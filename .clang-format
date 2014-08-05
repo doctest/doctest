@@ -1,0 +1,25 @@
+BasedOnStyle: LLVM
+IndentWidth: 4
+TabWidth: 4
+UseTab: Never
+BreakBeforeBraces: Attach
+AllowShortIfStatementsOnASingleLine: false
+IndentCaseLabels: false
+PointerBindsToType: true
+ColumnLimit: 80
+SpaceAfterControlStatementKeyword: false
+NamespaceIndentation: None
+BinPackParameters: false
+AllowAllParametersOfDeclarationOnNextLine: false
+AccessModifierOffset: -4
+BreakConstructorInitializersBeforeComma: true
+Standard: Cpp11
+AlwaysBreakTemplateDeclarations: true
+Cpp11BracedListStyle: true
+
+PenaltyBreakBeforeFirstCallParameter: 19
+PenaltyBreakComment: 60
+PenaltyBreakString: 1000
+PenaltyBreakFirstLessLess: 120
+PenaltyExcessCharacter: 1000000
+PenaltyReturnTypeOnItsOwnLine: 1000
