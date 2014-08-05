@@ -1,14 +1,6 @@
 // use %ERRORLEVEL% to get the result of `int main()`
 
-#include "doctest.h"
-
-struct Y {
-    static void check() { int a = 5; }
-};
-
-DOCTEST_REGISTER_CLASS_CHECK_FUNCTION(Y);
-
-#include "u.h"
+#include "crap.h"
 
 #include <vector>
 DOCTEST_IMPLEMENT_GLOBALS();

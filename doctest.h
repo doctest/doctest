@@ -7,8 +7,8 @@ namespace doctestns {
 // ============================================================================
 
 #define DOCTEST_IMPLEMENT_GLOBALS()                                            \
-namespace doctestns {                                                            \
-    std::vector<functionType>* registeredFunctions = 0;                     \
+namespace doctestns {                                                          \
+    std::vector<functionType>* registeredFunctions = 0;                        \
     void registerFunctionInGlobalArray(functionType f) {                       \
         if(!registeredFunctions)                                               \
             registeredFunctions = new std::vector<functionType>;               \
@@ -16,7 +16,7 @@ namespace doctestns {                                                           
     }                                                                          \
     void invokeAllFunctions() {                                                \
         if(registeredFunctions)                                                \
-            for(unsigned i = 0; i < registeredFunctions->size(); ++i)            \
+            for(unsigned i = 0; i < registeredFunctions->size(); ++i)          \
                 registeredFunctions->at(i)();                                  \
     }                                                                          \
 } // namespace doctestns
@@ -94,7 +94,7 @@ int registerFunction(functionType f) {
 // ============================================================================
 
 #define DOCTEST_REGISTER_FUNCTION(f)                                           \
-    static int DOCTEST_ANONYMOUS_NAME(f) = doctestns::registerFunction<&f>(f);
+    static int DOCTEST_ANONYMOUS_NAME(a) = doctestns::registerFunction<&f>(f);
 
 #define DOCTEST_REGISTER_CLASS_FUNCTION(x, f)                                  \
     static int DOCTEST_ANONYMOUS_NAME(x##f) =                                  \
@@ -104,73 +104,33 @@ int registerFunction(functionType f) {
     DOCTEST_REGISTER_CLASS_FUNCTION(x, check)
 
 #define DOCTEST_CREATE_AND_REGISTER_FUNCTION(x)                                \
-    void x();                                                                  \
-    DOCTEST_REGISTER_FUNCTION(x);                                              \
-    inline void x()
+    namespace doctestns {                                                      \
+        void x();                                                              \
+        DOCTEST_REGISTER_FUNCTION(x)                                           \
+    }                                                                          \
+    inline void doctestns::x()                                                 \
 
-#define doctest                                                                \
-    DOCTEST_CREATE_AND_REGISTER_FUNCTION(DOCTEST_ANONYMOUS_NAME(f))
+#define doctest DOCTEST_CREATE_AND_REGISTER_FUNCTION(DOCTEST_ANONYMOUS_NAME(f))
 
-#define DOCTEST_INHERIT_FIXTURE(name, base, func) \
-	struct name : base { \
-		inline void f(); \
-	}; \
-	inline void func() { \
-		name var; \
-		var.f(); \
-	} \
-    static int DOCTEST_ANONYMOUS_NAME(func) = doctestns::registerFunction<&func>(func); \
-	inline void name::f()
+#define DOCTEST_INHERIT_FIXTURE(name, base, func)                              \
+    struct name : base {                                                       \
+        inline void f();                                                       \
+    };                                                                         \
+    inline void func() {                                                       \
+        name var;                                                              \
+        var.f();                                                               \
+    }                                                                          \
+    static int DOCTEST_ANONYMOUS_NAME(a) =                                     \
+        doctestns::registerFunction<&func>(func);                              \
+    inline void name::f()
 
 #define doctest_fixture(x) \
-    DOCTEST_INHERIT_FIXTURE(DOCTEST_ANONYMOUS_NAME(x), x, DOCTEST_ANONYMOUS_NAME(func))
-	
+    DOCTEST_INHERIT_FIXTURE(DOCTEST_ANONYMOUS_NAME(x), x, DOCTEST_ANONYMOUS_NAME(f))
+
 } // namespace doctestns
 
 // ============================================================================
 // ================================== END =====================================
 // ============================================================================
 
-
-
-
-struct MILF {
-	MILF() : a(5) {}
-	~MILF() {}
-	void mthd() {}
-	int a;
-};
-
-doctest_fixture(MILF) {
-	a = 666;
-	mthd();
-}
-
-doctest_fixture(MILF) {
-	mthd();
-	a = 88;
-}
-
-
-
-struct X {
-    static void check() { int a = 5; }
-
-    static void opsa() { int a = 5; }
-
-    static void opsa2() { int a = 5; }
-};
-
-DOCTEST_REGISTER_CLASS_CHECK_FUNCTION(X);
-DOCTEST_REGISTER_CLASS_FUNCTION(X, opsa);
-DOCTEST_REGISTER_CLASS_FUNCTION(X, opsa2);
-
-inline void test() { int a = 5; }
-
-DOCTEST_REGISTER_FUNCTION(test);
-DOCTEST_REGISTER_FUNCTION(test);
-DOCTEST_REGISTER_FUNCTION(test);
-DOCTEST_REGISTER_FUNCTION(test);
-DOCTEST_REGISTER_FUNCTION(test);
-
-doctest{}
+struct MILF {};
