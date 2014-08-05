@@ -1,0 +1,38 @@
+# Compiled Object files
+*.slo
+*.lo
+*.o
+*.obj
+
+# Compiled Dynamic libraries
+*.so
+*.dylib
+*.dll
+
+# Compiled Static libraries
+*.lai
+*.la
+*.a
+*.lib
+
+# Executables
+*.exe
+*.out
+*.app
+
+# Text garbage
+*.ii
+*.s
+
+# My garbage :)
+examples/temp_test_output.txt
+
+scripts/bench/assimp/*
+scripts/bench/catch/*
+scripts/bench/log.txt
+build/*
+build-mingw/*
+examples/*/build/*
+examples/*/build-mingw/*
+*.suo
+*.pyc

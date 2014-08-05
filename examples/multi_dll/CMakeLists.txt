@@ -1,0 +1,19 @@
+cmake_minimum_required(VERSION 2.8)
+
+project(multi_dll)
+
+include(../../scripts/flags.cmake)
+
+# force 64 bit for OSX because -m32 fails >>> SOMETIMES <<< (x86_64 vs 386 - like the dll is not linked with -m32...)
+if(APPLE)
+    add_compiler_flags(-m64)
+endif()
+
+include_directories("../../doctest/")
+
+add_library(dll_1 SHARED dll.cpp)
+
+add_executable(${PROJECT_NAME} main.cpp)
+target_link_libraries(${PROJECT_NAME} dll_1)
+
+add_test(NAME ${PROJECT_NAME} COMMAND $<TARGET_FILE:${PROJECT_NAME}>)

@@ -1,0 +1,6 @@
+- run github_changelog_generator with --future-release 1.x.0
+- run update.py
+- commit in dev
+- merge dev in master and coverity_scan (and rebase them)
+- push all branches (git push --all)
+- create github release with the same semver tag as the changelog

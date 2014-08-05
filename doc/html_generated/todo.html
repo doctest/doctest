@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<title>todo</title>
+<xmp theme="united" style="display:none;">
+
+## TODO FOR FIRST RELEASE
+
+- integrate sanitizers into CI builds
+- CHECK/REQUIRE macros
+- debugger present detection (and break when a CHECK/REQUIRE macro fails)
+- a message macro
+- look at catch command line options
+- ability to not run tests at all
+- error reporting
+- colors in output
+- MSVC/IDE integration
+- make a compact reporter (for within ide-s - just the file and line number)
+- streaming reporters???
+- signal handling for unix: http://www.cplusplus.com/reference/csignal/signal/
+- fixing warnings gcc/clang/msvc (and add more stuff in the disabled example)
+- test coverage
+- documentation
+- benchmark
+- reddit/boost mailing list/comp.lang.c++/comp.std.c++/hackernews/hora ot cg/ https://github.com/fffaraz/awesome-cpp (also research how to market a new library)
+
+## FUTURE
+- xml reporter (jUnit compatible, etc.)
+- timing reports of tests, duration restrictions, kill of longer than, etc...
+- test execution in separate processes - UNIX only with fork()
+- hierarchical test suites? using a stack for the pushed states
+- sorting the test order (by file, by test suite, or both, ASC/DESC...)
+- ability to re-run only newly compiled tests - based on timestamps of the __FILE__ in which they are - and stored in some file
+- error checking of parameters (if the range is valid (first <= last), etc)
+- BDD based on the subtests - like Catch
+- matchers?
+- count the number of times TESTSUITE and TESTSUITE_END have been called and issue a warning when the tests are getting ran if there is a mismatch (also each TESTSUITE should check if it's called directly after a TESTSUITE without a TESTSUITE_END in between)
+- silencing warnings - take into account when a compiler (which version) accuires a pragma/attribute/warning (for gcc use -Wno-unknown-warning)
+- ability to transfer/copy registered functions from one dll to another so they are put in one set and duplicates are filtered
+
+## DOCUMENTATION
+- profile doctest vs Catch (compile/startup)
+- defense of macros in testing frameworks: http://accu.org/var/uploads/journals/Overload125.pdf
+- whats the library's main purpose
+- warning free even with the most aggressive options for all 3 major compilers
+- mocking is not included because it is orthogonal to testing and a different third party library may be used for that (google mock)
+- property based testing - what it is and how to use it with doctest
+- document how to use spaces for filters in the comma separated list (using "")
+- tests are ran serially
+- document all the options
+- initially was planning on a C version of the library but figured that there is no reason to choose C over C++ anywhere
+- tests in headers... might end up in different test suites - and only 1 of them will get registered? or might have ifdef-ed parts that get compiled differently based on how/where the header is included...... so not a good practice to write tests in header files
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</xmp>
+<script src="strapdown.js/strapdown.js"></script>
+</html>

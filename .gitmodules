@@ -1,0 +1,3 @@
+[submodule "scripts/coveralls-cmake"]
+	path = scripts/coveralls-cmake
+	url = https://github.com/JoakimSoderberg/coveralls-cmake.git
