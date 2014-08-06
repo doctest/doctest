@@ -5,7 +5,9 @@
 int main() {
     DOCTEST_INVOKE_ALL_TEST_FUNCTIONS();
     
-    //system("pause");
-	
+#if defined(_MSC_VER)
+    system("pause");
+#endif // _MSC_VER
+
     return 0;
 }

@@ -1,51 +1,62 @@
 #pragma once
+#ifndef __DOCTEST_HEADER_INCLUDED__
+#define __DOCTEST_HEADER_INCLUDED__
 
-#include <iostream>
-#include <vector>
+// An alternative to including these is to put the functionality that registers
+// functions into the map into a macro and require the user to use that macro
+// once somewhere in a source file and to have these includes there before it.
 #include <map>
-using namespace std;
+#include <cstring>
+
+// ============================================================================
+// ================================== BEGIN ===================================
+// ============================================================================
 
 namespace doctestns {
 
-// ============================================================================
-// type of functions used by the test suite
-// ============================================================================
+// call the registered tests with this
+#define DOCTEST_INVOKE_ALL_TEST_FUNCTIONS() doctestns::invokeAllFunctions();
 
 typedef void (*functionType)(void);
 
 struct functionSignature {
     unsigned line;
     const char* file;
+    
+    bool operator<(const functionSignature& other) const {
+        if(line != other.line) return line < other.line;
+        return strcmp(file, other.file) < 0;
+    }
 };
 
-inline std::map<functionSignature, functionType>*& getRegisteredFunctions2() {
+inline std::map<functionSignature, functionType>*& getRegisteredFunctions() {
     static std::map<functionSignature, functionType>* value = 0;
     return value;
 }
 
-inline std::vector<functionType>*& getRegisteredFunctions() {
-    static std::vector<functionType>* value = 0;
-    return value;
+inline int registerFunctionInGlobalArray(functionType f, unsigned line, const char* file) {
+    std::map<functionSignature, functionType>*& registeredFunctions = getRegisteredFunctions();
+    if(!registeredFunctions)
+        registeredFunctions = new std::map<functionSignature, functionType>;
+    functionSignature signature;
+    signature.line = line;
+    signature.file = file;
+    registeredFunctions->insert(std::pair<functionSignature, functionType>(signature, f));
+    return 0;
 }
 
-inline void registerFunctionInGlobalArray(functionType f) {
-    std::vector<functionType>*& registeredFunctions = getRegisteredFunctions();
-    if(!registeredFunctions)
-        registeredFunctions = new std::vector<functionType>;
-    registeredFunctions->push_back(f);
-}
 inline void invokeAllFunctions() {
-    std::vector<functionType>*& registeredFunctions = getRegisteredFunctions();
+    std::map<functionSignature, functionType>*& registeredFunctions = getRegisteredFunctions();
     if(registeredFunctions)
-        for(unsigned i = 0; i < registeredFunctions->size(); ++i)
-            registeredFunctions->at(i)();
+        for(std::map<functionSignature, functionType>::iterator it = registeredFunctions->begin();
+            it != registeredFunctions->end(); ++it)
+            it->second();
 }
 
 // ============================================================================
 // invocation macro - executes all the registered test functions
 // ============================================================================
 
-#define DOCTEST_INVOKE_ALL_TEST_FUNCTIONS() doctestns::invokeAllFunctions();
 
 // ============================================================================
 // internal macros
@@ -60,62 +71,16 @@ inline void invokeAllFunctions() {
 #endif
 
 // ============================================================================
-// getters of global variables
-// ============================================================================
-
-template <functionType fn>
-int& getGlobalIntForFunction() {
-    static int value = 0;
-    return value;
-}
-
-template <typename T>
-int& getGlobalIntForType() {
-    static int value = 0;
-    return value;
-}
-
-template <typename T, functionType fn>
-int& getGlobalIntForMember() {
-    static int value = 0;
-    return value;
-}
-
-// ============================================================================
-// forward declarations of statics and implementation
-// ============================================================================
-
-//extern std::vector<functionType>* registeredFunctions;
-void registerFunctionInGlobalArray(functionType);
-
-// ============================================================================
-// templated registering functions
-// ============================================================================
-
-template <typename T, functionType fn>
-int registerMemberFunction(functionType f) {
-    int& inited = getGlobalIntForMember<T, fn>();
-    if(!inited) registerFunctionInGlobalArray(f);
-    return inited = 1;
-}
-
-template <functionType fn>
-int registerFunction(functionType f) {
-    int& inited = getGlobalIntForFunction<fn>();
-    if(!inited) registerFunctionInGlobalArray(f);
-    return inited = 1;
-}
-
-// ============================================================================
 // macros for creating and registering test functions
 // ============================================================================
 
 #define DOCTEST_REGISTER_FUNCTION(f)                                           \
-    static int DOCTEST_ANONYMOUS_NAME(a) = doctestns::registerFunction<&f>(f);
+    static int DOCTEST_ANONYMOUS_NAME(a) =                                     \
+        doctestns::registerFunctionInGlobalArray(f, __LINE__, __FILE__);
 
 #define DOCTEST_REGISTER_CLASS_FUNCTION(x, f)                                  \
     static int DOCTEST_ANONYMOUS_NAME(x##f) =                                  \
-        doctestns::registerMemberFunction<x, &x::f>(&x::f);
+        doctestns::registerFunctionInGlobalArray(&x::f, __LINE__, __FILE__);
 
 #define DOCTEST_REGISTER_CLASS_CHECK_FUNCTION(x)                               \
     DOCTEST_REGISTER_CLASS_FUNCTION(x, check)
@@ -129,7 +94,7 @@ int registerFunction(functionType f) {
 
 #define doctest DOCTEST_CREATE_AND_REGISTER_FUNCTION(DOCTEST_ANONYMOUS_NAME(f))
 
-#define DOCTEST_INHERIT_FIXTURE(name, base, func)                              \
+#define DOCTEST_IMPLEMENT_FIXTURE(name, base, func)                            \
     namespace doctestns {                                                      \
         struct name : base {                                                   \
             inline void f();                                                   \
@@ -139,12 +104,12 @@ int registerFunction(functionType f) {
             var.f();                                                           \
         }                                                                      \
         static int DOCTEST_ANONYMOUS_NAME(a) =                                 \
-            doctestns::registerFunction<&func>(func);                          \
+            doctestns::registerFunctionInGlobalArray(func, __LINE__, __FILE__);\
     }                                                                          \
     inline void doctestns::name::f()
 
-#define doctest_fixture(x) \
-    DOCTEST_INHERIT_FIXTURE(DOCTEST_ANONYMOUS_NAME(x), x, DOCTEST_ANONYMOUS_NAME(f))
+#define doctest_fixture(x) DOCTEST_IMPLEMENT_FIXTURE(                          \
+    DOCTEST_ANONYMOUS_NAME(x), x, DOCTEST_ANONYMOUS_NAME(f))
 
 } // namespace doctestns
 
@@ -152,4 +117,4 @@ int registerFunction(functionType f) {
 // ================================== END =====================================
 // ============================================================================
 
-struct MILF {};
+#endif // __DOCTEST_HEADER_INCLUDED__
