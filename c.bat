@@ -1,1 +1,1 @@
-@g++ *.cpp --save-temps -std=c++14 -Wall
+@g++ *.cpp --save-temps -std=c++14 -Wall -pedantic %1 %2 %3 %4 %5
