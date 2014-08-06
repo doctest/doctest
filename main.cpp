@@ -2,9 +2,6 @@
 
 #include "crap.h"
 
-#include <vector>
-DOCTEST_IMPLEMENT_GLOBALS();
-
 int main() {
     DOCTEST_INVOKE_ALL_TEST_FUNCTIONS();
     
