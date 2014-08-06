@@ -1,13 +1,8 @@
 #include "doctest.h"
-#include "crap.h"
+doctest(Asd) {}
+doctest() {}
 
-#include <iostream>
-using namespace std;
+struct MILF{};
+doctest_fixture(MILF, adf) {
 
-doctest{ cout << "anon 1\n"; }
-doctest{ cout << "anon 2\n"; }
-doctest{ cout << "anon 3\n"; }
-
-
-
-doctest{ cout << "anon 4\n"; }
+}

@@ -1,2 +1,1 @@
-@g++ *.cpp --save-temps -Wall
-@REM -std=c++14
+@g++ *.cpp --save-temps -std=c++14 -Wall
