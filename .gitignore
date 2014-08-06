@@ -19,3 +19,7 @@
 *.exe
 *.out
 *.app
+
+# Text garbage
+*.ii
+*.s
