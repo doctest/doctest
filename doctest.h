@@ -2,11 +2,16 @@
 #ifndef __DOCTEST_HEADER_INCLUDED__
 #define __DOCTEST_HEADER_INCLUDED__
 
+//#define DOCTEST_GLOBAL_DISABLE
+
 // == BENCHMARK:
 //  10k doctests in 1 cpp == 32 sec build time on my machine
 //   5k doctests in 1 cpp ==  9 sec build time on my machine
 // 2.5k doctests in 1 cpp ==  3 sec build time on my machine
 // == TODO:
+// - think about not defining _CRT_SECURE_NO_WARNINGS 
+// - switch to new from malloc
+// - think about not doing warning(disable: 4003) (separate set of macros for named tests?)
 // - think about in-class doctests
 // - macro for making the lib not header only - for multi dll scenarios
 //   (will force the user to use a macro in only 1 dll in only 1 source file)
@@ -19,6 +24,13 @@
 #if !defined(DOCTEST_GLOBAL_DISABLE)
 
 #if !defined(DOCTEST_NOT_HEADER_ONLY)
+
+// MSVC fixes
+#if defined(_MSC_VER)
+#define _CRT_SECURE_NO_WARNINGS
+#pragma warning(disable: 4003) // not enough actual parameters for macro
+#endif // _MSC_VER
+
 // required includes
 #include <map>
 #include <cstring>
@@ -43,7 +55,7 @@ struct functionSignature {
     bool operator<(const functionSignature& other) const {
         if(line != other.line) return line < other.line;
         int fileCmp = strcmp(file, other.file);
-        if(fileCmp != 0) return fileCmp;
+        if(fileCmp != 0) return fileCmp < 0;
         return strcmp(method, other.method) < 0;
     }
 };
@@ -146,8 +158,6 @@ void invokeAllFunctions(int argc, char** argv);
 #endif // DOCTEST_NOT_HEADER_ONLY
 
 } // namespace doctestns
-
-
 
 // ============================================================================
 // macros for creating and registering test functions - produce optimal codegen
