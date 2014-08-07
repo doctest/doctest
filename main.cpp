@@ -1,6 +1,8 @@
 // use %ERRORLEVEL% to get the result of `int main()`
 #include "doctest.h"
 
+#include <cstdlib>
+
 int main(int argc, char** argv) {
     DOCTEST_INVOKE_ALL_TEST_FUNCTIONS(argc, argv);
     
