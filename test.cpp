@@ -1,4 +1,7 @@
+
 #include "doctest.h"
+#include "doctest_impl.h"
+
 
 #include <cstdio>
 #if defined(_MSC_VER)
@@ -32,3 +35,4 @@ protected:
 };
 
 doctest_fixture(Test1, ) { printf("%d\n", a); }
+

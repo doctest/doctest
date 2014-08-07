@@ -8,7 +8,7 @@ IndentCaseLabels: false
 PointerBindsToType: true
 ColumnLimit: 80
 SpaceAfterControlStatementKeyword: false
-NamespaceIndentation: None
+NamespaceIndentation: All
 BinPackParameters: false
 AllowAllParametersOfDeclarationOnNextLine: false
 AccessModifierOffset: -4
