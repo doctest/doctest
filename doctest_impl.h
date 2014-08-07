@@ -90,13 +90,13 @@ namespace doctestns {
         if(registeredFunctions) {
             char* filtersString = 0;
             char** filters = 0;
-            unsigned filterCount = 0;
+            size_t filterCount = 0;
             // locate the filters string from the arguments (with comma separated filters)
             for(int i = 1; i < argc; ++i) {
                 const char* temp = strstr(argv[i], "-doctest=");
                 if(temp) {
                     temp += strlen("-doctest=");
-                    unsigned len = strlen(temp);
+                    size_t len = strlen(temp);
                     if(len) {
                         filtersString = new char[len + 1];
                         strcpy(filtersString, temp);
@@ -106,12 +106,12 @@ namespace doctestns {
             }
             // if we have found the filter string
             if(filtersString) {
-                const unsigned maxFiltersInList = 1024; // ought to be enough
+                const size_t maxFiltersInList = 1024; // ought to be enough
                 filters = new char* [maxFiltersInList];
                 // tokenize with "," as a separator for the first maxFiltersInList filters
                 char* pch = strtok(filtersString, ",");
                 while(pch != 0) {
-                    unsigned len = strlen(pch);
+                    size_t len = strlen(pch);
                     if(len && filterCount < maxFiltersInList) {
                         filters[filterCount] = new char[len + 1];
                         strcpy(filters[filterCount], pch);
@@ -126,7 +126,7 @@ namespace doctestns {
                 // if there are any filters given
                 if(filterCount) {
                     // call the callback if atleast one filter matches
-                    for(unsigned i = 0; i < filterCount; ++i) {
+                    for(size_t i = 0; i < filterCount; ++i) {
                         if(strstr(it->first.name, filters[i])) {
                             it->second();
                             break;
@@ -139,7 +139,7 @@ namespace doctestns {
             }
             // cleanup buffers
             if(filters) {
-                for(unsigned i = 0; i < filterCount; ++i)
+                for(size_t i = 0; i < filterCount; ++i)
                     delete[] filters[i];
                 delete[] filters;
                 delete[] filtersString;

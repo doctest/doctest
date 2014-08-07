@@ -62,7 +62,11 @@ DOCTEST_IMPLEMENT_FIXTURE(DOCTEST_ANONYMOUS_NAME(F), x, DOCTEST_ANONYMOUS_NAME(f
 // =============================================================================
 #else // DOCTEST_GLOBAL_DISABLE
 
-#define DOCTEST_INVOKE_ALL_TEST_FUNCTIONS(argc, argv)
+// hack for silencing warning about unused variables when registration/invocation is disabled
+namespace doctestns { inline void dmy(int i, char** c) { int a = i; i = a; char** t = c; c = t; } }
+
+#define DOCTEST_INVOKE_ALL_TEST_FUNCTIONS(argc, argv) \
+doctestns::dmy(argc, argv);
 #define DOCTEST_REGISTER_FUNCTION(f, name)
 #define DOCTEST_REGISTER_CLASS_FUNCTION(x, m)
 #define DOCTEST_IMPLEMENT_FIXTURE(der, base, func, name) \
@@ -72,12 +76,16 @@ inline void doctestns::der::f()
 #define DOCTEST_CREATE_AND_REGISTER_FUNCTION(f, name) \
 namespace doctestns{void f();DOCTEST_REGISTER_FUNCTION(f, name)}inline void doctestns::f()
 
-// for registering normal doctests
+// for registering doctests
 #define doctest(name) \
 DOCTEST_CREATE_AND_REGISTER_FUNCTION(DOCTEST_ANONYMOUS_NAME(f), name)
+#define doctest_noname \
+DOCTEST_CREATE_AND_REGISTER_FUNCTION(DOCTEST_ANONYMOUS_NAME(f), _)
 
 // for registering doctests with a fixture
 #define doctest_fixture(x, name) \
 DOCTEST_IMPLEMENT_FIXTURE(DOCTEST_ANONYMOUS_NAME(F), x, DOCTEST_ANONYMOUS_NAME(f), name)
+#define doctest_fixture_noname(x) \
+DOCTEST_IMPLEMENT_FIXTURE(DOCTEST_ANONYMOUS_NAME(F), x, DOCTEST_ANONYMOUS_NAME(f), _)
 
 #endif // DOCTEST_GLOBAL_DISABLE
