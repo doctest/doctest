@@ -34,3 +34,11 @@ protected:
 };
 
 doctest_fixture(Test1, asdf) { printf("%d\n", a); }
+
+class Trololo {
+
+public:
+	static void check() { printf("inside static member!\n"); }
+};
+
+DOCTEST_REGISTER_CLASS_FUNCTION(Trololo, check)

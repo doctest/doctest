@@ -1,5 +1,6 @@
 #pragma once
 
+// if registering is not disabled
 #if !defined DOCTEST_GLOBAL_DISABLE
 
 // if this header is included into the main doctest.h header the functions
@@ -23,10 +24,13 @@
 #include <cstring>
 #include <cstdlib> // for atexit
 
+// the namespace used by all functions generated/registered by this library
 namespace doctestns {
 
+    // the function type this library works with
     typedef void (*functionType)(void);
 
+    // a struct defining a registered test callback
     struct functionSignature {
         unsigned line;
         const char* file;
@@ -62,8 +66,7 @@ namespace doctestns {
         registeredFunctions = 0;
     }
 
-    // the function used by the macros for registering doctest callbacks (short
-    // name for small codegen)
+    // used by the macros for registering doctest callbacks (short name for small codegen)
     DOCTEST_INLINE int r(functionType f, unsigned line, const char* file, const char* method,
                          const char* name) {
         std::map<functionSignature, functionType>*& registeredFunctions = getRegisteredFunctions();
@@ -88,8 +91,7 @@ namespace doctestns {
             char* filtersString = 0;
             char** filters = 0;
             unsigned filterCount = 0;
-            // locate the filters string from the arguments (with comma
-            // separated filters)
+            // locate the filters string from the arguments (with comma separated filters)
             for(int i = 1; i < argc; ++i) {
                 const char* temp = strstr(argv[i], "-doctest=");
                 if(temp) {
@@ -104,14 +106,13 @@ namespace doctestns {
             }
             // if we have found the filter string
             if(filtersString) {
-                const unsigned maxFiltersInCommaSeparatedList = 1024; // ought to be enough
-                filters = new char* [maxFiltersInCommaSeparatedList];
-                // tokenize with "," as a separator for the first
-                // maxFiltersInCommaSeparatedList filters
+                const unsigned maxFiltersInList = 1024; // ought to be enough
+                filters = new char* [maxFiltersInList];
+                // tokenize with "," as a separator for the first maxFiltersInList filters
                 char* pch = strtok(filtersString, ",");
                 while(pch != 0) {
                     unsigned len = strlen(pch);
-                    if(len && filterCount < maxFiltersInCommaSeparatedList) {
+                    if(len && filterCount < maxFiltersInList) {
                         filters[filterCount] = new char[len + 1];
                         strcpy(filters[filterCount], pch);
                         ++filterCount;

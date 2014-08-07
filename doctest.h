@@ -9,6 +9,7 @@
 #define DOCTEST_ANONYMOUS_NAME(x) DOCTEST_STR_CONCAT(x, __LINE__)
 #endif
 
+// if registering is not disabled
 #if !defined(DOCTEST_GLOBAL_DISABLE)
 
 // if the user wants to include this header himself somewhere and not
