@@ -10,5 +10,5 @@ include_directories("../../")
 
 add_library(dll_1 SHARED dll.cpp)
 
-add_executable(multi_dll main.cpp)
-target_link_libraries(multi_dll dll_1)
+add_executable(exe main.cpp)
+target_link_libraries(exe dll_1)

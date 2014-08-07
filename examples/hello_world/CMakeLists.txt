@@ -8,4 +8,4 @@ endif()
 
 include_directories("../../")
 
-add_executable(hello_world main.cpp)
+add_executable(exe main.cpp)

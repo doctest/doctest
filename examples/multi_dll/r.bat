@@ -1,0 +1,3 @@
+@cd mingw
+@exe
+@cd ../
