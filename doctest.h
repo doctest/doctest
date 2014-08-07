@@ -114,9 +114,9 @@ inline void invokeAllFunctions(int argc, char** argv) {
         }
         // if we have found the filter string
         if(filtersString) {
-			const unsigned maxFiltersInCommaSeparatedList = 1024; // ought to be enough
+            const unsigned maxFiltersInCommaSeparatedList = 1024; // ought to be enough
             filters = new char*[maxFiltersInCommaSeparatedList];
-			// tokenize with "," as a separator the first maxFiltersInCommaSeparatedList filters
+            // tokenize with "," as a separator for the first maxFiltersInCommaSeparatedList filters
             char* pch = strtok(filtersString, ",");
             while(pch != 0) {
                 unsigned len = strlen(pch);
