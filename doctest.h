@@ -10,7 +10,6 @@
 // 2.5k doctests in 1 cpp ==  3 sec build time on my machine
 // == TODO:
 // - think about not defining _CRT_SECURE_NO_WARNINGS 
-// - switch to new from malloc
 // - think about not doing warning(disable: 4003) (separate set of macros for named tests?)
 // - think about in-class doctests
 // - macro for making the lib not header only - for multi dll scenarios
@@ -28,12 +27,13 @@
 // MSVC fixes
 #if defined(_MSC_VER)
 #define _CRT_SECURE_NO_WARNINGS
-#pragma warning(disable: 4003) // not enough actual parameters for macro
+//#pragma warning(disable: 4003) // not enough actual parameters for macro
 #endif // _MSC_VER
 
 // required includes
 #include <map>
 #include <cstring>
+#include <cstdlib> // for atexit
 #endif // DOCTEST_NOT_HEADER_ONLY)
 
 namespace doctestns {
@@ -106,25 +106,26 @@ inline void invokeAllFunctions(int argc, char** argv) {
                 temp += strlen("-doctest=");
                 unsigned len = strlen(temp);
                 if(len) {
-                    filtersString = (char*)malloc(len + 1);
-                    strcpy(filtersString, temp);
+                    filtersString = new char[len + 1];
+                    memcpy(filtersString, temp, len + 1);
                     break;
                 }
             }
         }
         // if we have found the filter string
         if(filtersString) {
-            filters = (char**)malloc(1000);
-            //printf("%s\n", filtersString);
+			const unsigned maxFiltersInCommaSeparatedList = 1024; // ought to be enough
+            filters = new char*[maxFiltersInCommaSeparatedList];
+			// tokenize with "," as a separator the first maxFiltersInCommaSeparatedList filters
             char* pch = strtok(filtersString, ",");
             while(pch != 0) {
                 unsigned len = strlen(pch);
-                if(len) {
-                    filters[filterCount] = (char*)malloc(len + 1);
-                    strcpy(filters[filterCount], pch);
+                if(len && filterCount < maxFiltersInCommaSeparatedList) {
+                    filters[filterCount] = new char[len + 1];
+                    memcpy(filters[filterCount], pch, len + 1);
                     ++filterCount;
                 }
-                pch = strtok(NULL, ",");
+                pch = strtok(0, ",");
             }
         }
         // invoke the registered functions
@@ -146,9 +147,9 @@ inline void invokeAllFunctions(int argc, char** argv) {
         // cleanup buffers
         if(filters) {
             for(unsigned i = 0; i < filterCount; ++i)
-                free(filters[i]);
-            free(filters);
-            free(filtersString);
+                delete [] filters[i];
+            delete [] filters;
+            delete [] filtersString;
         }
     }
 }
