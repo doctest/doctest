@@ -1,6 +1,6 @@
 #pragma once
 
-// internal macros for string concatenation and anonymous variable registration
+// internal macros for string concatenation and anonymous variable name generation
 #define DOCTEST_STR_CONCAT_IMPL(s1, s2) s1##s2
 #define DOCTEST_STR_CONCAT(s1, s2) DOCTEST_STR_CONCAT_IMPL(s1, s2)
 #ifdef __COUNTER__ // not standard and may be missing for some compilers
@@ -11,11 +11,16 @@
 
 #if !defined(DOCTEST_GLOBAL_DISABLE)
 
+// if the user wants to include this header himself somewhere and not
+// everywhere doctest.h is included (no unnecessary header inclusion)
 #if !defined(DOCTEST_DONT_INCLUDE_IMPLEMENTATION)
 #include "doctest_impl.h"
 #endif
+
 namespace doctestns {
+    // forward declarations of the function used by the registering macros
     int r(void (*f)(void), unsigned line, const char* file, const char* method, const char* name);
+    // the function used by the test invocation macro
     void invokeAllFunctions(int argc, char** argv);
 }
 
@@ -38,13 +43,17 @@ inline void doctestns::der::f()
 #define DOCTEST_CREATE_AND_REGISTER_FUNCTION(f, name) \
 namespace doctestns{void f();DOCTEST_REGISTER_FUNCTION(f, name)}inline void doctestns::f()
 
-// for registering normal doctests
+// for registering doctests
 #define doctest(name) \
 DOCTEST_CREATE_AND_REGISTER_FUNCTION(DOCTEST_ANONYMOUS_NAME(f), name)
+#define doctest_noname \
+DOCTEST_CREATE_AND_REGISTER_FUNCTION(DOCTEST_ANONYMOUS_NAME(f), _)
 
 // for registering doctests with a fixture
 #define doctest_fixture(x, name) \
 DOCTEST_IMPLEMENT_FIXTURE(DOCTEST_ANONYMOUS_NAME(F), x, DOCTEST_ANONYMOUS_NAME(f), name)
+#define doctest_fixture_noname(x) \
+DOCTEST_IMPLEMENT_FIXTURE(DOCTEST_ANONYMOUS_NAME(F), x, DOCTEST_ANONYMOUS_NAME(f), _)
 
 // =============================================================================
 // == WHAT FOLLOWS IS VERSIONS OF THE MACROS THAT DO NOT DO ANY REGISTERING!  ==

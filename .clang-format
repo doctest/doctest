@@ -6,10 +6,10 @@ BreakBeforeBraces: Attach
 AllowShortIfStatementsOnASingleLine: false
 IndentCaseLabels: false
 PointerBindsToType: true
-ColumnLimit: 80
+ColumnLimit: 100
 SpaceAfterControlStatementKeyword: false
 NamespaceIndentation: All
-BinPackParameters: false
+BinPackParameters: true
 AllowAllParametersOfDeclarationOnNextLine: false
 AccessModifierOffset: -4
 BreakConstructorInitializersBeforeComma: true
