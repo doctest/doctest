@@ -5,6 +5,7 @@ doctest is a testing framework for c++ that is inspired by the unittest function
 
 TODO:
 - think about class scope doctests
+- think about multi dll issue
 - examples (using cmake)
 - asserts
 - reporting
