@@ -3,13 +3,15 @@ doctest
 
 doctest is a testing framework for c++ that is inspired by the unittest functionality in the D programming language and the docstrings in python - tests are documentation and should reside near the code they test.
 
+The library has automatic test discovery and is c++98 compatible.
+
+The only non-standard features used in this library are:
+
+- the **__COUNTER__** macro, but all major compilers support it (if it is not found, **__LINE__** is used and then there are some corner cases with the codegen)
+
+- the **pragma once** directive - because of the DRY principle
+
 ##TODO
-
-- think about class scope doctests
-
-- think about multi dll issue
-
-- examples (using cmake)
 
 - asserts
 

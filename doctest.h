@@ -9,6 +9,13 @@
 #define DOCTEST_ANONYMOUS_NAME(x) DOCTEST_STR_CONCAT(x, __LINE__)
 #endif
 
+// internal macro for making a string
+#define DOCTEST_TOSTR_IMPL(x) #x
+#define DOCTEST_TOSTR(x) DOCTEST_TOSTR_IMPL(x)
+
+// internal macro for concatenating 2 literals and making the result a string
+#define DOCTEST_STR_CONCAT_TOSTR(s1, s2) DOCTEST_TOSTR(DOCTEST_STR_CONCAT(s1, s2))
+
 // if registering is not disabled
 #if !defined(DOCTEST_GLOBAL_DISABLE)
 
@@ -33,9 +40,6 @@ doctestns::invokeAllFunctions(argc, argv);
 #define DOCTEST_REGISTER_FUNCTION(f, name) \
 static int DOCTEST_ANONYMOUS_NAME(a)=r(f,__LINE__,__FILE__,"",#name);
 
-#define DOCTEST_REGISTER_CLASS_FUNCTION(x, m) \
-namespace doctestns{static int DOCTEST_ANONYMOUS_NAME(a)=r(&x::m,0,__FILE__,#m,"");}
-
 #define DOCTEST_IMPLEMENT_FIXTURE(der, base, func, name) \
 namespace doctestns{struct der:base{void f();};inline void func(){der v;v.f();}\
 static int DOCTEST_ANONYMOUS_NAME(a)=r(func,__LINE__,__FILE__,"",#name);}\
@@ -51,10 +55,15 @@ DOCTEST_CREATE_AND_REGISTER_FUNCTION(DOCTEST_ANONYMOUS_NAME(f), name)
 DOCTEST_CREATE_AND_REGISTER_FUNCTION(DOCTEST_ANONYMOUS_NAME(f), _)
 
 // for registering doctests with a fixture
-#define doctest_fixture(x, name) \
-DOCTEST_IMPLEMENT_FIXTURE(DOCTEST_ANONYMOUS_NAME(F), x, DOCTEST_ANONYMOUS_NAME(f), name)
-#define doctest_fixture_noname(x) \
-DOCTEST_IMPLEMENT_FIXTURE(DOCTEST_ANONYMOUS_NAME(F), x, DOCTEST_ANONYMOUS_NAME(f), _)
+#define doctest_fixture(c, name) \
+DOCTEST_IMPLEMENT_FIXTURE(DOCTEST_ANONYMOUS_NAME(F), c, DOCTEST_ANONYMOUS_NAME(f), name)
+#define doctest_fixture_noname(c) \
+DOCTEST_IMPLEMENT_FIXTURE(DOCTEST_ANONYMOUS_NAME(F), c, DOCTEST_ANONYMOUS_NAME(f), _)
+
+// for registering static methods of classes
+#define doctest_static_method(c, m) \
+namespace doctestns{static int DOCTEST_ANONYMOUS_NAME(a)=r(&c::m,0,"",\
+DOCTEST_STR_CONCAT_TOSTR(c, m),DOCTEST_STR_CONCAT_TOSTR(c, m));}
 
 // =============================================================================
 // == WHAT FOLLOWS IS VERSIONS OF THE MACROS THAT DO NOT DO ANY REGISTERING!  ==
@@ -68,7 +77,6 @@ namespace doctestns { inline void dmy(int i, char** c) { int a = i; i = a; char*
 #define DOCTEST_INVOKE_ALL_TEST_FUNCTIONS(argc, argv) \
 doctestns::dmy(argc, argv);
 #define DOCTEST_REGISTER_FUNCTION(f, name)
-#define DOCTEST_REGISTER_CLASS_FUNCTION(x, m)
 #define DOCTEST_IMPLEMENT_FIXTURE(der, base, func, name) \
 namespace doctestns{struct der:base{void f();};inline void func(){der v;v.f();}}\
 inline void doctestns::der::f()
@@ -87,5 +95,8 @@ DOCTEST_CREATE_AND_REGISTER_FUNCTION(DOCTEST_ANONYMOUS_NAME(f), _)
 DOCTEST_IMPLEMENT_FIXTURE(DOCTEST_ANONYMOUS_NAME(F), x, DOCTEST_ANONYMOUS_NAME(f), name)
 #define doctest_fixture_noname(x) \
 DOCTEST_IMPLEMENT_FIXTURE(DOCTEST_ANONYMOUS_NAME(F), x, DOCTEST_ANONYMOUS_NAME(f), _)
+
+// for registering static methods of classes
+#define doctest_static_method(c, m)
 
 #endif // DOCTEST_GLOBAL_DISABLE

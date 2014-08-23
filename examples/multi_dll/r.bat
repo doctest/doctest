@@ -1,3 +1,3 @@
 @cd mingw
-@exe
+@exe -doctest=%1
 @cd ../
