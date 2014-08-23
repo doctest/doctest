@@ -1,7 +1,5 @@
 #include "common.h"
 
-#include <cstdlib>
-
 doctest(executable) {
     printf("I am a test from the executable!\n");
 }

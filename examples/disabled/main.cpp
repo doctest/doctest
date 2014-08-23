@@ -1,7 +1,6 @@
 #define DOCTEST_GLOBAL_DISABLE
 #include "doctest.h"
 
-#include <cstdlib>
 #include <cstdio>
 
 doctest_noname {

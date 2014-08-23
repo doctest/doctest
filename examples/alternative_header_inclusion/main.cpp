@@ -1,7 +1,6 @@
 #define DOCTEST_DONT_INCLUDE_IMPLEMENTATION
 #include "doctest.h"
 
-#include <cstdlib>
 #include <cstdio>
 
 doctest(main) {

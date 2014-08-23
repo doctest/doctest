@@ -25,7 +25,7 @@ DOCTEST_INVOKE_ALL_TEST_FUNCTIONS(argc, argv);
 
 ##Test naming
 
-Tests can be invoked based on filter strings (comma separated on the command line).
+Tests can be invoked based on filter strings (comma separated on the command line). Names are case sensitive.
 Tests registered without a name actually have an empty name ("") and are invoked only when no filters are supplied.
 
 ```C++
@@ -118,6 +118,8 @@ dtor-ing...!
 
 - Tests are registered globally within each shared object/executable. If a test is defined in a header and that header is used in an executable and in a shared object, then the test is registered in both places. To see how to invoke tests from a shared object check out **multi_dll** from the examples folder.
 
+- The library does not use operator new/delete (only malloc) so it's memory usage is completely transparent to the user and that makes it fit for testing even memory management.
+
 - The only non-standard features used in this library are:
 
   - the **__COUNTER__** macro, but all major compilers support it (if it is not found, **__LINE__** is used and then there are some corner cases with the macro codegen and a test may be registered twice)
@@ -131,6 +133,14 @@ dtor-ing...!
 - reporting (like the pro testing libraries)
 
 - more documentation
+
+- poll people
+
+  - case insensitive names?
+  
+  - different macro names?
+  
+  - ability to name static method tests?
 
 ##Workflow with examples
 

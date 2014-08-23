@@ -1,6 +1,5 @@
 #include "doctest.h"
 
-#include <cstdlib>
 #include <cstdio>
 
 doctest(First) {

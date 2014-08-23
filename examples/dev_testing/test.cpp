@@ -1,6 +1,7 @@
 #include "doctest.h"
 
 #include <cstdio>
+
 #if defined(_MSC_VER)
 #define __func__ __FUNCTION__
 #endif // _MSC_VER
@@ -34,5 +35,9 @@ protected:
 };
 
 doctest_fixture(Test1, asdf) { printf("%d\n", a); }
+
+doctest(asd) { printf("in test asd1\n"); }
+doctest(asd) { printf("in test asd2\n"); }
+doctest(asd) { printf("in test asd3\n"); }
 
 
