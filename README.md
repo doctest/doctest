@@ -1,7 +1,7 @@
 doctest
 =======
 
-doctest is a testing framework for c++ that is inspired by the unittest functionality in the D programming language and the docstrings in python - tests are documentation and should reside near the code they test.
+doctest is a c++ header only library for writing tests that is inspired by the unittest functionality in the D programming language and the docstrings in python - tests are documentation and should reside near the code they test.
 
 The library has automatic test discovery and is c++98 compatible.
 
@@ -58,7 +58,7 @@ Test2
 
 ##Fixtures
 
-Fixtures are supported - they are basically a normal class. To have access to the data members of a fixture class they should be public or protected. Each test using a fixture will have it's fixture initialized for it.
+Fixtures are supported - they are basically a normal class. To have access to the data members of a fixture class they should be public or protected. Each test using a fixture will have it's fixture initialized for it. Fixture classes may also inherit each other to form more complex hierarchies.
 
 ```C++
 #include <iostream>
