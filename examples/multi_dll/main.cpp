@@ -1,17 +1,14 @@
-#define DOCTEST_DONT_INCLUDE_IMPLEMENTATION
-#include "doctest.h"
-
-//#include "doctest_impl.h"
+#include "common.h"
 
 #include <cstdlib>
-#include <cstdio>
 
-doctest(First) {
-    printf("IN FILE: %s\n", __FILE__);
+doctest(executable) {
+    printf("I am a test from the executable!\n");
 }
 
 int main(int argc, char** argv) {
     DOCTEST_INVOKE_ALL_TEST_FUNCTIONS(argc, argv);
+    call_tests_from_dll(argc, argv);
 
 #if defined(_MSC_VER)
     system("pause");

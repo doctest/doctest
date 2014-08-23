@@ -1,10 +1,10 @@
-#define DOCTEST_DONT_INCLUDE_IMPLEMENTATION
-#include "doctest.h"
+#define BUILDING_DLL
+#include "common.h"
 
-#include "doctest_impl.h"
+doctest(dll) {
+    printf("I am a test from the dll!\n");
+}
 
-#include <cstdio>
-
-doctest(First) {
-    printf("IN FILE: %s\n", __FILE__);
+DLL_PUBLIC void call_tests_from_dll(int argc, char** argv) {
+    DOCTEST_INVOKE_ALL_TEST_FUNCTIONS(argc, argv);
 }
