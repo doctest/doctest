@@ -108,21 +108,21 @@ dtor-ing...!
 
 ##Notes
 
-The library does not produce any warnings with GCC when compiled with ```-Wall -Wextra -pedantic -std=c++98 -m64```
+- The library does not produce any warnings with GCC when compiled with ```-Wall -Wextra -pedantic -std=c++98 -m64```
 
-The registration of test functions can be disabled by defining ```DOCTEST_GLOBAL_DISABLE``` before the inclusion of the **doctest.h** header. For large projects with tens of thousands of tests this may reduce the link time of the program especially if lots of tests are registered in header files.
+- The registration of test functions can be disabled by defining ```DOCTEST_GLOBAL_DISABLE``` before the inclusion of the **doctest.h** header. For large projects with tens of thousands of tests this may reduce the link time of the production build especially if lots of tests are registered in header files and will also reduce the binary size.
 
-The library by default includes its implementation which drags a dependency on **std::map**, the **cstring** header and the implementation of the library. This can be avoided by defining ```DOCTEST_DONT_INCLUDE_IMPLEMENTATION``` before the inclusion of **doctest.h** but then the user should include **doctest_impl.h** in one of his source files and have the ```DOCTEST_DONT_INCLUDE_IMPLEMENTATION``` macro defined before that as well. See **disabled** from the examples folder.
+- The library by default includes its implementation which drags a dependency on **std::map**, the **cstring** header and the implementation of the library. This can be avoided by defining ```DOCTEST_DONT_INCLUDE_IMPLEMENTATION``` before the inclusion of **doctest.h** but then the user should include **doctest_impl.h** in one of his source files and have the ```DOCTEST_DONT_INCLUDE_IMPLEMENTATION``` macro defined before that as well. See **disabled** from the examples folder.
 
-Tests are registered from top to bottom of each processed cpp after the headers have been preprocessed and included but there is no ordering between cpp files.
+- Tests are registered from top to bottom of each processed cpp after the headers have been preprocessed and included but there is no ordering between cpp files.
 
-Tests are registered globally within each shared object/executable. If a test is defined in a header and that header is used in an executable and in a shared object, then the test is registered in both places. To see how to invoke tests from a shared object check out **multi_dll** from the examples folder.
+- Tests are registered globally within each shared object/executable. If a test is defined in a header and that header is used in an executable and in a shared object, then the test is registered in both places. To see how to invoke tests from a shared object check out **multi_dll** from the examples folder.
 
-The only non-standard features used in this library are:
+- The only non-standard features used in this library are:
 
-- the **__COUNTER__** macro, but all major compilers support it (if it is not found, **__LINE__** is used and then there are some corner cases with the macro codegen and a test may be registered twice)
+  - the **__COUNTER__** macro, but all major compilers support it (if it is not found, **__LINE__** is used and then there are some corner cases with the macro codegen and a test may be registered twice)
 
-- the **pragma once** directive - supporting the DRY principle
+  - the **pragma once** directive - supporting the DRY principle
 
 ##TODO
 
