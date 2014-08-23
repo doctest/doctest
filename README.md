@@ -16,7 +16,7 @@ Tests are registered with the following macros:
 Tests can be registered anywhere - from source to header files. Each test is guaranteed to be registered only once no matter how many occurances it has in the code.
 
 To register a static method of a class as a test the user should use the doctest_static_method() macro outside of the class definition.
-The method should be of type ```void(*)(void)```. Such tests cannot be named.
+The method should be of type ```void(*)(void)```. Such tests cannot be named. See the **class_static_method** example.
 
 To invoke all the registered tests call DOCTEST_INVOKE_ALL_TEST_FUNCTIONS() passing the argc and argv of the program like this:
 ```C++
@@ -110,9 +110,9 @@ dtor-ing...!
 
 - The library does not produce any warnings with GCC when compiled with ```-Wall -Wextra -pedantic -std=c++98 -m64```
 
-- The registration of test functions can be disabled by defining ```DOCTEST_GLOBAL_DISABLE``` before the inclusion of the **doctest.h** header. For large projects with tens of thousands of tests this may reduce the link time of the production build especially if lots of tests are registered in header files and will also reduce the binary size.
+- The registration of test functions can be disabled by defining ```DOCTEST_GLOBAL_DISABLE``` before the inclusion of the **doctest.h** header. For large projects with tens of thousands of tests this may reduce the link time of the production build especially if lots of tests are registered in header files and will also reduce the binary size. See **disabled** from the examples folder.
 
-- The library by default includes its implementation which drags a dependency on **std::map**, the **cstring** header and the implementation of the library. This can be avoided by defining ```DOCTEST_DONT_INCLUDE_IMPLEMENTATION``` before the inclusion of **doctest.h** but then the user should include **doctest_impl.h** in one of his source files and have the ```DOCTEST_DONT_INCLUDE_IMPLEMENTATION``` macro defined before that as well. See **disabled** from the examples folder.
+- The library by default includes its implementation which drags a dependency on **std::map**, the **cstring** header and the implementation of the library. This can be avoided by defining ```DOCTEST_DONT_INCLUDE_IMPLEMENTATION``` before the inclusion of **doctest.h** but then the user should include **doctest_impl.h** in one of his source files and have the ```DOCTEST_DONT_INCLUDE_IMPLEMENTATION``` macro defined before that as well. See **alternative_header_inclusion** from the examples folder.
 
 - Tests are registered from top to bottom of each processed cpp after the headers have been preprocessed and included but there is no ordering between cpp files.
 
