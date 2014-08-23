@@ -20,7 +20,7 @@ Tests can be registered anywhere - from source to header files. Each test is gua
 Tests can be invoked based on filter strings (comma separated on the command line).
 Tests registered without a name actually have an empty name ("") and are invoked only when no filters are supplied.
 
-```
+```C++
 doctest(Test1)      { cout << "Test1" << endl; }
 doctest(Test2)      { cout << "Test2" << endl; }
 doctest(Test3)      { cout << "Test3" << endl; }
@@ -49,12 +49,13 @@ Test2
 
 Fixtures are supported - register with macros doctest_fixture() and doctest_fixture_noname() like this:
 
-```
+```C++
 #include <iostream>
 using namespace std;
 
 struct Shared {
-    Shared() : a(5) { cout << "hello! I am fixture ctor!" << endl; }
+    Shared() : a(5) { cout << "hello! I am a fixture ctor!" << endl; }
+    ~Shared() { cout << "dtor-ing...!" << endl; }
     int a;
 };
 
@@ -66,16 +67,32 @@ doctest_fixture(Shared, Fixture1_name) {
 
 doctest_fixture(Shared, Fixture2_name) {
     cout << a << endl;
-    a = 6;
+    a = 8;
     cout << a << endl;
 }
 
 doctest_fixture_noname(Shared) {
     cout << a << endl;
-    a = 6;
+    a = 2;
     cout << a << endl;
 }
+```
 
+For the above tests the output will be this:
+
+```
+hello! I am a fixture ctor!
+5
+6
+dtor-ing...!
+hello! I am a fixture ctor!
+5
+8
+dtor-ing...!
+hello! I am a fixture ctor!
+5
+2
+dtor-ing...!
 ```
 
 ##Non-standard dependencies
