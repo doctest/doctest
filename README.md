@@ -25,6 +25,6 @@ You can get **MinGW w64** from http://sourceforge.net/projects/mingwbuilds/ (arc
 
 - **g.bat** - generates build files through cmake
 
-- **m.bat** - invokes mingw32-make on the makefile target
+- **c.bat** - invokes mingw32-make on the makefile target
 
 - **r.bat** - runs the exe
