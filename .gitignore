@@ -23,3 +23,9 @@
 # Text garbage
 *.ii
 *.s
+
+# My garbage :)
+examples/*/mingw/*
+examples/*/msvc/*
+examples/*/*.bat
+*.suo

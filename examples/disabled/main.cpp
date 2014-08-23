@@ -1,11 +1,32 @@
+#define DOCTEST_GLOBAL_DISABLE
 #include "doctest.h"
 
 #include <cstdlib>
 #include <cstdio>
 
-doctest(First) {
+doctest_noname {
     printf("Anyone there?\n");
 }
+
+doctest(ops) {
+    printf("Anyone there?\n");
+}
+
+struct Empty {};
+
+doctest_fixture_noname(Empty) {
+    printf("Help?\n");
+}
+
+doctest_fixture(Empty, ops) {
+    printf("Help?\n");
+}
+
+struct Stuff {
+    static void check() { printf("halp!!!!!!!!!\n"); }
+};
+
+doctest_static_method(Stuff, check)
 
 int main(int argc, char** argv) {
     DOCTEST_INVOKE_ALL_TEST_FUNCTIONS(argc, argv);
