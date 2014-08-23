@@ -19,11 +19,25 @@ The only non-standard features used in this library are:
 
 - documentation
 
-##Current workflow under Windows
+The requirements for the examples are to have CMake 2.8 or higher.
 
-The requirements for the examples are to have CMake 2.8 or higher and atleast **MinGW w64** installed for Windows (or MSVC 2013 - hardcoded in the .bat files)
+##Workflow under Linux
+
+To build an example navigate to its folder and enter
+
+```
+cmake ./
+make
+./exe
+```
+
+##Workflow under Windows
+
+You will need **MinGW w64** installed for Windows (or MSVC 2013 - hardcoded in the .bat files)
 
 You can get **MinGW w64** from http://sourceforge.net/projects/mingwbuilds/ (arch: "x64" threads: "posix" exceptions: "seh")
+
+Use the bat files in the examples folder to build (or atleast configure) each example - place them in the sub folder of an example and run them
 
 - **g.bat** - generates build files through cmake
 
