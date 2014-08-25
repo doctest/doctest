@@ -143,7 +143,7 @@ DOCTEST_INLINE void invokeAllFunctions(int argc, char** argv) {
         char** filters = 0;
         size_t filterCount = 0;
         // locate the filters string from the arguments (with comma separated filters)
-        for(int i = 1; i < argc; ++i) {
+        for(int i = 0; i < argc; ++i) {
             const char* temp = strstr(argv[i], "-doctest=");
             if(temp) {
                 temp += strlen("-doctest=");
