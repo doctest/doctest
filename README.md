@@ -120,6 +120,8 @@ dtor-ing...!
 
 - The library does not use operator new/delete (only malloc) so it's memory usage is completely transparent to the user and that makes it fit for testing even memory management.
 
+- For tests written on the same line only the first one will be registered successfully.
+
 - The only non-standard features used in this library are:
 
   - the **__COUNTER__** macro, but all major compilers support it (if it is not found, **__LINE__** is used and then there are some corner cases with the macro codegen and a test may be registered twice)
