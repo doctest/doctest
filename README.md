@@ -2,6 +2,7 @@ doctest
 =======
 
 [![Build Status](https://travis-ci.org/hardly/doctestcpp.svg?branch=master)](https://travis-ci.org/hardly/doctestcpp)
+[![Coverage Status](https://coveralls.io/repos/hardly/doctestcpp/badge.png)](https://coveralls.io/r/hardly/doctestcpp)
 
 doctest is a c++ header only library for writing tests that is inspired by the unittest functionality in the D programming language and the docstrings in python - tests are documentation and should reside near the code they test.
 
