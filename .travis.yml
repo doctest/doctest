@@ -1,0 +1,5 @@
+language: cpp
+compiler:
+  - gcc
+#i am a comment TROLOLO
+script: cd examples/hello_world && cmake . && make
