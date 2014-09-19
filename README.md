@@ -1,6 +1,6 @@
 doctest
 =======
-
+[![Maintenance Status](http://stillmaintained.com/hardly/doctestcpp.png)](http://stillmaintained.com/hardly/doctestcpp)
 [![Build Status](https://travis-ci.org/hardly/doctestcpp.svg?branch=master)](https://travis-ci.org/hardly/doctestcpp)
 [![Coverage Status](https://coveralls.io/repos/hardly/doctestcpp/badge.png)](https://coveralls.io/r/hardly/doctestcpp)
 
