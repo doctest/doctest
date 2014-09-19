@@ -20,6 +20,7 @@
 #endif
 
 // required includes
+#include <limits>
 #include <map>
 #include <cstring> // C string manipulation
 #include <cstdlib> // malloc
@@ -84,6 +85,10 @@ struct MallocAllocator
     template <typename Other>
     struct rebind { typedef MallocAllocator<Other> other; };
 
+    size_type max_size() const throw() {
+        return std::numeric_limits<std::size_t>::max() / sizeof(T);
+    }
+
     pointer address(reference ref) const {
         return &ref;
     }
@@ -113,6 +118,40 @@ inline bool operator!=(const MallocAllocator<T>& a, const MallocAllocator<U>& b)
 
 typedef std::map<functionSignature, functionType, std::less<functionSignature>,
     MallocAllocator<std::pair<const functionSignature, functionType> > > mapType;
+
+// taken from http://www.emoticode.net/c/simple-wildcard-string-compare-globbing-function.html
+DOCTEST_INLINE int wildcmp(const char* str, const char* wild) {
+    const char* cp = NULL, *mp = NULL;
+
+    while((*str) && (*wild != '*')) {
+        if((*wild != *str) && (*wild != '?')) {
+            return 0;
+        }
+        wild++;
+        str++;
+    }
+
+    while(*str) {
+        if(*wild == '*') {
+            if(!*++wild) {
+                return 1;
+            }
+            mp = wild;
+            cp = str + 1;
+        } else if((*wild == *str) || (*wild == '?')) {
+            wild++;
+            str++;
+        } else {
+            wild = mp;
+            str = cp++;
+        }
+    }
+
+    while(*wild == '*') {
+        wild++;
+    }
+    return !*wild;
+}
 
 // trick to register a global variable in a header - as a static var in an inline method
 DOCTEST_INLINE mapType& getRegisteredFunctions() {

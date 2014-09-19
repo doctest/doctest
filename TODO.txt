@@ -1,0 +1,70 @@
+##TODO
+
+test suites
+
+switch to using wildcards instead of substrings for filters
+
+filters for file and test suite
+
+exclusion filters
+
+make the static method macro to be just for a fuction with 1 parameter, and to work with any function
+
+sorting the test order (by file, by test suite, or both, ASC/DESC...)
+
+a message macro
+
+case insensitivity (OPTIONAL!!!):
+    http://cboard.cprogramming.com/c-programming/63091-strcmp-without-case-sensitivity.html
+
+when comparing filenames use forward slashes
+
+nameless tests should have name "nameless"
+
+add a try catch section
+
+play with boost test and cpp check
+
+
+
+
+finish reading boost doc
+    http://www.boost.org/doc/libs/1_56_0/libs/test/doc/html/index.html
+
+CI
+    travis
+        compile all examples
+        valgrind
+            https://github.com/dlundquist/sniproxy/blob/master/.travis.yml
+        clang static analysis
+        
+        coverage
+            https://github.com/eddyxu/cpp-coveralls
+            
+            https://github.com/kylelutz/compute
+            https://github.com/apolukhin/variant/blob/travisci/.travis.yml
+            
+    msvc
+        just compile all the examples
+        https://github.com/mkurdej/bft/blob/develop/appveyor.yml
+        https://github.com/mapbox/variant/blob/master/appveyor.yml
+
+
+
+
+.
+
+
+
+
+notes:
+    expressions passed to CHECK_EQ should evaluate only once
+
+THINK OF IN THE LONG TERM
+    make C compatible?
+    keep the 2 headers (main and implementation)?
+    remove dependency on most stuff like std::map (meaning implementing my own)?
+    documentation
+        document how to use spaces for filters in the comma separated list (using "")
+        tests are ran serially
+        document when the library may crash (div by zero, bad ptr deref, etc)

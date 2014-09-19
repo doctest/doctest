@@ -2,7 +2,7 @@ doctest
 =======
 [![Maintenance Status](http://stillmaintained.com/hardly/doctestcpp.png)](http://stillmaintained.com/hardly/doctestcpp)
 [![Windows Status](http://img.shields.io/appveyor/ci/hardly/doctestcpp.svg?branch=master)](https://ci.appveyor.com/project/hardly/doctestcpp)
-[![Build Status](https://travis-ci.org/hardly/doctestcpp.svg?branch=master)](https://travis-ci.org/hardly/doctestcpp)
+[![Linux Status](https://travis-ci.org/hardly/doctestcpp.svg?branch=master)](https://travis-ci.org/hardly/doctestcpp)
 [![Coverage Status](https://coveralls.io/repos/hardly/doctestcpp/badge.png)](https://coveralls.io/r/hardly/doctestcpp)
 
 doctest is a c++ header only library for writing tests that is inspired by the unittest functionality in the D programming language and the docstrings in python - tests are documentation and should reside near the code they test.
@@ -131,22 +131,6 @@ dtor-ing...!
   - the **__COUNTER__** macro, but all major compilers support it (if it is not found, **__LINE__** is used and then there are some corner cases with the macro codegen and a test may be registered twice)
 
   - the **pragma once** directive - supporting the DRY principle
-
-##TODO
-
-- asserts (like the pro testing libraries)
-
-- reporting (like the pro testing libraries)
-
-- more documentation
-
-- poll people
-
-  - case insensitive names?
-  
-  - different macro names?
-  
-  - ability to name static method tests?
 
 ##Workflow with examples
 
