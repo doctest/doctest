@@ -2,6 +2,7 @@ doctest
 =======
 [![Maintenance Status](http://stillmaintained.com/hardly/doctestcpp.png)](http://stillmaintained.com/hardly/doctestcpp)
 [![Build status](https://ci.appveyor.com/api/projects/status/wdikjw08af51qulx)](https://ci.appveyor.com/project/hardly/doctestcpp)
+[![Windows Status](http://img.shields.io/appveyor/ci/hardly/doctestcpp.svg?branch=master)](https://ci.appveyor.com/project/hardly/doctestcpp)
 [![Build Status](https://travis-ci.org/hardly/doctestcpp.svg?branch=master)](https://travis-ci.org/hardly/doctestcpp)
 [![Coverage Status](https://coveralls.io/repos/hardly/doctestcpp/badge.png)](https://coveralls.io/r/hardly/doctestcpp)
 
