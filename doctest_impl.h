@@ -23,6 +23,7 @@
 #include <map>
 #include <cstring> // C string manipulation
 #include <cstdlib> // malloc
+#include <cstdio>  // printf
 
 // TODO: REMOVE! only while dev!
 #include <iostream>
