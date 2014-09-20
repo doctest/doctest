@@ -1,23 +1,23 @@
 #pragma once
 
 // if registering is not disabled
-#if !defined DOCTEST_GLOBAL_DISABLE
+#if !defined(DOCTEST_GLOBAL_DISABLE)
 
 // if this header is included into the main doctest.h header the functions
 // defined here should be marked as inline so compilation doesn't fail
 #define DOCTEST_INLINE inline
-#if defined DOCTEST_DONT_INCLUDE_IMPLEMENTATION
+#ifdef DOCTEST_DONT_INCLUDE_IMPLEMENTATION
 #undef DOCTEST_INLINE
 #define DOCTEST_INLINE
-#endif
+#endif // DOCTEST_DONT_INCLUDE_IMPLEMENTATION
 
 // MSVC fix to not complain about using strcpy instead of strcpy_s
-#if defined _MSC_VER
-#if !defined _CRT_SECURE_NO_WARNINGS
+#ifdef _MSC_VER
+#if !defined(_CRT_SECURE_NO_WARNINGS)
 #define _CRT_SECURE_NO_WARNINGS
 #define UNDEFINE_CRT_SECURE_NO_WARNINGS
-#endif
-#endif
+#endif // _CRT_SECURE_NO_WARNINGS
+#endif // _MSC_VER
 
 // required includes
 #include <limits>
@@ -37,15 +37,19 @@ struct functionSignature
     unsigned line;
     const char* file;
     const char* method;
+    const char* testsuite;
 
     const char* name; // not used for comparing
 
     bool operator<(const functionSignature& other) const {
         if(line != other.line)
             return line < other.line;
-        int fileCmp = strcmp(file, other.file);
-        if(fileCmp != 0)
-            return fileCmp < 0;
+        int res = strcmp(file, other.file);
+        if(res != 0)
+            return res < 0;
+        res = strcmp(testsuite, other.testsuite);
+        if(res != 0)
+            return res < 0;
         return strcmp(method, other.method) < 0;
     }
 };
@@ -121,7 +125,7 @@ typedef std::map<functionSignature, functionType, std::less<functionSignature>,
 
 // taken from http://www.emoticode.net/c/simple-wildcard-string-compare-globbing-function.html
 DOCTEST_INLINE int wildcmp(const char* str, const char* wild) {
-    const char* cp = NULL, *mp = NULL;
+    const char* cp = 0, *mp = 0;
 
     while((*str) && (*wild != '*')) {
         if((*wild != *str) && (*wild != '?')) {
@@ -159,14 +163,26 @@ DOCTEST_INLINE mapType& getRegisteredFunctions() {
     return value;
 }
 
+// trick to register a global variable in a header - as a static var in an inline method
+DOCTEST_INLINE const char*& getTestSuiteName() {
+    static const char* value = "";
+    return value;
+}
+
+DOCTEST_INLINE int setTestSuiteName(const char* name) {
+    getTestSuiteName() = name;
+    return 0;
+}
+
 // used by the macros for registering doctest callbacks (short name for small codegen)
-DOCTEST_INLINE int r(functionType f, unsigned line, const char* file, const char* method,
-                     const char* name) {
+DOCTEST_INLINE int registerFunction(functionType f, unsigned line, const char* file,
+                                    const char* method, const char* name) {
     mapType& registeredFunctions = getRegisteredFunctions();
     // initialize the record
     functionSignature signature;
     signature.line = line;
     signature.file = file;
+    signature.testsuite = getTestSuiteName();
     signature.method = method;
     signature.name = name;
     // insert the record
@@ -239,10 +255,10 @@ DOCTEST_INLINE void invokeAllFunctions(int argc, char** argv) {
 } // namespace doctestns
 
 // undef stuff defined at the top to keep things isolated
-#if defined UNDEFINE_CRT_SECURE_NO_WARNINGS
+#ifdef UNDEFINE_CRT_SECURE_NO_WARNINGS
 #undef _CRT_SECURE_NO_WARNINGS
 #undef UNDEFINE_CRT_SECURE_NO_WARNINGS
-#endif
+#endif // UNDEFINE_CRT_SECURE_NO_WARNINGS
 
 #undef DOCTEST_INLINE
 

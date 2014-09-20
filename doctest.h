@@ -5,9 +5,9 @@
 #define DOCTEST_STR_CONCAT(s1, s2) DOCTEST_STR_CONCAT_IMPL(s1, s2)
 #ifdef __COUNTER__ // not standard and may be missing for some compilers
 #define DOCTEST_ANONYMOUS_NAME(x) DOCTEST_STR_CONCAT(x, __COUNTER__)
-#else
+#else // __COUNTER__
 #define DOCTEST_ANONYMOUS_NAME(x) DOCTEST_STR_CONCAT(x, __LINE__)
-#endif
+#endif // __COUNTER__
 
 // internal macro for making a string
 #define DOCTEST_TOSTR_IMPL(x) #x
@@ -27,7 +27,8 @@
 
 namespace doctestns {
     // forward declarations of the function used by the registering macros
-    int r(void (*f)(void), unsigned line, const char* file, const char* method, const char* name);
+    int registerFunction(void (*f)(void), unsigned line, const char* file,
+                         const char* method, const char* name);
     // the function used by the test invocation macro
     void invokeAllFunctions(int argc, char** argv);
 }
@@ -38,32 +39,40 @@ doctestns::invokeAllFunctions(argc, argv);
 
 // internal registering macros
 #define DOCTEST_REGISTER_FUNCTION(f, name) \
-static int DOCTEST_ANONYMOUS_NAME(a)=r(f,__LINE__,__FILE__,"",#name);
+static int DOCTEST_ANONYMOUS_NAME(a)=registerFunction(f,__LINE__,__FILE__,"",#name);
 
 #define DOCTEST_IMPLEMENT_FIXTURE(der, base, func, name) \
 namespace doctestns{struct der:base{void f();};inline void func(){der v;v.f();}\
-static int DOCTEST_ANONYMOUS_NAME(a)=r(func,__LINE__,__FILE__,"",#name);}\
+static int DOCTEST_ANONYMOUS_NAME(a)=registerFunction(func,__LINE__,__FILE__,"",#name);}\
 inline void doctestns::der::f()
 
 #define DOCTEST_CREATE_AND_REGISTER_FUNCTION(f, name) \
 namespace doctestns{void f();DOCTEST_REGISTER_FUNCTION(f, name)}inline void doctestns::f()
 
 // for registering doctests
-#define doctest(name) \
+#define doctest_test(name) \
 DOCTEST_CREATE_AND_REGISTER_FUNCTION(DOCTEST_ANONYMOUS_NAME(f), name)
-#define doctest_noname \
-DOCTEST_CREATE_AND_REGISTER_FUNCTION(DOCTEST_ANONYMOUS_NAME(f), _)
+#define doctest_test_noname \
+DOCTEST_CREATE_AND_REGISTER_FUNCTION(DOCTEST_ANONYMOUS_NAME(f), nameless)
 
 // for registering doctests with a fixture
-#define doctest_fixture(c, name) \
+#define doctest_test_fixture(c, name) \
 DOCTEST_IMPLEMENT_FIXTURE(DOCTEST_ANONYMOUS_NAME(F), c, DOCTEST_ANONYMOUS_NAME(f), name)
-#define doctest_fixture_noname(c) \
-DOCTEST_IMPLEMENT_FIXTURE(DOCTEST_ANONYMOUS_NAME(F), c, DOCTEST_ANONYMOUS_NAME(f), _)
+#define doctest_test_fixture_noname(c) \
+DOCTEST_IMPLEMENT_FIXTURE(DOCTEST_ANONYMOUS_NAME(F), c, DOCTEST_ANONYMOUS_NAME(f), nameless)
 
 // for registering static methods of classes
 #define doctest_static_method(c, m) \
-namespace doctestns{static int DOCTEST_ANONYMOUS_NAME(a)=r(&c::m,0,"",\
+namespace doctestns{static int DOCTEST_ANONYMOUS_NAME(a)=registerFunction(&c::m,0,"",\
 DOCTEST_STR_CONCAT_TOSTR(c, m),DOCTEST_STR_CONCAT_TOSTR(c, m));}
+
+// for starting a testsuite block
+#define doctest_testsuite(name) \
+namespace doctestns{static int DOCTEST_ANONYMOUS_NAME(a)=setTestSuiteName(#name);}
+
+// for ending a testsuite block
+#define doctest_testsuite_end \
+namespace doctestns{static int DOCTEST_ANONYMOUS_NAME(a)=setTestSuiteName("");}
 
 // =============================================================================
 // == WHAT FOLLOWS IS VERSIONS OF THE MACROS THAT DO NOT DO ANY REGISTERING!  ==
@@ -88,15 +97,35 @@ namespace doctestns{void f();DOCTEST_REGISTER_FUNCTION(f, name)}inline void doct
 #define doctest(name) \
 DOCTEST_CREATE_AND_REGISTER_FUNCTION(DOCTEST_ANONYMOUS_NAME(f), name)
 #define doctest_noname \
-DOCTEST_CREATE_AND_REGISTER_FUNCTION(DOCTEST_ANONYMOUS_NAME(f), _)
+DOCTEST_CREATE_AND_REGISTER_FUNCTION(DOCTEST_ANONYMOUS_NAME(f), nameless)
 
 // for registering doctests with a fixture
 #define doctest_fixture(x, name) \
 DOCTEST_IMPLEMENT_FIXTURE(DOCTEST_ANONYMOUS_NAME(F), x, DOCTEST_ANONYMOUS_NAME(f), name)
 #define doctest_fixture_noname(x) \
-DOCTEST_IMPLEMENT_FIXTURE(DOCTEST_ANONYMOUS_NAME(F), x, DOCTEST_ANONYMOUS_NAME(f), _)
+DOCTEST_IMPLEMENT_FIXTURE(DOCTEST_ANONYMOUS_NAME(F), x, DOCTEST_ANONYMOUS_NAME(f), nameless)
 
 // for registering static methods of classes
 #define doctest_static_method(c, m)
 
+// for starting a testsuite block
+#define doctest_testsuite(name)
+
+// for ending a testsuite block
+#define doctest_testsuite_end
+
 #endif // DOCTEST_GLOBAL_DISABLE
+
+// === SHORT VERSIONS OF THE 
+#ifdef DOCTEST_SHORT_MACRO_NAMES
+
+#define test(name) doctest_test(name)
+#define test_noname doctest_test_noname
+#define test_fixture(c, name) doctest_test_fixture(c, name)
+#define test_fixture_noname(c) doctest_test_fixture_noname(c)
+
+// method missing
+#define testsuite(name) doctest_testsuite(name)
+#define testsuite_end doctest_testsuite_end
+
+#endif // DOCTEST_SHORT_MACRO_NAMES

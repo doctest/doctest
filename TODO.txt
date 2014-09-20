@@ -19,8 +19,6 @@ case insensitivity (OPTIONAL!!!):
 
 when comparing filenames use forward slashes
 
-nameless tests should have name "nameless"
-
 add a try catch section
 
 play with boost test and cpp check
