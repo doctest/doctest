@@ -8,23 +8,23 @@
 
 struct MFL {};
 
-doctest_fixture(MFL, qwe) { printf("%s\n", __func__); }
-doctest(Asd) { printf("%s\n", __func__); }
+test_fixture(MFL, qwe) { printf("%s\n", __func__); }
+test(Asd) { printf("%s\n", __func__); }
 
-doctest_noname { printf("%s\n", __func__); }
-doctest(Asd) { printf("%s\n", __func__); }
-doctest(asdfa) { printf("%s\n", __func__); }
-doctest(Asd) { printf("%s\n", __func__); }
-doctest(adffd) { printf("%s\n", __func__); }
-doctest(qweqq) { printf("%s\n", __func__); }
-doctest_noname { printf("%s\n", __func__); }
+test_noname { printf("%s\n", __func__); }
+test(Asd) { printf("%s\n", __func__); }
+test(asdfa) { printf("%s\n", __func__); }
+test(Asd) { printf("%s\n", __func__); }
+test(adffd) { printf("%s\n", __func__); }
+test(qweqq) { printf("%s\n", __func__); }
+test_noname { printf("%s\n", __func__); }
 
-doctest_fixture_noname(MFL) { printf("%s\n", __func__); }
+test_fixture_noname(MFL) { printf("%s\n", __func__); }
 
-doctest_fixture(MFL, asdf) { printf("%s\n", __func__); }
-doctest_fixture(MFL, qwe) { printf("%s\n", __func__); }
-doctest_fixture(MFL, q) { printf("%s\n", __func__); }
-doctest_fixture(MFL, dsf) { printf("%s\n", __func__); }
+test_fixture(MFL, asdf) { printf("%s\n", __func__); }
+test_fixture(MFL, qwe) { printf("%s\n", __func__); }
+test_fixture(MFL, q) { printf("%s\n", __func__); }
+test_fixture(MFL, dsf) { printf("%s\n", __func__); }
 
 struct Test1 {
     Test1()
@@ -34,10 +34,10 @@ protected:
     int a;
 };
 
-doctest_fixture(Test1, asdf) { printf("%d\n", a); }
+test_fixture(Test1, asdf) { printf("%d\n", a); }
 
-doctest(asd) { printf("in test asd1\n"); }
-doctest(asd) { printf("in test asd2\n"); }
-doctest(asd) { printf("in test asd3\n"); }
+test(asd) { printf("in test asd1\n"); }
+test(asd) { printf("in test asd2\n"); }
+test(asd) { printf("in test asd3\n"); }
 
 
