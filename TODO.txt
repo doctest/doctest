@@ -1,20 +1,5 @@
 ##TODO
 
-test suites
-
-switch to using wildcards instead of substrings for filters
-
-filters for file and test suite
-
-exclusion filters - example:
-    a.exe
-    -doctest_name=asd,*ad*
-    -doctest_name_exclude=*adf*
-    -doctest_file=*.cpp
-    -doctest_file_exclude=*test.cpp
-    -doctest_suite=*
-    -doctest_suite_exclude=*crap*
-
 make the static method macro to be just for a fuction with 1 parameter, and to work with any function
 
 sorting the test order (by file, by test suite, or both, ASC/DESC...)
@@ -25,8 +10,6 @@ case insensitivity (OPTIONAL!!!):
     http://cboard.cprogramming.com/c-programming/63091-strcmp-without-case-sensitivity.html
 
 when comparing filenames use forward slashes
-
-add a try catch section
 
 play with boost test and cpp check
 
@@ -66,7 +49,7 @@ notes:
     expressions passed to CHECK_EQ should evaluate only once
 
 THINK OF IN THE LONG TERM
-    make C compatible?
+    make C compatible? HELL NO! namespaces, fixtures, std::map goodness, exception catching
     keep the 2 headers (main and implementation)?
     remove dependency on most stuff like std::map (meaning implementing my own)?
     documentation

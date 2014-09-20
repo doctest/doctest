@@ -1,6 +1,6 @@
 #include "doctest.h"
 
-testsuite(main)
+testsuite(MAIN)
 test(mmm) { cout << "main!" << endl; }
 testsuite_end
 

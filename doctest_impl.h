@@ -41,7 +41,7 @@ struct FunctionSignature
     unsigned line;
     const char* file;
     const char* method;
-    const char* testsuite;
+    const char* suite;
 
     const char* name; // not used for comparing
 
@@ -52,13 +52,14 @@ struct FunctionSignature
         int res = strcmp(file, other.file);
         if(res != 0)
             return res < 0;
-        res = strcmp(testsuite, other.testsuite);
+        res = strcmp(suite, other.suite);
         if(res != 0)
             return res < 0;
         return strcmp(method, other.method) < 0;
     }
 };
 
+// std::allocator compatible using plain malloc to avoid operator new
 template <typename T>
 struct MallocAllocator
 {
@@ -113,6 +114,7 @@ struct MallocAllocator
 
     size_type max_size() const throw()
     {
+        // ugly size_t maximum but don't want to drag <numeric_limits> just because of this
         return std::size_t(-1) / sizeof(T);
     }
 
@@ -149,9 +151,11 @@ inline bool operator!=(const MallocAllocator<T>& a, const MallocAllocator<U>& b)
     return !(a == b);
 }
 
+// typedef for the map with the custom allocator
 typedef std::map<FunctionSignature, functionType, std::less<FunctionSignature>,
                  MallocAllocator<std::pair<const FunctionSignature, functionType> > > mapType;
 
+// matching of a string against a wildcard mask
 // taken from http://www.emoticode.net/c/simple-wildcard-string-compare-globbing-function.html
 DOCTEST_INLINE int wildcmp(const char* str, const char* wild)
 {
@@ -172,7 +176,13 @@ DOCTEST_INLINE int wildcmp(const char* str, const char* wild)
             }
             mp = wild;
             cp = str + 1;
-        } else if((*wild == *str) || (*wild == '?')) {
+        } else if(
+#ifdef DOCTEST_CASE_SENSITIVE
+            (*wild == *str)
+#else  // DOCTEST_CASE_SENSITIVE
+            (*wild == *str)
+#endif // DOCTEST_CASE_SENSITIVE
+            || (*wild == '?')) {
             wild++;
             str++;
         } else {
@@ -217,7 +227,7 @@ DOCTEST_INLINE int registerFunction(functionType f, unsigned line, const char* f
     FunctionSignature signature;
     signature.line = line;
     signature.file = file;
-    signature.testsuite = getTestSuiteName();
+    signature.suite = getTestSuiteName();
     signature.method = method;
     signature.name = name;
     // insert the record
@@ -262,44 +272,86 @@ DOCTEST_INLINE void parseArgs(int argc, char** argv, const char* pattern, char**
     }
 }
 
+// checks if the name matches any of the filters (and can be configured what to do when empty)
+DOCTEST_INLINE int matchesAny(const char* name, char** filters, size_t filterCount, bool matchEmpty)
+{
+    if(filterCount == 0 && matchEmpty)
+        return true;
+    for(size_t i = 0; i < filterCount; ++i) {
+        if(wildcmp(name, filters[i])) {
+            return true;
+        }
+    }
+    return false;
+}
+
+// frees a 2D array with the first dimention specified by size
+template <typename T>
+void freeArray2D(T** arr, size_t size)
+{
+    if(arr) {
+        for(size_t i = 0; i < size; ++i)
+            free(arr[i]);
+        free(arr);
+    }
+}
+
 DOCTEST_INLINE void invokeAllFunctions(int argc, char** argv)
 {
     mapType& registeredFunctions = getRegisteredFunctions();
     // if atleast one test has been registered
     if(registeredFunctions.size() > 0) {
-        char** filters = 0;
-        size_t filterCount = 0;
-        parseArgs(argc, argv, "-doctest_name=", filters, filterCount);
-        // parseArgs(argc, argv, "-doctest_file=");
-        // parseArgs(argc, argv, "-doctest_file_exclude=");
-        // parseArgs(argc, argv, "-doctest_suite=");
-        // parseArgs(argc, argv, "-doctest_suite_exclude=");
-        // parseArgs(argc, argv, "-doctest_name=");
-        // parseArgs(argc, argv, "-doctest_name_exclude=");
+        char** file = 0;
+        size_t file_count = 0;
+        char** file_exclude = 0;
+        size_t file_exclude_count = 0;
+        char** suite = 0;
+        size_t suite_count = 0;
+        char** suite_exclude = 0;
+        size_t suite_exclude_count = 0;
+        char** name = 0;
+        size_t name_count = 0;
+        char** name_exclude = 0;
+        size_t name_exclude_count = 0;
+        parseArgs(argc, argv, "-doctest_file=", file, file_count);
+        parseArgs(argc, argv, "-doctest_file_exclude=", file_exclude, file_exclude_count);
+        parseArgs(argc, argv, "-doctest_suite=", suite, suite_count);
+        parseArgs(argc, argv, "-doctest_suite_exclude=", suite_exclude, suite_exclude_count);
+        parseArgs(argc, argv, "-doctest_name=", name, name_count);
+        parseArgs(argc, argv, "-doctest_name_exclude=", name_exclude, name_exclude_count);
 
         // invoke the registered functions
         mapType::iterator it;
         for(it = registeredFunctions.begin(); it != registeredFunctions.end(); ++it) {
-            // if there are any filters given
-            if(filterCount) {
-                // call the callback if atleast one filter matches
-                for(size_t i = 0; i < filterCount; ++i) {
-                    if(strstr(it->first.name, filters[i])) {
-                        it->second();
-                        break;
-                    }
-                }
-            } else {
-                // just invoke each test if there are no filters
+            if(!matchesAny(it->first.file, file, file_count, true))
+                continue;
+            if(matchesAny(it->first.file, file_exclude, file_exclude_count, false))
+                continue;
+            if(!matchesAny(it->first.suite, suite, suite_count, true))
+                continue;
+            if(matchesAny(it->first.suite, suite_exclude, suite_exclude_count, false))
+                continue;
+            if(!matchesAny(it->first.name, name, name_count, true))
+                continue;
+            if(matchesAny(it->first.name, name_exclude, name_exclude_count, false))
+                continue;
+
+            // call the function if it passes all the filtering
+            try {
                 it->second();
+            } catch(std::exception& e) {
+                printf("%s\n", e.what());
+            } catch(...) {
+                printf("Unknown exception caught!\n");
             }
         }
         // cleanup buffers
-        if(filters) {
-            for(size_t i = 0; i < filterCount; ++i)
-                free(filters[i]);
-            free(filters);
-        }
+        freeArray2D(file, file_count);
+        freeArray2D(file_exclude, file_exclude_count);
+        freeArray2D(suite, suite_count);
+        freeArray2D(suite_exclude, suite_exclude_count);
+        freeArray2D(name, name_count);
+        freeArray2D(name_exclude, name_exclude_count);
     }
 }
 } // namespace doctestns
