@@ -46,9 +46,9 @@ struct FunctionSignature
         int res = strcmp(file, other.file);
         if(res != 0)
             return res < 0;
-        //res = strcmp(testsuite, other.testsuite);
-        //if(res != 0)
-        //    return res < 0;
+        res = strcmp(testsuite, other.testsuite);
+        if(res != 0)
+            return res < 0;
         return strcmp(method, other.method) < 0;
     }
 };
@@ -190,7 +190,9 @@ DOCTEST_INLINE int registerFunction(functionType f, unsigned line, const char* f
     return 0;
 }
 
-//struct Filters
+DOCTEST_INLINE void parseArgs(int argc, char** argv) {
+
+}
 
 DOCTEST_INLINE void invokeAllFunctions(int argc, char** argv) {
     mapType& registeredFunctions = getRegisteredFunctions();

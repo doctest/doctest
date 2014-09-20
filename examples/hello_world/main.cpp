@@ -2,7 +2,7 @@
 
 #include <cstdio>
 
-doctest(First) {
+doctest_test(First) {
     printf("Hello world!\n");
 }
 
