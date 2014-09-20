@@ -141,9 +141,9 @@ namespace doctestns { inline void dmy(int i, char** c) { int a = i; i = a; char*
     inline void doctestns::f()
 
 // for registering doctests
-#define doctest(name)                                                                              \
+#define doctest_test(name)                                                                         \
     DOCTEST_CREATE_AND_REGISTER_FUNCTION(DOCTEST_ANONYMOUS(f), name)
-#define doctest_noname                                                                             \
+#define doctest_test_noname                                                                        \
     DOCTEST_CREATE_AND_REGISTER_FUNCTION(DOCTEST_ANONYMOUS(f), nameless)
 
 // for registering doctests with a fixture
@@ -163,7 +163,7 @@ namespace doctestns { inline void dmy(int i, char** c) { int a = i; i = a; char*
 
 #endif // DOCTEST_GLOBAL_DISABLE
 
-// === SHORT VERSIONS OF THE TEST/TESTSUITE MACROS
+// === SHORT VERSIONS OF THE TEST/FIXTURE/TESTSUITE MACROS
 #ifdef DOCTEST_SHORT_MACRO_NAMES
 
 #define test(name) doctest_test(name)
