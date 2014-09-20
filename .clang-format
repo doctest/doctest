@@ -2,20 +2,22 @@ BasedOnStyle: LLVM
 IndentWidth: 4
 TabWidth: 4
 UseTab: Never
-BreakBeforeBraces: Attach
+BreakBeforeBraces: Linux
 AllowShortIfStatementsOnASingleLine: false
 IndentCaseLabels: false
 PointerBindsToType: true
 ColumnLimit: 100
 SpaceAfterControlStatementKeyword: false
-NamespaceIndentation: All
+NamespaceIndentation: Inner
 BinPackParameters: true
 AllowAllParametersOfDeclarationOnNextLine: false
 AccessModifierOffset: -4
 BreakConstructorInitializersBeforeComma: true
-Standard: Cpp11
+Standard: Cpp03
 AlwaysBreakTemplateDeclarations: true
 Cpp11BracedListStyle: true
+AllowAllParametersOfDeclarationOnNextLine: true
+AllowShortFunctionsOnASingleLine: false
 
 PenaltyBreakBeforeFirstCallParameter: 19
 PenaltyBreakComment: 60

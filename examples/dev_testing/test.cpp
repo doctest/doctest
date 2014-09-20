@@ -1,5 +1,5 @@
 #include "doctest.h"
 
 testsuite(test)
-test_noname { cout << "test!" << endl; }
+test(ttt) { cout << "test!" << endl; }
 testsuite_end

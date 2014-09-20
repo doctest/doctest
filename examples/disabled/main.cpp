@@ -3,11 +3,11 @@
 
 #include <cstdio>
 
-doctest_noname {
+doctest_test_noname {
     printf("Anyone there?\n");
 }
 
-doctest(ops) {
+doctest_test(ops) {
     printf("Anyone there?\n");
 }
 

@@ -24,8 +24,13 @@
 #include <cstring> // C string manipulation
 #include <cstdlib> // malloc
 
+// TODO: REMOVE! only while dev!
+#include <iostream>
+using namespace std;
+
 // the namespace used by all functions generated/registered by this library
-namespace doctestns {
+namespace doctestns
+{
 
 // the function type this library works with
 typedef void (*functionType)(void);
@@ -40,7 +45,8 @@ struct FunctionSignature
 
     const char* name; // not used for comparing
 
-    bool operator<(const FunctionSignature& other) const {
+    bool operator<(const FunctionSignature& other) const
+    {
         if(line != other.line)
             return line < other.line;
         int res = strcmp(file, other.file);
@@ -53,7 +59,7 @@ struct FunctionSignature
     }
 };
 
-template<typename T>
+template <typename T>
 struct MallocAllocator
 {
     typedef std::size_t size_type;
@@ -64,67 +70,92 @@ struct MallocAllocator
     typedef const T& const_reference;
     typedef T value_type;
 
-    pointer allocate(size_type n, const void* = 0) {
+    pointer allocate(size_type n, const void* = 0)
+    {
         return static_cast<pointer>(malloc(sizeof(value_type) * n));
     }
 
-    void deallocate(pointer ptr, size_type) {
+    void deallocate(pointer ptr, size_type)
+    {
         free(ptr);
     }
 
     // boilerplate follows
-    MallocAllocator() {}
+    MallocAllocator()
+    {
+    }
 
-    MallocAllocator(const MallocAllocator&) {}
+    MallocAllocator(const MallocAllocator&)
+    {
+    }
 
     template <typename Other>
-    MallocAllocator(const MallocAllocator<Other>&) {}
+    MallocAllocator(const MallocAllocator<Other>&)
+    {
+    }
 
-    MallocAllocator& operator=(const MallocAllocator&) { return *this; }
+    MallocAllocator& operator=(const MallocAllocator&)
+    {
+        return *this;
+    }
 
     template <class Other>
-    MallocAllocator& operator=(const MallocAllocator<Other>&) { return *this; }
+    MallocAllocator& operator=(const MallocAllocator<Other>&)
+    {
+        return *this;
+    }
 
     template <typename Other>
-    struct rebind { typedef MallocAllocator<Other> other; };
+    struct rebind
+    {
+        typedef MallocAllocator<Other> other;
+    };
 
-    size_type max_size() const throw() {
+    size_type max_size() const throw()
+    {
         return std::size_t(-1) / sizeof(T);
     }
 
-    pointer address(reference ref) const {
+    pointer address(reference ref) const
+    {
         return &ref;
     }
 
-    const_pointer address(const_reference ref) const {
+    const_pointer address(const_reference ref) const
+    {
         return &ref;
     }
 
-    void construct(pointer ptr, const value_type& val) {
-        ::new(ptr) value_type(val);
+    void construct(pointer ptr, const value_type& val)
+    {
+        ::new (ptr) value_type(val);
     }
 
-    void destroy(pointer ptr) {
+    void destroy(pointer ptr)
+    {
         ptr->~value_type();
     }
 };
 
 template <typename T, typename U>
-inline bool operator==(const MallocAllocator<T>&, const MallocAllocator<U>&) {
+inline bool operator==(const MallocAllocator<T>&, const MallocAllocator<U>&)
+{
     return true;
 }
 
 template <typename T, typename U>
-inline bool operator!=(const MallocAllocator<T>& a, const MallocAllocator<U>& b) {
+inline bool operator!=(const MallocAllocator<T>& a, const MallocAllocator<U>& b)
+{
     return !(a == b);
 }
 
 typedef std::map<FunctionSignature, functionType, std::less<FunctionSignature>,
-    MallocAllocator<std::pair<const FunctionSignature, functionType> > > mapType;
+                 MallocAllocator<std::pair<const FunctionSignature, functionType> > > mapType;
 
 // taken from http://www.emoticode.net/c/simple-wildcard-string-compare-globbing-function.html
-DOCTEST_INLINE int wildcmp(const char* str, const char* wild) {
-    const char* cp = 0, *mp = 0;
+DOCTEST_INLINE int wildcmp(const char* str, const char* wild)
+{
+    const char* cp = 0, * mp = 0;
 
     while((*str) && (*wild != '*')) {
         if((*wild != *str) && (*wild != '?')) {
@@ -157,26 +188,30 @@ DOCTEST_INLINE int wildcmp(const char* str, const char* wild) {
 }
 
 // trick to register a global variable in a header - as a static var in an inline method
-DOCTEST_INLINE mapType& getRegisteredFunctions() {
+DOCTEST_INLINE mapType& getRegisteredFunctions()
+{
     static mapType value;
     return value;
 }
 
 // trick to register a global variable in a header - as a static var in an inline method
-DOCTEST_INLINE const char*& getTestSuiteName() {
+DOCTEST_INLINE const char*& getTestSuiteName()
+{
     static const char* value = "";
     return value;
 }
 
 // sets the current test suite
-DOCTEST_INLINE int setTestSuiteName(const char* name) {
+DOCTEST_INLINE int setTestSuiteName(const char* name)
+{
     getTestSuiteName() = name;
     return 0;
 }
 
 // used by the macros for registering doctest callbacks (short name for small codegen)
 DOCTEST_INLINE int registerFunction(functionType f, unsigned line, const char* file,
-                                    const char* method, const char* name) {
+                                    const char* method, const char* name)
+{
     mapType& registeredFunctions = getRegisteredFunctions();
     // initialize the record
     FunctionSignature signature;
@@ -190,46 +225,58 @@ DOCTEST_INLINE int registerFunction(functionType f, unsigned line, const char* f
     return 0;
 }
 
-DOCTEST_INLINE void parseArgs(int argc, char** argv) {
+// parses a comma separated list of words after a pattern in one of the arguments in argv
+DOCTEST_INLINE void parseArgs(int argc, char** argv, const char* pattern, char**& filters,
+                              size_t& filterCount)
+{
+    char* filtersString = 0;
+    for(int i = 0; i < argc; ++i) {
+        const char* temp = strstr(argv[i], pattern);
+        if(temp) {
+            temp += strlen(pattern);
+            size_t len = strlen(temp);
+            if(len) {
+                filtersString = static_cast<char*>(malloc(len + 1));
+                strcpy(filtersString, temp);
+                break;
+            }
+        }
+    }
 
+    // if we have found the filter string
+    if(filtersString) {
+        const size_t maxFiltersInList = 1024; // ought to be enough
+        filters = static_cast<char**>(malloc(sizeof(char*) * maxFiltersInList));
+        // tokenize with "," as a separator for the first maxFiltersInList filters
+        char* pch = strtok(filtersString, ",");
+        while(pch != 0) {
+            size_t len = strlen(pch);
+            if(len && filterCount < maxFiltersInList) {
+                filters[filterCount] = static_cast<char*>(malloc(len + 1));
+                strcpy(filters[filterCount], pch);
+                ++filterCount;
+            }
+            pch = strtok(0, ",");
+        }
+        free(filtersString);
+    }
 }
 
-DOCTEST_INLINE void invokeAllFunctions(int argc, char** argv) {
+DOCTEST_INLINE void invokeAllFunctions(int argc, char** argv)
+{
     mapType& registeredFunctions = getRegisteredFunctions();
     // if atleast one test has been registered
     if(registeredFunctions.size() > 0) {
-        char* filtersString = 0;
         char** filters = 0;
         size_t filterCount = 0;
-        // locate the filters string from the arguments (with comma separated filters)
-        for(int i = 0; i < argc; ++i) {
-            const char* temp = strstr(argv[i], "-doctest=");
-            if(temp) {
-                temp += strlen("-doctest=");
-                size_t len = strlen(temp);
-                if(len) {
-                    filtersString = static_cast<char*>(malloc(len + 1));
-                    strcpy(filtersString, temp);
-                    break;
-                }
-            }
-        }
-        // if we have found the filter string
-        if(filtersString) {
-            const size_t maxFiltersInList = 1024; // ought to be enough
-            filters = static_cast<char**>(malloc(sizeof(char*) * maxFiltersInList));
-            // tokenize with "," as a separator for the first maxFiltersInList filters
-            char* pch = strtok(filtersString, ",");
-            while(pch != 0) {
-                size_t len = strlen(pch);
-                if(len && filterCount < maxFiltersInList) {
-                    filters[filterCount] = static_cast<char*>(malloc(len + 1));
-                    strcpy(filters[filterCount], pch);
-                    ++filterCount;
-                }
-                pch = strtok(0, ",");
-            }
-        }
+        parseArgs(argc, argv, "-doctest_name=", filters, filterCount);
+        // parseArgs(argc, argv, "-doctest_file=");
+        // parseArgs(argc, argv, "-doctest_file_exclude=");
+        // parseArgs(argc, argv, "-doctest_suite=");
+        // parseArgs(argc, argv, "-doctest_suite_exclude=");
+        // parseArgs(argc, argv, "-doctest_name=");
+        // parseArgs(argc, argv, "-doctest_name_exclude=");
+
         // invoke the registered functions
         mapType::iterator it;
         for(it = registeredFunctions.begin(); it != registeredFunctions.end(); ++it) {
@@ -252,7 +299,6 @@ DOCTEST_INLINE void invokeAllFunctions(int argc, char** argv) {
             for(size_t i = 0; i < filterCount; ++i)
                 free(filters[i]);
             free(filters);
-            free(filtersString);
         }
     }
 }

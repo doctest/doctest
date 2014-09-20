@@ -27,7 +27,7 @@
 
 #include <cstdio>
 
-doctest(shared) {
+doctest_test(shared) {
     printf("I am a test in a header used by the executable and the dll!\n");
 }
 

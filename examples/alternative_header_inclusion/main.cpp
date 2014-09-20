@@ -3,7 +3,7 @@
 
 #include <cstdio>
 
-doctest(main) {
+doctest_test(main) {
     printf("Here we don't have std::map included because the doctest implementation is included only in a single cpp file elsewhere!\n");
 }
 

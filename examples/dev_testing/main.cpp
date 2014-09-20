@@ -1,7 +1,7 @@
 #include "doctest.h"
 
 testsuite(main)
-test_noname { cout << "main!" << endl; }
+test(mmm) { cout << "main!" << endl; }
 testsuite_end
 
 int main(int argc, char** argv) {
