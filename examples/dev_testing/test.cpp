@@ -1,5 +1,23 @@
 #include "doctest.h"
 
 testsuite(test)
+
 test(ttt) { cout << "test!" << endl; }
+
+static struct F {
+    F() { cout << "ctor!" << endl; }
+    ~F() { cout << "dtor..." << endl; }
+};
+
+fixture_noname(F) {
+    cout << "    fixturing!" << endl;
+}
+
+void global() {
+    cout << "i am global!" << endl;
+}
+
+
+
+
 testsuite_end

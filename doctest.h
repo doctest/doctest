@@ -175,3 +175,10 @@ namespace doctestns { inline void dmy(int i, char** c) { int a = i; i = a; char*
 #define testsuite_end doctest_testsuite_end
 
 #endif // DOCTEST_SHORT_MACRO_NAMES
+
+
+struct Z {
+    static void z() { cout << "ZzZ" << endl; }
+};
+
+
