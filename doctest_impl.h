@@ -20,7 +20,6 @@
 #endif // _MSC_VER
 
 // required includes
-#include <limits>
 #include <map>
 #include <cstring> // C string manipulation
 #include <cstdlib> // malloc
@@ -32,7 +31,7 @@ namespace doctestns {
 typedef void (*functionType)(void);
 
 // a struct defining a registered test callback
-struct functionSignature
+struct FunctionSignature
 {
     unsigned line;
     const char* file;
@@ -41,15 +40,15 @@ struct functionSignature
 
     const char* name; // not used for comparing
 
-    bool operator<(const functionSignature& other) const {
+    bool operator<(const FunctionSignature& other) const {
         if(line != other.line)
             return line < other.line;
         int res = strcmp(file, other.file);
         if(res != 0)
             return res < 0;
-        res = strcmp(testsuite, other.testsuite);
-        if(res != 0)
-            return res < 0;
+        //res = strcmp(testsuite, other.testsuite);
+        //if(res != 0)
+        //    return res < 0;
         return strcmp(method, other.method) < 0;
     }
 };
@@ -90,7 +89,7 @@ struct MallocAllocator
     struct rebind { typedef MallocAllocator<Other> other; };
 
     size_type max_size() const throw() {
-        return std::numeric_limits<std::size_t>::max() / sizeof(T);
+        return std::size_t(-1) / sizeof(T);
     }
 
     pointer address(reference ref) const {
@@ -120,8 +119,8 @@ inline bool operator!=(const MallocAllocator<T>& a, const MallocAllocator<U>& b)
     return !(a == b);
 }
 
-typedef std::map<functionSignature, functionType, std::less<functionSignature>,
-    MallocAllocator<std::pair<const functionSignature, functionType> > > mapType;
+typedef std::map<FunctionSignature, functionType, std::less<FunctionSignature>,
+    MallocAllocator<std::pair<const FunctionSignature, functionType> > > mapType;
 
 // taken from http://www.emoticode.net/c/simple-wildcard-string-compare-globbing-function.html
 DOCTEST_INLINE int wildcmp(const char* str, const char* wild) {
@@ -169,6 +168,7 @@ DOCTEST_INLINE const char*& getTestSuiteName() {
     return value;
 }
 
+// sets the current test suite
 DOCTEST_INLINE int setTestSuiteName(const char* name) {
     getTestSuiteName() = name;
     return 0;
@@ -179,16 +179,18 @@ DOCTEST_INLINE int registerFunction(functionType f, unsigned line, const char* f
                                     const char* method, const char* name) {
     mapType& registeredFunctions = getRegisteredFunctions();
     // initialize the record
-    functionSignature signature;
+    FunctionSignature signature;
     signature.line = line;
     signature.file = file;
     signature.testsuite = getTestSuiteName();
     signature.method = method;
     signature.name = name;
     // insert the record
-    registeredFunctions.insert(std::pair<functionSignature, functionType>(signature, f));
+    registeredFunctions.insert(std::pair<FunctionSignature, functionType>(signature, f));
     return 0;
 }
+
+//struct Filters
 
 DOCTEST_INLINE void invokeAllFunctions(int argc, char** argv) {
     mapType& registeredFunctions = getRegisteredFunctions();

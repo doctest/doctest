@@ -6,7 +6,14 @@ switch to using wildcards instead of substrings for filters
 
 filters for file and test suite
 
-exclusion filters
+exclusion filters - example:
+    a.exe
+    -doctest_name=asd,*ad*
+    -doctest_name_exclude=*adf*
+    -doctest_file=*.cpp
+    -doctest_file_exclude=*test.cpp
+    -doctest_suite=*
+    -doctest_suite_exclude=*crap*
 
 make the static method macro to be just for a fuction with 1 parameter, and to work with any function
 

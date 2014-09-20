@@ -42,12 +42,12 @@ doctestns::invokeAllFunctions(argc, argv);
 static int DOCTEST_ANONYMOUS_NAME(a)=registerFunction(f,__LINE__,__FILE__,"",#name);
 
 #define DOCTEST_IMPLEMENT_FIXTURE(der, base, func, name) \
-namespace doctestns{struct der:base{void f();};inline void func(){der v;v.f();}\
+namespace doctestns{struct der:base{void f();};static void func(){der v;v.f();}\
 static int DOCTEST_ANONYMOUS_NAME(a)=registerFunction(func,__LINE__,__FILE__,"",#name);}\
 inline void doctestns::der::f()
 
 #define DOCTEST_CREATE_AND_REGISTER_FUNCTION(f, name) \
-namespace doctestns{void f();DOCTEST_REGISTER_FUNCTION(f, name)}inline void doctestns::f()
+namespace doctestns{static void f();DOCTEST_REGISTER_FUNCTION(f, name)}inline void doctestns::f()
 
 // for registering doctests
 #define doctest_test(name) \
@@ -116,16 +116,21 @@ DOCTEST_IMPLEMENT_FIXTURE(DOCTEST_ANONYMOUS_NAME(F), x, DOCTEST_ANONYMOUS_NAME(f
 
 #endif // DOCTEST_GLOBAL_DISABLE
 
-// === SHORT VERSIONS OF THE 
+// === SHORT VERSIONS OF THE TEST/TESTSUITE MACROS
 #ifdef DOCTEST_SHORT_MACRO_NAMES
 
 #define test(name) doctest_test(name)
 #define test_noname doctest_test_noname
 #define test_fixture(c, name) doctest_test_fixture(c, name)
 #define test_fixture_noname(c) doctest_test_fixture_noname(c)
-
-// method missing
+// static method missing - TODO!
 #define testsuite(name) doctest_testsuite(name)
 #define testsuite_end doctest_testsuite_end
 
 #endif // DOCTEST_SHORT_MACRO_NAMES
+
+
+#include <cstdio>
+
+//test(uff) { printf("UFFF!!!!\n"); }
+//struct headered {};test_fixture(headered, blqk) { printf("__HEADERED__: %s\n", __func__); }

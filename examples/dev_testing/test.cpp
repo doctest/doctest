@@ -1,14 +1,15 @@
 #include "doctest.h"
 
-#include <cstdio>
-
 #if defined(_MSC_VER)
 #define __func__ __FUNCTION__
 #endif // _MSC_VER
 
-struct MFL {};
+test_noname { printf("test\n"); }
 
-test_fixture(MFL, qwe) { printf("%s\n", __func__); }
+struct MFL2 {}; test_fixture_noname(MFL2) { printf("TEST\n"); }
+
+
+/*
 test(Asd) { printf("%s\n", __func__); }
 
 test_noname { printf("%s\n", __func__); }
@@ -40,4 +41,4 @@ test(asd) { printf("in test asd1\n"); }
 test(asd) { printf("in test asd2\n"); }
 test(asd) { printf("in test asd3\n"); }
 
-
+*/
