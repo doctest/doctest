@@ -56,3 +56,4 @@ THINK OF IN THE LONG TERM
         document how to use spaces for filters in the comma separated list (using "")
         tests are ran serially
         document when the library may crash (div by zero, bad ptr deref, etc)
+        can be case sensitive in filtering (must define something)

@@ -155,14 +155,21 @@ inline bool operator!=(const MallocAllocator<T>& a, const MallocAllocator<U>& b)
 typedef std::map<FunctionSignature, functionType, std::less<FunctionSignature>,
                  MallocAllocator<std::pair<const FunctionSignature, functionType> > > mapType;
 
-// matching of a string against a wildcard mask
+// matching of a string against a wildcard mask (case sensitivity configurable)
 // taken from http://www.emoticode.net/c/simple-wildcard-string-compare-globbing-function.html
 DOCTEST_INLINE int wildcmp(const char* str, const char* wild)
 {
     const char* cp = 0, * mp = 0;
 
     while((*str) && (*wild != '*')) {
-        if((*wild != *str) && (*wild != '?')) {
+        if(
+#ifdef DOCTEST_CASE_SENSITIVE
+            (*wild != *str)
+#else  // DOCTEST_CASE_SENSITIVE
+            // rolled my own tolower() to not include more headers
+            ((*wild >= 'A' && *wild <= 'Z') ? *wild + 32 : *wild) != ((*str >= 'A' && *str <= 'Z') ? *str + 32 : *str)
+#endif // DOCTEST_CASE_SENSITIVE
+            && (*wild != '?')) {
             return 0;
         }
         wild++;
@@ -180,7 +187,8 @@ DOCTEST_INLINE int wildcmp(const char* str, const char* wild)
 #ifdef DOCTEST_CASE_SENSITIVE
             (*wild == *str)
 #else  // DOCTEST_CASE_SENSITIVE
-            (*wild == *str)
+            // rolled my own tolower() to not include more headers
+            ((*wild >= 'A' && *wild <= 'Z') ? *wild + 32 : *wild) == ((*str >= 'A' && *str <= 'Z') ? *str + 32 : *str)
 #endif // DOCTEST_CASE_SENSITIVE
             || (*wild == '?')) {
             wild++;
