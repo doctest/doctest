@@ -306,61 +306,58 @@ void freeArray2D(T** arr, size_t size)
 
 DOCTEST_INLINE void invokeAllFunctions(int argc, char** argv)
 {
+    char** file = 0;
+    size_t file_count = 0;
+    char** file_exclude = 0;
+    size_t file_exclude_count = 0;
+    char** suite = 0;
+    size_t suite_count = 0;
+    char** suite_exclude = 0;
+    size_t suite_exclude_count = 0;
+    char** name = 0;
+    size_t name_count = 0;
+    char** name_exclude = 0;
+    size_t name_exclude_count = 0;
+    parseArgs(argc, argv, "-doctest_file=", file, file_count);
+    parseArgs(argc, argv, "-doctest_file_exclude=", file_exclude, file_exclude_count);
+    parseArgs(argc, argv, "-doctest_suite=", suite, suite_count);
+    parseArgs(argc, argv, "-doctest_suite_exclude=", suite_exclude, suite_exclude_count);
+    parseArgs(argc, argv, "-doctest_name=", name, name_count);
+    parseArgs(argc, argv, "-doctest_name_exclude=", name_exclude, name_exclude_count);
+
+    // invoke the registered functions
     mapType& registeredFunctions = getRegisteredFunctions();
-    // if atleast one test has been registered
-    if(registeredFunctions.size() > 0) {
-        char** file = 0;
-        size_t file_count = 0;
-        char** file_exclude = 0;
-        size_t file_exclude_count = 0;
-        char** suite = 0;
-        size_t suite_count = 0;
-        char** suite_exclude = 0;
-        size_t suite_exclude_count = 0;
-        char** name = 0;
-        size_t name_count = 0;
-        char** name_exclude = 0;
-        size_t name_exclude_count = 0;
-        parseArgs(argc, argv, "-doctest_file=", file, file_count);
-        parseArgs(argc, argv, "-doctest_file_exclude=", file_exclude, file_exclude_count);
-        parseArgs(argc, argv, "-doctest_suite=", suite, suite_count);
-        parseArgs(argc, argv, "-doctest_suite_exclude=", suite_exclude, suite_exclude_count);
-        parseArgs(argc, argv, "-doctest_name=", name, name_count);
-        parseArgs(argc, argv, "-doctest_name_exclude=", name_exclude, name_exclude_count);
+    mapType::iterator it;
+    for(it = registeredFunctions.begin(); it != registeredFunctions.end(); ++it) {
+        if(!matchesAny(it->first.file, file, file_count, true))
+            continue;
+        if(matchesAny(it->first.file, file_exclude, file_exclude_count, false))
+            continue;
+        if(!matchesAny(it->first.suite, suite, suite_count, true))
+            continue;
+        if(matchesAny(it->first.suite, suite_exclude, suite_exclude_count, false))
+            continue;
+        if(!matchesAny(it->first.name, name, name_count, true))
+            continue;
+        if(matchesAny(it->first.name, name_exclude, name_exclude_count, false))
+            continue;
 
-        // invoke the registered functions
-        mapType::iterator it;
-        for(it = registeredFunctions.begin(); it != registeredFunctions.end(); ++it) {
-            if(!matchesAny(it->first.file, file, file_count, true))
-                continue;
-            if(matchesAny(it->first.file, file_exclude, file_exclude_count, false))
-                continue;
-            if(!matchesAny(it->first.suite, suite, suite_count, true))
-                continue;
-            if(matchesAny(it->first.suite, suite_exclude, suite_exclude_count, false))
-                continue;
-            if(!matchesAny(it->first.name, name, name_count, true))
-                continue;
-            if(matchesAny(it->first.name, name_exclude, name_exclude_count, false))
-                continue;
-
-            // call the function if it passes all the filtering
-            try {
-                it->second();
-            } catch(std::exception& e) {
-                printf("%s\n", e.what());
-            } catch(...) {
-                printf("Unknown exception caught!\n");
-            }
+        // call the function if it passes all the filtering
+        try {
+            it->second();
+        } catch(std::exception& e) {
+            printf("%s\n", e.what());
+        } catch(...) {
+            printf("Unknown exception caught!\n");
         }
-        // cleanup buffers
-        freeArray2D(file, file_count);
-        freeArray2D(file_exclude, file_exclude_count);
-        freeArray2D(suite, suite_count);
-        freeArray2D(suite_exclude, suite_exclude_count);
-        freeArray2D(name, name_count);
-        freeArray2D(name_exclude, name_exclude_count);
     }
+    // cleanup buffers
+    freeArray2D(file, file_count);
+    freeArray2D(file_exclude, file_exclude_count);
+    freeArray2D(suite, suite_count);
+    freeArray2D(suite_exclude, suite_exclude_count);
+    freeArray2D(name, name_count);
+    freeArray2D(name_exclude, name_exclude_count);
 }
 } // namespace doctestns
 
