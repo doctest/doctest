@@ -294,53 +294,32 @@ DOCTEST_INLINE int matchesAny(const char* name, char** filters, size_t filterCou
     return false;
 }
 
-// frees a 2D array with the first dimention specified by size
-template <typename T>
-void freeArray2D(T** arr, size_t size)
-{
-    if(arr) {
-        for(size_t i = 0; i < size; ++i)
-            free(arr[i]);
-        free(arr);
-    }
-}
-
 DOCTEST_INLINE void invokeAllFunctions(int argc, char** argv)
 {
-    char** file = 0;
-    size_t file_count = 0;
-    char** file_exclude = 0;
-    size_t file_exclude_count = 0;
-    char** suite = 0;
-    size_t suite_count = 0;
-    char** suite_exclude = 0;
-    size_t suite_exclude_count = 0;
-    char** name = 0;
-    size_t name_count = 0;
-    char** name_exclude = 0;
-    size_t name_exclude_count = 0;
-    parseArgs(argc, argv, "-doctest_file=", file, file_count);
-    parseArgs(argc, argv, "-doctest_file_exclude=", file_exclude, file_exclude_count);
-    parseArgs(argc, argv, "-doctest_suite=", suite, suite_count);
-    parseArgs(argc, argv, "-doctest_suite_exclude=", suite_exclude, suite_exclude_count);
-    parseArgs(argc, argv, "-doctest_name=", name, name_count);
-    parseArgs(argc, argv, "-doctest_name_exclude=", name_exclude, name_exclude_count);
+    char** filters[6] = {0, 0, 0, 0, 0, 0};
+    size_t counts[6] = {0, 0, 0, 0, 0, 0};
+    parseArgs(argc, argv, "-doctest_file=", filters[0], counts[0]);
+    parseArgs(argc, argv, "-doctest_file_exclude=", filters[1], counts[1]);
+    parseArgs(argc, argv, "-doctest_suite=", filters[2], counts[2]);
+    parseArgs(argc, argv, "-doctest_suite_exclude=", filters[3], counts[3]);
+    parseArgs(argc, argv, "-doctest_name=", filters[4], counts[4]);
+    parseArgs(argc, argv, "-doctest_name_exclude=", filters[5], counts[5]);
 
     // invoke the registered functions
     mapType& registeredFunctions = getRegisteredFunctions();
     mapType::iterator it;
     for(it = registeredFunctions.begin(); it != registeredFunctions.end(); ++it) {
-        if(!matchesAny(it->first.file, file, file_count, true))
+        if(!matchesAny(it->first.file, filters[0], counts[0], true))
             continue;
-        if(matchesAny(it->first.file, file_exclude, file_exclude_count, false))
+        if(matchesAny(it->first.file, filters[1], counts[1], false))
             continue;
-        if(!matchesAny(it->first.suite, suite, suite_count, true))
+        if(!matchesAny(it->first.suite, filters[2], counts[2], true))
             continue;
-        if(matchesAny(it->first.suite, suite_exclude, suite_exclude_count, false))
+        if(matchesAny(it->first.suite, filters[3], counts[3], false))
             continue;
-        if(!matchesAny(it->first.name, name, name_count, true))
+        if(!matchesAny(it->first.name, filters[4], counts[4], true))
             continue;
-        if(matchesAny(it->first.name, name_exclude, name_exclude_count, false))
+        if(matchesAny(it->first.name, filters[5], counts[5], false))
             continue;
 
         // call the function if it passes all the filtering
@@ -352,13 +331,15 @@ DOCTEST_INLINE void invokeAllFunctions(int argc, char** argv)
             printf("Unknown exception caught!\n");
         }
     }
+
     // cleanup buffers
-    freeArray2D(file, file_count);
-    freeArray2D(file_exclude, file_exclude_count);
-    freeArray2D(suite, suite_count);
-    freeArray2D(suite_exclude, suite_exclude_count);
-    freeArray2D(name, name_count);
-    freeArray2D(name_exclude, name_exclude_count);
+    for(size_t i = 0; i < 6; i++) {
+        if(counts[i] > 0) {
+            for(size_t k = 0; k < counts[i]; ++k)
+                free(filters[i][k]);
+            free(filters[i]);
+        }
+    }
 }
 } // namespace doctestns
 
