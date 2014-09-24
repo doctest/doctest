@@ -5,4 +5,4 @@ compiler:
   - gcc
   - clang
 #i am a comment TROLOLO
-script: cd examples/hello_world && cmake . && make
+script: cd examples/dev_testing && cmake . && make
