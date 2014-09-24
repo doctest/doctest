@@ -4,7 +4,7 @@ testsuite(test)
 
 test(ttt) { cout << "test!" << endl; }
 
-static struct F {
+struct F {
     F() { cout << "ctor!" << endl; }
     ~F() { cout << "dtor..." << endl; }
 };
