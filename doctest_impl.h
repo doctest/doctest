@@ -165,8 +165,8 @@ struct FunctionData {
 
 DOCTEST_INLINE int functionDataComparator(const void* a, const void* b)
 {
-    FunctionData* lhs = (FunctionData*)a;
-    FunctionData* rhs = (FunctionData*)b;
+    FunctionData* lhs = *(FunctionData**)a;
+    FunctionData* rhs = *(FunctionData**)b;
 
     int res = strcmp(lhs->file, rhs->file);
     if(res != 0)
