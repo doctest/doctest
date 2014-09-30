@@ -28,8 +28,7 @@
 namespace doctestns
 {
 // forward declarations of the function used by the registering macros
-int registerFunction(void (*f)(void), unsigned line, const char* file, const char* method,
-                     const char* name);
+int registerFunction(void (*f)(void), unsigned line, const char* file, const char* name);
 // the function used by the test invocation macro
 void invokeAllFunctions(int argc, char** argv);
 }
@@ -40,7 +39,7 @@ void invokeAllFunctions(int argc, char** argv);
 
 // internal registering macros
 #define DOCTEST_REGISTER_FUNCTION(f, name)                                                         \
-    static int DOCTEST_ANONYMOUS(a) = registerFunction(f, __LINE__, __FILE__, "", #name);
+    static int DOCTEST_ANONYMOUS(a) = registerFunction(f, __LINE__, __FILE__, #name);
 
 #define DOCTEST_IMPLEMENT_FIXTURE(der, base, func, name)                                           \
     namespace doctestns                                                                            \
@@ -56,8 +55,7 @@ void invokeAllFunctions(int argc, char** argv);
                 der v;                                                                             \
                 v.f();                                                                             \
             }                                                                                      \
-            static int DOCTEST_ANONYMOUS(a) = registerFunction(func, __LINE__, __FILE__, "",       \
-                                                               #name);                             \
+            static int DOCTEST_ANONYMOUS(a) = registerFunction(func, __LINE__, __FILE__, #name);   \
         }                                                                                          \
     }                                                                                              \
     inline void doctestns::der::f()
@@ -175,10 +173,3 @@ namespace doctestns { inline void dmy(int i, char** c) { int a = i; i = a; char*
 #define testsuite_end doctest_testsuite_end
 
 #endif // DOCTEST_SHORT_MACRO_NAMES
-
-
-struct Z {
-    static void z() { cout << "ZzZ" << endl; }
-};
-
-

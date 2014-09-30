@@ -1,5 +1,8 @@
 #include "doctest.h"
 
+#include <iostream>
+using namespace std;
+
 testsuite(test)
 
 test(ttt) { cout << "test!" << endl; }

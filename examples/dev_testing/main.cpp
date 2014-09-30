@@ -1,5 +1,8 @@
 #include "doctest.h"
 
+#include <iostream>
+using namespace std;
+
 testsuite(MAIN)
 test(zzz) { cout << "main!" << endl; }
 testsuite_end
