@@ -11,6 +11,10 @@
 #endif // _CRT_SECURE_NO_WARNINGS
 #endif // _MSC_VER
 
+// @TODO: REMOVE ME WHEN DEV IS DONE! cuz this shit be ugly ^_^
+#include <iostream>
+using namespace std;
+
 // required includes
 #include <cstdlib> // malloc, qsort
 #include <cstring> // C string manipulation
@@ -24,9 +28,9 @@
 #endif // DOCTEST_DONT_INCLUDE_IMPLEMENTATION
 
 // the number of buckets used for the hash set
-#if !defined(DOCTEST_NUM_BUCKETS)
-#define DOCTEST_NUM_BUCKETS 8192
-#endif // DOCTEST_NUM_BUCKETS
+#if !defined(DOCTEST_HASH_TABLE_NUM_BUCKETS)
+#define DOCTEST_HASH_TABLE_NUM_BUCKETS 8192
+#endif // DOCTEST_HASH_TABLE_NUM_BUCKETS
 
 // the namespace used by all functions generated/registered by this library
 namespace doctestns
@@ -83,7 +87,7 @@ DOCTEST_INLINE int wildcmp(const char* str, const char* wild)
 }
 
 // C string hash function (djb2) - taken from http://www.cse.yorku.ca/~oz/hash.html
-DOCTEST_INLINE unsigned long hashStr(unsigned const char *str)
+DOCTEST_INLINE unsigned long hashStr(unsigned const char* str)
 {
     unsigned long hash = 5381;
     int c;
@@ -94,12 +98,61 @@ DOCTEST_INLINE unsigned long hashStr(unsigned const char *str)
     return hash;
 }
 
+// checks if the name matches any of the filters (and can be configured what to do when empty)
+DOCTEST_INLINE int matchesAny(const char* name, char** filters, size_t filterCount, bool matchEmpty)
+{
+    if(filterCount == 0 && matchEmpty)
+        return true;
+    for(size_t i = 0; i < filterCount; ++i) {
+        if(wildcmp(name, filters[i])) {
+            return true;
+        }
+    }
+    return false;
+}
+
+// parses a comma separated list of words after a pattern in one of the arguments in argv
+DOCTEST_INLINE void parseArgs(int argc, char** argv, const char* pattern, char**& filters,
+                              size_t& filterCount)
+{
+    char* filtersString = 0;
+    for(int i = 0; i < argc; ++i) {
+        const char* temp = strstr(argv[i], pattern);
+        if(temp) {
+            temp += strlen(pattern);
+            size_t len = strlen(temp);
+            if(len) {
+                filtersString = (char*)(malloc(len + 1));
+                strcpy(filtersString, temp);
+                break;
+            }
+        }
+    }
+
+    // if we have found the filter string
+    if(filtersString) {
+        const size_t maxFiltersInList = 1024; // ought to be enough
+        filters = (char**)(malloc(sizeof(char*) * maxFiltersInList));
+        // tokenize with "," as a separator for the first maxFiltersInList filters
+        char* pch = strtok(filtersString, ",");
+        while(pch != 0) {
+            size_t len = strlen(pch);
+            if(len && filterCount < maxFiltersInList) {
+                filters[filterCount] = (char*)(malloc(len + 1));
+                strcpy(filters[filterCount], pch);
+                ++filterCount;
+            }
+            pch = strtok(0, ",");
+        }
+        free(filtersString);
+    }
+}
+
 // the function type this library works with
 typedef void (*funcType)(void);
 
 // a struct defining a registered test callback
-struct FunctionData
-{
+struct FunctionData {
     unsigned line;
     const char* file;
     const char* suite;
@@ -110,10 +163,31 @@ struct FunctionData
     FunctionData* next;
 };
 
-// trick to register a global variable in a header - as a static var in an inline method
+DOCTEST_INLINE int compareFunctionData(const void* a, const void* b)
+{
+    FunctionData* lhs = (FunctionData*)a;
+    FunctionData* rhs = (FunctionData*)b;
+
+    if(lhs->line != rhs->line)
+        return lhs->line < rhs->line;
+    int res = strcmp(lhs->file, rhs->file);
+    if(res != 0)
+        return res < 0;
+    return strcmp(lhs->suite, rhs->suite) < 0;
+}
+
+// the global hash table
 DOCTEST_INLINE FunctionData** getHashTable()
 {
-    static FunctionData* value[DOCTEST_NUM_BUCKETS];
+    // @TODO: CLEAN ME UP!!!!!!!!!!! free mee!
+    static FunctionData* value[DOCTEST_HASH_TABLE_NUM_BUCKETS];
+    return value;
+}
+
+// the global hash table size
+DOCTEST_INLINE size_t& getHashTableSize()
+{
+    static size_t value;
     return value;
 }
 
@@ -134,7 +208,7 @@ DOCTEST_INLINE int setTestSuiteName(const char* name)
 // used by the macros for registering doctest callbacks
 DOCTEST_INLINE int registerFunction(funcType f, unsigned line, const char* file, const char* name)
 {
-    FunctionData** registeredFunctions = getHashTable();
+    FunctionData** hashTable = getHashTable();
     const char* suite = getTestSuiteName();
 
     // compute the hash using the file and the line at which the test was registered
@@ -142,7 +216,7 @@ DOCTEST_INLINE int registerFunction(funcType f, unsigned line, const char* file,
 
     // try to find the function in the hash table
     bool found = false;
-    FunctionData* bucket = registeredFunctions[hash % DOCTEST_NUM_BUCKETS];
+    FunctionData*& bucket = hashTable[hash % DOCTEST_HASH_TABLE_NUM_BUCKETS];
     FunctionData* curr = bucket;
     FunctionData* last = curr;
     while(curr != 0) {
@@ -157,6 +231,8 @@ DOCTEST_INLINE int registerFunction(funcType f, unsigned line, const char* file,
 
     // if not found in the bucket
     if(!found) {
+        getHashTableSize()++;
+
         // initialize the record
         FunctionData data;
         data.line = line;
@@ -179,56 +255,6 @@ DOCTEST_INLINE int registerFunction(funcType f, unsigned line, const char* file,
     return 0;
 }
 
-// parses a comma separated list of words after a pattern in one of the arguments in argv
-DOCTEST_INLINE void parseArgs(int argc, char** argv, const char* pattern, char**& filters,
-                              size_t& filterCount)
-{
-    char* filtersString = 0;
-    for(int i = 0; i < argc; ++i) {
-        const char* temp = strstr(argv[i], pattern);
-        if(temp) {
-            temp += strlen(pattern);
-            size_t len = strlen(temp);
-            if(len) {
-                filtersString = static_cast<char*>(malloc(len + 1));
-                strcpy(filtersString, temp);
-                break;
-            }
-        }
-    }
-
-    // if we have found the filter string
-    if(filtersString) {
-        const size_t maxFiltersInList = 1024; // ought to be enough
-        filters = static_cast<char**>(malloc(sizeof(char*) * maxFiltersInList));
-        // tokenize with "," as a separator for the first maxFiltersInList filters
-        char* pch = strtok(filtersString, ",");
-        while(pch != 0) {
-            size_t len = strlen(pch);
-            if(len && filterCount < maxFiltersInList) {
-                filters[filterCount] = static_cast<char*>(malloc(len + 1));
-                strcpy(filters[filterCount], pch);
-                ++filterCount;
-            }
-            pch = strtok(0, ",");
-        }
-        free(filtersString);
-    }
-}
-
-// checks if the name matches any of the filters (and can be configured what to do when empty)
-DOCTEST_INLINE int matchesAny(const char* name, char** filters, size_t filterCount, bool matchEmpty)
-{
-    if(filterCount == 0 && matchEmpty)
-        return true;
-    for(size_t i = 0; i < filterCount; ++i) {
-        if(wildcmp(name, filters[i])) {
-            return true;
-        }
-    }
-    return false;
-}
-
 DOCTEST_INLINE void invokeAllFunctions(int argc, char** argv)
 {
     char** filters[6] = {0, 0, 0, 0, 0, 0};
@@ -241,33 +267,48 @@ DOCTEST_INLINE void invokeAllFunctions(int argc, char** argv)
     parseArgs(argc, argv, "-doctest_name_exclude=", filters[5], counts[5]);
 
     // invoke the registered functions
-    //FunctionData** registeredFunctions = getHashTable();
-    /*
-    mapType::iterator it;
-    for(it = registeredFunctions.begin(); it != registeredFunctions.end(); ++it) {
-        if(!matchesAny(it->first.file, filters[0], counts[0], true))
+    FunctionData** hashTable = getHashTable();
+    size_t hashTableSize = getHashTableSize();
+    FunctionData** hashEntryArray = (FunctionData**)malloc(hashTableSize * sizeof(FunctionData*));
+
+    // fill the hashEntryArray with pointers to hash table records for sorting later
+    size_t k = 0;
+    for(size_t i = 0; i < DOCTEST_HASH_TABLE_NUM_BUCKETS; i++) {
+        FunctionData* curr = hashTable[i];
+        while(curr) {
+            hashEntryArray[k++] = curr;
+            curr = curr->next;
+        }
+    }
+
+    // sort the collected records
+    qsort(hashEntryArray, hashTableSize, sizeof(FunctionData*), compareFunctionData);
+
+    // invoke the registered functions if they match the filter criteria
+    for(size_t i = 0; i < hashTableSize; i++) {
+        FunctionData& data = *hashEntryArray[i];
+        if(!matchesAny(data.file, filters[0], counts[0], true))
             continue;
-        if(matchesAny(it->first.file, filters[1], counts[1], false))
+        if(matchesAny(data.file, filters[1], counts[1], false))
             continue;
-        if(!matchesAny(it->first.suite, filters[2], counts[2], true))
+        if(!matchesAny(data.suite, filters[2], counts[2], true))
             continue;
-        if(matchesAny(it->first.suite, filters[3], counts[3], false))
+        if(matchesAny(data.suite, filters[3], counts[3], false))
             continue;
-        if(!matchesAny(it->first.name, filters[4], counts[4], true))
+        if(!matchesAny(data.name, filters[4], counts[4], true))
             continue;
-        if(matchesAny(it->first.name, filters[5], counts[5], false))
+        if(matchesAny(data.name, filters[5], counts[5], false))
             continue;
 
         // call the function if it passes all the filtering
         try {
-            it->second();
+            data.f();
         } catch(std::exception& e) {
             printf("%s\n", e.what());
         } catch(...) {
             printf("Unknown exception caught!\n");
         }
     }
-    */
 
     // cleanup buffers
     for(size_t i = 0; i < 6; i++) {
