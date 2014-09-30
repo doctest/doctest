@@ -341,6 +341,7 @@ DOCTEST_INLINE void invokeAllFunctions(int argc, char** argv)
             free(filters[i]);
         }
     }
+    free(hashEntryArray);
 }
 } // namespace doctestns
 
