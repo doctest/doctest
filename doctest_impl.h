@@ -3,14 +3,6 @@
 // if registering is not disabled
 #if !defined(DOCTEST_GLOBAL_DISABLE)
 
-// if this header is included into the main doctest.h header the functions
-// defined here should be marked as inline so compilation doesn't fail
-#define DOCTEST_INLINE inline
-#ifdef DOCTEST_DONT_INCLUDE_IMPLEMENTATION
-#undef DOCTEST_INLINE
-#define DOCTEST_INLINE
-#endif // DOCTEST_DONT_INCLUDE_IMPLEMENTATION
-
 // MSVC fix to not complain about using strcpy instead of strcpy_s
 #ifdef _MSC_VER
 #if !defined(_CRT_SECURE_NO_WARNINGS)
@@ -20,141 +12,25 @@
 #endif // _MSC_VER
 
 // required includes
-#include <map>
+#include <cstdlib> // malloc, qsort
 #include <cstring> // C string manipulation
-#include <cstdlib> // malloc
-#include <cstdio>  // printf
 
-// TODO: REMOVE! only while dev!
-#include <iostream>
-using namespace std;
+// if this header is included into the main doctest.h header the functions
+// defined here should be marked as inline so compilation doesn't fail
+#define DOCTEST_INLINE inline
+#ifdef DOCTEST_DONT_INCLUDE_IMPLEMENTATION
+#undef DOCTEST_INLINE
+#define DOCTEST_INLINE
+#endif // DOCTEST_DONT_INCLUDE_IMPLEMENTATION
+
+// the number of buckets used for the hash set
+#if !defined(DOCTEST_NUM_BUCKETS)
+#define DOCTEST_NUM_BUCKETS 8192
+#endif // DOCTEST_NUM_BUCKETS
 
 // the namespace used by all functions generated/registered by this library
 namespace doctestns
 {
-
-// the function type this library works with
-typedef void (*functionType)(void);
-
-// a struct defining a registered test callback
-struct FunctionSignature
-{
-    unsigned line;
-    const char* file;
-    const char* method;
-    const char* suite;
-
-    const char* name; // not used for comparing
-
-    bool operator<(const FunctionSignature& other) const
-    {
-        if(line != other.line)
-            return line < other.line;
-        int res = strcmp(file, other.file);
-        if(res != 0)
-            return res < 0;
-        res = strcmp(suite, other.suite);
-        if(res != 0)
-            return res < 0;
-        return strcmp(method, other.method) < 0;
-    }
-};
-
-// std::allocator compatible using plain malloc to avoid operator new
-template <typename T>
-struct MallocAllocator
-{
-    typedef std::size_t size_type;
-    typedef std::ptrdiff_t difference_type;
-    typedef T* pointer;
-    typedef const T* const_pointer;
-    typedef T& reference;
-    typedef const T& const_reference;
-    typedef T value_type;
-
-    pointer allocate(size_type n, const void* = 0)
-    {
-        return static_cast<pointer>(malloc(sizeof(value_type) * n));
-    }
-
-    void deallocate(pointer ptr, size_type)
-    {
-        free(ptr);
-    }
-
-    // boilerplate follows
-    MallocAllocator()
-    {
-    }
-
-    MallocAllocator(const MallocAllocator&)
-    {
-    }
-
-    template <typename Other>
-    MallocAllocator(const MallocAllocator<Other>&)
-    {
-    }
-
-    MallocAllocator& operator=(const MallocAllocator&)
-    {
-        return *this;
-    }
-
-    template <class Other>
-    MallocAllocator& operator=(const MallocAllocator<Other>&)
-    {
-        return *this;
-    }
-
-    template <typename Other>
-    struct rebind
-    {
-        typedef MallocAllocator<Other> other;
-    };
-
-    size_type max_size() const throw()
-    {
-        // ugly size_t maximum but don't want to drag <numeric_limits> just because of this
-        return std::size_t(-1) / sizeof(T);
-    }
-
-    pointer address(reference ref) const
-    {
-        return &ref;
-    }
-
-    const_pointer address(const_reference ref) const
-    {
-        return &ref;
-    }
-
-    void construct(pointer ptr, const value_type& val)
-    {
-        ::new (ptr) value_type(val);
-    }
-
-    void destroy(pointer ptr)
-    {
-        ptr->~value_type();
-    }
-};
-
-template <typename T, typename U>
-inline bool operator==(const MallocAllocator<T>&, const MallocAllocator<U>&)
-{
-    return true;
-}
-
-template <typename T, typename U>
-inline bool operator!=(const MallocAllocator<T>& a, const MallocAllocator<U>& b)
-{
-    return !(a == b);
-}
-
-// typedef for the map with the custom allocator
-typedef std::map<FunctionSignature, functionType, std::less<FunctionSignature>,
-                 MallocAllocator<std::pair<const FunctionSignature, functionType> > > mapType;
 
 // matching of a string against a wildcard mask (case sensitivity configurable)
 // taken from http://www.emoticode.net/c/simple-wildcard-string-compare-globbing-function.html
@@ -206,10 +82,38 @@ DOCTEST_INLINE int wildcmp(const char* str, const char* wild)
     return !*wild;
 }
 
-// trick to register a global variable in a header - as a static var in an inline method
-DOCTEST_INLINE mapType& getRegisteredFunctions()
+// C string hash function (djb2) - taken from http://www.cse.yorku.ca/~oz/hash.html
+DOCTEST_INLINE unsigned long hashStr(unsigned const char *str)
 {
-    static mapType value;
+    unsigned long hash = 5381;
+    int c;
+
+    while(c = *str++)
+        hash = ((hash << 5) + hash) + c; // hash * 33 + c
+
+    return hash;
+}
+
+// the function type this library works with
+typedef void (*funcType)(void);
+
+// a struct defining a registered test callback
+struct FunctionData
+{
+    unsigned line;
+    const char* file;
+    const char* suite;
+
+    // not used for comparing
+    const char* name;
+    funcType f;
+    FunctionData* next;
+};
+
+// trick to register a global variable in a header - as a static var in an inline method
+DOCTEST_INLINE FunctionData** getHashTable()
+{
+    static FunctionData* value[DOCTEST_NUM_BUCKETS];
     return value;
 }
 
@@ -227,20 +131,51 @@ DOCTEST_INLINE int setTestSuiteName(const char* name)
     return 0;
 }
 
-// used by the macros for registering doctest callbacks (short name for small codegen)
-DOCTEST_INLINE int registerFunction(functionType f, unsigned line, const char* file,
-                                    const char* method, const char* name)
+// used by the macros for registering doctest callbacks
+DOCTEST_INLINE int registerFunction(funcType f, unsigned line, const char* file, const char* name)
 {
-    mapType& registeredFunctions = getRegisteredFunctions();
-    // initialize the record
-    FunctionSignature signature;
-    signature.line = line;
-    signature.file = file;
-    signature.suite = getTestSuiteName();
-    signature.method = method;
-    signature.name = name;
-    // insert the record
-    registeredFunctions.insert(std::pair<FunctionSignature, functionType>(signature, f));
+    FunctionData** registeredFunctions = getHashTable();
+    const char* suite = getTestSuiteName();
+
+    // compute the hash using the file and the line at which the test was registered
+    unsigned long hash = hashStr((unsigned const char*)file) ^ line;
+
+    // try to find the function in the hash table
+    bool found = false;
+    FunctionData* bucket = registeredFunctions[hash % DOCTEST_NUM_BUCKETS];
+    FunctionData* curr = bucket;
+    FunctionData* last = curr;
+    while(curr != 0) {
+        // compare by line, file and suite
+        if(curr->line == line && strcmp(curr->file, file) == 0 && strcmp(curr->suite, suite) == 0) {
+            found = true;
+            break;
+        }
+        last = curr;
+        curr = curr->next;
+    }
+
+    // if not found in the bucket
+    if(!found) {
+        // initialize the record
+        FunctionData data;
+        data.line = line;
+        data.file = file;
+        data.suite = suite;
+        data.name = name;
+        data.f = f;
+        data.next = 0;
+
+        if(last == 0) {
+            // insert the record into this bucket as a first item
+            bucket = (FunctionData*)malloc(sizeof(FunctionData));
+            memcpy(bucket, &data, sizeof(FunctionData));
+        } else {
+            // append the record to the current bucket
+            last->next = (FunctionData*)malloc(sizeof(FunctionData));
+            memcpy(last->next, &data, sizeof(FunctionData));
+        }
+    }
     return 0;
 }
 
@@ -306,7 +241,8 @@ DOCTEST_INLINE void invokeAllFunctions(int argc, char** argv)
     parseArgs(argc, argv, "-doctest_name_exclude=", filters[5], counts[5]);
 
     // invoke the registered functions
-    mapType& registeredFunctions = getRegisteredFunctions();
+    //FunctionData** registeredFunctions = getHashTable();
+    /*
     mapType::iterator it;
     for(it = registeredFunctions.begin(); it != registeredFunctions.end(); ++it) {
         if(!matchesAny(it->first.file, filters[0], counts[0], true))
@@ -331,6 +267,7 @@ DOCTEST_INLINE void invokeAllFunctions(int argc, char** argv)
             printf("Unknown exception caught!\n");
         }
     }
+    */
 
     // cleanup buffers
     for(size_t i = 0; i < 6; i++) {
