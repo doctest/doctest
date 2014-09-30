@@ -3,7 +3,7 @@
 // if registering is not disabled
 #if !defined(DOCTEST_GLOBAL_DISABLE)
 
-// MSVC fix to not complain about using strcpy instead of strcpy_s
+// MSVC fix to not complain about using strcpy instead of strcpy_s and other such stuff
 #ifdef _MSC_VER
 #if !defined(_CRT_SECURE_NO_WARNINGS)
 #define _CRT_SECURE_NO_WARNINGS
@@ -163,23 +163,23 @@ struct FunctionData {
     FunctionData* next;
 };
 
-DOCTEST_INLINE int compareFunctionData(const void* a, const void* b)
+DOCTEST_INLINE int functionDataComparator(const void* a, const void* b)
 {
     FunctionData* lhs = (FunctionData*)a;
     FunctionData* rhs = (FunctionData*)b;
 
-    if(lhs->line != rhs->line)
-        return lhs->line < rhs->line;
     int res = strcmp(lhs->file, rhs->file);
     if(res != 0)
         return res < 0;
+    if(lhs->line != rhs->line)
+        return lhs->line < rhs->line;
     return strcmp(lhs->suite, rhs->suite) < 0;
 }
 
 // the global hash table
 DOCTEST_INLINE FunctionData** getHashTable()
 {
-    // @TODO: CLEAN ME UP!!!!!!!!!!! free mee!
+    // @TODO: CLEAN ME UP!!!!!!!!!!! free me!
     static FunctionData* value[DOCTEST_HASH_TABLE_NUM_BUCKETS];
     return value;
 }
@@ -282,7 +282,7 @@ DOCTEST_INLINE void invokeAllFunctions(int argc, char** argv)
     }
 
     // sort the collected records
-    qsort(hashEntryArray, hashTableSize, sizeof(FunctionData*), compareFunctionData);
+    qsort(hashEntryArray, hashTableSize, sizeof(FunctionData*), functionDataComparator);
 
     // invoke the registered functions if they match the filter criteria
     for(size_t i = 0; i < hashTableSize; i++) {
