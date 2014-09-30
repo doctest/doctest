@@ -153,16 +153,18 @@ typedef void (*funcType)(void);
 
 // a struct defining a registered test callback
 struct FunctionData {
-    unsigned line;
-    const char* file;
-    const char* suite;
+    // fields by which difference of test functions shall be determined
+    unsigned line; // the line where the test was registered
+    const char* file; // the file in which the test was registered
 
     // not used for comparing
-    const char* name;
-    funcType f;
-    FunctionData* next;
+    const char* suite; // the test suite in which the test was added
+    const char* name; // name of the test function
+    funcType f; // a function pointer to the test function
+    FunctionData* next; // a pointer to the next record in the current hash table bucket
 };
 
+// a comparison function for using qsort on arrays with pointers to FunctionData structures
 DOCTEST_INLINE int functionDataComparator(const void* a, const void* b)
 {
     FunctionData* lhs = *(FunctionData**)a;
@@ -170,10 +172,8 @@ DOCTEST_INLINE int functionDataComparator(const void* a, const void* b)
 
     int res = strcmp(lhs->file, rhs->file);
     if(res != 0)
-        return res < 0;
-    if(lhs->line != rhs->line)
-        return lhs->line < rhs->line;
-    return strcmp(lhs->suite, rhs->suite) < 0;
+        return res;
+    return lhs->line - rhs->line;
 }
 
 // the global hash table
