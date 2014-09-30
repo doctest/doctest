@@ -304,9 +304,10 @@ DOCTEST_INLINE void invokeAllFunctions(int argc, char** argv)
         try {
             data.f();
         } catch(std::exception& e) {
-            printf("%s\n", e.what());
+            //printf("%s\n", e.what());
+            e.what();
         } catch(...) {
-            printf("Unknown exception caught!\n");
+            //printf("Unknown exception caught!\n");
         }
     }
 
