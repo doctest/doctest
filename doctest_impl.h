@@ -154,13 +154,13 @@ typedef void (*funcType)(void);
 // a struct defining a registered test callback
 struct FunctionData {
     // fields by which difference of test functions shall be determined
-    unsigned line; // the line where the test was registered
+    unsigned line;    // the line where the test was registered
     const char* file; // the file in which the test was registered
 
     // not used for comparing
-    const char* suite; // the test suite in which the test was added
-    const char* name; // name of the test function
-    funcType f; // a function pointer to the test function
+    const char* suite;  // the test suite in which the test was added
+    const char* name;   // name of the test function
+    funcType f;         // a function pointer to the test function
     FunctionData* next; // a pointer to the next record in the current hash table bucket
 };
 
@@ -179,7 +179,6 @@ DOCTEST_INLINE int functionDataComparator(const void* a, const void* b)
 // the global hash table
 DOCTEST_INLINE FunctionData** getHashTable()
 {
-    // @TODO: CLEAN ME UP!!!!!!!!!!! free me!
     static FunctionData* value[DOCTEST_HASH_TABLE_NUM_BUCKETS];
     return value;
 }
@@ -205,10 +204,33 @@ DOCTEST_INLINE int setTestSuiteName(const char* name)
     return 0;
 }
 
+// traverses the hash table bucket by bucket and frees everything
+DOCTEST_INLINE void cleanupHashTable()
+{
+    FunctionData** hashTable = getHashTable();
+    for(size_t i = 0; i < DOCTEST_HASH_TABLE_NUM_BUCKETS; i++) {
+        FunctionData*& curr = hashTable[i];
+        while(curr) {
+            FunctionData* temp = curr->next;
+            free(curr);
+            curr = 0;
+            curr = temp;
+        }
+    }
+}
+
 // used by the macros for registering doctest callbacks
 DOCTEST_INLINE int registerFunction(funcType f, unsigned line, const char* file, const char* name)
 {
+    // register the hash table cleanup function only once
+    static int cleanupFunctionRegistered = false;
+    if(!cleanupFunctionRegistered) {
+        atexit(cleanupHashTable);
+        cleanupFunctionRegistered = true;
+    }
+
     FunctionData** hashTable = getHashTable();
+    // get the current test suite
     const char* suite = getTestSuiteName();
 
     // compute the hash using the file and the line at which the test was registered
@@ -304,10 +326,10 @@ DOCTEST_INLINE void invokeAllFunctions(int argc, char** argv)
         try {
             data.f();
         } catch(std::exception& e) {
-            //printf("%s\n", e.what());
+            // printf("%s\n", e.what());
             e.what();
         } catch(...) {
-            //printf("Unknown exception caught!\n");
+            // printf("Unknown exception caught!\n");
         }
     }
 
