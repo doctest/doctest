@@ -243,7 +243,7 @@ DOCTEST_INLINE int registerFunction(funcType f, unsigned line, const char* file,
     FunctionData* last = curr;
     while(curr != 0) {
         // compare by line, file and suite
-        if(curr->line == line && strcmp(curr->file, file) == 0 && strcmp(curr->suite, suite) == 0) {
+        if(curr->line == line && strcmp(curr->file, file) == 0) {
             found = true;
             break;
         }
