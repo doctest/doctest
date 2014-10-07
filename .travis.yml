@@ -10,5 +10,5 @@ before_install:
 script:
   - cd examples/dev_testing
   - cmake .
-  - make
+  - make -n
   - valgrind ./exe
