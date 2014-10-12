@@ -6,6 +6,14 @@ sorting the test order (by file, by test suite, or both, ASC/DESC...)
 
 a message macro
 
+2 namespaces from doctest - internal and for the user
+
+break on assert in doctest
+
+make the invoke function return an error code
+
+single header
+
 play with boost test and Catch
 
 
@@ -31,6 +39,7 @@ CI
         just compile all the examples
         https://github.com/mkurdej/bft/blob/develop/appveyor.yml
         https://github.com/mapbox/variant/blob/master/appveyor.yml
+        https://github.com/cppformat/cppformat/blob/master/appveyor.yml
 
 
 
