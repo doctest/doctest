@@ -11,7 +11,6 @@ doctest is a c++ header only library for writing tests that is inspired by the u
 WARNING! The library is under heavy development and is 100% not stable! Come back when this message is deleted
 ==============================================================================================================
 
-
 The library has automatic test discovery and is c++98 compatible.
 
 Tests are registered with the following macros:
