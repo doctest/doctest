@@ -14,9 +14,31 @@ make the invoke function return an error code
 
 single header
 
+timing reports of tests, duration restrictions, kill of longer than, etc...
+
 play with boost test and Catch
 
+ability to supply ur own main
 
+range-based execution
+count option (with/without filtering)
+option to exit(0) after running tests
+option to not allow overrides
+example with a python script that makes a bucket-style multithreaded execution of an executable with tests in it
+ 
+tests/examples folders separate
+
+process stuff under windows
+    http://msdn.microsoft.com/en-us/library/windows/desktop/ms682512(v=vs.85).aspx
+    http://msdn.microsoft.com/en-us/library/windows/desktop/ms682499(v=vs.85).aspx
+
+to make it C compatible:
+    wrap all casts
+    remove exception catching
+    migrate to pointers from references
+    remove the fixture macro
+    remove namespaces
+        wrap in a macro every doctest function declaration/definition/call for a "doctest_" prefix
 
 
 finish reading boost doc
@@ -58,6 +80,7 @@ THINK OF IN THE LONG TERM
     remove dependency on most stuff like std::map (meaning implementing my own)?
     hierarchical test suites? using a stack for the pushed states
     documentation
+        mocking features are not necessary because they are orthogonal to testing and a different third party library may be used for that (google mock)
         document how to use spaces for filters in the comma separated list (using "")
         tests are ran serially
         document when the library may crash (div by zero, bad ptr deref, etc)

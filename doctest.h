@@ -13,6 +13,18 @@
 #define DOCTEST_TOSTR_IMPL(x) #x
 #define DOCTEST_TOSTR(x) DOCTEST_TOSTR_IMPL(x)
 
+// define DOCTEST_C_INTERFACE if you want to force a C interface even for C++
+#ifndef __cplusplus
+#define DOCTEST_C_INTERFACE
+#endif // __cplusplus
+
+// cast wrapper for c/c++
+#ifdef DOCTEST_C_INTERFACE
+#define DOCTEST_CAST(x) (x)
+#else // DOCTEST_C_INTERFACE
+#define DOCTEST_CAST(x) reinterpret_cast<x>
+#endif // DOCTEST_C_INTERFACE
+
 // internal macro for concatenating 2 literals and making the result a string
 #define DOCTEST_STR_CONCAT_TOSTR(s1, s2) DOCTEST_TOSTR(DOCTEST_STR_CONCAT(s1, s2))
 
@@ -23,8 +35,7 @@
 // everywhere doctest.h is included (no unnecessary header inclusion)
 #if !defined(DOCTEST_DONT_INCLUDE_IMPLEMENTATION)
 #include "doctest_impl.h"
-#endif
-
+#else // DOCTEST_DONT_INCLUDE_IMPLEMENTATION
 namespace doctestns
 {
 // forward declarations of the function used by the registering macros
@@ -32,6 +43,7 @@ int registerFunction(void (*f)(void), unsigned line, const char* file, const cha
 // the function used by the test invocation macro
 void invokeAllFunctions(int argc, char** argv);
 }
+#endif // DOCTEST_DONT_INCLUDE_IMPLEMENTATION
 
 // call the registered tests with this
 #define DOCTEST_INVOKE_ALL_TEST_FUNCTIONS(argc, argv)                                              \

@@ -122,7 +122,7 @@ DOCTEST_INLINE void parseArgs(int argc, char** argv, const char* pattern, char**
             temp += strlen(pattern);
             size_t len = strlen(temp);
             if(len) {
-                filtersString = (char*)(malloc(len + 1));
+                filtersString = DOCTEST_CAST(char*)(malloc(len + 1));
                 strcpy(filtersString, temp);
                 break;
             }
@@ -132,13 +132,13 @@ DOCTEST_INLINE void parseArgs(int argc, char** argv, const char* pattern, char**
     // if we have found the filter string
     if(filtersString) {
         const size_t maxFiltersInList = 1024; // ought to be enough
-        filters = (char**)(malloc(sizeof(char*) * maxFiltersInList));
+        filters = DOCTEST_CAST(char**)(malloc(sizeof(char*) * maxFiltersInList));
         // tokenize with "," as a separator for the first maxFiltersInList filters
         char* pch = strtok(filtersString, ",");
         while(pch != 0) {
             size_t len = strlen(pch);
             if(len && filterCount < maxFiltersInList) {
-                filters[filterCount] = (char*)(malloc(len + 1));
+                filters[filterCount] = DOCTEST_CAST(char*)(malloc(len + 1));
                 strcpy(filters[filterCount], pch);
                 ++filterCount;
             }
@@ -161,14 +161,14 @@ struct FunctionData {
     const char* suite;  // the test suite in which the test was added
     const char* name;   // name of the test function
     funcType f;         // a function pointer to the test function
-    FunctionData* next; // a pointer to the next record in the current hash table bucket
+    struct FunctionData* next; // a pointer to the next record in the current hash table bucket
 };
 
 // a comparison function for using qsort on arrays with pointers to FunctionData structures
 DOCTEST_INLINE int functionDataComparator(const void* a, const void* b)
 {
-    FunctionData* lhs = *(FunctionData**)a;
-    FunctionData* rhs = *(FunctionData**)b;
+    const struct FunctionData* lhs = *DOCTEST_CAST(struct FunctionData* const *)(a);
+    const struct FunctionData* rhs = *DOCTEST_CAST(struct FunctionData* const *)(b);
 
     int res = strcmp(lhs->file, rhs->file);
     if(res != 0)
@@ -177,9 +177,9 @@ DOCTEST_INLINE int functionDataComparator(const void* a, const void* b)
 }
 
 // the global hash table
-DOCTEST_INLINE FunctionData** getHashTable()
+DOCTEST_INLINE struct FunctionData** getHashTable()
 {
-    static FunctionData* value[DOCTEST_HASH_TABLE_NUM_BUCKETS];
+    static struct FunctionData* value[DOCTEST_HASH_TABLE_NUM_BUCKETS];
     return value;
 }
 
@@ -207,11 +207,11 @@ DOCTEST_INLINE int setTestSuiteName(const char* name)
 // traverses the hash table bucket by bucket and frees everything
 DOCTEST_INLINE void cleanupHashTable()
 {
-    FunctionData** hashTable = getHashTable();
+    struct FunctionData** hashTable = getHashTable();
     for(size_t i = 0; i < DOCTEST_HASH_TABLE_NUM_BUCKETS; i++) {
-        FunctionData*& curr = hashTable[i];
+        struct FunctionData*& curr = hashTable[i];
         while(curr) {
-            FunctionData* temp = curr->next;
+            struct FunctionData* temp = curr->next;
             free(curr);
             curr = 0;
             curr = temp;
@@ -229,18 +229,18 @@ DOCTEST_INLINE int registerFunction(funcType f, unsigned line, const char* file,
         cleanupFunctionRegistered = true;
     }
 
-    FunctionData** hashTable = getHashTable();
+    struct FunctionData** hashTable = getHashTable();
     // get the current test suite
     const char* suite = getTestSuiteName();
 
     // compute the hash using the file and the line at which the test was registered
-    unsigned long hash = hashStr((unsigned const char*)file) ^ line;
+    unsigned long hash = hashStr(DOCTEST_CAST(unsigned const char*)(file)) ^ line;
 
     // try to find the function in the hash table
     bool found = false;
-    FunctionData*& bucket = hashTable[hash % DOCTEST_HASH_TABLE_NUM_BUCKETS];
-    FunctionData* curr = bucket;
-    FunctionData* last = curr;
+    struct FunctionData*& bucket = hashTable[hash % DOCTEST_HASH_TABLE_NUM_BUCKETS];
+    struct FunctionData* curr = bucket;
+    struct FunctionData* last = curr;
     while(curr != 0) {
         // compare by line, file and suite
         if(curr->line == line && strcmp(curr->file, file) == 0) {
@@ -256,7 +256,7 @@ DOCTEST_INLINE int registerFunction(funcType f, unsigned line, const char* file,
         getHashTableSize()++;
 
         // initialize the record
-        FunctionData data;
+        struct FunctionData data;
         data.line = line;
         data.file = file;
         data.suite = suite;
@@ -266,12 +266,12 @@ DOCTEST_INLINE int registerFunction(funcType f, unsigned line, const char* file,
 
         if(last == 0) {
             // insert the record into this bucket as a first item
-            bucket = (FunctionData*)malloc(sizeof(FunctionData));
-            memcpy(bucket, &data, sizeof(FunctionData));
+            bucket = DOCTEST_CAST(struct FunctionData*)(malloc(sizeof(struct FunctionData)));
+            memcpy(bucket, &data, sizeof(struct FunctionData));
         } else {
             // append the record to the current bucket
-            last->next = (FunctionData*)malloc(sizeof(FunctionData));
-            memcpy(last->next, &data, sizeof(FunctionData));
+            last->next = DOCTEST_CAST(struct FunctionData*)(malloc(sizeof(struct FunctionData)));
+            memcpy(last->next, &data, sizeof(struct FunctionData));
         }
     }
     return 0;
@@ -289,26 +289,26 @@ DOCTEST_INLINE void invokeAllFunctions(int argc, char** argv)
     parseArgs(argc, argv, "-doctest_name_exclude=", filters[5], counts[5]);
 
     // invoke the registered functions
-    FunctionData** hashTable = getHashTable();
+    struct FunctionData** hashTable = getHashTable();
     size_t hashTableSize = getHashTableSize();
-    FunctionData** hashEntryArray = (FunctionData**)malloc(hashTableSize * sizeof(FunctionData*));
+    struct FunctionData** hashEntryArray = DOCTEST_CAST(struct FunctionData**)(malloc(hashTableSize * sizeof(struct FunctionData*)));
 
     // fill the hashEntryArray with pointers to hash table records for sorting later
-    size_t k = 0;
+    size_t numTestsSoFar = 0;
     for(size_t i = 0; i < DOCTEST_HASH_TABLE_NUM_BUCKETS; i++) {
-        FunctionData* curr = hashTable[i];
+        struct FunctionData* curr = hashTable[i];
         while(curr) {
-            hashEntryArray[k++] = curr;
+            hashEntryArray[numTestsSoFar++] = curr;
             curr = curr->next;
         }
     }
 
     // sort the collected records
-    qsort(hashEntryArray, hashTableSize, sizeof(FunctionData*), functionDataComparator);
+    qsort(hashEntryArray, hashTableSize, sizeof(struct FunctionData*), functionDataComparator);
 
     // invoke the registered functions if they match the filter criteria
     for(size_t i = 0; i < hashTableSize; i++) {
-        FunctionData& data = *hashEntryArray[i];
+        struct FunctionData& data = *hashEntryArray[i];
         if(!matchesAny(data.file, filters[0], counts[0], true))
             continue;
         if(matchesAny(data.file, filters[1], counts[1], false))
@@ -323,6 +323,12 @@ DOCTEST_INLINE void invokeAllFunctions(int argc, char** argv)
             continue;
 
         // call the function if it passes all the filtering
+#ifdef DOCTEST_C_INTERFACE
+        data.f();
+#else // DOCTEST_C_INTERFACE
+#ifdef _MSC_VER
+        __try {
+#endif // _MSC_VER
         try {
             data.f();
         } catch(std::exception& e) {
@@ -331,6 +337,12 @@ DOCTEST_INLINE void invokeAllFunctions(int argc, char** argv)
         } catch(...) {
             // printf("Unknown exception caught!\n");
         }
+#ifdef _MSC_VER
+        } __except(1) {
+            // printf("Unknown SEH exception caught!\n");
+        }
+#endif // _MSC_VER
+#endif // DOCTEST_C_INTERFACE
     }
 
     // cleanup buffers
