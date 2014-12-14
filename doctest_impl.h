@@ -15,9 +15,7 @@
 #include <iostream>
 using namespace std;
 
-#ifndef DOCTEST_C_INTERFACE
 #include <exception>
-#endif // DOCTEST_C_INTERFACE
 
 // required includes
 #include <cstdlib> // malloc, qsort
