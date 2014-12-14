@@ -37,6 +37,7 @@ to make it C compatible:
     remove exception catching
     migrate to pointers from references
     remove the fixture macro
+    the CHECK macro... will need CHECK_EQUAL and all that bullshit...
     remove namespaces
         wrap in a macro every doctest function declaration/definition/call for a "doctest_" prefix
 

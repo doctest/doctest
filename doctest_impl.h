@@ -15,6 +15,10 @@
 #include <iostream>
 using namespace std;
 
+#ifndef DOCTEST_C_INTERFACE
+#include <exception>
+#endif // DOCTEST_C_INTERFACE
+
 // required includes
 #include <cstdlib> // malloc, qsort
 #include <cstring> // C string manipulation
@@ -38,19 +42,16 @@ namespace doctestns
 
 // matching of a string against a wildcard mask (case sensitivity configurable)
 // taken from http://www.emoticode.net/c/simple-wildcard-string-compare-globbing-function.html
-DOCTEST_INLINE int wildcmp(const char* str, const char* wild)
+DOCTEST_INLINE int wildcmp(const char* str, const char* wild, int caseSensitive)
 {
     const char* cp = 0, * mp = 0;
 
+    // rolled my own tolower() to not include more headers
     while((*str) && (*wild != '*')) {
-        if(
-#ifdef DOCTEST_CASE_SENSITIVE
-            (*wild != *str)
-#else  // DOCTEST_CASE_SENSITIVE
-            // rolled my own tolower() to not include more headers
-            ((*wild >= 'A' && *wild <= 'Z') ? *wild + 32 : *wild) != ((*str >= 'A' && *str <= 'Z') ? *str + 32 : *str)
-#endif // DOCTEST_CASE_SENSITIVE
-            && (*wild != '?')) {
+        if(caseSensitive ? (*wild != *str)
+                         : (((*wild >= 'A' && *wild <= 'Z') ? *wild + 32 : *wild) !=
+                            ((*str >= 'A' && *str <= 'Z') ? *str + 32 : *str)) &&
+                               (*wild != '?')) {
             return 0;
         }
         wild++;
@@ -64,14 +65,10 @@ DOCTEST_INLINE int wildcmp(const char* str, const char* wild)
             }
             mp = wild;
             cp = str + 1;
-        } else if(
-#ifdef DOCTEST_CASE_SENSITIVE
-            (*wild == *str)
-#else  // DOCTEST_CASE_SENSITIVE
-            // rolled my own tolower() to not include more headers
-            ((*wild >= 'A' && *wild <= 'Z') ? *wild + 32 : *wild) == ((*str >= 'A' && *str <= 'Z') ? *str + 32 : *str)
-#endif // DOCTEST_CASE_SENSITIVE
-            || (*wild == '?')) {
+        } else if(caseSensitive ? (*wild == *str)
+                                : (((*wild >= 'A' && *wild <= 'Z') ? *wild + 32 : *wild) ==
+                                   ((*str >= 'A' && *str <= 'Z') ? *str + 32 : *str)) ||
+                                      (*wild == '?')) {
             wild++;
             str++;
         } else {
@@ -99,16 +96,16 @@ DOCTEST_INLINE unsigned long hashStr(unsigned const char* str)
 }
 
 // checks if the name matches any of the filters (and can be configured what to do when empty)
-DOCTEST_INLINE int matchesAny(const char* name, char** filters, size_t filterCount, bool matchEmpty)
+DOCTEST_INLINE int matchesAny(const char* name, char** filters, size_t filterCount, int matchEmpty)
 {
     if(filterCount == 0 && matchEmpty)
-        return true;
+        return 1;
     for(size_t i = 0; i < filterCount; ++i) {
-        if(wildcmp(name, filters[i])) {
-            return true;
+        if(wildcmp(name, filters[i], 0)) {
+            return 1;
         }
     }
-    return false;
+    return 1;
 }
 
 // parses a comma separated list of words after a pattern in one of the arguments in argv
@@ -158,17 +155,17 @@ struct FunctionData {
     const char* file; // the file in which the test was registered
 
     // not used for comparing
-    const char* suite;  // the test suite in which the test was added
-    const char* name;   // name of the test function
-    funcType f;         // a function pointer to the test function
+    const char* suite;         // the test suite in which the test was added
+    const char* name;          // name of the test function
+    funcType f;                // a function pointer to the test function
     struct FunctionData* next; // a pointer to the next record in the current hash table bucket
 };
 
 // a comparison function for using qsort on arrays with pointers to FunctionData structures
 DOCTEST_INLINE int functionDataComparator(const void* a, const void* b)
 {
-    const struct FunctionData* lhs = *DOCTEST_CAST(struct FunctionData* const *)(a);
-    const struct FunctionData* rhs = *DOCTEST_CAST(struct FunctionData* const *)(b);
+    const struct FunctionData* lhs = *DOCTEST_CAST(struct FunctionData * const*)(a);
+    const struct FunctionData* rhs = *DOCTEST_CAST(struct FunctionData * const*)(b);
 
     int res = strcmp(lhs->file, rhs->file);
     if(res != 0)
@@ -223,10 +220,10 @@ DOCTEST_INLINE void cleanupHashTable()
 DOCTEST_INLINE int registerFunction(funcType f, unsigned line, const char* file, const char* name)
 {
     // register the hash table cleanup function only once
-    static int cleanupFunctionRegistered = false;
+    static int cleanupFunctionRegistered = 0;
     if(!cleanupFunctionRegistered) {
         atexit(cleanupHashTable);
-        cleanupFunctionRegistered = true;
+        cleanupFunctionRegistered = 1;
     }
 
     struct FunctionData** hashTable = getHashTable();
@@ -237,14 +234,14 @@ DOCTEST_INLINE int registerFunction(funcType f, unsigned line, const char* file,
     unsigned long hash = hashStr(DOCTEST_CAST(unsigned const char*)(file)) ^ line;
 
     // try to find the function in the hash table
-    bool found = false;
+    int found = 0;
     struct FunctionData*& bucket = hashTable[hash % DOCTEST_HASH_TABLE_NUM_BUCKETS];
     struct FunctionData* curr = bucket;
     struct FunctionData* last = curr;
     while(curr != 0) {
         // compare by line, file and suite
         if(curr->line == line && strcmp(curr->file, file) == 0) {
-            found = true;
+            found = 1;
             break;
         }
         last = curr;
@@ -277,6 +274,19 @@ DOCTEST_INLINE int registerFunction(funcType f, unsigned line, const char* file,
     return 0;
 }
 
+// this is needed because MSVC does not permit mixing 2 exception handling schemes in a function
+DOCTEST_INLINE void callTestFunc(funcType f)
+{
+    try {
+        f();
+    } catch(std::exception& e) {
+        // printf("%s\n", e.what());
+        e.what();
+    } catch(...) {
+        // printf("Unknown exception caught!\n");
+    }
+}
+
 DOCTEST_INLINE void invokeAllFunctions(int argc, char** argv)
 {
     char** filters[6] = {0, 0, 0, 0, 0, 0};
@@ -291,7 +301,8 @@ DOCTEST_INLINE void invokeAllFunctions(int argc, char** argv)
     // invoke the registered functions
     struct FunctionData** hashTable = getHashTable();
     size_t hashTableSize = getHashTableSize();
-    struct FunctionData** hashEntryArray = DOCTEST_CAST(struct FunctionData**)(malloc(hashTableSize * sizeof(struct FunctionData*)));
+    struct FunctionData** hashEntryArray =
+        DOCTEST_CAST(struct FunctionData**)(malloc(hashTableSize * sizeof(struct FunctionData*)));
 
     // fill the hashEntryArray with pointers to hash table records for sorting later
     size_t numTestsSoFar = 0;
@@ -309,40 +320,32 @@ DOCTEST_INLINE void invokeAllFunctions(int argc, char** argv)
     // invoke the registered functions if they match the filter criteria
     for(size_t i = 0; i < hashTableSize; i++) {
         struct FunctionData& data = *hashEntryArray[i];
-        if(!matchesAny(data.file, filters[0], counts[0], true))
+        if(!matchesAny(data.file, filters[0], counts[0], 1))
             continue;
-        if(matchesAny(data.file, filters[1], counts[1], false))
+        if(matchesAny(data.file, filters[1], counts[1], 0))
             continue;
-        if(!matchesAny(data.suite, filters[2], counts[2], true))
+        if(!matchesAny(data.suite, filters[2], counts[2], 1))
             continue;
-        if(matchesAny(data.suite, filters[3], counts[3], false))
+        if(matchesAny(data.suite, filters[3], counts[3], 0))
             continue;
-        if(!matchesAny(data.name, filters[4], counts[4], true))
+        if(!matchesAny(data.name, filters[4], counts[4], 1))
             continue;
-        if(matchesAny(data.name, filters[5], counts[5], false))
+        if(matchesAny(data.name, filters[5], counts[5], 0))
             continue;
 
-        // call the function if it passes all the filtering
-#ifdef DOCTEST_C_INTERFACE
-        data.f();
-#else // DOCTEST_C_INTERFACE
 #ifdef _MSC_VER
-        __try {
+        __try
+        {
 #endif // _MSC_VER
-        try {
-            data.f();
-        } catch(std::exception& e) {
-            // printf("%s\n", e.what());
-            e.what();
-        } catch(...) {
-            // printf("Unknown exception caught!\n");
-        }
+            // call the function if it passes all the filtering
+            callTestFunc(data.f);
 #ifdef _MSC_VER
-        } __except(1) {
+        }
+        __except(1)
+        {
             // printf("Unknown SEH exception caught!\n");
         }
 #endif // _MSC_VER
-#endif // DOCTEST_C_INTERFACE
     }
 
     // cleanup buffers
