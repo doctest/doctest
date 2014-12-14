@@ -14,6 +14,21 @@ make the invoke function return an error code
 
 single header
 
+add asserts
+
+trim "\"" from test names?
+
+
+
+fix the global disabling
+
+
+
+
+clang-format trouble with the testsuite macros...
+
+
+
 timing reports of tests, duration restrictions, kill of longer than, etc...
 
 play with boost test and Catch
@@ -25,7 +40,9 @@ count option (with/without filtering)
 option to exit(0) after running tests
 option to not allow overrides
 example with a python script that makes a bucket-style multithreaded execution of an executable with tests in it
- 
+
+ability to transfer/copy registered functions from one shared object to another so they are put in one hash_set and duplicates are filtered
+
 tests/examples folders separate
 
 process stuff under windows
@@ -33,13 +50,14 @@ process stuff under windows
     http://msdn.microsoft.com/en-us/library/windows/desktop/ms682499(v=vs.85).aspx
 
 to make it C compatible:
-    wrap all casts
+    [DONE] wrap all casts
+    use the struct keyword everywhere
+    remove counter definitions from for loops
     remove exception catching
     migrate to pointers from references
     remove the fixture macro
     the CHECK macro... will need CHECK_EQUAL and all that bullshit...
-    remove namespaces
-        wrap in a macro every doctest function declaration/definition/call for a "doctest_" prefix
+    remove namespaces (wrap in a macro every doctest function declaration/definition/call for a "doctest_" prefix)
 
 
 finish reading boost doc
@@ -76,9 +94,7 @@ notes:
     expressions passed to CHECK_EQ should evaluate only once
 
 THINK OF IN THE LONG TERM
-    make C compatible? HELL NO! namespaces, fixtures, std::map goodness, exception catching
     keep the 2 headers (main and implementation)?
-    remove dependency on most stuff like std::map (meaning implementing my own)?
     hierarchical test suites? using a stack for the pushed states
     documentation
         mocking features are not necessary because they are orthogonal to testing and a different third party library may be used for that (google mock)

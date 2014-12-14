@@ -3,7 +3,7 @@
 #include <iostream>
 using namespace std;
 
-testsuite(test)
+testsuite(test);
 
 test(ttt) { cout << "test!" << endl; }
 
@@ -23,4 +23,4 @@ void global() {
 
 
 
-testsuite_end
+testsuite_end;

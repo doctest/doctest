@@ -3,19 +3,17 @@
 #include <iostream>
 using namespace std;
 
-#define my_stupid_macro
-
-testsuite(MAIN)
+testsuite(MAIN);
 test(zzz) { cout << "main!" << endl; }
-testsuite_end
+testsuite_end;
 
-int main(int argc, char** argv) {
-
-    //doctest::Options options;
-    //doctest::parseOptions(&options, argc, argv);
-    //doctest::
-
-    DOCTEST_INVOKE_ALL_TEST_FUNCTIONS(argc, argv);
+int main(int argc, char** argv)
+{
+    void* params = doctest::createParams(argc, argv);
+    doctest::setOption(params, "doctest_case_sensitive", true);
+    doctest::addFilter(params, "doctest_name", "zzz");
+    doctest::runTests(params);
+    doctest::freeParams(params);
 
 #if defined(_MSC_VER)
     system("pause");
