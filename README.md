@@ -1,9 +1,9 @@
 doctest
 =======
-[![Maintenance Status](http://stillmaintained.com/hardly/doctestcpp.png)](http://stillmaintained.com/hardly/doctestcpp)
-[![Windows Status](http://img.shields.io/appveyor/ci/hardly/doctestcpp.svg?branch=master)](https://ci.appveyor.com/project/hardly/doctestcpp)
-[![Linux Status](https://travis-ci.org/hardly/doctestcpp.svg?branch=master)](https://travis-ci.org/hardly/doctestcpp)
-[![Coverage Status](https://coveralls.io/repos/hardly/doctestcpp/badge.png)](https://coveralls.io/r/hardly/doctestcpp)
+[![Maintenance Status](http://stillmaintained.com/onqtam/doctest.png)](http://stillmaintained.com/onqtam/doctest)
+[![Windows Status](http://img.shields.io/appveyor/ci/onqtam/doctest.svg?branch=master)](https://ci.appveyor.com/project/onqtam/doctest)
+[![Linux Status](https://travis-ci.org/onqtam/doctest.svg?branch=master)](https://travis-ci.org/onqtam/doctest)
+[![Coverage Status](https://coveralls.io/repos/onqtam/doctest/badge.png)](https://coveralls.io/r/onqtam/doctest)
 [![License](http://img.shields.io/badge/license-MIT-blue.svg)](http://opensource.org/licenses/MIT)
 
 doctest is a c++ header only library for writing tests that is inspired by the unittest functionality in the D programming language and the docstrings in python - tests are documentation and should reside near the code they test.

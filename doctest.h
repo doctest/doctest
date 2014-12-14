@@ -36,10 +36,10 @@
 #if !defined(DOCTEST_DONT_INCLUDE_IMPLEMENTATION)
 #include "doctest_impl.h"
 #else  // DOCTEST_DONT_INCLUDE_IMPLEMENTATION
-namespace doctestns
+namespace doctest
 {
 // forward declarations of the function used by the registering macros
-int registerFunction(void (*f)(void), unsigned line, const char* file, const char* name);
+int regTest(void (*f)(void), unsigned line, const char* file, const char* name);
 // the function used by the test invocation macro
 void invokeAllFunctions(int argc, char** argv);
 }
@@ -47,14 +47,15 @@ void invokeAllFunctions(int argc, char** argv);
 
 // call the registered tests with this
 #define DOCTEST_INVOKE_ALL_TEST_FUNCTIONS(argc, argv)                                              \
-    doctestns::invokeAllFunctions(argc, argv);
+    doctest::invokeAllFunctions(argc, argv);
 
 // internal registering macros
 #define DOCTEST_REGISTER_FUNCTION(f, name)                                                         \
-    static int DOCTEST_ANONYMOUS(a) = registerFunction(f, __LINE__, __FILE__, #name);
+    static int DOCTEST_ANONYMOUS(a) =                                                              \
+        doctest::detail::regTest(f, __LINE__, __FILE__, #name);
 
 #define DOCTEST_IMPLEMENT_FIXTURE(der, base, func, name)                                           \
-    namespace doctestns                                                                            \
+    namespace doctest_generated                                                                    \
     {                                                                                              \
     namespace                                                                                      \
     {                                                                                              \
@@ -66,18 +67,19 @@ void invokeAllFunctions(int argc, char** argv);
             der v;                                                                                 \
             v.f();                                                                                 \
         }                                                                                          \
-        static int DOCTEST_ANONYMOUS(a) = registerFunction(func, __LINE__, __FILE__, #name);       \
+        static int DOCTEST_ANONYMOUS(a) = doctest::detail::regTest(func, __LINE__, __FILE__,       \
+                                                                   #name);                         \
     }                                                                                              \
     }                                                                                              \
-    inline void doctestns::der::f()
+    inline void doctest_generated::der::f()
 
 #define DOCTEST_CREATE_AND_REGISTER_FUNCTION(f, name)                                              \
-    namespace doctestns                                                                            \
+    namespace doctest_generated                                                                    \
     {                                                                                              \
     static void f();                                                                               \
     DOCTEST_REGISTER_FUNCTION(f, name)                                                             \
     }                                                                                              \
-    inline void doctestns::f()
+    inline void doctest_generated::f()
 
 // for registering doctests
 #define doctest_test(name)                                                                         \
@@ -93,25 +95,25 @@ void invokeAllFunctions(int argc, char** argv);
 
 // for registering static methods of classes
 #define doctest_static_method(c, m)                                                                \
-    namespace doctestns                                                                            \
+    namespace doctest_generated                                                                    \
     {                                                                                              \
-    static int DOCTEST_ANONYMOUS(a) = registerFunction(&c::m, 0, "",                               \
-                                                       DOCTEST_STR_CONCAT_TOSTR(c, m),             \
-                                                       DOCTEST_STR_CONCAT_TOSTR(c, m));            \
+    static int DOCTEST_ANONYMOUS(a) = doctest::detail::regTest(&c::m, 0, "",                       \
+                                                               DOCTEST_STR_CONCAT_TOSTR(c, m),     \
+                                                               DOCTEST_STR_CONCAT_TOSTR(c, m));    \
     }
 
 // for starting a testsuite block
 #define doctest_testsuite(name)                                                                    \
-    namespace doctestns                                                                            \
+    namespace doctest_generated                                                                    \
     {                                                                                              \
-    static int DOCTEST_ANONYMOUS(a) = setTestSuiteName(#name);                                     \
+    static int DOCTEST_ANONYMOUS(a) = doctest::detail::setTestSuiteName(#name);                    \
     }
 
 // for ending a testsuite block
 #define doctest_testsuite_end                                                                      \
-    namespace doctestns                                                                            \
+    namespace doctest_generated                                                                    \
     {                                                                                              \
-    static int DOCTEST_ANONYMOUS(a) = setTestSuiteName("");                                        \
+    static int DOCTEST_ANONYMOUS(a) = doctest::detail::setTestSuiteName("");                       \
     }
 
 // =============================================================================
@@ -121,13 +123,13 @@ void invokeAllFunctions(int argc, char** argv);
 #else // DOCTEST_GLOBAL_DISABLE
 
 // hack for silencing warning about unused variables when registration/invocation is disabled
-namespace doctestns { inline void dmy(int i, char** c) { int a = i; i = a; char** t = c; c = t; } }
+namespace doctest { inline void dmy(int i, char** c) { int a = i; i = a; char** t = c; c = t; } }
 
 #define DOCTEST_INVOKE_ALL_TEST_FUNCTIONS(argc, argv)                                              \
-    doctestns::dmy(argc, argv);
+    doctest::dmy(argc, argv);
 #define DOCTEST_REGISTER_FUNCTION(f, name)
 #define DOCTEST_IMPLEMENT_FIXTURE(der, base, func, name)                                           \
-    namespace doctestns                                                                            \
+    namespace doctest_generated                                                                    \
     {                                                                                              \
     struct der : base {                                                                            \
         void f();                                                                                  \
@@ -138,15 +140,14 @@ namespace doctestns { inline void dmy(int i, char** c) { int a = i; i = a; char*
         v.f();                                                                                     \
     }                                                                                              \
     }                                                                                              \
-    inline void doctestns::der::f()
+    inline void doctest_generated::der::f()
 
 #define DOCTEST_CREATE_AND_REGISTER_FUNCTION(f, name)                                              \
-    namespace doctestns                                                                            \
+    namespace doctest_generated                                                                    \
     {                                                                                              \
     void f();                                                                                      \
-    DOCTEST_REGISTER_FUNCTION(f, name)                                                             \
     }                                                                                              \
-    inline void doctestns::f()
+    inline void doctest_generated::f()
 
 // for registering doctests
 #define doctest_test(name)                                                                         \

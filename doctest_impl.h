@@ -35,9 +35,14 @@ using namespace std;
 #endif // DOCTEST_HASH_TABLE_NUM_BUCKETS
 
 // the namespace used by all functions generated/registered by this library
-namespace doctestns
+namespace doctest
 {
 
+// the function type this library works with
+typedef void (*funcType)(void);
+
+namespace detail
+{
 // matching of a string against a wildcard mask (case sensitivity configurable)
 // taken from http://www.emoticode.net/c/simple-wildcard-string-compare-globbing-function.html
 DOCTEST_INLINE int wildcmp(const char* str, const char* wild, int caseSensitive)
@@ -143,9 +148,6 @@ DOCTEST_INLINE void parseArgs(int argc, char** argv, const char* pattern, char**
     }
 }
 
-// the function type this library works with
-typedef void (*funcType)(void);
-
 // a struct defining a registered test callback
 struct FunctionData {
     // fields by which difference of test functions shall be determined
@@ -215,7 +217,7 @@ DOCTEST_INLINE void cleanupHashTable()
 }
 
 // used by the macros for registering doctest callbacks
-DOCTEST_INLINE int registerFunction(funcType f, unsigned line, const char* file, const char* name)
+DOCTEST_INLINE int regTest(funcType f, unsigned line, const char* file, const char* name)
 {
     // register the hash table cleanup function only once
     static int cleanupFunctionRegistered = 0;
@@ -285,8 +287,14 @@ DOCTEST_INLINE void callTestFunc(funcType f)
     }
 }
 
+} // detail
+
+struct Options {
+};
+
 DOCTEST_INLINE void invokeAllFunctions(int argc, char** argv)
 {
+    using namespace detail;
     char** filters[6] = {0, 0, 0, 0, 0, 0};
     size_t counts[6] = {0, 0, 0, 0, 0, 0};
     parseArgs(argc, argv, "-doctest_file=", filters[0], counts[0]);
@@ -356,7 +364,7 @@ DOCTEST_INLINE void invokeAllFunctions(int argc, char** argv)
     }
     free(hashEntryArray);
 }
-} // namespace doctestns
+} // namespace doctest
 
 // undef stuff defined at the top to keep things isolated
 #ifdef UNDEFINE_CRT_SECURE_NO_WARNINGS
