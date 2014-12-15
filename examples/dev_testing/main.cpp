@@ -13,14 +13,14 @@ testsuite_end;
 
 test(thrower)
 {
-    if(5 > 4) {
+    if(rand() > 4) {
         throw std::exception();
     } else {
         cout << "trololo" << endl;
     }
 }
 
-int testWrapper(void (*f)(void))
+static int testWrapper(void (*f)(void))
 {
     try {
         f();
