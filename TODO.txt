@@ -1,7 +1,5 @@
 ##TODO
 
-example with a python script that makes a bucket-style multithreaded execution of an executable with tests in it
-
 the CHECK() macro
     OPTIONAL!!! break on failed CHECK() macros in doctest
 
