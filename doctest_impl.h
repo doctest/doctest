@@ -127,7 +127,7 @@ namespace detail
         const char* file; // the file in which the test was registered
         unsigned line;    // the line where the test was registered
 
-        unsigned padding; // padding - not used for anything
+        int padding; // padding - not used for anything
     };
 
     // a comparison function for using qsort on arrays with pointers to FunctionData structures
@@ -270,6 +270,8 @@ namespace detail
         int exitAfterTests;  // calls exit() after the tests are ran/counted
         int first;           // the first (matching) test to be executed
         int last;            // the last (matching) test to be executed
+
+        int padding; // padding - not used for anything
 
         int (*testExecutionWrapper)(funcType); // wrapper for test execution
     };

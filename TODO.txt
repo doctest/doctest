@@ -1,66 +1,62 @@
 ##TODO
 
-sorting the test order (by file, by test suite, or both, ASC/DESC...)
-
-a message macro
-
-break on assert in doctest
-
-single header
-
-trim "\"" from test names?
-
-
-
 fix the global disabling
-
-
-
-error checking of parameters (if the range is valid (first <= last), etc)
-    add asserts
-
-timing reports of tests, duration restrictions, kill of longer than, etc...
 
 ability to supply ur own main
 
 example with a python script that makes a bucket-style multithreaded execution of an executable with tests in it
 
-ability to transfer/copy registered functions from one shared object to another so they are put in one hash_set and duplicates are filtered
+the CHECK() macro
+    OPTIONAL!!! break on failed CHECK() macros in doctest
+
+a message macro
+
+timing reports of tests, duration restrictions, kill of longer than, etc...
 
 tests/examples folders separate
 
-process stuff under windows
-    http://msdn.microsoft.com/en-us/library/windows/desktop/ms682512(v=vs.85).aspx
-    http://msdn.microsoft.com/en-us/library/windows/desktop/ms682499(v=vs.85).aspx
+profile hash table distribution on a large project
 
+profile doctest vs Catch
+    compile time
+    startup time
+
+error reporting
+    MSVC/IDE integration
+    xml
+
+test execution in separate processes
+    UNIX
+    process stuff under windows
+        maybe call itself? with the range functionality? better not...
+        http://msdn.microsoft.com/en-us/library/windows/desktop/ms682512(v=vs.85).aspx
+        http://msdn.microsoft.com/en-us/library/windows/desktop/ms682499(v=vs.85).aspx
 
 CI
     travis
-        compile all examples
+        compile/run all examples
         valgrind
             https://github.com/dlundquist/sniproxy/blob/master/.travis.yml
         clang static analysis
-        
+        coverity static analysis http://www.coverity.com/
         coverage
             https://github.com/eddyxu/cpp-coveralls
-            
             https://github.com/kylelutz/compute
             https://github.com/apolukhin/variant/blob/travisci/.travis.yml
-            
     msvc
         just compile all the examples
         https://github.com/mkurdej/bft/blob/develop/appveyor.yml
         https://github.com/mapbox/variant/blob/master/appveyor.yml
         https://github.com/cppformat/cppformat/blob/master/appveyor.yml
 
-
-
-
-
-
 THINK OF IN THE LONG TERM
+    sorting the test order (by file, by test suite, or both, ASC/DESC...)
+    trim "\"" from test/fixture/testsuite names?
     keep the 2 headers (main and implementation)?
-    hierarchical test suites? using a stack for the pushed states
+        depends only on profiling different schemas
+    hierarchical test suites? using a stack for the pushed states    
+    error checking of parameters (if the range is valid (first <= last), etc)
+    ability to transfer/copy registered functions from one shared object to another so they are put in one set and duplicates are filtered
     to make it C compatible:
         option to use the C variant in C++
         [DONE] wrap all casts
@@ -74,6 +70,7 @@ THINK OF IN THE LONG TERM
         remove namespaces (wrap in a macro every doctest function declaration/definition/call for a "doctest_" prefix)
     documentation
         mocking features are not necessary because they are orthogonal to testing and a different third party library may be used for that (google mock)
+        document what has been taken from Catch
         document how to use spaces for filters in the comma separated list (using "")
         tests are ran serially
         document all the options
