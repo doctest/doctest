@@ -3,6 +3,7 @@ cmake_minimum_required(VERSION 2.8)
 project(dev_testing)
 
 if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
+    #set(CMAKE_CXX_FLAGS "-Werror ${CMAKE_CXX_FLAGS}")
     set(CMAKE_CXX_FLAGS "--save-temps -std=c++98 -pedantic -m64 -O2 -ansi -fvisibility=hidden -fstrict-aliasing ${CMAKE_CXX_FLAGS}")
 endif()
 

@@ -16,7 +16,6 @@
 // required includes
 #include <cstdlib> // malloc, qsort
 #include <cstring> // C string manipulation
-#include <exception>
 
 // if this header is included into the main doctest.h header the functions
 // defined here should be marked as inline so compilation doesn't fail
@@ -244,29 +243,33 @@ namespace detail
     }
 
     // this is needed because MSVC does not permit mixing 2 exception handling schemes in a function
-    DOCTEST_INLINE void callTestFunc(funcType f)
+    DOCTEST_INLINE int callTestFunc(int (*testExecutionWrapper)(funcType), funcType f)
     {
         try {
-            f();
-        } catch(std::exception& e) {
-            // printf("%s\n", e.what());
-            e.what();
+            if(testExecutionWrapper) {
+                return testExecutionWrapper(f);
+            } else {
+                f();
+            }
         } catch(...) {
-            // printf("Unknown exception caught!\n");
+            printf("Unknown exception caught!\n");
+            return 1;
         }
+        return 0;
     }
 
     struct Parameters {
         char** filters[6];
         size_t filterCounts[6];
 
-        // TODO: ranges
+        int getCount;        // if only the count of matching tests is to be retreived
+        int caseSensitive;   // if filtering should be case sensitive
+        int separateProcess; // if each test should be executed in a separate process
+        int allowOverrides;  // all but this can be overriden
+        int first;           // the first (matching) test to be executed
+        int last;            // the last (matching) test to be executed
 
-        // options
-        int getCount;
-        int caseSensitive;
-        int allowOverrides;
-        int separateProcess;
+        int (*testExecutionWrapper)(funcType); // wrapper for test execution
     };
 
     // parses a comma separated list of words after a pattern in one of the arguments in argv
@@ -304,8 +307,9 @@ namespace detail
         }
     }
 
-    // parses a bool option from the command line
-    DOCTEST_INLINE int parseOption(int argc, char** argv, const char* option, int defaultVal)
+    // parses an option from the command line (bool: type == 0, int: type == 1)
+    DOCTEST_INLINE int parseOption(int argc, char** argv, const char* option, int type,
+                                   int defaultVal)
     {
         int outVal = defaultVal;
 
@@ -316,19 +320,27 @@ namespace detail
         if(theCount > 0) {
             // if there is only 1 value in the "comma separated list"
             if(theCount == 1) {
-                const char positive[][7] = {"1", "true", "TRUE", "on", "ON", "yes", "YES"};
-                const char negative[][7] = {"0", "false", "FALSE", "off", "OFF", "no", "NO"};
+                if(type == 0) {
+                    // boolean
+                    const char positive[][7] = {"1", "true", "TRUE", "on", "ON", "yes", "YES"};
+                    const char negative[][7] = {"0", "false", "FALSE", "off", "OFF", "no", "NO"};
 
-                // if the value matches any of the positive/negative possibilities
-                for(size_t i = 0; i < 7; i++) {
-                    if(strcmp(theStr[0], positive[i]) == 0) {
-                        outVal = 1;
-                        break;
+                    // if the value matches any of the positive/negative possibilities
+                    for(size_t i = 0; i < 7; i++) {
+                        if(strcmp(theStr[0], positive[i]) == 0) {
+                            outVal = 1;
+                            break;
+                        }
+                        if(strcmp(theStr[0], negative[i]) == 0) {
+                            outVal = 0;
+                            break;
+                        }
                     }
-                    if(strcmp(theStr[0], negative[i]) == 0) {
-                        outVal = 0;
-                        break;
-                    }
+                } else {
+                    // integer
+                    int res = atoi(theStr[0]);
+                    if(res != 0)
+                        outVal = res;
                 }
             }
 
@@ -356,6 +368,8 @@ DOCTEST_INLINE void* createParams(int argc, char** argv)
         params->filterCounts[i] = 0;
     }
 
+    params->testExecutionWrapper = 0;
+
     parseFilter(argc, argv, "-doctest_file=", params->filters[0], params->filterCounts[0]);
     parseFilter(argc, argv, "-doctest_file_exclude=", params->filters[1], params->filterCounts[1]);
     parseFilter(argc, argv, "-doctest_suite=", params->filters[2], params->filterCounts[2]);
@@ -363,10 +377,12 @@ DOCTEST_INLINE void* createParams(int argc, char** argv)
     parseFilter(argc, argv, "-doctest_name=", params->filters[4], params->filterCounts[4]);
     parseFilter(argc, argv, "-doctest_name_exclude=", params->filters[5], params->filterCounts[5]);
 
-    params->getCount = parseOption(argc, argv, "-doctest_count=", 0);
-    params->caseSensitive = parseOption(argc, argv, "-doctest_case_sensitive=", 0);
-    params->allowOverrides = parseOption(argc, argv, "-doctest_override=", 1);
-    params->separateProcess = parseOption(argc, argv, "-doctest_separate_process=", 0);
+    params->getCount = parseOption(argc, argv, "-doctest_count=", 0, 0);
+    params->caseSensitive = parseOption(argc, argv, "-doctest_case_sensitive=", 0, 0);
+    params->allowOverrides = parseOption(argc, argv, "-doctest_override=", 0, 1);
+    params->separateProcess = parseOption(argc, argv, "-doctest_separate_process=", 0, 0);
+    params->first = parseOption(argc, argv, "-doctest_first=", 1, 1);
+    params->last = parseOption(argc, argv, "-doctest_last=", 1, 0);
 
     return DOCTEST_STATIC_CAST(void*)(params);
 }
@@ -419,7 +435,23 @@ DOCTEST_INLINE void setOption(void* params_struct, const char* option, int value
             params->getCount = value;
         if(strcmp(option, "doctest_case_sensitive") == 0)
             params->caseSensitive = value;
+        if(strcmp(option, "doctest_separate_process") == 0)
+            params->separateProcess = value;
+        if(strcmp(option, "doctest_first") == 0)
+            params->first = value;
+        if(strcmp(option, "doctest_last") == 0)
+            params->last = value;
     }
+}
+
+// allows the user to provide a test execution wrapper for custom exception handling
+DOCTEST_INLINE void setTestExecutionWrapper(void* params_struct, int (*f)(funcType))
+{
+    using namespace detail;
+
+    Parameters* params = DOCTEST_STATIC_CAST(Parameters*)(params_struct);
+
+    params->testExecutionWrapper = f;
 }
 
 // frees the type-erased params structure
@@ -465,7 +497,7 @@ DOCTEST_INLINE void runTests(void* params_struct)
     qsort(hashEntryArray, hashTableSize, sizeof(FunctionData*), functionDataComparator);
 
     int caseSensitive = params->caseSensitive;
-    int numUnfilteredTests = 0;
+    int numFilterPassedTests = 0;
     // invoke the registered functions if they match the filter criteria (or just count them)
     for(size_t i = 0; i < hashTableSize; i++) {
         FunctionData& data = *hashEntryArray[i];
@@ -482,24 +514,41 @@ DOCTEST_INLINE void runTests(void* params_struct)
         if(matchesAny(data.name, params->filters[5], params->filterCounts[5], 0, caseSensitive))
             continue;
 
-        numUnfilteredTests++;
+        numFilterPassedTests++;
+        // do not execute the test if we are to only count the number of filter passing tests
         if(params->getCount)
             continue;
 
-#ifdef _MSC_VER
-        __try
+        // skip the test if it is not in the execution range
+        if(params->first > numFilterPassedTests || params->last < numFilterPassedTests)
+            continue;
+
+        // execute the test if it passes all the filtering
         {
-#endif // _MSC_VER
-            // call the function if it passes all the filtering
-            callTestFunc(data.f);
+            int res = 0;
+
 #ifdef _MSC_VER
-        }
-        __except(1)
-        {
-            // printf("Unknown SEH exception caught!\n");
-        }
+            __try
+            {
 #endif // _MSC_VER
+                res = callTestFunc(params->testExecutionWrapper, data.f);
+#ifdef _MSC_VER
+            }
+            __except(1)
+            {
+                printf("Unknown SEH exception caught!\n");
+                res = 1;
+            }
+#endif // _MSC_VER
+
+            if(res) {
+                printf("Test failed!\n");
+            }
+        }
     }
+
+    if(params->getCount)
+        printf("%d\n", numFilterPassedTests);
 
     // cleanup buffers
     free(hashEntryArray);

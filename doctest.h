@@ -61,6 +61,7 @@ void* createParams(int argc, char** argv);
 void addFilter(void* params_struct, const char* filter, const char* value);
 void setOption(void* params_struct, const char* option, int value);
 void freeParams(void* params_struct);
+void setTestExecutionWrapper(void* params_struct, int (*f)(void (*)(void)));
 void runTests(void* params_struct);
 } // namespace doctest
 #endif // DOCTEST_DONT_INCLUDE_IMPLEMENTATION

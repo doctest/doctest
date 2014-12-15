@@ -5,14 +5,24 @@ using namespace std;
 
 testsuite(test);
 
-test(ttt) { cout << "test!" << endl; }
+test(ttt)
+{
+    cout << "test!" << endl;
+}
 
 struct F {
-    F() { cout << "ctor!" << endl; }
-    ~F() { cout << "dtor..." << endl; }
+    F()
+    {
+        cout << "ctor!" << endl;
+    }
+    ~F()
+    {
+        cout << "dtor..." << endl;
+    }
 };
 
-fixture_noname(F) {
+fixture_noname(F)
+{
     cout << "    fixturing!" << endl;
 }
 
