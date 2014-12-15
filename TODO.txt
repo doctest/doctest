@@ -22,6 +22,12 @@ trim "\"" from test names?
 
 fix the global disabling
 
+clean warnings on travis
+
+
+
+MAKE IT ALL WORK (currently broken)
+
 
 
 
@@ -51,6 +57,7 @@ process stuff under windows
 
 to make it C compatible:
     [DONE] wrap all casts
+    change c standard library includes
     use the struct keyword everywhere
     remove counter definitions from for loops
     remove exception catching

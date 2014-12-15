@@ -20,9 +20,11 @@
 
 // cast wrapper for c/c++
 #ifdef DOCTEST_C_INTERFACE
-#define DOCTEST_CAST(x) (x)
+#define DOCTEST_STATIC_CAST(x) (x)
+#define DOCTEST_REINTERPRET_CAST(x) (x)
 #else // DOCTEST_C_INTERFACE
-#define DOCTEST_CAST(x) reinterpret_cast<x>
+#define DOCTEST_STATIC_CAST(x) static_cast<x>
+#define DOCTEST_REINTERPRET_CAST(x) reinterpret_cast<x>
 #endif // DOCTEST_C_INTERFACE
 
 // internal macro for concatenating 2 literals and making the result a string
