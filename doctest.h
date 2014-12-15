@@ -62,7 +62,7 @@ void addFilter(void* params_struct, const char* filter, const char* value);
 void setOption(void* params_struct, const char* option, int value);
 void freeParams(void* params_struct);
 void setTestExecutionWrapper(void* params_struct, int (*f)(void (*)(void)));
-void runTests(void* params_struct);
+int runTests(void* params_struct);
 } // namespace doctest
 #endif // DOCTEST_DONT_INCLUDE_IMPLEMENTATION
 
@@ -107,14 +107,6 @@ void runTests(void* params_struct);
 #define doctest_fixture_noname(c)                                                                  \
     DOCTEST_IMPLEMENT_FIXTURE(DOCTEST_ANONYMOUS(F), c, DOCTEST_ANONYMOUS(f), nameless)
 
-// for registering static methods of classes
-#define doctest_static_method(c, m)                                                                \
-    namespace doctest_generated                                                                    \
-    {                                                                                              \
-        static int DOCTEST_ANONYMOUS(a) = doctest::detail::regTest(                                \
-            &c::m, 0, "", DOCTEST_STR_CONCAT_TOSTR(c, m), DOCTEST_STR_CONCAT_TOSTR(c, m));         \
-    }
-
 // for starting a testsuite block
 #define doctest_testsuite(name)                                                                    \
     namespace doctest_generated                                                                    \
@@ -137,7 +129,6 @@ void runTests(void* params_struct);
 // =============================================================================
 #else // DOCTEST_GLOBAL_DISABLE
 
-#define DOCTEST_REGISTER_FUNCTION(f, name)
 #define DOCTEST_IMPLEMENT_FIXTURE(der, base, func, name)                                           \
     namespace doctest_generated                                                                    \
     {                                                                                              \
@@ -168,9 +159,6 @@ void runTests(void* params_struct);
     DOCTEST_IMPLEMENT_FIXTURE(DOCTEST_ANONYMOUS(F), x, DOCTEST_ANONYMOUS(f), name)
 #define doctest_fixture_noname(x)                                                                  \
     DOCTEST_IMPLEMENT_FIXTURE(DOCTEST_ANONYMOUS(F), x, DOCTEST_ANONYMOUS(f), nameless)
-
-// for registering static methods of classes
-#define doctest_static_method(c, m)
 
 // for starting a testsuite block
 #define doctest_testsuite(name)                                                                    \

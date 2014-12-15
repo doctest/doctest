@@ -126,6 +126,7 @@ namespace detail
         // fields by which difference of test functions shall be determined
         const char* file; // the file in which the test was registered
         unsigned line;    // the line where the test was registered
+
         unsigned padding; // padding - not used for anything
     };
 
@@ -266,6 +267,7 @@ namespace detail
         int caseSensitive;   // if filtering should be case sensitive
         int separateProcess; // if each test should be executed in a separate process
         int allowOverrides;  // all but this can be overriden
+        int exitAfterTests;  // calls exit() after the tests are ran/counted
         int first;           // the first (matching) test to be executed
         int last;            // the last (matching) test to be executed
 
@@ -382,6 +384,7 @@ DOCTEST_INLINE void* createParams(int argc, char** argv)
     params->caseSensitive = parseOption(argc, argv, "-doctest_case_sensitive=", 0, 0);
     params->allowOverrides = parseOption(argc, argv, "-doctest_override=", 0, 1);
     params->separateProcess = parseOption(argc, argv, "-doctest_separate_process=", 0, 0);
+    params->exitAfterTests = parseOption(argc, argv, "-doctest_exit=", 0, 0);
     params->first = parseOption(argc, argv, "-doctest_first=", 1, 1);
     params->last = parseOption(argc, argv, "-doctest_last=", 1, 0);
 
@@ -438,6 +441,8 @@ DOCTEST_INLINE void setOption(void* params_struct, const char* option, int value
             params->caseSensitive = value;
         if(strcmp(option, "doctest_separate_process") == 0)
             params->separateProcess = value;
+        if(strcmp(option, "doctest_exit") == 0)
+            params->exitAfterTests = value;
         if(strcmp(option, "doctest_first") == 0)
             params->first = value;
         if(strcmp(option, "doctest_last") == 0)
@@ -472,7 +477,7 @@ DOCTEST_INLINE void freeParams(void* params_struct)
     free(params);
 }
 
-DOCTEST_INLINE void runTests(void* params_struct)
+DOCTEST_INLINE int runTests(void* params_struct)
 {
     using namespace detail;
 
@@ -499,6 +504,7 @@ DOCTEST_INLINE void runTests(void* params_struct)
 
     int caseSensitive = params->caseSensitive;
     int numFilterPassedTests = 0;
+    int numFailed = 0;
     // invoke the registered functions if they match the filter criteria (or just count them)
     for(size_t i = 0; i < hashTableSize; i++) {
         FunctionData& data = *hashEntryArray[i];
@@ -545,6 +551,7 @@ DOCTEST_INLINE void runTests(void* params_struct)
 
             if(res) {
                 printf("Test failed!\n");
+                numFailed++;
             }
         }
     }
@@ -554,6 +561,14 @@ DOCTEST_INLINE void runTests(void* params_struct)
 
     // cleanup buffers
     free(hashEntryArray);
+
+    if(params->exitAfterTests) {
+        // @NOTE: this will fail if the user has wrapped this in a RAII thing or in atexit()
+        freeParams(params_struct);
+        exit(numFailed); // @TODO: is this legal? Or should I only pass EXIT_SUCCESS/EXIT_FAILURE?
+    }
+
+    return numFailed;
 }
 } // namespace doctest
 

@@ -42,7 +42,7 @@ int main(int argc, char** argv)
     doctest::addFilter(params, "doctest_name", "ttt");
 
     // run
-    doctest::runTests(params);
+    int res = doctest::runTests(params);
 
     // free
     doctest::freeParams(params);
@@ -51,5 +51,5 @@ int main(int argc, char** argv)
     system("pause");
 #endif // _MSC_VER
 
-    return 0;
+    return res;
 }

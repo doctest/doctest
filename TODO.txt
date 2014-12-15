@@ -1,20 +1,12 @@
 ##TODO
 
-make the static method macro to be just for a fuction with 1 parameter, and to work with any function
-
 sorting the test order (by file, by test suite, or both, ASC/DESC...)
 
 a message macro
 
-2 namespaces from doctest - internal and for the user
-
 break on assert in doctest
 
-make the invoke function return an error code
-
 single header
-
-add asserts
 
 trim "\"" from test names?
 
@@ -25,17 +17,12 @@ fix the global disabling
 
 
 error checking of parameters (if the range is valid (first <= last), etc)
+    add asserts
 
 timing reports of tests, duration restrictions, kill of longer than, etc...
 
-play with boost test and Catch
-
 ability to supply ur own main
 
-range-based execution
-count option (with/without filtering)
-option to exit(0) after running tests
-option to not allow overrides
 example with a python script that makes a bucket-style multithreaded execution of an executable with tests in it
 
 ability to transfer/copy registered functions from one shared object to another so they are put in one hash_set and duplicates are filtered
@@ -46,20 +33,6 @@ process stuff under windows
     http://msdn.microsoft.com/en-us/library/windows/desktop/ms682512(v=vs.85).aspx
     http://msdn.microsoft.com/en-us/library/windows/desktop/ms682499(v=vs.85).aspx
 
-to make it C compatible:
-    [DONE] wrap all casts
-    change c standard library includes
-    use the struct keyword everywhere
-    remove counter definitions from for loops
-    remove exception catching
-    migrate to pointers from references
-    remove the fixture macro
-    the CHECK macro... will need CHECK_EQUAL and all that bullshit...
-    remove namespaces (wrap in a macro every doctest function declaration/definition/call for a "doctest_" prefix)
-
-
-finish reading boost doc
-    http://www.boost.org/doc/libs/1_56_0/libs/test/doc/html/index.html
 
 CI
     travis
@@ -83,20 +56,24 @@ CI
 
 
 
-.
 
-
-
-
-notes:
-    expressions passed to CHECK_EQ should evaluate only once
 
 THINK OF IN THE LONG TERM
     keep the 2 headers (main and implementation)?
     hierarchical test suites? using a stack for the pushed states
+    to make it C compatible:
+        option to use the C variant in C++
+        [DONE] wrap all casts
+        change c standard library includes
+        use the struct keyword everywhere
+        remove counter definitions from for loops
+        remove exception catching
+        migrate to pointers from references
+        remove the fixture macro
+        the CHECK macro... will need CHECK_EQUAL and all that bullshit because it cannot be implemented in plain C...
+        remove namespaces (wrap in a macro every doctest function declaration/definition/call for a "doctest_" prefix)
     documentation
         mocking features are not necessary because they are orthogonal to testing and a different third party library may be used for that (google mock)
         document how to use spaces for filters in the comma separated list (using "")
         tests are ran serially
-        document when the library may crash (div by zero, bad ptr deref, etc)
-        can be case sensitive in filtering (must define something)
+        document all the options
