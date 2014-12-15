@@ -11,17 +11,13 @@ test(zzz)
 }
 testsuite_end;
 
-class MyException : public std::exception
-{
-    const char* what() const throw()
-    {
-        return "slap!";
-    }
-};
-
 test(thrower)
 {
-    throw MyException();
+    if(5 > 4) {
+        throw std::exception();
+    } else {
+        cout << "trololo" << endl;
+    }
 }
 
 int testWrapper(void (*f)(void))
