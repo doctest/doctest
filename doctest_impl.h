@@ -129,6 +129,7 @@ namespace detail
         // fields by which difference of test functions shall be determined
         const char* file; // the file in which the test was registered
         unsigned line;    // the line where the test was registered
+        unsigned padding; // padding - not used for anything
     };
 
     // a comparison function for using qsort on arrays with pointers to FunctionData structures
