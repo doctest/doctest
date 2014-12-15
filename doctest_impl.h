@@ -11,10 +11,7 @@
 #endif // _CRT_SECURE_NO_WARNINGS
 #endif // _MSC_VER
 
-
-
 #include <cstdio>
-
 
 // required includes
 #include <cstdlib> // malloc, qsort
@@ -49,6 +46,11 @@ typedef void (*funcType)(void);
 // library internals namespace
 namespace detail
 {
+    DOCTEST_INLINE char tolower(const char c)
+    {
+        return ((c >= 'A' && c <= 'Z') ? DOCTEST_STATIC_CAST(char)(c + 32) : c);
+    }
+
     // matching of a string against a wildcard mask (case sensitivity configurable)
     // taken from http://www.emoticode.net/c/simple-wildcard-string-compare-globbing-function.html
     DOCTEST_INLINE int wildcmp(const char* str, const char* wild, int caseSensitive)
@@ -57,10 +59,8 @@ namespace detail
 
         // rolled my own tolower() to not include more headers
         while((*str) && (*wild != '*')) {
-            if(caseSensitive ? (*wild != *str)
-                             : (((*wild >= 'A' && *wild <= 'Z') ? *wild + 32 : *wild) !=
-                                ((*str >= 'A' && *str <= 'Z') ? *str + 32 : *str)) &&
-                                   (*wild != '?')) {
+            if((caseSensitive ? (*wild != *str) : (tolower(*wild) != tolower(*str))) &&
+               (*wild != '?')) {
                 return 0;
             }
             wild++;
@@ -74,10 +74,8 @@ namespace detail
                 }
                 mp = wild;
                 cp = str + 1;
-            } else if(caseSensitive ? (*wild == *str)
-                                    : (((*wild >= 'A' && *wild <= 'Z') ? *wild + 32 : *wild) ==
-                                       ((*str >= 'A' && *str <= 'Z') ? *str + 32 : *str)) ||
-                                          (*wild == '?')) {
+            } else if((caseSensitive ? (*wild == *str) : (tolower(*wild) == tolower(*str))) ||
+                      (*wild == '?')) {
                 wild++;
                 str++;
             } else {
@@ -262,10 +260,13 @@ namespace detail
         char** filters[6];
         size_t filterCounts[6];
 
+        // TODO: ranges
+
         // options
         int getCount;
         int caseSensitive;
         int allowOverrides;
+        int separateProcess;
     };
 
     // parses a comma separated list of words after a pattern in one of the arguments in argv
@@ -365,6 +366,7 @@ DOCTEST_INLINE void* createParams(int argc, char** argv)
     params->getCount = parseOption(argc, argv, "-doctest_count=", 0);
     params->caseSensitive = parseOption(argc, argv, "-doctest_case_sensitive=", 0);
     params->allowOverrides = parseOption(argc, argv, "-doctest_override=", 1);
+    params->separateProcess = parseOption(argc, argv, "-doctest_separate_process=", 0);
 
     return DOCTEST_STATIC_CAST(void*)(params);
 }

@@ -16,11 +16,4 @@ fixture_noname(F) {
     cout << "    fixturing!" << endl;
 }
 
-void global() {
-    cout << "i am global!" << endl;
-}
-
-
-
-
 testsuite_end;
