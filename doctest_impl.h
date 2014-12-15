@@ -120,15 +120,15 @@ namespace detail
 
     // a struct defining a registered test callback
     struct FunctionData {
-        // fields by which difference of test functions shall be determined
-        const char* file; // the file in which the test was registered
-        unsigned line;    // the line where the test was registered
-
         // not used for comparing
         const char* suite;  // the test suite in which the test was added
         const char* name;   // name of the test function
         funcType f;         // a function pointer to the test function
         FunctionData* next; // a pointer to the next record in the current hash table bucket
+
+        // fields by which difference of test functions shall be determined
+        const char* file; // the file in which the test was registered
+        unsigned line;    // the line where the test was registered
     };
 
     // a comparison function for using qsort on arrays with pointers to FunctionData structures
