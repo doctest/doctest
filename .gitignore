@@ -29,3 +29,5 @@ examples/*/mingw/*
 examples/*/msvc/*
 examples/*/*.bat
 *.suo
+*.pyc
+err.txt

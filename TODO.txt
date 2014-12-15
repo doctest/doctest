@@ -19,8 +19,10 @@ error reporting
     MSVC/IDE integration
     xml
 
+signal handling for unix: http://www.cplusplus.com/reference/csignal/signal/
+
 test execution in separate processes
-    UNIX
+    UNIX - fork()
     process stuff under windows
         maybe call itself? with the range functionality? better not...
         http://msdn.microsoft.com/en-us/library/windows/desktop/ms682512(v=vs.85).aspx
