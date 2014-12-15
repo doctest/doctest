@@ -55,7 +55,6 @@ namespace detail
     int regTest(void (*f)(void), unsigned line, const char* file, const char* name);
     int setTestSuiteName(const char* name);
 } // namespace detail
-
 // forward declarations of the functions intended for direct use
 void* createParams(int argc, char** argv);
 void addFilter(void* params_struct, const char* filter, const char* value);
@@ -170,7 +169,64 @@ int runTests(void* params_struct);
 
 #endif // DOCTEST_GLOBAL_DISABLE
 
-// === SHORT VERSIONS OF THE TEST/FIXTURE/TESTSUITE MACROS
+#if defined(DOCTEST_GLOBAL_DISABLE)
+
+#if defined(__clang__)
+#pragma clang diagnostic ignored "-Wunused-parameter"
+#pragma clang diagnostic push
+#elif defined(__GNUC__)
+#pragma GCC diagnostic ignored "-Wunused-parameter"
+#pragma GCC diagnostic push
+#elif defined(_MSC_VER)
+#pragma warning(push)
+#pragma warning(disable : 4100)
+#endif
+namespace doctest
+{
+inline void* createParams(int argc, char** argv)
+{
+    return 0;
+}
+inline void addFilter(void* params_struct, const char* filter, const char* value)
+{
+}
+inline void setOption(void* params_struct, const char* option, int value)
+{
+}
+inline void freeParams(void* params_struct)
+{
+}
+inline void setTestExecutionWrapper(void* params_struct, int (*f)(void (*)(void)))
+{
+}
+inline int runTests(void* params_struct)
+{
+    return 0;
+}
+} // namespace doctest
+#if defined(__clang__)
+#pragma clang diagnostic pop
+#elif defined(__GNUC__)
+#pragma GCC diagnostic pop
+#elif defined(_MSC_VER)
+#pragma warning(pop)
+#endif
+
+#endif
+
+// == THIS SUPPLIES A MAIN FUNCTION AND SHOULD BE DONE ONLY IN ONE TRANSLATION UNIT
+#ifdef DOCTEST_CONFIG_MAIN
+// Standard C/C++ main entry point
+int main(int argc, char* const argv[])
+{
+    void* params = doctest::createParams(argc, argv);
+    int res = doctest::runTests(params);
+    doctest::freeParams(params);
+    return res;
+}
+#endif
+
+// == SHORT VERSIONS OF THE TEST/FIXTURE/TESTSUITE MACROS
 #ifdef DOCTEST_SHORT_MACRO_NAMES
 
 #define test(name) doctest_test(name)

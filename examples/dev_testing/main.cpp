@@ -1,6 +1,7 @@
 #include "doctest.h"
 
 #include <iostream>
+#include <cstdlib>
 #include <exception>
 using namespace std;
 
