@@ -205,7 +205,7 @@ inline int runTests(void* params_struct) { return 0; }
 // == THIS SUPPLIES A MAIN FUNCTION AND SHOULD BE DONE ONLY IN ONE TRANSLATION UNIT
 #ifdef DOCTEST_CONFIG_MAIN
 // Standard C/C++ main entry point
-int main(int argc, char* const argv[])
+int main(int argc, char** argv)
 {
     void* params = doctest::createParams(argc, argv);
     int res = doctest::runTests(params);
