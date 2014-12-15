@@ -181,29 +181,17 @@ int runTests(void* params_struct);
 #pragma warning(push)
 #pragma warning(disable : 4100)
 #endif
+// clang-format off
 namespace doctest
 {
-inline void* createParams(int argc, char** argv)
-{
-    return 0;
-}
-inline void addFilter(void* params_struct, const char* filter, const char* value)
-{
-}
-inline void setOption(void* params_struct, const char* option, int value)
-{
-}
-inline void freeParams(void* params_struct)
-{
-}
-inline void setTestExecutionWrapper(void* params_struct, int (*f)(void (*)(void)))
-{
-}
-inline int runTests(void* params_struct)
-{
-    return 0;
-}
+inline void* createParams(int argc, char** argv) { return 0; }
+inline void addFilter(void* params_struct, const char* filter, const char* value) {}
+inline void setOption(void* params_struct, const char* option, int value) {}
+inline void freeParams(void* params_struct) {}
+inline void setTestExecutionWrapper(void* params_struct, int (*f)(void (*)(void))) {}
+inline int runTests(void* params_struct) { return 0; }
 } // namespace doctest
+// clang-format on
 #if defined(__clang__)
 #pragma clang diagnostic pop
 #elif defined(__GNUC__)
