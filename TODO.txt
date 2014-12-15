@@ -22,14 +22,6 @@ trim "\"" from test names?
 
 fix the global disabling
 
-clean warnings on travis
-
-
-
-MAKE IT ALL WORK (currently broken)
-
-
-
 
 
 error checking of parameters (if the range is valid (first <= last), etc)

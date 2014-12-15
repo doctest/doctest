@@ -25,7 +25,7 @@ static int testWrapper(void (*f)(void))
     try {
         f();
     } catch(std::exception& e) {
-        cout << e.what() << endl;
+        cout << "caught the bugger! " << e.what() << endl;
         return 1;
     }
     return 0;
@@ -33,11 +33,18 @@ static int testWrapper(void (*f)(void))
 
 int main(int argc, char** argv)
 {
+    // initialize
     void* params = doctest::createParams(argc, argv);
-    doctest::setOption(params, "doctest_case_sensitive", true);
-    // doctest::addFilter(params, "doctest_name", "zzz");
     doctest::setTestExecutionWrapper(params, testWrapper);
+
+    // overrides
+    doctest::setOption(params, "doctest_case_sensitive", true);
+    doctest::addFilter(params, "doctest_name", "ttt");
+
+    // run
     doctest::runTests(params);
+
+    // free
     doctest::freeParams(params);
 
 #if defined(_MSC_VER)

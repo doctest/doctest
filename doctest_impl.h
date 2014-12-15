@@ -112,7 +112,7 @@ namespace detail
                 return 1;
             }
         }
-        return 1;
+        return 0;
     }
 
     // a struct defining a registered test callback
@@ -313,7 +313,8 @@ namespace detail
     {
         int outVal = defaultVal;
 
-        char** theStr = 0;
+        char** theStr =
+            DOCTEST_STATIC_CAST(char**)(malloc(sizeof(char*) * DOCTEST_MAX_FILTERS_IN_LIST));
         size_t theCount = 0;
         parseFilter(argc, argv, option, theStr, theCount);
         // if the option has been found
@@ -343,12 +344,12 @@ namespace detail
                         outVal = res;
                 }
             }
-
-            // free the buffers
-            for(size_t i = 0; i < theCount; i++)
-                free(theStr[i]);
-            free(theStr);
         }
+
+        // free the buffers
+        for(size_t i = 0; i < theCount; i++)
+            free(theStr[i]);
+        free(theStr);
 
         return outVal;
     }
@@ -520,7 +521,8 @@ DOCTEST_INLINE void runTests(void* params_struct)
             continue;
 
         // skip the test if it is not in the execution range
-        if(params->first > numFilterPassedTests || params->last < numFilterPassedTests)
+        if((params->last < numFilterPassedTests && params->first <= params->last) ||
+           (params->first > numFilterPassedTests))
             continue;
 
         // execute the test if it passes all the filtering
