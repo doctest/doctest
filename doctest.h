@@ -128,6 +128,18 @@ int runTests(void* params_struct);
 // =============================================================================
 #else // DOCTEST_GLOBAL_DISABLE
 
+// clang-format off
+namespace doctest
+{
+inline void* createParams(int, char**) { return 0; }
+inline void addFilter(void*, const char*, const char*) {}
+inline void setOption(void*, const char*, int) {}
+inline void freeParams(void*) {}
+inline void setTestExecutionWrapper(void*, int (*)(void (*)(void))) {}
+inline int runTests(void*) { return 0; }
+} // namespace doctest
+// clang-format on
+
 #define DOCTEST_IMPLEMENT_FIXTURE(der, base, func, name)                                           \
     namespace doctest_generated                                                                    \
     {                                                                                              \
@@ -168,39 +180,6 @@ int runTests(void* params_struct);
     static int DOCTEST_ANONYMOUS(GIVE_ME_COMMA) = doctest_generated::dummy()
 
 #endif // DOCTEST_GLOBAL_DISABLE
-
-#if defined(DOCTEST_GLOBAL_DISABLE)
-
-#if defined(__clang__)
-#pragma clang diagnostic ignored "-Wunused-parameter"
-#pragma clang diagnostic push
-#elif defined(__GNUC__)
-#pragma GCC diagnostic ignored "-Wunused-parameter"
-#pragma GCC diagnostic push
-#elif defined(_MSC_VER)
-#pragma warning(push)
-#pragma warning(disable : 4100)
-#endif
-// clang-format off
-namespace doctest
-{
-inline void* createParams(int argc, char** argv) { return 0; }
-inline void addFilter(void* params_struct, const char* filter, const char* value) {}
-inline void setOption(void* params_struct, const char* option, int value) {}
-inline void freeParams(void* params_struct) {}
-inline void setTestExecutionWrapper(void* params_struct, int (*f)(void (*)(void))) {}
-inline int runTests(void* params_struct) { return 0; }
-} // namespace doctest
-// clang-format on
-#if defined(__clang__)
-#pragma clang diagnostic pop
-#elif defined(__GNUC__)
-#pragma GCC diagnostic pop
-#elif defined(_MSC_VER)
-#pragma warning(pop)
-#endif
-
-#endif
 
 // == THIS SUPPLIES A MAIN FUNCTION AND SHOULD BE DONE ONLY IN ONE TRANSLATION UNIT
 #ifdef DOCTEST_CONFIG_MAIN
