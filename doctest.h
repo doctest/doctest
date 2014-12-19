@@ -13,20 +13,6 @@
 #define DOCTEST_TOSTR_IMPL(x) #x
 #define DOCTEST_TOSTR(x) DOCTEST_TOSTR_IMPL(x)
 
-// define DOCTEST_C_INTERFACE if you want to force a C interface even for C++
-#ifndef __cplusplus
-#define DOCTEST_C_INTERFACE
-#endif // __cplusplus
-
-// cast wrapper for c/c++
-#ifdef DOCTEST_C_INTERFACE
-#define DOCTEST_STATIC_CAST(x) (x)
-#define DOCTEST_REINTERPRET_CAST(x) (x)
-#else // DOCTEST_C_INTERFACE
-#define DOCTEST_STATIC_CAST(x) static_cast<x>
-#define DOCTEST_REINTERPRET_CAST(x) reinterpret_cast<x>
-#endif // DOCTEST_C_INTERFACE
-
 // internal macro for concatenating 2 literals and making the result a string
 #define DOCTEST_STR_CONCAT_TOSTR(s1, s2) DOCTEST_TOSTR(DOCTEST_STR_CONCAT(s1, s2))
 

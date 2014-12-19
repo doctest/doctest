@@ -47,7 +47,7 @@ namespace detail
 {
     DOCTEST_INLINE char tolower(const char c)
     {
-        return ((c >= 'A' && c <= 'Z') ? DOCTEST_STATIC_CAST(char)(c + 32) : c);
+        return ((c >= 'A' && c <= 'Z') ? static_cast<char>(c + 32) : c);
     }
 
     // matching of a string against a wildcard mask (case sensitivity configurable)
@@ -133,13 +133,13 @@ namespace detail
     // a comparison function for using qsort on arrays with pointers to FunctionData structures
     DOCTEST_INLINE int functionDataComparator(const void* a, const void* b)
     {
-        const FunctionData* lhs = *DOCTEST_STATIC_CAST(FunctionData * const*)(a);
-        const FunctionData* rhs = *DOCTEST_STATIC_CAST(FunctionData * const*)(b);
+        const FunctionData* lhs = *static_cast<FunctionData* const*>(a);
+        const FunctionData* rhs = *static_cast<FunctionData* const*>(b);
 
         int res = strcmp(lhs->file, rhs->file);
         if(res != 0)
             return res;
-        return DOCTEST_STATIC_CAST(int)(lhs->line - rhs->line);
+        return static_cast<int>(lhs->line - rhs->line);
     }
 
     // the global hash table
@@ -200,7 +200,7 @@ namespace detail
         const char* suite = getTestSuiteName();
 
         // compute the hash using the file and the line at which the test was registered
-        unsigned long hash = hashStr(DOCTEST_REINTERPRET_CAST(unsigned const char*)(file)) ^ line;
+        unsigned long hash = hashStr(reinterpret_cast<unsigned const char*>(file)) ^ line;
 
         // try to find the function in the hash table
         int found = 0;
@@ -232,11 +232,11 @@ namespace detail
 
             if(last == 0) {
                 // insert the record into this bucket as a first item
-                bucket = DOCTEST_STATIC_CAST(FunctionData*)(malloc(sizeof(FunctionData)));
+                bucket = static_cast<FunctionData*>(malloc(sizeof(FunctionData)));
                 memcpy(bucket, &data, sizeof(FunctionData));
             } else {
                 // append the record to the current bucket
-                last->next = DOCTEST_STATIC_CAST(FunctionData*)(malloc(sizeof(FunctionData)));
+                last->next = static_cast<FunctionData*>(malloc(sizeof(FunctionData)));
                 memcpy(last->next, &data, sizeof(FunctionData));
             }
         }
@@ -287,7 +287,7 @@ namespace detail
                 temp += strlen(pattern);
                 size_t len = strlen(temp);
                 if(len) {
-                    filtersString = DOCTEST_STATIC_CAST(char*)(malloc(len + 1));
+                    filtersString = static_cast<char*>(malloc(len + 1));
                     strcpy(filtersString, temp);
                     break;
                 }
@@ -301,7 +301,7 @@ namespace detail
             while(pch != 0) {
                 size_t len = strlen(pch);
                 if(len && filterCount < DOCTEST_MAX_FILTERS_IN_LIST) {
-                    filters[filterCount] = DOCTEST_STATIC_CAST(char*)(malloc(len + 1));
+                    filters[filterCount] = static_cast<char*>(malloc(len + 1));
                     strcpy(filters[filterCount], pch);
                     ++filterCount;
                 }
@@ -317,8 +317,7 @@ namespace detail
     {
         int outVal = defaultVal;
 
-        char** theStr =
-            DOCTEST_STATIC_CAST(char**)(malloc(sizeof(char*) * DOCTEST_MAX_FILTERS_IN_LIST));
+        char** theStr = static_cast<char**>(malloc(sizeof(char*) * DOCTEST_MAX_FILTERS_IN_LIST));
         size_t theCount = 0;
         parseFilter(argc, argv, option, theStr, theCount);
         // if the option has been found
@@ -366,10 +365,10 @@ DOCTEST_INLINE void* createParams(int argc, char** argv)
     using namespace detail;
 
     detail::Parameters* params =
-        DOCTEST_STATIC_CAST(detail::Parameters*)(malloc(sizeof(detail::Parameters)));
+        static_cast<detail::Parameters*>(malloc(sizeof(detail::Parameters)));
     for(int i = 0; i < 6; i++) {
         params->filters[i] =
-            DOCTEST_STATIC_CAST(char**)(malloc(sizeof(char*) * DOCTEST_MAX_FILTERS_IN_LIST));
+            static_cast<char**>(malloc(sizeof(char*) * DOCTEST_MAX_FILTERS_IN_LIST));
         params->filterCounts[i] = 0;
     }
 
@@ -390,7 +389,7 @@ DOCTEST_INLINE void* createParams(int argc, char** argv)
     params->first = parseOption(argc, argv, "-doctest_first=", 1, 1);
     params->last = parseOption(argc, argv, "-doctest_last=", 1, 0);
 
-    return DOCTEST_STATIC_CAST(void*)(params);
+    return static_cast<void*>(params);
 }
 
 // allows the user to add procedurally to the filters from the command line
@@ -398,7 +397,7 @@ DOCTEST_INLINE void addFilter(void* params_struct, const char* filter, const cha
 {
     using namespace detail;
 
-    Parameters* params = DOCTEST_STATIC_CAST(Parameters*)(params_struct);
+    Parameters* params = static_cast<Parameters*>(params_struct);
 
     if(params->allowOverrides) {
         size_t idx = 666;
@@ -421,7 +420,7 @@ DOCTEST_INLINE void addFilter(void* params_struct, const char* filter, const cha
             // if there is place for more filters
             if(len > 0 && count < DOCTEST_MAX_FILTERS_IN_LIST) {
                 // insert the filter in the array
-                params->filters[idx][count] = DOCTEST_STATIC_CAST(char*)(malloc(len + 1));
+                params->filters[idx][count] = static_cast<char*>(malloc(len + 1));
                 strcpy(params->filters[idx][count], value);
                 ++params->filterCounts[idx];
             }
@@ -434,7 +433,7 @@ DOCTEST_INLINE void setOption(void* params_struct, const char* option, int value
 {
     using namespace detail;
 
-    Parameters* params = DOCTEST_STATIC_CAST(Parameters*)(params_struct);
+    Parameters* params = static_cast<Parameters*>(params_struct);
 
     if(params->allowOverrides) {
         if(strcmp(option, "doctest_count") == 0)
@@ -457,7 +456,7 @@ DOCTEST_INLINE void setTestExecutionWrapper(void* params_struct, int (*f)(funcTy
 {
     using namespace detail;
 
-    Parameters* params = DOCTEST_STATIC_CAST(Parameters*)(params_struct);
+    Parameters* params = static_cast<Parameters*>(params_struct);
 
     params->testExecutionWrapper = f;
 }
@@ -467,7 +466,7 @@ DOCTEST_INLINE void freeParams(void* params_struct)
 {
     using namespace detail;
 
-    Parameters* params = DOCTEST_STATIC_CAST(Parameters*)(params_struct);
+    Parameters* params = static_cast<Parameters*>(params_struct);
 
     // cleanup buffers
     for(size_t i = 0; i < 6; i++) {
@@ -483,13 +482,13 @@ DOCTEST_INLINE int runTests(void* params_struct)
 {
     using namespace detail;
 
-    Parameters* params = DOCTEST_STATIC_CAST(Parameters*)(params_struct);
+    Parameters* params = static_cast<Parameters*>(params_struct);
 
     // invoke the registered functions
     FunctionData** hashTable = getHashTable();
     size_t hashTableSize = getHashTableSize();
     FunctionData** hashEntryArray =
-        DOCTEST_STATIC_CAST(FunctionData**)(malloc(hashTableSize * sizeof(FunctionData*)));
+        static_cast<FunctionData**>(malloc(hashTableSize * sizeof(FunctionData*)));
 
     // fill the hashEntryArray with pointers to hash table records for sorting later
     size_t numTestsSoFar = 0;
