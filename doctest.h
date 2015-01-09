@@ -82,8 +82,7 @@ int runTests(void* params_struct);
                 der v;                                                                             \
                 v.f();                                                                             \
             }                                                                                      \
-            static int DOCTEST_ANONYMOUS(a) = doctest::detail::regTest(func, __LINE__, __FILE__,   \
-                                                                       #name);                     \
+            DOCTEST_REGISTER_FUNCTION(func, name)                                                  \
         }                                                                                          \
     }                                                                                              \
     inline void doctest_generated::der::f()
