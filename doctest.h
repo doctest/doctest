@@ -16,7 +16,7 @@
 // internal macro for concatenating 2 literals and making the result a string
 #define DOCTEST_STR_CONCAT_TOSTR(s1, s2) DOCTEST_TOSTR(DOCTEST_STR_CONCAT(s1, s2))
 
-namespace doctest_generated
+namespace doctest
 {
 // a dummy function that can be used for initializing globals (for silencing warnings)
 inline int dummy()
@@ -53,59 +53,52 @@ int runTests(void* params_struct);
 
 // internal registering macros
 #define DOCTEST_REGISTER_FUNCTION(f, name)                                                         \
-    static int DOCTEST_ANONYMOUS(a) = doctest::detail::regTest(f, __LINE__, __FILE__, #name);
+    static int DOCTEST_ANONYMOUS(DOCTEST_AUTOGEN_VAR_) =                                           \
+        doctest::detail::regTest(f, __LINE__, __FILE__, #name);
 
 #define DOCTEST_IMPLEMENT_FIXTURE(der, base, func, name)                                           \
-    namespace doctest_generated                                                                    \
+    namespace                                                                                      \
     {                                                                                              \
-        namespace                                                                                  \
+        struct der : base {                                                                        \
+            void f();                                                                              \
+        };                                                                                         \
+        static void func()                                                                         \
         {                                                                                          \
-            struct der : base {                                                                    \
-                void f();                                                                          \
-            };                                                                                     \
-            static void func()                                                                     \
-            {                                                                                      \
-                der v;                                                                             \
-                v.f();                                                                             \
-            }                                                                                      \
-            DOCTEST_REGISTER_FUNCTION(func, name)                                                  \
+            der v;                                                                                 \
+            v.f();                                                                                 \
         }                                                                                          \
+        DOCTEST_REGISTER_FUNCTION(func, name)                                                      \
     }                                                                                              \
-    inline void doctest_generated::der::f()
+    inline void der::f()
 
 #define DOCTEST_CREATE_AND_REGISTER_FUNCTION(f, name)                                              \
-    namespace doctest_generated                                                                    \
-    {                                                                                              \
-        static void f();                                                                           \
-        DOCTEST_REGISTER_FUNCTION(f, name)                                                         \
-    }                                                                                              \
-    inline void doctest_generated::f()
+    static void f();                                                                               \
+    DOCTEST_REGISTER_FUNCTION(f, name)                                                             \
+    inline void f()
 
 // for registering doctests
-#define doctest_test(name) DOCTEST_CREATE_AND_REGISTER_FUNCTION(DOCTEST_ANONYMOUS(f), name)
-#define doctest_test_noname DOCTEST_CREATE_AND_REGISTER_FUNCTION(DOCTEST_ANONYMOUS(f), nameless)
+#define doctest_test(name)                                                                         \
+    DOCTEST_CREATE_AND_REGISTER_FUNCTION(DOCTEST_ANONYMOUS(DOCTEST_AUTOGEN_FUNC_), name)
+#define doctest_test_noname                                                                        \
+    DOCTEST_CREATE_AND_REGISTER_FUNCTION(DOCTEST_ANONYMOUS(DOCTEST_AUTOGEN_FUNC_), noname)
 
 // for registering doctests with a fixture
 #define doctest_fixture(c, name)                                                                   \
-    DOCTEST_IMPLEMENT_FIXTURE(DOCTEST_ANONYMOUS(F), c, DOCTEST_ANONYMOUS(f), name)
+    DOCTEST_IMPLEMENT_FIXTURE(DOCTEST_ANONYMOUS(DOCTEST_AUTOGEN_CLASS_), c,                        \
+                              DOCTEST_ANONYMOUS(DOCTEST_AUTOGEN_FUNC_), name)
 #define doctest_fixture_noname(c)                                                                  \
-    DOCTEST_IMPLEMENT_FIXTURE(DOCTEST_ANONYMOUS(F), c, DOCTEST_ANONYMOUS(f), nameless)
+    DOCTEST_IMPLEMENT_FIXTURE(DOCTEST_ANONYMOUS(DOCTEST_AUTOGEN_CLASS_), c,                        \
+                              DOCTEST_ANONYMOUS(DOCTEST_AUTOGEN_FUNC_), noname)
 
 // for starting a testsuite block
 #define doctest_testsuite(name)                                                                    \
-    namespace doctest_generated                                                                    \
-    {                                                                                              \
-        static int DOCTEST_ANONYMOUS(a) = doctest::detail::setTestSuiteName(#name);                \
-    }                                                                                              \
-    static int DOCTEST_ANONYMOUS(GIVE_ME_COMMA) = doctest_generated::dummy()
+    static int DOCTEST_ANONYMOUS(DOCTEST_AUTOGEN_VAR_) = doctest::detail::setTestSuiteName(#name); \
+    static int DOCTEST_ANONYMOUS(DOCTEST_AUTOGEN_GIVE_ME_COMMA_) = doctest::dummy()
 
 // for ending a testsuite block
 #define doctest_testsuite_end                                                                      \
-    namespace doctest_generated                                                                    \
-    {                                                                                              \
-        static int DOCTEST_ANONYMOUS(a) = doctest::detail::setTestSuiteName("");                   \
-    }                                                                                              \
-    static int DOCTEST_ANONYMOUS(GIVE_ME_COMMA) = doctest_generated::dummy()
+    static int DOCTEST_ANONYMOUS(DOCTEST_AUTOGEN_VAR_) = doctest::detail::setTestSuiteName("");    \
+    static int DOCTEST_ANONYMOUS(DOCTEST_AUTOGEN_GIVE_ME_COMMA_) = doctest::dummy()
 
 // =============================================================================
 // == WHAT FOLLOWS IS VERSIONS OF THE MACROS THAT DO NOT DO ANY REGISTERING!  ==
@@ -126,43 +119,42 @@ inline int runTests(void*) { return 0; }
 // clang-format on
 
 #define DOCTEST_IMPLEMENT_FIXTURE(der, base, func, name)                                           \
-    namespace doctest_generated                                                                    \
+    namespace                                                                                      \
     {                                                                                              \
         struct der : base {                                                                        \
             void f();                                                                              \
         };                                                                                         \
-        inline void func()                                                                         \
+        static void func()                                                                         \
         {                                                                                          \
             der v;                                                                                 \
             v.f();                                                                                 \
         }                                                                                          \
     }                                                                                              \
-    inline void doctest_generated::der::f()
+    inline void der::f()
 
-#define DOCTEST_CREATE_AND_REGISTER_FUNCTION(f, name)                                              \
-    namespace doctest_generated                                                                    \
-    {                                                                                              \
-        void f();                                                                                  \
-    }                                                                                              \
-    inline void doctest_generated::f()
+#define DOCTEST_CREATE_AND_REGISTER_FUNCTION(f, name) static inline void f()
 
 // for registering doctests
-#define doctest_test(name) DOCTEST_CREATE_AND_REGISTER_FUNCTION(DOCTEST_ANONYMOUS(f), name)
-#define doctest_test_noname DOCTEST_CREATE_AND_REGISTER_FUNCTION(DOCTEST_ANONYMOUS(f), nameless)
+#define doctest_test(name)                                                                         \
+    DOCTEST_CREATE_AND_REGISTER_FUNCTION(DOCTEST_ANONYMOUS(DOCTEST_AUTOGEN_FUNC_), name)
+#define doctest_test_noname                                                                        \
+    DOCTEST_CREATE_AND_REGISTER_FUNCTION(DOCTEST_ANONYMOUS(DOCTEST_AUTOGEN_FUNC_), noname)
 
 // for registering doctests with a fixture
 #define doctest_fixture(x, name)                                                                   \
-    DOCTEST_IMPLEMENT_FIXTURE(DOCTEST_ANONYMOUS(F), x, DOCTEST_ANONYMOUS(f), name)
+    DOCTEST_IMPLEMENT_FIXTURE(DOCTEST_ANONYMOUS(DOCTEST_AUTOGEN_CLASS_), x,                        \
+                              DOCTEST_ANONYMOUS(DOCTEST_AUTOGEN_FUNC_), name)
 #define doctest_fixture_noname(x)                                                                  \
-    DOCTEST_IMPLEMENT_FIXTURE(DOCTEST_ANONYMOUS(F), x, DOCTEST_ANONYMOUS(f), nameless)
+    DOCTEST_IMPLEMENT_FIXTURE(DOCTEST_ANONYMOUS(DOCTEST_AUTOGEN_CLASS_), x,                        \
+                              DOCTEST_ANONYMOUS(DOCTEST_AUTOGEN_FUNC_), noname)
 
 // for starting a testsuite block
 #define doctest_testsuite(name)                                                                    \
-    static int DOCTEST_ANONYMOUS(GIVE_ME_COMMA) = doctest_generated::dummy()
+    static int DOCTEST_ANONYMOUS(DOCTEST_AUTOGEN_GIVE_ME_COMMA_) = doctest::dummy()
 
 // for ending a testsuite block
 #define doctest_testsuite_end                                                                      \
-    static int DOCTEST_ANONYMOUS(GIVE_ME_COMMA) = doctest_generated::dummy()
+    static int DOCTEST_ANONYMOUS(DOCTEST_AUTOGEN_GIVE_ME_COMMA_) = doctest::dummy()
 
 #endif // DOCTEST_GLOBAL_DISABLE
 
