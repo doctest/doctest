@@ -1,16 +1,17 @@
 #!/usr/bin/python2.7
 
-# Notes: 
+# Notes:
+#   - cmake, gcc, make and git should be added to the PATH
+#   - to see what exactly this script does just check the git modifications to the assimp sources after running it
 #   - framework headers are included directly in the source files and not in headers and this may be lighter
 #   that a real-world scenario because the ifdef-ed headers are included only once in each translation unit
-#   - cmake, gcc, make and git should be added to the PATH
 
 framework   = "doctest" # catch/doctest
 compiler    = "GCC"     # GCC/MSVC/BOTH     - GCC is MinGW under Windows and is the only option for linux
 config      = "Debug"   # Debug/Release     - the configuration that will be built
 include     = True      # True/False        - whether to include the framework headers at all
-insert      = True      # True/False        - whether to insert tests in the source files
-in_headers  = False     # True/False        - whether to insert tests in header files too (doctest only)
+in_sources  = True      # True/False        - whether to insert tests in the source files
+in_headers  = False     # True/False        - whether to insert tests in header files (doctest only)
 disable     = False     # True/False        - whether to disable the test registration (doctest only)
 
 MSVC_dir                = "C:\\Program Files (x86)\\Microsoft Visual Studio 12.0"
@@ -20,6 +21,8 @@ MSVC_cmake_generator    = "Visual Studio 12 Win64"
 
 import os
 import sys
+import random
+import string
 import multiprocessing
 from datetime import datetime
 
@@ -31,6 +34,14 @@ if os.name == "nt":
     windows = True
     makefile = "MinGW Makefiles"
     make = "mingw32-make"
+
+# the path to the appropriate header
+framework_header = '"../../catch/single_include/catch.hpp"'
+if framework == "doctest":
+    framework_header = '"../../../doctest.h"'
+
+# files that (probably) should not be modified
+skipList = ["AssimpPCH.cpp", "AssimpPCH.h"]
 
 # clones the repositories and calls cmake for the first time
 def setup():
@@ -52,6 +63,15 @@ def setup():
     os.system('cmake -DASSIMP_BUILD_ASSIMP_TOOLS=OFF -DASSIMP_BUILD_TESTS=OFF -DCMAKE_BUILD_TYPE=Release -G "' + makefile + '" ../')
     os.chdir("../../");
 
+def randomword():
+    return ''.join(random.choice(string.digits + string.letters + "_ <>(){}[]-=+&*&^%$#@!~") for i in range(random.randint(5, 15)))
+
+def createTest(framework):
+    if framework == "catch":
+        return 'TEST_CASE("' + randomword() + '", "") {\n    printf("hello from %s!\\n", __func__);\n}\n'
+    else:
+        return 'doctest_test("' + randomword() + '") {\n    printf("hello from %s!\\n", __func__);\n}\n'
+
 # setup everything if not already done
 if not os.path.exists("assimp"):
     setup()
@@ -65,24 +85,52 @@ os.system("git checkout .")
 
 # headers/defines at the top of translation units
 if include:
-    # the path to the appropriate header
-    framework_header = '"../../catch/single_include/catch.hpp"'
-    if framework == "doctest":
-        framework_header = '"../../../doctest.h"'
-    # for each translation unit (*.cpp)
+    # insert headers and defines for all translation units (assimp/code/*.cpp)
     for filename in os.listdir('code'):
-        if filename[-3:] == "cpp":
+        if filename[-3:] == "cpp" and filename not in skipList:
             f = open('./code/' + filename, "r+")
             old = f.read()
             f.seek(0)
-            # prepend the disabling define
-            if disable:
+            
+            # ensure the __func__ macro is present everywhere
+            f.write('#if defined(_MSC_VER)\n')
+            f.write('#define __func__ __FUNCTION__\n')
+            f.write('#endif // _MSC_VER\n\n')
+            
+            if framework == "doctest" and disable:
                 f.write('#define DOCTEST_GLOBAL_DISABLE\n')
-            # prepend the inclusion of the header
+            
+            # stuff that should be in only one translation unit
+            if filename == "Assimp.cpp":
+                if framework == "catch":
+                    f.write("#define CATCH_CONFIG_RUNNER\n")
+                else:
+                    f.write('#include ' + framework_header + '\n')
+            
+            if framework == "doctest":
+                f.write("#define DOCTEST_DONT_INCLUDE_IMPLEMENTATION\n")
             f.write('#include ' + framework_header + '\n')
-            # append the contents of the file
+            f.write('#include <stdio.h>\n')
             f.write(old)
             f.close()
+    # if inserting tests and not only including the headers
+    if in_sources:
+        numTests = 0
+        for filename in os.listdir('code'):
+            if filename[-3:] == "cpp" and filename not in skipList:
+                f = open('./code/' + filename, "r+")
+                lines = f.readlines()
+                f.seek(0)
+                prev = ""
+                for line in lines:
+                    if prev == "}\n" and line == "\n":
+                        numTests = numTests + 1
+                        f.write("\n")
+                        f.write(createTest(framework))
+                    f.write(line)
+                    prev = line;
+                f.close()
+        print("Inserted " + str(numTests) + " tests in source files")
 
 # MSVC
 if windows and (compiler == "MSVC" or compiler == "BOTH"):
