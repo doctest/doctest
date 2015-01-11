@@ -13,7 +13,7 @@ include     = True      # True/False        - whether to include the framework h
 in_sources  = True      # True/False        - whether to insert tests in the source files
 in_headers  = False     # True/False        - whether to insert tests in header files (doctest only)
 disable     = False     # True/False        - whether to disable the test registration (doctest only)
-test_mult   = 10         # 1/2/3..100..     - a multiplier for the amount of tests to be added
+test_mult   = 1         # 1/2/3..100..     - a multiplier for the amount of tests to be added
 
 MSVC_dir                = "C:\\Program Files (x86)\\Microsoft Visual Studio 12.0"
 MSVC_cmake_generator    = "Visual Studio 12 Win64"
