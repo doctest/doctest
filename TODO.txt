@@ -1,5 +1,7 @@
 ##TODO
 
+profile hash table distribution on a large project
+
 the CHECK() macro
     OPTIONAL!!! break on failed CHECK() macros in doctest
 
@@ -8,8 +10,6 @@ a message macro
 timing reports of tests, duration restrictions, kill of longer than, etc...
 
 tests/examples folders separate
-
-profile hash table distribution on a large project
 
 profile doctest vs Catch
     compile time
@@ -73,3 +73,4 @@ THINK OF IN THE LONG TERM
         document how to use spaces for filters in the comma separated list (using "")
         tests are ran serially
         document all the options
+        library is easily breakable if __counter__ is not defined (a test in a header and a test in a cpp on the same line as the header) - will result in compilation error

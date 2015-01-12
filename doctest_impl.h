@@ -503,6 +503,17 @@ DOCTEST_INLINE int runTests(void* params_struct)
     // sort the collected records
     qsort(hashEntryArray, hashTableSize, sizeof(FunctionData*), functionDataComparator);
 
+    // @TODO: remove this histogram print
+    for(size_t i = 0; i < DOCTEST_HASH_TABLE_NUM_BUCKETS; i++) {
+        FunctionData* curr = hashTable[i];
+        int count = 0;
+        while(curr) {
+            count++;
+            curr = curr->next;
+        }
+        printf("%5d %4d\n", static_cast<int>(i), count);
+    }
+
     int caseSensitive = params->caseSensitive;
     int numFilterPassedTests = 0;
     int numFailed = 0;
