@@ -7,13 +7,13 @@
 #   that a real-world scenario because the ifdef-ed headers are included only once in each translation unit
 
 framework   = "doctest" # catch/doctest
-compiler    = "BOTH"    # GCC/MSVC/BOTH     - GCC is MinGW under Windows and is the only option for linux
+compiler    = "GCC"     # GCC/MSVC/BOTH     - GCC is MinGW under Windows and is the only option for linux
 config      = "Debug"   # Debug/Release     - the configuration that will be built
 include     = True      # True/False        - whether to include the framework headers at all
 in_sources  = True      # True/False        - whether to insert tests in the source files
-in_headers  = True      # True/False        - whether to insert tests in header files (doctest only)
+in_headers  = False     # True/False        - whether to insert tests in header files (doctest only)
 disable     = False     # True/False        - whether to disable the test registration (doctest only)
-test_mult   = 1         # 1/2/3..100..     - a multiplier for the amount of tests to be added
+test_mult   = 1         # 1/2/3..100..      - a multiplier for the amount of tests to be added
 
 MSVC_dir                = "C:\\Program Files (x86)\\Microsoft Visual Studio 12.0"
 MSVC_cmake_generator    = "Visual Studio 12 Win64"
@@ -114,8 +114,8 @@ if include:
             f.write('#include ' + framework_header + '\n')
             f.write('#include <stdio.h>\n')
             f.write(old)
-            if filename == "Assimp.cpp":
-                f.write("ASSIMP_API int myFunc(int argc, char** argv) {\n")
+            if filename == "Assimp.cpp" and framework == "doctest":
+                f.write("\nASSIMP_API int runTests(int argc, char** argv) {\n")
                 f.write("    void* params = doctest::createParams(argc, argv);\n")
                 f.write("    int res = doctest::runTests(params);\n")
                 f.write("    doctest::freeParams(params);\n")
