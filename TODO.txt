@@ -1,6 +1,6 @@
 ##TODO
 
-profile hash table distribution on a large project
+make the hash-table histogram printing optional (with a parameter) and make it more beautiful
 
 the CHECK() macro
     OPTIONAL!!! break on failed CHECK() macros in doctest
