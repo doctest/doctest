@@ -7,11 +7,11 @@
 #   that a real-world scenario because the ifdef-ed headers are included only once in each translation unit
 
 framework   = "doctest" # catch/doctest
-compiler    = "GCC"     # GCC/MSVC/BOTH     - GCC is MinGW under Windows and is the only option for linux
+compiler    = "BOTH"    # GCC/MSVC/BOTH     - GCC is MinGW under Windows and is the only option for linux
 config      = "Debug"   # Debug/Release     - the configuration that will be built
 include     = True      # True/False        - whether to include the framework headers at all
 in_sources  = True      # True/False        - whether to insert tests in the source files
-in_headers  = False     # True/False        - whether to insert tests in header files (doctest only)
+in_headers  = True      # True/False        - whether to insert tests in header files (doctest only)
 disable     = False     # True/False        - whether to disable the test registration (doctest only)
 test_mult   = 1         # 1/2/3..100..     - a multiplier for the amount of tests to be added
 
@@ -73,6 +73,9 @@ def createTest(framework):
     else:
         return '\ndoctest_test("' + randomword() + '") {\n    printf("hello from %s!\\n", __func__);\n}\n'
 
+def defineFuncMacro():
+    return '#if defined(_MSC_VER)\n' + '#define __func__ __FUNCTION__\n' + '#endif // _MSC_VER\n\n'
+
 # setup everything if not already done
 if not os.path.exists("assimp"):
     setup()
@@ -94,9 +97,7 @@ if include:
             f.seek(0)
             
             # ensure the __func__ macro is present everywhere
-            f.write('#if defined(_MSC_VER)\n')
-            f.write('#define __func__ __FUNCTION__\n')
-            f.write('#endif // _MSC_VER\n\n')
+            f.write(defineFuncMacro())
             
             if framework == "doctest" and disable:
                 f.write('#define DOCTEST_GLOBAL_DISABLE\n')
@@ -113,6 +114,13 @@ if include:
             f.write('#include ' + framework_header + '\n')
             f.write('#include <stdio.h>\n')
             f.write(old)
+            if filename == "Assimp.cpp":
+                f.write("ASSIMP_API int myFunc(int argc, char** argv) {\n")
+                f.write("    void* params = doctest::createParams(argc, argv);\n")
+                f.write("    int res = doctest::runTests(params);\n")
+                f.write("    doctest::freeParams(params);\n")
+                f.write("    return res;\n")
+                f.write("}\n")
             f.close()
     # if inserting tests and not only including the headers
     if in_sources:
@@ -143,6 +151,11 @@ if include:
                 f.write("#define DOCTEST_DONT_INCLUDE_IMPLEMENTATION\n")
                 f.write('#include ' + framework_header + '\n')
                 f.write('#include <stdio.h>\n')
+                
+                # ensure the __func__ macro is present everywhere
+                f.write(defineFuncMacro())
+                
+                # add tests in multiples of 10
                 for k in range(0, test_mult):
                     for i in range(0, 10):
                         numTests = numTests + 1
