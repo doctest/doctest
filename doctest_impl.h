@@ -27,12 +27,12 @@
 
 // the number of buckets used for the hash set
 #if !defined(DOCTEST_HASH_TABLE_NUM_BUCKETS)
-#define DOCTEST_HASH_TABLE_NUM_BUCKETS 8192
+#define DOCTEST_HASH_TABLE_NUM_BUCKETS 1024
 #endif // DOCTEST_HASH_TABLE_NUM_BUCKETS
 
 // the number of buckets used for the hash set
 #if !defined(DOCTEST_MAX_FILTERS_IN_LIST)
-#define DOCTEST_MAX_FILTERS_IN_LIST 1024
+#define DOCTEST_MAX_FILTERS_IN_LIST 64
 #endif // DOCTEST_MAX_FILTERS_IN_LIST
 
 // main namespace of the library
