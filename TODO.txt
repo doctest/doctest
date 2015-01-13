@@ -29,6 +29,7 @@ test execution in separate processes
         http://msdn.microsoft.com/en-us/library/windows/desktop/ms682499(v=vs.85).aspx
 
 CI
+    https://svn.boost.org/trac/boost/wiki/TravisCoverals
     travis
         compile/run all examples
         valgrind
