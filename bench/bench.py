@@ -39,7 +39,7 @@ if os.name == "nt":
 # the path to the appropriate header
 framework_header = '"../../catch/single_include/catch.hpp"'
 if framework == "doctest":
-    framework_header = '"../../../doctest.h"'
+    framework_header = '"../../../doctest/doctest.h"'
 
 # files that (probably) should not be modified
 skipList = ["AssimpPCH.cpp", "AssimpPCH.h"]

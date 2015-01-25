@@ -21,6 +21,6 @@ endif()
 
 add_definitions(-DDOCTEST_SHORT_MACRO_NAMES)
 
-include_directories("../../")
+include_directories("../../doctest/")
 
 add_executable(exe main.cpp test.cpp)
