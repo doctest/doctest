@@ -19,7 +19,7 @@ To register a static method of a class as a test the user should use the doctest
 The method should be of type ```void(*)(void)```. Such tests cannot be named. See the **class_static_method** example.
 
 To invoke all the registered tests call DOCTEST_INVOKE_ALL_TEST_FUNCTIONS() passing the argc and argv of the program like this:
-```C++
+```
 DOCTEST_INVOKE_ALL_TEST_FUNCTIONS(argc, argv);
 ```
 
@@ -28,7 +28,9 @@ DOCTEST_INVOKE_ALL_TEST_FUNCTIONS(argc, argv);
 Tests can be invoked based on filter strings (comma separated on the command line). Names are case sensitive.
 Tests registered without a name actually have an empty name ("") and are invoked only when no filters are supplied.
 
-```C++
+For more information about the command line go [here](command_line.md)
+
+```
 #include <iostream>
 using namespace std;
 
@@ -60,7 +62,7 @@ Test2
 
 Fixtures are supported - they are basically a normal class. To have access to the data members of a fixture class they should be public or protected. Each test using a fixture will have it's fixture initialized for it. Fixture classes may also inherit each other to form more complex hierarchies.
 
-```C++
+```
 #include <iostream>
 using namespace std;
 

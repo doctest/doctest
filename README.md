@@ -12,7 +12,7 @@ doctest is a c++ header only library for writing tests that is inspired by the u
 WARNING! The library is under heavy development and is 100% not stable! Come back when this message is deleted
 ==============================================================================================================
 
-Documentation can be found [here](doc/README.md)
+Documentation can be found [here](doc/index.md)
 
 
 ##TODO
