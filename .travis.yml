@@ -11,4 +11,5 @@ script:
   - cd examples/dev_testing
   - cmake .
   - make
-  - valgrind --leak-check=full ./exe
+  - ./exe
+  - valgrind --leak-check=full --track-origins=yes --error-exitcode=yes ./exe
