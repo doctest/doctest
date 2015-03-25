@@ -12,4 +12,4 @@ script:
   - cmake .
   - make
   - ./exe
-  - valgrind --leak-check=full --track-origins=yes --error-exitcode=yes ./exe
+  - valgrind --leak-check=full --track-origins=yes --error-exitcode=1 ./exe
