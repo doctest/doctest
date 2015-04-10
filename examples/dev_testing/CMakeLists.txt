@@ -20,8 +20,11 @@ if(MSVC)
     add_definitions(/W4)
 endif()
 
-add_definitions(-DDOCTEST_SHORT_MACRO_NAMES)
+add_definitions(-DDOCTEST_CONFIG_SHORT_MACRO_NAMES)
+add_definitions(-DDOCTEST_CONFIG_IMPLEMENT)
 
 include_directories("../../doctest/")
 
-add_executable(exe main.cpp test.cpp)
+add_executable(exe main.cpp
+    #test.cpp
+)

@@ -40,7 +40,7 @@ int main(int argc, char** argv)
 
     // overrides
     doctest::setOption(params, "doctest_case_sensitive", true);
-    doctest::addFilter(params, "doctest_name", "ttt");
+    //doctest::addFilter(params, "doctest_name", "zzz");
 
     // run
     int res = doctest::runTests(params);
@@ -54,3 +54,13 @@ int main(int argc, char** argv)
 
     return res;
 }
+
+test("") { cout << "TEST " << __LINE__ << endl; }
+test("") { cout << "TEST " << __LINE__ << endl; }
+test("") { cout << "TEST " << __LINE__ << endl; }
+test("") { cout << "TEST " << __LINE__ << endl; }
+test("") { cout << "TEST " << __LINE__ << endl; }
+test("") { cout << "TEST " << __LINE__ << endl; }
+test("") { cout << "TEST " << __LINE__ << endl; }
+test("") { cout << "TEST " << __LINE__ << endl; }
+test("") { cout << "TEST " << __LINE__ << endl; }

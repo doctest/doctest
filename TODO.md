@@ -1,20 +1,20 @@
-
-
 ##TODO
-
-badges - https://github.com/davidsiaw/luacppinterface
-https://bitdeli.com/
-https://gitter.im/
-
-__attribute((unused))__ for tests when disabled globally
-
-make it all 1 big file
-
-use a pool for the allocations because 1k+ allocs before entering main() can be heavy
 
 ability to not run tests at all
 
-prefix all config defines with doctest_config
+use a pool for the allocations because 1k+ allocs before entering main() can be heavy
+
+move to RAII instead of atexit() bullshit (and maybe stop this void* BS)
+
+
+
+
+
+__attribute((unused))__ for tests when disabled globally
+
+
+
+
 
 the CHECK() macro
     OPTIONAL!!! break on failed CHECK() macros in doctest
@@ -24,8 +24,6 @@ a message macro
 more aggressive gcc/clang warnings! http://meetingcpp.com/tl_files/2014/talks/robust_code.pdf
 
 timing reports of tests, duration restrictions, kill of longer than, etc...
-
-uppercase vs lowercase macros - with a define!
 
 look at catch command line options
 
@@ -70,15 +68,17 @@ CI
         https://github.com/mapbox/variant/blob/master/appveyor.yml
         https://github.com/cppformat/cppformat/blob/master/appveyor.yml
 
+badges - https://github.com/davidsiaw/luacppinterface
+https://bitdeli.com/
+https://gitter.im/
+
 THINK OF IN THE LONG TERM
 
-better command line names (and shorter?)
+think about removing the custom exception catcher/test runner function (testExecutionWrapper)
 
 sorting the test order (by file, by test suite, or both, ASC/DESC...)
 
 trim "\"" from test/fixture/testsuite names?
-
-keep the 2 headers (main and implementation)?
 
 - depends only on profiling different schemas
     
@@ -118,6 +118,7 @@ documentation
 
 - mocking features are not necessary because they are orthogonal to testing and a different third party library may be used for that (google
  mock)
+ 
 - document what has been taken from Catch
 
 - document how to use spaces for filters in the comma separated list (using "")
