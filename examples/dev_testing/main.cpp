@@ -12,14 +12,14 @@ test(zzz)
 }
 testsuite_end;
 
-test(thrower)
-{
-    if(rand() > 4) {
-        throw std::exception();
-    } else {
-        cout << "trololo" << endl;
-    }
-}
+//test(thrower)
+//{
+//    if(rand() > 4) {
+//        throw std::exception();
+//    } else {
+//        cout << "trololo" << endl;
+//    }
+//}
 
 static int testWrapper(void (*f)(void))
 {

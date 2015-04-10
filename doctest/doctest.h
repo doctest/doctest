@@ -201,7 +201,7 @@ int main(int argc, char** argv)
 #define testsuite(name) doctest_testsuite(name)
 #define testsuite_end doctest_testsuite_end
 
-#endif // DOCTEST_SHORT_MACRO_NAMES
+#endif // DOCTEST_CONFIG_SHORT_MACRO_NAMES
 
 #endif // DOCTEST_LIBRARY_INCLUDED
 
@@ -211,6 +211,12 @@ int main(int argc, char** argv)
 #if defined(DOCTEST_CONFIG_IMPLEMENT)
 #ifndef DOCTEST_LIBRARY_IMPLEMENTATION
 #define DOCTEST_LIBRARY_IMPLEMENTATION
+
+// CLANG fix for defining non-inline functions in a header
+#if defined(__clang__)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wmissing-prototypes"
+#endif
 
 // MSVC fix to not complain about using strcpy instead of strcpy_s and other such stuff
 #ifdef _MSC_VER
@@ -836,6 +842,10 @@ int runTests(void* params_struct)
 #undef _CRT_SECURE_NO_WARNINGS
 #undef UNDEFINE_CRT_SECURE_NO_WARNINGS
 #endif // UNDEFINE_CRT_SECURE_NO_WARNINGS
+
+#if defined(__clang__)
+#pragma clang diagnostic pop
+#endif
 
 #endif // DOCTEST_LIBRARY_IMPLEMENTATION
 #endif // DOCTEST_CONFIG_IMPLEMENT
