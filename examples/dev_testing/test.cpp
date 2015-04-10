@@ -27,3 +27,14 @@ fixture_noname(F)
 }
 
 testsuite_end;
+
+/*
+#define hash #
+#define f(x) x
+#define label(a) f(hash)a
+
+#define macro \
+label(pragma gcc diagnostic ignored "-Wformat")
+
+macro();
+*/

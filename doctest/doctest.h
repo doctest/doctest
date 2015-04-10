@@ -52,9 +52,18 @@ int runTests(void* params_struct);
 #endif // DOCTEST_DONT_INCLUDE_IMPLEMENTATION
 
 // internal registering macros
+#if !defined(__clang__)
 #define DOCTEST_REGISTER_FUNCTION(f, name)                                                         \
     static int DOCTEST_ANONYMOUS(DOCTEST_AUTOGEN_VAR_) =                                           \
         doctest::detail::regTest(f, __LINE__, __FILE__, #name);
+#else
+#define DOCTEST_REGISTER_FUNCTION(f, name)                                                         \
+    _Pragma("clang diagnostic push")                                                               \
+        _Pragma("clang diagnostic ignored -\"Wglobal-constructors\"") static int                   \
+            DOCTEST_ANONYMOUS(DOCTEST_AUTOGEN_VAR_) =                                              \
+                doctest::detail::regTest(f, __LINE__, __FILE__, #name);                            \
+    _Pragma("clang diagnostic pop")
+#endif
 
 #define DOCTEST_IMPLEMENT_FIXTURE(der, base, func, name)                                           \
     namespace                                                                                      \
