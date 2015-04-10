@@ -59,7 +59,7 @@ int runTests(void* params_struct);
 #else
 #define DOCTEST_REGISTER_FUNCTION(f, name)                                                         \
     _Pragma("clang diagnostic push")                                                               \
-        _Pragma("clang diagnostic ignored -\"Wglobal-constructors\"") static int                   \
+        _Pragma("clang diagnostic ignored \"-Wglobal-constructors\"") static int                   \
             DOCTEST_ANONYMOUS(DOCTEST_AUTOGEN_VAR_) =                                              \
                 doctest::detail::regTest(f, __LINE__, __FILE__, #name);                            \
     _Pragma("clang diagnostic pop")
