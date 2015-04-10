@@ -6,11 +6,11 @@ badges - https://github.com/davidsiaw/luacppinterface
 https://bitdeli.com/
 https://gitter.im/
 
-make the hash-table histogram printing optional (with a parameter) and make it more beautiful
-
 __attribute((unused))__ for tests when disabled globally
 
 make it all 1 big file
+
+use a pool for the allocations because 1k+ allocs before entering main() can be heavy
 
 ability to not run tests at all
 

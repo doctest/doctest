@@ -27,3 +27,7 @@ fixture_noname(F)
 }
 
 testsuite_end;
+
+
+test(__LINE__) {}
+test(__LINE__) {}

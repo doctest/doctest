@@ -50,6 +50,15 @@ namespace detail
         return ((c >= 'A' && c <= 'Z') ? static_cast<char>(c + 32) : c);
     }
 
+    DOCTEST_INLINE int strcicmp(char const* a, char const* b)
+    {
+        for(;; a++, b++) {
+            int d = tolower(*a) - tolower(*b);
+            if(d != 0 || !*a)
+                return d;
+        }
+    }
+
     // matching of a string against a wildcard mask (case sensitivity configurable)
     // taken from http://www.emoticode.net/c/simple-wildcard-string-compare-globbing-function.html
     DOCTEST_INLINE int wildcmp(const char* str, const char* wild, int caseSensitive)
@@ -263,15 +272,16 @@ namespace detail
         char** filters[6];
         size_t filterCounts[6];
 
-        int getCount;        // if only the count of matching tests is to be retreived
-        int caseSensitive;   // if filtering should be case sensitive
-        int separateProcess; // if each test should be executed in a separate process
-        int allowOverrides;  // all but this can be overriden
-        int exitAfterTests;  // calls exit() after the tests are ran/counted
-        int first;           // the first (matching) test to be executed
-        int last;            // the last (matching) test to be executed
+        int getCount;             // if only the count of matching tests is to be retreived
+        int caseSensitive;        // if filtering should be case sensitive
+        int separateProcess;      // if each test should be executed in a separate process
+        int allowOverrides;       // all but this can be overriden
+        int exitAfterTests;       // calls exit() after the tests are ran/counted
+        int first;                // the first (matching) test to be executed
+        int last;                 // the last (matching) test to be executed
+        int hash_table_histogram; // if the hash table should be printed as a histogram
 
-        int padding; // padding - not used for anything
+        //int padding; // padding - not used for anything
 
         int (*testExecutionWrapper)(funcType); // wrapper for test execution
     };
@@ -326,16 +336,16 @@ namespace detail
             if(theCount == 1) {
                 if(type == 0) {
                     // boolean
-                    const char positive[][7] = {"1", "true", "TRUE", "on", "ON", "yes", "YES"};
-                    const char negative[][7] = {"0", "false", "FALSE", "off", "OFF", "no", "NO"};
+                    const char positive[][5] = {"1", "true", "on", "yes"}; // 5 - strlen("true") + 1
+                    const char negative[][6] = {"0", "false", "off", "no"};
 
                     // if the value matches any of the positive/negative possibilities
-                    for(size_t i = 0; i < 7; i++) {
-                        if(strcmp(theStr[0], positive[i]) == 0) {
+                    for(size_t i = 0; i < 4; i++) {
+                        if(strcicmp(theStr[0], positive[i]) == 0) {
                             outVal = 1;
                             break;
                         }
-                        if(strcmp(theStr[0], negative[i]) == 0) {
+                        if(strcicmp(theStr[0], negative[i]) == 0) {
                             outVal = 0;
                             break;
                         }
@@ -388,6 +398,7 @@ DOCTEST_INLINE void* createParams(int argc, char** argv)
     params->exitAfterTests = parseOption(argc, argv, "-doctest_exit=", 0, 0);
     params->first = parseOption(argc, argv, "-doctest_first=", 1, 1);
     params->last = parseOption(argc, argv, "-doctest_last=", 1, 0);
+    params->hash_table_histogram = parseOption(argc, argv, "-doctest_hash_table_histogram=", 0, 0);
 
     return static_cast<void*>(params);
 }
@@ -448,6 +459,8 @@ DOCTEST_INLINE void setOption(void* params_struct, const char* option, int value
             params->first = value;
         if(strcmp(option, "doctest_last") == 0)
             params->last = value;
+        if(strcmp(option, "doctest_hash_table_histogram") == 0)
+            params->hash_table_histogram = value;
     }
 }
 
@@ -504,14 +517,42 @@ DOCTEST_INLINE int runTests(void* params_struct)
     qsort(hashEntryArray, hashTableSize, sizeof(FunctionData*), functionDataComparator);
 
     // @TODO: remove this histogram print
-    for(size_t i = 0; i < DOCTEST_HASH_TABLE_NUM_BUCKETS; i++) {
-        FunctionData* curr = hashTable[i];
-        int count = 0;
-        while(curr) {
-            count++;
-            curr = curr->next;
+    //if(params->printHashTableHistogram) {
+    if(params->hash_table_histogram) {
+        // find the most full bucket
+        int maxElementsInBucket = 0;
+        for(size_t i = 0; i < DOCTEST_HASH_TABLE_NUM_BUCKETS; i++) {
+            FunctionData* curr = hashTable[i];
+            int count = 0;
+            while(curr) {
+                count++;
+                curr = curr->next;
+            }
+            if(count > maxElementsInBucket)
+                maxElementsInBucket = count;
         }
-        printf("%5d %4d\n", static_cast<int>(i), count);
+
+        // print a prettified histogram
+        printf("[doctest] hash table bucket histogram\n");
+        printf("============================================================\n");
+        printf("#bucket     |count| relative count\n");
+        printf("============================================================\n");
+        for(size_t i = 0; i < DOCTEST_HASH_TABLE_NUM_BUCKETS; i++) {
+            FunctionData* curr = hashTable[i];
+            int count = 0;
+            while(curr) {
+                count++;
+                curr = curr->next;
+            }
+            printf("bucket %4d |%4d |", static_cast<int>(i), count);
+
+            float ratio = static_cast<float>(count) / static_cast<float>(maxElementsInBucket);
+            int numStars = static_cast<int>(ratio * 41);
+            for(int k = 0; k < numStars; ++k)
+                printf("*");
+            printf("\n");
+        }
+        printf("\n");
     }
 
     int caseSensitive = params->caseSensitive;
