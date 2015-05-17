@@ -709,6 +709,10 @@ int runTests(void* params_struct)
 
     Parameters* params = static_cast<Parameters*>(params_struct);
 
+    // exit right now
+    if(params->no_run)
+        return 0;
+
     // invoke the registered functions
     FunctionData** hashTable = getHashTable();
     size_t hashTableSize = getHashTableSize();

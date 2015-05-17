@@ -6,6 +6,8 @@ use a pool for the allocations because 1k+ allocs before entering main() can be 
 
 move to RAII instead of atexit() bullshit (and maybe stop this void* BS)
 
+more aggressive gcc/clang warnings! http://meetingcpp.com/tl_files/2014/talks/robust_code.pdf
+
 
 
 
@@ -20,8 +22,6 @@ the CHECK() macro
     OPTIONAL!!! break on failed CHECK() macros in doctest
 
 a message macro
-
-more aggressive gcc/clang warnings! http://meetingcpp.com/tl_files/2014/talks/robust_code.pdf
 
 timing reports of tests, duration restrictions, kill of longer than, etc...
 
