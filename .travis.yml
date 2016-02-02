@@ -11,6 +11,7 @@ before_install:
   - sudo apt-get install -y -qq lcov curl valgrind
   - git submodule update --init --recursive
 script:
+  - export COVERALLS_SERVICE_NAME=travis-ci # COVERALLS_REPO_TOKEN added in env vars in travis
   - cmake -DCOVERALLS=ON -DCMAKE_BUILD_TYPE=Debug examples/dev_testing
   - cmake --build .
   - ./exe

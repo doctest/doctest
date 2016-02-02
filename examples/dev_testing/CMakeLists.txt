@@ -8,13 +8,7 @@ option(COVERALLS "Generate coveralls data" OFF)
 if(COVERALLS)
     include(Coveralls)
     coveralls_turn_on_coverage()
-endif()
-
-if(COVERALLS)
-    coveralls_setup(
-        "../../doctest/doctest.h"
-        ON
-        "${PROJECT_SOURCE_DIR}/../../ci/coveralls-cmake/cmake")
+    coveralls_setup("../../doctest/doctest.h" ON "${PROJECT_SOURCE_DIR}/../../ci/coveralls-cmake/cmake")
 endif()
 
 if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
