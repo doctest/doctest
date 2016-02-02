@@ -2,6 +2,10 @@
 
 import os
 
+filelist = [f for f in os.listdir(".") if f.endswith(".html")]
+for f in filelist:
+    os.remove(f)
+
 for filename in os.listdir('./../'):
     if filename[-2:] == "md":
         md = open('./../' + filename, "r")

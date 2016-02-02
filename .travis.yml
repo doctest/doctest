@@ -8,10 +8,9 @@ compiler:
   - clang
 before_install:
   - sudo apt-get update -qq
-  - sudo apt-get install valgrind
+  - sudo apt-get install -y -qq lcov curl valgrind
 script:
-  - cd examples/dev_testing
-  - cmake .
+  - cmake examples/dev_testing
   - make
   - ./exe
   - valgrind --leak-check=full --track-origins=yes --error-exitcode=1 ./exe
