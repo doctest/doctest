@@ -9,8 +9,10 @@ compiler:
 before_install:
   - sudo apt-get update -qq
   - sudo apt-get install -y -qq lcov curl valgrind
+  - git submodule update --init --recursive
 script:
-  - cmake examples/dev_testing
-  - make
+  - cmake -DCOVERALLS=ON -DCMAKE_BUILD_TYPE=Debug examples/dev_testing
+  - cmake --build .
   - ./exe
   - valgrind --leak-check=full --track-origins=yes --error-exitcode=1 ./exe
+  - cmake --build . --target coveralls
