@@ -1,6 +1,8 @@
 language: cpp
 notifications:
-  email: false
+  email:
+    on_success: change
+    on_failure: change
 compiler:
   - gcc
   - clang

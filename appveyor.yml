@@ -1,0 +1,28 @@
+# http://www.appveyor.com/docs/appveyor-yml
+
+notifications:
+  - provider: Email
+    to:
+      - vik.kirilov@gmail.com
+    subject: 'Build {{status}}'
+    message: "{{message}}, {{commitId}}, ..."
+    on_build_status_changed: true
+    on_build_failure: true
+
+clone_depth: 1
+matrix:
+  fast_finish: true
+branches:
+  except:
+    - gh-pages
+platform:
+  - x64
+configuration:
+  - Debug
+  - Release
+
+before_build:
+  - cmake -G "Visual Studio 14 2015 Win64" examples/dev_testing
+build:
+  parallel: true
+  project: dev_testing.sln
