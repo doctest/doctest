@@ -12,8 +12,7 @@ before_install:
   - git submodule update --init --recursive
 script:
   - export COVERALLS_SERVICE_NAME=travis-ci # COVERALLS_REPO_TOKEN added in env vars in travis
-  - cmake -DCOVERALLS=ON -DCMAKE_BUILD_TYPE=Debug examples/dev_testing
+  - cmake -DCOVERALLS=ON -DCMAKE_BUILD_TYPE=Debug .
   - cmake --build .
-  - ./exe
-  - valgrind --leak-check=full --track-origins=yes --error-exitcode=1 ./exe
   - cmake --build . --target coveralls
+  - valgrind --leak-check=full --track-origins=yes --error-exitcode=1 ./exe

@@ -2,15 +2,6 @@ cmake_minimum_required(VERSION 2.8)
 
 project(dev_testing)
 
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR}/../../ci/coveralls-cmake/cmake)
-option(COVERALLS "Generate coveralls data" OFF)
-
-if(COVERALLS)
-    include(Coveralls)
-    coveralls_turn_on_coverage()
-    coveralls_setup("../../doctest/doctest.h" ON "${PROJECT_SOURCE_DIR}/../../ci/coveralls-cmake/cmake")
-endif()
-
 if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
     #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Werror")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} --save-temps -std=c++98 -pedantic -m64 -O2 -fvisibility=hidden -fstrict-aliasing")
