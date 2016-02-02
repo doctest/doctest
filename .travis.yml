@@ -13,6 +13,8 @@ before_install:
 script:
   - export COVERALLS_SERVICE_NAME=travis-ci # COVERALLS_REPO_TOKEN added in env vars in travis
   - cmake -DCOVERALLS=ON -DCMAKE_BUILD_TYPE=Debug .
-  - cmake --build .
-  - cmake --build . --target coveralls
-  - valgrind --leak-check=full --track-origins=yes --error-exitcode=1 ./exe
+  - make
+  - make coveralls
+#  - cmake --build .
+#  - cmake --build . --target coveralls
+#  - valgrind --leak-check=full --track-origins=yes --error-exitcode=1 ./exe
