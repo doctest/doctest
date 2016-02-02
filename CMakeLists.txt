@@ -15,4 +15,4 @@ endif()
 
 add_subdirectory(examples/dev_testing)
 
-add_test(coverage exe)
+#add_test(coverage exe)
