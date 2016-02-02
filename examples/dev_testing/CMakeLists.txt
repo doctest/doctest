@@ -29,4 +29,4 @@ add_executable(exe main.cpp
     #test.cpp
 )
 
-add_test(coverage ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/exe)
+add_test(dev_testing ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/exe)

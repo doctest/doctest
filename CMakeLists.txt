@@ -14,5 +14,3 @@ if(COVERALLS)
 endif()
 
 add_subdirectory(examples/dev_testing)
-
-#add_test(coverage exe)
