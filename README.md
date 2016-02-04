@@ -13,3 +13,4 @@ WARNING! The library is under heavy development and is 100% not stable! Come bac
 ==============================================================================================================
 
 Documentation can be found [here](doc/index.md)
+
