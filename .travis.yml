@@ -12,9 +12,14 @@ before_install:
   - git submodule update --init --recursive
 script:
   - export COVERALLS_SERVICE_NAME=travis-ci # COVERALLS_REPO_TOKEN added in env vars in travis
-  - cmake -DCOVERALLS=ON -DCMAKE_BUILD_TYPE=Debug .
-  - make
-  - make coveralls
+  - cmake -DCI_COVERAGE=ON .
+  - cmake --build .
+  - cmake --build . --target tests
+  - gcov doctest/doctest.h
+#  - valgrind --leak-check=full --track-origins=yes --error-exitcode=1 ./exe
+after_success:
+  - bash <(curl -s https://codecov.io/bash)
+  
 #  - cmake --build .
 #  - cmake --build . --target coveralls
 #  - valgrind --leak-check=full --track-origins=yes --error-exitcode=1 ./exe

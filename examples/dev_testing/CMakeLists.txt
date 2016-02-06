@@ -25,8 +25,6 @@ add_definitions(-DDOCTEST_CONFIG_IMPLEMENT)
 
 include_directories("../../doctest/")
 
-add_executable(exe main.cpp
-    #test.cpp
-)
+add_executable(${PROJECT_NAME} main.cpp)
 
-add_test(dev_testing ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/exe)
+add_test(${PROJECT_NAME} ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME})
