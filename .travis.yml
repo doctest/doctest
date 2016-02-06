@@ -8,14 +8,14 @@ compiler:
 #  - clang
 before_install:
   - sudo apt-get update -qq
-  - sudo apt-get install -y -qq lcov curl valgrind
+  - sudo apt-get install -y -qq lcov curl valgrind tree
   - git submodule update --init --recursive
 script:
   - export COVERALLS_SERVICE_NAME=travis-ci # COVERALLS_REPO_TOKEN added in env vars in travis
   - cmake -DCI_COVERAGE=ON .
   - cmake --build .
   - cmake --build . --target test
-  - ls -l
+  - tree
   - gcov doctest/doctest.h
 #  - valgrind --leak-check=full --track-origins=yes --error-exitcode=1 ./exe
 after_success:
