@@ -15,6 +15,7 @@ script:
   - cmake -DCI_COVERAGE=ON .
   - cmake --build .
   - cmake --build . --target test
+  - ls -l
   - gcov doctest/doctest.h
 #  - valgrind --leak-check=full --track-origins=yes --error-exitcode=1 ./exe
 after_success:
