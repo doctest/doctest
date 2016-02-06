@@ -4,8 +4,7 @@ project(ci)
 
 enable_testing()
 
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR}/ci/coveralls-cmake/cmake)
-option(COVERALLS "Generate coveralls data" OFF)
+option(COVERALLS "Generate coverage data" OFF)
 
 if(COVERALLS)
     include(Coveralls)
