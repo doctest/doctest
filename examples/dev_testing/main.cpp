@@ -1,9 +1,12 @@
+#define DOCTEST_CONFIG_IMPLEMENT
 #include "doctest.h"
 
 #include <iostream>
 #include <cstdlib>
 #include <exception>
 using namespace std;
+
+#include "bla/main.h"
 
 testsuite(MAIN);
 test(zzz)
@@ -52,7 +55,7 @@ int main(int argc, char** argv)
     system("pause");
 #endif // _MSC_VER
 
-    return res;
+    return OMFGGG();
 }
 
 test("") { cout << "TEST " << __LINE__ << endl; }
