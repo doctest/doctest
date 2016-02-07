@@ -21,6 +21,10 @@ configuration:
 
 before_build:
   - cmake -G "Visual Studio 14 2015 Win64" .
+  - echo "{{configuration}}"
+  - echo "{configuration}"
+  - echo "$(configuration)"
+  - echo $(configuration)
 build:
   parallel: true
   project: ci.sln
