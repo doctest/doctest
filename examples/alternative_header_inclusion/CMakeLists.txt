@@ -1,11 +1,7 @@
-cmake_minimum_required(VERSION 2.8)
-
 project(alternative_header_inclusion)
 
-if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
-	set(CMAKE_CXX_FLAGS "-m64 -Wall -Wextra --save-temps -std=c++98 -pedantic -Wconversion -Werror -fvisibility=hidden ${CMAKE_CXX_FLAGS}")
-endif()
+include_directories("${CMAKE_SOURCE_DIR}/doctest/")
 
-include_directories("../../doctest/")
+add_executable(${PROJECT_NAME} main.cpp file.cpp)
 
-add_executable(exe main.cpp file.cpp)
+add_test(${PROJECT_NAME} ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME})

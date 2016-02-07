@@ -1,15 +1,11 @@
-cmake_minimum_required(VERSION 2.8)
-
 project(stress_test)
 
-if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
-	set(CMAKE_CXX_FLAGS "-m64 -Wall -Wextra --save-temps -std=c++98 -pedantic -Wconversion -Werror -fvisibility=hidden ${CMAKE_CXX_FLAGS}")
-endif()
-
-include_directories("../../doctest/")
+include_directories("${CMAKE_SOURCE_DIR}/doctest/")
 
 if(MSVC)
 	add_definitions(/bigobj)
 endif()
 
-add_executable(exe main.cpp test.cpp)
+add_executable(${PROJECT_NAME} main.cpp test.cpp)
+
+add_test(${PROJECT_NAME} ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME})

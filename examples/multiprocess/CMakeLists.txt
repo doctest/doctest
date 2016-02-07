@@ -1,7 +1,7 @@
-cmake_minimum_required(VERSION 2.8)
-
 project(multithreaded)
 
-include_directories("../../doctest/")
+include_directories("${CMAKE_SOURCE_DIR}/doctest/")
 
-add_executable(exe main.cpp)
+add_executable(${PROJECT_NAME} main.cpp)
+
+add_test(${PROJECT_NAME} ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME})

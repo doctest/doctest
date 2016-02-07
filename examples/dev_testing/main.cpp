@@ -6,8 +6,6 @@
 #include <exception>
 using namespace std;
 
-#include "bla/main.h"
-
 testsuite(MAIN);
 test(zzz)
 {
@@ -55,7 +53,7 @@ int main(int argc, char** argv)
     system("pause");
 #endif // _MSC_VER
 
-    return OMFGGG();
+    return 0;
 }
 
 test("") { cout << "TEST " << __LINE__ << endl; }

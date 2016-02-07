@@ -1,3 +1,4 @@
+#define DOCTEST_CONFIG_IMPLEMENT
 #include "doctest.h"
 
 #include <cstdio>
@@ -7,7 +8,14 @@ doctest_test(First) {
 }
 
 int main(int argc, char** argv) {
-    DOCTEST_INVOKE_ALL_TEST_FUNCTIONS(argc, argv);
+    // initialize
+    void* params = doctest::createParams(argc, argv);
+
+    // run
+    int res = doctest::runTests(params);
+
+    // free
+    doctest::freeParams(params);
 
 #if defined(_MSC_VER)
     system("pause");
