@@ -33,6 +33,8 @@ before_build:
   - echo {config}
   - echo "$(config)"
   - echo $(config)
+  - echo %config%
+  - echo %configuration%
 build:
   parallel: true
   project: ci.sln
