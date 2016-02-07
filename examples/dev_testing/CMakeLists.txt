@@ -1,5 +1,3 @@
-cmake_minimum_required(VERSION 2.8)
-
 project(dev_testing)
 
 if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
@@ -21,9 +19,8 @@ if(MSVC)
 endif()
 
 add_definitions(-DDOCTEST_CONFIG_SHORT_MACRO_NAMES)
-#add_definitions(-DDOCTEST_CONFIG_IMPLEMENT)
 
-include_directories("../../doctest/")
+include_directories("${CMAKE_SOURCE_DIR}/doctest/")
 
 add_executable(${PROJECT_NAME} main.cpp test.cpp)
 
