@@ -3,7 +3,11 @@ doctest
 
 [![Windows Status](https://ci.appveyor.com/api/projects/status/j89qxtahyw1dp4gd?svg=true)](https://ci.appveyor.com/project/onqtam/doctest)
 [![Linux Status](https://travis-ci.org/onqtam/doctest.svg?branch=master)](https://travis-ci.org/onqtam/doctest)
+
 [![codecov.io](https://codecov.io/github/onqtam/doctest/coverage.svg?branch=master)](https://codecov.io/github/onqtam/doctest?branch=master)
+
+[![Coverage Status](https://coveralls.io/repos/github/onqtam/doctest/badge.svg?branch=master)](https://coveralls.io/github/onqtam/doctest?branch=master)
+
 [![License](http://img.shields.io/badge/license-MIT-blue.svg)](http://opensource.org/licenses/MIT)
 [![Version](https://badge.fury.io/gh/onqtam%2Fdoctest.svg)](https://github.com/onqtam/doctest/releases)
 

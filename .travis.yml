@@ -11,15 +11,15 @@ before_install:
   - sudo apt-get install -y -qq lcov curl valgrind tree
   - git submodule update --init --recursive
 script:
-  - export COVERALLS_SERVICE_NAME=travis-ci # COVERALLS_REPO_TOKEN added in env vars in travis
+#  - export COVERALLS_SERVICE_NAME=travis-ci # COVERALLS_REPO_TOKEN added in env vars in travis
   - cmake -DCI_COVERAGE=ON .
   - cmake --build .
-  - cmake --build . --target test
+  - cmake --build . --target coveralls
   - tree
-  - gcov doctest/doctest.h
+#  - gcov doctest/doctest.h
 #  - valgrind --leak-check=full --track-origins=yes --error-exitcode=1 ./exe
 after_success:
-  - bash <(curl -s https://codecov.io/bash)
+#  - bash <(curl -s https://codecov.io/bash)
   
 #  - cmake --build .
 #  - cmake --build . --target coveralls
