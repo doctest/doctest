@@ -6,9 +6,9 @@ filelist = [f for f in os.listdir(".") if f.endswith(".html")]
 for f in filelist:
     os.remove(f)
 
-for filename in os.listdir('./../'):
+for filename in os.listdir('./../markdown/'):
     if filename[-2:] == "md":
-        md = open('./../' + filename, "r")
+        md = open('./../markdown/' + filename, "r")
         md_contents = md.read()
         md.close()
         html = open('./' + filename[:-2] + "html", "w")

@@ -25,4 +25,4 @@ build:
   parallel: true
   project: ci.sln
 test_script:
-  - cmake --build . --target tests
+  - cmake --build . --target RUN_TESTS
