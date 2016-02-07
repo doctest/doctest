@@ -2,9 +2,8 @@
 #define DOCTEST_CONFIG_IMPLEMENT
 #include "doctest.h"
 
-
-    //system("timeout /t 1 /nobreak");\
-    //system("sleep 1s");\
+//system("timeout /t 1 /nobreak");
+//system("sleep 1s");
 
 #if defined(_WIN32)
 #define implement_sleeper \
