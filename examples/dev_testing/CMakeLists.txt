@@ -2,7 +2,7 @@ project(dev_testing)
 
 add_definitions(-DDOCTEST_CONFIG_SHORT_MACRO_NAMES)
 
-include_directories("${CMAKE_SOURCE_DIR}/doctest/")
+include_directories("../../doctest/")
 
 add_executable(${PROJECT_NAME} main.cpp)
 

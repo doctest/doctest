@@ -20,7 +20,9 @@ configuration:
   - Release
 
 before_build:
-  - cmake -G "Visual Studio 14 2015 Win64" examples/dev_testing
+  - cmake -G "Visual Studio 14 2015 Win64" .
 build:
   parallel: true
   project: dev_testing.sln
+test_script:
+  - cmake --build . --target tests

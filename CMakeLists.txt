@@ -4,16 +4,6 @@ option(CI_COVERAGE "coverage" OFF)
 
 enable_testing()
 
-if(CI_COVERAGE)
-    set(CMAKE_BUILD_TYPE Debug CACHE STRING "" FORCE)
-    
-    set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_SOURCE_DIR}/ci/coveralls-cmake/cmake)
-	include(Coveralls)
-	coveralls_turn_on_coverage()
-    
-	coveralls_setup("${CMAKE_SOURCE_DIR}/doctest/doctest.h" ON "${CMAKE_SOURCE_DIR}/ci/coveralls-cmake/cmake")
-endif()
-
 if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
     #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Werror")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} --save-temps -std=c++98 -pedantic -m64 -O2 -fvisibility=hidden -fstrict-aliasing")
@@ -31,6 +21,18 @@ endif()
 if(MSVC)
     add_definitions(/W4)
 endif()
+
+if(CI_COVERAGE)
+    set(CMAKE_BUILD_TYPE Debug CACHE STRING "" FORCE)
+    
+    set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_SOURCE_DIR}/ci/coveralls-cmake/cmake)
+	include(Coveralls)
+	coveralls_turn_on_coverage()
+    
+	coveralls_setup("${CMAKE_SOURCE_DIR}/doctest/doctest.h" ON "${CMAKE_SOURCE_DIR}/ci/coveralls-cmake/cmake")
+endif()
+
+include_directories("doctest/") # this is needed here so the coverage tools work - because the "../../doctest" relative path will confuse it
 
 add_subdirectory(examples/dev_testing)
 add_subdirectory(examples/hello_world)

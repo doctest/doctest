@@ -1,6 +1,6 @@
 project(stress_test)
 
-include_directories("${CMAKE_SOURCE_DIR}/doctest/")
+include_directories("../../doctest/")
 
 if(MSVC)
 	add_definitions(/bigobj)

@@ -1,6 +1,6 @@
 project(multi_dll)
 
-include_directories("${CMAKE_SOURCE_DIR}/doctest/")
+include_directories("../../doctest/")
 
 add_library(dll_1 SHARED dll.cpp)
 

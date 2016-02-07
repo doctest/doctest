@@ -1,6 +1,6 @@
 project(alternative_header_inclusion)
 
-include_directories("${CMAKE_SOURCE_DIR}/doctest/")
+include_directories("../../doctest/")
 
 add_executable(${PROJECT_NAME} main.cpp file.cpp)
 
