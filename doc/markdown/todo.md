@@ -52,10 +52,10 @@ test execution in separate processes
 
 CI
     travis
+        osx
         clang
         valgrind
-        clang static analysis
-        coverity static analysis https://scan.coverity.com/travis_ci
+    coverity static analysis https://scan.coverity.com/travis_ci
 
 https://gitter.im/
 
