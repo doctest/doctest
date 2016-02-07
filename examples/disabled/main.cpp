@@ -1,4 +1,4 @@
-#define DOCTEST_GLOBAL_DISABLE
+#define DOCTEST_CONFIG_IMPLEMENT
 #include "doctest.h"
 
 #include <cstdio>
@@ -28,7 +28,9 @@ struct Stuff {
 doctest_static_method(Stuff, check)
 
 int main(int argc, char** argv) {
-    DOCTEST_INVOKE_ALL_TEST_FUNCTIONS(argc, argv);
+    void* params = doctest::createParams(argc, argv);
+    int res = doctest::runTests(params);
+    doctest::freeParams(params);
 
 #if defined(_MSC_VER)
     system("pause");

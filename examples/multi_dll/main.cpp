@@ -5,7 +5,10 @@ doctest_test(executable) {
 }
 
 int main(int argc, char** argv) {
-    DOCTEST_INVOKE_ALL_TEST_FUNCTIONS(argc, argv);
+    void* params = doctest::createParams(argc, argv);
+    int res = doctest::runTests(params);
+    doctest::freeParams(params);
+    
     call_tests_from_dll(argc, argv);
 
 #if defined(_MSC_VER)

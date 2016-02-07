@@ -25,5 +25,4 @@ build:
   parallel: true
   project: ci.sln
 test_script:
-  - tree /F
   - cmake --build . --target RUN_TESTS --config %configuration%

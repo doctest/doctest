@@ -1,3 +1,4 @@
+#define DOCTEST_CONFIG_IMPLEMENT
 #include "doctest.h"
 #include "stress.inl"
 #include "stress.inl"
@@ -11,7 +12,9 @@
 #include "stress.inl"
 
 int main(int argc, char** argv) {
-    DOCTEST_INVOKE_ALL_TEST_FUNCTIONS(argc, argv);
+    void* params = doctest::createParams(argc, argv);
+    int res = doctest::runTests(params);
+    doctest::freeParams(params);
 
 #if defined(_MSC_VER)
     system("pause");

@@ -37,4 +37,8 @@ endif()
 include_directories("doctest/") # this is needed here so the coverage tools work - because the "../../doctest" relative path will confuse it
 
 add_subdirectory(examples/dev_testing)
+add_subdirectory(examples/disabled)
 add_subdirectory(examples/hello_world)
+add_subdirectory(examples/multi_dll)
+add_subdirectory(examples/multiprocess)
+add_subdirectory(examples/stress_test)

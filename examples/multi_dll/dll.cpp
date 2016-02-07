@@ -6,5 +6,7 @@ doctest_test(dll) {
 }
 
 DLL_PUBLIC void call_tests_from_dll(int argc, char** argv) {
-    DOCTEST_INVOKE_ALL_TEST_FUNCTIONS(argc, argv);
+    void* params = doctest::createParams(argc, argv);
+    int res = doctest::runTests(params);
+    doctest::freeParams(params);
 }

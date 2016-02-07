@@ -12,7 +12,7 @@ more aggressive gcc/clang warnings! http://meetingcpp.com/tl_files/2014/talks/ro
 
 
 
-__attribute((unused))__ for tests when disabled globally
+__attribute((unused))__ for tests when disabled globally (or made as templates that never get instantiated)
 
 
 
@@ -51,30 +51,13 @@ test execution in separate processes
         http://msdn.microsoft.com/en-us/library/windows/desktop/ms682499(v=vs.85).aspx
 
 CI
-    https://svn.boost.org/trac/boost/wiki/TravisCoverals
     travis
-        compile/run all examples
+        clang
         valgrind
-            https://github.com/dlundquist/sniproxy/blob/master/.travis.yml
         clang static analysis
-        coverity static analysis http://www.coverity.com/
-        coverage
-            https://github.com/eddyxu/cpp-coveralls
-            https://github.com/kylelutz/compute
-            https://github.com/apolukhin/variant/blob/travisci/.travis.yml
-    msvc
-        just compile all the examples
-        https://github.com/mkurdej/bft/blob/develop/appveyor.yml
-        https://github.com/mapbox/variant/blob/master/appveyor.yml
-        https://github.com/cppformat/cppformat/blob/master/appveyor.yml
-
-badges - https://github.com/davidsiaw/luacppinterface
-
-https://bitdeli.com/
+        coverity static analysis https://scan.coverity.com/travis_ci
 
 https://gitter.im/
-
-http://shields.io/
 
 THINK OF IN THE LONG TERM
 
@@ -93,6 +76,8 @@ error checking of parameters (if the range is valid (first <= last), etc)
 ability to transfer/copy registered functions from one shared object to another so they are put in one set and duplicates are filtered
 
 to make it C compatible:
+
+- WHY DON'T YOU USE C++?
 
 - make a DOCTEST_C_INTERFACE macro
 
