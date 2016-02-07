@@ -4,8 +4,6 @@ notifications:
   - provider: Email
     to:
       - vik.kirilov@gmail.com
-    subject: "[doctest] Build {{status}}"
-    message: "{{message}}, {{commitId}}, ..."
     on_build_status_changed: true
     on_build_failure: true
 
