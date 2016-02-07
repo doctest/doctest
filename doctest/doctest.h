@@ -165,18 +165,6 @@ inline int runTests(void*) { return 0; }
 
 #endif // DOCTEST_CONFIG_DISABLE
 
-// == THIS SUPPLIES A MAIN FUNCTION AND SHOULD BE DONE ONLY IN ONE TRANSLATION UNIT
-#ifdef DOCTEST_CONFIG_MAIN
-// Standard C/C++ main entry point
-int main(int argc, char** argv)
-{
-    void* params = doctest::createParams(argc, argv);
-    int res = doctest::runTests(params);
-    doctest::freeParams(params);
-    return res;
-}
-#endif
-
 #define doctest_test(name) DOCTEST_TEST(name)
 #define doctest_test_noname DOCTEST_TEST_NONAME
 #define doctest_fixture(c, name) DOCTEST_FIXTURE(c, name)
@@ -853,3 +841,16 @@ int runTests(void* params_struct)
 
 #endif // DOCTEST_LIBRARY_IMPLEMENTATION
 #endif // DOCTEST_CONFIG_IMPLEMENT
+
+// == THIS SUPPLIES A MAIN FUNCTION AND SHOULD BE DONE ONLY IN ONE TRANSLATION UNIT
+#if defined(DOCTEST_CONFIG_MAIN) && !defined(DOCTEST_MAIN_CONFIGURED)
+#define DOCTEST_MAIN_CONFIGURED
+// Standard C/C++ main entry point
+int main(int argc, char** argv)
+{
+	void* params = doctest::createParams(argc, argv);
+	int res = doctest::runTests(params);
+	doctest::freeParams(params);
+	return res;
+}
+#endif // defined(DOCTEST_CONFIG_MAIN) && !defined(DOCTEST_MAIN_CONFIGURED)

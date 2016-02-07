@@ -21,12 +21,6 @@ doctest_fixture(Empty, ops) {
     printf("Help?\n");
 }
 
-struct Stuff {
-    static void check() { printf("halp!!!!!!!!!\n"); }
-};
-
-doctest_static_method(Stuff, check)
-
 int main(int argc, char** argv) {
     void* params = doctest::createParams(argc, argv);
     int res = doctest::runTests(params);
@@ -36,5 +30,5 @@ int main(int argc, char** argv) {
     system("pause");
 #endif // _MSC_VER
 
-    return 0;
+    return res;
 }

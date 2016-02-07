@@ -53,7 +53,7 @@ int main(int argc, char** argv)
     system("pause");
 #endif // _MSC_VER
 
-    return 0;
+    return res;
 }
 
 test("") { cout << "TEST " << __LINE__ << endl; }

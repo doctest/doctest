@@ -9,11 +9,11 @@ int main(int argc, char** argv) {
     int res = doctest::runTests(params);
     doctest::freeParams(params);
     
-    call_tests_from_dll(argc, argv);
+    res += call_tests_from_dll(argc, argv);
 
 #if defined(_MSC_VER)
     system("pause");
 #endif // _MSC_VER
 
-    return 0;
+    return res;
 }
