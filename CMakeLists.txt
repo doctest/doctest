@@ -6,12 +6,11 @@ option(CI_COVERAGE "coverage" OFF)
 
 enable_testing()
 
-option(COVERALLS "Turn on coveralls support" OFF)
-option(COVERALLS_UPLOAD "Upload the generated coveralls json" ON)
-
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR}/ci/coveralls-cmake/cmake)
 
 if(CI_COVERAGE)
+    set(CMAKE_BUILD_TYPE Debug CACHE STRING "" FORCE)
+    
+    set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR}/ci/coveralls-cmake/cmake)
 	include(Coveralls)
 	coveralls_turn_on_coverage()
     
@@ -31,6 +30,6 @@ add_subdirectory(examples/dev_testing)
 if(CI_COVERAGE)
 	coveralls_setup(
         "${PROJECT_SOURCE_DIR}/doctest/doctest.h"
-        ${COVERALLS_UPLOAD}
+        ON
         "${PROJECT_SOURCE_DIR}/ci/coveralls-cmake/cmake")
 endif()
