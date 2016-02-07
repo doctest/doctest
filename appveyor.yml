@@ -21,23 +21,9 @@ configuration:
 
 before_build:
   - cmake -G "Visual Studio 14 2015 Win64" .
-  - echo "{{configuration}}"
-  - echo "{configuration}"
-  - echo {{configuration}}
-  - echo {configuration}
-  - echo "$(configuration)"
-  - echo $(configuration)
-  - echo "{{config}}"
-  - echo "{config}"
-  - echo {{config}}
-  - echo {config}
-  - echo "$(config)"
-  - echo $(config)
-  - echo %config%
-  - echo %configuration%
 build:
   parallel: true
   project: ci.sln
 test_script:
   - tree /F
-  - cmake --build . --target RUN_TESTS --config "{{configuration}}"
+  - cmake --build . --target RUN_TESTS --config %configuration%
