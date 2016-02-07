@@ -7,7 +7,7 @@ notifications:
     on_build_status_changed: true
     on_build_failure: true
 
-clone_depth: 1
+clone_depth: 5
 matrix:
   fast_finish: true
 branches:
