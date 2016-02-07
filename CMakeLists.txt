@@ -29,7 +29,7 @@ add_subdirectory(examples/dev_testing)
 
 if(CI_COVERAGE)
 	coveralls_setup(
-        "${PROJECT_SOURCE_DIR}/doctest/doctest.h"
+        "${PROJECT_SOURCE_DIR}/doctest/doctest.h;${PROJECT_SOURCE_DIR}/examples/dev_testing/main.cpp"
         ON
         "${PROJECT_SOURCE_DIR}/ci/coveralls-cmake/cmake")
 endif()
