@@ -11,6 +11,8 @@ before_install:
   - sudo apt-get install -y -qq lcov curl valgrind tree
   - git submodule update --init --recursive
 script:
+  - export COVERALLS_SERVICE_NAME=travis-ci
+  - export COVERALLS_REPO_TOKEN=mVbX7eodORjykDY1eua653oNsLE9WM51B
 #  - export COVERALLS_SERVICE_NAME=travis-ci # COVERALLS_REPO_TOKEN added in env vars in travis
   - cmake -DCI_COVERAGE=ON .
   - cmake --build .
