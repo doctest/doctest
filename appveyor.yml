@@ -13,6 +13,7 @@ matrix:
 branches:
   except:
     - gh-pages
+    - coverity_scan
 platform:
   - x64
 configuration:
