@@ -10,13 +10,14 @@ doctest is a single header C++ library for writing tests that is inspired by the
 Build status
 ------------
 
-| Service               | Status                                                   |
-|-----------------------|----------------------------------------------------------|
-| Travis-CI (Linux)     | [![Linux Status](https://travis-ci.org/onqtam/doctest.svg?branch=master)](https://travis-ci.org/onqtam/doctest)|
-| Appveyor (Windows)    | [![Windows Status](https://ci.appveyor.com/api/projects/status/j89qxtahyw1dp4gd?svg=true)](https://ci.appveyor.com/project/onqtam/doctest)|
-| Unit Test Coverage    | [![Coverage Status](https://coveralls.io/repos/github/onqtam/doctest/badge.svg?branch=master)](https://coveralls.io/github/onqtam/doctest?branch=master)|
+| Service            | Status                                                   |
+|--------------------|----------------------------------------------------------|
+| Travis-CI (Linux)  | [![Linux Status](https://travis-ci.org/onqtam/doctest.svg?branch=master)](https://travis-ci.org/onqtam/doctest)|
+| Appveyor (Windows) | [![Windows Status](https://ci.appveyor.com/api/projects/status/j89qxtahyw1dp4gd?svg=true)](https://ci.appveyor.com/project/onqtam/doctest)|
+| Unit Test Coverage | [![Coverage Status](https://coveralls.io/repos/github/onqtam/doctest/badge.svg?branch=master)](https://coveralls.io/github/onqtam/doctest?branch=master)|
+| Static Analysis    | [![Static Analysis](https://scan.coverity.com/projects/7865/badge.svg)](https://scan.coverity.com/projects/onqtam-doctest)|
 
 Documentation
 ------------
 
-Documentation can be found [here](doc/markdown/)
+Documentation can be found [here](doc/markdown/).
