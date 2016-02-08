@@ -6,6 +6,17 @@ notifications:
 compiler:
   - gcc
 #  - clang
+
+addons:
+  coverity_scan:
+    project:
+      name: onqtam/doctest
+      version: 1.0
+    notification_email: vik.kirilov@gmail.com
+    build_command_prepend: cd examples/hello_world && cmake .
+    build_command: make
+    branch_pattern: coverity_scan
+
 before_install:
   - sudo apt-get update -qq
   - sudo apt-get install -y -qq lcov curl valgrind tree
