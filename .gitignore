@@ -25,12 +25,8 @@
 *.s
 
 # My garbage :)
-bench/assimp/*
-bench/catch/*
-bench/log.txt
-examples/*/mingw/*
-examples/*/msvc/*
-examples/*/*.bat
+scripts/bench/assimp/*
+scripts/bench/catch/*
+scripts/bench/log.txt
 *.suo
 *.pyc
-err.txt

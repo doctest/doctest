@@ -1,5 +1,12 @@
 #! /usr/bin/env python
 
+# ==============================================================================
+# ==============================================================================
+# == NOTE THIS SCRIPT IS A MODIFIED VERSION (FOR .H INSTEAD OF .HPP HEADERS) ===
+# == TAKEN FROM https://github.com/ned14/Boost.APIBind/tree/master/scripts =====
+# ==============================================================================
+# ==============================================================================
+
 # This script uploads a directory to Wandbox (http://melpon.org/wandbox),
 # which is an online compiler environment, and prints a permalink to the
 # uploaded code. We use this to provide a "Try it online" version of the

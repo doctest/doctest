@@ -6,6 +6,7 @@ notifications:
       - vik.kirilov@gmail.com
     on_build_status_changed: true
     on_build_failure: true
+    on_build_success: false
 
 clone_depth: 5
 matrix:
@@ -24,6 +25,6 @@ before_build:
   - cmake -G "Visual Studio 14 2015 Win64" .
 build:
   parallel: true
-  project: ci.sln
+  project: all.sln
 test_script:
   - cmake --build . --target RUN_TESTS --config %configuration%

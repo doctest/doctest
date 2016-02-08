@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 2.8)
 
-project(ci)
+project(all)
 
 option(CI_COVERAGE "coverage" OFF)
 
@@ -27,11 +27,11 @@ endif()
 if(CI_COVERAGE)
     set(CMAKE_BUILD_TYPE Debug CACHE STRING "" FORCE)
     
-    set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_SOURCE_DIR}/ci/coveralls-cmake/cmake)
+    set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_SOURCE_DIR}/scripts/coveralls-cmake/cmake)
 	include(Coveralls)
 	coveralls_turn_on_coverage()
     
-	coveralls_setup("${CMAKE_SOURCE_DIR}/doctest/doctest.h" ON "${CMAKE_SOURCE_DIR}/ci/coveralls-cmake/cmake")
+	coveralls_setup("${CMAKE_SOURCE_DIR}/doctest/doctest.h" ON "${CMAKE_SOURCE_DIR}/scripts/coveralls-cmake/cmake")
 endif()
 
 include_directories("doctest/") # this is needed here so the coverage tools work - because the "../../doctest" relative path will confuse it
