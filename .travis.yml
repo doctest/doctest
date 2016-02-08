@@ -24,7 +24,8 @@ before_install:
 script:
   # COVERALLS_REPO_TOKEN added in env vars in travis
   - export COVERALLS_SERVICE_NAME=travis-ci
-  - cmake -DCI_COVERAGE=ON .
+  - cmake -DCI_COVERAGE=ON -DCMAKE_EXPORT_COMPILE_COMMANDS=ON .
   - cmake --build .
   - cmake --build . --target coveralls
+  - cat compile_commands.json
 #  - valgrind --leak-check=full --track-origins=yes --error-exitcode=1 ./exe

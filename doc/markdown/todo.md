@@ -25,6 +25,8 @@ the CHECK() macro
 
 a message macro
 
+squash git history for version 1 (after the CHECK() macro is done and some reporting is present) and recreate branches
+
 timing reports of tests, duration restrictions, kill of longer than, etc...
 
 look at catch command line options

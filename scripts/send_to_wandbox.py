@@ -2,8 +2,11 @@
 
 # ==============================================================================
 # ==============================================================================
-# == NOTE THIS SCRIPT IS A MODIFIED VERSION (FOR .H INSTEAD OF .HPP HEADERS) ===
-# == TAKEN FROM https://github.com/ned14/Boost.APIBind/tree/master/scripts =====
+# == NOTE THIS SCRIPT IS A MODIFIED VERSION OF
+# == https://github.com/ned14/Boost.APIBind/tree/master/scripts
+# == - SEARCHES FOR HEADERS WITH AN '.H' EXTENSION INSTEAD OF '.HPP'
+# == - NO BOOST, NEWEST COMPILER, ETC.
+# == REST API: https://github.com/melpon/wandbox/blob/master/kennel2/API.rst
 # ==============================================================================
 # ==============================================================================
 
@@ -112,7 +115,7 @@ def main():
         'options': 'c++98,cpp-no-pedantic',
         'compiler': 'gcc-head',
         'save': True,
-        'compiler-option-raw': '-Wno-deprecated-declarations'
+        'compiler-option-raw': '' # -Wall and etc. go here
     })
 
     if 'status' in response and response['status'] == '0':
