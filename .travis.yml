@@ -12,7 +12,6 @@ addons:
     # COVERITY_SCAN_TOKEN added as env var in travis project 
     project:
       name: onqtam/doctest
-      version: 1.0
     notification_email: vik.kirilov@gmail.com
     build_command_prepend: cd examples/hello_world && cmake .
     build_command: make

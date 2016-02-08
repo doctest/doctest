@@ -432,6 +432,7 @@ namespace detail
             data.name = name;
             data.f = f;
             data.next = 0;
+            data.padding = 0;
 
             if(last == 0) {
                 // insert the record into this bucket as a first item
