@@ -1,5 +1,7 @@
 ##TODO
 
+move to dashes from underscores for command line arguments
+
 ability to not run tests at all
 
 use a pool for the allocations because 1k+ allocs before entering main() can be heavy
@@ -55,7 +57,6 @@ CI
         osx
         clang
         valgrind
-    coverity static analysis https://scan.coverity.com/travis_ci
 
 https://gitter.im/
 

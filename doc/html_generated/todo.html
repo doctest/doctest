@@ -5,6 +5,8 @@
 
 ##TODO
 
+move to dashes from underscores for command line arguments
+
 ability to not run tests at all
 
 use a pool for the allocations because 1k+ allocs before entering main() can be heavy
@@ -17,7 +19,7 @@ more aggressive gcc/clang warnings! http://meetingcpp.com/tl_files/2014/talks/ro
 
 
 
-__attribute((unused))__ for tests when disabled globally
+__attribute((unused))__ for tests when disabled globally (or made as templates that never get instantiated)
 
 
 
@@ -56,30 +58,12 @@ test execution in separate processes
         http://msdn.microsoft.com/en-us/library/windows/desktop/ms682499(v=vs.85).aspx
 
 CI
-    https://svn.boost.org/trac/boost/wiki/TravisCoverals
     travis
-        compile/run all examples
+        osx
+        clang
         valgrind
-            https://github.com/dlundquist/sniproxy/blob/master/.travis.yml
-        clang static analysis
-        coverity static analysis http://www.coverity.com/
-        coverage
-            https://github.com/eddyxu/cpp-coveralls
-            https://github.com/kylelutz/compute
-            https://github.com/apolukhin/variant/blob/travisci/.travis.yml
-    msvc
-        just compile all the examples
-        https://github.com/mkurdej/bft/blob/develop/appveyor.yml
-        https://github.com/mapbox/variant/blob/master/appveyor.yml
-        https://github.com/cppformat/cppformat/blob/master/appveyor.yml
-
-badges - https://github.com/davidsiaw/luacppinterface
-
-https://bitdeli.com/
 
 https://gitter.im/
-
-http://shields.io/
 
 THINK OF IN THE LONG TERM
 
@@ -98,6 +82,8 @@ error checking of parameters (if the range is valid (first <= last), etc)
 ability to transfer/copy registered functions from one shared object to another so they are put in one set and duplicates are filtered
 
 to make it C compatible:
+
+- WHY DON'T YOU USE C++?
 
 - make a DOCTEST_C_INTERFACE macro
 
@@ -140,78 +126,6 @@ documentation
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-https://svn.boost.org/trac/boost/wiki/BestPracticeHandbook#a14.USERFRIENDLINESS:Considerlettingpotentialuserstryyourlibrarywithasinglemouseclick
-
-
-
-
-
-
-
-
-
-
-WANDBOX TRY-IT-ONLINE
-
- Hi,
-
-I've recently added a new functionality to proposed boost.di library
-documentation.
-After `try it online` the natural next step was to add `run this code`
-functionality like in http://en.cppreference.com/w/ or
-http://www.rust-lang.org/ programming language.
-Powered by Wandbox and CodeMirror approach, let you play with the
-particular example and switch between normal quick book programming listing
-mode and the editor/compiler mode.
-
-You can check it here:
-http://krzysztof-jusiak.github.io/di/cpp14/boost/libs/di/doc/html/di/examples/hello_world.html
-
-Just click on `Run this code` button and you will be switched to the editor
-mode, where you would be able to edit the code and compile it online using
-the newest version of the library.
-
-Implementation details:
-https://github.com/krzysztof-jusiak/di/blob/cpp14/doc/js/run_this_code.js
-
-It's basically the same solution as `try it online`, just implemented in js
-instead. Additionally, it also takes the newest version of the library from
-github.
-
-Minimal html:
-<link rel="stylesheet" href="CodeMirror/lib/codemirror.css">
-<link rel="stylesheet" href="CodeMirror/theme/zenburn.css">
-<script src="CodeMirror/lib/codemirror.js"></script>
-<script src="CodeMirror/mode/clike/clike.js"></script>
-<script src="CodeMirror/addon/selection/active-line.js"></script>
-<script src="run_this_code.js"></script>
-
-<button class="TryItBtn" id="run_it_btn" onclick="show('
-https://raw.githubusercontent.com/krzysztof-jusiak/di/cpp14/examples/hello_world.cpp)">Run
-this code!<\/button>
-<textarea style="display: none" id="code"></textarea>
-<textarea style="display: none" id="output"></textarea>
-<div id="code_listing">
-//quick book programming listing here or anything else, which should be
-hidden when editor mode is enabled
-</div>
-
-Let me know, what do you think.
-
-Cheers, Kris
 
 </xmp>
 <script src="strapdown.js/strapdown.js"></script>

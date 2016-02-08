@@ -1,0 +1,6 @@
+- run release.py
+- update HISTORY.md
+- commit in dev
+- merge dev in master and coverity_scan
+- push all branches
+- create github release with a semver tag
