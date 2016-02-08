@@ -28,5 +28,7 @@
 scripts/bench/assimp/*
 scripts/bench/catch/*
 scripts/bench/log.txt
+build/*
+examples/*/build/*
 *.suo
 *.pyc

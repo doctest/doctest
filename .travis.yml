@@ -9,6 +9,7 @@ compiler:
 
 addons:
   coverity_scan:
+    # COVERITY_SCAN_TOKEN added as env var in travis project 
     project:
       name: onqtam/doctest
       version: 1.0
@@ -22,7 +23,8 @@ before_install:
   - sudo apt-get install -y -qq lcov curl valgrind tree
   - git submodule update --init --recursive
 script:
-  - export COVERALLS_SERVICE_NAME=travis-ci # COVERALLS_REPO_TOKEN added in env vars in travis
+  # COVERALLS_REPO_TOKEN added in env vars in travis
+  - export COVERALLS_SERVICE_NAME=travis-ci
   - cmake -DCI_COVERAGE=ON .
   - cmake --build .
   - cmake --build . --target coveralls
