@@ -6,53 +6,53 @@ option(CI_COVERAGE "coverage" OFF)
 
 enable_testing()
 
+macro(add_cpp_flag flag)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${flag}")
+endmacro()
+
 if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Werror")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}
-        --save-temps
-        -std=c++98
-        -pedantic
-        -m64
-        -O2
-        -fvisibility=hidden
-        -fstrict-aliasing
-    ")
+    #add_cpp_flag(-Werror)
+    add_cpp_flag(--save-temps)
+    add_cpp_flag(-std=c++98)
+    add_cpp_flag(-pedantic)
+    add_cpp_flag(-m64)
+    add_cpp_flag(-O2)
+    add_cpp_flag(-fvisibility=hidden)
+    add_cpp_flag(-fstrict-aliasing)
 endif()
 
 if(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}
-        -ansi
-        -Wall
-        -Wextra
-        -Wconversion
-        -Wno-missing-field-initializers
-        -Wold-style-cast
-        -Wfloat-equal
-        -Wlogical-op
-        -Wundef
-        -Wredundant-decls
-        -Wshadow
-        -Wstrict-overflow=5
-        -Wwrite-strings
-        -Wpointer-arith
-        -Wcast-qual
-        -Wformat=2
-        -Wswitch-default
-        -Wmissing-include-dirs
-        -Wcast-align
-        -Wformat-nonliteral
-        -Wparentheses
-        -Winit-self
-        -Wuninitialized
-        -Wswitch-enum
-        -Wno-endif-labels
-        -Wunused-function
-    ")
+    add_cpp_flag(-ansi)
+    add_cpp_flag(-Wall)
+    add_cpp_flag(-Wextra)
+    add_cpp_flag(-Wconversion)
+    add_cpp_flag(-Wno-missing-field-initializers)
+    add_cpp_flag(-Wold-style-cast)
+    add_cpp_flag(-Wfloat-equal)
+    add_cpp_flag(-Wlogical-op)
+    add_cpp_flag(-Wundef)
+    add_cpp_flag(-Wredundant-decls)
+    add_cpp_flag(-Wshadow)
+    add_cpp_flag(-Wstrict-overflow=5)
+    add_cpp_flag(-Wwrite-strings)
+    add_cpp_flag(-Wpointer-arith)
+    add_cpp_flag(-Wcast-qual)
+    add_cpp_flag(-Wformat=2)
+    add_cpp_flag(-Wswitch-default)
+    add_cpp_flag(-Wmissing-include-dirs)
+    add_cpp_flag(-Wcast-align)
+    add_cpp_flag(-Wformat-nonliteral)
+    add_cpp_flag(-Wparentheses)
+    add_cpp_flag(-Winit-self)
+    add_cpp_flag(-Wuninitialized)
+    add_cpp_flag(-Wswitch-enum)
+    add_cpp_flag(-Wno-endif-labels)
+    add_cpp_flag(-Wunused-function)
 endif()
 
 if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Weverything")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-global-constructors")
+    add_cpp_flag(-Weverything)
+    add_cpp_flag(-Wno-global-constructors)
 endif()
 
 if(MSVC)
