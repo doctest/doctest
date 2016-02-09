@@ -1,1 +1,0 @@
-[![Try it online](https://img.shields.io/badge/try%20it-online-orange.svg)]({u'url': u'http://melpon.org/wandbox/permlink/M50iHU1plnZV5t82', u'permlink': u'M50iHU1plnZV5t82', u'signal': u'Killed'})

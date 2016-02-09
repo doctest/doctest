@@ -3,6 +3,7 @@
 import os
 import subprocess
 import fileinput
+import time
 
 # run generate_html.py
 print("generating html documentation from markdown")
@@ -10,17 +11,22 @@ os.system("python generate_html.py")
 
 # create readme files in examples with 'try it online' badges with permalinks
 examples = "../examples/"
+examples_skip = ["multiprocess"]
 
 for dir in os.listdir(examples):
     # skip folders with more than 1 source file
     sources = [s for s in os.listdir(examples + dir) if ".cpp" in s]
-    if len(sources) > 1:
+    if dir in examples_skip or len(sources) > 1 or len(sources) == 0:
         continue
     
     print("generating readme for example '" + examples + dir + "'")
     
     proc = subprocess.Popen('python send_to_wandbox.py ../doctest/ ' + examples + dir + "/" + sources[0], stdout = subprocess.PIPE)
     url = proc.stdout.read().strip()
+    
+    if not url.startswith("http"):
+        print("skipping current example because of crappy url: '" + url + "'\n")
+        continue
     
     readme = open(examples + dir + "/README.md", "w")
     readme.write("[![Try it online](https://img.shields.io/badge/try%20it-online-orange.svg)](" + url + ")")
