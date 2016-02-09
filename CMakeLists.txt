@@ -7,8 +7,8 @@ option(CI_COVERAGE "coverage" OFF)
 enable_testing()
 
 if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
-    #set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} -Werror)
-    set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS}
+    #list(APPEND CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} -Werror)
+    list(APPEND CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS}
         --save-temps
         -std=c++98
         -pedantic
@@ -20,7 +20,7 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
 endif()
 
 if(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
-    set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS}
+    list(APPEND CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS}
         -ansi
         -Wall
         -Wextra
@@ -51,8 +51,8 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
 endif()
 
 if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-    set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} -Weverything)
-    set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} -Wno-global-constructors)
+    list(APPEND CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} -Weverything)
+    list(APPEND CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} -Wno-global-constructors)
 endif()
 
 if(MSVC)
