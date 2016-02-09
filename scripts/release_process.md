@@ -1,4 +1,4 @@
-- run release.py
+- run update.py
 - update HISTORY.md
 - commit in dev
 - merge dev in master and coverity_scan

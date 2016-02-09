@@ -115,7 +115,7 @@ def main():
         'options': 'c++98,cpp-no-pedantic',
         'compiler': 'gcc-head',
         'save': True,
-        'compiler-option-raw': '' # -Wall and etc. go here
+        'compiler-option-raw': '-Wall\n-Wextra'
     })
 
     if 'status' in response and response['status'] == '0':
