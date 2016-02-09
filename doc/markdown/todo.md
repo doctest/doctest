@@ -20,6 +20,9 @@ __attribute((unused))__ for tests when disabled globally (or made as templates t
 
 
 
+
+
+
 the CHECK() macro
     OPTIONAL!!! break on failed CHECK() macros in doctest
 
@@ -56,11 +59,13 @@ test execution in separate processes
 
 CI
     travis
-        osx
-        clang
         valgrind
+        clang
+        osx
 
 https://gitter.im/
+
+use https://github.com/skywinder/github-changelog-generator
 
 THINK OF IN THE LONG TERM
 

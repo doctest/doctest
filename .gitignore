@@ -29,6 +29,8 @@ scripts/bench/assimp/*
 scripts/bench/catch/*
 scripts/bench/log.txt
 build/*
+build-mingw/*
 examples/*/build/*
+examples/*/build-mingw/*
 *.suo
 *.pyc
