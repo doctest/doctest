@@ -76,4 +76,6 @@ add_subdirectory(examples/disabled)
 add_subdirectory(examples/hello_world)
 add_subdirectory(examples/multi_dll)
 add_subdirectory(examples/multiprocess)
-add_subdirectory(examples/stress_test)
+if(NOT APPLE)
+    add_subdirectory(examples/stress_test) # compilers on that platform just hang on this one...
+endif()

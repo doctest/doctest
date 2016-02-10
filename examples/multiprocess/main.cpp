@@ -7,11 +7,13 @@
 
 #if defined(_WIN32)
 #define implement_sleeper \
-    for(int i = 0; i < 100000000; i++);\
+    for(int i = 0; i < 100000000; i++)\
+    ;\
     printf("%s\n", __FUNCTION__);
 #else
 #define implement_sleeper \
-    for(int i = 0; i < 100000000; i++);\
+    for(int i = 0; i < 100000000; i++)\
+    ;\
     printf("%s\n", __func__);
 #endif
 
