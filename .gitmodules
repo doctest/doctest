@@ -4,3 +4,4 @@
 [submodule "scripts/ucm"]
 	path = scripts/ucm
 	url = https://github.com/onqtam/ucm.git
+    ignore = dirty
