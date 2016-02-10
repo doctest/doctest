@@ -29,7 +29,7 @@ addons:
 before_install:
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew update                     ; fi
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install lcov curl valgrind ; fi
-  - git submodule update --init --recursive
+  - git submodule update --init #--recursive
 script:
   # COVERALLS_REPO_TOKEN added in env vars in travis
   - export COVERALLS_SERVICE_NAME=travis-ci
