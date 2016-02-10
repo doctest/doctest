@@ -57,12 +57,6 @@ test execution in separate processes
         http://msdn.microsoft.com/en-us/library/windows/desktop/ms682512(v=vs.85).aspx
         http://msdn.microsoft.com/en-us/library/windows/desktop/ms682499(v=vs.85).aspx
 
-CI
-    travis
-        valgrind
-        clang
-        osx
-
 https://gitter.im/
 
 use https://github.com/skywinder/github-changelog-generator

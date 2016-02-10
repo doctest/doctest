@@ -67,6 +67,8 @@ if(CI_COVERAGE)
     coveralls_setup("${CMAKE_SOURCE_DIR}/doctest/doctest.h" ON "${CMAKE_SOURCE_DIR}/scripts/coveralls-cmake/cmake")
 endif()
 
+ucm_print_flags()
+
 include_directories("doctest/") # this is needed here so the coverage tools work - because the "../../doctest" relative path will confuse it
 
 add_subdirectory(examples/dev_testing)

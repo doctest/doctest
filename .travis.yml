@@ -1,3 +1,4 @@
+sudo: false
 language: cpp
 notifications:
   email:
@@ -6,8 +7,16 @@ notifications:
 compiler:
   - gcc
 #  - clang
+os:
+  - linux
+  - osx
 
 addons:
+  apt:
+    packages:
+    - lcov
+    - curl
+    - valgrind
   coverity_scan:
     # COVERITY_SCAN_TOKEN added as env var in travis project 
     project:
@@ -18,8 +27,8 @@ addons:
     branch_pattern: coverity_scan
 
 before_install:
-  - sudo apt-get update -qq
-  - sudo apt-get install -y -qq lcov curl valgrind tree
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew update                     ; fi
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install lcov curl valgrind ; fi
   - git submodule update --init --recursive
 script:
   # COVERALLS_REPO_TOKEN added in env vars in travis
