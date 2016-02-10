@@ -1,15 +1,14 @@
 #define DOCTEST_CONFIG_IMPLEMENT
 #include "doctest.h"
 
-#include <iostream>
+#include <cstdio>
 #include <cstdlib>
 #include <exception>
-using namespace std;
 
 testsuite(MAIN);
 test(zzz)
 {
-    cout << "main!" << endl;
+    printf("main!\n");
 }
 testsuite_end;
 
@@ -27,7 +26,7 @@ static int testWrapper(void (*f)(void))
     try {
         f();
     } catch(std::exception& e) {
-        cout << "caught the bugger! " << e.what() << endl;
+        printf("caught the bugger! %s\n", e.what());
         return 1;
     }
     return 0;
@@ -56,12 +55,11 @@ int main(int argc, char** argv)
     return res;
 }
 
-test("") { cout << "TEST " << __LINE__ << endl; }
-test("") { cout << "TEST " << __LINE__ << endl; }
-test("") { cout << "TEST " << __LINE__ << endl; }
-test("") { cout << "TEST " << __LINE__ << endl; }
-test("") { cout << "TEST " << __LINE__ << endl; }
-test("") { cout << "TEST " << __LINE__ << endl; }
-test("") { cout << "TEST " << __LINE__ << endl; }
-test("") { cout << "TEST " << __LINE__ << endl; }
-test("") { cout << "TEST " << __LINE__ << endl; }
+test("") { printf("TEST %d", __LINE__); }
+test("") { printf("TEST %d", __LINE__); }
+test("") { printf("TEST %d", __LINE__); }
+test("") { printf("TEST %d", __LINE__); }
+test("") { printf("TEST %d", __LINE__); }
+test("") { printf("TEST %d", __LINE__); }
+test("") { printf("TEST %d", __LINE__); }
+test("") { printf("TEST %d", __LINE__); }

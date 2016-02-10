@@ -1,29 +1,28 @@
 #include "doctest.h"
 
-#include <iostream>
-using namespace std;
+#include <cstdio>
 
 testsuite(test);
 
 test(ttt)
 {
-    cout << "test!" << endl;
+    printf("test!\n");
 }
 
 struct F {
     F()
     {
-        cout << "ctor!" << endl;
+        printf("ctor!\n");
     }
     ~F()
     {
-        cout << "dtor..." << endl;
+        printf("dtor...\n");
     }
 };
 
 fixture_noname(F)
 {
-    cout << "    fixturing!" << endl;
+    printf("    fixturing!\n");
 }
 
 testsuite_end;
