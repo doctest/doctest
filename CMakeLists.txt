@@ -10,7 +10,7 @@ option(VALGRIND "valgrind" OFF)
 if(VALGRIND)
     # overload add_test() function to add valgrind checks
     function(add_test ARGV)
-        set(valgrind_test_args ${ARGV0} valgrind --leak-check=full --track-origins=yes --error-exitcode=1 ${ARGV1})
+        set(valgrind_test_args ${ARGV0}_valgrind valgrind --leak-check=full --track-origins=yes --error-exitcode=1 ${ARGV1})
         set(args ${ARGV})
         list(REMOVE_AT args 0 1)
         foreach(arg ${args})
