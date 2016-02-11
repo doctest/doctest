@@ -8,10 +8,18 @@ option(CI_COVERAGE "coverage" OFF)
 option(VALGRIND "valgrind" OFF)
 
 if(VALGRIND)
+    # overload add_test() function to add valgrind checks
     function(add_test ARGV)
-        # adding the test twice - once for normal execution and once from valgrind with error code from valgrind errors
+        set(valgrind_test_args ${ARGV0} valgrind --leak-check=full --track-origins=yes --error-exitcode=1 ${ARGV1})
+        set(args ${ARGV})
+        list(REMOVE_AT args 0 1)
+        foreach(arg ${args})
+           list(APPEND valgrind_test_args ${arg})
+        endforeach()
+        
+        # adding the test twice - once for normal execution and once from within valgrind with error code from valgrind errors
         _add_test(${ARGV})
-        _add_test(valgrind --leak-check=full --track-origins=yes --error-exitcode=1 ${ARGV})
+        _add_test(${valgrind_test_args})
     endfunction()
 endif()
 
