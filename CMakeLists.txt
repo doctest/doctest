@@ -16,7 +16,7 @@ if(VALGRIND)
 endif()
 
 macro(add_flags)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${ARGV}")
 endmacro()
 
 if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
