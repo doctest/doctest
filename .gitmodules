@@ -1,7 +1,3 @@
 [submodule "scripts/coveralls-cmake"]
 	path = scripts/coveralls-cmake
 	url = https://github.com/JoakimSoderberg/coveralls-cmake.git
-[submodule "scripts/ucm"]
-	path = scripts/ucm
-	url = https://github.com/onqtam/ucm.git
-    ignore = dirty

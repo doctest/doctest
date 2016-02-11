@@ -3,6 +3,10 @@ doctest
 
 doctest is a single header C++ library for writing tests that is inspired by the unittest functionality in the D programming language and the docstrings in python - tests are documentation and should reside near the code they test.
 
+<hr>
+## LIBRARY NOT DONE YET! VERY UNSTABLE - UNDER RAPID DEVELOPMENT! COME BACK LATER...
+<hr>
+
 [![Language](https://img.shields.io/badge/language-C++-blue.svg)](https://github.com/onqtam/doctest/wiki)
 [![Version](https://badge.fury.io/gh/onqtam%2Fdoctest.svg)](https://github.com/onqtam/doctest/releases)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://opensource.org/licenses/MIT)
