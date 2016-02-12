@@ -49,7 +49,7 @@ int main(int argc, char** argv)
     doctest::freeParams(params);
 
 #if defined(_MSC_VER)
-    system("pause");
+    //system("pause");
 #endif // _MSC_VER
 
     return res;
