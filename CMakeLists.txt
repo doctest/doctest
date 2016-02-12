@@ -10,6 +10,11 @@ option(CI_COVERAGE "coverage" OFF)
 option(TESTS_VALGRIND "valgrind" OFF)
 option(TESTS_COLLECT_OUTPUT "collect test output" OFF)
 
+if(TESTS_VALGRIND AND WIN32)
+    set(TESTS_VALGRIND OFF CACHE BOOL "NO VALGRIND UNDER WINDOWS" FORCE)
+    message(AUTHOR_WARNING "TEST_VALGRIND not supported on Windows!")
+endif()
+
 if(TESTS_VALGRIND AND TESTS_COLLECT_OUTPUT)
     message(FATAL_ERROR "TEST_VALGRIND and TESTS_COLLECT_OUTPUT options cannot both be set to ON!")
 endif()
@@ -106,11 +111,15 @@ endif()
 
 include_directories("doctest/") # this is needed here so the coverage tools work - because the "../../doctest" relative path will confuse it
 
-add_subdirectory(examples/dev_testing)
-add_subdirectory(examples/disabled)
-add_subdirectory(examples/hello_world)
-add_subdirectory(examples/multi_dll)
-add_subdirectory(examples/multiprocess)
+add_executable(${PROJECT_NAME} test.cpp)
+
+add_test(NAME ${PROJECT_NAME} COMMAND $<TARGET_FILE:${PROJECT_NAME}>)
+
+#add_subdirectory(examples/dev_testing)
+#add_subdirectory(examples/disabled)
+#add_subdirectory(examples/hello_world)
+#add_subdirectory(examples/multi_dll)
+#add_subdirectory(examples/multiprocess)
 if(NOT APPLE)
-    add_subdirectory(examples/stress_test) # compilers on osx just hang on this one...
+#    add_subdirectory(examples/stress_test) # compilers on osx just hang on this one...
 endif()

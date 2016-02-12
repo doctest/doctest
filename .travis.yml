@@ -6,7 +6,7 @@ notifications:
     on_failure: change
 compiler:
   - gcc
-#  - clang
+  - clang
 os:
   - linux
   - osx
