@@ -17,31 +17,31 @@ if(TESTS_VALGRIND AND TESTS_COLLECT_OUTPUT)
     message(FATAL_ERROR "TEST_VALGRIND and TESTS_COLLECT_OUTPUT options cannot both be set to ON!")
 endif()
 
-#include(CMakeParseArguments)
-#
-## add a customized overloaded version of add_test() to suite my needs
-#function(add_test)
-#    cmake_parse_arguments(ARG "NO_VALGRIND;NO_OUTPUT" "NAME" "COMMAND" ${ARGN})
-#    if(NOT "${ARG_UNPARSED_ARGUMENTS}" STREQUAL "" OR "${ARG_NAME}" STREQUAL "" OR "${ARG_COMMAND}" STREQUAL "")
-#        message(FATAL_ERROR "add_test() called with wrong options!")
-#    endif()
-#    
-#    # construct the command that will be called by the exec_test.cmake script
-#    set(the_command "")
-#    if(TESTS_VALGRIND AND NOT ARG_NO_VALGRIND)
-#        set(the_command "valgrind --leak-check=full --track-origins=yes --error-exitcode=1")
-#    endif()
-#    foreach(cur ${ARG_COMMAND})
-#        set(the_command "${the_command} ${cur}")
-#    endforeach()
-#    
-#    set(ADDITIONAL_FLAGS "")
-#    if(TESTS_COLLECT_OUTPUT AND NOT ARG_NO_OUTPUT)
-#        set(ADDITIONAL_FLAGS "-DTEST_OUTPUT_FILE=${CMAKE_CURRENT_SOURCE_DIR}/${ARG_NAME}.txt")
-#    endif()
-#    
-#    _add_test(NAME ${ARG_NAME} COMMAND ${CMAKE_COMMAND} -DCOMMAND=${the_command} ${ADDITIONAL_FLAGS} -P ${CMAKE_SOURCE_DIR}/scripts/exec_test.cmake)
-#endfunction()
+include(CMakeParseArguments)
+
+# add a customized overloaded version of add_test() to suite my needs
+function(add_test)
+    cmake_parse_arguments(ARG "NO_VALGRIND;NO_OUTPUT" "NAME" "COMMAND" ${ARGN})
+    if(NOT "${ARG_UNPARSED_ARGUMENTS}" STREQUAL "" OR "${ARG_NAME}" STREQUAL "" OR "${ARG_COMMAND}" STREQUAL "")
+        message(FATAL_ERROR "add_test() called with wrong options!")
+    endif()
+    
+    # construct the command that will be called by the exec_test.cmake script
+    set(the_command "")
+    if(TESTS_VALGRIND AND NOT ARG_NO_VALGRIND)
+        set(the_command "valgrind --leak-check=full --track-origins=yes --error-exitcode=1")
+    endif()
+    foreach(cur ${ARG_COMMAND})
+        set(the_command "${the_command} ${cur}")
+    endforeach()
+    
+    set(ADDITIONAL_FLAGS "")
+    if(TESTS_COLLECT_OUTPUT AND NOT ARG_NO_OUTPUT)
+        set(ADDITIONAL_FLAGS "-DTEST_OUTPUT_FILE=${CMAKE_CURRENT_SOURCE_DIR}/${ARG_NAME}.txt")
+    endif()
+    
+    _add_test(NAME ${ARG_NAME} COMMAND ${CMAKE_COMMAND} -DCOMMAND=${the_command} ${ADDITIONAL_FLAGS} -P ${CMAKE_SOURCE_DIR}/scripts/exec_test.cmake)
+endfunction()
 #
 ## helper macro for adding flags
 #macro(add_flags)
