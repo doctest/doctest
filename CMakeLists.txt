@@ -52,7 +52,7 @@ endmacro()
 
 if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
     #add_flags(-Werror)
-    add_flags(--save-temps)
+#    add_flags(--save-temps)
 #    add_flags(-std=c++98)
 #    add_flags(-pedantic)
 #    add_flags(-m64)
@@ -108,6 +108,8 @@ if(CI_COVERAGE)
     
     coveralls_setup("${CMAKE_SOURCE_DIR}/doctest/doctest.h" ON "${CMAKE_SOURCE_DIR}/scripts/coveralls-cmake/cmake")
 endif()
+
+add_flags(--save-temps)
 
 include_directories("doctest/") # this is needed here so the coverage tools work - because the "../../doctest" relative path will confuse it
 
