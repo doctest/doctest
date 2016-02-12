@@ -6,4 +6,4 @@ include_directories("../../doctest/")
 
 add_executable(${PROJECT_NAME} main.cpp)
 
-add_test(${PROJECT_NAME} ${PROJECT_NAME})
+add_test(NAME ${PROJECT_NAME} COMMAND $<TARGET_FILE:hello_world>)

@@ -4,27 +4,52 @@ project(all)
 
 enable_testing()
 
-option(CI_COVERAGE "coverage" OFF)
-option(VALGRIND "valgrind" OFF)
+include(CMakeParseArguments)
 
-if(VALGRIND)
-    # overload add_test() function to add valgrind checks
-    function(add_test ARGV)
-        set(valgrind_test_args ${ARGV0}_valgrind valgrind --leak-check=full --track-origins=yes --error-exitcode=1 ${ARGV1})
-        set(args ${ARGV})
-        list(REMOVE_AT args 0 1)
-        foreach(arg ${args})
-           list(APPEND valgrind_test_args ${arg})
-        endforeach()
-        
-        # adding the test twice - once for normal execution and once from within valgrind with error code from valgrind errors
-        _add_test(${ARGV})
-        _add_test(${valgrind_test_args})
-    endfunction()
+option(CI_COVERAGE "coverage" OFF)
+option(TESTS_VALGRIND "valgrind" OFF)
+option(TESTS_COLLECT_OUTPUT "collect test output" OFF)
+
+if(TESTS_VALGRIND AND TESTS_COLLECT_OUTPUT)
+    message(FATAL_ERROR "TEST_VALGRIND and TESTS_COLLECT_OUTPUT options cannot both be set to ON!")
 endif()
 
+# add a customized overloaded version of add_test() to suite my needs
+function(add_test)
+    cmake_parse_arguments(ARG "NO_VALGRIND;NO_OUTPUT" "NAME" "COMMAND" ${ARGN})
+    if(NOT "${ARG_UNPARSED_ARGUMENTS}" STREQUAL "" OR "${ARG_NAME}" STREQUAL "" OR "${ARG_COMMAND}" STREQUAL "")
+        message(FATAL_ERROR "add_test() called with wrong options!")
+    endif()
+    
+    #message("${ARG_COMMAND}")
+    #message(${ARG_COMMAND})
+    
+    #return()
+    
+    # construct the command that will be called by the exec_test.cmake script
+    set(the_command "")
+    if(TESTS_VALGRIND AND NOT ARG_NO_VALGRIND)
+        set(the_command "valgrind --leak-check=full --track-origins=yes --error-exitcode=1")
+    endif()
+    foreach(cur ${ARG_COMMAND})
+        set(the_command "${the_command} ${cur}")
+    endforeach()
+    
+    #set(the_command "${ARG_COMMAND}")
+    
+    set(FLAGS "")
+    if(TESTS_COLLECT_OUTPUT)
+        set(FLAGS "-DTEST_OUTPUT_FILE=${CMAKE_CURRENT_SOURCE_DIR}/${ARG_NAME}.txt")
+    endif()
+    
+    _add_test(NAME mytest COMMAND ${CMAKE_COMMAND} -DCOMMAND="${ARG_COMMAND}" ${FLAGS} -P ${CMAKE_SOURCE_DIR}/scripts/exec_test.cmake)
+endfunction()
+
+# helper macro for adding flags
 macro(add_flags)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${ARGV}")
+    foreach(flag ${ARGV})
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${flag}")
+    endforeach()
 endmacro()
 
 if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
@@ -89,10 +114,10 @@ endif()
 include_directories("doctest/") # this is needed here so the coverage tools work - because the "../../doctest" relative path will confuse it
 
 add_subdirectory(examples/dev_testing)
-add_subdirectory(examples/disabled)
+#add_subdirectory(examples/disabled)
 add_subdirectory(examples/hello_world)
-add_subdirectory(examples/multi_dll)
-add_subdirectory(examples/multiprocess)
+#add_subdirectory(examples/multi_dll)
+#add_subdirectory(examples/multiprocess)
 if(NOT APPLE)
-    add_subdirectory(examples/stress_test) # compilers on that platform just hang on this one...
+#    add_subdirectory(examples/stress_test) # compilers on that platform just hang on this one...
 endif()
