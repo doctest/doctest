@@ -52,7 +52,7 @@ endmacro()
 
 if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
     #add_flags(-Werror)
-    add_flags(--save-temps)
+#    add_flags(--save-temps)
 #    add_flags(-std=c++98)
 #    add_flags(-pedantic)
 #    add_flags(-m64)
