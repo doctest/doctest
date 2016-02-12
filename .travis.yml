@@ -31,7 +31,6 @@ before_install:
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install lcov curl valgrind ; fi
   - git submodule update --init --recursive
 script:
-  - valgrind --version
   # COVERALLS_REPO_TOKEN added in env vars in travis
   - export COVERALLS_SERVICE_NAME=travis-ci
   - cmake -DCI_COVERAGE=ON -DTESTS_VALGRIND=ON -DCMAKE_EXPORT_COMPILE_COMMANDS=ON .

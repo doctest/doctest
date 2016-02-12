@@ -111,7 +111,7 @@ endif()
 
 include_directories("doctest/") # this is needed here so the coverage tools work - because the "../../doctest" relative path will confuse it
 
-add_executable(${PROJECT_NAME} test.cpp)
+add_executable(${PROJECT_NAME} ${CMAKE_SOURCE_DIR}/test.cpp)
 
 add_test(NAME ${PROJECT_NAME} COMMAND $<TARGET_FILE:${PROJECT_NAME}>)
 
