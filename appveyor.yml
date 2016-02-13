@@ -27,4 +27,4 @@ build:
   parallel: true
   project: all.sln
 test_script:
-  - cmake --build . --target RUN_TESTS --config %configuration%
+  - ctest -C %configuration% --output-on-failure
