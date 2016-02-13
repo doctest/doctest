@@ -42,10 +42,9 @@ function(add_test)
     list(APPEND ADDITIONAL_FLAGS -DTEST_OUTPUT_FILE=${CMAKE_CURRENT_SOURCE_DIR}/test_output/${ARG_NAME}.txt)
     list(APPEND ADDITIONAL_FLAGS -DTEST_TEMP_FILE=${CMAKE_SOURCE_DIR}/examples/temp_test_output.txt)
     
-    file(MAKE_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/test_output/)
-    
     if(${TEST_MODE} STREQUAL "COLLECT" OR ${TEST_MODE} STREQUAL "COMPARE")
         if(NOT ARG_NO_OUTPUT)
+            file(MAKE_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/test_output/)
             set(the_test_mode ${TEST_MODE})
         endif()
     endif()

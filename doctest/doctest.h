@@ -196,7 +196,7 @@ inline int runTests(void*) { return 0; }
 // =============================================================================
 // == WHAT FOLLOWS IS THE IMPLEMENTATION OF THE TEST RUNNER                   ==
 // =============================================================================
-#if defined(DOCTEST_CONFIG_IMPLEMENT)
+#if defined(DOCTEST_CONFIG_IMPLEMENT) && !defined(DOCTEST_CONFIG_DISABLE)
 #ifndef DOCTEST_LIBRARY_IMPLEMENTATION
 #define DOCTEST_LIBRARY_IMPLEMENTATION
 

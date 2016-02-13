@@ -21,20 +21,27 @@ endif()
 
 execute_process(${cmd})
 
+# fix line endings
+if("${TEST_MODE}" STREQUAL "COLLECT" AND NOT CMAKE_HOST_UNIX)
+    execute_process(COMMAND dos2unix ${TEST_OUTPUT_FILE})
+endif()
+
 if("${TEST_MODE}" STREQUAL "COMPARE")
+    if(NOT CMAKE_HOST_UNIX)
+        execute_process(COMMAND dos2unix ${TEST_TEMP_FILE})
+    endif()
+    
     execute_process(COMMAND ${CMAKE_COMMAND} -E compare_files ${TEST_OUTPUT_FILE} ${TEST_TEMP_FILE} RESULT_VARIABLE cmp_result)
     
-    file(READ ${TEST_OUTPUT_FILE} a1)
-    file(READ ${TEST_TEMP_FILE} a2)
-    
-    message("")
-    message("${a1}")
-    message("")
-    message("${a2}")
-    message("")
-    
     if(cmp_result)
-        set(CMD_RESULT "Output is different from reference file ${TEST_OUTPUT_FILE}")
+        file(READ ${TEST_OUTPUT_FILE} orig)
+        file(READ ${TEST_TEMP_FILE} temp)
+        
+        message("== CONTENTS OF ${TEST_OUTPUT_FILE}")
+        message("${orig}")
+        message("== CONTENTS OF ${TEST_TEMP_FILE}")
+        message("${temp}")
+        set(CMD_RESULT "Output is different from reference file!")
     endif()
 endif()
 

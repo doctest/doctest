@@ -4,7 +4,7 @@ project(disabled)
 
 include_directories("../../doctest/")
 
-add_definitions(-DDOCTEST_GLOBAL_DISABLE)
+add_definitions(-DDOCTEST_CONFIG_DISABLE)
 
 add_executable(${PROJECT_NAME} main.cpp)
 
