@@ -21,7 +21,7 @@ if(CI_COVERAGE)
     include(Coveralls)
     coveralls_turn_on_coverage()
     
-    coveralls_setup("${CMAKE_SOURCE_DIR}/doctest/doctest.h" ON "${CMAKE_SOURCE_DIR}/scripts/coveralls-cmake/cmake")
+    coveralls_setup("${CMAKE_SOURCE_DIR}/doctest/doctest.h" ON "${PROJECT_SOURCE_DIR}/scripts/coveralls-cmake/cmake")
 endif()
 
 include_directories("doctest/")
