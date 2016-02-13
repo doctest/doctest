@@ -6,16 +6,6 @@ enable_testing()
 
 option(CI_COVERAGE "coverage" OFF)
 
-macro(add_flags)
-    foreach(flag ${ARGV})
-        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${flag}")
-    endforeach()
-endmacro()
-
-if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
-    add_flags(--save-temps)
-endif()
-
 if(CI_COVERAGE)
     set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_SOURCE_DIR}/coveralls-cmake/cmake)
     include(Coveralls)
