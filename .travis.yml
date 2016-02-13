@@ -4,6 +4,8 @@ notifications:
   email:
     on_success: change
     on_failure: change
+git:
+  depth: 5
 compiler:
   - gcc
   - clang
@@ -33,7 +35,16 @@ before_install:
 script:
   # COVERALLS_REPO_TOKEN added in env vars in travis
   - export COVERALLS_SERVICE_NAME=travis-ci
-  - cmake -DCI_COVERAGE=ON -DCMAKE_BUILD_TYPE=Debug -DTESTS_VALGRIND=ON -DCMAKE_EXPORT_COMPILE_COMMANDS=ON .
+  # build
+  - cmake -DCMAKE_BUILD_TYPE=Debug -DTEST_MODE=COMPARE -DCMAKE_EXPORT_COMPILE_COMMANDS=ON .
   - cmake --build .
+  # run tests
+  - ctest --output-on-failure
+  # valgrind time
+  - cmake -DTEST_MODE=VALGRIND .
+  - ctest --output-on-failure
+  # submit code coverage to coveralls (it runs ctest itself)
+  - cmake -DTEST_MODE=NORMAL -DCI_COVERAGE=ON .
   - cmake --build . --target coveralls
+after_script:
   - cat compile_commands.json

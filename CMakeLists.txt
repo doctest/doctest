@@ -7,17 +7,9 @@ enable_testing()
 include(CMakeParseArguments)
 
 option(CI_COVERAGE "coverage" OFF)
-option(TESTS_VALGRIND "valgrind" OFF)
-option(TESTS_COLLECT_OUTPUT "collect test output" OFF)
 
-if(TESTS_VALGRIND AND WIN32)
-    set(TESTS_VALGRIND OFF CACHE BOOL "NO VALGRIND UNDER WINDOWS" FORCE)
-    message(AUTHOR_WARNING "TEST_VALGRIND not supported on Windows!")
-endif()
-
-if(TESTS_VALGRIND AND TESTS_COLLECT_OUTPUT)
-    message(FATAL_ERROR "TEST_VALGRIND and TESTS_COLLECT_OUTPUT options cannot both be set to ON!")
-endif()
+set(TEST_MODE "NORMAL" CACHE STRING "Test mode - normal/run through valgrind/collect output/compare with output")
+set_property(CACHE TEST_MODE PROPERTY STRINGS "NORMAL;VALGRIND;COLLECT;COMPARE")
 
 if(CI_COVERAGE)
     set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_SOURCE_DIR}/scripts/coveralls-cmake/cmake)
@@ -34,19 +26,31 @@ function(add_test)
         message(FATAL_ERROR "add_test() called with wrong options!")
     endif()
     
+    set(the_test_mode NORMAL)
+    
     # construct the command that will be called by the exec_test.cmake script
     set(the_command "")
-    if(TESTS_VALGRIND AND NOT ARG_NO_VALGRIND)
+    if(${TEST_MODE} STREQUAL "VALGRIND" AND NOT ARG_NO_VALGRIND)
+        set(the_test_mode VALGRIND)
         set(the_command "valgrind --leak-check=full --track-origins=yes --error-exitcode=1")
     endif()
     foreach(cur ${ARG_COMMAND})
         set(the_command "${the_command} ${cur}")
     endforeach()
+    string(STRIP ${the_command} the_command)
     
-    set(ADDITIONAL_FLAGS "")
-    if(TESTS_COLLECT_OUTPUT AND NOT ARG_NO_OUTPUT)
-        set(ADDITIONAL_FLAGS "-DTEST_OUTPUT_FILE=${CMAKE_CURRENT_SOURCE_DIR}/${ARG_NAME}.txt")
+    list(APPEND ADDITIONAL_FLAGS -DTEST_OUTPUT_FILE=${CMAKE_CURRENT_SOURCE_DIR}/test_output/${ARG_NAME}.txt)
+    list(APPEND ADDITIONAL_FLAGS -DTEST_TEMP_FILE=${CMAKE_SOURCE_DIR}/examples/temp_test_output.txt)
+    
+    file(MAKE_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/test_output/)
+    
+    if(${TEST_MODE} STREQUAL "COLLECT" OR ${TEST_MODE} STREQUAL "COMPARE")
+        if(NOT ARG_NO_OUTPUT)
+            set(the_test_mode ${TEST_MODE})
+        endif()
     endif()
+    
+    list(APPEND ADDITIONAL_FLAGS -DTEST_MODE=${the_test_mode})
     
     _add_test(NAME ${ARG_NAME} COMMAND ${CMAKE_COMMAND} -DCOMMAND=${the_command} ${ADDITIONAL_FLAGS} -P ${CMAKE_SOURCE_DIR}/scripts/exec_test.cmake)
 endfunction()

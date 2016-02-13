@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 2.8)
 
-if(APPLE)
-    return() # compilers on osx just hang on this one...
+if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+    return() # Clang dies on linking this example - shame... - hope it gets a lot faster in the future
 endif()
 
 project(stress_test)

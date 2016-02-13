@@ -1,0 +1,4 @@
+I am a test from the executable!
+I am a test in a header used by the executable and the dll!
+I am a test from the dll!
+I am a test in a header used by the executable and the dll!
