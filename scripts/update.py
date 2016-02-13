@@ -14,6 +14,9 @@ examples = "../examples/"
 examples_skip = ["multiprocess"]
 
 for dir in os.listdir(examples):
+    if not os.path.isdir(examples + dir):
+        continue
+    
     # skip folders with more than 1 source file
     sources = [s for s in os.listdir(examples + dir) if ".cpp" in s]
     if dir in examples_skip or len(sources) > 1 or len(sources) == 0:

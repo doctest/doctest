@@ -1,1 +1,1 @@
-[![Try it online](https://img.shields.io/badge/try%20it-online-orange.svg)](http://melpon.org/wandbox/permlink/W0L9WDHPRjWYXpHP)
+[![Try it online](https://img.shields.io/badge/try%20it-online-orange.svg)](http://melpon.org/wandbox/permlink/a0V55I0c7cS8Ae7R)

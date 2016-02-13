@@ -8,7 +8,7 @@ doctest is a single header C++ library for writing tests that is inspired by the
 [![Language](https://img.shields.io/badge/language-C++-blue.svg)](https://github.com/onqtam/doctest/wiki)
 [![Version](https://badge.fury.io/gh/onqtam%2Fdoctest.svg)](https://github.com/onqtam/doctest/releases)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://opensource.org/licenses/MIT)
-[![Try it online](https://img.shields.io/badge/try%20it-online-orange.svg)](http://melpon.org/wandbox/permlink/JtwiOSb6lwzkqQoJ)
+[![Try it online](https://img.shields.io/badge/try%20it-online-orange.svg)](http://melpon.org/wandbox/permlink/pmbghtX29AWPYGh6)
 
 Build status
 ------------
