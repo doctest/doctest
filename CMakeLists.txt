@@ -108,10 +108,10 @@ endif()
 
 include_directories("doctest/") # needed here so the coverage tools work - otherwise the "../../doctest" relative path fucks up
 
-file(GLOB subdir_list "${CMAKE_SOURCE_DIR}/*")
+file(GLOB subdir_list "${CMAKE_SOURCE_DIR}/examples/*")
 foreach(dir ${subdir_list})
     if(IS_DIRECTORY ${dir})
         get_filename_component(DIRNAME ${dir} NAME)
-        add_subdirectory(${DIRNAME})
+        add_subdirectory(examples/${DIRNAME})
     endif()
 endforeach()
