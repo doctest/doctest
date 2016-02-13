@@ -11,9 +11,8 @@
 #message("TEST_OUTPUT_FILE: ${TEST_OUTPUT_FILE}")
 #message("TEST_TEMP_FILE: ${TEST_TEMP_FILE}")
 
-string(REPLACE " " ";" COMMAND ${COMMAND})
-
-set(cmd COMMAND ${COMMAND} RESULT_VARIABLE CMD_RESULT)
+string(REPLACE " " ";" COMMAND_LIST ${COMMAND})
+set(cmd COMMAND ${COMMAND_LIST} RESULT_VARIABLE CMD_RESULT)
 if("${TEST_MODE}" STREQUAL "COLLECT")
     list(APPEND cmd OUTPUT_FILE ${TEST_OUTPUT_FILE} ERROR_FILE ${TEST_OUTPUT_FILE})
 elseif("${TEST_MODE}" STREQUAL "COMPARE")
@@ -24,6 +23,15 @@ execute_process(${cmd})
 
 if("${TEST_MODE}" STREQUAL "COMPARE")
     execute_process(COMMAND ${CMAKE_COMMAND} -E compare_files ${TEST_OUTPUT_FILE} ${TEST_TEMP_FILE} RESULT_VARIABLE cmp_result)
+    
+    file(READ ${TEST_OUTPUT_FILE} a1)
+    file(READ ${TEST_TEMP_FILE} a2)
+    
+    message("")
+    message("${a1}")
+    message("")
+    message("${a2}")
+    message("")
     
     if(cmp_result)
         set(CMD_RESULT "Output is different from reference file ${TEST_OUTPUT_FILE}")
