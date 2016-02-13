@@ -36,7 +36,7 @@ script:
   # COVERALLS_REPO_TOKEN added in env vars in travis
   - export COVERALLS_SERVICE_NAME=travis-ci
   # build
-  - cmake -DCMAKE_BUILD_TYPE=Debug -DTEST_MODE=NORMAL -DCMAKE_EXPORT_COMPILE_COMMANDS=ON .
+  - cmake -DCI_COVERAGE=ON -DCMAKE_BUILD_TYPE=Debug -DTEST_MODE=NORMAL -DCMAKE_EXPORT_COMPILE_COMMANDS=ON .
   - cmake --build .
   # submit code coverage to coveralls (the target runs ctest itself)
   - cmake --build . --target coveralls
