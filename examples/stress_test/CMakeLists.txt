@@ -1,5 +1,8 @@
-
 cmake_minimum_required(VERSION 2.8)
+
+if(APPLE)
+    return() # compilers on osx just hang on this one...
+endif()
 
 project(stress_test)
 

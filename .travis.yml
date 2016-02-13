@@ -1,11 +1,16 @@
 sudo: false
 language: cpp
+notifications:
+  email:
+    on_success: change
+    on_failure: change
 compiler:
   - gcc
   - clang
 os:
   - linux
   - osx
+
 addons:
   apt:
     packages:
@@ -21,11 +26,6 @@ addons:
     build_command: make
     branch_pattern: coverity_scan
 
-notifications:
-  email:
-    on_success: change
-    on_failure: change
-
 before_install:
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew update                     ; fi
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install lcov curl valgrind ; fi
@@ -33,6 +33,7 @@ before_install:
 script:
   # COVERALLS_REPO_TOKEN added in env vars in travis
   - export COVERALLS_SERVICE_NAME=travis-ci
-  - cmake -DCI_COVERAGE=ON -DCMAKE_BUILD_TYPE=Debug .
+  - cmake -DCI_COVERAGE=ON -DCMAKE_BUILD_TYPE=Debug -DTESTS_VALGRIND=ON -DCMAKE_EXPORT_COMPILE_COMMANDS=ON .
   - cmake --build .
   - cmake --build . --target coveralls
+  - cat compile_commands.json

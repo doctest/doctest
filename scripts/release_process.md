@@ -1,6 +1,7 @@
 - run update.py
-- update HISTORY.md
 - commit in dev
 - merge dev in master and coverity_scan
+- tag master to the next semver
+- update CHANGELOG.md with ruby script
 - push all branches
 - create github release with a semver tag
