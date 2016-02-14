@@ -41,7 +41,7 @@ script:
   # submit code coverage to coveralls (the target runs ctest itself)
   - cmake --build . --target coveralls
   # run tests
-# temporarily disabled - the multi dll test fails gcc/clang! really weird... Also output will change often so no need for this yet
+# temporarily disabled - output will change often so no need for this yet
 #  - cmake -DTEST_MODE=COMPARE .
 #  - ctest --output-on-failure
   # valgrind time

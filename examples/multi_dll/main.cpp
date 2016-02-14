@@ -11,9 +11,5 @@ int main(int argc, char** argv) {
     
     res += call_tests_from_dll(argc, argv);
 
-#if defined(_MSC_VER)
-    //system("pause");
-#endif // _MSC_VER
-
     return res;
 }

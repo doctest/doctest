@@ -244,7 +244,7 @@ namespace detail
         return ((c >= 'A' && c <= 'Z') ? static_cast<char>(c + 32) : c);
     }
 
-    int strcicmp(char const* a, char const* b)
+    int stricmp(char const* a, char const* b)
     {
         for(;; a++, b++) {
             int d = tolower(*a) - tolower(*b);
@@ -338,8 +338,13 @@ namespace detail
     {
         const FunctionData* lhs = *static_cast<FunctionData* const*>(a);
         const FunctionData* rhs = *static_cast<FunctionData* const*>(b);
-
+#ifdef _MSC_VER
+        // this is needed because MSVC gives different case for drive letters
+        // for __FILE__ when evaluated in a header and a source file
+        int res = stricmp(lhs->file, rhs->file);
+#else
         int res = strcmp(lhs->file, rhs->file);
+#endif
         if(res != 0)
             return res;
         return static_cast<int>(lhs->line - rhs->line);
@@ -538,11 +543,11 @@ namespace detail
 
                     // if the value matches any of the positive/negative possibilities
                     for(size_t i = 0; i < 4; i++) {
-                        if(strcicmp(theStr[0], positive[i]) == 0) {
+                        if(stricmp(theStr[0], positive[i]) == 0) {
                             outVal = 1;
                             break;
                         }
-                        if(strcicmp(theStr[0], negative[i]) == 0) {
+                        if(stricmp(theStr[0], negative[i]) == 0) {
                             outVal = 0;
                             break;
                         }
@@ -721,7 +726,6 @@ int runTests(void* params_struct)
     // sort the collected records
     qsort(hashEntryArray, hashTableSize, sizeof(FunctionData*), functionDataComparator);
 
-    // if(params->printHashTableHistogram) {
     if(params->hash_table_histogram) {
         // find the most full bucket
         int maxElementsInBucket = 0;
