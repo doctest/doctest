@@ -2,6 +2,6 @@
 - commit in dev
 - merge dev in master and coverity_scan
 - tag master to the next semver
-- update CHANGELOG.md with ruby script
+- update CHANGELOG.md with ruby script https://github.com/skywinder/github-changelog-generator
 - push all branches
 - create github release with a semver tag
