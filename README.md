@@ -1,6 +1,8 @@
 doctest
 -------
 
+[![Join the chat at https://gitter.im/onqtam/doctest](https://badges.gitter.im/onqtam/doctest.svg)](https://gitter.im/onqtam/doctest?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 doctest is a single header C++ library for writing tests that is inspired by the unittest functionality in the D programming language and the docstrings in python - tests are documentation and should reside near the code they test.
 
 # LIBRARY NOT DONE YET! VERY UNSTABLE - UNDER RAPID DEVELOPMENT! COME BACK LATER...
