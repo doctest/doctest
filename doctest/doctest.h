@@ -17,6 +17,7 @@
 #pragma GCC diagnostic ignored "-Wstrict-overflow"
 #pragma GCC diagnostic ignored "-Wmissing-declarations"
 #pragma GCC diagnostic ignored "-Wzero-as-null-pointer-constant"
+//#pragma GCC diagnostic ignored "-Wlong-long"
 #endif // __GNUC__
 
 #ifdef _MSC_VER
@@ -65,8 +66,14 @@ public:
     String operator+(const String& other) const;
     String& operator+=(const String& other);
 
-    operator char*() { return m_str; }
-    operator const char*() const { return m_str; }
+    char& operator[](unsigned pos) { return m_str[pos]; }
+    const char& operator[](unsigned pos) const { return m_str[pos]; }
+
+    char*       c_str() { return m_str; }
+    const char* c_str() const { return m_str; }
+
+    int compare(const char* other, bool no_case = false) const;
+    int compare(const String& other, bool no_case = false) const;
 };
 
 namespace detail
@@ -112,6 +119,82 @@ namespace detail
         bool operator==(const Subtest& other) const;
         operator bool() const { return m_entered; }
     };
+
+    String stringify(const char* in);
+    String stringify(bool in);
+    String stringify(char in);
+    String stringify(int in);
+    String stringify(long in);
+    //String stringify(long long in);
+    String stringify(unsigned in);
+    String stringify(unsigned long in);
+    //String stringify(unsigned long long in);
+    String stringify(float in);
+    String stringify(double in);
+    String stringify(long double in);
+
+    template <typename T>
+    String stringify(const T&) {
+        return "{?}";
+    }
+
+// pointers???
+//template <typename T>
+//String stringify(const T*&) {
+//    return "{?}";
+//}
+
+#if defined(__GNUC__) && !defined(__clang__)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Waggregate-return"
+#endif
+
+    template <typename L, typename R>
+    String stringify(const L& lhs, const char* op, const R& rhs) {
+        return stringify(lhs) + " " + op + " " + stringify(rhs);
+    }
+
+    struct Result
+    {
+        const bool   m_passed;
+        const String m_decomposition;
+
+        Result(bool passed, const String& decomposition)
+                : m_passed(passed)
+                , m_decomposition(decomposition) {}
+        operator bool() { return !m_passed; }
+    };
+
+    template <typename L>
+    struct Expression_lhs
+    {
+        const L lhs;
+
+        Expression_lhs(L in)
+                : lhs(in) {}
+
+        operator Result() { return Result(!!lhs, stringify(lhs)); }
+
+        // clang-format off
+        template <typename R> Result operator==(const R& rhs) { return Result(lhs == rhs, stringify(lhs, "==", rhs)); }
+        template <typename R> Result operator!=(const R& rhs) { return Result(lhs != rhs, stringify(lhs, "!=", rhs)); }
+        template <typename R> Result operator< (const R& rhs) { return Result(lhs <  rhs, stringify(lhs, "<",  rhs)); }
+        template <typename R> Result operator<=(const R& rhs) { return Result(lhs <= rhs, stringify(lhs, "<=", rhs)); }
+        template <typename R> Result operator> (const R& rhs) { return Result(lhs >  rhs, stringify(lhs, ">",  rhs)); }
+        template <typename R> Result operator>=(const R& rhs) { return Result(lhs >= rhs, stringify(lhs, ">=", rhs)); }
+        // clang-format on
+    };
+
+    struct ExpressionDecomposer
+    {
+        template <typename L>
+        Expression_lhs<const L&> operator<<(const L& operand) {
+            return Expression_lhs<const L&>(operand);
+        }
+    };
+#if defined(__GNUC__) && !defined(__clang__)
+#pragma GCC diagnostic pop
+#endif
 } // namespace detail
 
 struct Context
@@ -256,6 +339,25 @@ int runTests(void* params_struct);
     void       DOCTEST_ANONYMOUS(DOCTEST_AUTOGEN_FOR_SEMICOLON_)()
 #endif // MSVC
 
+#if defined(__GNUC__) && !defined(__clang__)
+#define DOCTEST_CHECK(expr)                                                                        \
+    do {                                                                                           \
+        _Pragma("GCC diagnostic push")                                                             \
+                _Pragma("GCC diagnostic ignored \"-Waggregate-return\"") if(                       \
+                        doctest::detail::Result failed =                                           \
+                                (doctest::detail::ExpressionDecomposer() << expr))                 \
+                        printf("%s\n", failed.m_decomposition.c_str());                            \
+        _Pragma("GCC diagnostic pop")                                                              \
+    } while(false)
+
+#else
+#define DOCTEST_CHECK(expr)                                                                        \
+    do {                                                                                           \
+        if(doctest::detail::Result failed = (doctest::detail::ExpressionDecomposer() << expr))     \
+            printf("%s\n", failed.m_decomposition.c_str());                                        \
+    } while(false)
+#endif
+
 // =============================================================================
 // == WHAT FOLLOWS IS VERSIONS OF THE MACROS THAT DO NOT DO ANY REGISTERING!  ==
 // == THIS CAN BE ENABLED BY DEFINING DOCTEST_CONFIG_DISABLE GLOBALLY!        ==
@@ -264,6 +366,7 @@ int runTests(void* params_struct);
 
 namespace doctest
 {
+inline String::String(const char*) {}
 inline Context::Context(int, char**) {}
 inline void Context::addFilter(const char*, const char*) {}
 inline void Context::setOption(const char*, int) {}
@@ -303,6 +406,8 @@ inline int  Context::runTests() { return 0; }
 // for ending a testsuite block
 #define DOCTEST_TESTSUITE_END void DOCTEST_ANONYMOUS(DOCTEST_AUTOGEN_FOR_SEMICOLON_)()
 
+#define DOCTEST_CHECK(expr) expr;
+
 #endif // DOCTEST_CONFIG_DISABLE
 
 #define doctest_test(name) DOCTEST_TEST(name)
@@ -310,6 +415,7 @@ inline int  Context::runTests() { return 0; }
 #define doctest_subtest(name) DOCTEST_SUBTEST(name)
 #define doctest_testsuite(name) DOCTEST_TESTSUITE(name)
 #define doctest_testsuite_end DOCTEST_TESTSUITE_END
+#define doctest_check DOCTEST_CHECK
 
 // == SHORT VERSIONS OF THE TEST/FIXTURE/TESTSUITE MACROS
 #ifdef DOCTEST_CONFIG_SHORT_MACRO_NAMES
@@ -319,12 +425,14 @@ inline int  Context::runTests() { return 0; }
 #define SUBTEST(name) DOCTEST_SUBTEST(name)
 #define TESTSUITE(name) DOCTEST_TESTSUITE(name)
 #define TESTSUITE_END DOCTEST_TESTSUITE_END
+#define CHECK DOCTEST_CHECK
 
 #define test(name) doctest_test(name)
 #define fixture(c, name) doctest_fixture(c, name)
 #define subtest(name) doctest_subtest(name)
 #define testsuite(name) doctest_testsuite(name)
 #define testsuite_end doctest_testsuite_end
+#define check doctest_check
 
 #endif // DOCTEST_CONFIG_SHORT_MACRO_NAMES
 
@@ -338,10 +446,10 @@ inline int  Context::runTests() { return 0; }
 #define DOCTEST_LIBRARY_IMPLEMENTATION
 
 // required includes
-#include <cstdio>  // printf and friends
+#include <cstdio>  // printf, sprintf and friends
 #include <cstdlib> // malloc, free, qsort
 #include <cstring> // strlen, strcpy, strtok
-#include <new>     // placement new
+#include <new>     // placement new (can be skipped if the containers require 'construct()' from T)
 
 // the number of buckets used for the hash set
 #if !defined(DOCTEST_CONFIG_HASH_TABLE_NUM_BUCKETS)
@@ -417,11 +525,11 @@ namespace detail
     }
 
     // checks if the name matches any of the filters (and can be configured what to do when empty)
-    int matchesAny(const char* name, Vector<String> filters, int matchEmpty, bool caseSensitive) {
+    int matchesAny(const String& name, Vector<String> filters, int matchEmpty, bool caseSensitive) {
         if(filters.size() == 0 && matchEmpty)
             return 1;
         for(size_t i = 0; i < filters.size(); ++i)
-            if(wildcmp(name, filters[i], caseSensitive))
+            if(wildcmp(name.c_str(), filters[i].c_str(), caseSensitive))
                 return 1;
         return 0;
     }
@@ -611,6 +719,83 @@ namespace detail
         return m_line == other.m_line && strcmp(m_file, other.m_file) == 0;
     }
 
+    String stringify(const char* in) {
+        String out("\"");
+        out += in;
+        out += "\"";
+        return out;
+    }
+
+    String stringify(bool in) {
+        String out("\"");
+        out += (in ? "true" : "false");
+        out += "\"";
+        return out;
+    }
+
+    String stringify(char in) {
+        char buf[64];
+        if(in < ' ')
+            sprintf(buf, "%d", in);
+        else
+            sprintf(buf, "%c", in);
+        return buf;
+    }
+
+    String stringify(int in) {
+        char buf[64];
+        sprintf(buf, "%d", in);
+        return buf;
+    }
+
+    String stringify(long in) {
+        char buf[64];
+        sprintf(buf, "%ld", in);
+        return buf;
+    }
+
+    //String stringify(long long in) {
+    //    char buf[64];
+    //    sprintf(buf, "%lld", in);
+    //    return buf;
+    //}
+
+    String stringify(unsigned in) {
+        char buf[64];
+        sprintf(buf, "%u", in);
+        return buf;
+    }
+
+    String stringify(unsigned long in) {
+        char buf[64];
+        sprintf(buf, "%lu", in);
+        return buf;
+    }
+
+    //String stringify(unsigned long long in) {
+    //    char buf[64];
+    //    sprintf(buf, "%llu", in);
+    //    return buf;
+    //}
+
+    String stringify(float in) {
+        char buf[64];
+        sprintf(buf, "%f", static_cast<double>(in));
+        return buf;
+    }
+
+    String stringify(double in) {
+        char buf[64];
+        sprintf(buf, "%f", in);
+        return buf;
+    }
+
+    String stringify(long double in) {
+        char buf[64];
+        sprintf(buf, "%Lf", in);
+        return buf;
+    }
+
     // a struct defining a registered test callback
     struct TestData
     {
@@ -640,8 +825,8 @@ namespace detail
                 if(name[name_len] != '"') {
                     m_name = name;
                 } else {
-                    m_name           = name;
-                    m_name[name_len] = '\0';
+                    m_name                   = name;
+                    m_name.c_str()[name_len] = '\0';
                 }
             }
 
@@ -709,7 +894,7 @@ namespace detail
         // for details see http://stackoverflow.com/questions/35671155
         String temp             = getCurrentTestSuite();
         String currentTestSuite = temp;
-        getRegisteredTests().insert(TestData(currentTestSuite, name, f, file, line));
+        getRegisteredTests().insert(TestData(currentTestSuite.c_str(), name, f, file, line));
         return 0;
     }
 
@@ -744,9 +929,9 @@ namespace detail
         }
 
         // if we have found the filter string
-        if(filtersString) {
+        if(filtersString.c_str()) {
             // tokenize with "," as a separator
-            char* pch = strtok(filtersString, ","); // modifies the string
+            char* pch = strtok(filtersString.c_str(), ","); // modifies the string
             while(pch != 0) {
                 if(strlen(pch))
                     filters.push_back(pch);
@@ -771,18 +956,18 @@ namespace detail
 
                 // if the value matches any of the positive/negative possibilities
                 for(size_t i = 0; i < 4; i++) {
-                    if(stricmp(parsedValues[0], positive[i]) == 0) {
+                    if(parsedValues[0].compare(positive[i]) == 0) {
                         outVal = 1;
                         break;
                     }
-                    if(stricmp(parsedValues[0], negative[i]) == 0) {
+                    if(parsedValues[0].compare(negative[i]) == 0) {
                         outVal = 0;
                         break;
                     }
                 }
             } else {
                 // integer
-                int res = atoi(parsedValues[0]);
+                int res = atoi(parsedValues[0].c_str());
                 if(res != 0)
                     outVal = res;
             }
@@ -841,6 +1026,18 @@ String& String::operator+=(const String& other) {
         m_str = newStr;
     }
     return *this;
+}
+
+int String::compare(const char* other, bool no_case) const {
+    if(no_case)
+        return stricmp(m_str, other);
+    return strcmp(m_str, other);
+}
+
+int String::compare(const String& other, bool no_case) const {
+    if(no_case)
+        return stricmp(m_str, other.m_str);
+    return strcmp(m_str, other.m_str);
 }
 
 Context::Context(int argc, char** argv)

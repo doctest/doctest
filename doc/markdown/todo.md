@@ -16,6 +16,7 @@
 - documentation
 - benchmark
 - reddit/boost mailing list/comp.lang.c++/comp.std.c++/hackernews/hora ot cg/ https://github.com/fffaraz/awesome-cpp (also research how to market a new library)
+- add doctest to lists of c++ testing frameworks all around the web
 
 ## FUTURE
 - [core] xml reporter (jUnit compatible, etc.)
@@ -35,6 +36,7 @@
 - [unsure] count the number of times TESTSUITE and TESTSUITE_END have been called and issue a warning when the tests are getting ran if there is a mismatch (also each TESTSUITE should check if it's called directly after a TESTSUITE without a TESTSUITE_END in between)
 - [unsure] silencing warnings - take into account when a compiler (which version) accuires a pragma/attribute/warning (for gcc use -Wno-unknown-warning)
 - [unsure] ability to transfer/copy registered functions from one dll to another so they are put in one set and duplicates are filtered
+- [unsure] wchar stuff in stringify and whatever - see <wchar.h>
 
 ## DOCUMENTATION
 - mimic catch front page - tutorial link, what is different link, documentation link.

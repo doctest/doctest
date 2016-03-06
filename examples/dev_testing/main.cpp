@@ -6,85 +6,23 @@
 #include <cstdio>
 #include <exception>
 
-#define DECOMPOSE(expr) (expression_decomposer() << expr)
-
-#define EXPECT(expr)                                                                               \
-    do {                                                                                           \
-        if(result failed = DECOMPOSE(expr))                                                        \
-            printf("failed!\n");                                                                   \
-    } while(false)
-
-struct result
+#include <string>
+namespace doctest
 {
-    const bool passed;
-    const doctest::String decomposition;
-
-    result(bool passed, const doctest::String& decomposition)
-        : passed(passed), decomposition(decomposition) {}
-    operator bool() { return !passed; }
-};
-
-//inline std::string to_string(std::string    const & text) { return "\"" + text + "\""; }
-inline doctest::String to_string(const char * text) { return doctest::String("\"") + text + "\""; }
-//inline doctest::String to_string(char text) { return doctest::String("\'") + text + "\'"; }
-
-inline std::ostream & operator<<(std::ostream & os, approx const & appr)
+namespace detail
 {
-    return os << appr.magnitude();
-}
-
-template <typename T>
-std::string to_string(T const & value, int = 0 /* VC6 */)
-{
-    std::ostringstream os; os << std::boolalpha << value; return os.str();
-}
-
-template<typename T1, typename T2>
-std::string to_string(std::pair<T1, T2> const & pair)
-{
-    std::ostringstream oss;
-    oss << "{ " << to_string(pair.first) << ", " << to_string(pair.second) << " }";
-    return oss.str();
-}
-
-template <typename L, typename R>
-std::string to_string(L const & lhs, std::string op, R const & rhs)
-{
-    std::ostringstream os; os << to_string(lhs) << " " << op << " " << to_string(rhs); return os.str();
-}
-
-
-template <typename L>
-struct expression_lhs
-{
-    const L lhs;
-
-    expression_lhs(L lhs)
-            : lhs(lhs) {}
-
-    operator result() { return result(!!lhs, to_string(lhs)); }
-
-    // clang-format off
-    template <typename R> result operator==(R const & rhs) { return result(lhs == rhs, to_string(lhs, "==", rhs)); }
-    template <typename R> result operator!=(R const & rhs) { return result(lhs != rhs, to_string(lhs, "!=", rhs)); }
-    template <typename R> result operator< (R const & rhs) { return result(lhs <  rhs, to_string(lhs, "<", rhs)); }
-    template <typename R> result operator<=(R const & rhs) { return result(lhs <= rhs, to_string(lhs, "<=", rhs)); }
-    template <typename R> result operator> (R const & rhs) { return result(lhs >  rhs, to_string(lhs, ">", rhs)); }
-    template <typename R> result operator>=(R const & rhs) { return result(lhs >= rhs, to_string(lhs, ">=", rhs)); }
-    // clang-format on
-};
-
-struct expression_decomposer
-{
-    template <typename L>
-    expression_lhs<L const&> operator<<(L const& operand) {
-        return expression_lhs<L const &>(operand);
+    template <>
+    String stringify(const std::string& in) {
+        return in.c_str();
     }
-};
-
+} // namespace detail
+} // namespace doctest
 
 testsuite(MAIN);
 test(zzz) {
+    check(true == false);
+    check(std::string("OMG2") == std::string("OMG"));
+
     printf("main\n");
     subtest("") {
         printf("1\n");
