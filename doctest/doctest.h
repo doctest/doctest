@@ -1,3 +1,12 @@
+// Suppress this globally - there is no way to silence it in the expression decomposition macros
+// _Pragma() in macros doesn't work for the c++ front-end of g++
+// https://gcc.gnu.org/bugzilla/show_bug.cgi?id=55578
+// https://gcc.gnu.org/bugzilla/show_bug.cgi?id=69543
+// Also it is completely worthless nowadays - http://stackoverflow.com/questions/14016993
+#if defined(__GNUC__) && !defined(__clang__)
+#pragma GCC diagnostic ignored "-Waggregate-return"
+#endif
+
 #if defined(__clang__)
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wpadded"
@@ -138,16 +147,11 @@ namespace detail
         return "{?}";
     }
 
-// pointers???
-//template <typename T>
-//String stringify(const T*&) {
-//    return "{?}";
-//}
-
-#if defined(__GNUC__) && !defined(__clang__)
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Waggregate-return"
-#endif
+    // pointers???
+    //template <typename T>
+    //String stringify(const T*&) {
+    //    return "{?}";
+    //}
 
     template <typename L, typename R>
     String stringify(const L& lhs, const char* op, const R& rhs) {
@@ -192,9 +196,6 @@ namespace detail
             return Expression_lhs<const L&>(operand);
         }
     };
-#if defined(__GNUC__) && !defined(__clang__)
-#pragma GCC diagnostic pop
-#endif
 } // namespace detail
 
 struct Context
@@ -339,24 +340,11 @@ int runTests(void* params_struct);
     void       DOCTEST_ANONYMOUS(DOCTEST_AUTOGEN_FOR_SEMICOLON_)()
 #endif // MSVC
 
-#if defined(__GNUC__) && !defined(__clang__)
-#define DOCTEST_CHECK(expr)                                                                        \
-    do {                                                                                           \
-        _Pragma("GCC diagnostic push")                                                             \
-                _Pragma("GCC diagnostic ignored \"-Waggregate-return\"") if(                       \
-                        doctest::detail::Result failed =                                           \
-                                (doctest::detail::ExpressionDecomposer() << expr))                 \
-                        printf("%s\n", failed.m_decomposition.c_str());                            \
-        _Pragma("GCC diagnostic pop")                                                              \
-    } while(false)
-
-#else
 #define DOCTEST_CHECK(expr)                                                                        \
     do {                                                                                           \
         if(doctest::detail::Result failed = (doctest::detail::ExpressionDecomposer() << expr))     \
             printf("%s\n", failed.m_decomposition.c_str());                                        \
     } while(false)
-#endif
 
 // =============================================================================
 // == WHAT FOLLOWS IS VERSIONS OF THE MACROS THAT DO NOT DO ANY REGISTERING!  ==
@@ -1030,13 +1018,13 @@ String& String::operator+=(const String& other) {
 
 int String::compare(const char* other, bool no_case) const {
     if(no_case)
-        return stricmp(m_str, other);
+        return detail::stricmp(m_str, other);
     return strcmp(m_str, other);
 }
 
 int String::compare(const String& other, bool no_case) const {
     if(no_case)
-        return stricmp(m_str, other.m_str);
+        return detail::stricmp(m_str, other.m_str);
     return strcmp(m_str, other.m_str);
 }
 
