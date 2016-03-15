@@ -3,6 +3,8 @@ doctest
 
 doctest is a lightweight single header C++ framework for writing tests that is inspired by the ```unittest``` functionality in the D programming and the docstrings in python - tests are a sort of documentation and should reside near the code they test.
 
+[![Donate to support](https://pledgie.com/campaigns/31280.png)](https://pledgie.com/campaigns/31280)
+
 # LIBRARY NOT DONE YET! UNDER RAPID DEVELOPMENT! COME BACK LATER...
 
 [![documentation](https://img.shields.io/badge/documentation-online-blue.svg)](doc/markdown/)
@@ -11,7 +13,6 @@ doctest is a lightweight single header C++ framework for writing tests that is i
 [![Version](https://badge.fury.io/gh/onqtam%2Fdoctest.svg)](https://github.com/onqtam/doctest/releases)
 [![Try it online](https://img.shields.io/badge/try%20it-online-orange.svg)](http://melpon.org/wandbox/permlink/oxgO6e6vONzlHlwr)
 [![Join the chat at https://gitter.im/onqtam/doctest](https://badges.gitter.im/onqtam/doctest.svg)](https://gitter.im/onqtam/doctest?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
-[![Donate to support](https://pledgie.com/campaigns/31280.png)](https://pledgie.com/campaigns/31280)
 
 Build status
 ------------

@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 2.8)
 get_filename_component(PROJECT_NAME ${CMAKE_CURRENT_SOURCE_DIR} NAME)
 project(${PROJECT_NAME})
 
-include(../../scripts/flags.cmake)
+include(../../scripts/common.cmake)
 
 # force 64 bit for OSX because -m32 fails >>> SOMETIMES <<< (x86_64 vs 386 - like the dll is not linked with -m32...)
 if(APPLE)

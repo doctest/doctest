@@ -16,6 +16,7 @@
 - fixing warnings gcc/clang/msvc (and add more stuff in the disabled example)
 - benchmark
 - documentation
+- pledgie campaign - more info
 
 ## Spreading the word after 1.0.0 is released
 

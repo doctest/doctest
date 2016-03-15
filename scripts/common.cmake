@@ -3,6 +3,46 @@ if(warnings_included)
 endif()
 set(warnings_included true)
 
+enable_testing()
+
+set(TEST_MODE "NORMAL" CACHE STRING "Test mode - normal/run through valgrind/collect output/compare with output")
+set_property(CACHE TEST_MODE PROPERTY STRINGS "NORMAL;VALGRIND;COLLECT;COMPARE")
+
+# add a customized overloaded version of add_test() to suite my needs
+function(add_test)
+    cmake_parse_arguments(ARG "NO_VALGRIND;NO_OUTPUT" "NAME" "COMMAND" ${ARGN})
+    if(NOT "${ARG_UNPARSED_ARGUMENTS}" STREQUAL "" OR "${ARG_NAME}" STREQUAL "" OR "${ARG_COMMAND}" STREQUAL "")
+        message(FATAL_ERROR "add_test() called with wrong options!")
+    endif()
+    
+    set(the_test_mode NORMAL)
+    
+    # construct the command that will be called by the exec_test.cmake script
+    set(the_command "")
+    if(${TEST_MODE} STREQUAL "VALGRIND" AND NOT ARG_NO_VALGRIND)
+        set(the_test_mode VALGRIND)
+        set(the_command "valgrind -v --leak-check=full --track-origins=yes --error-exitcode=1")
+    endif()
+    foreach(cur ${ARG_COMMAND})
+        set(the_command "${the_command} ${cur}")
+    endforeach()
+    string(STRIP ${the_command} the_command)
+    
+    list(APPEND ADDITIONAL_FLAGS -DTEST_OUTPUT_FILE=${CMAKE_CURRENT_SOURCE_DIR}/test_output/${ARG_NAME}.txt)
+    list(APPEND ADDITIONAL_FLAGS -DTEST_TEMP_FILE=${CMAKE_CURRENT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/temp_test_output.txt)
+    
+    if(${TEST_MODE} STREQUAL "COLLECT" OR ${TEST_MODE} STREQUAL "COMPARE")
+        if(NOT ARG_NO_OUTPUT)
+            file(MAKE_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/test_output/)
+            set(the_test_mode ${TEST_MODE})
+        endif()
+    endif()
+    
+    list(APPEND ADDITIONAL_FLAGS -DTEST_MODE=${the_test_mode})
+    
+    _add_test(NAME ${ARG_NAME} COMMAND ${CMAKE_COMMAND} -DCOMMAND=${the_command} ${ADDITIONAL_FLAGS} -P ${CMAKE_CURRENT_LIST_DIR}/exec_test.cmake)
+endfunction()
+
 macro(add_compiler_flags)
     foreach(flag ${ARGV})
         set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${flag}")
