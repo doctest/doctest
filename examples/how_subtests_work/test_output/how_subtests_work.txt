@@ -1,0 +1,8 @@
+
+creating empty vector
++ 2
+== size: 2
+
+creating empty vector
++ 1
+== size: 1

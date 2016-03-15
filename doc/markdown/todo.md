@@ -39,6 +39,7 @@
 - [core] timing reports of tests, duration restrictions, kill of longer than, etc...
 - [core] test execution in separate processes - UNIX only with fork()
 - [CI] test with VC6 (and maybe get it somehow on a zip install for appveyor)
+- [CI] try building with VS 2008/2010/2012/2013 also on appveyor - http://www.appveyor.com/docs/installed-software
 - [CI] mingw-w64 on appveyor
 - [CI] static analysis: msvc, clang, cppcheck
 - [easy] hierarchical test suites? using a stack for the pushed states

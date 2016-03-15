@@ -3,6 +3,9 @@ if(warnings_included)
 endif()
 set(warnings_included true)
 
+# cache this for use inside of the function
+set(CURRENT_LIST_DIR_CACHED ${CMAKE_CURRENT_LIST_DIR})
+
 enable_testing()
 
 set(TEST_MODE "NORMAL" CACHE STRING "Test mode - normal/run through valgrind/collect output/compare with output")
@@ -28,19 +31,18 @@ function(add_test)
     endforeach()
     string(STRIP ${the_command} the_command)
     
-    list(APPEND ADDITIONAL_FLAGS -DTEST_OUTPUT_FILE=${CMAKE_CURRENT_SOURCE_DIR}/test_output/${ARG_NAME}.txt)
-    list(APPEND ADDITIONAL_FLAGS -DTEST_TEMP_FILE=${CMAKE_CURRENT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/temp_test_output.txt)
-    
     if(${TEST_MODE} STREQUAL "COLLECT" OR ${TEST_MODE} STREQUAL "COMPARE")
         if(NOT ARG_NO_OUTPUT)
             file(MAKE_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/test_output/)
             set(the_test_mode ${TEST_MODE})
+            list(APPEND ADDITIONAL_FLAGS -DTEST_OUTPUT_FILE=${CMAKE_CURRENT_SOURCE_DIR}/test_output/${ARG_NAME}.txt)
+            list(APPEND ADDITIONAL_FLAGS -DTEST_TEMP_FILE=${CMAKE_CURRENT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/temp_test_output.txt)
         endif()
     endif()
     
     list(APPEND ADDITIONAL_FLAGS -DTEST_MODE=${the_test_mode})
     
-    _add_test(NAME ${ARG_NAME} COMMAND ${CMAKE_COMMAND} -DCOMMAND=${the_command} ${ADDITIONAL_FLAGS} -P ${CMAKE_CURRENT_LIST_DIR}/exec_test.cmake)
+    _add_test(NAME ${ARG_NAME} COMMAND ${CMAKE_COMMAND} -DCOMMAND=${the_command} ${ADDITIONAL_FLAGS} -P ${CURRENT_LIST_DIR_CACHED}/exec_test.cmake)
 endfunction()
 
 macro(add_compiler_flags)
