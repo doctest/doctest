@@ -103,35 +103,35 @@ matrix:
           sources: *apt_sources
 
     # Clang 3.4
-    - env: COMPILER=clang++ # HAS_ASAN=true HAS_UBSAN=true # waiting for libclang-3.8-dev:i386
+    - env: COMPILER=clang++ # HAS_ASAN=true HAS_UBSAN=true # waiting for libclang-3.4-dev:i386
       addons: &clang
         apt:
           packages: [             "valgrind", "g++-multilib", "libc6-dbg", "libc6-dbg:i386"]
           sources: *apt_sources
 
     # Clang 3.5
-    - env: COMPILER=clang++-3.5 # HAS_ASAN=true HAS_UBSAN=true # waiting for libclang-3.8-dev:i386
+    - env: COMPILER=clang++-3.5 # HAS_ASAN=true HAS_UBSAN=true # waiting for libclang-3.5-dev:i386
       addons: &clang35
         apt:
           packages: ["clang-3.5", "valgrind", "g++-multilib", "libc6-dbg", "libc6-dbg:i386"]
           sources: *apt_sources
 
     # Clang 3.6
-    - env: COMPILER=clang++-3.6 # HAS_ASAN=true HAS_UBSAN=true # waiting for libclang-3.8-dev:i386
+    - env: COMPILER=clang++-3.6 # HAS_ASAN=true HAS_UBSAN=true # waiting for libclang-3.6-dev:i386
       addons: &clang36
         apt:
           packages: ["clang-3.6", "valgrind", "g++-multilib", "libc6-dbg", "libc6-dbg:i386"]
           sources: *apt_sources
 
     # Clang 3.7
-    - env: COMPILER=clang++-3.7 # HAS_ASAN=true HAS_UBSAN=true # waiting for libclang-3.8-dev:i386 Also this has x64 bit trouble
+    - env: COMPILER=clang++-3.7 # HAS_ASAN=true HAS_UBSAN=true # not even for 64 bit - https://llvm.org/bugs/show_bug.cgi?id=22757
       addons: &clang37
         apt:
           packages: ["clang-3.7", "valgrind", "g++-multilib", "libc6-dbg", "libc6-dbg:i386"]
           sources: *apt_sources
 
     # Clang 3.8
-    - env: COMPILER=clang++-3.8 # HAS_ASAN=true HAS_UBSAN=true # waiting for libclang-3.8-dev:i386 Also this has x64 bit trouble
+    - env: COMPILER=clang++-3.8 # HAS_ASAN=true HAS_UBSAN=true # not even for 64 bit - https://llvm.org/bugs/show_bug.cgi?id=22757
       addons: &clang38
         apt:
           packages: ["clang-3.8", "valgrind", "g++-multilib", "libc6-dbg", "libc6-dbg:i386"]

@@ -5,21 +5,36 @@
 - a message macro
 - look at catch command line options (also lest)
 - ability to not run tests at all
+- signal handling for unix: http://www.cplusplus.com/reference/csignal/signal/
 - error reporting
 - colors in output
 - MSVC/IDE integration
 - make a compact reporter (for within ide-s - just the file and line number)
 - streaming reporters???
-- signal handling for unix: http://www.cplusplus.com/reference/csignal/signal/
+- xml reporter (jUnit compatible, etc.)
 - test coverage
 - fixing warnings gcc/clang/msvc (and add more stuff in the disabled example)
-- documentation
 - benchmark
-- reddit/boost mailing list/comp.lang.c++/comp.std.c++/hackernews/hora ot cg/ https://github.com/fffaraz/awesome-cpp (also research how to market a new library)
+- documentation
+
+## Spreading the word after 1.0.0 is released
+
+- reddit cpp/programming/gamedev/other
+- boost mailing list
+- comp.lang.c++
+- comp.std.c++
+- hackernews
+- hora ot cg
+- bg podcast? like bobi?
+- gamedev/programming/c++ forums
+- https://github.com/fffaraz/awesome-cpp
 - add doctest to lists of c++ testing frameworks all around the web
+- research how to market a new library
+
+- https://www.google.bg/webhp?sourceid=chrome-instant&ion=1&espv=2&ie=UTF-8#q=list%20of%20testing%20frameworks%20c%2B%2B
+- http://stackoverflow.com/a/33925554/3162383
 
 ## FUTURE
-- [core] xml reporter (jUnit compatible, etc.)
 - [core] timing reports of tests, duration restrictions, kill of longer than, etc...
 - [core] test execution in separate processes - UNIX only with fork()
 - [CI] test with VC6 (and maybe get it somehow on a zip install for appveyor)
