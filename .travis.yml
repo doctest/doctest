@@ -287,8 +287,8 @@ script:
   - |
     if [[ "${COVERALLS_SERVICE_NAME}" = "travis-ci" ]]; then
       cmake ${CMAKE_OPTIONS_GLOBAL} -DCMAKE_BUILD_TYPE=Debug .
-      cmake --build .
-      cmake --build . --target coveralls
+      make -j2
+      make -j2 --target coveralls
       exit
     fi
 
@@ -297,24 +297,28 @@ script:
 
   # debug x86
   - cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_FLAGS="-m32" .
-  - cmake --build .
+  - cmake --build . --target clean
+  - make -j2
   # valgrind for 32bit under osx fails
   - if [[ "${TRAVIS_OS_NAME}" == "linux" ]]; then cmake -DTEST_MODE=VALGRIND . && ctest --output-on-failure ; fi
 #  - cmake -DTEST_MODE=COMPARE . && ctest --output-on-failure
   # debug x64
   - cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_FLAGS="-m64" .
-  - cmake --build .
+  - cmake --build . --target clean
+  - make -j2
   - cmake -DTEST_MODE=VALGRIND . && ctest --output-on-failure
 #  - cmake -DTEST_MODE=COMPARE . && ctest --output-on-failure
   # release x86
   - cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="-m32" .
-  - cmake --build .
+  - cmake --build . --target clean
+  - make -j2
   # valgrind for 32bit under osx fails
   - if [[ "${TRAVIS_OS_NAME}" == "linux" ]]; then cmake -DTEST_MODE=VALGRIND . && ctest --output-on-failure ; fi
 #  - cmake -DTEST_MODE=COMPARE . && ctest --output-on-failure
   # release x64
   - cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="-m64" .
-  - cmake --build .
+  - cmake --build . --target clean
+  - make -j2
   - cmake -DTEST_MODE=VALGRIND . && ctest --output-on-failure
 #  - cmake -DTEST_MODE=COMPARE . && ctest --output-on-failure
 
@@ -322,13 +326,21 @@ script:
   - cmake -DTEST_MODE=NORMAL .
 #  - cmake -DTEST_MODE=COMPARE .
   # on separate commands because when something fails I want to see which one exactly
-  - if [[ "${HAS_ASAN}" = "true" ]];  then cmake -DCMAKE_BUILD_TYPE=Debug   -DCMAKE_CXX_FLAGS="-m64 -fsanitize=address" .   && cmake --build . && ctest --output-on-failure ; fi
-  - if [[ "${HAS_ASAN}" = "true" ]];  then cmake -DCMAKE_BUILD_TYPE=Debug   -DCMAKE_CXX_FLAGS="-m32 -fsanitize=address" .   && cmake --build . && ctest --output-on-failure ; fi
-  - if [[ "${HAS_ASAN}" = "true" ]];  then cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="-m64 -fsanitize=address" .   && cmake --build . && ctest --output-on-failure ; fi
-  - if [[ "${HAS_ASAN}" = "true" ]];  then cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="-m32 -fsanitize=address" .   && cmake --build . && ctest --output-on-failure ; fi
-  - if [[ "${HAS_UBSAN}" = "true" ]]; then cmake -DCMAKE_BUILD_TYPE=Debug   -DCMAKE_CXX_FLAGS="-m64 -fsanitize=undefined" . && cmake --build . && ctest --output-on-failure ; fi
-  - if [[ "${HAS_UBSAN}" = "true" ]]; then cmake -DCMAKE_BUILD_TYPE=Debug   -DCMAKE_CXX_FLAGS="-m32 -fsanitize=undefined" . && cmake --build . && ctest --output-on-failure ; fi
-  - if [[ "${HAS_UBSAN}" = "true" ]]; then cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="-m64 -fsanitize=undefined" . && cmake --build . && ctest --output-on-failure ; fi
-  - if [[ "${HAS_UBSAN}" = "true" ]]; then cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="-m32 -fsanitize=undefined" . && cmake --build . && ctest --output-on-failure ; fi
+  - cmake --build . --target clean
+  - if [[ "${HAS_ASAN}" = "true" ]];  then cmake -DCMAKE_BUILD_TYPE=Debug   -DCMAKE_CXX_FLAGS="-m64 -fsanitize=address" .   && make -j2 && ctest --output-on-failure ; fi
+  - cmake --build . --target clean
+  - if [[ "${HAS_ASAN}" = "true" ]];  then cmake -DCMAKE_BUILD_TYPE=Debug   -DCMAKE_CXX_FLAGS="-m32 -fsanitize=address" .   && make -j2 && ctest --output-on-failure ; fi
+  - cmake --build . --target clean
+  - if [[ "${HAS_ASAN}" = "true" ]];  then cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="-m64 -fsanitize=address" .   && make -j2 && ctest --output-on-failure ; fi
+  - cmake --build . --target clean
+  - if [[ "${HAS_ASAN}" = "true" ]];  then cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="-m32 -fsanitize=address" .   && make -j2 && ctest --output-on-failure ; fi
+  - cmake --build . --target clean
+  - if [[ "${HAS_UBSAN}" = "true" ]]; then cmake -DCMAKE_BUILD_TYPE=Debug   -DCMAKE_CXX_FLAGS="-m64 -fsanitize=undefined" . && make -j2 && ctest --output-on-failure ; fi
+  - cmake --build . --target clean
+  - if [[ "${HAS_UBSAN}" = "true" ]]; then cmake -DCMAKE_BUILD_TYPE=Debug   -DCMAKE_CXX_FLAGS="-m32 -fsanitize=undefined" . && make -j2 && ctest --output-on-failure ; fi
+  - cmake --build . --target clean
+  - if [[ "${HAS_UBSAN}" = "true" ]]; then cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="-m64 -fsanitize=undefined" . && make -j2 && ctest --output-on-failure ; fi
+  - cmake --build . --target clean
+  - if [[ "${HAS_UBSAN}" = "true" ]]; then cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="-m32 -fsanitize=undefined" . && make -j2 && ctest --output-on-failure ; fi
 after_script:
   - cat compile_commands.json
