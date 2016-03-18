@@ -64,6 +64,8 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
     #add_compiler_flags(-fstack-protector-all)
     #add_compiler_flags(-funsafe-loop-optimizations)
     
+    add_compiler_flags(-ggdb) # temp - to see valgrind issues
+    
     add_compiler_flags(-ansi)
     add_compiler_flags(-Wall)
     add_compiler_flags(-Wextra)

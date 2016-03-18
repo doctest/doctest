@@ -19,7 +19,9 @@
 #endif // __clang__
 
 #if defined(__GNUC__) && !defined(__clang__)
+#if __GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ > 6)
 #pragma GCC diagnostic push
+#endif // > gcc 4.6
 #pragma GCC diagnostic ignored "-Wconversion"
 #pragma GCC diagnostic ignored "-Weffc++"
 #pragma GCC diagnostic ignored "-Wsign-conversion"
@@ -216,7 +218,6 @@ class Context
     bool hash_table_histogram; // if the hash table should be printed as a histogram
 
     bool no_run;  // to not run the tests at all (can be done with an "*" exclude)
-    bool padding; // padding - not used for anything
     int  first;   // the first (matching) test to be executed
     int  last;    // the last (matching) test to be executed
 
@@ -822,15 +823,12 @@ namespace detail
         const char* m_file; // the file in which the test was registered
         unsigned    m_line; // the line where the test was registered
 
-        int m_padding; // padding - not used for anything
-
         TestData(const char* suite, const char* name, funcType f, const char* file, int line)
                 : m_suite()
                 , m_name()
                 , m_f(f)
                 , m_file(file)
-                , m_line(line)
-                , m_padding(0) {
+                , m_line(line) {
             // trimming quotes of name
             if(name) {
                 if(*name == '"')
@@ -965,11 +963,11 @@ namespace detail
 
                 // if the value matches any of the positive/negative possibilities
                 for(size_t i = 0; i < 4; i++) {
-                    if(parsedValues[0].compare(positive[i]) == 0) {
+                    if(parsedValues[0].compare(positive[i], true) == 0) {
                         outVal = 1;
                         break;
                     }
-                    if(parsedValues[0].compare(negative[i]) == 0) {
+                    if(parsedValues[0].compare(negative[i], true) == 0) {
                         outVal = 0;
                         break;
                     }
@@ -1069,7 +1067,6 @@ int String::compare(const String& other, bool no_case) const {
 
 Context::Context(int argc, char** argv)
         : filters(6)     // 6 different filters total
-        , padding(false) // dummy
 {
     using namespace detail;
 
@@ -1279,7 +1276,9 @@ int main(int argc, char** argv) {
 #endif // __clang__
 
 #if defined(__GNUC__) && !defined(__clang__)
+#if __GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ > 6)
 #pragma GCC diagnostic pop
+#endif // > gcc 4.6
 #endif // __GNUC__
 
 #ifdef _MSC_VER
