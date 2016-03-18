@@ -7,10 +7,14 @@
 #include <string>
 
 // @TODO: maybe also check if __cplusplus == 201103 or higher?
-#if defined(_MSC_EXTENSIONS) || (defined(_MSC_VER) && (_MSC_VER >= 1400))
-#define HAS_LONG_LONG
-#elif (defined(ULLONG_MAX) || defined(ULONG_LONG_MAX) || defined(ULONGLONG_MAX))
-#define HAS_LONG_LONG
+// #if defined(_MSC_EXTENSIONS) || (defined(_MSC_VER) && (_MSC_VER >= 1400))
+// #define HAS_LONG_LONG
+// #elif (defined(ULLONG_MAX) || defined(ULONG_LONG_MAX) || defined(ULONGLONG_MAX))
+// #define HAS_LONG_LONG
+// #endif
+
+#if defined(__GNUC__) && !defined(__clang__)
+#pragma GCC diagnostic ignored "-Waggregate-return"
 #endif
 
 // @TODO: look at https://github.com/louisdx/cxx-prettyprint

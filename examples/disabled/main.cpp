@@ -18,9 +18,8 @@ doctest_test(ops) {
 
 doctest_testsuite_end;
 
-struct Empty {
-    virtual ~Empty() {}
-};
+struct Empty
+{};
 
 doctest_fixture(Empty, "name") {
     printf("Help?\n");

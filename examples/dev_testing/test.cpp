@@ -34,9 +34,7 @@ test(zzz) {
 testsuite_end;
 
 struct Empty
-{
-    virtual ~Empty() {}
-};
+{};
 
 doctest_fixture(Empty, trololo) { printf("Help?\n"); }
 

@@ -64,8 +64,6 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
     #add_compiler_flags(-fstack-protector-all)
     #add_compiler_flags(-funsafe-loop-optimizations)
     
-    add_compiler_flags(-ggdb) # temporary
-    
     add_compiler_flags(-ansi)
     add_compiler_flags(-Wall)
     add_compiler_flags(-Wextra)
@@ -119,6 +117,8 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
         add_compiler_flags(-Wshift-overflow=2)
         add_compiler_flags(-Wnull-dereference)
         add_compiler_flags(-Wduplicated-cond)
+        add_compiler_flags(-Wmisleading-indentation)
+        add_compiler_flags(-Wshift-negative-value)
     endif()
 endif()
 

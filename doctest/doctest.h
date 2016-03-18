@@ -343,11 +343,23 @@ namespace detail
     void       DOCTEST_ANONYMOUS(DOCTEST_AUTOGEN_FOR_SEMICOLON_)()
 #endif // MSVC
 
+#if defined(__clang__)
+#define DOCTEST_CHECK(expr)                                                                        \
+    do {                                                                                           \
+        _Pragma("clang diagnostic push")                                                           \
+                _Pragma("clang diagnostic ignored \"-Woverloaded-shift-op-parentheses\"") if(      \
+                        doctest::detail::Result failed =                                           \
+                                (doctest::detail::ExpressionDecomposer() << expr))                 \
+                        printf("%s\n", failed.m_decomposition.c_str());                            \
+        _Pragma("clang diagnostic pop")                                                            \
+    } while(false)
+#else // __clang__
 #define DOCTEST_CHECK(expr)                                                                        \
     do {                                                                                           \
         if(doctest::detail::Result failed = (doctest::detail::ExpressionDecomposer() << expr))     \
             printf("%s\n", failed.m_decomposition.c_str());                                        \
     } while(false)
+#endif // __clang__
 
 // =============================================================================
 // == WHAT FOLLOWS IS VERSIONS OF THE MACROS THAT DO NOT DO ANY REGISTERING!  ==
@@ -819,20 +831,11 @@ namespace detail
                 , m_file(file)
                 , m_line(line)
                 , m_padding(0) {
-            // not using std::strlen() because of valgrind errors when optimizations are turned on
-            // 'Invalid read of size 4' when the test suite len (with '\0') is not a multiple of 4
-            // for details see http://stackoverflow.com/questions/35671155
-
             // trimming quotes of name
             if(name) {
                 if(*name == '"')
                     ++name;
-
-                const char* name_temp = name;
-                while(*name_temp)
-                    ++name_temp;
-                size_t name_len = name_temp - name;
-
+                size_t name_len = strlen(name);
                 if(name[name_len] != '"') {
                     m_name = name;
                 } else {
@@ -845,12 +848,7 @@ namespace detail
             if(suite) {
                 if(*suite == '"')
                     ++suite;
-
-                const char* suite_temp = suite;
-                while(*suite_temp)
-                    ++suite_temp;
-                size_t suite_len = suite_temp - suite;
-
+                size_t suite_len = strlen(suite);
                 if(suite[suite_len] != '"') {
                     m_suite = suite;
                 } else {
@@ -993,7 +991,16 @@ String::String(const char* in)
     if(in == 0)
         return;
 
-    m_str = static_cast<char*>(malloc(strlen(in) + 1));
+    // not using std::strlen() because of valgrind errors when optimizations are turned on
+    // 'Invalid read of size 4' when the test suite len (with '\0') is not a multiple of 4
+    // for details see http://stackoverflow.com/questions/35671155
+
+    const char* temp = in;
+    while(*temp)
+        ++temp;
+    size_t len = temp - in;
+
+    m_str = static_cast<char*>(malloc(len + 1));
     strcpy(m_str, in);
 }
 
@@ -1008,7 +1015,16 @@ void String::copy(const String& other) {
     m_str = 0;
 
     if(other.m_str) {
-        m_str = static_cast<char*>(malloc(strlen(other.m_str) + 1));
+        // not using std::strlen() because of valgrind errors when optimizations are turned on
+        // 'Invalid read of size 4' when the test suite len (with '\0') is not a multiple of 4
+        // for details see http://stackoverflow.com/questions/35671155
+
+        const char* temp = other.m_str;
+        while(*temp)
+            ++temp;
+        size_t len = temp - other.m_str;
+
+        m_str = static_cast<char*>(malloc(len + 1));
         strcpy(m_str, other.m_str);
     }
 }
@@ -1052,7 +1068,8 @@ int String::compare(const String& other, bool no_case) const {
 }
 
 Context::Context(int argc, char** argv)
-        : filters(6) // 6 different filters total
+        : filters(6)     // 6 different filters total
+        , padding(false) // dummy
 {
     using namespace detail;
 
