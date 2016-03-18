@@ -85,6 +85,8 @@ public:
     int compare(const String& other, bool no_case = false) const;
 };
 
+#if !defined(DOCTEST_CONFIG_DISABLE)
+
 namespace detail
 {
     template <class T>
@@ -198,11 +200,13 @@ namespace detail
     };
 } // namespace detail
 
-struct Context
+#endif // DOCTEST_CONFIG_DISABLE
+
+class Context
 {
 #if !defined(DOCTEST_CONFIG_DISABLE)
+
     detail::Vector<detail::Vector<String> > filters;
-#endif // DOCTEST_CONFIG_DISABLE
 
     bool count;                // if only the count of matching tests is to be retreived
     bool case_sensitive;       // if filtering should be case sensitive
@@ -218,6 +222,9 @@ struct Context
 
     int (*testExecutionWrapper)(funcType); // wrapper for test execution
 
+#endif // DOCTEST_CONFIG_DISABLE
+
+public:
     Context(int argc, char** argv);
 
     void addFilter(const char* filter, const char* value);
@@ -231,7 +238,6 @@ struct Context
 // if registering is not disabled
 #if !defined(DOCTEST_CONFIG_DISABLE)
 
-#if !defined(DOCTEST_CONFIG_IMPLEMENT)
 namespace doctest
 {
 namespace detail
@@ -240,10 +246,7 @@ namespace detail
     int regTest(void (*f)(void), unsigned line, const char* file, const char* name);
     int setTestSuiteName(const char* name);
 } // namespace detail
-// forward declarations of the functions intended for direct use
-int runTests(void* params_struct);
 } // namespace doctest
-#endif // DOCTEST_CONFIG_IMPLEMENT
 
 // registers the test by initializing a dummy var with a function
 #if defined(__GNUC__) && !defined(__clang__)
@@ -355,6 +358,14 @@ int runTests(void* params_struct);
 namespace doctest
 {
 inline String::String(const char*) {}
+inline String::String(const String&) {}
+inline String::~String() {}
+inline String& String::operator=(const String&) { return *this; }
+inline String  String::operator+(const String&) const { return String(); }
+inline String& String::operator+=(const String&) { return *this; }
+inline int     String::compare(const char*, bool) const { return 0; }
+inline int     String::compare(const String&, bool) const { return 0; }
+
 inline Context::Context(int, char**) {}
 inline void Context::addFilter(const char*, const char*) {}
 inline void Context::setOption(const char*, int) {}
@@ -423,6 +434,9 @@ inline int  Context::runTests() { return 0; }
 #define check doctest_check
 
 #endif // DOCTEST_CONFIG_SHORT_MACRO_NAMES
+
+// this is here to clear the 'current test suite' for the current translation unit - at the top
+doctest_testsuite_end;
 
 #endif // DOCTEST_LIBRARY_INCLUDED
 
@@ -805,11 +819,20 @@ namespace detail
                 , m_file(file)
                 , m_line(line)
                 , m_padding(0) {
+            // not using std::strlen() because of valgrind errors when optimizations are turned on
+            // 'Invalid read of size 4' when the test suite len (with '\0') is not a multiple of 4
+            // for details see http://stackoverflow.com/questions/35671155
+
             // trimming quotes of name
             if(name) {
                 if(*name == '"')
                     ++name;
-                size_t name_len = strlen(name);
+
+                const char* name_temp = name;
+                while(*name_temp)
+                    ++name_temp;
+                size_t name_len = name_temp - name;
+
                 if(name[name_len] != '"') {
                     m_name = name;
                 } else {
@@ -822,7 +845,12 @@ namespace detail
             if(suite) {
                 if(*suite == '"')
                     ++suite;
-                size_t suite_len = strlen(suite);
+
+                const char* suite_temp = suite;
+                while(*suite_temp)
+                    ++suite_temp;
+                size_t suite_len = suite_temp - suite;
+
                 if(suite[suite_len] != '"') {
                     m_suite = suite;
                 } else {
@@ -877,12 +905,7 @@ namespace detail
 
     // used by the macros for registering tests
     int regTest(funcType f, unsigned line, const char* file, const char* name) {
-        // using some temp variables to silence a g++5 valgrind problem with inlining - the error is
-        // 'Invalid read of size 4' when the current test suite length (including '\0') is not a multiple of 4
-        // for details see http://stackoverflow.com/questions/35671155
-        String temp             = getCurrentTestSuite();
-        String currentTestSuite = temp;
-        getRegisteredTests().insert(TestData(currentTestSuite.c_str(), name, f, file, line));
+        getRegisteredTests().insert(TestData(getCurrentTestSuite(), name, f, file, line));
         return 0;
     }
 

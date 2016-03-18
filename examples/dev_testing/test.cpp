@@ -1,32 +1,51 @@
+//#define DOCTEST_CONFIG_DISABLE
+
 #include "doctest.h"
 
-#include <cstdio>
-
-testsuite(test);
-
-test(ttt)
+#include <string>
+namespace doctest
 {
-    printf("test!\n");
-}
-
-struct F {
-    F()
+    namespace detail
     {
-        printf("ctor!\n");
-    }
-    ~F()
-    {
-        printf("dtor...\n");
-    }
-};
+        String stringify(const std::string& in); // to silence GCC "-Wmissing-declarations"
+        String stringify(const std::string& in) {
+            String out;
+            out += in.c_str();
+            return out;
+        }
+    } // namespace detail
+} // namespace doctest
 
-fixture_noname(F)
-{
-    printf("    fixturing!\n");
+testsuite(MAIN);
+test(zzz) {
+    check(true == false);
+    check(std::string("OMG2") == std::string("OMG"));
+
+    printf("main\n");
+    subtest("") {
+        printf("1\n");
+        subtest("") { printf("1-1\n"); }
+        subtest("") { printf("1-2\n"); }
+    }
+    subtest("") { printf("2\n"); }
 }
-
 testsuite_end;
 
+struct Empty
+{
+    virtual ~Empty() {}
+};
 
-test(__LINE__) {}
-test(__LINE__) {}
+doctest_fixture(Empty, trololo) { printf("Help?\n"); }
+
+// test("") { printf("TEST %d\n", __LINE__); }
+// test("") { printf("TEST %d\n", __LINE__); }
+// test("") { printf("TEST %d\n", __LINE__); }
+// test("") { printf("TEST %d\n", __LINE__); }
+// test("") { printf("TEST %d\n", __LINE__); }
+// test("") { printf("TEST %d\n", __LINE__); }
+// test("") { printf("TEST %d\n", __LINE__); }
+// test("") { printf("TEST %d\n", __LINE__); }
+// test("") { printf("TEST %d\n", __LINE__); }
+// test("") { printf("TEST %d\n", __LINE__); }
+// test("") { printf("TEST %d\n", __LINE__); }

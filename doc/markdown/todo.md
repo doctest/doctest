@@ -1,6 +1,7 @@
 ## TODO FOR FIRST RELEASE
 
 - CHECK/REQUIRE macros
+- pointer stringification
 - debugger present detection (and break when a CHECK/REQUIRE macro fails)
 - a message macro
 - look at catch command line options (also lest)
@@ -50,18 +51,21 @@
 - [unsure] BDD based on the subtests - like Catch
 - [unsure] matchers?
 - [unsure] put internals in anonymous namespace (even if already in detail) - even though clang-format will make everything more indented
-- [unsure] count the number of times TESTSUITE and TESTSUITE_END have been called and issue a warning when the tests are getting ran if there is a mismatch (also each TESTSUITE should check if it's called directly after a TESTSUITE without a TESTSUITE_END in between)
 - [unsure] silencing warnings - take into account when a compiler (which version) accuires a pragma/attribute/warning (for gcc use -Wno-unknown-warning)
 - [unsure] ability to transfer/copy registered functions from one dll to another so they are put in one set and duplicates are filtered
 - [unsure] wchar stuff in stringify and whatever - see <wchar.h>
 
 ## DOCUMENTATION
+
+"the latest and greatest in unit testing in c++"
+
 - mimic catch front page - tutorial link, what is different link, documentation link.
 - profile doctest vs Catch (compile/startup)
 - defense of macros in testing frameworks: http://accu.org/var/uploads/journals/Overload125.pdf
 - whats the library's main purpose
 - warning free even with the most aggressive options for all 3 major compilers
 - mocking is not included because it is orthogonal to testing and a different third party library may be used for that (google mock)
+https://github.com/tpounds/mockitopp
 - check what features catch/lest have to offer (and what they say they lack)
 - property based testing - what it is and how to use it with doctest
 - document how to use spaces for filters in the comma separated list (using "")
@@ -71,8 +75,11 @@
 - tests in headers... might end up in different test suites - and only 1 of them will get registered? or might have ifdef-ed parts that get compiled differently based on how/where the header is included...... so not a good practice to write tests in header files
 - how subtests work - http://pastebin.com/rwghFzK4
 
-
-
+list of c++ testing libs
+https://github.com/unittest-cpp/unittest-cpp
+catch
+lest
+etc.
 
 
 

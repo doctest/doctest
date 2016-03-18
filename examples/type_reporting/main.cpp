@@ -16,7 +16,7 @@
 // @TODO: look at https://github.com/louisdx/cxx-prettyprint
 namespace doctest {
 namespace detail {
-    template <>
+    String stringify(const std::string& in); // to silence GCC "-Wmissing-declarations"
     String stringify(const std::string& in) {
         return in.c_str();
     }

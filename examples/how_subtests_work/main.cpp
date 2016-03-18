@@ -1,13 +1,3 @@
-#if defined(__clang__)
-#pragma clang diagnostic ignored "-Wpadded"
-#pragma clang diagnostic ignored "-Wglobal-constructors"
-#pragma clang diagnostic ignored "-Wexit-time-destructors"
-#pragma clang diagnostic ignored "-Wmissing-prototypes"
-#elif defined(__GNUC__)
-#pragma GCC diagnostic ignored "-Wmissing-declarations"
-#pragma GCC diagnostic ignored "-Waggregate-return"
-#endif
-
 #include <iostream>
 #include <vector>
 #include <set>
@@ -52,10 +42,6 @@ struct Subtest {
     }
 
     operator bool() const { return m_entered; }
-
-private:
-    Subtest(const Subtest& other);
-    Subtest& operator=(const Subtest& other);
 
     bool m_entered;
     const char* m_file;

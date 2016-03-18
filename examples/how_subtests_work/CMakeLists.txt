@@ -5,6 +5,10 @@ project(${PROJECT_NAME})
 
 include(../../scripts/common.cmake)
 
+if(NOT MSVC)
+    add_compiler_flags(-w) # suppress all warnings because this is not a real example of using the library
+endif()
+
 add_executable(${PROJECT_NAME} main.cpp)
 
 add_test(NAME ${PROJECT_NAME} COMMAND $<TARGET_FILE:${PROJECT_NAME}>)

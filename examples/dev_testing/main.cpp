@@ -6,49 +6,6 @@
 #include <cstdio>
 #include <exception>
 
-#include <string>
-namespace doctest
-{
-namespace detail
-{
-    template <>
-    String stringify(const std::string& in) {
-        return in.c_str();
-    }
-} // namespace detail
-} // namespace doctest
-
-testsuite(MAIN);
-test(zzz) {
-    check(true == false);
-    check(std::string("OMG2") == std::string("OMG"));
-
-    printf("main\n");
-    subtest("") {
-        printf("1\n");
-        subtest("") { printf("1-1\n"); }
-        subtest("") { printf("1-2\n"); }
-    }
-    subtest("") { printf("2\n"); }
-}
-testsuite_end;
-
-struct Empty
-{
-    virtual ~Empty() {}
-};
-
-doctest_fixture(Empty, trololo) { printf("Help?\n"); }
-
-// test(thrower)
-//{
-//    if(rand() > 4) {
-//        throw std::exception();
-//    } else {
-//        cout << "trololo" << endl;
-//    }
-//}
-
 static int testWrapper(void (*f)(void)) {
     try {
         f();
@@ -77,15 +34,3 @@ int main(int argc, char** argv) {
 
     return res;
 }
-
-// test("") { printf("TEST %d\n", __LINE__); }
-// test("") { printf("TEST %d\n", __LINE__); }
-// test("") { printf("TEST %d\n", __LINE__); }
-// test("") { printf("TEST %d\n", __LINE__); }
-// test("") { printf("TEST %d\n", __LINE__); }
-// test("") { printf("TEST %d\n", __LINE__); }
-// test("") { printf("TEST %d\n", __LINE__); }
-// test("") { printf("TEST %d\n", __LINE__); }
-// test("") { printf("TEST %d\n", __LINE__); }
-// test("") { printf("TEST %d\n", __LINE__); }
-// test("") { printf("TEST %d\n", __LINE__); }
