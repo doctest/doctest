@@ -2,7 +2,6 @@ cmake_minimum_required(VERSION 2.8)
 
 project(all)
 
-include(CMakeParseArguments)
 include(scripts/common.cmake)
 
 # when on Travis CI force 64 bit for gcc 4.4 under OSX because -m32 fails

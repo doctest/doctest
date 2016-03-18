@@ -219,9 +219,9 @@ class Context
     bool exit_after_tests;     // calls exit() after the tests are ran/counted
     bool hash_table_histogram; // if the hash table should be printed as a histogram
 
-    bool no_run;  // to not run the tests at all (can be done with an "*" exclude)
-    int  first;   // the first (matching) test to be executed
-    int  last;    // the last (matching) test to be executed
+    bool no_run; // to not run the tests at all (can be done with an "*" exclude)
+    int  first;  // the first (matching) test to be executed
+    int  last;   // the last (matching) test to be executed
 
     int (*testExecutionWrapper)(funcType); // wrapper for test execution
 
@@ -465,7 +465,7 @@ doctest_testsuite_end;
 // required includes
 #include <cstdio>  // printf, sprintf and friends
 #include <cstdlib> // malloc, free, qsort
-#include <cstring> // strlen, strcpy, strtok
+#include <cstring> // strcpy, strtok
 #include <new>     // placement new (can be skipped if the containers require 'construct()' from T)
 
 // the number of buckets used for the hash set
@@ -481,6 +481,16 @@ namespace detail
 {
     // lowers ascii letters
     char tolower(const char c) { return ((c >= 'A' && c <= 'Z') ? static_cast<char>(c + 32) : c); }
+
+    // not using std::strlen() because of valgrind errors when optimizations are turned on
+    // 'Invalid read of size 4' when the test suite len (with '\0') is not a multiple of 4
+    // for details see http://stackoverflow.com/questions/35671155
+    size_t my_strlen(const char* in) {
+        const char* temp = in;
+        while(*temp)
+            ++temp;
+        return temp - in;
+    }
 
     // case insensitive strcmp
     int stricmp(char const* a, char const* b) {
@@ -835,7 +845,7 @@ namespace detail
             if(name) {
                 if(*name == '"')
                     ++name;
-                size_t name_len = strlen(name);
+                size_t name_len = my_strlen(name);
                 if(name[name_len] != '"') {
                     m_name = name;
                 } else {
@@ -848,7 +858,7 @@ namespace detail
             if(suite) {
                 if(*suite == '"')
                     ++suite;
-                size_t suite_len = strlen(suite);
+                size_t suite_len = my_strlen(suite);
                 if(suite[suite_len] != '"') {
                     m_suite = suite;
                 } else {
@@ -928,8 +938,8 @@ namespace detail
         for(int i = 0; i < argc; ++i) {
             const char* temp = strstr(argv[i], pattern);
             if(temp) {
-                temp += strlen(pattern);
-                size_t len = strlen(temp);
+                temp += my_strlen(pattern);
+                size_t len = my_strlen(temp);
                 if(len) {
                     filtersString = temp;
                     break;
@@ -942,7 +952,7 @@ namespace detail
             // tokenize with "," as a separator
             char* pch = strtok(filtersString.c_str(), ","); // modifies the string
             while(pch != 0) {
-                if(strlen(pch))
+                if(my_strlen(pch))
                     filters.push_back(pch);
                 pch = strtok(0, ","); // uses the strtok() internal state to go to the next token
             }
@@ -991,16 +1001,7 @@ String::String(const char* in)
     if(in == 0)
         return;
 
-    // not using std::strlen() because of valgrind errors when optimizations are turned on
-    // 'Invalid read of size 4' when the test suite len (with '\0') is not a multiple of 4
-    // for details see http://stackoverflow.com/questions/35671155
-
-    const char* temp = in;
-    while(*temp)
-        ++temp;
-    size_t len = temp - in;
-
-    m_str = static_cast<char*>(malloc(len + 1));
+    m_str = static_cast<char*>(malloc(detail::my_strlen(in) + 1));
     strcpy(m_str, in);
 }
 
@@ -1043,12 +1044,13 @@ String& String::operator=(const String& other) {
 String String::operator+(const String& other) const { return String(m_str) += other; }
 
 String& String::operator+=(const String& other) {
+    using namespace detail;
     if(m_str == 0) {
         copy(other);
     } else if(other.m_str != 0) {
-        char* newStr = static_cast<char*>(malloc(strlen(m_str) + strlen(other.m_str) + 1));
+        char* newStr = static_cast<char*>(malloc(my_strlen(m_str) + my_strlen(other.m_str) + 1));
         strcpy(newStr, m_str);
-        strcpy(newStr + strlen(m_str), other.m_str);
+        strcpy(newStr + my_strlen(m_str), other.m_str);
         free(m_str);
         m_str = newStr;
     }
@@ -1068,7 +1070,7 @@ int String::compare(const String& other, bool no_case) const {
 }
 
 Context::Context(int argc, char** argv)
-        : filters(6)     // 6 different filters total
+        : filters(6) // 6 different filters total
 {
     using namespace detail;
 
@@ -1111,7 +1113,7 @@ void Context::addFilter(const char* filter, const char* value) {
         if(strcmp(filter, "dt-name-exclude") == 0)
             idx = 5;
         // if the filter name is valid
-        if(idx != 42 && strlen(value))
+        if(idx != 42 && my_strlen(value))
             filters[idx].push_back(value);
     }
 }

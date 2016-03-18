@@ -1,7 +1,9 @@
-if(warnings_included)
+if(common_included)
     return()
 endif()
-set(warnings_included true)
+set(common_included true)
+
+include(CMakeParseArguments)
 
 # cache this for use inside of the function
 set(CURRENT_LIST_DIR_CACHED ${CMAKE_CURRENT_LIST_DIR})
