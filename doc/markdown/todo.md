@@ -1,6 +1,6 @@
 ## TODO FOR FIRST RELEASE
 
-- CHECK/REQUIRE macros
+- CHECK/REQUIRE macros (also xxx_THROWS versions!)
 - pointer stringification
 - debugger present detection (and break when a CHECK/REQUIRE macro fails)
 - a message macro

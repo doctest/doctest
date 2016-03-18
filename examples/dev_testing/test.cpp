@@ -2,6 +2,8 @@
 
 #include "doctest.h"
 
+#include <cstdio>
+
 #include <string>
 namespace doctest
 {
