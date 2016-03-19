@@ -18,6 +18,10 @@ doctest_test(ops) {
 
 doctest_testsuite_end;
 
+#if defined(__GNUC__) && !defined(__clang__)
+#pragma GCC diagnostic ignored "-Weffc++"
+#endif
+
 struct Empty
 {};
 
