@@ -1,7 +1,6 @@
-#define DOCTEST_CONFIG_DISABLE
+#define DOCTEST_DISABLE
 
-#define DOCTEST_CONFIG_MAIN
-#define DOCTEST_CONFIG_IMPLEMENT
+#define DOCTEST_IMPLEMENT_WITH_MAIN
 #include "doctest.h"
 
 #include <cstdio>

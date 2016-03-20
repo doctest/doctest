@@ -1,5 +1,4 @@
-#define DOCTEST_CONFIG_MAIN
-#define DOCTEST_CONFIG_IMPLEMENT
+#define DOCTEST_IMPLEMENT_WITH_MAIN
 #include "doctest.h"
 
 #include <cstdio>

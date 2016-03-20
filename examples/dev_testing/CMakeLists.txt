@@ -5,8 +5,6 @@ project(${PROJECT_NAME})
 
 include(../../scripts/common.cmake)
 
-add_definitions(-DDOCTEST_CONFIG_SHORT_MACRO_NAMES)
-
 include_directories("../../doctest/")
 
 add_executable(${PROJECT_NAME} main.cpp test.cpp)

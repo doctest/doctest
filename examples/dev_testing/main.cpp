@@ -1,6 +1,6 @@
-//#define DOCTEST_CONFIG_DISABLE
+//#define DOCTEST_DISABLE
 
-#define DOCTEST_CONFIG_IMPLEMENT
+#define DOCTEST_IMPLEMENT
 #include "doctest.h"
 
 #include <cstdio>

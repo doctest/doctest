@@ -90,7 +90,7 @@ public:
     int compare(const String& other, bool no_case = false) const;
 };
 
-#if !defined(DOCTEST_CONFIG_DISABLE)
+#if !defined(DOCTEST_DISABLE)
 
 namespace detail
 {
@@ -205,11 +205,11 @@ namespace detail
     };
 } // namespace detail
 
-#endif // DOCTEST_CONFIG_DISABLE
+#endif // DOCTEST_DISABLE
 
 class Context
 {
-#if !defined(DOCTEST_CONFIG_DISABLE)
+#if !defined(DOCTEST_DISABLE)
 
     detail::Vector<detail::Vector<String> > filters;
 
@@ -226,7 +226,7 @@ class Context
 
     int (*testExecutionWrapper)(funcType); // wrapper for test execution
 
-#endif // DOCTEST_CONFIG_DISABLE
+#endif // DOCTEST_DISABLE
 
 public:
     Context(int argc, char** argv);
@@ -240,7 +240,7 @@ public:
 } // namespace doctest
 
 // if registering is not disabled
-#if !defined(DOCTEST_CONFIG_DISABLE)
+#if !defined(DOCTEST_DISABLE)
 
 namespace doctest
 {
@@ -367,9 +367,9 @@ namespace detail
 
 // =============================================================================
 // == WHAT FOLLOWS IS VERSIONS OF THE MACROS THAT DO NOT DO ANY REGISTERING!  ==
-// == THIS CAN BE ENABLED BY DEFINING DOCTEST_CONFIG_DISABLE GLOBALLY!        ==
+// == THIS CAN BE ENABLED BY DEFINING DOCTEST_DISABLE GLOBALLY!        ==
 // =============================================================================
-#else // DOCTEST_CONFIG_DISABLE
+#else // DOCTEST_DISABLE
 
 namespace doctest
 {
@@ -423,7 +423,7 @@ inline int  Context::runTests() { return 0; }
 
 #define DOCTEST_CHECK(expr) expr;
 
-#endif // DOCTEST_CONFIG_DISABLE
+#endif // DOCTEST_DISABLE
 
 #define doctest_test(name) DOCTEST_TEST(name)
 #define doctest_fixture(c, name) DOCTEST_FIXTURE(c, name)
@@ -433,7 +433,7 @@ inline int  Context::runTests() { return 0; }
 #define doctest_check DOCTEST_CHECK
 
 // == SHORT VERSIONS OF THE TEST/FIXTURE/TESTSUITE MACROS
-#ifdef DOCTEST_CONFIG_SHORT_MACRO_NAMES
+#ifndef DOCTEST_NO_SHORT_MACRO_NAMES
 
 #define TEST(name) DOCTEST_TEST(name)
 #define FIXTURE(c, name) DOCTEST_FIXTURE(c, name)
@@ -449,7 +449,7 @@ inline int  Context::runTests() { return 0; }
 #define testsuite_end doctest_testsuite_end
 #define check doctest_check
 
-#endif // DOCTEST_CONFIG_SHORT_MACRO_NAMES
+#endif // DOCTEST_NO_SHORT_MACRO_NAMES
 
 // this is here to clear the 'current test suite' for the current translation unit - at the top
 doctest_testsuite_end;
@@ -459,7 +459,8 @@ doctest_testsuite_end;
 // =============================================================================
 // == WHAT FOLLOWS IS THE IMPLEMENTATION OF THE TEST RUNNER                   ==
 // =============================================================================
-#if defined(DOCTEST_CONFIG_IMPLEMENT) && !defined(DOCTEST_CONFIG_DISABLE)
+#if(defined(DOCTEST_IMPLEMENT) || defined(DOCTEST_IMPLEMENT_WITH_MAIN)) &&           \
+        !defined(DOCTEST_DISABLE)
 #ifndef DOCTEST_LIBRARY_IMPLEMENTATION
 #define DOCTEST_LIBRARY_IMPLEMENTATION
 
@@ -470,9 +471,9 @@ doctest_testsuite_end;
 #include <new>     // placement new (can be skipped if the containers require 'construct()' from T)
 
 // the number of buckets used for the hash set
-#if !defined(DOCTEST_CONFIG_HASH_TABLE_NUM_BUCKETS)
-#define DOCTEST_CONFIG_HASH_TABLE_NUM_BUCKETS 1024
-#endif // DOCTEST_CONFIG_HASH_TABLE_NUM_BUCKETS
+#if !defined(DOCTEST_HASH_TABLE_NUM_BUCKETS)
+#define DOCTEST_HASH_TABLE_NUM_BUCKETS 1024
+#endif // DOCTEST_HASH_TABLE_NUM_BUCKETS
 
 // main namespace of the library
 namespace doctest
@@ -908,7 +909,7 @@ namespace detail
 
     // all the registered tests
     HashTable<TestData>& getRegisteredTests() {
-        static HashTable<TestData> data(DOCTEST_CONFIG_HASH_TABLE_NUM_BUCKETS);
+        static HashTable<TestData> data(DOCTEST_HASH_TABLE_NUM_BUCKETS);
         return data;
     }
 
@@ -1265,16 +1266,16 @@ int Context::runTests() {
 } // namespace doctest
 
 #endif // DOCTEST_LIBRARY_IMPLEMENTATION
-#endif // DOCTEST_CONFIG_IMPLEMENT
+#endif // DOCTEST_IMPLEMENT
 
 // == THIS SUPPLIES A MAIN FUNCTION AND SHOULD BE DONE ONLY IN ONE TRANSLATION UNIT
-#if defined(DOCTEST_CONFIG_MAIN) && !defined(DOCTEST_MAIN_CONFIGURED)
+#if defined(DOCTEST_IMPLEMENT_WITH_MAIN) && !defined(DOCTEST_MAIN_CONFIGURED)
 #define DOCTEST_MAIN_CONFIGURED
 int main(int argc, char** argv) {
     doctest::Context context(argc, argv);
     return context.runTests();
 }
-#endif // DOCTEST_CONFIG_MAIN
+#endif // DOCTEST_MAIN_CONFIGURED
 
 #if defined(__clang__)
 #pragma clang diagnostic pop

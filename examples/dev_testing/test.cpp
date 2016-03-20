@@ -1,4 +1,4 @@
-//#define DOCTEST_CONFIG_DISABLE
+//#define DOCTEST_DISABLE
 
 #include "doctest.h"
 
