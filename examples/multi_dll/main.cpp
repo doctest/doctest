@@ -1,6 +1,6 @@
 #include "common.h"
 
-doctest_test(executable) {
+testcase(executable) {
     printf("I am a test from the executable!\n");
 }
 

@@ -32,7 +32,7 @@
 
 #include <cstdio>
 
-doctest_test(shared) {
+testcase(shared) {
     printf("I am a test in a header used by the executable and the dll!\n");
 }
 

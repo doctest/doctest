@@ -3,6 +3,6 @@
 
 #include <cstdio>
 
-doctest_test(First) {
+testcase(First) {
     printf("Hello world!\n");
 }

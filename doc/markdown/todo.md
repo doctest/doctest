@@ -1,6 +1,5 @@
 ## TODO FOR FIRST RELEASE
 
-- rename macros (test->testcase, subtest->subcase)
 - CHECK/REQUIRE macros (also xxx_THROWS versions!)
 - pointer stringification
 - debugger present detection (and break when a CHECK/REQUIRE macro fails)

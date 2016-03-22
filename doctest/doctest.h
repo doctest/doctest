@@ -120,19 +120,19 @@ namespace detail
         void push_back(const T& item);
     };
 
-    struct Subtest
+    struct Subcase
     {
         String      m_name;
         const char* m_file;
         int         m_line;
         bool        m_entered;
 
-        Subtest(const char* name, const char* file, int line);
-        ~Subtest();
-        Subtest(const Subtest& other);
-        Subtest& operator=(const Subtest& other);
+        Subcase(const char* name, const char* file, int line);
+        ~Subcase();
+        Subcase(const Subcase& other);
+        Subcase& operator=(const Subcase& other);
 
-        bool operator==(const Subtest& other) const;
+        bool operator==(const Subcase& other) const;
         operator bool() const { return m_entered; }
     };
 
@@ -289,24 +289,24 @@ namespace detail
     inline void f()
 
 // for registering tests
-#define DOCTEST_TEST(name)                                                                         \
+#define DOCTEST_TESTCASE(name)                                                                     \
     DOCTEST_CREATE_AND_REGISTER_FUNCTION(DOCTEST_ANONYMOUS(DOCTEST_AUTOGEN_FUNC_), name)
 
 // for registering tests with a fixture
-#define DOCTEST_FIXTURE(c, name)                                                                   \
+#define DOCTEST_TESTCASE_FIXTURE(c, name)                                                          \
     DOCTEST_IMPLEMENT_FIXTURE(DOCTEST_ANONYMOUS(DOCTEST_AUTOGEN_CLASS_), c,                        \
                               DOCTEST_ANONYMOUS(DOCTEST_AUTOGEN_FUNC_), name)
 
-// for subtests
+// for subcases
 #if defined(__GNUC__)
-#define DOCTEST_SUBTEST(name)                                                                      \
-    if(const doctest::detail::Subtest & DOCTEST_ANONYMOUS(DOCTEST_AUTOGEN_SUBTEST_)                \
+#define DOCTEST_SUBCASE(name)                                                                      \
+    if(const doctest::detail::Subcase & DOCTEST_ANONYMOUS(DOCTEST_AUTOGEN_SUBCASE_)                \
                                                 __attribute__((unused)) =                          \
-               doctest::detail::Subtest(#name, __FILE__, __LINE__))
+               doctest::detail::Subcase(#name, __FILE__, __LINE__))
 #else // __GNUC__
-#define DOCTEST_SUBTEST(name)                                                                      \
-    if(const doctest::detail::Subtest & DOCTEST_ANONYMOUS(DOCTEST_AUTOGEN_SUBTEST_) =              \
-               doctest::detail::Subtest(#name, __FILE__, __LINE__))
+#define DOCTEST_SUBCASE(name)                                                                      \
+    if(const doctest::detail::Subcase & DOCTEST_ANONYMOUS(DOCTEST_AUTOGEN_SUBCASE_) =              \
+               doctest::detail::Subcase(#name, __FILE__, __LINE__))
 #endif // __GNUC__
 
 // for starting a testsuite block
@@ -404,16 +404,16 @@ inline int  Context::runTests() { return 0; }
     static inline void f()
 
 // for registering tests
-#define DOCTEST_TEST(name)                                                                         \
+#define DOCTEST_TESTCASE(name)                                                                     \
     DOCTEST_CREATE_AND_REGISTER_FUNCTION(DOCTEST_ANONYMOUS(DOCTEST_AUTOGEN_FUNC_), name)
 
 // for registering tests with a fixture
-#define DOCTEST_FIXTURE(x, name)                                                                   \
+#define DOCTEST_TESTCASE_FIXTURE(x, name)                                                          \
     DOCTEST_IMPLEMENT_FIXTURE(DOCTEST_ANONYMOUS(DOCTEST_AUTOGEN_CLASS_), x,                        \
                               DOCTEST_ANONYMOUS(DOCTEST_AUTOGEN_FUNC_), name)
 
-// for subtests
-#define DOCTEST_SUBTEST(name)
+// for subcases
+#define DOCTEST_SUBCASE(name)
 
 // for starting a testsuite block
 #define DOCTEST_TESTSUITE(name) void DOCTEST_ANONYMOUS(DOCTEST_AUTOGEN_FOR_SEMICOLON_)()
@@ -425,9 +425,9 @@ inline int  Context::runTests() { return 0; }
 
 #endif // DOCTEST_DISABLE
 
-#define doctest_test(name) DOCTEST_TEST(name)
-#define doctest_fixture(c, name) DOCTEST_FIXTURE(c, name)
-#define doctest_subtest(name) DOCTEST_SUBTEST(name)
+#define doctest_testcase(name) DOCTEST_TESTCASE(name)
+#define doctest_testcase_fixture(c, name) DOCTEST_TESTCASE_FIXTURE(c, name)
+#define doctest_subcase(name) DOCTEST_SUBCASE(name)
 #define doctest_testsuite(name) DOCTEST_TESTSUITE(name)
 #define doctest_testsuite_end DOCTEST_TESTSUITE_END
 #define doctest_check DOCTEST_CHECK
@@ -435,16 +435,16 @@ inline int  Context::runTests() { return 0; }
 // == SHORT VERSIONS OF THE TEST/FIXTURE/TESTSUITE MACROS
 #ifndef DOCTEST_NO_SHORT_MACRO_NAMES
 
-#define TEST(name) DOCTEST_TEST(name)
-#define FIXTURE(c, name) DOCTEST_FIXTURE(c, name)
-#define SUBTEST(name) DOCTEST_SUBTEST(name)
+#define TESTCASE(name) DOCTEST_TESTCASE(name)
+#define TESTCASE_FIXTURE(c, name) DOCTEST_TESTCASE_FIXTURE(c, name)
+#define SUBCASE(name) DOCTEST_SUBCASE(name)
 #define TESTSUITE(name) DOCTEST_TESTSUITE(name)
 #define TESTSUITE_END DOCTEST_TESTSUITE_END
 #define CHECK DOCTEST_CHECK
 
-#define test(name) doctest_test(name)
-#define fixture(c, name) doctest_fixture(c, name)
-#define subtest(name) doctest_subtest(name)
+#define testcase(name) doctest_testcase(name)
+#define testcase_fixture(c, name) doctest_testcase_fixture(c, name)
+#define subcase(name) doctest_subcase(name)
 #define testsuite(name) doctest_testsuite(name)
 #define testsuite_end doctest_testsuite_end
 #define check doctest_check
@@ -459,8 +459,7 @@ doctest_testsuite_end;
 // =============================================================================
 // == WHAT FOLLOWS IS THE IMPLEMENTATION OF THE TEST RUNNER                   ==
 // =============================================================================
-#if(defined(DOCTEST_IMPLEMENT) || defined(DOCTEST_IMPLEMENT_WITH_MAIN)) &&           \
-        !defined(DOCTEST_DISABLE)
+#if(defined(DOCTEST_IMPLEMENT) || defined(DOCTEST_IMPLEMENT_WITH_MAIN)) && !defined(DOCTEST_DISABLE)
 #ifndef DOCTEST_LIBRARY_IMPLEMENTATION
 #define DOCTEST_LIBRARY_IMPLEMENTATION
 
@@ -644,7 +643,7 @@ namespace detail
         }
     }
 
-    unsigned Hash(const Subtest& in) {
+    unsigned Hash(const Subcase& in) {
         return hashStr(reinterpret_cast<unsigned const char*>(in.m_file)) ^ in.m_line;
     }
 
@@ -681,62 +680,62 @@ namespace detail
         const Vector<Vector<T> >& getBuckets() const { return buckets; }
     };
 
-    // stuff for Subtests
-    HashTable<Subtest>& getSubtestsPassed() {
-        static HashTable<Subtest> data(100);
+    // stuff for subcases
+    HashTable<Subcase>& getSubcasesPassed() {
+        static HashTable<Subcase> data(100);
         return data;
     }
 
-    HashTable<int>& getSubtestsEnteredLevels() {
+    HashTable<int>& getSubcasesEnteredLevels() {
         static HashTable<int> data(100);
         return data;
     }
 
-    int& getSubtestsCurrentLevel() {
+    int& getSubcasesCurrentLevel() {
         static int data = 0;
         return data;
     }
 
-    bool& getSubtestsHasSkipped() {
+    bool& getSubcasesHasSkipped() {
         static bool data = false;
         return data;
     }
 
-    Subtest::Subtest(const char* name, const char* file, int line)
+    Subcase::Subcase(const char* name, const char* file, int line)
             : m_name(name)
             , m_file(file)
             , m_line(line)
             , m_entered(false) {
         // if we have already completed it
-        if(getSubtestsPassed().has(*this))
+        if(getSubcasesPassed().has(*this))
             return;
 
-        // if a Subtest on the same level has already been entered
-        if(getSubtestsEnteredLevels().has(getSubtestsCurrentLevel())) {
-            getSubtestsHasSkipped() = true;
+        // if a Subcase on the same level has already been entered
+        if(getSubcasesEnteredLevels().has(getSubcasesCurrentLevel())) {
+            getSubcasesHasSkipped() = true;
             return;
         }
 
-        getSubtestsEnteredLevels().insert(getSubtestsCurrentLevel()++);
+        getSubcasesEnteredLevels().insert(getSubcasesCurrentLevel()++);
         m_entered = true;
     }
 
-    Subtest::~Subtest() {
+    Subcase::~Subcase() {
         if(m_entered) {
-            getSubtestsCurrentLevel()--;
-            // only mark the subtest as passed if no subtests have been skipped
-            if(getSubtestsHasSkipped() == false)
-                getSubtestsPassed().insert(*this);
+            getSubcasesCurrentLevel()--;
+            // only mark the subcase as passed if no subcases have been skipped
+            if(getSubcasesHasSkipped() == false)
+                getSubcasesPassed().insert(*this);
         }
     }
 
-    Subtest::Subtest(const Subtest& other)
+    Subcase::Subcase(const Subcase& other)
             : m_name(other.m_name)
             , m_file(other.m_file)
             , m_line(other.m_line)
             , m_entered(other.m_entered) {}
 
-    Subtest& Subtest::operator=(const Subtest& other) {
+    Subcase& Subcase::operator=(const Subcase& other) {
         m_name    = other.m_name;
         m_file    = other.m_file;
         m_line    = other.m_line;
@@ -744,7 +743,7 @@ namespace detail
         return *this;
     }
 
-    bool Subtest::operator==(const Subtest& other) const {
+    bool Subcase::operator==(const Subcase& other) const {
         return m_line == other.m_line && strcmp(m_file, other.m_file) == 0;
     }
 
@@ -1228,15 +1227,15 @@ int Context::runTests() {
 //__try {
 #endif // _MSC_VER
 
-            getSubtestsPassed().clear();
+            getSubcasesPassed().clear();
             do {
-                getSubtestsHasSkipped()   = false;
-                getSubtestsCurrentLevel() = 0;
-                getSubtestsEnteredLevels().clear();
+                getSubcasesHasSkipped()   = false;
+                getSubcasesCurrentLevel() = 0;
+                getSubcasesEnteredLevels().clear();
 
                 res += callTestFunc(testExecutionWrapper, data.m_f);
 
-            } while(getSubtestsHasSkipped() == true);
+            } while(getSubcasesHasSkipped() == true);
 
 #ifdef _MSC_VER
 //} __except(1) {

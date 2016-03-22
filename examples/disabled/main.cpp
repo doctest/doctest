@@ -5,17 +5,17 @@
 
 #include <cstdio>
 
-doctest_test("name1") {
+testcase("name1") {
     printf("Anyone there?\n");
 }
 
-doctest_testsuite(the testsuite!);
+testsuite(the testsuite!);
 
-doctest_test(ops) {
+testcase(ops) {
     printf("Anyone there?\n");
 }
 
-doctest_testsuite_end;
+testsuite_end;
 
 #if defined(__GNUC__) && !defined(__clang__)
 #pragma GCC diagnostic ignored "-Weffc++"
@@ -24,10 +24,10 @@ doctest_testsuite_end;
 struct Empty
 {};
 
-doctest_fixture(Empty, "name") {
+testcase_fixture(Empty, "name") {
     printf("Help?\n");
 }
 
-doctest_fixture(Empty, ops) {
+testcase_fixture(Empty, ops) {
     printf("Help?\n");
 }

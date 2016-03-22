@@ -17,17 +17,17 @@
 #endif
 
 // @TODO: look at https://github.com/louisdx/cxx-prettyprint
-namespace doctest {
-namespace detail {
+namespace doctest
+{
+namespace detail
+{
     String stringify(const std::string& in); // to silence GCC "-Wmissing-declarations"
-    String stringify(const std::string& in) {
-        return in.c_str();
-    }
+    String stringify(const std::string& in) { return in.c_str(); }
 } // namespace detail
 } // namespace doctest
 
-doctest_test(First) {
+testcase(First) {
     std::string dummy1 = "omg";
     std::string dummy2 = "tralala";
-    doctest_check(dummy1 == dummy2);
+    check(dummy1 == dummy2);
 }

@@ -7,29 +7,29 @@
 #include <string>
 namespace doctest
 {
-    namespace detail
-    {
-        String stringify(const std::string& in); // to silence GCC "-Wmissing-declarations"
-        String stringify(const std::string& in) {
-            String out;
-            out += in.c_str();
-            return out;
-        }
-    } // namespace detail
+namespace detail
+{
+    String stringify(const std::string& in); // to silence GCC "-Wmissing-declarations"
+    String stringify(const std::string& in) {
+        String out;
+        out += in.c_str();
+        return out;
+    }
+} // namespace detail
 } // namespace doctest
 
 testsuite(MAIN);
-test(zzz) {
+testcase(zzz) {
     check(true == false);
     check(std::string("OMG2") == std::string("OMG"));
 
     printf("main\n");
-    subtest("") {
+    subcase("") {
         printf("1\n");
-        subtest("") { printf("1-1\n"); }
-        subtest("") { printf("1-2\n"); }
+        subcase("") { printf("1-1\n"); }
+        subcase("") { printf("1-2\n"); }
     }
-    subtest("") { printf("2\n"); }
+    subcase("") { printf("2\n"); }
 }
 testsuite_end;
 
@@ -40,7 +40,7 @@ testsuite_end;
 struct Empty
 {};
 
-doctest_fixture(Empty, trololo) { printf("Help?\n"); }
+testcase_fixture(Empty, trololo) { printf("Help?\n"); }
 
 // test("") { printf("TEST %d\n", __LINE__); }
 // test("") { printf("TEST %d\n", __LINE__); }
