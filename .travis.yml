@@ -216,16 +216,6 @@ matrix:
       compiler: gcc
       os: osx
 
-  allow_failures:
-    # because of missing multilib packages in the apt whitelist - these 2 issues should be closed automatically someday
-    # https://github.com/travis-ci/apt-package-whitelist/issues/2522
-    # https://github.com/travis-ci/apt-package-whitelist/issues/2523
-    # http://stackoverflow.com/questions/35637672/using-g-with-m32-on-travis-results-in-an-error/35638486#35638486
-    - env: COMPILER=g++-4.6
-      os: linux
-    - env: COMPILER=g++-4.7
-      os: linux
-
 addons:
   coverity_scan:
     # COVERITY_SCAN_TOKEN added as env var in travis project
