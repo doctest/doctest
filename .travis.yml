@@ -113,7 +113,7 @@ matrix:
     - env: COMPILER=clang++-3.5 HAS_ASAN=true HAS_UBSAN=true # waiting for libclang-3.5-dev:i386
       addons: &clang35
         apt:
-          packages: ["clang-3.5", "valgrind", "g++-multilib", "libc6-dbg", "libc6-dbg:i386", "libclang-3.5-dev:i386"]
+          packages: ["clang-3.5", "valgrind", "g++-multilib", "libc6-dbg", "libc6-dbg:i386", "libclang-3.5-dev"]
           sources: *apt_sources
 
     # Clang 3.6
