@@ -4,7 +4,9 @@
 
 #include <cstdio>
 
+#include <exception>
 #include <string>
+
 namespace doctest
 {
 namespace detail
@@ -16,7 +18,7 @@ namespace detail
 
 testsuite(MAIN);
 testcase(zzz) {
-    check(true == false);
+    require(true == false);
     check(std::string("OMG2") == std::string("OMG"));
 
     printf("main\n");
@@ -50,8 +52,27 @@ testcase_fixture(Empty, trololo) { printf("Help?\n"); }
 // test("") { printf("TEST %d\n", __LINE__); }
 // test("") { printf("TEST %d\n", __LINE__); }
 
-testcase(zzz) {
-    CHECK(1 == 1);
-    CHECK_FALSE(1 == 1);
+void throws(); // to silence GCC "-Wmissing-declarations"
+void throws() { throw std::exception(); }
+void nothrows(); // to silence GCC "-Wmissing-declarations"
+void nothrows() {}
 
+testcase(zzz) {
+    check(1 == 0);
+    check_false(1 == 0);
+
+    check(1 == 1);
+    require(1 == 1);
+
+    check_false(0);
+    require_false(0);
+
+    check_throws(throws());
+    require_throws(throws());
+
+    check_throws_as(throws(), std::exception);
+    require_throws_as(throws(), std::exception);
+
+    check_nothrow(nothrows());
+    require_nothrow(nothrows());
 }

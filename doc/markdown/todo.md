@@ -1,7 +1,5 @@
 ## TODO FOR FIRST RELEASE
 
-- CHECK/REQUIRE macros (also xxx_THROWS versions!)
-
 - debugger present detection (and break when a CHECK/REQUIRE macro fails)
 
 - a message macro
@@ -20,6 +18,10 @@
 
 - stringify overload example outside of namespaces
 - think about the expression decomposition static asserts
+- handle __FILE__ for the doctest testsuite - add an ifdef-ed mode where it is not printed in the output
+- remove <cstring> dependency (strcpy and strtok)
+- pool allocator for String class
+- think about the exit code (maybe clamp between 0/127) (catch also returns the number of failed tests) - http://stackoverflow.com/questions/36727192
 
 - example of stringify-ing common stl stuff like containers
 - test coverage
@@ -74,6 +76,7 @@ https://github.com/nothings/stb/blob/master/docs/other_libs.md
 - [unsure] tagging? also see this: https://github.com/philsquared/Catch/blob/master/docs/test-cases-and-sections.md#special-tags
 - [unsure] pointer stringification (typename tostring? and address)
 - [unsure] think about adding support for std::exception and others
+- [unsure] think about parameterising the output alignment to 80 or some other column limit
 
 ## DOCUMENTATION
 

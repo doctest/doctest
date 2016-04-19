@@ -276,6 +276,13 @@ namespace detail
 
     bool logAssert(const Result& res, bool threw, const char* expr, const char* assert_name,
                    bool is_check, const char* file, int line);
+
+    bool logAssertThrows(const char* expr, bool threw, bool is_check, const char* file, int line);
+
+    bool logAssertThrowsAs(const char* expr, const char* as, bool threw, bool threw_as,
+                           bool is_check, const char* file, int line);
+
+    bool logAssertNothrow(const char* expr, bool threw, bool is_check, const char* file, int line);
 } // namespace detail
 } // namespace doctest
 
@@ -386,8 +393,8 @@ namespace detail
     if(doctest::detail::logAssert(res, threw, #expr, assert_name, is_check, __FILE__, __LINE__))   \
         throw doctest::detail::TestFailureException();
 
-//if(doctest::detail::isDebuggerActive())                                                    \
-//    doctest::detail::debugBreak();                                                         \
+//if(doctest::detail::isDebuggerActive())
+//    doctest::detail::debugBreak();
 
 #if defined(__clang__)
 #define DOCTEST_ASSERT_PROXY(expr, assert_name, is_check, false_invert_op)                         \
@@ -409,6 +416,50 @@ namespace detail
 
 #define DOCTEST_CHECK_FALSE(expr) DOCTEST_ASSERT_PROXY(expr, "CHECK_FALSE", true, res.invert())
 #define DOCTEST_REQUIRE_FALSE(expr) DOCTEST_ASSERT_PROXY(expr, "REQUIRE", false, res.invert())
+
+#define DOCTEST_ASSERT_THROWS(expr, is_check)                                                      \
+    do {                                                                                           \
+        bool threw = false;                                                                        \
+        try {                                                                                      \
+            expr;                                                                                  \
+        } catch(...) { threw = true; }                                                             \
+        if(doctest::detail::logAssertThrows(#expr, threw, is_check, __FILE__, __LINE__))           \
+            throw doctest::detail::TestFailureException();                                         \
+    } while(false)
+
+#define DOCTEST_ASSERT_THROWS_AS(expr, as, is_check)                                               \
+    do {                                                                                           \
+        bool threw    = false;                                                                     \
+        bool threw_as = false;                                                                     \
+        try {                                                                                      \
+            expr;                                                                                  \
+        } catch(as&) {                                                                             \
+            threw    = true;                                                                       \
+            threw_as = true;                                                                       \
+        } catch(...) { threw = true; }                                                             \
+        if(doctest::detail::logAssertThrowsAs(#expr, #as, threw, threw_as, is_check, __FILE__,     \
+                                              __LINE__))                                           \
+            throw doctest::detail::TestFailureException();                                         \
+    } while(false)
+
+#define DOCTEST_ASSERT_NOTHROW(expr, is_check)                                                     \
+    do {                                                                                           \
+        bool threw = false;                                                                        \
+        try {                                                                                      \
+            expr;                                                                                  \
+        } catch(...) { threw = true; }                                                             \
+        if(doctest::detail::logAssertNothrow(#expr, threw, is_check, __FILE__, __LINE__))          \
+            throw doctest::detail::TestFailureException();                                         \
+    } while(false)
+
+#define DOCTEST_CHECK_THROWS(expr) DOCTEST_ASSERT_THROWS(expr, true)
+#define DOCTEST_REQUIRE_THROWS(expr) DOCTEST_ASSERT_THROWS(expr, false)
+
+#define DOCTEST_CHECK_THROWS_AS(expr, ex) DOCTEST_ASSERT_THROWS_AS(expr, ex, true)
+#define DOCTEST_REQUIRE_THROWS_AS(expr, ex) DOCTEST_ASSERT_THROWS_AS(expr, ex, false)
+
+#define DOCTEST_CHECK_NOTHROW(expr) DOCTEST_ASSERT_NOTHROW(expr, true)
+#define DOCTEST_REQUIRE_NOTHROW(expr) DOCTEST_ASSERT_NOTHROW(expr, false)
 
 // =================================================================================================
 // == WHAT FOLLOWS IS VERSIONS OF THE MACROS THAT DO NOT DO ANY REGISTERING!                      ==
@@ -467,41 +518,68 @@ inline int  Context::runTests() { return 0; }
 #define DOCTEST_TESTSUITE_END void DOCTEST_ANONYMOUS(DOCTEST_AUTOGEN_FOR_SEMICOLON_)()
 
 #define DOCTEST_CHECK(expr) expr
+#define DOCTEST_CHECK_FALSE(expr) expr
+#define DOCTEST_CHECK_THROWS(expr) expr
+#define DOCTEST_CHECK_THROWS_AS(expr, ex) expr
+#define DOCTEST_CHECK_NOTHROW(expr) expr
+#define DOCTEST_REQUIRE(expr) expr
+#define DOCTEST_REQUIRE_FALSE(expr) expr
+#define DOCTEST_REQUIRE_THROWS(expr) expr
+#define DOCTEST_REQUIRE_THROWS_AS(expr, ex) expr
+#define DOCTEST_REQUIRE_NOTHROW(expr) expr
 
 #endif // DOCTEST_DISABLE
 
-#define doctest_testcase(name) DOCTEST_TESTCASE(name)
-#define doctest_testcase_fixture(c, name) DOCTEST_TESTCASE_FIXTURE(c, name)
-#define doctest_subcase(name) DOCTEST_SUBCASE(name)
-#define doctest_testsuite(name) DOCTEST_TESTSUITE(name)
+#define doctest_testcase DOCTEST_TESTCASE
+#define doctest_testcase_fixture DOCTEST_TESTCASE_FIXTURE
+#define doctest_subcase DOCTEST_SUBCASE
+#define doctest_testsuite DOCTEST_TESTSUITE
 #define doctest_testsuite_end DOCTEST_TESTSUITE_END
 #define doctest_check DOCTEST_CHECK
-#define doctest_require DOCTEST_REQUIRE
 #define doctest_check_false DOCTEST_CHECK_FALSE
+#define doctest_check_throws DOCTEST_CHECK_THROWS
+#define doctest_check_throws_as DOCTEST_CHECK_THROWS_AS
+#define doctest_check_nothrow DOCTEST_CHECK_NOTHROW
+#define doctest_require DOCTEST_REQUIRE
 #define doctest_require_false DOCTEST_REQUIRE_FALSE
+#define doctest_require_throws DOCTEST_REQUIRE_THROWS
+#define doctest_require_throws_as DOCTEST_REQUIRE_THROWS_AS
+#define doctest_require_nothrow DOCTEST_REQUIRE_NOTHROW
 
 // == SHORT VERSIONS OF THE TEST/FIXTURE/TESTSUITE MACROS
 #ifndef DOCTEST_NO_SHORT_MACRO_NAMES
 
-#define TESTCASE(name) DOCTEST_TESTCASE(name)
-#define TESTCASE_FIXTURE(c, name) DOCTEST_TESTCASE_FIXTURE(c, name)
-#define SUBCASE(name) DOCTEST_SUBCASE(name)
-#define TESTSUITE(name) DOCTEST_TESTSUITE(name)
+#define TESTCASE DOCTEST_TESTCASE
+#define TESTCASE_FIXTURE DOCTEST_TESTCASE_FIXTURE
+#define SUBCASE DOCTEST_SUBCASE
+#define TESTSUITE DOCTEST_TESTSUITE
 #define TESTSUITE_END DOCTEST_TESTSUITE_END
 #define CHECK DOCTEST_CHECK
-#define REQUIRE DOCTEST_REQUIRE
 #define CHECK_FALSE DOCTEST_CHECK_FALSE
+#define CHECK_THROWS DOCTEST_CHECK_THROWS
+#define CHECK_THROWS_AS DOCTEST_CHECK_THROWS_AS
+#define CHECK_NOTHROW DOCTEST_CHECK_NOTHROW
+#define REQUIRE DOCTEST_REQUIRE
 #define REQUIRE_FALSE DOCTEST_REQUIRE_FALSE
+#define REQUIRE_THROWS DOCTEST_REQUIRE_THROWS
+#define REQUIRE_THROWS_AS DOCTEST_REQUIRE_THROWS_AS
+#define REQUIRE_NOTHROW DOCTEST_REQUIRE_NOTHROW
 
-#define testcase(name) doctest_testcase(name)
-#define testcase_fixture(c, name) doctest_testcase_fixture(c, name)
-#define subcase(name) doctest_subcase(name)
-#define testsuite(name) doctest_testsuite(name)
-#define testsuite_end doctest_testsuite_end
-#define check doctest_check
-#define require doctest_require
-#define check_false doctest_check_false
-#define require_false doctest_require_false
+#define testcase DOCTEST_TESTCASE
+#define testcase_fixture DOCTEST_TESTCASE_FIXTURE
+#define subcase DOCTEST_SUBCASE
+#define testsuite DOCTEST_TESTSUITE
+#define testsuite_end DOCTEST_TESTSUITE_END
+#define check DOCTEST_CHECK
+#define check_false DOCTEST_CHECK_FALSE
+#define check_throws DOCTEST_CHECK_THROWS
+#define check_throws_as DOCTEST_CHECK_THROWS_AS
+#define check_nothrow DOCTEST_CHECK_NOTHROW
+#define require DOCTEST_REQUIRE
+#define require_false DOCTEST_REQUIRE_FALSE
+#define require_throws DOCTEST_REQUIRE_THROWS
+#define require_throws_as DOCTEST_REQUIRE_THROWS_AS
+#define require_nothrow DOCTEST_REQUIRE_NOTHROW
 
 #endif // DOCTEST_NO_SHORT_MACRO_NAMES
 
@@ -734,6 +812,12 @@ namespace detail
         const Vector<Vector<T> >& getBuckets() const { return buckets; }
     };
 
+    // assertion macros use this to mark the current test as failed if an assertion fails
+    bool& getHasCurrentTestFailed() {
+        static bool data = false;
+        return data;
+    }
+
     // stuff for subcases
     HashTable<Subcase>& getSubcasesPassed() {
         static HashTable<Subcase> data(100);
@@ -801,12 +885,7 @@ namespace detail
         return m_line == other.m_line && strcmp(m_file, other.m_file) == 0;
     }
 
-    String stringify(const char* in) {
-        String out("\"");
-        out += in;
-        out += "\"";
-        return out;
-    }
+    String stringify(const char* in) { return String("\"") + in + "\""; }
 
     String stringify(bool in) { return in ? "true" : "false"; }
 
@@ -969,19 +1048,20 @@ namespace detail
 
     // this is needed because MSVC does not permit mixing 2 exception handling schemes in a function
     int callTestFunc(int (*testExecutionWrapper)(funcType), funcType f) {
+        int res = 0;
         try {
             if(testExecutionWrapper) {
-                return testExecutionWrapper(f);
+                res = testExecutionWrapper(f);
             } else {
                 f();
             }
-        } catch (const TestFailureException&) {
-            return 1;
-        } catch(...) {
+            if(getHasCurrentTestFailed())
+                res = 1;
+        } catch(const TestFailureException&) { return 1; } catch(...) {
             printf("Unknown exception caught!\n");
-            return 1;
+            res = 1;
         }
-        return 0;
+        return res;
     }
 
     // parses a comma separated list of words after a pattern in one of the arguments in argv
@@ -1048,13 +1128,55 @@ namespace detail
 
     bool logAssert(const Result& res, bool threw, const char* expr, const char* assert_name,
                    bool is_check, const char* file, int line) {
-        if (!res.m_passed || threw) {
-            printf("%s(%d):\nFAILED: %s(%s)\n\n", file, line, assert_name, res.m_decomposition.c_str());
+        if(!res.m_passed || threw) {
+            printf("%s(%d): FAILED! %s\n  %s( %s )\n\n", file, line,
+                   (threw ? "(threw exception)" : ""), assert_name,
+                   (threw ? expr : res.m_decomposition.c_str()));
+
+            getHasCurrentTestFailed() = true;
+
             return !is_check;
         }
         return false;
     }
 
+    bool logAssertThrows(const char* expr, bool threw, bool is_check, const char* file, int line) {
+        if(!threw) {
+            printf("%s(%d): FAILED!\n  %s( %s )\n\n", file, line,
+                   (is_check ? "CHECK_THROWS" : "REQUIRE_THROWS"), expr);
+
+            getHasCurrentTestFailed() = true;
+
+            return !is_check;
+        }
+        return false;
+    }
+
+    bool logAssertThrowsAs(const char* expr, const char* as, bool threw, bool threw_as,
+                           bool is_check, const char* file, int line) {
+        if(!threw || !threw_as) {
+            printf("%s(%d): FAILED! %s\n  %s( %s , %s )\n\n", file, line,
+                   (threw ? "(didn't throw an exception of the type)" : "(didn't throw at all)"),
+                   (is_check ? "CHECK_THROWS_AS" : "REQUIRE_THROWS_AS"), expr, as);
+
+            getHasCurrentTestFailed() = true;
+
+            return !is_check;
+        }
+        return false;
+    }
+
+    bool logAssertNothrow(const char* expr, bool threw, bool is_check, const char* file, int line) {
+        if(threw) {
+            printf("%s(%d): FAILED!\n  %s( %s )\n\n", file, line,
+                   (is_check ? "CHECK_NOTHROW" : "REQUIRE_NOTHROW"), expr);
+
+            getHasCurrentTestFailed() = true;
+
+            return !is_check;
+        }
+        return false;
+    }
 } // namespace detail
 
 String::String(const char* in)
@@ -1289,6 +1411,10 @@ int Context::runTests() {
 
             getSubcasesPassed().clear();
             do {
+                // reset the assertion state
+                getHasCurrentTestFailed() = false;
+
+                // reset some of the fields for subcases (except for the set of fully passed ones)
                 getSubcasesHasSkipped()   = false;
                 getSubcasesCurrentLevel() = 0;
                 getSubcasesEnteredLevels().clear();
@@ -1305,7 +1431,6 @@ int Context::runTests() {
 #endif // _MSC_VER
 
             if(res) {
-                printf("Test failed!\n");
                 numFailed++;
             }
         }

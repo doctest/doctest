@@ -1,5 +1,6 @@
 //#define DOCTEST_DISABLE
 
+//#include "doctest.h"
 #define DOCTEST_IMPLEMENT
 #include "doctest.h"
 
@@ -10,7 +11,7 @@ static int testWrapper(void (*f)(void)) {
     try {
         f();
     } catch(std::exception& e) {
-        printf("caught the bugger! %s\n", e.what());
+        printf("caught a std::exception! %s\n", e.what());
         return 1;
     }
     return 0;
