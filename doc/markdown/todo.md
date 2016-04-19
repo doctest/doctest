@@ -1,25 +1,37 @@
 ## TODO FOR FIRST RELEASE
 
 - CHECK/REQUIRE macros (also xxx_THROWS versions!)
-- pointer stringification
+
 - debugger present detection (and break when a CHECK/REQUIRE macro fails)
+
 - a message macro
 - look at catch command line options (also lest)
 - ability to not run tests at all
+
 - signal handling for unix: http://www.cplusplus.com/reference/csignal/signal/
+
 - error reporting
 - colors in output
+
 - MSVC/IDE integration
 - make a compact reporter (for within ide-s - just the file and line number)
 - streaming reporters???
 - xml reporter (jUnit compatible, etc.)
+
+- stringify overload example outside of namespaces
+- think about the expression decomposition static asserts
+
+- example of stringify-ing common stl stuff like containers
 - test coverage
 - fixing warnings gcc/clang/msvc (and add more stuff in the disabled example)
+- test for warnings with -std=c++03/11/14/1z
 - benchmark
 - documentation
 - pledgie campaign - more info
 
 ## Spreading the word after 1.0.0 is released
+
+- bringing the unittest functionality of D into C++
 
 - reddit cpp/programming/gamedev/other
 - boost mailing list
@@ -32,6 +44,11 @@
 - https://github.com/fffaraz/awesome-cpp
 - add doctest to lists of c++ testing frameworks all around the web
 - research how to market a new library
+
+https://www.facebook.com/groups/IndieGameDevs/
+https://github.com/nothings/stb/blob/master/docs/other_libs.md
+
+- suggest to be linked to in https://github.com/nothings/stb
 
 - https://www.google.bg/webhp?sourceid=chrome-instant&ion=1&espv=2&ie=UTF-8#q=list%20of%20testing%20frameworks%20c%2B%2B
 - http://stackoverflow.com/a/33925554/3162383
@@ -54,10 +71,16 @@
 - [unsure] silencing warnings - take into account when a compiler (which version) accuires a pragma/attribute/warning (for gcc use -Wno-unknown-warning)
 - [unsure] ability to transfer/copy registered functions from one dll to another so they are put in one set and duplicates are filtered
 - [unsure] wchar stuff in stringify and whatever - see <wchar.h>
+- [unsure] tagging? also see this: https://github.com/philsquared/Catch/blob/master/docs/test-cases-and-sections.md#special-tags
+- [unsure] pointer stringification (typename tostring? and address)
+- [unsure] think about adding support for std::exception and others
 
 ## DOCUMENTATION
 
 "the latest and greatest in unit testing in c++"
+
+180 builds linux/osx (+12 if clang 3.4/3.5/3.6 get the 32 bit sanitizer stuff)
+4 builds windows
 
 - mimic catch front page - tutorial link, what is different link, documentation link.
 - profile doctest vs Catch (compile/startup)

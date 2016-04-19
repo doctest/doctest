@@ -22,7 +22,7 @@ namespace doctest
 namespace detail
 {
     String stringify(const std::string& in); // to silence GCC "-Wmissing-declarations"
-    String stringify(const std::string& in) { return in.c_str(); }
+    String stringify(const std::string& in) { return String("\"") + in.c_str() + "\""; }
 } // namespace detail
 } // namespace doctest
 

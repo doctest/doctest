@@ -165,15 +165,36 @@ namespace detail
         return stringify(lhs) + " " + op + " " + stringify(rhs);
     }
 
+    struct STATIC_ASSERT_Expression_Too_Complex_Please_Rewrite_As_Binary_Comparison;
+    struct TROLOLO;
+
     struct Result
     {
-        const bool   m_passed;
-        const String m_decomposition;
+        bool   m_passed;
+        String m_decomposition;
 
-        Result(bool passed, const String& decomposition)
+        Result(bool passed = true, const String& decomposition = "")
                 : m_passed(passed)
                 , m_decomposition(decomposition) {}
         operator bool() { return !m_passed; }
+
+        void invert() { m_passed = !m_passed; }
+
+        // clang-format off
+        //template <typename R> TROLOLO& operator+(const R&);
+        //template <typename R> TROLOLO& operator-(const R&);
+        //template <typename R> TROLOLO& operator/(const R&);
+        //template <typename R> TROLOLO& operator*(const R&);
+        //template <typename R> TROLOLO& operator&&(const R&);
+        //template <typename R> TROLOLO& operator||(const R&);
+        //
+        //template <typename R> TROLOLO& operator==(const R&);
+        //template <typename R> TROLOLO& operator!=(const R&);
+        //template <typename R> TROLOLO& operator<(const R&);
+        //template <typename R> TROLOLO& operator<=(const R&);
+        //template <typename R> TROLOLO& operator>(const R&);
+        //template <typename R> TROLOLO& operator>=(const R&);
+        // clang-format on
     };
 
     template <typename L>
@@ -203,6 +224,9 @@ namespace detail
             return Expression_lhs<const L&>(operand);
         }
     };
+
+    struct TestFailureException
+    {};
 } // namespace detail
 
 #endif // DOCTEST_DISABLE
@@ -246,9 +270,12 @@ namespace doctest
 {
 namespace detail
 {
-    // forward declarations of the functions used by the registering macros
+    // forward declarations of functions used by the macros
     int regTest(void (*f)(void), unsigned line, const char* file, const char* name);
     int setTestSuiteName(const char* name);
+
+    bool logAssert(const Result& res, bool threw, const char* expr, const char* assert_name,
+                   bool is_check, const char* file, int line);
 } // namespace detail
 } // namespace doctest
 
@@ -347,28 +374,46 @@ namespace detail
     void       DOCTEST_ANONYMOUS(DOCTEST_AUTOGEN_FOR_SEMICOLON_)()
 #endif // MSVC
 
+#define DOCTEST_ASSERT_IMPLEMENT(expr, assert_name, is_check, false_invert_op)                     \
+    doctest::detail::Result res;                                                                   \
+    bool                    threw = false;                                                         \
+    try {                                                                                          \
+        res = doctest::detail::ExpressionDecomposer() << expr;                                     \
+    } catch(...) { threw = true; }                                                                 \
+    false_invert_op;                                                                               \
+    if(res || threw) {                                                                             \
+    }                                                                                              \
+    if(doctest::detail::logAssert(res, threw, #expr, assert_name, is_check, __FILE__, __LINE__))   \
+        throw doctest::detail::TestFailureException();
+
+//if(doctest::detail::isDebuggerActive())                                                    \
+//    doctest::detail::debugBreak();                                                         \
+
 #if defined(__clang__)
-#define DOCTEST_CHECK(expr)                                                                        \
+#define DOCTEST_ASSERT_PROXY(expr, assert_name, is_check, false_invert_op)                         \
     do {                                                                                           \
         _Pragma("clang diagnostic push")                                                           \
-                _Pragma("clang diagnostic ignored \"-Woverloaded-shift-op-parentheses\"") if(      \
-                        doctest::detail::Result failed =                                           \
-                                (doctest::detail::ExpressionDecomposer() << expr))                 \
-                        printf("%s\n", failed.m_decomposition.c_str());                            \
-        _Pragma("clang diagnostic pop")                                                            \
+                _Pragma("clang diagnostic ignored \"-Woverloaded-shift-op-parentheses\"")          \
+                        DOCTEST_ASSERT_IMPLEMENT(expr, assert_name, is_check, false_invert_op)     \
+                                _Pragma("clang diagnostic pop")                                    \
     } while(false)
 #else // __clang__
-#define DOCTEST_CHECK(expr)                                                                        \
+#define DOCTEST_ASSERT_PROXY(expr, assert_name, is_check, false_invert_op)                         \
     do {                                                                                           \
-        if(doctest::detail::Result failed = (doctest::detail::ExpressionDecomposer() << expr))     \
-            printf("%s\n", failed.m_decomposition.c_str());                                        \
+        DOCTEST_ASSERT_IMPLEMENT(expr, assert_name, is_check, false_invert_op)                     \
     } while(false)
 #endif // __clang__
 
-// =============================================================================
-// == WHAT FOLLOWS IS VERSIONS OF THE MACROS THAT DO NOT DO ANY REGISTERING!  ==
-// == THIS CAN BE ENABLED BY DEFINING DOCTEST_DISABLE GLOBALLY!        ==
-// =============================================================================
+#define DOCTEST_CHECK(expr) DOCTEST_ASSERT_PROXY(expr, "CHECK", true, ((void)0))
+#define DOCTEST_REQUIRE(expr) DOCTEST_ASSERT_PROXY(expr, "REQUIRE", false, ((void)0))
+
+#define DOCTEST_CHECK_FALSE(expr) DOCTEST_ASSERT_PROXY(expr, "CHECK_FALSE", true, res.invert())
+#define DOCTEST_REQUIRE_FALSE(expr) DOCTEST_ASSERT_PROXY(expr, "REQUIRE", false, res.invert())
+
+// =================================================================================================
+// == WHAT FOLLOWS IS VERSIONS OF THE MACROS THAT DO NOT DO ANY REGISTERING!                      ==
+// == THIS CAN BE ENABLED BY DEFINING DOCTEST_DISABLE GLOBALLY!                                   ==
+// =================================================================================================
 #else // DOCTEST_DISABLE
 
 namespace doctest
@@ -421,7 +466,7 @@ inline int  Context::runTests() { return 0; }
 // for ending a testsuite block
 #define DOCTEST_TESTSUITE_END void DOCTEST_ANONYMOUS(DOCTEST_AUTOGEN_FOR_SEMICOLON_)()
 
-#define DOCTEST_CHECK(expr) expr;
+#define DOCTEST_CHECK(expr) expr
 
 #endif // DOCTEST_DISABLE
 
@@ -431,6 +476,9 @@ inline int  Context::runTests() { return 0; }
 #define doctest_testsuite(name) DOCTEST_TESTSUITE(name)
 #define doctest_testsuite_end DOCTEST_TESTSUITE_END
 #define doctest_check DOCTEST_CHECK
+#define doctest_require DOCTEST_REQUIRE
+#define doctest_check_false DOCTEST_CHECK_FALSE
+#define doctest_require_false DOCTEST_REQUIRE_FALSE
 
 // == SHORT VERSIONS OF THE TEST/FIXTURE/TESTSUITE MACROS
 #ifndef DOCTEST_NO_SHORT_MACRO_NAMES
@@ -441,6 +489,9 @@ inline int  Context::runTests() { return 0; }
 #define TESTSUITE(name) DOCTEST_TESTSUITE(name)
 #define TESTSUITE_END DOCTEST_TESTSUITE_END
 #define CHECK DOCTEST_CHECK
+#define REQUIRE DOCTEST_REQUIRE
+#define CHECK_FALSE DOCTEST_CHECK_FALSE
+#define REQUIRE_FALSE DOCTEST_REQUIRE_FALSE
 
 #define testcase(name) doctest_testcase(name)
 #define testcase_fixture(c, name) doctest_testcase_fixture(c, name)
@@ -448,6 +499,9 @@ inline int  Context::runTests() { return 0; }
 #define testsuite(name) doctest_testsuite(name)
 #define testsuite_end doctest_testsuite_end
 #define check doctest_check
+#define require doctest_require
+#define check_false doctest_check_false
+#define require_false doctest_require_false
 
 #endif // DOCTEST_NO_SHORT_MACRO_NAMES
 
@@ -456,9 +510,9 @@ doctest_testsuite_end;
 
 #endif // DOCTEST_LIBRARY_INCLUDED
 
-// =============================================================================
-// == WHAT FOLLOWS IS THE IMPLEMENTATION OF THE TEST RUNNER                   ==
-// =============================================================================
+// =================================================================================================
+// == WHAT FOLLOWS IS THE IMPLEMENTATION OF THE TEST RUNNER                                       ==
+// =================================================================================================
 #if(defined(DOCTEST_IMPLEMENT) || defined(DOCTEST_IMPLEMENT_WITH_MAIN)) && !defined(DOCTEST_DISABLE)
 #ifndef DOCTEST_LIBRARY_IMPLEMENTATION
 #define DOCTEST_LIBRARY_IMPLEMENTATION
@@ -754,12 +808,7 @@ namespace detail
         return out;
     }
 
-    String stringify(bool in) {
-        String out("\"");
-        out += (in ? "true" : "false");
-        out += "\"";
-        return out;
-    }
+    String stringify(bool in) { return in ? "true" : "false"; }
 
     String stringify(char in) {
         char buf[64];
@@ -926,6 +975,8 @@ namespace detail
             } else {
                 f();
             }
+        } catch (const TestFailureException&) {
+            return 1;
         } catch(...) {
             printf("Unknown exception caught!\n");
             return 1;
@@ -993,6 +1044,15 @@ namespace detail
             }
         }
         return outVal;
+    }
+
+    bool logAssert(const Result& res, bool threw, const char* expr, const char* assert_name,
+                   bool is_check, const char* file, int line) {
+        if (!res.m_passed || threw) {
+            printf("%s(%d):\nFAILED: %s(%s)\n\n", file, line, assert_name, res.m_decomposition.c_str());
+            return !is_check;
+        }
+        return false;
     }
 
 } // namespace detail

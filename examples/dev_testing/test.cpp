@@ -10,11 +10,7 @@ namespace doctest
 namespace detail
 {
     String stringify(const std::string& in); // to silence GCC "-Wmissing-declarations"
-    String stringify(const std::string& in) {
-        String out;
-        out += in.c_str();
-        return out;
-    }
+    String stringify(const std::string& in) { return String("\"") + in.c_str() + "\""; }
 } // namespace detail
 } // namespace doctest
 
@@ -53,3 +49,9 @@ testcase_fixture(Empty, trololo) { printf("Help?\n"); }
 // test("") { printf("TEST %d\n", __LINE__); }
 // test("") { printf("TEST %d\n", __LINE__); }
 // test("") { printf("TEST %d\n", __LINE__); }
+
+testcase(zzz) {
+    CHECK(1 == 1);
+    CHECK_FALSE(1 == 1);
+
+}
