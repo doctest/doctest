@@ -22,6 +22,7 @@
 - remove <cstring> dependency (strcpy and strtok)
 - pool allocator for String class
 - think about the exit code (maybe clamp between 0/127) (catch also returns the number of failed tests) - http://stackoverflow.com/questions/36727192
+- make it possible for tests through valgrind to have an exit code different than 0 - http://stackoverflow.com/questions/36729692
 
 - example of stringify-ing common stl stuff like containers
 - test coverage

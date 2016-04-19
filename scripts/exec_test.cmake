@@ -1,6 +1,7 @@
 # Arguments:
 # - COMMAND: the command to run with all it's arguments
 # - TEST_MODE: NORMAL/VALGRIND/COLLECT/COMPARE
+# - NO_EXITCODE: if ON the exit code of the application will be ignored
 # - TEST_OUTPUT_FILE: the file to/from which to write/read the output of the test
 # - TEST_TEMP_FILE: the temp file for the current test output used in COMPARE mode 
 # To run something through this script use cmake like this:
@@ -8,6 +9,7 @@
 
 #message("COMMAND: ${COMMAND}")
 #message("TEST_MODE: ${TEST_MODE}")
+#message("NO_EXITCODE: ${NO_EXITCODE}")
 #message("TEST_OUTPUT_FILE: ${TEST_OUTPUT_FILE}")
 #message("TEST_TEMP_FILE: ${TEST_TEMP_FILE}")
 
@@ -42,6 +44,11 @@ if("${TEST_MODE}" STREQUAL "COMPARE")
         message("== CONTENTS OF ${TEST_TEMP_FILE}")
         message("${temp}")
         set(CMD_RESULT "Output is different from reference file!")
+    endif()
+else()
+    # ignore the exit code if requested
+    if(NO_EXITCODE)
+        set(CMD_RESULT "")
     endif()
 endif()
 
