@@ -517,16 +517,16 @@ inline int  Context::runTests() { return 0; }
 // for ending a testsuite block
 #define DOCTEST_TESTSUITE_END void DOCTEST_ANONYMOUS(DOCTEST_AUTOGEN_FOR_SEMICOLON_)()
 
-#define DOCTEST_CHECK(expr) expr
-#define DOCTEST_CHECK_FALSE(expr) expr
-#define DOCTEST_CHECK_THROWS(expr) expr
-#define DOCTEST_CHECK_THROWS_AS(expr, ex) expr
-#define DOCTEST_CHECK_NOTHROW(expr) expr
-#define DOCTEST_REQUIRE(expr) expr
-#define DOCTEST_REQUIRE_FALSE(expr) expr
-#define DOCTEST_REQUIRE_THROWS(expr) expr
-#define DOCTEST_REQUIRE_THROWS_AS(expr, ex) expr
-#define DOCTEST_REQUIRE_NOTHROW(expr) expr
+#define DOCTEST_CHECK(expr) ((void)0)
+#define DOCTEST_CHECK_FALSE(expr) ((void)0)
+#define DOCTEST_CHECK_THROWS(expr) ((void)0)
+#define DOCTEST_CHECK_THROWS_AS(expr, ex) ((void)0)
+#define DOCTEST_CHECK_NOTHROW(expr) ((void)0)
+#define DOCTEST_REQUIRE(expr) ((void)0)
+#define DOCTEST_REQUIRE_FALSE(expr) ((void)0)
+#define DOCTEST_REQUIRE_THROWS(expr) ((void)0)
+#define DOCTEST_REQUIRE_THROWS_AS(expr, ex) ((void)0)
+#define DOCTEST_REQUIRE_NOTHROW(expr) ((void)0)
 
 #endif // DOCTEST_DISABLE
 

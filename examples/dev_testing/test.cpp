@@ -52,7 +52,14 @@ testcase_fixture(Empty, trololo) { printf("Help?\n"); }
 // test("") { printf("TEST %d\n", __LINE__); }
 // test("") { printf("TEST %d\n", __LINE__); }
 
-void throws(); // to silence GCC "-Wmissing-declarations"
+// to silence GCC "-Wmissing-declarations"
+// and the attribute is to silence "-Wmissing-noreturn" on clang
+#ifdef __clang__
+void throws() __attribute__((noreturn));
+#else
+void throws();
+#endif
+
 void throws() { throw std::exception(); }
 void nothrows(); // to silence GCC "-Wmissing-declarations"
 void nothrows() {}
