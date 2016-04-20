@@ -4,8 +4,6 @@
 
 - a message macro
 - look at catch command line options (also lest)
-- ability to not run tests at all
-- ability to not return an error code != 0
 
 - signal handling for unix: http://www.cplusplus.com/reference/csignal/signal/
 
@@ -86,6 +84,7 @@ https://github.com/nothings/stb/blob/master/docs/other_libs.md
 - [unsure] pointer stringification (typename tostring? and address)
 - [unsure] think about adding support for std::exception and others
 - [unsure] think about parameterising the output alignment to 80 or some other column limit
+- [unsure] improve command line parsing - passing "-dt-no-run=1 -dt-no-run=0" should result in running the tests
 
 ## DOCUMENTATION
 

@@ -246,16 +246,13 @@ class Context
 
     bool count;                // if only the count of matching tests is to be retreived
     bool case_sensitive;       // if filtering should be case sensitive
-    bool separate_process;     // if each test should be executed in a separate process
     bool allow_overrides;      // all but this can be overriden
     bool exit_after_tests;     // calls exit() after the tests are ran/counted
     bool hash_table_histogram; // if the hash table should be printed as a histogram
-
-    bool no_run; // to not run the tests at all (can be done with an "*" exclude)
-    int  first;  // the first (matching) test to be executed
-    int  last;   // the last (matching) test to be executed
-
-    int (*testExecutionWrapper)(funcType); // wrapper for test execution
+    bool no_exitcode;          // if the framework should return 0 as the exitcode
+    bool no_run;               // to not run the tests at all (can be done with an "*" exclude)
+    int  first;                // the first (matching) test to be executed
+    int  last;                 // the last (matching) test to be executed
 
 #endif // DOCTEST_DISABLE
 
@@ -264,8 +261,7 @@ public:
 
     void addFilter(const char* filter, const char* value);
     void setOption(const char* option, int value);
-    void setTestExecutionWrapper(int (*f)(funcType));
-    int  runTests();
+    int runTests();
 };
 
 } // namespace doctest
@@ -488,7 +484,6 @@ inline int     String::compare(const String&, bool) const { return 0; }
 inline Context::Context(int, char**) {}
 inline void Context::addFilter(const char*, const char*) {}
 inline void Context::setOption(const char*, int) {}
-inline void Context::setTestExecutionWrapper(int (*)(void (*)(void))) {}
 inline int  Context::runTests() { return 0; }
 } // namespace doctest
 
@@ -538,7 +533,7 @@ inline int  Context::runTests() { return 0; }
 #endif // DOCTEST_DISABLE
 
 // == SHORT VERSIONS OF THE TEST/FIXTURE/TESTSUITE MACROS
-#ifndef DOCTEST_NO_SHORT_MACRO_NAMES
+#if !defined(DOCTEST_NO_SHORT_MACRO_NAMES)
 
 #define TESTCASE DOCTEST_TESTCASE
 #define TESTCASE_FIXTURE DOCTEST_TESTCASE_FIXTURE
@@ -572,7 +567,7 @@ DOCTEST_TESTSUITE_END;
 
 // required includes
 #include <cstdio>  // printf, sprintf and friends
-#include <cstdlib> // malloc, free, qsort
+#include <cstdlib> // malloc, free, qsort, exit
 #include <cstring> // strcpy, strtok
 #include <new>     // placement new (can be skipped if the containers require 'construct()' from T)
 
@@ -996,19 +991,15 @@ namespace detail
     }
 
     // this is needed because MSVC does not permit mixing 2 exception handling schemes in a function
-    int callTestFunc(int (*testExecutionWrapper)(funcType), funcType f) {
-        int res = 0;
+    int callTestFunc(funcType f) {
+        int res = EXIT_SUCCESS;
         try {
-            if(testExecutionWrapper) {
-                res = testExecutionWrapper(f);
-            } else {
-                f();
-            }
+            f();
             if(getHasCurrentTestFailed())
-                res = 1;
-        } catch(const TestFailureException&) { return 1; } catch(...) {
+                res = EXIT_FAILURE;
+        } catch(const TestFailureException&) { res = EXIT_FAILURE; } catch(...) {
             printf("Unknown exception caught!\n");
-            res = 1;
+            res = EXIT_FAILURE;
         }
         return res;
     }
@@ -1206,8 +1197,6 @@ Context::Context(int argc, char** argv)
 {
     using namespace detail;
 
-    testExecutionWrapper = 0;
-
     parseFilter(argc, argv, "-dt-file=", filters[0]);
     parseFilter(argc, argv, "-dt-file-exclude=", filters[1]);
     parseFilter(argc, argv, "-dt-suite=", filters[2]);
@@ -1218,11 +1207,11 @@ Context::Context(int argc, char** argv)
     count                = !!parseOption(argc, argv, "-dt-count=", 0, 0);
     case_sensitive       = !!parseOption(argc, argv, "-dt-case-sensitive=", 0, 0);
     allow_overrides      = !!parseOption(argc, argv, "-dt-override=", 0, 1);
-    separate_process     = !!parseOption(argc, argv, "-dt-separate-process=", 0, 0);
     exit_after_tests     = !!parseOption(argc, argv, "-dt-exit=", 0, 0);
     first                = parseOption(argc, argv, "-dt-first=", 1, 1);
     last                 = parseOption(argc, argv, "-dt-last=", 1, 0);
     hash_table_histogram = !!parseOption(argc, argv, "-dt-hash-table-histogram=", 0, 0);
+    no_exitcode          = !!parseOption(argc, argv, "-dt-no-exitcode=", 0, 0);
     no_run               = !!parseOption(argc, argv, "-dt-no-run=", 0, 0);
 }
 
@@ -1259,8 +1248,6 @@ void Context::setOption(const char* option, int value) {
             count = !!value;
         if(strcmp(option, "dt-case-sensitive") == 0)
             case_sensitive = !!value;
-        if(strcmp(option, "dt-separate-process") == 0)
-            separate_process = !!value;
         if(strcmp(option, "dt-exit") == 0)
             exit_after_tests = !!value;
         if(strcmp(option, "dt-first") == 0)
@@ -1269,16 +1256,11 @@ void Context::setOption(const char* option, int value) {
             last = value;
         if(strcmp(option, "dt-hash-table-histogram") == 0)
             hash_table_histogram = !!value;
+        if(strcmp(option, "dt-no-exitcode") == 0)
+            no_exitcode = !!value;
         if(strcmp(option, "dt-no-run") == 0)
             no_run = !!value;
     }
-}
-
-// allows the user to provide a test execution wrapper for custom exception handling
-void Context::setTestExecutionWrapper(int (*f)(funcType)) {
-    using namespace detail;
-
-    testExecutionWrapper = f;
 }
 
 // the main function that does all the filtering and test running
@@ -1286,8 +1268,11 @@ int Context::runTests() {
     using namespace detail;
 
     // exit right now
-    if(no_run)
-        return 0;
+    if(no_run) {
+        if(exit_after_tests)
+            exit(EXIT_SUCCESS);
+        return EXIT_SUCCESS;
+    }
 
     const Vector<Vector<TestData> >& buckets = getRegisteredTests().getBuckets();
 
@@ -1342,6 +1327,7 @@ int Context::runTests() {
             continue;
 
         numFilterPassedTests++;
+
         // do not execute the test if we are to only count the number of filter passing tests
         if(count)
             continue;
@@ -1352,8 +1338,6 @@ int Context::runTests() {
 
         // execute the test if it passes all the filtering
         {
-            int res = 0;
-
 #ifdef _MSC_VER
 //__try {
 #endif // _MSC_VER
@@ -1368,33 +1352,37 @@ int Context::runTests() {
                 getSubcasesCurrentLevel() = 0;
                 getSubcasesEnteredLevels().clear();
 
-                res += callTestFunc(testExecutionWrapper, data.m_f);
+                numFailed += callTestFunc(data.m_f);
 
             } while(getSubcasesHasSkipped() == true);
 
 #ifdef _MSC_VER
 //} __except(1) {
 //    printf("Unknown SEH exception caught!\n");
-//    res = 1;
+//    numFailed++;
 //}
 #endif // _MSC_VER
-
-            if(res) {
-                numFailed++;
-            }
         }
     }
 
-    if(count)
+    if(count) {
         printf("[doctest] number of registered tests passing the current filters: "
                "%d\n",
                numFilterPassedTests);
-
-    if(exit_after_tests) {
-        exit(numFailed); // @TODO: is this legal? Or should I only pass EXIT_SUCCESS/EXIT_FAILURE?
+    } else {
+        if(numFailed == 0)
+            printf("[doctest] all %d tests passed!\n", numFilterPassedTests);
+        else
+            printf("[doctest] %d out of %d tests passed!\n", numFilterPassedTests - numFailed,
+                   numFilterPassedTests);
     }
 
-    return numFailed;
+    if(exit_after_tests)
+        exit((numFailed && !no_exitcode) ? EXIT_FAILURE : EXIT_SUCCESS);
+
+    if(numFailed && !no_exitcode)
+        return EXIT_FAILURE;
+    return EXIT_SUCCESS;
 }
 } // namespace doctest
 
@@ -1404,10 +1392,7 @@ int Context::runTests() {
 // == THIS SUPPLIES A MAIN FUNCTION AND SHOULD BE DONE ONLY IN ONE TRANSLATION UNIT
 #if defined(DOCTEST_IMPLEMENT_WITH_MAIN) && !defined(DOCTEST_MAIN_CONFIGURED)
 #define DOCTEST_MAIN_CONFIGURED
-int main(int argc, char** argv) {
-    doctest::Context context(argc, argv);
-    return context.runTests();
-}
+int main(int argc, char** argv) { return doctest::Context(argc, argv).runTests(); }
 #endif // DOCTEST_MAIN_CONFIGURED
 
 #if defined(__clang__)
