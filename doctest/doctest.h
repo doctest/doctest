@@ -2,7 +2,7 @@
 // _Pragma() in macros doesn't work for the c++ front-end of g++
 // https://gcc.gnu.org/bugzilla/show_bug.cgi?id=55578
 // https://gcc.gnu.org/bugzilla/show_bug.cgi?id=69543
-// Also it is completely worthless nowadays - http://stackoverflow.com/questions/14016993
+// Also the warning is completely worthless nowadays - http://stackoverflow.com/questions/14016993
 #if defined(__GNUC__) && !defined(__clang__)
 #pragma GCC diagnostic ignored "-Waggregate-return"
 #endif
@@ -173,6 +173,13 @@ namespace detail
         bool   m_passed;
         String m_decomposition;
 
+// to fix gcc 4.7 "-Winline" warnings
+#if defined(__GNUC__) && !defined(__clang__)
+        __attribute__((noinline))
+#endif
+        ~Result() {
+        }
+
         Result(bool passed = true, const String& decomposition = "")
                 : m_passed(passed)
                 , m_decomposition(decomposition) {}
@@ -290,18 +297,18 @@ namespace detail
 #if defined(__GNUC__) && !defined(__clang__)
 #define DOCTEST_REGISTER_FUNCTION(f, name)                                                         \
     static int DOCTEST_ANONYMOUS(DOCTEST_AUTOGEN_VAR_) __attribute__((unused)) =                   \
-            doctest::detail::regTest(f, __LINE__, __FILE__, #name);
+            doctest::detail::regTest(f, __LINE__, __FILE__, name);
 #elif defined(__clang__)
 #define DOCTEST_REGISTER_FUNCTION(f, name)                                                         \
     _Pragma("clang diagnostic push")                                                               \
             _Pragma("clang diagnostic ignored \"-Wglobal-constructors\"") static int               \
                     DOCTEST_ANONYMOUS(DOCTEST_AUTOGEN_VAR_) =                                      \
-                            doctest::detail::regTest(f, __LINE__, __FILE__, #name);                \
+                            doctest::detail::regTest(f, __LINE__, __FILE__, name);                 \
     _Pragma("clang diagnostic pop")
 #else // MSVC
 #define DOCTEST_REGISTER_FUNCTION(f, name)                                                         \
     static int DOCTEST_ANONYMOUS(DOCTEST_AUTOGEN_VAR_) =                                           \
-            doctest::detail::regTest(f, __LINE__, __FILE__, #name);
+            doctest::detail::regTest(f, __LINE__, __FILE__, name);
 #endif // MSVC
 
 #define DOCTEST_IMPLEMENT_FIXTURE(der, base, func, name)                                           \
@@ -336,29 +343,29 @@ namespace detail
 #define DOCTEST_SUBCASE(name)                                                                      \
     if(const doctest::detail::Subcase & DOCTEST_ANONYMOUS(DOCTEST_AUTOGEN_SUBCASE_)                \
                                                 __attribute__((unused)) =                          \
-               doctest::detail::Subcase(#name, __FILE__, __LINE__))
+               doctest::detail::Subcase(name, __FILE__, __LINE__))
 #else // __GNUC__
 #define DOCTEST_SUBCASE(name)                                                                      \
     if(const doctest::detail::Subcase & DOCTEST_ANONYMOUS(DOCTEST_AUTOGEN_SUBCASE_) =              \
-               doctest::detail::Subcase(#name, __FILE__, __LINE__))
+               doctest::detail::Subcase(name, __FILE__, __LINE__))
 #endif // __GNUC__
 
 // for starting a testsuite block
 #if defined(__GNUC__) && !defined(__clang__)
 #define DOCTEST_TESTSUITE(name)                                                                    \
     static int DOCTEST_ANONYMOUS(DOCTEST_AUTOGEN_VAR_) __attribute__((unused)) =                   \
-            doctest::detail::setTestSuiteName(#name);                                              \
+            doctest::detail::setTestSuiteName(name);                                               \
     void DOCTEST_ANONYMOUS(DOCTEST_AUTOGEN_FOR_SEMICOLON_)()
 #elif defined(__clang__)
 #define DOCTEST_TESTSUITE(name)                                                                    \
     _Pragma("clang diagnostic push")                                                               \
             _Pragma("clang diagnostic ignored \"-Wglobal-constructors\"") static int               \
                     DOCTEST_ANONYMOUS(DOCTEST_AUTOGEN_VAR_) =                                      \
-                            doctest::detail::setTestSuiteName(#name);                              \
+                            doctest::detail::setTestSuiteName(name);                               \
     _Pragma("clang diagnostic pop") void DOCTEST_ANONYMOUS(DOCTEST_AUTOGEN_FOR_SEMICOLON_)()
 #else // MSVC
 #define DOCTEST_TESTSUITE(name)                                                                    \
-    static int DOCTEST_ANONYMOUS(DOCTEST_AUTOGEN_VAR_) = doctest::detail::setTestSuiteName(#name); \
+    static int DOCTEST_ANONYMOUS(DOCTEST_AUTOGEN_VAR_) = doctest::detail::setTestSuiteName(name);  \
     void       DOCTEST_ANONYMOUS(DOCTEST_AUTOGEN_FOR_SEMICOLON_)()
 #endif // MSVC
 
@@ -530,22 +537,6 @@ inline int  Context::runTests() { return 0; }
 
 #endif // DOCTEST_DISABLE
 
-#define doctest_testcase DOCTEST_TESTCASE
-#define doctest_testcase_fixture DOCTEST_TESTCASE_FIXTURE
-#define doctest_subcase DOCTEST_SUBCASE
-#define doctest_testsuite DOCTEST_TESTSUITE
-#define doctest_testsuite_end DOCTEST_TESTSUITE_END
-#define doctest_check DOCTEST_CHECK
-#define doctest_check_false DOCTEST_CHECK_FALSE
-#define doctest_check_throws DOCTEST_CHECK_THROWS
-#define doctest_check_throws_as DOCTEST_CHECK_THROWS_AS
-#define doctest_check_nothrow DOCTEST_CHECK_NOTHROW
-#define doctest_require DOCTEST_REQUIRE
-#define doctest_require_false DOCTEST_REQUIRE_FALSE
-#define doctest_require_throws DOCTEST_REQUIRE_THROWS
-#define doctest_require_throws_as DOCTEST_REQUIRE_THROWS_AS
-#define doctest_require_nothrow DOCTEST_REQUIRE_NOTHROW
-
 // == SHORT VERSIONS OF THE TEST/FIXTURE/TESTSUITE MACROS
 #ifndef DOCTEST_NO_SHORT_MACRO_NAMES
 
@@ -565,26 +556,10 @@ inline int  Context::runTests() { return 0; }
 #define REQUIRE_THROWS_AS DOCTEST_REQUIRE_THROWS_AS
 #define REQUIRE_NOTHROW DOCTEST_REQUIRE_NOTHROW
 
-#define testcase DOCTEST_TESTCASE
-#define testcase_fixture DOCTEST_TESTCASE_FIXTURE
-#define subcase DOCTEST_SUBCASE
-#define testsuite DOCTEST_TESTSUITE
-#define testsuite_end DOCTEST_TESTSUITE_END
-#define check DOCTEST_CHECK
-#define check_false DOCTEST_CHECK_FALSE
-#define check_throws DOCTEST_CHECK_THROWS
-#define check_throws_as DOCTEST_CHECK_THROWS_AS
-#define check_nothrow DOCTEST_CHECK_NOTHROW
-#define require DOCTEST_REQUIRE
-#define require_false DOCTEST_REQUIRE_FALSE
-#define require_throws DOCTEST_REQUIRE_THROWS
-#define require_throws_as DOCTEST_REQUIRE_THROWS_AS
-#define require_nothrow DOCTEST_REQUIRE_NOTHROW
-
 #endif // DOCTEST_NO_SHORT_MACRO_NAMES
 
 // this is here to clear the 'current test suite' for the current translation unit - at the top
-doctest_testsuite_end;
+DOCTEST_TESTSUITE_END;
 
 #endif // DOCTEST_LIBRARY_INCLUDED
 
@@ -965,37 +940,11 @@ namespace detail
         unsigned    m_line; // the line where the test was registered
 
         TestData(const char* suite, const char* name, funcType f, const char* file, int line)
-                : m_suite()
-                , m_name()
+                : m_suite(suite)
+                , m_name(name)
                 , m_f(f)
                 , m_file(file)
-                , m_line(line) {
-            // trimming quotes of name
-            if(name) {
-                if(*name == '"')
-                    ++name;
-                size_t name_len = my_strlen(name);
-                if(name[name_len] != '"') {
-                    m_name = name;
-                } else {
-                    m_name                   = name;
-                    m_name.c_str()[name_len] = '\0';
-                }
-            }
-
-            // trimming quotes of suite
-            if(suite) {
-                if(*suite == '"')
-                    ++suite;
-                size_t suite_len = my_strlen(suite);
-                if(suite[suite_len] != '"') {
-                    m_suite = suite;
-                } else {
-                    m_suite            = suite;
-                    m_suite[suite_len] = '\0';
-                }
-            }
-        }
+                , m_line(line) {}
 
         bool operator==(const TestData& other) const {
             return m_line == other.m_line && strcmp(m_file, other.m_file) == 0;

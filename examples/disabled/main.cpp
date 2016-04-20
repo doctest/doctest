@@ -6,11 +6,11 @@
 #include <cstdio>
 #include <exception>
 
-testcase("name1") {
+TESTCASE("name1") {
     printf("Anyone there?\n");
 }
 
-testsuite(the testsuite!);
+TESTSUITE("the testsuite!");
 
 // to silence GCC "-Wmissing-declarations"
 // and the attribute is to silence "-Wmissing-noreturn" on clang
@@ -24,28 +24,31 @@ void throws() { throw std::exception(); }
 void nothrows(); // to silence GCC "-Wmissing-declarations"
 void nothrows() {}
 
-testcase(ops) {
+TESTCASE("ops") {
     printf("Anyone there?\n");
 
-    check(1 == 1);
-    require(1 == 1);
+    CHECK(1 == 0);
+    CHECK_FALSE(1 == 0);
 
-    check_false(0);
-    require_false(0);
+    CHECK(1 == 1);
+    REQUIRE(1 == 1);
 
-    check_throws(throws());
-    require_throws(throws());
+    CHECK_FALSE(0);
+    REQUIRE_FALSE(0);
 
-    check_throws_as(throws(), std::exception);
-    require_throws_as(throws(), std::exception);
+    CHECK_THROWS(throws());
+    REQUIRE_THROWS(throws());
 
-    check_nothrow(nothrows());
-    require_nothrow(nothrows());
-    
-    subcase("") {}
+    CHECK_THROWS_AS(throws(), std::exception);
+    REQUIRE_THROWS_AS(throws(), std::exception);
+
+    CHECK_NOTHROW(nothrows());
+    REQUIRE_NOTHROW(nothrows());
+
+    SUBCASE("") {}
 }
 
-testsuite_end;
+TESTSUITE_END;
 
 #if defined(__GNUC__) && !defined(__clang__)
 #pragma GCC diagnostic ignored "-Weffc++"
@@ -54,10 +57,10 @@ testsuite_end;
 struct Empty
 {};
 
-testcase_fixture(Empty, "name") {
+TESTCASE_FIXTURE(Empty, "name") {
     printf("Help?\n");
 }
 
-testcase_fixture(Empty, ops) {
+TESTCASE_FIXTURE(Empty, "ops") {
     printf("Help?\n");
 }

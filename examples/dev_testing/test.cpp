@@ -16,20 +16,20 @@ namespace detail
 } // namespace detail
 } // namespace doctest
 
-testsuite(MAIN);
-testcase(zzz) {
-    require(true == false);
-    check(std::string("OMG2") == std::string("OMG"));
+TESTSUITE("MAIN");
+TESTCASE("zzz") {
+    REQUIRE(true == false);
+    CHECK(std::string("OMG2") == std::string("OMG"));
 
     printf("main\n");
-    subcase("") {
+    SUBCASE("") {
         printf("1\n");
-        subcase("") { printf("1-1\n"); }
-        subcase("") { printf("1-2\n"); }
+        SUBCASE("") { printf("1-1\n"); }
+        SUBCASE("") { printf("1-2\n"); }
     }
-    subcase("") { printf("2\n"); }
+    SUBCASE("") { printf("2\n"); }
 }
-testsuite_end;
+TESTSUITE_END;
 
 #if defined(__GNUC__) && !defined(__clang__)
 #pragma GCC diagnostic ignored "-Weffc++"
@@ -38,7 +38,7 @@ testsuite_end;
 struct Empty
 {};
 
-testcase_fixture(Empty, trololo) { printf("Help?\n"); }
+TESTCASE_FIXTURE(Empty, "trololo") { printf("Help?\n"); }
 
 // test("") { printf("TEST %d\n", __LINE__); }
 // test("") { printf("TEST %d\n", __LINE__); }
@@ -64,22 +64,22 @@ void throws() { throw std::exception(); }
 void nothrows(); // to silence GCC "-Wmissing-declarations"
 void nothrows() {}
 
-testcase(zzz) {
-    check(1 == 0);
-    check_false(1 == 0);
+TESTCASE("zzz") {
+    CHECK(1 == 0);
+    CHECK_FALSE(1 == 0);
 
-    check(1 == 1);
-    require(1 == 1);
+    CHECK(1 == 1);
+    REQUIRE(1 == 1);
 
-    check_false(0);
-    require_false(0);
+    CHECK_FALSE(0);
+    REQUIRE_FALSE(0);
 
-    check_throws(throws());
-    require_throws(throws());
+    CHECK_THROWS(throws());
+    REQUIRE_THROWS(throws());
 
-    check_throws_as(throws(), std::exception);
-    require_throws_as(throws(), std::exception);
+    CHECK_THROWS_AS(throws(), std::exception);
+    REQUIRE_THROWS_AS(throws(), std::exception);
 
-    check_nothrow(nothrows());
-    require_nothrow(nothrows());
+    CHECK_NOTHROW(nothrows());
+    REQUIRE_NOTHROW(nothrows());
 }

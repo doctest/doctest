@@ -5,6 +5,7 @@
 - a message macro
 - look at catch command line options (also lest)
 - ability to not run tests at all
+- ability to not return an error code != 0
 
 - signal handling for unix: http://www.cplusplus.com/reference/csignal/signal/
 
@@ -23,10 +24,15 @@
 - pool allocator for String class
 - think about the exit code (maybe clamp between 0/127) (catch also returns the number of failed tests) - http://stackoverflow.com/questions/36727192
 - make it possible for tests through valgrind to have an exit code different than 0 - http://stackoverflow.com/questions/36729692
+        think about going through another script that ignores the app error code!
 
 - example of stringify-ing common stl stuff like containers
 - test coverage
 - fixing warnings gcc/clang/msvc (and add more stuff in the disabled example)
+
+gcc 4.5/4.6 under osx - weird stuff
+/Users/travis/build/onqtam/doctest/examples/hello_world/main.cpp:8:1: warning: offset outside bounds of constant string
+
 - test for warnings with -std=c++03/11/14/1z
 - benchmark
 - documentation
@@ -47,6 +53,8 @@
 - https://github.com/fffaraz/awesome-cpp
 - add doctest to lists of c++ testing frameworks all around the web
 - research how to market a new library
+
+for gamedev - compile time!
 
 https://www.facebook.com/groups/IndieGameDevs/
 https://github.com/nothings/stb/blob/master/docs/other_libs.md

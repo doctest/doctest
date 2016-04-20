@@ -26,8 +26,8 @@ namespace detail
 } // namespace detail
 } // namespace doctest
 
-testcase(First) {
+TESTCASE("the only test") {
     std::string dummy1 = "omg";
     std::string dummy2 = "tralala";
-    check(dummy1 == dummy2);
+    CHECK(dummy1 == dummy2);
 }

@@ -3,6 +3,6 @@
 
 #include <cstdio>
 
-testcase(First) {
+TESTCASE("the only test") {
     printf("Hello world!\n");
 }
