@@ -238,23 +238,34 @@ namespace detail
 
 #endif // DOCTEST_DISABLE
 
-class Context
+struct ContextParams
 {
 #if !defined(DOCTEST_DISABLE)
 
     detail::Vector<detail::Vector<String> > filters;
 
-    bool count;                // if only the count of matching tests is to be retreived
-    bool case_sensitive;       // if filtering should be case sensitive
-    bool allow_overrides;      // all but this can be overriden
-    bool exit_after_tests;     // calls exit() after the tests are ran/counted
-    bool hash_table_histogram; // if the hash table should be printed as a histogram
-    bool no_exitcode;          // if the framework should return 0 as the exitcode
-    bool no_run;               // to not run the tests at all (can be done with an "*" exclude)
-    int  first;                // the first (matching) test to be executed
-    int  last;                 // the last (matching) test to be executed
+    bool count;            // if only the count of matching tests is to be retreived
+    bool case_sensitive;   // if filtering should be case sensitive
+    bool allow_overrides;  // all but this can be overriden
+    bool exit_after_tests; // calls exit() after the tests are ran/counted
+    bool no_exitcode;      // if the framework should return 0 as the exitcode
+    bool no_run;           // to not run the tests at all (can be done with an "*" exclude)
 
+    bool hash_table_histogram; // if the hash table should be printed as a histogram
+    bool no_path_in_filenames; // if the path to files should be removed from the output
+
+    int first; // the first (matching) test to be executed
+    int last;  // the last (matching) test to be executed
+
+    ContextParams()
+            : filters(6) // 6 different filters total
+    {}
 #endif // DOCTEST_DISABLE
+};
+
+class Context
+{
+    ContextParams p;
 
 public:
     Context(int argc, char** argv);
@@ -565,10 +576,10 @@ DOCTEST_TESTSUITE_END;
 #ifndef DOCTEST_LIBRARY_IMPLEMENTATION
 #define DOCTEST_LIBRARY_IMPLEMENTATION
 
-// required includes
-#include <cstdio>  // printf, sprintf and friends
+// required includes - will go only in one translation unit!
+#include <cstdio>  // printf, sprintf
 #include <cstdlib> // malloc, free, qsort, exit
-#include <cstring> // strcpy, strtok
+#include <cstring> // strcpy, strtok, strrchr
 #include <new>     // placement new (can be skipped if the containers require 'construct()' from T)
 
 // the number of buckets used for the hash set
@@ -782,9 +793,21 @@ namespace detail
         const Vector<Vector<T> >& getBuckets() const { return buckets; }
     };
 
-    // assertion macros use this to mark the current test as failed if an assertion fails
-    bool& getHasCurrentTestFailed() {
-        static bool data = false;
+    // the current ContextParams with which tests are being executed
+    ContextParams*& getCurrentContextParams() {
+        static ContextParams* data = 0;
+        return data;
+    }
+
+    // the amount of passed assertions
+    int& getNumAssertions() {
+        static int data = 0;
+        return data;
+    }
+
+    // holds the amount of failed assertions for the current test
+    int& getNumFailedAssertions() {
+        static int data = 0;
         return data;
     }
 
@@ -995,7 +1018,7 @@ namespace detail
         int res = EXIT_SUCCESS;
         try {
             f();
-            if(getHasCurrentTestFailed())
+            if(getNumFailedAssertions())
                 res = EXIT_FAILURE;
         } catch(const TestFailureException&) { res = EXIT_FAILURE; } catch(...) {
             printf("Unknown exception caught!\n");
@@ -1066,14 +1089,30 @@ namespace detail
         return outVal;
     }
 
+    // depending on the current options this will remove the path of filenames
+    const char* fileForOutput(const char* file) {
+        if(getCurrentContextParams()->no_path_in_filenames) {
+            const char* back    = strrchr(file, '\\');
+            const char* forward = strrchr(file, '/');
+            if(back || forward) {
+                if(back > forward)
+                    forward = back;
+                return forward + 1;
+            }
+        }
+        return file;
+    }
+
     bool logAssert(const Result& res, bool threw, const char* expr, const char* assert_name,
                    bool is_check, const char* file, int line) {
+        getNumAssertions()++;
+
         if(!res.m_passed || threw) {
-            printf("%s(%d): FAILED! %s\n  %s( %s )\n\n", file, line,
+            printf("%s(%d): FAILED! %s\n  %s( %s )\n\n", fileForOutput(file), line,
                    (threw ? "(threw exception)" : ""), assert_name,
                    (threw ? expr : res.m_decomposition.c_str()));
 
-            getHasCurrentTestFailed() = true;
+            getNumFailedAssertions()++;
 
             return !is_check;
         }
@@ -1081,11 +1120,13 @@ namespace detail
     }
 
     bool logAssertThrows(const char* expr, bool threw, bool is_check, const char* file, int line) {
+        getNumAssertions()++;
+
         if(!threw) {
-            printf("%s(%d): FAILED!\n  %s( %s )\n\n", file, line,
+            printf("%s(%d): FAILED!\n  %s( %s )\n\n", fileForOutput(file), line,
                    (is_check ? "CHECK_THROWS" : "REQUIRE_THROWS"), expr);
 
-            getHasCurrentTestFailed() = true;
+            getNumFailedAssertions()++;
 
             return !is_check;
         }
@@ -1094,12 +1135,14 @@ namespace detail
 
     bool logAssertThrowsAs(const char* expr, const char* as, bool threw, bool threw_as,
                            bool is_check, const char* file, int line) {
+        getNumAssertions()++;
+
         if(!threw || !threw_as) {
-            printf("%s(%d): FAILED! %s\n  %s( %s , %s )\n\n", file, line,
+            printf("%s(%d): FAILED! %s\n  %s( %s , %s )\n\n", fileForOutput(file), line,
                    (threw ? "(didn't throw an exception of the type)" : "(didn't throw at all)"),
                    (is_check ? "CHECK_THROWS_AS" : "REQUIRE_THROWS_AS"), expr, as);
 
-            getHasCurrentTestFailed() = true;
+            getNumFailedAssertions()++;
 
             return !is_check;
         }
@@ -1107,11 +1150,13 @@ namespace detail
     }
 
     bool logAssertNothrow(const char* expr, bool threw, bool is_check, const char* file, int line) {
+        getNumAssertions()++;
+
         if(threw) {
-            printf("%s(%d): FAILED!\n  %s( %s )\n\n", file, line,
+            printf("%s(%d): FAILED!\n  %s( %s )\n\n", fileForOutput(file), line,
                    (is_check ? "CHECK_NOTHROW" : "REQUIRE_NOTHROW"), expr);
 
-            getHasCurrentTestFailed() = true;
+            getNumFailedAssertions()++;
 
             return !is_check;
         }
@@ -1139,16 +1184,7 @@ void String::copy(const String& other) {
     m_str = 0;
 
     if(other.m_str) {
-        // not using std::strlen() because of valgrind errors when optimizations are turned on
-        // 'Invalid read of size 4' when the test suite len (with '\0') is not a multiple of 4
-        // for details see http://stackoverflow.com/questions/35671155
-
-        const char* temp = other.m_str;
-        while(*temp)
-            ++temp;
-        size_t len = temp - other.m_str;
-
-        m_str = static_cast<char*>(malloc(len + 1));
+        m_str = static_cast<char*>(malloc(detail::my_strlen(other.m_str) + 1));
         strcpy(m_str, other.m_str);
     }
 }
@@ -1192,34 +1228,33 @@ int String::compare(const String& other, bool no_case) const {
     return strcmp(m_str, other.m_str);
 }
 
-Context::Context(int argc, char** argv)
-        : filters(6) // 6 different filters total
-{
+Context::Context(int argc, char** argv) {
     using namespace detail;
 
-    parseFilter(argc, argv, "-dt-file=", filters[0]);
-    parseFilter(argc, argv, "-dt-file-exclude=", filters[1]);
-    parseFilter(argc, argv, "-dt-suite=", filters[2]);
-    parseFilter(argc, argv, "-dt-suite-exclude=", filters[3]);
-    parseFilter(argc, argv, "-dt-name=", filters[4]);
-    parseFilter(argc, argv, "-dt-name-exclude=", filters[5]);
+    parseFilter(argc, argv, "-dt-file=", p.filters[0]);
+    parseFilter(argc, argv, "-dt-file-exclude=", p.filters[1]);
+    parseFilter(argc, argv, "-dt-suite=", p.filters[2]);
+    parseFilter(argc, argv, "-dt-suite-exclude=", p.filters[3]);
+    parseFilter(argc, argv, "-dt-name=", p.filters[4]);
+    parseFilter(argc, argv, "-dt-name-exclude=", p.filters[5]);
 
-    count                = !!parseOption(argc, argv, "-dt-count=", 0, 0);
-    case_sensitive       = !!parseOption(argc, argv, "-dt-case-sensitive=", 0, 0);
-    allow_overrides      = !!parseOption(argc, argv, "-dt-override=", 0, 1);
-    exit_after_tests     = !!parseOption(argc, argv, "-dt-exit=", 0, 0);
-    first                = parseOption(argc, argv, "-dt-first=", 1, 1);
-    last                 = parseOption(argc, argv, "-dt-last=", 1, 0);
-    hash_table_histogram = !!parseOption(argc, argv, "-dt-hash-table-histogram=", 0, 0);
-    no_exitcode          = !!parseOption(argc, argv, "-dt-no-exitcode=", 0, 0);
-    no_run               = !!parseOption(argc, argv, "-dt-no-run=", 0, 0);
+    p.count                = !!parseOption(argc, argv, "-dt-count=", 0, 0);
+    p.case_sensitive       = !!parseOption(argc, argv, "-dt-case-sensitive=", 0, 0);
+    p.allow_overrides      = !!parseOption(argc, argv, "-dt-override=", 0, 1);
+    p.exit_after_tests     = !!parseOption(argc, argv, "-dt-exit=", 0, 0);
+    p.first                = parseOption(argc, argv, "-dt-first=", 1, 1);
+    p.last                 = parseOption(argc, argv, "-dt-last=", 1, 0);
+    p.no_exitcode          = !!parseOption(argc, argv, "-dt-no-exitcode=", 0, 0);
+    p.no_run               = !!parseOption(argc, argv, "-dt-no-run=", 0, 0);
+    p.hash_table_histogram = !!parseOption(argc, argv, "-dt-hash-table-histogram=", 0, 0);
+    p.no_path_in_filenames = !!parseOption(argc, argv, "-dt-no-path-in-filenames=", 0, 0);
 }
 
 // allows the user to add procedurally to the filters from the command line
 void Context::addFilter(const char* filter, const char* value) {
     using namespace detail;
 
-    if(allow_overrides) {
+    if(p.allow_overrides) {
         size_t idx = 42;
         if(strcmp(filter, "dt-file") == 0)
             idx = 0;
@@ -1235,7 +1270,7 @@ void Context::addFilter(const char* filter, const char* value) {
             idx = 5;
         // if the filter name is valid
         if(idx != 42 && my_strlen(value))
-            filters[idx].push_back(value);
+            p.filters[idx].push_back(value);
     }
 }
 
@@ -1243,23 +1278,25 @@ void Context::addFilter(const char* filter, const char* value) {
 void Context::setOption(const char* option, int value) {
     using namespace detail;
 
-    if(allow_overrides) {
+    if(p.allow_overrides) {
         if(strcmp(option, "dt-count") == 0)
-            count = !!value;
+            p.count = !!value;
         if(strcmp(option, "dt-case-sensitive") == 0)
-            case_sensitive = !!value;
+            p.case_sensitive = !!value;
         if(strcmp(option, "dt-exit") == 0)
-            exit_after_tests = !!value;
+            p.exit_after_tests = !!value;
         if(strcmp(option, "dt-first") == 0)
-            first = value;
+            p.first = value;
         if(strcmp(option, "dt-last") == 0)
-            last = value;
-        if(strcmp(option, "dt-hash-table-histogram") == 0)
-            hash_table_histogram = !!value;
+            p.last = value;
         if(strcmp(option, "dt-no-exitcode") == 0)
-            no_exitcode = !!value;
+            p.no_exitcode = !!value;
         if(strcmp(option, "dt-no-run") == 0)
-            no_run = !!value;
+            p.no_run = !!value;
+        if(strcmp(option, "dt-hash-table-histogram") == 0)
+            p.hash_table_histogram = !!value;
+        if(strcmp(option, "dt-no-path-in-filenames") == 0)
+            p.no_path_in_filenames = !!value;
     }
 }
 
@@ -1267,9 +1304,11 @@ void Context::setOption(const char* option, int value) {
 int Context::runTests() {
     using namespace detail;
 
+    getCurrentContextParams() = &p;
+
     // exit right now
-    if(no_run) {
-        if(exit_after_tests)
+    if(p.no_run) {
+        if(p.exit_after_tests)
             exit(EXIT_SUCCESS);
         return EXIT_SUCCESS;
     }
@@ -1284,7 +1323,7 @@ int Context::runTests() {
     // sort the collected records
     qsort(testDataArray.data(), testDataArray.size(), sizeof(TestData*), TestDataComparator);
 
-    if(hash_table_histogram) {
+    if(p.hash_table_histogram) {
         // find the most full bucket
         size_t maxInBucket = 0;
         for(size_t i = 0; i < buckets.size(); i++)
@@ -1310,30 +1349,31 @@ int Context::runTests() {
 
     int numFilterPassedTests = 0;
     int numFailed            = 0;
+    int numAssertionsFailed  = 0;
     // invoke the registered functions if they match the filter criteria (or just count them)
     for(size_t i = 0; i < testDataArray.size(); i++) {
         const TestData& data = *testDataArray[i];
-        if(!matchesAny(data.m_file, filters[0], 1, case_sensitive))
+        if(!matchesAny(data.m_file, p.filters[0], 1, p.case_sensitive))
             continue;
-        if(matchesAny(data.m_file, filters[1], 0, case_sensitive))
+        if(matchesAny(data.m_file, p.filters[1], 0, p.case_sensitive))
             continue;
-        if(!matchesAny(data.m_suite, filters[2], 1, case_sensitive))
+        if(!matchesAny(data.m_suite, p.filters[2], 1, p.case_sensitive))
             continue;
-        if(matchesAny(data.m_suite, filters[3], 0, case_sensitive))
+        if(matchesAny(data.m_suite, p.filters[3], 0, p.case_sensitive))
             continue;
-        if(!matchesAny(data.m_name, filters[4], 1, case_sensitive))
+        if(!matchesAny(data.m_name, p.filters[4], 1, p.case_sensitive))
             continue;
-        if(matchesAny(data.m_name, filters[5], 0, case_sensitive))
+        if(matchesAny(data.m_name, p.filters[5], 0, p.case_sensitive))
             continue;
 
         numFilterPassedTests++;
 
         // do not execute the test if we are to only count the number of filter passing tests
-        if(count)
+        if(p.count)
             continue;
 
         // skip the test if it is not in the execution range
-        if((last < numFilterPassedTests && first <= last) || (first > numFilterPassedTests))
+        if((p.last < numFilterPassedTests && p.first <= p.last) || (p.first > numFilterPassedTests))
             continue;
 
         // execute the test if it passes all the filtering
@@ -1345,7 +1385,7 @@ int Context::runTests() {
             getSubcasesPassed().clear();
             do {
                 // reset the assertion state
-                getHasCurrentTestFailed() = false;
+                getNumFailedAssertions() = 0;
 
                 // reset some of the fields for subcases (except for the set of fully passed ones)
                 getSubcasesHasSkipped()   = false;
@@ -1353,7 +1393,7 @@ int Context::runTests() {
                 getSubcasesEnteredLevels().clear();
 
                 numFailed += callTestFunc(data.m_f);
-
+                numAssertionsFailed += getNumFailedAssertions();
             } while(getSubcasesHasSkipped() == true);
 
 #ifdef _MSC_VER
@@ -1365,22 +1405,26 @@ int Context::runTests() {
         }
     }
 
-    if(count) {
+    if(p.count) {
         printf("[doctest] number of registered tests passing the current filters: "
                "%d\n",
                numFilterPassedTests);
     } else {
-        if(numFailed == 0)
+        if(numFailed == 0) {
             printf("[doctest] all %d tests passed!\n", numFilterPassedTests);
-        else
+            printf("[doctest] all %d assertions passed!\n", getNumAssertions());
+        } else {
             printf("[doctest] %d out of %d tests passed!\n", numFilterPassedTests - numFailed,
                    numFilterPassedTests);
+            printf("[doctest] %d out of %d assertions passed!\n",
+                   getNumAssertions() - numAssertionsFailed, getNumAssertions());
+        }
     }
 
-    if(exit_after_tests)
-        exit((numFailed && !no_exitcode) ? EXIT_FAILURE : EXIT_SUCCESS);
+    if(p.exit_after_tests)
+        exit((numFailed && !p.no_exitcode) ? EXIT_FAILURE : EXIT_SUCCESS);
 
-    if(numFailed && !no_exitcode)
+    if(numFailed && !p.no_exitcode)
         return EXIT_FAILURE;
     return EXIT_SUCCESS;
 }

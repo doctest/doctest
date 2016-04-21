@@ -18,8 +18,8 @@ namespace detail
 
 TESTSUITE("MAIN");
 TESTCASE("zzz") {
-    REQUIRE(true == false);
     CHECK(std::string("OMG2") == std::string("OMG"));
+    REQUIRE(true == false);
 
     printf("main\n");
     SUBCASE("") {
