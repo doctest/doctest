@@ -59,11 +59,54 @@
 // internal macro for concatenating 2 literals and making the result a string
 #define DOCTEST_STR_CONCAT_TOSTR(s1, s2) DOCTEST_TOSTR(DOCTEST_STR_CONCAT(s1, s2))
 
+// not using __APPLE__ because... this is how Catch does it
+#if defined(__MAC_OS_X_VERSION_MIN_REQUIRED)
+#define DOCTEST_PLATFORM_MAC
+#elif defined(__IPHONE_OS_VERSION_MIN_REQUIRED)
+#define DOCTEST_PLATFORM_IPHONE
+#elif defined(_WIN32) || defined(_MSC_VER)
+#define DOCTEST_PLATFORM_WINDOWS
+#else
+#define DOCTEST_PLATFORM_LINUX
+#endif
+
+#define DOCTEST_COUNTOF(x) (sizeof(x) / sizeof(x[0]))
+
+#ifdef _MSC_VER
+#define DOCTEST_SNPRINTF _snprintf
+#else
+#define DOCTEST_SNPRINTF snprintf
+#endif
+
+#ifdef DOCTEST_PLATFORM_MAC
+// The following code snippet based on:
+// http://cocoawithlove.com/2008/03/break-into-debugger.html
+#ifdef DEBUG
+#if defined(__ppc64__) || defined(__ppc__)
+#define DOCTEST_BREAK_INTO_DEBUGGER()                                                              \
+    if(doctest::detail::isDebuggerActive())                                                        \
+    __asm__("li r0, 20\nsc\nnop\nli r0, 37\nli r4, 2\nsc\nnop\n" : : : "memory", "r0", "r3", "r4")
+#else // __ppc64__ || __ppc__
+#define DOCTEST_BREAK_INTO_DEBUGGER()                                                              \
+    if(doctest::detail::isDebuggerActive())                                                        \
+    __asm__("int $3\n" : :)
+#endif // __ppc64__ || __ppc__
+#endif // DEBUG
+#elif defined(_MSC_VER)
+#define DOCTEST_BREAK_INTO_DEBUGGER()                                                              \
+    if(doctest::detail::isDebuggerActive())                                                        \
+    __debugbreak()
+#elif defined(__MINGW32__)
+extern "C" __declspec(dllimport) void __stdcall DebugBreak();
+#define DOCTEST_BREAK_INTO_DEBUGGER()                                                              \
+    if(doctest::detail::isDebuggerActive())                                                        \
+    ::DebugBreak()
+#else // linux
+#define DOCTEST_BREAK_INTO_DEBUGGER() ((void)0)
+#endif // linux
+
 namespace doctest
 {
-// the function type this library works with
-typedef void (*funcType)(void);
-
 class String
 {
     char* m_str;
@@ -90,10 +133,12 @@ public:
     int compare(const String& other, bool no_case = false) const;
 };
 
-#if !defined(DOCTEST_DISABLE)
-
 namespace detail
 {
+#if !defined(DOCTEST_DISABLE)
+    // the function type this library works with
+    typedef void (*funcType)(void);
+
     template <class T>
     class Vector
     {
@@ -137,28 +182,30 @@ namespace detail
     };
 
     String stringify(const char* in);
+    String stringify(const void* in);
     String stringify(bool in);
-    String stringify(char in);
-    String stringify(int in);
-    String stringify(long in);
-    //String stringify(long long in);
-    String stringify(unsigned in);
-    String stringify(unsigned long in);
-    //String stringify(unsigned long long in);
     String stringify(float in);
     String stringify(double in);
-    String stringify(long double in);
+    String stringify(double long in);
+
+    String stringify(char in);
+    String stringify(char unsigned in);
+    String stringify(short int in);
+    String stringify(short int unsigned in);
+    String stringify(int in);
+    String stringify(int unsigned in);
+    String stringify(long int in);
+    String stringify(long int unsigned in);
 
     template <typename T>
     String stringify(const T&) {
         return "{?}";
     }
 
-    // pointers???
-    //template <typename T>
-    //String stringify(const T*&) {
-    //    return "{?}";
-    //}
+    template <typename T>
+    String stringify(T* in) {
+        return stringify(static_cast<const void*>(in));
+    }
 
     template <typename L, typename R>
     String stringify(const L& lhs, const char* op, const R& rhs) {
@@ -234,38 +281,39 @@ namespace detail
 
     struct TestFailureException
     {};
-} // namespace detail
 
 #endif // DOCTEST_DISABLE
 
-struct ContextParams
-{
+    struct ContextParams
+    {
 #if !defined(DOCTEST_DISABLE)
 
-    detail::Vector<detail::Vector<String> > filters;
+        detail::Vector<detail::Vector<String> > filters;
 
-    bool count;            // if only the count of matching tests is to be retreived
-    bool case_sensitive;   // if filtering should be case sensitive
-    bool allow_overrides;  // all but this can be overriden
-    bool exit_after_tests; // calls exit() after the tests are ran/counted
-    bool no_exitcode;      // if the framework should return 0 as the exitcode
-    bool no_run;           // to not run the tests at all (can be done with an "*" exclude)
+        bool count;            // if only the count of matching tests is to be retreived
+        bool case_sensitive;   // if filtering should be case sensitive
+        bool allow_overrides;  // all but this can be overriden
+        bool exit_after_tests; // calls exit() after the tests are ran/counted
+        bool no_exitcode;      // if the framework should return 0 as the exitcode
+        bool no_run;           // to not run the tests at all (can be done with an "*" exclude)
 
-    bool hash_table_histogram; // if the hash table should be printed as a histogram
-    bool no_path_in_filenames; // if the path to files should be removed from the output
+        bool hash_table_histogram; // if the hash table should be printed as a histogram
+        bool no_path_in_filenames; // if the path to files should be removed from the output
 
-    int first; // the first (matching) test to be executed
-    int last;  // the last (matching) test to be executed
+        int first; // the first (matching) test to be executed
+        int last;  // the last (matching) test to be executed
 
-    ContextParams()
-            : filters(6) // 6 different filters total
-    {}
+        ContextParams()
+                : filters(6) // 6 different filters total
+        {}
 #endif // DOCTEST_DISABLE
-};
+    };
+
+} // namespace detail
 
 class Context
 {
-    ContextParams p;
+    detail::ContextParams p;
 
 public:
     Context(int argc, char** argv);
@@ -297,6 +345,9 @@ namespace detail
                            bool is_check, const char* file, int line);
 
     bool logAssertNothrow(const char* expr, bool threw, bool is_check, const char* file, int line);
+
+    bool isDebuggerActive();
+    void writeToDebugConsole(const String&);
 } // namespace detail
 } // namespace doctest
 
@@ -402,13 +453,10 @@ namespace detail
         res = doctest::detail::ExpressionDecomposer() << expr;                                     \
     } catch(...) { threw = true; }                                                                 \
     false_invert_op;                                                                               \
-    if(res || threw) {                                                                             \
-    }                                                                                              \
+    if(res || threw)                                                                               \
+        DOCTEST_BREAK_INTO_DEBUGGER();                                                             \
     if(doctest::detail::logAssert(res, threw, #expr, assert_name, is_check, __FILE__, __LINE__))   \
         throw doctest::detail::TestFailureException();
-
-//if(doctest::detail::isDebuggerActive())
-//    doctest::detail::debugBreak();
 
 #if defined(__clang__)
 #define DOCTEST_ASSERT_PROXY(expr, assert_name, is_check, false_invert_op)                         \
@@ -437,6 +485,8 @@ namespace detail
         try {                                                                                      \
             expr;                                                                                  \
         } catch(...) { threw = true; }                                                             \
+        if(!threw)                                                                                 \
+            DOCTEST_BREAK_INTO_DEBUGGER();                                                         \
         if(doctest::detail::logAssertThrows(#expr, threw, is_check, __FILE__, __LINE__))           \
             throw doctest::detail::TestFailureException();                                         \
     } while(false)
@@ -451,6 +501,8 @@ namespace detail
             threw    = true;                                                                       \
             threw_as = true;                                                                       \
         } catch(...) { threw = true; }                                                             \
+        if(!threw_as)                                                                              \
+            DOCTEST_BREAK_INTO_DEBUGGER();                                                         \
         if(doctest::detail::logAssertThrowsAs(#expr, #as, threw, threw_as, is_check, __FILE__,     \
                                               __LINE__))                                           \
             throw doctest::detail::TestFailureException();                                         \
@@ -462,6 +514,8 @@ namespace detail
         try {                                                                                      \
             expr;                                                                                  \
         } catch(...) { threw = true; }                                                             \
+        if(threw)                                                                                  \
+            DOCTEST_BREAK_INTO_DEBUGGER();                                                         \
         if(doctest::detail::logAssertNothrow(#expr, threw, is_check, __FILE__, __LINE__))          \
             throw doctest::detail::TestFailureException();                                         \
     } while(false)
@@ -577,7 +631,7 @@ DOCTEST_TESTSUITE_END;
 #define DOCTEST_LIBRARY_IMPLEMENTATION
 
 // required includes - will go only in one translation unit!
-#include <cstdio>  // printf, sprintf
+#include <cstdio>  // printf, fprintf, sprintf, snprintf
 #include <cstdlib> // malloc, free, qsort, exit
 #include <cstring> // strcpy, strtok, strrchr
 #include <new>     // placement new (can be skipped if the containers require 'construct()' from T)
@@ -586,6 +640,16 @@ DOCTEST_TESTSUITE_END;
 #if !defined(DOCTEST_HASH_TABLE_NUM_BUCKETS)
 #define DOCTEST_HASH_TABLE_NUM_BUCKETS 1024
 #endif // DOCTEST_HASH_TABLE_NUM_BUCKETS
+
+// the buffer size used for snprintf() calls
+#if !defined(DOCTEST_SNPRINTF_BUFFER_LENGTH)
+#define DOCTEST_SNPRINTF_BUFFER_LENGTH 1024
+#endif // DOCTEST_SNPRINTF_BUFFER_LENGTH
+
+#if defined(_MSC_VER) || defined(__MINGW32__)
+extern "C" __declspec(dllimport) void __stdcall OutputDebugStringA(const char*);
+extern "C" __declspec(dllimport) int __stdcall IsDebuggerPresent();
+#endif // DOCTEST_PLATFORM_WINDOWS
 
 // main namespace of the library
 namespace doctest
@@ -880,52 +944,13 @@ namespace detail
 
     String stringify(const char* in) { return String("\"") + in + "\""; }
 
+    String stringify(const void* in) {
+        char buf[64];
+        sprintf(buf, "0x%p", in);
+        return buf;
+    }
+
     String stringify(bool in) { return in ? "true" : "false"; }
-
-    String stringify(char in) {
-        char buf[64];
-        if(in < ' ')
-            sprintf(buf, "%d", in);
-        else
-            sprintf(buf, "%c", in);
-        return buf;
-    }
-
-    String stringify(int in) {
-        char buf[64];
-        sprintf(buf, "%d", in);
-        return buf;
-    }
-
-    String stringify(long in) {
-        char buf[64];
-        sprintf(buf, "%ld", in);
-        return buf;
-    }
-
-    //String stringify(long long in) {
-    //    char buf[64];
-    //    sprintf(buf, "%lld", in);
-    //    return buf;
-    //}
-
-    String stringify(unsigned in) {
-        char buf[64];
-        sprintf(buf, "%u", in);
-        return buf;
-    }
-
-    String stringify(unsigned long in) {
-        char buf[64];
-        sprintf(buf, "%lu", in);
-        return buf;
-    }
-
-    //String stringify(unsigned long long in) {
-    //    char buf[64];
-    //    sprintf(buf, "%llu", in);
-    //    return buf;
-    //}
 
     String stringify(float in) {
         char buf[64];
@@ -939,9 +964,63 @@ namespace detail
         return buf;
     }
 
-    String stringify(long double in) {
+    String stringify(double long in) {
         char buf[64];
         sprintf(buf, "%Lf", in);
+        return buf;
+    }
+
+    String stringify(char in) {
+        char buf[64];
+        if(in < ' ')
+            sprintf(buf, "%d", in);
+        else
+            sprintf(buf, "%c", in);
+        return buf;
+    }
+
+    String stringify(char unsigned in) {
+        char buf[64];
+        if(in < ' ')
+            sprintf(buf, "%ud", in);
+        else
+            sprintf(buf, "%c", in);
+        return buf;
+    }
+
+    String stringify(short int in) {
+        char buf[64];
+        sprintf(buf, "%d", in);
+        return buf;
+    }
+
+    String stringify(short int unsigned in) {
+        char buf[64];
+        sprintf(buf, "%u", in);
+        return buf;
+    }
+
+    String stringify(int in) {
+        char buf[64];
+        sprintf(buf, "%d", in);
+        return buf;
+    }
+
+    String stringify(int unsigned in) {
+        char buf[64];
+        sprintf(buf, "%u", in);
+        return buf;
+    }
+
+    String stringify(long int in) {
+        char buf[64];
+        sprintf(buf, "%ld", in);
+        return buf;
+    }
+
+    String stringify(long int unsigned in) {
+        char buf[64];
+        sprintf(buf, "%lu", in);
         return buf;
     }
 
@@ -1103,14 +1182,64 @@ namespace detail
         return file;
     }
 
+#ifdef DOCTEST_PLATFORM_MAC
+#include <sys/types.h>
+#include <unistd.h>
+#include <sys/sysctl.h>
+    // The following function is taken directly from the following technical note:
+    // http://developer.apple.com/library/mac/#qa/qa2004/qa1361.html
+    // Returns true if the current process is being debugged (either
+    // running under the debugger or has a debugger attached post facto).
+    bool isDebuggerActive() {
+        int               mib[4];
+        struct kinfo_proc info;
+        size_t            size;
+        // Initialize the flags so that, if sysctl fails for some bizarre
+        // reason, we get a predictable result.
+        info.kp_proc.p_flag = 0;
+        // Initialize mib, which tells sysctl the info we want, in this case
+        // we're looking for information about a specific process ID.
+        mib[0] = CTL_KERN;
+        mib[1] = KERN_PROC;
+        mib[2] = KERN_PROC_PID;
+        mib[3] = getpid();
+        // Call sysctl.
+        size = sizeof(info);
+        if(sysctl(mib, sizeof(mib) / sizeof(*mib), &info, &size, 0, 0) != 0) {
+            fprintf(stderr, "\n** Call to sysctl failed - unable to determine if debugger is "
+                            "active **\n\n");
+            return false;
+        }
+        // We're being debugged if the P_TRACED flag is set.
+        return ((info.kp_proc.p_flag & P_TRACED) != 0);
+    }
+#elif defined(_MSC_VER) || defined(__MINGW32__)
+    bool    isDebuggerActive() { return ::IsDebuggerPresent() != 0; }
+#else
+    bool isDebuggerActive() { return false; }
+#endif // Platform
+
+#ifdef DOCTEST_PLATFORM_WINDOWS
+    void writeToDebugConsole(const String& text) { ::OutputDebugStringA(text.c_str()); }
+#else
+    // TODO: integration with XCode and other IDEs
+    void writeToDebugConsole(const String&) {}
+#endif // Platform
+
     bool logAssert(const Result& res, bool threw, const char* expr, const char* assert_name,
                    bool is_check, const char* file, int line) {
         getNumAssertions()++;
 
         if(!res.m_passed || threw) {
-            printf("%s(%d): FAILED! %s\n  %s( %s )\n\n", fileForOutput(file), line,
-                   (threw ? "(threw exception)" : ""), assert_name,
-                   (threw ? expr : res.m_decomposition.c_str()));
+            char buffer[DOCTEST_SNPRINTF_BUFFER_LENGTH];
+            DOCTEST_SNPRINTF(buffer, DOCTEST_COUNTOF(buffer), "%s(%d): FAILED! %s\n  %s( %s )\n\n",
+                             fileForOutput(file), line, (threw ? "(threw exception)" : ""),
+                             assert_name, (threw ? expr : res.m_decomposition.c_str()));
+
+            if(isDebuggerActive())
+                writeToDebugConsole(buffer);
+
+            printf("%s", buffer);
 
             getNumFailedAssertions()++;
 
@@ -1123,8 +1252,15 @@ namespace detail
         getNumAssertions()++;
 
         if(!threw) {
-            printf("%s(%d): FAILED!\n  %s( %s )\n\n", fileForOutput(file), line,
-                   (is_check ? "CHECK_THROWS" : "REQUIRE_THROWS"), expr);
+            char buffer[DOCTEST_SNPRINTF_BUFFER_LENGTH];
+            DOCTEST_SNPRINTF(buffer, DOCTEST_COUNTOF(buffer), "%s(%d): FAILED!\n  %s( %s )\n\n",
+                             fileForOutput(file), line,
+                             (is_check ? "CHECK_THROWS" : "REQUIRE_THROWS"), expr);
+
+            if(isDebuggerActive())
+                writeToDebugConsole(buffer);
+
+            printf("%s", buffer);
 
             getNumFailedAssertions()++;
 
@@ -1138,9 +1274,17 @@ namespace detail
         getNumAssertions()++;
 
         if(!threw || !threw_as) {
-            printf("%s(%d): FAILED! %s\n  %s( %s , %s )\n\n", fileForOutput(file), line,
-                   (threw ? "(didn't throw an exception of the type)" : "(didn't throw at all)"),
-                   (is_check ? "CHECK_THROWS_AS" : "REQUIRE_THROWS_AS"), expr, as);
+            char buffer[DOCTEST_SNPRINTF_BUFFER_LENGTH];
+            DOCTEST_SNPRINTF(
+                    buffer, DOCTEST_COUNTOF(buffer), "%s(%d): FAILED! %s\n  %s( %s , %s )\n\n",
+                    fileForOutput(file), line,
+                    (threw ? "(didn't a different type of an exception)" : "(didn't throw at all)"),
+                    (is_check ? "CHECK_THROWS_AS" : "REQUIRE_THROWS_AS"), expr, as);
+
+            if(isDebuggerActive())
+                writeToDebugConsole(buffer);
+
+            printf("%s", buffer);
 
             getNumFailedAssertions()++;
 
@@ -1153,8 +1297,15 @@ namespace detail
         getNumAssertions()++;
 
         if(threw) {
-            printf("%s(%d): FAILED!\n  %s( %s )\n\n", fileForOutput(file), line,
-                   (is_check ? "CHECK_NOTHROW" : "REQUIRE_NOTHROW"), expr);
+            char buffer[DOCTEST_SNPRINTF_BUFFER_LENGTH];
+            DOCTEST_SNPRINTF(buffer, DOCTEST_COUNTOF(buffer), "%s(%d): FAILED!\n  %s( %s )\n\n",
+                             fileForOutput(file), line,
+                             (is_check ? "CHECK_NOTHROW" : "REQUIRE_NOTHROW"), expr);
+
+            if(isDebuggerActive())
+                writeToDebugConsole(buffer);
+
+            printf("%s", buffer);
 
             getNumFailedAssertions()++;
 

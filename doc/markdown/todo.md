@@ -1,8 +1,6 @@
 ## TODO FOR FIRST RELEASE
 
-- debugger present detection (and break when a CHECK/REQUIRE macro fails)
 - colors in output
-
 
 look at catch command line options (also lest)
 - version (also add a step in the .txt file for updating the library - or even make it automatic!)
@@ -86,7 +84,6 @@ https://github.com/nothings/stb/blob/master/docs/other_libs.md
 - [unsure] progress of tests being executed (and an option for it)
 - [unsure] wchar stuff in stringify and whatever - see <wchar.h>
 - [unsure] tagging? also see this: https://github.com/philsquared/Catch/blob/master/docs/test-cases-and-sections.md#special-tags
-- [unsure] pointer stringification (typename tostring? and address)
 - [unsure] utf8?
 - [unsure] think about adding support for std::exception and others
 - [unsure] think about parameterising the output alignment to 80 or some other column limit

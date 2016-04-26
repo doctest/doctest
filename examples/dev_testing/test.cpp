@@ -68,6 +68,10 @@ TESTCASE("zzz") {
     CHECK(1 == 0);
     CHECK_FALSE(1 == 0);
 
+    int a = 5;
+    int b = 5;
+    CHECK(&a == &b);
+
     CHECK(1 == 1);
     REQUIRE(1 == 1);
 
