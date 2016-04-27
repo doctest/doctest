@@ -5,12 +5,43 @@ import subprocess
 import fileinput
 import time
 
+# the version of the release
+version_major = "1"
+version_minor = "0"
+version_patch = "0"
+
+version = version_major + "." + version_minor + "." + version_patch
+
+# update version in the header file
+
+doctest_contents = ""
+for line in fileinput.input(["../doctest/doctest.h"]):
+    if line.startswith("#define DOCTEST_VERSION_MAJOR"):
+        doctest_contents += "#define DOCTEST_VERSION_MAJOR " + version_major + "\n"
+    elif line.startswith("#define DOCTEST_VERSION_MINOR"):
+        doctest_contents += "#define DOCTEST_VERSION_MINOR " + version_minor + "\n"
+    elif line.startswith("#define DOCTEST_VERSION_PATCH"):
+        doctest_contents += "#define DOCTEST_VERSION_PATCH " + version_patch + "\n"
+    else:
+        doctest_contents += line
+
+readme = open("../doctest/doctest.h", "w")
+readme.write(doctest_contents)
+readme.close()
+
+os.system("git add ../doctest/doctest.h")
+
 # run generate_html.py
 print("generating html documentation from markdown")
 os.system("python generate_html.py")
 
-examples = "../examples/"
+# update changelog
+os.chdir("../")
+os.system("github_changelog_generator --future-release " + version)
+os.system("git add CHANGELOG.md")
+os.chdir("scripts")
 
+examples = "../examples/"
 '''
 # create readme files in examples with 'try it online' badges with permalinks
 examples_skip = ["multiprocess"]

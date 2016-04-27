@@ -1,10 +1,5 @@
 ## TODO FOR FIRST RELEASE
 
-- colors in output
-
-
-- -dt-help   !!!
-version
 
 
 look at catch command line options (also lest)
@@ -17,6 +12,7 @@ look at catch command line options (also lest)
 - signal handling for unix: http://www.cplusplus.com/reference/csignal/signal/
 (signals on *NIX platforms or structured exceptions on Windows)
 
+- colors in output
 - MSVC/IDE integration
 - make a compact reporter (for within ide-s - just the file and line number)
 - streaming reporters???
@@ -25,6 +21,7 @@ look at catch command line options (also lest)
 - think about the expression decomposition static asserts
 - example of stringify-ing common stl stuff like containers
 - test coverage
+- help and version flags!
 - fixing warnings gcc/clang/msvc (and add more stuff in the disabled example)
 
 GCC 4.8/5.0 -Wstrict-overflow NONSENSE
