@@ -2,6 +2,28 @@
 
 - colors in output
 
+OMFG stringify overloading not working for gcc! std::string example failing!
+
+- fix command line
+- [unsure] improve command line - passing "-dt-no-run=1 -dt-no-run=0" should result in running the tests (AND SHORT VERSIONS!!!)
+
+
+add _CONFIG_ in config macros
+
+
+
+
+-dt-file
+-dt-file-exclude
+-dt-suite
+-dt-suite-exclude
+-dt-name
+-dt-name-exclude
+
+
+
+
+
 look at catch command line options (also lest)
 - version (also add a step in the .txt file for updating the library - or even make it automatic!)
 - randomization of test order
@@ -75,7 +97,7 @@ https://github.com/nothings/stb/blob/master/docs/other_libs.md
 - [unsure] Bitwise() class that has overloaded operators for comparison - to be used to check objects bitwise against each other
 - [unsure] add WARN as third option to CHECK/REQUIRE versions of assertions
 - [unsure] floating point comparison support
-- [unsure] ability to stop a test after it exceeds a time limit
+- [unsure] ability to stop a test after it exceeds a time limit (will perhaps require threading)
 - [unsure] BDD based on the subtests - like Catch
 - [unsure] matchers?
 - [unsure] put internals in anonymous namespace (even if already in detail) - even though clang-format will make everything more indented
@@ -87,7 +109,6 @@ https://github.com/nothings/stb/blob/master/docs/other_libs.md
 - [unsure] utf8?
 - [unsure] think about adding support for std::exception and others
 - [unsure] think about parameterising the output alignment to 80 or some other column limit
-- [unsure] improve command line - passing "-dt-no-run=1 -dt-no-run=0" should result in running the tests (AND SHORT VERSIONS!!!)
 - [unsure] a message macro (also tracepoint/passpoint/info/context and whatever - like in boost.test) (ALSO ERROR/FAIL - like boost)
 - think about the ability to mix different versions of the library within the same executable (like stb libraries)
 

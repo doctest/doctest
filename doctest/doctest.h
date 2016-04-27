@@ -72,11 +72,22 @@
 
 #define DOCTEST_COUNTOF(x) (sizeof(x) / sizeof(x[0]))
 
+// no snprintf() in C++98
 #ifdef _MSC_VER
 #define DOCTEST_SNPRINTF _snprintf
 #else
 #define DOCTEST_SNPRINTF snprintf
 #endif
+
+#if !defined(DOCTEST_COLORS_NONE)
+#if !defined(DOCTEST_COLORS_WINDOWS) && !defined(DOCTEST_COLORS_ANSI)
+#ifdef DOCTEST_PLATFORM_WINDOWS
+#define DOCTEST_COLORS_WINDOWS
+#else // linux
+#define DOCTEST_COLORS_ANSI
+#endif // platform
+#endif // DOCTEST_COLORS_WINDOWS && DOCTEST_COLORS_ANSI
+#endif // DOCTEST_COLORS_NONE
 
 #ifdef DOCTEST_PLATFORM_MAC
 // The following code snippet based on:
@@ -84,22 +95,26 @@
 #ifdef DEBUG
 #if defined(__ppc64__) || defined(__ppc__)
 #define DOCTEST_BREAK_INTO_DEBUGGER()                                                              \
-    if(doctest::detail::isDebuggerActive())                                                        \
+    if(doctest::detail::isDebuggerActive() &&                                                      \
+       !doctest::detail::getCurrentContextParams()->no_breaks)                                     \
     __asm__("li r0, 20\nsc\nnop\nli r0, 37\nli r4, 2\nsc\nnop\n" : : : "memory", "r0", "r3", "r4")
 #else // __ppc64__ || __ppc__
 #define DOCTEST_BREAK_INTO_DEBUGGER()                                                              \
-    if(doctest::detail::isDebuggerActive())                                                        \
+    if(doctest::detail::isDebuggerActive() &&                                                      \
+       !doctest::detail::getCurrentContextParams()->no_breaks)                                     \
     __asm__("int $3\n" : :)
 #endif // __ppc64__ || __ppc__
 #endif // DEBUG
 #elif defined(_MSC_VER)
 #define DOCTEST_BREAK_INTO_DEBUGGER()                                                              \
-    if(doctest::detail::isDebuggerActive())                                                        \
+    if(doctest::detail::isDebuggerActive() &&                                                      \
+       !doctest::detail::getCurrentContextParams()->no_breaks)                                     \
     __debugbreak()
 #elif defined(__MINGW32__)
 extern "C" __declspec(dllimport) void __stdcall DebugBreak();
 #define DOCTEST_BREAK_INTO_DEBUGGER()                                                              \
-    if(doctest::detail::isDebuggerActive())                                                        \
+    if(doctest::detail::isDebuggerActive() &&                                                      \
+       !doctest::detail::getCurrentContextParams()->no_breaks)                                     \
     ::DebugBreak()
 #else // linux
 #define DOCTEST_BREAK_INTO_DEBUGGER() ((void)0)
@@ -133,9 +148,10 @@ public:
     int compare(const String& other, bool no_case = false) const;
 };
 
+#if !defined(DOCTEST_DISABLE)
+
 namespace detail
 {
-#if !defined(DOCTEST_DISABLE)
     // the function type this library works with
     typedef void (*funcType)(void);
 
@@ -282,12 +298,8 @@ namespace detail
     struct TestFailureException
     {};
 
-#endif // DOCTEST_DISABLE
-
     struct ContextParams
     {
-#if !defined(DOCTEST_DISABLE)
-
         detail::Vector<detail::Vector<String> > filters;
 
         bool count;            // if only the count of matching tests is to be retreived
@@ -296,6 +308,8 @@ namespace detail
         bool exit_after_tests; // calls exit() after the tests are ran/counted
         bool no_exitcode;      // if the framework should return 0 as the exitcode
         bool no_run;           // to not run the tests at all (can be done with an "*" exclude)
+        bool no_colors;        // if output to the console should be colorized
+        bool no_breaks;        // to not break into the debugger
 
         bool hash_table_histogram; // if the hash table should be printed as a histogram
         bool no_path_in_filenames; // if the path to files should be removed from the output
@@ -306,14 +320,18 @@ namespace detail
         ContextParams()
                 : filters(6) // 6 different filters total
         {}
-#endif // DOCTEST_DISABLE
     };
 
+    ContextParams*& getCurrentContextParams();
 } // namespace detail
+
+#endif // DOCTEST_DISABLE
 
 class Context
 {
+#if !defined(DOCTEST_DISABLE)
     detail::ContextParams p;
+#endif // DOCTEST_DISABLE
 
 public:
     Context(int argc, char** argv);
@@ -650,6 +668,32 @@ DOCTEST_TESTSUITE_END;
 extern "C" __declspec(dllimport) void __stdcall OutputDebugStringA(const char*);
 extern "C" __declspec(dllimport) int __stdcall IsDebuggerPresent();
 #endif // DOCTEST_PLATFORM_WINDOWS
+
+#ifdef DOCTEST_COLORS_ANSI
+#include <unistd.h>
+#endif // DOCTEST_COLORS_ANSI
+
+#ifdef DOCTEST_COLORS_WINDOWS
+
+// defines for a leaner windows.h
+#ifndef WIN32_MEAN_AND_LEAN
+#define WIN32_MEAN_AND_LEAN
+#endif // WIN32_MEAN_AND_LEAN
+#ifndef VC_EXTRA_LEAN
+#define VC_EXTRA_LEAN
+#endif // VC_EXTRA_LEAN
+#ifndef NOMINMAX
+#define NOMINMAX
+#endif // NOMINMAX
+
+// not sure what AfxWin.h is for - here I do what Catch does
+#ifdef __AFXDLL
+#include <AfxWin.h>
+#else
+#include <windows.h>
+#endif
+
+#endif // DOCTEST_COLORS_WINDOWS
 
 // main namespace of the library
 namespace doctest
@@ -1168,6 +1212,103 @@ namespace detail
         return outVal;
     }
 
+    struct Color
+    {
+        enum Code
+        {
+            None = 0,
+            White,
+            Red,
+            Green,
+            Blue,
+            Cyan,
+            Yellow,
+            Grey,
+
+            Bright = 0x10,
+
+            BrightRed   = Bright | Red,
+            BrightGreen = Bright | Green,
+            LightGrey   = Bright | Grey,
+            BrightWhite = Bright | White
+        };
+        Color(Code code) { use(code); }
+        ~Color() { use(None); }
+
+        void use(Code code);
+
+    private:
+        Color(Color const& other);
+    };
+
+    void Color::use(Code code) {
+        ContextParams* p = getCurrentContextParams();
+        if(p->no_colors)
+            return;
+#ifdef DOCTEST_COLORS_ANSI
+        if(isatty(STDOUT_FILENO)) {
+            const char* col = "";
+            // clang-format off
+            switch(_colourCode) {
+                case Color::Red:         col = "[0;31m"; break;
+                case Color::Green:       col = "[0;32m"; break;
+                case Color::Blue:        col = "[0:34m"; break;
+                case Color::Cyan:        col = "[0;36m"; break;
+                case Color::Yellow:      col = "[0;33m"; break;
+                case Color::Grey:        col = "[1;30m"; break;
+                case Color::LightGrey:   col = "[0;37m"; break;
+                case Color::BrightRed:   col = "[1;31m"; break;
+                case Color::BrightGreen: col = "[1;32m"; break;
+                case Color::BrightWhite: col = "[1;37m"; break;
+                case Color::Bright: // invalid
+                case Color::None:
+                case Color::White:
+                default:                 col = "[0m";
+            }
+            // clang-format on
+            printf("\033%s", col);
+        }
+#endif // DOCTEST_COLORS_ANSI
+
+#ifdef DOCTEST_COLORS_WINDOWS
+#define set(x) SetConsoleTextAttribute(stdoutHandle, x | originalBackgroundAttributes)
+        static HANDLE stdoutHandle(GetStdHandle(STD_OUTPUT_HANDLE));
+        static WORD   originalForegroundAttributes;
+        static WORD   originalBackgroundAttributes;
+        static bool   attrsInitted = false;
+        if(!attrsInitted) {
+            attrsInitted = true;
+            CONSOLE_SCREEN_BUFFER_INFO csbiInfo;
+            GetConsoleScreenBufferInfo(stdoutHandle, &csbiInfo);
+            originalForegroundAttributes =
+                    csbiInfo.wAttributes &
+                    ~(BACKGROUND_GREEN | BACKGROUND_RED | BACKGROUND_BLUE | BACKGROUND_INTENSITY);
+            originalBackgroundAttributes =
+                    csbiInfo.wAttributes &
+                    ~(FOREGROUND_GREEN | FOREGROUND_RED | FOREGROUND_BLUE | FOREGROUND_INTENSITY);
+        }
+
+        // clang-format off
+        switch (code) {
+            case Color::White:       set(FOREGROUND_GREEN | FOREGROUND_RED | FOREGROUND_BLUE); break;
+            case Color::Red:         set(FOREGROUND_RED);                                      break;
+            case Color::Green:       set(FOREGROUND_GREEN);                                    break;
+            case Color::Blue:        set(FOREGROUND_BLUE);                                     break;
+            case Color::Cyan:        set(FOREGROUND_BLUE | FOREGROUND_GREEN);                  break;
+            case Color::Yellow:      set(FOREGROUND_RED | FOREGROUND_GREEN);                   break;
+            case Color::Grey:        set(0);                                                   break;
+            case Color::LightGrey:   set(FOREGROUND_INTENSITY);                                break;
+            case Color::BrightRed:   set(FOREGROUND_INTENSITY | FOREGROUND_RED);               break;
+            case Color::BrightGreen: set(FOREGROUND_INTENSITY | FOREGROUND_GREEN);             break;
+            case Color::BrightWhite: set(FOREGROUND_INTENSITY | FOREGROUND_GREEN | FOREGROUND_RED | FOREGROUND_BLUE); break;
+            case Color::None:
+            case Color::Bright:
+            default:                 set(originalForegroundAttributes);
+        }
+// clang-format on
+#endif // DOCTEST_COLORS_WINDOWS
+    }
+
     // depending on the current options this will remove the path of filenames
     const char* fileForOutput(const char* file) {
         if(getCurrentContextParams()->no_path_in_filenames) {
@@ -1238,6 +1379,8 @@ namespace detail
 
             if(isDebuggerActive())
                 writeToDebugConsole(buffer);
+
+            Color col(Color::Red);
 
             printf("%s", buffer);
 
@@ -1397,6 +1540,8 @@ Context::Context(int argc, char** argv) {
     p.last                 = parseOption(argc, argv, "-dt-last=", 1, 0);
     p.no_exitcode          = !!parseOption(argc, argv, "-dt-no-exitcode=", 0, 0);
     p.no_run               = !!parseOption(argc, argv, "-dt-no-run=", 0, 0);
+    p.no_colors            = !!parseOption(argc, argv, "-dt-no-colors=", 0, 0);
+    p.no_breaks            = !!parseOption(argc, argv, "-dt-no-breaks=", 0, 0);
     p.hash_table_histogram = !!parseOption(argc, argv, "-dt-hash-table-histogram=", 0, 0);
     p.no_path_in_filenames = !!parseOption(argc, argv, "-dt-no-path-in-filenames=", 0, 0);
 }
@@ -1444,6 +1589,10 @@ void Context::setOption(const char* option, int value) {
             p.no_exitcode = !!value;
         if(strcmp(option, "dt-no-run") == 0)
             p.no_run = !!value;
+        if(strcmp(option, "dt-no-colors") == 0)
+            p.no_colors = !!value;
+        if(strcmp(option, "dt-no-breaks") == 0)
+            p.no_breaks = !!value;
         if(strcmp(option, "dt-hash-table-histogram") == 0)
             p.hash_table_histogram = !!value;
         if(strcmp(option, "dt-no-path-in-filenames") == 0)
@@ -1563,11 +1712,11 @@ int Context::runTests() {
     } else {
         if(numFailed == 0) {
             printf("[doctest] all %d tests passed!\n", numFilterPassedTests);
-            printf("[doctest] all %d assertions passed!\n", getNumAssertions());
+            printf("[doctest] all %d assertions passed!\n\n", getNumAssertions());
         } else {
             printf("[doctest] %d out of %d tests passed!\n", numFilterPassedTests - numFailed,
                    numFilterPassedTests);
-            printf("[doctest] %d out of %d assertions passed!\n",
+            printf("[doctest] %d out of %d assertions passed!\n\n",
                    getNumAssertions() - numAssertionsFailed, getNumAssertions());
         }
     }

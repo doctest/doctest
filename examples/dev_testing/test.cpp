@@ -11,23 +11,27 @@ namespace doctest
 {
 namespace detail
 {
-    String stringify(const std::string& in); // to silence GCC "-Wmissing-declarations"
-    String stringify(const std::string& in) { return String("\"") + in.c_str() + "\""; }
+    template <>
+    String stringify(const std::string& in) {
+        return String("\"") + in.c_str() + "\"";
+    }
 } // namespace detail
 } // namespace doctest
 
 TESTSUITE("MAIN");
 TESTCASE("zzz") {
     CHECK(std::string("OMG2") == std::string("OMG"));
-    REQUIRE(true == false);
 
-    printf("main\n");
-    SUBCASE("") {
-        printf("1\n");
-        SUBCASE("") { printf("1-1\n"); }
-        SUBCASE("") { printf("1-2\n"); }
-    }
-    SUBCASE("") { printf("2\n"); }
+
+    //REQUIRE(true == false);
+    //
+    //printf("main\n");
+    //SUBCASE("") {
+    //    printf("1\n");
+    //    SUBCASE("") { printf("1-1\n"); }
+    //    SUBCASE("") { printf("1-2\n"); }
+    //}
+    //SUBCASE("") { printf("2\n"); }
 }
 TESTSUITE_END;
 
@@ -65,8 +69,6 @@ void nothrows(); // to silence GCC "-Wmissing-declarations"
 void nothrows() {}
 
 TESTCASE("zzz") {
-    CHECK(1 == 0);
-    CHECK_FALSE(1 == 0);
 
     int a = 5;
     int b = 5;

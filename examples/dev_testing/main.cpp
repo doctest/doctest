@@ -12,6 +12,8 @@ int main(int argc, char** argv) {
 
     // overrides
     context.setOption("dt-case-sensitive", true);
+    context.setOption("dt-no-breaks", true);
+    //context.setOption("dt-no-colors", true);
     context.addFilter("dt-name", "zzz");
 
     // run
