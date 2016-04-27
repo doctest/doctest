@@ -43,6 +43,10 @@
 #ifndef DOCTEST_LIBRARY_INCLUDED
 #define DOCTEST_LIBRARY_INCLUDED
 
+#define DOCTEST_VERSION_MAJOR 0
+#define DOCTEST_VERSION_MINOR 0
+#define DOCTEST_VERSION_PATCH 0
+
 // internal macros for string concatenation and anonymous variable name generation
 #define DOCTEST_STR_CONCAT_IMPL(s1, s2) s1##s2
 #define DOCTEST_STR_CONCAT(s1, s2) DOCTEST_STR_CONCAT_IMPL(s1, s2)
@@ -316,6 +320,9 @@ namespace detail
 
         int first; // the first (matching) test to be executed
         int last;  // the last (matching) test to be executed
+
+        bool help;    // to print the help
+        bool version; // to print the version
 
         ContextParams()
                 : filters(6) // 6 different filters total
@@ -1347,6 +1354,8 @@ namespace detail
             if(isDebuggerActive())
                 writeToDebugConsole(buffer);
 
+            Color col(Color::Red);
+
             printf("%s", buffer);
 
             getNumFailedAssertions()++;
@@ -1371,6 +1380,8 @@ namespace detail
             if(isDebuggerActive())
                 writeToDebugConsole(buffer);
 
+            Color col(Color::Red);
+
             printf("%s", buffer);
 
             getNumFailedAssertions()++;
@@ -1392,6 +1403,8 @@ namespace detail
             if(isDebuggerActive())
                 writeToDebugConsole(buffer);
 
+            Color col(Color::Red);
+
             printf("%s", buffer);
 
             getNumFailedAssertions()++;
@@ -1401,13 +1414,58 @@ namespace detail
         return false;
     }
 
-    // the implementation of parseCommaSepArg()
-    bool parseCommaSepArgImpl(int argc, const char* const* argv, const char* pattern,
-                              Vector<String>& res) {
+    // the implementation of parseFlag()
+    bool parseFlagImpl(int argc, const char* const* argv, const char* pattern) {
+        for(int i = argc - 1; i >= 0; --i) {
+            const char* temp = strstr(argv[i], pattern);
+            if(temp) {
+                // eliminate strings in which the chars before the option are not '-'
+                bool shouldBreak = false;
+                while(temp != argv[i]) {
+                    if(*--temp != '-') {
+                        shouldBreak = true;
+                        break;
+                    }
+                }
+                if(shouldBreak)
+                    break;
+
+                return true;
+            }
+        }
+        return false;
+    }
+
+    // locates a flag on the command line
+    bool parseFlag(int argc, const char* const* argv, const char* pattern) {
+#ifndef DOCTEST_CONFIG_NO_SHORT_FLAGS
+        if(!parseFlagImpl(argc, argv, pattern))
+            return parseFlagImpl(argc, argv, pattern + 3); // 3 for "dt-"
+        return true;
+#else  // DOCTEST_CONFIG_NO_SHORT_FLAGS
+        return parseCommaSepArgsImpl(argc, argv, pattern);
+#endif // DOCTEST_CONFIG_NO_SHORT_FLAGS
+    }
+
+    // the implementation of parseCommaSepArgs()
+    bool parseCommaSepArgsImpl(int argc, const char* const* argv, const char* pattern,
+                               Vector<String>& res) {
         String filtersString;
         for(int i = argc - 1; i >= 0; --i) {
             const char* temp = strstr(argv[i], pattern);
             if(temp) {
+                // eliminate matches in which the chars before the option are not '-'
+                bool        shouldBreak = false;
+                const char* curr        = argv[i];
+                while(curr != temp) {
+                    if(*curr++ != '-') {
+                        shouldBreak = true;
+                        break;
+                    }
+                }
+                if(shouldBreak)
+                    break;
+
                 temp += my_strlen(pattern);
                 size_t len = my_strlen(temp);
                 if(len) {
@@ -1432,14 +1490,14 @@ namespace detail
     }
 
     // parses a comma separated list of words after a pattern in one of the arguments in argv
-    bool parseCommaSepArg(int argc, const char* const* argv, const char* pattern,
-                          Vector<String>& res) {
+    bool parseCommaSepArgs(int argc, const char* const* argv, const char* pattern,
+                           Vector<String>& res) {
 #ifndef DOCTEST_CONFIG_NO_SHORT_FLAGS
-        if(!parseCommaSepArgImpl(argc, argv, pattern, res))
-            return parseCommaSepArgImpl(argc, argv, pattern + 3, res); // 3 for "dt-"
+        if(!parseCommaSepArgsImpl(argc, argv, pattern, res))
+            return parseCommaSepArgsImpl(argc, argv, pattern + 3, res); // 3 for "dt-"
         return true;
 #else // DOCTEST_CONFIG_NO_SHORT_FLAGS
-        return parseCommaSepArgImpl(argc, argv, pattern, res);
+        return parseCommaSepArgsImpl(argc, argv, pattern, res);
 #endif // DOCTEST_CONFIG_NO_SHORT_FLAGS
     }
 
@@ -1455,7 +1513,7 @@ namespace detail
         res = defaultVal;
 
         Vector<String> parsedValues;
-        parseCommaSepArg(argc, argv, option, parsedValues);
+        parseCommaSepArgs(argc, argv, option, parsedValues);
 
         // if the option has been found (and there is only 1 value in the "comma separated list")
         if(parsedValues.size() == 1) {
@@ -1553,18 +1611,33 @@ int String::compare(const String& other, bool no_case) const {
     return strcmp(m_str, other.m_str);
 }
 
-Context::Context(int argc, const char* const* argv) { parseArgs(argc, argv, true); }
+Context::Context(int argc, const char* const* argv) {
+    using namespace detail;
+
+    parseArgs(argc, argv, true);
+
+    p.help    = false;
+    p.version = false;
+    if(parseFlag(argc, argv, "dt-help")) {
+        p.help = true;
+        p.exit = true;
+    }
+    if(parseFlag(argc, argv, "dt-version")) {
+        p.version = true;
+        p.exit    = true;
+    }
+}
 
 // parses args
 void Context::parseArgs(int argc, const char* const* argv, bool withDefaults) {
     using namespace detail;
 
-    parseCommaSepArg(argc, argv, "dt-file=", p.filters[0]);
-    parseCommaSepArg(argc, argv, "dt-file-exclude=", p.filters[1]);
-    parseCommaSepArg(argc, argv, "dt-suite=", p.filters[2]);
-    parseCommaSepArg(argc, argv, "dt-suite-exclude=", p.filters[3]);
-    parseCommaSepArg(argc, argv, "dt-name=", p.filters[4]);
-    parseCommaSepArg(argc, argv, "dt-name-exclude=", p.filters[5]);
+    parseCommaSepArgs(argc, argv, "dt-file=", p.filters[0]);
+    parseCommaSepArgs(argc, argv, "dt-file-exclude=", p.filters[1]);
+    parseCommaSepArgs(argc, argv, "dt-suite=", p.filters[2]);
+    parseCommaSepArgs(argc, argv, "dt-suite-exclude=", p.filters[3]);
+    parseCommaSepArgs(argc, argv, "dt-name=", p.filters[4]);
+    parseCommaSepArgs(argc, argv, "dt-name-exclude=", p.filters[5]);
 
     int res = 0;
 
@@ -1576,14 +1649,15 @@ void Context::parseArgs(int argc, const char* const* argv, bool withDefaults) {
     DOCTEST_PARSE_OPTION("dt-case-sensitive=", case_sensitive, param_bool, 0);
     DOCTEST_PARSE_OPTION("dt-no-overrides=", no_overrides, param_bool, 0);
     DOCTEST_PARSE_OPTION("dt-exit=", exit, param_bool, 0);
-    DOCTEST_PARSE_OPTION("dt-first=", first, param_int, 1);
-    DOCTEST_PARSE_OPTION("dt-last=", last, param_int, 0);
     DOCTEST_PARSE_OPTION("dt-no-exitcode=", no_exitcode, param_bool, 0);
     DOCTEST_PARSE_OPTION("dt-no-run=", no_run, param_bool, 0);
     DOCTEST_PARSE_OPTION("dt-no-colors=", no_colors, param_bool, 0);
     DOCTEST_PARSE_OPTION("dt-no-breaks=", no_breaks, param_bool, 0);
     DOCTEST_PARSE_OPTION("dt-hash-table-histogram=", hash_table_histogram, param_bool, 0);
     DOCTEST_PARSE_OPTION("dt-no-path-in-filenames=", no_path_in_filenames, param_bool, 0);
+
+    DOCTEST_PARSE_OPTION("dt-first=", first, param_int, 1);
+    DOCTEST_PARSE_OPTION("dt-last=", last, param_int, 0);
 #undef DOCTEST_PARSE_OPTION
 }
 
@@ -1616,7 +1690,15 @@ int Context::runTests() {
     getCurrentContextParams() = &p;
 
     // exit right now
-    if(p.no_run) {
+    if(p.no_run || p.version || p.help) {
+        if(p.version) {
+            printf("[doctest] version is %d.%d.%d\n\n", DOCTEST_VERSION_MAJOR,
+                   DOCTEST_VERSION_MINOR, DOCTEST_VERSION_PATCH);
+        }
+        if(p.help) {
+            printf("[doctest] no help sry\n\n");
+        }
+
         if(p.exit)
             exit(EXIT_SUCCESS);
         return EXIT_SUCCESS;

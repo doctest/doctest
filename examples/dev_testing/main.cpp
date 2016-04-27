@@ -14,7 +14,7 @@ int main(int argc, char** argv) {
     context.setOption("dt-case-sensitive", true);
     context.setOption("no-breaks", true);
     //context.setOption("dt-no-colors", true);
-    context.addFilter("dt-name", "zzz");
+    context.addFilter("name", "zzz");
 
     // run
     int res = context.runTests();

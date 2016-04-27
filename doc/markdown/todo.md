@@ -3,6 +3,8 @@
 - colors in output
 
 
+- -dt-help   !!!
+version
 
 
 look at catch command line options (also lest)
@@ -33,7 +35,6 @@ gcc 4.5/4.6 under osx - weird stuff
 - test for warnings with -std=c++03/11/14/1z
 - benchmark
 - documentation
-- -dt-help   !!!
 - CONTRIBUTING.md - pull requests, travis, formatting, etc.
 - pledgie campaign - more info
 
