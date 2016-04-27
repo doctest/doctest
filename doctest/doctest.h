@@ -302,14 +302,14 @@ namespace detail
     {
         detail::Vector<detail::Vector<String> > filters;
 
-        bool count;            // if only the count of matching tests is to be retreived
-        bool case_sensitive;   // if filtering should be case sensitive
-        bool allow_overrides;  // all but this can be overriden
-        bool exit_after_tests; // calls exit() after the tests are ran/counted
-        bool no_exitcode;      // if the framework should return 0 as the exitcode
-        bool no_run;           // to not run the tests at all (can be done with an "*" exclude)
-        bool no_colors;        // if output to the console should be colorized
-        bool no_breaks;        // to not break into the debugger
+        bool count;          // if only the count of matching tests is to be retreived
+        bool case_sensitive; // if filtering should be case sensitive
+        bool no_overrides;   // to disable overrides from code
+        bool exit;           // calls exit() after the tests are ran/counted/whatever
+        bool no_exitcode;    // if the framework should return 0 as the exitcode
+        bool no_run;         // to not run the tests at all (can be done with an "*" exclude)
+        bool no_colors;      // if output to the console should be colorized
+        bool no_breaks;      // to not break into the debugger
 
         bool hash_table_histogram; // if the hash table should be printed as a histogram
         bool no_path_in_filenames; // if the path to files should be removed from the output
@@ -331,10 +331,13 @@ class Context
 {
 #if !defined(DOCTEST_DISABLE)
     detail::ContextParams p;
+
+    void parseArgs(int argc, const char* const* argv, bool withDefaults = false);
+
 #endif // DOCTEST_DISABLE
 
 public:
-    Context(int argc, char** argv);
+    Context(int argc, const char* const* argv);
 
     void addFilter(const char* filter, const char* value);
     void setOption(const char* option, int value);
@@ -564,7 +567,7 @@ inline String& String::operator+=(const String&) { return *this; }
 inline int     String::compare(const char*, bool) const { return 0; }
 inline int     String::compare(const String&, bool) const { return 0; }
 
-inline Context::Context(int, char**) {}
+inline Context::Context(int, const char* const*) {}
 inline void Context::addFilter(const char*, const char*) {}
 inline void Context::setOption(const char*, int) {}
 inline int  Context::runTests() { return 0; }
@@ -1150,68 +1153,6 @@ namespace detail
         return res;
     }
 
-    // parses a comma separated list of words after a pattern in one of the arguments in argv
-    void parseFilter(int argc, char** argv, const char* pattern, Vector<String>& filters) {
-        String filtersString;
-        for(int i = 0; i < argc; ++i) {
-            const char* temp = strstr(argv[i], pattern);
-            if(temp) {
-                temp += my_strlen(pattern);
-                size_t len = my_strlen(temp);
-                if(len) {
-                    filtersString = temp;
-                    break;
-                }
-            }
-        }
-
-        // if we have found the filter string
-        if(filtersString.c_str()) {
-            // tokenize with "," as a separator
-            char* pch = strtok(filtersString.c_str(), ","); // modifies the string
-            while(pch != 0) {
-                if(my_strlen(pch))
-                    filters.push_back(pch);
-                pch = strtok(0, ","); // uses the strtok() internal state to go to the next token
-            }
-        }
-    }
-
-    // parses an option from the command line (bool: type == 0, int: type == 1)
-    int parseOption(int argc, char** argv, const char* option, int type, int defaultVal) {
-        int outVal = defaultVal;
-
-        Vector<String> parsedValues;
-        parseFilter(argc, argv, option, parsedValues);
-
-        // if the option has been found (and there is only 1 value in the "comma separated list")
-        if(parsedValues.size() == 1) {
-            if(type == 0) {
-                // boolean
-                const char positive[][5] = {"1", "true", "on", "yes"}; // 5 - strlen("true") + 1
-                const char negative[][6] = {"0", "false", "off", "no"};
-
-                // if the value matches any of the positive/negative possibilities
-                for(size_t i = 0; i < 4; i++) {
-                    if(parsedValues[0].compare(positive[i], true) == 0) {
-                        outVal = 1;
-                        break;
-                    }
-                    if(parsedValues[0].compare(negative[i], true) == 0) {
-                        outVal = 0;
-                        break;
-                    }
-                }
-            } else {
-                // integer
-                int res = atoi(parsedValues[0].c_str());
-                if(res != 0)
-                    outVal = res;
-            }
-        }
-        return outVal;
-    }
-
     struct Color
     {
         enum Code
@@ -1302,7 +1243,7 @@ namespace detail
             case Color::BrightGreen: set(FOREGROUND_INTENSITY | FOREGROUND_GREEN);             break;
             case Color::BrightWhite: set(FOREGROUND_INTENSITY | FOREGROUND_GREEN | FOREGROUND_RED | FOREGROUND_BLUE); break;
             case Color::None:
-            case Color::Bright:
+            case Color::Bright: // invalid
             default:                 set(originalForegroundAttributes);
         }
 // clang-format on
@@ -1456,6 +1397,79 @@ namespace detail
         }
         return false;
     }
+
+    // parses a comma separated list of words after a pattern in one of the arguments in argv
+    void parseCommaSepArg(int argc, const char* const* argv, const char* pattern,
+                          Vector<String>& res) {
+        String filtersString;
+        for(int i = argc - 1; i >= 0; --i) {
+            const char* temp = strstr(argv[i], pattern);
+            if(temp) {
+                temp += my_strlen(pattern);
+                size_t len = my_strlen(temp);
+                if(len) {
+                    filtersString = temp;
+                    break;
+                }
+            }
+        }
+
+        // if we have found the filter string
+        if(filtersString.c_str()) {
+            // tokenize with "," as a separator
+            char* pch = strtok(filtersString.c_str(), ","); // modifies the string
+            while(pch != 0) {
+                if(my_strlen(pch))
+                    res.push_back(pch);
+                pch = strtok(0, ","); // uses the strtok() internal state to go to the next token
+            }
+        }
+    }
+
+    enum paramType
+    {
+        param_bool,
+        param_int
+    };
+
+    // parses an option from the command line (bool: type == 0, int: type == 1)
+    bool parseOption(int argc, const char* const* argv, const char* option, paramType type, int def,
+                     int& res) {
+        res = def;
+
+        Vector<String> parsedValues;
+        parseCommaSepArg(argc, argv, option, parsedValues);
+
+        // if the option has been found (and there is only 1 value in the "comma separated list")
+        if(parsedValues.size() == 1) {
+            if(type == 0) {
+                // boolean
+                const char positive[][5] = {"1", "true", "on", "yes"};  // 5 - strlen("true") + 1
+                const char negative[][6] = {"0", "false", "off", "no"}; // 6 - strlen("false") + 1
+
+                // if the value matches any of the positive/negative possibilities
+                for(size_t i = 0; i < 4; i++) {
+                    if(parsedValues[0].compare(positive[i], true) == 0) {
+                        res = 1;
+                        return true;
+                    }
+                    if(parsedValues[0].compare(negative[i], true) == 0) {
+                        res = 0;
+                        return true;
+                    }
+                }
+            } else {
+                // integer
+                int theInt = atoi(parsedValues[0].c_str());
+                if(theInt != 0) {
+                    res = theInt;
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
 } // namespace detail
 
 String::String(const char* in)
@@ -1522,51 +1536,55 @@ int String::compare(const String& other, bool no_case) const {
     return strcmp(m_str, other.m_str);
 }
 
-Context::Context(int argc, char** argv) {
+Context::Context(int argc, const char* const* argv) { parseArgs(argc, argv, true); }
+
+// parses args
+void Context::parseArgs(int argc, const char* const* argv, bool withDefaults) {
     using namespace detail;
 
-    parseFilter(argc, argv, "-dt-file=", p.filters[0]);
-    parseFilter(argc, argv, "-dt-file-exclude=", p.filters[1]);
-    parseFilter(argc, argv, "-dt-suite=", p.filters[2]);
-    parseFilter(argc, argv, "-dt-suite-exclude=", p.filters[3]);
-    parseFilter(argc, argv, "-dt-name=", p.filters[4]);
-    parseFilter(argc, argv, "-dt-name-exclude=", p.filters[5]);
+    parseCommaSepArg(argc, argv, "dt-file=", p.filters[0]);
+    parseCommaSepArg(argc, argv, "dt-file-exclude=", p.filters[1]);
+    parseCommaSepArg(argc, argv, "dt-suite=", p.filters[2]);
+    parseCommaSepArg(argc, argv, "dt-suite-exclude=", p.filters[3]);
+    parseCommaSepArg(argc, argv, "dt-name=", p.filters[4]);
+    parseCommaSepArg(argc, argv, "dt-name-exclude=", p.filters[5]);
 
-    p.count                = !!parseOption(argc, argv, "-dt-count=", 0, 0);
-    p.case_sensitive       = !!parseOption(argc, argv, "-dt-case-sensitive=", 0, 0);
-    p.allow_overrides      = !!parseOption(argc, argv, "-dt-override=", 0, 1);
-    p.exit_after_tests     = !!parseOption(argc, argv, "-dt-exit=", 0, 0);
-    p.first                = parseOption(argc, argv, "-dt-first=", 1, 1);
-    p.last                 = parseOption(argc, argv, "-dt-last=", 1, 0);
-    p.no_exitcode          = !!parseOption(argc, argv, "-dt-no-exitcode=", 0, 0);
-    p.no_run               = !!parseOption(argc, argv, "-dt-no-run=", 0, 0);
-    p.no_colors            = !!parseOption(argc, argv, "-dt-no-colors=", 0, 0);
-    p.no_breaks            = !!parseOption(argc, argv, "-dt-no-breaks=", 0, 0);
-    p.hash_table_histogram = !!parseOption(argc, argv, "-dt-hash-table-histogram=", 0, 0);
-    p.no_path_in_filenames = !!parseOption(argc, argv, "-dt-no-path-in-filenames=", 0, 0);
+    int res = 0;
+
+    if(withDefaults || parseOption(argc, argv, "dt-count=", param_bool, 0, res))
+        p.count = !!res;
+    if(withDefaults || parseOption(argc, argv, "dt-case-sensitive=", param_bool, 0, res))
+        p.case_sensitive = !!res;
+    if(withDefaults || parseOption(argc, argv, "dt-no-overrides=", param_bool, 0, res))
+        p.no_overrides = !!res;
+    if(withDefaults || parseOption(argc, argv, "dt-exit=", param_bool, 0, res))
+        p.exit = !!res;
+    if(withDefaults || parseOption(argc, argv, "dt-first=", param_int, 0, res))
+        p.first = !!res;
+    if(withDefaults || parseOption(argc, argv, "dt-last=", param_int, 0, res))
+        p.last = !!res;
+    if(withDefaults || parseOption(argc, argv, "dt-no-exitcode=", param_bool, 0, res))
+        p.no_exitcode = !!res;
+    if(withDefaults || parseOption(argc, argv, "dt-no-run=", param_bool, 0, res))
+        p.no_run = !!res;
+    if(withDefaults || parseOption(argc, argv, "dt-no-colors=", param_bool, 0, res))
+        p.no_colors = !!res;
+    if(withDefaults || parseOption(argc, argv, "dt-no-breaks=", param_bool, 0, res))
+        p.no_breaks = !!res;
+    if(withDefaults || parseOption(argc, argv, "dt-hash-table-histogram=", param_bool, 0, res))
+        p.hash_table_histogram = !!res;
+    if(withDefaults || parseOption(argc, argv, "dt-no-path-in-filenames=", param_bool, 0, res))
+        p.no_path_in_filenames = !!res;
 }
 
 // allows the user to add procedurally to the filters from the command line
 void Context::addFilter(const char* filter, const char* value) {
     using namespace detail;
 
-    if(p.allow_overrides) {
-        size_t idx = 42;
-        if(strcmp(filter, "dt-file") == 0)
-            idx = 0;
-        if(strcmp(filter, "dt-file-exclude") == 0)
-            idx = 1;
-        if(strcmp(filter, "dt-suite") == 0)
-            idx = 2;
-        if(strcmp(filter, "dt-suite-exclude") == 0)
-            idx = 3;
-        if(strcmp(filter, "dt-name") == 0)
-            idx = 4;
-        if(strcmp(filter, "dt-name-exclude") == 0)
-            idx = 5;
-        // if the filter name is valid
-        if(idx != 42 && my_strlen(value))
-            p.filters[idx].push_back(value);
+    if(!p.no_overrides) {
+        String      argv   = String(filter) + "=" + value;
+        const char* lvalue = argv.c_str();
+        parseArgs(1, &lvalue);
     }
 }
 
@@ -1574,29 +1592,10 @@ void Context::addFilter(const char* filter, const char* value) {
 void Context::setOption(const char* option, int value) {
     using namespace detail;
 
-    if(p.allow_overrides) {
-        if(strcmp(option, "dt-count") == 0)
-            p.count = !!value;
-        if(strcmp(option, "dt-case-sensitive") == 0)
-            p.case_sensitive = !!value;
-        if(strcmp(option, "dt-exit") == 0)
-            p.exit_after_tests = !!value;
-        if(strcmp(option, "dt-first") == 0)
-            p.first = value;
-        if(strcmp(option, "dt-last") == 0)
-            p.last = value;
-        if(strcmp(option, "dt-no-exitcode") == 0)
-            p.no_exitcode = !!value;
-        if(strcmp(option, "dt-no-run") == 0)
-            p.no_run = !!value;
-        if(strcmp(option, "dt-no-colors") == 0)
-            p.no_colors = !!value;
-        if(strcmp(option, "dt-no-breaks") == 0)
-            p.no_breaks = !!value;
-        if(strcmp(option, "dt-hash-table-histogram") == 0)
-            p.hash_table_histogram = !!value;
-        if(strcmp(option, "dt-no-path-in-filenames") == 0)
-            p.no_path_in_filenames = !!value;
+    if(!p.no_overrides) {
+        String      argv   = String(option) + "=" + stringify(value);
+        const char* lvalue = argv.c_str();
+        parseArgs(1, &lvalue);
     }
 }
 
@@ -1608,7 +1607,7 @@ int Context::runTests() {
 
     // exit right now
     if(p.no_run) {
-        if(p.exit_after_tests)
+        if(p.exit)
             exit(EXIT_SUCCESS);
         return EXIT_SUCCESS;
     }
@@ -1721,7 +1720,7 @@ int Context::runTests() {
         }
     }
 
-    if(p.exit_after_tests)
+    if(p.exit)
         exit((numFailed && !p.no_exitcode) ? EXIT_FAILURE : EXIT_SUCCESS);
 
     if(numFailed && !p.no_exitcode)

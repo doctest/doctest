@@ -2,10 +2,7 @@
 
 - colors in output
 
-OMFG stringify overloading not working for gcc! std::string example failing!
-
 - fix command line
-- [unsure] improve command line - passing "-dt-no-run=1 -dt-no-run=0" should result in running the tests (AND SHORT VERSIONS!!!)
 
 
 add _CONFIG_ in config macros
