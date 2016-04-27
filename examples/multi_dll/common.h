@@ -27,7 +27,7 @@
   #endif
 #endif
 
-#define DOCTEST_IMPLEMENT
+#define DOCTEST_CONFIG_IMPLEMENT
 #include "doctest.h"
 
 #include <cstdio>

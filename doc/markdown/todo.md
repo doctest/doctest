@@ -2,22 +2,6 @@
 
 - colors in output
 
-- fix command line
-
-
-add _CONFIG_ in config macros
-
-
-
-
--dt-file
--dt-file-exclude
--dt-suite
--dt-suite-exclude
--dt-name
--dt-name-exclude
-
-
 
 
 

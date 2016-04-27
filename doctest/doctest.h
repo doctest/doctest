@@ -79,15 +79,15 @@
 #define DOCTEST_SNPRINTF snprintf
 #endif
 
-#if !defined(DOCTEST_COLORS_NONE)
-#if !defined(DOCTEST_COLORS_WINDOWS) && !defined(DOCTEST_COLORS_ANSI)
+#if !defined(DOCTEST_CONFIG_COLORS_NONE)
+#if !defined(DOCTEST_CONFIG_COLORS_WINDOWS) && !defined(DOCTEST_CONFIG_COLORS_ANSI)
 #ifdef DOCTEST_PLATFORM_WINDOWS
-#define DOCTEST_COLORS_WINDOWS
+#define DOCTEST_CONFIG_COLORS_WINDOWS
 #else // linux
-#define DOCTEST_COLORS_ANSI
+#define DOCTEST_CONFIG_COLORS_ANSI
 #endif // platform
-#endif // DOCTEST_COLORS_WINDOWS && DOCTEST_COLORS_ANSI
-#endif // DOCTEST_COLORS_NONE
+#endif // DOCTEST_CONFIG_COLORS_WINDOWS && DOCTEST_CONFIG_COLORS_ANSI
+#endif // DOCTEST_CONFIG_COLORS_NONE
 
 #ifdef DOCTEST_PLATFORM_MAC
 // The following code snippet based on:
@@ -148,7 +148,7 @@ public:
     int compare(const String& other, bool no_case = false) const;
 };
 
-#if !defined(DOCTEST_DISABLE)
+#if !defined(DOCTEST_CONFIG_DISABLE)
 
 namespace detail
 {
@@ -325,16 +325,16 @@ namespace detail
     ContextParams*& getCurrentContextParams();
 } // namespace detail
 
-#endif // DOCTEST_DISABLE
+#endif // DOCTEST_CONFIG_DISABLE
 
 class Context
 {
-#if !defined(DOCTEST_DISABLE)
+#if !defined(DOCTEST_CONFIG_DISABLE)
     detail::ContextParams p;
 
     void parseArgs(int argc, const char* const* argv, bool withDefaults = false);
 
-#endif // DOCTEST_DISABLE
+#endif // DOCTEST_CONFIG_DISABLE
 
 public:
     Context(int argc, const char* const* argv);
@@ -347,7 +347,7 @@ public:
 } // namespace doctest
 
 // if registering is not disabled
-#if !defined(DOCTEST_DISABLE)
+#if !defined(DOCTEST_CONFIG_DISABLE)
 
 namespace doctest
 {
@@ -552,9 +552,9 @@ namespace detail
 
 // =================================================================================================
 // == WHAT FOLLOWS IS VERSIONS OF THE MACROS THAT DO NOT DO ANY REGISTERING!                      ==
-// == THIS CAN BE ENABLED BY DEFINING DOCTEST_DISABLE GLOBALLY!                                   ==
+// == THIS CAN BE ENABLED BY DEFINING DOCTEST_CONFIG_DISABLE GLOBALLY!                                   ==
 // =================================================================================================
-#else // DOCTEST_DISABLE
+#else // DOCTEST_CONFIG_DISABLE
 
 namespace doctest
 {
@@ -616,10 +616,10 @@ inline int  Context::runTests() { return 0; }
 #define DOCTEST_REQUIRE_THROWS_AS(expr, ex) ((void)0)
 #define DOCTEST_REQUIRE_NOTHROW(expr) ((void)0)
 
-#endif // DOCTEST_DISABLE
+#endif // DOCTEST_CONFIG_DISABLE
 
 // == SHORT VERSIONS OF THE TEST/FIXTURE/TESTSUITE MACROS
-#if !defined(DOCTEST_NO_SHORT_MACRO_NAMES)
+#if !defined(DOCTEST_CONFIG_NO_SHORT_MACRO_NAMES)
 
 #define TESTCASE DOCTEST_TESTCASE
 #define TESTCASE_FIXTURE DOCTEST_TESTCASE_FIXTURE
@@ -637,7 +637,7 @@ inline int  Context::runTests() { return 0; }
 #define REQUIRE_THROWS_AS DOCTEST_REQUIRE_THROWS_AS
 #define REQUIRE_NOTHROW DOCTEST_REQUIRE_NOTHROW
 
-#endif // DOCTEST_NO_SHORT_MACRO_NAMES
+#endif // DOCTEST_CONFIG_NO_SHORT_MACRO_NAMES
 
 // this is here to clear the 'current test suite' for the current translation unit - at the top
 DOCTEST_TESTSUITE_END;
@@ -647,7 +647,8 @@ DOCTEST_TESTSUITE_END;
 // =================================================================================================
 // == WHAT FOLLOWS IS THE IMPLEMENTATION OF THE TEST RUNNER                                       ==
 // =================================================================================================
-#if(defined(DOCTEST_IMPLEMENT) || defined(DOCTEST_IMPLEMENT_WITH_MAIN)) && !defined(DOCTEST_DISABLE)
+#if(defined(DOCTEST_CONFIG_IMPLEMENT) || defined(DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN)) &&           \
+        !defined(DOCTEST_CONFIG_DISABLE)
 #ifndef DOCTEST_LIBRARY_IMPLEMENTATION
 #define DOCTEST_LIBRARY_IMPLEMENTATION
 
@@ -672,11 +673,11 @@ extern "C" __declspec(dllimport) void __stdcall OutputDebugStringA(const char*);
 extern "C" __declspec(dllimport) int __stdcall IsDebuggerPresent();
 #endif // DOCTEST_PLATFORM_WINDOWS
 
-#ifdef DOCTEST_COLORS_ANSI
+#ifdef DOCTEST_CONFIG_COLORS_ANSI
 #include <unistd.h>
-#endif // DOCTEST_COLORS_ANSI
+#endif // DOCTEST_CONFIG_COLORS_ANSI
 
-#ifdef DOCTEST_COLORS_WINDOWS
+#ifdef DOCTEST_CONFIG_COLORS_WINDOWS
 
 // defines for a leaner windows.h
 #ifndef WIN32_MEAN_AND_LEAN
@@ -696,7 +697,7 @@ extern "C" __declspec(dllimport) int __stdcall IsDebuggerPresent();
 #include <windows.h>
 #endif
 
-#endif // DOCTEST_COLORS_WINDOWS
+#endif // DOCTEST_CONFIG_COLORS_WINDOWS
 
 // main namespace of the library
 namespace doctest
@@ -1186,7 +1187,7 @@ namespace detail
         ContextParams* p = getCurrentContextParams();
         if(p->no_colors)
             return;
-#ifdef DOCTEST_COLORS_ANSI
+#ifdef DOCTEST_CONFIG_COLORS_ANSI
         if(isatty(STDOUT_FILENO)) {
             const char* col = "";
             // clang-format off
@@ -1209,10 +1210,9 @@ namespace detail
             // clang-format on
             printf("\033%s", col);
         }
-#endif // DOCTEST_COLORS_ANSI
+#endif // DOCTEST_CONFIG_COLORS_ANSI
 
-#ifdef DOCTEST_COLORS_WINDOWS
-#define set(x) SetConsoleTextAttribute(stdoutHandle, x | originalBackgroundAttributes)
+#ifdef DOCTEST_CONFIG_COLORS_WINDOWS
         static HANDLE stdoutHandle(GetStdHandle(STD_OUTPUT_HANDLE));
         static WORD   originalForegroundAttributes;
         static WORD   originalBackgroundAttributes;
@@ -1229,25 +1229,28 @@ namespace detail
                     ~(FOREGROUND_GREEN | FOREGROUND_RED | FOREGROUND_BLUE | FOREGROUND_INTENSITY);
         }
 
+#define DOCTEST_SET_ATTR(x) SetConsoleTextAttribute(stdoutHandle, x | originalBackgroundAttributes)
+
         // clang-format off
         switch (code) {
-            case Color::White:       set(FOREGROUND_GREEN | FOREGROUND_RED | FOREGROUND_BLUE); break;
-            case Color::Red:         set(FOREGROUND_RED);                                      break;
-            case Color::Green:       set(FOREGROUND_GREEN);                                    break;
-            case Color::Blue:        set(FOREGROUND_BLUE);                                     break;
-            case Color::Cyan:        set(FOREGROUND_BLUE | FOREGROUND_GREEN);                  break;
-            case Color::Yellow:      set(FOREGROUND_RED | FOREGROUND_GREEN);                   break;
-            case Color::Grey:        set(0);                                                   break;
-            case Color::LightGrey:   set(FOREGROUND_INTENSITY);                                break;
-            case Color::BrightRed:   set(FOREGROUND_INTENSITY | FOREGROUND_RED);               break;
-            case Color::BrightGreen: set(FOREGROUND_INTENSITY | FOREGROUND_GREEN);             break;
-            case Color::BrightWhite: set(FOREGROUND_INTENSITY | FOREGROUND_GREEN | FOREGROUND_RED | FOREGROUND_BLUE); break;
+            case Color::White:       DOCTEST_SET_ATTR(FOREGROUND_GREEN | FOREGROUND_RED | FOREGROUND_BLUE); break;
+            case Color::Red:         DOCTEST_SET_ATTR(FOREGROUND_RED);                                      break;
+            case Color::Green:       DOCTEST_SET_ATTR(FOREGROUND_GREEN);                                    break;
+            case Color::Blue:        DOCTEST_SET_ATTR(FOREGROUND_BLUE);                                     break;
+            case Color::Cyan:        DOCTEST_SET_ATTR(FOREGROUND_BLUE | FOREGROUND_GREEN);                  break;
+            case Color::Yellow:      DOCTEST_SET_ATTR(FOREGROUND_RED | FOREGROUND_GREEN);                   break;
+            case Color::Grey:        DOCTEST_SET_ATTR(0);                                                   break;
+            case Color::LightGrey:   DOCTEST_SET_ATTR(FOREGROUND_INTENSITY);                                break;
+            case Color::BrightRed:   DOCTEST_SET_ATTR(FOREGROUND_INTENSITY | FOREGROUND_RED);               break;
+            case Color::BrightGreen: DOCTEST_SET_ATTR(FOREGROUND_INTENSITY | FOREGROUND_GREEN);             break;
+            case Color::BrightWhite: DOCTEST_SET_ATTR(FOREGROUND_INTENSITY | FOREGROUND_GREEN | FOREGROUND_RED | FOREGROUND_BLUE); break;
             case Color::None:
             case Color::Bright: // invalid
-            default:                 set(originalForegroundAttributes);
+            default:                 DOCTEST_SET_ATTR(originalForegroundAttributes);
         }
 // clang-format on
-#endif // DOCTEST_COLORS_WINDOWS
+#undef DOCTEST_SET_ATTR
+#endif // DOCTEST_CONFIG_COLORS_WINDOWS
     }
 
     // depending on the current options this will remove the path of filenames
@@ -1398,9 +1401,9 @@ namespace detail
         return false;
     }
 
-    // parses a comma separated list of words after a pattern in one of the arguments in argv
-    void parseCommaSepArg(int argc, const char* const* argv, const char* pattern,
-                          Vector<String>& res) {
+    // the implementation of parseCommaSepArg()
+    bool parseCommaSepArgImpl(int argc, const char* const* argv, const char* pattern,
+                              Vector<String>& res) {
         String filtersString;
         for(int i = argc - 1; i >= 0; --i) {
             const char* temp = strstr(argv[i], pattern);
@@ -1423,19 +1426,33 @@ namespace detail
                     res.push_back(pch);
                 pch = strtok(0, ","); // uses the strtok() internal state to go to the next token
             }
+            return true;
         }
+        return false;
     }
 
-    enum paramType
+    // parses a comma separated list of words after a pattern in one of the arguments in argv
+    bool parseCommaSepArg(int argc, const char* const* argv, const char* pattern,
+                          Vector<String>& res) {
+#ifndef DOCTEST_CONFIG_NO_SHORT_FLAGS
+        if(!parseCommaSepArgImpl(argc, argv, pattern, res))
+            return parseCommaSepArgImpl(argc, argv, pattern + 3, res); // 3 for "dt-"
+        return true;
+#else // DOCTEST_CONFIG_NO_SHORT_FLAGS
+        return parseCommaSepArgImpl(argc, argv, pattern, res);
+#endif // DOCTEST_CONFIG_NO_SHORT_FLAGS
+    }
+
+    enum optionType
     {
         param_bool,
         param_int
     };
 
-    // parses an option from the command line (bool: type == 0, int: type == 1)
-    bool parseOption(int argc, const char* const* argv, const char* option, paramType type, int def,
-                     int& res) {
-        res = def;
+    // parses an option from the command line
+    bool parseOption(int argc, const char* const* argv, const char* option, optionType type,
+                     int defaultVal, int& res) {
+        res = defaultVal;
 
         Vector<String> parsedValues;
         parseCommaSepArg(argc, argv, option, parsedValues);
@@ -1551,30 +1568,23 @@ void Context::parseArgs(int argc, const char* const* argv, bool withDefaults) {
 
     int res = 0;
 
-    if(parseOption(argc, argv, "dt-count=", param_bool, 0, res) || withDefaults)
-        p.count = !!res;
-    if(parseOption(argc, argv, "dt-case-sensitive=", param_bool, 0, res) || withDefaults)
-        p.case_sensitive = !!res;
-    if(parseOption(argc, argv, "dt-no-overrides=", param_bool, 0, res) || withDefaults)
-        p.no_overrides = !!res;
-    if(parseOption(argc, argv, "dt-exit=", param_bool, 0, res) || withDefaults)
-        p.exit = !!res;
-    if(parseOption(argc, argv, "dt-first=", param_int, 1, res) || withDefaults)
-        p.first = !!res;
-    if(parseOption(argc, argv, "dt-last=", param_int, 0, res) || withDefaults)
-        p.last = !!res;
-    if(parseOption(argc, argv, "dt-no-exitcode=", param_bool, 0, res) || withDefaults)
-        p.no_exitcode = !!res;
-    if(parseOption(argc, argv, "dt-no-run=", param_bool, 0, res) || withDefaults)
-        p.no_run = !!res;
-    if(parseOption(argc, argv, "dt-no-colors=", param_bool, 0, res) || withDefaults)
-        p.no_colors = !!res;
-    if(parseOption(argc, argv, "dt-no-breaks=", param_bool, 0, res) || withDefaults)
-        p.no_breaks = !!res;
-    if(parseOption(argc, argv, "dt-hash-table-histogram=", param_bool, 0, res) || withDefaults)
-        p.hash_table_histogram = !!res;
-    if(parseOption(argc, argv, "dt-no-path-in-filenames=", param_bool, 0, res) || withDefaults)
-        p.no_path_in_filenames = !!res;
+#define DOCTEST_PARSE_OPTION(name, var, type, default)                                             \
+    if(parseOption(argc, argv, name, type, default, res) || withDefaults)                          \
+    p.var = !!res
+
+    DOCTEST_PARSE_OPTION("dt-count=", count, param_bool, 0);
+    DOCTEST_PARSE_OPTION("dt-case-sensitive=", case_sensitive, param_bool, 0);
+    DOCTEST_PARSE_OPTION("dt-no-overrides=", no_overrides, param_bool, 0);
+    DOCTEST_PARSE_OPTION("dt-exit=", exit, param_bool, 0);
+    DOCTEST_PARSE_OPTION("dt-first=", first, param_int, 1);
+    DOCTEST_PARSE_OPTION("dt-last=", last, param_int, 0);
+    DOCTEST_PARSE_OPTION("dt-no-exitcode=", no_exitcode, param_bool, 0);
+    DOCTEST_PARSE_OPTION("dt-no-run=", no_run, param_bool, 0);
+    DOCTEST_PARSE_OPTION("dt-no-colors=", no_colors, param_bool, 0);
+    DOCTEST_PARSE_OPTION("dt-no-breaks=", no_breaks, param_bool, 0);
+    DOCTEST_PARSE_OPTION("dt-hash-table-histogram=", hash_table_histogram, param_bool, 0);
+    DOCTEST_PARSE_OPTION("dt-no-path-in-filenames=", no_path_in_filenames, param_bool, 0);
+#undef DOCTEST_PARSE_OPTION
 }
 
 // allows the user to add procedurally to the filters from the command line
@@ -1730,10 +1740,10 @@ int Context::runTests() {
 } // namespace doctest
 
 #endif // DOCTEST_LIBRARY_IMPLEMENTATION
-#endif // DOCTEST_IMPLEMENT
+#endif // DOCTEST_CONFIG_IMPLEMENT
 
 // == THIS SUPPLIES A MAIN FUNCTION AND SHOULD BE DONE ONLY IN ONE TRANSLATION UNIT
-#if defined(DOCTEST_IMPLEMENT_WITH_MAIN) && !defined(DOCTEST_MAIN_CONFIGURED)
+#if defined(DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN) && !defined(DOCTEST_MAIN_CONFIGURED)
 #define DOCTEST_MAIN_CONFIGURED
 int main(int argc, char** argv) { return doctest::Context(argc, argv).runTests(); }
 #endif // DOCTEST_MAIN_CONFIGURED

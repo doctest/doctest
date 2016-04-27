@@ -1,7 +1,7 @@
-//#define DOCTEST_DISABLE
+//#define DOCTEST_CONFIG_DISABLE
 
 //#include "doctest.h"
-#define DOCTEST_IMPLEMENT
+#define DOCTEST_CONFIG_IMPLEMENT
 #include "doctest.h"
 
 #include <cstdio>
@@ -12,7 +12,7 @@ int main(int argc, char** argv) {
 
     // overrides
     context.setOption("dt-case-sensitive", true);
-    context.setOption("dt-no-breaks", true);
+    context.setOption("no-breaks", true);
     //context.setOption("dt-no-colors", true);
     context.addFilter("dt-name", "zzz");
 
