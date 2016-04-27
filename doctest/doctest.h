@@ -1551,29 +1551,29 @@ void Context::parseArgs(int argc, const char* const* argv, bool withDefaults) {
 
     int res = 0;
 
-    if(withDefaults || parseOption(argc, argv, "dt-count=", param_bool, 0, res))
+    if(parseOption(argc, argv, "dt-count=", param_bool, 0, res) || withDefaults)
         p.count = !!res;
-    if(withDefaults || parseOption(argc, argv, "dt-case-sensitive=", param_bool, 0, res))
+    if(parseOption(argc, argv, "dt-case-sensitive=", param_bool, 0, res) || withDefaults)
         p.case_sensitive = !!res;
-    if(withDefaults || parseOption(argc, argv, "dt-no-overrides=", param_bool, 0, res))
+    if(parseOption(argc, argv, "dt-no-overrides=", param_bool, 0, res) || withDefaults)
         p.no_overrides = !!res;
-    if(withDefaults || parseOption(argc, argv, "dt-exit=", param_bool, 0, res))
+    if(parseOption(argc, argv, "dt-exit=", param_bool, 0, res) || withDefaults)
         p.exit = !!res;
-    if(withDefaults || parseOption(argc, argv, "dt-first=", param_int, 0, res))
+    if(parseOption(argc, argv, "dt-first=", param_int, 1, res) || withDefaults)
         p.first = !!res;
-    if(withDefaults || parseOption(argc, argv, "dt-last=", param_int, 0, res))
+    if(parseOption(argc, argv, "dt-last=", param_int, 0, res) || withDefaults)
         p.last = !!res;
-    if(withDefaults || parseOption(argc, argv, "dt-no-exitcode=", param_bool, 0, res))
+    if(parseOption(argc, argv, "dt-no-exitcode=", param_bool, 0, res) || withDefaults)
         p.no_exitcode = !!res;
-    if(withDefaults || parseOption(argc, argv, "dt-no-run=", param_bool, 0, res))
+    if(parseOption(argc, argv, "dt-no-run=", param_bool, 0, res) || withDefaults)
         p.no_run = !!res;
-    if(withDefaults || parseOption(argc, argv, "dt-no-colors=", param_bool, 0, res))
+    if(parseOption(argc, argv, "dt-no-colors=", param_bool, 0, res) || withDefaults)
         p.no_colors = !!res;
-    if(withDefaults || parseOption(argc, argv, "dt-no-breaks=", param_bool, 0, res))
+    if(parseOption(argc, argv, "dt-no-breaks=", param_bool, 0, res) || withDefaults)
         p.no_breaks = !!res;
-    if(withDefaults || parseOption(argc, argv, "dt-hash-table-histogram=", param_bool, 0, res))
+    if(parseOption(argc, argv, "dt-hash-table-histogram=", param_bool, 0, res) || withDefaults)
         p.hash_table_histogram = !!res;
-    if(withDefaults || parseOption(argc, argv, "dt-no-path-in-filenames=", param_bool, 0, res))
+    if(parseOption(argc, argv, "dt-no-path-in-filenames=", param_bool, 0, res) || withDefaults)
         p.no_path_in_filenames = !!res;
 }
 
