@@ -46,7 +46,12 @@
 #define DOCTEST_VERSION_MAJOR 1
 #define DOCTEST_VERSION_MINOR 0
 #define DOCTEST_VERSION_PATCH 0
-#define DOCTEST_VERSION 
+#define DOCTEST_VERSION                                                                            \
+    DOCTEST_TOSTR(DOCTEST_STR_CONCAT(                                                              \
+            DOCTEST_STR_CONCAT(DOCTEST_STR_CONCAT(DOCTEST_STR_CONCAT(DOCTEST_VERSION_MAJOR, .),    \
+                                                  DOCTEST_VERSION_MINOR),                          \
+                               .),                                                                 \
+            DOCTEST_VERSION_PATCH))
 
 // internal macros for string concatenation and anonymous variable name generation
 #define DOCTEST_STR_CONCAT_IMPL(s1, s2) s1##s2
@@ -1695,8 +1700,7 @@ int Context::runTests() {
     // exit right now
     if(p.no_run || p.version || p.help) {
         if(p.version) {
-            printf("[doctest] version is %d.%d.%d\n\n", DOCTEST_VERSION_MAJOR,
-                   DOCTEST_VERSION_MINOR, DOCTEST_VERSION_PATCH);
+            printf("[doctest] version is %s\n\n", DOCTEST_VERSION);
         }
         if(p.help) {
             printf("[doctest] no help sry\n\n");
