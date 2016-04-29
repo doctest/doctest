@@ -46,6 +46,7 @@
 #define DOCTEST_VERSION_MAJOR 1
 #define DOCTEST_VERSION_MINOR 0
 #define DOCTEST_VERSION_PATCH 0
+#define DOCTEST_VERSION 
 
 // internal macros for string concatenation and anonymous variable name generation
 #define DOCTEST_STR_CONCAT_IMPL(s1, s2) s1##s2
@@ -76,11 +77,16 @@
 
 #define DOCTEST_COUNTOF(x) (sizeof(x) / sizeof(x[0]))
 
-// no snprintf() in C++98
+// snprintf() not in the C++98 standard
 #ifdef _MSC_VER
 #define DOCTEST_SNPRINTF _snprintf
 #else
 #define DOCTEST_SNPRINTF snprintf
+#endif
+
+// for anything below Visual Studio 2005 (VC++6 has no __debugbreak() - not sure about VS 2003)
+#if defined(_MSC_VER) && _MSC_VER < 1400
+#define __debugbreak() __asm { int 3}
 #endif
 
 #if !defined(DOCTEST_CONFIG_COLORS_NONE)
@@ -274,7 +280,7 @@ namespace detail
     template <typename L>
     struct Expression_lhs
     {
-        const L lhs;
+        L lhs;
 
         Expression_lhs(L in)
                 : lhs(in) {}
@@ -1420,17 +1426,15 @@ namespace detail
             const char* temp = strstr(argv[i], pattern);
             if(temp) {
                 // eliminate strings in which the chars before the option are not '-'
-                bool shouldBreak = false;
+                bool noBadCharsFound = true;
                 while(temp != argv[i]) {
                     if(*--temp != '-') {
-                        shouldBreak = true;
+                        noBadCharsFound = false;
                         break;
                     }
                 }
-                if(shouldBreak)
-                    break;
-
-                return true;
+                if(noBadCharsFound)
+                    return true;
             }
         }
         return false;
@@ -1455,22 +1459,21 @@ namespace detail
             const char* temp = strstr(argv[i], pattern);
             if(temp) {
                 // eliminate matches in which the chars before the option are not '-'
-                bool        shouldBreak = false;
-                const char* curr        = argv[i];
+                bool        noBadCharsFound = true;
+                const char* curr            = argv[i];
                 while(curr != temp) {
                     if(*curr++ != '-') {
-                        shouldBreak = true;
+                        noBadCharsFound = false;
                         break;
                     }
                 }
-                if(shouldBreak)
-                    break;
-
-                temp += my_strlen(pattern);
-                size_t len = my_strlen(temp);
-                if(len) {
-                    filtersString = temp;
-                    break;
+                if(noBadCharsFound) {
+                    temp += my_strlen(pattern);
+                    size_t len = my_strlen(temp);
+                    if(len) {
+                        filtersString = temp;
+                        break;
+                    }
                 }
             }
         }
@@ -1704,10 +1707,11 @@ int Context::runTests() {
         return EXIT_SUCCESS;
     }
 
+    size_t                           i       = 0;
     const Vector<Vector<TestData> >& buckets = getRegisteredTests().getBuckets();
 
     Vector<const TestData*> testDataArray;
-    for(size_t i = 0; i < buckets.size(); i++)
+    for(i = 0; i < buckets.size(); i++)
         for(size_t k = 0; k < buckets[i].size(); k++)
             testDataArray.push_back(&buckets[i][k]);
 
@@ -1717,7 +1721,7 @@ int Context::runTests() {
     if(p.hash_table_histogram) {
         // find the most full bucket
         size_t maxInBucket = 0;
-        for(size_t i = 0; i < buckets.size(); i++)
+        for(i = 0; i < buckets.size(); i++)
             if(buckets[i].size() > maxInBucket)
                 maxInBucket = buckets[i].size();
 
@@ -1726,7 +1730,7 @@ int Context::runTests() {
         printf("============================================================\n");
         printf("#bucket     |count| relative count\n");
         printf("============================================================\n");
-        for(size_t i = 0; i < buckets.size(); i++) {
+        for(i = 0; i < buckets.size(); i++) {
             printf("bucket %4d |%4d |", static_cast<int>(i), buckets[i].size());
 
             float ratio = static_cast<float>(buckets[i].size()) / static_cast<float>(maxInBucket);
@@ -1742,7 +1746,7 @@ int Context::runTests() {
     int numFailed            = 0;
     int numAssertionsFailed  = 0;
     // invoke the registered functions if they match the filter criteria (or just count them)
-    for(size_t i = 0; i < testDataArray.size(); i++) {
+    for(i = 0; i < testDataArray.size(); i++) {
         const TestData& data = *testDataArray[i];
         if(!matchesAny(data.m_file, p.filters[0], 1, p.case_sensitive))
             continue;
