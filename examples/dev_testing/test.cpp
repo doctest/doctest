@@ -9,13 +9,10 @@
 
 namespace doctest
 {
-namespace detail
-{
     template <>
     String stringify(const std::string& in) {
         return String("\"") + in.c_str() + "\"";
     }
-} // namespace detail
 } // namespace doctest
 
 TESTSUITE("MAIN");

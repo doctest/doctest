@@ -1,10 +1,11 @@
 //#define DOCTEST_CONFIG_DISABLE
 
-//#include "doctest.h"
+#include "doctest.h"
 #define DOCTEST_CONFIG_IMPLEMENT
 #include "doctest.h"
 
 #include <cstdio>
+#include <cstdlib>
 
 int main(int argc, char** argv) {
     // initialize

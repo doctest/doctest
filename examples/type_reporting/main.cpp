@@ -19,13 +19,10 @@
 // @TODO: look at https://github.com/louisdx/cxx-prettyprint
 namespace doctest
 {
-namespace detail
-{
     template <>
     String stringify(const std::string& in) {
         return String("\"") + in.c_str() + "\"";
     }
-} // namespace detail
 } // namespace doctest
 
 TESTCASE("the only test") {

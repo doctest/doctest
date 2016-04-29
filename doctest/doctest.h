@@ -163,7 +163,33 @@ public:
     int compare(const String& other, bool no_case = false) const;
 };
 
+template <typename T>
+String stringify(const T&) {
+    return "{?}";
+}
+
 #if !defined(DOCTEST_CONFIG_DISABLE)
+
+String stringify(const char* in);
+String stringify(const void* in);
+String stringify(bool in);
+String stringify(float in);
+String stringify(double in);
+String stringify(double long in);
+
+String stringify(char in);
+String stringify(char unsigned in);
+String stringify(short int in);
+String stringify(short int unsigned in);
+String stringify(int in);
+String stringify(int unsigned in);
+String stringify(long int in);
+String stringify(long int unsigned in);
+
+template <typename T>
+String stringify(T* in) {
+    return stringify(static_cast<const void*>(in));
+}
 
 namespace detail
 {
@@ -212,34 +238,8 @@ namespace detail
         operator bool() const { return m_entered; }
     };
 
-    String stringify(const char* in);
-    String stringify(const void* in);
-    String stringify(bool in);
-    String stringify(float in);
-    String stringify(double in);
-    String stringify(double long in);
-
-    String stringify(char in);
-    String stringify(char unsigned in);
-    String stringify(short int in);
-    String stringify(short int unsigned in);
-    String stringify(int in);
-    String stringify(int unsigned in);
-    String stringify(long int in);
-    String stringify(long int unsigned in);
-
-    template <typename T>
-    String stringify(const T&) {
-        return "{?}";
-    }
-
-    template <typename T>
-    String stringify(T* in) {
-        return stringify(static_cast<const void*>(in));
-    }
-
     template <typename L, typename R>
-    String stringify(const L& lhs, const char* op, const R& rhs) {
+    String stringifyBinaryExpr(const L& lhs, const char* op, const R& rhs) {
         return stringify(lhs) + " " + op + " " + stringify(rhs);
     }
 
@@ -293,12 +293,12 @@ namespace detail
         operator Result() { return Result(!!lhs, stringify(lhs)); }
 
         // clang-format off
-        template <typename R> Result operator==(const R& rhs) { return Result(lhs == rhs, stringify(lhs, "==", rhs)); }
-        template <typename R> Result operator!=(const R& rhs) { return Result(lhs != rhs, stringify(lhs, "!=", rhs)); }
-        template <typename R> Result operator< (const R& rhs) { return Result(lhs <  rhs, stringify(lhs, "<",  rhs)); }
-        template <typename R> Result operator<=(const R& rhs) { return Result(lhs <= rhs, stringify(lhs, "<=", rhs)); }
-        template <typename R> Result operator> (const R& rhs) { return Result(lhs >  rhs, stringify(lhs, ">",  rhs)); }
-        template <typename R> Result operator>=(const R& rhs) { return Result(lhs >= rhs, stringify(lhs, ">=", rhs)); }
+        template <typename R> Result operator==(const R& rhs) { return Result(lhs == rhs, stringifyBinaryExpr(lhs, "==", rhs)); }
+        template <typename R> Result operator!=(const R& rhs) { return Result(lhs != rhs, stringifyBinaryExpr(lhs, "!=", rhs)); }
+        template <typename R> Result operator< (const R& rhs) { return Result(lhs <  rhs, stringifyBinaryExpr(lhs, "<",  rhs)); }
+        template <typename R> Result operator<=(const R& rhs) { return Result(lhs <= rhs, stringifyBinaryExpr(lhs, "<=", rhs)); }
+        template <typename R> Result operator> (const R& rhs) { return Result(lhs >  rhs, stringifyBinaryExpr(lhs, ">",  rhs)); }
+        template <typename R> Result operator>=(const R& rhs) { return Result(lhs >= rhs, stringifyBinaryExpr(lhs, ">=", rhs)); }
         // clang-format on
     };
 
@@ -720,6 +720,88 @@ extern "C" __declspec(dllimport) int __stdcall IsDebuggerPresent();
 // main namespace of the library
 namespace doctest
 {
+String stringify(const char* in) { return String("\"") + in + "\""; }
+
+String stringify(const void* in) {
+    char buf[64];
+    sprintf(buf, "0x%p", in);
+    return buf;
+}
+
+String stringify(bool in) { return in ? "true" : "false"; }
+
+String stringify(float in) {
+    char buf[64];
+    sprintf(buf, "%f", static_cast<double>(in));
+    return buf;
+}
+
+String stringify(double in) {
+    char buf[64];
+    sprintf(buf, "%f", in);
+    return buf;
+}
+
+String stringify(double long in) {
+    char buf[64];
+    sprintf(buf, "%Lf", in);
+    return buf;
+}
+
+String stringify(char in) {
+    char buf[64];
+    if(in < ' ')
+        sprintf(buf, "%d", in);
+    else
+        sprintf(buf, "%c", in);
+    return buf;
+}
+
+String stringify(char unsigned in) {
+    char buf[64];
+    if(in < ' ')
+        sprintf(buf, "%ud", in);
+    else
+        sprintf(buf, "%c", in);
+    return buf;
+}
+
+String stringify(short int in) {
+    char buf[64];
+    sprintf(buf, "%d", in);
+    return buf;
+}
+
+String stringify(short int unsigned in) {
+    char buf[64];
+    sprintf(buf, "%u", in);
+    return buf;
+}
+
+String stringify(int in) {
+    char buf[64];
+    sprintf(buf, "%d", in);
+    return buf;
+}
+
+String stringify(int unsigned in) {
+    char buf[64];
+    sprintf(buf, "%u", in);
+    return buf;
+}
+
+String stringify(long int in) {
+    char buf[64];
+    sprintf(buf, "%ld", in);
+    return buf;
+}
+
+String stringify(long int unsigned in) {
+    char buf[64];
+    sprintf(buf, "%lu", in);
+    return buf;
+}
+
 // library internals namespace
 namespace detail
 {
@@ -1006,88 +1088,6 @@ namespace detail
 
     bool Subcase::operator==(const Subcase& other) const {
         return m_line == other.m_line && strcmp(m_file, other.m_file) == 0;
-    }
-
-    String stringify(const char* in) { return String("\"") + in + "\""; }
-
-    String stringify(const void* in) {
-        char buf[64];
-        sprintf(buf, "0x%p", in);
-        return buf;
-    }
-
-    String stringify(bool in) { return in ? "true" : "false"; }
-
-    String stringify(float in) {
-        char buf[64];
-        sprintf(buf, "%f", static_cast<double>(in));
-        return buf;
-    }
-
-    String stringify(double in) {
-        char buf[64];
-        sprintf(buf, "%f", in);
-        return buf;
-    }
-
-    String stringify(double long in) {
-        char buf[64];
-        sprintf(buf, "%Lf", in);
-        return buf;
-    }
-
-    String stringify(char in) {
-        char buf[64];
-        if(in < ' ')
-            sprintf(buf, "%d", in);
-        else
-            sprintf(buf, "%c", in);
-        return buf;
-    }
-
-    String stringify(char unsigned in) {
-        char buf[64];
-        if(in < ' ')
-            sprintf(buf, "%ud", in);
-        else
-            sprintf(buf, "%c", in);
-        return buf;
-    }
-
-    String stringify(short int in) {
-        char buf[64];
-        sprintf(buf, "%d", in);
-        return buf;
-    }
-
-    String stringify(short int unsigned in) {
-        char buf[64];
-        sprintf(buf, "%u", in);
-        return buf;
-    }
-
-    String stringify(int in) {
-        char buf[64];
-        sprintf(buf, "%d", in);
-        return buf;
-    }
-
-    String stringify(int unsigned in) {
-        char buf[64];
-        sprintf(buf, "%u", in);
-        return buf;
-    }
-
-    String stringify(long int in) {
-        char buf[64];
-        sprintf(buf, "%ld", in);
-        return buf;
-    }
-
-    String stringify(long int unsigned in) {
-        char buf[64];
-        sprintf(buf, "%lu", in);
-        return buf;
     }
 
     // a struct defining a registered test callback
