@@ -23,7 +23,7 @@ VC6 - templated stringify() overloads will not compile
 - the help!
 - fixing warnings gcc/clang/msvc (and add more stuff in the disabled example)
 
-GCC 4.8/5.0 -Wstrict-overflow NONSENSE
+GCC 4.8 -Wstrict-overflow NONSENSE
 
 gcc 4.5/4.6 under osx - weird stuff
 /Users/travis/build/onqtam/doctest/examples/hello_world/main.cpp:8:1: warning: offset outside bounds of constant string
