@@ -286,7 +286,10 @@ namespace detail
     template <typename L>
     struct Expression_lhs
     {
-        L lhs;
+#if defined(_MSC_VER) && _MSC_VER > 1200
+        const
+#endif
+                L lhs;
 
         Expression_lhs(L in)
                 : lhs(in) {}
@@ -1758,7 +1761,7 @@ int Context::runTests() {
     // does not occur when simplifying conditional to constant [-Werror=strict-overflow]"
     int          numFilterPassedTests = 0;
     volatile int numFailed            = 0;
-    int          numAssertionsFailed  = 0;
+    volatile int numAssertionsFailed  = 0;
     // invoke the registered functions if they match the filter criteria (or just count them)
     for(i = 0; i < testDataArray.size(); i++) {
         const TestData& data = *testDataArray[i];
