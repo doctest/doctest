@@ -1,6 +1,6 @@
 # Change Log
 
-## [1.0.0](https://github.com/onqtam/doctest/tree/1.0.0) (2016-04-27)
+## [1.0.0](https://github.com/onqtam/doctest/tree/1.0.0) (2016-04-30)
 **Merged pull requests:**
 
 - Add a Gitter chat badge to README.md [\#1](https://github.com/onqtam/doctest/pull/1) ([gitter-badger](https://github.com/gitter-badger))

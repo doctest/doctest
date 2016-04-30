@@ -78,8 +78,8 @@ url = proc.stdout.read().strip()
 
 readme_contents = ""
 for line in fileinput.input(["../README.md"]):
-    if line.startswith("[![Try it online]"):
-        readme_contents += "[![Try it online](https://img.shields.io/badge/try%20it-online-orange.svg)](" + url + ")\n"
+    if line.startswith("- [![Try it online]"):
+        readme_contents += "- [![Try it online](https://img.shields.io/badge/try%20it-online-orange.svg)](" + url + ")\n"
     else:
         readme_contents += line
 

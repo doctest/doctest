@@ -3,8 +3,6 @@
 
 
 - look at catch command line options (also lest)
-- detect floating point exceptions
-- colors
 - sorting the test order (also RAND! and SEED!) (by file, by test suite, or both, ASC/DESC...)
 
 - signal handling for unix: http://www.cplusplus.com/reference/csignal/signal/
@@ -17,10 +15,11 @@
 - xml reporter (jUnit compatible, etc.)
 
 - think about the expression decomposition static asserts
-- test coverage
-- enabling COMPARE in tests
-- the help!
 - kosta - test pledgie
+
+- the help!
+- examples and test coverage
+- enabling COMPARE in tests
 - test for warnings with -std=c++03/11/14/1z
 - benchmark (assimp and empty files - or maybe just empty files)
 - documentation
@@ -30,12 +29,12 @@
 ## FUTURE
 - gcc 6
 - pool allocator for String class
-- Bitwise() class that has overloaded operators for comparison - to be used to check objects bitwise against each other
 - floating point comparison support
 - Bitwise() class that has overloaded operators for comparison - to be used to check objects bitwise against each other
 - timing reports of tests, duration restrictions, kill of longer than (will perhaps require threading), etc...
 - test execution in separate processes - UNIX only with fork() (but windows has some .dll which could help)
 - matchers?
+- detect floating point exceptions
 - [CI] static analysis: msvc, clang, cppcheck
 - [CI] mingw-w64 on appveyor
 
@@ -54,9 +53,7 @@
 - think about adding support for std::exception and others
 - think about parameterising the output alignment to 80 or some other column limit
 - think about the ability to mix different versions of the library within the same executable (like stb libraries)
-- silencing warnings - take into account when a compiler (which version) accuires a pragma/attribute/warning (for gcc use -Wno-unknown-warning)
 - ability to transfer/copy registered functions from one dll to another so they are put in one set and duplicates are filtered
-
 
 ## Spreading the word after 1.0.0 is released
 
@@ -125,6 +122,7 @@ CI:
 - 18 builds windows
 
 unintrusive
+- everything testing-related can be removed from the binary executable with a global define
 - all macros have prefixes
     - some by default have unprefixed versions as well but that can be turned off
 - 0 warnings even with the most aggresive flags

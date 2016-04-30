@@ -3,8 +3,25 @@
 <title>readme</title>
 <xmp theme="united" style="display:none;">
 
-doctest
+Reference
 =======
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 doctest is a c++ header only library for writing tests that is inspired by the unittest functionality in the D programming language and the docstrings in python - tests are documentation and should reside near the code they test.
 
@@ -115,11 +132,7 @@ dtor-ing...!
 
 ##Notes
 
-- The library does not produce any warnings with GCC when compiled with ```-Wall -Wextra -pedantic -std=c++98 -m64```
-
 - The registration of test functions can be disabled by defining ```DOCTEST_GLOBAL_DISABLE``` before the inclusion of the **doctest.h** header. For large projects with tens of thousands of tests this may reduce the link time of the production build especially if lots of tests are registered in header files and will also reduce the binary size. See **disabled** from the examples folder.
-
-- The library by default includes its implementation which drags a dependency on **std::map**, the **cstring** header and the implementation of the library. This can be avoided by defining ```DOCTEST_DONT_INCLUDE_IMPLEMENTATION``` before the inclusion of **doctest.h** but then the user should include **doctest_impl.h** in one of his source files and have the ```DOCTEST_DONT_INCLUDE_IMPLEMENTATION``` macro defined before that as well. See **alternative_header_inclusion** from the examples folder.
 
 - Tests are registered from top to bottom of each processed cpp after the headers have been preprocessed and included but there is no ordering between cpp files.
 
@@ -134,35 +147,6 @@ dtor-ing...!
   - the **__COUNTER__** macro, but all major compilers support it (if it is not found, **__LINE__** is used and then there are some corner cases with the macro codegen and a test may be registered twice)
 
   - the **pragma once** directive - supporting the DRY principle
-
-##Workflow with examples
-
-The requirements for the examples are to have CMake 2.8 or higher.
-
-####Under Linux
-
-To build an example navigate to its folder and enter
-
-```
-cmake ./
-make
-./exe
-```
-
-####Under Windows
-
-You will need **MinGW w64** installed for Windows (or MSVC 2013 - hardcoded in the .bat files)
-
-You can get **MinGW w64** from http://sourceforge.net/projects/mingwbuilds/ (arch: "x64" threads: "posix" exceptions: "seh")
-
-Use the bat files in the examples folder to build (or atleast configure) each example - place them in the sub folder of an example and run them
-
-- **g.bat** - generates build files through cmake
-
-- **c.bat** - invokes mingw32-make on the makefile target
-
-- **r.bat** - runs the exe
-
 
 </xmp>
 <script src="strapdown.js/strapdown.js"></script>
