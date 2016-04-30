@@ -28,25 +28,41 @@ environment:
   - platform: x86
     configuration: Debug
     arch: "Win32"
-    VS_GEN: ""
+    VS_GEN: "Visual Studio 10 2010"
   - platform: x86
     configuration: Release
     arch: "Win32"
-    VS_GEN: ""
+    VS_GEN: "Visual Studio 10 2010"
   - platform: x64
     configuration: Debug
     arch: "x64"
-    VS_GEN: " Win64"
+    VS_GEN: "Visual Studio 10 2010 Win64"
   - platform: x64
     configuration: Release
     arch: "x64"
-    VS_GEN: " Win64"
+    VS_GEN: "Visual Studio 10 2010 Win64"
+  - platform: x86
+    configuration: Debug
+    arch: "Win32"
+    VS_GEN: "Visual Studio 14 2015"
+  - platform: x86
+    configuration: Release
+    arch: "Win32"
+    VS_GEN: "Visual Studio 14 2015"
+  - platform: x64
+    configuration: Debug
+    arch: "x64"
+    VS_GEN: "Visual Studio 14 2015 Win64"
+  - platform: x64
+    configuration: Release
+    arch: "x64"
+    VS_GEN: "Visual Studio 14 2015 Win64"
 
 before_build:
-  - cmake . -G "Visual Studio 14 2015%VS_GEN%"
+  - cmake . -G "%VS_GEN%"
 build_script:
   - msbuild all.sln /p:Configuration=%Configuration%;Platform=%arch% /maxcpucount
 test_script:
 # temporarily disabled - output will change often so no need for this yet
 #  - cmake . -DTEST_MODE=COMPARE
-  - ctest -C %configuration% --output-on-failure
+  - ctest -C %configuration% --output-on-failure -V

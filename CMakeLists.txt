@@ -28,3 +28,7 @@ foreach(dir ${subdir_list})
         add_subdirectory(examples/${DIRNAME})
     endif()
 endforeach()
+
+add_executable(omg test_appveyor.cpp)
+
+add_test(NAME omg COMMAND $<TARGET_FILE:omg>)

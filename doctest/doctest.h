@@ -37,9 +37,10 @@
 
 #ifdef _MSC_VER
 #pragma warning(push)
-#pragma warning(disable : 4996)
-#pragma warning(disable : 4267)
-#endif // _MSC_VER
+#pragma warning(disable : 4996) // The compiler encountered a deprecated declaration
+#pragma warning(disable : 4267) // 'var' : conversion from 'size_t' to 'type', possible loss of data
+#pragma warning(disable : 4706) // assignment within conditional expression
+#endif                          // _MSC_VER
 
 #ifndef DOCTEST_LIBRARY_INCLUDED
 #define DOCTEST_LIBRARY_INCLUDED
