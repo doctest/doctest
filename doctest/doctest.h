@@ -46,12 +46,7 @@
 #define DOCTEST_VERSION_MAJOR 1
 #define DOCTEST_VERSION_MINOR 0
 #define DOCTEST_VERSION_PATCH 0
-#define DOCTEST_VERSION                                                                            \
-    DOCTEST_TOSTR(DOCTEST_STR_CONCAT(                                                              \
-            DOCTEST_STR_CONCAT(DOCTEST_STR_CONCAT(DOCTEST_STR_CONCAT(DOCTEST_VERSION_MAJOR, .),    \
-                                                  DOCTEST_VERSION_MINOR),                          \
-                               .),                                                                 \
-            DOCTEST_VERSION_PATCH))
+#define DOCTEST_VERSION "1.0.0"
 
 // internal macros for string concatenation and anonymous variable name generation
 #define DOCTEST_STR_CONCAT_IMPL(s1, s2) s1##s2
@@ -163,32 +158,35 @@ public:
     int compare(const String& other, bool no_case = false) const;
 };
 
+struct ADL_helper
+{};
+
 template <typename T>
-String stringify(const T&) {
+String stringify(ADL_helper, const T&) {
     return "{?}";
 }
 
 #if !defined(DOCTEST_CONFIG_DISABLE)
 
-String stringify(const char* in);
-String stringify(const void* in);
-String stringify(bool in);
-String stringify(float in);
-String stringify(double in);
-String stringify(double long in);
+String stringify(ADL_helper, const char* in);
+String stringify(ADL_helper, const void* in);
+String stringify(ADL_helper, bool in);
+String stringify(ADL_helper, float in);
+String stringify(ADL_helper, double in);
+String stringify(ADL_helper, double long in);
 
-String stringify(char in);
-String stringify(char unsigned in);
-String stringify(short int in);
-String stringify(short int unsigned in);
-String stringify(int in);
-String stringify(int unsigned in);
-String stringify(long int in);
-String stringify(long int unsigned in);
+String stringify(ADL_helper, char in);
+String stringify(ADL_helper, char unsigned in);
+String stringify(ADL_helper, short int in);
+String stringify(ADL_helper, short int unsigned in);
+String stringify(ADL_helper, int in);
+String stringify(ADL_helper, int unsigned in);
+String stringify(ADL_helper, long int in);
+String stringify(ADL_helper, long int unsigned in);
 
 template <typename T>
-String stringify(T* in) {
-    return stringify(static_cast<const void*>(in));
+String stringify(ADL_helper, T* in) {
+    return stringify(doctest::ADL_helper(), static_cast<const void*>(in));
 }
 
 namespace detail
@@ -240,7 +238,8 @@ namespace detail
 
     template <typename L, typename R>
     String stringifyBinaryExpr(const L& lhs, const char* op, const R& rhs) {
-        return stringify(lhs) + " " + op + " " + stringify(rhs);
+        return stringify(doctest::ADL_helper(), lhs) + " " + op + " " +
+               stringify(doctest::ADL_helper(), rhs);
     }
 
     struct STATIC_ASSERT_Expression_Too_Complex_Please_Rewrite_As_Binary_Comparison;
@@ -290,7 +289,7 @@ namespace detail
         Expression_lhs(L in)
                 : lhs(in) {}
 
-        operator Result() { return Result(!!lhs, stringify(lhs)); }
+        operator Result() { return Result(!!lhs, stringify(doctest::ADL_helper(), lhs)); }
 
         // clang-format off
         template <typename R> Result operator==(const R& rhs) { return Result(lhs == rhs, stringifyBinaryExpr(lhs, "==", rhs)); }
@@ -720,35 +719,35 @@ extern "C" __declspec(dllimport) int __stdcall IsDebuggerPresent();
 // main namespace of the library
 namespace doctest
 {
-String stringify(const char* in) { return String("\"") + in + "\""; }
+String stringify(ADL_helper, const char* in) { return String("\"") + in + "\""; }
 
-String stringify(const void* in) {
+String stringify(ADL_helper, const void* in) {
     char buf[64];
     sprintf(buf, "0x%p", in);
     return buf;
 }
 
-String stringify(bool in) { return in ? "true" : "false"; }
+String stringify(ADL_helper, bool in) { return in ? "true" : "false"; }
 
-String stringify(float in) {
+String stringify(ADL_helper, float in) {
     char buf[64];
     sprintf(buf, "%f", static_cast<double>(in));
     return buf;
 }
 
-String stringify(double in) {
+String stringify(ADL_helper, double in) {
     char buf[64];
     sprintf(buf, "%f", in);
     return buf;
 }
 
-String stringify(double long in) {
+String stringify(ADL_helper, double long in) {
     char buf[64];
     sprintf(buf, "%Lf", in);
     return buf;
 }
 
-String stringify(char in) {
+String stringify(ADL_helper, char in) {
     char buf[64];
     if(in < ' ')
         sprintf(buf, "%d", in);
@@ -757,7 +756,7 @@ String stringify(char in) {
     return buf;
 }
 
-String stringify(char unsigned in) {
+String stringify(ADL_helper, char unsigned in) {
     char buf[64];
     if(in < ' ')
         sprintf(buf, "%ud", in);
@@ -766,37 +765,37 @@ String stringify(char unsigned in) {
     return buf;
 }
 
-String stringify(short int in) {
+String stringify(ADL_helper, short int in) {
     char buf[64];
     sprintf(buf, "%d", in);
     return buf;
 }
 
-String stringify(short int unsigned in) {
+String stringify(ADL_helper, short int unsigned in) {
     char buf[64];
     sprintf(buf, "%u", in);
     return buf;
 }
 
-String stringify(int in) {
+String stringify(ADL_helper, int in) {
     char buf[64];
     sprintf(buf, "%d", in);
     return buf;
 }
 
-String stringify(int unsigned in) {
+String stringify(ADL_helper, int unsigned in) {
     char buf[64];
     sprintf(buf, "%u", in);
     return buf;
 }
 
-String stringify(long int in) {
+String stringify(ADL_helper, long int in) {
     char buf[64];
     sprintf(buf, "%ld", in);
     return buf;
 }
 
-String stringify(long int unsigned in) {
+String stringify(ADL_helper, long int unsigned in) {
     char buf[64];
     sprintf(buf, "%lu", in);
     return buf;
@@ -1685,7 +1684,7 @@ void Context::setOption(const char* option, int value) {
     using namespace detail;
 
     if(!p.no_overrides) {
-        String      argv   = String(option) + "=" + stringify(value);
+        String      argv   = String(option) + "=" + stringify(doctest::ADL_helper(), value);
         const char* lvalue = argv.c_str();
         parseArgs(1, &lvalue);
     }

@@ -13,15 +13,16 @@ version_patch = "0"
 version = version_major + "." + version_minor + "." + version_patch
 
 # update version in the header file
-
 doctest_contents = ""
 for line in fileinput.input(["../doctest/doctest.h"]):
-    if line.startswith("#define DOCTEST_VERSION_MAJOR"):
+    if line.startswith("#define DOCTEST_VERSION_MAJOR "):
         doctest_contents += "#define DOCTEST_VERSION_MAJOR " + version_major + "\n"
-    elif line.startswith("#define DOCTEST_VERSION_MINOR"):
+    elif line.startswith("#define DOCTEST_VERSION_MINOR "):
         doctest_contents += "#define DOCTEST_VERSION_MINOR " + version_minor + "\n"
-    elif line.startswith("#define DOCTEST_VERSION_PATCH"):
+    elif line.startswith("#define DOCTEST_VERSION_PATCH "):
         doctest_contents += "#define DOCTEST_VERSION_PATCH " + version_patch + "\n"
+    elif line.startswith("#define DOCTEST_VERSION "):
+        doctest_contents += "#define DOCTEST_VERSION \"" + version + "\"\n"
     else:
         doctest_contents += line
 

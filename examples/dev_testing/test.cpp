@@ -6,12 +6,20 @@
 
 #include <exception>
 #include <string>
+#include <vector>
 
 namespace doctest
 {
-    template <>
-    String stringify(const std::string& in) {
+    static String stringify(ADL_helper, const std::string& in) {
         return String("\"") + in.c_str() + "\"";
+    }
+
+    template <typename T>
+    String stringify(ADL_helper, const std::vector<T>& in) {
+        String out("vector[");
+        for (unsigned i = 0; i < in.size(); ++i)
+            out += stringify(ADL_helper(), in[i]) + (i + 1 == in.size() ? "]" : ", ");
+        return out;
     }
 } // namespace doctest
 
@@ -19,6 +27,17 @@ TESTSUITE("MAIN");
 TESTCASE("zzz") {
     CHECK(std::string("OMG2") == std::string("OMG"));
 
+    std::vector<int> vec1;
+    vec1.push_back(1);
+    vec1.push_back(2);
+    vec1.push_back(3);
+
+    std::vector<int> vec2;
+    vec2.push_back(1);
+    vec2.push_back(2);
+    vec2.push_back(4);
+
+    CHECK(vec1 == vec2);
 
     //REQUIRE(true == false);
     //
