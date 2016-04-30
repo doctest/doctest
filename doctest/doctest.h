@@ -40,6 +40,8 @@
 #pragma warning(disable : 4996) // The compiler encountered a deprecated declaration
 #pragma warning(disable : 4267) // 'var' : conversion from 'size_t' to 'type', possible loss of data
 #pragma warning(disable : 4706) // assignment within conditional expression
+#pragma warning(disable : 4512) // 'class' : assignment operator could not be generated
+#pragma warning(disable : 4127) // conditional expression is constant
 #endif                          // _MSC_VER
 
 #ifndef DOCTEST_LIBRARY_INCLUDED
@@ -294,6 +296,9 @@ namespace detail
         Expression_lhs(L in)
                 : lhs(in) {}
 
+        Expression_lhs(const Expression_lhs& other)
+                : lhs(other.lhs) {}
+
         operator Result() { return Result(!!lhs, stringify(doctest::ADL_helper(), lhs)); }
 
         // clang-format off
@@ -333,8 +338,8 @@ namespace detail
         bool hash_table_histogram; // if the hash table should be printed as a histogram
         bool no_path_in_filenames; // if the path to files should be removed from the output
 
-        int first; // the first (matching) test to be executed
-        int last;  // the last (matching) test to be executed
+        unsigned first; // the first (matching) test to be executed
+        unsigned last;  // the last (matching) test to be executed
 
         bool help;    // to print the help
         bool version; // to print the version
@@ -822,7 +827,7 @@ namespace detail
     // not using std::strlen() because of valgrind errors when optimizations are turned on
     // 'Invalid read of size 4' when the test suite len (with '\0') is not a multiple of 4
     // for details see http://stackoverflow.com/questions/35671155
-    size_t my_strlen(const char* in) {
+    unsigned my_strlen(const char* in) {
         const char* temp = in;
         while(*temp)
             ++temp;
@@ -892,7 +897,7 @@ namespace detail
     int matchesAny(const String& name, Vector<String> filters, int matchEmpty, bool caseSensitive) {
         if(filters.size() == 0 && matchEmpty)
             return 1;
-        for(size_t i = 0; i < filters.size(); ++i)
+        for(unsigned i = 0; i < filters.size(); ++i)
             if(wildcmp(name.c_str(), filters[i].c_str(), caseSensitive))
                 return 1;
         return 0;
@@ -932,7 +937,7 @@ namespace detail
     template <class T>
     Vector<T>& Vector<T>::operator=(const Vector& other) {
         if(this != &other) {
-            for(size_t i = 0; i < m_size; ++i)
+            for(unsigned i = 0; i < m_size; ++i)
                 (*(m_buffer + i)).~T();
             free(m_buffer);
 
@@ -1485,7 +1490,7 @@ namespace detail
                 }
                 if(noBadCharsFound) {
                     temp += my_strlen(pattern);
-                    size_t len = my_strlen(temp);
+                    unsigned len = my_strlen(temp);
                     if(len) {
                         filtersString = temp;
                         break;
@@ -1542,7 +1547,7 @@ namespace detail
                 const char negative[][6] = {"0", "false", "off", "no"}; // 6 - strlen("false") + 1
 
                 // if the value matches any of the positive/negative possibilities
-                for(size_t i = 0; i < 4; i++) {
+                for(unsigned i = 0; i < 4; i++) {
                     if(parsedValues[0].compare(positive[i], true) == 0) {
                         res = 1;
                         return true;
@@ -1722,12 +1727,12 @@ int Context::runTests() {
         return EXIT_SUCCESS;
     }
 
-    size_t                           i       = 0;
+    unsigned                         i       = 0;
     const Vector<Vector<TestData> >& buckets = getRegisteredTests().getBuckets();
 
     Vector<const TestData*> testDataArray;
     for(i = 0; i < buckets.size(); i++)
-        for(size_t k = 0; k < buckets[i].size(); k++)
+        for(unsigned k = 0; k < buckets[i].size(); k++)
             testDataArray.push_back(&buckets[i][k]);
 
     // sort the collected records
@@ -1735,7 +1740,7 @@ int Context::runTests() {
 
     if(p.hash_table_histogram) {
         // find the most full bucket
-        size_t maxInBucket = 0;
+        unsigned maxInBucket = 0;
         for(i = 0; i < buckets.size(); i++)
             if(buckets[i].size() > maxInBucket)
                 maxInBucket = buckets[i].size();
@@ -1749,8 +1754,8 @@ int Context::runTests() {
             printf("bucket %4d |%4d |", static_cast<int>(i), buckets[i].size());
 
             float ratio = static_cast<float>(buckets[i].size()) / static_cast<float>(maxInBucket);
-            int   numStars = static_cast<int>(ratio * 41);
-            for(int k = 0; k < numStars; ++k)
+            unsigned numStars = static_cast<unsigned>(ratio * 41);
+            for(unsigned k = 0; k < numStars; ++k)
                 printf("*");
             printf("\n");
         }
@@ -1759,9 +1764,9 @@ int Context::runTests() {
 
     // volatile to silence the moronic warning of gcc 4.8 in release: "assuming signed overflow
     // does not occur when simplifying conditional to constant [-Werror=strict-overflow]"
-    int          numFilterPassedTests = 0;
-    volatile int numFailed            = 0;
-    volatile int numAssertionsFailed  = 0;
+    unsigned          numFilterPassedTests = 0;
+    volatile unsigned numFailed            = 0;
+    volatile unsigned numAssertionsFailed  = 0;
     // invoke the registered functions if they match the filter criteria (or just count them)
     for(i = 0; i < testDataArray.size(); i++) {
         const TestData& data = *testDataArray[i];
@@ -1823,12 +1828,12 @@ int Context::runTests() {
                numFilterPassedTests);
     } else {
         if(numFailed == 0) {
-            printf("[doctest] all %d tests passed!\n", numFilterPassedTests);
-            printf("[doctest] all %d assertions passed!\n\n", getNumAssertions());
+            printf("[doctest] all %u tests passed!\n", numFilterPassedTests);
+            printf("[doctest] all %u assertions passed!\n\n", getNumAssertions());
         } else {
-            printf("[doctest] %d out of %d tests passed!\n", numFilterPassedTests - numFailed,
+            printf("[doctest] %u out of %u tests passed!\n", numFilterPassedTests - numFailed,
                    numFilterPassedTests);
-            printf("[doctest] %d out of %d assertions passed!\n\n",
+            printf("[doctest] %u out of %u assertions passed!\n\n",
                    getNumAssertions() - numAssertionsFailed, getNumAssertions());
         }
     }
