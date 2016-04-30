@@ -33,14 +33,15 @@ environment:
     configuration: Release
     arch: "Win32"
     VS_GEN: "Visual Studio 9 2008"
-  - platform: x64
-    configuration: Debug
-    arch: "x64"
-    VS_GEN: "Visual Studio 9 2008 Win64"
-  - platform: x64
-    configuration: Release
-    arch: "x64"
-    VS_GEN: "Visual Studio 9 2008 Win64"
+## THE FOLLOWING ARE DISABLED BECAUSE CMAKE CANNOT FIND THE COMPILER FOR Win64
+#  - platform: x64
+#    configuration: Debug
+#    arch: "x64"
+#    VS_GEN: "Visual Studio 9 2008 Win64"
+#  - platform: x64
+#    configuration: Release
+#    arch: "x64"
+#    VS_GEN: "Visual Studio 9 2008 Win64"
   - platform: x86
     configuration: Debug
     arch: "Win32"

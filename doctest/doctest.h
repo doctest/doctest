@@ -826,7 +826,7 @@ namespace detail
     // not using std::strlen() because of valgrind errors when optimizations are turned on
     // 'Invalid read of size 4' when the test suite len (with '\0') is not a multiple of 4
     // for details see http://stackoverflow.com/questions/35671155
-    unsigned my_strlen(const char* in) {
+    size_t my_strlen(const char* in) {
         const char* temp = in;
         while(*temp)
             ++temp;
