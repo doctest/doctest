@@ -21,13 +21,29 @@ branches:
     - coverity_scan
 
 matrix:
-  fast_finish: true
+  fast_finish: false
 
 environment:
   matrix:
   - platform: x86
     configuration: Debug
     arch: "Win32"
+    VS_GEN: "Visual Studio 9 2008"
+  - platform: x86
+    configuration: Release
+    arch: "Win32"
+    VS_GEN: "Visual Studio 9 2008"
+  - platform: x64
+    configuration: Debug
+    arch: "x64"
+    VS_GEN: "Visual Studio 9 2008 Win64"
+  - platform: x64
+    configuration: Release
+    arch: "x64"
+    VS_GEN: "Visual Studio 9 2008 Win64"
+  - platform: x86
+    configuration: Debug
+    arch: "Win32"
     VS_GEN: "Visual Studio 10 2010"
   - platform: x86
     configuration: Release
@@ -41,6 +57,38 @@ environment:
     configuration: Release
     arch: "x64"
     VS_GEN: "Visual Studio 10 2010 Win64"
+  - platform: x86
+    configuration: Debug
+    arch: "Win32"
+    VS_GEN: "Visual Studio 11 2012"
+  - platform: x86
+    configuration: Release
+    arch: "Win32"
+    VS_GEN: "Visual Studio 11 2012"
+  - platform: x64
+    configuration: Debug
+    arch: "x64"
+    VS_GEN: "Visual Studio 11 2012 Win64"
+  - platform: x64
+    configuration: Release
+    arch: "x64"
+    VS_GEN: "Visual Studio 11 2012 Win64"
+  - platform: x86
+    configuration: Debug
+    arch: "Win32"
+    VS_GEN: "Visual Studio 12 2013"
+  - platform: x86
+    configuration: Release
+    arch: "Win32"
+    VS_GEN: "Visual Studio 12 2013"
+  - platform: x64
+    configuration: Debug
+    arch: "x64"
+    VS_GEN: "Visual Studio 12 2013 Win64"
+  - platform: x64
+    configuration: Release
+    arch: "x64"
+    VS_GEN: "Visual Studio 12 2013 Win64"
   - platform: x86
     configuration: Debug
     arch: "Win32"
@@ -65,4 +113,4 @@ build_script:
 test_script:
 # temporarily disabled - output will change often so no need for this yet
 #  - cmake . -DTEST_MODE=COMPARE
-  - ctest -C %configuration% --output-on-failure -V
+  - ctest -C %configuration% --output-on-failure

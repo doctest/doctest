@@ -21,7 +21,6 @@
 - enabling COMPARE in tests
 - the help!
 - kosta - test pledgie
-- try building with VS 2008/2010/2012/2013 also on appveyor - http://www.appveyor.com/docs/installed-software
 - test for warnings with -std=c++03/11/14/1z
 - benchmark (assimp and empty files - or maybe just empty files)
 - documentation
@@ -89,7 +88,7 @@ https://github.com/nothings/stb/blob/master/docs/other_libs.md
 "the latest and greatest in unit testing in c++"
 
 180 builds linux/osx (+12 if clang 3.4/3.5/3.6 get the 32 bit sanitizer stuff)
-4 builds windows
+20 builds windows
 
 VC6 subcases not working - set a bounty on this:
 http://stackoverflow.com/questions/36940730/preprocessor-problems-with-vc6

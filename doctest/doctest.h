@@ -520,19 +520,12 @@ namespace detail
                         DOCTEST_ASSERT_IMPLEMENT(expr, assert_name, is_check, false_invert_op)     \
                                 _Pragma("clang diagnostic pop")                                    \
     } while(doctest::detail::always_false())
-#elif defined(_MSC_VER) && _MSC_VER >= 1400
-#define DOCTEST_ASSERT_PROXY(expr, assert_name, is_check, false_invert_op)                         \
-    do {                                                                                           \
-        __pragma(warning(push)) __pragma(warning(disable : 4127))                                  \
-                DOCTEST_ASSERT_IMPLEMENT(expr, assert_name, is_check, false_invert_op)             \
-                        __pragma(warning(pop))                                                     \
-    } while(doctest::detail::always_false())
-#else // _MSC_VER
+#else // __clang__
 #define DOCTEST_ASSERT_PROXY(expr, assert_name, is_check, false_invert_op)                         \
     do {                                                                                           \
         DOCTEST_ASSERT_IMPLEMENT(expr, assert_name, is_check, false_invert_op)                     \
     } while(doctest::detail::always_false())
-#endif // _MSC_VER
+#endif // __clang__
 
 #define DOCTEST_CHECK(expr) DOCTEST_ASSERT_PROXY(expr, "CHECK", true, ((void)0))
 #define DOCTEST_REQUIRE(expr) DOCTEST_ASSERT_PROXY(expr, "REQUIRE", false, ((void)0))
