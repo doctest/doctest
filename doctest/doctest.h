@@ -198,6 +198,8 @@ namespace detail
     // the function type this library works with
     typedef void (*funcType)(void);
 
+    inline bool always_false() { return false; }
+
     template <class T>
     class Vector
     {
@@ -517,19 +519,19 @@ namespace detail
                 _Pragma("clang diagnostic ignored \"-Woverloaded-shift-op-parentheses\"")          \
                         DOCTEST_ASSERT_IMPLEMENT(expr, assert_name, is_check, false_invert_op)     \
                                 _Pragma("clang diagnostic pop")                                    \
-    } while(false)
+    } while(doctest::detail::always_false())
 #elif defined(_MSC_VER) && _MSC_VER >= 1400
 #define DOCTEST_ASSERT_PROXY(expr, assert_name, is_check, false_invert_op)                         \
     do {                                                                                           \
         __pragma(warning(push)) __pragma(warning(disable : 4127))                                  \
                 DOCTEST_ASSERT_IMPLEMENT(expr, assert_name, is_check, false_invert_op)             \
                         __pragma(warning(pop))                                                     \
-    } while(false)
+    } while(doctest::detail::always_false())
 #else // _MSC_VER
 #define DOCTEST_ASSERT_PROXY(expr, assert_name, is_check, false_invert_op)                         \
     do {                                                                                           \
         DOCTEST_ASSERT_IMPLEMENT(expr, assert_name, is_check, false_invert_op)                     \
-    } while(false)
+    } while(doctest::detail::always_false())
 #endif // _MSC_VER
 
 #define DOCTEST_CHECK(expr) DOCTEST_ASSERT_PROXY(expr, "CHECK", true, ((void)0))
@@ -548,7 +550,7 @@ namespace detail
             DOCTEST_BREAK_INTO_DEBUGGER();                                                         \
         if(doctest::detail::logAssertThrows(#expr, threw, is_check, __FILE__, __LINE__))           \
             throw doctest::detail::TestFailureException();                                         \
-    } while(false)
+    } while(doctest::detail::always_false())
 
 #define DOCTEST_ASSERT_THROWS_AS(expr, as, is_check)                                               \
     do {                                                                                           \
@@ -565,7 +567,7 @@ namespace detail
         if(doctest::detail::logAssertThrowsAs(#expr, #as, threw, threw_as, is_check, __FILE__,     \
                                               __LINE__))                                           \
             throw doctest::detail::TestFailureException();                                         \
-    } while(false)
+    } while(doctest::detail::always_false())
 
 #define DOCTEST_ASSERT_NOTHROW(expr, is_check)                                                     \
     do {                                                                                           \
@@ -577,7 +579,7 @@ namespace detail
             DOCTEST_BREAK_INTO_DEBUGGER();                                                         \
         if(doctest::detail::logAssertNothrow(#expr, threw, is_check, __FILE__, __LINE__))          \
             throw doctest::detail::TestFailureException();                                         \
-    } while(false)
+    } while(doctest::detail::always_false())
 
 #define DOCTEST_CHECK_THROWS(expr) DOCTEST_ASSERT_THROWS(expr, true)
 #define DOCTEST_REQUIRE_THROWS(expr) DOCTEST_ASSERT_THROWS(expr, false)
