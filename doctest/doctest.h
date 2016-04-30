@@ -357,6 +357,13 @@ class Context
 public:
     Context(int argc, const char* const* argv);
 
+// to fix gcc 4.7 "-Winline" warnings
+#if defined(__GNUC__) && !defined(__clang__)
+    __attribute__((noinline))
+#endif
+    ~Context() {
+    }
+
     void addFilter(const char* filter, const char* value);
     void setOption(const char* option, int value);
     int runTests();
@@ -1746,9 +1753,11 @@ int Context::runTests() {
         printf("\n");
     }
 
-    int numFilterPassedTests = 0;
-    int numFailed            = 0;
-    int numAssertionsFailed  = 0;
+    // volatile to silence the moronic warning of gcc 4.8 in release: "assuming signed overflow
+    // does not occur when simplifying conditional to constant [-Werror=strict-overflow]"
+    int          numFilterPassedTests = 0;
+    volatile int numFailed            = 0;
+    int          numAssertionsFailed  = 0;
     // invoke the registered functions if they match the filter criteria (or just count them)
     for(i = 0; i < testDataArray.size(); i++) {
         const TestData& data = *testDataArray[i];
