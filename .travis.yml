@@ -102,18 +102,18 @@ matrix:
 #        apt:
 #          packages: ["g++-5",   "valgrind", "g++-5-multilib",   "libc6-dbg", "libc6-dbg:i386"]
 #          sources: *apt_sources
-
-#    # GCC 6
-#    # released on 2016.04.27
-#    # wait for it to enter the whitelist - https://github.com/travis-ci/apt-package-whitelist/blob/master/ubuntu-precise
-#    # also with homebrew under OSX!!!
-#    - env: COMPILER=g++-6 HAS_ASAN_32=true HAS_UBSAN_32=true HAS_ASAN_64=true HAS_UBSAN_64=true
-#      compiler: gcc
-#      addons: &gcc6
-#        apt:
-#          packages: ["g++-6",   "valgrind", "g++-6-multilib",   "libc6-dbg", "libc6-dbg:i386"]
-#          sources: *apt_sources
-
+#
+##    # GCC 6
+##    # released on 2016.04.27
+##    # wait for it to enter the whitelist - https://github.com/travis-ci/apt-package-whitelist/blob/master/ubuntu-precise
+##    # also with homebrew under OSX!!!
+##    - env: COMPILER=g++-6 HAS_ASAN_32=true HAS_UBSAN_32=true HAS_ASAN_64=true HAS_UBSAN_64=true
+##      compiler: gcc
+##      addons: &gcc6
+##        apt:
+##          packages: ["g++-6",   "valgrind", "g++-6-multilib",   "libc6-dbg", "libc6-dbg:i386"]
+##          sources: *apt_sources
+#
 #    # Clang 3.4
 #    - env: COMPILER=clang++ HAS_ASAN_64=true HAS_UBSAN_64=true
 #      addons: &clang
@@ -217,12 +217,12 @@ matrix:
 #    - env: COMPILER=g++-4.9 HAS_ASAN_32=true HAS_UBSAN_32=true HAS_ASAN_64=true HAS_UBSAN_64=true
 #      compiler: gcc
 #      os: osx
-
-    # OSX GCC 5
-    - env: COMPILER=g++-5 HAS_ASAN_32=true HAS_UBSAN_32=true HAS_ASAN_64=true HAS_UBSAN_64=true
-      compiler: gcc
-      os: osx
-
+#
+#    # OSX GCC 5
+#    - env: COMPILER=g++-5 HAS_ASAN_32=true HAS_UBSAN_32=true HAS_ASAN_64=true HAS_UBSAN_64=true
+#      compiler: gcc
+#      os: osx
+#
 #    # OSX LLVM-GCC
 #    - env: COMPILER=g++
 #      compiler: gcc

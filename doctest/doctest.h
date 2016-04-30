@@ -288,10 +288,7 @@ namespace detail
     template <typename L>
     struct Expression_lhs
     {
-#if defined(_MSC_VER) && _MSC_VER > 1200
-        const
-#endif
-                L lhs;
+        L lhs;
 
         Expression_lhs(L in)
                 : lhs(in) {}
@@ -521,7 +518,7 @@ namespace detail
                         DOCTEST_ASSERT_IMPLEMENT(expr, assert_name, is_check, false_invert_op)     \
                                 _Pragma("clang diagnostic pop")                                    \
     } while(false)
-#elif defined(_MSC_VER)
+#elif defined(_MSC_VER) && _MSC_VER >= 1400
 #define DOCTEST_ASSERT_PROXY(expr, assert_name, is_check, false_invert_op)                         \
     do {                                                                                           \
         __pragma(warning(push)) __pragma(warning(disable : 4127))                                  \
