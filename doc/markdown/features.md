@@ -7,7 +7,7 @@ There are many c++ testing frameworks - [Catch](https://github.com/philsquared/C
 
 **doctest** is much **lighter** and is **unintrusive**. It also offers a way to remove everything testing-related from the binary.
  
-This allows the library to be used in more ways - tests can be written in the production code - just like with the ```unittest {}``` functionality in the **D** programming language.
+This allows the library to be used in more ways - tests can be written in the production code - just like with the ```unittest {}``` functionality in the **D** programming language. The name is inspired by the **docstrings** in python.
 
 - This makes the barrier for writing tests is much lower - you don't have to: **1.** make a separate source file **2.** include a bunch of stuff in it **3.** add it to the build system and **4.** add it to source control - You can just write the tests for a class or a piece of functionality at the bottom of the source file (or even header file).
 - Also tests in the production code can be thought of as documentation or comments - showing how an API is used.
@@ -52,9 +52,26 @@ This library was modeled after [**Catch**](https://github.com/philsquared/Catch)
 
 ## Features
 
-- can remove everything testing related from the binary with the ```DOCTEST_CONFIG_DISABLE``` macro
-- can write tests in headers - they will still be registered only once
+- really easy to get started - [**tutorial**](tutorial.md)
+- minimal compile time footprint - [**benchmarks**](benchmarks.md)
+- ultra portable - C++98 compliant and tested on all major compilers and platforms
+- warning-free even on the [**most aggressive**](../../scripts/common.cmake#L59) warning levels
+- doesn't pollute the global namespace - everything is either in the ```doctest``` namespace or is a prefixed macro
+- per-commit tested on multiple platforms/compilers in different configurations and ran through different tools
+- can remove everything testing-related from the binary with the ```DOCTEST_CONFIG_DISABLE``` macro - [**configuration**](configuration.md)
+- tests are auto registered
+- supports [**subcases**](testcases.md#subcases) for easy setup/teardown of tests (also supports the retro [**test fixtures**](testcases.md#test-fixtures) with classes)
+- only one core [**assertion macro**](assertions.md) for comparisons - standard C++ operators are used for the comparison - yet the full expression is decomposed and left and right values of the expression are logged
+- tests can be grouped in [**testsuites**](testcases.md#testsuites)
+- tests can be [**filtered**](commandline.md#filtering) based on their name/file/testsuite
+- failures can (optionally) break into the debugger on Windows and Mac
+- integration with the output window of Visual Studio for failing tests
+- a ```main()``` can be provided based on [**which macro**](configuration.md) you use in the translation unit you are implementing the library in
+- can write tests in headers - they will still be registered only once in the executable/shared object
 - the library doesn't use operator ```new```/```delete``` (only ```malloc```) so you can test your ```operator new()```
+- [**range-based**](commandline.md#ranges) execution of tests - see the [**multiprocess**](../../examples/multiprocess/) example (the **run.py** script)
+- colored output in the console
+- controlling the order of test execution
 
 ## TODO for release
 
@@ -109,31 +126,6 @@ This library was modeled after [**Catch**](https://github.com/philsquared/Catch)
 - think about parameterising the output alignment to 80 or some other column limit
 - think about the ability to mix different versions of the library within the same executable (like stb libraries)
 - ability to transfer/copy registered functions from one dll to another so they are put in one set and duplicates are filtered
-
-
-
-
-
-
-
-
-- mimic catch front page - tutorial link, what is different link, documentation link.
-- profile doctest vs Catch (compile/startup)
-- defense of macros in testing frameworks: http://accu.org/var/uploads/journals/Overload125.pdf
-- whats the library's main purpose
-- warning free even with the most aggressive options for all 3 major compilers
-- mocking is not included because it is orthogonal to testing and a different third party library may be used for that (google mock)
-https://github.com/tpounds/mockitopp
-- check what features catch/lest have to offer (and what they say they lack)
-- FAQ - linker issues (_IMPLEMENT, etc)...
-- property based testing - what it is and how to use it with doctest
-- document how to use spaces for filters in the comma separated list (using "")
-- tests are ran serially
-- listing reporters or counting tests implies no_run
-- document all the options
-- initially was planning on a C version of the library but figured that there is no reason to choose C over C++ anywhere
-- tests in headers... might end up in different test suites - and only 1 of them will get registered? or might have ifdef-ed parts that get compiled differently based on how/where the header is included...... so not a good practice to write tests in header files
-- how subtests work - http://pastebin.com/rwghFzK4
 
 
 

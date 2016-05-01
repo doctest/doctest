@@ -40,3 +40,4 @@ This library has some design goals which must be kept. Make sure you have read t
 
 The ```master``` branch is the stable one with the latest release and the ```dev``` branch is on the bleeding edge. 
 
+Note that only GCC/Clang/MSVC as compilers have been tested and warnings have been silenced only for them so this might be an area worth exploring...

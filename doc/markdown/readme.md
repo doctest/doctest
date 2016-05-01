@@ -12,3 +12,4 @@ Reference
 - [main() entry point](main.md)
 - [Command line](commandline.md)
 - [Benchmarks](benchmarks.md)
+- [FAQ](faq.md)
