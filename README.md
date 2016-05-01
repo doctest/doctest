@@ -1,15 +1,13 @@
-DOCTEST - the lightest and feature rich C++ single header testing framework
+the lightest and feature rich C++ single header testing framework
 -------
 
-The library is inspired by the ```unittest``` functionality of the **D** programming language and the **docstrings** in python - tests can be considered a form of documentation and should be able to reside near the production code which they test.
+The **doctest** library is inspired by the ```unittest``` functionality of the **D** programming language and the **docstrings** in python - tests can be considered a form of documentation and _should_ be able to reside near the production code which they test.
 
 - Check out [**features and design goals**](doc/markdown/features.md) to see why this library exists and how it is different from all the rest.
 - Check out the tutorial [**here**](doc/markdown/tutorial.md).
 - [![Try it online](https://img.shields.io/badge/try%20it-online-orange.svg)](http://melpon.org/wandbox/permlink/xvF0y5DTzIDLN98f)
-- [![documentation](https://img.shields.io/badge/documentation-online-blue.svg)](doc/markdown/readme.md)
-- The latest version of the library can be downloaded from [**here**](https://raw.githubusercontent.com/onqtam/doctest/master/doctest/doctest.h).
-
-This library was **strongly** influenced by [**Catch**](https://github.com/philsquared/Catch) and [**lest**](https://github.com/martinmoene/lest).
+- [![documentation](https://img.shields.io/badge/documentation-online%20%20%20%20%20-blue.svg)](doc/markdown/readme.md)
+- [![download](https://img.shields.io/badge/latest%20version%20%20-download-blue.svg)](https://raw.githubusercontent.com/onqtam/doctest/master/doctest/doctest.h)
 
 [![Language](https://img.shields.io/badge/language-C++-blue.svg)](https://isocpp.org/)
 [![Standard](https://img.shields.io/badge/c%2B%2B-98-blue.svg)](https://en.wikipedia.org/wiki/C%2B%2B#Standardization)
@@ -36,6 +34,9 @@ Donations would be appreciated very much since I quit my job to write open sourc
 
 Contributions in the form of issues and pull requests are welcome as well.
 
-For pull requests make sure the code is formatted with a recent-enough ```clang-format``` using the config file in the root of the repo (or I will format it after the merge) and that all the builds on travis and appveyor pass. Also before making a pull requrest you might want to make an issue about it for a discussion. This library has some design goals which must be kept.
+For pull requests make sure the code is formatted with a recent-enough ```clang-format``` using the config file in the root of the repo (or I will format it after the merge) and that all the builds on ```travis``` and ```appveyor``` pass. Also before making a pull requrest you might want to make an issue about it for a discussion. 
+
+This library has some design goals which must be kept. Make sure you have read the [**features and design goals**](doc/markdown/features.md) page.
 
 The ```master``` branch is the stable one with the latest release and the ```dev``` branch is on the bleeding edge. 
+

@@ -1,3 +1,16 @@
+//
+// doctest.h - the lightest and feature rich C++ single header testing framework
+//
+// Copyright (c) 2016 Viktor Kirilov
+//
+// Distributed under the MIT Software License
+// See accompanying file LICENSE.txt or copy at
+// https://opensource.org/licenses/MIT
+//
+// The documentation can be found at the library's page:
+// https://github.com/onqtam/doctest/blob/master/doc/markdown/readme.md
+//
+
 // Suppress this globally - there is no way to silence it in the expression decomposition macros
 // _Pragma() in macros doesn't work for the c++ front-end of g++
 // https://gcc.gnu.org/bugzilla/show_bug.cgi?id=55578
