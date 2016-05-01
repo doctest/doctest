@@ -3,17 +3,17 @@ Features and design goals
 
 ## Why does this library exist and how is it different from all the rest?
 
-There are many c++ testing frameworks - [Catch](https://github.com/philsquared/Catch), [Boost.Test](http://www.boost.org/doc/libs/1_60_0/libs/test/doc/html/index.html), [UnitTest++](https://github.com/unittest-cpp/unittest-cpp), [lest](https://github.com/martinmoene/lest), [bandit](http://banditcpp.org/), [igloo](http://igloo-testing.org/), [xUnit++](https://bitbucket.org/moswald/xunit/wiki/Home), [CppTest](http://cpptest.sourceforge.net/), [CppUnit](https://sourceforge.net/projects/cppunit/), [CxxTest](https://github.com/CxxTest/cxxtest), [cpputest](https://github.com/cpputest/cpputest), [googletest](https://github.com/google/googletest), [cute](https://github.com/Kosta-Github/cute) and many many [other](https://en.wikipedia.org/wiki/List_of_unit_testing_frameworks#C.2B.2B).
+There are many C++ testing frameworks - [Catch](https://github.com/philsquared/Catch), [Boost.Test](http://www.boost.org/doc/libs/1_60_0/libs/test/doc/html/index.html), [UnitTest++](https://github.com/unittest-cpp/unittest-cpp), [lest](https://github.com/martinmoene/lest), [bandit](http://banditcpp.org/), [igloo](http://igloo-testing.org/), [xUnit++](https://bitbucket.org/moswald/xunit/wiki/Home), [CppTest](http://cpptest.sourceforge.net/), [CppUnit](https://sourceforge.net/projects/cppunit/), [CxxTest](https://github.com/CxxTest/cxxtest), [cpputest](https://github.com/cpputest/cpputest), [googletest](https://github.com/google/googletest), [cute](https://github.com/Kosta-Github/cute) and many [other](https://en.wikipedia.org/wiki/List_of_unit_testing_frameworks#C.2B.2B).
 
-**doctest** is much **lighter** and is **unintrusive**. It also offers a way to remove everything testing-related from the binary.
+**doctest** is much **lighter** and is **unintrusive**. It also offers a way to remove **everything** testing-related from the binary.
  
 This allows the library to be used in more ways - tests can be written in the production code - just like with the ```unittest {}``` functionality in the **D** programming language. The name is inspired by the **docstrings** in python.
 
-- This makes the barrier for writing tests is much lower - you don't have to: **1.** make a separate source file **2.** include a bunch of stuff in it **3.** add it to the build system and **4.** add it to source control - You can just write the tests for a class or a piece of functionality at the bottom of the source file (or even header file).
+- This makes the barrier for writing tests much lower - you don't have to: **1.** make a separate source file **2.** include a bunch of stuff in it **3.** add it to the build system and **4.** add it to source control - You can just write the tests for a class or a piece of functionality at the bottom of the source file (or even header file).
 - Also tests in the production code can be thought of as documentation or comments - showing how an API is used.
 - Tests can be shipped to the customer with the software to diagnose a bug faster.
 
-Even if you don't see the ability of writing tests in your production code as beneficial the library can still be used like any other - it is (almost) on par with the rest as far as features go and is much lighter and portable. See the [**features**](#features).
+Even if you don't see the ability of writing tests in your production code as beneficial the library can still be used like any other - it is (almost - or will be) on par with the rest as far as features go and is much lighter, portable and clear. See the [**features**](#features).
 
 ### Unintrusive:
 
@@ -63,7 +63,7 @@ This library was modeled after [**Catch**](https://github.com/philsquared/Catch)
 - supports [**subcases**](testcases.md#subcases) for easy setup/teardown of tests (also supports the retro [**test fixtures**](testcases.md#test-fixtures) with classes)
 - only one core [**assertion macro**](assertions.md) for comparisons - standard C++ operators are used for the comparison - yet the full expression is decomposed and left and right values of the expression are logged
 - tests can be grouped in [**testsuites**](testcases.md#testsuites)
-- tests can be [**filtered**](commandline.md#filtering) based on their name/file/testsuite
+- tests can be [**filtered**](commandline.md#filtering) based on their name/file/testsuite with wildcards
 - failures can (optionally) break into the debugger on Windows and Mac
 - integration with the output window of Visual Studio for failing tests
 - a ```main()``` can be provided based on [**which macro**](configuration.md) you use in the translation unit you are implementing the library in
@@ -77,6 +77,8 @@ This library was modeled after [**Catch**](https://github.com/philsquared/Catch)
 
 - look at catch command line options (also lest)
 - sorting the test order (also RAND! and SEED!) (by file, by test suite, or both, ASC/DESC...)
+- running tests a few times
+- disabling exceptions!!!
 
 - signal handling for unix: http://www.cplusplus.com/reference/csignal/signal/
 (signals on *NIX platforms or structured exceptions on Windows)
@@ -104,6 +106,10 @@ This library was modeled after [**Catch**](https://github.com/philsquared/Catch)
 - floating point comparison support
 - Bitwise() class that has overloaded operators for comparison - to be used to check objects bitwise against each other
 - timing reports of tests, duration restrictions, kill of longer than (will perhaps require threading), etc...
+- a message macro (also tracepoint/passpoint/info/context and whatever - like in boost.test) (ALSO ERROR/FAIL - like boost)
+- add WARN as third option to CHECK/REQUIRE versions of assertions
+- marking a test as "may fail"
+- marking a test as (run X times (should also multiply with the global test run times))
 - test execution in separate processes - UNIX only with fork() (but windows has some .dll which could help)
 - matchers?
 - detect floating point exceptions
@@ -114,18 +120,18 @@ This library was modeled after [**Catch**](https://github.com/philsquared/Catch)
 
 - BDD based on the subtests - like Catch
 - tagging? also see this: https://github.com/philsquared/Catch/blob/master/docs/test-cases-and-sections.md#special-tags
+- add the ability to query if code is currently being ran in a test - some global of doctest...
 - utf8?
-- a message macro (also tracepoint/passpoint/info/context and whatever - like in boost.test) (ALSO ERROR/FAIL - like boost)
-- add WARN as third option to CHECK/REQUIRE versions of assertions
 - hierarchical test suites? using a stack for the pushed states - should be easy
 - ability to re-run only newly compiled tests - based on timestamps of the __FILE__ in which they are - and stored in some file
+- ability to provide a temp folder to tests that is cleared between them
 - put internals in anonymous namespace (even if already in detail) - even though clang-format will make everything more indented
+- ability to check for memory leaks - comparing memory usage before and after the test with some API
 - wchar stuff in stringify and whatever - see <wchar.h>
 - progress of tests being executed (and an option for it)
-- think about adding support for std::exception and others
+- think about adding support for std::exception and others (mainly catching them so the .what() method can be called)
 - think about parameterising the output alignment to 80 or some other column limit
 - think about the ability to mix different versions of the library within the same executable (like stb libraries)
-- ability to transfer/copy registered functions from one dll to another so they are put in one set and duplicates are filtered
 
 
 
