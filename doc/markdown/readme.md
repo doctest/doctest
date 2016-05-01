@@ -11,3 +11,4 @@ Reference
 - [Configuration](configuration.md)
 - [main() entry point](main.md)
 - [Command line](commandline.md)
+- [Benchmarks](benchmarks.md)

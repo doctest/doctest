@@ -1,36 +1,36 @@
 Features and design goals
 =======
 
-### Why does this library exist and how is it different from all the rest?
+## Why does this library exist and how is it different from all the rest?
 
 There are many c++ testing frameworks - [Catch](https://github.com/philsquared/Catch), [Boost.Test](http://www.boost.org/doc/libs/1_60_0/libs/test/doc/html/index.html), [UnitTest++](https://github.com/unittest-cpp/unittest-cpp), [lest](https://github.com/martinmoene/lest), [bandit](http://banditcpp.org/), [igloo](http://igloo-testing.org/), [xUnit++](https://bitbucket.org/moswald/xunit/wiki/Home), [CppTest](http://cpptest.sourceforge.net/), [CppUnit](https://sourceforge.net/projects/cppunit/), [CxxTest](https://github.com/CxxTest/cxxtest), [cpputest](https://github.com/cpputest/cpputest), [googletest](https://github.com/google/googletest), [cute](https://github.com/Kosta-Github/cute) and many many [other](https://en.wikipedia.org/wiki/List_of_unit_testing_frameworks#C.2B.2B).
 
-doctest is different because it is much **lighter** than all of those and is **unintrusive**. It also offers a way to remove everything testing-related from the resulting binary.
+**doctest** is much **lighter** and is **unintrusive**. It also offers a way to remove everything testing-related from the binary.
  
-This allows the library to be used in a different way - tests can be written in the production code - just like with the ```unittest {}``` functionality of the **D** programming language.
+This allows the library to be used in more ways - tests can be written in the production code - just like with the ```unittest {}``` functionality in the **D** programming language.
 
-- This way the barrier for writing tests is much smaller - you don't have to make a separate source file, include a bunch of stuff in it, add it to the build system and then add it to source control just to test a class or a piece of functionality - you can write the tests at the bottom of the source file (or even header file).
-- Also tests in the production code can be thought of as documentation - they can show how an API is supposed to be used.
-- You can decide to not strip the tests out of the release build and ship them to the customer - this way you may diagnose a problem which happens only to the customer faster.
+- This makes the barrier for writing tests is much lower - you don't have to: **1.** make a separate source file **2.** include a bunch of stuff in it **3.** add it to the build system and **4.** add it to source control - You can just write the tests for a class or a piece of functionality at the bottom of the source file (or even header file).
+- Also tests in the production code can be thought of as documentation or comments - showing how an API is used.
+- Tests can be shipped to the customer with the software to diagnose a bug faster.
 
-Even if you don't see the ability of writing tests in your production code as beneficial the library can still be used like any other - it is (almost) on par with the rest as far as features go and is much lighter and portable (and might have better defaults making it more pleasant to write tests). 
+Even if you don't see the ability of writing tests in your production code as beneficial the library can still be used like any other - it is (almost) on par with the rest as far as features go and is much lighter and portable (and might have better defaults). See the [**features**](Features:)
 
-#### unintrusive:
+### Unintrusive:
 
 - everything testing-related can be removed from the binary executable with a global define - see [**configuration**](configuration.md)
 - very small and easy to integrate - single header - less than 3k LOC in the implementation translation unit and less than 1k LOC everywhere else - **extremely** low footprint on compile times - see the [**benchmarks**](benchmarks.md)
 - doesn't drag any headers when included (except for in the translation unit where the library gets implemented)
-- everything is in the ```doctest``` namespace (and the implementation details are in a nested namespace)
-- all macros have prefixes - some by default have unprefixed versions as well but that can be turned off - see [**configuration**](configuration.md)
+- everything is in the ```doctest``` namespace (and the implementation details are in a nested ```detail``` namespace)
+- all macros have prefixes - some by default have unprefixed versions as well but that is optional - see [**configuration**](configuration.md)
 - 0 warnings even with the most aggresive flags (on all tested compilers!!!)
-	- ```-Weverything -pedantic -std=c++98``` for **clang**
-	- ```-Wall -Wextra -pedantic -std=c++98``` and **>> over 50 <<** other warnings **not** covered by these flags for **GCC**!!! - see [**here**](../../scripts/common.cmake#L59)
+	- ```-Weverything -pedantic``` for **clang**
+	- ```-Wall -Wextra -pedantic``` and **>> over 50 <<** other warnings **not** covered by these flags for **GCC**!!! - see [**here**](../../scripts/common.cmake#L59)
 	- ```/W4``` for **MSVC** (```/Wall``` is too much there - even their own headers produce **thousands** of warnings with that option)
 - doesn't error on unrecognized [**command line**](commandline.md) options and supports prefixes to not clash with user defined ones
-- can set options procedurally and not worry about passing **argc**/```argv``` from the command line
+- can set options procedurally and not worry about passing ```argc```/```argv``` from the command line
 - doesn't leave warnings disabled after itself
 
-#### extremely portable:
+### Extremely portable:
 
 - Standards compliant **C++98** code
 - tested with **GCC**: **4.4**, **4.5**, **4.6**, **4.7**, **4.8**, **4.9**, **5.0**
@@ -43,28 +43,18 @@ Even if you don't see the ability of writing tests in your production code as be
 	- all tests built and ran in **Debug**/**Release**
 	- all tests built and ran in **32**/**64** bit modes
 	- all tests ran through **valgrind** under **Linux**/**OSX**
-	- all tests ran through **address** and **UB** sanitizers under **Linux**/**OSX** of **GCC**/**Clang**
+	- all tests ran through **address** and **UB** sanitizers under **Linux**/**OSX**
 	- passes coverity static analysis (soon to integrate msvc/clang/cppcheck analysis)
-	- good test coverage
 	- tests are ran in a total of **180** different configurations on UNIX (Linux + OSX) on **travis** CI
 	- tests are ran in a total of **18** different configurations on Windows on **appveyor** CI
 
-This library was **strongly** influenced by [**Catch**](https://github.com/philsquared/Catch) and [**lest**](https://github.com/martinmoene/lest) - especially the subcases (called sections in Catch) and the expression decomposition macros.
+This library was modeled after [**Catch**](https://github.com/philsquared/Catch) and [**lest**](https://github.com/martinmoene/lest) - especially the subcases and the expression decomposition macros.
 
-## Features:
+##(Features:)
 
 - can remove everything testing related from the binary with the ```DOCTEST_CONFIG_DISABLE``` macro
 - can write tests in headers - they will still be registered only once
 - the library doesn't use operator ```new```/```delete``` (only ```malloc```) so you can test your ```operator new()```
-  
-
-
-
-
-
-
-
-
 
 ## TODO for release
 
@@ -89,7 +79,6 @@ This library was **strongly** influenced by [**Catch**](https://github.com/phils
 - test for warnings with -std=c++03/11/14/1z
 - benchmark (assimp and empty files - or maybe just empty files)
 - documentation
-- CONTRIBUTING.md - pull requests, travis, formatting, etc.
 - pledgie campaign - more info
 
 ## FUTURE
