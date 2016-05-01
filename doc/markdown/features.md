@@ -1,88 +1,72 @@
 Features and design goals
 =======
 
-This library was **strongly** influenced by [**Catch**](https://github.com/philsquared/Catch) and [**lest**](https://github.com/martinmoene/lest).
+### Why does this library exist and how is it different from all the rest?
 
-list of c++ testing libs
-https://github.com/unittest-cpp/unittest-cpp
-catch
-lest
-etc.
+There are many c++ testing frameworks - [Catch](https://github.com/philsquared/Catch), [Boost.Test](http://www.boost.org/doc/libs/1_60_0/libs/test/doc/html/index.html), [UnitTest++](https://github.com/unittest-cpp/unittest-cpp), [lest](https://github.com/martinmoene/lest), [bandit](http://banditcpp.org/), [igloo](http://igloo-testing.org/), [xUnit++](https://bitbucket.org/moswald/xunit/wiki/Home), [CppTest](http://cpptest.sourceforge.net/), [CppUnit](https://sourceforge.net/projects/cppunit/), [CxxTest](https://github.com/CxxTest/cxxtest), [cpputest](https://github.com/cpputest/cpputest), [googletest](https://github.com/google/googletest), [cute](https://github.com/Kosta-Github/cute) and many many [other](https://en.wikipedia.org/wiki/List_of_unit_testing_frameworks#C.2B.2B).
 
-###extremely portable and bug free
+doctest is different because it is much **lighter** than all of those and is **unintrusive**. It also offers a way to remove everything testing-related from the resulting binary.
+ 
+This allows the library to be used in a different way - tests can be written in the production code - just like with the ```unittest {}``` functionality of the **D** programming language.
 
-- c++98
-- Debug/Release
-- 32/64 bit
-- valgrind, address sanitizer, UB sanitizer, coverity (more static analysis coming soon)
-- tested with gcc under OSX/Linux
-    - 4.4
-    - 4.5
-    - 4.6
-    - 4.7
-    - 4.8
-    - 4.9
-    - 5
-- tested with clang under OSX/Linux
-    - 3.4
-    - 3.5
-    - 3.6
-    - 3.7
-    - 3.8
-- tested with Visual Studio
-    - VC++6 (yes - that 18 year old compiler from 1998)
-    - 2008
-    - 2010
-    - 2012
-    - 2013
-    - 2015
+- This way the barrier for writing tests is much smaller - you don't have to make a separate source file, include a bunch of stuff in it, add it to the build system and then add it to source control just to test a class or a piece of functionality - you can write the tests at the bottom of the source file (or even header file).
+- Also tests in the production code can be thought of as documentation - they can show how an API is supposed to be used.
+- You can decide to not strip the tests out of the release build and ship them to the customer - this way you may diagnose a problem which happens only to the customer faster.
 
-###CI
+Even if you don't see the ability of writing tests in your production code as beneficial the library can still be used like any other - it is (almost) on par with the rest as far as features go and is much lighter and portable (and might have better defaults making it more pleasant to write tests). 
 
-- 180 builds linux/osx
-- 18 builds windows
+#### unintrusive:
 
-###unintrusive:
-
-- everything testing-related can be removed from the binary executable with a global define
-- all macros have prefixes
-    - some by default have unprefixed versions as well but that can be turned off
-- 0 warnings even with the most aggresive flags
+- everything testing-related can be removed from the binary executable with a global define - see [**configuration**](configuration.md)
+- very small and easy to integrate - single header - less than 3k LOC in the implementation translation unit and less than 1k LOC everywhere else - **extremely** low footprint on compile times - see the [**benchmarks**](benchmarks.md)
+- doesn't drag any headers when included (except for in the translation unit where the library gets implemented)
+- everything is in the ```doctest``` namespace (and the implementation details are in a nested namespace)
+- all macros have prefixes - some by default have unprefixed versions as well but that can be turned off - see [**configuration**](configuration.md)
+- 0 warnings even with the most aggresive flags (on all tested compilers!!!)
+	- ```-Weverything -pedantic -std=c++98``` for **clang**
+	- ```-Wall -Wextra -pedantic -std=c++98``` and **>> over 50 <<** other warnings **not** covered by these flags for **GCC**!!! - see [**here**](../../scripts/common.cmake#L59)
+	- ```/W4``` for **MSVC** (```/Wall``` is too much there - even their own headers produce **thousands** of warnings with that option)
+- doesn't error on unrecognized [**command line**](commandline.md) options and supports prefixes to not clash with user defined ones
+- can set options procedurally and not worry about passing **argc**/```argv``` from the command line
 - doesn't leave warnings disabled after itself
-- doesn't drag any headers with itself
-- everything is in doctest namespace
-    - implementation details are in a nested namespace
-- command line
-    - doesn't error on unrecognized options
-    - supports prefixed options that won't clash with user defines ones
-- can set options procedurally and not worry about the command line
+
+#### extremely portable:
+
+- Standards compliant **C++98** code
+- tested with **GCC**: **4.4**, **4.5**, **4.6**, **4.7**, **4.8**, **4.9**, **5.0**
+- tested with **Clang**: **3.4**, **3.5**, **3.6**, **3.7**, **3.8**
+- tested with **MSVC**: **2008**, **2010**, **2012**, **2013**, **2015** (and even **VC++6** - that **18 year old compiler** from 1998!)
+- should work with any **C++98** compiler
+- per-commit tested on **travis** and **appveyor** CI services
+	- warnings as errors even on the most aggressive warning levels - see [**here**](../../scripts/common.cmake#L59)
+	- all tests have their output compared to reference output of a previous known good run
+	- all tests built and ran in **Debug**/**Release**
+	- all tests built and ran in **32**/**64** bit modes
+	- all tests ran through **valgrind** under **Linux**/**OSX**
+	- all tests ran through **address** and **UB** sanitizers under **Linux**/**OSX** of **GCC**/**Clang**
+	- passes coverity static analysis (soon to integrate msvc/clang/cppcheck analysis)
+	- good test coverage
+	- tests are ran in a total of **180** different configurations on UNIX (Linux + OSX) on **travis** CI
+	- tests are ran in a total of **18** different configurations on Windows on **appveyor** CI
+
+This library was **strongly** influenced by [**Catch**](https://github.com/philsquared/Catch) and [**lest**](https://github.com/martinmoene/lest) - especially the subcases (called sections in Catch) and the expression decomposition macros.
+
+## Features:
+
+- can remove everything testing related from the binary with the ```DOCTEST_CONFIG_DISABLE``` macro
+- can write tests in headers - they will still be registered only once
+- the library doesn't use operator ```new```/```delete``` (only ```malloc```) so you can test your ```operator new()```
+  
 
 
 
-- can register tests in headers - they still will be registered only once
-
-
-
-
-- The registration of test functions can be disabled by defining ```DOCTEST_GLOBAL_DISABLE``` before the inclusion of the **doctest.h** header. For large projects with tens of thousands of tests this may reduce the link time of the production build especially if lots of tests are registered in header files and will also reduce the binary size. See **disabled** from the examples folder.
-
-- Tests are registered from top to bottom of each processed cpp after the headers have been preprocessed and included but there is no ordering between cpp files.
-
-- Tests are registered globally within each shared object/executable. If a test is defined in a header and that header is used in an executable and in a shared object, then the test is registered in both places. To see how to invoke tests from a shared object check out **multi_dll** from the examples folder.
-
-- The library does not use operator new/delete (only malloc) so it's memory usage is completely transparent to the user and that makes it fit for testing even memory management.
 
 
 
 
 
-VC6 subcases not working - set a bounty on this:
-http://stackoverflow.com/questions/36940730/preprocessor-problems-with-vc6
-VC6 - templated stringify() overloads will not compile
 
-
-
-
+## TODO for release
 
 - look at catch command line options (also lest)
 - sorting the test order (also RAND! and SEED!) (by file, by test suite, or both, ASC/DESC...)
@@ -202,3 +186,7 @@ https://github.com/nothings/stb/blob/master/docs/other_libs.md
 
 - https://www.google.bg/webhp?sourceid=chrome-instant&ion=1&espv=2&ie=UTF-8#q=list%20of%20testing%20frameworks%20c%2B%2B
 - http://stackoverflow.com/a/33925554/3162383
+
+---------------
+
+[Home](readme.md)

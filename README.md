@@ -34,7 +34,7 @@ Donations would be appreciated very much since I quit my job to write open sourc
 
 Contributions in the form of issues and pull requests are welcome as well.
 
-For pull requests make sure the code is formatted with a recent-enough ```clang-format``` using the config file in the root of the repo (or I will format it after the merge) and that all the builds on ```travis``` and ```appveyor``` pass. Also before making a pull requrest you might want to make an issue about it for a discussion. 
+For pull requests make sure the code is formatted with a recent-enough ```clang-format``` using the config file in the root of the repo (or I will format it after the merge) and that all the builds on ```travis``` and ```appveyor``` pass. Also before making a pull requrest you might want to make an issue about it for a discussion or join the chat on gitter. 
 
 This library has some design goals which must be kept. Make sure you have read the [**features and design goals**](doc/markdown/features.md) page.
 

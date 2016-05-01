@@ -6,10 +6,8 @@ Reference
 
 ---------------
 
-- [Test cases](testcases.md)
 - [Assertion macros](assertions.md)
-- [Subcases and test fixtures](subcases.md)
-- [main() entry point](main.md)
+- [Test cases, subcases and test fixtures](testcases.md)
 - [Configuration](configuration.md)
-- [Testsuites](testsuites.md)
+- [main() entry point](main.md)
 - [Command line](commandline.md)
