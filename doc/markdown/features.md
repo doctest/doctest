@@ -13,7 +13,7 @@ This allows the library to be used in more ways - tests can be written in the pr
 - Also tests in the production code can be thought of as documentation or comments - showing how an API is used.
 - Tests can be shipped to the customer with the software to diagnose a bug faster.
 
-Even if you don't see the ability of writing tests in your production code as beneficial the library can still be used like any other - it is (almost) on par with the rest as far as features go and is much lighter and portable (and might have better defaults). See the [**features**](#features)
+Even if you don't see the ability of writing tests in your production code as beneficial the library can still be used like any other - it is (almost) on par with the rest as far as features go and is much lighter and portable (and might have better defaults). See the [**features**](#Features:)
 
 ### Unintrusive:
 
@@ -50,7 +50,7 @@ Even if you don't see the ability of writing tests in your production code as be
 
 This library was modeled after [**Catch**](https://github.com/philsquared/Catch) and [**lest**](https://github.com/martinmoene/lest) - especially the subcases and the expression decomposition macros.
 
-## features
+## Features:
 
 - can remove everything testing related from the binary with the ```DOCTEST_CONFIG_DISABLE``` macro
 - can write tests in headers - they will still be registered only once
