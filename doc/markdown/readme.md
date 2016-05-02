@@ -9,7 +9,7 @@ Reference
 - [Assertion macros](assertions.md)
 - [Test cases, subcases and test fixtures](testcases.md)
 - [Configuration](configuration.md)
-- [main() entry point](main.md)
+- [main() entry point and dealing with shared objects](main.md)
 - [Command line](commandline.md)
 - [Benchmarks](benchmarks.md)
 - [FAQ](faq.md)
