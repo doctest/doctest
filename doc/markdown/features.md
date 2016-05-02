@@ -14,7 +14,7 @@ Even if you don't see the ability of writing tests in your production code as be
 
 ### Unintrusive (transparent):
 
-- everything testing-related can be removed from the binary executable with a global define - see [**configuration**](configuration.md)
+- everything testing-related can be removed from the binary executable with the [**```DOCTEST_CONFIG_DISABLE```**](configuration.md) macro
 - very small and easy to integrate - single header - less than 3k LOC in the implementation translation unit and less than 1k LOC everywhere else - **extremely** low footprint on compile times - see the [**benchmarks**](benchmarks.md)
 - doesn't drag any headers when included (except for in the translation unit where the library gets implemented)
 - everything is in the ```doctest``` namespace (and the implementation details are in a nested ```detail``` namespace)
@@ -44,13 +44,10 @@ Even if you don't see the ability of writing tests in your production code as be
 	- tests are ran in a total of **180** different configurations on UNIX (Linux + OSX) on **travis** CI
 	- tests are ran in a total of **18** different configurations on Windows on **appveyor** CI
 
-This library was modeled after [**Catch**](https://github.com/philsquared/Catch) and [**lest**](https://github.com/martinmoene/lest) - especially the subcases and the expression decomposition macros.
-
 ## Features
 
 - really easy to get started - [**tutorial**](tutorial.md#tutorial)
 - very light, unintrusive and portable - see the sections above
-- can remove everything testing-related from the binary with the [**```DOCTEST_CONFIG_DISABLE```**](configuration.md) macro
 - tests are registered automatically - no need to add them to a collection manually
 - supports [**subcases**](testcases.md#subcases) for easy setup/teardown of tests (also supports the retro [**test fixtures**](testcases.md#test-fixtures) with classes)
 - only one core [**assertion macro**](assertions.md) for comparisons - standard C++ operators are used for the comparison - yet the full expression is decomposed and left and right values of the expression are logged
@@ -64,6 +61,8 @@ This library was modeled after [**Catch**](https://github.com/philsquared/Catch)
 - [**range-based**](commandline.md#ranges) execution of tests - see the [**multiprocess**](../../examples/multiprocess/) example (the **run.py** script)
 - colored output in the console
 - controlling the order of test execution
+
+This library was modeled after [**Catch**](https://github.com/philsquared/Catch) and [**lest**](https://github.com/martinmoene/lest) - especially the subcases and the expression decomposition macros.
 
 ## TODO for release
 
