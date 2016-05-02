@@ -3,14 +3,14 @@
 There are many C++ testing frameworks - [Catch](https://github.com/philsquared/Catch), [Boost.Test](http://www.boost.org/doc/libs/1_60_0/libs/test/doc/html/index.html), [UnitTest++](https://github.com/unittest-cpp/unittest-cpp), [lest](https://github.com/martinmoene/lest), [bandit](http://banditcpp.org/), [igloo](http://igloo-testing.org/), [xUnit++](https://bitbucket.org/moswald/xunit/wiki/Home), [CppTest](http://cpptest.sourceforge.net/), [CppUnit](https://sourceforge.net/projects/cppunit/), [CxxTest](https://github.com/CxxTest/cxxtest), [cpputest](https://github.com/cpputest/cpputest), [googletest](https://github.com/google/googletest), [cute](https://github.com/Kosta-Github/cute) and many [other](https://en.wikipedia.org/wiki/List_of_unit_testing_frameworks#C.2B.2B).
 
 **doctest** is much **lighter** and is **unintrusive**. It also offers a way to remove **everything** testing-related from the binary.
- 
+
 This allows the library to be used in more ways - tests can be written in the production code - just like with the ```unittest {}``` functionality of the **D** programming language. The name is inspired by the **docstrings** in python.
 
 - This makes the barrier for writing tests much lower - you don't have to: **1.** make a separate source file **2.** include a bunch of stuff in it **3.** add it to the build system and **4.** add it to source control - You can just write the tests for a class or a piece of functionality at the bottom of the source file (or even header file).
 - Also tests in the production code can be thought of as documentation or comments - showing how an API is used.
 - Tests can be shipped to the customer with the software to diagnose a bug faster.
 
-Even if you don't see the ability of writing tests in your production code as beneficial the library can still be used like any other - it is (almost - or will be) on par with the rest as far as features go and is much lighter, portable and clear. See the [**features**](#features).
+The library can be used like any other even if you are not fond of the idea of mixing production code and tests. It is (or will be) on par with most of the other libraries as far as features go but is much lighter, portable and clear - see the [**features**](#features).  
 
 ### Unintrusive (transparent):
 
@@ -24,7 +24,7 @@ Even if you don't see the ability of writing tests in your production code as be
 	- ```-Wall -Wextra -pedantic``` and **>> over 50 <<** other warnings **not** covered by these flags for **GCC**!!! - see [**here**](../../scripts/common.cmake#L59)
 	- ```/W4``` for **MSVC** (```/Wall``` is too much there - even their own headers produce **thousands** of warnings with that option)
 - doesn't error on unrecognized [**command line**](commandline.md) options and supports prefixes to not clash with user defined ones
-- can set options procedurally and not worry about passing ```argc```/```argv``` from the command line
+- can set options [**procedurally**](main.md) and not worry about passing ```argc```/```argv``` from the command line
 - doesn't leave warnings disabled after itself
 
 ### Extremely portable:
@@ -46,11 +46,12 @@ Even if you don't see the ability of writing tests in your production code as be
 
 ## Features
 
-- really easy to get started - [**tutorial**](tutorial.md#tutorial)
+- really easy to get started - it's just 1 header file - see the [**tutorial**](tutorial.md#tutorial)
 - very light, unintrusive and portable - see the sections above
 - tests are registered automatically - no need to add them to a collection manually
 - supports [**subcases**](testcases.md#subcases) for easy setup/teardown of tests (also supports the retro [**test fixtures**](testcases.md#test-fixtures) with classes)
-- only one core [**assertion macro**](assertions.md) for comparisons - standard C++ operators are used for the comparison - yet the full expression is decomposed and left and right values of the expression are logged
+- only one core [**assertion macro**](assertions.md) for comparisons - standard C++ operators are used for the comparison (less than, equal, greater than...) - yet the full expression is decomposed and left and right values of the expression are logged
+- assertion macros for [**exceptions**](assertions.md) - if something should or shouldn't throw
 - tests can be grouped in [**testsuites**](testcases.md#testsuites)
 - tests can be [**filtered**](commandline.md#filtering) based on their name/file/testsuite using wildcards
 - failures can (optionally) break into the debugger on Windows and Mac
@@ -70,6 +71,7 @@ This library was modeled after [**Catch**](https://github.com/philsquared/Catch)
 - sorting the test order (also RAND! and SEED!) (by file, by test suite, or both, ASC/DESC...)
 - running tests a few times
 - disabling exceptions!!!
+- rewrite internals so there aren't that many getters of static data - maybe just 1 getter of a global struct of such flags
 
 - signal handling for unix: http://www.cplusplus.com/reference/csignal/signal/
 (signals on *NIX platforms or structured exceptions on Windows)

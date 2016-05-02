@@ -3,10 +3,10 @@ the lightest and feature rich C++ single header testing framework
 
 The **doctest** library is inspired by the ```unittest``` functionality of the **D** programming language and the **docstrings** in python - tests can be considered a form of documentation and _should_ be able to reside near the production code which they test.
 
-- Check out [**features and design goals**](doc/markdown/features.md#features-and-design-goals) to see why this library exists and how it is different from all the rest.
-- Check out the tutorial [**here**](doc/markdown/tutorial.md).
+- Check out [**features and design goals**](doc/markdown/features.md##the-lightest-and-feature-rich-c-single-header-testing-framework) to see why this library exists and how it is different from all the rest.
+- Check out the tutorial [**here**](doc/markdown/tutorial.md#tutorial).
 - [![Try it online](https://img.shields.io/badge/try%20it-online-orange.svg)](http://melpon.org/wandbox/permlink/xvF0y5DTzIDLN98f)
-- [![documentation](https://img.shields.io/badge/documentation-online%20%20%20%20%20-blue.svg)](doc/markdown/readme.md)
+- [![documentation](https://img.shields.io/badge/documentation-online%20%20%20%20%20-blue.svg)](doc/markdown/readme.md#reference)
 - [![download](https://img.shields.io/badge/latest%20version%20%20-download-blue.svg)](https://raw.githubusercontent.com/onqtam/doctest/master/doctest/doctest.h)
 
 [![Language](https://img.shields.io/badge/language-C++-blue.svg)](https://isocpp.org/)
