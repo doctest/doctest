@@ -106,16 +106,6 @@
 #define __debugbreak() __asm { int 3}
 #endif
 
-#if !defined(DOCTEST_CONFIG_COLORS_NONE)
-#if !defined(DOCTEST_CONFIG_COLORS_WINDOWS) && !defined(DOCTEST_CONFIG_COLORS_ANSI)
-#ifdef DOCTEST_PLATFORM_WINDOWS
-#define DOCTEST_CONFIG_COLORS_WINDOWS
-#else // linux
-#define DOCTEST_CONFIG_COLORS_ANSI
-#endif // platform
-#endif // DOCTEST_CONFIG_COLORS_WINDOWS && DOCTEST_CONFIG_COLORS_ANSI
-#endif // DOCTEST_CONFIG_COLORS_NONE
-
 #ifdef DOCTEST_PLATFORM_MAC
 // The following code snippet based on:
 // http://cocoawithlove.com/2008/03/break-into-debugger.html
@@ -544,7 +534,7 @@ namespace detail
 #define DOCTEST_REQUIRE(expr) DOCTEST_ASSERT_PROXY(expr, "REQUIRE", false, ((void)0))
 
 #define DOCTEST_CHECK_FALSE(expr) DOCTEST_ASSERT_PROXY(expr, "CHECK_FALSE", true, res.invert())
-#define DOCTEST_REQUIRE_FALSE(expr) DOCTEST_ASSERT_PROXY(expr, "REQUIRE", false, res.invert())
+#define DOCTEST_REQUIRE_FALSE(expr) DOCTEST_ASSERT_PROXY(expr, "REQUIRE_FALSE", false, res.invert())
 
 #define DOCTEST_ASSERT_THROWS(expr, is_check)                                                      \
     do {                                                                                           \
@@ -697,6 +687,24 @@ DOCTEST_TESTSUITE_END;
         !defined(DOCTEST_CONFIG_DISABLE)
 #ifndef DOCTEST_LIBRARY_IMPLEMENTATION
 #define DOCTEST_LIBRARY_IMPLEMENTATION
+
+#if !defined(DOCTEST_CONFIG_COLORS_NONE)
+#if !defined(DOCTEST_CONFIG_COLORS_WINDOWS) && !defined(DOCTEST_CONFIG_COLORS_ANSI)
+#ifdef DOCTEST_PLATFORM_WINDOWS
+#define DOCTEST_CONFIG_COLORS_WINDOWS
+#else // linux
+#define DOCTEST_CONFIG_COLORS_ANSI
+#endif // platform
+#endif // DOCTEST_CONFIG_COLORS_WINDOWS && DOCTEST_CONFIG_COLORS_ANSI
+#endif // DOCTEST_CONFIG_COLORS_NONE
+
+#define DOCTEST_PRINTF_COLORED(buffer, color)                                                      \
+    do {                                                                                           \
+        if(buffer[0] != 0) {                                                                       \
+            doctest::detail::Color col(color);                                                     \
+            printf("%s", buffer);                                                                  \
+        }                                                                                          \
+    } while(doctest::detail::always_false())
 
 // required includes - will go only in one translation unit!
 #include <cstdio>  // printf, fprintf, sprintf, snprintf
@@ -1362,17 +1370,35 @@ namespace detail
         getNumAssertions()++;
 
         if(!res.m_passed || threw) {
-            char buffer[DOCTEST_SNPRINTF_BUFFER_LENGTH];
-            DOCTEST_SNPRINTF(buffer, DOCTEST_COUNTOF(buffer), "%s(%d): FAILED! %s\n  %s( %s )\n\n",
-                             fileForOutput(file), line, (threw ? "(threw exception)" : ""),
-                             assert_name, (threw ? expr : res.m_decomposition.c_str()));
+            char loc[DOCTEST_SNPRINTF_BUFFER_LENGTH];
+            DOCTEST_SNPRINTF(loc, DOCTEST_COUNTOF(loc), "%s(%d)", fileForOutput(file), line);
 
-            if(isDebuggerActive())
-                writeToDebugConsole(buffer);
+            char msg[DOCTEST_SNPRINTF_BUFFER_LENGTH];
+            DOCTEST_SNPRINTF(msg, DOCTEST_COUNTOF(msg), " FAILED! %s\n",
+                             (threw ? "(threw exception)" : ""));
 
-            Color col(Color::Red);
+            char info1[DOCTEST_SNPRINTF_BUFFER_LENGTH];
+            DOCTEST_SNPRINTF(info1, DOCTEST_COUNTOF(info1), "  %s( %s )\n", assert_name, expr);
 
-            printf("%s", buffer);
+            char info2[DOCTEST_SNPRINTF_BUFFER_LENGTH];
+            char info3[DOCTEST_SNPRINTF_BUFFER_LENGTH];
+            info2[0] = 0;
+            if(!threw) {
+                DOCTEST_SNPRINTF(info2, DOCTEST_COUNTOF(info2), "with expansion:\n");
+                DOCTEST_SNPRINTF(info3, DOCTEST_COUNTOF(info3), "  %s( %s )\n\n", assert_name,
+                                 res.m_decomposition.c_str());
+            }
+
+            if(isDebuggerActive()) {
+                String concat = String(loc) + msg + info1 + info2 + info3;
+                writeToDebugConsole(concat.c_str());
+            }
+
+            DOCTEST_PRINTF_COLORED(loc, Color::Cyan);
+            DOCTEST_PRINTF_COLORED(msg, Color::Red);
+            DOCTEST_PRINTF_COLORED(info1, Color::Green);
+            DOCTEST_PRINTF_COLORED(info2, Color::Cyan);
+            DOCTEST_PRINTF_COLORED(info3, Color::Green);
 
             getNumFailedAssertions()++;
 
@@ -1457,7 +1483,7 @@ namespace detail
     bool parseFlagImpl(int argc, const char* const* argv, const char* pattern) {
         for(int i = argc - 1; i >= 0; --i) {
             const char* temp = strstr(argv[i], pattern);
-            if(temp) {
+            if(temp && my_strlen(temp) == my_strlen(pattern)) {
                 // eliminate strings in which the chars before the option are not '-'
                 bool noBadCharsFound = true;
                 while(temp != argv[i]) {
@@ -1654,7 +1680,8 @@ Context::Context(int argc, const char* const* argv) {
 
     p.help    = false;
     p.version = false;
-    if(parseFlag(argc, argv, "dt-help")) {
+    if(parseFlag(argc, argv, "dt-help") || parseFlag(argc, argv, "dt-h") ||
+       parseFlag(argc, argv, "dt-?")) {
         p.help = true;
         p.exit = true;
     }

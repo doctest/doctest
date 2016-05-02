@@ -1,8 +1,8 @@
 Reference
 =======
 
-- [Features and design goals](features.md) - what makes this library different from all the rest
-- [Tutorial](tutorial.md)
+- [Features and design goals](features.md#why-does-this-library-exist-and-how-is-it-different-from-all-the-rest) - what makes this library different from all the rest
+- [Tutorial](tutorial.md#tutorial)
 
 ---------------
 

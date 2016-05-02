@@ -63,15 +63,15 @@ The library can be used like any other even if you are not fond of the idea of m
 - colored output in the console
 - controlling the order of test execution
 
-This library was modeled after [**Catch**](https://github.com/philsquared/Catch) and [**lest**](https://github.com/martinmoene/lest) - especially the subcases and the expression decomposition macros.
-
 ## TODO for release
 
 - look at catch command line options (also lest)
 - sorting the test order (also RAND! and SEED!) (by file, by test suite, or both, ASC/DESC...)
 - running tests a few times
 - disabling exceptions!!!
-- rewrite internals so there aren't that many getters of static data - maybe just 1 getter of a global struct of such flags
+- rewrite internals so there aren't that many getters of static data - maybe just 1 getter of a global struct of such flags - getGlobals()
+- the library should print its version before running tests
+- print the test name on the first failed assert (or atleast the position) - like catch
 
 - signal handling for unix: http://www.cplusplus.com/reference/csignal/signal/
 (signals on *NIX platforms or structured exceptions on Windows)
@@ -97,7 +97,6 @@ This library was modeled after [**Catch**](https://github.com/philsquared/Catch)
 - gcc 6
 - pool allocator for String class
 - floating point comparison support
-- Bitwise() class that has overloaded operators for comparison - to be used to check objects bitwise against each other
 - timing reports of tests, duration restrictions, kill of longer than (will perhaps require threading), etc...
 - a message macro (also tracepoint/passpoint/info/context and whatever - like in boost.test) (ALSO ERROR/FAIL - like boost)
 - add WARN as third option to CHECK/REQUIRE versions of assertions
@@ -112,6 +111,7 @@ This library was modeled after [**Catch**](https://github.com/philsquared/Catch)
 ## UNSURE
 
 - BDD based on the subtests - like Catch
+- Bitwise() class that has overloaded operators for comparison - to be used to check objects bitwise against each other (or maybe not - because of packing!)
 - tagging? also see this: https://github.com/philsquared/Catch/blob/master/docs/test-cases-and-sections.md#special-tags
 - add the ability to query if code is currently being ran in a test - some global of doctest...
 - utf8?
@@ -169,4 +169,4 @@ https://github.com/nothings/stb/blob/master/docs/other_libs.md
 
 ---------------
 
-[Home](readme.md)
+[Home](readme.md#reference)
