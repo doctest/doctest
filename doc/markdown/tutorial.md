@@ -34,7 +34,7 @@ This will compile to a complete executable which responds to command line argume
 
 If you run this as written it will pass. Everything is good. Right? Well, there is still a bug here. We missed to check if ```factorial(0) == 1``` so lets add that check as well:
 
-```
+```c++
 TESTCASE("testing the factorial function") {
     CHECK(factorial(0) == 1);
     CHECK(factorial(1) == 1);
@@ -114,9 +114,8 @@ So far so good - this is already an improvement on the setup/teardown approach b
 
 The power of sections really shows, however, when we need to execute a sequence of, checked, operations. Continuing the vector example, we might want to verify that attempting to reserve a capacity smaller than the current capacity of the vector changes nothing. We can do that, naturally, like so:
 
-<table><tr><td>
+<table width=100%><tr><td>
 <pre lang="c++">
-```c++
 #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 #include "doctest/doctest/doctest.h"
 
@@ -144,11 +143,9 @@ TESTCASE("lots of nested subcases") {
         SUBCASE("") { cout << "2.4" << endl; }
     }
 }
-```
 </pre>
 </td><td>
 <pre lang="">
-```
 root
 1
 1.1
@@ -176,70 +173,8 @@ root
 root
 2
 2.4
-```
 </pre>
 </td></tr></table>
-```c++
-#define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
-#include "doctest/doctest/doctest.h"
-
-#include <iostream>
-using namespace std;
-
-TESTCASE("lots of nested subcases") {
-    cout << endl << "root" << endl;
-    SUBCASE("") {
-        cout << "1" << endl;
-        SUBCASE("") { cout << "1.1" << endl; }
-    }
-    SUBCASE("") {   
-        cout << "2" << endl;
-        SUBCASE("") { cout << "2.1" << endl; }
-        SUBCASE("") {
-            cout << "2.2" << endl;
-            SUBCASE("") {
-                cout << "2.2.1" << endl;
-                SUBCASE("") { cout << "2.2.1.1" << endl; }
-                SUBCASE("") { cout << "2.2.1.2" << endl; }
-            }
-        }
-        SUBCASE("") { cout << "2.3" << endl; }
-        SUBCASE("") { cout << "2.4" << endl; }
-    }
-}
-```
-
-this will print the following:
-
-```
-root
-1
-1.1
-
-root
-2
-2.1
-
-root
-2
-2.2
-2.2.1
-2.2.1.1
-
-root
-2
-2.2
-2.2.1
-2.2.1.2
-
-root
-2
-2.3
-
-root
-2
-2.4
-```
 
 You can check out how subcases are implemented in [**this example**](../../examples/how_subcases_work/main.cpp).
 
