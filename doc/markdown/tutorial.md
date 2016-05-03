@@ -114,12 +114,16 @@ So far so good - this is already an improvement on the setup/teardown approach b
 
 The power of sections really shows, however, when we need to execute a sequence of, checked, operations. Continuing the vector example, we might want to verify that attempting to reserve a capacity smaller than the current capacity of the vector changes nothing. We can do that, naturally, like so:
 
-<table width=100%><tr><td>
+<table><tr><td>
+Code
+</td><td>
+Output
+</td></tr><tr><td>
 <pre lang="c++">
 #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 #include "doctest/doctest/doctest.h"
 
-#include <iostream>
+#include &lt;iostream&gt;
 using namespace std;
 
 TESTCASE("lots of nested subcases") {
@@ -146,7 +150,7 @@ TESTCASE("lots of nested subcases") {
 </pre>
 </td><td>
 <pre lang="">
-root
+root &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 1
 1.1
 
