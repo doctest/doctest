@@ -14,7 +14,7 @@ The library can be used like any other even if you are not fond of the idea of m
 
 ### Unintrusive (transparent):
 
-- everything testing-related can be removed from the binary executable with the [**```DOCTEST_CONFIG_DISABLE```**](configuration.md) macro
+- everything testing-related can be removed from the binary executable by defining the [**```DOCTEST_CONFIG_DISABLE```**](configuration.md) identifier
 - very small and easy to integrate - single header - less than 3k LOC in the implementation translation unit and less than 1k LOC everywhere else - **extremely** low footprint on compile times - see the [**benchmarks**](benchmarks.md)
 - doesn't drag any headers when included (except for in the translation unit where the library gets implemented)
 - everything is in the ```doctest``` namespace (and the implementation details are in a nested ```detail``` namespace)
@@ -49,14 +49,14 @@ The library can be used like any other even if you are not fond of the idea of m
 - really easy to get started - it's just 1 header file - see the [**tutorial**](tutorial.md#tutorial)
 - very light, unintrusive and portable - see the sections above
 - tests are registered automatically - no need to add them to a collection manually
-- supports [**subcases**](testcases.md#subcases) for easy setup/teardown of tests (also supports the retro [**test fixtures**](testcases.md#test-fixtures) with classes)
+- supports [**sub cases**](testcases.md#subcases) for easy setup/teardown of tests (also supports the retro [**test fixtures**](testcases.md#test-fixtures) with classes)
 - only one core [**assertion macro**](assertions.md) for comparisons - standard C++ operators are used for the comparison (less than, equal, greater than...) - yet the full expression is decomposed and left and right values of the expression are logged
 - assertion macros for [**exceptions**](assertions.md) - if something should or shouldn't throw
 - tests can be grouped in [**testsuites**](testcases.md#testsuites)
 - tests can be [**filtered**](commandline.md#filtering) based on their name/file/testsuite using wildcards
 - failures can (optionally) break into the debugger on Windows and Mac
 - integration with the output window of Visual Studio for failing tests
-- a ```main()``` can be provided when implementing the library with the [**```DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN```**](main.md) macro
+- a ```main()``` can be provided when implementing the library with the [**```DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN```**](main.md) identifier
 - can write tests in headers - they will still be registered only once in the executable/shared object
 - the library doesn't use operator ```new```/```delete``` (only ```malloc```) so you can test your ```operator new()``` usage
 - [**range-based**](commandline.md#ranges) execution of tests - see the [**multiprocess**](../../examples/multiprocess/) example (the **run.py** script)
@@ -110,7 +110,7 @@ The library can be used like any other even if you are not fond of the idea of m
 
 ## UNSURE
 
-- BDD based on the subtests - like Catch
+- BDD based on the sub cases - like Catch
 - Bitwise() class that has overloaded operators for comparison - to be used to check objects bitwise against each other (or maybe not - because of packing!)
 - tagging? also see this: https://github.com/philsquared/Catch/blob/master/docs/test-cases-and-sections.md#special-tags
 - add the ability to query if code is currently being ran in a test - some global of doctest...
