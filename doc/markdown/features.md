@@ -65,6 +65,8 @@ The library can be used like any other even if you are not fond of the idea of m
 
 ## TODO for release
 
+- colors in output
+
 - look at catch command line options (also lest)
 - sorting the test order (also RAND! and SEED!) (by file, by test suite, or both, ASC/DESC...)
 - running tests a few times
@@ -76,14 +78,7 @@ The library can be used like any other even if you are not fond of the idea of m
 - signal handling for unix: http://www.cplusplus.com/reference/csignal/signal/
 (signals on *NIX platforms or structured exceptions on Windows)
 
-- colors in output
-- MSVC/IDE integration
-- make a compact reporter (for within ide-s - just the file and line number)
-- streaming reporters???
-- xml reporter (jUnit compatible, etc.)
-
 - think about the expression decomposition static asserts
-- kosta - test pledgie
 
 - the help!
 - examples and test coverage
@@ -91,9 +86,10 @@ The library can be used like any other even if you are not fond of the idea of m
 - test for warnings with -std=c++03/11/14/1z
 - benchmark (assimp and empty files - or maybe just empty files)
 - documentation
-- pledgie campaign - more info
 
 ## FUTURE
+- make a compact reporter
+- xml reporter (jUnit/xUnit compatible, etc.)
 - gcc 6
 - pool allocator for String class
 - floating point comparison support

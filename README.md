@@ -1,7 +1,7 @@
 the lightest and feature rich C++ single header testing framework
 -------
 
-The **doctest** library is inspired by the ```unittest``` functionality of the **D** programming language and the **docstrings** in python - tests can be considered a form of documentation and _should_ be able to reside near the production code which they test.
+The **doctest** library is inspired by the ```unittest {}``` functionality of the **D** programming language and the **docstrings** in python - tests can be considered a form of documentation and _should_ be able to reside near the production code which they test.
 
 It is modeled after [**Catch**](https://github.com/philsquared/Catch) (and [**lest**](https://github.com/martinmoene/lest)) which is currently the most popular, simple and user friendly library out there.
 
