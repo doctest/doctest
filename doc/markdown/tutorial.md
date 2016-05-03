@@ -53,7 +53,7 @@ with expansion:
   CHECK( 0 == 1 )
 ```
 
-Note that we get the actual return value of ```factorial(0)``` printed for us (0) - even though we used a natural expression with the == operator. That let's us immediately see what the problem is.
+Note that we get the actual return value of ```factorial(0)``` printed for us (0) - even though we used a natural expression with the ```==``` operator. That let's us immediately see what the problem is.
 
 Let's change the factorial function to:
 
@@ -148,7 +148,7 @@ TESTCASE("lots of nested subcases") {
 </pre>
 </td><td>
 <pre lang="">
-root &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+root &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 1
 1.1
 
@@ -201,7 +201,7 @@ In fact it is usually a good idea to put the block with the ```#define``` in it'
 
 This has been a brief introduction to get you up and running with **doctest** and to point out some of the key differences between **doctest** and other frameworks you may already be familiar with. This will get you going quite far already and you are now in a position to dive in and write some tests.
 
-Of course there is more to learn - see the ever-growing [**Reference**](readme.md#reference) section for what's available.
+Of course there is more to learn - see the ever-growing [**reference**](readme.md#reference) section for what's available.
 
 ---------------
 
