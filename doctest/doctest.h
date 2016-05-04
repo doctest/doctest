@@ -197,7 +197,12 @@ namespace detail
     // the function type this library works with
     typedef void (*funcType)(void);
 
-    inline bool always_false() { return false; }
+    struct TestFailureException
+    {};
+
+    inline void  throwException() { throw doctest::detail::TestFailureException(); }
+    inline bool  always_false() { return false; }
+    inline void* getNullPtr() { return 0; }
 
     template <class T>
     class Vector
@@ -355,9 +360,6 @@ namespace detail
         }
     };
 
-    struct TestFailureException
-    {};
-
     // forward declarations of functions used by the macros
     int regTest(void (*f)(void), unsigned line, const char* file, const char* name);
     int setTestSuiteName(const char* name);
@@ -365,16 +367,11 @@ namespace detail
     void logAssert(const Result& res, bool threw, const char* expr, const char* assert_name,
                    const char* file, int line);
 
-    void logAssertThrows(bool threw, const char* expr, const char* assert_name, const char* file,
-                         int line);
-
     void logAssertThrowsAs(bool threw, bool threw_as, const char* as, const char* expr,
                            const char* assert_name, const char* file, int line);
 
     void logAssertNothrow(bool threw, const char* expr, const char* assert_name, const char* file,
                           int line);
-
-    inline void throwException() { throw doctest::detail::TestFailureException(); }
 
     bool isDebuggerActive();
     void writeToDebugConsole(const String&);
@@ -604,7 +601,9 @@ public:
         } catch(...) { threw = true; }                                                             \
         if(!threw)                                                                                 \
             DOCTEST_BREAK_INTO_DEBUGGER();                                                         \
-        doctest::detail::logAssertThrows(threw, #expr, assert_name, __FILE__, __LINE__);           \
+        doctest::detail::logAssertThrowsAs(                                                        \
+                threw, true, static_cast<const char*>(doctest::detail::getNullPtr()), #expr,       \
+                assert_name, __FILE__, __LINE__);                                                  \
         require_op;                                                                                \
     } while(doctest::detail::always_false())
 
@@ -1440,33 +1439,6 @@ namespace detail
         }
     }
 
-    void logAssertThrows(bool threw, const char* expr, const char* assert_name, const char* file,
-                         int line) {
-        getContextState()->numAssertions++;
-
-        if(!threw) {
-            char loc[DOCTEST_SNPRINTF_BUFFER_LENGTH];
-            DOCTEST_SNPRINTF(loc, DOCTEST_COUNTOF(loc), "%s(%d)", fileForOutput(file), line);
-
-            char msg[DOCTEST_SNPRINTF_BUFFER_LENGTH];
-            DOCTEST_SNPRINTF(msg, DOCTEST_COUNTOF(msg), " FAILED!\n");
-
-            char info1[DOCTEST_SNPRINTF_BUFFER_LENGTH];
-            DOCTEST_SNPRINTF(info1, DOCTEST_COUNTOF(info1), "  %s( %s )\n", assert_name, expr);
-
-            if(isDebuggerActive()) {
-                String concat = String(loc) + msg + info1;
-                writeToDebugConsole(concat.c_str());
-            }
-
-            DOCTEST_PRINTF_COLORED(loc, Color::Cyan);
-            DOCTEST_PRINTF_COLORED(msg, Color::Red);
-            DOCTEST_PRINTF_COLORED(info1, Color::Green);
-
-            getContextState()->numFailedAssertionsForCurrentTestcase++;
-        }
-    }
-
     void logAssertThrowsAs(bool threw, bool threw_as, const char* as, const char* expr,
                            const char* assert_name, const char* file, int line) {
         getContextState()->numAssertions++;
@@ -1476,8 +1448,9 @@ namespace detail
             DOCTEST_SNPRINTF(loc, DOCTEST_COUNTOF(loc), "%s(%d)", fileForOutput(file), line);
 
             char msg[DOCTEST_SNPRINTF_BUFFER_LENGTH];
-            DOCTEST_SNPRINTF(msg, DOCTEST_COUNTOF(msg), " FAILED! %s\n",
-                             (threw ? "(threw a different exception)" : "(didn't throw at all)"));
+            DOCTEST_SNPRINTF(
+                    msg, DOCTEST_COUNTOF(msg), " FAILED! %s\n",
+                    (as ? (threw ? "(threw something else)" : "(didn't throw at all)") : ""));
 
             char info1[DOCTEST_SNPRINTF_BUFFER_LENGTH];
             DOCTEST_SNPRINTF(info1, DOCTEST_COUNTOF(info1), "  %s( %s, %s )\n", assert_name, expr,
