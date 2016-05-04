@@ -10,17 +10,18 @@
 
 namespace doctest
 {
-    static String stringify(ADL_helper, const std::string& in) {
-        return String("\"") + in.c_str() + "\"";
-    }
+template <>
+String stringify(ADL_helper, const std::string& in) {
+    return String("\"") + in.c_str() + "\"";
+}
 
-    template <typename T>
-    String stringify(ADL_helper, const std::vector<T>& in) {
-        String out("vector[");
-        for (unsigned i = 0; i < in.size(); ++i)
-            out += stringify(ADL_helper(), in[i]) + (i + 1 == in.size() ? "]" : ", ");
-        return out;
-    }
+template <typename T>
+String stringify(ADL_helper, const std::vector<T>& in) {
+    String out("vector[");
+    for(unsigned i = 0; i < in.size(); ++i)
+        out += stringify(ADL_helper(), in[i]) + (i + 1 == in.size() ? "]" : ", ");
+    return out;
+}
 } // namespace doctest
 
 TESTSUITE("MAIN");
@@ -85,11 +86,9 @@ void nothrows(); // to silence GCC "-Wmissing-declarations"
 void nothrows() {}
 
 TESTCASE("zzz") {
-
     int a = 5;
     int b = 5;
     CHECK(&a == &b);
-
 
     CHECK(0);
 

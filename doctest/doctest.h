@@ -358,6 +358,28 @@ namespace detail
     struct TestFailureException
     {};
 
+    // forward declarations of functions used by the macros
+    int regTest(void (*f)(void), unsigned line, const char* file, const char* name);
+    int setTestSuiteName(const char* name);
+
+    void logAssert(const Result& res, bool threw, const char* expr, const char* assert_name,
+                   const char* file, int line);
+
+    void logAssertThrows(bool threw, const char* expr, const char* assert_name, const char* file,
+                         int line);
+
+    void logAssertThrowsAs(bool threw, bool threw_as, const char* as, const char* expr,
+                           const char* assert_name, const char* file, int line);
+
+    void logAssertNothrow(bool threw, const char* expr, const char* assert_name, const char* file,
+                          int line);
+
+    inline void throwException() { throw doctest::detail::TestFailureException(); }
+
+    bool isDebuggerActive();
+    void writeToDebugConsole(const String&);
+
+    // this holds both parameters for the command line and runtime data for tests
     struct ContextState
     {
         // == parameters from the command line
@@ -443,29 +465,6 @@ public:
 
 // if registering is not disabled
 #if !defined(DOCTEST_CONFIG_DISABLE)
-
-namespace doctest
-{
-namespace detail
-{
-    // forward declarations of functions used by the macros
-    int regTest(void (*f)(void), unsigned line, const char* file, const char* name);
-    int setTestSuiteName(const char* name);
-
-    bool logAssert(const Result& res, bool threw, const char* expr, const char* assert_name,
-                   bool is_check, const char* file, int line);
-
-    bool logAssertThrows(const char* expr, bool threw, bool is_check, const char* file, int line);
-
-    bool logAssertThrowsAs(const char* expr, const char* as, bool threw, bool threw_as,
-                           bool is_check, const char* file, int line);
-
-    bool logAssertNothrow(const char* expr, bool threw, bool is_check, const char* file, int line);
-
-    bool isDebuggerActive();
-    void writeToDebugConsole(const String&);
-} // namespace detail
-} // namespace doctest
 
 // registers the test by initializing a dummy var with a function
 #if defined(__GNUC__) && !defined(__clang__)
@@ -562,7 +561,7 @@ namespace detail
     void       DOCTEST_ANONYMOUS(DOCTEST_AUTOGEN_FOR_SEMICOLON_)()
 #endif // MSVC
 
-#define DOCTEST_ASSERT_IMPLEMENT(expr, assert_name, is_check, false_invert_op)                     \
+#define DOCTEST_ASSERT_IMPLEMENT(expr, assert_name, require_op, false_invert_op)                   \
     doctest::detail::Result res;                                                                   \
     bool                    threw = false;                                                         \
     try {                                                                                          \
@@ -571,31 +570,33 @@ namespace detail
     false_invert_op;                                                                               \
     if(res || threw)                                                                               \
         DOCTEST_BREAK_INTO_DEBUGGER();                                                             \
-    if(doctest::detail::logAssert(res, threw, #expr, assert_name, is_check, __FILE__, __LINE__))   \
-        throw doctest::detail::TestFailureException();
+    doctest::detail::logAssert(res, threw, #expr, assert_name, __FILE__, __LINE__);                \
+    require_op;
 
 #if defined(__clang__)
-#define DOCTEST_ASSERT_PROXY(expr, assert_name, is_check, false_invert_op)                         \
+#define DOCTEST_ASSERT_PROXY(expr, assert_name, require_op, false_invert_op)                       \
     do {                                                                                           \
         _Pragma("clang diagnostic push")                                                           \
                 _Pragma("clang diagnostic ignored \"-Woverloaded-shift-op-parentheses\"")          \
-                        DOCTEST_ASSERT_IMPLEMENT(expr, assert_name, is_check, false_invert_op)     \
+                        DOCTEST_ASSERT_IMPLEMENT(expr, assert_name, require_op, false_invert_op)   \
                                 _Pragma("clang diagnostic pop")                                    \
     } while(doctest::detail::always_false())
 #else // __clang__
-#define DOCTEST_ASSERT_PROXY(expr, assert_name, is_check, false_invert_op)                         \
+#define DOCTEST_ASSERT_PROXY(expr, assert_name, require_op, false_invert_op)                       \
     do {                                                                                           \
-        DOCTEST_ASSERT_IMPLEMENT(expr, assert_name, is_check, false_invert_op)                     \
+        DOCTEST_ASSERT_IMPLEMENT(expr, assert_name, require_op, false_invert_op)                   \
     } while(doctest::detail::always_false())
 #endif // __clang__
 
-#define DOCTEST_CHECK(expr) DOCTEST_ASSERT_PROXY(expr, "CHECK", true, ((void)0))
-#define DOCTEST_REQUIRE(expr) DOCTEST_ASSERT_PROXY(expr, "REQUIRE", false, ((void)0))
+#define DOCTEST_CHECK(expr) DOCTEST_ASSERT_PROXY(expr, "CHECK", ((void)0), ((void)0))
+#define DOCTEST_REQUIRE(expr)                                                                      \
+    DOCTEST_ASSERT_PROXY(expr, "REQUIRE", doctest::detail::throwException(), ((void)0))
 
-#define DOCTEST_CHECK_FALSE(expr) DOCTEST_ASSERT_PROXY(expr, "CHECK_FALSE", true, res.invert())
-#define DOCTEST_REQUIRE_FALSE(expr) DOCTEST_ASSERT_PROXY(expr, "REQUIRE_FALSE", false, res.invert())
+#define DOCTEST_CHECK_FALSE(expr) DOCTEST_ASSERT_PROXY(expr, "CHECK_FALSE", ((void)0), res.invert())
+#define DOCTEST_REQUIRE_FALSE(expr)                                                                \
+    DOCTEST_ASSERT_PROXY(expr, "REQUIRE_FALSE", doctest::detail::throwException(), res.invert())
 
-#define DOCTEST_ASSERT_THROWS(expr, is_check)                                                      \
+#define DOCTEST_ASSERT_THROWS(expr, assert_name, require_op)                                       \
     do {                                                                                           \
         bool threw = false;                                                                        \
         try {                                                                                      \
@@ -603,11 +604,11 @@ namespace detail
         } catch(...) { threw = true; }                                                             \
         if(!threw)                                                                                 \
             DOCTEST_BREAK_INTO_DEBUGGER();                                                         \
-        if(doctest::detail::logAssertThrows(#expr, threw, is_check, __FILE__, __LINE__))           \
-            throw doctest::detail::TestFailureException();                                         \
+        doctest::detail::logAssertThrows(threw, #expr, assert_name, __FILE__, __LINE__);           \
+        require_op;                                                                                \
     } while(doctest::detail::always_false())
 
-#define DOCTEST_ASSERT_THROWS_AS(expr, as, is_check)                                               \
+#define DOCTEST_ASSERT_THROWS_AS(expr, as, assert_name, require_op)                                \
     do {                                                                                           \
         bool threw    = false;                                                                     \
         bool threw_as = false;                                                                     \
@@ -619,12 +620,12 @@ namespace detail
         } catch(...) { threw = true; }                                                             \
         if(!threw_as)                                                                              \
             DOCTEST_BREAK_INTO_DEBUGGER();                                                         \
-        if(doctest::detail::logAssertThrowsAs(#expr, #as, threw, threw_as, is_check, __FILE__,     \
-                                              __LINE__))                                           \
-            throw doctest::detail::TestFailureException();                                         \
+        doctest::detail::logAssertThrowsAs(threw, threw_as, #as, #expr, assert_name, __FILE__,     \
+                                           __LINE__);                                              \
+        require_op;                                                                                \
     } while(doctest::detail::always_false())
 
-#define DOCTEST_ASSERT_NOTHROW(expr, is_check)                                                     \
+#define DOCTEST_ASSERT_NOTHROW(expr, assert_name, require_op)                                      \
     do {                                                                                           \
         bool threw = false;                                                                        \
         try {                                                                                      \
@@ -632,18 +633,22 @@ namespace detail
         } catch(...) { threw = true; }                                                             \
         if(threw)                                                                                  \
             DOCTEST_BREAK_INTO_DEBUGGER();                                                         \
-        if(doctest::detail::logAssertNothrow(#expr, threw, is_check, __FILE__, __LINE__))          \
-            throw doctest::detail::TestFailureException();                                         \
+        doctest::detail::logAssertNothrow(threw, #expr, assert_name, __FILE__, __LINE__);          \
+        require_op;                                                                                \
     } while(doctest::detail::always_false())
 
-#define DOCTEST_CHECK_THROWS(expr) DOCTEST_ASSERT_THROWS(expr, true)
-#define DOCTEST_REQUIRE_THROWS(expr) DOCTEST_ASSERT_THROWS(expr, false)
+#define DOCTEST_CHECK_THROWS(expr) DOCTEST_ASSERT_THROWS(expr, "CHECK_THROWS", ((void)0))
+#define DOCTEST_REQUIRE_THROWS(expr)                                                               \
+    DOCTEST_ASSERT_THROWS(expr, "REQUIRE_THROWS", doctest::detail::throwException())
 
-#define DOCTEST_CHECK_THROWS_AS(expr, ex) DOCTEST_ASSERT_THROWS_AS(expr, ex, true)
-#define DOCTEST_REQUIRE_THROWS_AS(expr, ex) DOCTEST_ASSERT_THROWS_AS(expr, ex, false)
+#define DOCTEST_CHECK_THROWS_AS(expr, ex)                                                          \
+    DOCTEST_ASSERT_THROWS_AS(expr, ex, "CHECK_THROWS_AS", ((void)0))
+#define DOCTEST_REQUIRE_THROWS_AS(expr, ex)                                                        \
+    DOCTEST_ASSERT_THROWS_AS(expr, ex, "REQUIRE_THROWS_AS", doctest::detail::throwException())
 
-#define DOCTEST_CHECK_NOTHROW(expr) DOCTEST_ASSERT_NOTHROW(expr, true)
-#define DOCTEST_REQUIRE_NOTHROW(expr) DOCTEST_ASSERT_NOTHROW(expr, false)
+#define DOCTEST_CHECK_NOTHROW(expr) DOCTEST_ASSERT_NOTHROW(expr, "CHECK_NOTHROW", ((void)0))
+#define DOCTEST_REQUIRE_NOTHROW(expr)                                                              \
+    DOCTEST_ASSERT_NOTHROW(expr, "REQUIRE_NOTHROW", doctest::detail::throwException())
 
 // =================================================================================================
 // == WHAT FOLLOWS IS VERSIONS OF THE MACROS THAT DO NOT DO ANY REGISTERING!                      ==
@@ -1396,8 +1401,8 @@ namespace detail
     void writeToDebugConsole(const String&) {}
 #endif // Platform
 
-    bool logAssert(const Result& res, bool threw, const char* expr, const char* assert_name,
-                   bool is_check, const char* file, int line) {
+    void logAssert(const Result& res, bool threw, const char* expr, const char* assert_name,
+                   const char* file, int line) {
         getContextState()->numAssertions++;
 
         if(!res.m_passed || threw) {
@@ -1432,13 +1437,11 @@ namespace detail
             DOCTEST_PRINTF_COLORED(info3, Color::Green);
 
             getContextState()->numFailedAssertionsForCurrentTestcase++;
-
-            return !is_check;
         }
-        return false;
     }
 
-    bool logAssertThrows(const char* expr, bool threw, bool is_check, const char* file, int line) {
+    void logAssertThrows(bool threw, const char* expr, const char* assert_name, const char* file,
+                         int line) {
         getContextState()->numAssertions++;
 
         if(!threw) {
@@ -1449,8 +1452,7 @@ namespace detail
             DOCTEST_SNPRINTF(msg, DOCTEST_COUNTOF(msg), " FAILED!\n");
 
             char info1[DOCTEST_SNPRINTF_BUFFER_LENGTH];
-            DOCTEST_SNPRINTF(info1, DOCTEST_COUNTOF(info1), "  %s( %s )\n",
-                             (is_check ? "CHECK_THROWS" : "REQUIRE_THROWS"), expr);
+            DOCTEST_SNPRINTF(info1, DOCTEST_COUNTOF(info1), "  %s( %s )\n", assert_name, expr);
 
             if(isDebuggerActive()) {
                 String concat = String(loc) + msg + info1;
@@ -1462,14 +1464,11 @@ namespace detail
             DOCTEST_PRINTF_COLORED(info1, Color::Green);
 
             getContextState()->numFailedAssertionsForCurrentTestcase++;
-
-            return !is_check;
         }
-        return false;
     }
 
-    bool logAssertThrowsAs(const char* expr, const char* as, bool threw, bool threw_as,
-                           bool is_check, const char* file, int line) {
+    void logAssertThrowsAs(bool threw, bool threw_as, const char* as, const char* expr,
+                           const char* assert_name, const char* file, int line) {
         getContextState()->numAssertions++;
 
         if(!threw || !threw_as) {
@@ -1481,8 +1480,8 @@ namespace detail
                              (threw ? "(threw a different exception)" : "(didn't throw at all)"));
 
             char info1[DOCTEST_SNPRINTF_BUFFER_LENGTH];
-            DOCTEST_SNPRINTF(info1, DOCTEST_COUNTOF(info1), "  %s( %s, %s )\n",
-                             (is_check ? "CHECK_THROWS_AS" : "REQUIRE_THROWS_AS"), expr, as);
+            DOCTEST_SNPRINTF(info1, DOCTEST_COUNTOF(info1), "  %s( %s, %s )\n", assert_name, expr,
+                             as);
 
             if(isDebuggerActive()) {
                 String concat = String(loc) + msg + info1;
@@ -1494,13 +1493,11 @@ namespace detail
             DOCTEST_PRINTF_COLORED(info1, Color::Green);
 
             getContextState()->numFailedAssertionsForCurrentTestcase++;
-
-            return !is_check;
         }
-        return false;
     }
 
-    bool logAssertNothrow(const char* expr, bool threw, bool is_check, const char* file, int line) {
+    void logAssertNothrow(bool threw, const char* expr, const char* assert_name, const char* file,
+                          int line) {
         getContextState()->numAssertions++;
 
         if(threw) {
@@ -1511,8 +1508,7 @@ namespace detail
             DOCTEST_SNPRINTF(msg, DOCTEST_COUNTOF(msg), " FAILED!\n");
 
             char info1[DOCTEST_SNPRINTF_BUFFER_LENGTH];
-            DOCTEST_SNPRINTF(info1, DOCTEST_COUNTOF(info1), "  %s( %s )\n",
-                             (is_check ? "CHECK_NOTHROW" : "REQUIRE_NOTHROW"), expr);
+            DOCTEST_SNPRINTF(info1, DOCTEST_COUNTOF(info1), "  %s( %s )\n", assert_name, expr);
 
             if(isDebuggerActive()) {
                 String concat = String(loc) + msg + info1;
@@ -1524,10 +1520,7 @@ namespace detail
             DOCTEST_PRINTF_COLORED(info1, Color::Green);
 
             getContextState()->numFailedAssertionsForCurrentTestcase++;
-
-            return !is_check;
         }
-        return false;
     }
 
     // the implementation of parseFlag()
