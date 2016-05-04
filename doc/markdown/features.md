@@ -71,7 +71,6 @@ The library can be used like any other even if you are not fond of the idea of m
 - sorting the test order (also RAND! and SEED!) (by file, by test suite, or both, ASC/DESC...)
 - running tests a few times
 - disabling exceptions!!!
-- rewrite internals so there aren't that many getters of static data - maybe just 1 getter of a global struct of such flags - getGlobals()
 - the library should print its version before running tests
 - print the test name on the first failed assert (or atleast the position) - like catch
 
@@ -80,10 +79,8 @@ The library can be used like any other even if you are not fond of the idea of m
 
 - think about the expression decomposition static asserts
 
-- the help!
 - examples and test coverage
 - enabling COMPARE in tests
-- test for warnings with -std=c++03/11/14/1z
 - benchmark (assimp and empty files - or maybe just empty files)
 - documentation
 

@@ -1634,6 +1634,58 @@ namespace detail
         return false;
     }
 
+    void printVersion() {
+        DOCTEST_PRINTF_COLORED("[doctest] ", Color::Cyan);
+        printf("version is \"%s\"\n", DOCTEST_VERSION);
+    }
+
+    void printHelp() {
+        printVersion();
+        DOCTEST_PRINTF_COLORED("[doctest]\n", Color::Cyan);
+        DOCTEST_PRINTF_COLORED("[doctest] ", Color::Cyan);
+        printf("boolean values: \"1/on/yes/true\" or \"0/off/no/false\"\n");
+        DOCTEST_PRINTF_COLORED("[doctest] ", Color::Cyan);
+        printf("filter  values: \"str1,str2,str3\" (comma separated strings)\n");
+#ifndef DOCTEST_CONFIG_NO_SHORT_FLAGS
+        DOCTEST_PRINTF_COLORED("[doctest] ", Color::Cyan);
+        printf("all options and filters also available without the \"dt-\" prefix\n");
+#endif
+        DOCTEST_PRINTF_COLORED("[doctest] ", Color::Cyan);
+        printf("filters use wildcards for matching strings\n");
+        DOCTEST_PRINTF_COLORED("[doctest] ", Color::Cyan);
+        printf("something passes a filter if any of the strings in a filter matches\n");
+        DOCTEST_PRINTF_COLORED("[doctest]\n", Color::Cyan);
+        DOCTEST_PRINTF_COLORED("[doctest] ", Color::Cyan);
+        printf("the available options and filters are:\n");
+        printf("  -dt-help                          prints this message and calls exit()\n");
+        printf("  -dt-version                       prints the version and calls exit()\n");
+        // =================================================================================== << 80
+        printf("  -dt-name=<filters>                filters tests by their name\n");
+        printf("  -dt-name-exclude=<filters>        filters OUT tests by their name\n");
+        printf("  -dt-file=<filters>                filters tests by their file\n");
+        printf("  -dt-file-exclude=<filters>        filters OUT tests by their file\n");
+        printf("  -dt-testsuite=<filters>           filters tests by their testsuite\n");
+        printf("  -dt-testsuite-exclude=<filters>   filters OUT tests by their testsuite\n");
+        printf("  -dt-count=<bool>                  counts the number of tests passing the\n");
+        printf("                                    filters and calls exit()\n");
+        printf("  -dt-first=<int>                   the first test passing the filters to\n");
+        printf("                                    execute - for range-based execution\n");
+        printf("  -dt-last=<int>                    the last test passing the filters to\n");
+        printf("                                    execute - for range-based execution\n");
+        printf("  -dt-case-sensitive=<bool>         filters being treated as case sensitive\n");
+        printf("  -dt-no-overrides=<bool>           disables procedural overrides of options\n");
+        printf("  -dt-exit=<bool>                   to call exit() after the tests finish\n");
+        printf("  -dt-no-exitcode=<bool>            returns (or exits) always with success\n");
+        printf("  -dt-no-run=<bool>                 skips all runtime doctest operations\n");
+        printf("  -dt-no-colors=<bool>              disables colors in output\n");
+        printf("  -dt-no-breaks=<bool>              disables breakpoints in debuggers\n");
+        printf("  -dt-no-path-in-filenames=<bool>   only filenames and no paths in output\n");
+        printf("  -dt-hash-table-histogram=<bool>   undocumented\n");
+        // =================================================================================== << 80
+
+        DOCTEST_PRINTF_COLORED("[doctest] ", Color::Cyan);
+        printf("for more information visit the project documentation");
+    }
 } // namespace detail
 
 String::String(const char* in)
@@ -1707,8 +1759,7 @@ Context::Context(int argc, const char* const* argv) {
 
     p.help    = false;
     p.version = false;
-    if(parseFlag(argc, argv, "dt-help") || parseFlag(argc, argv, "dt-h") ||
-       parseFlag(argc, argv, "dt-?")) {
+    if(parseFlag(argc, argv, "dt-help")) {
         p.help = true;
         p.exit = true;
     }
@@ -1782,14 +1833,12 @@ int Context::runTests() {
 
     // exit right now
     if(p.no_run || p.version || p.help) {
-        if(p.version) {
-            printf("[doctest] version is %s\n\n", DOCTEST_VERSION);
-        }
-        if(p.help) {
-            printf("[doctest] no help sry\n\n");
-        }
+        if(p.version)
+            printVersion();
+        if(p.help)
+            printHelp();
 
-        if(p.exit)
+        if(p.exit) // will be set to true for version and help
             exit(EXIT_SUCCESS);
         return EXIT_SUCCESS;
     }
@@ -1813,7 +1862,8 @@ int Context::runTests() {
                 maxInBucket = buckets[i].size();
 
         // print a prettified histogram
-        printf("[doctest] hash table bucket histogram\n");
+        DOCTEST_PRINTF_COLORED("[doctest] ", Color::Cyan);
+        printf("hash table bucket histogram\n");
         printf("============================================================\n");
         printf("#bucket     |count| relative count\n");
         printf("============================================================\n");
@@ -1831,8 +1881,8 @@ int Context::runTests() {
 
     // volatile to silence the moronic warning of gcc 4.8 in release: "assuming signed overflow
     // does not occur when simplifying conditional to constant [-Werror=strict-overflow]"
-    unsigned          numFilterPassedTests = 0;
-    volatile unsigned numFailed            = 0;
+    unsigned          numTestsPassingFilters = 0;
+    volatile unsigned numFailed              = 0;
     // invoke the registered functions if they match the filter criteria (or just count them)
     for(i = 0; i < testDataArray.size(); i++) {
         const TestData& data = *testDataArray[i];
@@ -1849,14 +1899,15 @@ int Context::runTests() {
         if(matchesAny(data.m_name, p.filters[5], 0, p.case_sensitive))
             continue;
 
-        numFilterPassedTests++;
+        numTestsPassingFilters++;
 
         // do not execute the test if we are to only count the number of filter passing tests
         if(p.count)
             continue;
 
         // skip the test if it is not in the execution range
-        if((p.last < numFilterPassedTests && p.first <= p.last) || (p.first > numFilterPassedTests))
+        if((p.last < numTestsPassingFilters && p.first <= p.last) ||
+           (p.first > numTestsPassingFilters))
             continue;
 
         // execute the test if it passes all the filtering
@@ -1889,18 +1940,22 @@ int Context::runTests() {
     }
 
     if(p.count) {
-        printf("[doctest] number of registered tests passing the current filters: "
-               "%d\n",
-               numFilterPassedTests);
+        DOCTEST_PRINTF_COLORED("[doctest] ", Color::Cyan);
+        printf("number of registered tests passing the current filters: %d\n",
+               numTestsPassingFilters);
     } else {
         if(numFailed == 0) {
-            printf("[doctest] all %u tests passed!\n", numFilterPassedTests);
-            printf("[doctest] all %u assertions passed!\n\n", p.numAssertions);
+            DOCTEST_PRINTF_COLORED("[doctest] ", Color::Cyan);
+            printf("all %u tests passed!\n", numTestsPassingFilters);
+            DOCTEST_PRINTF_COLORED("[doctest] ", Color::Cyan);
+            printf("all %u assertions passed!\n\n", p.numAssertions);
         } else {
-            printf("[doctest] %u out of %u tests passed!\n", numFilterPassedTests - numFailed,
-                   numFilterPassedTests);
-            printf("[doctest] %u out of %u assertions passed!\n\n",
-                   p.numAssertions - p.numFailedAssertions, p.numAssertions);
+            DOCTEST_PRINTF_COLORED("[doctest] ", Color::Cyan);
+            printf("%u out of %u tests passed!\n", numTestsPassingFilters - numFailed,
+                   numTestsPassingFilters);
+            DOCTEST_PRINTF_COLORED("[doctest] ", Color::Cyan);
+            printf("%u out of %u assertions passed!\n\n", p.numAssertions - p.numFailedAssertions,
+                   p.numAssertions);
         }
     }
 
