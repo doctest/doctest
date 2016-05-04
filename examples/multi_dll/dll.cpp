@@ -7,5 +7,5 @@ TESTCASE("dll") {
 
 DLL_PUBLIC int call_tests_from_dll(int argc, char** argv) {
     doctest::Context context(argc, argv);
-    return context.runTests();
+    return context.run();
 }

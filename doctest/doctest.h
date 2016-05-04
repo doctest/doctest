@@ -360,14 +360,14 @@ namespace detail
 
     struct ContextState
     {
-        // parameters from the command line
+        // == parameters from the command line
 
         detail::Vector<detail::Vector<String> > filters;
 
         bool count;          // if only the count of matching tests is to be retreived
         bool case_sensitive; // if filtering should be case sensitive
         bool no_overrides;   // to disable overrides from code
-        bool exit;           // calls exit() after the tests are ran/counted/whatever
+        bool exit;           // if the program should be exited after the tests are ran/whatever
         bool no_exitcode;    // if the framework should return 0 as the exitcode
         bool no_run;         // to not run the tests at all (can be done with an "*" exclude)
         bool no_colors;      // if output to the console should be colorized
@@ -382,7 +382,7 @@ namespace detail
         bool help;    // to print the help
         bool version; // to print the version
 
-        // data for the tests being ran
+        // == data for the tests being ran
 
         int numAssertions;
         int numFailedAssertions;
@@ -433,7 +433,10 @@ public:
 
     void addFilter(const char* filter, const char* value);
     void setOption(const char* option, int value);
-    int runTests();
+
+    bool shouldExit();
+
+    int run();
 };
 
 } // namespace doctest
@@ -662,7 +665,8 @@ inline int     String::compare(const String&, bool) const { return 0; }
 inline Context::Context(int, const char* const*) {}
 inline void Context::addFilter(const char*, const char*) {}
 inline void Context::setOption(const char*, int) {}
-inline int  Context::runTests() { return 0; }
+inline bool Context::shouldExit() { return false; }
+inline int  Context::run() { return 0; }
 } // namespace doctest
 
 #define DOCTEST_IMPLEMENT_FIXTURE(der, base, func, name)                                           \
@@ -764,7 +768,7 @@ DOCTEST_TESTSUITE_END;
 
 // required includes - will go only in one translation unit!
 #include <cstdio>  // printf, fprintf, sprintf, snprintf
-#include <cstdlib> // malloc, free, qsort, exit
+#include <cstdlib> // malloc, free, qsort
 #include <cstring> // strcpy, strtok, strrchr
 #include <new>     // placement new (can be skipped if the containers require 'construct()' from T)
 
@@ -1438,17 +1442,24 @@ namespace detail
         getContextState()->numAssertions++;
 
         if(!threw) {
-            char buffer[DOCTEST_SNPRINTF_BUFFER_LENGTH];
-            DOCTEST_SNPRINTF(buffer, DOCTEST_COUNTOF(buffer), "%s(%d): FAILED!\n  %s( %s )\n\n",
-                             fileForOutput(file), line,
+            char loc[DOCTEST_SNPRINTF_BUFFER_LENGTH];
+            DOCTEST_SNPRINTF(loc, DOCTEST_COUNTOF(loc), "%s(%d)", fileForOutput(file), line);
+
+            char msg[DOCTEST_SNPRINTF_BUFFER_LENGTH];
+            DOCTEST_SNPRINTF(msg, DOCTEST_COUNTOF(msg), " FAILED!\n");
+
+            char info1[DOCTEST_SNPRINTF_BUFFER_LENGTH];
+            DOCTEST_SNPRINTF(info1, DOCTEST_COUNTOF(info1), "  %s( %s )\n",
                              (is_check ? "CHECK_THROWS" : "REQUIRE_THROWS"), expr);
 
-            if(isDebuggerActive())
-                writeToDebugConsole(buffer);
+            if(isDebuggerActive()) {
+                String concat = String(loc) + msg + info1;
+                writeToDebugConsole(concat.c_str());
+            }
 
-            Color col(Color::Red);
-
-            printf("%s", buffer);
+            DOCTEST_PRINTF_COLORED(loc, Color::Cyan);
+            DOCTEST_PRINTF_COLORED(msg, Color::Red);
+            DOCTEST_PRINTF_COLORED(info1, Color::Green);
 
             getContextState()->numFailedAssertionsForCurrentTestcase++;
 
@@ -1462,19 +1473,25 @@ namespace detail
         getContextState()->numAssertions++;
 
         if(!threw || !threw_as) {
-            char buffer[DOCTEST_SNPRINTF_BUFFER_LENGTH];
-            DOCTEST_SNPRINTF(
-                    buffer, DOCTEST_COUNTOF(buffer), "%s(%d): FAILED! %s\n  %s( %s , %s )\n\n",
-                    fileForOutput(file), line,
-                    (threw ? "(didn't a different type of an exception)" : "(didn't throw at all)"),
-                    (is_check ? "CHECK_THROWS_AS" : "REQUIRE_THROWS_AS"), expr, as);
+            char loc[DOCTEST_SNPRINTF_BUFFER_LENGTH];
+            DOCTEST_SNPRINTF(loc, DOCTEST_COUNTOF(loc), "%s(%d)", fileForOutput(file), line);
 
-            if(isDebuggerActive())
-                writeToDebugConsole(buffer);
+            char msg[DOCTEST_SNPRINTF_BUFFER_LENGTH];
+            DOCTEST_SNPRINTF(msg, DOCTEST_COUNTOF(msg), " FAILED! %s\n",
+                             (threw ? "(threw a different exception)" : "(didn't throw at all)"));
 
-            Color col(Color::Red);
+            char info1[DOCTEST_SNPRINTF_BUFFER_LENGTH];
+            DOCTEST_SNPRINTF(info1, DOCTEST_COUNTOF(info1), "  %s( %s, %s )\n",
+                             (is_check ? "CHECK_THROWS_AS" : "REQUIRE_THROWS_AS"), expr, as);
 
-            printf("%s", buffer);
+            if(isDebuggerActive()) {
+                String concat = String(loc) + msg + info1;
+                writeToDebugConsole(concat.c_str());
+            }
+
+            DOCTEST_PRINTF_COLORED(loc, Color::Cyan);
+            DOCTEST_PRINTF_COLORED(msg, Color::Red);
+            DOCTEST_PRINTF_COLORED(info1, Color::Green);
 
             getContextState()->numFailedAssertionsForCurrentTestcase++;
 
@@ -1487,17 +1504,24 @@ namespace detail
         getContextState()->numAssertions++;
 
         if(threw) {
-            char buffer[DOCTEST_SNPRINTF_BUFFER_LENGTH];
-            DOCTEST_SNPRINTF(buffer, DOCTEST_COUNTOF(buffer), "%s(%d): FAILED!\n  %s( %s )\n\n",
-                             fileForOutput(file), line,
+            char loc[DOCTEST_SNPRINTF_BUFFER_LENGTH];
+            DOCTEST_SNPRINTF(loc, DOCTEST_COUNTOF(loc), "%s(%d)", fileForOutput(file), line);
+
+            char msg[DOCTEST_SNPRINTF_BUFFER_LENGTH];
+            DOCTEST_SNPRINTF(msg, DOCTEST_COUNTOF(msg), " FAILED!\n");
+
+            char info1[DOCTEST_SNPRINTF_BUFFER_LENGTH];
+            DOCTEST_SNPRINTF(info1, DOCTEST_COUNTOF(info1), "  %s( %s )\n",
                              (is_check ? "CHECK_NOTHROW" : "REQUIRE_NOTHROW"), expr);
 
-            if(isDebuggerActive())
-                writeToDebugConsole(buffer);
+            if(isDebuggerActive()) {
+                String concat = String(loc) + msg + info1;
+                writeToDebugConsole(concat.c_str());
+            }
 
-            Color col(Color::Red);
-
-            printf("%s", buffer);
+            DOCTEST_PRINTF_COLORED(loc, Color::Cyan);
+            DOCTEST_PRINTF_COLORED(msg, Color::Red);
+            DOCTEST_PRINTF_COLORED(info1, Color::Green);
 
             getContextState()->numFailedAssertionsForCurrentTestcase++;
 
@@ -1657,8 +1681,8 @@ namespace detail
         DOCTEST_PRINTF_COLORED("[doctest]\n", Color::Cyan);
         DOCTEST_PRINTF_COLORED("[doctest] ", Color::Cyan);
         printf("the available options and filters are:\n");
-        printf("  -dt-help                          prints this message and calls exit()\n");
-        printf("  -dt-version                       prints the version and calls exit()\n");
+        printf("  -dt-help                          prints this message and exits\n");
+        printf("  -dt-version                       prints the version and exits\n");
         // =================================================================================== << 80
         printf("  -dt-name=<filters>                filters tests by their name\n");
         printf("  -dt-name-exclude=<filters>        filters OUT tests by their name\n");
@@ -1667,14 +1691,14 @@ namespace detail
         printf("  -dt-testsuite=<filters>           filters tests by their testsuite\n");
         printf("  -dt-testsuite-exclude=<filters>   filters OUT tests by their testsuite\n");
         printf("  -dt-count=<bool>                  counts the number of tests passing the\n");
-        printf("                                    filters and calls exit()\n");
+        printf("                                    filters and exits\n");
         printf("  -dt-first=<int>                   the first test passing the filters to\n");
         printf("                                    execute - for range-based execution\n");
         printf("  -dt-last=<int>                    the last test passing the filters to\n");
         printf("                                    execute - for range-based execution\n");
         printf("  -dt-case-sensitive=<bool>         filters being treated as case sensitive\n");
         printf("  -dt-no-overrides=<bool>           disables procedural overrides of options\n");
-        printf("  -dt-exit=<bool>                   to call exit() after the tests finish\n");
+        printf("  -dt-exit=<bool>                   exits after the tests finish\n");
         printf("  -dt-no-exitcode=<bool>            returns (or exits) always with success\n");
         printf("  -dt-no-run=<bool>                 skips all runtime doctest operations\n");
         printf("  -dt-no-colors=<bool>              disables colors in output\n");
@@ -1824,24 +1848,26 @@ void Context::setOption(const char* option, int value) {
     }
 }
 
+bool Context::shouldExit() { return p.exit; }
+
 // the main function that does all the filtering and test running
-int Context::runTests() {
+int Context::run() {
     using namespace detail;
 
     getContextState() = &p;
     p.resetRunData();
 
-    // exit right now
+    // handle version, help and no_run
     if(p.no_run || p.version || p.help) {
         if(p.version)
             printVersion();
         if(p.help)
             printHelp();
 
-        if(p.exit) // will be set to true for version and help
-            exit(EXIT_SUCCESS);
         return EXIT_SUCCESS;
     }
+
+    printVersion();
 
     unsigned                         i       = 0;
     const Vector<Vector<TestData> >& buckets = getRegisteredTests().getBuckets();
@@ -1959,9 +1985,6 @@ int Context::runTests() {
         }
     }
 
-    if(p.exit)
-        exit((numFailed && !p.no_exitcode) ? EXIT_FAILURE : EXIT_SUCCESS);
-
     if(numFailed && !p.no_exitcode)
         return EXIT_FAILURE;
     return EXIT_SUCCESS;
@@ -1974,7 +1997,7 @@ int Context::runTests() {
 // == THIS SUPPLIES A MAIN FUNCTION AND SHOULD BE DONE ONLY IN ONE TRANSLATION UNIT
 #if defined(DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN) && !defined(DOCTEST_MAIN_CONFIGURED)
 #define DOCTEST_MAIN_CONFIGURED
-int main(int argc, char** argv) { return doctest::Context(argc, argv).runTests(); }
+int main(int argc, char** argv) { return doctest::Context(argc, argv).run(); }
 #endif // DOCTEST_MAIN_CONFIGURED
 
 #if defined(__clang__)

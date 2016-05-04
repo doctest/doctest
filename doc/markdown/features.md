@@ -67,6 +67,10 @@ The library can be used like any other even if you are not fond of the idea of m
 
 - colors in output
 
+- test require() with -fno-exceptions - if it behaves like a check()
+
+- print sections when asserts fail
+
 - look at catch command line options (also lest)
 - sorting the test order (also RAND! and SEED!) (by file, by test suite, or both, ASC/DESC...)
 - running tests a few times

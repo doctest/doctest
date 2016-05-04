@@ -18,7 +18,10 @@ int main(int argc, char** argv) {
     context.addFilter("name", "zzz");
 
     // run
-    int res = context.runTests();
+    int res = context.run();
+
+    if(context.shouldExit())
+        return res;
 
 #if defined(WITH_PAUSE)
     system("pause");

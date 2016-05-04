@@ -6,7 +6,7 @@ TESTCASE("executable") {
 
 int main(int argc, char** argv) {
     doctest::Context context(argc, argv);
-    int res = context.runTests();
+    int res = context.run();
     
     res += call_tests_from_dll(argc, argv);
 
