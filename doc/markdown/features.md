@@ -90,6 +90,7 @@ The library can be used like any other even if you are not fond of the idea of m
 ## FUTURE
 - make a compact reporter
 - xml reporter (jUnit/xUnit compatible, etc.)
+- ability for users to write their own reporters
 - gcc 6
 - pool allocator for String class
 - floating point comparison support

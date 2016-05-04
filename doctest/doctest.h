@@ -112,26 +112,22 @@
 #ifdef DEBUG
 #if defined(__ppc64__) || defined(__ppc__)
 #define DOCTEST_BREAK_INTO_DEBUGGER()                                                              \
-    if(doctest::detail::isDebuggerActive() &&                                                      \
-       !doctest::detail::getCurrentContextParams()->no_breaks)                                     \
+    if(doctest::detail::isDebuggerActive() && !doctest::detail::getContextState()->no_breaks)      \
     __asm__("li r0, 20\nsc\nnop\nli r0, 37\nli r4, 2\nsc\nnop\n" : : : "memory", "r0", "r3", "r4")
 #else // __ppc64__ || __ppc__
 #define DOCTEST_BREAK_INTO_DEBUGGER()                                                              \
-    if(doctest::detail::isDebuggerActive() &&                                                      \
-       !doctest::detail::getCurrentContextParams()->no_breaks)                                     \
+    if(doctest::detail::isDebuggerActive() && !doctest::detail::getContextState()->no_breaks)      \
     __asm__("int $3\n" : :)
 #endif // __ppc64__ || __ppc__
 #endif // DEBUG
 #elif defined(_MSC_VER)
 #define DOCTEST_BREAK_INTO_DEBUGGER()                                                              \
-    if(doctest::detail::isDebuggerActive() &&                                                      \
-       !doctest::detail::getCurrentContextParams()->no_breaks)                                     \
+    if(doctest::detail::isDebuggerActive() && !doctest::detail::getContextState()->no_breaks)      \
     __debugbreak()
 #elif defined(__MINGW32__)
 extern "C" __declspec(dllimport) void __stdcall DebugBreak();
 #define DOCTEST_BREAK_INTO_DEBUGGER()                                                              \
-    if(doctest::detail::isDebuggerActive() &&                                                      \
-       !doctest::detail::getCurrentContextParams()->no_breaks)                                     \
+    if(doctest::detail::isDebuggerActive() && !doctest::detail::getContextState()->no_breaks)      \
     ::DebugBreak()
 #else // linux
 #define DOCTEST_BREAK_INTO_DEBUGGER() ((void)0)
@@ -212,7 +208,7 @@ namespace detail
 
     public:
         Vector();
-        explicit Vector(unsigned num);
+        Vector(unsigned num, const T& val = T());
         Vector(const Vector& other);
         ~Vector();
         Vector& operator=(const Vector& other);
@@ -227,6 +223,44 @@ namespace detail
         void clear();
         void pop_back();
         void push_back(const T& item);
+        void resize(unsigned num, const T& val = T());
+    };
+
+    // the default Hash() implementation that the HashTable class uses - returns 0 - very naive
+    // specialize for better HashTable performance
+    template <typename T>
+    unsigned Hash(const T&) {
+        return 0;
+    }
+
+    template <class T>
+    class HashTable
+    {
+        Vector<Vector<T> > buckets;
+
+    public:
+        explicit HashTable(unsigned num_buckets)
+                : buckets(num_buckets) {}
+
+        bool has(const T& in) const {
+            const Vector<T>& bucket = buckets[Hash(in) % buckets.size()];
+            for(unsigned i = 0; i < bucket.size(); ++i)
+                if(bucket[i] == in)
+                    return true;
+            return false;
+        }
+
+        void insert(const T& in) {
+            if(!has(in))
+                buckets[Hash(in) % buckets.size()].push_back(in);
+        }
+
+        void clear() {
+            for(unsigned i = 0; i < buckets.size(); ++i)
+                buckets[i].clear();
+        }
+
+        const Vector<Vector<T> >& getBuckets() const { return buckets; }
     };
 
     struct Subcase
@@ -324,8 +358,10 @@ namespace detail
     struct TestFailureException
     {};
 
-    struct ContextParams
+    struct ContextState
     {
+        // parameters from the command line
+
         detail::Vector<detail::Vector<String> > filters;
 
         bool count;          // if only the count of matching tests is to be retreived
@@ -346,12 +382,32 @@ namespace detail
         bool help;    // to print the help
         bool version; // to print the version
 
-        ContextParams()
+        // data for the tests being ran
+
+        int numAssertions;
+        int numFailedAssertions;
+        int numFailedAssertionsForCurrentTestcase;
+
+        // stuff for subcases
+        HashTable<Subcase> subcasesPassed;
+        HashTable<int>     subcasesEnteredLevels;
+        int                subcasesCurrentLevel;
+        bool               subcasesHasSkipped;
+
+        void resetRunData() {
+            numAssertions       = 0;
+            numFailedAssertions = 0;
+        }
+
+        ContextState()
                 : filters(6) // 6 different filters total
-        {}
+                , subcasesPassed(100)
+                , subcasesEnteredLevels(100) {
+            resetRunData();
+        }
     };
 
-    ContextParams*& getCurrentContextParams();
+    ContextState*& getContextState();
 } // namespace detail
 
 #endif // DOCTEST_CONFIG_DISABLE
@@ -359,7 +415,7 @@ namespace detail
 class Context
 {
 #if !defined(DOCTEST_CONFIG_DISABLE)
-    detail::ContextParams p;
+    detail::ContextState p;
 
     void parseArgs(int argc, const char* const* argv, bool withDefaults = false);
 
@@ -588,7 +644,7 @@ namespace detail
 
 // =================================================================================================
 // == WHAT FOLLOWS IS VERSIONS OF THE MACROS THAT DO NOT DO ANY REGISTERING!                      ==
-// == THIS CAN BE ENABLED BY DEFINING DOCTEST_CONFIG_DISABLE GLOBALLY!                                   ==
+// == THIS CAN BE ENABLED BY DEFINING DOCTEST_CONFIG_DISABLE GLOBALLY!                            ==
 // =================================================================================================
 #else // DOCTEST_CONFIG_DISABLE
 
@@ -930,12 +986,12 @@ namespace detail
             , m_buffer(0) {}
 
     template <class T>
-    Vector<T>::Vector(unsigned num)
+    Vector<T>::Vector(unsigned num, const T& val)
             : m_size(num)
             , m_capacity(num)
             , m_buffer(static_cast<T*>(malloc(sizeof(T) * m_capacity))) {
         for(unsigned i = 0; i < m_size; ++i)
-            new(m_buffer + i) T();
+            new(m_buffer + i) T(val);
     }
 
     template <class T>
@@ -1004,79 +1060,46 @@ namespace detail
         }
     }
 
+    template <class T>
+    void Vector<T>::resize(unsigned num, const T& val) {
+        if(num < m_size) {
+            for(unsigned i = num; i < m_size; ++i)
+                (*(m_buffer + i)).~T();
+            m_size = num;
+        } else {
+            if(num > m_capacity) {
+                if(m_capacity = 0) {
+                    m_buffer = static_cast<T*>(malloc(sizeof(T) * num));
+                } else {
+                    T* temp = static_cast<T*>(malloc(sizeof(T) * num));
+                    for(unsigned i = 0; i < m_size; ++i) {
+                        new(temp + i) T(m_buffer[i]);
+                        (*(m_buffer + i)).~T();
+                    }
+                }
+
+                for(unsigned i = m_size; i < num; ++i)
+                    new(m_buffer + i) T(val);
+
+                m_size     = num;
+                m_capacity = num;
+            }
+        }
+    }
+
+    template <>
     unsigned Hash(const Subcase& in) {
         return hashStr(reinterpret_cast<unsigned const char*>(in.m_file)) ^ in.m_line;
     }
 
-    unsigned Hash(int in) { return in; }
-
-    // requires that 'bool operator==(T&)' and 'unsigned Hash(T&)' are both present for T
-    template <class T>
-    class HashTable
-    {
-        Vector<Vector<T> > buckets;
-
-    public:
-        explicit HashTable(unsigned num_buckets)
-                : buckets(num_buckets) {}
-
-        bool has(const T& in) const {
-            const Vector<T>& bucket = buckets[Hash(in) % buckets.size()];
-            for(unsigned i = 0; i < bucket.size(); ++i)
-                if(bucket[i] == in)
-                    return true;
-            return false;
-        }
-
-        void insert(const T& in) {
-            if(!has(in))
-                buckets[Hash(in) % buckets.size()].push_back(in);
-        }
-
-        void clear() {
-            for(unsigned i = 0; i < buckets.size(); ++i)
-                buckets[i].clear();
-        }
-
-        const Vector<Vector<T> >& getBuckets() const { return buckets; }
-    };
-
-    // the current ContextParams with which tests are being executed
-    ContextParams*& getCurrentContextParams() {
-        static ContextParams* data = 0;
-        return data;
+    template <>
+    unsigned Hash(const int& in) {
+        return in;
     }
 
-    // the amount of passed assertions
-    int& getNumAssertions() {
-        static int data = 0;
-        return data;
-    }
-
-    // holds the amount of failed assertions for the current test
-    int& getNumFailedAssertions() {
-        static int data = 0;
-        return data;
-    }
-
-    // stuff for subcases
-    HashTable<Subcase>& getSubcasesPassed() {
-        static HashTable<Subcase> data(100);
-        return data;
-    }
-
-    HashTable<int>& getSubcasesEnteredLevels() {
-        static HashTable<int> data(100);
-        return data;
-    }
-
-    int& getSubcasesCurrentLevel() {
-        static int data = 0;
-        return data;
-    }
-
-    bool& getSubcasesHasSkipped() {
-        static bool data = false;
+    // the current ContextState with which tests are being executed
+    ContextState*& getContextState() {
+        static ContextState* data = 0;
         return data;
     }
 
@@ -1085,26 +1108,30 @@ namespace detail
             , m_file(file)
             , m_line(line)
             , m_entered(false) {
+        ContextState* s = getContextState();
+
         // if we have already completed it
-        if(getSubcasesPassed().has(*this))
+        if(s->subcasesPassed.has(*this))
             return;
 
         // if a Subcase on the same level has already been entered
-        if(getSubcasesEnteredLevels().has(getSubcasesCurrentLevel())) {
-            getSubcasesHasSkipped() = true;
+        if(s->subcasesEnteredLevels.has(s->subcasesCurrentLevel)) {
+            s->subcasesHasSkipped = true;
             return;
         }
 
-        getSubcasesEnteredLevels().insert(getSubcasesCurrentLevel()++);
+        s->subcasesEnteredLevels.insert(s->subcasesCurrentLevel++);
         m_entered = true;
     }
 
     Subcase::~Subcase() {
         if(m_entered) {
-            getSubcasesCurrentLevel()--;
+            ContextState* s = getContextState();
+
+            s->subcasesCurrentLevel--;
             // only mark the subcase as passed if no subcases have been skipped
-            if(getSubcasesHasSkipped() == false)
-                getSubcasesPassed().insert(*this);
+            if(s->subcasesHasSkipped == false)
+                s->subcasesPassed.insert(*this);
         }
     }
 
@@ -1199,7 +1226,7 @@ namespace detail
         int res = EXIT_SUCCESS;
         try {
             f();
-            if(getNumFailedAssertions())
+            if(getContextState()->numFailedAssertionsForCurrentTestcase)
                 res = EXIT_FAILURE;
         } catch(const TestFailureException&) { res = EXIT_FAILURE; } catch(...) {
             printf("Unknown exception caught!\n");
@@ -1238,7 +1265,7 @@ namespace detail
     };
 
     void Color::use(Code code) {
-        ContextParams* p = getCurrentContextParams();
+        ContextState* p = getContextState();
         if(p->no_colors)
             return;
 #ifdef DOCTEST_CONFIG_COLORS_ANSI
@@ -1309,7 +1336,7 @@ namespace detail
 
     // depending on the current options this will remove the path of filenames
     const char* fileForOutput(const char* file) {
-        if(getCurrentContextParams()->no_path_in_filenames) {
+        if(getContextState()->no_path_in_filenames) {
             const char* back    = strrchr(file, '\\');
             const char* forward = strrchr(file, '/');
             if(back || forward) {
@@ -1367,7 +1394,7 @@ namespace detail
 
     bool logAssert(const Result& res, bool threw, const char* expr, const char* assert_name,
                    bool is_check, const char* file, int line) {
-        getNumAssertions()++;
+        getContextState()->numAssertions++;
 
         if(!res.m_passed || threw) {
             char loc[DOCTEST_SNPRINTF_BUFFER_LENGTH];
@@ -1400,7 +1427,7 @@ namespace detail
             DOCTEST_PRINTF_COLORED(info2, Color::Cyan);
             DOCTEST_PRINTF_COLORED(info3, Color::Green);
 
-            getNumFailedAssertions()++;
+            getContextState()->numFailedAssertionsForCurrentTestcase++;
 
             return !is_check;
         }
@@ -1408,7 +1435,7 @@ namespace detail
     }
 
     bool logAssertThrows(const char* expr, bool threw, bool is_check, const char* file, int line) {
-        getNumAssertions()++;
+        getContextState()->numAssertions++;
 
         if(!threw) {
             char buffer[DOCTEST_SNPRINTF_BUFFER_LENGTH];
@@ -1423,7 +1450,7 @@ namespace detail
 
             printf("%s", buffer);
 
-            getNumFailedAssertions()++;
+            getContextState()->numFailedAssertionsForCurrentTestcase++;
 
             return !is_check;
         }
@@ -1432,7 +1459,7 @@ namespace detail
 
     bool logAssertThrowsAs(const char* expr, const char* as, bool threw, bool threw_as,
                            bool is_check, const char* file, int line) {
-        getNumAssertions()++;
+        getContextState()->numAssertions++;
 
         if(!threw || !threw_as) {
             char buffer[DOCTEST_SNPRINTF_BUFFER_LENGTH];
@@ -1449,7 +1476,7 @@ namespace detail
 
             printf("%s", buffer);
 
-            getNumFailedAssertions()++;
+            getContextState()->numFailedAssertionsForCurrentTestcase++;
 
             return !is_check;
         }
@@ -1457,7 +1484,7 @@ namespace detail
     }
 
     bool logAssertNothrow(const char* expr, bool threw, bool is_check, const char* file, int line) {
-        getNumAssertions()++;
+        getContextState()->numAssertions++;
 
         if(threw) {
             char buffer[DOCTEST_SNPRINTF_BUFFER_LENGTH];
@@ -1472,7 +1499,7 @@ namespace detail
 
             printf("%s", buffer);
 
-            getNumFailedAssertions()++;
+            getContextState()->numFailedAssertionsForCurrentTestcase++;
 
             return !is_check;
         }
@@ -1750,7 +1777,8 @@ void Context::setOption(const char* option, int value) {
 int Context::runTests() {
     using namespace detail;
 
-    getCurrentContextParams() = &p;
+    getContextState() = &p;
+    p.resetRunData();
 
     // exit right now
     if(p.no_run || p.version || p.help) {
@@ -1805,7 +1833,6 @@ int Context::runTests() {
     // does not occur when simplifying conditional to constant [-Werror=strict-overflow]"
     unsigned          numFilterPassedTests = 0;
     volatile unsigned numFailed            = 0;
-    volatile unsigned numAssertionsFailed  = 0;
     // invoke the registered functions if they match the filter criteria (or just count them)
     for(i = 0; i < testDataArray.size(); i++) {
         const TestData& data = *testDataArray[i];
@@ -1838,19 +1865,19 @@ int Context::runTests() {
 //__try {
 #endif // _MSC_VER
 
-            getSubcasesPassed().clear();
+            p.subcasesPassed.clear();
             do {
                 // reset the assertion state
-                getNumFailedAssertions() = 0;
+                p.numFailedAssertionsForCurrentTestcase = 0;
 
                 // reset some of the fields for subcases (except for the set of fully passed ones)
-                getSubcasesHasSkipped()   = false;
-                getSubcasesCurrentLevel() = 0;
-                getSubcasesEnteredLevels().clear();
+                p.subcasesHasSkipped   = false;
+                p.subcasesCurrentLevel = 0;
+                p.subcasesEnteredLevels.clear();
 
                 numFailed += callTestFunc(data.m_f);
-                numAssertionsFailed += getNumFailedAssertions();
-            } while(getSubcasesHasSkipped() == true);
+                p.numFailedAssertions += p.numFailedAssertionsForCurrentTestcase;
+            } while(p.subcasesHasSkipped == true);
 
 #ifdef _MSC_VER
 //} __except(1) {
@@ -1868,12 +1895,12 @@ int Context::runTests() {
     } else {
         if(numFailed == 0) {
             printf("[doctest] all %u tests passed!\n", numFilterPassedTests);
-            printf("[doctest] all %u assertions passed!\n\n", getNumAssertions());
+            printf("[doctest] all %u assertions passed!\n\n", p.numAssertions);
         } else {
             printf("[doctest] %u out of %u tests passed!\n", numFilterPassedTests - numFailed,
                    numFilterPassedTests);
             printf("[doctest] %u out of %u assertions passed!\n\n",
-                   getNumAssertions() - numAssertionsFailed, getNumAssertions());
+                   p.numAssertions - p.numFailedAssertions, p.numAssertions);
         }
     }
 
