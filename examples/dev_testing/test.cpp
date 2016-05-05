@@ -24,8 +24,8 @@ String stringify(ADL_helper, const std::vector<T>& in) {
 }
 } // namespace doctest
 
-TESTSUITE("MAIN");
-TESTCASE("zzz") {
+TEST_SUITE("MAIN");
+TEST_CASE("zzz") {
     CHECK(std::string("OMG2") == std::string("OMG"));
 
     std::vector<int> vec1;
@@ -50,7 +50,7 @@ TESTCASE("zzz") {
     //}
     //SUBCASE("") { printf("2\n"); }
 }
-TESTSUITE_END;
+TEST_SUITE_END;
 
 #if defined(__GNUC__) && !defined(__clang__)
 #pragma GCC diagnostic ignored "-Weffc++"
@@ -59,7 +59,7 @@ TESTSUITE_END;
 struct Empty
 {};
 
-TESTCASE_FIXTURE(Empty, "trololo") { printf("Help?\n"); }
+TEST_CASE_FIXTURE(Empty, "trololo") { printf("Help?\n"); }
 
 // test("") { printf("TEST %d\n", __LINE__); }
 // test("") { printf("TEST %d\n", __LINE__); }
@@ -85,7 +85,7 @@ void throws() { throw std::exception(); }
 void nothrows(); // to silence GCC "-Wmissing-declarations"
 void nothrows() {}
 
-TESTCASE("zzz") {
+TEST_CASE("zzz") {
     int a = 5;
     int b = 5;
     CHECK(&a == &b);

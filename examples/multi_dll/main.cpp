@@ -1,6 +1,6 @@
 #include "common.h"
 
-TESTCASE("executable") {
+TEST_CASE("executable") {
     printf("I am a test from the executable!\n");
 }
 

@@ -6,11 +6,11 @@
 #include <cstdio>
 #include <exception>
 
-TESTCASE("name1") {
+TEST_CASE("name1") {
     printf("Anyone there?\n");
 }
 
-TESTSUITE("the testsuite!");
+TEST_SUITE("the testsuite!");
 
 // to silence GCC "-Wmissing-declarations"
 // and the attribute is to silence "-Wmissing-noreturn" on clang
@@ -24,7 +24,7 @@ void throws() { throw std::exception(); }
 void nothrows(); // to silence GCC "-Wmissing-declarations"
 void nothrows() {}
 
-TESTCASE("ops") {
+TEST_CASE("ops") {
     printf("Anyone there?\n");
 
     CHECK(1 == 0);
@@ -48,7 +48,7 @@ TESTCASE("ops") {
     SUBCASE("") {}
 }
 
-TESTSUITE_END;
+TEST_SUITE_END;
 
 #if defined(__GNUC__) && !defined(__clang__)
 #pragma GCC diagnostic ignored "-Weffc++"
@@ -57,10 +57,10 @@ TESTSUITE_END;
 struct Empty
 {};
 
-TESTCASE_FIXTURE(Empty, "name") {
+TEST_CASE_FIXTURE(Empty, "name") {
     printf("Help?\n");
 }
 
-TESTCASE_FIXTURE(Empty, "ops") {
+TEST_CASE_FIXTURE(Empty, "ops") {
     printf("Help?\n");
 }

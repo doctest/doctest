@@ -19,7 +19,7 @@ namespace doctest
     }
 } // namespace doctest
 
-TESTCASE("the only test") {
+TEST_CASE("the only test") {
     std::string dummy1 = "omg";
     std::string dummy2 = "tralala";
 

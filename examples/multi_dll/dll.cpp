@@ -1,7 +1,7 @@
 #define BUILDING_DLL
 #include "common.h"
 
-TESTCASE("dll") {
+TEST_CASE("dll") {
     printf("I am a test from the dll!\n");
 }
 

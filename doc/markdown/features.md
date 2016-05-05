@@ -65,11 +65,17 @@ The library can be used like any other even if you are not fond of the idea of m
 
 ## TODO for release
 
+[5/5/2016 4:50:41 PM | Edited 4:51:14 PM] Bobi: освен това CHECK_CLOSE или APPROX или нещо подобно за floats
+[5/5/2016 4:51:01 PM] Bobi: или zip
+[5/5/2016 4:51:05 PM] Bobi: или други функции
+[5/5/2016 4:51:51 PM | Edited 4:52:38 PM] Bobi: и освен това custom messages - да се закачи допълнителна информация към check или warn
+[5/5/2016 4:51:54 PM] Bobi: и WARN
+
+bountysource/patreon
+
 - colors in output
 
-- test require() with -fno-exceptions - if it behaves like a check()
-
-- print sections when asserts fail
+- print sections when asserts fail (look if catch does that)
 
 - look at catch command line options (also lest)
 - sorting the test order (also RAND! and SEED!) (by file, by test suite, or both, ASC/DESC...)
@@ -90,6 +96,7 @@ The library can be used like any other even if you are not fond of the idea of m
 
 ## FUTURE
 - make a compact reporter
+- output to file
 - xml reporter (jUnit/xUnit compatible, etc.)
 - ability for users to write their own reporters
 - gcc 6

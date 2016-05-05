@@ -500,11 +500,11 @@ public:
     inline void f()
 
 // for registering tests
-#define DOCTEST_TESTCASE(name)                                                                     \
+#define DOCTEST_TEST_CASE(name)                                                                    \
     DOCTEST_CREATE_AND_REGISTER_FUNCTION(DOCTEST_ANONYMOUS(DOCTEST_AUTOGEN_FUNC_), name)
 
 // for registering tests with a fixture
-#define DOCTEST_TESTCASE_FIXTURE(c, name)                                                          \
+#define DOCTEST_TEST_CASE_FIXTURE(c, name)                                                         \
     DOCTEST_IMPLEMENT_FIXTURE(DOCTEST_ANONYMOUS(DOCTEST_AUTOGEN_CLASS_), c,                        \
                               DOCTEST_ANONYMOUS(DOCTEST_AUTOGEN_FUNC_), name)
 
@@ -522,38 +522,38 @@ public:
 
 // for starting a testsuite block
 #if defined(__GNUC__) && !defined(__clang__)
-#define DOCTEST_TESTSUITE(name)                                                                    \
+#define DOCTEST_TEST_SUITE(name)                                                                   \
     static int DOCTEST_ANONYMOUS(DOCTEST_AUTOGEN_VAR_) __attribute__((unused)) =                   \
             doctest::detail::setTestSuiteName(name);                                               \
     void DOCTEST_ANONYMOUS(DOCTEST_AUTOGEN_FOR_SEMICOLON_)()
 #elif defined(__clang__)
-#define DOCTEST_TESTSUITE(name)                                                                    \
+#define DOCTEST_TEST_SUITE(name)                                                                   \
     _Pragma("clang diagnostic push")                                                               \
             _Pragma("clang diagnostic ignored \"-Wglobal-constructors\"") static int               \
                     DOCTEST_ANONYMOUS(DOCTEST_AUTOGEN_VAR_) =                                      \
                             doctest::detail::setTestSuiteName(name);                               \
     _Pragma("clang diagnostic pop") void DOCTEST_ANONYMOUS(DOCTEST_AUTOGEN_FOR_SEMICOLON_)()
 #else // MSVC
-#define DOCTEST_TESTSUITE(name)                                                                    \
+#define DOCTEST_TEST_SUITE(name)                                                                   \
     static int DOCTEST_ANONYMOUS(DOCTEST_AUTOGEN_VAR_) = doctest::detail::setTestSuiteName(name);  \
     void       DOCTEST_ANONYMOUS(DOCTEST_AUTOGEN_FOR_SEMICOLON_)()
 #endif // MSVC
 
 // for ending a testsuite block
 #if defined(__GNUC__) && !defined(__clang__)
-#define DOCTEST_TESTSUITE_END                                                                      \
+#define DOCTEST_TEST_SUITE_END                                                                     \
     static int DOCTEST_ANONYMOUS(DOCTEST_AUTOGEN_VAR_) __attribute__((unused)) =                   \
             doctest::detail::setTestSuiteName("");                                                 \
     void DOCTEST_ANONYMOUS(DOCTEST_AUTOGEN_FOR_SEMICOLON_)()
 #elif defined(__clang__)
-#define DOCTEST_TESTSUITE_END                                                                      \
+#define DOCTEST_TEST_SUITE_END                                                                     \
     _Pragma("clang diagnostic push")                                                               \
             _Pragma("clang diagnostic ignored \"-Wglobal-constructors\"") static int               \
                     DOCTEST_ANONYMOUS(DOCTEST_AUTOGEN_VAR_) =                                      \
                             doctest::detail::setTestSuiteName("");                                 \
     _Pragma("clang diagnostic pop") void DOCTEST_ANONYMOUS(DOCTEST_AUTOGEN_FOR_SEMICOLON_)()
 #else // MSVC
-#define DOCTEST_TESTSUITE_END                                                                      \
+#define DOCTEST_TEST_SUITE_END                                                                     \
     static int DOCTEST_ANONYMOUS(DOCTEST_AUTOGEN_VAR_) = doctest::detail::setTestSuiteName("");    \
     void       DOCTEST_ANONYMOUS(DOCTEST_AUTOGEN_FOR_SEMICOLON_)()
 #endif // MSVC
@@ -688,11 +688,11 @@ inline int  Context::run() { return 0; }
     static inline void f()
 
 // for registering tests
-#define DOCTEST_TESTCASE(name)                                                                     \
+#define DOCTEST_TEST_CASE(name)                                                                    \
     DOCTEST_CREATE_AND_REGISTER_FUNCTION(DOCTEST_ANONYMOUS(DOCTEST_AUTOGEN_FUNC_), name)
 
 // for registering tests with a fixture
-#define DOCTEST_TESTCASE_FIXTURE(x, name)                                                          \
+#define DOCTEST_TEST_CASE_FIXTURE(x, name)                                                         \
     DOCTEST_IMPLEMENT_FIXTURE(DOCTEST_ANONYMOUS(DOCTEST_AUTOGEN_CLASS_), x,                        \
                               DOCTEST_ANONYMOUS(DOCTEST_AUTOGEN_FUNC_), name)
 
@@ -700,10 +700,10 @@ inline int  Context::run() { return 0; }
 #define DOCTEST_SUBCASE(name)
 
 // for starting a testsuite block
-#define DOCTEST_TESTSUITE(name) void DOCTEST_ANONYMOUS(DOCTEST_AUTOGEN_FOR_SEMICOLON_)()
+#define DOCTEST_TEST_SUITE(name) void DOCTEST_ANONYMOUS(DOCTEST_AUTOGEN_FOR_SEMICOLON_)()
 
 // for ending a testsuite block
-#define DOCTEST_TESTSUITE_END void DOCTEST_ANONYMOUS(DOCTEST_AUTOGEN_FOR_SEMICOLON_)()
+#define DOCTEST_TEST_SUITE_END void DOCTEST_ANONYMOUS(DOCTEST_AUTOGEN_FOR_SEMICOLON_)()
 
 #define DOCTEST_CHECK(expr) ((void)0)
 #define DOCTEST_CHECK_FALSE(expr) ((void)0)
@@ -718,14 +718,14 @@ inline int  Context::run() { return 0; }
 
 #endif // DOCTEST_CONFIG_DISABLE
 
-// == SHORT VERSIONS OF THE TEST/FIXTURE/TESTSUITE MACROS
+// == SHORT VERSIONS OF THE MACROS
 #if !defined(DOCTEST_CONFIG_NO_SHORT_MACRO_NAMES)
 
-#define TESTCASE DOCTEST_TESTCASE
-#define TESTCASE_FIXTURE DOCTEST_TESTCASE_FIXTURE
+#define TEST_CASE DOCTEST_TEST_CASE
+#define TEST_CASE_FIXTURE DOCTEST_TEST_CASE_FIXTURE
 #define SUBCASE DOCTEST_SUBCASE
-#define TESTSUITE DOCTEST_TESTSUITE
-#define TESTSUITE_END DOCTEST_TESTSUITE_END
+#define TEST_SUITE DOCTEST_TEST_SUITE
+#define TEST_SUITE_END DOCTEST_TEST_SUITE_END
 #define CHECK DOCTEST_CHECK
 #define CHECK_FALSE DOCTEST_CHECK_FALSE
 #define CHECK_THROWS DOCTEST_CHECK_THROWS
@@ -740,7 +740,7 @@ inline int  Context::run() { return 0; }
 #endif // DOCTEST_CONFIG_NO_SHORT_MACRO_NAMES
 
 // this is here to clear the 'current test suite' for the current translation unit - at the top
-DOCTEST_TESTSUITE_END;
+DOCTEST_TEST_SUITE_END;
 
 #endif // DOCTEST_LIBRARY_INCLUDED
 
@@ -1834,6 +1834,8 @@ int Context::run() {
     }
 
     printVersion();
+    DOCTEST_PRINTF_COLORED("[doctest] ", Color::Cyan);
+    printf("run with \"--help\" for options\n");
 
     unsigned                         i       = 0;
     const Vector<Vector<TestData> >& buckets = getRegisteredTests().getBuckets();

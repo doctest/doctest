@@ -8,11 +8,11 @@
 #ifndef MY_PROXY_MACROS
 #define MY_PROXY_MACROS
 
-#define my_testcase            DOCTEST_TESTCASE
-#define my_testcase_fixture    DOCTEST_TESTCASE_FIXTURE
+#define my_testcase            DOCTEST_TEST_CASE
+#define my_testcase_fixture    DOCTEST_TEST_CASE_FIXTURE
 #define my_subcase             DOCTEST_SUBCASE
-#define my_testsuite           DOCTEST_TESTSUITE
-#define my_testsuite_end       DOCTEST_TESTSUITE_END
+#define my_testsuite           DOCTEST_TEST_SUITE
+#define my_testsuite_end       DOCTEST_TEST_SUITE_END
 #define my_check               DOCTEST_CHECK
 #define my_check_false         DOCTEST_CHECK_FALSE
 #define my_check_throws        DOCTEST_CHECK_THROWS
