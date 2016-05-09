@@ -200,9 +200,9 @@ namespace detail
     struct TestFailureException
     {};
 
-    inline void  throwException() { throw doctest::detail::TestFailureException(); }
-    inline bool  always_false() { return false; }
-    inline void* getNullPtr() { return 0; }
+    void  throwException();
+    bool  always_false();
+    void* getNullPtr();
 
     template <class T>
     class Vector
@@ -659,24 +659,6 @@ public:
 // =================================================================================================
 #else // DOCTEST_CONFIG_DISABLE
 
-namespace doctest
-{
-inline String::String(const char*) {}
-inline String::String(const String&) {}
-inline String::~String() {}
-inline String& String::operator=(const String&) { return *this; }
-inline String  String::operator+(const String&) const { return String(); }
-inline String& String::operator+=(const String&) { return *this; }
-inline int     String::compare(const char*, bool) const { return 0; }
-inline int     String::compare(const String&, bool) const { return 0; }
-
-inline Context::Context(int, const char* const*) {}
-inline void Context::addFilter(const char*, const char*) {}
-inline void Context::setOption(const char*, int) {}
-inline bool Context::shouldExit() { return false; }
-inline int  Context::run() { return 0; }
-} // namespace doctest
-
 #define DOCTEST_IMPLEMENT_FIXTURE(der, base, func, name)                                           \
     namespace                                                                                      \
     {                                                                                              \
@@ -751,10 +733,29 @@ DOCTEST_TEST_SUITE_END;
 // =================================================================================================
 // == WHAT FOLLOWS IS THE IMPLEMENTATION OF THE TEST RUNNER                                       ==
 // =================================================================================================
-#if(defined(DOCTEST_CONFIG_IMPLEMENT) || defined(DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN)) &&           \
-        !defined(DOCTEST_CONFIG_DISABLE)
+#if(defined(DOCTEST_CONFIG_IMPLEMENT) || defined(DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN))
 #ifndef DOCTEST_LIBRARY_IMPLEMENTATION
 #define DOCTEST_LIBRARY_IMPLEMENTATION
+
+#if defined(DOCTEST_CONFIG_DISABLE)
+namespace doctest
+{
+String::String(const char*) {}
+String::String(const String&) {}
+String::~String() {}
+String& String::operator=(const String&) { return *this; }
+String  String::operator+(const String&) const { return String(); }
+String& String::operator+=(const String&) { return *this; }
+int     String::compare(const char*, bool) const { return 0; }
+int     String::compare(const String&, bool) const { return 0; }
+
+Context::Context(int, const char* const*) {}
+void Context::addFilter(const char*, const char*) {}
+void Context::setOption(const char*, int) {}
+bool Context::shouldExit() { return false; }
+int  Context::run() { return 0; }
+} // namespace doctest
+#else // DOCTEST_CONFIG_DISABLE
 
 #if !defined(DOCTEST_CONFIG_COLORS_NONE)
 #if !defined(DOCTEST_CONFIG_COLORS_WINDOWS) && !defined(DOCTEST_CONFIG_COLORS_ANSI)
@@ -909,6 +910,10 @@ String stringify(ADL_helper, long int unsigned in) {
 // library internals namespace
 namespace detail
 {
+    void  throwException() { throw doctest::detail::TestFailureException(); }
+    bool  always_false() { return false; }
+    void* getNullPtr() { return 0; }
+
     // lowers ascii letters
     char tolower(const char c) { return ((c >= 'A' && c <= 'Z') ? static_cast<char>(c + 32) : c); }
 
@@ -1877,10 +1882,8 @@ int Context::run() {
         printf("\n");
     }
 
-    // volatile to silence the moronic warning of gcc 4.8 in release: "assuming signed overflow
-    // does not occur when simplifying conditional to constant [-Werror=strict-overflow]"
-    unsigned          numTestsPassingFilters = 0;
-    volatile unsigned numFailed              = 0;
+    unsigned numTestsPassingFilters = 0;
+    unsigned numFailed              = 0;
     // invoke the registered functions if they match the filter criteria (or just count them)
     for(i = 0; i < testDataArray.size(); i++) {
         const TestData& data = *testDataArray[i];
@@ -1966,6 +1969,7 @@ int Context::run() {
 }
 } // namespace doctest
 
+#endif // DOCTEST_CONFIG_DISABLE
 #endif // DOCTEST_LIBRARY_IMPLEMENTATION
 #endif // DOCTEST_CONFIG_IMPLEMENT
 

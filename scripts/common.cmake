@@ -134,6 +134,7 @@ endif()
 
 if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
     add_compiler_flags(-Weverything)
+    add_compiler_flags(-Qunused-arguments) # needed for ccache integration on travis
 endif()
 
 if(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
