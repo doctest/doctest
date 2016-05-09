@@ -5,8 +5,11 @@ project(${PROJECT_NAME})
 
 include(../../scripts/common.cmake)
 
+# suppress all warnings because this is not a real example of using the library
 if(NOT MSVC)
-    add_compiler_flags(-w) # suppress all warnings because this is not a real example of using the library
+    add_compiler_flags(-w)
+else()
+    add_compiler_flags(/w)
 endif()
 
 include_directories("../../doctest/")

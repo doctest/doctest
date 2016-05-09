@@ -1,25 +1,27 @@
 #pragma once
 
+struct String
+{
+    char* data;
+
+    String(const char* in = 0);
+    String(const String& other);
+    String& operator=(const String& other);
+    ~String();
+
+    operator char*() { return data; }
+};
+
 namespace std
 {
 template <class charT>
 struct char_traits;
 template <>
-class char_traits<char>;
+struct char_traits<char>;
 template <class charT, class traits>
 class basic_ostream;
 typedef basic_ostream<char, char_traits<char> > ostream;
 }
-
-template <typename T>
-struct refWrapper
-{
-    const T& data;
-    refWrapper(const T& in)
-            : data(in) {}
-
-    operator const T&() { return data; }
-};
 
 namespace has_insertion_operator_impl
 {
@@ -56,27 +58,22 @@ struct enable_if
 
 template <typename T>
 struct enable_if<true, T>
-{ typedef T type; };
-
-void defaultPrint(std::ostream& stream);
-
-//template <typename T>
-//std::ostream& operator<<(std::ostream& stream, const T&) {
-//    defaultPrint(stream);
-//    return stream;
-//}
-
-#include <string>
+{ typedef T value; };
 
 std::ostream* createStream();
-std::string   getStreamResult(std::ostream*);
+String        getStreamResult(std::ostream*);
 void          freeStream(std::ostream*);
 
 template <class T>
-typename enable_if<has_insertion_operator<T>::type, std::string>::type stringify(const T& in) {
+typename enable_if<has_insertion_operator<T>::value, String>::value stringify(const T& in) {
     std::ostream* stream = createStream();
     *stream << in;
-    std::string result = getStreamResult(stream);
+    String result = getStreamResult(stream);
     freeStream(stream);
     return result;
+}
+
+template <class T>
+typename enable_if<!has_insertion_operator<T>::value, String>::value stringify(const T&) {
+    return "{?}";
 }
