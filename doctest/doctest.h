@@ -568,7 +568,8 @@ public:
     if(res || threw)                                                                               \
         DOCTEST_BREAK_INTO_DEBUGGER();                                                             \
     doctest::detail::logAssert(res, threw, #expr, assert_name, __FILE__, __LINE__);                \
-    require_op;
+    if(res || threw)                                                                               \
+        require_op;
 
 #if defined(__clang__)
 #define DOCTEST_ASSERT_PROXY(expr, assert_name, require_op, false_invert_op)                       \
@@ -604,7 +605,8 @@ public:
         doctest::detail::logAssertThrowsAs(                                                        \
                 threw, true, static_cast<const char*>(doctest::detail::getNullPtr()), #expr,       \
                 assert_name, __FILE__, __LINE__);                                                  \
-        require_op;                                                                                \
+        if(!threw)                                                                                 \
+            require_op;                                                                            \
     } while(doctest::detail::always_false())
 
 #define DOCTEST_ASSERT_THROWS_AS(expr, as, assert_name, require_op)                                \
@@ -621,7 +623,8 @@ public:
             DOCTEST_BREAK_INTO_DEBUGGER();                                                         \
         doctest::detail::logAssertThrowsAs(threw, threw_as, #as, #expr, assert_name, __FILE__,     \
                                            __LINE__);                                              \
-        require_op;                                                                                \
+        if(!threw_as)                                                                              \
+            require_op;                                                                            \
     } while(doctest::detail::always_false())
 
 #define DOCTEST_ASSERT_NOTHROW(expr, assert_name, require_op)                                      \
@@ -633,7 +636,8 @@ public:
         if(threw)                                                                                  \
             DOCTEST_BREAK_INTO_DEBUGGER();                                                         \
         doctest::detail::logAssertNothrow(threw, #expr, assert_name, __FILE__, __LINE__);          \
-        require_op;                                                                                \
+        if(threw)                                                                                  \
+            require_op;                                                                            \
     } while(doctest::detail::always_false())
 
 #define DOCTEST_CHECK_THROWS(expr) DOCTEST_ASSERT_THROWS(expr, "CHECK_THROWS", ((void)0))
@@ -1909,7 +1913,7 @@ int Context::run() {
 #ifdef _MSC_VER
 //__try {
 #endif // _MSC_VER
-
+            unsigned didFail = 0;
             p.subcasesPassed.clear();
             do {
                 // reset the assertion state
@@ -1920,9 +1924,12 @@ int Context::run() {
                 p.subcasesCurrentLevel = 0;
                 p.subcasesEnteredLevels.clear();
 
-                numFailed += callTestFunc(data.m_f);
+                didFail += callTestFunc(data.m_f);
                 p.numFailedAssertions += p.numFailedAssertionsForCurrentTestcase;
             } while(p.subcasesHasSkipped == true);
+
+            if(didFail > 0)
+                numFailed++;
 
 #ifdef _MSC_VER
 //} __except(1) {

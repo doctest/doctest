@@ -256,6 +256,8 @@ before_install:
     if [[ "${TRAVIS_OS_NAME}" == "osx" ]]; then
       # update package list
       brew update
+      # ccache
+      brew install ccache
       # valgrind
       brew install valgrind
       # cmake
@@ -294,7 +296,7 @@ before_install:
 
 install:
   - ${CXX} --version
-  - export CXX="${COMPILER}"
+  - export CXX="ccache ${COMPILER}"
   - ${CXX} --version
   - ccache -s
 
@@ -344,7 +346,7 @@ script:
   - if [[ "${HAS_UBSAN_64}" = "true" ]]; then cmake -DCMAKE_BUILD_TYPE=Debug   -DCMAKE_CXX_FLAGS="-m64 -fsanitize=undefined" . && make clean && make -j2 && ctest --output-on-failure ; fi
   - if [[ "${HAS_UBSAN_32}" = "true" ]]; then cmake -DCMAKE_BUILD_TYPE=Debug   -DCMAKE_CXX_FLAGS="-m32 -fsanitize=undefined" . && make clean && make -j2 && ctest --output-on-failure ; fi
   - if [[ "${HAS_UBSAN_64}" = "true" ]]; then cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="-m64 -fsanitize=undefined" . && make clean && make -j2 && ctest --output-on-failure ; fi
-  - if [[ "${HAS_UBSAN_32}" = "true" ]]; then cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="-m32 -fsanitize=undefined" . && make -j2 && ctest --output-on-failure ; fi
+  - if [[ "${HAS_UBSAN_32}" = "true" ]]; then cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="-m32 -fsanitize=undefined" . && make clean && make -j2 && ctest --output-on-failure ; fi
 
 after_script:
   - cat compile_commands.json
