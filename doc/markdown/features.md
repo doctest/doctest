@@ -75,14 +75,13 @@ bountysource/patreon
 
 - colors in output
 
-- print sections when asserts fail (look if catch does that)
-
 - look at catch command line options (also lest)
 - sorting the test order (also RAND! and SEED!) (by file, by test suite, or both, ASC/DESC...)
 - running tests a few times
 - disabling exceptions!!!
 - the library should print its version before running tests
 - print the test name on the first failed assert (or atleast the position) - like catch
+- print sections when asserts fail (look if catch does that)
 
 - signal handling for unix: http://www.cplusplus.com/reference/csignal/signal/
 (signals on *NIX platforms or structured exceptions on Windows)

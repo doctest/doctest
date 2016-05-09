@@ -13,6 +13,7 @@ notifications:
 git:
   depth: 5
 
+# check out the ccache setup/teardown of Urho3D - https://github.com/urho3d/Urho3D/blob/master/.travis.yml
 cache:
   - apt
   - ccache
@@ -22,7 +23,8 @@ env:
     - USE_CCACHE=1
     - CCACHE_SLOPPINESS=pch_defines,time_macros
     - CCACHE_COMPRESS=1
-    - CCACHE_MAXSIZE=100M
+    - CCACHE_MAXSIZE=200M
+    - CCACHE_CPP2=1
     - CMAKE_OPTIONS_GLOBAL="-DCMAKE_EXPORT_COMPILE_COMMANDS=ON"
   # Workaround for https://github.com/travis-ci/travis-ci/issues/4681
   # "Defining the build matrix only with matrix.include leads to an additional, unwanted job"
@@ -241,16 +243,6 @@ matrix:
       compiler: gcc
       os: osx
 
-addons:
-  coverity_scan:
-    # COVERITY_SCAN_TOKEN added as env var in travis project
-    project:
-      name: onqtam/doctest
-    notification_email: vik.kirilov@gmail.com
-    build_command_prepend: cd examples/hello_world && cmake .
-    build_command: make
-    branch_pattern: coverity_scan
-
 before_install:
   - |
     if [[ "${TRAVIS_OS_NAME}" == "osx" ]]; then
@@ -350,3 +342,25 @@ script:
 
 after_script:
   - cat compile_commands.json
+
+---
+
+########################################################################################################################
+## COVERITY SCAN #######################################################################################################
+########################################################################################################################
+
+branch: {name: coverity_scan, active: yes, mandatory: yes}
+language: cpp
+compiler: gcc
+sudo: false
+
+addons:
+  coverity_scan:
+    # COVERITY_SCAN_TOKEN added as env var in travis project
+    project:
+      name: onqtam/doctest
+    notification_email: vik.kirilov@gmail.com
+    build_command_prepend: cd examples/hello_world && cmake .
+    build_command: make
+    branch_pattern: coverity_scan
+script: true
