@@ -1,16 +1,6 @@
 #pragma once
 
-struct String
-{
-    char* data;
-
-    String(const char* in = 0);
-    String(const String& other);
-    String& operator=(const String& other);
-    ~String();
-
-    operator char*() { return data; }
-};
+#include <string>
 
 namespace std
 {
@@ -61,19 +51,19 @@ struct enable_if<true, T>
 { typedef T value; };
 
 std::ostream* createStream();
-String        getStreamResult(std::ostream*);
+std::string   getStreamResult(std::ostream*);
 void          freeStream(std::ostream*);
 
 template <class T>
-typename enable_if<has_insertion_operator<T>::value, String>::value stringify(const T& in) {
+typename enable_if<has_insertion_operator<T>::value, std::string>::value stringify(const T& in) {
     std::ostream* stream = createStream();
     *stream << in;
-    String result = getStreamResult(stream);
+    std::string result = getStreamResult(stream);
     freeStream(stream);
     return result;
 }
 
 template <class T>
-typename enable_if<!has_insertion_operator<T>::value, String>::value stringify(const T&) {
+typename enable_if<!has_insertion_operator<T>::value, std::string>::value stringify(const T&) {
     return "{?}";
 }
