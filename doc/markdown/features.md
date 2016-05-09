@@ -73,10 +73,6 @@ The library can be used like any other even if you are not fond of the idea of m
 
 bountysource/patreon
 
-cache:
-  - apt
-  - ccache
-
 - colors in output
 
 - print sections when asserts fail (look if catch does that)

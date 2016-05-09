@@ -30,6 +30,7 @@
 #pragma clang diagnostic ignored "-Wshorten-64-to-32"
 #pragma clang diagnostic ignored "-Wmissing-variable-declarations"
 #pragma clang diagnostic ignored "-Wcovered-switch-default"
+#pragma clang diagnostic ignored "-Wmissing-noreturn"
 #endif // __clang__
 
 #if defined(__GNUC__) && !defined(__clang__)
@@ -1085,7 +1086,7 @@ namespace detail
             m_size = num;
         } else {
             if(num > m_capacity) {
-                if(m_capacity = 0) {
+                if(m_capacity == 0) {
                     m_buffer = static_cast<T*>(malloc(sizeof(T) * num));
                 } else {
                     T* temp = static_cast<T*>(malloc(sizeof(T) * num));
