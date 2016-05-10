@@ -13,6 +13,11 @@
 #define my_subcase             DOCTEST_SUBCASE
 #define my_testsuite           DOCTEST_TEST_SUITE
 #define my_testsuite_end       DOCTEST_TEST_SUITE_END
+#define my_warn                DOCTEST_WARN
+#define my_warn_false          DOCTEST_WARN_FALSE
+#define my_warn_throws         DOCTEST_WARN_THROWS
+#define my_warn_throws_as      DOCTEST_WARN_THROWS_AS
+#define my_warn_nothrow        DOCTEST_WARN_NOTHROW
 #define my_check               DOCTEST_CHECK
 #define my_check_false         DOCTEST_CHECK_FALSE
 #define my_check_throws        DOCTEST_CHECK_THROWS

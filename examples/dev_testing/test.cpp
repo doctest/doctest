@@ -90,7 +90,7 @@ TEST_CASE("zzz") {
     int b = 5;
     CHECK(&a == &b);
 
-    CHECK(0);
+    CHECK(1);
 
     CHECK(1 == 1);
     REQUIRE(1 == 1);

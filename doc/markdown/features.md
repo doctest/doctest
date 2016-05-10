@@ -49,40 +49,38 @@ The library can be used like any other even if you are not fond of the idea of m
 - really easy to get started - it's just 1 header file - see the [**tutorial**](tutorial.md#tutorial)
 - very light, unintrusive and portable - see the sections above
 - tests are registered automatically - no need to add them to a collection manually
-- supports [**sub cases**](testcases.md#subcases) for easy setup/teardown of tests (also supports the retro [**test fixtures**](testcases.md#test-fixtures) with classes)
+- supports [**subcases**](testcases.md#subcases) for easy setup/teardown of tests (also supports the retro [**test fixtures**](testcases.md#test-fixtures) with classes)
 - only one core [**assertion macro**](assertions.md) for comparisons - standard C++ operators are used for the comparison (less than, equal, greater than...) - yet the full expression is decomposed and left and right values of the expression are logged
 - assertion macros for [**exceptions**](assertions.md) - if something should or shouldn't throw
-- tests can be grouped in [**testsuites**](testcases.md#testsuites)
-- tests can be [**filtered**](commandline.md#filtering) based on their name/file/testsuite using wildcards
+- tests can be grouped in [**test suites**](testcases.md#test-suites)
+- powerful [**command line**](commandline.md) options
+- tests can be [**filtered**](commandline.md#filtering) based on their name/file/test suite using wildcards
 - failures can (optionally) break into the debugger on Windows and Mac
 - integration with the output window of Visual Studio for failing tests
 - a ```main()``` can be provided when implementing the library with the [**```DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN```**](main.md) identifier
 - can write tests in headers - they will still be registered only once in the executable/shared object
-- the library doesn't use operator ```new```/```delete``` (only ```malloc```) so you can test your ```operator new()``` usage
+- the library doesn't use operator ```new```/```delete``` (only ```malloc```) so you can test your ```operator new()``` usage (TODO: CHECK THIS NOW THAT I SUPPORT OSTREAM<<)
 - [**range-based**](commandline.md#ranges) execution of tests - see the [**multiprocess**](../../examples/multiprocess/) example (the **run.py** script)
 - colored output in the console
 - controlling the order of test execution
 
 ## TODO for release
 
-[5/5/2016 4:50:41 PM | Edited 4:51:14 PM] Bobi: освен това CHECK_CLOSE или APPROX или нещо подобно за floats
-[5/5/2016 4:51:01 PM] Bobi: или zip
-[5/5/2016 4:51:05 PM] Bobi: или други функции
-[5/5/2016 4:51:51 PM | Edited 4:52:38 PM] Bobi: и освен това custom messages - да се закачи допълнителна информация към check или warn
-[5/5/2016 4:51:54 PM] Bobi: и WARN
-
-bountysource/patreon
-
-- colors in output
-
-- look at catch command line options (also lest)
+- COMMAND LINE OPTIONS:
 - sorting the test order (also RAND! and SEED!) (by file, by test suite, or both, ASC/DESC...)
-- running tests a few times
-- disabling exceptions!!!
-- the library should print its version before running tests
+- order - file/test suite/name/rand
+- rand-seed - the rng seed
+- nothrow - disabling exception asserts
+- list-tests - list tests
+- list-test-names-only - list test names
+- success - output successful tests too
+- abort - abort on first failure
+- abortx - abort on X failures
+
 - print the test name on the first failed assert (or atleast the position) - like catch
 - print sections when asserts fail (look if catch does that)
 
+- floating point comparison support
 - signal handling for unix: http://www.cplusplus.com/reference/csignal/signal/
 (signals on *NIX platforms or structured exceptions on Windows)
 
@@ -92,20 +90,23 @@ bountysource/patreon
 - enabling COMPARE in tests
 - benchmark (assimp and empty files - or maybe just empty files)
 - documentation
+- add pledgie campaign in features/roadmap and in the reference
+- research bountysource/patreon
 
 ## FUTURE
+- support for predicates (or zip or whatever)
 - make a compact reporter
 - output to file
 - xml reporter (jUnit/xUnit compatible, etc.)
 - ability for users to write their own reporters
 - gcc 6
 - pool allocator for String class
-- floating point comparison support
+- add the ability to query if code is currently being ran in a test - some global of doctest...
 - timing reports of tests, duration restrictions, kill of longer than (will perhaps require threading), etc...
 - a message macro (also tracepoint/passpoint/info/context and whatever - like in boost.test) (ALSO ERROR/FAIL - like boost)
-- add WARN as third option to CHECK/REQUIRE versions of assertions
 - marking a test as "may fail"
-- marking a test as (run X times (should also multiply with the global test run times))
+- running tests a few times
+- marking a test to run X times (should also multiply with the global test run times)
 - test execution in separate processes - UNIX only with fork() (but windows has some .dll which could help)
 - matchers?
 - detect floating point exceptions
@@ -114,10 +115,10 @@ bountysource/patreon
 
 ## UNSURE
 
-- BDD based on the sub cases - like Catch
+- think about long long support or maybe int64_t support
+- BDD based on subcases - like Catch
 - Bitwise() class that has overloaded operators for comparison - to be used to check objects bitwise against each other (or maybe not - because of packing!)
 - tagging? also see this: https://github.com/philsquared/Catch/blob/master/docs/test-cases-and-sections.md#special-tags
-- add the ability to query if code is currently being ran in a test - some global of doctest...
 - utf8?
 - hierarchical test suites? using a stack for the pushed states - should be easy
 - ability to re-run only newly compiled tests - based on timestamps of the __FILE__ in which they are - and stored in some file
@@ -129,19 +130,6 @@ bountysource/patreon
 - think about adding support for std::exception and others (mainly catching them so the .what() method can be called)
 - think about parameterising the output alignment to 80 or some other column limit
 - think about the ability to mix different versions of the library within the same executable (like stb libraries)
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 ## Spreading the word after 1.0.0 is released
 

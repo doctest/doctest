@@ -587,10 +587,12 @@ public:
     } while(doctest::detail::always_false())
 #endif // __clang__
 
+#define DOCTEST_WARN(expr) DOCTEST_ASSERT_PROXY(expr, "WARN", ((void)0), ((void)0))
 #define DOCTEST_CHECK(expr) DOCTEST_ASSERT_PROXY(expr, "CHECK", ((void)0), ((void)0))
 #define DOCTEST_REQUIRE(expr)                                                                      \
     DOCTEST_ASSERT_PROXY(expr, "REQUIRE", doctest::detail::throwException(), ((void)0))
 
+#define DOCTEST_WARN_FALSE(expr) DOCTEST_ASSERT_PROXY(expr, "WARN_FALSE", ((void)0), res.invert())
 #define DOCTEST_CHECK_FALSE(expr) DOCTEST_ASSERT_PROXY(expr, "CHECK_FALSE", ((void)0), res.invert())
 #define DOCTEST_REQUIRE_FALSE(expr)                                                                \
     DOCTEST_ASSERT_PROXY(expr, "REQUIRE_FALSE", doctest::detail::throwException(), res.invert())
@@ -641,15 +643,19 @@ public:
             require_op;                                                                            \
     } while(doctest::detail::always_false())
 
+#define DOCTEST_WARN_THROWS(expr) DOCTEST_ASSERT_THROWS(expr, "WARN_THROWS", ((void)0))
 #define DOCTEST_CHECK_THROWS(expr) DOCTEST_ASSERT_THROWS(expr, "CHECK_THROWS", ((void)0))
 #define DOCTEST_REQUIRE_THROWS(expr)                                                               \
     DOCTEST_ASSERT_THROWS(expr, "REQUIRE_THROWS", doctest::detail::throwException())
 
+#define DOCTEST_WARN_THROWS_AS(expr, ex)                                                           \
+    DOCTEST_ASSERT_THROWS_AS(expr, ex, "WARN_THROWS_AS", ((void)0))
 #define DOCTEST_CHECK_THROWS_AS(expr, ex)                                                          \
     DOCTEST_ASSERT_THROWS_AS(expr, ex, "CHECK_THROWS_AS", ((void)0))
 #define DOCTEST_REQUIRE_THROWS_AS(expr, ex)                                                        \
     DOCTEST_ASSERT_THROWS_AS(expr, ex, "REQUIRE_THROWS_AS", doctest::detail::throwException())
 
+#define DOCTEST_WARN_NOTHROW(expr) DOCTEST_ASSERT_NOTHROW(expr, "WARN_NOTHROW", ((void)0))
 #define DOCTEST_CHECK_NOTHROW(expr) DOCTEST_ASSERT_NOTHROW(expr, "CHECK_NOTHROW", ((void)0))
 #define DOCTEST_REQUIRE_NOTHROW(expr)                                                              \
     DOCTEST_ASSERT_NOTHROW(expr, "REQUIRE_NOTHROW", doctest::detail::throwException())
@@ -692,6 +698,11 @@ public:
 // for ending a testsuite block
 #define DOCTEST_TEST_SUITE_END void DOCTEST_ANONYMOUS(DOCTEST_AUTOGEN_FOR_SEMICOLON_)()
 
+#define DOCTEST_WARN(expr) ((void)0)
+#define DOCTEST_WARN_FALSE(expr) ((void)0)
+#define DOCTEST_WARN_THROWS(expr) ((void)0)
+#define DOCTEST_WARN_THROWS_AS(expr, ex) ((void)0)
+#define DOCTEST_WARN_NOTHROW(expr) ((void)0)
 #define DOCTEST_CHECK(expr) ((void)0)
 #define DOCTEST_CHECK_FALSE(expr) ((void)0)
 #define DOCTEST_CHECK_THROWS(expr) ((void)0)
@@ -713,6 +724,11 @@ public:
 #define SUBCASE DOCTEST_SUBCASE
 #define TEST_SUITE DOCTEST_TEST_SUITE
 #define TEST_SUITE_END DOCTEST_TEST_SUITE_END
+#define WARN DOCTEST_WARN
+#define WARN_FALSE DOCTEST_WARN_FALSE
+#define WARN_THROWS DOCTEST_WARN_THROWS
+#define WARN_THROWS_AS DOCTEST_WARN_THROWS_AS
+#define WARN_NOTHROW DOCTEST_WARN_NOTHROW
 #define CHECK DOCTEST_CHECK
 #define CHECK_FALSE DOCTEST_CHECK_FALSE
 #define CHECK_THROWS DOCTEST_CHECK_THROWS
@@ -777,10 +793,11 @@ int  Context::run() { return 0; }
     } while(doctest::detail::always_false())
 
 // required includes - will go only in one translation unit!
-#include <cstdio>  // printf, fprintf, sprintf, snprintf
-#include <cstdlib> // malloc, free, qsort
-#include <cstring> // strcpy, strtok, strrchr
-#include <new>     // placement new (can be skipped if the containers require 'construct()' from T)
+#include <cstdio>    // printf, fprintf, sprintf, snprintf
+#include <cstdlib>   // malloc, free, qsort
+#include <cstring>   // strcpy, strtok, strrchr, strncmp
+#include <algorithm> // random_shuffle
+#include <new>       // placement new (can be skipped if the containers require 'construct()' from T)
 
 // the number of buckets used for the hash set
 #if !defined(DOCTEST_HASH_TABLE_NUM_BUCKETS)
@@ -1445,7 +1462,8 @@ namespace detail
             DOCTEST_PRINTF_COLORED(info2, Color::Cyan);
             DOCTEST_PRINTF_COLORED(info3, Color::Green);
 
-            getContextState()->numFailedAssertionsForCurrentTestcase++;
+            if(strncmp(assert_name, "WARN", 4) != 0)
+                getContextState()->numFailedAssertionsForCurrentTestcase++;
         }
     }
 
@@ -1475,7 +1493,8 @@ namespace detail
             DOCTEST_PRINTF_COLORED(msg, Color::Red);
             DOCTEST_PRINTF_COLORED(info1, Color::Green);
 
-            getContextState()->numFailedAssertionsForCurrentTestcase++;
+            if(strncmp(assert_name, "WARN", 4) != 0)
+                getContextState()->numFailedAssertionsForCurrentTestcase++;
         }
     }
 
@@ -1502,7 +1521,8 @@ namespace detail
             DOCTEST_PRINTF_COLORED(msg, Color::Red);
             DOCTEST_PRINTF_COLORED(info1, Color::Green);
 
-            getContextState()->numFailedAssertionsForCurrentTestcase++;
+            if(strncmp(assert_name, "WARN", 4) != 0)
+                getContextState()->numFailedAssertionsForCurrentTestcase++;
         }
     }
 
