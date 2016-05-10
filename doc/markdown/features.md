@@ -85,6 +85,7 @@ The library can be used like any other even if you are not fond of the idea of m
 (signals on *NIX platforms or structured exceptions on Windows)
 
 - think about the expression decomposition static asserts
+- VC6 support
 
 - examples and test coverage
 - enabling COMPARE in tests

@@ -1880,7 +1880,7 @@ int Context::run() {
 
     if(p.hash_table_histogram) {
         // find the most full bucket
-        unsigned maxInBucket = 0;
+        unsigned maxInBucket = 1;
         for(i = 0; i < buckets.size(); i++)
             if(buckets[i].size() > maxInBucket)
                 maxInBucket = buckets[i].size();
