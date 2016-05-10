@@ -1,118 +1,117 @@
-## http://www.appveyor.com/docs/appveyor-yml
-#
-#notifications:
-#  - provider: Email
-#    to:
-#      - vik.kirilov@gmail.com
-#    on_build_status_changed: true
-#    on_build_failure: true
-#    on_build_success: false
-#  # gitter
-#  - provider: Webhook
-#    url: https://webhooks.gitter.im/e/3a78202a235c0325e516
-#    on_build_status_changed: true
-#    on_build_failure: true
-#    on_build_success: false
-#
-#clone_depth: 5
-#branches:
-#  except:
-#    - gh-pages
-#    - coverity_scan
-#
-#matrix:
-#  fast_finish: false
-#
-#environment:
-#  matrix:
-#  - platform: x86
-#    configuration: Debug
-#    arch: "Win32"
-#    VS_GEN: "Visual Studio 9 2008"
-#  - platform: x86
-#    configuration: Release
-#    arch: "Win32"
-#    VS_GEN: "Visual Studio 9 2008"
-### THE FOLLOWING ARE DISABLED BECAUSE CMAKE CANNOT FIND THE COMPILER FOR Win64
-##  - platform: x64
-##    configuration: Debug
-##    arch: "x64"
-##    VS_GEN: "Visual Studio 9 2008 Win64"
-##  - platform: x64
-##    configuration: Release
-##    arch: "x64"
-##    VS_GEN: "Visual Studio 9 2008 Win64"
-#  - platform: x86
-#    configuration: Debug
-#    arch: "Win32"
-#    VS_GEN: "Visual Studio 10 2010"
-#  - platform: x86
-#    configuration: Release
-#    arch: "Win32"
-#    VS_GEN: "Visual Studio 10 2010"
+# http://www.appveyor.com/docs/appveyor-yml
+
+notifications:
+  - provider: Email
+    to:
+      - vik.kirilov@gmail.com
+    on_build_status_changed: true
+    on_build_failure: true
+    on_build_success: false
+  # gitter
+  - provider: Webhook
+    url: https://webhooks.gitter.im/e/3a78202a235c0325e516
+    on_build_status_changed: true
+    on_build_failure: true
+    on_build_success: false
+
+clone_depth: 5
+branches:
+  except:
+    - gh-pages
+    - coverity_scan
+
+matrix:
+  fast_finish: false
+
+environment:
+  matrix:
+  - platform: x86
+    configuration: Debug
+    arch: "Win32"
+    VS_GEN: "Visual Studio 9 2008"
+  - platform: x86
+    configuration: Release
+    arch: "Win32"
+    VS_GEN: "Visual Studio 9 2008"
+## THE FOLLOWING ARE DISABLED BECAUSE CMAKE CANNOT FIND THE COMPILER FOR Win64
 #  - platform: x64
 #    configuration: Debug
 #    arch: "x64"
-#    VS_GEN: "Visual Studio 10 2010 Win64"
+#    VS_GEN: "Visual Studio 9 2008 Win64"
 #  - platform: x64
 #    configuration: Release
 #    arch: "x64"
-#    VS_GEN: "Visual Studio 10 2010 Win64"
-#  - platform: x86
-#    configuration: Debug
-#    arch: "Win32"
-#    VS_GEN: "Visual Studio 11 2012"
-#  - platform: x86
-#    configuration: Release
-#    arch: "Win32"
-#    VS_GEN: "Visual Studio 11 2012"
-#  - platform: x64
-#    configuration: Debug
-#    arch: "x64"
-#    VS_GEN: "Visual Studio 11 2012 Win64"
-#  - platform: x64
-#    configuration: Release
-#    arch: "x64"
-#    VS_GEN: "Visual Studio 11 2012 Win64"
-#  - platform: x86
-#    configuration: Debug
-#    arch: "Win32"
-#    VS_GEN: "Visual Studio 12 2013"
-#  - platform: x86
-#    configuration: Release
-#    arch: "Win32"
-#    VS_GEN: "Visual Studio 12 2013"
-#  - platform: x64
-#    configuration: Debug
-#    arch: "x64"
-#    VS_GEN: "Visual Studio 12 2013 Win64"
-#  - platform: x64
-#    configuration: Release
-#    arch: "x64"
-#    VS_GEN: "Visual Studio 12 2013 Win64"
-#  - platform: x86
-#    configuration: Debug
-#    arch: "Win32"
-#    VS_GEN: "Visual Studio 14 2015"
-#  - platform: x86
-#    configuration: Release
-#    arch: "Win32"
-#    VS_GEN: "Visual Studio 14 2015"
-#  - platform: x64
-#    configuration: Debug
-#    arch: "x64"
-#    VS_GEN: "Visual Studio 14 2015 Win64"
-#  - platform: x64
-#    configuration: Release
-#    arch: "x64"
-#    VS_GEN: "Visual Studio 14 2015 Win64"
-#
-#before_build:
-#  - cmake . -G "%VS_GEN%"
-#build_script:
-#  - msbuild all.sln /p:Configuration=%Configuration%;Platform=%arch% /maxcpucount
-#test_script:
-## temporarily disabled - output will change often so no need for this yet
-##  - cmake . -DTEST_MODE=COMPARE
-#  - ctest -C %configuration% --output-on-failure
-#
+#    VS_GEN: "Visual Studio 9 2008 Win64"
+  - platform: x86
+    configuration: Debug
+    arch: "Win32"
+    VS_GEN: "Visual Studio 10 2010"
+  - platform: x86
+    configuration: Release
+    arch: "Win32"
+    VS_GEN: "Visual Studio 10 2010"
+  - platform: x64
+    configuration: Debug
+    arch: "x64"
+    VS_GEN: "Visual Studio 10 2010 Win64"
+  - platform: x64
+    configuration: Release
+    arch: "x64"
+    VS_GEN: "Visual Studio 10 2010 Win64"
+  - platform: x86
+    configuration: Debug
+    arch: "Win32"
+    VS_GEN: "Visual Studio 11 2012"
+  - platform: x86
+    configuration: Release
+    arch: "Win32"
+    VS_GEN: "Visual Studio 11 2012"
+  - platform: x64
+    configuration: Debug
+    arch: "x64"
+    VS_GEN: "Visual Studio 11 2012 Win64"
+  - platform: x64
+    configuration: Release
+    arch: "x64"
+    VS_GEN: "Visual Studio 11 2012 Win64"
+  - platform: x86
+    configuration: Debug
+    arch: "Win32"
+    VS_GEN: "Visual Studio 12 2013"
+  - platform: x86
+    configuration: Release
+    arch: "Win32"
+    VS_GEN: "Visual Studio 12 2013"
+  - platform: x64
+    configuration: Debug
+    arch: "x64"
+    VS_GEN: "Visual Studio 12 2013 Win64"
+  - platform: x64
+    configuration: Release
+    arch: "x64"
+    VS_GEN: "Visual Studio 12 2013 Win64"
+  - platform: x86
+    configuration: Debug
+    arch: "Win32"
+    VS_GEN: "Visual Studio 14 2015"
+  - platform: x86
+    configuration: Release
+    arch: "Win32"
+    VS_GEN: "Visual Studio 14 2015"
+  - platform: x64
+    configuration: Debug
+    arch: "x64"
+    VS_GEN: "Visual Studio 14 2015 Win64"
+  - platform: x64
+    configuration: Release
+    arch: "x64"
+    VS_GEN: "Visual Studio 14 2015 Win64"
+
+before_build:
+  - cmake . -G "%VS_GEN%"
+build_script:
+  - msbuild all.sln /p:Configuration=%Configuration%;Platform=%arch% /maxcpucount
+test_script:
+# temporarily disabled - output will change often so no need for this yet
+#  - cmake . -DTEST_MODE=COMPARE
+  - ctest -C %configuration% --output-on-failure
