@@ -13,18 +13,17 @@ notifications:
 git:
   depth: 5
 
-# check out the ccache setup/teardown of Urho3D - https://github.com/urho3d/Urho3D/blob/master/.travis.yml
 cache:
   - apt
-  - ccache
+#  - ccache
 
 env:
   global:
-    - USE_CCACHE=1
-    - CCACHE_SLOPPINESS=pch_defines,time_macros
-    - CCACHE_COMPRESS=1
-    - CCACHE_MAXSIZE=200M
-    - CCACHE_CPP2=1
+#    - USE_CCACHE=1
+#    - CCACHE_SLOPPINESS=pch_defines,time_macros
+#    - CCACHE_COMPRESS=1
+#    - CCACHE_MAXSIZE=200M
+#    - CCACHE_CPP2=1
     - CMAKE_OPTIONS_GLOBAL="-DCMAKE_EXPORT_COMPILE_COMMANDS=ON"
   # Workaround for https://github.com/travis-ci/travis-ci/issues/4681
   # "Defining the build matrix only with matrix.include leads to an additional, unwanted job"
@@ -256,9 +255,7 @@ before_install:
     if [[ "${TRAVIS_OS_NAME}" == "osx" ]]; then
       # update package list
       brew update
-      # ccache
-      brew install ccache
-      # valgrind
+#      brew install ccache
       brew install valgrind
       # cmake
       if brew list -1 | grep -q "^cmake\$"; then
@@ -296,9 +293,10 @@ before_install:
 
 install:
   - ${CXX} --version
-  - export CXX="ccache ${COMPILER}"
+#  - export CXX="ccache ${COMPILER}"
+  - export CXX="${COMPILER}"
   - ${CXX} --version
-  - ccache -s
+#  - ccache -s
 
 script:
   # coverage - do not continue with other build configurations after that
@@ -347,6 +345,8 @@ script:
   - if [[ "${HAS_UBSAN_32}" = "true" ]]; then cmake -DCMAKE_BUILD_TYPE=Debug   -DCMAKE_CXX_FLAGS="-m32 -fsanitize=undefined" . && make clean && make -j2 && ctest --output-on-failure ; fi
   - if [[ "${HAS_UBSAN_64}" = "true" ]]; then cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="-m64 -fsanitize=undefined" . && make clean && make -j2 && ctest --output-on-failure ; fi
   - if [[ "${HAS_UBSAN_32}" = "true" ]]; then cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="-m32 -fsanitize=undefined" . && make clean && make -j2 && ctest --output-on-failure ; fi
+
+#  - ccache -s
 
 after_script:
   - cat compile_commands.json

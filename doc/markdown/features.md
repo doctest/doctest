@@ -59,12 +59,14 @@ The library can be used like any other even if you are not fond of the idea of m
 - integration with the output window of Visual Studio for failing tests
 - a ```main()``` can be provided when implementing the library with the [**```DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN```**](main.md) identifier
 - can write tests in headers - they will still be registered only once in the executable/shared object
-- the library doesn't use operator ```new```/```delete``` (only ```malloc```) so you can test your ```operator new()``` usage (TODO: CHECK THIS NOW THAT I SUPPORT OSTREAM<<)
 - [**range-based**](commandline.md#ranges) execution of tests - see the [**multiprocess**](../../examples/multiprocess/) example (the **run.py** script)
 - colored output in the console
 - controlling the order of test execution
 
 ## TODO for release
+
+fix ostream forward declaration with libc++
+add DOCTEST_CONFIG_USE_IOSFWD config option
 
 - COMMAND LINE OPTIONS:
 - sorting the test order (also RAND! and SEED!) (by file, by test suite, or both, ASC/DESC...)
@@ -86,6 +88,8 @@ The library can be used like any other even if you are not fond of the idea of m
 
 - think about the expression decomposition static asserts
 - VC6 support
+- switch to std::vector
+- maybe remove malloc/free in favor of new/delete
 
 - examples and test coverage
 - enabling COMPARE in tests

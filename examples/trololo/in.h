@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+//#include <iosfwd>
 using namespace std;
 
 namespace std

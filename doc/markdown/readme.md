@@ -11,5 +11,6 @@ Reference
 - [Configuration](configuration.md)
 - [main() entry point and dealing with shared objects](main.md)
 - [Command line](commandline.md)
+- [Stringification](stringification.md)
 - [Benchmarks](benchmarks.md)
 - [FAQ](faq.md)
