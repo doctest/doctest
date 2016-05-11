@@ -1557,10 +1557,8 @@ namespace detail
 #endif // DOCTEST_CONFIG_NO_SHORT_FLAGS
     }
 
-    // the implementation of parseCommaSepArgs()
-    bool parseCommaSepArgsImpl(int argc, const char* const* argv, const char* pattern,
-                               Vector<String>& res) {
-        String filtersString;
+    // the implementation of parseOption()
+    bool parseOptionImpl(int argc, const char* const* argv, const char* pattern, String& res) {
         for(int i = argc - 1; i >= 0; --i) {
             const char* temp = strstr(argv[i], pattern);
             if(temp) {
@@ -1577,15 +1575,31 @@ namespace detail
                     temp += my_strlen(pattern);
                     unsigned len = my_strlen(temp);
                     if(len) {
-                        filtersString = temp;
-                        break;
+                        res = temp;
+                        return true;
                     }
                 }
             }
         }
+        return false;
+    }
 
-        // if we have found the filter string
-        if(filtersString.c_str()) {
+    // parses an option and returns the string after the '=' character
+    bool parseOption(int argc, const char* const* argv, const char* pattern, String& res) {
+#ifndef DOCTEST_CONFIG_NO_SHORT_FLAGS
+        if(!parseOptionImpl(argc, argv, pattern, res))
+            return parseOptionImpl(argc, argv, pattern + 3, res); // 3 for "dt-"
+        return true;
+#else  // DOCTEST_CONFIG_NO_SHORT_FLAGS
+        return parseOptionImpl(argc, argv, pattern, res);
+#endif // DOCTEST_CONFIG_NO_SHORT_FLAGS
+    }
+
+    // parses a comma separated list of words after a pattern in one of the arguments in argv
+    bool parseCommaSepArgs(int argc, const char* const* argv, const char* pattern,
+                           Vector<String>& res) {
+        String filtersString;
+        if(parseOption(argc, argv, pattern, filtersString)) {
             // tokenize with "," as a separator
             char* pch = strtok(filtersString.c_str(), ","); // modifies the string
             while(pch != 0) {
@@ -1598,34 +1612,19 @@ namespace detail
         return false;
     }
 
-    // parses a comma separated list of words after a pattern in one of the arguments in argv
-    bool parseCommaSepArgs(int argc, const char* const* argv, const char* pattern,
-                           Vector<String>& res) {
-#ifndef DOCTEST_CONFIG_NO_SHORT_FLAGS
-        if(!parseCommaSepArgsImpl(argc, argv, pattern, res))
-            return parseCommaSepArgsImpl(argc, argv, pattern + 3, res); // 3 for "dt-"
-        return true;
-#else // DOCTEST_CONFIG_NO_SHORT_FLAGS
-        return parseCommaSepArgsImpl(argc, argv, pattern, res);
-#endif // DOCTEST_CONFIG_NO_SHORT_FLAGS
-    }
-
     enum optionType
     {
-        param_bool,
-        param_int
+        option_bool,
+        option_int
     };
 
-    // parses an option from the command line
-    bool parseOption(int argc, const char* const* argv, const char* option, optionType type,
-                     int defaultVal, int& res) {
+    // parses an int/bool option from the command line
+    bool parseIntOption(int argc, const char* const* argv, const char* pattern, optionType type,
+                        int& res, int defaultVal = int()) {
         res = defaultVal;
 
-        Vector<String> parsedValues;
-        parseCommaSepArgs(argc, argv, option, parsedValues);
-
-        // if the option has been found (and there is only 1 value in the "comma separated list")
-        if(parsedValues.size() == 1) {
+        String parsedValue;
+        if(parseOption(argc, argv, pattern, parsedValue)) {
             if(type == 0) {
                 // boolean
                 const char positive[][5] = {"1", "true", "on", "yes"};  // 5 - strlen("true") + 1
@@ -1633,18 +1632,18 @@ namespace detail
 
                 // if the value matches any of the positive/negative possibilities
                 for(unsigned i = 0; i < 4; i++) {
-                    if(parsedValues[0].compare(positive[i], true) == 0) {
+                    if(parsedValue.compare(positive[i], true) == 0) {
                         res = 1;
                         return true;
                     }
-                    if(parsedValues[0].compare(negative[i], true) == 0) {
+                    if(parsedValue.compare(negative[i], true) == 0) {
                         res = 0;
                         return true;
                     }
                 }
             } else {
                 // integer
-                int theInt = atoi(parsedValues[0].c_str());
+                int theInt = atoi(parsedValue.c_str());
                 if(theInt != 0) {
                     res = theInt;
                     return true;
@@ -1802,23 +1801,25 @@ void Context::parseArgs(int argc, const char* const* argv, bool withDefaults) {
 
     int res = 0;
 
+//order
+
 #define DOCTEST_PARSE_OPTION(name, var, type, default)                                             \
-    if(parseOption(argc, argv, name, type, default, res) || withDefaults)                          \
+    if(parseIntOption(argc, argv, name, type, res, default) || withDefaults)                       \
     p.var = !!res
 
-    DOCTEST_PARSE_OPTION("dt-count=", count, param_bool, 0);
-    DOCTEST_PARSE_OPTION("dt-case-sensitive=", case_sensitive, param_bool, 0);
-    DOCTEST_PARSE_OPTION("dt-no-overrides=", no_overrides, param_bool, 0);
-    DOCTEST_PARSE_OPTION("dt-exit=", exit, param_bool, 0);
-    DOCTEST_PARSE_OPTION("dt-no-exitcode=", no_exitcode, param_bool, 0);
-    DOCTEST_PARSE_OPTION("dt-no-run=", no_run, param_bool, 0);
-    DOCTEST_PARSE_OPTION("dt-no-colors=", no_colors, param_bool, 0);
-    DOCTEST_PARSE_OPTION("dt-no-breaks=", no_breaks, param_bool, 0);
-    DOCTEST_PARSE_OPTION("dt-hash-table-histogram=", hash_table_histogram, param_bool, 0);
-    DOCTEST_PARSE_OPTION("dt-no-path-in-filenames=", no_path_in_filenames, param_bool, 0);
+    DOCTEST_PARSE_OPTION("dt-count=", count, option_bool, 0);
+    DOCTEST_PARSE_OPTION("dt-case-sensitive=", case_sensitive, option_bool, 0);
+    DOCTEST_PARSE_OPTION("dt-no-overrides=", no_overrides, option_bool, 0);
+    DOCTEST_PARSE_OPTION("dt-exit=", exit, option_bool, 0);
+    DOCTEST_PARSE_OPTION("dt-no-exitcode=", no_exitcode, option_bool, 0);
+    DOCTEST_PARSE_OPTION("dt-no-run=", no_run, option_bool, 0);
+    DOCTEST_PARSE_OPTION("dt-no-colors=", no_colors, option_bool, 0);
+    DOCTEST_PARSE_OPTION("dt-no-breaks=", no_breaks, option_bool, 0);
+    DOCTEST_PARSE_OPTION("dt-hash-table-histogram=", hash_table_histogram, option_bool, 0);
+    DOCTEST_PARSE_OPTION("dt-no-path-in-filenames=", no_path_in_filenames, option_bool, 0);
 
-    DOCTEST_PARSE_OPTION("dt-first=", first, param_int, 1);
-    DOCTEST_PARSE_OPTION("dt-last=", last, param_int, 0);
+    DOCTEST_PARSE_OPTION("dt-first=", first, option_int, 1);
+    DOCTEST_PARSE_OPTION("dt-last=", last, option_int, 0);
 #undef DOCTEST_PARSE_OPTION
 }
 
