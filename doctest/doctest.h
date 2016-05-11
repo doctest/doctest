@@ -143,7 +143,7 @@ class String
     void copy(const String& other);
 
 public:
-    String(const char* in = 0);
+    String(const char* in = "");
     String(const String& other);
     ~String();
 
@@ -306,7 +306,7 @@ namespace detail
         ~Result() {
         }
 
-        Result(bool passed = true, const String& decomposition = "")
+        Result(bool passed = true, const String& decomposition = String())
                 : m_passed(passed)
                 , m_decomposition(decomposition) {}
         operator bool() { return !m_passed; }
@@ -398,6 +398,8 @@ namespace detail
 
         unsigned first; // the first (matching) test to be executed
         unsigned last;  // the last (matching) test to be executed
+
+        String order; // the order of tests - how they should be sorted
 
         bool help;    // to print the help
         bool version; // to print the version
@@ -1553,7 +1555,7 @@ namespace detail
             return parseFlagImpl(argc, argv, pattern + 3); // 3 for "dt-"
         return true;
 #else  // DOCTEST_CONFIG_NO_SHORT_FLAGS
-        return parseCommaSepArgsImpl(argc, argv, pattern);
+        return parseFlagImpl(argc, argv, pattern);
 #endif // DOCTEST_CONFIG_NO_SHORT_FLAGS
     }
 
@@ -1585,7 +1587,9 @@ namespace detail
     }
 
     // parses an option and returns the string after the '=' character
-    bool parseOption(int argc, const char* const* argv, const char* pattern, String& res) {
+    bool parseOption(int argc, const char* const* argv, const char* pattern, String& res,
+                     const String& defaultVal = String()) {
+        res = defaultVal;
 #ifndef DOCTEST_CONFIG_NO_SHORT_FLAGS
         if(!parseOptionImpl(argc, argv, pattern, res))
             return parseOptionImpl(argc, argv, pattern + 3, res); // 3 for "dt-"
@@ -1707,11 +1711,7 @@ namespace detail
     }
 } // namespace detail
 
-String::String(const char* in)
-        : m_str(0) {
-    if(in == 0)
-        return;
-
+String::String(const char* in) {
     m_str = static_cast<char*>(malloc(detail::my_strlen(in) + 1));
     strcpy(m_str, in);
 }
@@ -1799,28 +1799,35 @@ void Context::parseArgs(int argc, const char* const* argv, bool withDefaults) {
     parseCommaSepArgs(argc, argv, "dt-name=", p.filters[4]);
     parseCommaSepArgs(argc, argv, "dt-name-exclude=", p.filters[5]);
 
-    int res = 0;
+    int    intRes = 0;
+    String strRes;
 
-//order
+#define DOCTEST_PARSE_INT_OPTION(name, var, type, default)                                         \
+    if(parseIntOption(argc, argv, name, type, intRes, default) || withDefaults)                    \
+    p.var = !!intRes
 
-#define DOCTEST_PARSE_OPTION(name, var, type, default)                                             \
-    if(parseIntOption(argc, argv, name, type, res, default) || withDefaults)                       \
-    p.var = !!res
+#define DOCTEST_PARSE_STR_OPTION(name, var, default)                                               \
+    if(parseOption(argc, argv, name, strRes, default) || withDefaults)                             \
+    p.var = strRes
 
-    DOCTEST_PARSE_OPTION("dt-count=", count, option_bool, 0);
-    DOCTEST_PARSE_OPTION("dt-case-sensitive=", case_sensitive, option_bool, 0);
-    DOCTEST_PARSE_OPTION("dt-no-overrides=", no_overrides, option_bool, 0);
-    DOCTEST_PARSE_OPTION("dt-exit=", exit, option_bool, 0);
-    DOCTEST_PARSE_OPTION("dt-no-exitcode=", no_exitcode, option_bool, 0);
-    DOCTEST_PARSE_OPTION("dt-no-run=", no_run, option_bool, 0);
-    DOCTEST_PARSE_OPTION("dt-no-colors=", no_colors, option_bool, 0);
-    DOCTEST_PARSE_OPTION("dt-no-breaks=", no_breaks, option_bool, 0);
-    DOCTEST_PARSE_OPTION("dt-hash-table-histogram=", hash_table_histogram, option_bool, 0);
-    DOCTEST_PARSE_OPTION("dt-no-path-in-filenames=", no_path_in_filenames, option_bool, 0);
+    DOCTEST_PARSE_INT_OPTION("dt-count=", count, option_bool, 0);
+    DOCTEST_PARSE_INT_OPTION("dt-case-sensitive=", case_sensitive, option_bool, 0);
+    DOCTEST_PARSE_INT_OPTION("dt-no-overrides=", no_overrides, option_bool, 0);
+    DOCTEST_PARSE_INT_OPTION("dt-exit=", exit, option_bool, 0);
+    DOCTEST_PARSE_INT_OPTION("dt-no-exitcode=", no_exitcode, option_bool, 0);
+    DOCTEST_PARSE_INT_OPTION("dt-no-run=", no_run, option_bool, 0);
+    DOCTEST_PARSE_INT_OPTION("dt-no-colors=", no_colors, option_bool, 0);
+    DOCTEST_PARSE_INT_OPTION("dt-no-breaks=", no_breaks, option_bool, 0);
+    DOCTEST_PARSE_INT_OPTION("dt-hash-table-histogram=", hash_table_histogram, option_bool, 0);
+    DOCTEST_PARSE_INT_OPTION("dt-no-path-in-filenames=", no_path_in_filenames, option_bool, 0);
 
-    DOCTEST_PARSE_OPTION("dt-first=", first, option_int, 1);
-    DOCTEST_PARSE_OPTION("dt-last=", last, option_int, 0);
-#undef DOCTEST_PARSE_OPTION
+    DOCTEST_PARSE_INT_OPTION("dt-first=", first, option_int, 1);
+    DOCTEST_PARSE_INT_OPTION("dt-last=", last, option_int, 0);
+
+    DOCTEST_PARSE_STR_OPTION("dt-order=", order, "file");
+
+#undef DOCTEST_PARSE_STR_OPTION
+#undef DOCTEST_PARSE_INT_OPTION
 }
 
 // allows the user to add procedurally to the filters from the command line

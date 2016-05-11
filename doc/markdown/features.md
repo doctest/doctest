@@ -67,7 +67,7 @@ The library can be used like any other even if you are not fond of the idea of m
 
 - COMMAND LINE OPTIONS:
 - sorting the test order (also RAND! and SEED!) (by file, by test suite, or both, ASC/DESC...)
-- order - file/test suite/name/rand
+- order - file/suite/name/rand
 - rand-seed - the rng seed
 - nothrow - disabling exception asserts
 - list-tests - list tests
@@ -117,6 +117,7 @@ The library can be used like any other even if you are not fond of the idea of m
 
 ## UNSURE
 
+- when an option is found - like "-dt-count=" - validate it - if a string has been passed instead of a number - there should be an error
 - think about long long support or maybe int64_t support
 - BDD based on subcases - like Catch
 - Bitwise() class that has overloaded operators for comparison - to be used to check objects bitwise against each other (or maybe not - because of packing!)
@@ -126,7 +127,6 @@ The library can be used like any other even if you are not fond of the idea of m
 - ability to re-run only newly compiled tests - based on timestamps of the __FILE__ in which they are - and stored in some file
 - ability to provide a temp folder to tests that is cleared between them
 - put internals in anonymous namespace (even if already in detail) - even though clang-format will make everything more indented
-- ability to check for memory leaks - comparing memory usage before and after the test with some API
 - wchar stuff in stringify and whatever - see <wchar.h>
 - progress of tests being executed (and an option for it)
 - think about adding support for std::exception and others (mainly catching them so the .what() method can be called)
