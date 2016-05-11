@@ -66,9 +66,6 @@ The library can be used like any other even if you are not fond of the idea of m
 ## TODO for release
 
 - COMMAND LINE OPTIONS:
-- sorting the test order (also RAND! and SEED!) (by file, by test suite, or both, ASC/DESC...)
-- order - file/suite/name/rand
-- rand-seed - the rng seed
 - nothrow - disabling exception asserts
 - list-tests - list tests
 - list-test-names-only - list test names
@@ -91,7 +88,7 @@ The library can be used like any other even if you are not fond of the idea of m
 - examples and test coverage
 - enabling COMPARE in tests
 - benchmark (assimp and empty files - or maybe just empty files)
-- documentation
+- documentation (also try it online in tutorial and other places!)
 - add pledgie campaign in features/roadmap and in the reference
 - research bountysource/patreon
 
@@ -117,6 +114,7 @@ The library can be used like any other even if you are not fond of the idea of m
 
 ## UNSURE
 
+- order option - ASC/DESC for sorting
 - when an option is found - like "-dt-count=" - validate it - if a string has been passed instead of a number - there should be an error
 - think about long long support or maybe int64_t support
 - BDD based on subcases - like Catch

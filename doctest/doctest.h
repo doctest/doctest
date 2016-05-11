@@ -399,7 +399,8 @@ namespace detail
         unsigned first; // the first (matching) test to be executed
         unsigned last;  // the last (matching) test to be executed
 
-        String order; // the order of tests - how they should be sorted
+        String   sort;      // how tests should be sorted
+        unsigned rand_seed; // the seed for rand ordering
 
         bool help;    // to print the help
         bool version; // to print the version
@@ -796,7 +797,8 @@ int  Context::run() { return 0; }
 
 // required includes - will go only in one translation unit!
 #include <cstdio>    // printf, fprintf, sprintf, snprintf
-#include <cstdlib>   // malloc, free, qsort
+#include <cstdlib>   // malloc, free, qsort, rand, srand
+#include <ctime>     // time stuff
 #include <cstring>   // strcpy, strtok, strrchr, strncmp
 #include <algorithm> // random_shuffle
 #include <new>       // placement new (can be skipped if the containers require 'construct()' from T)
@@ -1193,12 +1195,12 @@ namespace detail
     // a struct defining a registered test callback
     struct TestData
     {
-        // not used for comparing
+        // not used for determining uniqueness
         String   m_suite; // the test suite in which the test was added
         String   m_name;  // name of the test function
         funcType m_f;     // a function pointer to the test function
 
-        // fields by which difference of test functions shall be determined
+        // fields by which uniqueness of test cases shall be determined
         const char* m_file; // the file in which the test was registered
         unsigned    m_line; // the line where the test was registered
 
@@ -1218,8 +1220,8 @@ namespace detail
         return hashStr(reinterpret_cast<unsigned const char*>(in.m_file)) ^ in.m_line;
     }
 
-    // a comparison function for using qsort on arrays with pointers to TestData structures
-    int TestDataComparator(const void* a, const void* b) {
+    // for sorting tests by file/line
+    int fileOrderComparator(const void* a, const void* b) {
         const TestData* lhs = *static_cast<TestData* const*>(a);
         const TestData* rhs = *static_cast<TestData* const*>(b);
 #ifdef _MSC_VER
@@ -1232,6 +1234,28 @@ namespace detail
         if(res != 0)
             return res;
         return static_cast<int>(lhs->m_line - rhs->m_line);
+    }
+
+    // for sorting tests by suite/file/line
+    int suiteOrderComparator(const void* a, const void* b) {
+        const TestData* lhs = *static_cast<TestData* const*>(a);
+        const TestData* rhs = *static_cast<TestData* const*>(b);
+
+        int res = lhs->m_suite.compare(rhs->m_suite);
+        if(res != 0)
+            return res;
+        return fileOrderComparator(a, b);
+    }
+
+    // for sorting tests by name/suite/file/line
+    int nameOrderComparator(const void* a, const void* b) {
+        const TestData* lhs = *static_cast<TestData* const*>(a);
+        const TestData* rhs = *static_cast<TestData* const*>(b);
+
+        int res = lhs->m_name.compare(rhs->m_name);
+        if(res != 0)
+            return res;
+        return suiteOrderComparator(a, b);
     }
 
     // holds the current test suite
@@ -1657,6 +1681,8 @@ namespace detail
         return false;
     }
 
+    int myRandom(int i) { return rand() % i; }
+
     void printVersion() {
         DOCTEST_PRINTF_COLORED("[doctest] ", Color::Cyan);
         printf("version is \"%s\"\n", DOCTEST_VERSION);
@@ -1689,6 +1715,9 @@ namespace detail
         printf("  -dt-file-exclude=<filters>        filters OUT tests by their file\n");
         printf("  -dt-testsuite=<filters>           filters tests by their testsuite\n");
         printf("  -dt-testsuite-exclude=<filters>   filters OUT tests by their testsuite\n");
+        printf("  -dt-sort=<string>                 how the tests should be sorted\n");
+        printf("                                    <string> - by [file/suite/name/rand]\n");
+        printf("  -dt-rand-seed=<int>               seed for random ordering\n");
         printf("  -dt-count=<bool>                  counts the number of tests passing the\n");
         printf("                                    filters and exits\n");
         printf("  -dt-first=<int>                   the first test passing the filters to\n");
@@ -1824,7 +1853,8 @@ void Context::parseArgs(int argc, const char* const* argv, bool withDefaults) {
     DOCTEST_PARSE_INT_OPTION("dt-first=", first, option_int, 1);
     DOCTEST_PARSE_INT_OPTION("dt-last=", last, option_int, 0);
 
-    DOCTEST_PARSE_STR_OPTION("dt-order=", order, "file");
+    DOCTEST_PARSE_STR_OPTION("dt-sort=", sort, "file");
+    DOCTEST_PARSE_INT_OPTION("dt-rand-seed=", rand_seed, option_int, 0);
 
 #undef DOCTEST_PARSE_STR_OPTION
 #undef DOCTEST_PARSE_INT_OPTION
@@ -1878,13 +1908,22 @@ int Context::run() {
     unsigned                         i       = 0;
     const Vector<Vector<TestData> >& buckets = getRegisteredTests().getBuckets();
 
-    Vector<const TestData*> testDataArray;
+    Vector<const TestData*> testArray;
     for(i = 0; i < buckets.size(); i++)
         for(unsigned k = 0; k < buckets[i].size(); k++)
-            testDataArray.push_back(&buckets[i][k]);
+            testArray.push_back(&buckets[i][k]);
 
     // sort the collected records
-    qsort(testDataArray.data(), testDataArray.size(), sizeof(TestData*), TestDataComparator);
+    if(p.sort.compare("file") == 0) {
+        qsort(testArray.data(), testArray.size(), sizeof(TestData*), fileOrderComparator);
+    } else if(p.sort.compare("suite") == 0) {
+        qsort(testArray.data(), testArray.size(), sizeof(TestData*), suiteOrderComparator);
+    } else if(p.sort.compare("name") == 0) {
+        qsort(testArray.data(), testArray.size(), sizeof(TestData*), nameOrderComparator);
+    } else if(p.sort.compare("rand") == 0) {
+        srand(p.rand_seed);
+        std::random_shuffle(testArray.data(), testArray.data() + testArray.size(), myRandom);
+    }
 
     if(p.hash_table_histogram) {
         // find the most full bucket
@@ -1914,8 +1953,8 @@ int Context::run() {
     unsigned numTestsPassingFilters = 0;
     unsigned numFailed              = 0;
     // invoke the registered functions if they match the filter criteria (or just count them)
-    for(i = 0; i < testDataArray.size(); i++) {
-        const TestData& data = *testDataArray[i];
+    for(i = 0; i < testArray.size(); i++) {
+        const TestData& data = *testArray[i];
         if(!matchesAny(data.m_file, p.filters[0], 1, p.case_sensitive))
             continue;
         if(matchesAny(data.m_file, p.filters[1], 0, p.case_sensitive))
