@@ -15,7 +15,9 @@ int main(int argc, char** argv) {
     context.setOption("dt-case-sensitive", true);
     context.setOption("no-breaks", true);
     //context.setOption("dt-no-colors", true);
-    context.addFilter("name", "zzz");
+    //context.addFilter("suite", "randomness");
+    //context.setOption("sort", "rand");
+    //context.setOption("rand-seed", 435);
 
     // run
     int res = context.run();

@@ -61,18 +61,6 @@ struct Empty
 
 TEST_CASE_FIXTURE(Empty, "trololo") { printf("Help?\n"); }
 
-// test("") { printf("TEST %d\n", __LINE__); }
-// test("") { printf("TEST %d\n", __LINE__); }
-// test("") { printf("TEST %d\n", __LINE__); }
-// test("") { printf("TEST %d\n", __LINE__); }
-// test("") { printf("TEST %d\n", __LINE__); }
-// test("") { printf("TEST %d\n", __LINE__); }
-// test("") { printf("TEST %d\n", __LINE__); }
-// test("") { printf("TEST %d\n", __LINE__); }
-// test("") { printf("TEST %d\n", __LINE__); }
-// test("") { printf("TEST %d\n", __LINE__); }
-// test("") { printf("TEST %d\n", __LINE__); }
-
 // to silence GCC "-Wmissing-declarations"
 // and the attribute is to silence "-Wmissing-noreturn" on clang
 #ifdef __clang__
@@ -107,3 +95,17 @@ TEST_CASE("zzz") {
     CHECK_NOTHROW(nothrows());
     REQUIRE_NOTHROW(nothrows());
 }
+
+// testing randomness
+TEST_SUITE("randomness");
+TEST_CASE("") { printf("TEST %d\n", __LINE__ - 100); }
+TEST_CASE("") { printf("TEST %d\n", __LINE__ - 100); }
+TEST_CASE("") { printf("TEST %d\n", __LINE__ - 100); }
+TEST_CASE("") { printf("TEST %d\n", __LINE__ - 100); }
+TEST_CASE("") { printf("TEST %d\n", __LINE__ - 100); }
+TEST_CASE("") { printf("TEST %d\n", __LINE__ - 100); }
+TEST_CASE("") { printf("TEST %d\n", __LINE__ - 100); }
+TEST_CASE("") { printf("TEST %d\n", __LINE__ - 100); }
+TEST_CASE("") { printf("TEST %d\n", __LINE__ - 100); }
+TEST_CASE("") { printf("TEST %d\n", __LINE__ - 100); }
+TEST_SUITE_END;

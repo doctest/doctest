@@ -456,6 +456,7 @@ public:
 
     void addFilter(const char* filter, const char* value);
     void setOption(const char* option, int value);
+    void setOption(const char* option, const char* value);
 
     bool shouldExit();
 
@@ -772,6 +773,7 @@ int     String::compare(const String&, bool) const { return 0; }
 Context::Context(int, const char* const*) {}
 void Context::addFilter(const char*, const char*) {}
 void Context::setOption(const char*, int) {}
+void Context::setOption(const char*, const char*) {}
 bool Context::shouldExit() { return false; }
 int  Context::run() { return 0; }
 } // namespace doctest
@@ -796,12 +798,11 @@ int  Context::run() { return 0; }
     } while(doctest::detail::always_false())
 
 // required includes - will go only in one translation unit!
-#include <cstdio>    // printf, fprintf, sprintf, snprintf
-#include <cstdlib>   // malloc, free, qsort, rand, srand
-#include <ctime>     // time stuff
-#include <cstring>   // strcpy, strtok, strrchr, strncmp
-#include <algorithm> // random_shuffle
-#include <new>       // placement new (can be skipped if the containers require 'construct()' from T)
+#include <cstdio>  // printf, fprintf, sprintf, snprintf
+#include <cstdlib> // malloc, free, qsort, rand, srand
+#include <ctime>   // time stuff
+#include <cstring> // strcpy, strtok, strrchr, strncmp
+#include <new>     // placement new (can be skipped if the containers require 'construct()' from T)
 
 // the number of buckets used for the hash set
 #if !defined(DOCTEST_HASH_TABLE_NUM_BUCKETS)
@@ -1681,8 +1682,6 @@ namespace detail
         return false;
     }
 
-    int myRandom(int i) { return rand() % i; }
-
     void printVersion() {
         DOCTEST_PRINTF_COLORED("[doctest] ", Color::Cyan);
         printf("version is \"%s\"\n", DOCTEST_VERSION);
@@ -1831,57 +1830,59 @@ void Context::parseArgs(int argc, const char* const* argv, bool withDefaults) {
     int    intRes = 0;
     String strRes;
 
-#define DOCTEST_PARSE_INT_OPTION(name, var, type, default)                                         \
-    if(parseIntOption(argc, argv, name, type, intRes, default) || withDefaults)                    \
+#define DOCTEST_PARSE_BOOL_OPTION(name, var, default)                                              \
+    if(parseIntOption(argc, argv, name, option_bool, intRes, default) || withDefaults)             \
     p.var = !!intRes
+
+#define DOCTEST_PARSE_INT_OPTION(name, var, default)                                               \
+    if(parseIntOption(argc, argv, name, option_int, intRes, default) || withDefaults)              \
+    p.var = intRes
 
 #define DOCTEST_PARSE_STR_OPTION(name, var, default)                                               \
     if(parseOption(argc, argv, name, strRes, default) || withDefaults)                             \
     p.var = strRes
 
-    DOCTEST_PARSE_INT_OPTION("dt-count=", count, option_bool, 0);
-    DOCTEST_PARSE_INT_OPTION("dt-case-sensitive=", case_sensitive, option_bool, 0);
-    DOCTEST_PARSE_INT_OPTION("dt-no-overrides=", no_overrides, option_bool, 0);
-    DOCTEST_PARSE_INT_OPTION("dt-exit=", exit, option_bool, 0);
-    DOCTEST_PARSE_INT_OPTION("dt-no-exitcode=", no_exitcode, option_bool, 0);
-    DOCTEST_PARSE_INT_OPTION("dt-no-run=", no_run, option_bool, 0);
-    DOCTEST_PARSE_INT_OPTION("dt-no-colors=", no_colors, option_bool, 0);
-    DOCTEST_PARSE_INT_OPTION("dt-no-breaks=", no_breaks, option_bool, 0);
-    DOCTEST_PARSE_INT_OPTION("dt-hash-table-histogram=", hash_table_histogram, option_bool, 0);
-    DOCTEST_PARSE_INT_OPTION("dt-no-path-in-filenames=", no_path_in_filenames, option_bool, 0);
+    DOCTEST_PARSE_BOOL_OPTION("dt-count=", count, 0);
+    DOCTEST_PARSE_BOOL_OPTION("dt-case-sensitive=", case_sensitive, 0);
+    DOCTEST_PARSE_BOOL_OPTION("dt-no-overrides=", no_overrides, 0);
+    DOCTEST_PARSE_BOOL_OPTION("dt-exit=", exit, 0);
+    DOCTEST_PARSE_BOOL_OPTION("dt-no-exitcode=", no_exitcode, 0);
+    DOCTEST_PARSE_BOOL_OPTION("dt-no-run=", no_run, 0);
+    DOCTEST_PARSE_BOOL_OPTION("dt-no-colors=", no_colors, 0);
+    DOCTEST_PARSE_BOOL_OPTION("dt-no-breaks=", no_breaks, 0);
+    DOCTEST_PARSE_BOOL_OPTION("dt-hash-table-histogram=", hash_table_histogram, 0);
+    DOCTEST_PARSE_BOOL_OPTION("dt-no-path-in-filenames=", no_path_in_filenames, 0);
 
-    DOCTEST_PARSE_INT_OPTION("dt-first=", first, option_int, 1);
-    DOCTEST_PARSE_INT_OPTION("dt-last=", last, option_int, 0);
+    DOCTEST_PARSE_INT_OPTION("dt-first=", first, 1);
+    DOCTEST_PARSE_INT_OPTION("dt-last=", last, 0);
 
     DOCTEST_PARSE_STR_OPTION("dt-sort=", sort, "file");
-    DOCTEST_PARSE_INT_OPTION("dt-rand-seed=", rand_seed, option_int, 0);
+    DOCTEST_PARSE_INT_OPTION("dt-rand-seed=", rand_seed, 0);
 
 #undef DOCTEST_PARSE_STR_OPTION
 #undef DOCTEST_PARSE_INT_OPTION
 }
 
 // allows the user to add procedurally to the filters from the command line
-void Context::addFilter(const char* filter, const char* value) {
-    using namespace detail;
+void Context::addFilter(const char* filter, const char* value) { setOption(filter, value); }
 
-    if(!p.no_overrides) {
-        String      argv   = String(filter) + "=" + value;
-        const char* lvalue = argv.c_str();
-        parseArgs(1, &lvalue);
-    }
-}
-
-// allows the user to override procedurally the options from the command line
+// allows the user to override procedurally the int/bool options from the command line
 void Context::setOption(const char* option, int value) {
+    setOption(option, stringify(doctest::ADL_helper(), value).c_str());
+}
+
+// allows the user to override procedurally the string options from the command line
+void Context::setOption(const char* option, const char* value) {
     using namespace detail;
 
     if(!p.no_overrides) {
-        String      argv   = String(option) + "=" + stringify(doctest::ADL_helper(), value);
+        String      argv   = String(option) + "=" + value;
         const char* lvalue = argv.c_str();
         parseArgs(1, &lvalue);
     }
 }
 
+// users should query this in their main() and exit the program if true
 bool Context::shouldExit() { return p.exit; }
 
 // the main function that does all the filtering and test running
@@ -1922,7 +1923,17 @@ int Context::run() {
         qsort(testArray.data(), testArray.size(), sizeof(TestData*), nameOrderComparator);
     } else if(p.sort.compare("rand") == 0) {
         srand(p.rand_seed);
-        std::random_shuffle(testArray.data(), testArray.data() + testArray.size(), myRandom);
+
+        // random_shuffle implementation
+        const TestData** first = testArray.data();
+        for(i = testArray.size() - 1; i > 0; --i) {
+            int idxToSwap = rand() % (i + 1);
+
+            const TestData* temp = first[i];
+
+            first[i]         = first[idxToSwap];
+            first[idxToSwap] = temp;
+        }
     }
 
     if(p.hash_table_histogram) {
