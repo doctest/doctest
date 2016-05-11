@@ -12,6 +12,7 @@ std::ostream& operator<<(std::ostream& s, const myType&) { s << "myType"; return
 
 
 
+
 template<typename T>
 std::ostream& operator<<(std::ostream& s, const std::vector<T>& in) { s << "vector<T>"; return s; }
 
