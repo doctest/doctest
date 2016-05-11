@@ -9,6 +9,8 @@ drags cstdio, cstring and many others
 
 GCC 5 - 1k of code without new lines and stuff
 
+clang and libc++ - 400 loc
+
 ```catch.hpp ```
 
 MSVC 2015: 85k after preprocessor - 42k loc (without the new lines)

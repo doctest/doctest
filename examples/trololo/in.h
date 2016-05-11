@@ -2,6 +2,7 @@
 
 #include <string>
 //#include <iosfwd>
+#include <ciso646>
 using namespace std;
 
 namespace std
