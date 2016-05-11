@@ -1,10 +1,15 @@
 #pragma once
 
 #include <string>
-//#include <iosfwd>
-#include <ciso646>
-using namespace std;
 
+#ifdef __clang__
+#include <ciso646>
+#endif // __clang__
+
+#ifdef _LIBCPP_VERSION
+#include <iosfwd>
+#else // _LIBCPP_VERSION
+#ifndef DOCTEST_CONFIG_USE_IOSFWD
 namespace std
 {
 template <class charT>
@@ -15,19 +20,26 @@ template <class charT, class traits>
 class basic_ostream;
 typedef basic_ostream<char, char_traits<char> > ostream;
 }
+#else // DOCTEST_CONFIG_USE_IOSFWD
+#include <iosfwd>
+#endif // DOCTEST_CONFIG_USE_IOSFWD
+#endif // _LIBCPP_VERSION
 
-namespace has_insertion_operator_impl {
-    typedef char no;
-    typedef char yes[2];
+namespace has_insertion_operator_impl
+{
+typedef char no;
+typedef char yes[2];
 
-    template<bool>
-    struct static_assertion;
+template <bool>
+struct static_assertion;
 
-    template<>
-    struct static_assertion<true> {};
+template <>
+struct static_assertion<true>
+{};
 
-    template<bool in>
-    void f() { static_assertion<in>(); }
+template <bool in>
+void           f() {
+    static_assertion<in>(); }
 
     struct any_t {
         template <typename T>

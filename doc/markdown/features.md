@@ -65,14 +65,6 @@ The library can be used like any other even if you are not fond of the idea of m
 
 ## TODO for release
 
-
-_LIBCPP_VERSION
-#include <ciso646>
-or
-#include <iso646.h>
-fix ostream forward declaration with libc++
-add DOCTEST_CONFIG_USE_IOSFWD config option
-
 - COMMAND LINE OPTIONS:
 - sorting the test order (also RAND! and SEED!) (by file, by test suite, or both, ASC/DESC...)
 - order - file/test suite/name/rand
