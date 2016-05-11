@@ -66,7 +66,6 @@ The library can be used like any other even if you are not fond of the idea of m
 ## TODO for release
 
 - COMMAND LINE OPTIONS:
-- nothrow - disabling exception asserts
 - list-tests - list tests
 - list-test-names-only - list test names
 - success - output successful tests too

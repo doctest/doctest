@@ -1,5 +1,5 @@
 //
-// doctest.h - the lightest and feature rich C++ single header testing framework
+// doctest.h - the lightest feature rich C++ single header testing framework
 //
 // Copyright (c) 2016 Viktor Kirilov
 //
@@ -384,10 +384,17 @@ namespace detail
 
         detail::Vector<detail::Vector<String> > filters;
 
-        bool count;          // if only the count of matching tests is to be retreived
+        String   sort;      // how tests should be sorted
+        unsigned rand_seed; // the seed for rand ordering
+
+        bool     count; // if only the count of matching tests is to be retreived
+        unsigned first; // the first (matching) test to be executed
+        unsigned last;  // the last (matching) test to be executed
+
         bool case_sensitive; // if filtering should be case sensitive
         bool no_overrides;   // to disable overrides from code
         bool exit;           // if the program should be exited after the tests are ran/whatever
+        bool no_throw;       // to skip exceptions-related assertion macros
         bool no_exitcode;    // if the framework should return 0 as the exitcode
         bool no_run;         // to not run the tests at all (can be done with an "*" exclude)
         bool no_colors;      // if output to the console should be colorized
@@ -395,12 +402,6 @@ namespace detail
 
         bool hash_table_histogram; // if the hash table should be printed as a histogram
         bool no_path_in_filenames; // if the path to files should be removed from the output
-
-        unsigned first; // the first (matching) test to be executed
-        unsigned last;  // the last (matching) test to be executed
-
-        String   sort;      // how tests should be sorted
-        unsigned rand_seed; // the seed for rand ordering
 
         bool help;    // to print the help
         bool version; // to print the version
@@ -603,48 +604,54 @@ public:
 
 #define DOCTEST_ASSERT_THROWS(expr, assert_name, require_op)                                       \
     do {                                                                                           \
-        bool threw = false;                                                                        \
-        try {                                                                                      \
-            expr;                                                                                  \
-        } catch(...) { threw = true; }                                                             \
-        if(!threw)                                                                                 \
-            DOCTEST_BREAK_INTO_DEBUGGER();                                                         \
-        doctest::detail::logAssertThrowsAs(                                                        \
-                threw, true, static_cast<const char*>(doctest::detail::getNullPtr()), #expr,       \
-                assert_name, __FILE__, __LINE__);                                                  \
-        if(!threw)                                                                                 \
-            require_op;                                                                            \
+        if(!doctest::detail::getContextState()->no_throw) {                                        \
+            bool threw = false;                                                                    \
+            try {                                                                                  \
+                expr;                                                                              \
+            } catch(...) { threw = true; }                                                         \
+            if(!threw)                                                                             \
+                DOCTEST_BREAK_INTO_DEBUGGER();                                                     \
+            doctest::detail::logAssertThrowsAs(                                                    \
+                    threw, true, static_cast<const char*>(doctest::detail::getNullPtr()), #expr,   \
+                    assert_name, __FILE__, __LINE__);                                              \
+            if(!threw)                                                                             \
+                require_op;                                                                        \
+        }                                                                                          \
     } while(doctest::detail::always_false())
 
 #define DOCTEST_ASSERT_THROWS_AS(expr, as, assert_name, require_op)                                \
     do {                                                                                           \
-        bool threw    = false;                                                                     \
-        bool threw_as = false;                                                                     \
-        try {                                                                                      \
-            expr;                                                                                  \
-        } catch(as&) {                                                                             \
-            threw    = true;                                                                       \
-            threw_as = true;                                                                       \
-        } catch(...) { threw = true; }                                                             \
-        if(!threw_as)                                                                              \
-            DOCTEST_BREAK_INTO_DEBUGGER();                                                         \
-        doctest::detail::logAssertThrowsAs(threw, threw_as, #as, #expr, assert_name, __FILE__,     \
-                                           __LINE__);                                              \
-        if(!threw_as)                                                                              \
-            require_op;                                                                            \
+        if(!doctest::detail::getContextState()->no_throw) {                                        \
+            bool threw    = false;                                                                 \
+            bool threw_as = false;                                                                 \
+            try {                                                                                  \
+                expr;                                                                              \
+            } catch(as&) {                                                                         \
+                threw    = true;                                                                   \
+                threw_as = true;                                                                   \
+            } catch(...) { threw = true; }                                                         \
+            if(!threw_as)                                                                          \
+                DOCTEST_BREAK_INTO_DEBUGGER();                                                     \
+            doctest::detail::logAssertThrowsAs(threw, threw_as, #as, #expr, assert_name, __FILE__, \
+                                               __LINE__);                                          \
+            if(!threw_as)                                                                          \
+                require_op;                                                                        \
+        }                                                                                          \
     } while(doctest::detail::always_false())
 
 #define DOCTEST_ASSERT_NOTHROW(expr, assert_name, require_op)                                      \
     do {                                                                                           \
-        bool threw = false;                                                                        \
-        try {                                                                                      \
-            expr;                                                                                  \
-        } catch(...) { threw = true; }                                                             \
-        if(threw)                                                                                  \
-            DOCTEST_BREAK_INTO_DEBUGGER();                                                         \
-        doctest::detail::logAssertNothrow(threw, #expr, assert_name, __FILE__, __LINE__);          \
-        if(threw)                                                                                  \
-            require_op;                                                                            \
+        if(!doctest::detail::getContextState()->no_throw) {                                        \
+            bool threw = false;                                                                    \
+            try {                                                                                  \
+                expr;                                                                              \
+            } catch(...) { threw = true; }                                                         \
+            if(threw)                                                                              \
+                DOCTEST_BREAK_INTO_DEBUGGER();                                                     \
+            doctest::detail::logAssertNothrow(threw, #expr, assert_name, __FILE__, __LINE__);      \
+            if(threw)                                                                              \
+                require_op;                                                                        \
+        }                                                                                          \
     } while(doctest::detail::always_false())
 
 #define DOCTEST_WARN_THROWS(expr) DOCTEST_ASSERT_THROWS(expr, "WARN_THROWS", ((void)0))
@@ -1726,6 +1733,7 @@ namespace detail
         printf("  -dt-case-sensitive=<bool>         filters being treated as case sensitive\n");
         printf("  -dt-no-overrides=<bool>           disables procedural overrides of options\n");
         printf("  -dt-exit=<bool>                   exits after the tests finish\n");
+        printf("  -dt-no-throw=<bool>               skips exceptions-related assert checks\n");
         printf("  -dt-no-exitcode=<bool>            returns (or exits) always with success\n");
         printf("  -dt-no-run=<bool>                 skips all runtime doctest operations\n");
         printf("  -dt-no-colors=<bool>              disables colors in output\n");
@@ -1842,22 +1850,23 @@ void Context::parseArgs(int argc, const char* const* argv, bool withDefaults) {
     if(parseOption(argc, argv, name, strRes, default) || withDefaults)                             \
     p.var = strRes
 
+    DOCTEST_PARSE_STR_OPTION("dt-sort=", sort, "file");
+    DOCTEST_PARSE_INT_OPTION("dt-rand-seed=", rand_seed, 0);
+
     DOCTEST_PARSE_BOOL_OPTION("dt-count=", count, 0);
+    DOCTEST_PARSE_INT_OPTION("dt-first=", first, 1);
+    DOCTEST_PARSE_INT_OPTION("dt-last=", last, 0);
+
     DOCTEST_PARSE_BOOL_OPTION("dt-case-sensitive=", case_sensitive, 0);
     DOCTEST_PARSE_BOOL_OPTION("dt-no-overrides=", no_overrides, 0);
     DOCTEST_PARSE_BOOL_OPTION("dt-exit=", exit, 0);
+    DOCTEST_PARSE_BOOL_OPTION("dt-no-throw=", no_throw, 0);
     DOCTEST_PARSE_BOOL_OPTION("dt-no-exitcode=", no_exitcode, 0);
     DOCTEST_PARSE_BOOL_OPTION("dt-no-run=", no_run, 0);
     DOCTEST_PARSE_BOOL_OPTION("dt-no-colors=", no_colors, 0);
     DOCTEST_PARSE_BOOL_OPTION("dt-no-breaks=", no_breaks, 0);
     DOCTEST_PARSE_BOOL_OPTION("dt-hash-table-histogram=", hash_table_histogram, 0);
     DOCTEST_PARSE_BOOL_OPTION("dt-no-path-in-filenames=", no_path_in_filenames, 0);
-
-    DOCTEST_PARSE_INT_OPTION("dt-first=", first, 1);
-    DOCTEST_PARSE_INT_OPTION("dt-last=", last, 0);
-
-    DOCTEST_PARSE_STR_OPTION("dt-sort=", sort, "file");
-    DOCTEST_PARSE_INT_OPTION("dt-rand-seed=", rand_seed, 0);
 
 #undef DOCTEST_PARSE_STR_OPTION
 #undef DOCTEST_PARSE_INT_OPTION
