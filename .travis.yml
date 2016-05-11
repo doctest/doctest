@@ -253,9 +253,8 @@ matrix:
 before_install:
   - |
     if [[ "${TRAVIS_OS_NAME}" == "osx" ]]; then
-      # update package list
       brew update
-#      brew install ccache
+      # brew install ccache
       brew install valgrind
       # cmake
       if brew list -1 | grep -q "^cmake\$"; then
