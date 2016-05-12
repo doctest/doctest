@@ -307,7 +307,7 @@ namespace detail
         ~Result() {
         }
 
-        Result(bool passed = true, const String& decomposition = String())
+        Result(bool passed = false, const String& decomposition = String())
                 : m_passed(passed)
                 , m_decomposition(decomposition) {}
         operator bool() { return !m_passed; }
@@ -392,6 +392,7 @@ namespace detail
         unsigned last;  // the last (matching) test to be executed
 
         int  abort_after;    // stop tests after this many failed assertions
+        bool success;        // include successful assertions in output
         bool case_sensitive; // if filtering should be case sensitive
         bool exit;           // if the program should be exited after the tests are ran/whatever
         bool no_overrides;   // to disable overrides from code
@@ -1469,13 +1470,16 @@ namespace detail
                    const char* file, int line) {
         getContextState()->numAssertions++;
 
-        if(!res.m_passed || threw) {
+        if(!res.m_passed || getContextState()->success) {
             char loc[DOCTEST_SNPRINTF_BUFFER_LENGTH];
             DOCTEST_SNPRINTF(loc, DOCTEST_COUNTOF(loc), "%s(%d)", fileForOutput(file), line);
 
             char msg[DOCTEST_SNPRINTF_BUFFER_LENGTH];
-            DOCTEST_SNPRINTF(msg, DOCTEST_COUNTOF(msg), " FAILED! %s\n",
-                             (threw ? "(threw exception)" : ""));
+            if(res.m_passed)
+                DOCTEST_SNPRINTF(msg, DOCTEST_COUNTOF(msg), " PASSED!\n");
+            else
+                DOCTEST_SNPRINTF(msg, DOCTEST_COUNTOF(msg), " FAILED! %s\n",
+                                 (threw ? "(threw exception)" : ""));
 
             char info1[DOCTEST_SNPRINTF_BUFFER_LENGTH];
             DOCTEST_SNPRINTF(info1, DOCTEST_COUNTOF(info1), "  %s( %s )\n", assert_name, expr);
@@ -1494,13 +1498,13 @@ namespace detail
                 writeToDebugConsole(concat.c_str());
             }
 
-            DOCTEST_PRINTF_COLORED(loc, Color::Cyan);
-            DOCTEST_PRINTF_COLORED(msg, Color::Red);
+            DOCTEST_PRINTF_COLORED(loc, Color::LightGrey);
+            DOCTEST_PRINTF_COLORED(msg, res.m_passed ? Color::BrightGreen : Color::Red);
             DOCTEST_PRINTF_COLORED(info1, Color::Green);
             DOCTEST_PRINTF_COLORED(info2, Color::Cyan);
             DOCTEST_PRINTF_COLORED(info3, Color::Green);
 
-            if(strncmp(assert_name, "WARN", 4) != 0) {
+            if(!res.m_passed && strncmp(assert_name, "WARN", 4) != 0) {
                 getContextState()->numFailedAssertionsForCurrentTestcase++;
                 getContextState()->numFailedAssertions++;
             }
@@ -1511,17 +1515,20 @@ namespace detail
                            const char* assert_name, const char* file, int line) {
         getContextState()->numAssertions++;
 
-        if(!threw || !threw_as) {
+        if(!threw || !threw_as || getContextState()->success) {
             char loc[DOCTEST_SNPRINTF_BUFFER_LENGTH];
             DOCTEST_SNPRINTF(loc, DOCTEST_COUNTOF(loc), "%s(%d)", fileForOutput(file), line);
 
             char msg[DOCTEST_SNPRINTF_BUFFER_LENGTH];
-            DOCTEST_SNPRINTF(
-                    msg, DOCTEST_COUNTOF(msg), " FAILED! %s\n",
-                    (as ? (threw ? "(threw something else)" : "(didn't throw at all)") : ""));
+            if(threw_as)
+                DOCTEST_SNPRINTF(msg, DOCTEST_COUNTOF(msg), " PASSED!\n");
+            else
+                DOCTEST_SNPRINTF(
+                        msg, DOCTEST_COUNTOF(msg), " FAILED! %s\n",
+                        (as ? (threw ? "(threw something else)" : "(didn't throw at all)") : ""));
 
             char info1[DOCTEST_SNPRINTF_BUFFER_LENGTH];
-            DOCTEST_SNPRINTF(info1, DOCTEST_COUNTOF(info1), "  %s( %s, %s )\n", assert_name, expr,
+            DOCTEST_SNPRINTF(info1, DOCTEST_COUNTOF(info1), "  %s( %s, %s )\n\n", assert_name, expr,
                              as);
 
             if(isDebuggerActive()) {
@@ -1529,11 +1536,11 @@ namespace detail
                 writeToDebugConsole(concat.c_str());
             }
 
-            DOCTEST_PRINTF_COLORED(loc, Color::Cyan);
-            DOCTEST_PRINTF_COLORED(msg, Color::Red);
+            DOCTEST_PRINTF_COLORED(loc, Color::LightGrey);
+            DOCTEST_PRINTF_COLORED(msg, threw_as ? Color::BrightGreen : Color::Red);
             DOCTEST_PRINTF_COLORED(info1, Color::Green);
 
-            if(strncmp(assert_name, "WARN", 4) != 0) {
+            if(!threw_as && strncmp(assert_name, "WARN", 4) != 0) {
                 getContextState()->numFailedAssertionsForCurrentTestcase++;
                 getContextState()->numFailedAssertions++;
             }
@@ -1544,26 +1551,29 @@ namespace detail
                           int line) {
         getContextState()->numAssertions++;
 
-        if(threw) {
+        if(threw || getContextState()->success) {
             char loc[DOCTEST_SNPRINTF_BUFFER_LENGTH];
             DOCTEST_SNPRINTF(loc, DOCTEST_COUNTOF(loc), "%s(%d)", fileForOutput(file), line);
 
             char msg[DOCTEST_SNPRINTF_BUFFER_LENGTH];
-            DOCTEST_SNPRINTF(msg, DOCTEST_COUNTOF(msg), " FAILED!\n");
+            if(!threw)
+                DOCTEST_SNPRINTF(msg, DOCTEST_COUNTOF(msg), " PASSED!\n");
+            else
+                DOCTEST_SNPRINTF(msg, DOCTEST_COUNTOF(msg), " FAILED!\n");
 
             char info1[DOCTEST_SNPRINTF_BUFFER_LENGTH];
-            DOCTEST_SNPRINTF(info1, DOCTEST_COUNTOF(info1), "  %s( %s )\n", assert_name, expr);
+            DOCTEST_SNPRINTF(info1, DOCTEST_COUNTOF(info1), "  %s( %s )\n\n", assert_name, expr);
 
             if(isDebuggerActive()) {
                 String concat = String(loc) + msg + info1;
                 writeToDebugConsole(concat.c_str());
             }
 
-            DOCTEST_PRINTF_COLORED(loc, Color::Cyan);
-            DOCTEST_PRINTF_COLORED(msg, Color::Red);
+            DOCTEST_PRINTF_COLORED(loc, Color::LightGrey);
+            DOCTEST_PRINTF_COLORED(msg, !threw ? Color::BrightGreen : Color::Red);
             DOCTEST_PRINTF_COLORED(info1, Color::Green);
 
-            if(strncmp(assert_name, "WARN", 4) != 0) {
+            if(threw && strncmp(assert_name, "WARN", 4) != 0) {
                 getContextState()->numFailedAssertionsForCurrentTestcase++;
                 getContextState()->numFailedAssertions++;
             }
@@ -1744,6 +1754,7 @@ namespace detail
         printf(" -dt-last=<int>                   the last test passing the filters to\n");
         printf("                                  execute - for range-based execution\n");
         printf(" -dt-abort-after=<int>            stop after <int> failed assertions\n");
+        printf(" -dt-success=<bool>               include successful assertions in output\n");
         printf(" -dt-case-sensitive=<bool>        filters being treated as case sensitive\n");
         printf(" -dt-exit=<bool>                  exits after the tests finish\n");
         printf(" -dt-no-overrides=<bool>          disables procedural overrides of options\n");
@@ -1886,6 +1897,7 @@ void Context::parseArgs(int argc, const char* const* argv, bool withDefaults) {
     DOCTEST_PARSE_INT_OPTION("dt-last=", last, 0);
 
     DOCTEST_PARSE_INT_OPTION("dt-abort-after=", abort_after, 0);
+    DOCTEST_PARSE_BOOL_OPTION("dt-success=", success, 0);
     DOCTEST_PARSE_BOOL_OPTION("dt-case-sensitive=", case_sensitive, 0);
     DOCTEST_PARSE_BOOL_OPTION("dt-exit=", exit, 0);
     DOCTEST_PARSE_BOOL_OPTION("dt-no-overrides=", no_overrides, 0);

@@ -65,10 +65,6 @@ The library can be used like any other even if you are not fond of the idea of m
 
 ## TODO for release
 
-- COMMAND LINE OPTIONS:
-- list-tests - list tests
-- success - output successful tests too
-
 - print the test name on the first failed assert (or atleast the position) - like catch
 - print sections when asserts fail (look if catch does that)
 
