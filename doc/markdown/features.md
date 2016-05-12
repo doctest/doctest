@@ -76,11 +76,11 @@ The library can be used like any other even if you are not fond of the idea of m
 - think about the expression decomposition static asserts
 - VC6 support
 
+- add pledgie campaign in features/roadmap and in the reference
 - examples and test coverage
 - enabling COMPARE in tests
 - benchmark (assimp and empty files - or maybe just empty files)
 - documentation (also try it online in tutorial and other places!)
-- add pledgie campaign in features/roadmap and in the reference
 - research bountysource/patreon
 
 ## FUTURE
