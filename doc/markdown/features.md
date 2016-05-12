@@ -69,12 +69,11 @@ The library can be used like any other even if you are not fond of the idea of m
 - list-tests - list tests
 - list-test-names-only - list test names
 - success - output successful tests too
-- abort - abort on first failure
-- abortx - abort on X failures
 
 - print the test name on the first failed assert (or atleast the position) - like catch
 - print sections when asserts fail (look if catch does that)
 
+- move to operator<<(ostream&... stringification
 - floating point comparison support
 - signal handling for unix: http://www.cplusplus.com/reference/csignal/signal/
 (signals on *NIX platforms or structured exceptions on Windows)
@@ -150,6 +149,8 @@ for gamedev - compile time!
 https://www.facebook.com/groups/IndieGameDevs/
 
 facebook fmi group
+
+skype friends - and from TUES! (this is so low...)
 
 https://github.com/nothings/stb/blob/master/docs/other_libs.md
 

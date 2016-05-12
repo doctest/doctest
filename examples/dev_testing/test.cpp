@@ -39,6 +39,7 @@ TEST_CASE("zzz") {
     vec2.push_back(4);
 
     CHECK(vec1 == vec2);
+    CHECK(vec1 == vec2);
 
     //REQUIRE(true == false);
     //
@@ -50,7 +51,7 @@ TEST_CASE("zzz") {
     //}
     //SUBCASE("") { printf("2\n"); }
 }
-TEST_SUITE_END;
+TEST_SUITE_END();
 
 #if defined(__GNUC__) && !defined(__clang__)
 #pragma GCC diagnostic ignored "-Weffc++"
@@ -108,4 +109,4 @@ TEST_CASE("") { printf("TEST %d\n", __LINE__ - 100); }
 TEST_CASE("") { printf("TEST %d\n", __LINE__ - 100); }
 TEST_CASE("") { printf("TEST %d\n", __LINE__ - 100); }
 TEST_CASE("") { printf("TEST %d\n", __LINE__ - 100); }
-TEST_SUITE_END;
+TEST_SUITE_END();

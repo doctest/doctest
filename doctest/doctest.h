@@ -201,6 +201,7 @@ namespace detail
     struct TestFailureException
     {};
 
+    void checkIfShouldThrow(const char* assert_name);
     void  throwException();
     bool  always_false();
     void* getNullPtr();
@@ -391,6 +392,7 @@ namespace detail
         unsigned first; // the first (matching) test to be executed
         unsigned last;  // the last (matching) test to be executed
 
+        int  abort_after;    // stop tests after this many failed assertions
         bool case_sensitive; // if filtering should be case sensitive
         bool no_overrides;   // to disable overrides from code
         bool exit;           // if the program should be exited after the tests are ran/whatever
@@ -550,32 +552,32 @@ public:
 #define DOCTEST_TEST_SUITE_END                                                                     \
     static int DOCTEST_ANONYMOUS(DOCTEST_AUTOGEN_VAR_) __attribute__((unused)) =                   \
             doctest::detail::setTestSuiteName("");                                                 \
-    void DOCTEST_ANONYMOUS(DOCTEST_AUTOGEN_FOR_SEMICOLON_)()
+    void DOCTEST_ANONYMOUS(DOCTEST_AUTOGEN_TESTSUITE_END_)
 #elif defined(__clang__)
 #define DOCTEST_TEST_SUITE_END                                                                     \
     _Pragma("clang diagnostic push")                                                               \
             _Pragma("clang diagnostic ignored \"-Wglobal-constructors\"") static int               \
                     DOCTEST_ANONYMOUS(DOCTEST_AUTOGEN_VAR_) =                                      \
                             doctest::detail::setTestSuiteName("");                                 \
-    _Pragma("clang diagnostic pop") void DOCTEST_ANONYMOUS(DOCTEST_AUTOGEN_FOR_SEMICOLON_)()
+    _Pragma("clang diagnostic pop") void DOCTEST_ANONYMOUS(DOCTEST_AUTOGEN_TESTSUITE_END_)
 #else // MSVC
 #define DOCTEST_TEST_SUITE_END                                                                     \
     static int DOCTEST_ANONYMOUS(DOCTEST_AUTOGEN_VAR_) = doctest::detail::setTestSuiteName("");    \
-    void       DOCTEST_ANONYMOUS(DOCTEST_AUTOGEN_FOR_SEMICOLON_)()
+    void       DOCTEST_ANONYMOUS(DOCTEST_AUTOGEN_TESTSUITE_END_)
 #endif // MSVC
 
-#define DOCTEST_ASSERT_IMPLEMENT(expr, assert_name, require_op, false_invert_op)                   \
+#define DOCTEST_ASSERT_IMPLEMENT(expr, assert_name, false_invert_op)                               \
     doctest::detail::Result res;                                                                   \
     bool                    threw = false;                                                         \
     try {                                                                                          \
         res = doctest::detail::ExpressionDecomposer() << expr;                                     \
     } catch(...) { threw = true; }                                                                 \
     false_invert_op;                                                                               \
-    if(res || threw)                                                                               \
-        DOCTEST_BREAK_INTO_DEBUGGER();                                                             \
     doctest::detail::logAssert(res, threw, #expr, assert_name, __FILE__, __LINE__);                \
-    if(res || threw)                                                                               \
-        require_op;
+    if(res || threw) {                                                                             \
+        DOCTEST_BREAK_INTO_DEBUGGER();                                                             \
+        doctest::detail::checkIfShouldThrow(assert_name);                                          \
+    }
 
 #if defined(__clang__)
 #define DOCTEST_ASSERT_PROXY(expr, assert_name, require_op, false_invert_op)                       \
@@ -586,40 +588,38 @@ public:
                                 _Pragma("clang diagnostic pop")                                    \
     } while(doctest::detail::always_false())
 #else // __clang__
-#define DOCTEST_ASSERT_PROXY(expr, assert_name, require_op, false_invert_op)                       \
+#define DOCTEST_ASSERT_PROXY(expr, assert_name, false_invert_op)                                   \
     do {                                                                                           \
-        DOCTEST_ASSERT_IMPLEMENT(expr, assert_name, require_op, false_invert_op)                   \
+        DOCTEST_ASSERT_IMPLEMENT(expr, assert_name, false_invert_op)                               \
     } while(doctest::detail::always_false())
 #endif // __clang__
 
-#define DOCTEST_WARN(expr) DOCTEST_ASSERT_PROXY(expr, "WARN", ((void)0), ((void)0))
-#define DOCTEST_CHECK(expr) DOCTEST_ASSERT_PROXY(expr, "CHECK", ((void)0), ((void)0))
-#define DOCTEST_REQUIRE(expr)                                                                      \
-    DOCTEST_ASSERT_PROXY(expr, "REQUIRE", doctest::detail::throwException(), ((void)0))
+#define DOCTEST_WARN(expr) DOCTEST_ASSERT_PROXY(expr, "WARN", ((void)0))
+#define DOCTEST_CHECK(expr) DOCTEST_ASSERT_PROXY(expr, "CHECK", ((void)0))
+#define DOCTEST_REQUIRE(expr) DOCTEST_ASSERT_PROXY(expr, "REQUIRE", ((void)0))
 
-#define DOCTEST_WARN_FALSE(expr) DOCTEST_ASSERT_PROXY(expr, "WARN_FALSE", ((void)0), res.invert())
-#define DOCTEST_CHECK_FALSE(expr) DOCTEST_ASSERT_PROXY(expr, "CHECK_FALSE", ((void)0), res.invert())
-#define DOCTEST_REQUIRE_FALSE(expr)                                                                \
-    DOCTEST_ASSERT_PROXY(expr, "REQUIRE_FALSE", doctest::detail::throwException(), res.invert())
+#define DOCTEST_WARN_FALSE(expr) DOCTEST_ASSERT_PROXY(expr, "WARN_FALSE", res.invert())
+#define DOCTEST_CHECK_FALSE(expr) DOCTEST_ASSERT_PROXY(expr, "CHECK_FALSE", res.invert())
+#define DOCTEST_REQUIRE_FALSE(expr) DOCTEST_ASSERT_PROXY(expr, "REQUIRE_FALSE", res.invert())
 
-#define DOCTEST_ASSERT_THROWS(expr, assert_name, require_op)                                       \
+#define DOCTEST_ASSERT_THROWS(expr, assert_name)                                                   \
     do {                                                                                           \
         if(!doctest::detail::getContextState()->no_throw) {                                        \
             bool threw = false;                                                                    \
             try {                                                                                  \
                 expr;                                                                              \
             } catch(...) { threw = true; }                                                         \
-            if(!threw)                                                                             \
-                DOCTEST_BREAK_INTO_DEBUGGER();                                                     \
             doctest::detail::logAssertThrowsAs(                                                    \
                     threw, true, static_cast<const char*>(doctest::detail::getNullPtr()), #expr,   \
                     assert_name, __FILE__, __LINE__);                                              \
-            if(!threw)                                                                             \
-                require_op;                                                                        \
+            if(!threw) {                                                                           \
+                DOCTEST_BREAK_INTO_DEBUGGER();                                                     \
+                doctest::detail::checkIfShouldThrow(assert_name);                                  \
+            }                                                                                      \
         }                                                                                          \
     } while(doctest::detail::always_false())
 
-#define DOCTEST_ASSERT_THROWS_AS(expr, as, assert_name, require_op)                                \
+#define DOCTEST_ASSERT_THROWS_AS(expr, as, assert_name)                                            \
     do {                                                                                           \
         if(!doctest::detail::getContextState()->no_throw) {                                        \
             bool threw    = false;                                                                 \
@@ -630,46 +630,41 @@ public:
                 threw    = true;                                                                   \
                 threw_as = true;                                                                   \
             } catch(...) { threw = true; }                                                         \
-            if(!threw_as)                                                                          \
-                DOCTEST_BREAK_INTO_DEBUGGER();                                                     \
             doctest::detail::logAssertThrowsAs(threw, threw_as, #as, #expr, assert_name, __FILE__, \
                                                __LINE__);                                          \
-            if(!threw_as)                                                                          \
-                require_op;                                                                        \
+            if(!threw_as) {                                                                        \
+                DOCTEST_BREAK_INTO_DEBUGGER();                                                     \
+                doctest::detail::checkIfShouldThrow(assert_name);                                  \
+            }                                                                                      \
         }                                                                                          \
     } while(doctest::detail::always_false())
 
-#define DOCTEST_ASSERT_NOTHROW(expr, assert_name, require_op)                                      \
+#define DOCTEST_ASSERT_NOTHROW(expr, assert_name)                                                  \
     do {                                                                                           \
         if(!doctest::detail::getContextState()->no_throw) {                                        \
             bool threw = false;                                                                    \
             try {                                                                                  \
                 expr;                                                                              \
             } catch(...) { threw = true; }                                                         \
-            if(threw)                                                                              \
-                DOCTEST_BREAK_INTO_DEBUGGER();                                                     \
             doctest::detail::logAssertNothrow(threw, #expr, assert_name, __FILE__, __LINE__);      \
-            if(threw)                                                                              \
-                require_op;                                                                        \
+            if(threw) {                                                                            \
+                DOCTEST_BREAK_INTO_DEBUGGER();                                                     \
+                doctest::detail::checkIfShouldThrow(assert_name);                                  \
+            }                                                                                      \
         }                                                                                          \
     } while(doctest::detail::always_false())
 
-#define DOCTEST_WARN_THROWS(expr) DOCTEST_ASSERT_THROWS(expr, "WARN_THROWS", ((void)0))
-#define DOCTEST_CHECK_THROWS(expr) DOCTEST_ASSERT_THROWS(expr, "CHECK_THROWS", ((void)0))
-#define DOCTEST_REQUIRE_THROWS(expr)                                                               \
-    DOCTEST_ASSERT_THROWS(expr, "REQUIRE_THROWS", doctest::detail::throwException())
+#define DOCTEST_WARN_THROWS(expr) DOCTEST_ASSERT_THROWS(expr, "WARN_THROWS")
+#define DOCTEST_CHECK_THROWS(expr) DOCTEST_ASSERT_THROWS(expr, "CHECK_THROWS")
+#define DOCTEST_REQUIRE_THROWS(expr) DOCTEST_ASSERT_THROWS(expr, "REQUIRE_THROWS")
 
-#define DOCTEST_WARN_THROWS_AS(expr, ex)                                                           \
-    DOCTEST_ASSERT_THROWS_AS(expr, ex, "WARN_THROWS_AS", ((void)0))
-#define DOCTEST_CHECK_THROWS_AS(expr, ex)                                                          \
-    DOCTEST_ASSERT_THROWS_AS(expr, ex, "CHECK_THROWS_AS", ((void)0))
-#define DOCTEST_REQUIRE_THROWS_AS(expr, ex)                                                        \
-    DOCTEST_ASSERT_THROWS_AS(expr, ex, "REQUIRE_THROWS_AS", doctest::detail::throwException())
+#define DOCTEST_WARN_THROWS_AS(expr, ex) DOCTEST_ASSERT_THROWS_AS(expr, ex, "WARN_THROWS_AS")
+#define DOCTEST_CHECK_THROWS_AS(expr, ex) DOCTEST_ASSERT_THROWS_AS(expr, ex, "CHECK_THROWS_AS")
+#define DOCTEST_REQUIRE_THROWS_AS(expr, ex) DOCTEST_ASSERT_THROWS_AS(expr, ex, "REQUIRE_THROWS_AS")
 
-#define DOCTEST_WARN_NOTHROW(expr) DOCTEST_ASSERT_NOTHROW(expr, "WARN_NOTHROW", ((void)0))
-#define DOCTEST_CHECK_NOTHROW(expr) DOCTEST_ASSERT_NOTHROW(expr, "CHECK_NOTHROW", ((void)0))
-#define DOCTEST_REQUIRE_NOTHROW(expr)                                                              \
-    DOCTEST_ASSERT_NOTHROW(expr, "REQUIRE_NOTHROW", doctest::detail::throwException())
+#define DOCTEST_WARN_NOTHROW(expr) DOCTEST_ASSERT_NOTHROW(expr, "WARN_NOTHROW")
+#define DOCTEST_CHECK_NOTHROW(expr) DOCTEST_ASSERT_NOTHROW(expr, "CHECK_NOTHROW")
+#define DOCTEST_REQUIRE_NOTHROW(expr) DOCTEST_ASSERT_NOTHROW(expr, "REQUIRE_NOTHROW")
 
 // =================================================================================================
 // == WHAT FOLLOWS IS VERSIONS OF THE MACROS THAT DO NOT DO ANY REGISTERING!                      ==
@@ -707,7 +702,7 @@ public:
 #define DOCTEST_TEST_SUITE(name) void DOCTEST_ANONYMOUS(DOCTEST_AUTOGEN_FOR_SEMICOLON_)()
 
 // for ending a testsuite block
-#define DOCTEST_TEST_SUITE_END void DOCTEST_ANONYMOUS(DOCTEST_AUTOGEN_FOR_SEMICOLON_)()
+#define DOCTEST_TEST_SUITE_END void DOCTEST_ANONYMOUS(DOCTEST_AUTOGEN_TESTSUITE_END_)
 
 #define DOCTEST_WARN(expr) ((void)0)
 #define DOCTEST_WARN_FALSE(expr) ((void)0)
@@ -754,7 +749,7 @@ public:
 #endif // DOCTEST_CONFIG_NO_SHORT_MACRO_NAMES
 
 // this is here to clear the 'current test suite' for the current translation unit - at the top
-DOCTEST_TEST_SUITE_END;
+DOCTEST_TEST_SUITE_END();
 
 #endif // DOCTEST_LIBRARY_INCLUDED
 
@@ -940,6 +935,15 @@ String stringify(ADL_helper, long int unsigned in) {
 // library internals namespace
 namespace detail
 {
+    void checkIfShouldThrow(const char* assert_name) {
+        if(strncmp(assert_name, "REQUIRE", 7) == 0)
+            throwException();
+
+        if(strncmp(assert_name, "CHECK", 5) == 0 && getContextState()->abort_after > 0) {
+            if(getContextState()->numFailedAssertions >= getContextState()->abort_after)
+                throwException();
+        }
+    }
     void  throwException() { throw doctest::detail::TestFailureException(); }
     bool  always_false() { return false; }
     void* getNullPtr() { return 0; }
@@ -1496,8 +1500,10 @@ namespace detail
             DOCTEST_PRINTF_COLORED(info2, Color::Cyan);
             DOCTEST_PRINTF_COLORED(info3, Color::Green);
 
-            if(strncmp(assert_name, "WARN", 4) != 0)
+            if(strncmp(assert_name, "WARN", 4) != 0) {
                 getContextState()->numFailedAssertionsForCurrentTestcase++;
+                getContextState()->numFailedAssertions++;
+            }
         }
     }
 
@@ -1527,8 +1533,10 @@ namespace detail
             DOCTEST_PRINTF_COLORED(msg, Color::Red);
             DOCTEST_PRINTF_COLORED(info1, Color::Green);
 
-            if(strncmp(assert_name, "WARN", 4) != 0)
+            if(strncmp(assert_name, "WARN", 4) != 0) {
                 getContextState()->numFailedAssertionsForCurrentTestcase++;
+                getContextState()->numFailedAssertions++;
+            }
         }
     }
 
@@ -1555,8 +1563,10 @@ namespace detail
             DOCTEST_PRINTF_COLORED(msg, Color::Red);
             DOCTEST_PRINTF_COLORED(info1, Color::Green);
 
-            if(strncmp(assert_name, "WARN", 4) != 0)
+            if(strncmp(assert_name, "WARN", 4) != 0) {
                 getContextState()->numFailedAssertionsForCurrentTestcase++;
+                getContextState()->numFailedAssertions++;
+            }
         }
     }
 
@@ -1730,6 +1740,7 @@ namespace detail
         printf("                                    execute - for range-based execution\n");
         printf("  -dt-last=<int>                    the last test passing the filters to\n");
         printf("                                    execute - for range-based execution\n");
+        printf("  -dt-abort-after=<int>             stop after <int> failed assertions\n");
         printf("  -dt-case-sensitive=<bool>         filters being treated as case sensitive\n");
         printf("  -dt-no-overrides=<bool>           disables procedural overrides of options\n");
         printf("  -dt-exit=<bool>                   exits after the tests finish\n");
@@ -1857,6 +1868,7 @@ void Context::parseArgs(int argc, const char* const* argv, bool withDefaults) {
     DOCTEST_PARSE_INT_OPTION("dt-first=", first, 1);
     DOCTEST_PARSE_INT_OPTION("dt-last=", last, 0);
 
+    DOCTEST_PARSE_INT_OPTION("dt-abort-after=", abort_after, 0);
     DOCTEST_PARSE_BOOL_OPTION("dt-case-sensitive=", case_sensitive, 0);
     DOCTEST_PARSE_BOOL_OPTION("dt-no-overrides=", no_overrides, 0);
     DOCTEST_PARSE_BOOL_OPTION("dt-exit=", exit, 0);
@@ -2016,11 +2028,19 @@ int Context::run() {
                 p.subcasesEnteredLevels.clear();
 
                 didFail += callTestFunc(data.m_f);
-                p.numFailedAssertions += p.numFailedAssertionsForCurrentTestcase;
+
+                // exit this loop if enough assertions have failed
+                if(p.abort_after > 0 && p.numFailedAssertions >= p.abort_after)
+                    p.subcasesHasSkipped = false;
+
             } while(p.subcasesHasSkipped == true);
 
             if(didFail > 0)
                 numFailed++;
+
+            // stop executing tests if enough assertions have failed
+            if(p.abort_after > 0 && p.numFailedAssertions >= p.abort_after)
+                break;
 
 #ifdef _MSC_VER
 //} __except(1) {

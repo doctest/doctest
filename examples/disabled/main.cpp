@@ -48,7 +48,7 @@ TEST_CASE("ops") {
     SUBCASE("") {}
 }
 
-TEST_SUITE_END;
+TEST_SUITE_END();
 
 #if defined(__GNUC__) && !defined(__clang__)
 #pragma GCC diagnostic ignored "-Weffc++"
