@@ -17,7 +17,7 @@ int main(int argc, char** argv) {
     //context.setOption("no-throw", true);
     //context.setOption("dt-no-colors", true);
     context.addFilter("name", "zzz");
-    context.setOption("abort-after", 2);
+    context.setOption("abort-after", 1);
     //context.addFilter("suite", "randomness");
     //context.setOption("sort", "rand");
     //context.setOption("rand-seed", 435);

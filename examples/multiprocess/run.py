@@ -10,7 +10,7 @@ if len(sys.argv) != 2:
     sys.exit(0)
 
 # get the number of tests in the doctest executable
-result = subprocess.Popen([sys.argv[1], "-dt-count=true"], stdout = subprocess.PIPE).communicate()[0]
+result = subprocess.Popen([sys.argv[1], "-dt-count"], stdout = subprocess.PIPE).communicate()[0]
 num_tests = int(result.rsplit(' ', 1)[-1])
 
 # calculate the ranges

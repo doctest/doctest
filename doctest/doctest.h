@@ -388,25 +388,25 @@ namespace detail
         String   sort;      // how tests should be sorted
         unsigned rand_seed; // the seed for rand ordering
 
-        bool     count; // if only the count of matching tests is to be retreived
         unsigned first; // the first (matching) test to be executed
         unsigned last;  // the last (matching) test to be executed
 
         int  abort_after;    // stop tests after this many failed assertions
         bool case_sensitive; // if filtering should be case sensitive
-        bool no_overrides;   // to disable overrides from code
         bool exit;           // if the program should be exited after the tests are ran/whatever
+        bool no_overrides;   // to disable overrides from code
         bool no_throw;       // to skip exceptions-related assertion macros
         bool no_exitcode;    // if the framework should return 0 as the exitcode
         bool no_run;         // to not run the tests at all (can be done with an "*" exclude)
         bool no_colors;      // if output to the console should be colorized
         bool no_breaks;      // to not break into the debugger
-
-        bool hash_table_histogram; // if the hash table should be printed as a histogram
         bool no_path_in_filenames; // if the path to files should be removed from the output
 
-        bool help;    // to print the help
-        bool version; // to print the version
+        bool help;                 // to print the help
+        bool version;              // to print the version
+        bool count;                // if only the count of matching tests is to be retreived
+        bool list_tests;           // to list all tests matching the filters
+        bool hash_table_histogram; // if the hash table should be printed as a histogram
 
         // == data for the tests being ran
 
@@ -1592,13 +1592,13 @@ namespace detail
 
     // locates a flag on the command line
     bool parseFlag(int argc, const char* const* argv, const char* pattern) {
-#ifndef DOCTEST_CONFIG_NO_SHORT_FLAGS
+#ifndef DOCTEST_CONFIG_NO_UNPREFIXED_OPTIONS
         if(!parseFlagImpl(argc, argv, pattern))
             return parseFlagImpl(argc, argv, pattern + 3); // 3 for "dt-"
         return true;
-#else  // DOCTEST_CONFIG_NO_SHORT_FLAGS
+#else  // DOCTEST_CONFIG_NO_UNPREFIXED_OPTIONS
         return parseFlagImpl(argc, argv, pattern);
-#endif // DOCTEST_CONFIG_NO_SHORT_FLAGS
+#endif // DOCTEST_CONFIG_NO_UNPREFIXED_OPTIONS
     }
 
     // the implementation of parseOption()
@@ -1632,13 +1632,13 @@ namespace detail
     bool parseOption(int argc, const char* const* argv, const char* pattern, String& res,
                      const String& defaultVal = String()) {
         res = defaultVal;
-#ifndef DOCTEST_CONFIG_NO_SHORT_FLAGS
+#ifndef DOCTEST_CONFIG_NO_UNPREFIXED_OPTIONS
         if(!parseOptionImpl(argc, argv, pattern, res))
             return parseOptionImpl(argc, argv, pattern + 3, res); // 3 for "dt-"
         return true;
-#else  // DOCTEST_CONFIG_NO_SHORT_FLAGS
+#else // DOCTEST_CONFIG_NO_UNPREFIXED_OPTIONS
         return parseOptionImpl(argc, argv, pattern, res);
-#endif // DOCTEST_CONFIG_NO_SHORT_FLAGS
+#endif // DOCTEST_CONFIG_NO_UNPREFIXED_OPTIONS
     }
 
     // parses a comma separated list of words after a pattern in one of the arguments in argv
@@ -1701,7 +1701,7 @@ namespace detail
 
     void printVersion() {
         DOCTEST_PRINTF_COLORED("[doctest] ", Color::Cyan);
-        printf("version is \"%s\"\n", DOCTEST_VERSION);
+        printf("doctest version is \"%s\"\n", DOCTEST_VERSION);
     }
 
     void printHelp() {
@@ -1711,50 +1711,52 @@ namespace detail
         printf("boolean values: \"1/on/yes/true\" or \"0/off/no/false\"\n");
         DOCTEST_PRINTF_COLORED("[doctest] ", Color::Cyan);
         printf("filter  values: \"str1,str2,str3\" (comma separated strings)\n");
-#ifndef DOCTEST_CONFIG_NO_SHORT_FLAGS
-        DOCTEST_PRINTF_COLORED("[doctest] ", Color::Cyan);
-        printf("all options and filters also available without the \"dt-\" prefix\n");
-#endif
+        DOCTEST_PRINTF_COLORED("[doctest]\n", Color::Cyan);
         DOCTEST_PRINTF_COLORED("[doctest] ", Color::Cyan);
         printf("filters use wildcards for matching strings\n");
         DOCTEST_PRINTF_COLORED("[doctest] ", Color::Cyan);
         printf("something passes a filter if any of the strings in a filter matches\n");
         DOCTEST_PRINTF_COLORED("[doctest]\n", Color::Cyan);
+#ifndef DOCTEST_CONFIG_NO_UNPREFIXED_OPTIONS
         DOCTEST_PRINTF_COLORED("[doctest] ", Color::Cyan);
-        printf("the available options and filters are:\n");
-        printf("  -dt-help                          prints this message and exits\n");
-        printf("  -dt-version                       prints the version and exits\n");
-        // =================================================================================== << 80
-        printf("  -dt-name=<filters>                filters tests by their name\n");
-        printf("  -dt-name-exclude=<filters>        filters OUT tests by their name\n");
-        printf("  -dt-file=<filters>                filters tests by their file\n");
-        printf("  -dt-file-exclude=<filters>        filters OUT tests by their file\n");
-        printf("  -dt-testsuite=<filters>           filters tests by their testsuite\n");
-        printf("  -dt-testsuite-exclude=<filters>   filters OUT tests by their testsuite\n");
-        printf("  -dt-sort=<string>                 how the tests should be sorted\n");
-        printf("                                    <string> - by [file/suite/name/rand]\n");
-        printf("  -dt-rand-seed=<int>               seed for random ordering\n");
-        printf("  -dt-count=<bool>                  counts the number of tests passing the\n");
-        printf("                                    filters and exits\n");
-        printf("  -dt-first=<int>                   the first test passing the filters to\n");
-        printf("                                    execute - for range-based execution\n");
-        printf("  -dt-last=<int>                    the last test passing the filters to\n");
-        printf("                                    execute - for range-based execution\n");
-        printf("  -dt-abort-after=<int>             stop after <int> failed assertions\n");
-        printf("  -dt-case-sensitive=<bool>         filters being treated as case sensitive\n");
-        printf("  -dt-no-overrides=<bool>           disables procedural overrides of options\n");
-        printf("  -dt-exit=<bool>                   exits after the tests finish\n");
-        printf("  -dt-no-throw=<bool>               skips exceptions-related assert checks\n");
-        printf("  -dt-no-exitcode=<bool>            returns (or exits) always with success\n");
-        printf("  -dt-no-run=<bool>                 skips all runtime doctest operations\n");
-        printf("  -dt-no-colors=<bool>              disables colors in output\n");
-        printf("  -dt-no-breaks=<bool>              disables breakpoints in debuggers\n");
-        printf("  -dt-no-path-in-filenames=<bool>   only filenames and no paths in output\n");
-        printf("  -dt-hash-table-histogram=<bool>   undocumented\n");
-        // =================================================================================== << 80
+        printf("ALL OPTIONS AND FILTERS ALSO AVAILABLE WITHOUT THE \"dt-\" PREFIX!!!\n");
+#endif // DOCTEST_CONFIG_NO_UNPREFIXED_OPTIONS
+        DOCTEST_PRINTF_COLORED("[doctest]\n", Color::Cyan);
+        DOCTEST_PRINTF_COLORED("[doctest] ", Color::Cyan);
+        printf("the available options, flags and filters are:\n");
+        printf(" -dt-help   (also \"-dt-?\"/\"-dt-h\") prints this message and exits\n");
+        printf(" -dt-version                      prints the version and exits\n");
+        printf(" -dt-count                        prints the number of matching tests and exits\n");
+        printf(" -dt-list-tests                   lists all matching tests by name and exits\n");
+        //printf(" -dt-hash-table-histogram         undocumented\n");
+        // ==================================================================================== << 79
+        printf(" -dt-name=<filters>               filters     tests by their name\n");
+        printf(" -dt-name-exclude=<filters>       filters OUT tests by their name\n");
+        printf(" -dt-file=<filters>               filters     tests by their file\n");
+        printf(" -dt-file-exclude=<filters>       filters OUT tests by their file\n");
+        printf(" -dt-test-suite=<filters>         filters     tests by their test suite\n");
+        printf(" -dt-test-suite-exclude=<filters> filters OUT tests by their test suite\n");
+        printf(" -dt-sort=<string>                how the tests should be sorted\n");
+        printf("                                  <string> - by [file/suite/name/rand]\n");
+        printf(" -dt-rand-seed=<int>              seed for random ordering\n");
+        printf(" -dt-first=<int>                  the first test passing the filters to\n");
+        printf("                                  execute - for range-based execution\n");
+        printf(" -dt-last=<int>                   the last test passing the filters to\n");
+        printf("                                  execute - for range-based execution\n");
+        printf(" -dt-abort-after=<int>            stop after <int> failed assertions\n");
+        printf(" -dt-case-sensitive=<bool>        filters being treated as case sensitive\n");
+        printf(" -dt-exit=<bool>                  exits after the tests finish\n");
+        printf(" -dt-no-overrides=<bool>          disables procedural overrides of options\n");
+        printf(" -dt-no-throw=<bool>              skips exceptions-related assert checks\n");
+        printf(" -dt-no-exitcode=<bool>           returns (or exits) always with success\n");
+        printf(" -dt-no-run=<bool>                skips all runtime doctest operations\n");
+        printf(" -dt-no-colors=<bool>             disables colors in output\n");
+        printf(" -dt-no-breaks=<bool>             disables breakpoints in debuggers\n");
+        printf(" -dt-no-path-in-filenames=<bool>  only filenames and no paths in output\n");
+        // ==================================================================================== << 79
 
         DOCTEST_PRINTF_COLORED("[doctest] ", Color::Cyan);
-        printf("for more information visit the project documentation");
+        printf("for more information visit the project documentation\n\n");
     }
 } // namespace detail
 
@@ -1823,15 +1825,31 @@ Context::Context(int argc, const char* const* argv) {
 
     parseArgs(argc, argv, true);
 
-    p.help    = false;
-    p.version = false;
-    if(parseFlag(argc, argv, "dt-help")) {
+    p.help                 = false;
+    p.version              = false;
+    p.count                = false;
+    p.list_tests           = false;
+    p.hash_table_histogram = false;
+    if(parseFlag(argc, argv, "dt-help") || parseFlag(argc, argv, "dt-h") ||
+       parseFlag(argc, argv, "dt-?")) {
         p.help = true;
         p.exit = true;
     }
     if(parseFlag(argc, argv, "dt-version")) {
         p.version = true;
         p.exit    = true;
+    }
+    if(parseFlag(argc, argv, "dt-count")) {
+        p.count = true;
+        p.exit  = true;
+    }
+    if(parseFlag(argc, argv, "dt-list-tests")) {
+        p.list_tests = true;
+        p.exit       = true;
+    }
+    if(parseFlag(argc, argv, "dt-hash-table-histogram")) {
+        p.hash_table_histogram = true;
+        p.exit                 = true;
     }
 }
 
@@ -1841,8 +1859,8 @@ void Context::parseArgs(int argc, const char* const* argv, bool withDefaults) {
 
     parseCommaSepArgs(argc, argv, "dt-file=", p.filters[0]);
     parseCommaSepArgs(argc, argv, "dt-file-exclude=", p.filters[1]);
-    parseCommaSepArgs(argc, argv, "dt-suite=", p.filters[2]);
-    parseCommaSepArgs(argc, argv, "dt-suite-exclude=", p.filters[3]);
+    parseCommaSepArgs(argc, argv, "dt-test-suite=", p.filters[2]);
+    parseCommaSepArgs(argc, argv, "dt-test-suite-exclude=", p.filters[3]);
     parseCommaSepArgs(argc, argv, "dt-name=", p.filters[4]);
     parseCommaSepArgs(argc, argv, "dt-name-exclude=", p.filters[5]);
 
@@ -1864,20 +1882,18 @@ void Context::parseArgs(int argc, const char* const* argv, bool withDefaults) {
     DOCTEST_PARSE_STR_OPTION("dt-sort=", sort, "file");
     DOCTEST_PARSE_INT_OPTION("dt-rand-seed=", rand_seed, 0);
 
-    DOCTEST_PARSE_BOOL_OPTION("dt-count=", count, 0);
     DOCTEST_PARSE_INT_OPTION("dt-first=", first, 1);
     DOCTEST_PARSE_INT_OPTION("dt-last=", last, 0);
 
     DOCTEST_PARSE_INT_OPTION("dt-abort-after=", abort_after, 0);
     DOCTEST_PARSE_BOOL_OPTION("dt-case-sensitive=", case_sensitive, 0);
-    DOCTEST_PARSE_BOOL_OPTION("dt-no-overrides=", no_overrides, 0);
     DOCTEST_PARSE_BOOL_OPTION("dt-exit=", exit, 0);
+    DOCTEST_PARSE_BOOL_OPTION("dt-no-overrides=", no_overrides, 0);
     DOCTEST_PARSE_BOOL_OPTION("dt-no-throw=", no_throw, 0);
     DOCTEST_PARSE_BOOL_OPTION("dt-no-exitcode=", no_exitcode, 0);
     DOCTEST_PARSE_BOOL_OPTION("dt-no-run=", no_run, 0);
     DOCTEST_PARSE_BOOL_OPTION("dt-no-colors=", no_colors, 0);
     DOCTEST_PARSE_BOOL_OPTION("dt-no-breaks=", no_breaks, 0);
-    DOCTEST_PARSE_BOOL_OPTION("dt-hash-table-histogram=", hash_table_histogram, 0);
     DOCTEST_PARSE_BOOL_OPTION("dt-no-path-in-filenames=", no_path_in_filenames, 0);
 
 #undef DOCTEST_PARSE_STR_OPTION
@@ -1925,37 +1941,15 @@ int Context::run() {
 
     printVersion();
     DOCTEST_PRINTF_COLORED("[doctest] ", Color::Cyan);
-    printf("run with \"--help\" for options\n");
+    printf("run with \"-dt-help\" for options\n");
 
-    unsigned                         i       = 0;
+    unsigned                         i       = 0; // counter used for loops - here for VC6
     const Vector<Vector<TestData> >& buckets = getRegisteredTests().getBuckets();
 
     Vector<const TestData*> testArray;
     for(i = 0; i < buckets.size(); i++)
         for(unsigned k = 0; k < buckets[i].size(); k++)
             testArray.push_back(&buckets[i][k]);
-
-    // sort the collected records
-    if(p.sort.compare("file") == 0) {
-        qsort(testArray.data(), testArray.size(), sizeof(TestData*), fileOrderComparator);
-    } else if(p.sort.compare("suite") == 0) {
-        qsort(testArray.data(), testArray.size(), sizeof(TestData*), suiteOrderComparator);
-    } else if(p.sort.compare("name") == 0) {
-        qsort(testArray.data(), testArray.size(), sizeof(TestData*), nameOrderComparator);
-    } else if(p.sort.compare("rand") == 0) {
-        srand(p.rand_seed);
-
-        // random_shuffle implementation
-        const TestData** first = testArray.data();
-        for(i = testArray.size() - 1; i > 0; --i) {
-            int idxToSwap = rand() % (i + 1);
-
-            const TestData* temp = first[i];
-
-            first[i]         = first[idxToSwap];
-            first[idxToSwap] = temp;
-        }
-    }
 
     if(p.hash_table_histogram) {
         // find the most full bucket
@@ -1980,6 +1974,34 @@ int Context::run() {
             printf("\n");
         }
         printf("\n");
+        return EXIT_SUCCESS;
+    }
+
+    // sort the collected records
+    if(p.sort.compare("file") == 0) {
+        qsort(testArray.data(), testArray.size(), sizeof(TestData*), fileOrderComparator);
+    } else if(p.sort.compare("suite") == 0) {
+        qsort(testArray.data(), testArray.size(), sizeof(TestData*), suiteOrderComparator);
+    } else if(p.sort.compare("name") == 0) {
+        qsort(testArray.data(), testArray.size(), sizeof(TestData*), nameOrderComparator);
+    } else if(p.sort.compare("rand") == 0) {
+        srand(p.rand_seed);
+
+        // random_shuffle implementation
+        const TestData** first = testArray.data();
+        for(i = testArray.size() - 1; i > 0; --i) {
+            int idxToSwap = rand() % (i + 1);
+
+            const TestData* temp = first[i];
+
+            first[i]         = first[idxToSwap];
+            first[idxToSwap] = temp;
+        }
+    }
+
+    if(p.list_tests) {
+        DOCTEST_PRINTF_COLORED("[doctest] ", Color::Cyan);
+        printf("listing all test names\n");
     }
 
     unsigned numTestsPassingFilters = 0;
@@ -2005,6 +2027,12 @@ int Context::run() {
         // do not execute the test if we are to only count the number of filter passing tests
         if(p.count)
             continue;
+
+        // print the name of the test and don't execute it
+        if(p.list_tests) {
+            printf("%s\n", data.m_name.c_str());
+            continue;
+        }
 
         // skip the test if it is not in the execution range
         if((p.last < numTestsPassingFilters && p.first <= p.last) ||
@@ -2051,10 +2079,9 @@ int Context::run() {
         }
     }
 
-    if(p.count) {
+    if(p.count || p.list_tests) {
         DOCTEST_PRINTF_COLORED("[doctest] ", Color::Cyan);
-        printf("number of registered tests passing the current filters: %d\n",
-               numTestsPassingFilters);
+        printf("number of tests passing the current filters: %d\n", numTestsPassingFilters);
     } else {
         if(numFailed == 0) {
             DOCTEST_PRINTF_COLORED("[doctest] ", Color::Cyan);

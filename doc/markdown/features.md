@@ -67,7 +67,6 @@ The library can be used like any other even if you are not fond of the idea of m
 
 - COMMAND LINE OPTIONS:
 - list-tests - list tests
-- list-test-names-only - list test names
 - success - output successful tests too
 
 - print the test name on the first failed assert (or atleast the position) - like catch
@@ -80,8 +79,6 @@ The library can be used like any other even if you are not fond of the idea of m
 
 - think about the expression decomposition static asserts
 - VC6 support
-- switch to std::vector
-- maybe remove malloc/free in favor of new/delete
 
 - examples and test coverage
 - enabling COMPARE in tests
@@ -91,6 +88,8 @@ The library can be used like any other even if you are not fond of the idea of m
 - research bountysource/patreon
 
 ## FUTURE
+- add support for tags - like Catch
+- even shorter versions of command line options
 - support for predicates (or zip or whatever)
 - make a compact reporter
 - output to file
