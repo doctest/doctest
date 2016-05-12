@@ -65,7 +65,9 @@ The library can be used like any other even if you are not fond of the idea of m
 
 ## TODO for release
 
-- print the test name on the first failed assert (or atleast the position) - like catch
+- assume dt- prefix is not needed - remove from the help
+- even shorter versions of command line options
+- add the ability to not specify bool values for command line options - treat them as true
 - print sections when asserts fail (look if catch does that)
 
 - move to operator<<(ostream&... stringification
@@ -85,14 +87,12 @@ The library can be used like any other even if you are not fond of the idea of m
 
 ## FUTURE
 - add support for tags - like Catch
-- even shorter versions of command line options
 - support for predicates (or zip or whatever)
 - make a compact reporter
 - output to file
 - xml reporter (jUnit/xUnit compatible, etc.)
 - ability for users to write their own reporters
 - gcc 6
-- pool allocator for String class
 - add the ability to query if code is currently being ran in a test - some global of doctest...
 - timing reports of tests, duration restrictions, kill of longer than (will perhaps require threading), etc...
 - a message macro (also tracepoint/passpoint/info/context and whatever - like in boost.test) (ALSO ERROR/FAIL - like boost)
@@ -107,10 +107,12 @@ The library can be used like any other even if you are not fond of the idea of m
 
 ## UNSURE
 
+- refactor the assertion macros - make proxy functions that do most of the things to minimize code bloat
+- pool allocator for String class
 - order option - ASC/DESC for sorting
+- BDD based on subcases - like Catch
 - when an option is found - like "-dt-count=" - validate it - if a string has been passed instead of a number - there should be an error
 - think about long long support or maybe int64_t support
-- BDD based on subcases - like Catch
 - Bitwise() class that has overloaded operators for comparison - to be used to check objects bitwise against each other (or maybe not - because of packing!)
 - tagging? also see this: https://github.com/philsquared/Catch/blob/master/docs/test-cases-and-sections.md#special-tags
 - utf8?

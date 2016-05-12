@@ -95,6 +95,8 @@
 
 #define DOCTEST_COUNTOF(x) (sizeof(x) / sizeof(x[0]))
 
+#define DOCTEST_GCS doctest::detail::getContextState
+
 // snprintf() not in the C++98 standard
 #ifdef _MSC_VER
 #define DOCTEST_SNPRINTF _snprintf
@@ -113,22 +115,22 @@
 #ifdef DEBUG
 #if defined(__ppc64__) || defined(__ppc__)
 #define DOCTEST_BREAK_INTO_DEBUGGER()                                                              \
-    if(doctest::detail::isDebuggerActive() && !doctest::detail::getContextState()->no_breaks)      \
+    if(doctest::detail::isDebuggerActive() && !DOCTEST_GCS()->no_breaks)                           \
     __asm__("li r0, 20\nsc\nnop\nli r0, 37\nli r4, 2\nsc\nnop\n" : : : "memory", "r0", "r3", "r4")
 #else // __ppc64__ || __ppc__
 #define DOCTEST_BREAK_INTO_DEBUGGER()                                                              \
-    if(doctest::detail::isDebuggerActive() && !doctest::detail::getContextState()->no_breaks)      \
+    if(doctest::detail::isDebuggerActive() && !DOCTEST_GCS()->no_breaks)                           \
     __asm__("int $3\n" : :)
 #endif // __ppc64__ || __ppc__
 #endif // DEBUG
 #elif defined(_MSC_VER)
 #define DOCTEST_BREAK_INTO_DEBUGGER()                                                              \
-    if(doctest::detail::isDebuggerActive() && !doctest::detail::getContextState()->no_breaks)      \
+    if(doctest::detail::isDebuggerActive() && !DOCTEST_GCS()->no_breaks)                           \
     __debugbreak()
 #elif defined(__MINGW32__)
 extern "C" __declspec(dllimport) void __stdcall DebugBreak();
 #define DOCTEST_BREAK_INTO_DEBUGGER()                                                              \
-    if(doctest::detail::isDebuggerActive() && !doctest::detail::getContextState()->no_breaks)      \
+    if(doctest::detail::isDebuggerActive() && !DOCTEST_GCS()->no_breaks)                           \
     ::DebugBreak()
 #else // linux
 #define DOCTEST_BREAK_INTO_DEBUGGER() ((void)0)
@@ -198,7 +200,27 @@ namespace detail
     // the function type this library works with
     typedef void (*funcType)(void);
 
-    struct TestData;
+    // a struct defining a registered test callback
+    struct TestData
+    {
+        // not used for determining uniqueness
+        String   m_suite; // the test suite in which the test was added
+        String   m_name;  // name of the test function
+        funcType m_f;     // a function pointer to the test function
+
+        // fields by which uniqueness of test cases shall be determined
+        const char* m_file; // the file in which the test was registered
+        unsigned    m_line; // the line where the test was registered
+
+        TestData(const char* suite, const char* name, funcType f, const char* file, int line)
+                : m_suite(suite)
+                , m_name(name)
+                , m_f(f)
+                , m_file(file)
+                , m_line(line) {}
+
+        bool operator==(const TestData& other) const;
+    };
 
     struct TestFailureException
     {};
@@ -294,8 +316,8 @@ namespace detail
                stringify(doctest::ADL_helper(), rhs);
     }
 
-    struct STATIC_ASSERT_Expression_Too_Complex_Please_Rewrite_As_Binary_Comparison;
-    struct TROLOLO;
+    // TODO: think about this
+    //struct STATIC_ASSERT_Expression_Too_Complex;
 
     struct Result
     {
@@ -317,19 +339,19 @@ namespace detail
         void invert() { m_passed = !m_passed; }
 
         // clang-format off
-        //template <typename R> TROLOLO& operator+(const R&);
-        //template <typename R> TROLOLO& operator-(const R&);
-        //template <typename R> TROLOLO& operator/(const R&);
-        //template <typename R> TROLOLO& operator*(const R&);
-        //template <typename R> TROLOLO& operator&&(const R&);
-        //template <typename R> TROLOLO& operator||(const R&);
+        //template <typename R> STATIC_ASSERT_Expression_Too_Complex& operator+(const R&);
+        //template <typename R> STATIC_ASSERT_Expression_Too_Complex& operator-(const R&);
+        //template <typename R> STATIC_ASSERT_Expression_Too_Complex& operator/(const R&);
+        //template <typename R> STATIC_ASSERT_Expression_Too_Complex& operator*(const R&);
+        //template <typename R> STATIC_ASSERT_Expression_Too_Complex& operator&&(const R&);
+        //template <typename R> STATIC_ASSERT_Expression_Too_Complex& operator||(const R&);
         //
-        //template <typename R> TROLOLO& operator==(const R&);
-        //template <typename R> TROLOLO& operator!=(const R&);
-        //template <typename R> TROLOLO& operator<(const R&);
-        //template <typename R> TROLOLO& operator<=(const R&);
-        //template <typename R> TROLOLO& operator>(const R&);
-        //template <typename R> TROLOLO& operator>=(const R&);
+        //template <typename R> STATIC_ASSERT_Expression_Too_Complex& operator==(const R&);
+        //template <typename R> STATIC_ASSERT_Expression_Too_Complex& operator!=(const R&);
+        //template <typename R> STATIC_ASSERT_Expression_Too_Complex& operator<(const R&);
+        //template <typename R> STATIC_ASSERT_Expression_Too_Complex& operator<=(const R&);
+        //template <typename R> STATIC_ASSERT_Expression_Too_Complex& operator>(const R&);
+        //template <typename R> STATIC_ASSERT_Expression_Too_Complex& operator>=(const R&);
         // clang-format on
     };
 
@@ -370,8 +392,14 @@ namespace detail
 
     void addFailedAssert(const char* assert_name);
 
+    void logTestStart(const char* name, const char* file, unsigned line);
+    void logTestEnd();
+
     void logAssert(bool passed, const char* decomposition, bool threw, const char* expr,
                    const char* assert_name, const char* file, int line);
+
+    void logAssertThrows(bool threw, const char* expr, const char* assert_name, const char* file,
+                         int line);
 
     void logAssertThrowsAs(bool threw, bool threw_as, const char* as, const char* expr,
                            const char* assert_name, const char* file, int line);
@@ -417,9 +445,10 @@ namespace detail
 
         int             numAssertions;
         int             numFailedAssertions;
+        int             numAssertionsForCurrentTestcase;
         int             numFailedAssertionsForCurrentTestcase;
         const TestData* currentTest;
-        bool            hasPrintedCurrentTestName;
+        bool            hasLoggedCurrentTestStart;
 
         // stuff for subcases
         HashTable<Subcase> subcasesPassed;
@@ -573,6 +602,14 @@ public:
     void       DOCTEST_ANONYMOUS(DOCTEST_AUTOGEN_TESTSUITE_END_)
 #endif // MSVC
 
+#define DOCTEST_LOG_START()                                                                        \
+    if(!DOCTEST_GCS()->hasLoggedCurrentTestStart) {                                                \
+        doctest::detail::logTestStart(DOCTEST_GCS()->currentTest->m_name.c_str(),                  \
+                                      DOCTEST_GCS()->currentTest->m_file,                          \
+                                      DOCTEST_GCS()->currentTest->m_line);                         \
+        DOCTEST_GCS()->hasLoggedCurrentTestStart = true;                                           \
+    }
+
 #define DOCTEST_ASSERT_IMPLEMENT(expr, assert_name, false_invert_op)                               \
     doctest::detail::Result res;                                                                   \
     bool                    threw = false;                                                         \
@@ -580,10 +617,12 @@ public:
         res = doctest::detail::ExpressionDecomposer() << expr;                                     \
     } catch(...) { threw = true; }                                                                 \
     false_invert_op;                                                                               \
-    if(res || doctest::detail::getContextState()->success)                                         \
+    if(res || DOCTEST_GCS()->success) {                                                            \
+        DOCTEST_LOG_START();                                                                       \
         doctest::detail::logAssert(res.m_passed, res.m_decomposition.c_str(), threw, #expr,        \
                                    assert_name, __FILE__, __LINE__);                               \
-    doctest::detail::getContextState()->numAssertions++;                                           \
+    }                                                                                              \
+    DOCTEST_GCS()->numAssertionsForCurrentTestcase++;                                              \
     if(res) {                                                                                      \
         doctest::detail::addFailedAssert(assert_name);                                             \
         DOCTEST_BREAK_INTO_DEBUGGER();                                                             \
@@ -615,16 +654,16 @@ public:
 
 #define DOCTEST_ASSERT_THROWS(expr, assert_name)                                                   \
     do {                                                                                           \
-        if(!doctest::detail::getContextState()->no_throw) {                                        \
+        if(!DOCTEST_GCS()->no_throw) {                                                             \
             bool threw = false;                                                                    \
             try {                                                                                  \
                 expr;                                                                              \
             } catch(...) { threw = true; }                                                         \
-            if(!threw || doctest::detail::getContextState()->success)                              \
-                doctest::detail::logAssertThrowsAs(                                                \
-                        threw, true, static_cast<const char*>(doctest::detail::getNullPtr()),      \
-                        #expr, assert_name, __FILE__, __LINE__);                                   \
-            doctest::detail::getContextState()->numAssertions++;                                   \
+            if(!threw || DOCTEST_GCS()->success) {                                                 \
+                DOCTEST_LOG_START();                                                               \
+                doctest::detail::logAssertThrows(threw, #expr, assert_name, __FILE__, __LINE__);   \
+            }                                                                                      \
+            DOCTEST_GCS()->numAssertionsForCurrentTestcase++;                                      \
             if(!threw) {                                                                           \
                 doctest::detail::addFailedAssert(assert_name);                                     \
                 DOCTEST_BREAK_INTO_DEBUGGER();                                                     \
@@ -635,19 +674,21 @@ public:
 
 #define DOCTEST_ASSERT_THROWS_AS(expr, as, assert_name)                                            \
     do {                                                                                           \
-        if(!doctest::detail::getContextState()->no_throw) {                                        \
+        if(!DOCTEST_GCS()->no_throw) {                                                             \
             bool threw    = false;                                                                 \
             bool threw_as = false;                                                                 \
             try {                                                                                  \
                 expr;                                                                              \
-            } catch(as&) {                                                                         \
+            } catch(as) {                                                                          \
                 threw    = true;                                                                   \
                 threw_as = true;                                                                   \
             } catch(...) { threw = true; }                                                         \
-            if(!threw_as || doctest::detail::getContextState()->success)                           \
+            if(!threw_as || DOCTEST_GCS()->success) {                                              \
+                DOCTEST_LOG_START();                                                               \
                 doctest::detail::logAssertThrowsAs(threw, threw_as, #as, #expr, assert_name,       \
                                                    __FILE__, __LINE__);                            \
-            doctest::detail::getContextState()->numAssertions++;                                   \
+            }                                                                                      \
+            DOCTEST_GCS()->numAssertionsForCurrentTestcase++;                                      \
             if(!threw_as) {                                                                        \
                 doctest::detail::addFailedAssert(assert_name);                                     \
                 DOCTEST_BREAK_INTO_DEBUGGER();                                                     \
@@ -658,14 +699,16 @@ public:
 
 #define DOCTEST_ASSERT_NOTHROW(expr, assert_name)                                                  \
     do {                                                                                           \
-        if(!doctest::detail::getContextState()->no_throw) {                                        \
+        if(!DOCTEST_GCS()->no_throw) {                                                             \
             bool threw = false;                                                                    \
             try {                                                                                  \
                 expr;                                                                              \
             } catch(...) { threw = true; }                                                         \
-            if(threw || doctest::detail::getContextState()->success)                               \
+            if(threw || DOCTEST_GCS()->success) {                                                  \
+                DOCTEST_LOG_START();                                                               \
                 doctest::detail::logAssertNothrow(threw, #expr, assert_name, __FILE__, __LINE__);  \
-            doctest::detail::getContextState()->numAssertions++;                                   \
+            }                                                                                      \
+            DOCTEST_GCS()->numAssertionsForCurrentTestcase++;                                      \
             if(threw) {                                                                            \
                 doctest::detail::addFailedAssert(assert_name);                                     \
                 DOCTEST_BREAK_INTO_DEBUGGER();                                                     \
@@ -955,6 +998,10 @@ String stringify(ADL_helper, long int unsigned in) {
 // library internals namespace
 namespace detail
 {
+    bool TestData::operator==(const TestData& other) const {
+        return m_line == other.m_line && strcmp(m_file, other.m_file) == 0;
+    }
+
     void checkIfShouldThrow(const char* assert_name) {
         if(strncmp(assert_name, "REQUIRE", 7) == 0)
             throwException();
@@ -1224,30 +1271,6 @@ namespace detail
         return m_line == other.m_line && strcmp(m_file, other.m_file) == 0;
     }
 
-    // a struct defining a registered test callback
-    struct TestData
-    {
-        // not used for determining uniqueness
-        String   m_suite; // the test suite in which the test was added
-        String   m_name;  // name of the test function
-        funcType m_f;     // a function pointer to the test function
-
-        // fields by which uniqueness of test cases shall be determined
-        const char* m_file; // the file in which the test was registered
-        unsigned    m_line; // the line where the test was registered
-
-        TestData(const char* suite, const char* name, funcType f, const char* file, int line)
-                : m_suite(suite)
-                , m_name(name)
-                , m_f(f)
-                , m_file(file)
-                , m_line(line) {}
-
-        bool operator==(const TestData& other) const {
-            return m_line == other.m_line && strcmp(m_file, other.m_file) == 0;
-        }
-    };
-
     unsigned Hash(const TestData& in) {
         return hashStr(reinterpret_cast<unsigned const char*>(in.m_file)) ^ in.m_line;
     }
@@ -1485,6 +1508,10 @@ namespace detail
     void myOutputDebugString(const String&) {}
 #endif // Platform
 
+    const char* getSeparator() {
+        return "===============================================================================\n";
+    }
+
     void printToDebugConsole(const String& text) {
         if(isDebuggerActive())
             myOutputDebugString(text.c_str());
@@ -1496,6 +1523,26 @@ namespace detail
             getContextState()->numFailedAssertions++;
         }
     }
+
+    void logTestStart(const char* name, const char* file, unsigned line) {
+        const char* newLine = "\n";
+
+        char msg[DOCTEST_SNPRINTF_BUFFER_LENGTH];
+        DOCTEST_SNPRINTF(msg, DOCTEST_COUNTOF(msg), "test: \"%s\"\n", name);
+
+        char loc[DOCTEST_SNPRINTF_BUFFER_LENGTH];
+        DOCTEST_SNPRINTF(loc, DOCTEST_COUNTOF(loc), "%s(%d)\n", fileForOutput(file), line);
+
+        DOCTEST_PRINTF_COLORED(getSeparator(), Color::Yellow);
+        DOCTEST_PRINTF_COLORED(msg, Color::None);
+        DOCTEST_PRINTF_COLORED(loc, Color::LightGrey);
+        DOCTEST_PRINTF_COLORED(getSeparator(), Color::Yellow);
+        DOCTEST_PRINTF_COLORED(newLine, Color::None);
+
+        printToDebugConsole(String(getSeparator()) + msg + loc + getSeparator() + newLine);
+    }
+
+    void logTestEnd() {}
 
     void logAssert(bool passed, const char* decomposition, bool threw, const char* expr,
                    const char* assert_name, const char* file, int line) {
@@ -1521,23 +1568,34 @@ namespace detail
                              decomposition);
         }
 
-        //if(!getContextState()->hasPrintedCurrentTestName) {
-        //    char test_name[DOCTEST_SNPRINTF_BUFFER_LENGTH];
-        //    DOCTEST_SNPRINTF(test_name, DOCTEST_COUNTOF(test_name), "  %s( %s )\n", assert_name,
-        //                     expr);
-        //
-        //    DOCTEST_PRINTF_COLORED("==========================================\n", Color::Blue);
-        //    DOCTEST_PRINTF_COLORED("Test: %s\n", Color::Blue);
-        //    getContextState()->hasPrintedCurrentTestName = true;
-        //}
-
         DOCTEST_PRINTF_COLORED(loc, Color::LightGrey);
         DOCTEST_PRINTF_COLORED(msg, passed ? Color::BrightGreen : Color::Red);
         DOCTEST_PRINTF_COLORED(info1, Color::Green);
-        DOCTEST_PRINTF_COLORED(info2, Color::Cyan);
+        DOCTEST_PRINTF_COLORED(info2, Color::None);
         DOCTEST_PRINTF_COLORED(info3, Color::Green);
 
         printToDebugConsole(String(loc) + msg + info1 + info2 + info3);
+    }
+
+    void logAssertThrows(bool threw, const char* expr, const char* assert_name, const char* file,
+                         int line) {
+        char loc[DOCTEST_SNPRINTF_BUFFER_LENGTH];
+        DOCTEST_SNPRINTF(loc, DOCTEST_COUNTOF(loc), "%s(%d)", fileForOutput(file), line);
+
+        char msg[DOCTEST_SNPRINTF_BUFFER_LENGTH];
+        if(threw)
+            DOCTEST_SNPRINTF(msg, DOCTEST_COUNTOF(msg), " PASSED!\n");
+        else
+            DOCTEST_SNPRINTF(msg, DOCTEST_COUNTOF(msg), " FAILED!\n");
+
+        char info1[DOCTEST_SNPRINTF_BUFFER_LENGTH];
+        DOCTEST_SNPRINTF(info1, DOCTEST_COUNTOF(info1), "  %s( %s )\n\n", assert_name, expr);
+
+        DOCTEST_PRINTF_COLORED(loc, Color::LightGrey);
+        DOCTEST_PRINTF_COLORED(msg, threw ? Color::BrightGreen : Color::Red);
+        DOCTEST_PRINTF_COLORED(info1, Color::Green);
+
+        printToDebugConsole(String(loc) + msg + info1);
     }
 
     void logAssertThrowsAs(bool threw, bool threw_as, const char* as, const char* expr,
@@ -1549,9 +1607,8 @@ namespace detail
         if(threw_as)
             DOCTEST_SNPRINTF(msg, DOCTEST_COUNTOF(msg), " PASSED!\n");
         else
-            DOCTEST_SNPRINTF(
-                    msg, DOCTEST_COUNTOF(msg), " FAILED! %s\n",
-                    (as ? (threw ? "(threw something else)" : "(didn't throw at all)") : ""));
+            DOCTEST_SNPRINTF(msg, DOCTEST_COUNTOF(msg), " FAILED! %s\n",
+                             (threw ? "(threw something else)" : "(didn't throw at all)"));
 
         char info1[DOCTEST_SNPRINTF_BUFFER_LENGTH];
         DOCTEST_SNPRINTF(info1, DOCTEST_COUNTOF(info1), "  %s( %s, %s )\n\n", assert_name, expr,
@@ -2063,12 +2120,20 @@ int Context::run() {
 #endif // _MSC_VER
 
             p.currentTest               = &data;
-            p.hasPrintedCurrentTestName = false;
+            p.hasLoggedCurrentTestStart = false;
+
+            // if logging successful tests - force the start log
+            if(p.success) {
+                logTestStart(p.currentTest->m_name.c_str(), p.currentTest->m_file,
+                             p.currentTest->m_line);
+                p.hasLoggedCurrentTestStart = true;
+            }
 
             unsigned didFail = 0;
             p.subcasesPassed.clear();
             do {
                 // reset the assertion state
+                p.numAssertionsForCurrentTestcase       = 0;
                 p.numFailedAssertionsForCurrentTestcase = 0;
 
                 // reset some of the fields for subcases (except for the set of fully passed ones)
@@ -2077,12 +2142,16 @@ int Context::run() {
                 p.subcasesEnteredLevels.clear();
 
                 didFail += callTestFunc(data.m_f);
+                p.numAssertions += p.numAssertionsForCurrentTestcase;
 
                 // exit this loop if enough assertions have failed
                 if(p.abort_after > 0 && p.numFailedAssertions >= p.abort_after)
                     p.subcasesHasSkipped = false;
-
             } while(p.subcasesHasSkipped == true);
+
+            // if the start has been logged
+            if(p.hasLoggedCurrentTestStart)
+                logTestEnd();
 
             if(didFail > 0)
                 numFailed++;
@@ -2100,23 +2169,40 @@ int Context::run() {
         }
     }
 
+    DOCTEST_PRINTF_COLORED(getSeparator(), Color::Yellow);
     if(p.count || p.list_tests) {
         DOCTEST_PRINTF_COLORED("[doctest] ", Color::Cyan);
         printf("number of tests passing the current filters: %d\n", numTestsPassingFilters);
     } else {
-        if(numFailed == 0) {
-            DOCTEST_PRINTF_COLORED("[doctest] ", Color::Cyan);
-            printf("all %u tests passed!\n", numTestsPassingFilters);
-            DOCTEST_PRINTF_COLORED("[doctest] ", Color::Cyan);
-            printf("all %u assertions passed!\n\n", p.numAssertions);
-        } else {
-            DOCTEST_PRINTF_COLORED("[doctest] ", Color::Cyan);
-            printf("%u out of %u tests passed!\n", numTestsPassingFilters - numFailed,
-                   numTestsPassingFilters);
-            DOCTEST_PRINTF_COLORED("[doctest] ", Color::Cyan);
-            printf("%u out of %u assertions passed!\n\n", p.numAssertions - p.numFailedAssertions,
-                   p.numAssertions);
-        }
+        char buff[DOCTEST_SNPRINTF_BUFFER_LENGTH];
+
+        DOCTEST_PRINTF_COLORED("[doctest] ", Color::Cyan);
+
+        DOCTEST_SNPRINTF(buff, DOCTEST_COUNTOF(buff), "test cases: %4d", numTestsPassingFilters);
+        DOCTEST_PRINTF_COLORED(buff, Color::None);
+        DOCTEST_SNPRINTF(buff, DOCTEST_COUNTOF(buff), " | ");
+        DOCTEST_PRINTF_COLORED(buff, Color::None);
+        DOCTEST_SNPRINTF(buff, DOCTEST_COUNTOF(buff), "%4d passed",
+                         numTestsPassingFilters - numFailed);
+        DOCTEST_PRINTF_COLORED(buff, Color::Green);
+        DOCTEST_SNPRINTF(buff, DOCTEST_COUNTOF(buff), " | ");
+        DOCTEST_PRINTF_COLORED(buff, Color::None);
+        DOCTEST_SNPRINTF(buff, DOCTEST_COUNTOF(buff), "%4d failed\n", numFailed);
+        DOCTEST_PRINTF_COLORED(buff, Color::Red);
+
+        DOCTEST_PRINTF_COLORED("[doctest] ", Color::Cyan);
+
+        DOCTEST_SNPRINTF(buff, DOCTEST_COUNTOF(buff), "assertions: %4d", p.numAssertions);
+        DOCTEST_PRINTF_COLORED(buff, Color::None);
+        DOCTEST_SNPRINTF(buff, DOCTEST_COUNTOF(buff), " | ");
+        DOCTEST_PRINTF_COLORED(buff, Color::None);
+        DOCTEST_SNPRINTF(buff, DOCTEST_COUNTOF(buff), "%4d passed",
+                         p.numAssertions - p.numFailedAssertions);
+        DOCTEST_PRINTF_COLORED(buff, Color::Green);
+        DOCTEST_SNPRINTF(buff, DOCTEST_COUNTOF(buff), " | ");
+        DOCTEST_PRINTF_COLORED(buff, Color::None);
+        DOCTEST_SNPRINTF(buff, DOCTEST_COUNTOF(buff), "%4d failed\n", p.numFailedAssertions);
+        DOCTEST_PRINTF_COLORED(buff, Color::Red);
     }
 
     if(numFailed && !p.no_exitcode)
