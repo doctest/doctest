@@ -630,11 +630,11 @@ public:
     }
 
 #if defined(__clang__)
-#define DOCTEST_ASSERT_PROXY(expr, assert_name, require_op, false_invert_op)                       \
+#define DOCTEST_ASSERT_PROXY(expr, assert_name, false_invert_op)                                   \
     do {                                                                                           \
         _Pragma("clang diagnostic push")                                                           \
                 _Pragma("clang diagnostic ignored \"-Woverloaded-shift-op-parentheses\"")          \
-                        DOCTEST_ASSERT_IMPLEMENT(expr, assert_name, require_op, false_invert_op)   \
+                        DOCTEST_ASSERT_IMPLEMENT(expr, assert_name, false_invert_op)               \
                                 _Pragma("clang diagnostic pop")                                    \
     } while(doctest::detail::always_false())
 #else // __clang__
