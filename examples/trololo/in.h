@@ -1,6 +1,27 @@
 #pragma once
 
-#include <string>
+class String
+{
+    char* m_str;
+
+    void copy(const String& other);
+
+public:
+    String(const char* in = "");
+    String(const String& other);
+    ~String();
+
+    String& operator=(const String& other);
+
+    String operator+(const String& other) const;
+    String& operator+=(const String& other);
+
+    char& operator[](unsigned pos) { return m_str[pos]; }
+    const char& operator[](unsigned pos) const { return m_str[pos]; }
+
+    char*       c_str() { return m_str; }
+    const char* c_str() const { return m_str; }
+};
 
 #ifdef __clang__
 #include <ciso646>
@@ -75,33 +96,19 @@ struct my_enable_if<true, T>
 { typedef T value; };
 
 std::ostream* createStream();
-std::string   getStreamResult(std::ostream*);
+String   getStreamResult(std::ostream*);
 void          freeStream(std::ostream*);
 
 template <class T>
-typename my_enable_if<has_insertion_operator<T>::value, std::string>::value stringify(const T& in) {
+typename my_enable_if<has_insertion_operator<T>::value, String>::value stringify(const T& in) {
     std::ostream* stream = createStream();
     *stream << in;
-    std::string result = getStreamResult(stream);
+    String result = getStreamResult(stream);
     freeStream(stream);
     return result;
 }
 
-//template <template <typename, typename> class T, typename T0, typename T1>
-//typename my_enable_if<has_insertion_operator<T<T0, T1>>::value, std::string>::value stringify(const T<T0, T1>& in) {
-//    std::ostream* stream = createStream();
-//    *stream << in;
-//    std::string result = getStreamResult(stream);
-//    freeStream(stream);
-//    return result;
-//}
-
 template <class T>
-typename my_enable_if<!has_insertion_operator<T>::value, std::string>::value stringify(const T&) {
+typename my_enable_if<!has_insertion_operator<T>::value, String>::value stringify(const T&) {
     return "{?}";
 }
-
-//template <template <typename, typename> class T, typename T0, typename T1>
-//typename my_enable_if<!has_insertion_operator<T<T0, T1>>::value, std::string>::value stringify(const T<T0, T1>& in) {
-//    return "{?}";
-//}
