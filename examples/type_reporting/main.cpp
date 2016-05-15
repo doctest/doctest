@@ -3,21 +3,19 @@
 
 #include <string>
 #include <vector>
+#include <ostream>
 
-namespace doctest
-{
-    static String stringify(ADL_helper, const std::string& in) {
-        return String("\"") + in.c_str() + "\"";
-    }
-
-    template <typename T>
-    String stringify(ADL_helper, const std::vector<T>& in) {
-        String out("vector[");
-        for(unsigned i = 0; i < in.size(); ++i)
-            out += stringify(ADL_helper(), in[i]) + (i + 1 == in.size() ? "]" : ", ");
-        return out;
-    }
-} // namespace doctest
+template <typename T>
+std::ostream& operator<<(std::ostream& s, const std::vector<T>& in) {
+    s << "[";
+    for(size_t i = 0; i < in.size(); ++i)
+        if(i < in.size() - 1)
+            s << in[i] << ", ";
+        else
+            s << in[i];
+    s << "]";
+    return s;
+}
 
 TEST_CASE("the only test") {
     std::string dummy1 = "omg";

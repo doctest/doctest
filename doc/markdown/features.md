@@ -65,16 +65,18 @@ The library can be used like any other even if you are not fond of the idea of m
 
 ## TODO for release
 
+switch loc and msg in logTestStart
+
 - assume dt- prefix is not needed - remove from the help
 - even shorter versions of command line options
 - add the ability to not specify bool values for command line options - treat them as true
 - print sections when asserts fail (look if catch does that)
 
-- move to operator<<(ostream&... stringification
 - floating point comparison support
 - signal handling for unix: http://www.cplusplus.com/reference/csignal/signal/
 (signals on *NIX platforms or structured exceptions on Windows)
 
+- look into https://github.com/Barro/compiler-warnings
 - think about the expression decomposition static asserts
 - VC6 support
 

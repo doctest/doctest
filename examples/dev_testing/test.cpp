@@ -7,22 +7,18 @@
 #include <exception>
 #include <string>
 #include <vector>
-
-namespace doctest
-{
-template <>
-String stringify(ADL_helper, const std::string& in) {
-    return String("\"") + in.c_str() + "\"";
-}
-
-template <typename T>
-String stringify(ADL_helper, const std::vector<T>& in) {
-    String out("vector[");
-    for(unsigned i = 0; i < in.size(); ++i)
-        out += stringify(ADL_helper(), in[i]) + (i + 1 == in.size() ? "]" : ", ");
-    return out;
-}
-} // namespace doctest
+//#include <ostream>
+//template <typename T>
+//std::ostream& operator<<(std::ostream& s, const std::vector<T>& in) {
+//    s << "[";
+//    for(size_t i = 0; i < in.size(); ++i)
+//        if(i < in.size() - 1)
+//            s << in[i] << ", ";
+//        else
+//            s << in[i];
+//    s << "]";
+//    return s;
+//}
 
 TEST_SUITE("MAIN");
 TEST_CASE("zzz") {
@@ -39,9 +35,9 @@ TEST_CASE("zzz") {
     vec2.push_back(4);
 
     CHECK(vec1 == vec2);
-    CHECK(vec1 == vec2);
+    //CHECK(vec1 == vec2);
 
-    //REQUIRE(true == false);
+    REQUIRE(true == false);
     //
     //printf("main\n");
     //SUBCASE("") {
@@ -75,9 +71,9 @@ void nothrows(); // to silence GCC "-Wmissing-declarations"
 void nothrows() {}
 
 TEST_CASE("zzz") {
-    int a = 5;
-    int b = 5;
-    CHECK(&a == &b);
+    //int a = 5;
+    //int b = 5;
+    //CHECK(&a == &b);
 
     CHECK(1);
 

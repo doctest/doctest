@@ -136,6 +136,30 @@ extern "C" __declspec(dllimport) void __stdcall DebugBreak();
 #define DOCTEST_BREAK_INTO_DEBUGGER() ((void)0)
 #endif // linux
 
+#ifdef __clang__
+#include <ciso646>
+#endif // __clang__
+
+#define DOCTEST_CONFIG_USE_IOSFWD
+
+#ifdef _LIBCPP_VERSION
+#include <iosfwd>
+#else // _LIBCPP_VERSION
+#ifndef DOCTEST_CONFIG_USE_IOSFWD
+namespace std
+{
+template <class charT>
+struct char_traits;
+template <>
+struct char_traits<char>;
+template <class charT, class traits>
+class basic_ostream;
+typedef basic_ostream<char, char_traits<char> > ostream;
+}
+#else // DOCTEST_CONFIG_USE_IOSFWD
+#include <iosfwd>
+#endif // DOCTEST_CONFIG_USE_IOSFWD
+#endif // _LIBCPP_VERSION
 namespace doctest
 {
 class String
@@ -164,41 +188,88 @@ public:
     int compare(const String& other, bool no_case = false) const;
 };
 
-struct ADL_helper
-{};
-
-template <typename T>
-String stringify(ADL_helper, const T&) {
-    return "{?}";
-}
-
 #if !defined(DOCTEST_CONFIG_DISABLE)
-
-String stringify(ADL_helper, const char* in);
-String stringify(ADL_helper, const void* in);
-String stringify(ADL_helper, bool in);
-String stringify(ADL_helper, float in);
-String stringify(ADL_helper, double in);
-String stringify(ADL_helper, double long in);
-
-String stringify(ADL_helper, char in);
-String stringify(ADL_helper, char unsigned in);
-String stringify(ADL_helper, short int in);
-String stringify(ADL_helper, short int unsigned in);
-String stringify(ADL_helper, int in);
-String stringify(ADL_helper, int unsigned in);
-String stringify(ADL_helper, long int in);
-String stringify(ADL_helper, long int unsigned in);
-
-template <typename T>
-String stringify(ADL_helper, T* in) {
-    return stringify(doctest::ADL_helper(), static_cast<const void*>(in));
-}
 
 namespace detail
 {
+    namespace has_insertion_operator_impl
+    {
+        typedef char no;
+        typedef char yes[2];
+
+        template <bool>
+        struct static_assertion;
+
+        template <>
+        struct static_assertion<true>
+        {};
+
+        template <bool in>
+        void           f() {
+            static_assertion<in>();
+        }
+
+        struct any_t
+        {
+            template <typename T>
+            any_t(T const&) {
+                f<false>();
+            }
+        };
+
+        yes& test(std::ostream&);
+        no   test(no);
+
+        template <typename T>
+        struct has_insertion_operator
+        {
+            static std::ostream& s;
+            static T const&      t;
+            static bool const    value = sizeof(test(s << t)) == sizeof(yes);
+        };
+    } // namespace has_insertion_operator_impl
+
+    template <typename T>
+    struct has_insertion_operator : has_insertion_operator_impl::has_insertion_operator<T>
+    {};
+
+    // enable_if for c++98
+    template <bool, typename T = void>
+    struct my_enable_if
+    {};
+
+    template <typename T>
+    struct my_enable_if<true, T>
+    { typedef T value; };
+
+    std::ostream* createStream();
+    String        getStreamResult(std::ostream*);
+    void          freeStream(std::ostream*);
+
+    template <class T>
+    typename my_enable_if<has_insertion_operator<T>::value, String>::value stringify(const T& in) {
+        std::ostream* stream = createStream();
+        *stream << in;
+        String result = getStreamResult(stream);
+        freeStream(stream);
+        return result;
+    }
+
+    template <class T>
+    typename my_enable_if<!has_insertion_operator<T>::value, String>::value stringify(const T&) {
+        return "{?}";
+    }
+
     // the function type this library works with
     typedef void (*funcType)(void);
+
+    struct TestFailureException
+    {};
+
+    void checkIfShouldThrow(const char* assert_name);
+    void  throwException();
+    bool  always_false();
+    void* getNullPtr();
 
     // a struct defining a registered test callback
     struct TestData
@@ -221,14 +292,6 @@ namespace detail
 
         bool operator==(const TestData& other) const;
     };
-
-    struct TestFailureException
-    {};
-
-    void checkIfShouldThrow(const char* assert_name);
-    void  throwException();
-    bool  always_false();
-    void* getNullPtr();
 
     template <class T>
     class Vector
@@ -312,8 +375,7 @@ namespace detail
 
     template <typename L, typename R>
     String stringifyBinaryExpr(const L& lhs, const char* op, const R& rhs) {
-        return stringify(doctest::ADL_helper(), lhs) + " " + op + " " +
-               stringify(doctest::ADL_helper(), rhs);
+        return stringify(lhs) + " " + op + " " + stringify(rhs);
     }
 
     // TODO: think about this
@@ -366,7 +428,7 @@ namespace detail
         Expression_lhs(const Expression_lhs& other)
                 : lhs(other.lhs) {}
 
-        operator Result() { return Result(!!lhs, stringify(doctest::ADL_helper(), lhs)); }
+        operator Result() { return Result(!!lhs, stringify(lhs)); }
 
         // clang-format off
         template <typename R> Result operator==(const R& rhs) { return Result(lhs == rhs, stringifyBinaryExpr(lhs, "==", rhs)); }
@@ -506,6 +568,52 @@ public:
 
 // if registering is not disabled
 #if !defined(DOCTEST_CONFIG_DISABLE)
+
+//std::ostream& operator<<(std::ostream&, bool val);
+
+//template int function_name<int>(int);
+
+// in the global namespace - for details see this - http://stackoverflow.com/questions/37139784/
+doctest::detail::has_insertion_operator_impl::no operator<<(std::ostream&, const doctest::detail::has_insertion_operator_impl::any_t&);
+
+template doctest::String doctest::detail::stringify<bool>(const bool&);
+
+
+//static int crap
+
+//std::ostream& operator<< (std::ostream&, short val);
+//std::ostream& operator<< (std::ostream&, unsigned short val);
+//std::ostream& operator<< (std::ostream&, int val);
+//std::ostream& operator<< (std::ostream&, unsigned int val);
+//std::ostream& operator<< (std::ostream&, long val);
+//std::ostream& operator<< (std::ostream&, unsigned long val);
+//std::ostream& operator<< (std::ostream&, float val);
+//std::ostream& operator<< (std::ostream&, double val);
+//std::ostream& operator<< (std::ostream&, long double val);
+//std::ostream& operator<< (std::ostream&, void* val);
+
+//std::ostream& operator<<(std::ostream&, const char*);
+
+
+
+//std::ostream& operator<<(std::ostream&, bool);
+//std::ostream& operator<<(std::ostream&, int);
+
+//String stringify(ADL_helper, const char* in);
+//String stringify(ADL_helper, const void* in);
+//String stringify(ADL_helper, bool in);
+//String stringify(ADL_helper, float in);
+//String stringify(ADL_helper, double in);
+//String stringify(ADL_helper, double long in);
+//
+//String stringify(ADL_helper, char in);
+//String stringify(ADL_helper, char unsigned in);
+//String stringify(ADL_helper, short int in);
+//String stringify(ADL_helper, short int unsigned in);
+//String stringify(ADL_helper, int in);
+//String stringify(ADL_helper, int unsigned in);
+//String stringify(ADL_helper, long int in);
+//String stringify(ADL_helper, long int unsigned in);
 
 // registers the test by initializing a dummy var with a function
 #if defined(__GNUC__) && !defined(__clang__)
@@ -868,6 +976,16 @@ int  Context::run() { return 0; }
 #include <ctime>   // time stuff
 #include <cstring> // strcpy, strtok, strrchr, strncmp
 #include <new>     // placement new (can be skipped if the containers require 'construct()' from T)
+#include <sstream> // ostream, ostringstream
+
+//std::ostream& operator<<(std::ostream& s, const char*) {
+//    //s << in;
+//    return s;
+//}
+
+std::ostream& operator<<(std::ostream& s, bool in) {
+    return s.operator<<(in);
+}
 
 // the number of buckets used for the hash set
 #if !defined(DOCTEST_HASH_TABLE_NUM_BUCKETS)
@@ -913,91 +1031,15 @@ extern "C" __declspec(dllimport) int __stdcall IsDebuggerPresent();
 // main namespace of the library
 namespace doctest
 {
-String stringify(ADL_helper, const char* in) { return String("\"") + in + "\""; }
-
-String stringify(ADL_helper, const void* in) {
-    char buf[64];
-    sprintf(buf, "0x%p", in);
-    return buf;
-}
-
-String stringify(ADL_helper, bool in) { return in ? "true" : "false"; }
-
-String stringify(ADL_helper, float in) {
-    char buf[64];
-    sprintf(buf, "%f", static_cast<double>(in));
-    return buf;
-}
-
-String stringify(ADL_helper, double in) {
-    char buf[64];
-    sprintf(buf, "%f", in);
-    return buf;
-}
-
-String stringify(ADL_helper, double long in) {
-    char buf[64];
-    sprintf(buf, "%Lf", in);
-    return buf;
-}
-
-String stringify(ADL_helper, char in) {
-    char buf[64];
-    if(in < ' ')
-        sprintf(buf, "%d", in);
-    else
-        sprintf(buf, "%c", in);
-    return buf;
-}
-
-String stringify(ADL_helper, char unsigned in) {
-    char buf[64];
-    if(in < ' ')
-        sprintf(buf, "%ud", in);
-    else
-        sprintf(buf, "%c", in);
-    return buf;
-}
-
-String stringify(ADL_helper, short int in) {
-    char buf[64];
-    sprintf(buf, "%d", in);
-    return buf;
-}
-
-String stringify(ADL_helper, short int unsigned in) {
-    char buf[64];
-    sprintf(buf, "%u", in);
-    return buf;
-}
-
-String stringify(ADL_helper, int in) {
-    char buf[64];
-    sprintf(buf, "%d", in);
-    return buf;
-}
-
-String stringify(ADL_helper, int unsigned in) {
-    char buf[64];
-    sprintf(buf, "%u", in);
-    return buf;
-}
-
-String stringify(ADL_helper, long int in) {
-    char buf[64];
-    sprintf(buf, "%ld", in);
-    return buf;
-}
-
-String stringify(ADL_helper, long int unsigned in) {
-    char buf[64];
-    sprintf(buf, "%lu", in);
-    return buf;
-}
-
 // library internals namespace
 namespace detail
 {
+    std::ostream* createStream() { return new std::ostringstream(); }
+    String getStreamResult(std::ostream* in) {
+        return static_cast<std::ostringstream*>(in)->str().c_str();
+    }
+    void freeStream(std::ostream* in) { delete in; }
+
     bool TestData::operator==(const TestData& other) const {
         return m_line == other.m_line && strcmp(m_file, other.m_file) == 0;
     }
@@ -1979,7 +2021,7 @@ void Context::addFilter(const char* filter, const char* value) { setOption(filte
 
 // allows the user to override procedurally the int/bool options from the command line
 void Context::setOption(const char* option, int value) {
-    setOption(option, stringify(doctest::ADL_helper(), value).c_str());
+    setOption(option, detail::stringify(value).c_str());
 }
 
 // allows the user to override procedurally the string options from the command line
