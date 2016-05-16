@@ -159,6 +159,12 @@ typedef basic_ostream<char, char_traits<char> > ostream;
 #endif // DOCTEST_CONFIG_USE_IOSFWD
 #endif // _LIBCPP_VERSION
 
+#ifndef DOCTEST_CONFIG_WITH_LONG_LONG
+#if defined(__cplusplus) && __cplusplus >= 201103L
+#define DOCTEST_CONFIG_WITH_LONG_LONG
+#endif // __cplusplus
+#endif // DOCTEST_CONFIG_WITH_LONG_LONG
+
 namespace doctest
 {
 class String
@@ -189,27 +195,27 @@ public:
 
 namespace detail
 {
+    template <bool>
+    struct STATIC_ASSERT_No_output_stream_operator_found_for_type;
+
+    template <>
+    struct STATIC_ASSERT_No_output_stream_operator_found_for_type<true>
+    {};
+
     namespace has_insertion_operator_impl
     {
         typedef char no;
         typedef char yes[2];
 
-        template <bool>
-        struct static_assertion;
-
-        template <>
-        struct static_assertion<true>
-        {};
-
         template <bool in>
         void           f() {
-            static_assertion<in>();
+            STATIC_ASSERT_No_output_stream_operator_found_for_type<in>();
         }
 
         struct any_t
         {
             template <typename T>
-            any_t(T const&) {
+            any_t(const T&) {
                 f<false>();
             }
         };
@@ -221,8 +227,8 @@ namespace detail
         struct has_insertion_operator
         {
             static std::ostream& s;
-            static T const&      t;
-            static bool const    value = sizeof(test(s << t)) == sizeof(yes);
+            static const T&      t;
+            static const bool    value = sizeof(test(s << t)) == sizeof(yes);
         };
     } // namespace has_insertion_operator_impl
 
@@ -238,7 +244,7 @@ namespace detail
     struct StringMakerBase
     {
         template <typename T>
-        static String convert(T const&) {
+        static String convert(const T&) {
             return "{?}";
         }
     };
@@ -247,7 +253,7 @@ namespace detail
     struct StringMakerBase<true>
     {
         template <typename T>
-        static String convert(T const& in) {
+        static String convert(const T& in) {
             std::ostream* stream = createStream();
             *stream << in;
             String result = getStreamResult(stream);
@@ -292,23 +298,29 @@ struct StringMaker<R C::*>
 };
 
 template <typename T>
-String toString(const T& value);
+String toString(const T& value) {
+    return StringMaker<T>::convert(value);
+}
 
-String toString(const char* value);
-String toString(int value);
-String toString(unsigned long value);
-String toString(unsigned int value);
-String toString(double value);
-String toString(float value);
-String toString(bool value);
-String toString(char value);
-String toString(signed char value);
-String toString(unsigned char value);
+String toString(const char* in);
+String toString(bool in);
+String toString(float in);
+String toString(double in);
+String toString(double long in);
+
+String toString(char in);
+String toString(char unsigned in);
+String toString(int short in);
+String toString(int short unsigned in);
+String toString(int in);
+String toString(int unsigned in);
+String toString(int long in);
+String toString(int long unsigned in);
 
 #ifdef DOCTEST_CONFIG_WITH_LONG_LONG
-String toString(long long value);
-String toString(long long unsigned value);
-#endif
+String toString(int long long value);
+String toString(int long long unsigned value);
+#endif // DOCTEST_CONFIG_WITH_LONG_LONG
 
 #if !defined(DOCTEST_CONFIG_DISABLE)
 
@@ -429,7 +441,7 @@ namespace detail
 
     template <typename L, typename R>
     String stringifyBinaryExpr(const L& lhs, const char* op, const R& rhs) {
-        return StringMaker<L>::convert(lhs) + " " + op + " " + StringMaker<R>::convert(rhs);
+        return toString(lhs) + " " + op + " " + toString(rhs);
     }
 
     // TODO: think about this
@@ -482,7 +494,7 @@ namespace detail
         Expression_lhs(const Expression_lhs& other)
                 : lhs(other.lhs) {}
 
-        operator Result() { return Result(!!lhs, StringMaker<L>::convert(lhs)); }
+        operator Result() { return Result(!!lhs, toString(lhs)); }
 
         // clang-format off
         template <typename R> Result operator==(const R& rhs) { return Result(lhs == rhs, stringifyBinaryExpr(lhs, "==", rhs)); }
@@ -626,40 +638,6 @@ public:
 // in the global namespace - for details see this - http://stackoverflow.com/questions/37139784/
 doctest::detail::has_insertion_operator_impl::no operator<<(
         std::ostream&, const doctest::detail::has_insertion_operator_impl::any_t&);
-
-//static int crap
-
-//std::ostream& operator<< (std::ostream&, short val);
-//std::ostream& operator<< (std::ostream&, unsigned short val);
-//std::ostream& operator<< (std::ostream&, int val);
-//std::ostream& operator<< (std::ostream&, unsigned int val);
-//std::ostream& operator<< (std::ostream&, long val);
-//std::ostream& operator<< (std::ostream&, unsigned long val);
-//std::ostream& operator<< (std::ostream&, float val);
-//std::ostream& operator<< (std::ostream&, double val);
-//std::ostream& operator<< (std::ostream&, long double val);
-//std::ostream& operator<< (std::ostream&, void* val);
-
-//std::ostream& operator<<(std::ostream&, const char*);
-
-//std::ostream& operator<<(std::ostream&, bool);
-//std::ostream& operator<<(std::ostream&, int);
-
-//String stringify(ADL_helper, const char* in);
-//String stringify(ADL_helper, const void* in);
-//String stringify(ADL_helper, bool in);
-//String stringify(ADL_helper, float in);
-//String stringify(ADL_helper, double in);
-//String stringify(ADL_helper, double long in);
-//
-//String stringify(ADL_helper, char in);
-//String stringify(ADL_helper, char unsigned in);
-//String stringify(ADL_helper, short int in);
-//String stringify(ADL_helper, short int unsigned in);
-//String stringify(ADL_helper, int in);
-//String stringify(ADL_helper, int unsigned in);
-//String stringify(ADL_helper, long int in);
-//String stringify(ADL_helper, long int unsigned in);
 
 // registers the test by initializing a dummy var with a function
 #if defined(__GNUC__) && !defined(__clang__)
@@ -1017,13 +995,13 @@ int  Context::run() { return 0; }
     } while(doctest::detail::always_false())
 
 // required includes - will go only in one translation unit!
-#include <cstdio>  // printf, fprintf, sprintf, snprintf
-#include <cstdlib> // malloc, free, qsort, rand, srand
-#include <ctime>   // time stuff
-#include <cstring> // strcpy, strtok, strrchr, strncmp
-#include <new>     // placement new (can be skipped if the containers require 'construct()' from T)
-#include <sstream> // ostream, ostringstream
-#include <iomanip> // setfill, setw
+#include <cstdio>
+#include <cstdlib>
+#include <ctime>
+#include <cstring>
+#include <new>
+#include <sstream>
+#include <iomanip>
 
 // the number of buckets used for the hash set
 #if !defined(DOCTEST_HASH_TABLE_NUM_BUCKETS)
@@ -1069,6 +1047,104 @@ extern "C" __declspec(dllimport) int __stdcall IsDebuggerPresent();
 // main namespace of the library
 namespace doctest
 {
+namespace detail
+{
+    template <typename T>
+    String fpToString(T value, int precision) {
+        std::ostringstream oss;
+        oss << std::setprecision(precision) << std::fixed << value;
+        std::string d = oss.str();
+        std::size_t i = d.find_last_not_of('0');
+        if(i != std::string::npos && i != d.size() - 1) {
+            if(d[i] == '.')
+                i++;
+            d = d.substr(0, i + 1);
+        }
+        return d.c_str();
+    }
+} // namespace detail
+
+String toString(const char* in) { return String("\"") + (in ? in : "{null string}") + "\""; }
+
+String toString(bool in) { return in ? "true" : "false"; }
+
+String toString(float in) { return detail::fpToString(in, 5) + "f"; }
+
+String toString(double in) { return detail::fpToString(in, 10); }
+
+String toString(double long in) {
+    char buf[64];
+    sprintf(buf, "%Lf", in);
+    return buf;
+}
+
+String toString(char in) {
+    char buf[64];
+    if(in < ' ')
+        sprintf(buf, "%d", in);
+    else
+        sprintf(buf, "%c", in);
+    return buf;
+}
+
+String toString(char unsigned in) {
+    char buf[64];
+    if(in < ' ')
+        sprintf(buf, "%ud", in);
+    else
+        sprintf(buf, "%c", in);
+    return buf;
+}
+
+String toString(int short in) {
+    char buf[64];
+    sprintf(buf, "%d", in);
+    return buf;
+}
+
+String toString(int short unsigned in) {
+    char buf[64];
+    sprintf(buf, "%u", in);
+    return buf;
+}
+
+String toString(int in) {
+    char buf[64];
+    sprintf(buf, "%d", in);
+    return buf;
+}
+
+String toString(int unsigned in) {
+    char buf[64];
+    sprintf(buf, "%u", in);
+    return buf;
+}
+
+String toString(int long in) {
+    char buf[64];
+    sprintf(buf, "%ld", in);
+    return buf;
+}
+
+String toString(int long unsigned in) {
+    char buf[64];
+    sprintf(buf, "%lu", in);
+    return buf;
+}
+
+#ifdef DOCTEST_CONFIG_WITH_LONG_LONG
+String toString(int long long value) {
+    char buf[64];
+    sprintf(buf, "%lld", in);
+    return buf;
+}
+String toString(int long long unsigned value) {
+    char buf[64];
+    sprintf(buf, "%llu", in);
+    return buf;
+}
+#endif // DOCTEST_CONFIG_WITH_LONG_LONG
+
 // library internals namespace
 namespace detail
 {
@@ -1643,19 +1719,19 @@ namespace detail
     void logTestStart(const char* name, const char* file, unsigned line) {
         const char* newLine = "\n";
 
-        char msg[DOCTEST_SNPRINTF_BUFFER_LENGTH];
-        DOCTEST_SNPRINTF(msg, DOCTEST_COUNTOF(msg), "test: \"%s\"\n", name);
-
         char loc[DOCTEST_SNPRINTF_BUFFER_LENGTH];
         DOCTEST_SNPRINTF(loc, DOCTEST_COUNTOF(loc), "%s(%d)\n", fileForOutput(file), line);
 
+        char msg[DOCTEST_SNPRINTF_BUFFER_LENGTH];
+        DOCTEST_SNPRINTF(msg, DOCTEST_COUNTOF(msg), "test: \"%s\"\n", name);
+
         DOCTEST_PRINTF_COLORED(getSeparator(), Color::Yellow);
-        DOCTEST_PRINTF_COLORED(msg, Color::None);
         DOCTEST_PRINTF_COLORED(loc, Color::LightGrey);
+        DOCTEST_PRINTF_COLORED(msg, Color::None);
         DOCTEST_PRINTF_COLORED(getSeparator(), Color::Yellow);
         DOCTEST_PRINTF_COLORED(newLine, Color::None);
 
-        printToDebugConsole(String(getSeparator()) + msg + loc + getSeparator() + newLine);
+        printToDebugConsole(String(getSeparator()) + loc + msg + getSeparator() + newLine);
     }
 
     void logTestEnd() {}
@@ -2095,7 +2171,7 @@ void Context::addFilter(const char* filter, const char* value) { setOption(filte
 
 // allows the user to override procedurally the int/bool options from the command line
 void Context::setOption(const char* option, int value) {
-    setOption(option, StringMaker<int>::convert(value).c_str());
+    setOption(option, toString(value).c_str());
 }
 
 // allows the user to override procedurally the string options from the command line

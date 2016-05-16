@@ -7,18 +7,18 @@
 #include <exception>
 #include <string>
 #include <vector>
-//#include <ostream>
-//template <typename T>
-//std::ostream& operator<<(std::ostream& s, const std::vector<T>& in) {
-//    s << "[";
-//    for(size_t i = 0; i < in.size(); ++i)
-//        if(i < in.size() - 1)
-//            s << in[i] << ", ";
-//        else
-//            s << in[i];
-//    s << "]";
-//    return s;
-//}
+#include <ostream>
+template <typename T>
+std::ostream& operator<<(std::ostream& s, const std::vector<T>& in) {
+    s << "[";
+    for(size_t i = 0; i < in.size(); ++i)
+        if(i < in.size() - 1)
+            s << in[i] << ", ";
+        else
+            s << in[i];
+    s << "]";
+    return s;
+}
 
 TEST_SUITE("MAIN");
 TEST_CASE("zzz") {
@@ -71,9 +71,9 @@ void nothrows(); // to silence GCC "-Wmissing-declarations"
 void nothrows() {}
 
 TEST_CASE("zzz") {
-    //int a = 5;
-    //int b = 5;
-    //CHECK(&a == &b);
+    int a = 5;
+    int b = 5;
+    CHECK(&a == &b);
 
     CHECK(1);
 
