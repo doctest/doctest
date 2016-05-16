@@ -79,7 +79,6 @@ more comments in source code
 
 - look into https://github.com/Barro/compiler-warnings
 - think about the expression decomposition static asserts
-- VC6 support
 
 - add pledgie campaign in features/roadmap and in the reference
 - examples and test coverage
@@ -119,6 +118,7 @@ more comments in source code
 - Bitwise() class that has overloaded operators for comparison - to be used to check objects bitwise against each other (or maybe not - because of packing!)
 - tagging? also see this: https://github.com/philsquared/Catch/blob/master/docs/test-cases-and-sections.md#special-tags
 - utf8?
+- full support for VC++6 - currently the stringification with ```ostream& operator<<(ostream&, myType)``` is disabled
 - hierarchical test suites? using a stack for the pushed states - should be easy
 - ability to re-run only newly compiled tests - based on timestamps of the __FILE__ in which they are - and stored in some file
 - ability to provide a temp folder to tests that is cleared between them

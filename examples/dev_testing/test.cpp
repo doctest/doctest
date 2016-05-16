@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 #include <ostream>
+
 template <typename T>
 std::ostream& operator<<(std::ostream& s, const std::vector<T>& in) {
     s << "[";
@@ -19,6 +20,17 @@ std::ostream& operator<<(std::ostream& s, const std::vector<T>& in) {
     s << "]";
     return s;
 }
+
+template<typename T, typename T2>
+struct myType { T data; T2 op; };
+
+struct myType2 : myType<int, float> {};
+
+template<typename T, typename T2>
+bool operator==(const myType<T, T2>&, const myType<T, T2>&) { return false; }
+
+template<typename T, typename T2>
+std::ostream& operator<<(std::ostream& s, const myType<T, T2>&) { s << "myType"; return s; }
 
 TEST_SUITE("MAIN");
 TEST_CASE("zzz") {
@@ -33,6 +45,11 @@ TEST_CASE("zzz") {
     vec2.push_back(1);
     vec2.push_back(2);
     vec2.push_back(4);
+
+    myType2 op1;
+    myType2 op2;
+
+    CHECK(op1 == op2);
 
     CHECK(vec1 == vec2);
     //CHECK(vec1 == vec2);

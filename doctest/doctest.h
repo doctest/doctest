@@ -220,15 +220,23 @@ namespace detail
             }
         };
 
-        yes& test(std::ostream&);
-        no   test(no);
+        yes& testStreamable(std::ostream&);
+        no   testStreamable(no);
 
         template <typename T>
         struct has_insertion_operator
         {
             static std::ostream& s;
             static const T&      t;
-            static const bool    value = sizeof(test(s << t)) == sizeof(yes);
+// for anything below Visual Studio 2005 (VC++6 is troublesome - not sure about VS 2003)
+#if defined(_MSC_VER) && _MSC_VER < 1400
+            enum
+            {
+                value
+            };
+#else // _MSC_VER
+            static const bool value = sizeof(testStreamable(s << t)) == sizeof(yes);
+#endif // _MSC_VER
         };
     } // namespace has_insertion_operator_impl
 
@@ -270,10 +278,17 @@ namespace detail
     }
 } // namespace detail
 
+// for anything below Visual Studio 2005 (VC++6 is troublesome - not sure about VS 2003)
+#if defined(_MSC_VER) && _MSC_VER < 1400
+template <typename T>
+struct StringMaker : detail::StringMakerBase<false>
+{};
+#else  // _MSC_VER
 template <typename T>
 struct StringMaker : detail::StringMakerBase<detail::has_insertion_operator<T>::value>
 {};
-
+#endif // _MSC_VER
+/*
 template <typename T>
 struct StringMaker<T*>
 {
@@ -296,6 +311,7 @@ struct StringMaker<R C::*>
             return detail::rawMemoryToString(p);
     }
 };
+*/
 
 template <typename T>
 String toString(const T& value) {
@@ -1054,7 +1070,7 @@ namespace detail
         std::ostringstream oss;
         oss << std::setprecision(precision) << std::fixed << value;
         std::string d = oss.str();
-        std::size_t i = d.find_last_not_of('0');
+        size_t      i = d.find_last_not_of('0');
         if(i != std::string::npos && i != d.size() - 1) {
             if(d[i] == '.')
                 i++;
