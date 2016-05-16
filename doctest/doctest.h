@@ -140,8 +140,6 @@ extern "C" __declspec(dllimport) void __stdcall DebugBreak();
 #include <ciso646>
 #endif // __clang__
 
-#define DOCTEST_CONFIG_USE_IOSFWD
-
 #ifdef _LIBCPP_VERSION
 #include <iosfwd>
 #else // _LIBCPP_VERSION
@@ -160,6 +158,7 @@ typedef basic_ostream<char, char_traits<char> > ostream;
 #include <iosfwd>
 #endif // DOCTEST_CONFIG_USE_IOSFWD
 #endif // _LIBCPP_VERSION
+
 namespace doctest
 {
 class String
@@ -187,8 +186,6 @@ public:
     int compare(const char* other, bool no_case = false) const;
     int compare(const String& other, bool no_case = false) const;
 };
-
-#if !defined(DOCTEST_CONFIG_DISABLE)
 
 namespace detail
 {
@@ -233,33 +230,90 @@ namespace detail
     struct has_insertion_operator : has_insertion_operator_impl::has_insertion_operator<T>
     {};
 
-    // enable_if for c++98
-    template <bool, typename T = void>
-    struct my_enable_if
-    {};
-
-    template <typename T>
-    struct my_enable_if<true, T>
-    { typedef T value; };
-
     std::ostream* createStream();
     String        getStreamResult(std::ostream*);
     void          freeStream(std::ostream*);
 
-    template <class T>
-    typename my_enable_if<has_insertion_operator<T>::value, String>::value stringify(const T& in) {
-        std::ostream* stream = createStream();
-        *stream << in;
-        String result = getStreamResult(stream);
-        freeStream(stream);
-        return result;
-    }
+    template <bool C>
+    struct StringMakerBase
+    {
+        template <typename T>
+        static String convert(T const&) {
+            return "{?}";
+        }
+    };
 
-    template <class T>
-    typename my_enable_if<!has_insertion_operator<T>::value, String>::value stringify(const T&) {
-        return "{?}";
-    }
+    template <>
+    struct StringMakerBase<true>
+    {
+        template <typename T>
+        static String convert(T const& in) {
+            std::ostream* stream = createStream();
+            *stream << in;
+            String result = getStreamResult(stream);
+            freeStream(stream);
+            return result;
+        }
+    };
 
+    String rawMemoryToString(const void* object, unsigned size);
+
+    template <typename T>
+    String rawMemoryToString(const T& object) {
+        return rawMemoryToString(&object, sizeof(object));
+    }
+} // namespace detail
+
+template <typename T>
+struct StringMaker : detail::StringMakerBase<detail::has_insertion_operator<T>::value>
+{};
+
+template <typename T>
+struct StringMaker<T*>
+{
+    template <typename U>
+    static String convert(U* p) {
+        if(!p)
+            return "NULL";
+        else
+            return detail::rawMemoryToString(p);
+    }
+};
+
+template <typename R, typename C>
+struct StringMaker<R C::*>
+{
+    static String convert(R C::*p) {
+        if(!p)
+            return "NULL";
+        else
+            return detail::rawMemoryToString(p);
+    }
+};
+
+template <typename T>
+String toString(const T& value);
+
+String toString(const char* value);
+String toString(int value);
+String toString(unsigned long value);
+String toString(unsigned int value);
+String toString(double value);
+String toString(float value);
+String toString(bool value);
+String toString(char value);
+String toString(signed char value);
+String toString(unsigned char value);
+
+#ifdef DOCTEST_CONFIG_WITH_LONG_LONG
+String toString(long long value);
+String toString(long long unsigned value);
+#endif
+
+#if !defined(DOCTEST_CONFIG_DISABLE)
+
+namespace detail
+{
     // the function type this library works with
     typedef void (*funcType)(void);
 
@@ -375,7 +429,7 @@ namespace detail
 
     template <typename L, typename R>
     String stringifyBinaryExpr(const L& lhs, const char* op, const R& rhs) {
-        return stringify(lhs) + " " + op + " " + stringify(rhs);
+        return StringMaker<L>::convert(lhs) + " " + op + " " + StringMaker<R>::convert(rhs);
     }
 
     // TODO: think about this
@@ -428,7 +482,7 @@ namespace detail
         Expression_lhs(const Expression_lhs& other)
                 : lhs(other.lhs) {}
 
-        operator Result() { return Result(!!lhs, stringify(lhs)); }
+        operator Result() { return Result(!!lhs, StringMaker<L>::convert(lhs)); }
 
         // clang-format off
         template <typename R> Result operator==(const R& rhs) { return Result(lhs == rhs, stringifyBinaryExpr(lhs, "==", rhs)); }
@@ -569,15 +623,9 @@ public:
 // if registering is not disabled
 #if !defined(DOCTEST_CONFIG_DISABLE)
 
-//std::ostream& operator<<(std::ostream&, bool val);
-
-//template int function_name<int>(int);
-
 // in the global namespace - for details see this - http://stackoverflow.com/questions/37139784/
-doctest::detail::has_insertion_operator_impl::no operator<<(std::ostream&, const doctest::detail::has_insertion_operator_impl::any_t&);
-
-template doctest::String doctest::detail::stringify<bool>(const bool&);
-
+doctest::detail::has_insertion_operator_impl::no operator<<(
+        std::ostream&, const doctest::detail::has_insertion_operator_impl::any_t&);
 
 //static int crap
 
@@ -593,8 +641,6 @@ template doctest::String doctest::detail::stringify<bool>(const bool&);
 //std::ostream& operator<< (std::ostream&, void* val);
 
 //std::ostream& operator<<(std::ostream&, const char*);
-
-
 
 //std::ostream& operator<<(std::ostream&, bool);
 //std::ostream& operator<<(std::ostream&, int);
@@ -977,15 +1023,7 @@ int  Context::run() { return 0; }
 #include <cstring> // strcpy, strtok, strrchr, strncmp
 #include <new>     // placement new (can be skipped if the containers require 'construct()' from T)
 #include <sstream> // ostream, ostringstream
-
-//std::ostream& operator<<(std::ostream& s, const char*) {
-//    //s << in;
-//    return s;
-//}
-
-std::ostream& operator<<(std::ostream& s, bool in) {
-    return s.operator<<(in);
-}
+#include <iomanip> // setfill, setw
 
 // the number of buckets used for the hash set
 #if !defined(DOCTEST_HASH_TABLE_NUM_BUCKETS)
@@ -1034,6 +1072,42 @@ namespace doctest
 // library internals namespace
 namespace detail
 {
+    struct Endianness
+    {
+        enum Arch
+        {
+            Big,
+            Little
+        };
+
+        static Arch which() {
+            union _
+            {
+                int  asInt;
+                char asChar[sizeof(int)];
+            } u;
+
+            u.asInt = 1;
+            return (u.asChar[sizeof(int) - 1] == 1) ? Big : Little;
+        }
+    };
+
+    String rawMemoryToString(const void* object, unsigned size) {
+        // Reverse order for little endian architectures
+        int i = 0, end = static_cast<int>(size), inc = 1;
+        if(Endianness::which() == Endianness::Little) {
+            i   = end - 1;
+            end = inc = -1;
+        }
+
+        unsigned char const* bytes = static_cast<unsigned char const*>(object);
+        std::ostringstream   os;
+        os << "0x" << std::setfill('0') << std::hex;
+        for(; i != end; i += inc)
+            os << std::setw(2) << static_cast<unsigned>(bytes[i]);
+        return os.str().c_str();
+    }
+
     std::ostream* createStream() { return new std::ostringstream(); }
     String getStreamResult(std::ostream* in) {
         return static_cast<std::ostringstream*>(in)->str().c_str();
@@ -2021,7 +2095,7 @@ void Context::addFilter(const char* filter, const char* value) { setOption(filte
 
 // allows the user to override procedurally the int/bool options from the command line
 void Context::setOption(const char* option, int value) {
-    setOption(option, detail::stringify(value).c_str());
+    setOption(option, StringMaker<int>::convert(value).c_str());
 }
 
 // allows the user to override procedurally the string options from the command line

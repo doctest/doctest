@@ -65,6 +65,8 @@ The library can be used like any other even if you are not fond of the idea of m
 
 ## TODO for release
 
+tdd in c++?
+
 switch loc and msg in logTestStart
 
 - assume dt- prefix is not needed - remove from the help
