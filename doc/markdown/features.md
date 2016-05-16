@@ -74,8 +74,6 @@ more comments in source code
 - print sections when asserts fail (look if catch does that)
 
 - floating point comparison support
-- signal handling for unix: http://www.cplusplus.com/reference/csignal/signal/
-(signals on *NIX platforms or structured exceptions on Windows)
 
 - look into https://github.com/Barro/compiler-warnings
 - think about the expression decomposition static asserts
@@ -88,6 +86,7 @@ more comments in source code
 - research bountysource/patreon
 
 ## FUTURE
+- crash handling: signals on UNIX platforms or structured exceptions on Windows
 - add support for tags - like Catch
 - support for predicates (or zip or whatever)
 - make a compact reporter

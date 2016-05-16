@@ -24,7 +24,7 @@ std::ostream& operator<<(std::ostream& s, const std::vector<T>& in) {
 template<typename T, typename T2>
 struct myType { T data; T2 op; };
 
-struct myType2 : myType<int, float> {};
+//struct myType2 : myType<int, float> {};
 
 template<typename T, typename T2>
 bool operator==(const myType<T, T2>&, const myType<T, T2>&) { return false; }
@@ -46,8 +46,8 @@ TEST_CASE("zzz") {
     vec2.push_back(2);
     vec2.push_back(4);
 
-    myType2 op1;
-    myType2 op2;
+    myType<int, float> op1;
+    myType<int, float> op2;
 
     CHECK(op1 == op2);
 
