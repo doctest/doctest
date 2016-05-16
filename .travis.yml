@@ -13,6 +13,7 @@ notifications:
 git:
   depth: 5
 
+# both apt and ccache make the builds slower...
 #cache:
 #  - apt
 #  - ccache

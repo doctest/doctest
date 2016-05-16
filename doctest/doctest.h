@@ -67,12 +67,12 @@
 #define DOCTEST_VERSION "1.0.0"
 
 // internal macros for string concatenation and anonymous variable name generation
-#define DOCTEST_STR_CONCAT_IMPL(s1, s2) s1##s2
-#define DOCTEST_STR_CONCAT(s1, s2) DOCTEST_STR_CONCAT_IMPL(s1, s2)
+#define DOCTEST_CONCAT_IMPL(s1, s2) s1##s2
+#define DOCTEST_CONCAT(s1, s2) DOCTEST_CONCAT_IMPL(s1, s2)
 #ifdef __COUNTER__ // not standard and may be missing for some compilers
-#define DOCTEST_ANONYMOUS(x) DOCTEST_STR_CONCAT(x, __COUNTER__)
+#define DOCTEST_ANONYMOUS(x) DOCTEST_CONCAT(x, __COUNTER__)
 #else // __COUNTER__
-#define DOCTEST_ANONYMOUS(x) DOCTEST_STR_CONCAT(x, __LINE__)
+#define DOCTEST_ANONYMOUS(x) DOCTEST_CONCAT(x, __LINE__)
 #endif // __COUNTER__
 
 // internal macro for making a string
@@ -80,7 +80,7 @@
 #define DOCTEST_TOSTR(x) DOCTEST_TOSTR_IMPL(x)
 
 // internal macro for concatenating 2 literals and making the result a string
-#define DOCTEST_STR_CONCAT_TOSTR(s1, s2) DOCTEST_TOSTR(DOCTEST_STR_CONCAT(s1, s2))
+#define DOCTEST_STR_CONCAT_TOSTR(s1, s2) DOCTEST_TOSTR(s1) DOCTEST_TOSTR(s2)
 
 // not using __APPLE__ because... this is how Catch does it
 #if defined(__MAC_OS_X_VERSION_MIN_REQUIRED)
@@ -247,7 +247,7 @@ namespace detail
             {
                 value
             };
-#else  // _MSC_VER
+#else // _MSC_VER
             static const bool value = sizeof(testStreamable(s << t)) == sizeof(yes);
 #endif // _MSC_VER
         };
@@ -574,7 +574,7 @@ namespace detail
 
         detail::Vector<detail::Vector<String> > filters;
 
-        String   sort;      // how tests should be sorted
+        String   order_by;  // how tests should be ordered
         unsigned rand_seed; // the seed for rand ordering
 
         unsigned first; // the first (matching) test to be executed
@@ -595,7 +595,8 @@ namespace detail
         bool help;                 // to print the help
         bool version;              // to print the version
         bool count;                // if only the count of matching tests is to be retreived
-        bool list_tests;           // to list all tests matching the filters
+        bool list_test_cases;      // to list all tests matching the filters
+        bool list_test_suites;     // to list all suites matching the filters
         bool hash_table_histogram; // if the hash table should be printed as a histogram
 
         // == data for the tests being ran
@@ -1955,9 +1956,7 @@ namespace detail
 
     // parses an int/bool option from the command line
     bool parseIntOption(int argc, const char* const* argv, const char* pattern, optionType type,
-                        int& res, int defaultVal = int()) {
-        res = defaultVal;
-
+                        int& res) {
         String parsedValue;
         if(parseOption(argc, argv, pattern, parsedValue)) {
             if(type == 0) {
@@ -2016,16 +2015,17 @@ namespace detail
         printf(" -dt-help  (also \"-dt-?\"/\"-dt-h\") prints this message and exits\n");
         printf(" -dt-version                      prints the version and exits\n");
         printf(" -dt-count                        prints the number of matching tests and exits\n");
-        printf(" -dt-list-tests                   lists all matching tests by name and exits\n");
-        //printf(" -dt-hash-table-histogram         undocumented\n");
+        printf(" -dt-list-test-cases              lists all matching tests by name and exits\n");
+        printf(" -dt-list-test-suites             lists all matching test suites and exits\n");
+        printf(" -dt-hash-table-histogram         undocumented\n");
         // ==================================================================================== << 79
         printf(" -dt-name=<filters>               filters     tests by their name\n");
         printf(" -dt-name-exclude=<filters>       filters OUT tests by their name\n");
         printf(" -dt-file=<filters>               filters     tests by their file\n");
         printf(" -dt-file-exclude=<filters>       filters OUT tests by their file\n");
-        printf(" -dt-test-suite=<filters>         filters     tests by their test suite\n");
+        printf(" -dt-test-suite=<filters>         filternos     tests by their test suite\n");
         printf(" -dt-test-suite-exclude=<filters> filters OUT tests by their test suite\n");
-        printf(" -dt-sort=<string>                how the tests should be sorted\n");
+        printf(" -dt-order-by=<string>            how the tests should be ordered\n");
         printf("                                  <string> - by [file/suite/name/rand]\n");
         printf(" -dt-rand-seed=<int>              seed for random ordering\n");
         printf(" -dt-first=<int>                  the first test passing the filters to\n");
@@ -2118,26 +2118,31 @@ Context::Context(int argc, const char* const* argv) {
     p.help                 = false;
     p.version              = false;
     p.count                = false;
-    p.list_tests           = false;
+    p.list_test_cases      = false;
+    p.list_test_suites     = false;
     p.hash_table_histogram = false;
     if(parseFlag(argc, argv, "dt-help") || parseFlag(argc, argv, "dt-h") ||
        parseFlag(argc, argv, "dt-?")) {
         p.help = true;
         p.exit = true;
     }
-    if(parseFlag(argc, argv, "dt-version")) {
+    if(parseFlag(argc, argv, "dt-version") || parseFlag(argc, argv, "dt-v")) {
         p.version = true;
         p.exit    = true;
     }
-    if(parseFlag(argc, argv, "dt-count")) {
+    if(parseFlag(argc, argv, "dt-count") || parseFlag(argc, argv, "dt-c")) {
         p.count = true;
         p.exit  = true;
     }
-    if(parseFlag(argc, argv, "dt-list-tests")) {
-        p.list_tests = true;
-        p.exit       = true;
+    if(parseFlag(argc, argv, "dt-list-test-cases") || parseFlag(argc, argv, "dt-ltc")) {
+        p.list_test_cases = true;
+        p.exit            = true;
     }
-    if(parseFlag(argc, argv, "dt-hash-table-histogram")) {
+    if(parseFlag(argc, argv, "dt-list-test-suites") || parseFlag(argc, argv, "dt-lts")) {
+        p.list_test_suites = true;
+        p.exit             = true;
+    }
+    if(parseFlag(argc, argv, "dt-hash-table-histogram") || parseFlag(argc, argv, "dt-hth")) {
         p.hash_table_histogram = true;
         p.exit                 = true;
     }
@@ -2147,48 +2152,70 @@ Context::Context(int argc, const char* const* argv) {
 void Context::parseArgs(int argc, const char* const* argv, bool withDefaults) {
     using namespace detail;
 
-    parseCommaSepArgs(argc, argv, "dt-file=", p.filters[0]);
-    parseCommaSepArgs(argc, argv, "dt-file-exclude=", p.filters[1]);
-    parseCommaSepArgs(argc, argv, "dt-test-suite=", p.filters[2]);
+    // clang-format off
+    parseCommaSepArgs(argc, argv, "dt-file=",               p.filters[0]);
+    parseCommaSepArgs(argc, argv, "dt-f=",                  p.filters[0]);
+    parseCommaSepArgs(argc, argv, "dt-file-exclude=",       p.filters[1]);
+    parseCommaSepArgs(argc, argv, "dt-fe=",                 p.filters[1]);
+    parseCommaSepArgs(argc, argv, "dt-test-suite=",         p.filters[2]);
+    parseCommaSepArgs(argc, argv, "dt-ts=",                 p.filters[2]);
     parseCommaSepArgs(argc, argv, "dt-test-suite-exclude=", p.filters[3]);
-    parseCommaSepArgs(argc, argv, "dt-name=", p.filters[4]);
-    parseCommaSepArgs(argc, argv, "dt-name-exclude=", p.filters[5]);
+    parseCommaSepArgs(argc, argv, "dt-tse=",                p.filters[3]);
+    parseCommaSepArgs(argc, argv, "dt-name=",               p.filters[4]);
+    parseCommaSepArgs(argc, argv, "dt-n=",                  p.filters[4]);
+    parseCommaSepArgs(argc, argv, "dt-name-exclude=",       p.filters[5]);
+    parseCommaSepArgs(argc, argv, "dt-ne=",                 p.filters[5]);
+    // clang-format on
 
     int    intRes = 0;
     String strRes;
 
-#define DOCTEST_PARSE_BOOL_OPTION(name, var, default)                                              \
-    if(parseIntOption(argc, argv, name, option_bool, intRes, default) || withDefaults)             \
-    p.var = !!intRes
+#define DOCTEST_PARSE_AS_BOOL_OR_FLAG(name, sname, var, default)                                   \
+    if(parseIntOption(argc, argv, DOCTEST_STR_CONCAT_TOSTR(name, =), option_bool, intRes) ||       \
+       parseIntOption(argc, argv, DOCTEST_STR_CONCAT_TOSTR(sname, =), option_bool, intRes))        \
+        p.var = !!intRes;                                                                          \
+    else if(parseFlag(argc, argv, #name) || parseFlag(argc, argv, #sname))                         \
+        p.var = 1;                                                                                 \
+    else if(withDefaults)                                                                          \
+    p.var = default
 
-#define DOCTEST_PARSE_INT_OPTION(name, var, default)                                               \
-    if(parseIntOption(argc, argv, name, option_int, intRes, default) || withDefaults)              \
-    p.var = intRes
+#define DOCTEST_PARSE_INT_OPTION(name, sname, var, default)                                        \
+    if(parseIntOption(argc, argv, DOCTEST_STR_CONCAT_TOSTR(name, =), option_int, intRes) ||        \
+       parseIntOption(argc, argv, DOCTEST_STR_CONCAT_TOSTR(sname, =), option_int, intRes))         \
+        p.var = intRes;                                                                            \
+    else if(withDefaults)                                                                          \
+    p.var = default
 
-#define DOCTEST_PARSE_STR_OPTION(name, var, default)                                               \
-    if(parseOption(argc, argv, name, strRes, default) || withDefaults)                             \
+#define DOCTEST_PARSE_STR_OPTION(name, sname, var, default)                                        \
+    if(parseOption(argc, argv, DOCTEST_STR_CONCAT_TOSTR(name, =), strRes, default) ||              \
+       parseOption(argc, argv, DOCTEST_STR_CONCAT_TOSTR(sname, =), strRes, default) ||             \
+       withDefaults)                                                                               \
     p.var = strRes
 
-    DOCTEST_PARSE_STR_OPTION("dt-sort=", sort, "file");
-    DOCTEST_PARSE_INT_OPTION("dt-rand-seed=", rand_seed, 0);
+    // clang-format off
+    DOCTEST_PARSE_STR_OPTION(dt-order-by, dt-ob, order_by, "file");
+    DOCTEST_PARSE_INT_OPTION(dt-rand-seed, dt-rs, rand_seed, 0);
 
-    DOCTEST_PARSE_INT_OPTION("dt-first=", first, 1);
-    DOCTEST_PARSE_INT_OPTION("dt-last=", last, 0);
+    DOCTEST_PARSE_INT_OPTION(dt-first, dt-f, first, 1);
+    DOCTEST_PARSE_INT_OPTION(dt-last, dt-l, last, 0);
 
-    DOCTEST_PARSE_INT_OPTION("dt-abort-after=", abort_after, 0);
-    DOCTEST_PARSE_BOOL_OPTION("dt-success=", success, 0);
-    DOCTEST_PARSE_BOOL_OPTION("dt-case-sensitive=", case_sensitive, 0);
-    DOCTEST_PARSE_BOOL_OPTION("dt-exit=", exit, 0);
-    DOCTEST_PARSE_BOOL_OPTION("dt-no-overrides=", no_overrides, 0);
-    DOCTEST_PARSE_BOOL_OPTION("dt-no-throw=", no_throw, 0);
-    DOCTEST_PARSE_BOOL_OPTION("dt-no-exitcode=", no_exitcode, 0);
-    DOCTEST_PARSE_BOOL_OPTION("dt-no-run=", no_run, 0);
-    DOCTEST_PARSE_BOOL_OPTION("dt-no-colors=", no_colors, 0);
-    DOCTEST_PARSE_BOOL_OPTION("dt-no-breaks=", no_breaks, 0);
-    DOCTEST_PARSE_BOOL_OPTION("dt-no-path-in-filenames=", no_path_in_filenames, 0);
+    DOCTEST_PARSE_INT_OPTION(dt-abort-after, dt-aa, abort_after, 0);
+
+    DOCTEST_PARSE_AS_BOOL_OR_FLAG(dt-success, dt-s, success, 0);
+    DOCTEST_PARSE_AS_BOOL_OR_FLAG(dt-case-sensitive, dt-cs, case_sensitive, 0);
+    DOCTEST_PARSE_AS_BOOL_OR_FLAG(dt-exit, dt-e, exit, 0);
+    DOCTEST_PARSE_AS_BOOL_OR_FLAG(dt-no-overrides, dt-no, no_overrides, 0);
+    DOCTEST_PARSE_AS_BOOL_OR_FLAG(dt-no-throw, dt-nt, no_throw, 0);
+    DOCTEST_PARSE_AS_BOOL_OR_FLAG(dt-no-exitcode, dt-ne, no_exitcode, 0);
+    DOCTEST_PARSE_AS_BOOL_OR_FLAG(dt-no-run, dt-nr, no_run, 0);
+    DOCTEST_PARSE_AS_BOOL_OR_FLAG(dt-no-colors, dt-nc, no_colors, 0);
+    DOCTEST_PARSE_AS_BOOL_OR_FLAG(dt-no-breaks, dt-nb, no_breaks, 0);
+    DOCTEST_PARSE_AS_BOOL_OR_FLAG(dt-no-path-in-filenames, dt-npif, no_path_in_filenames, 0);
+// clang-format on
 
 #undef DOCTEST_PARSE_STR_OPTION
 #undef DOCTEST_PARSE_INT_OPTION
+#undef DOCTEST_PARSE_AS_BOOL_OR_FLAG
 }
 
 // allows the user to add procedurally to the filters from the command line
@@ -2269,13 +2296,13 @@ int Context::run() {
     }
 
     // sort the collected records
-    if(p.sort.compare("file") == 0) {
+    if(p.order_by.compare("file") == 0) {
         qsort(testArray.data(), testArray.size(), sizeof(TestData*), fileOrderComparator);
-    } else if(p.sort.compare("suite") == 0) {
+    } else if(p.order_by.compare("suite") == 0) {
         qsort(testArray.data(), testArray.size(), sizeof(TestData*), suiteOrderComparator);
-    } else if(p.sort.compare("name") == 0) {
+    } else if(p.order_by.compare("name") == 0) {
         qsort(testArray.data(), testArray.size(), sizeof(TestData*), nameOrderComparator);
-    } else if(p.sort.compare("rand") == 0) {
+    } else if(p.order_by.compare("rand") == 0) {
         srand(p.rand_seed);
 
         // random_shuffle implementation
@@ -2290,9 +2317,14 @@ int Context::run() {
         }
     }
 
-    if(p.list_tests) {
+    if(p.list_test_cases) {
         DOCTEST_PRINTF_COLORED("[doctest] ", Color::Cyan);
-        printf("listing all test names\n");
+        printf("listing all test case names\n");
+    }
+
+    if(p.list_test_suites) {
+        DOCTEST_PRINTF_COLORED("[doctest] ", Color::Cyan);
+        printf("listing all test case names\n");
     }
 
     unsigned numTestsPassingFilters = 0;
@@ -2320,7 +2352,7 @@ int Context::run() {
             continue;
 
         // print the name of the test and don't execute it
-        if(p.list_tests) {
+        if(p.list_test_cases) {
             printf("%s\n", data.m_name.c_str());
             continue;
         }
@@ -2387,7 +2419,7 @@ int Context::run() {
     }
 
     DOCTEST_PRINTF_COLORED(getSeparator(), Color::Yellow);
-    if(p.count || p.list_tests) {
+    if(p.count || p.list_test_cases || p.list_test_suites) {
         DOCTEST_PRINTF_COLORED("[doctest] ", Color::Cyan);
         printf("number of tests passing the current filters: %d\n", numTestsPassingFilters);
     } else {
