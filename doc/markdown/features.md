@@ -68,6 +68,8 @@ The library can be used like any other even if you are not fond of the idea of m
 tdd in c++?
 more comments in source code
 
+try removing the apt cache - to see if builds will be faster
+
 - assume dt- prefix is not needed - remove from the help
 - even shorter versions of command line options
 - add the ability to not specify bool values for command line options - treat them as true

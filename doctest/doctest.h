@@ -222,7 +222,20 @@ namespace detail
 
         yes& testStreamable(std::ostream&);
         no   testStreamable(no);
+    } // namespace has_insertion_operator_impl
+} // namespace detail
+} // namespace doctest
 
+// in the global namespace - for details see this - http://stackoverflow.com/questions/37139784/
+doctest::detail::has_insertion_operator_impl::no operator<<(
+        std::ostream&, const doctest::detail::has_insertion_operator_impl::any_t&);
+
+namespace doctest
+{
+namespace detail
+{
+    namespace has_insertion_operator_impl
+    {
         template <typename T>
         struct has_insertion_operator
         {
@@ -234,7 +247,7 @@ namespace detail
             {
                 value
             };
-#else // _MSC_VER
+#else  // _MSC_VER
             static const bool value = sizeof(testStreamable(s << t)) == sizeof(yes);
 #endif // _MSC_VER
         };
@@ -650,10 +663,6 @@ public:
 
 // if registering is not disabled
 #if !defined(DOCTEST_CONFIG_DISABLE)
-
-// in the global namespace - for details see this - http://stackoverflow.com/questions/37139784/
-doctest::detail::has_insertion_operator_impl::no operator<<(
-        std::ostream&, const doctest::detail::has_insertion_operator_impl::any_t&);
 
 // registers the test by initializing a dummy var with a function
 #if defined(__GNUC__) && !defined(__clang__)

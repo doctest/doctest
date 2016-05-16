@@ -13,8 +13,8 @@ notifications:
 git:
   depth: 5
 
-cache:
-  - apt
+#cache:
+#  - apt
 #  - ccache
 
 env:
