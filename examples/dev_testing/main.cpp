@@ -33,7 +33,7 @@ TEST_CASE("zzz") {
     vec2.push_back(2);
     vec2.push_back(4);
 
-    CHECK(vec1 == vec2);
+    //CHECK(vec1 == vec2);
 }
 
 int main(int argc, char** argv) {

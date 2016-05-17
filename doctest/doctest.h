@@ -301,7 +301,9 @@ template <typename T>
 struct StringMaker : detail::StringMakerBase<detail::has_insertion_operator<T>::value>
 {};
 #endif // _MSC_VER
-/*
+
+// not for anything below Visual Studio 2005 (VC++6 is troublesome - not sure about VS 2003)
+#if defined(_MSC_VER) && _MSC_VER >= 1400
 template <typename T>
 struct StringMaker<T*>
 {
@@ -324,7 +326,7 @@ struct StringMaker<R C::*>
             return detail::rawMemoryToString(p);
     }
 };
-*/
+#endif // _MSC_VER
 
 template <typename T>
 String toString(const T& value) {
@@ -357,6 +359,24 @@ namespace detail
 {
     // the function type this library works with
     typedef void (*funcType)(void);
+
+// not for anything below Visual Studio 2005 (VC++6 has no SFINAE - not sure about VS 2003)
+#if !defined(_MSC_VER) || _MSC_VER >= 1400
+    // clang-format off
+    template<class T>               struct decay_array       { typedef T type; };
+    template<class T, unsigned N>   struct decay_array<T[N]> { typedef T* type; };
+    template<class T>               struct decay_array<T[]>  { typedef T* type; };
+
+    template<class T>   struct not_char_pointer              { enum { value = true }; };
+    template<>          struct not_char_pointer<char*>       { enum { value = false }; };
+    template<>          struct not_char_pointer<const char*> { enum { value = false }; };
+
+    template<class T> struct can_use_op : not_char_pointer<typename decay_array<T>::type> {};
+
+    template<bool, class = void> struct enable_if {};
+    template<class T> struct enable_if<true, T> { typedef T type; };
+// clang-format on
+#endif // _MSC_VER
 
     struct TestFailureException
     {};
@@ -512,6 +532,40 @@ namespace detail
         // clang-format on
     };
 
+// clang-format off
+
+// for anything below Visual Studio 2005 (VC++6 has no SFINAE - not sure about VS 2003)
+#if defined(_MSC_VER) && _MSC_VER < 1400
+    template <typename L, typename R> bool eq (const L& lhs, const R& rhs) { return lhs == rhs; }
+    template <typename L, typename R> bool neq(const L& lhs, const R& rhs) { return lhs != rhs; }
+    template <typename L, typename R> bool lt (const L& lhs, const R& rhs) { return lhs < rhs; }
+    template <typename L, typename R> bool gt (const L& lhs, const R& rhs) { return lhs > rhs; }
+    template <typename L, typename R> bool lte(const L& lhs, const R& rhs) { return eq(lhs, rhs) != 0 ? lhs < rhs : true; }
+    template <typename L, typename R> bool gte(const L& lhs, const R& rhs) { return eq(lhs, rhs) != 0 ? lhs > rhs : true; }
+#else // _MSC_VER
+    template <typename L, typename R>
+    typename enable_if<can_use_op<L>::value || can_use_op<R>::value, bool>::type eq (const L& lhs, const R& rhs) { return lhs == rhs; }
+    template <typename L, typename R>
+    typename enable_if<can_use_op<L>::value || can_use_op<R>::value, bool>::type neq(const L& lhs, const R& rhs) { return lhs != rhs; }
+    template <typename L, typename R>
+    typename enable_if<can_use_op<L>::value || can_use_op<R>::value, bool>::type lt (const L& lhs, const R& rhs) { return lhs < rhs; }
+    template <typename L, typename R>
+    typename enable_if<can_use_op<L>::value || can_use_op<R>::value, bool>::type gt (const L& lhs, const R& rhs) { return lhs > rhs; }
+    template <typename L, typename R>
+    typename enable_if<can_use_op<L>::value || can_use_op<R>::value, bool>::type lte(const L& lhs, const R& rhs) { return neq(lhs, rhs) ? lhs < rhs : true; }
+    template <typename L, typename R>
+    typename enable_if<can_use_op<L>::value || can_use_op<R>::value, bool>::type gte(const L& lhs, const R& rhs) { return neq(lhs, rhs) ? lhs > rhs : true; }
+
+    inline bool eq (const char* lhs, const char* rhs) { return String(lhs).compare(rhs) == 0; }
+    inline bool neq(const char* lhs, const char* rhs) { return String(lhs).compare(rhs) != 0; }
+    inline bool lt (const char* lhs, const char* rhs) { return String(lhs).compare(rhs) < 0; }
+    inline bool gt (const char* lhs, const char* rhs) { return String(lhs).compare(rhs) > 0; }
+    inline bool lte(const char* lhs, const char* rhs) { return neq(lhs, rhs) ? String(lhs).compare(rhs) < 0 : true; }
+    inline bool gte(const char* lhs, const char* rhs) { return neq(lhs, rhs) ? String(lhs).compare(rhs) > 0 : true; }
+#endif // _MSC_VER
+
+    // clang-format on
+
     template <typename L>
     struct Expression_lhs
     {
@@ -526,12 +580,12 @@ namespace detail
         operator Result() { return Result(!!lhs, toString(lhs)); }
 
         // clang-format off
-        template <typename R> Result operator==(const R& rhs) { return Result(lhs == rhs, stringifyBinaryExpr(lhs, "==", rhs)); }
-        template <typename R> Result operator!=(const R& rhs) { return Result(lhs != rhs, stringifyBinaryExpr(lhs, "!=", rhs)); }
-        template <typename R> Result operator< (const R& rhs) { return Result(lhs <  rhs, stringifyBinaryExpr(lhs, "<",  rhs)); }
-        template <typename R> Result operator<=(const R& rhs) { return Result(lhs <= rhs, stringifyBinaryExpr(lhs, "<=", rhs)); }
-        template <typename R> Result operator> (const R& rhs) { return Result(lhs >  rhs, stringifyBinaryExpr(lhs, ">",  rhs)); }
-        template <typename R> Result operator>=(const R& rhs) { return Result(lhs >= rhs, stringifyBinaryExpr(lhs, ">=", rhs)); }
+        template <typename R> Result operator==(const R& rhs) { return Result(eq (lhs, rhs), stringifyBinaryExpr(lhs, "==", rhs)); }
+        template <typename R> Result operator!=(const R& rhs) { return Result(neq(lhs, rhs), stringifyBinaryExpr(lhs, "!=", rhs)); }
+        template <typename R> Result operator< (const R& rhs) { return Result(lt (lhs, rhs), stringifyBinaryExpr(lhs, "<" , rhs)); }
+        template <typename R> Result operator<=(const R& rhs) { return Result(lte(lhs, rhs), stringifyBinaryExpr(lhs, "<=", rhs)); }
+        template <typename R> Result operator> (const R& rhs) { return Result(gt (lhs, rhs), stringifyBinaryExpr(lhs, ">" , rhs)); }
+        template <typename R> Result operator>=(const R& rhs) { return Result(gte(lhs, rhs), stringifyBinaryExpr(lhs, ">=", rhs)); }
         // clang-format on
     };
 
