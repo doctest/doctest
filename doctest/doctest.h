@@ -349,8 +349,8 @@ String toString(int long in);
 String toString(int long unsigned in);
 
 #ifdef DOCTEST_CONFIG_WITH_LONG_LONG
-String toString(int long long value);
-String toString(int long long unsigned value);
+String toString(int long long in);
+String toString(int long long unsigned in);
 #endif // DOCTEST_CONFIG_WITH_LONG_LONG
 
 #if !defined(DOCTEST_CONFIG_DISABLE)
@@ -1213,12 +1213,12 @@ String toString(int long unsigned in) {
 }
 
 #ifdef DOCTEST_CONFIG_WITH_LONG_LONG
-String toString(int long long value) {
+String toString(int long long in) {
     char buf[64];
     sprintf(buf, "%lld", in);
     return buf;
 }
-String toString(int long long unsigned value) {
+String toString(int long long unsigned in) {
     char buf[64];
     sprintf(buf, "%llu", in);
     return buf;
