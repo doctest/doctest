@@ -65,7 +65,6 @@ The library can be used like any other even if you are not fond of the idea of m
 
 ## TODO for release
 
-- implement list_test_cases
 - assume dt- prefix is not needed - remove from the help
 - print sections when asserts fail (look if catch does that)
 

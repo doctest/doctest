@@ -193,6 +193,15 @@ public:
     int compare(const String& other, bool no_case = false) const;
 };
 
+// clang-format off
+inline bool operator==(const String& lhs, const String& rhs) { return lhs.compare(rhs) == 0; }
+inline bool operator!=(const String& lhs, const String& rhs) { return lhs.compare(rhs) != 0; }
+inline bool operator< (const String& lhs, const String& rhs) { return lhs.compare(rhs) < 0; }
+inline bool operator> (const String& lhs, const String& rhs) { return lhs.compare(rhs) > 0; }
+inline bool operator<=(const String& lhs, const String& rhs) { return (lhs != rhs) ? lhs.compare(rhs) < 0 : true; }
+inline bool operator>=(const String& lhs, const String& rhs) { return (lhs != rhs) ? lhs.compare(rhs) > 0 : true; }
+// clang-format on
+
 namespace detail
 {
     template <bool>
@@ -390,9 +399,9 @@ namespace detail
     struct TestData
     {
         // not used for determining uniqueness
-        String   m_suite; // the test suite in which the test was added
-        String   m_name;  // name of the test function
-        funcType m_f;     // a function pointer to the test function
+        const char* m_suite; // the test suite in which the test was added
+        const char* m_name;  // name of the test function
+        funcType    m_f;     // a function pointer to the test function
 
         // fields by which uniqueness of test cases shall be determined
         const char* m_file; // the file in which the test was registered
@@ -474,7 +483,7 @@ namespace detail
 
     struct Subcase
     {
-        String      m_name;
+        const char* m_name;
         const char* m_file;
         int         m_line;
         bool        m_entered;
@@ -555,13 +564,13 @@ namespace detail
     typename enable_if<can_use_op<L>::value || can_use_op<R>::value, bool>::type lte(const L& lhs, const R& rhs) { return neq(lhs, rhs) ? lhs < rhs : true; }
     template <typename L, typename R>
     typename enable_if<can_use_op<L>::value || can_use_op<R>::value, bool>::type gte(const L& lhs, const R& rhs) { return neq(lhs, rhs) ? lhs > rhs : true; }
-
-    inline bool eq (const char* lhs, const char* rhs) { return String(lhs).compare(rhs) == 0; }
-    inline bool neq(const char* lhs, const char* rhs) { return String(lhs).compare(rhs) != 0; }
-    inline bool lt (const char* lhs, const char* rhs) { return String(lhs).compare(rhs) < 0; }
-    inline bool gt (const char* lhs, const char* rhs) { return String(lhs).compare(rhs) > 0; }
-    inline bool lte(const char* lhs, const char* rhs) { return neq(lhs, rhs) ? String(lhs).compare(rhs) < 0 : true; }
-    inline bool gte(const char* lhs, const char* rhs) { return neq(lhs, rhs) ? String(lhs).compare(rhs) > 0 : true; }
+    
+    inline bool eq (const char* lhs, const char* rhs) { return String(lhs) == String(rhs); }
+    inline bool neq(const char* lhs, const char* rhs) { return String(lhs) != String(rhs); }
+    inline bool lt (const char* lhs, const char* rhs) { return String(lhs) < String(rhs); }
+    inline bool gt (const char* lhs, const char* rhs) { return String(lhs) > String(rhs); }
+    inline bool lte(const char* lhs, const char* rhs) { return String(lhs) <= String(rhs); }
+    inline bool gte(const char* lhs, const char* rhs) { return String(lhs) >= String(rhs); }
 #endif // _MSC_VER
 
     // clang-format on
@@ -816,7 +825,7 @@ public:
 
 #define DOCTEST_LOG_START()                                                                        \
     if(!DOCTEST_GCS()->hasLoggedCurrentTestStart) {                                                \
-        doctest::detail::logTestStart(DOCTEST_GCS()->currentTest->m_name.c_str(),                  \
+        doctest::detail::logTestStart(DOCTEST_GCS()->currentTest->m_name,                          \
                                       DOCTEST_GCS()->currentTest->m_file,                          \
                                       DOCTEST_GCS()->currentTest->m_line);                         \
         DOCTEST_GCS()->hasLoggedCurrentTestStart = true;                                           \
@@ -1145,18 +1154,10 @@ namespace detail
 } // namespace detail
 
 String toString(const char* in) { return String("\"") + (in ? in : "{null string}") + "\""; }
-
 String toString(bool in) { return in ? "true" : "false"; }
-
 String toString(float in) { return detail::fpToString(in, 5) + "f"; }
-
 String toString(double in) { return detail::fpToString(in, 10); }
-
-String toString(double long in) {
-    char buf[64];
-    sprintf(buf, "%Lf", in);
-    return buf;
-}
+String toString(double long in) { return detail::fpToString(in, 15); }
 
 String toString(char in) {
     char buf[64];
@@ -1360,11 +1361,11 @@ namespace detail
     }
 
     // checks if the name matches any of the filters (and can be configured what to do when empty)
-    int matchesAny(const String& name, Vector<String> filters, int matchEmpty, bool caseSensitive) {
+    int matchesAny(const char* name, Vector<String> filters, int matchEmpty, bool caseSensitive) {
         if(filters.size() == 0 && matchEmpty)
             return 1;
         for(unsigned i = 0; i < filters.size(); ++i)
-            if(wildcmp(name.c_str(), filters[i].c_str(), caseSensitive))
+            if(wildcmp(name, filters[i].c_str(), caseSensitive))
                 return 1;
         return 0;
     }
@@ -1483,6 +1484,11 @@ namespace detail
     }
 
     template <>
+    unsigned Hash(const String& in) {
+        return hashStr(reinterpret_cast<unsigned const char*>(in.c_str()));
+    }
+
+    template <>
     unsigned Hash(const int& in) {
         return in;
     }
@@ -1568,7 +1574,7 @@ namespace detail
         const TestData* lhs = *static_cast<TestData* const*>(a);
         const TestData* rhs = *static_cast<TestData* const*>(b);
 
-        int res = lhs->m_suite.compare(rhs->m_suite);
+        int res = strcmp(lhs->m_suite, rhs->m_suite);
         if(res != 0)
             return res;
         return fileOrderComparator(a, b);
@@ -1579,7 +1585,7 @@ namespace detail
         const TestData* lhs = *static_cast<TestData* const*>(a);
         const TestData* rhs = *static_cast<TestData* const*>(b);
 
-        int res = lhs->m_name.compare(rhs->m_name);
+        int res = strcmp(lhs->m_name, rhs->m_name);
         if(res != 0)
             return res;
         return suiteOrderComparator(a, b);
@@ -2376,9 +2382,10 @@ int Context::run() {
         printf("listing all test case names\n");
     }
 
+    HashTable<String> testSuitesPassingFilters(100);
     if(p.list_test_suites) {
         DOCTEST_PRINTF_COLORED("[doctest] ", Color::Cyan);
-        printf("listing all test case names\n");
+        printf("listing all test suites\n");
     }
 
     unsigned numTestsPassingFilters = 0;
@@ -2407,7 +2414,16 @@ int Context::run() {
 
         // print the name of the test and don't execute it
         if(p.list_test_cases) {
-            printf("%s\n", data.m_name.c_str());
+            printf("%s\n", data.m_name);
+            continue;
+        }
+
+        // print the name of the test suite if not done already and don't execute it
+        if(p.list_test_suites) {
+            if(!testSuitesPassingFilters.has(data.m_suite)) {
+                printf("%s\n", data.m_suite);
+                testSuitesPassingFilters.insert(data.m_suite);
+            }
             continue;
         }
 
@@ -2427,8 +2443,7 @@ int Context::run() {
 
             // if logging successful tests - force the start log
             if(p.success) {
-                logTestStart(p.currentTest->m_name.c_str(), p.currentTest->m_file,
-                             p.currentTest->m_line);
+                logTestStart(p.currentTest->m_name, p.currentTest->m_file, p.currentTest->m_line);
                 p.hasLoggedCurrentTestStart = true;
             }
 
