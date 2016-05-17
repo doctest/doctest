@@ -17,4 +17,12 @@ https://github.com/tpounds/mockitopp
 
 - why c++98?
 
+- why no ```long long``` in gcc/clang when in the c++98 standard?
+    - http://stackoverflow.com/questions/35826731/detect-if-long-long-is-present-at-compile-time
+
 - will the library support checking for memory leaks? no. use tools like valgrind or the sanitizers.
+
+- is the VC++6 support full?
+    - no
+        - the stringification with ```ostream& operator<<(ostream&, myType)``` is disabled
+        - comparing C strings will compare the pointers and not the actual strings

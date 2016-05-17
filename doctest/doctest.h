@@ -160,9 +160,9 @@ typedef basic_ostream<char, char_traits<char> > ostream;
 #endif // _LIBCPP_VERSION
 
 #ifndef DOCTEST_CONFIG_WITH_LONG_LONG
-#if defined(__cplusplus) && __cplusplus >= 201103L
+#if __cplusplus >= 201103L || defined(_MSC_EXTENSIONS) || (defined(_MSC_VER) && (_MSC_VER >= 1400))
 #define DOCTEST_CONFIG_WITH_LONG_LONG
-#endif // __cplusplus
+#endif // __cplusplus / _MSC_VER
 #endif // DOCTEST_CONFIG_WITH_LONG_LONG
 
 namespace doctest

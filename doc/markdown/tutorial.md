@@ -22,7 +22,7 @@ A complete compiling example with a self-registering test looks like this:
 
 int factorial(int number) { return number <= 1 ? number : factorial(number - 1) * number; }
 
-TESTCASE("testing the factorial function") {
+TEST_CASE("testing the factorial function") {
     CHECK(factorial(1) == 1);
     CHECK(factorial(2) == 2);
     CHECK(factorial(3) == 6);
@@ -35,7 +35,7 @@ This will compile to a complete executable which responds to command line argume
 If you run this as written it will pass. Everything is good. Right? Well there is still a bug here. We missed to check if ```factorial(0) == 1``` so lets add that check as well:
 
 ```c++
-TESTCASE("testing the factorial function") {
+TEST_CASE("testing the factorial function") {
     CHECK(factorial(0) == 1);
     CHECK(factorial(1) == 1);
     CHECK(factorial(2) == 2);
@@ -70,7 +70,7 @@ Of course there are still more issues to do deal with. For example we'll hit pro
 Although this was a simple test it's been enough to demonstrate a few things about how **doctest** is used.
 
 1. All we did was ```#define``` one identifier and ```#include``` one header and we got everything - even an implementation of ```main()``` that will respond to command line arguments. You can only use that ```#define``` in one source file for (hopefully) obvious reasons. Once you have more than one file with unit tests in you'll just ```#include "doctest.h"``` and go. Usually it's a good idea to have a dedicated implementation file that just has ```#define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN``` and ```#include "doctest.h"```. You can also provide your own implementation of main and drive **doctest** yourself - see [**supplying your own ```main()```**](main.md).
-2. We introduce test cases with the ```TESTCASE``` macro. It takes one argument - a free form test name (for more see [**Test cases and subcases**](testcases.md)). The test name doesn't have to be unique. You can run sets of tests by specifying a wildcarded test name or a tag expression. See the [**command line**](commandline.md) docs for more information on running tests.
+2. We introduce test cases with the ```TEST_CASE``` macro. It takes one argument - a free form test name (for more see [**Test cases and subcases**](testcases.md)). The test name doesn't have to be unique. You can run sets of tests by specifying a wildcarded test name or a tag expression. See the [**command line**](commandline.md) docs for more information on running tests.
 3. The name is just a string. We haven't had to declare a function or method - or explicitly register the test case anywhere. Behind the scenes a function with a generated name is defined for you and automatically registered using static registry classes. By abstracting the function name away we can name our tests without the constraints of identifier names.
 4. We write our individual test assertions using the ```CHECK()``` macro. Rather than a separate macro for each type of condition (equal, less than, greater than, etc.) we express the condition naturally using C++ syntax. Behind the scenes a simple expression template captures the left-hand-side and right-hand-side of the expression so we can display the values in our test report. There are other [**assertion macros**](assertions.md) not covered in this tutorial - but because of this technique the number of them is  drastically reduced.
 
@@ -85,7 +85,7 @@ While **doctest** fully supports this way of working there are a few problems wi
 This is best explained through an example:
 
 ```c++
-TESTCASE("vectors can be sized and resized") {
+TEST_CASE("vectors can be sized and resized") {
     std::vector<int> v(5);
 
     REQUIRE(v.size() == 5);
@@ -106,9 +106,9 @@ TESTCASE("vectors can be sized and resized") {
 }
 ```
 
-For each ```SUBCASE()``` the ```TESTCASE()``` is executed from the start - so as we enter each subcase we know that the size is 5 and the capacity is at least 5. We enforce those requirements with the ```REQUIRE()``` macros at the top level so we can be confident in them. If a ```CHECK()``` fails - the test is marked as failed but the execution continues - but if a ```REQUIRE()``` fails - execution of the test stops.
+For each ```SUBCASE()``` the ```TEST_CASE()``` is executed from the start - so as we enter each subcase we know that the size is 5 and the capacity is at least 5. We enforce those requirements with the ```REQUIRE()``` macros at the top level so we can be confident in them. If a ```CHECK()``` fails - the test is marked as failed but the execution continues - but if a ```REQUIRE()``` fails - execution of the test stops.
 
-This works because the ```SUBCASE()``` macro contains an if statement that calls back into **doctest** to see if the subcase should be executed. One leaf subcase is executed on each run through a ```TESTCASE()```. The other subcases are skipped. Next time the next subcase is executed and so on until no new subcases are encountered.
+This works because the ```SUBCASE()``` macro contains an if statement that calls back into **doctest** to see if the subcase should be executed. One leaf subcase is executed on each run through a ```TEST_CASE()```. The other subcases are skipped. Next time the next subcase is executed and so on until no new subcases are encountered.
 
 So far so good - this is already an improvement on the setup/teardown approach because now we see our setup code inline and use the stack. The power of subcases really shows when we start nesting them like in the example below:
 
@@ -124,7 +124,7 @@ Output
 #include &lt;iostream&gt;
 using namespace std;
 
-TESTCASE("lots of nested subcases") {
+TEST_CASE("lots of nested subcases") {
     cout << endl << "root" << endl;
     SUBCASE("") {
         cout << "1" << endl;

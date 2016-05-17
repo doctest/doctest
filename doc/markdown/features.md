@@ -72,7 +72,6 @@ The library can be used like any other even if you are not fond of the idea of m
 - floating point comparison support
 
 - tdd in c++?
-- update tutorial - TEST_CASE and etc.
 - more comments in source code
 - look into https://github.com/Barro/compiler-warnings
 - think about the expression decomposition static asserts
@@ -86,13 +85,13 @@ The library can be used like any other even if you are not fond of the idea of m
 
 ## FUTURE
 - crash handling: signals on UNIX platforms or structured exceptions on Windows
-- add support for tags - like Catch
+- add support for tags - like Catch - https://github.com/philsquared/Catch/blob/master/docs/test-cases-and-sections.md#special-tags
 - support for predicates (or zip or whatever)
 - make a compact reporter
 - output to file
 - xml reporter (jUnit/xUnit compatible, etc.)
 - ability for users to write their own reporters
-- gcc 6
+- test with gcc 6 and use it in the CI builds
 - add the ability to query if code is currently being ran in a test - some global of doctest...
 - timing reports of tests, duration restrictions, kill of longer than (will perhaps require threading), etc...
 - a message macro (also tracepoint/passpoint/info/context and whatever - like in boost.test) (ALSO ERROR/FAIL - like boost)
@@ -101,30 +100,26 @@ The library can be used like any other even if you are not fond of the idea of m
 - marking a test to run X times (should also multiply with the global test run times)
 - test execution in separate processes - UNIX only with fork() (but windows has some .dll which could help)
 - matchers?
+- ability to provide a temp folder to tests that is cleared between them
 - detect floating point exceptions
+- Bitwise() class that has overloaded operators for comparison - to be used to check objects bitwise against each other (or maybe not - because of packing!)
 - [CI] static analysis: msvc, clang, cppcheck
 - [CI] mingw-w64 on appveyor
 
 ## UNSURE
 
+- wchar stuff in stringify and whatever - see <wchar.h>
 - refactor the assertion macros - make proxy functions that do most of the things to minimize code bloat
 - pool allocator for String class
 - order option - ASC/DESC for sorting
 - BDD based on subcases - like Catch
-- when an option is found - like "-dt-count=" - validate it - if a string has been passed instead of a number - there should be an error
-- think about long long support or maybe int64_t support
-- Bitwise() class that has overloaded operators for comparison - to be used to check objects bitwise against each other (or maybe not - because of packing!)
-- tagging? also see this: https://github.com/philsquared/Catch/blob/master/docs/test-cases-and-sections.md#special-tags
+- when an option is found - like "-dt-last=" - validate it - if a string has been passed instead of a number - there should be an error
 - utf8?
-- full support for VC++6 - currently the stringification with ```ostream& operator<<(ostream&, myType)``` is disabled
 - hierarchical test suites? using a stack for the pushed states - should be easy
 - ability to re-run only newly compiled tests - based on timestamps of the __FILE__ in which they are - and stored in some file
-- ability to provide a temp folder to tests that is cleared between them
 - put internals in anonymous namespace (even if already in detail) - even though clang-format will make everything more indented
-- wchar stuff in stringify and whatever - see <wchar.h>
 - progress of tests being executed (and an option for it)
 - think about adding support for std::exception and others (mainly catching them so the .what() method can be called)
-- think about parameterising the output alignment to 80 or some other column limit
 - think about the ability to mix different versions of the library within the same executable (like stb libraries)
 
 ## Spreading the word after 1.0.0 is released
