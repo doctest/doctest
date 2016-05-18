@@ -3,7 +3,7 @@ the lightest feature rich C++ single header testing framework
 
 The **doctest** library is inspired by the ```unittest {}``` functionality of the **D** programming language and **Python**'s **docstrings** - tests can be considered a form of documentation and _should_ be able to reside near the production code which they test.
 
-It is modeled after [**Catch**](https://github.com/philsquared/Catch) which is currently the most popular, simple and user friendly library out there.
+It is heavily influenced by [**Catch**](https://github.com/philsquared/Catch) which is currently the most popular, simple and user friendly alternative out there.
 
 
 - Check out [**features and design goals**](doc/markdown/features.md#why-does-this-library-exist-and-how-is-it-different-from-all-the-rest) to see why this library exists and how it is different from all the rest.
@@ -31,16 +31,20 @@ Build status
 Contributing
 ------------
 
-Donations would be appreciated very much since I quit my job to write open source software.
+Support the development of the project with donations! There is a list of planned features which are all important and big - see the [**roadmap**](features.md#roadmap). I work on this project in my spare time and every cent is a big deal. Currently unemployed.
 
 [![Donate to support](https://pledgie.com/campaigns/31280.png)](https://pledgie.com/campaigns/31280)
 
 Contributions in the form of issues and pull requests are welcome as well.
 
-For pull requests make sure the code is formatted with a recent-enough ```clang-format``` using the config file in the root of the repo (or I will format it after the merge) and that all the builds on ```travis``` and ```appveyor``` pass. Also before making a pull requrest you might want to make an issue about it for a discussion or join the chat on gitter. 
+Open an issue for a discussion before making a pull request to make sure the contribution goes smoothly. 
 
-This library has some design goals which must be kept. Make sure you have read the [**features and design goals**](doc/markdown/features.md#features-and-design-goals) page.
+This framework has some design goals which must be kept. Make sure you have read the [**features and design goals**](doc/markdown/features.md#features-and-design-goals) page.
 
-The ```master``` branch is the stable one with the latest release and the ```dev``` branch is on the bleeding edge. 
+The ```master``` branch is the stable one with the latest release and the ```dev``` branch is on the bleeding edge.
+
+All the framework tests have their output collected when the CMake ```TEST_MODE``` variable is set to ```COLLECT``` (making the new reference output) and later the tests are ran on the CI services (```travis``` and ```appveyor```) - their output is compared with the current reference output in the repository with the ```COMPARE``` mode (default mode is ```NORMAL```).
+
+Code should be formatted with a recent-enough ```clang-format``` using the config file in the root of the repo (or I will do it...)
 
 Testing with compilers different from GCC/Clang/MSVC (and more platforms) is something the project would benefit from.

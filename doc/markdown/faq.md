@@ -27,6 +27,10 @@ https://github.com/tpounds/mockitopp
 
 - will the library support checking for memory leaks? no. use tools like valgrind or the sanitizers.
 
+- mixing different versions of the framework within the same executable?
+    - unfortunately what single header libraries like [stb](https://github.com/nothings/stb) are doing is not feasible with this library.
+    - it could be done if tests are written only in source files where the library has been implemented with the ```DOCTEST_CONFIG_IMPLEMENT``` macro but that is very limiting.
+
 - is the VC++6 support full?
     - no
         - the stringification with ```ostream& operator<<(ostream&, myType)``` is disabled

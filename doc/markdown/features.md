@@ -9,8 +9,9 @@ This allows the library to be used in more ways - tests can be written in the pr
 - This makes the barrier for writing tests much lower - you don't have to: **1.** make a separate source file **2.** include a bunch of stuff in it **3.** add it to the build system and **4.** add it to source control - You can just write the tests for a class or a piece of functionality at the bottom of the source file (or even header file).
 - Also tests in the production code can be thought of as documentation or comments - showing how an API is used.
 - Tests can be shipped to the customer with the software to diagnose a bug faster.
+- [TDD](https://en.wikipedia.org/wiki/Test-driven_development) in C++ has never been easier!
 
-The library can be used like any other even if you are not fond of the idea of mixing production code and tests. It is (or will be) on par with most of the other libraries as far as features go but is much lighter, portable and clear - see the [**features**](#features).  
+The library can be used like any other even if you are not fond of the idea of mixing production code and tests. It is (or will be) on par with most of the other libraries as far as features go but is much lighter, portable and clear - see below.  
 
 ### Unintrusive (transparent):
 
@@ -23,8 +24,8 @@ The library can be used like any other even if you are not fond of the idea of m
 	- ```-Weverything -pedantic``` for **clang**
 	- ```-Wall -Wextra -pedantic``` and **>> over 50 <<** other warnings **not** covered by these flags for **GCC**!!! - see [**here**](../../scripts/common.cmake#L59)
 	- ```/W4``` for **MSVC** (```/Wall``` is too much there - even their own headers produce **thousands** of warnings with that option)
-- doesn't error on unrecognized [**command line**](commandline.md) options and supports prefixes to not clash with user defined ones
-- can set options [**procedurally**](main.md) and not worry about passing ```argc```/```argv``` from the command line
+- doesn't error on unrecognized [**command line**](commandline.md) options and supports prefixes for interop with client command line parsing
+- can set options [**procedurally**](main.md) and not deal with passing ```argc```/```argv``` from the command line
 - doesn't leave warnings disabled after itself
 
 ### Extremely portable:
@@ -36,24 +37,25 @@ The library can be used like any other even if you are not fond of the idea of m
 - per-commit tested on **travis** and **appveyor** CI services
 	- warnings as errors even on the most aggressive warning levels - see [**here**](../../scripts/common.cmake#L59)
 	- all tests have their output compared to reference output of a previous known good run
-	- all tests built and ran in **Debug**/**Release**
-	- all tests built and ran in **32**/**64** bit modes
+	- all tests built and ran in **Debug**/**Release** and also in **32**/**64** bit modes
 	- all tests ran through **valgrind** under **Linux**/**OSX**
 	- all tests ran through **address** and **UB** sanitizers under **Linux**/**OSX**
-	- passes coverity static analysis (soon to integrate msvc/clang/cppcheck analysis)
 	- tests are ran in a total of **180** different configurations on UNIX (Linux + OSX) on **travis** CI
 	- tests are ran in a total of **18** different configurations on Windows on **appveyor** CI
 
 ## Features
 
 - really easy to get started - it's just 1 header file - see the [**tutorial**](tutorial.md#tutorial)
-- very light, unintrusive and portable - see the sections above
+- **very** light, unintrusive and portable - see the sections above - and also the [**benchmarks**](benchmarks.md)
+- offers a way to remove **everything** testing-related from the binary with the [**```DOCTEST_CONFIG_DISABLE```**](configuration.md) macro
 - tests are registered automatically - no need to add them to a collection manually
 - supports [**subcases**](testcases.md#subcases) for easy setup/teardown of tests (also supports the retro [**test fixtures**](testcases.md#test-fixtures) with classes)
 - only one core [**assertion macro**](assertions.md) for comparisons - standard C++ operators are used for the comparison (less than, equal, greater than...) - yet the full expression is decomposed and left and right values of the expression are logged
 - assertion macros for [**exceptions**](assertions.md) - if something should or shouldn't throw
+- floating point comparison support - see the [**```Approx()```**](assertions.md) helper
+- powerful mechanism for [**```stringification```**](stringification.md) of user types
 - tests can be grouped in [**test suites**](testcases.md#test-suites)
-- powerful [**command line**](commandline.md) options
+- powerful [**command line**](commandline.md) with lots of options
 - tests can be [**filtered**](commandline.md#filtering) based on their name/file/test suite using wildcards
 - failures can (optionally) break into the debugger on Windows and Mac
 - integration with the output window of Visual Studio for failing tests
@@ -63,62 +65,59 @@ The library can be used like any other even if you are not fond of the idea of m
 - colored output in the console
 - controlling the order of test execution
 
-## TODO for release
-
-- print sections when asserts fail (look if catch does that)
-
-- tdd in c++?
-- more comments in source code
-- think about the expression decomposition static asserts
-
-- add pledgie campaign in features/roadmap and in the reference
-- examples and test coverage
-- enabling COMPARE in tests
-- benchmark (assimp and empty files - or maybe just empty files)
-- documentation (also try it online in tutorial and other places!)
-- research bountysource/patreon
-
 ## Roadmap
 
-- look into https://github.com/Barro/compiler-warnings
-- crash handling: signals on UNIX platforms or structured exceptions on Windows
-- add support for tags - like Catch - https://github.com/philsquared/Catch/blob/master/docs/test-cases-and-sections.md#special-tags
-- support for predicates (or zip or whatever)
-- make a compact reporter
-- output to file
-- xml reporter (jUnit/xUnit compatible, etc.)
-- ability for users to write their own reporters
-- ability to use multiple reporters at once (but only 1 to stdout)
+This is a list of planned features for future releases (maybe in the given order).
+
 - test with gcc 6 and use it in the CI builds
-- add the ability to query if code is currently being ran in a test - some global of doctest...
-- timing reports of tests, duration restrictions, kill of longer than (will perhaps require threading), etc...
-- a message macro (also tracepoint/passpoint/info/context and whatever - like in boost.test) (ALSO ERROR/FAIL - like boost)
-- marking a test as "may fail"
+- BDD based on subcases - like Catch
+- support for ```std::exception``` and derivatives (mainly for calling the ```.what()``` method when caught unexpectedly)
+- test with missed warning flags for GCC - look into https://github.com/Barro/compiler-warnings
+- crash handling: signals on UNIX platforms or structured exceptions on Windows
+- support for tags
+    - may fail tag
+    - invisible tag
+    - look at Catch - https://github.com/philsquared/Catch/blob/master/docs/test-cases-and-sections.md#special-tags
+- output to file
+- reporters
+    - a system for writing custom reporters
+    - ability to use multiple reporters at once (but only 1 to stdout)
+    - a compact reporter
+    - an xml reporter
+    - jUnit/xUnit reporters
+- add the ability to query if code is currently being ran in a test -  ```doctest::isRunningInTest()```
+- convolution support for the assertion macros (with a predicate)
+- time stuff
+    - reporting running time of tests
+    - restricting duration of test cases
+    - killing a test that exceeds a time limit (will perhaps require threading or processes)
+- adding contextual info to asserts - with an ```INFO```/```CONTEXT``` /```TRACEPOINT``` macro
+- add ```ERROR```/```FAIL``` macros
 - running tests a few times
 - marking a test to run X times (should also multiply with the global test run times)
-- test execution in separate processes - UNIX only with fork() (but windows has some .dll which could help)
-- matchers?
-- ability to provide a temp folder to tests that is cleared between them
+- test execution in separate processes - UNIX only with ```fork()``` (should also check out cygwin under windows)
+- ability to provide a temp folder that is cleared between each test case
 - detect floating point exceptions
-- Bitwise() class that has overloaded operators for comparison - to be used to check objects bitwise against each other (or maybe not - because of packing!)
-- [CI] static analysis: msvc, clang, cppcheck
-- [CI] mingw-w64 on appveyor
+- ```Bitwise()``` class that has overloaded operators for comparison - to be used to check objects bitwise against each other
+- integrate static analysis on the CI: **msvc**, **clang**, **cppcheck**
+- get a build with **MinGW-w64** running on **appveyor**
 
-## UNSURE
+Support the development of the project with donations! I work on this project in my spare time and every cent is a big deal.
 
-- wchar stuff in stringify and whatever - see <wchar.h>
+[![Donate to support](https://pledgie.com/campaigns/31280.png)](https://pledgie.com/campaigns/31280)
+
+And here is a list of things that are being considered but not part of the roadmap yet:
+
+- matchers - should investigate what they are :D
+- handle ```wchar``` strings
 - refactor the assertion macros - make proxy functions that do most of the things to minimize code bloat
-- pool allocator for String class
-- order option - ASC/DESC for sorting
-- BDD based on subcases - like Catch
-- when an option is found - like "-dt-last=" - validate it - if a string has been passed instead of a number - there should be an error
-- utf8?
-- hierarchical test suites? using a stack for the pushed states - should be easy
-- ability to re-run only newly compiled tests - based on timestamps of the __FILE__ in which they are - and stored in some file
-- put internals in anonymous namespace (even if already in detail) - even though clang-format will make everything more indented
-- progress of tests being executed (and an option for it)
-- think about adding support for std::exception and others (mainly catching them so the .what() method can be called)
-- think about the ability to mix different versions of the library within the same executable (like stb libraries)
+- pool allocator for the ```String``` class - currently very unoptimized
+- ability to specify ASC/DESC for the order option
+- command line error handling/reporting
+- utf8? not sure if this should be here
+- hierarchical test suites - using a stack for the pushed ones - should be easy
+- put everything from the ```detail``` namespace also in a nested anonymous namespace to make them with internal linkage
+- ability to re-run only newly compiled tests based on time stamps using ```__DATE__``` and ```__TIME__``` - stored in some file
 
 ---------------
 
