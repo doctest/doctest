@@ -3,10 +3,23 @@
 
 #include <string>
 #include <vector>
-#include <ostream>
 
+/*
+#include <sstream>
+
+namespace doctest {
 template <typename T>
-std::ostream& operator<<(std::ostream& s, const std::vector<T>& in) {
+String toString(const std::vector<T>&) {
+    return "aaa";
+}
+}
+*/
+
+/*
+namespace doctest {
+template <typename T>
+String toString(const std::vector<T>& in) {
+    std::ostringstream s;
     s << "[";
     for(size_t i = 0; i < in.size(); ++i)
         if(i < in.size() - 1)
@@ -14,8 +27,10 @@ std::ostream& operator<<(std::ostream& s, const std::vector<T>& in) {
         else
             s << in[i];
     s << "]";
-    return s;
+    return s.str().c_str();
 }
+} // namespace doctest
+*/
 
 TEST_CASE("the only test") {
     std::string dummy1 = "omg";

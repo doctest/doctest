@@ -10,6 +10,13 @@
 #include <ostream>
 #include <cstring>
 
+namespace doctest {
+template <typename T>
+String toString(const std::vector<T>&) {
+    return "aaa";
+}
+}
+
 template <typename T>
 std::ostream& operator<<(std::ostream& s, const std::vector<T>& in) {
     s << "[";
@@ -22,16 +29,20 @@ std::ostream& operator<<(std::ostream& s, const std::vector<T>& in) {
     return s;
 }
 
+namespace crap {
 template<typename T, typename T2>
 struct myType { T data; T2 op; };
 
-//struct myType2 : myType<int, float> {};
+struct myType2 : myType<int, float> {};
 
 template<typename T, typename T2>
 bool operator==(const myType<T, T2>&, const myType<T, T2>&) { return false; }
 
 template<typename T, typename T2>
 std::ostream& operator<<(std::ostream& s, const myType<T, T2>&) { s << "myType"; return s; }
+}
+
+
 
 #ifdef _MSC_VER
 #pragma warning(push)
@@ -71,8 +82,8 @@ TEST_CASE("zzz") {
     vec2.push_back(2);
     vec2.push_back(4);
 
-    myType<int, float> opA;
-    myType<int, float> opB;
+    crap::myType2 opA;
+    crap::myType2 opB;
 
     CHECK(opA == opB);
 

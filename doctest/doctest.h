@@ -236,20 +236,9 @@ namespace detail
 
         yes& testStreamable(std::ostream&);
         no   testStreamable(no);
-    } // namespace has_insertion_operator_impl
-} // namespace detail
-} // namespace doctest
 
-// in the global namespace - for details see this - http://stackoverflow.com/questions/37139784/
-doctest::detail::has_insertion_operator_impl::no operator<<(
-        std::ostream&, const doctest::detail::has_insertion_operator_impl::any_t&);
+        no operator<<(std::ostream&, const any_t&);
 
-namespace doctest
-{
-namespace detail
-{
-    namespace has_insertion_operator_impl
-    {
         template <typename T>
         struct has_insertion_operator
         {

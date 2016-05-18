@@ -69,7 +69,6 @@ The library can be used like any other even if you are not fond of the idea of m
 
 - tdd in c++?
 - more comments in source code
-- look into https://github.com/Barro/compiler-warnings
 - think about the expression decomposition static asserts
 
 - add pledgie campaign in features/roadmap and in the reference
@@ -81,6 +80,7 @@ The library can be used like any other even if you are not fond of the idea of m
 
 ## Roadmap
 
+- look into https://github.com/Barro/compiler-warnings
 - crash handling: signals on UNIX platforms or structured exceptions on Windows
 - add support for tags - like Catch - https://github.com/philsquared/Catch/blob/master/docs/test-cases-and-sections.md#special-tags
 - support for predicates (or zip or whatever)
