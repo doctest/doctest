@@ -1244,7 +1244,7 @@ std::ostream& operator<<(std::ostream& stream, const String& in) {
 }
 
 Approx::Approx(double value)
-        : m_epsilon(std::numeric_limits<float>::epsilon() * 100)
+        : m_epsilon(static_cast<double>(std::numeric_limits<float>::epsilon()) * 100)
         , m_scale(1.0)
         , m_value(value) {}
 

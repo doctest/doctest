@@ -33,6 +33,10 @@ namespace crap {
 template<typename T, typename T2>
 struct myType { T data; T2 op; };
 
+#if defined(__GNUC__) && !defined(__clang__)
+#pragma GCC diagnostic ignored "-Weffc++"
+#endif // __GNUC__
+
 struct myType2 : myType<int, float> {};
 
 template<typename T, typename T2>
