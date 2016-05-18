@@ -2,12 +2,17 @@
 
 - linker issues (_IMPLEMENT, etc)...
 
+- stringification issues - if operator<<(ostream for a type is visible only in one source file...
+
 - why no regex and only wildcards
 
 - tests are ran serially - no multi-threaded execution planned for now 
 
 - mocking is not included because it is orthogonal to testing and a different third party library may be used for that (google mock)
 https://github.com/tpounds/mockitopp
+
+- linker errors for ```doctest::detail::...``` when using ```DOCTEST_CONFIG_DISABLE```
+    solution: don't use anything from detail
 
 - property based testing - what it is and how to use it with doctest
 

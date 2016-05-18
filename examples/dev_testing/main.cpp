@@ -7,6 +7,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <vector>
+//#include <ostream>
 
 //template <typename T>
 //std::ostream& operator<<(std::ostream& s, const std::vector<T>& in) {
@@ -19,6 +20,10 @@
 //    s << "]";
 //    return s;
 //}
+
+#include <algorithm>
+#include <limits>
+#include <cmath>
 
 TEST_CASE("zzz") {
     //CHECK(std::string("OMG2") == std::string("OMG"));
@@ -46,7 +51,7 @@ int main(int argc, char** argv) {
     //context.setOption("success", true);
     //context.setOption("no-throw", true);
     //context.setOption("dt-no-colors", true);
-    context.addFilter("name", "zzz");
+    context.addFilter("test-case", "zzz");
     //context.setOption("abort-after", 1);
     //context.addFilter("suite", "randomness");
     //context.setOption("sort", "rand");

@@ -67,8 +67,6 @@ The library can be used like any other even if you are not fond of the idea of m
 
 - print sections when asserts fail (look if catch does that)
 
-- floating point comparison support
-
 - tdd in c++?
 - more comments in source code
 - look into https://github.com/Barro/compiler-warnings
@@ -81,7 +79,8 @@ The library can be used like any other even if you are not fond of the idea of m
 - documentation (also try it online in tutorial and other places!)
 - research bountysource/patreon
 
-## FUTURE
+## Roadmap
+
 - crash handling: signals on UNIX platforms or structured exceptions on Windows
 - add support for tags - like Catch - https://github.com/philsquared/Catch/blob/master/docs/test-cases-and-sections.md#special-tags
 - support for predicates (or zip or whatever)
@@ -89,6 +88,7 @@ The library can be used like any other even if you are not fond of the idea of m
 - output to file
 - xml reporter (jUnit/xUnit compatible, etc.)
 - ability for users to write their own reporters
+- ability to use multiple reporters at once (but only 1 to stdout)
 - test with gcc 6 and use it in the CI builds
 - add the ability to query if code is currently being ran in a test - some global of doctest...
 - timing reports of tests, duration restrictions, kill of longer than (will perhaps require threading), etc...
@@ -119,36 +119,6 @@ The library can be used like any other even if you are not fond of the idea of m
 - progress of tests being executed (and an option for it)
 - think about adding support for std::exception and others (mainly catching them so the .what() method can be called)
 - think about the ability to mix different versions of the library within the same executable (like stb libraries)
-
-## Spreading the word after 1.0.0 is released
-
-- reddit cpp/programming/gamedev/other
-- boost mailing list
-- comp.lang.c++
-- comp.std.c++
-- hackernews
-- hora ot cg
-- code project site!!! :D
-- bg podcast? like bobi?
-- gamedev/programming/c++ forums
-- https://github.com/fffaraz/awesome-cpp
-- add doctest to lists of c++ testing frameworks all around the web
-- research how to market a new library
-
-for gamedev - compile time!
-
-https://www.facebook.com/groups/IndieGameDevs/
-
-facebook fmi group
-
-skype friends - and from TUES! (this is so low...)
-
-https://github.com/nothings/stb/blob/master/docs/other_libs.md
-
-- suggest to be linked to in https://github.com/nothings/stb
-
-- https://www.google.bg/webhp?sourceid=chrome-instant&ion=1&espv=2&ie=UTF-8#q=list%20of%20testing%20frameworks%20c%2B%2B
-- http://stackoverflow.com/a/33925554/3162383
 
 ---------------
 

@@ -57,7 +57,9 @@ TEST_CASE("zzz") {
     CHECK(op == op2);
     CHECK(op2 == bar);
 
-    doctest::detail::eq(foo, op2);
+    //doctest::detail::eq(foo, op2);
+
+    CHECK(doctest::Approx(0.2) == 0.2);
 
     std::vector<int> vec1;
     vec1.push_back(1);
@@ -69,12 +71,12 @@ TEST_CASE("zzz") {
     vec2.push_back(2);
     vec2.push_back(4);
 
-    //myType<int, float> op1;
-    //myType<int, float> op2;
+    myType<int, float> opA;
+    myType<int, float> opB;
 
-    //CHECK(op1 == op2);
+    CHECK(opA == opB);
 
-    //CHECK(vec1 == vec2);
+    CHECK(vec1 == vec2);
     //CHECK(vec1 == vec2);
 
     REQUIRE(true == false);

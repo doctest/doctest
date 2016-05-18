@@ -189,6 +189,9 @@ public:
     char*       c_str() { return m_str; }
     const char* c_str() const { return m_str; }
 
+    unsigned size() const;
+    unsigned length() const;
+
     int compare(const char* other, bool no_case = false) const;
     int compare(const String& other, bool no_case = false) const;
 };
@@ -201,6 +204,8 @@ inline bool operator> (const String& lhs, const String& rhs) { return lhs.compar
 inline bool operator<=(const String& lhs, const String& rhs) { return (lhs != rhs) ? lhs.compare(rhs) < 0 : true; }
 inline bool operator>=(const String& lhs, const String& rhs) { return (lhs != rhs) ? lhs.compare(rhs) > 0 : true; }
 // clang-format on
+
+std::ostream& operator<<(std::ostream& stream, const String& in);
 
 namespace detail
 {
@@ -361,6 +366,51 @@ String toString(int long unsigned in);
 String toString(int long long in);
 String toString(int long long unsigned in);
 #endif // DOCTEST_CONFIG_WITH_LONG_LONG
+
+class Approx
+{
+public:
+    explicit Approx(double value);
+
+    Approx(Approx const& other)
+            : m_epsilon(other.m_epsilon)
+            , m_scale(other.m_scale)
+            , m_value(other.m_value) {}
+
+    Approx operator()(double value) {
+        Approx approx(value);
+        approx.epsilon(m_epsilon);
+        approx.scale(m_scale);
+        return approx;
+    }
+
+    friend bool operator==(double lhs, Approx const& rhs);
+    friend bool operator==(Approx const& lhs, double rhs) { return operator==(rhs, lhs); }
+    friend bool operator!=(double lhs, Approx const& rhs) { return !operator==(lhs, rhs); }
+    friend bool operator!=(Approx const& lhs, double rhs) { return !operator==(rhs, lhs); }
+
+    Approx& epsilon(double newEpsilon) {
+        m_epsilon = newEpsilon;
+        return *this;
+    }
+
+    Approx& scale(double newScale) {
+        m_scale = newScale;
+        return *this;
+    }
+
+    String toString() const;
+
+private:
+    double m_epsilon;
+    double m_scale;
+    double m_value;
+};
+
+template <>
+inline String toString<Approx>(Approx const& value) {
+    return value.toString();
+}
 
 #if !defined(DOCTEST_CONFIG_DISABLE)
 
@@ -1044,100 +1094,41 @@ DOCTEST_TEST_SUITE_END();
 #ifndef DOCTEST_LIBRARY_IMPLEMENTATION
 #define DOCTEST_LIBRARY_IMPLEMENTATION
 
-#if defined(DOCTEST_CONFIG_DISABLE)
-namespace doctest
-{
-String::String(const char*) {}
-String::String(const String&) {}
-String::~String() {}
-String& String::operator=(const String&) { return *this; }
-String  String::operator+(const String&) const { return String(); }
-String& String::operator+=(const String&) { return *this; }
-int     String::compare(const char*, bool) const { return 0; }
-int     String::compare(const String&, bool) const { return 0; }
-
-Context::Context(int, const char* const*) {}
-void Context::addFilter(const char*, const char*) {}
-void Context::setOption(const char*, int) {}
-void Context::setOption(const char*, const char*) {}
-bool Context::shouldExit() { return false; }
-int  Context::run() { return 0; }
-} // namespace doctest
-#else // DOCTEST_CONFIG_DISABLE
-
-#if !defined(DOCTEST_CONFIG_COLORS_NONE)
-#if !defined(DOCTEST_CONFIG_COLORS_WINDOWS) && !defined(DOCTEST_CONFIG_COLORS_ANSI)
-#ifdef DOCTEST_PLATFORM_WINDOWS
-#define DOCTEST_CONFIG_COLORS_WINDOWS
-#else // linux
-#define DOCTEST_CONFIG_COLORS_ANSI
-#endif // platform
-#endif // DOCTEST_CONFIG_COLORS_WINDOWS && DOCTEST_CONFIG_COLORS_ANSI
-#endif // DOCTEST_CONFIG_COLORS_NONE
-
-#define DOCTEST_PRINTF_COLORED(buffer, color)                                                      \
-    do {                                                                                           \
-        if(buffer[0] != 0) {                                                                       \
-            doctest::detail::Color col(color);                                                     \
-            printf("%s", buffer);                                                                  \
-        }                                                                                          \
-    } while(doctest::detail::always_false())
-
 // required includes - will go only in one translation unit!
+#include <ctime>
+#include <cmath>
+#include <new>
 #include <cstdio>
 #include <cstdlib>
-#include <ctime>
 #include <cstring>
-#include <new>
+#include <algorithm>
+#include <limits>
 #include <sstream>
 #include <iomanip>
 
-// the number of buckets used for the hash set
-#if !defined(DOCTEST_HASH_TABLE_NUM_BUCKETS)
-#define DOCTEST_HASH_TABLE_NUM_BUCKETS 1024
-#endif // DOCTEST_HASH_TABLE_NUM_BUCKETS
-
-// the buffer size used for snprintf() calls
-#if !defined(DOCTEST_SNPRINTF_BUFFER_LENGTH)
-#define DOCTEST_SNPRINTF_BUFFER_LENGTH 1024
-#endif // DOCTEST_SNPRINTF_BUFFER_LENGTH
-
-#if defined(_MSC_VER) || defined(__MINGW32__)
-extern "C" __declspec(dllimport) void __stdcall OutputDebugStringA(const char*);
-extern "C" __declspec(dllimport) int __stdcall IsDebuggerPresent();
-#endif // DOCTEST_PLATFORM_WINDOWS
-
-#ifdef DOCTEST_CONFIG_COLORS_ANSI
-#include <unistd.h>
-#endif // DOCTEST_CONFIG_COLORS_ANSI
-
-#ifdef DOCTEST_CONFIG_COLORS_WINDOWS
-
-// defines for a leaner windows.h
-#ifndef WIN32_MEAN_AND_LEAN
-#define WIN32_MEAN_AND_LEAN
-#endif // WIN32_MEAN_AND_LEAN
-#ifndef VC_EXTRA_LEAN
-#define VC_EXTRA_LEAN
-#endif // VC_EXTRA_LEAN
-#ifndef NOMINMAX
-#define NOMINMAX
-#endif // NOMINMAX
-
-// not sure what AfxWin.h is for - here I do what Catch does
-#ifdef __AFXDLL
-#include <AfxWin.h>
-#else
-#include <windows.h>
-#endif
-
-#endif // DOCTEST_CONFIG_COLORS_WINDOWS
-
-// main namespace of the library
 namespace doctest
 {
 namespace detail
 {
+    // not using std::strlen() because of valgrind errors when optimizations are turned on
+    // 'Invalid read of size 4' when the test suite len (with '\0') is not a multiple of 4
+    // for details see http://stackoverflow.com/questions/35671155
+    size_t my_strlen(const char* in) {
+        const char* temp = in;
+        while(*temp)
+            ++temp;
+        return temp - in;
+    }
+
+    // case insensitive strcmp
+    int stricmp(char const* a, char const* b) {
+        for(;; a++, b++) {
+            int d = tolower(*a) - tolower(*b);
+            if(d != 0 || !*a)
+                return d;
+        }
+    }
+
     template <typename T>
     String fpToString(T value, int precision) {
         std::ostringstream oss;
@@ -1151,7 +1142,130 @@ namespace detail
         }
         return d.c_str();
     }
+
+    struct Endianness
+    {
+        enum Arch
+        {
+            Big,
+            Little
+        };
+
+        static Arch which() {
+            union _
+            {
+                int  asInt;
+                char asChar[sizeof(int)];
+            } u;
+
+            u.asInt = 1;
+            return (u.asChar[sizeof(int) - 1] == 1) ? Big : Little;
+        }
+    };
+
+    String rawMemoryToString(const void* object, unsigned size) {
+        // Reverse order for little endian architectures
+        int i = 0, end = static_cast<int>(size), inc = 1;
+        if(Endianness::which() == Endianness::Little) {
+            i   = end - 1;
+            end = inc = -1;
+        }
+
+        unsigned char const* bytes = static_cast<unsigned char const*>(object);
+        std::ostringstream   os;
+        os << "0x" << std::setfill('0') << std::hex;
+        for(; i != end; i += inc)
+            os << std::setw(2) << static_cast<unsigned>(bytes[i]);
+        return os.str().c_str();
+    }
+
+    std::ostream* createStream() { return new std::ostringstream(); }
+    String getStreamResult(std::ostream* in) {
+        return static_cast<std::ostringstream*>(in)->str().c_str();
+    }
+    void freeStream(std::ostream* in) { delete in; }
 } // namespace detail
+
+String::String(const char* in) {
+    m_str = static_cast<char*>(malloc(detail::my_strlen(in) + 1));
+    strcpy(m_str, in);
+}
+
+String::String(const String& other)
+        : m_str(0) {
+    copy(other);
+}
+
+void String::copy(const String& other) {
+    if(m_str)
+        free(m_str);
+    m_str = 0;
+
+    if(other.m_str) {
+        m_str = static_cast<char*>(malloc(detail::my_strlen(other.m_str) + 1));
+        strcpy(m_str, other.m_str);
+    }
+}
+
+String::~String() {
+    if(m_str)
+        free(m_str);
+}
+
+String& String::operator=(const String& other) {
+    if(this != &other)
+        copy(other);
+    return *this;
+}
+
+String String::operator+(const String& other) const { return String(m_str) += other; }
+
+String& String::operator+=(const String& other) {
+    using namespace detail;
+    if(m_str == 0) {
+        copy(other);
+    } else if(other.m_str != 0) {
+        char* newStr = static_cast<char*>(malloc(my_strlen(m_str) + my_strlen(other.m_str) + 1));
+        strcpy(newStr, m_str);
+        strcpy(newStr + my_strlen(m_str), other.m_str);
+        free(m_str);
+        m_str = newStr;
+    }
+    return *this;
+}
+
+unsigned String::size() const { return m_str ? detail::my_strlen(m_str) : 0; }
+unsigned String::length() const { return size(); }
+
+int String::compare(const char* other, bool no_case) const {
+    if(no_case)
+        return detail::stricmp(m_str, other);
+    return strcmp(m_str, other);
+}
+
+int String::compare(const String& other, bool no_case) const {
+    if(no_case)
+        return detail::stricmp(m_str, other.m_str);
+    return strcmp(m_str, other.m_str);
+}
+
+std::ostream& operator<<(std::ostream& stream, const String& in) {
+    stream << in.c_str();
+    return stream;
+}
+
+Approx::Approx(double value)
+        : m_epsilon(std::numeric_limits<float>::epsilon() * 100)
+        , m_scale(1.0)
+        , m_value(value) {}
+
+bool operator==(double lhs, Approx const& rhs) {
+    // Thanks to Richard Harris for his help refining this formula
+    return fabs(lhs - rhs.m_value) <
+           rhs.m_epsilon * (rhs.m_scale + (std::max)(fabs(lhs), fabs(rhs.m_value)));
+}
+
+String Approx::toString() const { return String("Approx( ") + doctest::toString(m_value) + " )"; }
 
 String toString(const char* in) { return String("\"") + (in ? in : "{null string}") + "\""; }
 String toString(bool in) { return in ? "true" : "false"; }
@@ -1226,51 +1340,83 @@ String toString(int long long unsigned in) {
 }
 #endif // DOCTEST_CONFIG_WITH_LONG_LONG
 
-// library internals namespace
+} // namespace doctest
+
+#if defined(DOCTEST_CONFIG_DISABLE)
+namespace doctest
+{
+Context::Context(int, const char* const*) {}
+void Context::addFilter(const char*, const char*) {}
+void Context::setOption(const char*, int) {}
+void Context::setOption(const char*, const char*) {}
+bool Context::shouldExit() { return false; }
+int  Context::run() { return 0; }
+} // namespace doctest
+#else // DOCTEST_CONFIG_DISABLE
+
+#if !defined(DOCTEST_CONFIG_COLORS_NONE)
+#if !defined(DOCTEST_CONFIG_COLORS_WINDOWS) && !defined(DOCTEST_CONFIG_COLORS_ANSI)
+#ifdef DOCTEST_PLATFORM_WINDOWS
+#define DOCTEST_CONFIG_COLORS_WINDOWS
+#else // linux
+#define DOCTEST_CONFIG_COLORS_ANSI
+#endif // platform
+#endif // DOCTEST_CONFIG_COLORS_WINDOWS && DOCTEST_CONFIG_COLORS_ANSI
+#endif // DOCTEST_CONFIG_COLORS_NONE
+
+#define DOCTEST_PRINTF_COLORED(buffer, color)                                                      \
+    do {                                                                                           \
+        if(buffer[0] != 0) {                                                                       \
+            doctest::detail::Color col(color);                                                     \
+            printf("%s", buffer);                                                                  \
+        }                                                                                          \
+    } while(doctest::detail::always_false())
+
+// the number of buckets used for the hash set
+#if !defined(DOCTEST_HASH_TABLE_NUM_BUCKETS)
+#define DOCTEST_HASH_TABLE_NUM_BUCKETS 1024
+#endif // DOCTEST_HASH_TABLE_NUM_BUCKETS
+
+// the buffer size used for snprintf() calls
+#if !defined(DOCTEST_SNPRINTF_BUFFER_LENGTH)
+#define DOCTEST_SNPRINTF_BUFFER_LENGTH 1024
+#endif // DOCTEST_SNPRINTF_BUFFER_LENGTH
+
+#if defined(_MSC_VER) || defined(__MINGW32__)
+extern "C" __declspec(dllimport) void __stdcall OutputDebugStringA(const char*);
+extern "C" __declspec(dllimport) int __stdcall IsDebuggerPresent();
+#endif // DOCTEST_PLATFORM_WINDOWS
+
+#ifdef DOCTEST_CONFIG_COLORS_ANSI
+#include <unistd.h>
+#endif // DOCTEST_CONFIG_COLORS_ANSI
+
+#ifdef DOCTEST_CONFIG_COLORS_WINDOWS
+
+// defines for a leaner windows.h
+#ifndef WIN32_MEAN_AND_LEAN
+#define WIN32_MEAN_AND_LEAN
+#endif // WIN32_MEAN_AND_LEAN
+#ifndef VC_EXTRA_LEAN
+#define VC_EXTRA_LEAN
+#endif // VC_EXTRA_LEAN
+#ifndef NOMINMAX
+#define NOMINMAX
+#endif // NOMINMAX
+
+// not sure what AfxWin.h is for - here I do what Catch does
+#ifdef __AFXDLL
+#include <AfxWin.h>
+#else
+#include <windows.h>
+#endif
+
+#endif // DOCTEST_CONFIG_COLORS_WINDOWS
+
+namespace doctest
+{
 namespace detail
 {
-    struct Endianness
-    {
-        enum Arch
-        {
-            Big,
-            Little
-        };
-
-        static Arch which() {
-            union _
-            {
-                int  asInt;
-                char asChar[sizeof(int)];
-            } u;
-
-            u.asInt = 1;
-            return (u.asChar[sizeof(int) - 1] == 1) ? Big : Little;
-        }
-    };
-
-    String rawMemoryToString(const void* object, unsigned size) {
-        // Reverse order for little endian architectures
-        int i = 0, end = static_cast<int>(size), inc = 1;
-        if(Endianness::which() == Endianness::Little) {
-            i   = end - 1;
-            end = inc = -1;
-        }
-
-        unsigned char const* bytes = static_cast<unsigned char const*>(object);
-        std::ostringstream   os;
-        os << "0x" << std::setfill('0') << std::hex;
-        for(; i != end; i += inc)
-            os << std::setw(2) << static_cast<unsigned>(bytes[i]);
-        return os.str().c_str();
-    }
-
-    std::ostream* createStream() { return new std::ostringstream(); }
-    String getStreamResult(std::ostream* in) {
-        return static_cast<std::ostringstream*>(in)->str().c_str();
-    }
-    void freeStream(std::ostream* in) { delete in; }
-
     bool TestData::operator==(const TestData& other) const {
         return m_line == other.m_line && strcmp(m_file, other.m_file) == 0;
     }
@@ -1290,25 +1436,6 @@ namespace detail
 
     // lowers ascii letters
     char tolower(const char c) { return ((c >= 'A' && c <= 'Z') ? static_cast<char>(c + 32) : c); }
-
-    // not using std::strlen() because of valgrind errors when optimizations are turned on
-    // 'Invalid read of size 4' when the test suite len (with '\0') is not a multiple of 4
-    // for details see http://stackoverflow.com/questions/35671155
-    size_t my_strlen(const char* in) {
-        const char* temp = in;
-        while(*temp)
-            ++temp;
-        return temp - in;
-    }
-
-    // case insensitive strcmp
-    int stricmp(char const* a, char const* b) {
-        for(;; a++, b++) {
-            int d = tolower(*a) - tolower(*b);
-            if(d != 0 || !*a)
-                return d;
-        }
-    }
 
     // matching of a string against a wildcard mask (case sensitivity configurable) taken from
     // http://www.emoticode.net/c/simple-wildcard-string-compare-globbing-function.html
@@ -2111,66 +2238,6 @@ namespace detail
         printf("for more information visit the project documentation\n\n");
     }
 } // namespace detail
-
-String::String(const char* in) {
-    m_str = static_cast<char*>(malloc(detail::my_strlen(in) + 1));
-    strcpy(m_str, in);
-}
-
-String::String(const String& other)
-        : m_str(0) {
-    copy(other);
-}
-
-void String::copy(const String& other) {
-    if(m_str)
-        free(m_str);
-    m_str = 0;
-
-    if(other.m_str) {
-        m_str = static_cast<char*>(malloc(detail::my_strlen(other.m_str) + 1));
-        strcpy(m_str, other.m_str);
-    }
-}
-
-String::~String() {
-    if(m_str)
-        free(m_str);
-}
-
-String& String::operator=(const String& other) {
-    if(this != &other)
-        copy(other);
-    return *this;
-}
-
-String String::operator+(const String& other) const { return String(m_str) += other; }
-
-String& String::operator+=(const String& other) {
-    using namespace detail;
-    if(m_str == 0) {
-        copy(other);
-    } else if(other.m_str != 0) {
-        char* newStr = static_cast<char*>(malloc(my_strlen(m_str) + my_strlen(other.m_str) + 1));
-        strcpy(newStr, m_str);
-        strcpy(newStr + my_strlen(m_str), other.m_str);
-        free(m_str);
-        m_str = newStr;
-    }
-    return *this;
-}
-
-int String::compare(const char* other, bool no_case) const {
-    if(no_case)
-        return detail::stricmp(m_str, other);
-    return strcmp(m_str, other);
-}
-
-int String::compare(const String& other, bool no_case) const {
-    if(no_case)
-        return detail::stricmp(m_str, other.m_str);
-    return strcmp(m_str, other.m_str);
-}
 
 Context::Context(int argc, const char* const* argv) {
     using namespace detail;
