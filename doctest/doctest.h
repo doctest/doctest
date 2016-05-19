@@ -713,6 +713,7 @@ namespace detail
         // stuff for subcases
         HashTable<Subcase> subcasesPassed;
         HashTable<int>     subcasesEnteredLevels;
+        Vector<Subcase>    subcasesStack;
         int                subcasesCurrentLevel;
         bool               subcasesHasSkipped;
 
@@ -1632,6 +1633,11 @@ namespace detail
             return;
         }
 
+        s->subcasesStack.push_back(*this);
+        s->hasLoggedCurrentTestStart = false;
+        if(s->hasLoggedCurrentTestStart)
+            logTestEnd();
+
         s->subcasesEnteredLevels.insert(s->subcasesCurrentLevel++);
         m_entered = true;
     }
@@ -1644,6 +1650,11 @@ namespace detail
             // only mark the subcase as passed if no subcases have been skipped
             if(s->subcasesHasSkipped == false)
                 s->subcasesPassed.insert(*this);
+
+            s->subcasesStack.pop_back();
+            s->hasLoggedCurrentTestStart = false;
+            if(s->hasLoggedCurrentTestStart)
+                logTestEnd();
         }
     }
 
@@ -1925,15 +1936,27 @@ namespace detail
         DOCTEST_SNPRINTF(loc, DOCTEST_COUNTOF(loc), "%s(%d)\n", fileForOutput(file), line);
 
         char msg[DOCTEST_SNPRINTF_BUFFER_LENGTH];
-        DOCTEST_SNPRINTF(msg, DOCTEST_COUNTOF(msg), "test: \"%s\"\n", name);
+        DOCTEST_SNPRINTF(msg, DOCTEST_COUNTOF(msg), "%s\n", name);
 
         DOCTEST_PRINTF_COLORED(getSeparator(), Color::Yellow);
         DOCTEST_PRINTF_COLORED(loc, Color::LightGrey);
         DOCTEST_PRINTF_COLORED(msg, Color::None);
-        DOCTEST_PRINTF_COLORED(getSeparator(), Color::Yellow);
+
+        String           subcaseStuff  = "";
+        Vector<Subcase>& subcasesStack = DOCTEST_GCS()->subcasesStack;
+        String           tabulation;
+        for(unsigned i = 0; i < subcasesStack.size(); ++i) {
+            tabulation += "  ";
+            char subcase[DOCTEST_SNPRINTF_BUFFER_LENGTH];
+            DOCTEST_SNPRINTF(subcase, DOCTEST_COUNTOF(loc), "%s%s\n", tabulation.c_str(),
+                             subcasesStack[i].m_name);
+            DOCTEST_PRINTF_COLORED(subcase, Color::None);
+            subcaseStuff += subcase;
+        }
+
         DOCTEST_PRINTF_COLORED(newLine, Color::None);
 
-        printToDebugConsole(String(getSeparator()) + loc + msg + getSeparator() + newLine);
+        printToDebugConsole(String(getSeparator()) + loc + msg + subcaseStuff.c_str() + newLine);
     }
 
     void logTestEnd() {}
@@ -2496,8 +2519,7 @@ int Context::run() {
 //__try {
 #endif // _MSC_VER
 
-            p.currentTest               = &data;
-            p.hasLoggedCurrentTestStart = false;
+            p.currentTest = &data;
 
             // if logging successful tests - force the start log
             if(p.success) {
@@ -2508,6 +2530,8 @@ int Context::run() {
             unsigned didFail = 0;
             p.subcasesPassed.clear();
             do {
+                p.hasLoggedCurrentTestStart = false;
+
                 // reset the assertion state
                 p.numAssertionsForCurrentTestcase       = 0;
                 p.numFailedAssertionsForCurrentTestcase = 0;
@@ -2523,11 +2547,12 @@ int Context::run() {
                 // exit this loop if enough assertions have failed
                 if(p.abort_after > 0 && p.numFailedAssertions >= p.abort_after)
                     p.subcasesHasSkipped = false;
-            } while(p.subcasesHasSkipped == true);
 
-            // if the start has been logged
-            if(p.hasLoggedCurrentTestStart)
-                logTestEnd();
+                // if the start has been logged
+                if(p.hasLoggedCurrentTestStart)
+                    logTestEnd();
+
+            } while(p.subcasesHasSkipped == true);
 
             if(didFail > 0)
                 numFailed++;

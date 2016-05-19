@@ -16,7 +16,7 @@ The library can be used like any other even if you are not fond of the idea of m
 ### Unintrusive (transparent):
 
 - everything testing-related can be removed from the binary executable by defining the [**```DOCTEST_CONFIG_DISABLE```**](configuration.md) identifier
-- very small and easy to integrate - single header - less than 3k LOC in the implementation translation unit and less than 1k LOC everywhere else - **extremely** low footprint on compile times - see the [**benchmarks**](benchmarks.md)
+- very small and easy to integrate - single header - less than 3k LOC in the implementation translation unit and less than 1.5k LOC everywhere else - **extremely** low footprint on compile times - see the [**benchmarks**](benchmarks.md)
 - doesn't drag any headers when included (except for in the translation unit where the library gets implemented)
 - everything is in the ```doctest``` namespace (and the implementation details are in a nested ```detail``` namespace)
 - all macros have prefixes - some by default have unprefixed versions as well but that is optional - see [**configuration**](configuration.md)
@@ -95,7 +95,7 @@ This is a list of planned features for future releases (maybe in the given order
 - add ```ERROR```/```FAIL``` macros
 - running tests a few times
 - marking a test to run X times (should also multiply with the global test run times)
-- test execution in separate processes - UNIX only with ```fork()``` (should also check out cygwin under windows)
+- test execution in separate processes - ```fork()``` for UNIX and [this](https://github.com/nemequ/munit/issues/2) for Windows
 - ability to provide a temp folder that is cleared between each test case
 - detect floating point exceptions
 - ```Bitwise()``` class that has overloaded operators for comparison - to be used to check objects bitwise against each other
