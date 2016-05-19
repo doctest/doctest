@@ -25,21 +25,66 @@
 #include <limits>
 #include <cmath>
 
-TEST_CASE("zzz") {
-    //CHECK(std::string("OMG2") == std::string("OMG"));
 
-    std::vector<int> vec1;
-    vec1.push_back(1);
-    vec1.push_back(2);
-    vec1.push_back(3);
 
-    std::vector<int> vec2;
-    vec2.push_back(1);
-    vec2.push_back(2);
-    vec2.push_back(4);
+SCENARIO("[math]vectors can be sized and resized") {
 
-    //CHECK(vec1 == vec2);
+    GIVEN("A vector with some items") {
+        std::vector<int> v(5);
+
+        REQUIRE(v.size() == 5u);
+        REQUIRE(v.capacity() >= 5u);
+
+        WHEN("the size is increased") {
+            v.resize(10);
+        
+            THEN("the size and capacity change") {
+                REQUIRE(v.size() == 10u);
+                REQUIRE(v.capacity() >= 10u);
+            }
+        }
+        WHEN("the size is reduced") {
+            v.resize(0);
+        
+            THEN("the size changes but not capacity") {
+                REQUIRE(v.size() == 0u);
+                REQUIRE(v.capacity() >= 5u);
+            }
+        }
+        WHEN("more capacity is reserved") {
+            v.reserve(10);
+        
+            THEN("the capacity changes but not the size") {
+                REQUIRE(v.size() == 5u);
+                REQUIRE(v.capacity() >= 10u);
+            }
+        }
+        WHEN("less capacity is reserved") {
+            v.reserve(0);
+        
+            THEN("neither size nor capacity are changed") {
+                REQUIRE(v.size() == 5u);
+                REQUIRE(v.capacity() >= 5u);
+            }
+        }
+    }
 }
+
+//TEST_CASE("zzz") {
+//    //CHECK(std::string("OMG2") == std::string("OMG"));
+//
+//    std::vector<int> vec1;
+//    vec1.push_back(1);
+//    vec1.push_back(2);
+//    vec1.push_back(3);
+//
+//    std::vector<int> vec2;
+//    vec2.push_back(1);
+//    vec2.push_back(2);
+//    vec2.push_back(4);
+//
+//    //CHECK(vec1 == vec2);
+//}
 
 int main(int argc, char** argv) {
     // initialize
@@ -51,7 +96,7 @@ int main(int argc, char** argv) {
     //context.setOption("success", true);
     //context.setOption("no-throw", true);
     //context.setOption("dt-no-colors", true);
-    context.addFilter("test-case", "zzz");
+    //context.addFilter("test-case", "zzz");
     //context.setOption("abort-after", 1);
     //context.addFilter("suite", "randomness");
     //context.setOption("sort", "rand");

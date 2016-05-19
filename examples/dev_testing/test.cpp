@@ -1,3 +1,4 @@
+/*
 //#define DOCTEST_CONFIG_DISABLE
 
 #include "doctest.h"
@@ -163,3 +164,4 @@ TEST_CASE("") { printf("TEST %d\n", __LINE__ - 100); }
 TEST_CASE("") { printf("TEST %d\n", __LINE__ - 100); }
 TEST_CASE("") { printf("TEST %d\n", __LINE__ - 100); }
 TEST_SUITE_END();
+*/

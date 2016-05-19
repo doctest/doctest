@@ -10,6 +10,15 @@
 // The documentation can be found at the library's page:
 // https://github.com/onqtam/doctest/blob/master/doc/markdown/readme.md
 //
+// The library is heavily influenced by Catch - https://github.com/philsquared/Catch
+// which uses the Boost Software License - Version 1.0
+// see here - https://github.com/philsquared/Catch/blob/master/LICENSE_1_0.txt
+// The concept of subcases (sections in Catch) and expression decomposition are from there.
+// Some parts of the code are taken directly:
+// - stringification - the detection of "ostream& operator<<(ostream&, const T&)" and the StringMaker class
+// - the Approx() helper class for floating point comparison
+// - colors in the console
+// - breaking into a debugger
 
 // Suppress this globally - there is no way to silence it in the expression decomposition macros
 // _Pragma() in macros doesn't work for the c++ front-end of g++
@@ -542,7 +551,7 @@ namespace detail
     }
 
     // TODO: think about this
-    //struct STATIC_ASSERT_Expression_Too_Complex;
+    //struct STATIC_ASSERT_Expression_Too_Complex_Please_Rewrite_As_Binary_Comparison;
 
     struct Result
     {
@@ -564,19 +573,19 @@ namespace detail
         void invert() { m_passed = !m_passed; }
 
         // clang-format off
-        //template <typename R> STATIC_ASSERT_Expression_Too_Complex& operator+(const R&);
-        //template <typename R> STATIC_ASSERT_Expression_Too_Complex& operator-(const R&);
-        //template <typename R> STATIC_ASSERT_Expression_Too_Complex& operator/(const R&);
-        //template <typename R> STATIC_ASSERT_Expression_Too_Complex& operator*(const R&);
-        //template <typename R> STATIC_ASSERT_Expression_Too_Complex& operator&&(const R&);
-        //template <typename R> STATIC_ASSERT_Expression_Too_Complex& operator||(const R&);
+        //template <typename R> STATIC_ASSERT_Expression_Too_Complex_Please_Rewrite_As_Binary_Comparison& operator+(const R&);
+        //template <typename R> STATIC_ASSERT_Expression_Too_Complex_Please_Rewrite_As_Binary_Comparison& operator-(const R&);
+        //template <typename R> STATIC_ASSERT_Expression_Too_Complex_Please_Rewrite_As_Binary_Comparison& operator/(const R&);
+        //template <typename R> STATIC_ASSERT_Expression_Too_Complex_Please_Rewrite_As_Binary_Comparison& operator*(const R&);
+        //template <typename R> STATIC_ASSERT_Expression_Too_Complex_Please_Rewrite_As_Binary_Comparison& operator&&(const R&);
+        //template <typename R> STATIC_ASSERT_Expression_Too_Complex_Please_Rewrite_As_Binary_Comparison& operator||(const R&);
         //
-        //template <typename R> STATIC_ASSERT_Expression_Too_Complex& operator==(const R&);
-        //template <typename R> STATIC_ASSERT_Expression_Too_Complex& operator!=(const R&);
-        //template <typename R> STATIC_ASSERT_Expression_Too_Complex& operator<(const R&);
-        //template <typename R> STATIC_ASSERT_Expression_Too_Complex& operator<=(const R&);
-        //template <typename R> STATIC_ASSERT_Expression_Too_Complex& operator>(const R&);
-        //template <typename R> STATIC_ASSERT_Expression_Too_Complex& operator>=(const R&);
+        //template <typename R> STATIC_ASSERT_Expression_Too_Complex_Please_Rewrite_As_Binary_Comparison& operator==(const R&);
+        //template <typename R> STATIC_ASSERT_Expression_Too_Complex_Please_Rewrite_As_Binary_Comparison& operator!=(const R&);
+        //template <typename R> STATIC_ASSERT_Expression_Too_Complex_Please_Rewrite_As_Binary_Comparison& operator<(const R&);
+        //template <typename R> STATIC_ASSERT_Expression_Too_Complex_Please_Rewrite_As_Binary_Comparison& operator<=(const R&);
+        //template <typename R> STATIC_ASSERT_Expression_Too_Complex_Please_Rewrite_As_Binary_Comparison& operator>(const R&);
+        //template <typename R> STATIC_ASSERT_Expression_Too_Complex_Please_Rewrite_As_Binary_Comparison& operator>=(const R&);
         // clang-format on
     };
 
@@ -1046,6 +1055,14 @@ public:
 
 #endif // DOCTEST_CONFIG_DISABLE
 
+// BDD style macros
+#define DOCTEST_SCENARIO(name) TEST_CASE("Scenario: " name)
+#define DOCTEST_GIVEN(name) SUBCASE("   Given: " name)
+#define DOCTEST_WHEN(name) SUBCASE("    When: " name)
+#define DOCTEST_AND_WHEN(name) SUBCASE("And when: " name)
+#define DOCTEST_THEN(name) SUBCASE("    Then: " name)
+#define DOCTEST_AND_THEN(name) SUBCASE("     And: " name)
+
 // == SHORT VERSIONS OF THE MACROS
 #if !defined(DOCTEST_CONFIG_NO_SHORT_MACRO_NAMES)
 
@@ -1069,6 +1086,13 @@ public:
 #define REQUIRE_THROWS DOCTEST_REQUIRE_THROWS
 #define REQUIRE_THROWS_AS DOCTEST_REQUIRE_THROWS_AS
 #define REQUIRE_NOTHROW DOCTEST_REQUIRE_NOTHROW
+
+#define SCENARIO DOCTEST_SCENARIO
+#define GIVEN DOCTEST_GIVEN
+#define WHEN DOCTEST_WHEN
+#define AND_WHEN DOCTEST_AND_WHEN
+#define THEN DOCTEST_THEN
+#define AND_THEN DOCTEST_AND_THEN
 
 #endif // DOCTEST_CONFIG_NO_SHORT_MACRO_NAMES
 

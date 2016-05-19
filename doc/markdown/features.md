@@ -50,6 +50,7 @@ The library can be used like any other even if you are not fond of the idea of m
 - offers a way to remove **everything** testing-related from the binary with the [**```DOCTEST_CONFIG_DISABLE```**](configuration.md) macro
 - tests are registered automatically - no need to add them to a collection manually
 - supports [**subcases**](testcases.md#subcases) for easy setup/teardown of tests (also supports the retro [**test fixtures**](testcases.md#test-fixtures) with classes)
+- supports [**BDD style**](testcases.md#bdd-style) tests
 - only one core [**assertion macro**](assertions.md) for comparisons - standard C++ operators are used for the comparison (less than, equal, greater than...) - yet the full expression is decomposed and left and right values of the expression are logged
 - assertion macros for [**exceptions**](assertions.md) - if something should or shouldn't throw
 - floating point comparison support - see the [**```Approx()```**](assertions.md) helper
@@ -70,7 +71,6 @@ The library can be used like any other even if you are not fond of the idea of m
 This is a list of planned features for future releases (maybe in the given order).
 
 - test with gcc 6 and use it in the CI builds
-- BDD based on subcases - like Catch
 - support for ```std::exception``` and derivatives (mainly for calling the ```.what()``` method when caught unexpectedly)
 - test with missed warning flags for GCC - look into https://github.com/Barro/compiler-warnings
 - crash handling: signals on UNIX platforms or structured exceptions on Windows
