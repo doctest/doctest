@@ -115,6 +115,7 @@ And here is a list of things that are being considered but not part of the roadm
 - ability to specify ASC/DESC for the order option
 - command line error handling/reporting
 - utf8? not sure if this should be here
+- print a warning when no assertion is encountered in a test case
 - hierarchical test suites - using a stack for the pushed ones - should be easy
 - put everything from the ```detail``` namespace also in a nested anonymous namespace to make them with internal linkage
 - ability to re-run only newly compiled tests based on time stamps using ```__DATE__``` and ```__TIME__``` - stored in some file
