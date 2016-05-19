@@ -25,9 +25,7 @@
 *.s
 
 # My garbage :)
-scripts/bench/assimp/*
-scripts/bench/catch/*
-scripts/bench/log.txt
+scripts/bench/project/*
 build/*
 build-mingw/*
 examples/*/build/*
