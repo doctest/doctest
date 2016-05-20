@@ -14,17 +14,9 @@ This is done for easy interoperability with client command line option handling 
 
 Filters use wildcards for matching values - where ```*``` means "match any sequence" and ```?``` means "match any one character".
 
-|                                                           Query Flags | Description                                                                                              |
-|-----------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------|
-| ```-?,   --help, -h```                                                | Prints a help message listing all these flags/options                                                    |
-| ```-v,   --version```                                                 | Prints the version of the **doctest** framework                                                          |
-| ```-c,   --count```                                                   | Prints the number of test cases matching the current filters (see below)                                 |
-| ```-ltc, --list-test-cases```                                         | Lists all test cases by name which match the current filters (see below)                                 |
-| ```-lts, --list-test-suites```                                        | Lists all test suites by name which have at least one test case matching the current filters (see below) |
-
-| Query Flags                    | Description                                                                                              |
-|--------------------------------|----------------------------------------------------------------------------------------------------------|
-| ```-?,   --help, -h```         | Prints a help message listing all these flags/options                                                    |
+|           Query Flags          | Description                                                                                              |
+|:------------------------------:|----------------------------------------------------------------------------------------------------------|
+| ```-?,   --help, -h```         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| Prints a help message listing all these flags/options                                                    |
 | ```-v,   --version```          | Prints the version of the **doctest** framework                                                          |
 | ```-c,   --count```            | Prints the number of test cases matching the current filters (see below)                                 |
 | ```-ltc, --list-test-cases```  | Lists all test cases by name which match the current filters (see below)                                 |
