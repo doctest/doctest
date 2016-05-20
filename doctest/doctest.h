@@ -20,6 +20,10 @@
 // - colors in the console
 // - breaking into a debugger
 
+// =================================================================================================
+// =================================================================================================
+// =================================================================================================
+
 // Suppress this globally - there is no way to silence it in the expression decomposition macros
 // _Pragma() in macros doesn't work for the c++ front-end of g++
 // https://gcc.gnu.org/bugzilla/show_bug.cgi?id=55578
@@ -169,7 +173,7 @@ typedef basic_ostream<char, char_traits<char> > ostream;
 #endif // _LIBCPP_VERSION
 
 #ifndef DOCTEST_CONFIG_WITH_LONG_LONG
-#if __cplusplus >= 201103L || defined(_MSC_EXTENSIONS) || (defined(_MSC_VER) && (_MSC_VER >= 1400))
+#if __cplusplus >= 201103L || (defined(_MSC_VER) && (_MSC_VER >= 1400))
 #define DOCTEST_CONFIG_WITH_LONG_LONG
 #endif // __cplusplus / _MSC_VER
 #endif // DOCTEST_CONFIG_WITH_LONG_LONG
@@ -1115,7 +1119,6 @@ DOCTEST_TEST_SUITE_END();
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
-#include <algorithm>
 #include <limits>
 #include <sstream>
 #include <iomanip>
@@ -1132,6 +1135,11 @@ namespace detail
         while(*temp)
             ++temp;
         return temp - in;
+    }
+
+    template <typename T>
+    T my_max(const T& lhs, const T& rhs) {
+        return lhs > rhs? lhs : rhs;
     }
 
     // case insensitive strcmp
@@ -1276,7 +1284,7 @@ Approx::Approx(double value)
 bool operator==(double lhs, Approx const& rhs) {
     // Thanks to Richard Harris for his help refining this formula
     return fabs(lhs - rhs.m_value) <
-           rhs.m_epsilon * (rhs.m_scale + (std::max)(fabs(lhs), fabs(rhs.m_value)));
+           rhs.m_epsilon * (rhs.m_scale + detail::my_max(fabs(lhs), fabs(rhs.m_value)));
 }
 
 String Approx::toString() const { return String("Approx( ") + doctest::toString(m_value) + " )"; }
@@ -1809,7 +1817,11 @@ namespace detail
         Color(Color const& other);
     };
 
-    void Color::use(Code code) {
+    void Color::use(Code
+#ifndef DOCTEST_CONFIG_COLORS_NONE
+                            code
+#endif // DOCTEST_CONFIG_COLORS_NONE
+                    ) {
         ContextState* p = getContextState();
         if(p->no_colors)
             return;
@@ -2461,13 +2473,13 @@ int Context::run() {
     }
 
     // sort the collected records
-    if(p.order_by.compare("file") == 0) {
+    if(p.order_by.compare("file", true) == 0) {
         qsort(testArray.data(), testArray.size(), sizeof(TestData*), fileOrderComparator);
-    } else if(p.order_by.compare("suite") == 0) {
+    } else if(p.order_by.compare("suite", true) == 0) {
         qsort(testArray.data(), testArray.size(), sizeof(TestData*), suiteOrderComparator);
-    } else if(p.order_by.compare("name") == 0) {
+    } else if(p.order_by.compare("name", true) == 0) {
         qsort(testArray.data(), testArray.size(), sizeof(TestData*), nameOrderComparator);
-    } else if(p.order_by.compare("rand") == 0) {
+    } else if(p.order_by.compare("rand", true) == 0) {
         srand(p.rand_seed);
 
         // random_shuffle implementation
