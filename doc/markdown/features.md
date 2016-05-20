@@ -91,7 +91,7 @@ This is a list of planned features for future releases (maybe in the given order
     - reporting running time of tests
     - restricting duration of test cases
     - killing a test that exceeds a time limit (will perhaps require threading or processes)
-- adding contextual info to asserts - with an ```INFO```/```CONTEXT``` /```TRACEPOINT``` macro
+- adding contextual info to asserts (logging) - with an ```INFO```/```CONTEXT``` /```TRACEPOINT``` macro
 - add ```ERROR```/```FAIL``` macros
 - running tests a few times
 - marking a test to run X times (should also multiply with the global test run times)
