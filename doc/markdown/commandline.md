@@ -15,10 +15,10 @@ This is done for easy interoperability with client command line option handling 
 Filters use wildcards for matching values - where ```*``` means "match any sequence" and ```?``` means "match any one character".
 
 <table><tr><td>
-**Query Flags**
+<b>Query Flags</b>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 </td><td>
-**Description**
+<b>Description</b>
 </td></tr><tr><td>
 <pre>-?,   --help, -h</pre>
 </td><td>
@@ -26,7 +26,7 @@ Prints a help message listing all these flags/options
 </td></tr><tr><td>
 <pre>-v,   --version</pre>
 </td><td>
-Prints the version of the **doctest** framework
+Prints the version of the <b>doctest</b> framework
 </td></tr><tr><td>
 <pre>-c,   --count</pre>
 </td><td>
@@ -42,10 +42,10 @@ Lists all test suites by name which have at least one test case matching the cur
 </td></tr></table>
 
 <table><tr><td>
-**Int/String Options**
+<b>Int/String Options</b>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 </td><td>
-**Description**
+<b>Description</b>
 </td></tr><tr><td>
 <pre>-tc,  --test-case=(filters)</pre>
 </td><td>
@@ -93,10 +93,10 @@ stop after (int) failed assertions
 </td></tr></table>
 
 <table><tr><td>
-**Bool Options**
+<b>Bool Options</b>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 </td><td>
-**Description**
+<b>Description</b>
 </td></tr><tr><td>
 <pre>-s,   --success=(bool)</pre>
 </td><td>
