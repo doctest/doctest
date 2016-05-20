@@ -49,7 +49,7 @@ All the flags/options also come with a prefixed version (with ```-dt-``` at the 
 
 All the unprefixed versions listed here can be disabled with the [**```DOCTEST_CONFIG_NO_UNPREFIXED_OPTIONS```**](configuration.md) define.
 
-This is done for easy interoperability with client command line option handling when the testing framework is integrated with a client codebase - all **doctest** related flags/options can be prefixed so there are no clashes and so that the user can exclude everything starting with ```-dt-``` from their option parsing.
+This is done for easy interoperability with client command line option handling when the testing framework is integrated within a client codebase - all **doctest** related flags/options can be prefixed so there are no clashes and so that the user can exclude everything starting with ```-dt-``` from their option parsing.
 
 ---------------
 
