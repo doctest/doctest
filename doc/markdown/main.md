@@ -29,16 +29,19 @@ int main(int argc, char** argv) {
     int res = context.run(); // run
 
     if(context.shouldExit()) // important - query flags (and --no-run) rely on the user doing this
-        return res;
+        return res;          // propagate the result of the tests
     
+    int client_stuff_return_code = 0;
     // your program - if the testing framework is integrated in your production code
     
-    return res;
+    return res + client_stuff_return_code;
 }
 
 ```
 
-#### dealing with shared objects (DLLs)
+Note the call to ```.shouldExit()``` on the context - that is very important - it will be set when a query flag has been used (or the ```--no-run``` option is set to ```true```) and it is the user's responsibility to exit the application in a normal way.
+
+### Dealing with shared objects (DLLs)
 
 When integrating the framework in production code which gets built as a shared object (dll) everything still works. Many shared objects and an executable can have tests in them and can even use different versions of the **doctest** framework.
 
