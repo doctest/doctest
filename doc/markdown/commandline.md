@@ -16,11 +16,11 @@ Filters use wildcards for matching values - where ```*``` means "match any seque
 
 
 
-| **Query Flags** | **Description** |
+| Query Flags | Description |
 |--------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| ```-?```  ```--help``` ```-h``` | Prints a help message listing all these flags/options |
-| ```-v```   ```--version``` | Prints the version of the **doctest** framework |
-| ```-c```   ```--count``` | Prints the number of test cases matching the current filters (see below) |
+| ```-?``` &nbsp;&nbsp;&nbsp; ```--help``` ```-h``` | Prints a help message listing all these flags/options |
+| ```-v``` &nbsp;&nbsp;&nbsp; ```--version``` | Prints the version of the **doctest** framework |
+| ```-c``` &nbsp;&nbsp;&nbsp; ```--count``` | Prints the number of test cases matching the current filters (see below) |
 | ```-ltc``` ```--list-test-cases``` | Lists all test cases by name which match the current filters (see below) |
 | ```-lts``` ```--list-test-suites``` | Lists all test suites by name which have at least one test case matching the current filters (see below) |
 | **Int/String Options** | <hr> |
