@@ -1,14 +1,39 @@
 the lightest feature rich C++ single header testing framework
 -------
 
-The **doctest** library is inspired by the ```unittest {}``` functionality of the **D** programming language and **Python**'s **docstrings** - tests can be considered a form of documentation and _should_ be able to reside near the production code which they test.
+The **doctest** library is inspired by the ```unittest {}``` functionality of the **D** programming language.
 
 It is heavily influenced by [**Catch**](https://github.com/philsquared/Catch) which is currently the most popular, simple and user friendly alternative out there.
+
+The main differences are:
+
+A complete compiling example with a self-registering test and a test runner looks like this:
+
+```c++
+#define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
+#include "doctest.h"
+
+int factorial(int number) { return number <= 1 ? number : factorial(number - 1) * number; }
+
+TEST_CASE("testing the factorial function") {
+    CHECK(factorial(1) == 1);
+    CHECK(factorial(2) == 2);
+    CHECK(factorial(10) == 3628800);
+}
+```
+
+
+
+
+
+
+
 
 
 - Check out [**features and design goals**](doc/markdown/features.md#why-does-this-library-exist-and-how-is-it-different-from-all-the-rest) to see why this library exists and how it is different from all the rest.
 - Check out the tutorial [**here**](doc/markdown/tutorial.md#tutorial).
 - [![Try it online](https://img.shields.io/badge/try%20it-online-orange.svg)](http://melpon.org/wandbox/permlink/xvF0y5DTzIDLN98f)
+- a rich set of examples...
 - [![documentation](https://img.shields.io/badge/documentation-online%20%20%20%20%20-blue.svg)](doc/markdown/readme.md#reference)
 - [![download](https://img.shields.io/badge/latest%20version%20%20-download-blue.svg)](https://raw.githubusercontent.com/onqtam/doctest/master/doctest/doctest.h)
 
