@@ -9,7 +9,7 @@ endif()
 get_filename_component(PROJECT_NAME ${CMAKE_CURRENT_SOURCE_DIR} NAME)
 project(${PROJECT_NAME})
 
-include(../../scripts/common.cmake)
+include(../common.cmake)
 
 include_directories("../../doctest/")
 
