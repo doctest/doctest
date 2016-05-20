@@ -24,29 +24,29 @@ Filters use wildcards for matching values - where ```*``` means "match any seque
 | ```-ltc``` ```--list-test-cases``` | Lists all test cases by name which match the current filters (see below) |
 | ```-lts``` ```--list-test-suites``` | Lists all test suites by name which have at least one test case matching the current filters (see below) |
 | **Int/String Options** | <hr> |
-| ```-tc``` ```--test-case=(filters)``` | Filters test cases based on their name. By default all test cases match but if a value is given to this filter like ```--test-case=*math*,*sound*``` then only test cases who match atleast one of the patterns in the comma-separated list with wildcards will get executed/counted/listed. |
+| ```-tc``` &nbsp; ```--test-case=(filters)``` | Filters test cases based on their name. By default all test cases match but if a value is given to this filter like ```--test-case=*math*,*sound*``` then only test cases who match atleast one of the patterns in the comma-separated list with wildcards will get executed/counted/listed. |
 | ```-tce``` ```--test-case-exclude=(filters)``` | same as the ```-test-case=(filters)``` option but if any of the patterns in the comma-separated list of values matches - then the test case is skipped. |
-| ```-sf``` ```--source-file=(filters)``` | filters tests by their file |
+| ```-sf``` &nbsp; ```--source-file=(filters)``` | filters tests by their file |
 | ```-sfe``` ```--source-file-exclude=(filters)``` | filters OUT tests by their file |
-| ```-ts``` ```--test-suite=(filters)``` | filters tests by their test suite |
+| ```-ts``` &nbsp; ```--test-suite=(filters)``` | filters tests by their test suite |
 | ```-tse``` ```--test-suite-exclude=(filters)``` | filters OUT tests by their test suite |
-| ```-ob``` ```--order-by=(string)``` | how the tests should be ordered (string) - by [file/suite/name/rand] |
-| ```-rs``` ```--rand-seed=(int)``` | seed for random ordering |
-| ```-f``` ```--first=(int)``` | the first test passing the filters to execute - for range-based execution |
-| ```-l``` ```--last=(int)``` | the last test passing the filters to execute - for range-based execution |
-| ```-aa``` ```--abort-after=(int)``` | stop after (int) failed assertions |
+| ```-ob``` &nbsp; ```--order-by=(string)``` | how the tests should be ordered (string) - by [file/suite/name/rand] |
+| ```-rs``` &nbsp; ```--rand-seed=(int)``` | seed for random ordering |
+| ```-f``` &nbsp;&nbsp;&nbsp; ```--first=(int)``` | the first test passing the filters to execute - for range-based execution |
+| ```-l``` &nbsp;&nbsp;&nbsp; ```--last=(int)``` | the last test passing the filters to execute - for range-based execution |
+| ```-aa``` &nbsp; ```--abort-after=(int)``` | stop after (int) failed assertions |
 | **Bool Options** | <hr> |
-| ```-s``` ```--success=(bool)``` | include successful assertions in output |
-| ```-cs``` ```--case-sensitive=(bool)``` | filters being treated as case sensitive |
-| ```-e``` ```--exit=(bool)``` | exits after the tests finish |
-| ```-no``` ```--no-overrides=(bool)``` | disables procedural overrides of options |
-| ```-nt``` ```--no-throw=(bool)``` | skips exceptions-related assert checks |
-| ```-ne``` ```--no-exitcode=(bool)``` | returns (or exits) always with success |
-| ```-nr``` ```--no-run=(bool)``` | skips all runtime doctest operations |
-| ```-nc``` ```--no-colors=(bool)``` | disables colors in output |
-| ```-nb``` ```--no-breaks=(bool)``` | disables breakpoints in debuggers |
+| ```-s``` &nbsp;&nbsp;&nbsp; ```--success=(bool)``` | include successful assertions in output |
+| ```-cs``` &nbsp; ```--case-sensitive=(bool)``` | filters being treated as case sensitive |
+| ```-e``` &nbsp;&nbsp;&nbsp; ```--exit=(bool)``` | exits after the tests finish |
+| ```-no``` &nbsp; ```--no-overrides=(bool)``` | disables procedural overrides of options |
+| ```-nt``` &nbsp; ```--no-throw=(bool)``` | skips exceptions-related assert checks |
+| ```-ne``` &nbsp; ```--no-exitcode=(bool)``` | returns (or exits) always with success |
+| ```-nr``` &nbsp; ```--no-run=(bool)``` | skips all runtime doctest operations |
+| ```-nc``` &nbsp; ```--no-colors=(bool)``` | disables colors in output |
+| ```-nb``` &nbsp; ```--no-breaks=(bool)``` | disables breakpoints in debuggers |
 | ```-npf``` ```--no-path-filenames=(bool)``` | only filenames and no paths in output |
-| &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| |
+| &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| |
 
 
 <table><tr><td>
