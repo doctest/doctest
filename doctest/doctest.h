@@ -1139,7 +1139,7 @@ namespace detail
 
     template <typename T>
     T my_max(const T& lhs, const T& rhs) {
-        return lhs > rhs? lhs : rhs;
+        return lhs > rhs ? lhs : rhs;
     }
 
     // case insensitive strcmp

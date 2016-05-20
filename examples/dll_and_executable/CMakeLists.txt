@@ -13,9 +13,9 @@ endif()
 
 include_directories("../../doctest/")
 
-add_library(dll_1 SHARED dll.cpp)
+add_library(dll SHARED dll.cpp)
 
 add_executable(${PROJECT_NAME} main.cpp)
-target_link_libraries(${PROJECT_NAME} dll_1)
+target_link_libraries(${PROJECT_NAME} dll)
 
 add_test(NAME ${PROJECT_NAME} COMMAND $<TARGET_FILE:${PROJECT_NAME}>)
