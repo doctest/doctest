@@ -17,7 +17,7 @@ Filters use wildcards for matching values - where ```*``` means "match any seque
 
 
 | **Query Flags** | **Description** |
-|-|-|
+|--------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | ```-?```  ```--help``` ```-h``` | Prints a help message listing all these flags/options |
 | ```-v```   ```--version``` | Prints the version of the **doctest** framework |
 | ```-c```   ```--count``` | Prints the number of test cases matching the current filters (see below) |
