@@ -109,6 +109,7 @@ Support the development of the project with donations! I work on this project in
 And here is a list of things that are being considered but not part of the roadmap yet:
 
 - matchers - should investigate what they are :D
+- option to list files in which  there are test cases who match the current filters
 - handle ```wchar``` strings
 - refactor the assertion macros - make proxy functions that do most of the things to minimize code bloat
 - pool allocator for the ```String``` class - currently very unoptimized
