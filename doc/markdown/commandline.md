@@ -1,7 +1,6 @@
 ## Command line
 
-**doctest** works quite nicely without any command line options at all - but for greater control use the following flags/options:
-
+**doctest** works quite nicely without any command line options at all - but for more control there are a bunch that are available.
 
 All the flags/options also come with a prefixed version (with ```-dt-``` at the front) - for example ```-rand-seed=<int>``` can be used also with ```-dt-rand-seed=<int>``` or ```-dt-rs=<int>```.
 
@@ -9,30 +8,31 @@ Also all the unprefixed versions listed here can be disabled with the [**```DOCT
 
 This is done for easy interoperability with client command line option handling when the testing framework is integrated with a client codebase - all **doctest** related flags/options can be prefixed so there are no clashes and so that the user can exclude everything starting with ```-dt-``` from their option parsing.
 
-Query flags - after the result is printed the program quits without executing any test cases (and if the framework is integrated into a client codebase and supplying it's own ```main()``` entry point - the program should check the result of ```doctest::Context::shouldExit()``` after calling ```doctest::Context::run()``` and should exit - this is left up to the user).
+Query flags - after the result is printed the program quits without executing any test cases (and if the framework is integrated into a client codebase and [**supplying it's own ```main()``` entry point**](main.md) - the program should check the result of ```doctest::Context::shouldExit()``` after calling ```doctest::Context::run()``` and should exit - this is left up to the user).
 
 <table><tr><td>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 Query Flags
 </td><td>
 Description
 </td></tr><tr><td>
-```-?,   --help, -h```
+<pre>-?,   --help, -h</pre>
 </td><td>
 Prints a help message listing all these flags/options
 </td></tr><tr><td>
-```-v,   --version```
+<pre>-v,   --version</pre>
 </td><td>
 Prints the version of the **doctest** framework
 </td></tr><tr><td>
-```-c,   --count```
+<pre>-c,   --count</pre>
 </td><td>
 Prints the number of test cases matching the current filters (see below)
 </td></tr><tr><td>
-```-ltc, --list-test-cases```
+<pre>-ltc, --list-test-cases</pre>
 </td><td>
 Lists all test cases by name which match the current filters (see below)
 </td></tr><tr><td>
-```-lts, --list-test-suites```
+<pre>-lts, --list-test-suites</pre>
 </td><td>
 Lists all test suites by name which have at least one test case matching the current filters (see below)
 </td></tr></table>
@@ -42,97 +42,99 @@ Lists all test suites by name which have at least one test case matching the cur
 Filters use wildcards for matching values - where ```*``` means "match any sequence" and ```?``` means "match any one character".
 
 <table><tr><td>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 Int/String Options
 </td><td>
 Description
 </td></tr><tr><td>
-```-tc,  --test-case=<filters>```
+<pre>-tc,  --test-case=<filters></pre>
 </td><td>
 Filters test cases based on their name. By default all test cases match but if a value is given to this filter like ```--test-case=*math*,*sound*``` then only test cases who match atleast one of the patterns in the comma-separated list with wildcards will get executed/counted/listed.
 </td></tr><tr><td>
-```-tce, --test-case-exclude=<filters>```
+<pre>-tce, --test-case-exclude=<filters></pre>
 </td><td>
 same as the ```-test-case=<filters>``` option but if any of the patterns in the comma-separated list of values matches - then the test case is skipped.
 </td></tr><tr><td>
-```-sf,  --source-file=<filters>```
+<pre>-sf,  --source-file=<filters></pre>
 </td><td>
 filters     tests by their file
 </td></tr><tr><td>
-```-sfe, --source-file-exclude=<filters>```
+<pre>-sfe, --source-file-exclude=<filters></pre>
 </td><td>
 filters OUT tests by their file
 </td></tr><tr><td>
-```-ts,  --test-suite=<filters>```
+<pre>-ts,  --test-suite=<filters></pre>
 </td><td>
 filters     tests by their test suite
 </td></tr><tr><td>
-```-tse, --test-suite-exclude=<filters>```
+<pre>-tse, --test-suite-exclude=<filters></pre>
 </td><td>
 filters OUT tests by their test suite
 </td></tr><tr><td>
-```-ob,  --order-by=<string>```
+<pre>-ob,  --order-by=<string></pre>
 </td><td>
 how the tests should be ordered <string> - by [file/suite/name/rand]
 </td></tr><tr><td>
-```-rs,  --rand-seed=<int>```
+<pre>-rs,  --rand-seed=<int></pre>
 </td><td>
 seed for random ordering
 </td></tr><tr><td>
-```-f,   --first=<int>```
+<pre>-f,   --first=<int></pre>
 </td><td>
 the first test passing the filters to execute - for range-based execution
 </td></tr><tr><td>
-```-l,   --last=<int>```
+<pre>-l,   --last=<int></pre>
 </td><td>
 the last test passing the filters to execute - for range-based execution
 </td></tr><tr><td>
-```-aa,  --abort-after=<int>```
+<pre>-aa,  --abort-after=<int></pre>
 </td><td>
 stop after <int> failed assertions
 </td></tr></table>
 
 <table><tr><td>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 Bool Options
 </td><td>
 Description
 </td></tr><tr><td>
-```-s,   --success=<bool>```
+<pre>-s,   --success=<bool></pre>
 </td><td>
 include successful assertions in output
 </td></tr><tr><td>
-```-cs,  --case-sensitive=<bool>```
+<pre>-cs,  --case-sensitive=<bool></pre>
 </td><td>
 filters being treated as case sensitive
 </td></tr><tr><td>
-```-e,   --exit=<bool>```
+<pre>-e,   --exit=<bool></pre>
 </td><td>
 exits after the tests finish
 </td></tr><tr><td>
-```-no,  --no-overrides=<bool>```
+<pre>-no,  --no-overrides=<bool></pre>
 </td><td>
 disables procedural overrides of options
 </td></tr><tr><td>
-```-nt,  --no-throw=<bool>```
+<pre>-nt,  --no-throw=<bool></pre>
 </td><td>
 skips exceptions-related assert checks
 </td></tr><tr><td>
-```-ne,  --no-exitcode=<bool>```
+<pre>-ne,  --no-exitcode=<bool></pre>
 </td><td>
 returns (or exits) always with success
 </td></tr><tr><td>
-```-nr,  --no-run=<bool>```
+<pre>-nr,  --no-run=<bool></pre>
 </td><td>
 skips all runtime doctest operations
 </td></tr><tr><td>
-```-nc,  --no-colors=<bool>```
+<pre>-nc,  --no-colors=<bool></pre>
 </td><td>
 disables colors in output
 </td></tr><tr><td>
-```-nb,  --no-breaks=<bool>```
+<pre>-nb,  --no-breaks=<bool></pre>
 </td><td>
 disables breakpoints in debuggers
 </td></tr><tr><td>
-```-npf, --no-path-filenames=<bool>```
+<pre>-npf, --no-path-filenames=<bool></pre>
 </td><td>
 only filenames and no paths in output
 </td></tr></table>
