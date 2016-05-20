@@ -2,16 +2,26 @@
 
 import sys
 import math
+import string
 import multiprocessing
 import subprocess
 
-if len(sys.argv) != 2:
+if len(sys.argv) < 2:
     print("supply the path to the doctest executable as the first argument!")
-    sys.exit(0)
+    sys.exit(1)
 
 # get the number of tests in the doctest executable
-result = subprocess.Popen([sys.argv[1], "-count"], stdout = subprocess.PIPE).communicate()[0]
-num_tests = int(result.rsplit(' ', 1)[-1])
+num_tests = 0
+
+program_with_args = [sys.argv[1], "-count"]
+for i in range(2, len(sys.argv)):
+    program_with_args.append(sys.argv[i])
+
+result = subprocess.Popen(program_with_args, stdout = subprocess.PIPE).communicate()[0]
+result = result.splitlines(True)
+for line in result:
+    if line.startswith("[doctest] number of tests passing the current filters:"):
+        num_tests = int(line.rsplit(' ', 1)[-1])
 
 # calculate the ranges
 cores = multiprocessing.cpu_count()
@@ -25,7 +35,8 @@ data = tuple([[x[0], x[-1]] for x in data])
 
 # the worker callback that runs the executable for the given range of tests
 def worker((first, last)):
-    subprocess.Popen([sys.argv[1], "-first=%s -last=%s" % (first, last)])
+    program_with_args = [sys.argv[1], "-first=" + str(first), "-last=" + str(last)]
+    subprocess.Popen(program_with_args)
 
 # run the tasks on a pool
 if __name__ == '__main__':
