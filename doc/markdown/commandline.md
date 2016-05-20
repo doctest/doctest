@@ -8,13 +8,17 @@ Also all the unprefixed versions listed here can be disabled with the [**```DOCT
 
 This is done for easy interoperability with client command line option handling when the testing framework is integrated with a client codebase - all **doctest** related flags/options can be prefixed so there are no clashes and so that the user can exclude everything starting with ```-dt-``` from their option parsing.
 
-Query flags - after the result is printed the program quits without executing any test cases (and if the framework is integrated into a client codebase and [**supplying it's own ```main()``` entry point**](main.md) - the program should check the result of ```doctest::Context::shouldExit()``` after calling ```doctest::Context::run()``` and should exit - this is left up to the user).
+**Query flags** - after the result is printed the program quits without executing any test cases (and if the framework is integrated into a client codebase and [**supplying it's own ```main()``` entry point**](main.md) - the program should check the result of ```doctest::Context::shouldExit()``` after calling ```doctest::Context::run()``` and should exit - this is left up to the user).
+
+```int```/```string``` options - they require a value after the ```=``` sign - without spaces! For example: ```--order-by=rand```.
+
+Filters use wildcards for matching values - where ```*``` means "match any sequence" and ```?``` means "match any one character".
 
 <table><tr><td>
-Query Flags
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+**Query Flags**
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 </td><td>
-Description
+**Description**
 </td></tr><tr><td>
 <pre>-?,   --help, -h</pre>
 </td><td>
@@ -37,15 +41,11 @@ Lists all test cases by name which match the current filters (see below)
 Lists all test suites by name which have at least one test case matching the current filters (see below)
 </td></tr></table>
 
-```int```/```string``` options - they require a value after the ```=``` sign - without spaces! For example: ```--order-by=rand```.
-
-Filters use wildcards for matching values - where ```*``` means "match any sequence" and ```?``` means "match any one character".
-
 <table><tr><td>
-Int/String Options
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+**Int/String Options**
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 </td><td>
-Description
+**Description**
 </td></tr><tr><td>
 <pre>-tc,  --test-case=(filters)</pre>
 </td><td>
@@ -93,10 +93,10 @@ stop after (int) failed assertions
 </td></tr></table>
 
 <table><tr><td>
-Bool Options
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+**Bool Options**
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 </td><td>
-Description
+**Description**
 </td></tr><tr><td>
 <pre>-s,   --success=(bool)</pre>
 </td><td>
