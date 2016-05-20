@@ -2,7 +2,7 @@
 
 **doctest** works quite nicely without any command line options at all - but for more control there are a bunch that are available.
 
-All the flags/options also come with a prefixed version (with ```-dt-``` at the front) - for example ```-rand-seed=<int>``` can be used also with ```-dt-rand-seed=<int>``` or ```-dt-rs=<int>```.
+All the flags/options also come with a prefixed version (with ```-dt-``` at the front) - for example ```-rand-seed=(int)``` can be used also with ```-dt-rand-seed=(int)``` or ```-dt-rs=(int)```.
 
 Also all the unprefixed versions listed here can be disabled with the [**```DOCTEST_CONFIG_NO_UNPREFIXED_OPTIONS```**](configuration.md) define.
 
@@ -47,49 +47,49 @@ Int/String Options
 </td><td>
 Description
 </td></tr><tr><td>
-<pre>-tc,  --test-case=<filters></pre>
+<pre>-tc,  --test-case=(filters)</pre>
 </td><td>
 Filters test cases based on their name. By default all test cases match but if a value is given to this filter like ```--test-case=*math*,*sound*``` then only test cases who match atleast one of the patterns in the comma-separated list with wildcards will get executed/counted/listed.
 </td></tr><tr><td>
-<pre>-tce, --test-case-exclude=<filters></pre>
+<pre>-tce, --test-case-exclude=(filters)</pre>
 </td><td>
-same as the ```-test-case=<filters>``` option but if any of the patterns in the comma-separated list of values matches - then the test case is skipped.
+same as the ```-test-case=(filters)``` option but if any of the patterns in the comma-separated list of values matches - then the test case is skipped.
 </td></tr><tr><td>
-<pre>-sf,  --source-file=<filters></pre>
+<pre>-sf,  --source-file=(filters)</pre>
 </td><td>
 filters     tests by their file
 </td></tr><tr><td>
-<pre>-sfe, --source-file-exclude=<filters></pre>
+<pre>-sfe, --source-file-exclude=(filters)</pre>
 </td><td>
 filters OUT tests by their file
 </td></tr><tr><td>
-<pre>-ts,  --test-suite=<filters></pre>
+<pre>-ts,  --test-suite=(filters)</pre>
 </td><td>
 filters     tests by their test suite
 </td></tr><tr><td>
-<pre>-tse, --test-suite-exclude=<filters></pre>
+<pre>-tse, --test-suite-exclude=(filters)</pre>
 </td><td>
 filters OUT tests by their test suite
 </td></tr><tr><td>
-<pre>-ob,  --order-by=<string></pre>
+<pre>-ob,  --order-by=(string)</pre>
 </td><td>
-how the tests should be ordered <string> - by [file/suite/name/rand]
+how the tests should be ordered (string) - by [file/suite/name/rand]
 </td></tr><tr><td>
-<pre>-rs,  --rand-seed=<int></pre>
+<pre>-rs,  --rand-seed=(int)</pre>
 </td><td>
 seed for random ordering
 </td></tr><tr><td>
-<pre>-f,   --first=<int></pre>
+<pre>-f,   --first=(int)</pre>
 </td><td>
 the first test passing the filters to execute - for range-based execution
 </td></tr><tr><td>
-<pre>-l,   --last=<int></pre>
+<pre>-l,   --last=(int)</pre>
 </td><td>
 the last test passing the filters to execute - for range-based execution
 </td></tr><tr><td>
-<pre>-aa,  --abort-after=<int></pre>
+<pre>-aa,  --abort-after=(int)</pre>
 </td><td>
-stop after <int> failed assertions
+stop after (int) failed assertions
 </td></tr></table>
 
 <table><tr><td>
@@ -98,43 +98,43 @@ Bool Options
 </td><td>
 Description
 </td></tr><tr><td>
-<pre>-s,   --success=<bool></pre>
+<pre>-s,   --success=(bool)</pre>
 </td><td>
 include successful assertions in output
 </td></tr><tr><td>
-<pre>-cs,  --case-sensitive=<bool></pre>
+<pre>-cs,  --case-sensitive=(bool)</pre>
 </td><td>
 filters being treated as case sensitive
 </td></tr><tr><td>
-<pre>-e,   --exit=<bool></pre>
+<pre>-e,   --exit=(bool)</pre>
 </td><td>
 exits after the tests finish
 </td></tr><tr><td>
-<pre>-no,  --no-overrides=<bool></pre>
+<pre>-no,  --no-overrides=(bool)</pre>
 </td><td>
 disables procedural overrides of options
 </td></tr><tr><td>
-<pre>-nt,  --no-throw=<bool></pre>
+<pre>-nt,  --no-throw=(bool)</pre>
 </td><td>
 skips exceptions-related assert checks
 </td></tr><tr><td>
-<pre>-ne,  --no-exitcode=<bool></pre>
+<pre>-ne,  --no-exitcode=(bool)</pre>
 </td><td>
 returns (or exits) always with success
 </td></tr><tr><td>
-<pre>-nr,  --no-run=<bool></pre>
+<pre>-nr,  --no-run=(bool)</pre>
 </td><td>
 skips all runtime doctest operations
 </td></tr><tr><td>
-<pre>-nc,  --no-colors=<bool></pre>
+<pre>-nc,  --no-colors=(bool)</pre>
 </td><td>
 disables colors in output
 </td></tr><tr><td>
-<pre>-nb,  --no-breaks=<bool></pre>
+<pre>-nb,  --no-breaks=(bool)</pre>
 </td><td>
 disables breakpoints in debuggers
 </td></tr><tr><td>
-<pre>-npf, --no-path-filenames=<bool></pre>
+<pre>-npf, --no-path-filenames=(bool)</pre>
 </td><td>
 only filenames and no paths in output
 </td></tr></table>
