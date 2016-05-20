@@ -13,6 +13,7 @@ This is done for easy interoperability with client command line option handling 
 ```int```/```string``` options - they require a value after the ```=``` sign - without spaces! For example: ```--order-by=rand```.
 
 Filters use wildcards for matching values - where ```*``` means "match any sequence" and ```?``` means "match any one character".
+
 | **Query Flags**                                  | **Description**                                                                                                                                                                                                                                                                              |
 |--------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | ```-?```  ```--help``` ```-h```                  | Prints a help message listing all these flags/options                                                                                                                                                                                                                                        |
