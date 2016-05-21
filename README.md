@@ -1,9 +1,7 @@
 The lightest feature rich C++ single header testing framework
 -------
 
-There are many C++ testing frameworks - [Catch](https://github.com/philsquared/Catch), [Boost.Test](http://www.boost.org/doc/libs/1_60_0/libs/test/doc/html/index.html), [UnitTest++](https://github.com/unittest-cpp/unittest-cpp), [lest](https://github.com/martinmoene/lest), [bandit](http://banditcpp.org/), [igloo](http://igloo-testing.org/), [xUnit++](https://bitbucket.org/moswald/xunit/wiki/Home), [CppTest](http://cpptest.sourceforge.net/), [CppUnit](https://sourceforge.net/projects/cppunit/), [CxxTest](https://github.com/CxxTest/cxxtest), [cpputest](https://github.com/cpputest/cpputest), [googletest](https://github.com/google/googletest), [cute](https://github.com/Kosta-Github/cute) and many [other](https://en.wikipedia.org/wiki/List_of_unit_testing_frameworks#C.2B.2B).
-
-What makes **doctest** different is that it is ultra light on compile times (by [**orders of magnitude**](doc/markdown/benchmarks.md)) and is unintrusive.
+The **doctest** library is inspired by the [**```unittest {}```**](https://wiki.dlang.org/Unittest) functionality of the **D** programming language and **Python**'s [**docstrings**](https://en.wikipedia.org/wiki/Docstring) - tests can be considered a form of documentation and should be able to reside near the production code which they test.
 
 A complete example with a self-registering test that compiles to an executable looks like this:
 
@@ -20,9 +18,15 @@ TEST_CASE("testing the factorial function") {
 }
 ```
 
-**doctest** is inspired by the [**```unittest {}```**](https://wiki.dlang.org/Unittest) functionality of the **D** programming language and **Python**'s [**docstrings**](https://en.wikipedia.org/wiki/Docstring).
+Note how a standard C++ operator for the comparison is used - **doctest** has only one core [**assertion macro**](assertions.md) (instead of many for *less than*, *equals*, *greater than*...) - yet the full expression is decomposed and the left and right values are logged.
 
 It is modeled after [**Catch**](https://github.com/philsquared/Catch) which is currently the most popular and easy to use alternative for testing in C++
+
+---------
+
+There are many C++ testing frameworks - [Catch](https://github.com/philsquared/Catch), [Boost.Test](http://www.boost.org/doc/libs/1_60_0/libs/test/doc/html/index.html), [UnitTest++](https://github.com/unittest-cpp/unittest-cpp), [lest](https://github.com/martinmoene/lest), [bandit](http://banditcpp.org/), [igloo](http://igloo-testing.org/), [xUnit++](https://bitbucket.org/moswald/xunit/wiki/Home), [CppTest](http://cpptest.sourceforge.net/), [CppUnit](https://sourceforge.net/projects/cppunit/), [CxxTest](https://github.com/CxxTest/cxxtest), [cpputest](https://github.com/cpputest/cpputest), [googletest](https://github.com/google/googletest), [cute](https://github.com/Kosta-Github/cute) and many [other](https://en.wikipedia.org/wiki/List_of_unit_testing_frameworks#C.2B.2B).
+
+What makes **doctest** different is that it is ultra light on compile times (by [**orders of magnitude**](doc/markdown/benchmarks.md)) and is unintrusive.
 
 The **key** differences between it and other testing libraries are:
 - Ultra light - [**below 10ms**](doc/markdown/benchmarks.md) of compile time overhead for including the header in a source file
@@ -30,6 +34,7 @@ The **key** differences between it and other testing libraries are:
 - Doesn't pollute the global namespace (everything is in the ```doctest``` namespace) and doesn't drag **any** headers with it
 - Doesn't produce any warnings even on the [**most aggressive**](scripts/common.cmake#L59) warning levels for **MSVC**/**GCC**/**Clang**
 - Very [**portable and well tested**](doc/markdown/features.md#extremely-portable) C++98 - per commit tested on CI with over 200 different builds (valgrind, sanitizers...)
+- Just one header and no external dependencies apart from the C/C++ standard library! (well... same as [**Catch**](https://github.com/philsquared/Catch)...)
 
 This allows the library to be used in more ways than any other - tests can be written directly in the production code!
 
