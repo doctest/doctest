@@ -1,16 +1,16 @@
 #!/usr/bin/python2.7
 
-with_gcc = 1
-is_debug = 0
+with_gcc = 0
+is_debug = 1
 
 numFiles = 500
 
-with_doctest    = 1
+with_doctest    = 0
 
 with_implement  = 1
 with_header     = 1
 with_a_test     = 1
-doctest_disable = 1
+doctest_disable = 0
 
 the_folder = "project"
 
@@ -34,7 +34,7 @@ from time import sleep
 if os.path.exists(the_folder):
     shutil.rmtree(the_folder)
 
-sleep(1) # or the script might fail...
+sleep(2) # or the script might fail...
 
 if not os.path.exists(the_folder):
     os.makedirs(the_folder)
@@ -103,9 +103,6 @@ if with_gcc:
 else:
     os.system('cmake . -G ' + MSVC_cmake_generator);
 
-# build it
-start = datetime.now()
-
 the_config = ''
 if with_gcc == False:
     if is_debug:
@@ -113,8 +110,11 @@ if with_gcc == False:
     else:
         the_config = ' --config Release'
 
+# build it
+start = datetime.now()
 os.system('cmake --build .' + the_config)
 end = datetime.now()
+
 print("Time for compiling (+ linking): " + str(end - start))
 
 os.chdir("../");
