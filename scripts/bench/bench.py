@@ -1,15 +1,16 @@
 #!/usr/bin/python2.7
 
-with_gcc = 0
-is_debug = 1
+with_gcc = 1
+is_debug = 0
 
 numFiles = 500
 
 with_doctest    = 1
+
+with_implement  = 1
 with_header     = 1
 with_a_test     = 1
-with_implement  = 1
-doctest_disable = 0
+doctest_disable = 1
 
 the_folder = "project"
 
@@ -80,10 +81,10 @@ f.close()
 # the cmake file
 f = open(the_folder + '/CMakeLists.txt', 'w')
 f.write('cmake_minimum_required(VERSION 2.8)\n\n')
-f.write('project(test)\n\n')
+f.write('project(bench)\n\n')
 if with_doctest:    f.write('include_directories("../../../doctest/")\n\n')
 else:               f.write('include_directories("../catch/single_include/")\n\n')
-f.write('add_executable(test main.cpp\n')
+f.write('add_executable(bench main.cpp\n')
 for i in range(0, numFiles):
     f.write('    ' + str(i) + '.cpp\n')
 f.write(')\n')
@@ -93,12 +94,10 @@ f.close()
 os.chdir(the_folder);
 
 if with_gcc:
-    # twice because MinGW-w64 fails the first time - dunno why
     cmake_build_type = 'Release'
     if is_debug:
         cmake_build_type = 'Debug'
-    
-    
+    # twice because MinGW-w64 fails the first time - don't know why
     os.system('cmake . -G ' + GCC_cmake_generator + ' -DCMAKE_BUILD_TYPE=' + cmake_build_type);
     os.system('cmake . -G ' + GCC_cmake_generator + ' -DCMAKE_BUILD_TYPE=' + cmake_build_type);
 else:
