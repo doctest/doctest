@@ -1,11 +1,11 @@
 #!/usr/bin/python2.7
 
 with_gcc = 0
-is_debug = 0
+is_debug = 1
 
 numFiles = 500
 
-with_doctest    = 0
+with_doctest    = 1
 
 with_implement  = 1
 with_header     = 1
