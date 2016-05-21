@@ -1,7 +1,7 @@
 #!/usr/bin/python2.7
 
 with_gcc = 0
-is_debug = 1
+is_debug = 0
 
 numFiles = 500
 
@@ -9,7 +9,7 @@ with_doctest    = 0
 
 with_implement  = 1
 with_header     = 1
-with_a_test     = 1
+with_a_test     = 0
 doctest_disable = 0
 
 the_folder = "project"

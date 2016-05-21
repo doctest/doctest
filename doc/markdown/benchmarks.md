@@ -16,7 +16,7 @@ It should be noted that GCC performs much better under Unix.
 The script generates 501 source files and in 500 of them makes a function in the form of ```int f135() { return 135; }``` and in ```main.cpp``` it forward declares all the 500 such dummy functions and accumulates their result to return from the ```main()``` function. This is done to ensure that all source files are built and that the linker doesn't remove something.
 
 - **baseline** - how much time the source files need for a single threaded build with ```msbuild```/```mingw32-make``` 
-- **with implementation** - only in ```main.cpp``` the header is included with a ```#define``` before it so it gets implemented:
+- **+ implementation** - only in ```main.cpp``` the header is included with a ```#define``` before it so it gets implemented:
     ```c++
 #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 #include "doctest.h"
@@ -29,7 +29,7 @@ The results are in seconds and are in **no way** intended to bash [**Catch**](ht
 
 ## doctest
 
-| &nbsp; | baseline | with implementation | + header everywhere | + a test everywhere | + disabled |
+| &nbsp; | baseline | + implementation | + header everywhere | + a test everywhere | + disabled |
 |--------------|----------|---------------------|------------------------------|---------------------|-------------------------|
 | MSVC Debug | 14.2 | 15.1 | 18.3 | 21.4 | 15.6 |
 | MSVC Release | 13.4 | 14.5 | 18.7 | 23.2 | 15.2 |
@@ -38,19 +38,19 @@ The results are in seconds and are in **no way** intended to bash [**Catch**](ht
 
 So on a modern developer machine:
 
-- implementing the library in one source file costs ~1 second ```(with_implementation - baseline) / 500```
-- the inclusion of ```doctest.h``` costs below 9ms ```(header_everywhere - with_implementation) / 500```
+- implementing the library in one source file costs ~1 second ```(implementation - baseline) / 500```
+- the inclusion of ```doctest.h``` costs below 9ms ```(header_everywhere - implementation) / 500```
 - the addition of a test costs below 10ms (below 18ms for MinGW-w64 but Linux GCC will be much faster) ```(a_test_everywhere - header_everywhere) / 500```
 - when the library is implemented, included everywhere, having tests and disabled - it is < 2 seconds ```(disabled - baseline) / 500```
 
 ## Catch
 
-| &nbsp; | Baseline | with implementation | + header included everywhere | + a test everywhere | &nbsp; |
+| &nbsp; | baseline | + implementation | + header everywhere | + a test everywhere | &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; |
 |--------------|----------|---------------------|------------------------------|---------------------|-------------------------|
 | MSVC Debug | 14.2 | 17 | 242 | 249 |  |
-| MSVC Release | 13.4 |  |  |  |  |
-| GCC Debug | 22.7 |  |  |  |  |
-| GCC Release | 22.9 |  |  |  |  |
+| MSVC Release | 13.4 | 17.7 |  |  |  |
+| GCC Debug | 22.7 | 36.7 |  |  |  |
+| GCC Release | 22.9 | 31.5 |  |  |  |
 
 ## Conclusion
 
