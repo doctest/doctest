@@ -303,7 +303,7 @@ script:
   - |
     if [[ "${COVERALLS_SERVICE_NAME}" = "travis-ci" ]]; then
       cmake ${CMAKE_OPTIONS_GLOBAL} -DCMAKE_BUILD_TYPE=Debug .
-      make -j2 && make coveralls
+      make -k -j2 && make coveralls
       exit
     fi
 
@@ -312,24 +312,24 @@ script:
 
   # debug x86
   - cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_FLAGS="-m32" .
-  - make clean && make -j2
+  - make clean && make -k -j2
   # valgrind for 32bit under osx fails
   - if [[ "${TRAVIS_OS_NAME}" == "linux" ]]; then cmake -DTEST_MODE=VALGRIND . && ctest --output-on-failure ; fi
 #  - cmake -DTEST_MODE=COMPARE . && ctest --output-on-failure
   # debug x64
   - cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_FLAGS="-m64" .
-  - make clean && make -j2
+  - make clean && make -k -j2
   - cmake -DTEST_MODE=VALGRIND . && ctest --output-on-failure
 #  - cmake -DTEST_MODE=COMPARE . && ctest --output-on-failure
   # release x86
   - cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="-m32" .
-  - make clean && make -j2
+  - make clean && make -k -j2
   # valgrind for 32bit under osx fails
   - if [[ "${TRAVIS_OS_NAME}" == "linux" ]]; then cmake -DTEST_MODE=VALGRIND . && ctest --output-on-failure ; fi
 #  - cmake -DTEST_MODE=COMPARE . && ctest --output-on-failure
   # release x64
   - cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="-m64" .
-  - make clean && make -j2
+  - make clean && make -k -j2
   - cmake -DTEST_MODE=VALGRIND . && ctest --output-on-failure
 #  - cmake -DTEST_MODE=COMPARE . && ctest --output-on-failure
 
@@ -337,14 +337,14 @@ script:
   - cmake -DTEST_MODE=NORMAL .
 #  - cmake -DTEST_MODE=COMPARE .
   # on separate commands because when something fails I want to see which one exactly
-  - if [[ "${HAS_ASAN_64}" = "true" ]];  then cmake -DCMAKE_BUILD_TYPE=Debug   -DCMAKE_CXX_FLAGS="-m64 -fsanitize=address" .   && make clean && make -j2 && ctest --output-on-failure ; fi
-  - if [[ "${HAS_ASAN_32}" = "true" ]];  then cmake -DCMAKE_BUILD_TYPE=Debug   -DCMAKE_CXX_FLAGS="-m32 -fsanitize=address" .   && make clean && make -j2 && ctest --output-on-failure ; fi
-  - if [[ "${HAS_ASAN_64}" = "true" ]];  then cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="-m64 -fsanitize=address" .   && make clean && make -j2 && ctest --output-on-failure ; fi
-  - if [[ "${HAS_ASAN_32}" = "true" ]];  then cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="-m32 -fsanitize=address" .   && make clean && make -j2 && ctest --output-on-failure ; fi
-  - if [[ "${HAS_UBSAN_64}" = "true" ]]; then cmake -DCMAKE_BUILD_TYPE=Debug   -DCMAKE_CXX_FLAGS="-m64 -fsanitize=undefined" . && make clean && make -j2 && ctest --output-on-failure ; fi
-  - if [[ "${HAS_UBSAN_32}" = "true" ]]; then cmake -DCMAKE_BUILD_TYPE=Debug   -DCMAKE_CXX_FLAGS="-m32 -fsanitize=undefined" . && make clean && make -j2 && ctest --output-on-failure ; fi
-  - if [[ "${HAS_UBSAN_64}" = "true" ]]; then cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="-m64 -fsanitize=undefined" . && make clean && make -j2 && ctest --output-on-failure ; fi
-  - if [[ "${HAS_UBSAN_32}" = "true" ]]; then cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="-m32 -fsanitize=undefined" . && make clean && make -j2 && ctest --output-on-failure ; fi
+  - if [[ "${HAS_ASAN_64}" = "true" ]];  then cmake -DCMAKE_BUILD_TYPE=Debug   -DCMAKE_CXX_FLAGS="-m64 -fsanitize=address" .   && make clean && make -k -j2 && ctest --output-on-failure ; fi
+  - if [[ "${HAS_ASAN_32}" = "true" ]];  then cmake -DCMAKE_BUILD_TYPE=Debug   -DCMAKE_CXX_FLAGS="-m32 -fsanitize=address" .   && make clean && make -k -j2 && ctest --output-on-failure ; fi
+  - if [[ "${HAS_ASAN_64}" = "true" ]];  then cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="-m64 -fsanitize=address" .   && make clean && make -k -j2 && ctest --output-on-failure ; fi
+  - if [[ "${HAS_ASAN_32}" = "true" ]];  then cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="-m32 -fsanitize=address" .   && make clean && make -k -j2 && ctest --output-on-failure ; fi
+  - if [[ "${HAS_UBSAN_64}" = "true" ]]; then cmake -DCMAKE_BUILD_TYPE=Debug   -DCMAKE_CXX_FLAGS="-m64 -fsanitize=undefined" . && make clean && make -k -j2 && ctest --output-on-failure ; fi
+  - if [[ "${HAS_UBSAN_32}" = "true" ]]; then cmake -DCMAKE_BUILD_TYPE=Debug   -DCMAKE_CXX_FLAGS="-m32 -fsanitize=undefined" . && make clean && make -k -j2 && ctest --output-on-failure ; fi
+  - if [[ "${HAS_UBSAN_64}" = "true" ]]; then cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="-m64 -fsanitize=undefined" . && make clean && make -k -j2 && ctest --output-on-failure ; fi
+  - if [[ "${HAS_UBSAN_32}" = "true" ]]; then cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="-m32 -fsanitize=undefined" . && make clean && make -k -j2 && ctest --output-on-failure ; fi
 
 #  - ccache -s
 
