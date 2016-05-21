@@ -22,14 +22,14 @@ TEST_CASE("testing the factorial function") {
 
 **doctest** is inspired by the [**```unittest {}```**](https://wiki.dlang.org/Unittest) functionality of the **D** programming language and **Python**'s [**docstrings**](https://en.wikipedia.org/wiki/Docstring).
 
-It is modeled after [**Catch**](https://github.com/philsquared/Catch) which is currently the most popular and easy to use alternative for testing in C++.
+It is modeled after [**Catch**](https://github.com/philsquared/Catch) which is currently the most popular and easy to use alternative for testing in C++
 
 The **key** differences between it and other testing libraries are:
 - Ultra light - [**below 10ms**](doc/markdown/benchmarks.md) of compile time overhead for including the header in a source file
 - Offers a way to remove **everything** testing-related from the binary with the [**```DOCTEST_CONFIG_DISABLE```**](doc/markdown/configuration.md) identifier
 - Doesn't pollute the global namespace (everything is in the ```doctest``` namespace) and doesn't drag **any** headers with it
 - Doesn't produce any warnings even on the [**most aggressive**](scripts/common.cmake#L59) warning levels for **MSVC**/**GCC**/**Clang**
-- Very portable and well tested C++98 - per commit tested on CI with over 200 different builds
+- Very [**portable and well tested**](doc/markdown/features.md#extremely-portable) C++98 - per commit tested on CI with over 200 different builds
 
 This allows the library to be used in more ways than any other - tests can be written directly in the production code!
 
@@ -38,7 +38,7 @@ This allows the library to be used in more ways than any other - tests can be wr
 - Tests can be shipped to the customer with the software to diagnose a bug faster
 - [**TDD**](https://en.wikipedia.org/wiki/Test-driven_development) in C++ has never been easier!
 
-The library can be used like any other if you don't like the idea of mixing production code and tests - it's still very good.
+The library can be used like any other if you don't like the idea of mixing production code and tests - check out the [**features**](doc/markdown/features.md)
 
 [![Language](https://img.shields.io/badge/language-C++-blue.svg)](https://isocpp.org/)
 [![Standard](https://img.shields.io/badge/c%2B%2B-98-blue.svg)](https://en.wikipedia.org/wiki/C%2B%2B#Standardization)
@@ -86,7 +86,7 @@ This framework has some design goals which must be kept. Make sure you have read
 
 The ```master``` branch is the stable one with the latest release and the ```dev``` branch is on the bleeding edge.
 
-All the framework tests have their output collected when the CMake ```TEST_MODE``` variable is set to ```COLLECT``` (making the new reference output) and later the tests are ran on the CI services (```travis``` and ```appveyor```) - their output is compared with the current reference output in the repository with the ```COMPARE``` mode (default mode is ```NORMAL```).
+All the framework tests (using ctest) have their output collected when the CMake ```TEST_MODE``` variable is set to ```COLLECT``` (making the new reference output) and later the tests are ran on the CI services (```travis``` and ```appveyor```) - their output is compared with the current reference output in the repository with the ```COMPARE``` mode (default mode is ```COMPARE```).
 
 Code should be formatted with a recent-enough ```clang-format``` using the config file in the root of the repo (or I will do it...)
 
