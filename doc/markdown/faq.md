@@ -32,3 +32,8 @@ https://github.com/tpounds/mockitopp
     - no
         - the stringification with ```ostream& operator<<(ostream&, myType)``` is disabled
         - comparing C strings will compare the pointers and not the actual strings
+        - VC6 subcases not working - set a bounty on this: http://stackoverflow.com/questions/36940730/preprocessor-problems-with-vc6
+
+---------------
+
+[Home](readme.md#reference)

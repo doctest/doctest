@@ -9,7 +9,7 @@ with_doctest    = 0
 
 with_implement  = 1
 with_header     = 1
-with_a_test     = 0
+with_a_test     = 1
 doctest_disable = 0
 
 the_folder = "project"

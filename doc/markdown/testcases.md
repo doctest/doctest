@@ -6,7 +6,6 @@
 
 test case and subcase names must be string literals
 
+---------------
 
-VC6 subcases not working - set a bounty on this:
-http://stackoverflow.com/questions/36940730/preprocessor-problems-with-vc6
-VC6 - templated stringify() overloads will not compile
+[Home](readme.md#reference)
