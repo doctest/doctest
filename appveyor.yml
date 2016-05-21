@@ -112,7 +112,6 @@
 #build_script:
 #  - msbuild all.sln /p:Configuration=%Configuration%;Platform=%arch% /maxcpucount
 #test_script:
-## temporarily disabled - output will change often so no need for this yet
-##  - cmake . -DTEST_MODE=COMPARE
+#  - cmake . -DTEST_MODE=COMPARE
 #  - ctest -C %configuration% --output-on-failure
 #
