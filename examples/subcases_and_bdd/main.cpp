@@ -5,16 +5,25 @@
 #include <vector>
 using namespace std;
 
+static int throws(bool in) {
+    if(in)
+        throw 5;
+    return 42;
+}
+
 TEST_CASE("lots of nested subcases") {
     cout << endl << "root" << endl;
     SUBCASE("") {
         cout << "1" << endl;
         SUBCASE("") { cout << "1.1" << endl; }
     }
-    SUBCASE("") {   
+    SUBCASE("") {
         cout << "2" << endl;
         SUBCASE("") { cout << "2.1" << endl; }
         SUBCASE("") {
+            // whops! all the subcases below shouldn't be discovered and executed!
+            throws(true);
+
             cout << "2.2" << endl;
             SUBCASE("") {
                 cout << "2.2.1" << endl;
@@ -67,4 +76,32 @@ SCENARIO("vectors can be sized and resized") {
             }
         }
     }
+}
+
+// to silence GCC warnings when inheriting from the class TheFixture which has no virtual destructor
+#if defined(__GNUC__) && !defined(__clang__)
+#pragma GCC diagnostic ignored "-Weffc++"
+#endif // __GNUC__
+
+struct TheFixture
+{
+    int data;
+    TheFixture()
+            : data(42) {
+        // setup here
+    }
+
+    ~TheFixture() {
+        // teardown here
+    }
+};
+
+TEST_CASE_FIXTURE(TheFixture, "test with a fixture - 1") {
+    data /= 2;
+    CHECK(data == 21);
+}
+
+TEST_CASE_FIXTURE(TheFixture, "test with a fixture - 2") {
+    data *= 2;
+    CHECK(data == 85);
 }

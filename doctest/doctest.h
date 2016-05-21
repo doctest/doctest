@@ -667,6 +667,8 @@ namespace detail
     void logTestStart(const char* name, const char* file, unsigned line);
     void logTestEnd();
 
+    void logTestCrashed();
+
     void logAssert(bool passed, const char* decomposition, bool threw, const char* expr,
                    const char* assert_name, const char* file, int line);
 
@@ -877,12 +879,14 @@ public:
 #endif // MSVC
 
 #define DOCTEST_LOG_START()                                                                        \
-    if(!DOCTEST_GCS()->hasLoggedCurrentTestStart) {                                                \
-        doctest::detail::logTestStart(DOCTEST_GCS()->currentTest->m_name,                          \
-                                      DOCTEST_GCS()->currentTest->m_file,                          \
-                                      DOCTEST_GCS()->currentTest->m_line);                         \
-        DOCTEST_GCS()->hasLoggedCurrentTestStart = true;                                           \
-    }
+    do {                                                                                           \
+        if(!DOCTEST_GCS()->hasLoggedCurrentTestStart) {                                            \
+            doctest::detail::logTestStart(DOCTEST_GCS()->currentTest->m_name,                      \
+                                          DOCTEST_GCS()->currentTest->m_file,                      \
+                                          DOCTEST_GCS()->currentTest->m_line);                     \
+            DOCTEST_GCS()->hasLoggedCurrentTestStart = true;                                       \
+        }                                                                                          \
+    } while(doctest::detail::always_false())
 
 #define DOCTEST_ASSERT_IMPLEMENT(expr, assert_name, false_invert_op)                               \
     doctest::detail::Result res;                                                                   \
@@ -1774,20 +1778,6 @@ namespace detail
         return 0;
     }
 
-    // this is needed because MSVC does not permit mixing 2 exception handling schemes in a function
-    int callTestFunc(funcType f) {
-        int res = EXIT_SUCCESS;
-        try {
-            f();
-            if(getContextState()->numFailedAssertionsForCurrentTestcase)
-                res = EXIT_FAILURE;
-        } catch(const TestFailureException&) { res = EXIT_FAILURE; } catch(...) {
-            printf("Unknown exception caught!\n");
-            res = EXIT_FAILURE;
-        }
-        return res;
-    }
-
     struct Color
     {
         enum Code
@@ -1889,6 +1879,21 @@ namespace detail
 // clang-format on
 #undef DOCTEST_SET_ATTR
 #endif // DOCTEST_CONFIG_COLORS_WINDOWS
+    }
+
+    // this is needed because MSVC does not permit mixing 2 exception handling schemes in a function
+    int callTestFunc(funcType f) {
+        int res = EXIT_SUCCESS;
+        try {
+            f();
+            if(getContextState()->numFailedAssertionsForCurrentTestcase)
+                res = EXIT_FAILURE;
+        } catch(const TestFailureException&) { res = EXIT_FAILURE; } catch(...) {
+            DOCTEST_LOG_START();
+            logTestCrashed();
+            res = EXIT_FAILURE;
+        }
+        return res;
     }
 
     // depending on the current options this will remove the path of filenames
@@ -1997,6 +2002,16 @@ namespace detail
 
     void logTestEnd() {}
 
+    void logTestCrashed() {
+        char msg[DOCTEST_SNPRINTF_BUFFER_LENGTH];
+
+        DOCTEST_SNPRINTF(msg, DOCTEST_COUNTOF(msg), "  TEST CASE FAILED! (threw exception)\n");
+
+        DOCTEST_PRINTF_COLORED(msg, Color::Red);
+
+        printToDebugConsole(String(msg));
+    }
+
     void logAssert(bool passed, const char* decomposition, bool threw, const char* expr,
                    const char* assert_name, const char* file, int line) {
         char loc[DOCTEST_SNPRINTF_BUFFER_LENGTH];
@@ -2015,6 +2030,7 @@ namespace detail
         char info2[DOCTEST_SNPRINTF_BUFFER_LENGTH];
         char info3[DOCTEST_SNPRINTF_BUFFER_LENGTH];
         info2[0] = 0;
+        info3[0] = 0;
         if(!threw) {
             DOCTEST_SNPRINTF(info2, DOCTEST_COUNTOF(info2), "with expansion:\n");
             DOCTEST_SNPRINTF(info3, DOCTEST_COUNTOF(info3), "  %s( %s )\n\n", assert_name,
@@ -2558,16 +2574,13 @@ int Context::run() {
             p.currentTest = &data;
 
             // if logging successful tests - force the start log
-            if(p.success) {
-                logTestStart(p.currentTest->m_name, p.currentTest->m_file, p.currentTest->m_line);
-                p.hasLoggedCurrentTestStart = true;
-            }
+            p.hasLoggedCurrentTestStart = false;
+            if(p.success)
+                DOCTEST_LOG_START();
 
             unsigned didFail = 0;
             p.subcasesPassed.clear();
             do {
-                p.hasLoggedCurrentTestStart = false;
-
                 // reset the assertion state
                 p.numAssertionsForCurrentTestcase       = 0;
                 p.numFailedAssertionsForCurrentTestcase = 0;
@@ -2577,6 +2590,7 @@ int Context::run() {
                 p.subcasesCurrentLevel = 0;
                 p.subcasesEnteredLevels.clear();
 
+                // execute the test
                 didFail += callTestFunc(data.m_f);
                 p.numAssertions += p.numAssertionsForCurrentTestcase;
 
@@ -2587,6 +2601,7 @@ int Context::run() {
                 // if the start has been logged
                 if(p.hasLoggedCurrentTestStart)
                     logTestEnd();
+                p.hasLoggedCurrentTestStart = false;
 
             } while(p.subcasesHasSkipped == true);
 
