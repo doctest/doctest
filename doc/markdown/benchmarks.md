@@ -9,7 +9,8 @@ It should be noted that GCC performs much better under Unix.
 The script generates 501 source files and in 500 of them makes a function in the form of ```int f135() { return 135; }``` and in ```main.cpp``` it forward declares all the 500 such dummy functions and accumulates their result to return from the ```main()``` function. This is done to ensure that all source files are built and that the linker doesn't remove/optimize anything.
 
 - **baseline** - how much time the source files need for a single threaded build with ```msbuild```/```mingw32-make``` 
-- **+ implementation** - only in ```main.cpp``` the header is included with a ```#define``` before it so it gets implemented:
+- **+ implementation** - only in ```main.cpp``` the header is included with a ```#define``` before it so the test runner gets instantiated:
+
     ```c++
 #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 #include "doctest.h"
@@ -40,9 +41,9 @@ The script generates 501 source files and in 500 of them makes a function in the
 
 So on a modern developer machine:
 
-### **doctest**
+### doctest
 
-- implementing the library in one source file costs ~1 second ```implementation - baseline```
+- instantiating the test runner in one source file costs ~1 second ```implementation - baseline```
 - the inclusion of ```doctest.h``` in one source file costs below 9ms ```(header_everywhere - implementation) / 500```
 - the addition of a test costs below 10ms ```(a_test_everywhere - header_everywhere) / 500```
   (below 18ms for MinGW-w64 but Linux GCC will be much faster)
@@ -50,7 +51,7 @@ So on a modern developer machine:
 
 ### [**Catch**](https://github.com/philsquared/Catch)
 
-- implementing the library in one source file costs ~4 second ```implementation - baseline```
+- instantiating the test runner in one source file costs ~4 second ```implementation - baseline```
   (~12 seconds for MinGW-w64 but Linux GCC will be much faster)
 - the inclusion of ```catch.hpp```  in one source file costs around 430ms ```(header_everywhere - implementation) / 500```
   (below 280ms for MinGW-w64 which is really odd)
@@ -64,7 +65,7 @@ So if ```doctest.h``` costs 8ms and ```catch.hpp``` costs 430ms on MSVC - then *
 
 The results are in seconds and are in **no way** intended to bash [**Catch**](https://github.com/philsquared/Catch) - the **doctest** framework wouldn't exist without it.
 
-The reason **doctest** is so light on compile times is because it forward declares everything and doesn't drag any standard headers in the source files (except for the source file it gets implemented). This was a design decision from day 1.
+The reason **doctest** is so light on compile times is because it forward declares everything and doesn't drag any standard headers in the source files (except for the source file where the test runner gets instantiated). This was a design decision from day 1.
 
 ## Details
 
