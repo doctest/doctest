@@ -40,10 +40,27 @@ The script generates 501 source files and in 500 of them makes a function in the
 
 So on a modern developer machine:
 
-- implementing the library in one source file costs ~1 second ```(implementation - baseline) / 500```
-- the inclusion of ```doctest.h``` costs below 9ms ```(header_everywhere - implementation) / 500```
-- the addition of a test costs below 10ms (below 18ms for MinGW-w64 but Linux GCC will be much faster) ```(a_test_everywhere - header_everywhere) / 500```
-- when the library is implemented, included everywhere, having tests and disabled - it is < 2 seconds ```(disabled - baseline) / 500```
+### **doctest**
+
+- implementing the library in one source file costs ~1 second ```implementation - baseline```
+- the inclusion of ```doctest.h``` in one source file costs below 9ms ```(header_everywhere - implementation) / 500```
+- the addition of a test costs below 10ms ```(a_test_everywhere - header_everywhere) / 500```
+  (below 18ms for MinGW-w64 but Linux GCC will be much faster)
+- using the library everywhere with tests - but everything disabled - costs less than 2 seconds ```disabled - baseline```
+
+### [**Catch**](https://github.com/philsquared/Catch)
+
+- implementing the library in one source file costs ~4 second ```implementation - baseline```
+  (~12 seconds for MinGW-w64 but Linux GCC will be much faster)
+- the inclusion of ```catch.hpp```  in one source file costs around 430ms ```(header_everywhere - implementation) / 500```
+  (below 280ms for MinGW-w64 which is really odd)
+- the addition of a test costs between 20ms and 60ms ```(a_test_everywhere - header_everywhere) / 500```
+
+----------
+
+So if ```doctest.h``` costs 8ms and ```catch.hpp``` costs 430ms on MSVC - then **doctest** is 54 times lighter! 
+
+----------
 
 The results are in seconds and are in **no way** intended to bash [**Catch**](https://github.com/philsquared/Catch) - the **doctest** framework wouldn't exist without it.
 
