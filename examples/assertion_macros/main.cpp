@@ -1,14 +1,6 @@
 #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 #include "doctest.h"
 
-TEST_SUITE("meaningless macros");
-
-TEST_CASE("an empty test that will succeed") {}
-
-TEST_CASE("an empty test that will fail because of an exception") { throw "omgomgomg"; }
-
-TEST_SUITE_END();
-
 static int throws(bool in) {
     if(in)
         throw 5;
@@ -16,6 +8,14 @@ static int throws(bool in) {
 }
 
 using doctest::Approx;
+
+TEST_SUITE("meaningless macros");
+
+TEST_CASE("an empty test that will succeed") {}
+
+TEST_CASE("an empty test that will fail because of an exception") { throws(true); }
+
+TEST_SUITE_END();
 
 TEST_CASE("normal macros") {
     int a = 5;
