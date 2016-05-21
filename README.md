@@ -1,9 +1,10 @@
-the lightest feature rich C++ single header testing framework
+The lightest feature rich C++ single header testing framework
 -------
 
 There are many C++ testing frameworks - [Catch](https://github.com/philsquared/Catch), [Boost.Test](http://www.boost.org/doc/libs/1_60_0/libs/test/doc/html/index.html), [UnitTest++](https://github.com/unittest-cpp/unittest-cpp), [lest](https://github.com/martinmoene/lest), [bandit](http://banditcpp.org/), [igloo](http://igloo-testing.org/), [xUnit++](https://bitbucket.org/moswald/xunit/wiki/Home), [CppTest](http://cpptest.sourceforge.net/), [CppUnit](https://sourceforge.net/projects/cppunit/), [CxxTest](https://github.com/CxxTest/cxxtest), [cpputest](https://github.com/cpputest/cpputest), [googletest](https://github.com/google/googletest), [cute](https://github.com/Kosta-Github/cute) and many [other](https://en.wikipedia.org/wiki/List_of_unit_testing_frameworks#C.2B.2B).
 
 What makes **doctest** different is that it is ultra light on compile times (by [**orders of magnitude**](doc/markdown/benchmarks.md)) and is unintrusive.
+
 A complete example with a self-registering test that compiles to an executable looks like this:
 
 ```c++
@@ -20,6 +21,7 @@ TEST_CASE("testing the factorial function") {
 ```
 
 The **doctest** framework is inspired by the ```unittest {}``` functionality of the **D** programming language.
+
 It is modeled after [**Catch**](https://github.com/philsquared/Catch) which is currently the most popular and easy to use alternative for testing in C++.
 
 The **key** differences between it and other testing libraries are:
@@ -34,7 +36,7 @@ This allows the library to be used in more ways than any other - tests can be wr
 - This makes the barrier for writing tests **much lower** - you don't have to: **1.** make a separate source file **2.** include a bunch of stuff in it **3.** add it to the build system and **4.** add it to source control - You can just write the tests for a class or a piece of functionality at the bottom of it's source file - or even header file!
 - Tests in the production code can be thought of as documentation or up to date comments - showing how an API is used
 - Tests can be shipped to the customer with the software to diagnose a bug faster
-- [TDD](https://en.wikipedia.org/wiki/Test-driven_development) in C++ has never been easier!
+- [**TDD**](https://en.wikipedia.org/wiki/Test-driven_development) in C++ has never been easier!
 
 The library can be used like any other even if you are not fond of the idea of mixing production code and tests. 
 
@@ -53,17 +55,20 @@ The library can be used like any other even if you are not fond of the idea of m
 Documentation
 -------------
 
-- [Features and design goals](features.md#why-does-this-library-exist-and-how-is-it-different-from-all-the-rest) - what makes this library different from all the rest
-- [Roadmap](roadmap.md#roadmap) - features that will be implemented in the future
-- [Tutorial](tutorial.md#tutorial) - make sure you have read it before the other parts of the documentation
-- [Assertion macros](assertions.md)
-- [Test cases, subcases and test fixtures](testcases.md)
-- [Configuration](configuration.md)
-- [```main()``` entry point and dealing with shared objects](main.md)
-- [Command line](commandline.md)
-- [Stringification](stringification.md)
-- [Benchmarks](benchmarks.md)
-- [FAQ](faq.md)
+- [Features and design goals](doc/markdown/features.md) - the complete list of features
+- [Roadmap](doc/markdown/roadmap.md#roadmap) - things for future updates of the library
+- [Tutorial](doc/markdown/tutorial.md#tutorial) - make sure you have read it before the other parts of the documentation
+
+-------------
+
+- [Assertion macros](doc/markdown/assertions.md)
+- [Test cases, subcases and test fixtures](doc/markdown/testcases.md)
+- [Configuration](doc/markdown/configuration.md)
+- [```main()``` entry point and dealing with shared objects](doc/markdown/main.md)
+- [Command line](doc/markdown/commandline.md)
+- [Stringification](doc/markdown/stringification.md)
+- [Benchmarks](doc/markdown/benchmarks.md)
+- [FAQ](doc/markdown/faq.md)
 
 Contributing
 ------------
