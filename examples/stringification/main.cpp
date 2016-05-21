@@ -3,38 +3,98 @@
 
 #include <string>
 #include <vector>
+#include <list>
 
-/*
 #include <sstream>
 
-namespace doctest {
+// the standard forbids writing in the std namespace but it works on all compilers
+namespace std
+{
 template <typename T>
-String toString(const std::vector<T>&) {
-    return "aaa";
-}
-}
-*/
-
-/*
-namespace doctest {
-template <typename T>
-String toString(const std::vector<T>& in) {
-    std::ostringstream s;
-    s << "[";
+ostream& operator<<(ostream& stream, const vector<T>& in) {
+    stream << "[";
     for(size_t i = 0; i < in.size(); ++i)
         if(i < in.size() - 1)
-            s << in[i] << ", ";
+            stream << in[i] << ", ";
         else
-            s << in[i];
-    s << "]";
-    return s.str().c_str();
+            stream << in[i];
+    stream << "]";
+    return stream;
 }
-} // namespace doctest
-*/
+}
+
+// as an alternative you may write a specialization of doctest::StringMaker
+namespace doctest
+{
+template <typename T>
+struct StringMaker<std::list<T> >
+{
+    static String convert(const std::list<T>& in) {
+        std::ostringstream oss;
+
+        oss << "[";
+        for(typename std::list<T>::const_iterator it = in.begin(); it != in.end(); ++it)
+            oss << *it << ", ";
+        oss << "]";
+
+        return oss.str().c_str();
+    }
+};
+}
+
+template <typename T, typename K>
+struct MyType
+{
+    T one;
+    K two;
+};
+
+template <typename T>
+struct MyTypeInherited : MyType<T, float>
+{};
+
+template <typename T, typename K>
+bool operator==(const MyType<T, K>& lhs, const MyType<T, K>& rhs) {
+    return lhs.one == rhs.one && lhs.two == rhs.two;
+}
+
+template <typename T, typename K>
+std::ostream& operator<<(std::ostream& stream, const MyType<T, K>& in) {
+    stream << "[" << in.one << ", " << in.two << "]";
+    return stream;
+}
+
+struct Foo
+{};
+
+static bool operator==(const Foo&, const Foo&) { return false; }
+
+// as a third option you may specialize the doctest::toString() template function
+namespace doctest
+{
+template <>
+String toString(const Foo&) {
+    return "Foo{}";
+}
+}
 
 TEST_CASE("the only test") {
+    MyTypeInherited<int> bla1;
+    bla1.one = 5;
+    bla1.two = 4.0f;
+    MyTypeInherited<int> bla2;
+    bla2.one = 5;
+    bla2.two = 6.0f;
+
+    Foo f1;
+    Foo f2;
+    CHECK(f1 == f2);
+
+    // std::string already has an operator<< working with std::ostream
     std::string dummy1 = "omg";
     std::string dummy2 = "tralala";
+
+    CHECK(dummy1 == dummy2);
 
     std::vector<int> vec1;
     vec1.push_back(1);
@@ -46,9 +106,17 @@ TEST_CASE("the only test") {
     vec2.push_back(2);
     vec2.push_back(4);
 
-    CHECK(4 == 3);
-
-    CHECK(dummy1 == dummy2);
-
     CHECK(vec1 == vec2);
+
+    std::list<int> lst_1;
+    lst_1.push_back(1);
+    lst_1.push_back(42);
+    lst_1.push_back(3);
+
+    std::list<int> lst_2;
+    lst_2.push_back(1);
+    lst_2.push_back(2);
+    lst_2.push_back(666);
+
+    CHECK(lst_1 == lst_2);
 }

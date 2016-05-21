@@ -1,5 +1,3 @@
-#define DOCTEST_CONFIG_DISABLE
-
 #define DOCTEST_CONFIG_IMPLEMENT
 #include "doctest.h"
 
@@ -21,4 +19,16 @@ int main(int argc, char** argv) {
     // your program - if the testing framework is integrated in your production code
 
     return res + client_stuff_return_code;
+}
+
+#include <string>
+
+TEST_CASE("[string] testing std::string") {
+    std::string a("omg");
+    CHECK(a == "omg");
+}
+
+TEST_CASE("[math] basic stuff") {
+    CHECK(6 > 5);
+    CHECK(6 > 7);
 }
