@@ -20,7 +20,7 @@ TEST_CASE("testing the factorial function") {
 }
 ```
 
-The **doctest** framework is inspired by the ```unittest {}``` functionality of the **D** programming language.
+**doctest** is inspired by the [**```unittest {}```**](https://wiki.dlang.org/Unittest) functionality of the **D** programming language and **Python**'s [**docstrings**](https://en.wikipedia.org/wiki/Docstring).
 
 It is modeled after [**Catch**](https://github.com/philsquared/Catch) which is currently the most popular and easy to use alternative for testing in C++.
 
@@ -38,7 +38,7 @@ This allows the library to be used in more ways than any other - tests can be wr
 - Tests can be shipped to the customer with the software to diagnose a bug faster
 - [**TDD**](https://en.wikipedia.org/wiki/Test-driven_development) in C++ has never been easier!
 
-The library can be used like any other even if you are not fond of the idea of mixing production code and tests. 
+The library can be used like any other if you don't like the idea of mixing production code and tests - it's still very good.
 
 [![Language](https://img.shields.io/badge/language-C++-blue.svg)](https://isocpp.org/)
 [![Standard](https://img.shields.io/badge/c%2B%2B-98-blue.svg)](https://en.wikipedia.org/wiki/C%2B%2B#Standardization)
@@ -56,18 +56,19 @@ Documentation
 -------------
 
 - [Features and design goals](doc/markdown/features.md) - the complete list of features
-- [Roadmap](doc/markdown/roadmap.md#roadmap) - things for future updates of the library
+- [Roadmap](doc/markdown/roadmap.md#roadmap) - upcoming features
 - [Tutorial](doc/markdown/tutorial.md#tutorial) - make sure you have read it before the other parts of the documentation
+- [Benchmarks](doc/markdown/benchmarks.md) - compile-time supremacy
+- [Examples](examples)
 
 -------------
 
 - [Assertion macros](doc/markdown/assertions.md)
 - [Test cases, subcases and test fixtures](doc/markdown/testcases.md)
-- [Configuration](doc/markdown/configuration.md)
-- [```main()``` entry point and dealing with shared objects](doc/markdown/main.md)
 - [Command line](doc/markdown/commandline.md)
+- [Configuration](doc/markdown/configuration.md)
 - [Stringification](doc/markdown/stringification.md)
-- [Benchmarks](doc/markdown/benchmarks.md)
+- [```main()``` entry point and dealing with shared objects](doc/markdown/main.md)
 - [FAQ](doc/markdown/faq.md)
 
 Contributing
@@ -90,18 +91,3 @@ All the framework tests have their output collected when the CMake ```TEST_MODE`
 Code should be formatted with a recent-enough ```clang-format``` using the config file in the root of the repo (or I will do it...)
 
 Testing with compilers different from GCC/Clang/MSVC (and more platforms) is something the project would benefit from.
-
-
-
-
-
-
-
-
-
-
-
-- Check out [**features and design goals**](doc/markdown/features.md#why-does-this-library-exist-and-how-is-it-different-from-all-the-rest) to see why this library exists and how it is different from all the rest.
-- Check out the tutorial [**here**](doc/markdown/tutorial.md#tutorial).
-- a rich set of examples...
-- [![documentation](https://img.shields.io/badge/documentation-online%20%20%20%20%20-blue.svg)](doc/markdown/readme.md#reference)
