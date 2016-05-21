@@ -35,7 +35,7 @@ TEST_CASE("normal macros") {
 
     CHECK(c_string == "test_test");
 
-    throw "unexpected error";
+    throws(true);
 }
 
 TEST_CASE("exceptions-related macros") {
