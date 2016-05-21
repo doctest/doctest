@@ -1,19 +1,8 @@
-## Why does this library exist and how is it different from all the rest?
+## Features and design goals
 
-There are many C++ testing frameworks - [Catch](https://github.com/philsquared/Catch), [Boost.Test](http://www.boost.org/doc/libs/1_60_0/libs/test/doc/html/index.html), [UnitTest++](https://github.com/unittest-cpp/unittest-cpp), [lest](https://github.com/martinmoene/lest), [bandit](http://banditcpp.org/), [igloo](http://igloo-testing.org/), [xUnit++](https://bitbucket.org/moswald/xunit/wiki/Home), [CppTest](http://cpptest.sourceforge.net/), [CppUnit](https://sourceforge.net/projects/cppunit/), [CxxTest](https://github.com/CxxTest/cxxtest), [cpputest](https://github.com/cpputest/cpputest), [googletest](https://github.com/google/googletest), [cute](https://github.com/Kosta-Github/cute) and many [other](https://en.wikipedia.org/wiki/List_of_unit_testing_frameworks#C.2B.2B).
+**doctest** has been designed from the start to be as **light** and **unintrusive** as possible. These key features should be kept.
 
-**doctest** is much **lighter** and is **unintrusive**. It also offers a way to remove **everything** testing-related from the binary.
-
-This allows the library to be used in more ways - tests can be written in the production code - just like with the ```unittest {}``` functionality of the **D** programming language. The name is inspired by the **docstrings** in python.
-
-- This makes the barrier for writing tests much lower - you don't have to: **1.** make a separate source file **2.** include a bunch of stuff in it **3.** add it to the build system and **4.** add it to source control - You can just write the tests for a class or a piece of functionality at the bottom of the source file (or even header file).
-- Also tests in the production code can be thought of as documentation or comments - showing how an API is used.
-- Tests can be shipped to the customer with the software to diagnose a bug faster.
-- [TDD](https://en.wikipedia.org/wiki/Test-driven_development) in C++ has never been easier!
-
-The library can be used like any other even if you are not fond of the idea of mixing production code and tests. It is (or will be) on par with most of the other libraries as far as features go but is much lighter, portable and clear - see below.  
-
-### Unintrusive (transparent):
+## Unintrusive (transparent):
 
 - everything testing-related can be removed from the binary executable by defining the [**```DOCTEST_CONFIG_DISABLE```**](configuration.md) identifier
 - very small and easy to integrate - single header - less than 3k LOC in the implementation translation unit and less than 1.5k LOC everywhere else - **extremely** low footprint on compile times - see the [**benchmarks**](benchmarks.md)
@@ -28,7 +17,7 @@ The library can be used like any other even if you are not fond of the idea of m
 - can set options [**procedurally**](main.md) and not deal with passing ```argc```/```argv``` from the command line
 - doesn't leave warnings disabled after itself
 
-### Extremely portable:
+## Extremely portable:
 
 - Standards compliant **C++98** code - should work with any **C++98** compiler
 - tested with **GCC**: **4.4**, **4.5**, **4.6**, **4.7**, **4.8**, **4.9**, **5.0**
@@ -43,7 +32,7 @@ The library can be used like any other even if you are not fond of the idea of m
 	- tests are ran in a total of **180** different configurations on UNIX (Linux + OSX) on **travis** CI
 	- tests are ran in a total of **18** different configurations on Windows on **appveyor** CI
 
-## Features
+## Other features:
 
 - really easy to get started - it's just 1 header file - see the [**tutorial**](tutorial.md#tutorial)
 - **very** light, unintrusive and portable - see the sections above - and also the [**benchmarks**](benchmarks.md)

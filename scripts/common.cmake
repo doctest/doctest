@@ -10,7 +10,7 @@ set(CURRENT_LIST_DIR_CACHED ${CMAKE_CURRENT_LIST_DIR})
 
 enable_testing()
 
-set(TEST_MODE "NORMAL" CACHE STRING "Test mode - normal/run through valgrind/collect output/compare with output")
+set(TEST_MODE "COMPARE" CACHE STRING "Test mode - normal/run through valgrind/collect output/compare with output")
 set_property(CACHE TEST_MODE PROPERTY STRINGS "NORMAL;VALGRIND;COLLECT;COMPARE")
 
 # add a customized overloaded version of add_test() to suite my needs
