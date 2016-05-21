@@ -2,6 +2,7 @@ Reference
 =======
 
 - [Features and design goals](features.md#why-does-this-library-exist-and-how-is-it-different-from-all-the-rest) - what makes this library different from all the rest
+- [Roadmap](roadmap.md#roadmap)
 - [Tutorial](tutorial.md#tutorial)
 - [Benchmarks](benchmarks.md)
 - [FAQ](faq.md)
