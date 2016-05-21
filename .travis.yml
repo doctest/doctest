@@ -58,13 +58,13 @@ matrix:
     - env: TRAVIS_EMPTY_JOB_WORKAROUND=true
 
   include:
-    # coverage
-    - env: COMPILER=g++ COVERALLS_SERVICE_NAME=travis-ci
-      compiler: gcc
-      addons:
-        apt:
-          packages: ["lcov", "curl"]
-
+#    # coverage
+#    - env: COMPILER=g++ COVERALLS_SERVICE_NAME=travis-ci
+#      compiler: gcc
+#      addons:
+#        apt:
+#          packages: ["lcov", "curl"]
+#
 #    # GCC 4.4
 #    - env: COMPILER=g++-4.4
 #      compiler: gcc
@@ -131,14 +131,14 @@ matrix:
 ##        apt:
 ##          packages: ["g++-6",   "valgrind", "g++-6-multilib",   "libc6-dbg", "libc6-dbg:i386"]
 ##          sources: *apt_sources
-
-    # Clang 3.4
-    - env: COMPILER=clang++ HAS_ASAN_64=true HAS_UBSAN_64=true
-      addons: &clang
-        apt:
-          packages: [             "valgrind", "g++-multilib", "libc6-dbg", "libc6-dbg:i386"]
-          sources: *apt_sources
-
+#
+#    # Clang 3.4
+#    - env: COMPILER=clang++ HAS_ASAN_64=true HAS_UBSAN_64=true
+#      addons: &clang
+#        apt:
+#          packages: [             "valgrind", "g++-multilib", "libc6-dbg", "libc6-dbg:i386"]
+#          sources: *apt_sources
+#
 #    # Clang 3.5
 #    - env: COMPILER=clang++-3.5 HAS_ASAN_64=true HAS_UBSAN_64=true
 #      addons: &clang35

@@ -1,13 +1,10 @@
 the lightest feature rich C++ single header testing framework
 -------
 
-The **doctest** library is inspired by the ```unittest {}``` functionality of the **D** programming language.
+There are many C++ testing frameworks - [Catch](https://github.com/philsquared/Catch), [Boost.Test](http://www.boost.org/doc/libs/1_60_0/libs/test/doc/html/index.html), [UnitTest++](https://github.com/unittest-cpp/unittest-cpp), [lest](https://github.com/martinmoene/lest), [bandit](http://banditcpp.org/), [igloo](http://igloo-testing.org/), [xUnit++](https://bitbucket.org/moswald/xunit/wiki/Home), [CppTest](http://cpptest.sourceforge.net/), [CppUnit](https://sourceforge.net/projects/cppunit/), [CxxTest](https://github.com/CxxTest/cxxtest), [cpputest](https://github.com/cpputest/cpputest), [googletest](https://github.com/google/googletest), [cute](https://github.com/Kosta-Github/cute) and many [other](https://en.wikipedia.org/wiki/List_of_unit_testing_frameworks#C.2B.2B).
 
-It is heavily influenced by [**Catch**](https://github.com/philsquared/Catch) which is currently the most popular, simple and user friendly alternative out there.
-
-The main differences are:
-
-A complete compiling example with a self-registering test and a test runner looks like this:
+What makes **doctest** different is that it is ultra light on compile times (by [**orders of magnitude**](doc/markdown/benchmarks.md)) and is unintrusive.
+A complete example with a self-registering test that compiles to an executable looks like this:
 
 ```c++
 #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
@@ -22,7 +19,41 @@ TEST_CASE("testing the factorial function") {
 }
 ```
 
+The **doctest** framework is inspired by the ```unittest {}``` functionality of the **D** programming language.
+It is modeled after [**Catch**](https://github.com/philsquared/Catch) which is currently the most popular and easy to use alternative for testing in C++.
 
+The **key** differences between it and other testing libraries are:
+- Ultra light - [**below 10ms**](doc/markdown/benchmarks.md) of compile time overhead for including the header in a source file
+- Offers a way to remove **everything** testing-related from the binary with the [**```DOCTEST_CONFIG_DISABLE```**](configuration.md) identifier
+- Doesn't pollute the global namespace (everything is in the ```doctest``` namespace) and doesn't drag **any** headers with it
+- Doesn't produce any warnings even on the [**most aggressive**](scripts/common.cmake#L59) warning levels for **MSVC**/**GCC**/**Clang**
+- Very portable and well tested C++98 - per commit tested on CI with over 200 different builds
+
+This allows the library to be used in more ways than any other - tests can be written directly in the production code!
+
+- This makes the barrier for writing tests much lower - you don't have to: **1.** make a separate source file **2.** include a bunch of stuff in it **3.** add it to the build system and **4.** add it to source control - You can just write the tests for a class or a piece of functionality at the bottom of it's source file - or even header file!
+- Tests in the production code can be thought of as documentation or active comments - showing how an API is used
+- Tests can be shipped to the customer with the software to diagnose a bug faster
+- [TDD](https://en.wikipedia.org/wiki/Test-driven_development) in C++ has never been easier!
+
+The library can be used like any other even if you are not fond of the idea of mixing production code and tests. 
+
+Documentation
+-------------
+
+- [Features and design goals](features.md#why-does-this-library-exist-and-how-is-it-different-from-all-the-rest) - what makes this library different from all the rest
+- [Roadmap](roadmap.md#roadmap) - features that will be implemented in the future
+- [Tutorial](tutorial.md#tutorial) - make sure you have read it before the other parts of the documentation
+- [Assertion macros](assertions.md)
+- [Test cases, subcases and test fixtures](testcases.md)
+- [Configuration](configuration.md)
+- [```main()``` entry point and dealing with shared objects](main.md)
+- [Command line](commandline.md)
+- [Stringification](stringification.md)
+- [Benchmarks](benchmarks.md)
+- [FAQ](faq.md)
+
+---------------
 
 
 
@@ -32,26 +63,22 @@ TEST_CASE("testing the factorial function") {
 
 - Check out [**features and design goals**](doc/markdown/features.md#why-does-this-library-exist-and-how-is-it-different-from-all-the-rest) to see why this library exists and how it is different from all the rest.
 - Check out the tutorial [**here**](doc/markdown/tutorial.md#tutorial).
-- [![Try it online](https://img.shields.io/badge/try%20it-online-orange.svg)](http://melpon.org/wandbox/permlink/xvF0y5DTzIDLN98f)
 - a rich set of examples...
 - [![documentation](https://img.shields.io/badge/documentation-online%20%20%20%20%20-blue.svg)](doc/markdown/readme.md#reference)
-- [![download](https://img.shields.io/badge/latest%20version%20%20-download-blue.svg)](https://raw.githubusercontent.com/onqtam/doctest/master/doctest/doctest.h)
+
 
 [![Language](https://img.shields.io/badge/language-C++-blue.svg)](https://isocpp.org/)
 [![Standard](https://img.shields.io/badge/c%2B%2B-98-blue.svg)](https://en.wikipedia.org/wiki/C%2B%2B#Standardization)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 [![Version](https://badge.fury.io/gh/onqtam%2Fdoctest.svg)](https://github.com/onqtam/doctest/releases)
+[![download](https://img.shields.io/badge/latest%20version%20%20-download-blue.svg)](https://raw.githubusercontent.com/onqtam/doctest/master/doctest/doctest.h)
 [![Join the chat at https://gitter.im/onqtam/doctest](https://badges.gitter.im/onqtam/doctest.svg)](https://gitter.im/onqtam/doctest?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+[![Try it online](https://img.shields.io/badge/try%20it-online-orange.svg)](http://melpon.org/wandbox/permlink/xvF0y5DTzIDLN98f)
 
-Build status
-------------
+| master branch | [![Linux/OSX Status](https://travis-ci.org/onqtam/doctest.svg?branch=master)](https://travis-ci.org/onqtam/doctest) | [![Windows status](https://ci.appveyor.com/api/projects/status/j89qxtahyw1dp4gd/branch/master?svg=true)](https://ci.appveyor.com/project/onqtam/doctest/branch/master) | [![Static Analysis](https://scan.coverity.com/projects/7865/badge.svg)](https://scan.coverity.com/projects/onqtam-doctest) |
+|--|--|--|--|
+| **dev branch** | [![Linux/OSX Status](https://travis-ci.org/onqtam/doctest.svg?branch=dev)](https://travis-ci.org/onqtam/doctest) | [![Windows status](https://ci.appveyor.com/api/projects/status/j89qxtahyw1dp4gd/branch/dev?svg=true)](https://ci.appveyor.com/project/onqtam/doctest/branch/dev) |  |
 
-| Service               | branch: master | branch: dev |
-|-----------------------|----------------|-------------|
-| Travis-CI (Linux/OSX) | [![Linux/OSX Status](https://travis-ci.org/onqtam/doctest.svg?branch=master)](https://travis-ci.org/onqtam/doctest)| [![Linux/OSX Status](https://travis-ci.org/onqtam/doctest.svg?branch=dev)](https://travis-ci.org/onqtam/doctest)|
-| Appveyor (Windows)    | [![Windows status](https://ci.appveyor.com/api/projects/status/j89qxtahyw1dp4gd/branch/master?svg=true)](https://ci.appveyor.com/project/onqtam/doctest/branch/master)| [![Windows status](https://ci.appveyor.com/api/projects/status/j89qxtahyw1dp4gd/branch/dev?svg=true)](https://ci.appveyor.com/project/onqtam/doctest/branch/dev)|
-| Unit Test Coverage    | [![Coverage Status](https://coveralls.io/repos/github/onqtam/doctest/badge.svg?branch=master)](https://coveralls.io/github/onqtam/doctest?branch=master)|[![Coverage Status](https://coveralls.io/repos/github/onqtam/doctest/badge.svg?branch=dev)](https://coveralls.io/github/onqtam/doctest?branch=dev)|
-| Static Analysis       | [![Static Analysis](https://scan.coverity.com/projects/7865/badge.svg)](https://scan.coverity.com/projects/onqtam-doctest)|   |
 
 Contributing
 ------------
