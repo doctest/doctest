@@ -24,19 +24,31 @@ It is modeled after [**Catch**](https://github.com/philsquared/Catch) which is c
 
 The **key** differences between it and other testing libraries are:
 - Ultra light - [**below 10ms**](doc/markdown/benchmarks.md) of compile time overhead for including the header in a source file
-- Offers a way to remove **everything** testing-related from the binary with the [**```DOCTEST_CONFIG_DISABLE```**](configuration.md) identifier
+- Offers a way to remove **everything** testing-related from the binary with the [**```DOCTEST_CONFIG_DISABLE```**](doc/markdown/configuration.md) identifier
 - Doesn't pollute the global namespace (everything is in the ```doctest``` namespace) and doesn't drag **any** headers with it
 - Doesn't produce any warnings even on the [**most aggressive**](scripts/common.cmake#L59) warning levels for **MSVC**/**GCC**/**Clang**
 - Very portable and well tested C++98 - per commit tested on CI with over 200 different builds
 
 This allows the library to be used in more ways than any other - tests can be written directly in the production code!
 
-- This makes the barrier for writing tests much lower - you don't have to: **1.** make a separate source file **2.** include a bunch of stuff in it **3.** add it to the build system and **4.** add it to source control - You can just write the tests for a class or a piece of functionality at the bottom of it's source file - or even header file!
-- Tests in the production code can be thought of as documentation or active comments - showing how an API is used
+- This makes the barrier for writing tests **much lower** - you don't have to: **1.** make a separate source file **2.** include a bunch of stuff in it **3.** add it to the build system and **4.** add it to source control - You can just write the tests for a class or a piece of functionality at the bottom of it's source file - or even header file!
+- Tests in the production code can be thought of as documentation or up to date comments - showing how an API is used
 - Tests can be shipped to the customer with the software to diagnose a bug faster
 - [TDD](https://en.wikipedia.org/wiki/Test-driven_development) in C++ has never been easier!
 
 The library can be used like any other even if you are not fond of the idea of mixing production code and tests. 
+
+[![Language](https://img.shields.io/badge/language-C++-blue.svg)](https://isocpp.org/)
+[![Standard](https://img.shields.io/badge/c%2B%2B-98-blue.svg)](https://en.wikipedia.org/wiki/C%2B%2B#Standardization)
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://opensource.org/licenses/MIT)
+[![Version](https://badge.fury.io/gh/onqtam%2Fdoctest.svg)](https://github.com/onqtam/doctest/releases)
+[![download](https://img.shields.io/badge/latest%20version%20%20-download-blue.svg)](https://raw.githubusercontent.com/onqtam/doctest/master/doctest/doctest.h)
+[![Join the chat at https://gitter.im/onqtam/doctest](https://badges.gitter.im/onqtam/doctest.svg)](https://gitter.im/onqtam/doctest?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+[![Try it online](https://img.shields.io/badge/try%20it-online-orange.svg)](http://melpon.org/wandbox/permlink/xvF0y5DTzIDLN98f)
+
+| master branch | [![Linux/OSX Status](https://travis-ci.org/onqtam/doctest.svg?branch=master)](https://travis-ci.org/onqtam/doctest) | [![Windows status](https://ci.appveyor.com/api/projects/status/j89qxtahyw1dp4gd/branch/master?svg=true)](https://ci.appveyor.com/project/onqtam/doctest/branch/master) | [![Static Analysis](https://scan.coverity.com/projects/7865/badge.svg)](https://scan.coverity.com/projects/onqtam-doctest) |
+|----------------|---------------------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------|
+| **dev branch** | [![Linux/OSX Status](https://travis-ci.org/onqtam/doctest.svg?branch=dev)](https://travis-ci.org/onqtam/doctest) | [![Windows status](https://ci.appveyor.com/api/projects/status/j89qxtahyw1dp4gd/branch/dev?svg=true)](https://ci.appveyor.com/project/onqtam/doctest/branch/dev) |  |
 
 Documentation
 -------------
@@ -52,33 +64,6 @@ Documentation
 - [Stringification](stringification.md)
 - [Benchmarks](benchmarks.md)
 - [FAQ](faq.md)
-
----------------
-
-
-
-
-
-
-
-- Check out [**features and design goals**](doc/markdown/features.md#why-does-this-library-exist-and-how-is-it-different-from-all-the-rest) to see why this library exists and how it is different from all the rest.
-- Check out the tutorial [**here**](doc/markdown/tutorial.md#tutorial).
-- a rich set of examples...
-- [![documentation](https://img.shields.io/badge/documentation-online%20%20%20%20%20-blue.svg)](doc/markdown/readme.md#reference)
-
-
-[![Language](https://img.shields.io/badge/language-C++-blue.svg)](https://isocpp.org/)
-[![Standard](https://img.shields.io/badge/c%2B%2B-98-blue.svg)](https://en.wikipedia.org/wiki/C%2B%2B#Standardization)
-[![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://opensource.org/licenses/MIT)
-[![Version](https://badge.fury.io/gh/onqtam%2Fdoctest.svg)](https://github.com/onqtam/doctest/releases)
-[![download](https://img.shields.io/badge/latest%20version%20%20-download-blue.svg)](https://raw.githubusercontent.com/onqtam/doctest/master/doctest/doctest.h)
-[![Join the chat at https://gitter.im/onqtam/doctest](https://badges.gitter.im/onqtam/doctest.svg)](https://gitter.im/onqtam/doctest?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
-[![Try it online](https://img.shields.io/badge/try%20it-online-orange.svg)](http://melpon.org/wandbox/permlink/xvF0y5DTzIDLN98f)
-
-| master branch | [![Linux/OSX Status](https://travis-ci.org/onqtam/doctest.svg?branch=master)](https://travis-ci.org/onqtam/doctest) | [![Windows status](https://ci.appveyor.com/api/projects/status/j89qxtahyw1dp4gd/branch/master?svg=true)](https://ci.appveyor.com/project/onqtam/doctest/branch/master) | [![Static Analysis](https://scan.coverity.com/projects/7865/badge.svg)](https://scan.coverity.com/projects/onqtam-doctest) |
-|--|--|--|--|
-| **dev branch** | [![Linux/OSX Status](https://travis-ci.org/onqtam/doctest.svg?branch=dev)](https://travis-ci.org/onqtam/doctest) | [![Windows status](https://ci.appveyor.com/api/projects/status/j89qxtahyw1dp4gd/branch/dev?svg=true)](https://ci.appveyor.com/project/onqtam/doctest/branch/dev) |  |
-
 
 Contributing
 ------------
@@ -100,3 +85,18 @@ All the framework tests have their output collected when the CMake ```TEST_MODE`
 Code should be formatted with a recent-enough ```clang-format``` using the config file in the root of the repo (or I will do it...)
 
 Testing with compilers different from GCC/Clang/MSVC (and more platforms) is something the project would benefit from.
+
+
+
+
+
+
+
+
+
+
+
+- Check out [**features and design goals**](doc/markdown/features.md#why-does-this-library-exist-and-how-is-it-different-from-all-the-rest) to see why this library exists and how it is different from all the rest.
+- Check out the tutorial [**here**](doc/markdown/tutorial.md#tutorial).
+- a rich set of examples...
+- [![documentation](https://img.shields.io/badge/documentation-online%20%20%20%20%20-blue.svg)](doc/markdown/readme.md#reference)
