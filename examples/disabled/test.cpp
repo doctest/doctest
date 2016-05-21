@@ -6,6 +6,10 @@
 #pragma warning(disable : 4505) // unreferenced local functions being removed
 #endif                          // _MSC_VER
 
+#ifdef __clang__
+#pragma clang diagnostic ignored "-Wunneeded-internal-declaration"
+#endif // __clang__
+
 using doctest::Approx;
 
 static int throws(bool in) {
