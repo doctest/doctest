@@ -13,7 +13,7 @@ if len(sys.argv) < 2:
 # get the number of tests in the doctest executable
 num_tests = 0
 
-program_with_args = [sys.argv[1], "-count"]
+program_with_args = [sys.argv[1], "--dt-count=1"]
 for i in range(2, len(sys.argv)):
     program_with_args.append(sys.argv[i])
 
@@ -35,7 +35,7 @@ data = tuple([[x[0], x[-1]] for x in data])
 
 # the worker callback that runs the executable for the given range of tests
 def worker((first, last)):
-    program_with_args = [sys.argv[1], "-first=" + str(first), "-last=" + str(last)]
+    program_with_args = [sys.argv[1], "--dt-first=" + str(first), "--dt-last=" + str(last)]
     subprocess.Popen(program_with_args)
 
 # run the tasks on a pool

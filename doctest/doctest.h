@@ -2033,7 +2033,7 @@ namespace detail
         info3[0] = 0;
         if(!threw) {
             DOCTEST_SNPRINTF(info2, DOCTEST_COUNTOF(info2), "with expansion:\n");
-            DOCTEST_SNPRINTF(info3, DOCTEST_COUNTOF(info3), "  %s( %s )\n\n", assert_name,
+            DOCTEST_SNPRINTF(info3, DOCTEST_COUNTOF(info3), "  %s( %s )\n", assert_name,
                              decomposition);
         }
 
@@ -2042,8 +2042,9 @@ namespace detail
         DOCTEST_PRINTF_COLORED(info1, Color::Green);
         DOCTEST_PRINTF_COLORED(info2, Color::None);
         DOCTEST_PRINTF_COLORED(info3, Color::Green);
+        DOCTEST_PRINTF_COLORED("\n", Color::None);
 
-        printToDebugConsole(String(loc) + msg + info1 + info2 + info3);
+        printToDebugConsole(String(loc) + msg + info1 + info2 + info3 + "\n");
     }
 
     void logAssertThrows(bool threw, const char* expr, const char* assert_name, const char* file,
