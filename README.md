@@ -29,7 +29,7 @@ The **key** differences between it and other testing libraries are:
 - Offers a way to remove **everything** testing-related from the binary with the [**```DOCTEST_CONFIG_DISABLE```**](doc/markdown/configuration.md) identifier
 - Doesn't pollute the global namespace (everything is in the ```doctest``` namespace) and doesn't drag **any** headers with it
 - Doesn't produce any warnings even on the [**most aggressive**](scripts/common.cmake#L59) warning levels for **MSVC**/**GCC**/**Clang**
-- Very [**portable and well tested**](doc/markdown/features.md#extremely-portable) C++98 - per commit tested on CI with over 200 different builds
+- Very [**portable and well tested**](doc/markdown/features.md#extremely-portable) C++98 - per commit tested on CI with over 200 different builds (valgrind, sanitizers...)
 
 This allows the library to be used in more ways than any other - tests can be written directly in the production code!
 
@@ -74,7 +74,7 @@ Documentation
 Contributing
 ------------
 
-Support the development of the project with donations! There is a list of planned features which are all important and big - see the [**roadmap**](features.md#roadmap). I work on this project in my spare time and every cent is a big deal. I took a break from working in the industry to make open source software.
+Support the development of the project with donations! There is a list of planned features which are all important and big - see the [**roadmap**](features.md). I work on this project in my spare time and every cent is a big deal. I took a break from working in the industry to make open source software.
 
 [![Donate to support](https://pledgie.com/campaigns/31280.png)](https://pledgie.com/campaigns/31280)
 
@@ -82,7 +82,7 @@ Contributions in the form of issues and pull requests are welcome as well.
 
 Open an issue for a discussion before making a pull request to make sure the contribution goes smoothly. 
 
-This framework has some design goals which must be kept. Make sure you have read the [**features and design goals**](doc/markdown/features.md#features-and-design-goals) page.
+This framework has some design goals which must be kept. Make sure you have read the [**features and design goals**](doc/markdown/features.md) page.
 
 The ```master``` branch is the stable one with the latest release and the ```dev``` branch is on the bleeding edge.
 

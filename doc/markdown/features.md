@@ -34,7 +34,7 @@
 
 ## Other features:
 
-- really easy to get started - it's just 1 header file - see the [**tutorial**](tutorial.md#tutorial)
+- really easy to get started - it's just 1 header file - see the [**tutorial**](tutorial.md)
 - **very** light, unintrusive and portable - see the sections above - and also the [**benchmarks**](benchmarks.md)
 - offers a way to remove **everything** testing-related from the binary with the [**```DOCTEST_CONFIG_DISABLE```**](configuration.md) macro
 - tests are registered automatically - no need to add them to a collection manually
@@ -46,16 +46,16 @@
 - powerful mechanism for [**```stringification```**](stringification.md) of user types
 - tests can be grouped in [**test suites**](testcases.md#test-suites)
 - powerful [**command line**](commandline.md) with lots of options
-- tests can be [**filtered**](commandline.md#filtering) based on their name/file/test suite using wildcards
+- tests can be [**filtered**](commandline.md) based on their name/file/test suite using wildcards
 - failures can (optionally) break into the debugger on Windows and Mac
 - integration with the output window of Visual Studio for failing tests
 - a ```main()``` can be provided when implementing the library with the [**```DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN```**](main.md) identifier
 - can write tests in headers - they will still be registered only once in the executable/shared object
-- [**range-based**](commandline.md#ranges) execution of tests - see the [**multiprocess**](../../examples/multiprocess/) example (the **run.py** script)
+- [**range-based**](commandline.md) execution of tests - see the [**range_based_execution**](../../examples/range_based_execution/) example (the **run.py** script)
 - colored output in the console
 - controlling the order of test execution
 
-There is a list of planned features which are all important and big - see the [**roadmap**](roadmap.md#roadmap).
+There is a list of planned features which are all important and big - see the [**roadmap**](roadmap.md).
 
 ---------------
 
