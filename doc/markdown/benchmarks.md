@@ -11,7 +11,7 @@ Room temperature: 18
 
 The benchmark is done with [**this**](../../scripts/bench/bench.py) script only under Windows (but can be adapted for Unix) using CMake. 
 
-The script generates 501 source files and in 500 of them makes a function in the form of ```int f135() { return 42; }``` and in ```main.cpp``` it forward declares all the 500 such dummy functions and accumulates their result to return from the ```main()``` function. This is done to ensure that all source files are built and that the linker doesn't remove something.
+The script generates 501 source files and in 500 of them makes a function in the form of ```int f135() { return 135; }``` and in ```main.cpp``` it forward declares all the 500 such dummy functions and accumulates their result to return from the ```main()``` function. This is done to ensure that all source files are built and that the linker doesn't remove something.
 
 - **baseline** - how much time the source files need for a single threaded build with ```msbuild```/```mingw32-make``` 
 - **with implementation** - only in ```main.cpp``` the header is included with a ```#define``` before it so it gets implemented:
@@ -29,10 +29,10 @@ The script generates 501 source files and in 500 of them makes a function in the
 
 | &nbsp; | baseline | with implementation | + header everywhere | + a test everywhere | + disabled |
 |--------------|----------|---------------------|------------------------------|---------------------|-------------------------|
-| MSVC Debug |  |  |  |  |  |
-| MSVC Release |  |  |  |  |  |
-| GCC Debug |  |  |  |  |  |
-| GCC Release |  |  |  |  |  |
+| MSVC Debug | 14.2 | 15.1 | 18.3 | 21.4 | 15.6 |
+| MSVC Release | 13.4 | 14.5 | 18.7 | 23.2 | 15.2 |
+| GCC Debug | 22.7 | 24.1 | 29.2 | 38 | 25 |
+| GCC Release | 22.9 | 25 | 30 | 45 | 25 |
 
 ## Catch
 
