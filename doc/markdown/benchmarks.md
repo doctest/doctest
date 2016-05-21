@@ -1,13 +1,6 @@
 ## Benchmarks
 
-Compilers used:
-
-- Microsoft Visual Studio Community 2015 - Version 14.0.25123.00 Update 2
-- gcc 5.3.0 (x86_64-posix-seh-rev0, Built by MinGW-W64 project) 
-
-Environment used - Windows 7 on an SSD, Intel i7 3770k, 16g RAM
-
-Room temperature: 18
+This is a benchmark that can be done only to single header and header only libraries - like **doctest** and [**Catch**](https://github.com/philsquared/Catch).
 
 The benchmark is done with [**this**](../../scripts/bench/bench.py) script only under Windows (but can be adapted for Unix) using CMake. 
 
@@ -48,9 +41,25 @@ So on a modern developer machine:
 | &nbsp; | baseline | + implementation | + header everywhere | + a test everywhere | &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; |
 |--------------|----------|---------------------|------------------------------|---------------------|-------------------------|
 | MSVC Debug | 14.2 | 17 | 242 | 249 |  |
-| MSVC Release | 13.4 | 17.7 |  |  |  |
+| MSVC Release | 13.4 | 17.7 | 231 |  |  |
 | GCC Debug | 22.7 | 36.7 |  |  |  |
 | GCC Release | 22.9 | 31.5 |  |  |  |
 
 ## Conclusion
 
+use doctest.
+
+## System specs
+
+Compilers used:
+
+- Microsoft Visual Studio Community 2015 - Version 14.0.25123.00 Update 2
+- gcc 5.3.0 (x86_64-posix-seh-rev0, Built by MinGW-W64 project) 
+
+Environment used - Windows 7 on an SSD, Intel i7 3770k, 16g RAM
+
+Room temperature: 18
+
+---------------
+
+[Home](readme.md#reference)

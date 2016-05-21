@@ -19,4 +19,6 @@ MSVC 2015: 85k after preprocessor - 42k loc (without the new lines)
 ```doctest.h ```
 MSVC 2015: 2k after preprocessor - 250 loc (without the new lines)
 
+---------------
 
+[Home](readme.md#reference)
