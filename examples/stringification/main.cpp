@@ -42,6 +42,11 @@ struct StringMaker<std::list<T> >
 };
 }
 
+// to silence GCC warnings when inheriting from the class MyType which has no virtual destructor
+#if defined(__GNUC__) && !defined(__clang__)
+#pragma GCC diagnostic ignored "-Weffc++"
+#endif // __GNUC__
+
 template <typename T, typename K>
 struct MyType
 {
