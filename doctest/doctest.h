@@ -572,6 +572,17 @@ namespace detail
         Result(bool passed = false, const String& decomposition = String())
                 : m_passed(passed)
                 , m_decomposition(decomposition) {}
+
+// to fix gcc 4.7 "-Winline" warnings
+#if defined(__GNUC__) && !defined(__clang__)
+        __attribute__((noinline))
+#endif
+        Result&
+        operator=(const Result& other) {
+            m_passed        = other.m_passed;
+            m_decomposition = other.m_decomposition;
+        }
+
         operator bool() { return !m_passed; }
 
         void invert() { m_passed = !m_passed; }
