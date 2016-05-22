@@ -250,7 +250,7 @@ namespace detail
         yes& testStreamable(std::ostream&);
         no   testStreamable(no);
 
-        no operator<<(std::ostream&, const any_t&);
+        no operator<<(const std::ostream&, const any_t&);
 
         template <typename T>
         struct has_insertion_operator
