@@ -5,6 +5,7 @@ main.cpp(16)
 an empty test that will fail because of an exception
 
   TEST CASE FAILED! (threw exception)
+
 ===============================================================================
 main.cpp(20)
 normal macros
@@ -18,6 +19,7 @@ with expansion:
   CHECK( Approx( 0.502 ) == 0.501 )
 
   TEST CASE FAILED! (threw exception)
+
 ===============================================================================
 main.cpp(41)
 exceptions-related macros

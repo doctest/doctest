@@ -16,6 +16,7 @@ main.cpp(14)
 lots of nested subcases
 
   TEST CASE FAILED! (threw exception)
+
 ===============================================================================
 main.cpp(39)
 Scenario: vectors can be sized and resized

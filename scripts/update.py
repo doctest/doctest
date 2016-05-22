@@ -72,6 +72,8 @@ for dir in os.listdir(examples):
     os.system("git add " + examples + dir + "/README.md")
 '''
 
+sys.exit(0) # for now dont continue to update the wandbox link - working with the api has changed
+
 # update main readme 'try it online' badge permalink
 print("updating main readme")
 proc = subprocess.Popen('python send_to_wandbox.py ../doctest/ ' + examples + "hello_world/main.cpp", stdout = subprocess.PIPE)

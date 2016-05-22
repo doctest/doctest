@@ -635,9 +635,9 @@ namespace detail
 
     struct TestAccessibleContextState
     {
-        bool success;        // include successful assertions in output
-        bool no_throw;       // to skip exceptions-related assertion macros
-        bool no_breaks;      // to not break into the debugger
+        bool            success;   // include successful assertions in output
+        bool            no_throw;  // to skip exceptions-related assertion macros
+        bool            no_breaks; // to not break into the debugger
         const TestData* currentTest;
         bool            hasLoggedCurrentTestStart;
         int             numAssertionsForCurrentTestcase;
@@ -1028,7 +1028,6 @@ DOCTEST_TEST_SUITE_END();
 
 namespace doctest
 {
-
 namespace detail
 {
     // not using std::strlen() because of valgrind errors when optimizations are turned on
@@ -1207,9 +1206,9 @@ namespace detail
 
         // == data for the tests being ran
 
-        int             numAssertions;
-        int             numFailedAssertions;
-        int             numFailedAssertionsForCurrentTestcase;
+        int numAssertions;
+        int numFailedAssertions;
+        int numFailedAssertionsForCurrentTestcase;
 
         // stuff for subcases
         HashTable<Subcase> subcasesPassed;
@@ -1394,7 +1393,6 @@ String toString(int long long unsigned in) {
 #if defined(DOCTEST_CONFIG_DISABLE)
 namespace doctest
 {
-
 Context::Context(int, const char* const*) {}
 Context::~Context() {}
 void Context::addFilter(const char*, const char*) {}
@@ -1677,9 +1675,7 @@ namespace detail
         return data;
     }
 
-    TestAccessibleContextState* getTestsContextState() {
-        return getContextState();
-    }
+    TestAccessibleContextState* getTestsContextState() { return getContextState(); }
 
     Subcase::Subcase(const char* name, const char* file, int line)
             : m_name(name)
@@ -2034,7 +2030,7 @@ namespace detail
     void logTestCrashed() {
         char msg[DOCTEST_SNPRINTF_BUFFER_LENGTH];
 
-        DOCTEST_SNPRINTF(msg, DOCTEST_COUNTOF(msg), "  TEST CASE FAILED! (threw exception)\n");
+        DOCTEST_SNPRINTF(msg, DOCTEST_COUNTOF(msg), "  TEST CASE FAILED! (threw exception)\n\n");
 
         DOCTEST_PRINTF_COLORED(msg, Color::Red);
 
@@ -2333,7 +2329,8 @@ namespace detail
     }
 } // namespace detail
 
-Context::Context(int argc, const char* const* argv): p(new detail::ContextState) {
+Context::Context(int argc, const char* const* argv)
+        : p(new detail::ContextState) {
     using namespace detail;
 
     parseArgs(argc, argv, true);
@@ -2371,10 +2368,7 @@ Context::Context(int argc, const char* const* argv): p(new detail::ContextState)
     }
 }
 
-Context::~Context()
-{
-    delete p;
-}
+Context::~Context() { delete p; }
 
 // parses args
 void Context::parseArgs(int argc, const char* const* argv, bool withDefaults) {

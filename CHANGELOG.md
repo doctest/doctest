@@ -3,6 +3,7 @@
 ## [1.0.0](https://github.com/onqtam/doctest/tree/1.0.0) (2016-05-22)
 **Merged pull requests:**
 
+- Reduce the header size for test users [\#3](https://github.com/onqtam/doctest/pull/3) ([zah](https://github.com/zah))
 - Add a Gitter chat badge to README.md [\#1](https://github.com/onqtam/doctest/pull/1) ([gitter-badger](https://github.com/gitter-badger))
 
 
