@@ -81,7 +81,7 @@ Expects that no exception is thrown during evaluation of the expression.
 
 --------
 
-- 
+- Check out the [**example**](../../examples/assertion_macros/main.cpp) which shows many of these macros
 - Do not wrap assertion macros in ```try```/```catch``` - the REQUIRE macros throw exceptions to end the test case execution!
 
 ---------------

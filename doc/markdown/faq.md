@@ -1,6 +1,8 @@
 ## FAQ
 
-- linker issues (_IMPLEMENT, etc)...
+#TODO...
+
+- linker issues? Make sure you have instantiated the test runner in only one source file.
 
 - stringification issues - if operator<<(ostream for a type is visible only in one source file...
 
@@ -20,7 +22,7 @@ https://github.com/tpounds/mockitopp
 
 - how subcases work - http://pastebin.com/rwghFzK4 - or look in the repo
 
-- why c++98?
+- why c++98? because.
 
 - will the library support checking for memory leaks? no. use tools like valgrind or the sanitizers.
 
