@@ -72,7 +72,7 @@ Documentation
 - [Test cases, subcases and test fixtures](doc/markdown/testcases.md)
 - [Command line](doc/markdown/commandline.md)
 - [Configuration](doc/markdown/configuration.md)
-- [Stringification](doc/markdown/stringification.md)
+- [String conversions](doc/markdown/stringification.md)
 - [```main()``` entry point and dealing with shared objects](doc/markdown/main.md)
 - [FAQ](doc/markdown/faq.md)
 

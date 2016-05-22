@@ -59,7 +59,7 @@ So on a modern developer machine:
 
 ----------
 
-So if ```doctest.h``` costs 8ms and ```catch.hpp``` costs 430ms on MSVC - then **doctest** is 54 times lighter! 
+So if ```doctest.h``` costs 8ms and ```catch.hpp``` costs 430ms on MSVC - then **doctest** is >> **54** << times lighter! 
 
 ----------
 

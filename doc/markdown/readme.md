@@ -13,7 +13,7 @@ Reference
 - [Test cases, subcases and test fixtures](testcases.md)
 - [Command line](commandline.md)
 - [Configuration](configuration.md)
-- [Stringification](stringification.md)
+- [String conversions](stringification.md)
 - [```main()``` entry point and dealing with shared objects](main.md)
 - [FAQ](faq.md)
 

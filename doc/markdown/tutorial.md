@@ -180,7 +180,7 @@ root
 
 Subcases can be nested to an arbitrary depth (limited only by your stack size). Each leaf subcase (a subcase that contains no nested subcases) will be executed exactly once on a separate path of execution from any other leaf subcase (so no leaf subcase can interfere with another). A fatal failure in a parent subcase will prevent nested subcases from running - but then that's the idea.
 
-You can check out how subcases are implemented in [**this example**](../../examples/how_subcases_work/main.cpp#L1).
+You can check out how subcases are implemented in [**this example**](../../scripts/how_subcases_work/main.cpp#L1).
 
 ## Scaling up
 
