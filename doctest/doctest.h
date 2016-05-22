@@ -581,6 +581,8 @@ namespace detail
         operator=(const Result& other) {
             m_passed        = other.m_passed;
             m_decomposition = other.m_decomposition;
+
+            return *this;
         }
 
         operator bool() { return !m_passed; }
