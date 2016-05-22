@@ -49,7 +49,7 @@ So on a modern developer machine:
   (below 18ms for MinGW-w64 but Linux GCC will be much faster)
 - using the library everywhere with tests - but everything disabled - costs less than 2 seconds ```disabled - baseline```
 
-### [**Catch**](https://github.com/philsquared/Catch)
+### [Catch](https://github.com/philsquared/Catch)
 
 - instantiating the test runner in one source file costs ~4 second ```implementation - baseline```
   (~12 seconds for MinGW-w64 but Linux GCC will be much faster)

@@ -29,15 +29,15 @@ All the options can also be set with code if the user [**supplies the ```main()`
 | ```-tse``` ```--test-suite-exclude=<filters>``` | Same as ```--test-case-exclude=<filters>``` but filters based on the test suite in which test cases are in |
 | ```-ob``` &nbsp; ```--order-by=<string>``` | Test cases will be sorted before being executed either by **the file in which they are** / **the test suite they are in** / **their name** / **random**. The possible values of ```<string>``` are ```file```/```suite```/```name```/```rand```. The default is ```file``` |
 | ```-rs``` &nbsp; ```--rand-seed=<int>``` | The seed for random ordering |
-| ```-f``` &nbsp;&nbsp;&nbsp; ```--first=<int>``` | The first test case to execute which passes the current filters - for range-based execution - see [**the multiprocess example**](../../examples/multiprocess/) (the **run.py** script) |
-| ```-l``` &nbsp;&nbsp;&nbsp; ```--last=<int>``` | The last test case to execute which passes the current filters - for range-based execution - see [**the multiprocess example**](../../examples/multiprocess/) (the **run.py** script) |
+| ```-f``` &nbsp;&nbsp;&nbsp; ```--first=<int>``` | The **first** test case to execute which passes the current filters - for range-based execution - see [**the example**](../../examples/range_based_execution/) (the **run.py** script) |
+| ```-l``` &nbsp;&nbsp;&nbsp; ```--last=<int>``` | The **last** test case to execute which passes the current filters - for range-based execution - see [**the example**](../../examples/range_based_execution/) (the **run.py** script) |
 | ```-aa``` &nbsp; ```--abort-after=<int>``` | The testing framework will stop executing test cases/assertions after this many failed assertions. The default is 0 which means don't stop at all |
 | **Bool Options** | <hr> |
 | ```-s``` &nbsp;&nbsp;&nbsp; ```--success=<bool>``` | To include successful assertions in the output |
 | ```-cs``` &nbsp; ```--case-sensitive=<bool>``` | Filters being treated as case sensitive |
 | ```-e``` &nbsp;&nbsp;&nbsp; ```--exit=<bool>``` | Exits after the tests finish - this is meaningful only when the client has [**provided the ```main()``` entry point**](main.md)  - the program should check ```doctest::Context::shouldExit()``` after calling ```doctest::Context::run()``` and should exit - this is left up to the user. The idea is to be able to execute just the tests in a client program and to not continue with it's execution |
 | ```-no``` &nbsp; ```--no-overrides=<bool>``` | Disables procedural overrides of options which are only possible if the client has [**provided the ```main()``` entry point**](main.md). This is useful if the program has some default options set (which override the command line) but you want to set an option differently from the command line without recompiling.|
-| ```-nt``` &nbsp; ```--no-throw=<bool>``` | Skips [**exceptions-related assertion**](assertions.md) checks |
+| ```-nt``` &nbsp; ```--no-throw=<bool>``` | Skips [**exceptions-related assertion**](assertions.md#exceptions) checks |
 | ```-ne``` &nbsp; ```--no-exitcode=<bool>``` | Always returns a successful exit code - even if a test case has failed |
 | ```-nr``` &nbsp; ```--no-run=<bool>``` | Skips all runtime **doctest** operations (except the test registering which happens before the program enters ```main()```). This is useful if the testing framework is integrated into a client codebase which has [**provided the ```main()``` entry point**](main.md) and the user wants to skip running the tests and just use the program |
 | ```-nc``` &nbsp; ```--no-colors=<bool>``` | Disables colors in the output |

@@ -4,20 +4,18 @@
 
 For most people the only configuration needed is telling **doctest** which source file should host all the implementation code:
 
-```c++
+- **```DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN```**
+
+    ```c++
 #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 #include "doctest.h"
-```
+    ```
 
-This should be done in only one source file! Otherwise there will be linker errors and slower build times.
+    This should be done in only one source file! Otherwise there will be linker errors and slower build times.
 
-If the client wants to [**supply the ```main()``` function**](main.md) (either to set an option with some value from the code or to integrate the framework into his existing project codebase) then the **```DOCTEST_CONFIG_IMPLEMENT```** define should be used.
+- **```DOCTEST_CONFIG_IMPLEMENT```** - if the client wants to [**supply the ```main()``` function**](main.md) (either to set an option with some value from the code or to integrate the framework into his existing project codebase) this define should be used.
 
-The next most important configuration option is **```DOCTEST_CONFIG_DISABLE```** - when defined globally in the whole project before the inclusion of the framework header - everything testing - related is removed from the binary - including most of the framework implementation and every test case written anywhere! This is one of the most unique features of **doctest**.
-
-
-
-Other configuration options are:
+- **```DOCTEST_CONFIG_DISABLE```** - the next most important configuration option - when defined globally in the whole project before the inclusion of the framework header - everything testing - related is removed from the binary - including most of the framework implementation and every test case written anywhere! This is one of the most unique features of **doctest**.
 
 - **```DOCTEST_CONFIG_NO_SHORT_MACRO_NAMES```** - this will remove all macros from **doctest** that don't have the **```DOCTEST_```** prefix - like **```CHECK```**, **```TEST_CASE```** and **```SUBCASE```**. Then only the full macro names will be available - **```DOCTEST_CHECK```**, **```DOCTEST_TEST_CASE```** and **```DOCTEST_SUBCASE```**. The user is free to make his own short versions of these macros - [**example**](../../examples/alternative_macros/)
 

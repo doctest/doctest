@@ -40,11 +40,11 @@
 - tests are registered automatically - no need to add them to a collection manually
 - supports [**subcases**](testcases.md#subcases) for easy setup/teardown of tests (also supports the retro [**test fixtures**](testcases.md#test-fixtures) with classes)
 - output from all compilers on all platforms is the same - byte by byte
-- supports [**BDD style**](testcases.md#bdd-style) tests
+- supports [**BDD style**](testcases.md##bdd-style-test-cases) tests
 - only one core [**assertion macro**](assertions.md) for comparisons - standard C++ operators are used for the comparison (less than, equal, greater than...) - yet the full expression is decomposed and left and right values of the expression are logged
-- assertion macros for [**exceptions**](assertions.md) - if something should or shouldn't throw
-- floating point comparison support - see the [**```Approx()```**](assertions.md) helper
-- powerful mechanism for [**```stringification```**](stringification.md) of user types
+- assertion macros for [**exceptions**](assertions.md#exceptions) - if something should or shouldn't throw
+- floating point comparison support - see the [**```Approx()```**](assertions.md#floating-point-comparisons) helper
+- powerful mechanism for [**stringification**](stringification.md) of user types
 - tests can be grouped in [**test suites**](testcases.md#test-suites)
 - powerful [**command line**](commandline.md) with lots of options
 - tests can be [**filtered**](commandline.md) based on their name/file/test suite using wildcards

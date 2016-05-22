@@ -9,7 +9,7 @@ Test cases and subcases are very easy to use in practice:
 * **TEST_CASE(** _test name_ **)**
 * **SUBCASE(** _subcase name_ **)**
 
-_test name_ and _subcase name_ are free form, quoted, strings. Test names must be unique within the Catch executable.
+_test name_ and _subcase name_ are free form, quoted, strings. Test names don't have to be unique within the **doctest** executable. They should also be string literals.
 
 For examples see the [Tutorial](tutorial.md)
 
@@ -92,7 +92,6 @@ Then test cases from specific test suites can be executed with the help of filte
 
 - Check out the [**example**](../../examples/subcases_and_bdd/main.cpp)
 - Tests are registered from top to bottom of each processed cpp after the headers have been preprocessed and included but there is no ordering between cpp files.
-- Test case and subcase names must be string literals
 
 ---------------
 

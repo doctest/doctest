@@ -17,6 +17,6 @@ Reference
 - [```main()``` entry point and dealing with shared objects](main.md)
 - [FAQ](faq.md)
 
-Support the development of the project with donations! There is a list of planned features which are all important and big - see the [**roadmap**](features.md#roadmap). I work on this project in my spare time and every cent is a big deal.
+Support the development of the project with donations! There is a list of planned features which are all important and big - see the [**roadmap**](roadmap.md). I work on this project in my spare time and every cent is a big deal.
 
 [![Donate to support](https://pledgie.com/campaigns/31280.png)](https://pledgie.com/campaigns/31280)

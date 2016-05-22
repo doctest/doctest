@@ -18,7 +18,7 @@ TEST_CASE("testing the factorial function") {
 }
 ```
 
-Note how a standard C++ operator for the comparison is used - **doctest** has only one core [**assertion macro**](assertions.md) (instead of many for *less than*, *equals*, *greater than*...) - yet the full expression is decomposed and the left and right values are logged.
+Note how a standard C++ operator for the comparison is used - **doctest** has only one core [**assertion macro**](doc/markdown/assertions.md) (instead of many for *less than*, *equals*, *greater than*...) - yet the full expression is decomposed and the left and right values are logged.
 
 It is modeled after [**Catch**](https://github.com/philsquared/Catch) which is currently the most popular and easy to use alternative for testing in C++
 
@@ -79,7 +79,7 @@ Documentation
 Contributing
 ------------
 
-Support the development of the project with donations! There is a list of planned features which are all important and big - see the [**roadmap**](features.md). I work on this project in my spare time and every cent is a big deal. I took a break from working in the industry to make open source software.
+Support the development of the project with donations! There is a list of planned features which are all important and big - see the [**roadmap**](doc/markdown/roadmap.md). I work on this project in my spare time and every cent is a big deal. I took a break from working in the industry to make open source software.
 
 [![Donate to support](https://pledgie.com/campaigns/31280.png)](https://pledgie.com/campaigns/31280)
 
