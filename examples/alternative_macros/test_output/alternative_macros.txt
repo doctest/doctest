@@ -1,0 +1,7 @@
+[doctest] doctest version is "1.0.0"
+[doctest] run with "-dt-help" for options
+Hello world!
+Hello world!
+===============================================================================
+[doctest] test cases:    1 |    1 passed |    0 failed
+[doctest] assertions:    4 |    4 passed |    0 failed

@@ -33,8 +33,8 @@ readme.close()
 os.system("git add ../doctest/doctest.h")
 
 # run generate_html.py
-print("generating html documentation from markdown")
-os.system("python generate_html.py")
+#print("generating html documentation from markdown")
+#os.system("python generate_html.py")
 
 # update changelog
 os.chdir("../")

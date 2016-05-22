@@ -58,198 +58,198 @@ matrix:
     - env: TRAVIS_EMPTY_JOB_WORKAROUND=true
 
   include:
-    # coverage
-    - env: COMPILER=g++ COVERALLS_SERVICE_NAME=travis-ci
-      compiler: gcc
-      addons:
-        apt:
-          packages: ["lcov", "curl"]
-
-    # GCC 4.4
-    - env: COMPILER=g++-4.4
-      compiler: gcc
-      addons: &gcc44
-        apt:
-          packages: ["g++-4.4", "valgrind", "g++-4.4-multilib", "libc6-dbg", "libc6-dbg:i386"]
-          sources: *apt_sources
-
-    # GCC 4.5
-    - env: COMPILER=g++-4.5
-      compiler: gcc
-      addons: &gcc45
-        apt:
-          packages: ["g++-4.5", "valgrind", "g++-4.5-multilib", "libc6-dbg", "libc6-dbg:i386"]
-          sources: *apt_sources
-
-    # GCC 4.6
-    - env: COMPILER=g++-4.6
-      compiler: gcc
-      addons: &gcc46
-        apt:
-          packages: [           "valgrind", "g++-4.6-multilib", "libc6-dbg", "libc6-dbg:i386"]
-          sources: *apt_sources
-
-    # GCC 4.7
-    - env: COMPILER=g++-4.7
-      compiler: gcc
-      addons: &gcc47
-        apt:
-          packages: ["g++-4.7", "valgrind", "g++-4.7-multilib", "libc6-dbg", "libc6-dbg:i386"]
-          sources: *apt_sources
-
-    # GCC 4.8
-    - env: COMPILER=g++-4.8 HAS_ASAN_32=true HAS_ASAN_64=true
-      compiler: gcc
-      addons: &gcc48
-        apt:
-          packages: ["g++-4.8", "valgrind", "g++-4.8-multilib", "libc6-dbg", "libc6-dbg:i386"]
-          sources: *apt_sources
-
-    # GCC 4.9
-    - env: COMPILER=g++-4.9 HAS_ASAN_32=true HAS_UBSAN_32=true HAS_ASAN_64=true HAS_UBSAN_64=true
-      compiler: gcc
-      addons: &gcc49
-        apt:
-          packages: ["g++-4.9", "valgrind", "g++-4.9-multilib", "libc6-dbg", "libc6-dbg:i386"]
-          sources: *apt_sources
-
-    # GCC 5
-    - env: COMPILER=g++-5 HAS_ASAN_32=true HAS_UBSAN_32=true HAS_ASAN_64=true HAS_UBSAN_64=true
-      compiler: gcc
-      addons: &gcc5
-        apt:
-          packages: ["g++-5",   "valgrind", "g++-5-multilib",   "libc6-dbg", "libc6-dbg:i386"]
-          sources: *apt_sources
-
-#    # GCC 6
-#    # released on 2016.04.27
-#    # wait for it to enter the whitelist - https://github.com/travis-ci/apt-package-whitelist/blob/master/ubuntu-precise
-#    # also with homebrew under OSX!!!
-#    - env: COMPILER=g++-6 HAS_ASAN_32=true HAS_UBSAN_32=true HAS_ASAN_64=true HAS_UBSAN_64=true
+#    # coverage
+#    - env: COMPILER=g++ COVERALLS_SERVICE_NAME=travis-ci
 #      compiler: gcc
-#      addons: &gcc6
+#      addons:
 #        apt:
-#          packages: ["g++-6",   "valgrind", "g++-6-multilib",   "libc6-dbg", "libc6-dbg:i386"]
+#          packages: ["lcov", "curl"]
+#
+#    # GCC 4.4
+#    - env: COMPILER=g++-4.4
+#      compiler: gcc
+#      addons: &gcc44
+#        apt:
+#          packages: ["g++-4.4", "valgrind", "g++-4.4-multilib", "libc6-dbg", "libc6-dbg:i386"]
 #          sources: *apt_sources
-
-    # Clang 3.4
-    - env: COMPILER=clang++ HAS_ASAN_64=true HAS_UBSAN_64=true
-      addons: &clang
-        apt:
-          packages: [             "valgrind", "g++-multilib", "libc6-dbg", "libc6-dbg:i386"]
-          sources: *apt_sources
-
-    # Clang 3.5
-    - env: COMPILER=clang++-3.5 HAS_ASAN_64=true HAS_UBSAN_64=true
-      addons: &clang35
-        apt:
-          packages: ["clang-3.5", "valgrind", "g++-multilib", "libc6-dbg", "libc6-dbg:i386"]
-          sources: *apt_sources
-
-    # Clang 3.6
-    - env: COMPILER=clang++-3.6 HAS_ASAN_64=true HAS_UBSAN_64=true
-      addons: &clang36
-        apt:
-          packages: ["clang-3.6", "valgrind", "g++-multilib", "libc6-dbg", "libc6-dbg:i386"]
-          sources: *apt_sources
-
-    # Clang 3.7
-    - env: COMPILER=clang++-3.7 # no sanitizers - not even for 64 bit - https://llvm.org/bugs/show_bug.cgi?id=22757
-      addons: &clang37
-        apt:
-          packages: ["clang-3.7", "valgrind", "g++-multilib", "libc6-dbg", "libc6-dbg:i386"]
-          sources: *apt_sources
-
-    # Clang 3.8
-    - env: COMPILER=clang++-3.8 # no sanitizers - not even for 64 bit - https://llvm.org/bugs/show_bug.cgi?id=22757
-      addons: &clang38
-        apt:
-          packages: ["clang-3.8", "valgrind", "g++-multilib", "libc6-dbg", "libc6-dbg:i386"]
-          sources: *apt_sources
-
-    # Xcode 6.1 Clang
-    - env: COMPILER=clang++
-      os: osx
-
-    # Xcode 6.2 Clang
-    - env: COMPILER=clang++
-      osx_image: beta-xcode6.2
-      os: osx
-
-    # Xcode 6.3 Clang
-    - env: COMPILER=clang++
-      osx_image: beta-xcode6.3
-      os: osx
-
-    # Xcode 6.4 Clang
-    - env: COMPILER=clang++
-      osx_image: xcode6.4
-      os: osx
-
-    # Xcode 7 Clang
-    - env: COMPILER=clang++ HAS_ASAN_32=true HAS_ASAN_64=true
-      osx_image: xcode7
-      os: osx
-
-    # Xcode 7.1 Clang
-    - env: COMPILER=clang++ HAS_ASAN_32=true HAS_ASAN_64=true
-      osx_image: xcode7.1
-      os: osx
-
-    # Xcode 7.2 Clang
-    - env: COMPILER=clang++ HAS_ASAN_32=true HAS_ASAN_64=true
-      osx_image: xcode7.2
-      os: osx
-
-    # Xcode 7.3 Clang
-    - env: COMPILER=clang++ HAS_ASAN_32=true HAS_ASAN_64=true
-      osx_image: xcode7.3
-      os: osx
-
-    # OSX GCC 4.4
-    - env: COMPILER=g++-4.4
-      compiler: gcc
-      os: osx
-
-    # OSX GCC 4.5
-    - env: COMPILER=g++-4.5
-      compiler: gcc
-      os: osx
-
-    # OSX GCC 4.6
-    - env: COMPILER=g++-4.6
-      compiler: gcc
-      os: osx
-
-    # OSX GCC 4.7
-    - env: COMPILER=g++-4.7
-      compiler: gcc
-      os: osx
-
-    # OSX GCC 4.8
-    - env: COMPILER=g++-4.8 HAS_ASAN_32=true HAS_ASAN_64=true
-      compiler: gcc
-      os: osx
-
-    # OSX GCC 4.9
-    - env: COMPILER=g++-4.9 HAS_ASAN_32=true HAS_UBSAN_32=true HAS_ASAN_64=true HAS_UBSAN_64=true
-      compiler: gcc
-      os: osx
-
-    # OSX GCC 5
-    - env: COMPILER=g++-5 HAS_ASAN_32=true HAS_UBSAN_32=true HAS_ASAN_64=true HAS_UBSAN_64=true
-      compiler: gcc
-      os: osx
-
-#    # OSX GCC 6
-#    - env: COMPILER=g++-6 HAS_ASAN_32=true HAS_UBSAN_32=true HAS_ASAN_64=true HAS_UBSAN_64=true
+#
+#    # GCC 4.5
+#    - env: COMPILER=g++-4.5
+#      compiler: gcc
+#      addons: &gcc45
+#        apt:
+#          packages: ["g++-4.5", "valgrind", "g++-4.5-multilib", "libc6-dbg", "libc6-dbg:i386"]
+#          sources: *apt_sources
+#
+#    # GCC 4.6
+#    - env: COMPILER=g++-4.6
+#      compiler: gcc
+#      addons: &gcc46
+#        apt:
+#          packages: [           "valgrind", "g++-4.6-multilib", "libc6-dbg", "libc6-dbg:i386"]
+#          sources: *apt_sources
+#
+#    # GCC 4.7
+#    - env: COMPILER=g++-4.7
+#      compiler: gcc
+#      addons: &gcc47
+#        apt:
+#          packages: ["g++-4.7", "valgrind", "g++-4.7-multilib", "libc6-dbg", "libc6-dbg:i386"]
+#          sources: *apt_sources
+#
+#    # GCC 4.8
+#    - env: COMPILER=g++-4.8 HAS_ASAN_32=true HAS_ASAN_64=true
+#      compiler: gcc
+#      addons: &gcc48
+#        apt:
+#          packages: ["g++-4.8", "valgrind", "g++-4.8-multilib", "libc6-dbg", "libc6-dbg:i386"]
+#          sources: *apt_sources
+#
+#    # GCC 4.9
+#    - env: COMPILER=g++-4.9 HAS_ASAN_32=true HAS_UBSAN_32=true HAS_ASAN_64=true HAS_UBSAN_64=true
+#      compiler: gcc
+#      addons: &gcc49
+#        apt:
+#          packages: ["g++-4.9", "valgrind", "g++-4.9-multilib", "libc6-dbg", "libc6-dbg:i386"]
+#          sources: *apt_sources
+#
+#    # GCC 5
+#    - env: COMPILER=g++-5 HAS_ASAN_32=true HAS_UBSAN_32=true HAS_ASAN_64=true HAS_UBSAN_64=true
+#      compiler: gcc
+#      addons: &gcc5
+#        apt:
+#          packages: ["g++-5",   "valgrind", "g++-5-multilib",   "libc6-dbg", "libc6-dbg:i386"]
+#          sources: *apt_sources
+#
+##    # GCC 6
+##    # released on 2016.04.27
+##    # wait for it to enter the whitelist - https://github.com/travis-ci/apt-package-whitelist/blob/master/ubuntu-precise
+##    # also with homebrew under OSX!!!
+##    - env: COMPILER=g++-6 HAS_ASAN_32=true HAS_UBSAN_32=true HAS_ASAN_64=true HAS_UBSAN_64=true
+##      compiler: gcc
+##      addons: &gcc6
+##        apt:
+##          packages: ["g++-6",   "valgrind", "g++-6-multilib",   "libc6-dbg", "libc6-dbg:i386"]
+##          sources: *apt_sources
+#
+#    # Clang 3.4
+#    - env: COMPILER=clang++ HAS_ASAN_64=true HAS_UBSAN_64=true
+#      addons: &clang
+#        apt:
+#          packages: [             "valgrind", "g++-multilib", "libc6-dbg", "libc6-dbg:i386"]
+#          sources: *apt_sources
+#
+#    # Clang 3.5
+#    - env: COMPILER=clang++-3.5 HAS_ASAN_64=true HAS_UBSAN_64=true
+#      addons: &clang35
+#        apt:
+#          packages: ["clang-3.5", "valgrind", "g++-multilib", "libc6-dbg", "libc6-dbg:i386"]
+#          sources: *apt_sources
+#
+#    # Clang 3.6
+#    - env: COMPILER=clang++-3.6 HAS_ASAN_64=true HAS_UBSAN_64=true
+#      addons: &clang36
+#        apt:
+#          packages: ["clang-3.6", "valgrind", "g++-multilib", "libc6-dbg", "libc6-dbg:i386"]
+#          sources: *apt_sources
+#
+#    # Clang 3.7
+#    - env: COMPILER=clang++-3.7 # no sanitizers - not even for 64 bit - https://llvm.org/bugs/show_bug.cgi?id=22757
+#      addons: &clang37
+#        apt:
+#          packages: ["clang-3.7", "valgrind", "g++-multilib", "libc6-dbg", "libc6-dbg:i386"]
+#          sources: *apt_sources
+#
+#    # Clang 3.8
+#    - env: COMPILER=clang++-3.8 # no sanitizers - not even for 64 bit - https://llvm.org/bugs/show_bug.cgi?id=22757
+#      addons: &clang38
+#        apt:
+#          packages: ["clang-3.8", "valgrind", "g++-multilib", "libc6-dbg", "libc6-dbg:i386"]
+#          sources: *apt_sources
+#
+#    # Xcode 6.1 Clang
+#    - env: COMPILER=clang++
+#      os: osx
+#
+#    # Xcode 6.2 Clang
+#    - env: COMPILER=clang++
+#      osx_image: beta-xcode6.2
+#      os: osx
+#
+#    # Xcode 6.3 Clang
+#    - env: COMPILER=clang++
+#      osx_image: beta-xcode6.3
+#      os: osx
+#
+#    # Xcode 6.4 Clang
+#    - env: COMPILER=clang++
+#      osx_image: xcode6.4
+#      os: osx
+#
+#    # Xcode 7 Clang
+#    - env: COMPILER=clang++ HAS_ASAN_32=true HAS_ASAN_64=true
+#      osx_image: xcode7
+#      os: osx
+#
+#    # Xcode 7.1 Clang
+#    - env: COMPILER=clang++ HAS_ASAN_32=true HAS_ASAN_64=true
+#      osx_image: xcode7.1
+#      os: osx
+#
+#    # Xcode 7.2 Clang
+#    - env: COMPILER=clang++ HAS_ASAN_32=true HAS_ASAN_64=true
+#      osx_image: xcode7.2
+#      os: osx
+#
+#    # Xcode 7.3 Clang
+#    - env: COMPILER=clang++ HAS_ASAN_32=true HAS_ASAN_64=true
+#      osx_image: xcode7.3
+#      os: osx
+#
+#    # OSX GCC 4.4
+#    - env: COMPILER=g++-4.4
 #      compiler: gcc
 #      os: osx
-
-    # OSX LLVM-GCC
-    - env: COMPILER=g++
-      compiler: gcc
-      os: osx
+#
+#    # OSX GCC 4.5
+#    - env: COMPILER=g++-4.5
+#      compiler: gcc
+#      os: osx
+#
+#    # OSX GCC 4.6
+#    - env: COMPILER=g++-4.6
+#      compiler: gcc
+#      os: osx
+#
+#    # OSX GCC 4.7
+#    - env: COMPILER=g++-4.7
+#      compiler: gcc
+#      os: osx
+#
+#    # OSX GCC 4.8
+#    - env: COMPILER=g++-4.8 HAS_ASAN_32=true HAS_ASAN_64=true
+#      compiler: gcc
+#      os: osx
+#
+#    # OSX GCC 4.9
+#    - env: COMPILER=g++-4.9 HAS_ASAN_32=true HAS_UBSAN_32=true HAS_ASAN_64=true HAS_UBSAN_64=true
+#      compiler: gcc
+#      os: osx
+#
+#    # OSX GCC 5
+#    - env: COMPILER=g++-5 HAS_ASAN_32=true HAS_UBSAN_32=true HAS_ASAN_64=true HAS_UBSAN_64=true
+#      compiler: gcc
+#      os: osx
+#
+##    # OSX GCC 6
+##    - env: COMPILER=g++-6 HAS_ASAN_32=true HAS_UBSAN_32=true HAS_ASAN_64=true HAS_UBSAN_64=true
+##      compiler: gcc
+##      os: osx
+#
+#    # OSX LLVM-GCC
+#    - env: COMPILER=g++
+#      compiler: gcc
+#      os: osx
 
 before_install:
   - |
@@ -303,48 +303,48 @@ script:
   - |
     if [[ "${COVERALLS_SERVICE_NAME}" = "travis-ci" ]]; then
       cmake ${CMAKE_OPTIONS_GLOBAL} -DCMAKE_BUILD_TYPE=Debug .
-      make -j2 && make coveralls
+      make -k -j2 && make coveralls
       exit
     fi
 
   # initial run with options
   - cmake ${CMAKE_OPTIONS_GLOBAL} ${CMAKE_OPTIONS} .
 
-  # debug x86
-  - cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_FLAGS="-m32" .
-  - make clean && make -j2
-  # valgrind for 32bit under osx fails
-  - if [[ "${TRAVIS_OS_NAME}" == "linux" ]]; then cmake -DTEST_MODE=VALGRIND . && ctest --output-on-failure ; fi
-#  - cmake -DTEST_MODE=COMPARE . && ctest --output-on-failure
   # debug x64
   - cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_FLAGS="-m64" .
-  - make clean && make -j2
+  - make clean && make -k -j2
   - cmake -DTEST_MODE=VALGRIND . && ctest --output-on-failure
-#  - cmake -DTEST_MODE=COMPARE . && ctest --output-on-failure
-  # release x86
-  - cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="-m32" .
-  - make clean && make -j2
-  # valgrind for 32bit under osx fails
-  - if [[ "${TRAVIS_OS_NAME}" == "linux" ]]; then cmake -DTEST_MODE=VALGRIND . && ctest --output-on-failure ; fi
-#  - cmake -DTEST_MODE=COMPARE . && ctest --output-on-failure
+  - cmake -DTEST_MODE=COMPARE  . && ctest --output-on-failure
   # release x64
   - cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="-m64" .
-  - make clean && make -j2
+  - make clean && make -k -j2
   - cmake -DTEST_MODE=VALGRIND . && ctest --output-on-failure
-#  - cmake -DTEST_MODE=COMPARE . && ctest --output-on-failure
+  - cmake -DTEST_MODE=COMPARE  . && ctest --output-on-failure
+  # debug x86
+  - cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_FLAGS="-m32" .
+  - make clean && make -k -j2
+  # valgrind for 32bit under osx fails
+  - if [[ "${TRAVIS_OS_NAME}" == "linux" ]]; then cmake -DTEST_MODE=VALGRIND . && ctest --output-on-failure ; fi
+  - cmake -DTEST_MODE=COMPARE . && ctest --output-on-failure
+  # release x86
+  - cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="-m32" .
+  - make clean && make -k -j2
+  # valgrind for 32bit under osx fails
+  - if [[ "${TRAVIS_OS_NAME}" == "linux" ]]; then cmake -DTEST_MODE=VALGRIND . && ctest --output-on-failure ; fi
+  - cmake -DTEST_MODE=COMPARE . && ctest --output-on-failure
 
   # sanitizers - again 32/64 bit Debug/Release configs through address/undefined sanitizers
-  - cmake -DTEST_MODE=NORMAL .
-#  - cmake -DTEST_MODE=COMPARE .
+#  - cmake -DTEST_MODE=NORMAL .
+  - cmake -DTEST_MODE=COMPARE .
   # on separate commands because when something fails I want to see which one exactly
-  - if [[ "${HAS_ASAN_64}" = "true" ]];  then cmake -DCMAKE_BUILD_TYPE=Debug   -DCMAKE_CXX_FLAGS="-m64 -fsanitize=address" .   && make clean && make -j2 && ctest --output-on-failure ; fi
-  - if [[ "${HAS_ASAN_32}" = "true" ]];  then cmake -DCMAKE_BUILD_TYPE=Debug   -DCMAKE_CXX_FLAGS="-m32 -fsanitize=address" .   && make clean && make -j2 && ctest --output-on-failure ; fi
-  - if [[ "${HAS_ASAN_64}" = "true" ]];  then cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="-m64 -fsanitize=address" .   && make clean && make -j2 && ctest --output-on-failure ; fi
-  - if [[ "${HAS_ASAN_32}" = "true" ]];  then cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="-m32 -fsanitize=address" .   && make clean && make -j2 && ctest --output-on-failure ; fi
-  - if [[ "${HAS_UBSAN_64}" = "true" ]]; then cmake -DCMAKE_BUILD_TYPE=Debug   -DCMAKE_CXX_FLAGS="-m64 -fsanitize=undefined" . && make clean && make -j2 && ctest --output-on-failure ; fi
-  - if [[ "${HAS_UBSAN_32}" = "true" ]]; then cmake -DCMAKE_BUILD_TYPE=Debug   -DCMAKE_CXX_FLAGS="-m32 -fsanitize=undefined" . && make clean && make -j2 && ctest --output-on-failure ; fi
-  - if [[ "${HAS_UBSAN_64}" = "true" ]]; then cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="-m64 -fsanitize=undefined" . && make clean && make -j2 && ctest --output-on-failure ; fi
-  - if [[ "${HAS_UBSAN_32}" = "true" ]]; then cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="-m32 -fsanitize=undefined" . && make clean && make -j2 && ctest --output-on-failure ; fi
+  - if [[ "${HAS_ASAN_64}" = "true" ]];  then cmake -DCMAKE_BUILD_TYPE=Debug   -DCMAKE_CXX_FLAGS="-m64 -fsanitize=address" .   && make clean && make -k -j2 && ctest --output-on-failure ; fi
+  - if [[ "${HAS_ASAN_32}" = "true" ]];  then cmake -DCMAKE_BUILD_TYPE=Debug   -DCMAKE_CXX_FLAGS="-m32 -fsanitize=address" .   && make clean && make -k -j2 && ctest --output-on-failure ; fi
+  - if [[ "${HAS_ASAN_64}" = "true" ]];  then cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="-m64 -fsanitize=address" .   && make clean && make -k -j2 && ctest --output-on-failure ; fi
+  - if [[ "${HAS_ASAN_32}" = "true" ]];  then cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="-m32 -fsanitize=address" .   && make clean && make -k -j2 && ctest --output-on-failure ; fi
+  - if [[ "${HAS_UBSAN_64}" = "true" ]]; then cmake -DCMAKE_BUILD_TYPE=Debug   -DCMAKE_CXX_FLAGS="-m64 -fsanitize=undefined" . && make clean && make -k -j2 && ctest --output-on-failure ; fi
+  - if [[ "${HAS_UBSAN_32}" = "true" ]]; then cmake -DCMAKE_BUILD_TYPE=Debug   -DCMAKE_CXX_FLAGS="-m32 -fsanitize=undefined" . && make clean && make -k -j2 && ctest --output-on-failure ; fi
+  - if [[ "${HAS_UBSAN_64}" = "true" ]]; then cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="-m64 -fsanitize=undefined" . && make clean && make -k -j2 && ctest --output-on-failure ; fi
+  - if [[ "${HAS_UBSAN_32}" = "true" ]]; then cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="-m32 -fsanitize=undefined" . && make clean && make -k -j2 && ctest --output-on-failure ; fi
 
 #  - ccache -s
 

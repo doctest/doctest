@@ -1,6 +1,6 @@
 #ifndef DOCTEST_CONFIG_NO_SHORT_MACRO_NAMES
 #define DOCTEST_CONFIG_NO_SHORT_MACRO_NAMES
-#endif // DOCTEST_NO_SHORT_MACRO_NAMES
+#endif // DOCTEST_CONFIG_NO_SHORT_MACRO_NAMES
 
 // no guard for including the doctest header itself because it should support multiple inclusion
 #include "doctest.h"
@@ -28,5 +28,12 @@
 #define my_require_throws      DOCTEST_REQUIRE_THROWS
 #define my_require_throws_as   DOCTEST_REQUIRE_THROWS_AS
 #define my_require_nothrow     DOCTEST_REQUIRE_NOTHROW
+
+#define my_scenario DOCTEST_SCENARIO
+#define my_given DOCTEST_GIVEN
+#define my_when DOCTEST_WHEN
+#define my_and_when DOCTEST_AND_WHEN
+#define my_then DOCTEST_THEN
+#define my_and_then DOCTEST_AND_THEN
 
 #endif // MY_PROXY_MACROS
