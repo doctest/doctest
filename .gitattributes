@@ -1,1 +1,7 @@
 * text=auto
+
+*.cpp text
+*.h text
+*.md text
+*.yml text
+*.txt text
