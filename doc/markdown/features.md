@@ -38,14 +38,14 @@
 - **very** light, unintrusive and portable - see the sections above - and also the [**benchmarks**](benchmarks.md)
 - offers a way to remove **everything** testing-related from the binary with the [**```DOCTEST_CONFIG_DISABLE```**](configuration.md) macro
 - tests are registered automatically - no need to add them to a collection manually
-- supports [**subcases**](testcases.md#subcases) for easy setup/teardown of tests (also supports the retro [**test fixtures**](testcases.md#test-fixtures) with classes)
+- supports [**subcases**](testcases.md) for easy setup/teardown of tests (also supports the retro [**test fixtures**](testcases.md#) with classes)
 - output from all compilers on all platforms is the same - byte by byte
-- supports [**BDD style**](testcases.md##bdd-style-test-cases) tests
+- supports [**BDD style**](testcases.md) tests
 - only one core [**assertion macro**](assertions.md) for comparisons - standard C++ operators are used for the comparison (less than, equal, greater than...) - yet the full expression is decomposed and left and right values of the expression are logged
-- assertion macros for [**exceptions**](assertions.md#exceptions) - if something should or shouldn't throw
+- assertion macros for [**exceptions**](assertions.md) - if something should or shouldn't throw
 - floating point comparison support - see the [**```Approx()```**](assertions.md#floating-point-comparisons) helper
 - powerful mechanism for [**stringification**](stringification.md) of user types
-- tests can be grouped in [**test suites**](testcases.md#test-suites)
+- tests can be grouped in [**test suites**](testcases.md)
 - powerful [**command line**](commandline.md) with lots of options
 - tests can be [**filtered**](commandline.md) based on their name/file/test suite using wildcards
 - failures can (optionally) break into the debugger on Windows and Mac

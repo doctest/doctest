@@ -118,7 +118,7 @@ def main():
         'compiler-option-raw': '-Wall\n-Wextra'
     })
 
-    if 'status' in response and response['status'] == '0':
+    if 'status' in response and not 'compiler_error' in response: # and response['status'] == '0':
         print response['url']
         return 0
     else:
