@@ -5,10 +5,12 @@ project(${PROJECT_NAME})
 
 include(../../scripts/common.cmake)
 
-if(DEFINED ENV{TRAVIS} AND APPLE)
+if(APPLE)
     set(CMAKE_MACOSX_RPATH ON)
-    # force 64 bit for OSX because -m32 fails >>> SOMETIMES <<< (x86_64 vs 386 - like the dll is not linked with -m32...)
-    add_compiler_flags(-m64)
+    if(DEFINED ENV{TRAVIS})
+        # force 64 bit for OSX because -m32 fails >>> SOMETIMES <<< (x86_64 vs 386 - like the dll is not linked with -m32...)
+        add_compiler_flags(-m64)
+    endif()
 endif()
 
 include_directories("../../doctest/")
