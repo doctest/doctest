@@ -36,6 +36,6 @@ TEST_CASE("[math] basic stuff") {
 }
 
 int program() {
-    printf( "Program code.\n" );
+    printf("Program code.\n");
     return EXIT_SUCCESS;
 }
