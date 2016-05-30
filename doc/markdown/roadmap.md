@@ -6,8 +6,11 @@ Support the development of the project with donations! I work on this project in
 
 This is a list of planned features for future releases (maybe in the given order).
 
+- switch to using ```std::vector``` and ```std::set``` and remove custom implementations
+- the set holding all registered tests should use a specialized allocator to minimize program startup time
 - fix the test coverage reports - currently each example replaces the coverage from the last example
 - test with gcc 6 and use it in the CI builds
+- a mechanism for translating exceptions - users should be able to teach the framework about their types (look at Catch for this)
 - support for ```std::exception``` and derivatives (mainly for calling the ```.what()``` method when caught unexpectedly)
 - test with missed warning flags for GCC - look into https://github.com/Barro/compiler-warnings
 - crash handling: signals on UNIX platforms or structured exceptions on Windows
@@ -41,9 +44,17 @@ This is a list of planned features for future releases (maybe in the given order
 
 And here is a list of things that are being considered but not part of the roadmap yet:
 
+- look into MSTest integration
+    - http://accu.org/index.php/journals/1851
+    - https://msdn.microsoft.com/en-us/library/hh270865.aspx
+    - also look into similar Xcode integration
 - matchers - should investigate what they are :D
+- generators? - look at Catch - and investigate what they are (also in [boost](http://www.boost.org/doc/libs/1_61_0/libs/test/doc/html/boost_test/tests_organization/test_cases/test_case_generation.html)
 - option to list files in which  there are test cases who match the current filters
 - handle ```wchar``` strings
+- a progress reporter
+- doctest in a GUI environment? with no console? APIs for attaching a console? querying if there is one? should investigate...
+- ability to customize the colors in the console output
 - refactor the assertion macros - make proxy functions that do most of the things to minimize code bloat
 - pool allocator for the ```String``` class - currently very unoptimized
 - ability to specify ASC/DESC for the order option
@@ -53,6 +64,7 @@ And here is a list of things that are being considered but not part of the roadm
 - hierarchical test suites - using a stack for the pushed ones - should be easy
 - put everything from the ```detail``` namespace also in a nested anonymous namespace to make them with internal linkage
 - ability to re-run only newly compiled tests based on time stamps using ```__DATE__``` and ```__TIME__``` - stored in some file
+- submit to [boost](http://www.boost.org/development/requirements.html)?
 
 ---------------
 
