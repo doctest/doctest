@@ -1,6 +1,8 @@
 #define DOCTEST_CONFIG_IMPLEMENT
 #include "doctest.h"
 
+int program();
+
 int main(int argc, char** argv) {
     doctest::Context context(argc, argv); // initialize
 
@@ -10,12 +12,12 @@ int main(int argc, char** argv) {
     context.setOption("abort-after", 5);  // stop test execution after 5 failed assertions
     context.setOption("sort", "name");    // sort the test cases by their name
 
-    int res = context.run(); // run
+    int res = context.run(); // run queries, or run tests unless --no-run is specified
 
     if(context.shouldExit()) // important - query flags (and --no-run) rely on the user doing this
         return res;          // propagate the result of the tests
 
-    int client_stuff_return_code = 0;
+    int client_stuff_return_code = program();
     // your program - if the testing framework is integrated in your production code
 
     return res + client_stuff_return_code;
@@ -31,4 +33,9 @@ TEST_CASE("[string] testing std::string") {
 TEST_CASE("[math] basic stuff") {
     CHECK(6 > 5);
     CHECK(6 > 7);
+}
+
+int program() {
+    printf( "Program code.\n" );
+    return EXIT_SUCCESS;
 }
