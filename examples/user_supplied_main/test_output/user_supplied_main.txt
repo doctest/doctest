@@ -3,3 +3,4 @@
 ===============================================================================
 [doctest] test cases:    1 |    1 passed |    0 failed
 [doctest] assertions:    1 |    1 passed |    0 failed
+Program code.
