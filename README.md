@@ -1,5 +1,6 @@
-The lightest feature rich C++ single header testing framework
--------
+### The lightest feature-rich C++ single-header testing framework for unit tests and TDD
+
+---------
 
 The **doctest** library is inspired by the [**```unittest {}```**](https://wiki.dlang.org/Unittest) functionality of the **D** programming language and **Python**'s [**docstrings**](https://en.wikipedia.org/wiki/Docstring) - tests can be considered a form of documentation and should be able to reside near the production code which they test.
 
@@ -80,20 +81,8 @@ Documentation
 Contributing
 ------------
 
-Support the development of the project with donations! There is a list of planned features which are all important and big - see the [**roadmap**](doc/markdown/roadmap.md). I work on this project in my spare time and every cent is a big deal. I took a break from working in the industry to make open source software.
+Support the development of the project with donations! There is a list of planned features which are all important and big - see the [**roadmap**](doc/markdown/roadmap.md). I took a break from working in the industry to make open source software so every cent is a big deal.
 
 [![Donate to support](https://pledgie.com/campaigns/31280.png)](https://pledgie.com/campaigns/31280)
 
-Contributions in the form of issues and pull requests are welcome as well.
-
-Open an issue for a discussion before making a pull request to make sure the contribution goes smoothly. 
-
-This framework has some design goals which must be kept. Make sure you have read the [**features and design goals**](doc/markdown/features.md) page.
-
-The ```master``` branch is the stable one with the latest release and the ```dev``` branch is on the bleeding edge.
-
-All the framework tests (using ctest) have their output collected when the CMake ```TEST_MODE``` variable is set to ```COLLECT``` (making the new reference output) and later the tests are ran on the CI services (```travis``` and ```appveyor```) - their output is compared with the current reference output in the repository with the ```COMPARE``` mode (default mode is ```COMPARE```).
-
-Code should be formatted with a recent-enough ```clang-format``` using the config file in the root of the repo (or I will do it...)
-
-Testing with compilers different from GCC/Clang/MSVC (and more platforms) is something the project would benefit from.
+Contributions in the form of issues and pull requests are welcome as well - check out the [**Contributing**](CONTRIBUTING.md) page.

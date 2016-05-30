@@ -44,6 +44,7 @@ This is a list of planned features for future releases (maybe in the given order
 
 And here is a list of things that are being considered but not part of the roadmap yet:
 
+- rework the cmake single header assembly - to use a ```.cmake``` script that sets the permissions of ```doctest.h``` as read only
 - look into MSTest integration
     - http://accu.org/index.php/journals/1851
     - https://msdn.microsoft.com/en-us/library/hh270865.aspx
