@@ -13,7 +13,7 @@ enable_testing()
 set(TEST_MODE "COMPARE" CACHE STRING "Test mode - normal/run through valgrind/collect output/compare with output")
 set_property(CACHE TEST_MODE PROPERTY STRINGS "NORMAL;VALGRIND;COLLECT;COMPARE")
 
-# add a customized overloaded version of add_test() to suite my needs
+# override add_test() to suite my needs
 function(add_test)
     cmake_parse_arguments(ARG "NO_VALGRIND;NO_OUTPUT" "NAME" "COMMAND" ${ARGN})
     if(NOT "${ARG_UNPARSED_ARGUMENTS}" STREQUAL "" OR "${ARG_NAME}" STREQUAL "" OR "${ARG_COMMAND}" STREQUAL "")
@@ -171,3 +171,15 @@ add_custom_command(
     COMMENT "assembling the single header")
 
 add_custom_target(assemble_single_header ALL DEPENDS ${doctest_include_folder}doctest.h)
+
+# override add_executable() to add a dependency on the header assembly target
+function(add_executable name)
+    _add_executable(${name} ${ARGN})
+    add_dependencies(${name} assemble_single_header)
+endfunction()
+
+# override add_library() to add a dependency on the header assembly target
+function(add_library name)
+    _add_library(${name} ${ARGN})
+    add_dependencies(${name} assemble_single_header)
+endfunction()
