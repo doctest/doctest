@@ -36,7 +36,8 @@
 #pragma warning(disable : 4127) // conditional expression is constant
 #endif                          // _MSC_VER
 
-#if(defined(DOCTEST_CONFIG_IMPLEMENT) || defined(DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN))
+#if defined(DOCTEST_CONFIG_IMPLEMENT) || defined(DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN) ||            \
+        !defined(DOCTEST_SINGLE_HEADER)
 #ifndef DOCTEST_LIBRARY_IMPLEMENTATION
 #define DOCTEST_LIBRARY_IMPLEMENTATION
 
