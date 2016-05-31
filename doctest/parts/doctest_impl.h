@@ -41,6 +41,10 @@
 #ifndef DOCTEST_LIBRARY_IMPLEMENTATION
 #define DOCTEST_LIBRARY_IMPLEMENTATION
 
+#ifndef DOCTEST_SINGLE_HEADER
+#include "doctest_fwd.h"
+#endif // DOCTEST_SINGLE_HEADER
+
 // required includes - will go only in one translation unit!
 #include <ctime>
 #include <cmath>

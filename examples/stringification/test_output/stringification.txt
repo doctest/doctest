@@ -1,5 +1,5 @@
 [doctest] doctest version is "1.0.0"
-[doctest] run with "-dt-help" for options
+[doctest] run with "--help" for options
 ===============================================================================
 main.cpp(86)
 the only test
@@ -25,5 +25,5 @@ with expansion:
   CHECK( [1, 42, 3, ] == [1, 2, 666, ] )
 
 ===============================================================================
-[doctest] test cases:    1 |    0 passed |    1 failed
-[doctest] assertions:    4 |    0 passed |    4 failed
+[doctest] test cases:    1 |    0 passed |    1 failed |    0 skipped
+[doctest] assertions:    4 |    0 passed |    4 failed |

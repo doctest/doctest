@@ -695,18 +695,18 @@ public:
 // registers the test by initializing a dummy var with a function
 #if defined(__GNUC__) && !defined(__clang__)
 #define DOCTEST_REGISTER_FUNCTION(f, name)                                                         \
-    static int DOCTEST_ANONYMOUS(DOCTEST_AUTOGEN_VAR_) __attribute__((unused)) =                   \
+    static int DOCTEST_ANONYMOUS(DOCTEST_ANON_VAR_) __attribute__((unused)) =                      \
             doctest::detail::regTest(f, __LINE__, __FILE__, name);
 #elif defined(__clang__)
 #define DOCTEST_REGISTER_FUNCTION(f, name)                                                         \
     _Pragma("clang diagnostic push")                                                               \
             _Pragma("clang diagnostic ignored \"-Wglobal-constructors\"") static int               \
-                    DOCTEST_ANONYMOUS(DOCTEST_AUTOGEN_VAR_) =                                      \
+                    DOCTEST_ANONYMOUS(DOCTEST_ANON_VAR_) =                                         \
                             doctest::detail::regTest(f, __LINE__, __FILE__, name);                 \
     _Pragma("clang diagnostic pop")
 #else // MSVC
 #define DOCTEST_REGISTER_FUNCTION(f, name)                                                         \
-    static int DOCTEST_ANONYMOUS(DOCTEST_AUTOGEN_VAR_) =                                           \
+    static int DOCTEST_ANONYMOUS(DOCTEST_ANON_VAR_) =                                              \
             doctest::detail::regTest(f, __LINE__, __FILE__, name);
 #endif // MSVC
 
@@ -730,61 +730,60 @@ public:
 
 // for registering tests
 #define DOCTEST_TEST_CASE(name)                                                                    \
-    DOCTEST_CREATE_AND_REGISTER_FUNCTION(DOCTEST_ANONYMOUS(DOCTEST_AUTOGEN_FUNC_), name)
+    DOCTEST_CREATE_AND_REGISTER_FUNCTION(DOCTEST_ANONYMOUS(DOCTEST_ANON_FUNC_), name)
 
 // for registering tests with a fixture
 #define DOCTEST_TEST_CASE_FIXTURE(c, name)                                                         \
-    DOCTEST_IMPLEMENT_FIXTURE(DOCTEST_ANONYMOUS(DOCTEST_AUTOGEN_CLASS_), c,                        \
-                              DOCTEST_ANONYMOUS(DOCTEST_AUTOGEN_FUNC_), name)
+    DOCTEST_IMPLEMENT_FIXTURE(DOCTEST_ANONYMOUS(DOCTEST_ANON_CLASS_), c,                           \
+                              DOCTEST_ANONYMOUS(DOCTEST_ANON_FUNC_), name)
 
 // for subcases
 #if defined(__GNUC__)
 #define DOCTEST_SUBCASE(name)                                                                      \
-    if(const doctest::detail::Subcase & DOCTEST_ANONYMOUS(DOCTEST_AUTOGEN_SUBCASE_)                \
+    if(const doctest::detail::Subcase & DOCTEST_ANONYMOUS(DOCTEST_ANON_SUBCASE_)                   \
                                                 __attribute__((unused)) =                          \
                doctest::detail::Subcase(name, __FILE__, __LINE__))
 #else // __GNUC__
 #define DOCTEST_SUBCASE(name)                                                                      \
-    if(const doctest::detail::Subcase & DOCTEST_ANONYMOUS(DOCTEST_AUTOGEN_SUBCASE_) =              \
+    if(const doctest::detail::Subcase & DOCTEST_ANONYMOUS(DOCTEST_ANON_SUBCASE_) =                 \
                doctest::detail::Subcase(name, __FILE__, __LINE__))
 #endif // __GNUC__
 
 // for starting a testsuite block
 #if defined(__GNUC__) && !defined(__clang__)
 #define DOCTEST_TEST_SUITE(name)                                                                   \
-    static int DOCTEST_ANONYMOUS(DOCTEST_AUTOGEN_VAR_) __attribute__((unused)) =                   \
+    static int DOCTEST_ANONYMOUS(DOCTEST_ANON_VAR_) __attribute__((unused)) =                      \
             doctest::detail::setTestSuiteName(name);                                               \
-    void DOCTEST_ANONYMOUS(DOCTEST_AUTOGEN_FOR_SEMICOLON_)()
+    void DOCTEST_ANONYMOUS(DOCTEST_ANON_FOR_SEMICOLON_)()
 #elif defined(__clang__)
 #define DOCTEST_TEST_SUITE(name)                                                                   \
     _Pragma("clang diagnostic push")                                                               \
             _Pragma("clang diagnostic ignored \"-Wglobal-constructors\"") static int               \
-                    DOCTEST_ANONYMOUS(DOCTEST_AUTOGEN_VAR_) =                                      \
+                    DOCTEST_ANONYMOUS(DOCTEST_ANON_VAR_) =                                         \
                             doctest::detail::setTestSuiteName(name);                               \
-    _Pragma("clang diagnostic pop") void DOCTEST_ANONYMOUS(DOCTEST_AUTOGEN_FOR_SEMICOLON_)()
+    _Pragma("clang diagnostic pop") void DOCTEST_ANONYMOUS(DOCTEST_ANON_FOR_SEMICOLON_)()
 #else // MSVC
 #define DOCTEST_TEST_SUITE(name)                                                                   \
-    static int DOCTEST_ANONYMOUS(DOCTEST_AUTOGEN_VAR_) = doctest::detail::setTestSuiteName(name);  \
-    void       DOCTEST_ANONYMOUS(DOCTEST_AUTOGEN_FOR_SEMICOLON_)()
+    static int DOCTEST_ANONYMOUS(DOCTEST_ANON_VAR_) = doctest::detail::setTestSuiteName(name);     \
+    void       DOCTEST_ANONYMOUS(DOCTEST_ANON_FOR_SEMICOLON_)()
 #endif // MSVC
 
 // for ending a testsuite block
 #if defined(__GNUC__) && !defined(__clang__)
 #define DOCTEST_TEST_SUITE_END                                                                     \
-    static int DOCTEST_ANONYMOUS(DOCTEST_AUTOGEN_VAR_) __attribute__((unused)) =                   \
+    static int DOCTEST_ANONYMOUS(DOCTEST_ANON_VAR_) __attribute__((unused)) =                      \
             doctest::detail::setTestSuiteName("");                                                 \
-    void DOCTEST_ANONYMOUS(DOCTEST_AUTOGEN_TESTSUITE_END_)
+    void DOCTEST_ANONYMOUS(DOCTEST_ANON_TESTSUITE_END_)
 #elif defined(__clang__)
-#define DOCTEST_TEST_SUITE_END                                                                     \
-    _Pragma("clang diagnostic push")                                                               \
-            _Pragma("clang diagnostic ignored \"-Wglobal-constructors\"") static int               \
-                    DOCTEST_ANONYMOUS(DOCTEST_AUTOGEN_VAR_) =                                      \
-                            doctest::detail::setTestSuiteName("");                                 \
-    _Pragma("clang diagnostic pop") void DOCTEST_ANONYMOUS(DOCTEST_AUTOGEN_TESTSUITE_END_)
+#define DOCTEST_TEST_SUITE_END                                                                                         \
+    _Pragma("clang diagnostic push")                                                                                   \
+            _Pragma("clang diagnostic ignored \"-Wglobal-constructors\"") static int                                   \
+                                         DOCTEST_ANONYMOUS(DOCTEST_ANON_VAR_) = doctest::detail::setTestSuiteName(""); \
+    _Pragma("clang diagnostic pop") void DOCTEST_ANONYMOUS(DOCTEST_ANON_TESTSUITE_END_)
 #else // MSVC
 #define DOCTEST_TEST_SUITE_END                                                                     \
-    static int DOCTEST_ANONYMOUS(DOCTEST_AUTOGEN_VAR_) = doctest::detail::setTestSuiteName("");    \
-    void       DOCTEST_ANONYMOUS(DOCTEST_AUTOGEN_TESTSUITE_END_)
+    static int DOCTEST_ANONYMOUS(DOCTEST_ANON_VAR_) = doctest::detail::setTestSuiteName("");       \
+    void       DOCTEST_ANONYMOUS(DOCTEST_ANON_TESTSUITE_END_)
 #endif // MSVC
 
 #define DOCTEST_LOG_START()                                                                        \
@@ -798,19 +797,19 @@ public:
     } while(doctest::detail::always_false())
 
 #define DOCTEST_ASSERT_IMPLEMENT(expr, assert_name, false_invert_op)                               \
-    doctest::detail::Result res;                                                                   \
-    bool                    threw = false;                                                         \
+    doctest::detail::Result _DOCTEST_R;                                                            \
+    bool                    _DOCTEST_THREW = false;                                                \
     try {                                                                                          \
-        res = doctest::detail::ExpressionDecomposer() << expr;                                     \
-    } catch(...) { threw = true; }                                                                 \
+        _DOCTEST_R = doctest::detail::ExpressionDecomposer() << expr;                              \
+    } catch(...) { _DOCTEST_THREW = true; }                                                        \
     false_invert_op;                                                                               \
-    if(res || DOCTEST_GCS()->success) {                                                            \
+    if(_DOCTEST_R || DOCTEST_GCS()->success) {                                                     \
         DOCTEST_LOG_START();                                                                       \
-        doctest::detail::logAssert(res.m_passed, res.m_decomposition.c_str(), threw, #expr,        \
-                                   assert_name, __FILE__, __LINE__);                               \
+        doctest::detail::logAssert(_DOCTEST_R.m_passed, _DOCTEST_R.m_decomposition.c_str(),        \
+                                   _DOCTEST_THREW, #expr, assert_name, __FILE__, __LINE__);        \
     }                                                                                              \
     DOCTEST_GCS()->numAssertionsForCurrentTestcase++;                                              \
-    if(res) {                                                                                      \
+    if(_DOCTEST_R) {                                                                               \
         doctest::detail::addFailedAssert(assert_name);                                             \
         DOCTEST_BREAK_INTO_DEBUGGER();                                                             \
         doctest::detail::checkIfShouldThrow(assert_name);                                          \
@@ -835,23 +834,24 @@ public:
 #define DOCTEST_CHECK(expr) DOCTEST_ASSERT_PROXY(expr, "CHECK", ((void)0))
 #define DOCTEST_REQUIRE(expr) DOCTEST_ASSERT_PROXY(expr, "REQUIRE", ((void)0))
 
-#define DOCTEST_WARN_FALSE(expr) DOCTEST_ASSERT_PROXY(expr, "WARN_FALSE", res.invert())
-#define DOCTEST_CHECK_FALSE(expr) DOCTEST_ASSERT_PROXY(expr, "CHECK_FALSE", res.invert())
-#define DOCTEST_REQUIRE_FALSE(expr) DOCTEST_ASSERT_PROXY(expr, "REQUIRE_FALSE", res.invert())
+#define DOCTEST_WARN_FALSE(expr) DOCTEST_ASSERT_PROXY(expr, "WARN_FALSE", _DOCTEST_R.invert())
+#define DOCTEST_CHECK_FALSE(expr) DOCTEST_ASSERT_PROXY(expr, "CHECK_FALSE", _DOCTEST_R.invert())
+#define DOCTEST_REQUIRE_FALSE(expr) DOCTEST_ASSERT_PROXY(expr, "REQUIRE_FALSE", _DOCTEST_R.invert()
 
 #define DOCTEST_ASSERT_THROWS(expr, assert_name)                                                   \
     do {                                                                                           \
         if(!DOCTEST_GCS()->no_throw) {                                                             \
-            bool threw = false;                                                                    \
+            bool _DOCTEST_THREW = false;                                                           \
             try {                                                                                  \
                 expr;                                                                              \
-            } catch(...) { threw = true; }                                                         \
-            if(!threw || DOCTEST_GCS()->success) {                                                 \
+            } catch(...) { _DOCTEST_THREW = true; }                                                \
+            if(!_DOCTEST_THREW || DOCTEST_GCS()->success) {                                        \
                 DOCTEST_LOG_START();                                                               \
-                doctest::detail::logAssertThrows(threw, #expr, assert_name, __FILE__, __LINE__);   \
+                doctest::detail::logAssertThrows(_DOCTEST_THREW, #expr, assert_name, __FILE__,     \
+                                                 __LINE__);                                        \
             }                                                                                      \
             DOCTEST_GCS()->numAssertionsForCurrentTestcase++;                                      \
-            if(!threw) {                                                                           \
+            if(!_DOCTEST_THREW) {                                                                  \
                 doctest::detail::addFailedAssert(assert_name);                                     \
                 DOCTEST_BREAK_INTO_DEBUGGER();                                                     \
                 doctest::detail::checkIfShouldThrow(assert_name);                                  \
@@ -862,21 +862,21 @@ public:
 #define DOCTEST_ASSERT_THROWS_AS(expr, as, assert_name)                                            \
     do {                                                                                           \
         if(!DOCTEST_GCS()->no_throw) {                                                             \
-            bool threw    = false;                                                                 \
-            bool threw_as = false;                                                                 \
+            bool _DOCTEST_THREW    = false;                                                        \
+            bool _DOCTEST_THREW_AS = false;                                                        \
             try {                                                                                  \
                 expr;                                                                              \
             } catch(as) {                                                                          \
-                threw    = true;                                                                   \
-                threw_as = true;                                                                   \
-            } catch(...) { threw = true; }                                                         \
-            if(!threw_as || DOCTEST_GCS()->success) {                                              \
+                _DOCTEST_THREW    = true;                                                          \
+                _DOCTEST_THREW_AS = true;                                                          \
+            } catch(...) { _DOCTEST_THREW = true; }                                                \
+            if(!_DOCTEST_THREW_AS || DOCTEST_GCS()->success) {                                     \
                 DOCTEST_LOG_START();                                                               \
-                doctest::detail::logAssertThrowsAs(threw, threw_as, #as, #expr, assert_name,       \
-                                                   __FILE__, __LINE__);                            \
+                doctest::detail::logAssertThrowsAs(_DOCTEST_THREW, _DOCTEST_THREW_AS, #as, #expr,  \
+                                                   assert_name, __FILE__, __LINE__);               \
             }                                                                                      \
             DOCTEST_GCS()->numAssertionsForCurrentTestcase++;                                      \
-            if(!threw_as) {                                                                        \
+            if(!_DOCTEST_THREW_AS) {                                                               \
                 doctest::detail::addFailedAssert(assert_name);                                     \
                 DOCTEST_BREAK_INTO_DEBUGGER();                                                     \
                 doctest::detail::checkIfShouldThrow(assert_name);                                  \
@@ -887,16 +887,17 @@ public:
 #define DOCTEST_ASSERT_NOTHROW(expr, assert_name)                                                  \
     do {                                                                                           \
         if(!DOCTEST_GCS()->no_throw) {                                                             \
-            bool threw = false;                                                                    \
+            bool _DOCTEST_THREW = false;                                                           \
             try {                                                                                  \
                 expr;                                                                              \
-            } catch(...) { threw = true; }                                                         \
-            if(threw || DOCTEST_GCS()->success) {                                                  \
+            } catch(...) { _DOCTEST_THREW = true; }                                                \
+            if(_DOCTEST_THREW || DOCTEST_GCS()->success) {                                         \
                 DOCTEST_LOG_START();                                                               \
-                doctest::detail::logAssertNothrow(threw, #expr, assert_name, __FILE__, __LINE__);  \
+                doctest::detail::logAssertNothrow(_DOCTEST_THREW, #expr, assert_name, __FILE__,    \
+                                                  __LINE__);                                       \
             }                                                                                      \
             DOCTEST_GCS()->numAssertionsForCurrentTestcase++;                                      \
-            if(threw) {                                                                            \
+            if(_DOCTEST_THREW) {                                                                   \
                 doctest::detail::addFailedAssert(assert_name);                                     \
                 DOCTEST_BREAK_INTO_DEBUGGER();                                                     \
                 doctest::detail::checkIfShouldThrow(assert_name);                                  \
@@ -938,21 +939,21 @@ public:
 
 // for registering tests
 #define DOCTEST_TEST_CASE(name)                                                                    \
-    DOCTEST_CREATE_AND_REGISTER_FUNCTION(DOCTEST_ANONYMOUS(DOCTEST_AUTOGEN_FUNC_), name)
+    DOCTEST_CREATE_AND_REGISTER_FUNCTION(DOCTEST_ANONYMOUS(DOCTEST_ANON_FUNC_), name)
 
 // for registering tests with a fixture
 #define DOCTEST_TEST_CASE_FIXTURE(x, name)                                                         \
-    DOCTEST_IMPLEMENT_FIXTURE(DOCTEST_ANONYMOUS(DOCTEST_AUTOGEN_CLASS_), x,                        \
-                              DOCTEST_ANONYMOUS(DOCTEST_AUTOGEN_FUNC_), name)
+    DOCTEST_IMPLEMENT_FIXTURE(DOCTEST_ANONYMOUS(DOCTEST_ANON_CLASS_), x,                           \
+                              DOCTEST_ANONYMOUS(DOCTEST_ANON_FUNC_), name)
 
 // for subcases
 #define DOCTEST_SUBCASE(name)
 
 // for starting a testsuite block
-#define DOCTEST_TEST_SUITE(name) void DOCTEST_ANONYMOUS(DOCTEST_AUTOGEN_FOR_SEMICOLON_)()
+#define DOCTEST_TEST_SUITE(name) void DOCTEST_ANONYMOUS(DOCTEST_ANON_FOR_SEMICOLON_)()
 
 // for ending a testsuite block
-#define DOCTEST_TEST_SUITE_END void DOCTEST_ANONYMOUS(DOCTEST_AUTOGEN_TESTSUITE_END_)
+#define DOCTEST_TEST_SUITE_END void DOCTEST_ANONYMOUS(DOCTEST_ANON_TESTSUITE_END_)
 
 #define DOCTEST_WARN(expr) ((void)0)
 #define DOCTEST_WARN_FALSE(expr) ((void)0)
@@ -1078,6 +1079,10 @@ DOCTEST_TEST_SUITE_END();
         !defined(DOCTEST_SINGLE_HEADER)
 #ifndef DOCTEST_LIBRARY_IMPLEMENTATION
 #define DOCTEST_LIBRARY_IMPLEMENTATION
+
+#ifndef DOCTEST_SINGLE_HEADER
+#include "doctest_fwd.h"
+#endif // DOCTEST_SINGLE_HEADER
 
 // required includes - will go only in one translation unit!
 #include <ctime>
