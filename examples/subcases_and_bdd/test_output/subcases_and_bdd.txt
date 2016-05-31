@@ -1,5 +1,5 @@
 [doctest] doctest version is "1.0.0"
-[doctest] run with "-dt-help" for options
+[doctest] run with "--help" for options
 
 root
 1
@@ -51,5 +51,5 @@ with expansion:
   CHECK( 84 == 85 )
 
 ===============================================================================
-[doctest] test cases:    4 |    1 passed |    3 failed
-[doctest] assertions:   18 |   15 passed |    3 failed
+[doctest] test cases:    4 |    1 passed |    3 failed |    0 skipped
+[doctest] assertions:   18 |   15 passed |    3 failed |

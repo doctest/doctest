@@ -1,5 +1,5 @@
 [doctest] doctest version is "1.0.0"
-[doctest] run with "-dt-help" for options
+[doctest] run with "--help" for options
 ===============================================================================
 main.cpp(16)
 an empty test that will fail because of an exception
@@ -37,5 +37,5 @@ main.cpp(47) FAILED!
   REQUIRE_NOTHROW( throws(true) )
 
 ===============================================================================
-[doctest] test cases:    4 |    1 passed |    3 failed
-[doctest] assertions:   11 |    5 passed |    6 failed
+[doctest] test cases:    4 |    1 passed |    3 failed |    0 skipped
+[doctest] assertions:   11 |    5 passed |    6 failed |

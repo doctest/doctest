@@ -1,5 +1,5 @@
 [doctest] doctest version is "1.0.0"
-[doctest] run with "-dt-help" for options
+[doctest] run with "--help" for options
 ===============================================================================
 main.cpp(6)
 testing the factorial function
@@ -10,5 +10,5 @@ with expansion:
   CHECK( 0 == 1 )
 
 ===============================================================================
-[doctest] test cases:    1 |    0 passed |    1 failed
-[doctest] assertions:    5 |    4 passed |    1 failed
+[doctest] test cases:    1 |    0 passed |    1 failed |    0 skipped
+[doctest] assertions:    5 |    4 passed |    1 failed |
