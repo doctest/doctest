@@ -1506,7 +1506,7 @@ int Context::run() {
 
     printVersion();
     DOCTEST_PRINTF_COLORED("[doctest] ", Color::Cyan);
-    printf("run with \"-dt-help\" for options\n");
+    printf("run with \"--help\" for options\n");
 
     unsigned                         i       = 0; // counter used for loops - here for VC6
     const Vector<Vector<TestData> >& buckets = getRegisteredTests().getBuckets();
@@ -1693,8 +1693,14 @@ int Context::run() {
         DOCTEST_PRINTF_COLORED(buff, Color::Green);
         DOCTEST_SNPRINTF(buff, DOCTEST_COUNTOF(buff), " | ");
         DOCTEST_PRINTF_COLORED(buff, Color::None);
-        DOCTEST_SNPRINTF(buff, DOCTEST_COUNTOF(buff), "%4d failed\n", numFailed);
-        DOCTEST_PRINTF_COLORED(buff, Color::Red);
+        DOCTEST_SNPRINTF(buff, DOCTEST_COUNTOF(buff), "%4d failed", numFailed);
+        DOCTEST_PRINTF_COLORED(buff, numFailed > 0 ? Color::Red : Color::None);
+
+        DOCTEST_SNPRINTF(buff, DOCTEST_COUNTOF(buff), " | ");
+        DOCTEST_PRINTF_COLORED(buff, Color::None);
+        DOCTEST_SNPRINTF(buff, DOCTEST_COUNTOF(buff), "%4d skipped\n",
+                         testArray.size() - numTestsPassingFilters);
+        DOCTEST_PRINTF_COLORED(buff, Color::None);
 
         DOCTEST_PRINTF_COLORED("[doctest] ", Color::Cyan);
 
@@ -1707,8 +1713,11 @@ int Context::run() {
         DOCTEST_PRINTF_COLORED(buff, Color::Green);
         DOCTEST_SNPRINTF(buff, DOCTEST_COUNTOF(buff), " | ");
         DOCTEST_PRINTF_COLORED(buff, Color::None);
-        DOCTEST_SNPRINTF(buff, DOCTEST_COUNTOF(buff), "%4d failed\n", p->numFailedAssertions);
-        DOCTEST_PRINTF_COLORED(buff, Color::Red);
+        DOCTEST_SNPRINTF(buff, DOCTEST_COUNTOF(buff), "%4d failed", p->numFailedAssertions);
+        DOCTEST_PRINTF_COLORED(buff, p->numFailedAssertions > 0 ? Color::Red : Color::None);
+
+        DOCTEST_SNPRINTF(buff, DOCTEST_COUNTOF(buff), " |\n");
+        DOCTEST_PRINTF_COLORED(buff, Color::None);
     }
 
     if(numFailed && !p->no_exitcode)
