@@ -26,4 +26,3 @@ for filename in os.listdir(md_dir):
         html.write('<script src="strapdown.js/strapdown.js"></script>\n')
         html.write('</html>\n')
         html.close()
-        os.system("git add " + html_dir + filename[:-3] + ".html")
