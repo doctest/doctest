@@ -7,15 +7,19 @@ import fileinput
 import time
 
 # the version of the release
-version_major = "1"
-version_minor = "0"
-version_patch = "0"
+with open("version.txt") as f: version = f.read()
 
-version = version_major + "." + version_minor + "." + version_patch
+def getVersionTuple(v):
+    return tuple(map(int, (v.split("."))))
+
+version_major = str(getVersionTuple(version)[0])
+version_minor = str(getVersionTuple(version)[1])
+version_patch = str(getVersionTuple(version)[2])
 
 # update version in the header file
+print("updating the version in the header file")
 doctest_contents = ""
-for line in fileinput.input(["../doctest/doctest.h"]):
+for line in fileinput.input(["../doctest/parts/doctest_fwd.h"]):
     if line.startswith("#define DOCTEST_VERSION_MAJOR "):
         doctest_contents += "#define DOCTEST_VERSION_MAJOR " + version_major + "\n"
     elif line.startswith("#define DOCTEST_VERSION_MINOR "):
@@ -27,21 +31,13 @@ for line in fileinput.input(["../doctest/doctest.h"]):
     else:
         doctest_contents += line
 
-readme = open("../doctest/doctest.h", "w")
+readme = open("../doctest/parts/doctest_fwd.h", "w")
 readme.write(doctest_contents)
 readme.close()
-
-os.system("git add ../doctest/doctest.h")
 
 # run generate_html.py
 print("generating html documentation from markdown")
 os.system("python generate_html.py")
-
-# update changelog
-os.chdir("../")
-os.system("github_changelog_generator --future-release " + version)
-os.system("git add CHANGELOG.md")
-os.chdir("scripts")
 
 examples = "../examples/"
 '''
@@ -69,7 +65,6 @@ for dir in os.listdir(examples):
     readme = open(examples + dir + "/README.md", "w")
     readme.write("[![Try it online](https://img.shields.io/badge/try%20it-online-orange.svg)](" + url + ")")
     readme.close()
-    os.system("git add " + examples + dir + "/README.md")
 '''
 
 # update main readme 'try it online' badge permalink
@@ -87,5 +82,3 @@ for line in fileinput.input(["../README.md"]):
 readme = open("../README.md", "w")
 readme.write(readme_contents)
 readme.close()
-
-os.system("git add ../README.md")

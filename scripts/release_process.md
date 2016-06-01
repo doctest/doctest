@@ -1,6 +1,10 @@
-- update version in update.py
-- run update.py from the scripts folder
-- commit in dev with the version in the message
-- merge dev in master and coverity_scan (and rebase them)
+- update version in version.txt
+- run update_stuff.py from the scripts folder
+- regenerate test output by running cmake with -DTEST_MODE=COLLECT and then running ctest
+- commit in dev
+- merge dev in master and coverity_scan (and rebase them?)
 - push all branches (git push --all)
+- run update_changelog.py in master
+- commit in master and push
 - create github release with the same semver tag as the changelog
+- merge master in dev
