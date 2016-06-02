@@ -6,6 +6,7 @@ Support the development of the project with donations! I work on this project in
 
 This is a list of planned features for future releases (maybe in the given order).
 
+- ability to have no output when everything succeeds
 - switch to using ```std::vector``` and ```std::set``` and remove custom implementations
 - the set holding all registered tests should use a specialized allocator to minimize program startup time
 - fix the test coverage reports - currently each example replaces the coverage from the last example
