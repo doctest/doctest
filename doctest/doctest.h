@@ -657,13 +657,15 @@ class Context
 #endif // DOCTEST_CONFIG_DISABLE
 
 public:
-    Context(int argc, const char* const* argv);
+    Context(int argc = 0, const char* const* argv = 0);
 
 // to fix gcc 4.7 "-Winline" warnings
 #if defined(__GNUC__) && !defined(__clang__)
     __attribute__((noinline))
 #endif
     ~Context();
+
+    void applyCommandLine(int argc, const char* const* argv);
 
     void addFilter(const char* filter, const char* value);
     void setOption(const char* option, int value);
@@ -1265,7 +1267,6 @@ namespace detail
         int  abort_after;    // stop tests after this many failed assertions
         bool case_sensitive; // if filtering should be case sensitive
         bool exit;           // if the program should be exited after the tests are ran/whatever
-        bool no_overrides;   // to disable overrides from code
         bool no_exitcode;    // if the framework should return 0 as the exitcode
         bool no_run;         // to not run the tests at all (can be done with an "*" exclude)
         bool no_colors;      // if output to the console should be colorized
@@ -1469,6 +1470,7 @@ namespace doctest
 {
 Context::Context(int, const char* const*) {}
 Context::~Context() {}
+void Context::applyCommandLine(int, const char* const*) {}
 void Context::addFilter(const char*, const char*) {}
 void Context::setOption(const char*, int) {}
 void Context::setOption(const char*, const char*) {}
@@ -2386,7 +2388,6 @@ namespace detail
         printf(" -s,   --success=<bool>                include successful assertions in output\n");
         printf(" -cs,  --case-sensitive=<bool>         filters being treated as case sensitive\n");
         printf(" -e,   --exit=<bool>                   exits after the tests finish\n");
-        printf(" -no,  --no-overrides=<bool>           disables procedural overrides of options\n");
         printf(" -nt,  --no-throw=<bool>               skips exceptions-related assert checks\n");
         printf(" -ne,  --no-exitcode=<bool>            returns (or exits) always with success\n");
         printf(" -nr,  --no-run=<bool>                 skips all runtime doctest operations\n");
@@ -2402,44 +2403,12 @@ namespace detail
 
 Context::Context(int argc, const char* const* argv)
         : p(new detail::ContextState) {
-    using namespace detail;
-
     parseArgs(argc, argv, true);
-
-    p->help                 = false;
-    p->version              = false;
-    p->count                = false;
-    p->list_test_cases      = false;
-    p->list_test_suites     = false;
-    p->hash_table_histogram = false;
-    if(parseFlag(argc, argv, "dt-help") || parseFlag(argc, argv, "dt-h") ||
-       parseFlag(argc, argv, "dt-?")) {
-        p->help = true;
-        p->exit = true;
-    }
-    if(parseFlag(argc, argv, "dt-version") || parseFlag(argc, argv, "dt-v")) {
-        p->version = true;
-        p->exit    = true;
-    }
-    if(parseFlag(argc, argv, "dt-count") || parseFlag(argc, argv, "dt-c")) {
-        p->count = true;
-        p->exit  = true;
-    }
-    if(parseFlag(argc, argv, "dt-list-test-cases") || parseFlag(argc, argv, "dt-ltc")) {
-        p->list_test_cases = true;
-        p->exit            = true;
-    }
-    if(parseFlag(argc, argv, "dt-list-test-suites") || parseFlag(argc, argv, "dt-lts")) {
-        p->list_test_suites = true;
-        p->exit             = true;
-    }
-    if(parseFlag(argc, argv, "dt-hash-table-histogram") || parseFlag(argc, argv, "dt-hth")) {
-        p->hash_table_histogram = true;
-        p->exit                 = true;
-    }
 }
 
 Context::~Context() { delete p; }
+
+void Context::applyCommandLine(int argc, const char* const* argv) { parseArgs(argc, argv); }
 
 // parses args
 void Context::parseArgs(int argc, const char* const* argv, bool withDefaults) {
@@ -2497,7 +2466,6 @@ void Context::parseArgs(int argc, const char* const* argv, bool withDefaults) {
     DOCTEST_PARSE_AS_BOOL_OR_FLAG(dt-success, dt-s, success, 0);
     DOCTEST_PARSE_AS_BOOL_OR_FLAG(dt-case-sensitive, dt-cs, case_sensitive, 0);
     DOCTEST_PARSE_AS_BOOL_OR_FLAG(dt-exit, dt-e, exit, 0);
-    DOCTEST_PARSE_AS_BOOL_OR_FLAG(dt-no-overrides, dt-no, no_overrides, 0);
     DOCTEST_PARSE_AS_BOOL_OR_FLAG(dt-no-throw, dt-nt, no_throw, 0);
     DOCTEST_PARSE_AS_BOOL_OR_FLAG(dt-no-exitcode, dt-ne, no_exitcode, 0);
     DOCTEST_PARSE_AS_BOOL_OR_FLAG(dt-no-run, dt-nr, no_run, 0);
@@ -2509,6 +2477,40 @@ void Context::parseArgs(int argc, const char* const* argv, bool withDefaults) {
 #undef DOCTEST_PARSE_STR_OPTION
 #undef DOCTEST_PARSE_INT_OPTION
 #undef DOCTEST_PARSE_AS_BOOL_OR_FLAG
+
+    if(withDefaults) {
+        p->help                 = false;
+        p->version              = false;
+        p->count                = false;
+        p->list_test_cases      = false;
+        p->list_test_suites     = false;
+        p->hash_table_histogram = false;
+    }
+    if(parseFlag(argc, argv, "dt-help") || parseFlag(argc, argv, "dt-h") ||
+       parseFlag(argc, argv, "dt-?")) {
+        p->help = true;
+        p->exit = true;
+    }
+    if(parseFlag(argc, argv, "dt-version") || parseFlag(argc, argv, "dt-v")) {
+        p->version = true;
+        p->exit    = true;
+    }
+    if(parseFlag(argc, argv, "dt-count") || parseFlag(argc, argv, "dt-c")) {
+        p->count = true;
+        p->exit  = true;
+    }
+    if(parseFlag(argc, argv, "dt-list-test-cases") || parseFlag(argc, argv, "dt-ltc")) {
+        p->list_test_cases = true;
+        p->exit            = true;
+    }
+    if(parseFlag(argc, argv, "dt-list-test-suites") || parseFlag(argc, argv, "dt-lts")) {
+        p->list_test_suites = true;
+        p->exit             = true;
+    }
+    if(parseFlag(argc, argv, "dt-hash-table-histogram") || parseFlag(argc, argv, "dt-hth")) {
+        p->hash_table_histogram = true;
+        p->exit                 = true;
+    }
 }
 
 // allows the user to add procedurally to the filters from the command line
@@ -2521,13 +2523,9 @@ void Context::setOption(const char* option, int value) {
 
 // allows the user to override procedurally the string options from the command line
 void Context::setOption(const char* option, const char* value) {
-    using namespace detail;
-
-    if(!p->no_overrides) {
-        String      argv   = String(option) + "=" + value;
-        const char* lvalue = argv.c_str();
-        parseArgs(1, &lvalue);
-    }
+    String      argv   = String(option) + "=" + value;
+    const char* lvalue = argv.c_str();
+    parseArgs(1, &lvalue);
 }
 
 // users should query this in their main() and exit the program if true

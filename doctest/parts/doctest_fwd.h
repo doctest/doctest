@@ -654,13 +654,15 @@ class Context
 #endif // DOCTEST_CONFIG_DISABLE
 
 public:
-    Context(int argc, const char* const* argv);
+    Context(int argc = 0, const char* const* argv = 0);
 
 // to fix gcc 4.7 "-Winline" warnings
 #if defined(__GNUC__) && !defined(__clang__)
     __attribute__((noinline))
 #endif
     ~Context();
+
+    void applyCommandLine(int argc, const char* const* argv);
 
     void addFilter(const char* filter, const char* value);
     void setOption(const char* option, int value);
