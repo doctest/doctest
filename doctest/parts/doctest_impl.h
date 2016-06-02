@@ -45,6 +45,22 @@
 #include "doctest_fwd.h"
 #endif // DOCTEST_SINGLE_HEADER
 
+// macro for making a string
+#define DOCTEST_TOSTR_IMPL(x) #x
+#define DOCTEST_TOSTR(x) DOCTEST_TOSTR_IMPL(x)
+
+// for concatenating 2 literals and making the result a string
+#define DOCTEST_STR_CONCAT_TOSTR(s1, s2) DOCTEST_TOSTR(s1) DOCTEST_TOSTR(s2)
+
+#define DOCTEST_COUNTOF(x) (sizeof(x) / sizeof(x[0]))
+
+// snprintf() not in the C++98 standard
+#ifdef _MSC_VER
+#define DOCTEST_SNPRINTF _snprintf
+#else
+#define DOCTEST_SNPRINTF snprintf
+#endif
+
 // required includes - will go only in one translation unit!
 #include <ctime>
 #include <cmath>
@@ -1040,12 +1056,9 @@ namespace detail
 
         String           subcaseStuff  = "";
         Vector<Subcase>& subcasesStack = getContextState()->subcasesStack;
-        String           tabulation;
         for(unsigned i = 0; i < subcasesStack.size(); ++i) {
-            tabulation += "  ";
             char subcase[DOCTEST_SNPRINTF_BUFFER_LENGTH];
-            DOCTEST_SNPRINTF(subcase, DOCTEST_COUNTOF(loc), "%s%s\n", tabulation.c_str(),
-                             subcasesStack[i].m_name);
+            DOCTEST_SNPRINTF(subcase, DOCTEST_COUNTOF(loc), "  %s\n", subcasesStack[i].m_name);
             DOCTEST_PRINTF_COLORED(subcase, Color::None);
             subcaseStuff += subcase;
         }
