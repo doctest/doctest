@@ -316,7 +316,7 @@ struct StringMaker : detail::StringMakerBase<detail::has_insertion_operator<T>::
 #endif // _MSC_VER
 
 // not for anything below Visual Studio 2005 (VC++6 is troublesome - not sure about VS 2003)
-#if defined(_MSC_VER) && _MSC_VER >= 1400
+#if !defined(_MSC_VER) || _MSC_VER >= 1400
 template <typename T>
 struct StringMaker<T*>
 {
