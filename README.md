@@ -66,6 +66,7 @@ Documentation
 - [Roadmap](doc/markdown/roadmap.md#roadmap) - upcoming features
 - [Tutorial](doc/markdown/tutorial.md#tutorial) - make sure you have read it before the other parts of the documentation
 - [Benchmarks](doc/markdown/benchmarks.md) - compile-time supremacy
+- [Contributing](doc/markdown/contributing.md)
 - [Examples](examples)
 
 -------------
@@ -85,4 +86,4 @@ Support the development of the project with donations! There is a list of planne
 
 [![Donate to support](https://pledgie.com/campaigns/31280.png)](https://pledgie.com/campaigns/31280)
 
-Contributions in the form of issues and pull requests are welcome as well - check out the [**Contributing**](CONTRIBUTING.md) page.
+Contributions in the form of issues and pull requests are welcome as well - check out the [**Contributing**](doc/markdown/contributing.md) page.

@@ -19,10 +19,10 @@ lots of nested subcases
 
 ===============================================================================
 main.cpp(39)
-Scenario: vectors can be sized and resized
+  Scenario: vectors can be sized and resized
      Given: A vector with some items
-        When: the size is increased
-          Then: the size and capacity change
+      When: the size is increased
+      Then: the size and capacity change
 
 main.cpp(50) FAILED! 
   CHECK( v.size() == 20u )
@@ -31,10 +31,10 @@ with expansion:
 
 ===============================================================================
 main.cpp(39)
-Scenario: vectors can be sized and resized
+  Scenario: vectors can be sized and resized
      Given: A vector with some items
-        When: less capacity is reserved
-          Then: neither size nor capacity are changed
+      When: less capacity is reserved
+      Then: neither size nor capacity are changed
 
 main.cpp(74) FAILED! 
   CHECK( v.size() == 10u )

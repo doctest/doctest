@@ -95,13 +95,6 @@
 #define DOCTEST_ANONYMOUS(x) DOCTEST_CONCAT(x, __LINE__)
 #endif // __COUNTER__
 
-// internal macro for making a string
-#define DOCTEST_TOSTR_IMPL(x) #x
-#define DOCTEST_TOSTR(x) DOCTEST_TOSTR_IMPL(x)
-
-// internal macro for concatenating 2 literals and making the result a string
-#define DOCTEST_STR_CONCAT_TOSTR(s1, s2) DOCTEST_TOSTR(s1) DOCTEST_TOSTR(s2)
-
 // not using __APPLE__ because... this is how Catch does it
 #if defined(__MAC_OS_X_VERSION_MIN_REQUIRED)
 #define DOCTEST_PLATFORM_MAC
@@ -113,16 +106,7 @@
 #define DOCTEST_PLATFORM_LINUX
 #endif
 
-#define DOCTEST_COUNTOF(x) (sizeof(x) / sizeof(x[0]))
-
 #define DOCTEST_GCS doctest::detail::getTestsContextState
-
-// snprintf() not in the C++98 standard
-#ifdef _MSC_VER
-#define DOCTEST_SNPRINTF _snprintf
-#else
-#define DOCTEST_SNPRINTF snprintf
-#endif
 
 // for anything below Visual Studio 2005 (VC++6 has no __debugbreak() - not sure about VS 2003)
 #if defined(_MSC_VER) && _MSC_VER < 1400
@@ -157,10 +141,13 @@ extern "C" __declspec(dllimport) void __stdcall DebugBreak();
 #endif // linux
 
 #ifdef __clang__
+// to detect if libc++ is being used with clang (the _LIBCPP_VERSION identifier)
 #include <ciso646>
 #endif // __clang__
 
 #ifdef _LIBCPP_VERSION
+// for libc++ I decided not to forward declare ostream myself because I had some problems
+// so the <iosfwd> header is used - also it is very light and doesn't drag a ton of stuff
 #include <iosfwd>
 #else // _LIBCPP_VERSION
 #ifndef DOCTEST_CONFIG_USE_IOSFWD
@@ -971,12 +958,14 @@ public:
 #endif // DOCTEST_CONFIG_DISABLE
 
 // BDD style macros
-#define DOCTEST_SCENARIO(name) TEST_CASE("Scenario: " name)
-#define DOCTEST_GIVEN(name) SUBCASE("   Given: " name)
-#define DOCTEST_WHEN(name) SUBCASE("    When: " name)
-#define DOCTEST_AND_WHEN(name) SUBCASE("And when: " name)
-#define DOCTEST_THEN(name) SUBCASE("    Then: " name)
-#define DOCTEST_AND_THEN(name) SUBCASE("     And: " name)
+// clang-format off
+#define DOCTEST_SCENARIO(name)  TEST_CASE("  Scenario: " name)
+#define DOCTEST_GIVEN(name)     SUBCASE("   Given: " name)
+#define DOCTEST_WHEN(name)      SUBCASE("    When: " name)
+#define DOCTEST_AND_WHEN(name)  SUBCASE("And when: " name)
+#define DOCTEST_THEN(name)      SUBCASE("    Then: " name)
+#define DOCTEST_AND_THEN(name)  SUBCASE("     And: " name)
+// clang-format on
 
 // == SHORT VERSIONS OF THE MACROS
 #if !defined(DOCTEST_CONFIG_NO_SHORT_MACRO_NAMES)

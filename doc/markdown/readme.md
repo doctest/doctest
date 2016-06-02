@@ -5,6 +5,7 @@ Reference
 - [Roadmap](roadmap.md) - upcoming features
 - [Tutorial](tutorial.md) - make sure you have read it before the other parts of the documentation
 - [Benchmarks](benchmarks.md) - compile time supremacy
+- [Contributing](contributing.md)
 - [Examples](../../examples)
 
 -------------
