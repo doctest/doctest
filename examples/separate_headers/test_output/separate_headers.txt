@@ -1,5 +1,14 @@
 [doctest] doctest version is "1.0.0"
 [doctest] run with "--help" for options
 ===============================================================================
-[doctest] test cases:    1 |    1 passed |    0 failed |    0 skipped
-[doctest] assertions:    1 |    1 passed |    0 failed |
+test.cpp(3)
+captain obvious
+
+test.cpp(4) FAILED! 
+  CHECK( true == false )
+with expansion:
+  CHECK( true == false )
+
+===============================================================================
+[doctest] test cases:    1 |    0 passed |    1 failed |    0 skipped
+[doctest] assertions:    1 |    0 passed |    1 failed |

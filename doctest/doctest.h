@@ -2223,7 +2223,7 @@ namespace detail
                         break;
                     }
                 }
-                if(noBadCharsFound)
+                if(noBadCharsFound && argv[i][0] == '-')
                     return true;
             }
         }
@@ -2255,7 +2255,7 @@ namespace detail
                         break;
                     }
                 }
-                if(noBadCharsFound) {
+                if(noBadCharsFound && argv[i][0] == '-') {
                     temp += my_strlen(pattern);
                     unsigned len = my_strlen(temp);
                     if(len) {
@@ -2523,7 +2523,7 @@ void Context::setOption(const char* option, int value) {
 
 // allows the user to override procedurally the string options from the command line
 void Context::setOption(const char* option, const char* value) {
-    String      argv   = String(option) + "=" + value;
+    String      argv   = String("-") + option + "=" + value;
     const char* lvalue = argv.c_str();
     parseArgs(1, &lvalue);
 }
