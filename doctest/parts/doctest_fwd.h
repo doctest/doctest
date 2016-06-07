@@ -17,6 +17,7 @@
 // The library is heavily influenced by Catch - https://github.com/philsquared/Catch
 // which uses the Boost Software License - Version 1.0
 // see here - https://github.com/philsquared/Catch/blob/master/LICENSE_1_0.txt
+//
 // The concept of subcases (sections in Catch) and expression decomposition are from there.
 // Some parts of the code are taken directly:
 // - stringification - the detection of "ostream& operator<<(ostream&, const T&)" and StringMaker<>
@@ -106,7 +107,7 @@
 #define DOCTEST_PLATFORM_LINUX
 #endif
 
-#define DOCTEST_GCS doctest::detail::getTestsContextState
+#define DOCTEST_GCS() (*doctest::detail::getTestsContextState())
 
 // for anything below Visual Studio 2005 (VC++6 has no __debugbreak() - not sure about VS 2003)
 #if defined(_MSC_VER) && _MSC_VER < 1400
@@ -119,26 +120,23 @@
 #ifdef DEBUG
 #if defined(__ppc64__) || defined(__ppc__)
 #define DOCTEST_BREAK_INTO_DEBUGGER()                                                              \
-    if(doctest::detail::isDebuggerActive() && !DOCTEST_GCS()->no_breaks)                           \
     __asm__("li r0, 20\nsc\nnop\nli r0, 37\nli r4, 2\nsc\nnop\n" : : : "memory", "r0", "r3", "r4")
 #else // __ppc64__ || __ppc__
-#define DOCTEST_BREAK_INTO_DEBUGGER()                                                              \
-    if(doctest::detail::isDebuggerActive() && !DOCTEST_GCS()->no_breaks)                           \
-    __asm__("int $3\n" : :)
+#define DOCTEST_BREAK_INTO_DEBUGGER() __asm__("int $3\n" : :)
 #endif // __ppc64__ || __ppc__
 #endif // DEBUG
 #elif defined(_MSC_VER)
-#define DOCTEST_BREAK_INTO_DEBUGGER()                                                              \
-    if(doctest::detail::isDebuggerActive() && !DOCTEST_GCS()->no_breaks)                           \
-    __debugbreak()
+#define DOCTEST_BREAK_INTO_DEBUGGER() __debugbreak()
 #elif defined(__MINGW32__)
 extern "C" __declspec(dllimport) void __stdcall DebugBreak();
-#define DOCTEST_BREAK_INTO_DEBUGGER()                                                              \
-    if(doctest::detail::isDebuggerActive() && !DOCTEST_GCS()->no_breaks)                           \
-    ::DebugBreak()
+#define DOCTEST_BREAK_INTO_DEBUGGER() ::DebugBreak()
 #else // linux
 #define DOCTEST_BREAK_INTO_DEBUGGER() ((void)0)
 #endif // linux
+
+#define DOCTEST_BREAK_INTO_DEBUGGER_CHECKED()                                                      \
+    if(doctest::detail::isDebuggerActive() && !DOCTEST_GCS().no_breaks)                            \
+        DOCTEST_BREAK_INTO_DEBUGGER();
 
 #ifdef __clang__
 // to detect if libc++ is being used with clang (the _LIBCPP_VERSION identifier)
@@ -436,10 +434,9 @@ namespace detail
     struct TestFailureException
     {};
 
-    void checkIfShouldThrow(const char* assert_name);
-    void  throwException();
-    bool  always_false();
-    void* getNullPtr();
+    bool checkIfShouldThrow(const char* assert_name);
+    void throwException();
+    bool always_false();
 
     // a struct defining a registered test callback
     struct TestData
@@ -640,6 +637,42 @@ namespace detail
     struct ContextState;
 
     TestAccessibleContextState* getTestsContextState();
+
+    namespace assertType
+    {
+        enum assertTypeEnum
+        {
+            normal,
+            negated,
+            throws,
+            throws_as,
+            nothrow
+        };
+    } // namespace assertType
+
+    struct ResultBuilder
+    {
+        const char*                m_assert_name;
+        assertType::assertTypeEnum m_assert_type;
+        const char*                m_file;
+        int                        m_line;
+        const char*                m_expr;
+        const char*                m_exception_type;
+
+        Result m_res;
+        bool   m_threw;
+        bool   m_threw_as;
+        bool   m_failed;
+
+        ResultBuilder(const char* assert_name, assertType::assertTypeEnum assert_type,
+                      const char* file, int line, const char* expr,
+                      const char* exception_type = "");
+
+        void setResult(const Result& res) { m_res = res; }
+
+        bool log();
+        void react() const;
+    };
 } // namespace detail
 
 #endif // DOCTEST_CONFIG_DISABLE
@@ -772,122 +805,79 @@ public:
     void       DOCTEST_ANONYMOUS(DOCTEST_ANON_TESTSUITE_END_)
 #endif // MSVC
 
-#define DOCTEST_LOG_START()                                                                        \
-    do {                                                                                           \
-        if(!DOCTEST_GCS()->hasLoggedCurrentTestStart) {                                            \
-            doctest::detail::logTestStart(DOCTEST_GCS()->currentTest->m_name,                      \
-                                          DOCTEST_GCS()->currentTest->m_file,                      \
-                                          DOCTEST_GCS()->currentTest->m_line);                     \
-            DOCTEST_GCS()->hasLoggedCurrentTestStart = true;                                       \
-        }                                                                                          \
-    } while(doctest::detail::always_false())
-
-#define DOCTEST_ASSERT_IMPLEMENT(expr, assert_name, false_invert_op)                               \
-    doctest::detail::Result _DOCTEST_R;                                                            \
-    bool                    _DOCTEST_THREW = false;                                                \
-    try {                                                                                          \
-        _DOCTEST_R = doctest::detail::ExpressionDecomposer() << expr;                              \
-    } catch(...) { _DOCTEST_THREW = true; }                                                        \
-    false_invert_op;                                                                               \
-    if(_DOCTEST_R || DOCTEST_GCS()->success) {                                                     \
-        DOCTEST_LOG_START();                                                                       \
-        doctest::detail::logAssert(_DOCTEST_R.m_passed, _DOCTEST_R.m_decomposition.c_str(),        \
-                                   _DOCTEST_THREW, #expr, assert_name, __FILE__, __LINE__);        \
-    }                                                                                              \
-    DOCTEST_GCS()->numAssertionsForCurrentTestcase++;                                              \
-    if(_DOCTEST_R) {                                                                               \
-        doctest::detail::addFailedAssert(assert_name);                                             \
+#define DOCTEST_ASSERT_LOG_AND_REACT(rb)                                                           \
+    if(rb.log())                                                                                   \
         DOCTEST_BREAK_INTO_DEBUGGER();                                                             \
-        doctest::detail::checkIfShouldThrow(assert_name);                                          \
-    }
+    rb.react()
+
+#define DOCTEST_ASSERT_IMPLEMENT(expr, assert_name, assert_type)                                   \
+    doctest::detail::ResultBuilder _DOCTEST_RB(                                                    \
+            assert_name, doctest::detail::assertType::assert_type, __FILE__, __LINE__, #expr);     \
+    try {                                                                                          \
+        _DOCTEST_RB.setResult(doctest::detail::ExpressionDecomposer() << expr);                    \
+    } catch(...) { _DOCTEST_RB.m_threw = true; }                                                   \
+    DOCTEST_ASSERT_LOG_AND_REACT(_DOCTEST_RB);
 
 #if defined(__clang__)
-#define DOCTEST_ASSERT_PROXY(expr, assert_name, false_invert_op)                                   \
+#define DOCTEST_ASSERT_PROXY(expr, assert_name, assert_type)                                       \
     do {                                                                                           \
         _Pragma("clang diagnostic push")                                                           \
                 _Pragma("clang diagnostic ignored \"-Woverloaded-shift-op-parentheses\"")          \
-                        DOCTEST_ASSERT_IMPLEMENT(expr, assert_name, false_invert_op)               \
+                        DOCTEST_ASSERT_IMPLEMENT(expr, assert_name, assert_type)                   \
                                 _Pragma("clang diagnostic pop")                                    \
     } while(doctest::detail::always_false())
 #else // __clang__
-#define DOCTEST_ASSERT_PROXY(expr, assert_name, false_invert_op)                                   \
+#define DOCTEST_ASSERT_PROXY(expr, assert_name, assert_type)                                       \
     do {                                                                                           \
-        DOCTEST_ASSERT_IMPLEMENT(expr, assert_name, false_invert_op)                               \
+        DOCTEST_ASSERT_IMPLEMENT(expr, assert_name, assert_type)                                   \
     } while(doctest::detail::always_false())
 #endif // __clang__
 
-#define DOCTEST_WARN(expr) DOCTEST_ASSERT_PROXY(expr, "WARN", ((void)0))
-#define DOCTEST_CHECK(expr) DOCTEST_ASSERT_PROXY(expr, "CHECK", ((void)0))
-#define DOCTEST_REQUIRE(expr) DOCTEST_ASSERT_PROXY(expr, "REQUIRE", ((void)0))
+#define DOCTEST_WARN(expr) DOCTEST_ASSERT_PROXY(expr, "WARN", normal)
+#define DOCTEST_CHECK(expr) DOCTEST_ASSERT_PROXY(expr, "CHECK", normal)
+#define DOCTEST_REQUIRE(expr) DOCTEST_ASSERT_PROXY(expr, "REQUIRE", normal)
 
-#define DOCTEST_WARN_FALSE(expr) DOCTEST_ASSERT_PROXY(expr, "WARN_FALSE", _DOCTEST_R.invert())
-#define DOCTEST_CHECK_FALSE(expr) DOCTEST_ASSERT_PROXY(expr, "CHECK_FALSE", _DOCTEST_R.invert())
-#define DOCTEST_REQUIRE_FALSE(expr) DOCTEST_ASSERT_PROXY(expr, "REQUIRE_FALSE", _DOCTEST_R.invert()
+#define DOCTEST_WARN_FALSE(expr) DOCTEST_ASSERT_PROXY(expr, "WARN_FALSE", negated)
+#define DOCTEST_CHECK_FALSE(expr) DOCTEST_ASSERT_PROXY(expr, "CHECK_FALSE", negated)
+#define DOCTEST_REQUIRE_FALSE(expr) DOCTEST_ASSERT_PROXY(expr, "REQUIRE_FALSE", negated)
 
 #define DOCTEST_ASSERT_THROWS(expr, assert_name)                                                   \
     do {                                                                                           \
-        if(!DOCTEST_GCS()->no_throw) {                                                             \
-            bool _DOCTEST_THREW = false;                                                           \
+        if(!DOCTEST_GCS().no_throw) {                                                              \
+            doctest::detail::ResultBuilder _DOCTEST_RB(                                            \
+                    assert_name, doctest::detail::assertType::throws, __FILE__, __LINE__, #expr);  \
             try {                                                                                  \
                 expr;                                                                              \
-            } catch(...) { _DOCTEST_THREW = true; }                                                \
-            if(!_DOCTEST_THREW || DOCTEST_GCS()->success) {                                        \
-                DOCTEST_LOG_START();                                                               \
-                doctest::detail::logAssertThrows(_DOCTEST_THREW, #expr, assert_name, __FILE__,     \
-                                                 __LINE__);                                        \
-            }                                                                                      \
-            DOCTEST_GCS()->numAssertionsForCurrentTestcase++;                                      \
-            if(!_DOCTEST_THREW) {                                                                  \
-                doctest::detail::addFailedAssert(assert_name);                                     \
-                DOCTEST_BREAK_INTO_DEBUGGER();                                                     \
-                doctest::detail::checkIfShouldThrow(assert_name);                                  \
-            }                                                                                      \
+            } catch(...) { _DOCTEST_RB.m_threw = true; }                                           \
+            DOCTEST_ASSERT_LOG_AND_REACT(_DOCTEST_RB);                                             \
         }                                                                                          \
     } while(doctest::detail::always_false())
 
 #define DOCTEST_ASSERT_THROWS_AS(expr, as, assert_name)                                            \
     do {                                                                                           \
-        if(!DOCTEST_GCS()->no_throw) {                                                             \
-            bool _DOCTEST_THREW    = false;                                                        \
-            bool _DOCTEST_THREW_AS = false;                                                        \
+        if(!DOCTEST_GCS().no_throw) {                                                              \
+            doctest::detail::ResultBuilder _DOCTEST_RB(assert_name,                                \
+                                                       doctest::detail::assertType::throws_as,     \
+                                                       __FILE__, __LINE__, #expr, #as);            \
             try {                                                                                  \
                 expr;                                                                              \
             } catch(as) {                                                                          \
-                _DOCTEST_THREW    = true;                                                          \
-                _DOCTEST_THREW_AS = true;                                                          \
-            } catch(...) { _DOCTEST_THREW = true; }                                                \
-            if(!_DOCTEST_THREW_AS || DOCTEST_GCS()->success) {                                     \
-                DOCTEST_LOG_START();                                                               \
-                doctest::detail::logAssertThrowsAs(_DOCTEST_THREW, _DOCTEST_THREW_AS, #as, #expr,  \
-                                                   assert_name, __FILE__, __LINE__);               \
-            }                                                                                      \
-            DOCTEST_GCS()->numAssertionsForCurrentTestcase++;                                      \
-            if(!_DOCTEST_THREW_AS) {                                                               \
-                doctest::detail::addFailedAssert(assert_name);                                     \
-                DOCTEST_BREAK_INTO_DEBUGGER();                                                     \
-                doctest::detail::checkIfShouldThrow(assert_name);                                  \
-            }                                                                                      \
+                _DOCTEST_RB.m_threw    = true;                                                     \
+                _DOCTEST_RB.m_threw_as = true;                                                     \
+            } catch(...) { _DOCTEST_RB.m_threw = true; }                                           \
+            DOCTEST_ASSERT_LOG_AND_REACT(_DOCTEST_RB);                                             \
         }                                                                                          \
     } while(doctest::detail::always_false())
 
 #define DOCTEST_ASSERT_NOTHROW(expr, assert_name)                                                  \
     do {                                                                                           \
-        if(!DOCTEST_GCS()->no_throw) {                                                             \
-            bool _DOCTEST_THREW = false;                                                           \
+        if(!DOCTEST_GCS().no_throw) {                                                              \
+            doctest::detail::ResultBuilder _DOCTEST_RB(                                            \
+                    assert_name, doctest::detail::assertType::nothrow, __FILE__, __LINE__, #expr); \
             try {                                                                                  \
                 expr;                                                                              \
-            } catch(...) { _DOCTEST_THREW = true; }                                                \
-            if(_DOCTEST_THREW || DOCTEST_GCS()->success) {                                         \
-                DOCTEST_LOG_START();                                                               \
-                doctest::detail::logAssertNothrow(_DOCTEST_THREW, #expr, assert_name, __FILE__,    \
-                                                  __LINE__);                                       \
-            }                                                                                      \
-            DOCTEST_GCS()->numAssertionsForCurrentTestcase++;                                      \
-            if(_DOCTEST_THREW) {                                                                   \
-                doctest::detail::addFailedAssert(assert_name);                                     \
-                DOCTEST_BREAK_INTO_DEBUGGER();                                                     \
-                doctest::detail::checkIfShouldThrow(assert_name);                                  \
-            }                                                                                      \
+            } catch(...) { _DOCTEST_RB.m_threw = true; }                                           \
+            DOCTEST_ASSERT_LOG_AND_REACT(_DOCTEST_RB);                                             \
         }                                                                                          \
     } while(doctest::detail::always_false())
 
