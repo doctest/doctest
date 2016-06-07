@@ -8,3 +8,9 @@
 - commit in master and push
 - create github release with the same semver tag as the changelog
 - merge master in dev
+
+on big releases spam in:
+- hackernews
+- reddit (cpp/gamedev/Cplusplus/programming)
+- isocpp.org
+

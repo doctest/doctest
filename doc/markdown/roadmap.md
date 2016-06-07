@@ -45,7 +45,6 @@ This is a list of planned features for future releases (maybe in the given order
 
 And here is a list of things that are being considered but not part of the roadmap yet:
 
-- rework the cmake single header assembly - to use a ```.cmake``` script that sets the permissions of ```doctest.h``` as read only
 - look into MSTest integration
     - http://accu.org/index.php/journals/1851
     - https://msdn.microsoft.com/en-us/library/hh270865.aspx
@@ -57,7 +56,6 @@ And here is a list of things that are being considered but not part of the roadm
 - a progress reporter
 - doctest in a GUI environment? with no console? APIs for attaching a console? querying if there is one? should investigate...
 - ability to customize the colors in the console output
-- refactor the assertion macros - make proxy functions that do most of the things to minimize code bloat
 - pool allocator for the ```String``` class - currently very unoptimized
 - ability to specify ASC/DESC for the order option
 - command line error handling/reporting

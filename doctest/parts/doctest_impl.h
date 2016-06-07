@@ -61,6 +61,16 @@
 #define DOCTEST_SNPRINTF snprintf
 #endif
 
+#define DOCTEST_LOG_START()                                                                        \
+    do {                                                                                           \
+        if(!DOCTEST_GCS().hasLoggedCurrentTestStart) {                                             \
+            doctest::detail::logTestStart(DOCTEST_GCS().currentTest->m_name,                       \
+                                          DOCTEST_GCS().currentTest->m_file,                       \
+                                          DOCTEST_GCS().currentTest->m_line);                      \
+            DOCTEST_GCS().hasLoggedCurrentTestStart = true;                                        \
+        }                                                                                          \
+    } while(doctest::detail::always_false())
+
 // required includes - will go only in one translation unit!
 #include <ctime>
 #include <cmath>
@@ -516,18 +526,19 @@ namespace detail
         return m_line == other.m_line && strcmp(m_file, other.m_file) == 0;
     }
 
-    void checkIfShouldThrow(const char* assert_name) {
+    bool checkIfShouldThrow(const char* assert_name) {
         if(strncmp(assert_name, "REQUIRE", 7) == 0)
-            throwException();
+            return true;
 
         if(strncmp(assert_name, "CHECK", 5) == 0 && getContextState()->abort_after > 0) {
             if(getContextState()->numFailedAssertions >= getContextState()->abort_after)
-                throwException();
+                return true;
         }
+
+        return false;
     }
-    void  throwException() { throw doctest::detail::TestFailureException(); }
-    bool  always_false() { return false; }
-    void* getNullPtr() { return 0; }
+    void throwException() { throw doctest::detail::TestFailureException(); }
+    bool always_false() { return false; }
 
     // lowers ascii letters
     char tolower(const char c) { return ((c >= 'A' && c <= 'Z') ? static_cast<char>(c + 32) : c); }
@@ -1178,6 +1189,63 @@ namespace detail
         DOCTEST_PRINTF_COLORED(info1, Color::Green);
 
         printToDebugConsole(String(loc) + msg + info1);
+    }
+
+    ResultBuilder::ResultBuilder(const char* assert_name, assertType::assertTypeEnum assert_type,
+                                 const char* file, int line, const char* expr,
+                                 const char* exception_type)
+            : m_assert_name(assert_name)
+            , m_assert_type(assert_type)
+            , m_file(file)
+            , m_line(line)
+            , m_expr(expr)
+            , m_exception_type(exception_type)
+            , m_threw(false)
+            , m_threw_as(false)
+            , m_failed(false) {}
+
+    bool ResultBuilder::log() {
+        DOCTEST_GCS().numAssertionsForCurrentTestcase++;
+
+        if(m_assert_type == assertType::normal) {
+            m_failed = m_res;
+        } else if(m_assert_type == assertType::negated) {
+            m_res.invert();
+            m_failed = m_res;
+        } else if(m_assert_type == assertType::throws) {
+            m_failed = !m_threw;
+        } else if(m_assert_type == assertType::throws_as) {
+            m_failed = !m_threw_as;
+        } else if(m_assert_type == assertType::nothrow) {
+            m_failed = m_threw;
+        }
+
+        if(m_failed || DOCTEST_GCS().success) {
+            DOCTEST_LOG_START();
+
+            if(m_assert_type == assertType::normal || m_assert_type == assertType::negated) {
+                logAssert(m_res.m_passed, m_res.m_decomposition.c_str(), m_threw, m_expr,
+                          m_assert_name, m_file, m_line);
+            } else if(m_assert_type == assertType::throws) {
+                logAssertThrows(m_threw, m_expr, m_assert_name, m_file, m_line);
+            } else if(m_assert_type == assertType::throws_as) {
+                logAssertThrowsAs(m_threw, m_threw_as, m_exception_type, m_expr, m_assert_name,
+                                  m_file, m_line);
+            } else if(m_assert_type == assertType::nothrow) {
+                logAssertNothrow(m_threw, m_expr, m_assert_name, m_file, m_line);
+            }
+        }
+
+        if(m_failed) {
+            addFailedAssert(m_assert_name);
+            if(isDebuggerActive() && !DOCTEST_GCS().no_breaks)
+                return true; // should break into the debugger
+        }
+        return false;
+    }
+    void ResultBuilder::react() const {
+        if(m_failed && checkIfShouldThrow(m_assert_name))
+            throwException();
     }
 
     // the implementation of parseFlag()
