@@ -21,7 +21,9 @@ int main(int argc, char** argv) {
     int client_stuff_return_code = 0;
     // your program - if the testing framework is integrated in your production code
 
+#ifdef WITH_PAUSE
     system("pause");
+#endif // WITH_PAUSE
 
     return res + client_stuff_return_code;
 }
