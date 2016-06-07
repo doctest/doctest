@@ -4,41 +4,11 @@
 test.cpp(3)
 captain obvious
 
-test.cpp(3) FAILED! 
+test.cpp(4) FAILED! 
   CHECK( true == false )
 with expansion:
   CHECK( true == false )
 
 ===============================================================================
-test.cpp(17)
-an empty test that will fail because of an exception
-
-  TEST CASE FAILED! (threw exception)
-
-===============================================================================
-test.cpp(21)
-normal macros
-
-test.cpp(25) FAILED! (threw exception)
-  CHECK( throws(true) == 42 )
-
-test.cpp(34) FAILED! 
-  CHECK( Approx(0.502) == 0.501 )
-with expansion:
-  CHECK( Approx( 0.502 ) == 0.501 )
-
-  TEST CASE FAILED! (threw exception)
-
-===============================================================================
-test.cpp(43)
-exceptions-related macros
-
-test.cpp(44) FAILED!
-  CHECK_THROWS( throws(false) )
-
-test.cpp(45) FAILED! (didn't throw at all)
-  CHECK_THROWS_AS( throws(false), int )
-
-===============================================================================
-[doctest] test cases:    5 |    1 passed |    4 failed |    0 skipped
-[doctest] assertions:    9 |    4 passed |    5 failed |
+[doctest] test cases:    1 |    0 passed |    1 failed |    0 skipped
+[doctest] assertions:    1 |    0 passed |    1 failed |
