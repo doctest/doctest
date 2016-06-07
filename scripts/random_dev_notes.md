@@ -11,7 +11,9 @@ how to deal with pull requests for the main branch instead of the dev branch
 - write a test in a header in one binary with multiple cpp files
 - coverage
 - better docs
+    - updated compile time benchmarks (and include linux!)
     - list the subcases as a major selling point on the main page - after the expression decomposition macro stuff
     - faq - why macros - http://accu.org/index.php/journals/2064
     - FAQ - how is it different from Catch (or what is lacking)
     - faq - why c++
+    - post the traffic screenshot in the FAQ - "how epic was the initial release"
