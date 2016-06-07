@@ -3,14 +3,15 @@
 with_gcc = 0
 is_debug = 1
 
-numFiles = 500
+numFiles = 100
 
-with_doctest    = 1
+with_doctest = 1
 
-with_implement  = 1
-with_header     = 1
-with_a_test     = 1
-doctest_disable = 0
+with_implement      = 1
+with_header         = 1
+with_num_tests      = 25
+with_num_assertions = 10
+doctest_disable     = 0
 
 the_folder = "project"
 
@@ -49,9 +50,12 @@ for i in range(0, numFiles):
             f.write('#include "doctest.h"\n\n')
         else:
             f.write('#include "catch.hpp"\n\n')
-        if with_a_test:
+        for t in range(0, with_num_tests):
             f.write('TEST_CASE("") {\n')
-            f.write('    CHECK(true == false);\n')
+            for a in range(0, with_num_assertions):
+                f.write('    int a' + str(a) + ' = 5;\n')
+                f.write('    int b' + str(a) + ' = 6;\n')
+                f.write('    CHECK(a' + str(a) + ' == b' + str(a) + ');\n')
             f.write('}\n\n')
     f.write('int f' + str(i) + '() { return ' + str(i) + '; }\n\n')
     f.close()

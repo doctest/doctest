@@ -668,6 +668,13 @@ namespace detail
                       const char* file, int line, const char* expr,
                       const char* exception_type = "");
 
+// to fix gcc 4.7 "-Winline" warnings
+#if defined(__GNUC__) && !defined(__clang__)
+        __attribute__((noinline))
+#endif
+        ~ResultBuilder() {
+        }
+
         void setResult(const Result& res) { m_res = res; }
 
         bool log();
