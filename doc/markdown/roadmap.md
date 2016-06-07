@@ -58,6 +58,7 @@ And here is a list of things that are being considered but not part of the roadm
 - ability to customize the colors in the console output
 - pool allocator for the ```String``` class - currently very unoptimized
 - ability to specify ASC/DESC for the order option
+- drop support for VC6 - _MSC_VER == 1400 for VS 2005
 - command line error handling/reporting
 - utf8? not sure if this should be here
 - print a warning when no assertion is encountered in a test case
