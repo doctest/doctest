@@ -2231,7 +2231,8 @@ namespace detail
             , m_failed(false) {}
 
     bool ResultBuilder::log() {
-        DOCTEST_GCS().numAssertionsForCurrentTestcase++;
+        if(strncmp(m_assert_name, "WARN", 4) != 0)
+            DOCTEST_GCS().numAssertionsForCurrentTestcase++;
 
         if(m_assert_type == assertType::normal) {
             m_failed = m_res;

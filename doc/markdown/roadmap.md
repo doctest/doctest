@@ -6,10 +6,8 @@ Support the development of the project with donations! I work on this project in
 
 This is a list of planned features for future releases (maybe in the given order).
 
-- ability to have no output when everything succeeds
-- switch to using ```std::vector``` and ```std::set``` and remove custom implementations
 - the set holding all registered tests should use a specialized allocator to minimize program startup time
-- fix the test coverage reports - currently each example replaces the coverage from the last example
+- ability to have no output when everything succeeds
 - test with gcc 6 and use it in the CI builds
 - a mechanism for translating exceptions - users should be able to teach the framework about their types (look at Catch for this)
 - support for ```std::exception``` and derivatives (mainly for calling the ```.what()``` method when caught unexpectedly)
@@ -67,6 +65,7 @@ And here is a list of things that are being considered but not part of the roadm
 - ability to re-run only newly compiled tests based on time stamps using ```__DATE__``` and ```__TIME__``` - stored in some file
 - submit to [boost](http://www.boost.org/development/requirements.html)?
 - fix all the hacks in the cmake scripts for OSX (they are mainly for gcc 4.4)
+- the [range_based_execution](../../examples/range_based_execution/) example sometimes leaves one subprocess running and hangs ctest - should fix probably the python script
 
 ---------------
 
