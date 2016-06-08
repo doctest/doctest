@@ -15,7 +15,7 @@ root
 main.cpp(14)
 lots of nested subcases
 
-  TEST CASE FAILED! (threw exception)
+TEST CASE FAILED! (threw exception)
 
 ===============================================================================
 main.cpp(39)

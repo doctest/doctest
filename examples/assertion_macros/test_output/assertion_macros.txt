@@ -4,7 +4,7 @@
 main.cpp(16)
 an empty test that will fail because of an exception
 
-  TEST CASE FAILED! (threw exception)
+TEST CASE FAILED! (threw exception)
 
 ===============================================================================
 main.cpp(20)
@@ -18,7 +18,7 @@ main.cpp(33) FAILED!
 with expansion:
   CHECK( Approx( 0.502 ) == 0.501 )
 
-  TEST CASE FAILED! (threw exception)
+TEST CASE FAILED! (threw exception)
 
 ===============================================================================
 main.cpp(42)
