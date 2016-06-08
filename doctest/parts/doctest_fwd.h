@@ -114,17 +114,16 @@
 #define __debugbreak() __asm { int 3}
 #endif
 
+// should probably take a look at https://github.com/scottt/debugbreak
 #ifdef DOCTEST_PLATFORM_MAC
 // The following code snippet based on:
 // http://cocoawithlove.com/2008/03/break-into-debugger.html
-#ifdef DEBUG
 #if defined(__ppc64__) || defined(__ppc__)
 #define DOCTEST_BREAK_INTO_DEBUGGER()                                                              \
     __asm__("li r0, 20\nsc\nnop\nli r0, 37\nli r4, 2\nsc\nnop\n" : : : "memory", "r0", "r3", "r4")
 #else // __ppc64__ || __ppc__
 #define DOCTEST_BREAK_INTO_DEBUGGER() __asm__("int $3\n" : :)
 #endif // __ppc64__ || __ppc__
-#endif // DEBUG
 #elif defined(_MSC_VER)
 #define DOCTEST_BREAK_INTO_DEBUGGER() __debugbreak()
 #elif defined(__MINGW32__)

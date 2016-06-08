@@ -66,6 +66,7 @@ And here is a list of things that are being considered but not part of the roadm
 - put everything from the ```detail``` namespace also in a nested anonymous namespace to make them with internal linkage
 - ability to re-run only newly compiled tests based on time stamps using ```__DATE__``` and ```__TIME__``` - stored in some file
 - submit to [boost](http://www.boost.org/development/requirements.html)?
+- fix all the hacks in the cmake scripts for OSX (they are mainly for gcc 4.4)
 
 ---------------
 

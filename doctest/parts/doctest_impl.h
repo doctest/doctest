@@ -1084,7 +1084,7 @@ namespace detail
     void logTestCrashed() {
         char msg[DOCTEST_SNPRINTF_BUFFER_LENGTH];
 
-        DOCTEST_SNPRINTF(msg, DOCTEST_COUNTOF(msg), "  TEST CASE FAILED! (threw exception)\n\n");
+        DOCTEST_SNPRINTF(msg, DOCTEST_COUNTOF(msg), "TEST CASE FAILED! (threw exception)\n\n");
 
         DOCTEST_PRINTF_COLORED(msg, Color::Red);
 
