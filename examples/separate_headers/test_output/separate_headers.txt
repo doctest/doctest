@@ -1,14 +1,24 @@
 [doctest] doctest version is "1.0.0"
 [doctest] run with "--help" for options
 ===============================================================================
-test.cpp(3)
+test.cpp(4)
 captain obvious
 
-test.cpp(4) FAILED! 
-  CHECK( true == false )
+test.cpp(7) FAILED! 
+  WARN_EQ( false == true )
 with expansion:
-  CHECK( true == false )
+  WARN_EQ( false == true )
+
+test.cpp(8) FAILED! 
+  CHECK_EQ( false == true )
+with expansion:
+  CHECK_EQ( false == true )
+
+test.cpp(9) FAILED! 
+  REQUIRE_EQ( false == true )
+with expansion:
+  REQUIRE_EQ( false == true )
 
 ===============================================================================
 [doctest] test cases:    1 |    0 passed |    1 failed |    0 skipped
-[doctest] assertions:    1 |    0 passed |    1 failed |
+[doctest] assertions:    2 |    0 passed |    2 failed |
