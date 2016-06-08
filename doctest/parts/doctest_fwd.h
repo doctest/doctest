@@ -65,6 +65,7 @@
 #pragma GCC diagnostic ignored "-Wstrict-overflow"
 #pragma GCC diagnostic ignored "-Wmissing-declarations"
 #pragma GCC diagnostic ignored "-Winline"
+#pragma GCC diagnostic ignored "-Wswitch-default"
 #if __GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ > 6)
 #pragma GCC diagnostic ignored "-Wzero-as-null-pointer-constant"
 #endif // > gcc 4.6
@@ -558,8 +559,8 @@ namespace detail
 
     inline bool eq (const char* lhs, const char* rhs) { return String(lhs) == String(rhs); }
     inline bool neq(const char* lhs, const char* rhs) { return String(lhs) != String(rhs); }
-    inline bool lt (const char* lhs, const char* rhs) { return String(lhs) < String(rhs); }
-    inline bool gt (const char* lhs, const char* rhs) { return String(lhs) > String(rhs); }
+    inline bool lt (const char* lhs, const char* rhs) { return String(lhs) <  String(rhs); }
+    inline bool gt (const char* lhs, const char* rhs) { return String(lhs) >  String(rhs); }
     inline bool lte(const char* lhs, const char* rhs) { return String(lhs) <= String(rhs); }
     inline bool gte(const char* lhs, const char* rhs) { return String(lhs) >= String(rhs); }
 #endif // _MSC_VER
@@ -679,6 +680,96 @@ namespace detail
         bool log();
         void react() const;
     };
+
+    namespace fastAssertAction
+    {
+        enum Enum
+        {
+            nothing     = 0,
+            dbgbreak    = 1,
+            shouldthrow = 2
+        };
+    } // namespace fastAssertAction
+
+    namespace fastAssertComparison
+    {
+        enum Enum
+        {
+            eq = 0,
+            neq,
+            gt,
+            lt,
+            gte,
+            lte
+        };
+    } // namespace fastAssertComparison
+
+    inline const char* getCmpString(fastAssertComparison::Enum val) {
+        switch(val) {
+            case fastAssertComparison::eq: return "==";
+            case fastAssertComparison::neq: return "!=";
+            case fastAssertComparison::gt: return ">";
+            case fastAssertComparison::lt: return "<";
+            case fastAssertComparison::gte: return ">=";
+            case fastAssertComparison::lte: return "<=";
+        }
+        return "";
+    }
+
+    // clang-format off
+    template <int, class L, class R> struct FastComparator     { bool operator()(const L&,     const R&    ) const { return true;       } };
+    template <class L, class R> struct FastComparator<0, L, R> { bool operator()(const L& lhs, const R& rhs) const { return lhs == rhs; } };
+    template <class L, class R> struct FastComparator<1, L, R> { bool operator()(const L& lhs, const R& rhs) const { return lhs != rhs; } };
+    template <class L, class R> struct FastComparator<2, L, R> { bool operator()(const L& lhs, const R& rhs) const { return lhs >  rhs; } };
+    template <class L, class R> struct FastComparator<3, L, R> { bool operator()(const L& lhs, const R& rhs) const { return lhs <  rhs; } };
+    template <class L, class R> struct FastComparator<4, L, R> { bool operator()(const L& lhs, const R& rhs) const { return lhs >= rhs; } };
+    template <class L, class R> struct FastComparator<5, L, R> { bool operator()(const L& lhs, const R& rhs) const { return lhs <= rhs; } };
+    // clang-format on
+
+    template <int comparison, typename L, typename R>
+    int fast_assert(const char* assert_name, const char* file, int line, const char* lhs_str,
+                    const char* rhs_str, const L& lhs, const R& rhs) {
+        const char*   comp_str = getCmpString(static_cast<fastAssertComparison::Enum>(comparison));
+        String        expr     = String(lhs_str) + " " + comp_str + " " + rhs_str;
+        const char*   expr_str = expr.c_str();
+        ResultBuilder rb(assert_name, doctest::detail::assertType::normal, file, line, expr_str);
+        try {
+            rb.m_res.m_passed        = FastComparator<comparison, L, R>()(lhs, rhs);
+            rb.m_res.m_decomposition = stringifyBinaryExpr(lhs, comp_str, rhs);
+        } catch(...) { rb.m_threw = true; }
+
+        int res = 0;
+
+        if(rb.log())
+            res |= fastAssertAction::dbgbreak;
+
+        if(rb.m_failed && checkIfShouldThrow(assert_name))
+            res |= fastAssertAction::shouldthrow;
+
+        return res;
+    }
+
+    template <typename T>
+    int fast_assert_unary(const char* assert_name, const char* file, int line, const char* expr,
+                          const T& val, bool is_false) {
+        ResultBuilder rb(assert_name, doctest::detail::assertType::normal, file, line, expr);
+        try {
+            rb.m_res.m_passed        = !!val;
+            rb.m_res.m_decomposition = toString(val);
+            if(is_false)
+                rb.m_res.m_passed = !rb.m_res.m_passed;
+        } catch(...) { rb.m_threw = true; }
+
+        int res = 0;
+
+        if(rb.log())
+            res |= fastAssertAction::dbgbreak;
+
+        if(rb.m_failed && checkIfShouldThrow(assert_name))
+            res |= fastAssertAction::shouldthrow;
+
+        return res;
+    }
 } // namespace detail
 
 #endif // DOCTEST_CONFIG_DISABLE
@@ -899,6 +990,53 @@ public:
 #define DOCTEST_CHECK_NOTHROW(expr) DOCTEST_ASSERT_NOTHROW(expr, "CHECK_NOTHROW")
 #define DOCTEST_REQUIRE_NOTHROW(expr) DOCTEST_ASSERT_NOTHROW(expr, "REQUIRE_NOTHROW")
 
+#define DOCTEST_FAST_ASSERTION(assert_name, lhs, rhs, comparison)                                  \
+    do {                                                                                           \
+        int res = doctest::detail::fast_assert<doctest::detail::fastAssertComparison::comparison>( \
+                assert_name, __FILE__, __LINE__, #lhs, #rhs, lhs, rhs);                            \
+        if(res & doctest::detail::fastAssertAction::dbgbreak)                                      \
+            DOCTEST_BREAK_INTO_DEBUGGER();                                                         \
+        if(res & doctest::detail::fastAssertAction::shouldthrow)                                   \
+            doctest::detail::throwException();                                                     \
+    } while(doctest::detail::always_false())
+
+#define DOCTEST_FAST_ASSERTION_UNARY(assert_name, val, is_false)                                   \
+    do {                                                                                           \
+        int res = doctest::detail::fast_assert_unary(assert_name, __FILE__, __LINE__, #val, val,   \
+                                                     is_false);                                    \
+        if(res & doctest::detail::fastAssertAction::dbgbreak)                                      \
+            DOCTEST_BREAK_INTO_DEBUGGER();                                                         \
+        if(res & doctest::detail::fastAssertAction::shouldthrow)                                   \
+            doctest::detail::throwException();                                                     \
+    } while(doctest::detail::always_false())
+
+#define DOCTEST_WARN_EQ(lhs, rhs) DOCTEST_FAST_ASSERTION("WARN_EQ", lhs, rhs, eq)
+#define DOCTEST_CHECK_EQ(lhs, rhs) DOCTEST_FAST_ASSERTION("CHECK_EQ", lhs, rhs, eq)
+#define DOCTEST_REQUIRE_EQ(lhs, rhs) DOCTEST_FAST_ASSERTION("REQUIRE_EQ", lhs, rhs, eq)
+#define DOCTEST_WARN_NEQ(lhs, rhs) DOCTEST_FAST_ASSERTION("WARN_NEQ", lhs, rhs, neq)
+#define DOCTEST_CHECK_NEQ(lhs, rhs) DOCTEST_FAST_ASSERTION("CHECK_NEQ", lhs, rhs, neq)
+#define DOCTEST_REQUIRE_NEQ(lhs, rhs) DOCTEST_FAST_ASSERTION("REQUIRE_NEQ", lhs, rhs, neq)
+#define DOCTEST_WARN_GT(lhs, rhs) DOCTEST_FAST_ASSERTION("WARN_GT", lhs, rhs, gt)
+#define DOCTEST_CHECK_GT(lhs, rhs) DOCTEST_FAST_ASSERTION("CHECK_GT", lhs, rhs, gt)
+#define DOCTEST_REQUIRE_GT(lhs, rhs) DOCTEST_FAST_ASSERTION("REQUIRE_GT", lhs, rhs, gt)
+#define DOCTEST_WARN_LT(lhs, rhs) DOCTEST_FAST_ASSERTION("WARN_LT", lhs, rhs, lt)
+#define DOCTEST_CHECK_LT(lhs, rhs) DOCTEST_FAST_ASSERTION("CHECK_LT", lhs, rhs, lt)
+#define DOCTEST_REQUIRE_LT(lhs, rhs) DOCTEST_FAST_ASSERTION("REQUIRE_LT", lhs, rhs, lt)
+#define DOCTEST_WARN_GTE(lhs, rhs) DOCTEST_FAST_ASSERTION("WARN_GTE", lhs, rhs, gte)
+#define DOCTEST_CHECK_GTE(lhs, rhs) DOCTEST_FAST_ASSERTION("CHECK_GTE", lhs, rhs, gte)
+#define DOCTEST_REQUIRE_GTE(lhs, rhs) DOCTEST_FAST_ASSERTION("REQUIRE_GTE", lhs, rhs, gte)
+#define DOCTEST_WARN_LTE(lhs, rhs) DOCTEST_FAST_ASSERTION("WARN_LTE", lhs, rhs, lte)
+#define DOCTEST_CHECK_LTE(lhs, rhs) DOCTEST_FAST_ASSERTION("CHECK_LTE", lhs, rhs, lte)
+#define DOCTEST_REQUIRE_LTE(lhs, rhs) DOCTEST_FAST_ASSERTION("REQUIRE_LTE", lhs, rhs, lte)
+
+#define DOCTEST_WARN_UNARY(val) DOCTEST_FAST_ASSERTION_UNARY("WARN_UNARY", val, false)
+#define DOCTEST_CHECK_UNARY(val) DOCTEST_FAST_ASSERTION_UNARY("CHECK_UNARY", val, false)
+#define DOCTEST_REQUIRE_UNARY(val) DOCTEST_FAST_ASSERTION_UNARY("REQUIRE_UNARY", val, false)
+#define DOCTEST_WARN_UNARY_FALSE(val) DOCTEST_FAST_ASSERTION_UNARY("WARN_UNARY_FALSE", val, true)
+#define DOCTEST_CHECK_UNARY_FALSE(val) DOCTEST_FAST_ASSERTION_UNARY("CHECK_UNARY_FALSE", val, true)
+#define DOCTEST_REQUIRE_UNARY_FALSE(val)                                                           \
+    DOCTEST_FAST_ASSERTION_UNARY("REQUIRE_UNARY_FALSE", val, true)
+
 // =================================================================================================
 // == WHAT FOLLOWS IS VERSIONS OF THE MACROS THAT DO NOT DO ANY REGISTERING!                      ==
 // == THIS CAN BE ENABLED BY DEFINING DOCTEST_CONFIG_DISABLE GLOBALLY!                            ==
@@ -953,6 +1091,32 @@ public:
 #define DOCTEST_REQUIRE_THROWS_AS(expr, ex) ((void)0)
 #define DOCTEST_REQUIRE_NOTHROW(expr) ((void)0)
 
+#define DOCTEST_WARN_EQ(lhs, rhs) ((void)0)
+#define DOCTEST_CHECK_EQ(lhs, rhs) ((void)0)
+#define DOCTEST_REQUIRE_EQ(lhs, rhs) ((void)0)
+#define DOCTEST_WARN_NEQ(lhs, rhs) ((void)0)
+#define DOCTEST_CHECK_NEQ(lhs, rhs) ((void)0)
+#define DOCTEST_REQUIRE_NEQ(lhs, rhs) ((void)0)
+#define DOCTEST_WARN_GT(lhs, rhs) ((void)0)
+#define DOCTEST_CHECK_GT(lhs, rhs) ((void)0)
+#define DOCTEST_REQUIRE_GT(lhs, rhs) ((void)0)
+#define DOCTEST_WARN_LT(lhs, rhs) ((void)0)
+#define DOCTEST_CHECK_LT(lhs, rhs) ((void)0)
+#define DOCTEST_REQUIRE_LT(lhs, rhs) ((void)0)
+#define DOCTEST_WARN_GTE(lhs, rhs) ((void)0)
+#define DOCTEST_CHECK_GTE(lhs, rhs) ((void)0)
+#define DOCTEST_REQUIRE_GTE(lhs, rhs) ((void)0)
+#define DOCTEST_WARN_LTE(lhs, rhs) ((void)0)
+#define DOCTEST_CHECK_LTE(lhs, rhs) ((void)0)
+#define DOCTEST_REQUIRE_LTE(lhs, rhs) ((void)0)
+
+#define DOCTEST_WARN_UNARY(val) ((void)0)
+#define DOCTEST_CHECK_UNARY(val) ((void)0)
+#define DOCTEST_REQUIRE_UNARY(val) ((void)0)
+#define DOCTEST_WARN_UNARY_FALSE(val) ((void)0)
+#define DOCTEST_CHECK_UNARY_FALSE(val) ((void)0)
+#define DOCTEST_REQUIRE_UNARY_FALSE(val) ((void)0)
+
 #endif // DOCTEST_CONFIG_DISABLE
 
 // BDD style macros
@@ -995,6 +1159,31 @@ public:
 #define AND_WHEN DOCTEST_AND_WHEN
 #define THEN DOCTEST_THEN
 #define AND_THEN DOCTEST_AND_THEN
+
+#define WARN_EQ DOCTEST_WARN_EQ
+#define CHECK_EQ DOCTEST_CHECK_EQ
+#define REQUIRE_EQ DOCTEST_REQUIRE_EQ
+#define WARN_NEQ DOCTEST_WARN_NEQ
+#define CHECK_NEQ DOCTEST_CHECK_NEQ
+#define REQUIRE_NEQ DOCTEST_REQUIRE_NEQ
+#define WARN_GT DOCTEST_WARN_GT
+#define CHECK_GT DOCTEST_CHECK_GT
+#define REQUIRE_GT DOCTEST_REQUIRE_GT
+#define WARN_LT DOCTEST_WARN_LT
+#define CHECK_LT DOCTEST_CHECK_LT
+#define REQUIRE_LT DOCTEST_REQUIRE_LT
+#define WARN_GTE DOCTEST_WARN_GTE
+#define CHECK_GTE DOCTEST_CHECK_GTE
+#define REQUIRE_GTE DOCTEST_REQUIRE_GTE
+#define WARN_LTE DOCTEST_WARN_LTE
+#define CHECK_LTE DOCTEST_CHECK_LTE
+#define REQUIRE_LTE DOCTEST_REQUIRE_LTE
+#define WARN_UNARY DOCTEST_WARN_UNARY
+#define CHECK_UNARY DOCTEST_CHECK_UNARY
+#define REQUIRE_UNARY DOCTEST_REQUIRE_UNARY
+#define WARN_UNARY_FALSE DOCTEST_WARN_UNARY_FALSE
+#define CHECK_UNARY_FALSE DOCTEST_CHECK_UNARY_FALSE
+#define REQUIRE_UNARY_FALSE DOCTEST_REQUIRE_UNARY_FALSE
 
 #endif // DOCTEST_CONFIG_NO_SHORT_MACRO_NAMES
 

@@ -51,6 +51,7 @@ And here is a list of things that are being considered but not part of the roadm
 - generators? - look at Catch - and investigate what they are (also in [boost](http://www.boost.org/doc/libs/1_61_0/libs/test/doc/html/boost_test/tests_organization/test_cases/test_case_generation.html)
 - option to list files in which  there are test cases who match the current filters
 - handle ```wchar``` strings
+- explore ```extern template``` from C++11 - maybe some templates can be externed - for basic types like int/char/float...
 - a progress reporter
 - doctest in a GUI environment? with no console? APIs for attaching a console? querying if there is one? should investigate...
 - ability to customize the colors in the console output
