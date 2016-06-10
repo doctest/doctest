@@ -256,9 +256,9 @@ matrix:
     - env: COMPILER=g++-5 HAS_ASAN_32=true HAS_UBSAN_32=true HAS_ASAN_64=true HAS_UBSAN_64=true
       os: linux
     # the clang builds for linux fail because the llvm apt is down
-    - env: COMPILER=clang++-3.5
+    - env: COMPILER=clang++-3.5 HAS_ASAN_64=true HAS_UBSAN_64=true
       os: linux
-    - env: COMPILER=clang++-3.6
+    - env: COMPILER=clang++-3.6 HAS_ASAN_64=true HAS_UBSAN_64=true
       os: linux
     - env: COMPILER=clang++-3.7
       os: linux
