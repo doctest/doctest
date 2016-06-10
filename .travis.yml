@@ -11,7 +11,7 @@ notifications:
     on_success: change
     on_failure: always
 git:
-  depth: 5
+  depth: 100
 
 # both apt and ccache make the builds slower...
 #cache:
@@ -42,13 +42,12 @@ addons:
     branch_pattern: coverity_scan
   # these apt sources will be referenced later (by using *name)
   apt:
-    sources: &apt_sources
-      - ubuntu-toolchain-r-test
-#      - llvm-toolchain-precise-3.5
-#      - llvm-toolchain-precise-3.6
-#      - llvm-toolchain-precise-3.7
-#      - llvm-toolchain-precise-3.8
-#      - llvm-toolchain-precise
+    sources: &llvm_apt_sources
+      - llvm-toolchain-precise-3.5
+      - llvm-toolchain-precise-3.6
+      - llvm-toolchain-precise-3.7
+      - llvm-toolchain-precise-3.8
+      - llvm-toolchain-precise
 
 compiler: clang
 os: linux
@@ -71,7 +70,7 @@ matrix:
       addons: &gcc44
         apt:
           packages: ["g++-4.4", "valgrind", "g++-4.4-multilib", "libc6-dbg", "libc6-dbg:i386"]
-          sources: *apt_sources
+          sources: ubuntu-toolchain-r-test
 
     # GCC 4.5
     - env: COMPILER=g++-4.5
@@ -79,7 +78,7 @@ matrix:
       addons: &gcc45
         apt:
           packages: ["g++-4.5", "valgrind", "g++-4.5-multilib", "libc6-dbg", "libc6-dbg:i386"]
-          sources: *apt_sources
+          sources: ubuntu-toolchain-r-test
 
     # GCC 4.6
     - env: COMPILER=g++-4.6
@@ -87,7 +86,7 @@ matrix:
       addons: &gcc46
         apt:
           packages: [           "valgrind", "g++-4.6-multilib", "libc6-dbg", "libc6-dbg:i386"]
-          sources: *apt_sources
+          sources: ubuntu-toolchain-r-test
 
     # GCC 4.7
     - env: COMPILER=g++-4.7
@@ -95,7 +94,7 @@ matrix:
       addons: &gcc47
         apt:
           packages: ["g++-4.7", "valgrind", "g++-4.7-multilib", "libc6-dbg", "libc6-dbg:i386"]
-          sources: *apt_sources
+          sources: ubuntu-toolchain-r-test
 
     # GCC 4.8
     - env: COMPILER=g++-4.8 HAS_ASAN_32=true HAS_ASAN_64=true
@@ -103,7 +102,7 @@ matrix:
       addons: &gcc48
         apt:
           packages: ["g++-4.8", "valgrind", "g++-4.8-multilib", "libc6-dbg", "libc6-dbg:i386"]
-          sources: *apt_sources
+          sources: ubuntu-toolchain-r-test
 
     # GCC 4.9
     - env: COMPILER=g++-4.9 HAS_ASAN_32=true HAS_UBSAN_32=true HAS_ASAN_64=true HAS_UBSAN_64=true
@@ -111,7 +110,7 @@ matrix:
       addons: &gcc49
         apt:
           packages: ["g++-4.9", "valgrind", "g++-4.9-multilib", "libc6-dbg", "libc6-dbg:i386"]
-          sources: *apt_sources
+          sources: ubuntu-toolchain-r-test
 
     # GCC 5
     - env: COMPILER=g++-5 HAS_ASAN_32=true HAS_UBSAN_32=true HAS_ASAN_64=true HAS_UBSAN_64=true
@@ -119,7 +118,7 @@ matrix:
       addons: &gcc5
         apt:
           packages: ["g++-5",   "valgrind", "g++-5-multilib",   "libc6-dbg", "libc6-dbg:i386"]
-          sources: *apt_sources
+          sources: ubuntu-toolchain-r-test
 
 #    # GCC 6
 #    # released on 2016.04.27
@@ -130,42 +129,41 @@ matrix:
 #      addons: &gcc6
 #        apt:
 #          packages: ["g++-6",   "valgrind", "g++-6-multilib",   "libc6-dbg", "libc6-dbg:i386"]
-#          sources: *apt_sources
+#          sources: ubuntu-toolchain-r-test
 
-#    # Clang 3.4
-#    - env: COMPILER=clang++ HAS_ASAN_64=true HAS_UBSAN_64=true
-#      addons: &clang
-#        apt:
-#          packages: [             "valgrind", "g++-multilib", "libc6-dbg", "libc6-dbg:i386"]
-#          sources: *apt_sources
-#
-#    # Clang 3.5
-#    - env: COMPILER=clang++-3.5 HAS_ASAN_64=true HAS_UBSAN_64=true
-#      addons: &clang35
-#        apt:
-#          packages: ["clang-3.5", "valgrind", "g++-multilib", "libc6-dbg", "libc6-dbg:i386"]
-#          sources: *apt_sources
-#
-#    # Clang 3.6
-#    - env: COMPILER=clang++-3.6 HAS_ASAN_64=true HAS_UBSAN_64=true
-#      addons: &clang36
-#        apt:
-#          packages: ["clang-3.6", "valgrind", "g++-multilib", "libc6-dbg", "libc6-dbg:i386"]
-#          sources: *apt_sources
-#
-#    # Clang 3.7
-#    - env: COMPILER=clang++-3.7 # no sanitizers - not even for 64 bit - https://llvm.org/bugs/show_bug.cgi?id=22757
-#      addons: &clang37
-#        apt:
-#          packages: ["clang-3.7", "valgrind", "g++-multilib", "libc6-dbg", "libc6-dbg:i386"]
-#          sources: *apt_sources
-#
-#    # Clang 3.8
-#    - env: COMPILER=clang++-3.8 # no sanitizers - not even for 64 bit - https://llvm.org/bugs/show_bug.cgi?id=22757
-#      addons: &clang38
-#        apt:
-#          packages: ["clang-3.8", "valgrind", "g++-multilib", "libc6-dbg", "libc6-dbg:i386"]
-#          sources: *apt_sources
+    # Clang 3.4
+    - env: COMPILER=clang++ HAS_ASAN_64=true HAS_UBSAN_64=true
+      addons: &clang
+        apt:
+          packages: [             "valgrind", "g++-multilib", "libc6-dbg", "libc6-dbg:i386"]
+
+    # Clang 3.5
+    - env: COMPILER=clang++-3.5 HAS_ASAN_64=true HAS_UBSAN_64=true
+      addons: &clang35
+        apt:
+          packages: ["clang-3.5", "valgrind", "g++-multilib", "libc6-dbg", "libc6-dbg:i386"]
+          sources: *llvm_apt_sources
+
+    # Clang 3.6
+    - env: COMPILER=clang++-3.6 HAS_ASAN_64=true HAS_UBSAN_64=true
+      addons: &clang36
+        apt:
+          packages: ["clang-3.6", "valgrind", "g++-multilib", "libc6-dbg", "libc6-dbg:i386"]
+          sources: *llvm_apt_sources
+
+    # Clang 3.7
+    - env: COMPILER=clang++-3.7 # no sanitizers - not even for 64 bit - https://llvm.org/bugs/show_bug.cgi?id=22757
+      addons: &clang37
+        apt:
+          packages: ["clang-3.7", "valgrind", "g++-multilib", "libc6-dbg", "libc6-dbg:i386"]
+          sources: *llvm_apt_sources
+
+    # Clang 3.8
+    - env: COMPILER=clang++-3.8 # no sanitizers - not even for 64 bit - https://llvm.org/bugs/show_bug.cgi?id=22757
+      addons: &clang38
+        apt:
+          packages: ["clang-3.8", "valgrind", "g++-multilib", "libc6-dbg", "libc6-dbg:i386"]
+          sources: *llvm_apt_sources
 
     # Xcode 6.1 Clang
     - env: COMPILER=clang++
@@ -257,6 +255,15 @@ matrix:
     # see this question for details - http://stackoverflow.com/questions/37688926/asan-with-g-5-4-0-not-working-on-travis-ci
     - env: COMPILER=g++-5 HAS_ASAN_32=true HAS_UBSAN_32=true HAS_ASAN_64=true HAS_UBSAN_64=true
       os: linux
+    # the clang builds for linux fail because the llvm apt is down
+    - env: COMPILER=clang++-3.5
+      os: linux
+    - env: COMPILER=clang++-3.6
+      os: linux
+    - env: COMPILER=clang++-3.7
+      os: linux
+    - env: COMPILER=clang++-3.8
+      os: linux
 
 before_install:
   - |
@@ -345,7 +352,6 @@ script:
   - cmake -DTEST_MODE=COMPARE . && ctest --output-on-failure
 
   # sanitizers - again 32/64 bit Debug/Release configs through address/undefined sanitizers
-#  - cmake -DTEST_MODE=NORMAL .
   - cmake -DTEST_MODE=COMPARE .
   # on separate commands because when something fails I want to see which one exactly
   - if [[ "${HAS_ASAN_64}" = "true" ]];  then cmake -DCMAKE_BUILD_TYPE=Debug   -DCMAKE_CXX_FLAGS="-m64 -fsanitize=address" .   && make clean && make -k -j2 && ctest --output-on-failure ; fi
