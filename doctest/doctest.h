@@ -461,6 +461,7 @@ namespace detail
                 , m_line(line) {}
 
         bool operator==(const TestData& other) const;
+        bool operator<(const TestData& other) const;
     };
 
     struct Subcase
@@ -476,6 +477,7 @@ namespace detail
         Subcase& operator=(const Subcase& other);
 
         bool operator==(const Subcase& other) const;
+        bool operator<(const Subcase& other) const;
         operator bool() const { return m_entered; }
     };
 
@@ -1294,8 +1296,11 @@ DOCTEST_TEST_SUITE_END();
 #include <cstdlib>
 #include <cstring>
 #include <limits>
+#include <utility>
 #include <sstream>
 #include <iomanip>
+#include <vector>
+#include <set>
 
 namespace doctest
 {
@@ -1382,76 +1387,13 @@ namespace detail
     void freeStream(std::ostream* in) { delete in; }
 
 #ifndef DOCTEST_CONFIG_DISABLE
-    template <class T>
-    class Vector
-    {
-        unsigned m_size;
-        unsigned m_capacity;
-        T*       m_buffer;
-
-    public:
-        Vector();
-        Vector(unsigned num, const T& val = T());
-        Vector(const Vector& other);
-        ~Vector();
-        Vector& operator=(const Vector& other);
-
-        T*       data() { return m_buffer; }
-        const T* data() const { return m_buffer; }
-        unsigned size() const { return m_size; }
-
-        T& operator[](unsigned index) { return m_buffer[index]; }
-        const T& operator[](unsigned index) const { return m_buffer[index]; }
-
-        void clear();
-        void pop_back();
-        void push_back(const T& item);
-        void resize(unsigned num, const T& val = T());
-    };
-
-    // the default Hash() implementation that the HashTable class uses - returns 0 - very naive
-    // specialize for better HashTable performance
-    template <typename T>
-    unsigned Hash(const T&) {
-        return 0;
-    }
-
-    template <class T>
-    class HashTable
-    {
-        Vector<Vector<T> > buckets;
-
-    public:
-        explicit HashTable(unsigned num_buckets)
-                : buckets(num_buckets) {}
-
-        bool has(const T& in) const {
-            const Vector<T>& bucket = buckets[Hash(in) % buckets.size()];
-            for(unsigned i = 0; i < bucket.size(); ++i)
-                if(bucket[i] == in)
-                    return true;
-            return false;
-        }
-
-        void insert(const T& in) {
-            if(!has(in))
-                buckets[Hash(in) % buckets.size()].push_back(in);
-        }
-
-        void clear() {
-            for(unsigned i = 0; i < buckets.size(); ++i)
-                buckets[i].clear();
-        }
-
-        const Vector<Vector<T> >& getBuckets() const { return buckets; }
-    };
 
     // this holds both parameters for the command line and runtime data for tests
     struct ContextState : TestAccessibleContextState
     {
         // == parameters from the command line
 
-        detail::Vector<detail::Vector<String> > filters;
+        std::vector<std::vector<String> > filters;
 
         String   order_by;  // how tests should be ordered
         unsigned rand_seed; // the seed for rand ordering
@@ -1467,12 +1409,11 @@ namespace detail
         bool no_colors;      // if output to the console should be colorized
         bool no_path_in_filenames; // if the path to files should be removed from the output
 
-        bool help;                 // to print the help
-        bool version;              // to print the version
-        bool count;                // if only the count of matching tests is to be retreived
-        bool list_test_cases;      // to list all tests matching the filters
-        bool list_test_suites;     // to list all suites matching the filters
-        bool hash_table_histogram; // if the hash table should be printed as a histogram
+        bool help;             // to print the help
+        bool version;          // to print the version
+        bool count;            // if only the count of matching tests is to be retreived
+        bool list_test_cases;  // to list all tests matching the filters
+        bool list_test_suites; // to list all suites matching the filters
 
         // == data for the tests being ran
 
@@ -1481,11 +1422,11 @@ namespace detail
         int numFailedAssertionsForCurrentTestcase;
 
         // stuff for subcases
-        HashTable<Subcase> subcasesPassed;
-        HashTable<int>     subcasesEnteredLevels;
-        Vector<Subcase>    subcasesStack;
-        int                subcasesCurrentLevel;
-        bool               subcasesHasSkipped;
+        std::set<std::pair<const char*, int> > subcasesPassed;
+        std::set<int>        subcasesEnteredLevels;
+        std::vector<Subcase> subcasesStack;
+        int                  subcasesCurrentLevel;
+        bool                 subcasesHasSkipped;
 
         void resetRunData() {
             numAssertions       = 0;
@@ -1494,8 +1435,7 @@ namespace detail
 
         ContextState()
                 : filters(6) // 6 different filters total
-                , subcasesPassed(100)
-                , subcasesEnteredLevels(100) {
+        {
             resetRunData();
         }
     };
@@ -1692,11 +1632,6 @@ int  Context::run() { return 0; }
         }                                                                                          \
     } while(doctest::detail::always_false())
 
-// the number of buckets used for the hash set
-#if !defined(DOCTEST_HASH_TABLE_NUM_BUCKETS)
-#define DOCTEST_HASH_TABLE_NUM_BUCKETS 1024
-#endif // DOCTEST_HASH_TABLE_NUM_BUCKETS
-
 // the buffer size used for snprintf() calls
 #if !defined(DOCTEST_SNPRINTF_BUFFER_LENGTH)
 #define DOCTEST_SNPRINTF_BUFFER_LENGTH 1024
@@ -1741,6 +1676,12 @@ namespace detail
         return m_line == other.m_line && strcmp(m_file, other.m_file) == 0;
     }
 
+    bool TestData::operator<(const TestData& other) const {
+        if(m_line != other.m_line)
+            return m_line < other.m_line;
+        return strcmp(m_file, other.m_file) < 0;
+    }
+
     bool checkIfShouldThrow(const char* assert_name) {
         if(strncmp(assert_name, "REQUIRE", 7) == 0)
             return true;
@@ -1752,7 +1693,7 @@ namespace detail
 
         return false;
     }
-    void throwException() { throw doctest::detail::TestFailureException(); }
+    void throwException() { throw TestFailureException(); }
     bool always_false() { return false; }
 
     // lowers ascii letters
@@ -1809,136 +1750,14 @@ namespace detail
     }
 
     // checks if the name matches any of the filters (and can be configured what to do when empty)
-    int matchesAny(const char* name, Vector<String> filters, int matchEmpty, bool caseSensitive) {
+    int matchesAny(const char* name, std::vector<String> filters, int matchEmpty,
+                   bool caseSensitive) {
         if(filters.size() == 0 && matchEmpty)
             return 1;
         for(unsigned i = 0; i < filters.size(); ++i)
             if(wildcmp(name, filters[i].c_str(), caseSensitive))
                 return 1;
         return 0;
-    }
-
-    template <class T>
-    Vector<T>::Vector()
-            : m_size(0)
-            , m_capacity(0)
-            , m_buffer(0) {}
-
-    template <class T>
-    Vector<T>::Vector(unsigned num, const T& val)
-            : m_size(num)
-            , m_capacity(num)
-            , m_buffer(static_cast<T*>(malloc(sizeof(T) * m_capacity))) {
-        for(unsigned i = 0; i < m_size; ++i)
-            new(m_buffer + i) T(val);
-    }
-
-    template <class T>
-    Vector<T>::Vector(const Vector& other)
-            : m_size(other.m_size)
-            , m_capacity(other.m_capacity)
-            , m_buffer(static_cast<T*>(malloc(sizeof(T) * m_capacity))) {
-        for(unsigned i = 0; i < m_size; ++i)
-            new(m_buffer + i) T(other.m_buffer[i]);
-    }
-
-    template <class T>
-    Vector<T>::~Vector() {
-        for(unsigned i = 0; i < m_size; ++i)
-            (*(m_buffer + i)).~T();
-        free(m_buffer);
-    }
-
-    template <class T>
-    Vector<T>& Vector<T>::operator=(const Vector& other) {
-        if(this != &other) {
-            for(unsigned i = 0; i < m_size; ++i)
-                (*(m_buffer + i)).~T();
-            free(m_buffer);
-
-            m_size     = other.m_size;
-            m_capacity = other.m_capacity;
-
-            m_buffer = static_cast<T*>(malloc(sizeof(T) * m_capacity));
-            for(unsigned i = 0; i < m_size; ++i)
-                new(m_buffer + i) T(other.m_buffer[i]);
-        }
-        return *this;
-    }
-
-    template <class T>
-    void Vector<T>::clear() {
-        for(unsigned i = 0; i < m_size; ++i)
-            (*(m_buffer + i)).~T();
-        m_size = 0;
-    }
-
-    template <class T>
-    void Vector<T>::pop_back() {
-        if(m_size > 0)
-            (*(m_buffer + --m_size)).~T();
-    }
-
-    template <class T>
-    void Vector<T>::push_back(const T& item) {
-        if(m_size < m_capacity) {
-            new(m_buffer + m_size++) T(item);
-        } else {
-            if(m_capacity == 0)
-                m_capacity = 5; // initial capacity
-            else
-                m_capacity *= 2; // capacity growth factor
-            T* temp = static_cast<T*>(malloc(sizeof(T) * m_capacity));
-            for(unsigned i = 0; i < m_size; ++i) {
-                new(temp + i) T(m_buffer[i]);
-                (*(m_buffer + i)).~T();
-            }
-            new(temp + m_size++) T(item);
-            free(m_buffer);
-            m_buffer = temp;
-        }
-    }
-
-    template <class T>
-    void Vector<T>::resize(unsigned num, const T& val) {
-        if(num < m_size) {
-            for(unsigned i = num; i < m_size; ++i)
-                (*(m_buffer + i)).~T();
-            m_size = num;
-        } else {
-            if(num > m_capacity) {
-                if(m_capacity == 0) {
-                    m_buffer = static_cast<T*>(malloc(sizeof(T) * num));
-                } else {
-                    T* temp = static_cast<T*>(malloc(sizeof(T) * num));
-                    for(unsigned i = 0; i < m_size; ++i) {
-                        new(temp + i) T(m_buffer[i]);
-                        (*(m_buffer + i)).~T();
-                    }
-                }
-
-                for(unsigned i = m_size; i < num; ++i)
-                    new(m_buffer + i) T(val);
-
-                m_size     = num;
-                m_capacity = num;
-            }
-        }
-    }
-
-    template <>
-    unsigned Hash(const Subcase& in) {
-        return hashStr(reinterpret_cast<unsigned const char*>(in.m_file)) ^ in.m_line;
-    }
-
-    template <>
-    unsigned Hash(const String& in) {
-        return hashStr(reinterpret_cast<unsigned const char*>(in.c_str()));
-    }
-
-    template <>
-    unsigned Hash(const int& in) {
-        return in;
     }
 
     // the current ContextState with which tests are being executed
@@ -1957,19 +1776,19 @@ namespace detail
         ContextState* s = getContextState();
 
         // if we have already completed it
-        if(s->subcasesPassed.has(*this))
+        if(s->subcasesPassed.count(std::pair<const char*, int>(m_file, m_line)) != 0)
             return;
 
         // if a Subcase on the same level has already been entered
-        if(s->subcasesEnteredLevels.has(s->subcasesCurrentLevel)) {
+        if(s->subcasesEnteredLevels.count(s->subcasesCurrentLevel) != 0) {
             s->subcasesHasSkipped = true;
             return;
         }
 
         s->subcasesStack.push_back(*this);
-        s->hasLoggedCurrentTestStart = false;
         if(s->hasLoggedCurrentTestStart)
             logTestEnd();
+        s->hasLoggedCurrentTestStart = false;
 
         s->subcasesEnteredLevels.insert(s->subcasesCurrentLevel++);
         m_entered = true;
@@ -1982,12 +1801,13 @@ namespace detail
             s->subcasesCurrentLevel--;
             // only mark the subcase as passed if no subcases have been skipped
             if(s->subcasesHasSkipped == false)
-                s->subcasesPassed.insert(*this);
+                s->subcasesPassed.insert(std::pair<const char*, int>(m_file, m_line));
 
-            s->subcasesStack.pop_back();
-            s->hasLoggedCurrentTestStart = false;
+            if(s->subcasesStack.size() > 0)
+                s->subcasesStack.pop_back();
             if(s->hasLoggedCurrentTestStart)
                 logTestEnd();
+            s->hasLoggedCurrentTestStart = false;
         }
     }
 
@@ -2009,8 +1829,10 @@ namespace detail
         return m_line == other.m_line && strcmp(m_file, other.m_file) == 0;
     }
 
-    unsigned Hash(const TestData& in) {
-        return hashStr(reinterpret_cast<unsigned const char*>(in.m_file)) ^ in.m_line;
+    bool Subcase::operator<(const Subcase& other) const {
+        if(m_line != other.m_line)
+            return m_line < other.m_line;
+        return strcmp(m_file, other.m_file) < 0;
     }
 
     // for sorting tests by file/line
@@ -2064,8 +1886,8 @@ namespace detail
     }
 
     // all the registered tests
-    HashTable<TestData>& getRegisteredTests() {
-        static HashTable<TestData> data(DOCTEST_HASH_TABLE_NUM_BUCKETS);
+    std::set<TestData>& getRegisteredTests() {
+        static std::set<TestData> data;
         return data;
     }
 
@@ -2280,8 +2102,8 @@ namespace detail
         DOCTEST_PRINTF_COLORED(loc, Color::LightGrey);
         DOCTEST_PRINTF_COLORED(msg, Color::None);
 
-        String           subcaseStuff  = "";
-        Vector<Subcase>& subcasesStack = getContextState()->subcasesStack;
+        String                subcaseStuff  = "";
+        std::vector<Subcase>& subcasesStack = getContextState()->subcasesStack;
         for(unsigned i = 0; i < subcasesStack.size(); ++i) {
             char subcase[DOCTEST_SNPRINTF_BUFFER_LENGTH];
             DOCTEST_SNPRINTF(subcase, DOCTEST_COUNTOF(loc), "  %s\n", subcasesStack[i].m_name);
@@ -2537,7 +2359,7 @@ namespace detail
 
     // parses a comma separated list of words after a pattern in one of the arguments in argv
     bool parseCommaSepArgs(int argc, const char* const* argv, const char* pattern,
-                           Vector<String>& res) {
+                           std::vector<String>& res) {
         String filtersString;
         if(parseOption(argc, argv, pattern, filtersString)) {
             // tokenize with "," as a separator
@@ -2619,7 +2441,6 @@ namespace detail
         printf(" -c,   --count                         prints the number of matching tests\n");
         printf(" -ltc, --list-test-cases               lists all matching tests by name\n");
         printf(" -lts, --list-test-suites              lists all matching test suites\n\n");
-        //printf(" -hth, --hash-table-histogram          undocumented\n");
         // ==================================================================================== << 79
         DOCTEST_PRINTF_COLORED("[doctest] ", Color::Cyan);
         printf("The available <int>/<string> options/filters are:\n\n");
@@ -2733,12 +2554,11 @@ void Context::parseArgs(int argc, const char* const* argv, bool withDefaults) {
 #undef DOCTEST_PARSE_AS_BOOL_OR_FLAG
 
     if(withDefaults) {
-        p->help                 = false;
-        p->version              = false;
-        p->count                = false;
-        p->list_test_cases      = false;
-        p->list_test_suites     = false;
-        p->hash_table_histogram = false;
+        p->help             = false;
+        p->version          = false;
+        p->count            = false;
+        p->list_test_cases  = false;
+        p->list_test_suites = false;
     }
     if(parseFlag(argc, argv, "dt-help") || parseFlag(argc, argv, "dt-h") ||
        parseFlag(argc, argv, "dt-?")) {
@@ -2760,10 +2580,6 @@ void Context::parseArgs(int argc, const char* const* argv, bool withDefaults) {
     if(parseFlag(argc, argv, "dt-list-test-suites") || parseFlag(argc, argv, "dt-lts")) {
         p->list_test_suites = true;
         p->exit             = true;
-    }
-    if(parseFlag(argc, argv, "dt-hash-table-histogram") || parseFlag(argc, argv, "dt-hth")) {
-        p->hash_table_histogram = true;
-        p->exit                 = true;
     }
 }
 
@@ -2799,6 +2615,8 @@ int Context::run() {
         if(p->help)
             printHelp();
 
+        getContextState() = 0;
+
         return EXIT_SUCCESS;
     }
 
@@ -2806,39 +2624,14 @@ int Context::run() {
     DOCTEST_PRINTF_COLORED("[doctest] ", Color::Cyan);
     printf("run with \"--help\" for options\n");
 
-    unsigned                         i       = 0; // counter used for loops - here for VC6
-    const Vector<Vector<TestData> >& buckets = getRegisteredTests().getBuckets();
+    unsigned i = 0; // counter used for loops - here for VC6
 
-    Vector<const TestData*> testArray;
-    for(i = 0; i < buckets.size(); i++)
-        for(unsigned k = 0; k < buckets[i].size(); k++)
-            testArray.push_back(&buckets[i][k]);
+    std::set<TestData>& registeredTests = getRegisteredTests();
 
-    if(p->hash_table_histogram) {
-        // find the most full bucket
-        unsigned maxInBucket = 1;
-        for(i = 0; i < buckets.size(); i++)
-            if(buckets[i].size() > maxInBucket)
-                maxInBucket = buckets[i].size();
-
-        // print a prettified histogram
-        DOCTEST_PRINTF_COLORED("[doctest] ", Color::Cyan);
-        printf("hash table bucket histogram\n");
-        printf("============================================================\n");
-        printf("#bucket     |count| relative count\n");
-        printf("============================================================\n");
-        for(i = 0; i < buckets.size(); i++) {
-            printf("bucket %4d |%4d |", static_cast<int>(i), buckets[i].size());
-
-            float ratio = static_cast<float>(buckets[i].size()) / static_cast<float>(maxInBucket);
-            unsigned numStars = static_cast<unsigned>(ratio * 41);
-            for(unsigned k = 0; k < numStars; ++k)
-                printf("*");
-            printf("\n");
-        }
-        printf("\n");
-        return EXIT_SUCCESS;
-    }
+    std::vector<const TestData*> testArray;
+    for(std::set<TestData>::iterator it = registeredTests.begin(); it != registeredTests.end();
+        ++it)
+        testArray.push_back(&(*it));
 
     // sort the collected records
     if(p->order_by.compare("file", true) == 0) {
@@ -2867,7 +2660,7 @@ int Context::run() {
         printf("listing all test case names\n");
     }
 
-    HashTable<String> testSuitesPassingFilters(100);
+    std::set<String> testSuitesPassingFilters;
     if(p->list_test_suites) {
         DOCTEST_PRINTF_COLORED("[doctest] ", Color::Cyan);
         printf("listing all test suites\n");
@@ -2905,7 +2698,7 @@ int Context::run() {
 
         // print the name of the test suite if not done already and don't execute it
         if(p->list_test_suites) {
-            if(!testSuitesPassingFilters.has(data.m_suite)) {
+            if(testSuitesPassingFilters.count(data.m_suite) == 0) {
                 printf("%s\n", data.m_suite);
                 testSuitesPassingFilters.insert(data.m_suite);
             }
@@ -2997,7 +2790,7 @@ int Context::run() {
         DOCTEST_SNPRINTF(buff, DOCTEST_COUNTOF(buff), " | ");
         DOCTEST_PRINTF_COLORED(buff, Color::None);
         DOCTEST_SNPRINTF(buff, DOCTEST_COUNTOF(buff), "%4d skipped\n",
-                         testArray.size() - numTestsPassingFilters);
+                         static_cast<unsigned>(testArray.size()) - numTestsPassingFilters);
         DOCTEST_PRINTF_COLORED(buff, Color::None);
 
         DOCTEST_PRINTF_COLORED("[doctest] ", Color::Cyan);
@@ -3017,6 +2810,8 @@ int Context::run() {
         DOCTEST_SNPRINTF(buff, DOCTEST_COUNTOF(buff), " |\n");
         DOCTEST_PRINTF_COLORED(buff, Color::None);
     }
+
+    getContextState() = 0;
 
     if(numFailed && !p->no_exitcode)
         return EXIT_FAILURE;

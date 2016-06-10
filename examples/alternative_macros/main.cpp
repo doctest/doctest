@@ -14,6 +14,5 @@ my_testcase("custom macros") {
         
         my_require(5 > 3);
     }
-    
     // CHECK(1 == 1); <== ERROR - the default short macros are disabled from the proxy header
 }

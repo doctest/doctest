@@ -458,6 +458,7 @@ namespace detail
                 , m_line(line) {}
 
         bool operator==(const TestData& other) const;
+        bool operator<(const TestData& other) const;
     };
 
     struct Subcase
@@ -473,6 +474,7 @@ namespace detail
         Subcase& operator=(const Subcase& other);
 
         bool operator==(const Subcase& other) const;
+        bool operator<(const Subcase& other) const;
         operator bool() const { return m_entered; }
     };
 

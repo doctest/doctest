@@ -1,11 +1,11 @@
-- switch to using ```std::vector``` and ```std::set``` and remove custom implementations
+- fix GTE to GE
+
+- think about the expression decomposition static asserts
+    - the static assert should use the c++11 feature if possible
 
 - tests in a static library without the implementation there - problematic
 
 - signed/unsigned comparison trouble in assertions
-
-- think about the expression decomposition static asserts
-    - the static assert should use the c++11 feature if possible
 
 - examples
     - removing everything with -dt- from the command line
