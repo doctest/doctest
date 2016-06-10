@@ -1,5 +1,3 @@
-- fix GTE to GE
-
 - think about the expression decomposition static asserts
     - the static assert should use the c++11 feature if possible
 

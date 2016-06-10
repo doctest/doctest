@@ -539,32 +539,32 @@ namespace detail
 
 // for anything below Visual Studio 2005 (VC++6 has no SFINAE - not sure about VS 2003)
 #if defined(_MSC_VER) && _MSC_VER < 1400
-    template <typename L, typename R> bool eq (const L& lhs, const R& rhs) { return lhs == rhs; }
-    template <typename L, typename R> bool neq(const L& lhs, const R& rhs) { return lhs != rhs; }
-    template <typename L, typename R> bool lt (const L& lhs, const R& rhs) { return lhs < rhs; }
-    template <typename L, typename R> bool gt (const L& lhs, const R& rhs) { return lhs > rhs; }
-    template <typename L, typename R> bool lte(const L& lhs, const R& rhs) { return eq(lhs, rhs) != 0 ? lhs < rhs : true; }
-    template <typename L, typename R> bool gte(const L& lhs, const R& rhs) { return eq(lhs, rhs) != 0 ? lhs > rhs : true; }
+    template <typename L, typename R> bool eq(const L& lhs, const R& rhs) { return lhs == rhs; }
+    template <typename L, typename R> bool ne(const L& lhs, const R& rhs) { return lhs != rhs; }
+    template <typename L, typename R> bool lt(const L& lhs, const R& rhs) { return lhs < rhs; }
+    template <typename L, typename R> bool gt(const L& lhs, const R& rhs) { return lhs > rhs; }
+    template <typename L, typename R> bool le(const L& lhs, const R& rhs) { return eq(lhs, rhs) != 0 ? lhs < rhs : true; }
+    template <typename L, typename R> bool ge(const L& lhs, const R& rhs) { return eq(lhs, rhs) != 0 ? lhs > rhs : true; }
 #else // _MSC_VER
     template <typename L, typename R>
-    typename enable_if<can_use_op<L>::value || can_use_op<R>::value, bool>::type eq (const L& lhs, const R& rhs) { return lhs == rhs; }
+    typename enable_if<can_use_op<L>::value || can_use_op<R>::value, bool>::type eq(const L& lhs, const R& rhs) { return lhs == rhs; }
     template <typename L, typename R>
-    typename enable_if<can_use_op<L>::value || can_use_op<R>::value, bool>::type neq(const L& lhs, const R& rhs) { return lhs != rhs; }
+    typename enable_if<can_use_op<L>::value || can_use_op<R>::value, bool>::type ne(const L& lhs, const R& rhs) { return lhs != rhs; }
     template <typename L, typename R>
-    typename enable_if<can_use_op<L>::value || can_use_op<R>::value, bool>::type lt (const L& lhs, const R& rhs) { return lhs < rhs; }
+    typename enable_if<can_use_op<L>::value || can_use_op<R>::value, bool>::type lt(const L& lhs, const R& rhs) { return lhs < rhs; }
     template <typename L, typename R>
-    typename enable_if<can_use_op<L>::value || can_use_op<R>::value, bool>::type gt (const L& lhs, const R& rhs) { return lhs > rhs; }
+    typename enable_if<can_use_op<L>::value || can_use_op<R>::value, bool>::type gt(const L& lhs, const R& rhs) { return lhs > rhs; }
     template <typename L, typename R>
-    typename enable_if<can_use_op<L>::value || can_use_op<R>::value, bool>::type lte(const L& lhs, const R& rhs) { return neq(lhs, rhs) ? lhs < rhs : true; }
+    typename enable_if<can_use_op<L>::value || can_use_op<R>::value, bool>::type le(const L& lhs, const R& rhs) { return ne(lhs, rhs) ? lhs < rhs : true; }
     template <typename L, typename R>
-    typename enable_if<can_use_op<L>::value || can_use_op<R>::value, bool>::type gte(const L& lhs, const R& rhs) { return neq(lhs, rhs) ? lhs > rhs : true; }
+    typename enable_if<can_use_op<L>::value || can_use_op<R>::value, bool>::type ge(const L& lhs, const R& rhs) { return ne(lhs, rhs) ? lhs > rhs : true; }
 
-    inline bool eq (const char* lhs, const char* rhs) { return String(lhs) == String(rhs); }
-    inline bool neq(const char* lhs, const char* rhs) { return String(lhs) != String(rhs); }
-    inline bool lt (const char* lhs, const char* rhs) { return String(lhs) <  String(rhs); }
-    inline bool gt (const char* lhs, const char* rhs) { return String(lhs) >  String(rhs); }
-    inline bool lte(const char* lhs, const char* rhs) { return String(lhs) <= String(rhs); }
-    inline bool gte(const char* lhs, const char* rhs) { return String(lhs) >= String(rhs); }
+    inline bool eq(const char* lhs, const char* rhs) { return String(lhs) == String(rhs); }
+    inline bool ne(const char* lhs, const char* rhs) { return String(lhs) != String(rhs); }
+    inline bool lt(const char* lhs, const char* rhs) { return String(lhs) <  String(rhs); }
+    inline bool gt(const char* lhs, const char* rhs) { return String(lhs) >  String(rhs); }
+    inline bool le(const char* lhs, const char* rhs) { return String(lhs) <= String(rhs); }
+    inline bool ge(const char* lhs, const char* rhs) { return String(lhs) >= String(rhs); }
 #endif // _MSC_VER
 
     // clang-format on
@@ -583,12 +583,12 @@ namespace detail
         operator Result() { return Result(!!lhs, toString(lhs)); }
 
         // clang-format off
-        template <typename R> Result operator==(const R& rhs) { return Result(eq (lhs, rhs), stringifyBinaryExpr(lhs, "==", rhs)); }
-        template <typename R> Result operator!=(const R& rhs) { return Result(neq(lhs, rhs), stringifyBinaryExpr(lhs, "!=", rhs)); }
-        template <typename R> Result operator< (const R& rhs) { return Result(lt (lhs, rhs), stringifyBinaryExpr(lhs, "<" , rhs)); }
-        template <typename R> Result operator<=(const R& rhs) { return Result(lte(lhs, rhs), stringifyBinaryExpr(lhs, "<=", rhs)); }
-        template <typename R> Result operator> (const R& rhs) { return Result(gt (lhs, rhs), stringifyBinaryExpr(lhs, ">" , rhs)); }
-        template <typename R> Result operator>=(const R& rhs) { return Result(gte(lhs, rhs), stringifyBinaryExpr(lhs, ">=", rhs)); }
+        template <typename R> Result operator==(const R& rhs) { return Result(eq(lhs, rhs), stringifyBinaryExpr(lhs, "==", rhs)); }
+        template <typename R> Result operator!=(const R& rhs) { return Result(ne(lhs, rhs), stringifyBinaryExpr(lhs, "!=", rhs)); }
+        template <typename R> Result operator< (const R& rhs) { return Result(lt(lhs, rhs), stringifyBinaryExpr(lhs, "<" , rhs)); }
+        template <typename R> Result operator<=(const R& rhs) { return Result(le(lhs, rhs), stringifyBinaryExpr(lhs, "<=", rhs)); }
+        template <typename R> Result operator> (const R& rhs) { return Result(gt(lhs, rhs), stringifyBinaryExpr(lhs, ">" , rhs)); }
+        template <typename R> Result operator>=(const R& rhs) { return Result(ge(lhs, rhs), stringifyBinaryExpr(lhs, ">=", rhs)); }
         // clang-format on
     };
 
@@ -698,22 +698,22 @@ namespace detail
         enum Enum
         {
             eq = 0,
-            neq,
+            ne,
             gt,
             lt,
-            gte,
-            lte
+            ge,
+            le
         };
     } // namespace fastAssertComparison
 
     inline const char* getCmpString(fastAssertComparison::Enum val) {
         switch(val) {
             case fastAssertComparison::eq: return "==";
-            case fastAssertComparison::neq: return "!=";
+            case fastAssertComparison::ne: return "!=";
             case fastAssertComparison::gt: return ">";
             case fastAssertComparison::lt: return "<";
-            case fastAssertComparison::gte: return ">=";
-            case fastAssertComparison::lte: return "<=";
+            case fastAssertComparison::ge: return ">=";
+            case fastAssertComparison::le: return "<=";
         }
         return "";
     }
@@ -1015,21 +1015,21 @@ public:
 #define DOCTEST_WARN_EQ(lhs, rhs) DOCTEST_FAST_ASSERTION("WARN_EQ", lhs, rhs, eq)
 #define DOCTEST_CHECK_EQ(lhs, rhs) DOCTEST_FAST_ASSERTION("CHECK_EQ", lhs, rhs, eq)
 #define DOCTEST_REQUIRE_EQ(lhs, rhs) DOCTEST_FAST_ASSERTION("REQUIRE_EQ", lhs, rhs, eq)
-#define DOCTEST_WARN_NEQ(lhs, rhs) DOCTEST_FAST_ASSERTION("WARN_NEQ", lhs, rhs, neq)
-#define DOCTEST_CHECK_NEQ(lhs, rhs) DOCTEST_FAST_ASSERTION("CHECK_NEQ", lhs, rhs, neq)
-#define DOCTEST_REQUIRE_NEQ(lhs, rhs) DOCTEST_FAST_ASSERTION("REQUIRE_NEQ", lhs, rhs, neq)
+#define DOCTEST_WARN_NE(lhs, rhs) DOCTEST_FAST_ASSERTION("WARN_NE", lhs, rhs, ne)
+#define DOCTEST_CHECK_NE(lhs, rhs) DOCTEST_FAST_ASSERTION("CHECK_NE", lhs, rhs, ne)
+#define DOCTEST_REQUIRE_NE(lhs, rhs) DOCTEST_FAST_ASSERTION("REQUIRE_NE", lhs, rhs, ne)
 #define DOCTEST_WARN_GT(lhs, rhs) DOCTEST_FAST_ASSERTION("WARN_GT", lhs, rhs, gt)
 #define DOCTEST_CHECK_GT(lhs, rhs) DOCTEST_FAST_ASSERTION("CHECK_GT", lhs, rhs, gt)
 #define DOCTEST_REQUIRE_GT(lhs, rhs) DOCTEST_FAST_ASSERTION("REQUIRE_GT", lhs, rhs, gt)
 #define DOCTEST_WARN_LT(lhs, rhs) DOCTEST_FAST_ASSERTION("WARN_LT", lhs, rhs, lt)
 #define DOCTEST_CHECK_LT(lhs, rhs) DOCTEST_FAST_ASSERTION("CHECK_LT", lhs, rhs, lt)
 #define DOCTEST_REQUIRE_LT(lhs, rhs) DOCTEST_FAST_ASSERTION("REQUIRE_LT", lhs, rhs, lt)
-#define DOCTEST_WARN_GTE(lhs, rhs) DOCTEST_FAST_ASSERTION("WARN_GTE", lhs, rhs, gte)
-#define DOCTEST_CHECK_GTE(lhs, rhs) DOCTEST_FAST_ASSERTION("CHECK_GTE", lhs, rhs, gte)
-#define DOCTEST_REQUIRE_GTE(lhs, rhs) DOCTEST_FAST_ASSERTION("REQUIRE_GTE", lhs, rhs, gte)
-#define DOCTEST_WARN_LTE(lhs, rhs) DOCTEST_FAST_ASSERTION("WARN_LTE", lhs, rhs, lte)
-#define DOCTEST_CHECK_LTE(lhs, rhs) DOCTEST_FAST_ASSERTION("CHECK_LTE", lhs, rhs, lte)
-#define DOCTEST_REQUIRE_LTE(lhs, rhs) DOCTEST_FAST_ASSERTION("REQUIRE_LTE", lhs, rhs, lte)
+#define DOCTEST_WARN_GE(lhs, rhs) DOCTEST_FAST_ASSERTION("WARN_GE", lhs, rhs, ge)
+#define DOCTEST_CHECK_GE(lhs, rhs) DOCTEST_FAST_ASSERTION("CHECK_GE", lhs, rhs, ge)
+#define DOCTEST_REQUIRE_GE(lhs, rhs) DOCTEST_FAST_ASSERTION("REQUIRE_GE", lhs, rhs, ge)
+#define DOCTEST_WARN_LE(lhs, rhs) DOCTEST_FAST_ASSERTION("WARN_LE", lhs, rhs, le)
+#define DOCTEST_CHECK_LE(lhs, rhs) DOCTEST_FAST_ASSERTION("CHECK_LE", lhs, rhs, le)
+#define DOCTEST_REQUIRE_LE(lhs, rhs) DOCTEST_FAST_ASSERTION("REQUIRE_LE", lhs, rhs, le)
 
 #define DOCTEST_WARN_UNARY(val) DOCTEST_FAST_ASSERTION_UNARY("WARN_UNARY", val, false)
 #define DOCTEST_CHECK_UNARY(val) DOCTEST_FAST_ASSERTION_UNARY("CHECK_UNARY", val, false)
@@ -1096,21 +1096,21 @@ public:
 #define DOCTEST_WARN_EQ(lhs, rhs) ((void)0)
 #define DOCTEST_CHECK_EQ(lhs, rhs) ((void)0)
 #define DOCTEST_REQUIRE_EQ(lhs, rhs) ((void)0)
-#define DOCTEST_WARN_NEQ(lhs, rhs) ((void)0)
-#define DOCTEST_CHECK_NEQ(lhs, rhs) ((void)0)
-#define DOCTEST_REQUIRE_NEQ(lhs, rhs) ((void)0)
+#define DOCTEST_WARN_NE(lhs, rhs) ((void)0)
+#define DOCTEST_CHECK_NE(lhs, rhs) ((void)0)
+#define DOCTEST_REQUIRE_NE(lhs, rhs) ((void)0)
 #define DOCTEST_WARN_GT(lhs, rhs) ((void)0)
 #define DOCTEST_CHECK_GT(lhs, rhs) ((void)0)
 #define DOCTEST_REQUIRE_GT(lhs, rhs) ((void)0)
 #define DOCTEST_WARN_LT(lhs, rhs) ((void)0)
 #define DOCTEST_CHECK_LT(lhs, rhs) ((void)0)
 #define DOCTEST_REQUIRE_LT(lhs, rhs) ((void)0)
-#define DOCTEST_WARN_GTE(lhs, rhs) ((void)0)
-#define DOCTEST_CHECK_GTE(lhs, rhs) ((void)0)
-#define DOCTEST_REQUIRE_GTE(lhs, rhs) ((void)0)
-#define DOCTEST_WARN_LTE(lhs, rhs) ((void)0)
-#define DOCTEST_CHECK_LTE(lhs, rhs) ((void)0)
-#define DOCTEST_REQUIRE_LTE(lhs, rhs) ((void)0)
+#define DOCTEST_WARN_GE(lhs, rhs) ((void)0)
+#define DOCTEST_CHECK_GE(lhs, rhs) ((void)0)
+#define DOCTEST_REQUIRE_GE(lhs, rhs) ((void)0)
+#define DOCTEST_WARN_LE(lhs, rhs) ((void)0)
+#define DOCTEST_CHECK_LE(lhs, rhs) ((void)0)
+#define DOCTEST_REQUIRE_LE(lhs, rhs) ((void)0)
 
 #define DOCTEST_WARN_UNARY(val) ((void)0)
 #define DOCTEST_CHECK_UNARY(val) ((void)0)
@@ -1165,21 +1165,21 @@ public:
 #define WARN_EQ DOCTEST_WARN_EQ
 #define CHECK_EQ DOCTEST_CHECK_EQ
 #define REQUIRE_EQ DOCTEST_REQUIRE_EQ
-#define WARN_NEQ DOCTEST_WARN_NEQ
-#define CHECK_NEQ DOCTEST_CHECK_NEQ
-#define REQUIRE_NEQ DOCTEST_REQUIRE_NEQ
+#define WARN_NE DOCTEST_WARN_NE
+#define CHECK_NE DOCTEST_CHECK_NE
+#define REQUIRE_NE DOCTEST_REQUIRE_NE
 #define WARN_GT DOCTEST_WARN_GT
 #define CHECK_GT DOCTEST_CHECK_GT
 #define REQUIRE_GT DOCTEST_REQUIRE_GT
 #define WARN_LT DOCTEST_WARN_LT
 #define CHECK_LT DOCTEST_CHECK_LT
 #define REQUIRE_LT DOCTEST_REQUIRE_LT
-#define WARN_GTE DOCTEST_WARN_GTE
-#define CHECK_GTE DOCTEST_CHECK_GTE
-#define REQUIRE_GTE DOCTEST_REQUIRE_GTE
-#define WARN_LTE DOCTEST_WARN_LTE
-#define CHECK_LTE DOCTEST_CHECK_LTE
-#define REQUIRE_LTE DOCTEST_REQUIRE_LTE
+#define WARN_GE DOCTEST_WARN_GE
+#define CHECK_GE DOCTEST_CHECK_GE
+#define REQUIRE_GE DOCTEST_REQUIRE_GE
+#define WARN_LE DOCTEST_WARN_LE
+#define CHECK_LE DOCTEST_CHECK_LE
+#define REQUIRE_LE DOCTEST_REQUIRE_LE
 #define WARN_UNARY DOCTEST_WARN_UNARY
 #define CHECK_UNARY DOCTEST_CHECK_UNARY
 #define REQUIRE_UNARY DOCTEST_REQUIRE_UNARY
