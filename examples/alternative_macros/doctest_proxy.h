@@ -36,4 +36,29 @@
 #define my_then DOCTEST_THEN
 #define my_and_then DOCTEST_AND_THEN
 
+#define my_warn_eq DOCTEST_WARN_EQ
+#define my_check_eq DOCTEST_CHECK_EQ
+#define my_require_eq DOCTEST_REQUIRE_EQ
+#define my_warn_ne DOCTEST_WARN_NE
+#define my_check_ne DOCTEST_CHECK_NE
+#define my_require_ne DOCTEST_REQUIRE_NE
+#define my_warn_gt DOCTEST_WARN_GT
+#define my_check_gt DOCTEST_CHECK_GT
+#define my_require_gt DOCTEST_REQUIRE_GT
+#define my_warn_lt DOCTEST_WARN_LT
+#define my_check_lt DOCTEST_CHECK_LT
+#define my_require_lt DOCTEST_REQUIRE_LT
+#define my_warn_ge DOCTEST_WARN_GE
+#define my_check_ge DOCTEST_CHECK_GE
+#define my_require_ge DOCTEST_REQUIRE_GE
+#define my_warn_le DOCTEST_WARN_LE
+#define my_check_le DOCTEST_CHECK_LE
+#define my_require_le DOCTEST_REQUIRE_LE
+#define my_warn_unary DOCTEST_WARN_UNARY
+#define my_check_unary DOCTEST_CHECK_UNARY
+#define my_require_unary DOCTEST_REQUIRE_UNARY
+#define my_warn_unary_false DOCTEST_WARN_UNARY_FALSE
+#define my_check_unary_false DOCTEST_CHECK_UNARY_FALSE
+#define my_require_unary_false DOCTEST_REQUIRE_UNARY_FALSE
+
 #endif // MY_PROXY_MACROS
