@@ -21,10 +21,11 @@
 #pragma GCC diagnostic ignored "-Wstrict-overflow"
 #pragma GCC diagnostic ignored "-Wmissing-declarations"
 #pragma GCC diagnostic ignored "-Winline"
+#pragma GCC diagnostic ignored "-Wswitch-default"
+#pragma GCC diagnostic ignored "-Wunsafe-loop-optimizations"
 #if __GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ > 6)
 #pragma GCC diagnostic ignored "-Wzero-as-null-pointer-constant"
 #endif // > gcc 4.6
-//#pragma GCC diagnostic ignored "-Wlong-long"
 #endif // __GNUC__
 
 #ifdef _MSC_VER
@@ -1418,16 +1419,16 @@ int Context::run() {
 
     // sort the collected records
     if(p->order_by.compare("file", true) == 0) {
-        qsort(testArray.data(), testArray.size(), sizeof(TestData*), fileOrderComparator);
+        qsort(&testArray[0], testArray.size(), sizeof(TestData*), fileOrderComparator);
     } else if(p->order_by.compare("suite", true) == 0) {
-        qsort(testArray.data(), testArray.size(), sizeof(TestData*), suiteOrderComparator);
+        qsort(&testArray[0], testArray.size(), sizeof(TestData*), suiteOrderComparator);
     } else if(p->order_by.compare("name", true) == 0) {
-        qsort(testArray.data(), testArray.size(), sizeof(TestData*), nameOrderComparator);
+        qsort(&testArray[0], testArray.size(), sizeof(TestData*), nameOrderComparator);
     } else if(p->order_by.compare("rand", true) == 0) {
         srand(p->rand_seed);
 
         // random_shuffle implementation
-        const TestData** first = testArray.data();
+        const TestData** first = &testArray[0];
         for(i = testArray.size() - 1; i > 0; --i) {
             int idxToSwap = rand() % (i + 1);
 
