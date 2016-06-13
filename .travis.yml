@@ -365,5 +365,5 @@ script:
 
 #  - ccache -s
 
-after_script:
-  - cat compile_commands.json
+#after_script:
+#  - cat compile_commands.json
