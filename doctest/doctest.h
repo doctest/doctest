@@ -1542,19 +1542,13 @@ String toString(double long in) { return detail::fpToString(in, 15); }
 
 String toString(char in) {
     char buf[64];
-    if(in < ' ')
-        sprintf(buf, "%d", in);
-    else
-        sprintf(buf, "%c", in);
+    sprintf(buf, "%d", in);
     return buf;
 }
 
 String toString(char unsigned in) {
     char buf[64];
-    if(in < ' ')
-        sprintf(buf, "%ud", in);
-    else
-        sprintf(buf, "%c", in);
+    sprintf(buf, "%ud", in);
     return buf;
 }
 
@@ -2643,24 +2637,26 @@ int Context::run() {
         testArray.push_back(&(*it));
 
     // sort the collected records
-    if(p->order_by.compare("file", true) == 0) {
-        qsort(&testArray[0], testArray.size(), sizeof(TestData*), fileOrderComparator);
-    } else if(p->order_by.compare("suite", true) == 0) {
-        qsort(&testArray[0], testArray.size(), sizeof(TestData*), suiteOrderComparator);
-    } else if(p->order_by.compare("name", true) == 0) {
-        qsort(&testArray[0], testArray.size(), sizeof(TestData*), nameOrderComparator);
-    } else if(p->order_by.compare("rand", true) == 0) {
-        srand(p->rand_seed);
+    if(testArray.size() > 0) {
+        if(p->order_by.compare("file", true) == 0) {
+            qsort(&testArray[0], testArray.size(), sizeof(TestData*), fileOrderComparator);
+        } else if(p->order_by.compare("suite", true) == 0) {
+            qsort(&testArray[0], testArray.size(), sizeof(TestData*), suiteOrderComparator);
+        } else if(p->order_by.compare("name", true) == 0) {
+            qsort(&testArray[0], testArray.size(), sizeof(TestData*), nameOrderComparator);
+        } else if(p->order_by.compare("rand", true) == 0) {
+            srand(p->rand_seed);
 
-        // random_shuffle implementation
-        const TestData** first = &testArray[0];
-        for(i = testArray.size() - 1; i > 0; --i) {
-            int idxToSwap = rand() % (i + 1);
+            // random_shuffle implementation
+            const TestData** first = &testArray[0];
+            for(i = testArray.size() - 1; i > 0; --i) {
+                int idxToSwap = rand() % (i + 1);
 
-            const TestData* temp = first[i];
+                const TestData* temp = first[i];
 
-            first[i]         = first[idxToSwap];
-            first[idxToSwap] = temp;
+                first[i]         = first[idxToSwap];
+                first[idxToSwap] = temp;
+            }
         }
     }
 
