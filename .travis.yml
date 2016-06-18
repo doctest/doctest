@@ -117,7 +117,7 @@ matrix:
       compiler: gcc
       addons: &gcc5
         apt:
-          packages: ["g++-5",   "valgrind", "g++-5-multilib",   "libc6-dbg", "libc6-dbg:i386", "binutils", "build-essential"]
+          packages: ["g++-5",   "valgrind", "g++-5-multilib",   "libc6-dbg", "libc6-dbg:i386"]
           sources: ubuntu-toolchain-r-test
 
     # GCC 6
@@ -314,7 +314,12 @@ install:
 #  - export CXX="ccache ${COMPILER}"
   - export CXX="${COMPILER}"
   - ${CXX} --version
-  - ld --version
+  - |
+    if [[ "${TRAVIS_OS_NAME}" == "linux" ]]; then
+      update-alternatives --install "/usr/bin/ld" "ld" "/usr/bin/ld.gold" 20
+      update-alternatives --install "/usr/bin/ld" "ld" "/usr/bin/ld.bfd" 10
+      update-alternatives --config ld
+    fi
 #  - ccache -s
 
 script:
