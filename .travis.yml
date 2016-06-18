@@ -318,7 +318,7 @@ install:
     if [[ "${TRAVIS_OS_NAME}" == "linux" ]]; then
       export CLINKER=`which gold`
       ${CLINKER} --version
-      export CMAKE_OPTIONS=${CMAKE_OPTIONS} -DCMAKE_LINKER=${CLINKER}
+      export CMAKE_OPTIONS="${CMAKE_OPTIONS} -DCMAKE_LINKER=${CLINKER}"
     fi
 #  - ccache -s
 
