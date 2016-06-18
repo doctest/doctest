@@ -316,9 +316,9 @@ install:
   - ${CXX} --version
   - |
     if [[ "${TRAVIS_OS_NAME}" == "linux" ]]; then
-      update-alternatives --install "/usr/bin/ld" "ld" "/usr/bin/ld.gold" 20
-      update-alternatives --install "/usr/bin/ld" "ld" "/usr/bin/ld.bfd" 10
-      update-alternatives --config ld
+      export CLINKER=`which gold`
+      ${CLINKER} --version
+      export CMAKE_OPTIONS=${CMAKE_OPTIONS} -DCMAKE_LINKER=${CLINKER}
     fi
 #  - ccache -s
 
