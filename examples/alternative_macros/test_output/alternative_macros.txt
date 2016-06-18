@@ -5,3 +5,5 @@ Hello world!
 ===============================================================================
 [doctest] test cases:    1 |    1 passed |    0 failed |    0 skipped
 [doctest] assertions:    4 |    4 passed |    0 failed |
+===== right before destroying the context
+===== right before exiting main

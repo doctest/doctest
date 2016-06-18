@@ -1,4 +1,14 @@
+- gcc 6
+
+- llvm - https://github.com/boostorg/hana/commit/f08e824a34cc4e6e850fee285f3d182f95440f60
+
 - tests in a static library without the implementation there - problematic
+
+- multiple subcases per line
+
+- look at https://github.com/philsquared/Catch/issues/675
+
+- fix unary/binary assertion macros...
 
 - think about the expression decomposition static asserts
     - the static assert should use the c++11 feature if possible
