@@ -117,7 +117,7 @@ matrix:
       compiler: gcc
       addons: &gcc5
         apt:
-          packages: ["g++-5",   "valgrind", "g++-5-multilib",   "libc6-dbg", "libc6-dbg:i386"]
+          packages: ["g++-5",   "valgrind", "g++-5-multilib",   "libc6-dbg", "libc6-dbg:i386", "binutils", "build-essential"]
           sources: ubuntu-toolchain-r-test
 
     # GCC 6
@@ -311,10 +311,10 @@ before_install:
   - git submodule update --init --recursive
 
 install:
-  - ${CXX} --version
 #  - export CXX="ccache ${COMPILER}"
   - export CXX="${COMPILER}"
   - ${CXX} --version
+  - ld --version
 #  - ccache -s
 
 script:
