@@ -2831,16 +2831,7 @@ int Context::run() {
 // == THIS SUPPLIES A MAIN FUNCTION AND SHOULD BE DONE ONLY IN ONE TRANSLATION UNIT
 #if defined(DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN) && !defined(DOCTEST_MAIN_CONFIGURED)
 #define DOCTEST_MAIN_CONFIGURED
-int main(int argc, char** argv) {
-    int ret = 0;
-    {
-        ret = doctest::Context(argc, argv).run();
-        // debugging the clang 3.4 UB sanitizer output...
-        printf("===== right before destroying the context\n");
-    }
-    printf("===== right before exiting main\n");
-    return ret;
-}
+int main(int argc, char** argv) { return doctest::Context(argc, argv).run(); }
 #endif // DOCTEST_MAIN_CONFIGURED
 
 #if defined(__clang__)

@@ -39,5 +39,3 @@ main.cpp(48) FAILED!
 ===============================================================================
 [doctest] test cases:    4 |    1 passed |    3 failed |    0 skipped
 [doctest] assertions:   11 |    5 passed |    6 failed |
-===== right before destroying the context
-===== right before exiting main

@@ -12,5 +12,3 @@ with expansion:
 ===============================================================================
 [doctest] test cases:    1 |    0 passed |    1 failed |    0 skipped
 [doctest] assertions:    5 |    4 passed |    1 failed |
-===== right before destroying the context
-===== right before exiting main
