@@ -2158,9 +2158,9 @@ namespace detail
 
         DOCTEST_PRINTF_COLORED(loc, Color::LightGrey);
         DOCTEST_PRINTF_COLORED(msg, passed ? Color::BrightGreen : Color::Red);
-        DOCTEST_PRINTF_COLORED(info1, Color::Green);
+        DOCTEST_PRINTF_COLORED(info1, Color::Red);
         DOCTEST_PRINTF_COLORED(info2, Color::None);
-        DOCTEST_PRINTF_COLORED(info3, Color::Green);
+        DOCTEST_PRINTF_COLORED(info3, Color::Red);
         DOCTEST_PRINTF_COLORED("\n", Color::None);
 
         printToDebugConsole(String(loc) + msg + info1 + info2 + info3 + "\n");
@@ -2771,7 +2771,7 @@ int Context::run() {
         }
     }
 
-    DOCTEST_PRINTF_COLORED(getSeparator(), Color::Yellow);
+    DOCTEST_PRINTF_COLORED(getSeparator(), numFailed > 0 ? Color::Red : Color::Green);
     if(p->count || p->list_test_cases || p->list_test_suites) {
         DOCTEST_PRINTF_COLORED("[doctest] ", Color::Cyan);
         printf("number of tests passing the current filters: %d\n", numTestsPassingFilters);
@@ -2786,7 +2786,7 @@ int Context::run() {
         DOCTEST_PRINTF_COLORED(buff, Color::None);
         DOCTEST_SNPRINTF(buff, DOCTEST_COUNTOF(buff), "%4d passed",
                          numTestsPassingFilters - numFailed);
-        DOCTEST_PRINTF_COLORED(buff, Color::Green);
+        DOCTEST_PRINTF_COLORED(buff, numFailed > 0 ? Color::None : Color::Green);
         DOCTEST_SNPRINTF(buff, DOCTEST_COUNTOF(buff), " | ");
         DOCTEST_PRINTF_COLORED(buff, Color::None);
         DOCTEST_SNPRINTF(buff, DOCTEST_COUNTOF(buff), "%4d failed", numFailed);
@@ -2806,7 +2806,7 @@ int Context::run() {
         DOCTEST_PRINTF_COLORED(buff, Color::None);
         DOCTEST_SNPRINTF(buff, DOCTEST_COUNTOF(buff), "%4d passed",
                          p->numAssertions - p->numFailedAssertions);
-        DOCTEST_PRINTF_COLORED(buff, Color::Green);
+        DOCTEST_PRINTF_COLORED(buff, numFailed > 0 ? Color::None : Color::Green);
         DOCTEST_SNPRINTF(buff, DOCTEST_COUNTOF(buff), " | ");
         DOCTEST_PRINTF_COLORED(buff, Color::None);
         DOCTEST_SNPRINTF(buff, DOCTEST_COUNTOF(buff), "%4d failed", p->numFailedAssertions);
