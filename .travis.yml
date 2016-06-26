@@ -57,76 +57,76 @@ matrix:
     - env: TRAVIS_EMPTY_JOB_WORKAROUND=true
 
   include:
-    # coverage
-    - env: COMPILER=g++ COVERALLS_SERVICE_NAME=travis-ci
-      compiler: gcc
-      addons:
-        apt:
-          packages: ["lcov", "curl"]
-
-    # GCC 4.4
-    - env: COMPILER=g++-4.4
-      compiler: gcc
-      addons: &gcc44
-        apt:
-          packages: ["g++-4.4", "valgrind", "g++-4.4-multilib", "libc6-dbg", "libc6-dbg:i386"]
-          sources: ubuntu-toolchain-r-test
-
-    # GCC 4.5
-    - env: COMPILER=g++-4.5
-      compiler: gcc
-      addons: &gcc45
-        apt:
-          packages: ["g++-4.5", "valgrind", "g++-4.5-multilib", "libc6-dbg", "libc6-dbg:i386"]
-          sources: ubuntu-toolchain-r-test
-
-    # GCC 4.6
-    - env: COMPILER=g++-4.6
-      compiler: gcc
-      addons: &gcc46
-        apt:
-          packages: [           "valgrind", "g++-4.6-multilib", "libc6-dbg", "libc6-dbg:i386"]
-          sources: ubuntu-toolchain-r-test
-
-    # GCC 4.7
-    - env: COMPILER=g++-4.7
-      compiler: gcc
-      addons: &gcc47
-        apt:
-          packages: ["g++-4.7", "valgrind", "g++-4.7-multilib", "libc6-dbg", "libc6-dbg:i386"]
-          sources: ubuntu-toolchain-r-test
-
-    # GCC 4.8
-    - env: COMPILER=g++-4.8 HAS_ASAN_32=true HAS_ASAN_64=true
-      compiler: gcc
-      addons: &gcc48
-        apt:
-          packages: ["g++-4.8", "valgrind", "g++-4.8-multilib", "libc6-dbg", "libc6-dbg:i386"]
-          sources: ubuntu-toolchain-r-test
-
-    # GCC 4.9
-    - env: COMPILER=g++-4.9 HAS_ASAN_32=true HAS_UBSAN_32=true HAS_ASAN_64=true HAS_UBSAN_64=true
-      compiler: gcc
-      addons: &gcc49
-        apt:
-          packages: ["g++-4.9", "valgrind", "g++-4.9-multilib", "libc6-dbg", "libc6-dbg:i386"]
-          sources: ubuntu-toolchain-r-test
-
-    # GCC 5
-    - env: COMPILER=g++-5 HAS_ASAN_32=true HAS_UBSAN_32=true HAS_ASAN_64=true HAS_UBSAN_64=true SANITIZER_CXX_FLAGS=-fuse-ld=gold
-      compiler: gcc
-      addons: &gcc5
-        apt:
-          packages: ["g++-5",   "valgrind", "g++-5-multilib",   "libc6-dbg", "libc6-dbg:i386"]
-          sources: ubuntu-toolchain-r-test
-
-    # GCC 6
-    - env: COMPILER=g++-6 HAS_ASAN_32=true HAS_UBSAN_32=true HAS_ASAN_64=true HAS_UBSAN_64=true SANITIZER_CXX_FLAGS=-fuse-ld=gold
-      compiler: gcc
-      addons: &gcc6
-        apt:
-          packages: ["g++-6",   "valgrind", "g++-6-multilib",   "libc6-dbg", "libc6-dbg:i386"]
-          sources: ubuntu-toolchain-r-test
+#    # coverage
+#    - env: COMPILER=g++ COVERALLS_SERVICE_NAME=travis-ci
+#      compiler: gcc
+#      addons:
+#        apt:
+#          packages: ["lcov", "curl"]
+#
+#    # GCC 4.4
+#    - env: COMPILER=g++-4.4
+#      compiler: gcc
+#      addons: &gcc44
+#        apt:
+#          packages: ["g++-4.4", "valgrind", "g++-4.4-multilib", "libc6-dbg", "libc6-dbg:i386"]
+#          sources: ubuntu-toolchain-r-test
+#
+#    # GCC 4.5
+#    - env: COMPILER=g++-4.5
+#      compiler: gcc
+#      addons: &gcc45
+#        apt:
+#          packages: ["g++-4.5", "valgrind", "g++-4.5-multilib", "libc6-dbg", "libc6-dbg:i386"]
+#          sources: ubuntu-toolchain-r-test
+#
+#    # GCC 4.6
+#    - env: COMPILER=g++-4.6
+#      compiler: gcc
+#      addons: &gcc46
+#        apt:
+#          packages: [           "valgrind", "g++-4.6-multilib", "libc6-dbg", "libc6-dbg:i386"]
+#          sources: ubuntu-toolchain-r-test
+#
+#    # GCC 4.7
+#    - env: COMPILER=g++-4.7
+#      compiler: gcc
+#      addons: &gcc47
+#        apt:
+#          packages: ["g++-4.7", "valgrind", "g++-4.7-multilib", "libc6-dbg", "libc6-dbg:i386"]
+#          sources: ubuntu-toolchain-r-test
+#
+#    # GCC 4.8
+#    - env: COMPILER=g++-4.8 HAS_ASAN_32=true HAS_ASAN_64=true
+#      compiler: gcc
+#      addons: &gcc48
+#        apt:
+#          packages: ["g++-4.8", "valgrind", "g++-4.8-multilib", "libc6-dbg", "libc6-dbg:i386"]
+#          sources: ubuntu-toolchain-r-test
+#
+#    # GCC 4.9
+#    - env: COMPILER=g++-4.9 HAS_ASAN_32=true HAS_UBSAN_32=true HAS_ASAN_64=true HAS_UBSAN_64=true
+#      compiler: gcc
+#      addons: &gcc49
+#        apt:
+#          packages: ["g++-4.9", "valgrind", "g++-4.9-multilib", "libc6-dbg", "libc6-dbg:i386"]
+#          sources: ubuntu-toolchain-r-test
+#
+#    # GCC 5
+#    - env: COMPILER=g++-5 HAS_ASAN_32=true HAS_UBSAN_32=true HAS_ASAN_64=true HAS_UBSAN_64=true SANITIZER_CXX_FLAGS=-fuse-ld=gold
+#      compiler: gcc
+#      addons: &gcc5
+#        apt:
+#          packages: ["g++-5",   "valgrind", "g++-5-multilib",   "libc6-dbg", "libc6-dbg:i386"]
+#          sources: ubuntu-toolchain-r-test
+#
+#    # GCC 6
+#    - env: COMPILER=g++-6 HAS_ASAN_32=true HAS_UBSAN_32=true HAS_ASAN_64=true HAS_UBSAN_64=true SANITIZER_CXX_FLAGS=-fuse-ld=gold
+#      compiler: gcc
+#      addons: &gcc6
+#        apt:
+#          packages: ["g++-6",   "valgrind", "g++-6-multilib",   "libc6-dbg", "libc6-dbg:i386"]
+#          sources: ubuntu-toolchain-r-test
 
     # Clang 3.4
     - env: COMPILER=clang++ HAS_ASAN_64=true HAS_UBSAN_64=true
@@ -166,94 +166,94 @@ matrix:
           packages: [             "valgrind", "g++-multilib", "libc6-dbg", "libc6-dbg:i386"]
           sources: *llvm_apt_sources
 
-    # Xcode 6.1 Clang
-    - env: COMPILER=clang++
-      os: osx
-
-    # Xcode 6.2 Clang
-    - env: COMPILER=clang++
-      osx_image: beta-xcode6.2
-      os: osx
-
-    # Xcode 6.3 Clang
-    - env: COMPILER=clang++
-      osx_image: beta-xcode6.3
-      os: osx
-
-    # Xcode 6.4 Clang
-    - env: COMPILER=clang++
-      osx_image: xcode6.4
-      os: osx
-
-    # Xcode 7 Clang
-    - env: COMPILER=clang++ HAS_ASAN_32=true HAS_ASAN_64=true
-      osx_image: xcode7
-      os: osx
-
-    # Xcode 7.1 Clang
-    - env: COMPILER=clang++ HAS_ASAN_32=true HAS_ASAN_64=true
-      osx_image: xcode7.1
-      os: osx
-
-    # Xcode 7.2 Clang
-    - env: COMPILER=clang++ HAS_ASAN_32=true HAS_ASAN_64=true
-      osx_image: xcode7.2
-      os: osx
-
-    # Xcode 7.3 Clang
-    - env: COMPILER=clang++ HAS_ASAN_32=true HAS_ASAN_64=true
-      osx_image: xcode7.3
-      os: osx
-
-    # Xcode 8 Clang
-    - env: COMPILER=clang++ HAS_ASAN_32=true HAS_ASAN_64=true
-      osx_image: xcode8
-      os: osx
-
-    # OSX GCC 4.4
-    - env: COMPILER=g++-4.4
-      compiler: gcc
-      os: osx
-
-    # OSX GCC 4.5
-    - env: COMPILER=g++-4.5
-      compiler: gcc
-      os: osx
-
-    # OSX GCC 4.6
-    - env: COMPILER=g++-4.6
-      compiler: gcc
-      os: osx
-
-    # OSX GCC 4.7
-    - env: COMPILER=g++-4.7
-      compiler: gcc
-      os: osx
-
-    # OSX GCC 4.8
-    - env: COMPILER=g++-4.8 HAS_ASAN_32=true HAS_ASAN_64=true
-      compiler: gcc
-      os: osx
-
-    # OSX GCC 4.9
-    - env: COMPILER=g++-4.9 HAS_ASAN_32=true HAS_UBSAN_32=true HAS_ASAN_64=true HAS_UBSAN_64=true
-      compiler: gcc
-      os: osx
-
-    # OSX GCC 5
-    - env: COMPILER=g++-5 HAS_ASAN_32=true HAS_UBSAN_32=true HAS_ASAN_64=true HAS_UBSAN_64=true
-      compiler: gcc
-      os: osx
-
-    # OSX GCC 6
-    - env: COMPILER=g++-6 HAS_ASAN_32=true HAS_UBSAN_32=true HAS_ASAN_64=true HAS_UBSAN_64=true
-      compiler: gcc
-      os: osx
-
-    # OSX LLVM-GCC
-    - env: COMPILER=g++
-      compiler: gcc
-      os: osx
+#    # Xcode 6.1 Clang
+#    - env: COMPILER=clang++
+#      os: osx
+#
+#    # Xcode 6.2 Clang
+#    - env: COMPILER=clang++
+#      osx_image: beta-xcode6.2
+#      os: osx
+#
+#    # Xcode 6.3 Clang
+#    - env: COMPILER=clang++
+#      osx_image: beta-xcode6.3
+#      os: osx
+#
+#    # Xcode 6.4 Clang
+#    - env: COMPILER=clang++
+#      osx_image: xcode6.4
+#      os: osx
+#
+#    # Xcode 7 Clang
+#    - env: COMPILER=clang++ HAS_ASAN_32=true HAS_ASAN_64=true
+#      osx_image: xcode7
+#      os: osx
+#
+#    # Xcode 7.1 Clang
+#    - env: COMPILER=clang++ HAS_ASAN_32=true HAS_ASAN_64=true
+#      osx_image: xcode7.1
+#      os: osx
+#
+#    # Xcode 7.2 Clang
+#    - env: COMPILER=clang++ HAS_ASAN_32=true HAS_ASAN_64=true
+#      osx_image: xcode7.2
+#      os: osx
+#
+#    # Xcode 7.3 Clang
+#    - env: COMPILER=clang++ HAS_ASAN_32=true HAS_ASAN_64=true
+#      osx_image: xcode7.3
+#      os: osx
+#
+#    # Xcode 8 Clang
+#    - env: COMPILER=clang++ HAS_ASAN_32=true HAS_ASAN_64=true
+#      osx_image: xcode8
+#      os: osx
+#
+#    # OSX GCC 4.4
+#    - env: COMPILER=g++-4.4
+#      compiler: gcc
+#      os: osx
+#
+#    # OSX GCC 4.5
+#    - env: COMPILER=g++-4.5
+#      compiler: gcc
+#      os: osx
+#
+#    # OSX GCC 4.6
+#    - env: COMPILER=g++-4.6
+#      compiler: gcc
+#      os: osx
+#
+#    # OSX GCC 4.7
+#    - env: COMPILER=g++-4.7
+#      compiler: gcc
+#      os: osx
+#
+#    # OSX GCC 4.8
+#    - env: COMPILER=g++-4.8 HAS_ASAN_32=true HAS_ASAN_64=true
+#      compiler: gcc
+#      os: osx
+#
+#    # OSX GCC 4.9
+#    - env: COMPILER=g++-4.9 HAS_ASAN_32=true HAS_UBSAN_32=true HAS_ASAN_64=true HAS_UBSAN_64=true
+#      compiler: gcc
+#      os: osx
+#
+#    # OSX GCC 5
+#    - env: COMPILER=g++-5 HAS_ASAN_32=true HAS_UBSAN_32=true HAS_ASAN_64=true HAS_UBSAN_64=true
+#      compiler: gcc
+#      os: osx
+#
+#    # OSX GCC 6
+#    - env: COMPILER=g++-6 HAS_ASAN_32=true HAS_UBSAN_32=true HAS_ASAN_64=true HAS_UBSAN_64=true
+#      compiler: gcc
+#      os: osx
+#
+#    # OSX LLVM-GCC
+#    - env: COMPILER=g++
+#      compiler: gcc
+#      os: osx
 
   allow_failures:
 
@@ -308,8 +308,10 @@ install:
     fi
 #  - export CXX="ccache ${COMPILER}"
   - export CXX="${COMPILER}"
-  - ${CXX} --version
 #  - ccache -s
+
+before_script:
+  - ${CXX} --version
   - cd ${TRAVIS_BUILD_DIR}
 
 script:

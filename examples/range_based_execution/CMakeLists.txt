@@ -9,4 +9,6 @@ include_directories("../../doctest/")
 
 add_executable(${PROJECT_NAME} main.cpp)
 
-add_test(NO_VALGRIND NO_OUTPUT NAME ${PROJECT_NAME} COMMAND python ${CMAKE_CURRENT_SOURCE_DIR}/run.py $<TARGET_FILE:${PROJECT_NAME}>)
+if(NOT DEFINED ENV{TRAVIS})
+    add_test(NO_VALGRIND NO_OUTPUT NAME ${PROJECT_NAME} COMMAND python ${CMAKE_CURRENT_SOURCE_DIR}/run.py $<TARGET_FILE:${PROJECT_NAME}>)
+endif()
