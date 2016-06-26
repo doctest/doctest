@@ -140,7 +140,7 @@ matrix:
           packages: [             "valgrind", "g++-multilib", "libc6-dbg", "libc6-dbg:i386"]
 
     # Clang 3.5
-    - env: COMPILER=clang++ LLVM_VERSION=3.5.2 HAS_ASAN_64=true HAS_UBSAN_64=true HAS_ASAN_32=true HAS_UBSAN_32=true
+    - env: COMPILER=clang++ LLVM_VERSION=3.5.2 HAS_ASAN_64=true HAS_UBSAN_64=true
       addons: &clang35
         apt:
           #packages: ["clang-3.5", "valgrind", "g++-multilib", "libc6-dbg", "libc6-dbg:i386"]
@@ -148,7 +148,7 @@ matrix:
           sources: *apt_sources
 
     # Clang 3.6
-    - env: COMPILER=clang++ LLVM_VERSION=3.6.2 HAS_ASAN_64=true HAS_UBSAN_64=true HAS_ASAN_32=true HAS_UBSAN_32=true
+    - env: COMPILER=clang++ LLVM_VERSION=3.6.2 HAS_ASAN_64=true HAS_UBSAN_64=true
       addons: &clang36
         apt:
           #packages: ["clang-3.6", "valgrind", "g++-multilib", "libc6-dbg", "libc6-dbg:i386"]
@@ -156,7 +156,7 @@ matrix:
           sources: *apt_sources
 
     # Clang 3.7
-    - env: COMPILER=clang++ LLVM_VERSION=3.7.1 HAS_ASAN_64=true HAS_UBSAN_64=true HAS_ASAN_32=true HAS_UBSAN_32=true # no sanitizers - not even for 64 bit - https://llvm.org/bugs/show_bug.cgi?id=22757
+    - env: COMPILER=clang++ LLVM_VERSION=3.7.1 HAS_ASAN_64=true HAS_UBSAN_64=true # no sanitizers - not even for 64 bit - https://llvm.org/bugs/show_bug.cgi?id=22757
       addons: &clang37
         apt:
           #packages: ["clang-3.7", "valgrind", "g++-multilib", "libc6-dbg", "libc6-dbg:i386"]
@@ -164,7 +164,7 @@ matrix:
           sources: *apt_sources
 
     # Clang 3.8
-    - env: COMPILER=clang++ LLVM_VERSION=3.8.0 HAS_ASAN_64=true HAS_UBSAN_64=true HAS_ASAN_32=true HAS_UBSAN_32=true # no sanitizers - not even for 64 bit - https://llvm.org/bugs/show_bug.cgi?id=22757
+    - env: COMPILER=clang++ LLVM_VERSION=3.8.0 HAS_ASAN_64=true HAS_UBSAN_64=true # no sanitizers - not even for 64 bit - https://llvm.org/bugs/show_bug.cgi?id=22757
       addons: &clang38
         apt:
           #packages: ["clang-3.8", "valgrind", "g++-multilib", "libc6-dbg", "libc6-dbg:i386"]
@@ -281,30 +281,30 @@ install:
   ############################################################################
   # Install libc++ and libc++abi (on Linux only; Xcode uses libc++ by default)
   ############################################################################
-#  - |
-#    if [[ "${LLVM_VERSION}" != "" ]]; then
-#      if [[ "${LLVM_VERSION}" != "trunk" ]]; then
-#        LLVM_URL="http://llvm.org/releases/${LLVM_VERSION}/llvm-${LLVM_VERSION}.src.tar.xz"
-#        LIBCXX_URL="http://llvm.org/releases/${LLVM_VERSION}/libcxx-${LLVM_VERSION}.src.tar.xz"
-#        LIBCXXABI_URL="http://llvm.org/releases/${LLVM_VERSION}/libcxxabi-${LLVM_VERSION}.src.tar.xz"
-#        TAR_FLAGS="-xJ"
-#      else
-#        LLVM_URL="https://github.com/llvm-mirror/llvm/archive/master.tar.gz"
-#        LIBCXX_URL="https://github.com/llvm-mirror/libcxx/archive/master.tar.gz"
-#        LIBCXXABI_URL="https://github.com/llvm-mirror/libcxxabi/archive/master.tar.gz"
-#        TAR_FLAGS="-xz"
-#      fi
-#      mkdir -p llvm llvm/build llvm/projects/libcxx llvm/projects/libcxxabi
-#      travis_retry wget --quiet -O - ${LLVM_URL} | tar --strip-components=1 ${TAR_FLAGS} -C llvm
-#      travis_retry wget --quiet -O - ${LIBCXX_URL} | tar --strip-components=1 ${TAR_FLAGS} -C llvm/projects/libcxx
-#      travis_retry wget --quiet -O - ${LIBCXXABI_URL} | tar --strip-components=1 ${TAR_FLAGS} -C llvm/projects/libcxxabi
-#      (cd llvm/build && cmake .. -DCMAKE_INSTALL_PREFIX=${DEPS_DIR}/llvm/install -DCMAKE_CXX_COMPILER=clang++)
-#      (cd llvm/build/projects/libcxx && make install -j2)
-#      (cd llvm/build/projects/libcxxabi && make install -j2)
-#      export CXXFLAGS="-nostdinc++ -isystem ${DEPS_DIR}/llvm/install/include/c++/v1"
-#      export LDFLAGS="-L ${DEPS_DIR}/llvm/install/lib -l c++ -l c++abi"
-#      export LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:${DEPS_DIR}/llvm/install/lib"
-#    fi
+  - |
+    if [[ "${LLVM_VERSION}" != "" ]]; then
+      if [[ "${LLVM_VERSION}" != "trunk" ]]; then
+        LLVM_URL="http://llvm.org/releases/${LLVM_VERSION}/llvm-${LLVM_VERSION}.src.tar.xz"
+        LIBCXX_URL="http://llvm.org/releases/${LLVM_VERSION}/libcxx-${LLVM_VERSION}.src.tar.xz"
+        LIBCXXABI_URL="http://llvm.org/releases/${LLVM_VERSION}/libcxxabi-${LLVM_VERSION}.src.tar.xz"
+        TAR_FLAGS="-xJ"
+      else
+        LLVM_URL="https://github.com/llvm-mirror/llvm/archive/master.tar.gz"
+        LIBCXX_URL="https://github.com/llvm-mirror/libcxx/archive/master.tar.gz"
+        LIBCXXABI_URL="https://github.com/llvm-mirror/libcxxabi/archive/master.tar.gz"
+        TAR_FLAGS="-xz"
+      fi
+      mkdir -p llvm llvm/build llvm/projects/libcxx llvm/projects/libcxxabi
+      travis_retry wget --quiet -O - ${LLVM_URL} | tar --strip-components=1 ${TAR_FLAGS} -C llvm
+      travis_retry wget --quiet -O - ${LIBCXX_URL} | tar --strip-components=1 ${TAR_FLAGS} -C llvm/projects/libcxx
+      travis_retry wget --quiet -O - ${LIBCXXABI_URL} | tar --strip-components=1 ${TAR_FLAGS} -C llvm/projects/libcxxabi
+      (cd llvm/build && cmake .. -DCMAKE_INSTALL_PREFIX=${DEPS_DIR}/llvm/install -DCMAKE_CXX_COMPILER=clang++)
+      (cd llvm/build/projects/libcxx && make install -j2)
+      (cd llvm/build/projects/libcxxabi && make install -j2)
+      export CXXFLAGS="-nostdinc++ -isystem ${DEPS_DIR}/llvm/install/include/c++/v1"
+      export LDFLAGS="-L ${DEPS_DIR}/llvm/install/lib -l c++ -l c++abi"
+      export LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:${DEPS_DIR}/llvm/install/lib"
+    fi
 
   ############################################################################
   # Install GCC under OSX
