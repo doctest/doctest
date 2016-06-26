@@ -310,6 +310,7 @@ install:
   - export CXX="${COMPILER}"
   - ${CXX} --version
 #  - ccache -s
+  - cd ${TRAVIS_BUILD_DIR}
 
 script:
   # coverage - do not continue with other build configurations after that
