@@ -140,7 +140,7 @@ matrix:
           packages: [             "valgrind", "g++-multilib", "libc6-dbg", "libc6-dbg:i386"]
 
     # Clang 3.5
-    - env: COMPILER=clang++ LLVM_VERSION=3.5.2 HAS_ASAN_64=true HAS_UBSAN_64=true
+    - env: COMPILER=clang++ LLVM_VERSION=3.5.2 HAS_ASAN_64=true HAS_UBSAN_64=true HAS_ASAN_32=true HAS_UBSAN_32=true
       addons: &clang35
         apt:
           #packages: ["clang-3.5", "valgrind", "g++-multilib", "libc6-dbg", "libc6-dbg:i386"]
@@ -148,7 +148,7 @@ matrix:
           sources: *apt_sources
 
     # Clang 3.6
-    - env: COMPILER=clang++ LLVM_VERSION=3.6.2 HAS_ASAN_64=true HAS_UBSAN_64=true
+    - env: COMPILER=clang++ LLVM_VERSION=3.6.2 HAS_ASAN_64=true HAS_UBSAN_64=true HAS_ASAN_32=true HAS_UBSAN_32=true
       addons: &clang36
         apt:
           #packages: ["clang-3.6", "valgrind", "g++-multilib", "libc6-dbg", "libc6-dbg:i386"]
@@ -156,7 +156,7 @@ matrix:
           sources: *apt_sources
 
     # Clang 3.7
-    - env: COMPILER=clang++ LLVM_VERSION=3.7.1 # no sanitizers - not even for 64 bit - https://llvm.org/bugs/show_bug.cgi?id=22757
+    - env: COMPILER=clang++ LLVM_VERSION=3.7.1 HAS_ASAN_64=true HAS_UBSAN_64=true HAS_ASAN_32=true HAS_UBSAN_32=true # no sanitizers - not even for 64 bit - https://llvm.org/bugs/show_bug.cgi?id=22757
       addons: &clang37
         apt:
           #packages: ["clang-3.7", "valgrind", "g++-multilib", "libc6-dbg", "libc6-dbg:i386"]
@@ -164,7 +164,7 @@ matrix:
           sources: *apt_sources
 
     # Clang 3.8
-    - env: COMPILER=clang++ LLVM_VERSION=3.8.0 # no sanitizers - not even for 64 bit - https://llvm.org/bugs/show_bug.cgi?id=22757
+    - env: COMPILER=clang++ LLVM_VERSION=3.8.0 HAS_ASAN_64=true HAS_UBSAN_64=true HAS_ASAN_32=true HAS_UBSAN_32=true # no sanitizers - not even for 64 bit - https://llvm.org/bugs/show_bug.cgi?id=22757
       addons: &clang38
         apt:
           #packages: ["clang-3.8", "valgrind", "g++-multilib", "libc6-dbg", "libc6-dbg:i386"]
@@ -278,9 +278,9 @@ install:
       mkdir clang && travis_retry wget --quiet -O - ${CLANG_URL} | tar --strip-components=1 -xJ -C clang
       export PATH="${DEPS_DIR}/clang/bin:${PATH}"
     fi
-#  ############################################################################
-#  # Install libc++ and libc++abi (on Linux only; Xcode uses libc++ by default)
-#  ############################################################################
+  ############################################################################
+  # Install libc++ and libc++abi (on Linux only; Xcode uses libc++ by default)
+  ############################################################################
 #  - |
 #    if [[ "${LLVM_VERSION}" != "" ]]; then
 #      if [[ "${LLVM_VERSION}" != "trunk" ]]; then
