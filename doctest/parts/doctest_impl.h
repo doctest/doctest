@@ -225,7 +225,7 @@ namespace detail
     };
 
     ContextState*& getContextState();
-#endif
+#endif // DOCTEST_CONFIG_DISABLE
 } // namespace detail
 
 String::String(const char* in) {

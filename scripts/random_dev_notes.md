@@ -1,6 +1,8 @@
-- gcc 6
-
 - llvm - https://github.com/boostorg/hana/commit/f08e824a34cc4e6e850fee285f3d182f95440f60
+
+- nullptr trouble
+
+- color::none after doctest
 
 - tests in a static library without the implementation there - problematic
 

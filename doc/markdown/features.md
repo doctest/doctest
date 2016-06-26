@@ -20,7 +20,7 @@
 ## Extremely portable:
 
 - Standards compliant **C++98** code - should work with any **C++98** compiler
-- tested with **GCC**: **4.4**, **4.5**, **4.6**, **4.7**, **4.8**, **4.9**, **5.0**
+- tested with **GCC**: **4.4**, **4.5**, **4.6**, **4.7**, **4.8**, **4.9**, **5**, **6**
 - tested with **Clang**: **3.4**, **3.5**, **3.6**, **3.7**, **3.8**
 - tested with **MSVC**: **2008**, **2010**, **2012**, **2013**, **2015** (and even **VC++6** - that **18 year old compiler** from 1998!)
 - per-commit tested on **travis** and **appveyor** CI services
