@@ -44,13 +44,15 @@ addons:
     branch_pattern: coverity_scan
   # these apt sources will be referenced later (by using *name)
   apt:
+    packages:
+      - g++-6
     sources: &apt_sources
       - ubuntu-toolchain-r-test
-      - llvm-toolchain-precise-3.5
-      - llvm-toolchain-precise-3.6
-      - llvm-toolchain-precise-3.7
-      - llvm-toolchain-precise-3.8
-      - llvm-toolchain-precise
+      #- llvm-toolchain-precise-3.5
+      #- llvm-toolchain-precise-3.6
+      #- llvm-toolchain-precise-3.7
+      #- llvm-toolchain-precise-3.8
+      #- llvm-toolchain-precise
 
 compiler: clang
 os: linux
@@ -132,37 +134,42 @@ matrix:
 #          sources: *apt_sources
 
     # Clang 3.4
-    - env: COMPILER=clang++ HAS_ASAN_64=true HAS_UBSAN_64=true WITH_LIBCXX=true
+    - env: COMPILER=clang++ LLVM_VERSION=3.4.2 HAS_ASAN_64=true HAS_UBSAN_64=true
       addons: &clang
         apt:
           packages: [             "valgrind", "g++-multilib", "libc6-dbg", "libc6-dbg:i386"]
+          sources: *apt_sources
 
     # Clang 3.5
-    - env: COMPILER=clang++-3.5 HAS_ASAN_64=true HAS_UBSAN_64=true WITH_LIBCXX=true
+    - env: COMPILER=clang++ LLVM_VERSION=3.5.2 HAS_ASAN_64=true HAS_UBSAN_64=true
       addons: &clang35
         apt:
-          packages: ["clang-3.5", "valgrind", "g++-multilib", "libc6-dbg", "libc6-dbg:i386"]
+          #packages: ["clang-3.5", "valgrind", "g++-multilib", "libc6-dbg", "libc6-dbg:i386"]
+          packages: [             "valgrind", "g++-multilib", "libc6-dbg", "libc6-dbg:i386"]
           sources: *apt_sources
 
     # Clang 3.6
-    - env: COMPILER=clang++-3.6 HAS_ASAN_64=true HAS_UBSAN_64=true WITH_LIBCXX=true
+    - env: COMPILER=clang++ LLVM_VERSION=3.6.2 HAS_ASAN_64=true HAS_UBSAN_64=true
       addons: &clang36
         apt:
-          packages: ["clang-3.6", "valgrind", "g++-multilib", "libc6-dbg", "libc6-dbg:i386"]
+          #packages: ["clang-3.6", "valgrind", "g++-multilib", "libc6-dbg", "libc6-dbg:i386"]
+          packages: [             "valgrind", "g++-multilib", "libc6-dbg", "libc6-dbg:i386"]
           sources: *apt_sources
 
     # Clang 3.7
-    - env: COMPILER=clang++-3.7 # no sanitizers even for 64 bit - (this bug is for 3.8...) https://llvm.org/bugs/show_bug.cgi?id=22757
+    - env: COMPILER=clang++ LLVM_VERSION=3.7.1 HAS_ASAN_64=true HAS_UBSAN_64=true
       addons: &clang37
         apt:
-          packages: ["clang-3.7", "valgrind", "g++-multilib", "libc6-dbg", "libc6-dbg:i386"]
+          #packages: ["clang-3.7", "valgrind", "g++-multilib", "libc6-dbg", "libc6-dbg:i386"]
+          packages: [             "valgrind", "g++-multilib", "libc6-dbg", "libc6-dbg:i386"]
           sources: *apt_sources
 
     # Clang 3.8
-    - env: COMPILER=clang++-3.8 HAS_ASAN_64=true HAS_UBSAN_64=true WITH_LIBCXX=true
+    - env: COMPILER=clang++ LLVM_VERSION=3.8.0 HAS_ASAN_64=true HAS_UBSAN_64=true
       addons: &clang38
         apt:
-          packages: ["clang-3.8", "valgrind", "g++-multilib", "libc6-dbg", "libc6-dbg:i386"]
+          #packages: ["clang-3.8", "valgrind", "g++-multilib", "libc6-dbg", "libc6-dbg:i386"]
+          packages: [             "valgrind", "g++-multilib", "libc6-dbg", "libc6-dbg:i386"]
           sources: *apt_sources
 
 #    # Xcode 6.1 Clang
@@ -260,24 +267,39 @@ before_install:
   - git submodule update --init --recursive
 
 install:
+  ############################################################################
+  # All the dependencies are installed in ${TRAVIS_BUILD_DIR}/deps/
+  ############################################################################
+  - DEPS_DIR="${TRAVIS_BUILD_DIR}/deps"
+  - mkdir -p ${DEPS_DIR} && cd ${DEPS_DIR}
+  ############################################################################
+  # Install Clang, libc++ and libc++abi
+  ############################################################################
+  - LLVM_DIR=${DEPS_DIR}/llvm-${LLVM_VERSION}
   - |
-    if [[ "${WITH_LIBCXX}" == "true" ]]; then
-      set -v
-      cwd=$(pwd)
-      svn co --quiet http://llvm.org/svn/llvm-project/llvm/trunk llvm
-      cd llvm/projects
-      svn co --quiet http://llvm.org/svn/llvm-project/libcxx/trunk libcxx
-      svn co --quiet http://llvm.org/svn/llvm-project/libcxxabi/trunk libcxxabi
-      cd ../
-      mkdir build
-      cd build
-      cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=$HOME ../
-      make cxx
-      make install-libcxx install-libcxxabi
-      cd $cwd
-      set +v
-      export ADDITIONAL_CXX_FLAGS="${ADDITIONAL_CXX_FLAGS} -stdlib=libc++"
+    if [[ "${LLVM_VERSION}" != "" ]]; then
+      if [[ -z "$(ls -A ${LLVM_DIR})" ]]; then
+        LLVM_URL="http://llvm.org/releases/${LLVM_VERSION}/llvm-${LLVM_VERSION}.src.tar.xz"
+        LIBCXX_URL="http://llvm.org/releases/${LLVM_VERSION}/libcxx-${LLVM_VERSION}.src.tar.xz"
+        LIBCXXABI_URL="http://llvm.org/releases/${LLVM_VERSION}/libcxxabi-${LLVM_VERSION}.src.tar.xz"
+        CLANG_URL="http://llvm.org/releases/${LLVM_VERSION}/clang+llvm-${LLVM_VERSION}-x86_64-linux-gnu-ubuntu-14.04.tar.xz"
+        mkdir -p ${LLVM_DIR} ${LLVM_DIR}/build ${LLVM_DIR}/projects/libcxx ${LLVM_DIR}/projects/libcxxabi ${LLVM_DIR}/clang
+        travis_retry wget --quiet -O - ${LLVM_URL}      | tar --strip-components=1 -xJ -C ${LLVM_DIR}
+        travis_retry wget --quiet -O - ${LIBCXX_URL}    | tar --strip-components=1 -xJ -C ${LLVM_DIR}/projects/libcxx
+        travis_retry wget --quiet -O - ${LIBCXXABI_URL} | tar --strip-components=1 -xJ -C ${LLVM_DIR}/projects/libcxxabi
+        travis_retry wget --quiet -O - ${CLANG_URL}     | tar --strip-components=1 -xJ -C ${LLVM_DIR}/clang
+        (cd ${LLVM_DIR}/build && cmake .. -DCMAKE_INSTALL_PREFIX=${LLVM_DIR}/install -DCMAKE_CXX_COMPILER=clang++)
+        (cd ${LLVM_DIR}/build/projects/libcxx && make install -j2)
+        (cd ${LLVM_DIR}/build/projects/libcxxabi && make install -j2)
+      fi
+      export CXXFLAGS="-nostdinc++ -isystem ${LLVM_DIR}/install/include/c++/v1"
+      export LDFLAGS="-L ${LLVM_DIR}/install/lib -l c++ -l c++abi"
+      export LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:${LLVM_DIR}/install/lib"
+      export PATH="${LLVM_DIR}/clang/bin:${PATH}"
     fi
+  ############################################################################
+  # Install stuff with homebrew under OSX
+  ############################################################################
   - |
     if [[ "${TRAVIS_OS_NAME}" == "osx" ]]; then
       brew update
@@ -315,13 +337,11 @@ install:
         brew install gcc6
       fi
     fi
-  - |
-    if [[ "${TRAVIS_OS_NAME}" == "linux" ]]; then
-      export ADDITIONAL_CXX_FLAGS="${ADDITIONAL_CXX_FLAGS} -fuse-ld=gold"
-    fi
+  - if [[ "${TRAVIS_OS_NAME}" == "linux" ]]; then export ADDITIONAL_CXX_FLAGS="${ADDITIONAL_CXX_FLAGS} -fuse-ld=gold" ; fi
 #  - export CXX="ccache ${COMPILER}"
   - export CXX="${COMPILER}"
 #  - ccache -s
+  - cd ${TRAVIS_BUILD_DIR}
 
 before_script:
   - ${CXX} --version
