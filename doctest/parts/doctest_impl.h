@@ -719,7 +719,7 @@ namespace detail
             switch(code) {
                 case Color::Red:         col = "[0;31m"; break;
                 case Color::Green:       col = "[0;32m"; break;
-                case Color::Blue:        col = "[0:34m"; break;
+                case Color::Blue:        col = "[0;34m"; break;
                 case Color::Cyan:        col = "[0;36m"; break;
                 case Color::Yellow:      col = "[0;33m"; break;
                 case Color::Grey:        col = "[1;30m"; break;
