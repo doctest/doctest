@@ -356,7 +356,7 @@ script:
     fi
 
   # initial run with options
-  - cmake ${CMAKE_OPTIONS_GLOBAL} ${CMAKE_OPTIONS} .
+  - cmake ${CMAKE_OPTIONS_GLOBAL} ${CMAKE_OPTIONS} -DCMAKE_CXX_COMPILER=${CXX} .
 
   # debug x64
   - cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_FLAGS="${ADDITIONAL_CXX_FLAGS} -m64" .
