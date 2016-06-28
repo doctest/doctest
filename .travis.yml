@@ -44,9 +44,6 @@ addons:
     branch_pattern: coverity_scan
   # these apt sources will be referenced later (by using *name)
   apt:
-    packages:
-      - libc++-dev
-      - libc++abi-dev
     sources: &apt_sources
       - ubuntu-toolchain-r-test
       - llvm-toolchain-precise-3.5
@@ -138,34 +135,34 @@ matrix:
     - env: COMPILER=clang++ HAS_ASAN_64=true HAS_UBSAN_64=true ADDITIONAL_CXX_FLAGS=-stdlib=libc++
       addons: &clang
         apt:
-          packages: [             "valgrind", "g++-multilib", "libc6-dbg", "libc6-dbg:i386"]
+          packages: [             "valgrind", "g++-multilib", "libc6-dbg", "libc6-dbg:i386", "libc++-dev", "libc++abi-dev"]
 
     # Clang 3.5
     - env: COMPILER=clang++-3.5 HAS_ASAN_64=true HAS_UBSAN_64=true ADDITIONAL_CXX_FLAGS=-stdlib=libc++
       addons: &clang35
         apt:
-          packages: ["clang-3.5", "valgrind", "g++-multilib", "libc6-dbg", "libc6-dbg:i386"]
+          packages: ["clang-3.5", "valgrind", "g++-multilib", "libc6-dbg", "libc6-dbg:i386", "libc++-dev", "libc++abi-dev"]
           sources: *apt_sources
 
     # Clang 3.6
     - env: COMPILER=clang++-3.6 HAS_ASAN_64=true HAS_UBSAN_64=true ADDITIONAL_CXX_FLAGS=-stdlib=libc++
       addons: &clang36
         apt:
-          packages: ["clang-3.6", "valgrind", "g++-multilib", "libc6-dbg", "libc6-dbg:i386"]
+          packages: ["clang-3.6", "valgrind", "g++-multilib", "libc6-dbg", "libc6-dbg:i386", "libc++-dev", "libc++abi-dev"]
           sources: *apt_sources
 
     # Clang 3.7
     - env: COMPILER=clang++-3.7 # no sanitizers even for 64 bit - (this bug is for 3.8...) https://llvm.org/bugs/show_bug.cgi?id=22757
       addons: &clang37
         apt:
-          packages: ["clang-3.7", "valgrind", "g++-multilib", "libc6-dbg", "libc6-dbg:i386"]
+          packages: ["clang-3.7", "valgrind", "g++-multilib", "libc6-dbg", "libc6-dbg:i386", "libc++-dev", "libc++abi-dev"]
           sources: *apt_sources
 
     # Clang 3.8
     - env: COMPILER=clang++-3.8 HAS_ASAN_64=true HAS_UBSAN_64=true ADDITIONAL_CXX_FLAGS=-stdlib=libc++
       addons: &clang38
         apt:
-          packages: ["clang-3.8", "valgrind", "g++-multilib", "libc6-dbg", "libc6-dbg:i386"]
+          packages: ["clang-3.8", "valgrind", "g++-multilib", "libc6-dbg", "libc6-dbg:i386", "libc++-dev", "libc++abi-dev"]
           sources: *apt_sources
 
 #    # Xcode 6.1 Clang
