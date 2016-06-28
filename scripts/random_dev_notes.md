@@ -1,6 +1,12 @@
+#define DYNAMIX_VERSION (DYNAMIX_VERSION_MAJOR*10000 + DYNAMIX_VERSION_MINOR*100 + DYNAMIX_VERSION_SUB_MINOR)
+
 - llvm - https://github.com/boostorg/hana/commit/f08e824a34cc4e6e850fee285f3d182f95440f60
 
 - nullptr trouble
+
+- add underscores to all preprocessor identifiers not intended for use by the user
+
+- users.md - projects that use doctest
 
 - color::none after doctest
 
