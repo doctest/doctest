@@ -275,9 +275,10 @@ install:
   ############################################################################
   # Install Clang, libc++ and libc++abi
   ############################################################################
-  - LLVM_DIR=${DEPS_DIR}/llvm-${LLVM_VERSION}
   - |
     if [[ "${LLVM_VERSION}" != "" ]]; then
+      LLVM_DIR=${DEPS_DIR}/llvm-${LLVM_VERSION}
+      mkdir -p ${LLVM_DIR}
       if [[ -z "$(ls -A ${LLVM_DIR})" ]]; then
         LLVM_URL="http://llvm.org/releases/${LLVM_VERSION}/llvm-${LLVM_VERSION}.src.tar.xz"
         LIBCXX_URL="http://llvm.org/releases/${LLVM_VERSION}/libcxx-${LLVM_VERSION}.src.tar.xz"
