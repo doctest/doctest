@@ -44,8 +44,11 @@ addons:
     branch_pattern: coverity_scan
   # these apt sources will be referenced later (by using *name)
   apt:
-    packages:
+    packages: &apt_packages
       - g++-6
+      - valgrind
+      - libc6-dbg
+      - libc6-dbg:i386
     sources: &apt_sources
       - ubuntu-toolchain-r-test
       #- llvm-toolchain-precise-3.5
@@ -137,7 +140,8 @@ matrix:
     - env: COMPILER=clang++ LLVM_VERSION=3.4.2 HAS_ASAN_64=true HAS_UBSAN_64=true
       addons: &clang
         apt:
-          packages: [             "valgrind", "g++-multilib", "libc6-dbg", "libc6-dbg:i386"]
+          packages: *apt_packages
+            - g++-multilib
           sources: *apt_sources
 
     # Clang 3.5
@@ -145,7 +149,9 @@ matrix:
       addons: &clang35
         apt:
           #packages: ["clang-3.5", "valgrind", "g++-multilib", "libc6-dbg", "libc6-dbg:i386"]
-          packages: [             "valgrind", "g++-multilib", "libc6-dbg", "libc6-dbg:i386"]
+          #packages: [             "valgrind", "g++-multilib", "libc6-dbg", "libc6-dbg:i386"]
+          packages: *apt_packages
+            - g++-multilib
           sources: *apt_sources
 
     # Clang 3.6
@@ -153,7 +159,9 @@ matrix:
       addons: &clang36
         apt:
           #packages: ["clang-3.6", "valgrind", "g++-multilib", "libc6-dbg", "libc6-dbg:i386"]
-          packages: [             "valgrind", "g++-multilib", "libc6-dbg", "libc6-dbg:i386"]
+          #packages: [             "valgrind", "g++-multilib", "libc6-dbg", "libc6-dbg:i386"]
+          packages: *apt_packages
+            - g++-multilib
           sources: *apt_sources
 
     # Clang 3.7
@@ -161,7 +169,9 @@ matrix:
       addons: &clang37
         apt:
           #packages: ["clang-3.7", "valgrind", "g++-multilib", "libc6-dbg", "libc6-dbg:i386"]
-          packages: [             "valgrind", "g++-multilib", "libc6-dbg", "libc6-dbg:i386"]
+          #packages: [             "valgrind", "g++-multilib", "libc6-dbg", "libc6-dbg:i386"]
+          packages: *apt_packages
+            - g++-multilib
           sources: *apt_sources
 
     # Clang 3.8
@@ -169,7 +179,9 @@ matrix:
       addons: &clang38
         apt:
           #packages: ["clang-3.8", "valgrind", "g++-multilib", "libc6-dbg", "libc6-dbg:i386"]
-          packages: [             "valgrind", "g++-multilib", "libc6-dbg", "libc6-dbg:i386"]
+          #packages: [             "valgrind", "g++-multilib", "libc6-dbg", "libc6-dbg:i386"]
+          packages: *apt_packages
+            - g++-multilib
           sources: *apt_sources
 
 #    # Xcode 6.1 Clang
