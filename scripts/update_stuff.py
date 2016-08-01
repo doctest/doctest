@@ -26,8 +26,8 @@ for line in fileinput.input(["../doctest/parts/doctest_fwd.h"]):
         doctest_contents += "#define DOCTEST_VERSION_MINOR " + version_minor + "\n"
     elif line.startswith("#define DOCTEST_VERSION_PATCH "):
         doctest_contents += "#define DOCTEST_VERSION_PATCH " + version_patch + "\n"
-    elif line.startswith("#define DOCTEST_VERSION "):
-        doctest_contents += "#define DOCTEST_VERSION \"" + version + "\"\n"
+    elif line.startswith("#define DOCTEST_VERSION_STR "):
+        doctest_contents += "#define DOCTEST_VERSION_STR \"" + version + "\"\n"
     else:
         doctest_contents += line
 

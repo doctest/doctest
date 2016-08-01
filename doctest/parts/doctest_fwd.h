@@ -87,7 +87,10 @@
 #define DOCTEST_VERSION_MAJOR 1
 #define DOCTEST_VERSION_MINOR 0
 #define DOCTEST_VERSION_PATCH 0
-#define DOCTEST_VERSION "1.0.0"
+#define DOCTEST_VERSION_STR "1.0.0"
+
+#define DOCTEST_VERSION                                                                            \
+    (DOCTEST_VERSION_MAJOR * 10000 + DOCTEST_VERSION_MINOR * 100 + DOCTEST_VERSION_PATCH)
 
 // internal macros for string concatenation and anonymous variable name generation
 #define DOCTEST_CONCAT_IMPL(s1, s2) s1##s2
@@ -170,6 +173,37 @@ typedef basic_ostream<char, char_traits<char> > ostream;
 #define DOCTEST_CONFIG_WITH_LONG_LONG
 #endif // __cplusplus / _MSC_VER
 #endif // DOCTEST_CONFIG_WITH_LONG_LONG
+
+#if __cplusplus >= 201103L
+#define DOCTEST_CONFIG_WITH_NULLPTR
+#endif // __cplusplus >= 201103L
+
+#ifdef __clang__
+#if __has_feature(cxx_nullptr)
+#define DOCTEST_CONFIG_WITH_NULLPTR
+#endif // __has_feature(cxx_nullptr)
+#endif // __clang__
+
+#if defined(__GNUC__) && __GNUC__ == 4 && __GNUC_MINOR__ >= 6 && defined(__GXX_EXPERIMENTAL_CXX0X__)
+#define DOCTEST_CONFIG_WITH_NULLPTR
+#endif // __GNUC__
+
+#if defined(_MSC_VER) && (_MSC_VER >= 1600) // MSVC 2010
+#define DOCTEST_CONFIG_WITH_NULLPTR
+#endif // _MSC_VER
+
+#if defined(DOCTEST_CONFIG_NO_NULLPTR) && defined(DOCTEST_CONFIG_WITH_NULLPTR)
+#undef DOCTEST_CONFIG_WITH_NULLPTR
+#endif // DOCTEST_CONFIG_NO_NULLPTR
+
+#ifdef DOCTEST_CONFIG_WITH_NULLPTR
+#ifdef __clang__
+#include <cstddef>
+#else  // __clang__
+namespace std
+{ typedef decltype(nullptr) nullptr_t; }
+#endif // __clang__
+#endif // DOCTEST_CONFIG_WITH_NULLPTR
 
 namespace doctest
 {
@@ -361,6 +395,10 @@ String toString(int long unsigned in);
 String toString(int long long in);
 String toString(int long long unsigned in);
 #endif // DOCTEST_CONFIG_WITH_LONG_LONG
+
+#ifdef DOCTEST_CONFIG_WITH_NULLPTR
+String toString(std::nullptr_t in);
+#endif // DOCTEST_CONFIG_WITH_NULLPTR
 
 class Approx
 {

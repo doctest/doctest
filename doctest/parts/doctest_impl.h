@@ -376,6 +376,10 @@ String toString(int long long unsigned in) {
 }
 #endif // DOCTEST_CONFIG_WITH_LONG_LONG
 
+#ifdef DOCTEST_CONFIG_WITH_NULLPTR
+String toString(std::nullptr_t) { return "nullptr"; }
+#endif // DOCTEST_CONFIG_WITH_NULLPTR
+
 } // namespace doctest
 
 #if defined(DOCTEST_CONFIG_DISABLE)
@@ -1194,7 +1198,7 @@ namespace detail
 
     void printVersion() {
         DOCTEST_PRINTF_COLORED("[doctest] ", Color::Cyan);
-        printf("doctest version is \"%s\"\n", DOCTEST_VERSION);
+        printf("doctest version is \"%s\"\n", DOCTEST_VERSION_STR);
     }
 
     void printHelp() {

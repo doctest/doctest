@@ -60,204 +60,204 @@ matrix:
     - env: TRAVIS_EMPTY_JOB_WORKAROUND=true
 
   include:
-#    # coverage
-#    - env: COMPILER=g++ COVERALLS_SERVICE_NAME=travis-ci
-#      compiler: gcc
-#      addons:
-#        apt:
-#          packages: ["lcov", "curl"]
-#
-#    # GCC 4.4
-#    - env: COMPILER=g++-4.4
-#      compiler: gcc
-#      addons: &gcc44
-#        apt:
-#          packages: ["g++-4.4", "valgrind", "g++-4.4-multilib", "libc6-dbg", "libc6-dbg:i386"]
-#          sources: *apt_sources
-#
-#    # GCC 4.5
-#    - env: COMPILER=g++-4.5
-#      compiler: gcc
-#      addons: &gcc45
-#        apt:
-#          packages: ["g++-4.5", "valgrind", "g++-4.5-multilib", "libc6-dbg", "libc6-dbg:i386"]
-#          sources: *apt_sources
-#
-#    # GCC 4.6
-#    - env: COMPILER=g++-4.6
-#      compiler: gcc
-#      addons: &gcc46
-#        apt:
-#          packages: [           "valgrind", "g++-4.6-multilib", "libc6-dbg", "libc6-dbg:i386"]
-#          sources: *apt_sources
-#
-#    # GCC 4.7
-#    - env: COMPILER=g++-4.7
-#      compiler: gcc
-#      addons: &gcc47
-#        apt:
-#          packages: ["g++-4.7", "valgrind", "g++-4.7-multilib", "libc6-dbg", "libc6-dbg:i386"]
-#          sources: *apt_sources
-#
-#    # GCC 4.8
-#    - env: COMPILER=g++-4.8 HAS_ASAN_32=true HAS_ASAN_64=true
-#      compiler: gcc
-#      addons: &gcc48
-#        apt:
-#          packages: ["g++-4.8", "valgrind", "g++-4.8-multilib", "libc6-dbg", "libc6-dbg:i386"]
-#          sources: *apt_sources
-#
-#    # GCC 4.9
-#    - env: COMPILER=g++-4.9 HAS_ASAN_32=true HAS_UBSAN_32=true HAS_ASAN_64=true HAS_UBSAN_64=true
-#      compiler: gcc
-#      addons: &gcc49
-#        apt:
-#          packages: ["g++-4.9", "valgrind", "g++-4.9-multilib", "libc6-dbg", "libc6-dbg:i386"]
-#          sources: *apt_sources
-#
-#    # GCC 5
-#    - env: COMPILER=g++-5 HAS_ASAN_32=true HAS_UBSAN_32=true HAS_ASAN_64=true HAS_UBSAN_64=true
-#      compiler: gcc
-#      addons: &gcc5
-#        apt:
-#          packages: ["g++-5",   "valgrind", "g++-5-multilib",   "libc6-dbg", "libc6-dbg:i386"]
-#          sources: *apt_sources
-#
-#    # GCC 6
-#    - env: COMPILER=g++-6 HAS_ASAN_32=true HAS_UBSAN_32=true HAS_ASAN_64=true HAS_UBSAN_64=true
-#      compiler: gcc
-#      addons: &gcc6
-#        apt:
-#          packages: ["g++-6",   "valgrind", "g++-6-multilib",   "libc6-dbg", "libc6-dbg:i386"]
-#          sources: *apt_sources
+    # coverage
+    - env: COMPILER=g++ COVERALLS_SERVICE_NAME=travis-ci
+      compiler: gcc
+      addons:
+        apt:
+          packages: ["lcov", "curl"]
+
+    # GCC 4.4
+    - env: COMPILER=g++-4.4
+      compiler: gcc
+      addons: &gcc44
+        apt:
+          packages: ["g++-4.4", "valgrind", "g++-4.4-multilib", "libc6-dbg", "libc6-dbg:i386"]
+          sources: *apt_sources
+
+    # GCC 4.5
+    - env: COMPILER=g++-4.5
+      compiler: gcc
+      addons: &gcc45
+        apt:
+          packages: ["g++-4.5", "valgrind", "g++-4.5-multilib", "libc6-dbg", "libc6-dbg:i386"]
+          sources: *apt_sources
+
+    # GCC 4.6
+    - env: COMPILER=g++-4.6
+      compiler: gcc
+      addons: &gcc46
+        apt:
+          packages: [           "valgrind", "g++-4.6-multilib", "libc6-dbg", "libc6-dbg:i386"]
+          sources: *apt_sources
+
+    # GCC 4.7
+    - env: COMPILER=g++-4.7
+      compiler: gcc
+      addons: &gcc47
+        apt:
+          packages: ["g++-4.7", "valgrind", "g++-4.7-multilib", "libc6-dbg", "libc6-dbg:i386"]
+          sources: *apt_sources
+
+    # GCC 4.8
+    - env: COMPILER=g++-4.8 HAS_ASAN_32=true HAS_ASAN_64=true
+      compiler: gcc
+      addons: &gcc48
+        apt:
+          packages: ["g++-4.8", "valgrind", "g++-4.8-multilib", "libc6-dbg", "libc6-dbg:i386"]
+          sources: *apt_sources
+
+    # GCC 4.9
+    - env: COMPILER=g++-4.9 HAS_ASAN_32=true HAS_UBSAN_32=true HAS_ASAN_64=true HAS_UBSAN_64=true
+      compiler: gcc
+      addons: &gcc49
+        apt:
+          packages: ["g++-4.9", "valgrind", "g++-4.9-multilib", "libc6-dbg", "libc6-dbg:i386"]
+          sources: *apt_sources
+
+    # GCC 5
+    - env: COMPILER=g++-5 HAS_ASAN_32=true HAS_UBSAN_32=true HAS_ASAN_64=true HAS_UBSAN_64=true
+      compiler: gcc
+      addons: &gcc5
+        apt:
+          packages: ["g++-5",   "valgrind", "g++-5-multilib",   "libc6-dbg", "libc6-dbg:i386"]
+          sources: *apt_sources
+
+    # GCC 6
+    - env: COMPILER=g++-6 HAS_ASAN_32=true HAS_UBSAN_32=true HAS_ASAN_64=true HAS_UBSAN_64=true
+      compiler: gcc
+      addons: &gcc6
+        apt:
+          packages: ["g++-6",   "valgrind", "g++-6-multilib",   "libc6-dbg", "libc6-dbg:i386"]
+          sources: *apt_sources
 
     # Clang 3.4
-    - env: COMPILER=clang++ LLVM_VERSION=3.4.2 HAS_ASAN_64=true HAS_UBSAN_64=true
+    - env: COMPILER=clang++-3.4 LLVM_VERSION=3.4.2 HAS_ASAN_64=true HAS_UBSAN_64=true
       addons: &clang
         apt:
           packages: [             "valgrind", "g++-multilib", "libc6-dbg", "libc6-dbg:i386", "g++-6"]
           sources: *apt_sources
 
     # Clang 3.5
-    - env: COMPILER=clang++ LLVM_VERSION=3.5.2 HAS_ASAN_64=true HAS_UBSAN_64=true
+    - env: COMPILER=clang++-3.5 LLVM_VERSION=3.5.2 HAS_ASAN_64=true HAS_UBSAN_64=true
       addons: &clang35
         apt:
-          #packages: ["clang-3.5", "valgrind", "g++-multilib", "libc6-dbg", "libc6-dbg:i386"]
-          packages: [             "valgrind", "g++-multilib", "libc6-dbg", "libc6-dbg:i386", "g++-6"]
+          packages: ["clang-3.5", "valgrind", "g++-multilib", "libc6-dbg", "libc6-dbg:i386", "g++-6"]
+          #packages: [             "valgrind", "g++-multilib", "libc6-dbg", "libc6-dbg:i386", "g++-6"]
           sources: *apt_sources
 
     # Clang 3.6
-    - env: COMPILER=clang++ LLVM_VERSION=3.6.2 HAS_ASAN_64=true HAS_UBSAN_64=true
+    - env: COMPILER=clang++-3.6 LLVM_VERSION=3.6.2 HAS_ASAN_64=true HAS_UBSAN_64=true
       addons: &clang36
         apt:
-          #packages: ["clang-3.6", "valgrind", "g++-multilib", "libc6-dbg", "libc6-dbg:i386"]
-          packages: [             "valgrind", "g++-multilib", "libc6-dbg", "libc6-dbg:i386", "g++-6"]
+          packages: ["clang-3.6", "valgrind", "g++-multilib", "libc6-dbg", "libc6-dbg:i386", "g++-6"]
+          #packages: [             "valgrind", "g++-multilib", "libc6-dbg", "libc6-dbg:i386", "g++-6"]
           sources: *apt_sources
 
     # Clang 3.7
-    - env: COMPILER=clang++ LLVM_VERSION=3.7.1 HAS_ASAN_64=true HAS_UBSAN_64=true
+    - env: COMPILER=clang++-3.7 LLVM_VERSION=3.7.1 HAS_ASAN_64=true HAS_UBSAN_64=true
       addons: &clang37
         apt:
-          #packages: ["clang-3.7", "valgrind", "g++-multilib", "libc6-dbg", "libc6-dbg:i386"]
-          packages: [             "valgrind", "g++-multilib", "libc6-dbg", "libc6-dbg:i386", "g++-6"]
+          packages: ["clang-3.7", "valgrind", "g++-multilib", "libc6-dbg", "libc6-dbg:i386", "g++-6"]
+          #packages: [             "valgrind", "g++-multilib", "libc6-dbg", "libc6-dbg:i386", "g++-6"]
           sources: *apt_sources
 
     # Clang 3.8
-    - env: COMPILER=clang++ LLVM_VERSION=3.8.0 HAS_ASAN_64=true HAS_UBSAN_64=true
+    - env: COMPILER=clang++-3.8 LLVM_VERSION=3.8.0 HAS_ASAN_64=true HAS_UBSAN_64=true
       addons: &clang38
         apt:
-          #packages: ["clang-3.8", "valgrind", "g++-multilib", "libc6-dbg", "libc6-dbg:i386"]
-          packages: [             "valgrind", "g++-multilib", "libc6-dbg", "libc6-dbg:i386", "g++-6"]
+          packages: ["clang-3.8", "valgrind", "g++-multilib", "libc6-dbg", "libc6-dbg:i386", "g++-6"]
+          #packages: [             "valgrind", "g++-multilib", "libc6-dbg", "libc6-dbg:i386", "g++-6"]
           sources: *apt_sources
 
-#    # Xcode 6.1 Clang
-#    - env: COMPILER=clang++
-#      os: osx
-#
-#    # Xcode 6.2 Clang
-#    - env: COMPILER=clang++
-#      osx_image: beta-xcode6.2
-#      os: osx
-#
-#    # Xcode 6.3 Clang
-#    - env: COMPILER=clang++
-#      osx_image: beta-xcode6.3
-#      os: osx
-#
-#    # Xcode 6.4 Clang
-#    - env: COMPILER=clang++
-#      osx_image: xcode6.4
-#      os: osx
-#
-#    # Xcode 7 Clang
-#    - env: COMPILER=clang++ HAS_ASAN_32=true HAS_ASAN_64=true
-#      osx_image: xcode7
-#      os: osx
-#
-#    # Xcode 7.1 Clang
-#    - env: COMPILER=clang++ HAS_ASAN_32=true HAS_ASAN_64=true
-#      osx_image: xcode7.1
-#      os: osx
-#
-#    # Xcode 7.2 Clang
-#    - env: COMPILER=clang++ HAS_ASAN_32=true HAS_ASAN_64=true
-#      osx_image: xcode7.2
-#      os: osx
-#
-#    # Xcode 7.3 Clang
-#    - env: COMPILER=clang++ HAS_ASAN_32=true HAS_ASAN_64=true
-#      osx_image: xcode7.3
-#      os: osx
-#
-#    # Xcode 8 Clang
-#    - env: COMPILER=clang++ HAS_ASAN_32=true HAS_ASAN_64=true
-#      osx_image: xcode8
-#      os: osx
-#
-#    # OSX GCC 4.4
-#    - env: COMPILER=g++-4.4
-#      compiler: gcc
-#      os: osx
-#
-#    # OSX GCC 4.5
-#    - env: COMPILER=g++-4.5
-#      compiler: gcc
-#      os: osx
-#
-#    # OSX GCC 4.6
-#    - env: COMPILER=g++-4.6
-#      compiler: gcc
-#      os: osx
-#
-#    # OSX GCC 4.7
-#    - env: COMPILER=g++-4.7
-#      compiler: gcc
-#      os: osx
-#
-#    # OSX GCC 4.8
-#    - env: COMPILER=g++-4.8 HAS_ASAN_32=true HAS_ASAN_64=true
-#      compiler: gcc
-#      os: osx
-#
-#    # OSX GCC 4.9
-#    - env: COMPILER=g++-4.9 HAS_ASAN_32=true HAS_UBSAN_32=true HAS_ASAN_64=true HAS_UBSAN_64=true
-#      compiler: gcc
-#      os: osx
-#
-#    # OSX GCC 5
-#    - env: COMPILER=g++-5 HAS_ASAN_32=true HAS_UBSAN_32=true HAS_ASAN_64=true HAS_UBSAN_64=true
-#      compiler: gcc
-#      os: osx
-#
-#    # OSX GCC 6
-#    - env: COMPILER=g++-6 HAS_ASAN_32=true HAS_UBSAN_32=true HAS_ASAN_64=true HAS_UBSAN_64=true
-#      compiler: gcc
-#      os: osx
-#
-#    # OSX LLVM-GCC
-#    - env: COMPILER=g++
-#      compiler: gcc
-#      os: osx
+    # Xcode 6.1 Clang
+    - env: COMPILER=clang++
+      os: osx
+
+    # Xcode 6.2 Clang
+    - env: COMPILER=clang++
+      osx_image: beta-xcode6.2
+      os: osx
+
+    # Xcode 6.3 Clang
+    - env: COMPILER=clang++
+      osx_image: beta-xcode6.3
+      os: osx
+
+    # Xcode 6.4 Clang
+    - env: COMPILER=clang++
+      osx_image: xcode6.4
+      os: osx
+
+    # Xcode 7 Clang
+    - env: COMPILER=clang++ HAS_ASAN_32=true HAS_ASAN_64=true
+      osx_image: xcode7
+      os: osx
+
+    # Xcode 7.1 Clang
+    - env: COMPILER=clang++ HAS_ASAN_32=true HAS_ASAN_64=true
+      osx_image: xcode7.1
+      os: osx
+
+    # Xcode 7.2 Clang
+    - env: COMPILER=clang++ HAS_ASAN_32=true HAS_ASAN_64=true
+      osx_image: xcode7.2
+      os: osx
+
+    # Xcode 7.3 Clang
+    - env: COMPILER=clang++ HAS_ASAN_32=true HAS_ASAN_64=true
+      osx_image: xcode7.3
+      os: osx
+
+    # Xcode 8 Clang
+    - env: COMPILER=clang++ HAS_ASAN_32=true HAS_ASAN_64=true
+      osx_image: xcode8
+      os: osx
+
+    # OSX GCC 4.4
+    - env: COMPILER=g++-4.4
+      compiler: gcc
+      os: osx
+
+    # OSX GCC 4.5
+    - env: COMPILER=g++-4.5
+      compiler: gcc
+      os: osx
+
+    # OSX GCC 4.6
+    - env: COMPILER=g++-4.6
+      compiler: gcc
+      os: osx
+
+    # OSX GCC 4.7
+    - env: COMPILER=g++-4.7
+      compiler: gcc
+      os: osx
+
+    # OSX GCC 4.8
+    - env: COMPILER=g++-4.8 HAS_ASAN_32=true HAS_ASAN_64=true
+      compiler: gcc
+      os: osx
+
+    # OSX GCC 4.9
+    - env: COMPILER=g++-4.9 HAS_ASAN_32=true HAS_UBSAN_32=true HAS_ASAN_64=true HAS_UBSAN_64=true
+      compiler: gcc
+      os: osx
+
+    # OSX GCC 5
+    - env: COMPILER=g++-5 HAS_ASAN_32=true HAS_UBSAN_32=true HAS_ASAN_64=true HAS_UBSAN_64=true
+      compiler: gcc
+      os: osx
+
+    # OSX GCC 6
+    - env: COMPILER=g++-6 HAS_ASAN_32=true HAS_UBSAN_32=true HAS_ASAN_64=true HAS_UBSAN_64=true
+      compiler: gcc
+      os: osx
+
+    # OSX LLVM-GCC
+    - env: COMPILER=g++
+      compiler: gcc
+      os: osx
 
   allow_failures:
 
@@ -265,46 +265,46 @@ before_install:
   - git submodule update --init --recursive
 
 install:
-  ############################################################################
-  # All the dependencies are installed in ${TRAVIS_BUILD_DIR}/deps/
-  ############################################################################
-  - DEPS_DIR="${TRAVIS_BUILD_DIR}/deps"
-  - mkdir -p ${DEPS_DIR} && cd ${DEPS_DIR}
-  ############################################################################
-  # Install a recent CMake
-  ############################################################################
-  - |
-    if [[ "${TRAVIS_OS_NAME}" == "linux" ]]; then
-      CMAKE_URL="http://www.cmake.org/files/v3.3/cmake-3.3.2-Linux-x86_64.tar.gz"
-      mkdir cmake && travis_retry wget --no-check-certificate --quiet -O - ${CMAKE_URL} | tar --strip-components=1 -xz -C cmake
-      export PATH=${DEPS_DIR}/cmake/bin:${PATH}
-    fi
-  ############################################################################
-  # Install Clang, libc++ and libc++abi
-  ############################################################################
-  - |
-    if [[ "${LLVM_VERSION}" != "" ]]; then
-      LLVM_DIR=${DEPS_DIR}/llvm-${LLVM_VERSION}
-      mkdir -p ${LLVM_DIR}
-      if [[ -z "$(ls -A ${LLVM_DIR})" ]]; then
-        LLVM_URL="http://llvm.org/releases/${LLVM_VERSION}/llvm-${LLVM_VERSION}.src.tar.xz"
-        LIBCXX_URL="http://llvm.org/releases/${LLVM_VERSION}/libcxx-${LLVM_VERSION}.src.tar.xz"
-        LIBCXXABI_URL="http://llvm.org/releases/${LLVM_VERSION}/libcxxabi-${LLVM_VERSION}.src.tar.xz"
-        CLANG_URL="http://llvm.org/releases/${LLVM_VERSION}/clang+llvm-${LLVM_VERSION}-x86_64-linux-gnu-ubuntu-14.04.tar.xz"
-        mkdir -p ${LLVM_DIR} ${LLVM_DIR}/build ${LLVM_DIR}/projects/libcxx ${LLVM_DIR}/projects/libcxxabi ${LLVM_DIR}/clang
-        travis_retry wget --quiet -O - ${LLVM_URL}      | tar --strip-components=1 -xJ -C ${LLVM_DIR}
-        travis_retry wget --quiet -O - ${LIBCXX_URL}    | tar --strip-components=1 -xJ -C ${LLVM_DIR}/projects/libcxx
-        travis_retry wget --quiet -O - ${LIBCXXABI_URL} | tar --strip-components=1 -xJ -C ${LLVM_DIR}/projects/libcxxabi
-        travis_retry wget --quiet -O - ${CLANG_URL}     | tar --strip-components=1 -xJ -C ${LLVM_DIR}/clang
-        (cd ${LLVM_DIR}/build && cmake .. -DCMAKE_INSTALL_PREFIX=${LLVM_DIR}/install -DCMAKE_CXX_COMPILER=clang++)
-        (cd ${LLVM_DIR}/build/projects/libcxx && make install -j2)
-        (cd ${LLVM_DIR}/build/projects/libcxxabi && make install -j2)
-      fi
-      export CXXFLAGS="-nostdinc++ -isystem ${LLVM_DIR}/install/include/c++/v1"
-      export LDFLAGS="-L ${LLVM_DIR}/install/lib -l c++ -l c++abi"
-      export LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:${LLVM_DIR}/install/lib"
-      export PATH="${LLVM_DIR}/clang/bin:${PATH}"
-    fi
+#  ############################################################################
+#  # All the dependencies are installed in ${TRAVIS_BUILD_DIR}/deps/
+#  ############################################################################
+#  - DEPS_DIR="${TRAVIS_BUILD_DIR}/deps"
+#  - mkdir -p ${DEPS_DIR} && cd ${DEPS_DIR}
+#  ############################################################################
+#  # Install a recent CMake
+#  ############################################################################
+#  - |
+#    if [[ "${TRAVIS_OS_NAME}" == "linux" ]]; then
+#      CMAKE_URL="http://www.cmake.org/files/v3.3/cmake-3.3.2-Linux-x86_64.tar.gz"
+#      mkdir cmake && travis_retry wget --no-check-certificate --quiet -O - ${CMAKE_URL} | tar --strip-components=1 -xz -C cmake
+#      export PATH=${DEPS_DIR}/cmake/bin:${PATH}
+#    fi
+#  ############################################################################
+#  # Install Clang, libc++ and libc++abi
+#  ############################################################################
+#  - |
+#    if [[ "${LLVM_VERSION}" != "" ]]; then
+#      LLVM_DIR=${DEPS_DIR}/llvm-${LLVM_VERSION}
+#      mkdir -p ${LLVM_DIR}
+#      if [[ -z "$(ls -A ${LLVM_DIR})" ]]; then
+#        LLVM_URL="http://llvm.org/releases/${LLVM_VERSION}/llvm-${LLVM_VERSION}.src.tar.xz"
+#        LIBCXX_URL="http://llvm.org/releases/${LLVM_VERSION}/libcxx-${LLVM_VERSION}.src.tar.xz"
+#        LIBCXXABI_URL="http://llvm.org/releases/${LLVM_VERSION}/libcxxabi-${LLVM_VERSION}.src.tar.xz"
+#        CLANG_URL="http://llvm.org/releases/${LLVM_VERSION}/clang+llvm-${LLVM_VERSION}-x86_64-linux-gnu-ubuntu-14.04.tar.xz"
+#        mkdir -p ${LLVM_DIR} ${LLVM_DIR}/build ${LLVM_DIR}/projects/libcxx ${LLVM_DIR}/projects/libcxxabi ${LLVM_DIR}/clang
+#        travis_retry wget --quiet -O - ${LLVM_URL}      | tar --strip-components=1 -xJ -C ${LLVM_DIR}
+#        travis_retry wget --quiet -O - ${LIBCXX_URL}    | tar --strip-components=1 -xJ -C ${LLVM_DIR}/projects/libcxx
+#        travis_retry wget --quiet -O - ${LIBCXXABI_URL} | tar --strip-components=1 -xJ -C ${LLVM_DIR}/projects/libcxxabi
+#        travis_retry wget --quiet -O - ${CLANG_URL}     | tar --strip-components=1 -xJ -C ${LLVM_DIR}/clang
+#        (cd ${LLVM_DIR}/build && cmake .. -DCMAKE_INSTALL_PREFIX=${LLVM_DIR}/install -DCMAKE_CXX_COMPILER=clang++)
+#        (cd ${LLVM_DIR}/build/projects/libcxx && make install -j2)
+#        (cd ${LLVM_DIR}/build/projects/libcxxabi && make install -j2)
+#      fi
+#      export CXXFLAGS="-nostdinc++ -isystem ${LLVM_DIR}/install/include/c++/v1"
+#      #export LDFLAGS="-L ${LLVM_DIR}/install/lib -l c++ -l c++abi"
+#      export LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:${LLVM_DIR}/install/lib"
+#      export PATH="${LLVM_DIR}/clang/bin:${PATH}"
+#    fi
   ############################################################################
   # Install stuff with homebrew under OSX
   ############################################################################
@@ -349,7 +349,7 @@ install:
 #  - export CXX="ccache ${COMPILER}"
   - export CXX="${COMPILER}"
 #  - ccache -s
-  - cd ${TRAVIS_BUILD_DIR}
+#  - cd ${TRAVIS_BUILD_DIR}
 
 before_script:
   - ${CXX} --version
