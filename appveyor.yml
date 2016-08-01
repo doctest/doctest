@@ -44,7 +44,7 @@ environment:
 
 install:
   - appveyor DownloadFile http://downloads.sourceforge.net/mingw-w64/x86_64-6.1.0-release-posix-seh-rt_v5-rev0.7z
-  - 7z x x86_64-6.1.0-release-posix-seh-rt_v5-rev0.7z -cc:\mingw > nul
+  - 7z x x86_64-6.1.0-release-posix-seh-rt_v5-rev0.7z -oc:\mingw > nul
 
 build_script:
   # ============= 2008 IS ENABLED ONLY FOR x86 BECAUSE CMAKE CANNOT FIND THE COMPILER FOR Win64
