@@ -44,8 +44,7 @@ environment:
 
 install:
   - appveyor DownloadFile http://downloads.sourceforge.net/mingw-w64/x86_64-6.1.0-release-posix-seh-rt_v5-rev0.7z
-  - 7z x x86_64-6.1.0-release-posix-seh-rt_v5-rev0.7z > nul
-  - set PATH=%PATH%;mingw64\bin
+  - 7z x x86_64-6.1.0-release-posix-seh-rt_v5-rev0.7z -cc:\mingw > nul
 
 build_script:
   # ============= 2008 IS ENABLED ONLY FOR x86 BECAUSE CMAKE CANNOT FIND THE COMPILER FOR Win64
@@ -87,6 +86,7 @@ build_script:
   # ============= MINGW - always 64 bit
   - mkdir gcc6
   - cd gcc6
+  - set PATH=C:\Program Files (x86)\CMake\bin;C:\mingw\mingw64\bin
   - cmake .. -G "MinGW Makefiles" -DCMAKE_BUILD_TYPE=%Configuration%
   - cmake --build .
   - ctest --output-on-failure
