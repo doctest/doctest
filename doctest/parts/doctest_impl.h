@@ -1591,6 +1591,9 @@ int Context::run() {
         DOCTEST_PRINTF_COLORED(buff, Color::None);
     }
 
+    // remove any coloring
+    DOCTEST_PRINTF_COLORED("", Color::None);
+
     getContextState() = 0;
 
     if(numFailed && !p->no_exitcode)

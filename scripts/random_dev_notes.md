@@ -1,14 +1,31 @@
+email to L Dionne
+how travis started working:
+- creating that folder
+- upgraded cmake
+- -l c++ flag?
+
 #define DYNAMIX_VERSION (DYNAMIX_VERSION_MAJOR*10000 + DYNAMIX_VERSION_MINOR*100 + DYNAMIX_VERSION_SUB_MINOR)
 
+mingw on appveyor - https://github.com/boost-experimental/di/blob/cpp14/.appveyor.yml
+https://github.com/boostorg/hana/blob/master/.appveyor.yml
+
 - llvm - https://github.com/boostorg/hana/commit/f08e824a34cc4e6e850fee285f3d182f95440f60
+https://github.com/boost-experimental/di/blob/cpp14/.travis.yml
+
+_LIBCPP_BEGIN_NAMESPACE_STD
+https://github.com/boost-experimental/di/blob/cpp14/include/boost/di.hpp
+
+- patreon
+
+- mocking - google mock assertion macros
+
+- should check the expression decomposer - if it copies by value anything
 
 - nullptr trouble
 
 - add underscores to all preprocessor identifiers not intended for use by the user
 
 - users.md - projects that use doctest
-
-- color::none after doctest
 
 - tests in a static library without the implementation there - problematic
 
