@@ -462,12 +462,24 @@ namespace detail
         bool operator<(const TestData& other) const;
     };
 
-    struct Subcase
+    struct SubcaseSignature
     {
         const char* m_name;
         const char* m_file;
         int         m_line;
-        bool        m_entered;
+
+        SubcaseSignature(const char* name, const char* file, int line)
+                : m_name(name)
+                , m_file(file)
+                , m_line(line) {}
+
+        bool operator<(const SubcaseSignature& other) const;
+    };
+
+    struct Subcase
+    {
+        SubcaseSignature m_signature;
+        bool             m_entered;
 
         Subcase(const char* name, const char* file, int line);
         ~Subcase();

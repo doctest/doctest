@@ -206,11 +206,11 @@ namespace detail
         int numFailedAssertionsForCurrentTestcase;
 
         // stuff for subcases
-        std::set<std::pair<const char*, int> > subcasesPassed;
-        std::set<int>        subcasesEnteredLevels;
-        std::vector<Subcase> subcasesStack;
-        int                  subcasesCurrentLevel;
-        bool                 subcasesHasSkipped;
+        std::set<SubcaseSignature> subcasesPassed;
+        std::set<int>              subcasesEnteredLevels;
+        std::vector<Subcase>       subcasesStack;
+        int                        subcasesCurrentLevel;
+        bool                       subcasesHasSkipped;
 
         void resetRunData() {
             numAssertions       = 0;
@@ -546,15 +546,21 @@ namespace detail
 
     TestAccessibleContextState* getTestsContextState() { return getContextState(); }
 
+    bool SubcaseSignature::operator<(const SubcaseSignature& other) const {
+        if(m_line != other.m_line)
+            return m_line < other.m_line;
+        if(strcmp(m_file, other.m_file) != 0)
+            return strcmp(m_file, other.m_file) < 0;
+        return strcmp(m_name, other.m_name) < 0;
+    }
+
     Subcase::Subcase(const char* name, const char* file, int line)
-            : m_name(name)
-            , m_file(file)
-            , m_line(line)
+            : m_signature(name, file, line)
             , m_entered(false) {
         ContextState* s = getContextState();
 
         // if we have already completed it
-        if(s->subcasesPassed.count(std::pair<const char*, int>(m_file, m_line)) != 0)
+        if(s->subcasesPassed.count(m_signature) != 0)
             return;
 
         // if a Subcase on the same level has already been entered
@@ -579,7 +585,7 @@ namespace detail
             s->subcasesCurrentLevel--;
             // only mark the subcase as passed if no subcases have been skipped
             if(s->subcasesHasSkipped == false)
-                s->subcasesPassed.insert(std::pair<const char*, int>(m_file, m_line));
+                s->subcasesPassed.insert(m_signature);
 
             if(s->subcasesStack.size() > 0)
                 s->subcasesStack.pop_back();
@@ -590,28 +596,22 @@ namespace detail
     }
 
     Subcase::Subcase(const Subcase& other)
-            : m_name(other.m_name)
-            , m_file(other.m_file)
-            , m_line(other.m_line)
+            : m_signature(other.m_signature)
             , m_entered(other.m_entered) {}
 
     Subcase& Subcase::operator=(const Subcase& other) {
-        m_name    = other.m_name;
-        m_file    = other.m_file;
-        m_line    = other.m_line;
-        m_entered = other.m_entered;
+        m_signature = other.m_signature;
+        m_entered   = other.m_entered;
         return *this;
     }
 
     bool Subcase::operator==(const Subcase& other) const {
-        return m_line == other.m_line && strcmp(m_file, other.m_file) == 0;
+        return m_signature.m_line == other.m_signature.m_line &&
+               strcmp(m_signature.m_file, other.m_signature.m_file) == 0 &&
+               strcmp(m_signature.m_name, other.m_signature.m_name) == 0;
     }
 
-    bool Subcase::operator<(const Subcase& other) const {
-        if(m_line != other.m_line)
-            return m_line < other.m_line;
-        return strcmp(m_file, other.m_file) < 0;
-    }
+    bool Subcase::operator<(const Subcase& other) const { return m_signature < other.m_signature; }
 
     // for sorting tests by file/line
     int fileOrderComparator(const void* a, const void* b) {
@@ -884,7 +884,8 @@ namespace detail
         std::vector<Subcase>& subcasesStack = getContextState()->subcasesStack;
         for(unsigned i = 0; i < subcasesStack.size(); ++i) {
             char subcase[DOCTEST_SNPRINTF_BUFFER_LENGTH];
-            DOCTEST_SNPRINTF(subcase, DOCTEST_COUNTOF(loc), "  %s\n", subcasesStack[i].m_name);
+            DOCTEST_SNPRINTF(subcase, DOCTEST_COUNTOF(loc), "  %s\n",
+                             subcasesStack[i].m_signature.m_name);
             DOCTEST_PRINTF_COLORED(subcase, Color::None);
             subcaseStuff += subcase;
         }
