@@ -345,7 +345,7 @@ install:
         brew install gcc6
       fi
     fi
-  - if [[ "${TRAVIS_OS_NAME}" == "linux" ]]; then export ADDITIONAL_CXX_FLAGS="${ADDITIONAL_CXX_FLAGS} -fuse-ld=gold" ; fi
+#  - if [[ "${TRAVIS_OS_NAME}" == "linux" ]]; then export ADDITIONAL_CXX_FLAGS="${ADDITIONAL_CXX_FLAGS} -fuse-ld=gold" ; fi
 #  - export CXX="ccache ${COMPILER}"
   - export CXX="${COMPILER}"
 #  - ccache -s
