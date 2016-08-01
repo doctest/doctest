@@ -123,7 +123,7 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
         add_compiler_flags(-Wsized-deallocation)
     endif()
     
-    if(CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 5.3)
+    if(CMAKE_CXX_COMPILER_VERSION VERSION_EQUAL 6.0 OR CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 6.0)
         add_compiler_flags(-Wshift-overflow=2)
         add_compiler_flags(-Wnull-dereference)
         add_compiler_flags(-Wduplicated-cond)
