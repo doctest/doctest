@@ -1,9 +1,6 @@
 mingw on appveyor - https://github.com/boost-experimental/di/blob/cpp14/.appveyor.yml
 https://github.com/boostorg/hana/blob/master/.appveyor.yml
 
-- llvm - https://github.com/boostorg/hana/commit/f08e824a34cc4e6e850fee285f3d182f95440f60
-https://github.com/boost-experimental/di/blob/cpp14/.travis.yml
-
 - patreon
 
 - mocking - google mock assertion macros
@@ -14,7 +11,7 @@ https://github.com/boost-experimental/di/blob/cpp14/.travis.yml
 
 - add underscores to all preprocessor identifiers not intended for use by the user
 
-- users.md - projects that use doctest
+
 
 - tests in a static library without the implementation there - problematic
 
