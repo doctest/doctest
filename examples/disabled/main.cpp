@@ -6,6 +6,8 @@
 int main(int argc, char** argv) {
     doctest::Context context; // initialize
 
+    printf("no test cases should be ran\n");
+
     // defaults
     context.addFilter("test-case-exclude", "*math*"); // exclude test cases with "math" in the name
     context.setOption("no-breaks", true);             // don't break in the debugger when assertions fail
