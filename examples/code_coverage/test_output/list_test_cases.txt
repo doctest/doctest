@@ -2,7 +2,7 @@
 [doctest] run with "--help" for options
 [doctest] listing all test case names
 subcases
-throws
+doctest internals
 subcases
 assertions
 throws

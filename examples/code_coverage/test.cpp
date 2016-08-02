@@ -2,6 +2,7 @@
 
 TEST_SUITE("ts2");
 
+// intentionally here so there are subcases on the same lines in different files
 TEST_CASE("subcases") {
     SUBCASE("1") {
         SUBCASE("1.1") {}
@@ -28,10 +29,10 @@ TEST_CASE("assertions") {
     //int* a = &iVar;
     //int* b = a - 1;
     //CHECK(a == b);
-    CHECK(1 == false);
+    CHECK(1 == 0);
     CHECK_FALSE(1);
     CHECK(Approx(0.1) == 0.2);
-    
+
     CHECK_THROWS(throws(true));
     CHECK_THROWS(throws(false));
     CHECK_NOTHROW(throws(false));

@@ -524,8 +524,6 @@ namespace detail
 
         Subcase(const char* name, const char* file, int line);
         ~Subcase();
-        Subcase(const Subcase& other);
-        Subcase& operator=(const Subcase& other);
 
         bool operator==(const Subcase& other) const;
         bool operator<(const Subcase& other) const;
@@ -1870,16 +1868,6 @@ namespace detail
                 logTestEnd();
             s->hasLoggedCurrentTestStart = false;
         }
-    }
-
-    Subcase::Subcase(const Subcase& other)
-            : m_signature(other.m_signature)
-            , m_entered(other.m_entered) {}
-
-    Subcase& Subcase::operator=(const Subcase& other) {
-        m_signature = other.m_signature;
-        m_entered   = other.m_entered;
-        return *this;
     }
 
     bool Subcase::operator==(const Subcase& other) const {

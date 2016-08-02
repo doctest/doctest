@@ -2,13 +2,16 @@
 #define DOCTEST_CONFIG_IMPLEMENT
 #include "doctest.h"
 
+// intentionally here so there are subcases on the same lines in different files
 TEST_CASE("subcases") {
     SUBCASE("1") {
         SUBCASE("1.1") {}
         SUBCASE("1.2") {}
+        SUBCASE("1.2") {}
     }
-    SUBCASE("2") {}
-    SUBCASE("3") {}
+    // clang-format off
+    SUBCASE("2") {} SUBCASE("3") {} // to have subcases on the same line with different names
+    // clang-format on
 }
 
 #include <iostream>
@@ -17,9 +20,8 @@ using namespace std;
 
 using doctest::toString;
 
-TEST_CASE("throws") {
-    CHECK(1 == 2);
-
+TEST_CASE("doctest internals") {
+    // string stuff
     doctest::String a;
     a += "omg";
     const doctest::String const_str("omgomgomg");
@@ -29,6 +31,7 @@ TEST_CASE("throws") {
     CHECK(a.compare(const_str, true) == 0);
     CHECK(a.compare("omgomgomg", true) == 0);
 
+    // toString
     cout << a << toString("aaa") << toString(0.5f) << toString('c')
          << toString(static_cast<long double>(0.1)) //
          << toString(static_cast<unsigned char>(1)) //
@@ -36,6 +39,12 @@ TEST_CASE("throws") {
          << toString(static_cast<long>(1))          //
          << toString(static_cast<unsigned long>(1)) //
          << toString(static_cast<unsigned short>(1));
+
+    // others
+    cout << doctest::detail::fileForOutput("c:\\a") << doctest::detail::fileForOutput("c:/a")
+         << doctest::detail::fileForOutput("a");
+
+    doctest::detail::Subcase subcase("", "", 0);
 }
 
 int main(int argc, char** argv) {

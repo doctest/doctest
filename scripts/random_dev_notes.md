@@ -17,7 +17,7 @@
 - think about the expression decomposition static asserts
     - the static assert should use the c++11 feature if possible
 
-- signed/unsigned comparison trouble in assertions
+- signed/unsigned comparison trouble in assertions - also     CHECK(1 == false); (under MSVC)
 
 - examples
     - removing everything with -dt- from the command line - https://github.com/onqtam/doctest/issues/20

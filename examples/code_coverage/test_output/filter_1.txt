@@ -1,31 +1,31 @@
 [doctest] doctest version is "1.0.0"
 [doctest] run with "--help" for options
 ===============================================================================
-test.cpp(26)
+test.cpp(27)
 assertions
 
-test.cpp(31) FAILED! 
-  CHECK( 1 == false )
-with expansion:
-  CHECK( 1 == false )
-
 test.cpp(32) FAILED! 
-  CHECK_FALSE( 1 )
+  CHECK( 1 == 0 )
 with expansion:
-  CHECK_FALSE( 1 )
+  CHECK( 1 == 0 )
 
 test.cpp(33) FAILED! 
+  CHECK_FALSE( 1 )
+with expansion:
+  CHECK_FALSE( 1 )
+
+test.cpp(34) FAILED! 
   CHECK( Approx(0.1) == 0.2 )
 with expansion:
   CHECK( Approx( 0.1 ) == 0.2 )
 
-test.cpp(36) FAILED!
+test.cpp(37) FAILED!
   CHECK_THROWS( throws(false) )
 
-test.cpp(38) FAILED!
+test.cpp(39) FAILED!
   CHECK_NOTHROW( throws(true) )
 
-test.cpp(40) FAILED! (didn't throw at all)
+test.cpp(41) FAILED! (didn't throw at all)
   CHECK_THROWS_AS( throws(false), bool )
 
 ===============================================================================
