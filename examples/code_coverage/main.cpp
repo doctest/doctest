@@ -1,6 +1,6 @@
-#define DOCTEST_CONFIG_COLORS_NONE
+#define DOCTEST_CONFIG_COLORS_NONE // the easy way to fix code coverage
 #define DOCTEST_CONFIG_IMPLEMENT
-#include "doctest.h"
+#include "parts/doctest_impl.h"
 
 // intentionally here so there are subcases on the same lines in different files
 TEST_CASE("subcases") {
@@ -29,10 +29,10 @@ TEST_CASE("doctest internals") {
     CHECK(a.size() == const_str.size());
     CHECK(a.length() == const_str.length());
     CHECK(a.compare(const_str, true) == 0);
-    CHECK(a.compare("omgomgomg", true) == 0);
+    CHECK(a.compare("omgomgomg", false) == 0);
 
     // toString
-    cout << a << toString("aaa") << toString(0.5f) << toString('c')
+    cout << toString("aaa") << toString(0.5f) << toString('c') << toString(true)
          << toString(static_cast<long double>(0.1)) //
          << toString(static_cast<unsigned char>(1)) //
          << toString(static_cast<short>(1))         //
@@ -43,8 +43,6 @@ TEST_CASE("doctest internals") {
     // others
     cout << doctest::detail::fileForOutput("c:\\a") << doctest::detail::fileForOutput("c:/a")
          << doctest::detail::fileForOutput("a");
-
-    doctest::detail::Subcase subcase("", "", 0);
 }
 
 int main(int argc, char** argv) {

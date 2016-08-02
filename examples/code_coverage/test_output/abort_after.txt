@@ -1,6 +1,6 @@
 [doctest] doctest version is "1.0.0"
 [doctest] run with "--help" for options
-omgomgomg"aaa"0.5f990.11d1111aaa===============================================================================
+"aaa"0.5f99true0.11d1111aaa===============================================================================
 test.cpp(6)
 subcases
   2
@@ -11,15 +11,15 @@ with expansion:
   CHECK( 0 )
 
 ===============================================================================
-test.cpp(27)
+test.cpp(35)
 assertions
 
-test.cpp(32) FAILED! 
+test.cpp(36) FAILED! 
   CHECK( 1 == 0 )
 with expansion:
   CHECK( 1 == 0 )
 
-test.cpp(33) FAILED! 
+test.cpp(37) FAILED! 
   CHECK_FALSE( 1 )
 with expansion:
   CHECK_FALSE( 1 )

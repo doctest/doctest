@@ -1,6 +1,6 @@
-#include "doctest.h"
+#include "parts/doctest_fwd.h"
 
-TEST_SUITE("ts2");
+#include <ostream>
 
 // intentionally here so there are subcases on the same lines in different files
 TEST_CASE("subcases") {
@@ -12,7 +12,7 @@ TEST_CASE("subcases") {
     SUBCASE("3") {}
 }
 
-TEST_SUITE_END();
+TEST_SUITE("ts1");
 
 using doctest::Approx;
 
@@ -22,15 +22,20 @@ static int throws(bool in) {
     return 42;
 }
 
-TEST_SUITE("ts1");
+struct myType
+{};
+
+static std::ostream& operator<<(std::ostream& stream, const myType&) {
+    stream << "myType!";
+    return stream;
+}
+
+static bool operator==(const myType&, const myType&) { return false; }
 
 TEST_CASE("assertions") {
-    //int iVar = 0;
-    //int* a = &iVar;
-    //int* b = a - 1;
-    //CHECK(a == b);
     CHECK(1 == 0);
     CHECK_FALSE(1);
+    CHECK(myType() == myType());
     CHECK(Approx(0.1) == 0.2);
 
     CHECK_THROWS(throws(true));
@@ -38,7 +43,7 @@ TEST_CASE("assertions") {
     CHECK_NOTHROW(throws(false));
     CHECK_NOTHROW(throws(true));
     CHECK_THROWS_AS(throws(true), bool);
-    CHECK_THROWS_AS(throws(false), bool);
+    REQUIRE_THROWS_AS(throws(false), bool);
 }
 
 TEST_CASE("throws") { throws(true); }

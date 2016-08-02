@@ -496,7 +496,6 @@ namespace detail
                 , m_file(file)
                 , m_line(line) {}
 
-        bool operator==(const TestData& other) const;
         bool operator<(const TestData& other) const;
     };
 
@@ -521,11 +520,7 @@ namespace detail
 
         Subcase(const char* name, const char* file, int line);
         ~Subcase();
-        Subcase(const Subcase& other);
-        Subcase& operator=(const Subcase& other);
 
-        bool operator==(const Subcase& other) const;
-        bool operator<(const Subcase& other) const;
         operator bool() const { return m_entered; }
     };
 

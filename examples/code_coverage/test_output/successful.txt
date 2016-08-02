@@ -24,11 +24,11 @@ with expansion:
   CHECK( 0 == 0 )
 
 main.cpp(32) PASSED!
-  CHECK( a.compare("omgomgomg", true) == 0 )
+  CHECK( a.compare("omgomgomg", false) == 0 )
 with expansion:
   CHECK( 0 == 0 )
 
-omgomgomg"aaa"0.5f990.11d1111aaa===============================================================================
+"aaa"0.5f99true0.11d1111aaa===============================================================================
 test.cpp(6)
 subcases
 
@@ -43,48 +43,53 @@ with expansion:
   CHECK( 0 )
 
 ===============================================================================
-test.cpp(27)
+test.cpp(35)
 assertions
 
-test.cpp(32) FAILED! 
+test.cpp(36) FAILED! 
   CHECK( 1 == 0 )
 with expansion:
   CHECK( 1 == 0 )
 
-test.cpp(33) FAILED! 
+test.cpp(37) FAILED! 
   CHECK_FALSE( 1 )
 with expansion:
   CHECK_FALSE( 1 )
 
-test.cpp(34) FAILED! 
+test.cpp(38) FAILED! 
+  CHECK( myType() == myType() )
+with expansion:
+  CHECK( myType! == myType! )
+
+test.cpp(39) FAILED! 
   CHECK( Approx(0.1) == 0.2 )
 with expansion:
   CHECK( Approx( 0.1 ) == 0.2 )
 
-test.cpp(36) PASSED!
+test.cpp(41) PASSED!
   CHECK_THROWS( throws(true) )
 
-test.cpp(37) FAILED!
+test.cpp(42) FAILED!
   CHECK_THROWS( throws(false) )
 
-test.cpp(38) PASSED!
+test.cpp(43) PASSED!
   CHECK_NOTHROW( throws(false) )
 
-test.cpp(39) FAILED!
+test.cpp(44) FAILED!
   CHECK_NOTHROW( throws(true) )
 
-test.cpp(40) PASSED!
+test.cpp(45) PASSED!
   CHECK_THROWS_AS( throws(true), bool )
 
-test.cpp(41) FAILED! (didn't throw at all)
-  CHECK_THROWS_AS( throws(false), bool )
+test.cpp(46) FAILED! (didn't throw at all)
+  REQUIRE_THROWS_AS( throws(false), bool )
 
 ===============================================================================
-test.cpp(44)
+test.cpp(49)
 throws
 
 TEST CASE FAILED! (threw exception)
 
 ===============================================================================
 [doctest] test cases:    5 |    2 passed |    3 failed |    0 skipped
-[doctest] assertions:   14 |    7 passed |    7 failed |
+[doctest] assertions:   15 |    7 passed |    8 failed |

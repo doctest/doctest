@@ -95,7 +95,7 @@ namespace detail
     // for details see http://stackoverflow.com/questions/35671155
     size_t my_strlen(const char* in) {
         const char* temp = in;
-        while(*temp)
+        while(temp && *temp)
             ++temp;
         return temp - in;
     }
@@ -228,9 +228,12 @@ namespace detail
 #endif // DOCTEST_CONFIG_DISABLE
 } // namespace detail
 
-String::String(const char* in) {
-    m_str = static_cast<char*>(malloc(detail::my_strlen(in) + 1));
-    strcpy(m_str, in);
+String::String(const char* in)
+        : m_str(static_cast<char*>(malloc(detail::my_strlen(in) + 1))) {
+    if(in)
+        strcpy(m_str, in);
+    else
+        m_str[0] = '\0';
 }
 
 String::String(const String& other)
@@ -241,18 +244,11 @@ String::String(const String& other)
 void String::copy(const String& other) {
     if(m_str)
         free(m_str);
-    m_str = 0;
-
-    if(other.m_str) {
-        m_str = static_cast<char*>(malloc(detail::my_strlen(other.m_str) + 1));
-        strcpy(m_str, other.m_str);
-    }
+    m_str = static_cast<char*>(malloc(detail::my_strlen(other.m_str) + 1));
+    strcpy(m_str, other.m_str);
 }
 
-String::~String() {
-    if(m_str)
-        free(m_str);
-}
+String::~String() { free(m_str); }
 
 String& String::operator=(const String& other) {
     if(this != &other)
@@ -264,9 +260,7 @@ String String::operator+(const String& other) const { return String(m_str) += ot
 
 String& String::operator+=(const String& other) {
     using namespace detail;
-    if(m_str == 0) {
-        copy(other);
-    } else if(other.m_str != 0) {
+    if(other.m_str != 0) {
         char* newStr = static_cast<char*>(malloc(my_strlen(m_str) + my_strlen(other.m_str) + 1));
         strcpy(newStr, m_str);
         strcpy(newStr + my_strlen(m_str), other.m_str);
@@ -454,10 +448,6 @@ namespace doctest
 {
 namespace detail
 {
-    bool TestData::operator==(const TestData& other) const {
-        return m_line == other.m_line && strcmp(m_file, other.m_file) == 0;
-    }
-
     bool TestData::operator<(const TestData& other) const {
         if(m_line != other.m_line)
             return m_line < other.m_line;
@@ -520,16 +510,14 @@ namespace detail
         return !*wild;
     }
 
-    // C string hash function (djb2) - taken from http://www.cse.yorku.ca/~oz/hash.html
-    unsigned hashStr(unsigned const char* str) {
-        unsigned long hash = 5381;
-        char          c;
-
-        while((c = *str++))
-            hash = ((hash << 5) + hash) + c; // hash * 33 + c
-
-        return hash;
-    }
+    //// C string hash function (djb2) - taken from http://www.cse.yorku.ca/~oz/hash.html
+    //unsigned hashStr(unsigned const char* str) {
+    //    unsigned long hash = 5381;
+    //    char          c;
+    //    while((c = *str++))
+    //        hash = ((hash << 5) + hash) + c; // hash * 33 + c
+    //    return hash;
+    //}
 
     // checks if the name matches any of the filters (and can be configured what to do when empty)
     int matchesAny(const char* name, std::vector<String> filters, int matchEmpty,
@@ -598,24 +586,6 @@ namespace detail
             s->hasLoggedCurrentTestStart = false;
         }
     }
-
-    Subcase::Subcase(const Subcase& other)
-            : m_signature(other.m_signature)
-            , m_entered(other.m_entered) {}
-
-    Subcase& Subcase::operator=(const Subcase& other) {
-        m_signature = other.m_signature;
-        m_entered   = other.m_entered;
-        return *this;
-    }
-
-    bool Subcase::operator==(const Subcase& other) const {
-        return m_signature.m_line == other.m_signature.m_line &&
-               strcmp(m_signature.m_file, other.m_signature.m_file) == 0 &&
-               strcmp(m_signature.m_name, other.m_signature.m_name) == 0;
-    }
-
-    bool Subcase::operator<(const Subcase& other) const { return m_signature < other.m_signature; }
 
     // for sorting tests by file/line
     int fileOrderComparator(const void* a, const void* b) {
