@@ -1,39 +1,6 @@
 [doctest] doctest version is "1.0.0"
 [doctest] run with "--help" for options
 ===============================================================================
-main.cpp(6)
-subcases
-
-===============================================================================
-main.cpp(27)
-doctest internals
-
-main.cpp(32) PASSED!
-  CHECK( a.size() == const_str.size() )
-with expansion:
-  CHECK( 9 == 9 )
-
-main.cpp(33) PASSED!
-  CHECK( a.length() == const_str.length() )
-with expansion:
-  CHECK( 9 == 9 )
-
-main.cpp(34) PASSED!
-  CHECK( a.compare(const_str, true) == 0 )
-with expansion:
-  CHECK( 0 == 0 )
-
-main.cpp(35) PASSED!
-  CHECK( a.compare("omgomgomg", false) == 0 )
-with expansion:
-  CHECK( 0 == 0 )
-
-"aaa"0.5f99true0.11d1111main.cpp(47) PASSED!
-  CHECK( doctest::detail::rawMemoryToString(a).length() > 0u )
-with expansion:
-  CHECK( 18 > 0 )
-
-aaa===============================================================================
 test.cpp(6)
 subcases
 
@@ -96,5 +63,5 @@ throws
 TEST CASE FAILED! (threw exception)
 
 ===============================================================================
-[doctest] test cases:    5 |    2 passed |    3 failed |    0 skipped
-[doctest] assertions:   16 |    8 passed |    8 failed |
+[doctest] test cases:    3 |    0 passed |    3 failed |    2 skipped
+[doctest] assertions:   11 |    3 passed |    8 failed |
