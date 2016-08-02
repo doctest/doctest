@@ -6,6 +6,8 @@
 
 - drop support for VC++6
 
+- add C++11 builds for gcc/clang (with -std=c++0x)
+
 - add underscores to all preprocessor identifiers not intended for use by the user
 
 - tests in a static library without the implementation there - problematic
