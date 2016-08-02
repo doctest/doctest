@@ -14,7 +14,7 @@ notifications:
     on_build_failure: true
     on_build_success: false
 
-clone_depth: 100
+clone_depth: 500
 branches:
   except:
     - gh-pages
@@ -48,49 +48,50 @@ install:
 
 build_script:
   # ============= 2008 IS ENABLED ONLY FOR x86 BECAUSE CMAKE CANNOT FIND THE COMPILER FOR Win64
-  #- IF "%arch%" == "Win32" mkdir 2008
-  #- IF "%arch%" == "Win32" cd 2008
-  #- IF "%arch%" == "Win32" set gen=Visual Studio 9 2008%VS_GEN%
-  #- IF "%arch%" == "Win32" cmake .. -G "%gen%"
-  #- IF "%arch%" == "Win32" msbuild all.sln /p:Configuration=%Configuration%;Platform=%arch% /maxcpucount
-  #- IF "%arch%" == "Win32" ctest -C %configuration% --output-on-failure
-  #- IF "%arch%" == "Win32" cd ..
-  #- mkdir 2010
-  #- cd 2010
-  #- set gen=Visual Studio 10 2010%VS_GEN%
-  #- cmake .. -G "%gen%"
-  #- msbuild all.sln /p:Configuration=%Configuration%;Platform=%arch% /maxcpucount
-  #- ctest -C %configuration% --output-on-failure
-  #- cd ..
-  #- mkdir 2012
-  #- cd 2012
-  #- set gen=Visual Studio 11 2012%VS_GEN%
-  #- cmake .. -G "%gen%"
-  #- msbuild all.sln /p:Configuration=%Configuration%;Platform=%arch% /maxcpucount
-  #- ctest -C %configuration% --output-on-failure
-  #- cd ..
-  #- mkdir 2013
-  #- cd 2013
-  #- set gen=Visual Studio 12 2013%VS_GEN%
-  #- cmake .. -G "%gen%"
-  #- msbuild all.sln /p:Configuration=%Configuration%;Platform=%arch% /maxcpucount
-  #- ctest -C %configuration% --output-on-failure
-  #- cd ..
-  #- mkdir 2015
-  #- cd 2015
-  #- set gen=Visual Studio 14 2015%VS_GEN%
-  #- cmake .. -G "%gen%"
-  #- msbuild all.sln /p:Configuration=%Configuration%;Platform=%arch% /maxcpucount
-  #- ctest -C %configuration% --output-on-failure
-  #- cd ..
+  - IF "%arch%" == "Win32" mkdir 2008
+  - IF "%arch%" == "Win32" cd 2008
+  - IF "%arch%" == "Win32" set gen=Visual Studio 9 2008%VS_GEN%
+  - IF "%arch%" == "Win32" cmake .. -G "%gen%"
+  - IF "%arch%" == "Win32" msbuild all.sln /p:Configuration=%Configuration%;Platform=%arch% /maxcpucount
+  - IF "%arch%" == "Win32" ctest -C %configuration% --output-on-failure
+  - IF "%arch%" == "Win32" cd ..
+  - mkdir 2010
+  - cd 2010
+  - set gen=Visual Studio 10 2010%VS_GEN%
+  - cmake .. -G "%gen%"
+  - msbuild all.sln /p:Configuration=%Configuration%;Platform=%arch% /maxcpucount
+  - ctest -C %configuration% --output-on-failure
+  - cd ..
+  - mkdir 2012
+  - cd 2012
+  - set gen=Visual Studio 11 2012%VS_GEN%
+  - cmake .. -G "%gen%"
+  - msbuild all.sln /p:Configuration=%Configuration%;Platform=%arch% /maxcpucount
+  - ctest -C %configuration% --output-on-failure
+  - cd ..
+  - mkdir 2013
+  - cd 2013
+  - set gen=Visual Studio 12 2013%VS_GEN%
+  - cmake .. -G "%gen%"
+  - msbuild all.sln /p:Configuration=%Configuration%;Platform=%arch% /maxcpucount
+  - ctest -C %configuration% --output-on-failure
+  - cd ..
+  - mkdir 2015
+  - cd 2015
+  - set gen=Visual Studio 14 2015%VS_GEN%
+  - cmake .. -G "%gen%"
+  - msbuild all.sln /p:Configuration=%Configuration%;Platform=%arch% /maxcpucount
+  - ctest -C %configuration% --output-on-failure
+  - cd ..
   # ============= MINGW - always 64 bit
   - mkdir gcc6
   - cd gcc6
-  # Workaround for CMake not wanting sh.exe on PATH for MinGW
+  # workaround for CMake not wanting sh.exe on PATH for MinGW
   - set PATH=%PATH:C:\Program Files\Git\usr\bin;=%
   - set PATH=C:\mingw\mingw64\bin;%PATH%
   - cmake .. -G "MinGW Makefiles" -DCMAKE_BUILD_TYPE=%Configuration%
   - cmake --build .
+  # adding git to the path again - for the dos2unix tool
   - set PATH=%PATH%;C:\Program Files\Git\usr\bin
   - ctest --output-on-failure
   - cd ..

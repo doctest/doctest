@@ -13,7 +13,7 @@ notifications:
     on_success: change
     on_failure: always
 git:
-  depth: 100
+  depth: 500
 
 # both apt and ccache make the builds slower...
 #cache:
@@ -261,46 +261,6 @@ before_install:
   - git submodule update --init --recursive
 
 install:
-#  ############################################################################
-#  # All the dependencies are installed in ${TRAVIS_BUILD_DIR}/deps/
-#  ############################################################################
-#  - DEPS_DIR="${TRAVIS_BUILD_DIR}/deps"
-#  - mkdir -p ${DEPS_DIR} && cd ${DEPS_DIR}
-#  ############################################################################
-#  # Install a recent CMake
-#  ############################################################################
-#  - |
-#    if [[ "${TRAVIS_OS_NAME}" == "linux" ]]; then
-#      CMAKE_URL="http://www.cmake.org/files/v3.3/cmake-3.3.2-Linux-x86_64.tar.gz"
-#      mkdir cmake && travis_retry wget --no-check-certificate --quiet -O - ${CMAKE_URL} | tar --strip-components=1 -xz -C cmake
-#      export PATH=${DEPS_DIR}/cmake/bin:${PATH}
-#    fi
-#  ############################################################################
-#  # Install Clang, libc++ and libc++abi
-#  ############################################################################
-#  - |
-#    if [[ "${LLVM_VERSION}" != "" ]]; then
-#      LLVM_DIR=${DEPS_DIR}/llvm-${LLVM_VERSION}
-#      mkdir -p ${LLVM_DIR}
-#      if [[ -z "$(ls -A ${LLVM_DIR})" ]]; then
-#        LLVM_URL="http://llvm.org/releases/${LLVM_VERSION}/llvm-${LLVM_VERSION}.src.tar.xz"
-#        LIBCXX_URL="http://llvm.org/releases/${LLVM_VERSION}/libcxx-${LLVM_VERSION}.src.tar.xz"
-#        LIBCXXABI_URL="http://llvm.org/releases/${LLVM_VERSION}/libcxxabi-${LLVM_VERSION}.src.tar.xz"
-#        CLANG_URL="http://llvm.org/releases/${LLVM_VERSION}/clang+llvm-${LLVM_VERSION}-x86_64-linux-gnu-ubuntu-14.04.tar.xz"
-#        mkdir -p ${LLVM_DIR} ${LLVM_DIR}/build ${LLVM_DIR}/projects/libcxx ${LLVM_DIR}/projects/libcxxabi ${LLVM_DIR}/clang
-#        travis_retry wget --quiet -O - ${LLVM_URL}      | tar --strip-components=1 -xJ -C ${LLVM_DIR}
-#        travis_retry wget --quiet -O - ${LIBCXX_URL}    | tar --strip-components=1 -xJ -C ${LLVM_DIR}/projects/libcxx
-#        travis_retry wget --quiet -O - ${LIBCXXABI_URL} | tar --strip-components=1 -xJ -C ${LLVM_DIR}/projects/libcxxabi
-#        travis_retry wget --quiet -O - ${CLANG_URL}     | tar --strip-components=1 -xJ -C ${LLVM_DIR}/clang
-#        (cd ${LLVM_DIR}/build && cmake .. -DCMAKE_INSTALL_PREFIX=${LLVM_DIR}/install -DCMAKE_CXX_COMPILER=clang++)
-#        (cd ${LLVM_DIR}/build/projects/libcxx && make install -j2)
-#        (cd ${LLVM_DIR}/build/projects/libcxxabi && make install -j2)
-#      fi
-#      export CXXFLAGS="-nostdinc++ -isystem ${LLVM_DIR}/install/include/c++/v1"
-#      #export LDFLAGS="-L ${LLVM_DIR}/install/lib -l c++ -l c++abi"
-#      export LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:${LLVM_DIR}/install/lib"
-#      export PATH="${LLVM_DIR}/clang/bin:${PATH}"
-#    fi
   ############################################################################
   # Install stuff with homebrew under OSX
   ############################################################################
@@ -341,10 +301,9 @@ install:
         brew install gcc6
       fi
     fi
-#  - export CXX="ccache ${COMPILER}"
   - export CXX="${COMPILER}"
+#  - export CXX="ccache ${COMPILER}"
 #  - ccache -s
-#  - cd ${TRAVIS_BUILD_DIR}
 
 before_script:
   - ${CXX} --version

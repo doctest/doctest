@@ -8,7 +8,6 @@ This is a list of planned features for future releases (maybe in the given order
 
 - the set holding all registered tests should use a specialized allocator to minimize program startup time
 - ability to have no output when everything succeeds
-- test with gcc 6 and use it in the CI builds
 - a mechanism for translating exceptions - users should be able to teach the framework about their types (look at Catch for this)
 - support for ```std::exception``` and derivatives (mainly for calling the ```.what()``` method when caught unexpectedly)
 - test with missed warning flags for GCC - look into https://github.com/Barro/compiler-warnings
@@ -39,7 +38,6 @@ This is a list of planned features for future releases (maybe in the given order
 - detect floating point exceptions
 - ```Bitwise()``` class that has overloaded operators for comparison - to be used to check objects bitwise against each other
 - integrate static analysis on the CI: **msvc**, **clang**, **cppcheck**
-- get a build with **MinGW-w64** running on **appveyor**
 
 And here is a list of things that are being considered but not part of the roadmap yet:
 
@@ -49,7 +47,7 @@ And here is a list of things that are being considered but not part of the roadm
     - also look into similar Xcode integration
 - matchers - should investigate what they are :D
 - generators? - look at Catch - and investigate what they are (also in [boost](http://www.boost.org/doc/libs/1_61_0/libs/test/doc/html/boost_test/tests_organization/test_cases/test_case_generation.html)
-- option to list files in which  there are test cases who match the current filters
+- option to list files in which there are test cases who match the current filters
 - handle ```wchar``` strings
 - explore ```extern template``` from C++11 - maybe some templates can be externed - for basic types like int/char/float...
 - a progress reporter

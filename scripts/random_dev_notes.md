@@ -1,6 +1,3 @@
-mingw on appveyor - https://github.com/boost-experimental/di/blob/cpp14/.appveyor.yml
-https://github.com/boostorg/hana/blob/master/.appveyor.yml
-
 - patreon
 
 - mocking - google mock assertion macros
@@ -10,8 +7,6 @@ https://github.com/boostorg/hana/blob/master/.appveyor.yml
 - drop support for VC++6
 
 - add underscores to all preprocessor identifiers not intended for use by the user
-
-
 
 - tests in a static library without the implementation there - problematic
 

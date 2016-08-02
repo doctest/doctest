@@ -33,8 +33,8 @@ function(add_test)
     endforeach()
     # append the argument for removing paths from filenames in the output so tests give the same output everywhere
     set(the_command "${the_command} --dt-no-path-filenames=1")
+    # append the argument for ignoring the exit code of the test programs because some are intended to have failing tests
     set(the_command "${the_command} --dt-no-exitcode=1")
-    set(the_command "${the_command} --dt-no-colors=1")
     
     string(STRIP ${the_command} the_command)
     
