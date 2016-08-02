@@ -1,6 +1,6 @@
 #define DOCTEST_CONFIG_COLORS_NONE // the easy way to fix code coverage
 #define DOCTEST_CONFIG_IMPLEMENT
-#include "parts/doctest_impl.h"
+#include "doctest.h"
 
 // intentionally here so there are subcases on the same lines in different files
 TEST_CASE("subcases") {

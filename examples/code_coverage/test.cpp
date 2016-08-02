@@ -1,4 +1,4 @@
-#include "parts/doctest_fwd.h"
+#include "doctest.h"
 
 #include <ostream>
 
