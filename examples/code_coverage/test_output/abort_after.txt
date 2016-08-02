@@ -13,15 +13,15 @@ with expansion:
 test.cpp(13)
 assertions
 
-test.cpp(17) FAILED! 
-  CHECK( a == b )
-with expansion:
-  CHECK( 0x000000000022f6cc == 0x000000000022f6c8 )
-
 test.cpp(18) FAILED! 
   CHECK( 1 == false )
 with expansion:
   CHECK( 1 == false )
+
+test.cpp(19) FAILED! 
+  CHECK( Approx(0.1) == 0.2 )
+with expansion:
+  CHECK( Approx( 0.1 ) == 0.2 )
 
 ===============================================================================
 [doctest] test cases:    2 |    0 passed |    2 failed |    2 skipped

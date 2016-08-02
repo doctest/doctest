@@ -13,11 +13,6 @@ with expansion:
 test.cpp(13)
 assertions
 
-test.cpp(17) FAILED! 
-  CHECK( a == b )
-with expansion:
-  CHECK( 0x000000000022f6cc == 0x000000000022f6c8 )
-
 test.cpp(18) FAILED! 
   CHECK( 1 == false )
 with expansion:
@@ -39,4 +34,4 @@ TEST CASE FAILED! (threw exception)
 
 ===============================================================================
 [doctest] test cases:    4 |    1 passed |    3 failed |    0 skipped
-[doctest] assertions:    7 |    2 passed |    5 failed |
+[doctest] assertions:    6 |    2 passed |    4 failed |

@@ -11,10 +11,10 @@ static int throws(bool in) {
 TEST_SUITE("ts1");
 
 TEST_CASE("assertions") {
-    int iVar = 0;
-    int* a = &iVar;
-    int* b = a - 1;
-    CHECK(a == b);
+    //int iVar = 0;
+    //int* a = &iVar;
+    //int* b = a - 1;
+    //CHECK(a == b);
     CHECK(1 == false);
     CHECK(Approx(0.1) == 0.2);
 
