@@ -1795,16 +1795,14 @@ namespace detail
         return !*wild;
     }
 
-    // C string hash function (djb2) - taken from http://www.cse.yorku.ca/~oz/hash.html
-    unsigned hashStr(unsigned const char* str) {
-        unsigned long hash = 5381;
-        char          c;
-
-        while((c = *str++))
-            hash = ((hash << 5) + hash) + c; // hash * 33 + c
-
-        return hash;
-    }
+    //// C string hash function (djb2) - taken from http://www.cse.yorku.ca/~oz/hash.html
+    //unsigned hashStr(unsigned const char* str) {
+    //    unsigned long hash = 5381;
+    //    char          c;
+    //    while((c = *str++))
+    //        hash = ((hash << 5) + hash) + c; // hash * 33 + c
+    //    return hash;
+    //}
 
     // checks if the name matches any of the filters (and can be configured what to do when empty)
     int matchesAny(const char* name, std::vector<String> filters, int matchEmpty,

@@ -1,28 +1,33 @@
 [doctest] doctest version is "1.0.0"
 [doctest] run with "--help" for options
 ===============================================================================
-main.cpp(4)
+main.cpp(20)
 throws
 
-main.cpp(5) FAILED! 
+main.cpp(21) FAILED! 
   CHECK( 1 == 2 )
 with expansion:
   CHECK( 1 == 2 )
 
+omgomgomg"aaa"0.5f990.11d1111===============================================================================
+test.cpp(5)
+subcases
+  2
+
+test.cpp(10) FAILED! 
+  CHECK( 0 )
+with expansion:
+  CHECK( 0 )
+
 ===============================================================================
-test.cpp(13)
+test.cpp(26)
 assertions
 
-test.cpp(18) FAILED! 
+test.cpp(31) FAILED! 
   CHECK( 1 == false )
 with expansion:
   CHECK( 1 == false )
-
-test.cpp(19) FAILED! 
-  CHECK( Approx(0.1) == 0.2 )
-with expansion:
-  CHECK( Approx( 0.1 ) == 0.2 )
 
 ===============================================================================
-[doctest] test cases:    2 |    0 passed |    2 failed |    2 skipped
-[doctest] assertions:    3 |    0 passed |    3 failed |
+[doctest] test cases:    4 |    1 passed |    3 failed |    1 skipped
+[doctest] assertions:    7 |    4 passed |    3 failed |

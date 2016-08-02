@@ -2,7 +2,7 @@
 [doctest] run with "--help" for options
 [doctest] listing all test suites
 
-ts1
 ts2
+ts1
 ===============================================================================
-[doctest] number of tests passing the current filters: 4
+[doctest] number of tests passing the current filters: 5
