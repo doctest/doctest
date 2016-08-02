@@ -6,6 +6,7 @@
 int main(int argc, char** argv) {
     doctest::Context context; // initialize
 
+    printf("no test cases should be ran\n");
     printf("no test cases should be ran");
 
     // defaults
