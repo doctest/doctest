@@ -86,6 +86,8 @@ build_script:
   # ============= MINGW - always 64 bit
   - mkdir gcc6
   - cd gcc6
+  # Workaround for CMake not wanting sh.exe on PATH for MinGW
+  - set PATH=%PATH:C:\Program Files (x86)\Git\bin;=%
   - set PATH=C:\mingw\mingw64\bin;%PATH%
   - cmake .. -G "MinGW Makefiles" -DCMAKE_BUILD_TYPE=%Configuration%
   - cmake --build .
