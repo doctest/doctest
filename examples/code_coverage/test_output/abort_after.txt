@@ -26,4 +26,4 @@ with expansion:
 
 ===============================================================================
 [doctest] test cases:    4 |    2 passed |    2 failed |    1 skipped
-[doctest] assertions:    7 |    4 passed |    3 failed |
+[doctest] assertions:    8 |    5 passed |    3 failed |

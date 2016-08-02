@@ -28,7 +28,12 @@ main.cpp(35) PASSED!
 with expansion:
   CHECK( 0 == 0 )
 
-"aaa"0.5f99true0.11d1111aaa===============================================================================
+"aaa"0.5f99true0.11d1111main.cpp(47) PASSED!
+  CHECK( doctest::detail::rawMemoryToString(a).length() > 0u )
+with expansion:
+  CHECK( 18 > 0 )
+
+aaa===============================================================================
 test.cpp(6)
 subcases
 
@@ -92,4 +97,4 @@ TEST CASE FAILED! (threw exception)
 
 ===============================================================================
 [doctest] test cases:    5 |    2 passed |    3 failed |    0 skipped
-[doctest] assertions:   15 |    7 passed |    8 failed |
+[doctest] assertions:   16 |    8 passed |    8 failed |

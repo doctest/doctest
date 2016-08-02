@@ -44,6 +44,7 @@ TEST_CASE("doctest internals") {
          << toString(static_cast<unsigned short>(1));
 
     // others
+    CHECK(doctest::detail::rawMemoryToString(a).length() > 0u);
     cout << doctest::detail::fileForOutput("c:\\a") << doctest::detail::fileForOutput("c:/a")
          << doctest::detail::fileForOutput("a");
 }

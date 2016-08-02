@@ -18,4 +18,4 @@ TEST CASE FAILED! (threw exception)
 
 ===============================================================================
 [doctest] test cases:    4 |    2 passed |    2 failed |    1 skipped
-[doctest] assertions:    5 |    4 passed |    1 failed |
+[doctest] assertions:    6 |    5 passed |    1 failed |
