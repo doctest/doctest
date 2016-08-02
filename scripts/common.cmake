@@ -34,6 +34,7 @@ function(add_test)
     # append the argument for removing paths from filenames in the output so tests give the same output everywhere
     set(the_command "${the_command} --dt-no-path-filenames=1")
     set(the_command "${the_command} --dt-no-exitcode=1")
+    set(the_command "${the_command} --dt-no-colors=1")
     
     string(STRIP ${the_command} the_command)
     
