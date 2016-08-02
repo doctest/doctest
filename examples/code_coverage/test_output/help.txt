@@ -1,0 +1,49 @@
+[doctest] doctest version is "1.0.0"
+[doctest]
+[doctest] boolean values: "1/on/yes/true" or "0/off/no/false"
+[doctest] filter  values: "str1,str2,str3" (comma separated strings)
+[doctest]
+[doctest] filters use wildcards for matching strings
+[doctest] something passes a filter if any of the strings in a filter matches
+[doctest]
+[doctest] ALL FLAGS, OPTIONS AND FILTERS ALSO AVAILABLE WITH A "dt-" PREFIX!!!
+[doctest]
+[doctest] Query flags - the program quits after them. Available:
+
+ -?,   --help, -h                      prints this message
+ -v,   --version                       prints the version
+ -c,   --count                         prints the number of matching tests
+ -ltc, --list-test-cases               lists all matching tests by name
+ -lts, --list-test-suites              lists all matching test suites
+
+[doctest] The available <int>/<string> options/filters are:
+
+ -tc,  --test-case=<filters>           filters     tests by their name
+ -tce, --test-case-exclude=<filters>   filters OUT tests by their name
+ -sf,  --source-file=<filters>         filters     tests by their file
+ -sfe, --source-file-exclude=<filters> filters OUT tests by their file
+ -ts,  --test-suite=<filters>          filters     tests by their test suite
+ -tse, --test-suite-exclude=<filters>  filters OUT tests by their test suite
+ -ob,  --order-by=<string>             how the tests should be ordered
+                                       <string> - by [file/suite/name/rand]
+ -rs,  --rand-seed=<int>               seed for random ordering
+ -f,   --first=<int>                   the first test passing the filters to
+                                       execute - for range-based execution
+ -l,   --last=<int>                    the last test passing the filters to
+                                       execute - for range-based execution
+ -aa,  --abort-after=<int>             stop after <int> failed assertions
+
+[doctest] Bool options - can be used like flags and true is assumed. Available:
+
+ -s,   --success=<bool>                include successful assertions in output
+ -cs,  --case-sensitive=<bool>         filters being treated as case sensitive
+ -e,   --exit=<bool>                   exits after the tests finish
+ -nt,  --no-throw=<bool>               skips exceptions-related assert checks
+ -ne,  --no-exitcode=<bool>            returns (or exits) always with success
+ -nr,  --no-run=<bool>                 skips all runtime doctest operations
+ -nc,  --no-colors=<bool>              disables colors in output
+ -nb,  --no-breaks=<bool>              disables breakpoints in debuggers
+ -npf, --no-path-filenames=<bool>      only filenames and no paths in output
+
+[doctest] for more information visit the project documentation
+

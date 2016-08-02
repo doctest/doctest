@@ -28,12 +28,12 @@ TEST_SUITE("the testsuite!");
     REQUIRE(1 == 1);                                                                               \
     CHECK_FALSE(0);                                                                                \
     REQUIRE_FALSE(0);                                                                              \
-    CHECK_THROWS(throws());                                                                        \
-    REQUIRE_THROWS(throws());                                                                      \
-    CHECK_THROWS_AS(throws(), int);                                                                \
-    REQUIRE_THROWS_AS(throws(), char);                                                             \
-    CHECK_NOTHROW(nothrows());                                                                     \
-    REQUIRE_NOTHROW(nothrows());                                                                   \
+    CHECK_THROWS(throws(true));                                                                    \
+    REQUIRE_THROWS(throws(true));                                                                  \
+    CHECK_THROWS_AS(throws(true), int);                                                            \
+    REQUIRE_THROWS_AS(throws(true), char);                                                         \
+    CHECK_NOTHROW(throws(false));                                                                  \
+    REQUIRE_NOTHROW(throws(false));                                                                \
     SUBCASE("") {}
 
 // in a separate function because the TEST_CASE() macro will expand to an uninstantiated template

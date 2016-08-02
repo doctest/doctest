@@ -24,8 +24,6 @@
     - using the fast assertions
     - a test in a header in one binary with multiple cpp files
 
-- coverage
-
 - write tests for the library itself
 
 - better docs
