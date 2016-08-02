@@ -1,5 +1,28 @@
 [doctest] doctest version is "1.0.0"
 [doctest] run with "--help" for options
 ===============================================================================
-[doctest] test cases:    1 |    1 passed |    0 failed |    0 skipped
-[doctest] assertions:    0 |    0 passed |    0 failed |
+main.cpp(4)
+throws
+
+main.cpp(5) FAILED! 
+  CHECK( 1 == 2 )
+with expansion:
+  CHECK( 1 == 2 )
+
+===============================================================================
+test.cpp(13)
+assertions
+
+test.cpp(17) FAILED! 
+  CHECK( a == b )
+with expansion:
+  CHECK( 0x000000000022f6cc == 0x000000000022f6c8 )
+
+test.cpp(18) FAILED! 
+  CHECK( 1 == false )
+with expansion:
+  CHECK( 1 == false )
+
+===============================================================================
+[doctest] test cases:    2 |    0 passed |    2 failed |    2 skipped
+[doctest] assertions:    3 |    0 passed |    3 failed |

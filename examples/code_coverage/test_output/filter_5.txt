@@ -29,5 +29,5 @@ throws
 TEST CASE FAILED! (threw exception)
 
 ===============================================================================
-[doctest] test cases:    4 |    2 passed |    2 failed |    0 skipped
+[doctest] test cases:    2 |    0 passed |    2 failed |    2 skipped
 [doctest] assertions:    6 |    2 passed |    4 failed |

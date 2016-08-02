@@ -1,8 +1,5 @@
 [doctest] doctest version is "1.0.0"
 [doctest] run with "--help" for options
-[doctest] listing all test suites
-
-ts1
-ts2
 ===============================================================================
-[doctest] number of tests passing the current filters: 4
+[doctest] test cases:    0 |    0 passed |    0 failed |    4 skipped
+[doctest] assertions:    0 |    0 passed |    0 failed |
