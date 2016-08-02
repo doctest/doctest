@@ -86,7 +86,7 @@ build_script:
   # ============= MINGW - always 64 bit
   - mkdir gcc6
   - cd gcc6
-  - set PATH=C:\Program Files (x86)\CMake\bin;C:\mingw\mingw64\bin
+  - set PATH=C:\mingw\mingw64\bin;%PATH%
   - cmake .. -G "MinGW Makefiles" -DCMAKE_BUILD_TYPE=%Configuration%
   - cmake --build .
   - ctest --output-on-failure
