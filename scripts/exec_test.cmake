@@ -28,7 +28,7 @@ endif()
 
 if("${TEST_MODE}" STREQUAL "COMPARE")
     if(NOT CMAKE_HOST_UNIX)
-        #execute_process(COMMAND dos2unix ${TEST_TEMP_FILE})
+        execute_process(COMMAND unix2dos ${TEST_TEMP_FILE})
     endif()
     
     execute_process(COMMAND ${CMAKE_COMMAND} -E compare_files ${TEST_OUTPUT_FILE} ${TEST_TEMP_FILE} RESULT_VARIABLE cmp_result)
