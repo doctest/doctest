@@ -20,10 +20,13 @@ using namespace std;
 
 using doctest::toString;
 
+#if __GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ > 6)
+#pragma GCC diagnostic ignored "-Wzero-as-null-pointer-constant"
+#endif // > gcc 4.6
+
 TEST_CASE("doctest internals") {
     // string stuff
-    doctest::String a;
-    a += "omg";
+    doctest::String       a(0);
     const doctest::String const_str("omgomgomg");
     a = const_str.c_str();
     CHECK(a.size() == const_str.size());

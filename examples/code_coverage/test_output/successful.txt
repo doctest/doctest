@@ -5,25 +5,25 @@ main.cpp(6)
 subcases
 
 ===============================================================================
-main.cpp(23)
+main.cpp(27)
 doctest internals
 
-main.cpp(29) PASSED!
+main.cpp(32) PASSED!
   CHECK( a.size() == const_str.size() )
 with expansion:
   CHECK( 9 == 9 )
 
-main.cpp(30) PASSED!
+main.cpp(33) PASSED!
   CHECK( a.length() == const_str.length() )
 with expansion:
   CHECK( 9 == 9 )
 
-main.cpp(31) PASSED!
+main.cpp(34) PASSED!
   CHECK( a.compare(const_str, true) == 0 )
 with expansion:
   CHECK( 0 == 0 )
 
-main.cpp(32) PASSED!
+main.cpp(35) PASSED!
   CHECK( a.compare("omgomgomg", false) == 0 )
 with expansion:
   CHECK( 0 == 0 )
