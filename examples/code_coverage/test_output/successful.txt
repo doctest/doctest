@@ -18,50 +18,55 @@ with expansion:
 test.cpp(35)
 assertions
 
-test.cpp(36) FAILED! 
-  CHECK( 1 == 0 )
+test.cpp(36) PASSED!
+  CHECK( true )
 with expansion:
-  CHECK( 1 == 0 )
+  CHECK( true )
 
 test.cpp(37) FAILED! 
+  CHECK( 1 == 0 )
+with expansion:
+  CHECK( 1 == 0 )
+
+test.cpp(38) FAILED! 
   CHECK_FALSE( 1 )
 with expansion:
   CHECK_FALSE( 1 )
 
-test.cpp(38) FAILED! 
+test.cpp(39) FAILED! 
   CHECK( myType() == myType() )
 with expansion:
   CHECK( myType! == myType! )
 
-test.cpp(39) FAILED! 
+test.cpp(40) FAILED! 
   CHECK( Approx(0.1) == 0.2 )
 with expansion:
   CHECK( Approx( 0.1 ) == 0.2 )
 
-test.cpp(41) PASSED!
+test.cpp(42) PASSED!
   CHECK_THROWS( throws(true) )
 
-test.cpp(42) FAILED!
+test.cpp(43) FAILED!
   CHECK_THROWS( throws(false) )
 
-test.cpp(43) PASSED!
+test.cpp(44) PASSED!
   CHECK_NOTHROW( throws(false) )
 
-test.cpp(44) FAILED!
+test.cpp(45) FAILED!
   CHECK_NOTHROW( throws(true) )
 
-test.cpp(45) PASSED!
+test.cpp(46) PASSED!
   CHECK_THROWS_AS( throws(true), bool )
 
-test.cpp(46) FAILED! (didn't throw at all)
+test.cpp(47) FAILED! (didn't throw at all)
   REQUIRE_THROWS_AS( throws(false), bool )
 
 ===============================================================================
-test.cpp(49)
+test.cpp(50)
 throws
 
 TEST CASE FAILED! (threw exception)
 
 ===============================================================================
 [doctest] test cases:    3 |    0 passed |    3 failed |    2 skipped
-[doctest] assertions:   11 |    3 passed |    8 failed |
+[doctest] assertions:   12 |    4 passed |    8 failed |

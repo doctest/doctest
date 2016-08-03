@@ -12,6 +12,8 @@
 
 - tests in a static library without the implementation there - problematic
 
+- fix color of successful expressions when printing everything with --success
+
 - look at https://github.com/philsquared/Catch/issues/675
 
 - fix unary/binary assertion macros...

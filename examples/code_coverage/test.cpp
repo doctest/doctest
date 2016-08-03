@@ -33,6 +33,7 @@ static std::ostream& operator<<(std::ostream& stream, const myType&) {
 static bool operator==(const myType&, const myType&) { return false; }
 
 TEST_CASE("assertions") {
+    CHECK(true);
     CHECK(1 == 0);
     CHECK_FALSE(1);
     CHECK(myType() == myType());

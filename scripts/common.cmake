@@ -68,6 +68,9 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
 endif()
 
 if(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
+    add_compiler_flags(-g)      # for debugging valgrind problems...
+    add_compiler_flags(-ggdb)   # for debugging valgrind problems...
+
     add_compiler_flags(-Wall)
     add_compiler_flags(-Wextra)
     add_compiler_flags(-fstack-protector-all)
