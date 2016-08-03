@@ -14,10 +14,6 @@ TEST_CASE("subcases") {
     // clang-format on
 }
 
-#include <iostream>
-
-using namespace std;
-
 using doctest::toString;
 
 #if __GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ > 6)
@@ -35,18 +31,19 @@ TEST_CASE("doctest internals") {
     CHECK(a.compare("omgomgomg", false) == 0);
 
     // toString
-    cout << toString("aaa") << toString(0.5f) << toString('c') << toString(true)
-         << toString(static_cast<long double>(0.1)) //
-         << toString(static_cast<unsigned char>(1)) //
-         << toString(static_cast<short>(1))         //
-         << toString(static_cast<long>(1))          //
-         << toString(static_cast<unsigned long>(1)) //
-         << toString(static_cast<unsigned short>(1));
+    a += toString("aaa") + toString(0.5f) + toString('c') + toString(true) +
+         toString(static_cast<long double>(0.1))   //
+         + toString(static_cast<unsigned char>(1)) //
+         + toString(static_cast<short>(1))         //
+         + toString(static_cast<long>(1))          //
+         + toString(static_cast<unsigned long>(1)) //
+         + toString(static_cast<unsigned short>(1));
 
     // others
+    a += doctest::detail::fileForOutput("c:\\a");
+    a += doctest::detail::fileForOutput("c:/a");
+    a += doctest::detail::fileForOutput("a");
     CHECK(doctest::detail::rawMemoryToString(a).length() > 0u);
-    cout << doctest::detail::fileForOutput("c:\\a") << doctest::detail::fileForOutput("c:/a")
-         << doctest::detail::fileForOutput("a");
 }
 
 int main(int argc, char** argv) {

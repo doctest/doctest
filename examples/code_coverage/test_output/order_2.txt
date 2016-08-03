@@ -33,7 +33,7 @@ test.cpp(45) FAILED!
 test.cpp(47) FAILED! (didn't throw at all)
   REQUIRE_THROWS_AS( throws(false), bool )
 
-"aaa"0.5f99true0.11d1111aaa===============================================================================
+===============================================================================
 test.cpp(6)
 subcases
   2
