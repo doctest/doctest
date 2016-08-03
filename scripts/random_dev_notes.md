@@ -1,20 +1,6 @@
-- patreon
-
-- mocking - google mock assertion macros
-
-- should check the expression decomposer - if it copies by value anything
-
-- drop support for VC++6
-
-- add C++11 builds for gcc/clang (with -std=c++0x)
-
-- add underscores to all preprocessor identifiers not intended for use by the user
-
 - tests in a static library without the implementation there - problematic
 
 - fix color of successful expressions when printing everything with --success
-
-- look at https://github.com/philsquared/Catch/issues/675
 
 - fix unary/binary assertion macros...
 
@@ -23,12 +9,16 @@
 
 - signed/unsigned comparison trouble in assertions - also     CHECK(1 == false); (under MSVC)
 
+- integrate patreon
+
 - examples
     - removing everything with -dt- from the command line - https://github.com/onqtam/doctest/issues/20
     - using the fast assertions
     - a test in a header in one binary with multiple cpp files
 
 - write tests for the library itself
+    - macros should evaluate expressions only once
+    - macros should work with noncopyable types
 
 - better docs
     - not just for c++98

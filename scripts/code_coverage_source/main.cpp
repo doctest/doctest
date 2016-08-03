@@ -43,6 +43,9 @@ TEST_CASE("doctest internals") {
     a += doctest::detail::fileForOutput("c:\\a");
     a += doctest::detail::fileForOutput("c:/a");
     a += doctest::detail::fileForOutput("a");
+    std::ostringstream oss;
+    oss << a;
+    a += oss.str().c_str();
     CHECK(doctest::detail::rawMemoryToString(a).length() > 0u);
 }
 

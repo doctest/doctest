@@ -6,12 +6,18 @@ Support the development of the project with donations! I work on this project in
 
 This is a list of planned features for future releases (maybe in the given order).
 
+- add C++11 builds for gcc/clang (with -std=c++0x)
+- drop support for VC6 (node: - _MSC_VER == 1400 for VS 2005)
+- mocking - investigate google mock assertion macros and interop with doctest
+- look at property based testing (for example https://github.com/emil-e/rapidcheck)
+- option to output summary only
+- add support for <=, >= to Approx - like requested with [catch](https://github.com/philsquared/Catch/issues/651)
 - the set holding all registered tests should use a specialized allocator to minimize program startup time
 - ability to have no output when everything succeeds
 - a mechanism for translating exceptions - users should be able to teach the framework about their types (look at Catch for this)
 - support for ```std::exception``` and derivatives (mainly for calling the ```.what()``` method when caught unexpectedly)
 - test with missed warning flags for GCC - look into https://github.com/Barro/compiler-warnings
-- crash handling: signals on UNIX platforms or structured exceptions on Windows
+- crash handling: signals on UNIX platforms or structured exceptions on Windows (should also have DOCTEST_CONFIG_NO_SIGNAL_CATCHING)
 - support for tags
     - may fail tag
     - invisible tag
@@ -29,7 +35,7 @@ This is a list of planned features for future releases (maybe in the given order
     - reporting running time of tests
     - restricting duration of test cases
     - killing a test that exceeds a time limit (will perhaps require threading or processes)
-- adding contextual info to asserts (logging) - with an ```INFO```/```CONTEXT``` /```TRACEPOINT``` macro
+- adding contextual info to asserts (logging) - with an ```INFO```/```CONTEXT``` /```TRACEPOINT``` macro (also look at [this](https://github.com/philsquared/Catch/issues/601))
 - add ```ERROR```/```FAIL``` macros
 - running tests a few times
 - marking a test to run X times (should also multiply with the global test run times)
@@ -51,12 +57,14 @@ And here is a list of things that are being considered but not part of the roadm
 - handle ```wchar``` strings
 - explore ```extern template``` from C++11 - maybe some templates can be externed - for basic types like int/char/float...
 - a progress reporter
+- add underscores to all preprocessor identifiers not intended for use by the user
+- ability to filter not just TEST_CASE names but also SUBCASE names (and maybe tags when they are introduced)
 - doctest in a GUI environment? with no console? APIs for attaching a console? querying if there is one? should investigate...
 - ability to customize the colors in the console output
 - pool allocator for the ```String``` class - currently very unoptimized
 - ability to specify ASC/DESC for the order option
-- drop support for VC6 - _MSC_VER == 1400 for VS 2005
 - command line error handling/reporting
+- ability for the user to extend the command line - as requested [here](https://github.com/philsquared/Catch/issues/622)
 - utf8? not sure if this should be here
 - print a warning when no assertion is encountered in a test case
 - hierarchical test suites - using a stack for the pushed ones - should be easy
