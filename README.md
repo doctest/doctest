@@ -1,4 +1,4 @@
-## The lightest feature-rich C++ single-header testing framework for unit tests and TDD
+### The lightest feature-rich C++ single-header testing framework for unit tests and TDD
 
 ---------
 

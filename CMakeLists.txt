@@ -12,6 +12,8 @@ endif()
 
 include_directories("doctest/") # needed here so the coverage tools work - otherwise the "../../doctest" relative path fucks up
 
+add_subdirectory(scripts/code_coverage_source)
+
 # setup coverage stuff only when COVERALLS_SERVICE_NAME is set (usually on travis CI)
 if(DEFINED ENV{COVERALLS_SERVICE_NAME})
     set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_SOURCE_DIR}/scripts/coveralls-cmake/cmake)
@@ -19,8 +21,6 @@ if(DEFINED ENV{COVERALLS_SERVICE_NAME})
     coveralls_turn_on_coverage()
     
     coveralls_setup("${CMAKE_SOURCE_DIR}/doctest/doctest.h" ON "${CMAKE_SOURCE_DIR}/scripts/coveralls-cmake/cmake")
-    
-    add_subdirectory(examples/code_coverage)
     
     return()
 endif()
