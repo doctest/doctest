@@ -6,6 +6,7 @@
 
 - think about the expression decomposition static asserts
     - the static assert should use the c++11 feature if possible
+    - also remove the static assert from the operator<< detection trait
 
 - signed/unsigned comparison trouble in assertions - also     CHECK(1 == false); (under MSVC)
 
@@ -27,6 +28,7 @@
     - faq - why macros - http://accu.org/index.php/journals/2064
     - FAQ - how is it different from Catch (or what is lacking)
     - faq - why c++
+    - FAQ - static libraries - also mention https://github.com/pthom/doctest_registerlibrary
     - default options should be mentioned
     - mention the new asserts
     - for power users - separate headers
