@@ -1,14 +1,26 @@
-- tests in a static library without the implementation there - problematic
-
-- fix color of successful expressions when printing everything with --success
+- signed/unsigned comparison trouble in assertions - also     CHECK(1 == false); (under MSVC)
 
 - fix unary/binary assertion macros...
+
+- tests in a static library without the implementation there - problematic
+
+// this will introduce a global dummy function
+#ifdef DOCTEST_DUMMY_FUNC_FOR_STATIC_LINKING
+namespace doctest
+{
+namespace detail
+{
+    int DOCTEST_DUMMY_FUNC_FOR_STATIC_LINKING() { return 0; }
+} //namespace detail
+} //namespace doctest
+#endif // DOCTEST_DUMMY_FUNC_FOR_STATIC_LINKING
 
 - think about the expression decomposition static asserts
     - the static assert should use the c++11 feature if possible
     - also remove the static assert from the operator<< detection trait
 
-- signed/unsigned comparison trouble in assertions - also     CHECK(1 == false); (under MSVC)
+- fix color of successful expressions when printing everything with --success
+    - maybe add color scheme support...
 
 - integrate patreon
 

@@ -414,7 +414,13 @@ int  Context::run() { return 0; }
 #endif // DOCTEST_SNPRINTF_BUFFER_LENGTH
 
 #if defined(_MSC_VER) || defined(__MINGW32__)
-extern "C" __declspec(dllimport) void __stdcall OutputDebugStringA(const char*);
+#if defined(_MSC_VER) && _MSC_VER >= 1700
+#define DOCTEST_WINDOWS_SAL_IN_OPT _In_opt_
+#else // _MSC_VER
+#define DOCTEST_WINDOWS_SAL_IN_OPT
+#endif // _MSC_VER
+extern "C" __declspec(dllimport) void __stdcall OutputDebugStringA(
+        DOCTEST_WINDOWS_SAL_IN_OPT const char*);
 extern "C" __declspec(dllimport) int __stdcall IsDebuggerPresent();
 #endif // DOCTEST_PLATFORM_WINDOWS
 
