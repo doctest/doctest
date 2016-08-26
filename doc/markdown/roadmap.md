@@ -7,7 +7,6 @@ Support the development of the project with donations! I work on this project in
 This is a list of planned features for future releases (maybe in the given order).
 
 - add C++11 builds for gcc/clang (with -std=c++0x)
-- drop support for VC6 (node: - _MSC_VER == 1400 for VS 2005)
 - mocking - investigate google mock assertion macros and interop with doctest
 - look at property based testing (for example https://github.com/emil-e/rapidcheck)
 - option to output summary only

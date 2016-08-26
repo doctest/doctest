@@ -117,11 +117,6 @@
 
 #define DOCTEST_GCS() (*doctest::detail::getTestsContextState())
 
-// for anything below Visual Studio 2005 (VC++6 has no __debugbreak() - not sure about VS 2003)
-#if defined(_MSC_VER) && _MSC_VER < 1400
-#define __debugbreak() __asm { int 3}
-#endif
-
 // should probably take a look at https://github.com/scottt/debugbreak
 #ifdef DOCTEST_PLATFORM_MAC
 // The following code snippet based on:
@@ -172,7 +167,7 @@ typedef basic_ostream<char, char_traits<char> > ostream;
 #endif // _LIBCPP_VERSION
 
 #ifndef DOCTEST_CONFIG_WITH_LONG_LONG
-#if __cplusplus >= 201103L || (defined(_MSC_VER) && (_MSC_VER >= 1400))
+#if __cplusplus >= 201103L || (defined(_MSC_VER) && (_MSC_VER >= 1400)) // 1400 is MSVC 2005
 #define DOCTEST_CONFIG_WITH_LONG_LONG
 #endif // __cplusplus / _MSC_VER
 #endif // DOCTEST_CONFIG_WITH_LONG_LONG
@@ -287,15 +282,7 @@ namespace detail
         {
             static std::ostream& s;
             static const T&      t;
-// for anything below Visual Studio 2005 (VC++6 is troublesome - not sure about VS 2003)
-#if defined(_MSC_VER) && _MSC_VER < 1400
-            enum
-            {
-                value
-            };
-#else // _MSC_VER
-            static const bool value = sizeof(testStreamable(s << t)) == sizeof(yes);
-#endif // _MSC_VER
+            static const bool    value = sizeof(testStreamable(s << t)) == sizeof(yes);
         };
     } // namespace has_insertion_operator_impl
 
@@ -337,19 +324,10 @@ namespace detail
     }
 } // namespace detail
 
-// for anything below Visual Studio 2005 (VC++6 is troublesome - not sure about VS 2003)
-#if defined(_MSC_VER) && _MSC_VER < 1400
-template <typename T>
-struct StringMaker : detail::StringMakerBase<false>
-{};
-#else  // _MSC_VER
 template <typename T>
 struct StringMaker : detail::StringMakerBase<detail::has_insertion_operator<T>::value>
 {};
-#endif // _MSC_VER
 
-// not for anything below Visual Studio 2005 (VC++6 is troublesome - not sure about VS 2003)
-#if !defined(_MSC_VER) || _MSC_VER >= 1400
 template <typename T>
 struct StringMaker<T*>
 {
@@ -372,7 +350,6 @@ struct StringMaker<R C::*>
             return detail::rawMemoryToString(p);
     }
 };
-#endif // _MSC_VER
 
 template <typename T>
 String toString(const T& value) {
@@ -455,8 +432,6 @@ namespace detail
     // the function type this library works with
     typedef void (*funcType)(void);
 
-// not for anything below Visual Studio 2005 (VC++6 has no SFINAE - not sure about VS 2003)
-#if !defined(_MSC_VER) || _MSC_VER >= 1400
     // clang-format off
     template<class T>               struct decay_array       { typedef T type; };
     template<class T, unsigned N>   struct decay_array<T[N]> { typedef T* type; };
@@ -470,8 +445,7 @@ namespace detail
 
     template<bool, class = void> struct enable_if {};
     template<class T> struct enable_if<true, T> { typedef T type; };
-// clang-format on
-#endif // _MSC_VER
+    // clang-format on
 
     struct TestFailureException
     {};
@@ -583,18 +557,7 @@ namespace detail
         //template <typename R> STATIC_ASSERT_Expression_Too_Complex_Please_Rewrite_As_Binary_Comparison& operator>=(const R&);
         // clang-format on
     };
-
-// clang-format off
-
-// for anything below Visual Studio 2005 (VC++6 has no SFINAE - not sure about VS 2003)
-#if defined(_MSC_VER) && _MSC_VER < 1400
-    template <typename L, typename R> bool eq(const L& lhs, const R& rhs) { return lhs == rhs; }
-    template <typename L, typename R> bool ne(const L& lhs, const R& rhs) { return lhs != rhs; }
-    template <typename L, typename R> bool lt(const L& lhs, const R& rhs) { return lhs < rhs; }
-    template <typename L, typename R> bool gt(const L& lhs, const R& rhs) { return lhs > rhs; }
-    template <typename L, typename R> bool le(const L& lhs, const R& rhs) { return eq(lhs, rhs) != 0 ? lhs < rhs : true; }
-    template <typename L, typename R> bool ge(const L& lhs, const R& rhs) { return eq(lhs, rhs) != 0 ? lhs > rhs : true; }
-#else // _MSC_VER
+    // clang-format off
     template <typename L, typename R>
     typename enable_if<can_use_op<L>::value || can_use_op<R>::value, bool>::type eq(const L& lhs, const R& rhs) { return lhs == rhs; }
     template <typename L, typename R>
@@ -614,8 +577,6 @@ namespace detail
     inline bool gt(const char* lhs, const char* rhs) { return String(lhs) >  String(rhs); }
     inline bool le(const char* lhs, const char* rhs) { return String(lhs) <= String(rhs); }
     inline bool ge(const char* lhs, const char* rhs) { return String(lhs) >= String(rhs); }
-#endif // _MSC_VER
-
     // clang-format on
 
     template <typename L>

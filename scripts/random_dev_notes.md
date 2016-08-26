@@ -1,7 +1,3 @@
-4.9 fails for 32 bit asan builds
-5/6 fail for release builds
-
-
 - signed/unsigned comparison trouble in assertions - also     CHECK(1 == false); (under MSVC)
 
 - fix unary/binary assertion macros...
