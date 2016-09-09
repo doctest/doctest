@@ -3,6 +3,8 @@ if(doctest_force_link_static_lib_in_target_included)
 endif()
 set(doctest_force_link_static_lib_in_target_included true)
 
+cmake_minimum_required(VERSION 3.0)
+
 # includes the file to the source with compiler flags
 function(doctest_include_file_in_sources header sources)
     foreach(src ${sources})
