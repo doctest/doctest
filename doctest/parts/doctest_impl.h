@@ -1551,7 +1551,7 @@ int Context::run() {
         DOCTEST_SNPRINTF(buff, DOCTEST_COUNTOF(buff), " | ");
         DOCTEST_PRINTF_COLORED(buff, Color::None);
         DOCTEST_SNPRINTF(buff, DOCTEST_COUNTOF(buff), "%4d skipped\n",
-                         static_cast<unsigned>(testArray.size()) - numTestsPassingFilters);
+                         testArray.size() - numTestsPassingFilters);
         DOCTEST_PRINTF_COLORED(buff, Color::None);
 
         DOCTEST_PRINTF_COLORED("[doctest] ", Color::Cyan);

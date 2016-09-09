@@ -48,7 +48,7 @@ function(doctest_force_link_static_lib_in_target target lib)
                 math(EXPR curr_dummy "${curr_dummy} + 1")
                 
                 set(curr_dummy_header ${dummy_dir}/dummy_${curr_dummy}.h)
-                file(WRITE ${curr_dummy_header} "${DLL_PRIVATE}namespace doctest { namespace detail { DLL_PRIVATE int dummy_for_${LIB_NAME}_${curr_dummy}(); DLL_PRIVATE int dummy_for_${LIB_NAME}_${curr_dummy}() { return ${curr_dummy}; } } }")
+                file(WRITE ${curr_dummy_header} "${DLL_PRIVATE}namespace doctest { namespace detail { DLL_PRIVATE int dummy_for_${LIB_NAME}_${curr_dummy}(); DLL_PRIVATE int dummy_for_${LIB_NAME}_${curr_dummy}() { return ${curr_dummy}; } } }\n")
                 doctest_include_file_in_sources(${curr_dummy_header} ${src})
             endif()
         endforeach()
@@ -67,7 +67,7 @@ function(doctest_force_link_static_lib_in_target target lib)
         foreach(curr_dummy RANGE 1 ${total_dummies})
             file(APPEND ${dummy_header} "    res += dummy_for_${LIB_NAME}_${curr_dummy}();\n")
         endforeach()
-        file(APPEND ${dummy_header} "    return res;\n}\n\n} } // namespaces")
+        file(APPEND ${dummy_header} "    return res;\n}\n\n} } // namespaces\n")
         
         # set the dummy header property so we don't recreate the dummy headers the next time this macro is called for this library
         set_target_properties(${lib} PROPERTIES DOCTEST_DUMMY_HEADER ${dummy_header})
