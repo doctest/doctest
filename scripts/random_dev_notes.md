@@ -1,6 +1,15 @@
-- signed/unsigned comparison trouble in assertions - also     CHECK(1 == false); (under MSVC)
+- test compile speeds of expression decomposition - with and without specialization for const char*
 
 - fix unary/binary assertion macros...
+
+- think about the expression decomposition static asserts
+    - the static assert should use the c++11 feature if possible
+    - also remove the static assert from the operator<< detection trait
+
+- fix color of successful expressions when printing everything with --success
+    - maybe add color scheme support...
+
+- signed/unsigned comparison trouble in assertions
 
 - tests in a static library without the implementation there - problematic
 
@@ -15,13 +24,6 @@ namespace detail
 } //namespace doctest
 #endif // DOCTEST_DUMMY_FUNC_FOR_STATIC_LINKING
 
-- think about the expression decomposition static asserts
-    - the static assert should use the c++11 feature if possible
-    - also remove the static assert from the operator<< detection trait
-
-- fix color of successful expressions when printing everything with --success
-    - maybe add color scheme support...
-
 - integrate patreon
 
 - examples
@@ -34,6 +36,7 @@ namespace detail
     - macros should work with noncopyable types
 
 - better docs
+    - char ptr comparison - not what u'd expect
     - not just for c++98
     - updated compile time benchmarks (and include linux!)
     - list the subcases as a major selling point on the main page - after the expression decomposition macro stuff

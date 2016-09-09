@@ -2,10 +2,8 @@
 
 notifications:
   - provider: Email
-    to:
-      - vik.kirilov@gmail.com
-    on_build_status_changed: true
-    on_build_failure: true
+    on_build_status_changed: false
+    on_build_failure: false
     on_build_success: false
   # gitter
   - provider: Webhook

@@ -49,7 +49,7 @@ And here is a list of things that are being considered but not part of the roadm
 - look into MSTest integration
     - http://accu.org/index.php/journals/1851
     - https://msdn.microsoft.com/en-us/library/hh270865.aspx
-    - also look into similar Xcode integration
+    - also look into similar Xcode integration - https://github.com/philsquared/Catch/pull/454
 - matchers - should investigate what they are :D
 - generators? - look at Catch - and investigate what they are (also in [boost](http://www.boost.org/doc/libs/1_61_0/libs/test/doc/html/boost_test/tests_organization/test_cases/test_case_generation.html)
 - option to list files in which there are test cases who match the current filters
