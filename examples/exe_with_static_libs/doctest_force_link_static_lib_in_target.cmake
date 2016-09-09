@@ -32,7 +32,7 @@ function(doctest_force_link_static_lib_in_target target lib)
     get_target_property(LIB_NAME ${lib} NAME)
     if(${DDH} STREQUAL "DDH-NOTFOUND")
         # figure out the paths and names of the dummy headers - should be in the build folder for the target
-        get_target_property(BD ${lib} BINARY_DIR)
+        set(BD ${CMAKE_CURRENT_BINARY_DIR}) # get_target_property(BD ${lib} BINARY_DIR) # 'BINARY_DIR' target property unsupported before CMake 3.4 ...
         set(dummy_dir ${BD}/${LIB_NAME}_DOCTEST_STATIC_LIB_FORCE_LINK_DUMMIES/)
         set(dummy_header ${dummy_dir}/all_dummies.h)
         file(MAKE_DIRECTORY ${dummy_dir})
