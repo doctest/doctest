@@ -11,19 +11,6 @@
 
 - signed/unsigned comparison trouble in assertions
 
-- tests in a static library without the implementation there - problematic
-
-// this will introduce a global dummy function
-#ifdef DOCTEST_DUMMY_FUNC_FOR_STATIC_LINKING
-namespace doctest
-{
-namespace detail
-{
-    int DOCTEST_DUMMY_FUNC_FOR_STATIC_LINKING() { return 0; }
-} //namespace detail
-} //namespace doctest
-#endif // DOCTEST_DUMMY_FUNC_FOR_STATIC_LINKING
-
 - integrate patreon
 
 - examples
