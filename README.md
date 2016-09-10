@@ -33,7 +33,7 @@ The **key** differences between it and other testing libraries are:
 - Ultra light - [**below 10ms**](doc/markdown/benchmarks.md) of compile time overhead for including the header in a source file
 - Offers a way to remove **everything** testing-related from the binary with the [**```DOCTEST_CONFIG_DISABLE```**](doc/markdown/configuration.md) identifier
 - Doesn't pollute the global namespace (everything is in the ```doctest``` namespace) and doesn't drag **any** headers with it
-- Doesn't produce any warnings even on the [**most aggressive**](scripts/common.cmake#L59) warning levels for **MSVC**/**GCC**/**Clang**
+- Doesn't produce any warnings even on the [**most aggressive**](scripts/common.cmake#L71) warning levels for **MSVC**/**GCC**/**Clang**
 - Very [**portable and well tested**](doc/markdown/features.md#extremely-portable) C++98 - per commit tested on CI with over 200 different builds (valgrind, sanitizers...)
 - Just one header and no external dependencies apart from the C/C++ standard library! (well... same as [**Catch**](https://github.com/philsquared/Catch)...)
 

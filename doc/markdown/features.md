@@ -22,15 +22,15 @@
 - Standards compliant **C++98** code - should work with any **C++98** compiler
 - tested with **GCC**: **4.4**, **4.5**, **4.6**, **4.7**, **4.8**, **4.9**, **5**, **6**
 - tested with **Clang**: **3.4**, **3.5**, **3.6**, **3.7**, **3.8**
-- tested with **MSVC**: **2008**, **2010**, **2012**, **2013**, **2015** (and even **VC++6** - that **18 year old compiler** from 1998!)
+- tested with **MSVC**: **2008**, **2010**, **2012**, **2013**, **2015**
 - per-commit tested on **travis** and **appveyor** CI services
-	- warnings as errors even on the most aggressive warning levels - see [**here**](../../scripts/common.cmake#L59)
+	- warnings as errors even on the most aggressive warning levels - see [**here**](../../scripts/common.cmake#L71)
 	- all tests have their output compared to reference output of a previous known good run
 	- all tests built and ran in **Debug**/**Release** and also in **32**/**64** bit modes
 	- all tests ran through **valgrind** under **Linux**/**OSX**
 	- all tests ran through **address** and **UB** sanitizers under **Linux**/**OSX**
-	- tests are ran in a total of **180** different configurations on UNIX (Linux + OSX) on **travis** CI
-	- tests are ran in a total of **18** different configurations on Windows on **appveyor** CI
+	- tests are ran in more than **200** different configurations on UNIX (Linux + OSX) on **travis** CI
+	- tests are ran in a total of **20** different configurations on Windows on **appveyor** CI
 
 ## Other features:
 
