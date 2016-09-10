@@ -54,7 +54,7 @@ REQUIRE(performComputation() == doctest::Approx(2.1));
 By default a small epsilon value is used that covers many simple cases of rounding errors. When this is insufficient the epsilon value (the amount within which a difference either way is ignored) can be specified by calling the ```epsilon()``` method on the ```doctest::Approx``` instance. e.g.:
 
 ```c++
-REQUIRE(22/7 == doctest::Approx(3.141).epsilon(0.01));
+REQUIRE(22.0/7 == doctest::Approx(3.141).epsilon(0.01));
 ```
 
 When dealing with very large or very small numbers it can be useful to specify a scale, which can be achieved by calling the ```scale()``` method on the ```doctest::Approx``` instance.
