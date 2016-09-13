@@ -46,14 +46,9 @@
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wunknown-pragmas"
 #pragma clang diagnostic ignored "-Wpadded"
-//#pragma clang diagnostic ignored "-Wglobal-constructors"
-//#pragma clang diagnostic ignored "-Wexit-time-destructors"
 #pragma clang diagnostic ignored "-Wmissing-prototypes"
-//#pragma clang diagnostic ignored "-Wsign-conversion"
 #pragma clang diagnostic ignored "-Wshorten-64-to-32"
-//#pragma clang diagnostic ignored "-Wmissing-variable-declarations"
 #pragma clang diagnostic ignored "-Wcovered-switch-default"
-//#pragma clang diagnostic ignored "-Wmissing-noreturn"
 #pragma clang diagnostic ignored "-Wunused-local-typedef"
 #endif // __clang__
 
@@ -62,14 +57,11 @@
 #pragma GCC diagnostic push
 #endif // > gcc 4.6
 #pragma GCC diagnostic ignored "-Wunknown-pragmas"
-//#pragma GCC diagnostic ignored "-Wconversion"
 #pragma GCC diagnostic ignored "-Weffc++"
-//#pragma GCC diagnostic ignored "-Wsign-conversion"
 #pragma GCC diagnostic ignored "-Wstrict-overflow"
 #pragma GCC diagnostic ignored "-Wmissing-declarations"
 #pragma GCC diagnostic ignored "-Winline"
 #pragma GCC diagnostic ignored "-Wswitch-default"
-//#pragma GCC diagnostic ignored "-Wunsafe-loop-optimizations"
 #if __GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ > 6)
 #pragma GCC diagnostic ignored "-Wzero-as-null-pointer-constant"
 #endif // > gcc 4.6
@@ -84,7 +76,6 @@
 #ifdef _MSC_VER
 #pragma warning(push)
 #pragma warning(disable : 4996) // The compiler encountered a deprecated declaration
-//#pragma warning(disable : 4267) // 'var' : conversion from 'size_t' to 'type', possible loss of data
 #pragma warning(disable : 4706) // assignment within conditional expression
 #pragma warning(disable : 4512) // 'class' : assignment operator could not be generated
 #pragma warning(disable : 4127) // conditional expression is constant
