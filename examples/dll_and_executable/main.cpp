@@ -10,5 +10,8 @@ int main(int argc, char** argv) {
     
     res += call_tests_from_dll(argc, argv);
 
-    return res;
+    if(context.shouldExit()) // important - query flags (and --exit) rely on the user doing this
+        return res;          // propagate the result of the tests
+
+    return res; // the result from doctest is propagated here as well
 }

@@ -26,6 +26,9 @@
 #if __GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ > 6)
 #pragma GCC diagnostic ignored "-Wzero-as-null-pointer-constant"
 #endif // > gcc 4.6
+#if __GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ > 7)
+#pragma GCC diagnostic ignored "-Wunused-local-typedefs"
+#endif // > gcc 4.7
 #if __GNUC__ > 5 || (__GNUC__ == 5 && __GNUC_MINOR__ > 3)
 #pragma GCC diagnostic ignored "-Wuseless-cast"
 #endif // > gcc 5.3
@@ -425,7 +428,7 @@ int  Context::run() { return 0; }
 extern "C" __declspec(dllimport) void __stdcall OutputDebugStringA(
         DOCTEST_WINDOWS_SAL_IN_OPT const char*);
 extern "C" __declspec(dllimport) int __stdcall IsDebuggerPresent();
-#endif // DOCTEST_PLATFORM_WINDOWS
+#endif // _MSC_VER || __MINGW32__
 
 #ifdef DOCTEST_CONFIG_COLORS_ANSI
 #include <unistd.h>

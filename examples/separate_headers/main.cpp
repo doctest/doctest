@@ -25,5 +25,5 @@ int main(int argc, char** argv) {
     system("pause");
 #endif // WITH_PAUSE
 
-    return res + client_stuff_return_code;
+    return res + client_stuff_return_code; // the result from doctest is propagated here as well
 }

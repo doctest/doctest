@@ -9,13 +9,13 @@ TEST_CASE("custom macros") {
 
     SUBCASE("bar") {
         SUBCASE("foo") {
-            printf("foo\n"); // 
+            printf("foo\n"); //
         }
         SUBCASE("baz") {
-            printf("baz\n"); // 
+            printf("baz\n"); //
         }
 
-        printf("end\n"); // 
+        printf("end\n"); //
     }
 }
 

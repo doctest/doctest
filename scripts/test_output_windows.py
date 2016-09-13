@@ -21,7 +21,6 @@ os.chdir("../")
 
 os.chdir("build-mingw")
 res = res + os.system("cmake .. -G \"MinGW Makefiles\" -DCMAKE_BUILD_TYPE=Debug");
-res = res + os.system("cmake .. -G \"MinGW Makefiles\"");
 res = res + os.system("cmake .. -DTEST_MODE=COMPARE");
 res = res + os.system("cmake --build .");
 res = res + os.system("ctest --output-on-failure");

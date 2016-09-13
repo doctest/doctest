@@ -22,5 +22,5 @@ int main(int argc, char** argv) {
     int client_stuff_return_code = 0;
     // your program - if the testing framework is integrated in your production code
 
-    return res + client_stuff_return_code;
+    return res + client_stuff_return_code; // the result from doctest is propagated here as well
 }

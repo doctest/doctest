@@ -1,10 +1,16 @@
+- add clearFilters functionality
+fixed #33
+
+// allows the user to clear all filters from the command line
+void Context::clearFilters(void) {
+	for (unsigned i = 0; i < p->filters.size(); ++i) {
+		p->filters[i].clear();
+	}
+}
+
 - test compile speeds of expression decomposition - with and without specialization for const char*
 
 - fix unary/binary assertion macros...
-
-- think about the expression decomposition static asserts
-    - the static assert should use the c++11 feature if possible
-    - also remove the static assert from the operator<< detection trait
 
 - fix color of successful expressions when printing everything with --success
     - maybe add color scheme support...
