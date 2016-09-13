@@ -53,6 +53,9 @@
 #pragma clang diagnostic ignored "-Wmissing-variable-declarations"
 #pragma clang diagnostic ignored "-Wcovered-switch-default"
 #pragma clang diagnostic ignored "-Wmissing-noreturn"
+#if __clang_major__ > 3 || __clang_minor__ > 5
+#pragma clang diagnostic ignored "-Wunused-local-typedef"
+#endif // > clang 3.5
 #endif // __clang__
 
 #if defined(__GNUC__) && !defined(__clang__)
