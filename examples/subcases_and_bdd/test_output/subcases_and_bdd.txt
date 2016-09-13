@@ -25,7 +25,7 @@ main.cpp(39)
       Then: the size and capacity change
 
 main.cpp(50) FAILED! 
-  CHECK( v.size() == 20u )
+  CHECK( v.size() == 20 )
 with expansion:
   CHECK( 10 == 20 )
 
@@ -37,7 +37,7 @@ main.cpp(39)
       Then: neither size nor capacity are changed
 
 main.cpp(74) FAILED! 
-  CHECK( v.size() == 10u )
+  CHECK( v.size() == 10 )
 with expansion:
   CHECK( 5 == 10 )
 
