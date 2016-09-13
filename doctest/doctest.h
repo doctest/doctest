@@ -920,6 +920,7 @@ public:
     void applyCommandLine(int argc, const char* const* argv);
 
     void addFilter(const char* filter, const char* value);
+    void clearFilters();
     void setOption(const char* option, int value);
     void setOption(const char* option, const char* value);
 
@@ -1726,6 +1727,7 @@ Context::Context(int, const char* const*) {}
 Context::~Context() {}
 void Context::applyCommandLine(int, const char* const*) {}
 void Context::addFilter(const char*, const char*) {}
+void Context::clearFilters() {}
 void Context::setOption(const char*, int) {}
 void Context::setOption(const char*, const char*) {}
 bool Context::shouldExit() { return false; }
@@ -2687,6 +2689,12 @@ void Context::parseArgs(int argc, const char* const* argv, bool withDefaults) {
 
 // allows the user to add procedurally to the filters from the command line
 void Context::addFilter(const char* filter, const char* value) { setOption(filter, value); }
+
+// allows the user to clear all filters from the command line
+void Context::clearFilters() {
+    for(unsigned i = 0; i < p->filters.size(); ++i)
+        p->filters[i].clear();
+}
 
 // allows the user to override procedurally the int/bool options from the command line
 void Context::setOption(const char* option, int value) {

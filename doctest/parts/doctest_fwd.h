@@ -917,6 +917,7 @@ public:
     void applyCommandLine(int argc, const char* const* argv);
 
     void addFilter(const char* filter, const char* value);
+    void clearFilters();
     void setOption(const char* option, int value);
     void setOption(const char* option, const char* value);
 
