@@ -36,8 +36,8 @@
 // =================================================================================================
 // =================================================================================================
 
-// Suppress this globally - there is no way to silence it in the expression decomposition macros
-// _Pragma() in macros doesn't work for the c++ front-end of g++
+// Suppress this globally (without push/pop) - there is no way to silence it in the
+// expression decomposition macros _Pragma() in macros doesn't work for the c++ front-end of g++
 // https://gcc.gnu.org/bugzilla/show_bug.cgi?id=55578
 // https://gcc.gnu.org/bugzilla/show_bug.cgi?id=69543
 // Also the warning is completely worthless nowadays - http://stackoverflow.com/questions/14016993
@@ -49,14 +49,14 @@
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wunknown-pragmas"
 #pragma clang diagnostic ignored "-Wpadded"
-#pragma clang diagnostic ignored "-Wglobal-constructors"
-#pragma clang diagnostic ignored "-Wexit-time-destructors"
+//#pragma clang diagnostic ignored "-Wglobal-constructors"
+//#pragma clang diagnostic ignored "-Wexit-time-destructors"
 #pragma clang diagnostic ignored "-Wmissing-prototypes"
-#pragma clang diagnostic ignored "-Wsign-conversion"
+//#pragma clang diagnostic ignored "-Wsign-conversion"
 #pragma clang diagnostic ignored "-Wshorten-64-to-32"
-#pragma clang diagnostic ignored "-Wmissing-variable-declarations"
+//#pragma clang diagnostic ignored "-Wmissing-variable-declarations"
 #pragma clang diagnostic ignored "-Wcovered-switch-default"
-#pragma clang diagnostic ignored "-Wmissing-noreturn"
+//#pragma clang diagnostic ignored "-Wmissing-noreturn"
 #pragma clang diagnostic ignored "-Wunused-local-typedef"
 #endif // __clang__
 
@@ -64,14 +64,15 @@
 #if __GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ > 6)
 #pragma GCC diagnostic push
 #endif // > gcc 4.6
-#pragma GCC diagnostic ignored "-Wconversion"
+#pragma GCC diagnostic ignored "-Wunknown-pragmas"
+//#pragma GCC diagnostic ignored "-Wconversion"
 #pragma GCC diagnostic ignored "-Weffc++"
-#pragma GCC diagnostic ignored "-Wsign-conversion"
+//#pragma GCC diagnostic ignored "-Wsign-conversion"
 #pragma GCC diagnostic ignored "-Wstrict-overflow"
 #pragma GCC diagnostic ignored "-Wmissing-declarations"
 #pragma GCC diagnostic ignored "-Winline"
 #pragma GCC diagnostic ignored "-Wswitch-default"
-#pragma GCC diagnostic ignored "-Wunsafe-loop-optimizations"
+//#pragma GCC diagnostic ignored "-Wunsafe-loop-optimizations"
 #if __GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ > 6)
 #pragma GCC diagnostic ignored "-Wzero-as-null-pointer-constant"
 #endif // > gcc 4.6
@@ -86,7 +87,7 @@
 #ifdef _MSC_VER
 #pragma warning(push)
 #pragma warning(disable : 4996) // The compiler encountered a deprecated declaration
-#pragma warning(disable : 4267) // 'var' : conversion from 'size_t' to 'type', possible loss of data
+//#pragma warning(disable : 4267) // 'var' : conversion from 'size_t' to 'type', possible loss of data
 #pragma warning(disable : 4706) // assignment within conditional expression
 #pragma warning(disable : 4512) // 'class' : assignment operator could not be generated
 #pragma warning(disable : 4127) // conditional expression is constant
@@ -546,7 +547,7 @@ namespace detail
         const char* m_file; // the file in which the test was registered
         unsigned    m_line; // the line where the test was registered
 
-        TestData(const char* suite, const char* name, funcType f, const char* file, int line)
+        TestData(const char* suite, const char* name, funcType f, const char* file, unsigned line)
                 : m_suite(suite)
                 , m_name(name)
                 , m_f(f)
@@ -644,6 +645,38 @@ namespace detail
         template <typename R> Result operator|= (const R&) { DOCTEST_STATIC_ASSERT(deferred_false<R>::value, Expression_Too_Complex_Please_Rewrite_As_Binary_Comparison); return Result(); }
         // clang-format on
     };
+
+#ifndef DOCTEST_CONFIG_NO_COMPARISON_WARNING_SUPPRESSION
+
+#if defined(__clang__)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wsign-conversion"
+#pragma clang diagnostic ignored "-Wsign-compare"
+#pragma clang diagnostic ignored "-Wdouble-promotion"
+//#pragma clang diagnostic ignored "-Wconversion"
+//#pragma clang diagnostic ignored "-Wfloat-equal"
+#endif // __clang__
+
+#if defined(__GNUC__) && !defined(__clang__)
+#if __GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ > 6)
+#pragma GCC diagnostic push
+#endif // > gcc 4.6
+#pragma GCC diagnostic ignored "-Wsign-conversion"
+#pragma GCC diagnostic ignored "-Wsign-compare"
+#pragma GCC diagnostic ignored "-Wdouble-promotion"
+//#pragma GCC diagnostic ignored "-Wconversion"
+//#pragma GCC diagnostic ignored "-Wfloat-equal"
+#endif // __GNUC__
+
+#ifdef _MSC_VER
+#pragma warning(push)
+#pragma warning(disable : 4389) // 'operator' : signed/unsigned mismatch
+#pragma warning(disable : 4018) // 'expression' : signed/unsigned mismatch
+//#pragma warning(disable : 4805) // 'operation' : unsafe mix of type 'type' and type 'type' in operation
+#endif // _MSC_VER
+
+#endif // DOCTEST_CONFIG_NO_COMPARISON_WARNING_SUPPRESSION
+
     // clang-format off
     template <typename L, typename R>
     typename enable_if<can_use_op<L>::value || can_use_op<R>::value, bool>::type eq(const L& lhs, const R& rhs) { return lhs == rhs; }
@@ -664,7 +697,25 @@ namespace detail
     inline bool gt(const char* lhs, const char* rhs) { return String(lhs) >  String(rhs); }
     inline bool le(const char* lhs, const char* rhs) { return String(lhs) <= String(rhs); }
     inline bool ge(const char* lhs, const char* rhs) { return String(lhs) >= String(rhs); }
-    // clang-format on
+// clang-format on
+
+#ifndef DOCTEST_CONFIG_NO_COMPARISON_WARNING_SUPPRESSION
+
+#if defined(__clang__)
+#pragma clang diagnostic pop
+#endif // __clang__
+
+#if defined(__GNUC__) && !defined(__clang__)
+#if __GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ > 6)
+#pragma GCC diagnostic pop
+#endif // > gcc 4.6
+#endif // __GNUC__
+
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif // _MSC_VER
+
+#endif // DOCTEST_CONFIG_NO_COMPARISON_WARNING_SUPPRESSION
 
     template <typename L>
     struct Expression_lhs
@@ -1360,6 +1411,7 @@ DOCTEST_TEST_SUITE_END();
 #if __GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ > 6)
 #pragma GCC diagnostic push
 #endif // > gcc 4.6
+#pragma GCC diagnostic ignored "-Wunknown-pragmas"
 #pragma GCC diagnostic ignored "-Wconversion"
 #pragma GCC diagnostic ignored "-Weffc++"
 #pragma GCC diagnostic ignored "-Wsign-conversion"

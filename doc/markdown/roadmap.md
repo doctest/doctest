@@ -46,6 +46,7 @@ This is a list of planned features for future releases (maybe in the given order
 
 And here is a list of things that are being considered but not part of the roadmap yet:
 
+- experiment with wrapping assertion internals in anonymous c++11 lambdas - to see if compile times speed up!
 - look into MSTest integration
     - http://accu.org/index.php/journals/1851
     - https://msdn.microsoft.com/en-us/library/hh270865.aspx

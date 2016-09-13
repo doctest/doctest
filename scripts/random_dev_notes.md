@@ -2,8 +2,6 @@
 
 - fix unary/binary assertion macros...
 
-- signed/unsigned comparison trouble in assertions
-
 - integrate patreon
 
 - examples
@@ -26,12 +24,11 @@
     - FAQ - static libraries - also mention https://github.com/pthom/doctest_registerlibrary
     - default options should be mentioned
     - mention the new asserts
+    - document the new config identifiers
     - for power users - separate headers
     - post the traffic screenshot in the FAQ - "how epic was the initial release"
 
 post in reddit for 1.1!
-
-
 
 
 
