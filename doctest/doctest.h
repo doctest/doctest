@@ -248,6 +248,9 @@ typedef basic_ostream<char, char_traits<char> > ostream;
 #endif // DOCTEST_CONFIG_USE_IOSFWD
 #endif // _LIBCPP_VERSION
 
+// static assert macro - because of the c++98 support requires that the message is an
+// identifier (no spaces and not a C string) - example without quotes: I_am_a_message
+// taken from here: http://stackoverflow.com/a/1980156/3162383
 #ifdef DOCTEST_CONFIG_WITH_STATIC_ASSERT
 #define DOCTEST_STATIC_ASSERT(expression, message) static_assert(expression, #message)
 #else // DOCTEST_CONFIG_WITH_STATIC_ASSERT
@@ -704,7 +707,7 @@ namespace detail
         // these 2 are unfortunate because they should be allowed - they have higher precedence over the comparisons, but the
         // ExpressionDecomposer class uses the left shift operator to capture the left operand of the binary expression...
         template <typename R> int operator<< (const R&) { DOCTEST_STATIC_ASSERT(deferred_false<R>::value, Please_Surround_The_Left_Shift_Operation_With_Parenthesis); return int(); }
-        template <typename R> int operator>> (const R&) { DOCTEST_STATIC_ASSERT(deferred_false<R>::value, Please_Surround_The_Left_Shift_Operation_With_Parenthesis); return int(); }
+        template <typename R> int operator>> (const R&) { DOCTEST_STATIC_ASSERT(deferred_false<R>::value, Please_Surround_The_Right_Shift_Operation_With_Parenthesis); return int(); }
         // clang-format on
     };
 
@@ -2259,9 +2262,9 @@ namespace detail
 
         DOCTEST_PRINTF_COLORED(loc, Color::LightGrey);
         DOCTEST_PRINTF_COLORED(msg, passed ? Color::BrightGreen : Color::Red);
-        DOCTEST_PRINTF_COLORED(info1, Color::Red);
+        DOCTEST_PRINTF_COLORED(info1, Color::Cyan);
         DOCTEST_PRINTF_COLORED(info2, Color::None);
-        DOCTEST_PRINTF_COLORED(info3, Color::Red);
+        DOCTEST_PRINTF_COLORED(info3, Color::Cyan);
         DOCTEST_PRINTF_COLORED("\n", Color::None);
 
         printToDebugConsole(String(loc) + msg + info1 + info2 + info3 + "\n");
@@ -2283,7 +2286,7 @@ namespace detail
 
         DOCTEST_PRINTF_COLORED(loc, Color::LightGrey);
         DOCTEST_PRINTF_COLORED(msg, threw ? Color::BrightGreen : Color::Red);
-        DOCTEST_PRINTF_COLORED(info1, Color::Green);
+        DOCTEST_PRINTF_COLORED(info1, Color::Cyan);
 
         printToDebugConsole(String(loc) + msg + info1);
     }
@@ -2306,7 +2309,7 @@ namespace detail
 
         DOCTEST_PRINTF_COLORED(loc, Color::LightGrey);
         DOCTEST_PRINTF_COLORED(msg, threw_as ? Color::BrightGreen : Color::Red);
-        DOCTEST_PRINTF_COLORED(info1, Color::Green);
+        DOCTEST_PRINTF_COLORED(info1, Color::Cyan);
 
         printToDebugConsole(String(loc) + msg + info1);
     }
@@ -2327,7 +2330,7 @@ namespace detail
 
         DOCTEST_PRINTF_COLORED(loc, Color::LightGrey);
         DOCTEST_PRINTF_COLORED(msg, !threw ? Color::BrightGreen : Color::Red);
-        DOCTEST_PRINTF_COLORED(info1, Color::Green);
+        DOCTEST_PRINTF_COLORED(info1, Color::Cyan);
 
         printToDebugConsole(String(loc) + msg + info1);
     }

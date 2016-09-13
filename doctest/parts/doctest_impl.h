@@ -921,9 +921,9 @@ namespace detail
 
         DOCTEST_PRINTF_COLORED(loc, Color::LightGrey);
         DOCTEST_PRINTF_COLORED(msg, passed ? Color::BrightGreen : Color::Red);
-        DOCTEST_PRINTF_COLORED(info1, Color::Red);
+        DOCTEST_PRINTF_COLORED(info1, Color::Cyan);
         DOCTEST_PRINTF_COLORED(info2, Color::None);
-        DOCTEST_PRINTF_COLORED(info3, Color::Red);
+        DOCTEST_PRINTF_COLORED(info3, Color::Cyan);
         DOCTEST_PRINTF_COLORED("\n", Color::None);
 
         printToDebugConsole(String(loc) + msg + info1 + info2 + info3 + "\n");
@@ -945,7 +945,7 @@ namespace detail
 
         DOCTEST_PRINTF_COLORED(loc, Color::LightGrey);
         DOCTEST_PRINTF_COLORED(msg, threw ? Color::BrightGreen : Color::Red);
-        DOCTEST_PRINTF_COLORED(info1, Color::Green);
+        DOCTEST_PRINTF_COLORED(info1, Color::Cyan);
 
         printToDebugConsole(String(loc) + msg + info1);
     }
@@ -968,7 +968,7 @@ namespace detail
 
         DOCTEST_PRINTF_COLORED(loc, Color::LightGrey);
         DOCTEST_PRINTF_COLORED(msg, threw_as ? Color::BrightGreen : Color::Red);
-        DOCTEST_PRINTF_COLORED(info1, Color::Green);
+        DOCTEST_PRINTF_COLORED(info1, Color::Cyan);
 
         printToDebugConsole(String(loc) + msg + info1);
     }
@@ -989,7 +989,7 @@ namespace detail
 
         DOCTEST_PRINTF_COLORED(loc, Color::LightGrey);
         DOCTEST_PRINTF_COLORED(msg, !threw ? Color::BrightGreen : Color::Red);
-        DOCTEST_PRINTF_COLORED(info1, Color::Green);
+        DOCTEST_PRINTF_COLORED(info1, Color::Cyan);
 
         printToDebugConsole(String(loc) + msg + info1);
     }

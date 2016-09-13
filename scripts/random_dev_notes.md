@@ -1,19 +1,6 @@
-- add clearFilters functionality
-fixed #33
-
-// allows the user to clear all filters from the command line
-void Context::clearFilters(void) {
-	for (unsigned i = 0; i < p->filters.size(); ++i) {
-		p->filters[i].clear();
-	}
-}
-
 - test compile speeds of expression decomposition - with and without specialization for const char*
 
 - fix unary/binary assertion macros...
-
-- fix color of successful expressions when printing everything with --success
-    - maybe add color scheme support...
 
 - signed/unsigned comparison trouble in assertions
 
