@@ -663,6 +663,7 @@ namespace detail
 
 #ifdef _MSC_VER
 #pragma warning(push)
+// http://stackoverflow.com/questions/39479163 what's the difference between C4018 and C4389
 #pragma warning(disable : 4389) // 'operator' : signed/unsigned mismatch
 #pragma warning(disable : 4018) // 'expression' : signed/unsigned mismatch
 //#pragma warning(disable : 4805) // 'operation' : unsafe mix of type 'type' and type 'type' in operation

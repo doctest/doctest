@@ -28,6 +28,10 @@ function(doctest_include_file_in_sources header sources)
 endfunction()
 
 # this is the magic function - forces every object file from the library to be linked into the target (dll or executable)
+# it doesn't work in 2 scenarios:
+# - either the target or the library uses a precompiled header - see the end of this issue for details: https://github.com/onqtam/doctest/issues/21
+# - either the target or the library is an imported target (pre-built) and not built within the current cmake tree
+# - for an alternative you can checkout this repository: https://github.com/pthom/doctest_registerlibrary
 function(doctest_force_link_static_lib_in_target target lib)
     # check if the library has generated dummy headers
     get_target_property(DDH ${lib} DOCTEST_DUMMY_HEADER)
