@@ -651,9 +651,9 @@ namespace detail
 #endif // > gcc 4.6
 #pragma GCC diagnostic ignored "-Wsign-conversion"
 #pragma GCC diagnostic ignored "-Wsign-compare"
-#if __GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ > 4)
+#if __GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ > 5)
 #pragma GCC diagnostic ignored "-Wdouble-promotion"
-#endif // > gcc 4.4
+#endif // > gcc 4.5
 //#pragma GCC diagnostic ignored "-Wconversion"
 //#pragma GCC diagnostic ignored "-Wfloat-equal"
 #endif // __GNUC__
