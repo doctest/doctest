@@ -1,6 +1,12 @@
-- test compile speeds of expression decomposition - with and without specialization for const char*
+- move functions from fwd to impl that can (the remapping ones with a switch for example)
 
-- fix unary/binary assertion macros...
+- fix unary/binary assertion macros
+
+- implement the fast unary/binary assertion macros
+
+- do not override add_test in CMake
+
+
 
 - integrate patreon
 

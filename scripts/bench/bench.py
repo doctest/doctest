@@ -3,17 +3,19 @@
 with_gcc = 0
 is_debug = 1
 
-numFiles = 100
+numFiles = 10
 
 with_doctest = 1
 
 with_implement      = 1
 with_header         = 1
 with_num_tests      = 25
-with_num_assertions = 10
+with_num_assertions = 100
 doctest_disable     = 0
 
-the_folder = "project"
+the_folder = 'project'
+
+doctest_header = 'doctest.h'
 
 GCC_cmake_generator     = '"MinGW Makefiles"'
 MSVC_cmake_generator    = '"Visual Studio 14 Win64"' # MSVC 2015
@@ -31,6 +33,9 @@ from datetime import datetime
 import shutil
 from time import sleep
 
+if os.name != "nt":
+    GCC_cmake_generator = "Makefiles"
+
 # clean and make the folder
 if os.path.exists(the_folder):
     shutil.rmtree(the_folder)
@@ -47,7 +52,7 @@ for i in range(0, numFiles):
         if with_doctest:
             if doctest_disable:
                 f.write('#define DOCTEST_CONFIG_DISABLE\n')
-            f.write('#include "doctest.h"\n\n')
+            f.write('#include "' + doctest_header + '"\n\n')
         else:
             f.write('#include "catch.hpp"\n\n')
         for t in range(0, with_num_tests):
@@ -68,7 +73,7 @@ if with_implement:
         if doctest_disable:
             f.write('#define DOCTEST_CONFIG_DISABLE\n')
         f.write('#define DOCTEST_CONFIG_IMPLEMENT\n')
-        f.write('#include "doctest.h"\n\n')
+        f.write('#include "' + doctest_header + '"\n\n')
     else:
         f.write('#define CATCH_CONFIG_RUNNER\n')
         f.write('#include "catch.hpp"\n\n')
@@ -102,8 +107,6 @@ if with_gcc:
     cmake_build_type = 'Release'
     if is_debug:
         cmake_build_type = 'Debug'
-    # twice because MinGW-w64 fails the first time - don't know why
-    os.system('cmake . -G ' + GCC_cmake_generator + ' -DCMAKE_BUILD_TYPE=' + cmake_build_type);
     os.system('cmake . -G ' + GCC_cmake_generator + ' -DCMAKE_BUILD_TYPE=' + cmake_build_type);
 else:
     os.system('cmake . -G ' + MSVC_cmake_generator);

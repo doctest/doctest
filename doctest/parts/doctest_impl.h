@@ -24,6 +24,7 @@
 #pragma GCC diagnostic ignored "-Wstrict-overflow"
 #pragma GCC diagnostic ignored "-Wmissing-declarations"
 #pragma GCC diagnostic ignored "-Winline"
+#pragma GCC diagnostic ignored "-Wswitch"
 #pragma GCC diagnostic ignored "-Wswitch-default"
 #pragma GCC diagnostic ignored "-Wunsafe-loop-optimizations"
 #if __GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ > 6)
@@ -55,15 +56,6 @@
 #include "doctest_fwd.h"
 #endif // DOCTEST_SINGLE_HEADER
 
-// macro for making a string
-#define DOCTEST_TOSTR_IMPL(x) #x
-#define DOCTEST_TOSTR(x) DOCTEST_TOSTR_IMPL(x)
-
-// for concatenating 2 literals and making the result a string
-#define DOCTEST_STR_CONCAT_TOSTR(s1, s2) DOCTEST_TOSTR(s1) DOCTEST_TOSTR(s2)
-
-#define DOCTEST_COUNTOF(x) (sizeof(x) / sizeof(x[0]))
-
 // snprintf() not in the C++98 standard
 #ifdef _MSC_VER
 #define DOCTEST_SNPRINTF _snprintf
@@ -88,6 +80,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include <cassert>
 #include <limits>
 #include <utility>
 #include <sstream>
@@ -470,11 +463,11 @@ namespace detail
         return strcmp(m_file, other.m_file) < 0;
     }
 
-    bool checkIfShouldThrow(const char* assert_name) {
-        if(strncmp(assert_name, "REQUIRE", 7) == 0)
+    bool checkIfShouldThrow(assertType::Enum assert_type) {
+        if(assert_type & assertType::is_require)
             return true;
 
-        if(strncmp(assert_name, "CHECK", 5) == 0 && getContextState()->abort_after > 0) {
+        if((assert_type & assertType::is_check) && getContextState()->abort_after > 0) {
             if(getContextState()->numFailedAssertions >= getContextState()->abort_after)
                 return true;
         }
@@ -850,8 +843,8 @@ namespace detail
             myOutputDebugString(text.c_str());
     }
 
-    void addFailedAssert(const char* assert_name) {
-        if(strncmp(assert_name, "WARN", 4) != 0) {
+    void addFailedAssert(assertType::Enum assert_type) {
+        if((assert_type & assertType::is_warn) == 0) {
             getContextState()->numFailedAssertionsForCurrentTestcase++;
             getContextState()->numFailedAssertions++;
         }
@@ -898,7 +891,7 @@ namespace detail
     }
 
     void logAssert(bool passed, const char* decomposition, bool threw, const char* expr,
-                   const char* assert_name, const char* file, int line) {
+                   assertType::Enum assert_type, const char* file, int line) {
         char loc[DOCTEST_SNPRINTF_BUFFER_LENGTH];
         DOCTEST_SNPRINTF(loc, DOCTEST_COUNTOF(loc), "%s(%d)", fileForOutput(file), line);
 
@@ -910,7 +903,8 @@ namespace detail
                              (threw ? "(threw exception)" : ""));
 
         char info1[DOCTEST_SNPRINTF_BUFFER_LENGTH];
-        DOCTEST_SNPRINTF(info1, DOCTEST_COUNTOF(info1), "  %s( %s )\n", assert_name, expr);
+        DOCTEST_SNPRINTF(info1, DOCTEST_COUNTOF(info1), "  %s( %s )\n",
+                         getAssertString(assert_type), expr);
 
         char info2[DOCTEST_SNPRINTF_BUFFER_LENGTH];
         char info3[DOCTEST_SNPRINTF_BUFFER_LENGTH];
@@ -918,8 +912,8 @@ namespace detail
         info3[0] = 0;
         if(!threw) {
             DOCTEST_SNPRINTF(info2, DOCTEST_COUNTOF(info2), "with expansion:\n");
-            DOCTEST_SNPRINTF(info3, DOCTEST_COUNTOF(info3), "  %s( %s )\n", assert_name,
-                             decomposition);
+            DOCTEST_SNPRINTF(info3, DOCTEST_COUNTOF(info3), "  %s( %s )\n",
+                             getAssertString(assert_type), decomposition);
         }
 
         DOCTEST_PRINTF_COLORED(loc, Color::LightGrey);
@@ -932,8 +926,8 @@ namespace detail
         printToDebugConsole(String(loc) + msg + info1 + info2 + info3 + "\n");
     }
 
-    void logAssertThrows(bool threw, const char* expr, const char* assert_name, const char* file,
-                         int line) {
+    void logAssertThrows(bool threw, const char* expr, assertType::Enum assert_type,
+                         const char* file, int line) {
         char loc[DOCTEST_SNPRINTF_BUFFER_LENGTH];
         DOCTEST_SNPRINTF(loc, DOCTEST_COUNTOF(loc), "%s(%d)", fileForOutput(file), line);
 
@@ -944,7 +938,8 @@ namespace detail
             DOCTEST_SNPRINTF(msg, DOCTEST_COUNTOF(msg), " FAILED!\n");
 
         char info1[DOCTEST_SNPRINTF_BUFFER_LENGTH];
-        DOCTEST_SNPRINTF(info1, DOCTEST_COUNTOF(info1), "  %s( %s )\n\n", assert_name, expr);
+        DOCTEST_SNPRINTF(info1, DOCTEST_COUNTOF(info1), "  %s( %s )\n\n",
+                         getAssertString(assert_type), expr);
 
         DOCTEST_PRINTF_COLORED(loc, Color::LightGrey);
         DOCTEST_PRINTF_COLORED(msg, threw ? Color::BrightGreen : Color::Red);
@@ -954,7 +949,7 @@ namespace detail
     }
 
     void logAssertThrowsAs(bool threw, bool threw_as, const char* as, const char* expr,
-                           const char* assert_name, const char* file, int line) {
+                           assertType::Enum assert_type, const char* file, int line) {
         char loc[DOCTEST_SNPRINTF_BUFFER_LENGTH];
         DOCTEST_SNPRINTF(loc, DOCTEST_COUNTOF(loc), "%s(%d)", fileForOutput(file), line);
 
@@ -966,8 +961,8 @@ namespace detail
                              (threw ? "(threw something else)" : "(didn't throw at all)"));
 
         char info1[DOCTEST_SNPRINTF_BUFFER_LENGTH];
-        DOCTEST_SNPRINTF(info1, DOCTEST_COUNTOF(info1), "  %s( %s, %s )\n\n", assert_name, expr,
-                         as);
+        DOCTEST_SNPRINTF(info1, DOCTEST_COUNTOF(info1), "  %s( %s, %s )\n\n",
+                         getAssertString(assert_type), expr, as);
 
         DOCTEST_PRINTF_COLORED(loc, Color::LightGrey);
         DOCTEST_PRINTF_COLORED(msg, threw_as ? Color::BrightGreen : Color::Red);
@@ -976,8 +971,8 @@ namespace detail
         printToDebugConsole(String(loc) + msg + info1);
     }
 
-    void logAssertNothrow(bool threw, const char* expr, const char* assert_name, const char* file,
-                          int line) {
+    void logAssertNothrow(bool threw, const char* expr, assertType::Enum assert_type,
+                          const char* file, int line) {
         char loc[DOCTEST_SNPRINTF_BUFFER_LENGTH];
         DOCTEST_SNPRINTF(loc, DOCTEST_COUNTOF(loc), "%s(%d)", fileForOutput(file), line);
 
@@ -988,7 +983,8 @@ namespace detail
             DOCTEST_SNPRINTF(msg, DOCTEST_COUNTOF(msg), " FAILED!\n");
 
         char info1[DOCTEST_SNPRINTF_BUFFER_LENGTH];
-        DOCTEST_SNPRINTF(info1, DOCTEST_COUNTOF(info1), "  %s( %s )\n\n", assert_name, expr);
+        DOCTEST_SNPRINTF(info1, DOCTEST_COUNTOF(info1), "  %s( %s )\n\n",
+                         getAssertString(assert_type), expr);
 
         DOCTEST_PRINTF_COLORED(loc, Color::LightGrey);
         DOCTEST_PRINTF_COLORED(msg, !threw ? Color::BrightGreen : Color::Red);
@@ -997,11 +993,9 @@ namespace detail
         printToDebugConsole(String(loc) + msg + info1);
     }
 
-    ResultBuilder::ResultBuilder(const char* assert_name, assertType::assertTypeEnum assert_type,
-                                 const char* file, int line, const char* expr,
-                                 const char* exception_type)
-            : m_assert_name(assert_name)
-            , m_assert_type(assert_type)
+    ResultBuilder::ResultBuilder(assertType::Enum assert_type, const char* file, int line,
+                                 const char* expr, const char* exception_type)
+            : m_assert_type(assert_type)
             , m_file(file)
             , m_line(line)
             , m_expr(expr)
@@ -1011,47 +1005,49 @@ namespace detail
             , m_failed(false) {}
 
     bool ResultBuilder::log() {
-        if(strncmp(m_assert_name, "WARN", 4) != 0)
+        if((m_assert_type & assertType::is_warn) == 0)
             DOCTEST_GCS().numAssertionsForCurrentTestcase++;
 
-        if(m_assert_type == assertType::normal) {
+        if(m_assert_type & assertType::is_normal) {
             m_failed = m_res;
-        } else if(m_assert_type == assertType::negated) {
+        } else if(m_assert_type & assertType::is_false) {
             m_res.invert();
             m_failed = m_res;
-        } else if(m_assert_type == assertType::throws) {
+        } else if(m_assert_type & assertType::is_throws) {
             m_failed = !m_threw;
-        } else if(m_assert_type == assertType::throws_as) {
+        } else if(m_assert_type & assertType::is_throws_as) {
             m_failed = !m_threw_as;
-        } else if(m_assert_type == assertType::nothrow) {
+        } else if(m_assert_type & assertType::is_nothrow) {
             m_failed = m_threw;
+        } else {
+            assert(false);
         }
 
         if(m_failed || DOCTEST_GCS().success) {
             DOCTEST_LOG_START();
 
-            if(m_assert_type == assertType::normal || m_assert_type == assertType::negated) {
+            if(m_assert_type & (assertType::is_normal | assertType::is_false)) {
                 logAssert(m_res.m_passed, m_res.m_decomposition.c_str(), m_threw, m_expr,
-                          m_assert_name, m_file, m_line);
-            } else if(m_assert_type == assertType::throws) {
-                logAssertThrows(m_threw, m_expr, m_assert_name, m_file, m_line);
-            } else if(m_assert_type == assertType::throws_as) {
-                logAssertThrowsAs(m_threw, m_threw_as, m_exception_type, m_expr, m_assert_name,
+                          m_assert_type, m_file, m_line);
+            } else if(m_assert_type & assertType::is_throws) {
+                logAssertThrows(m_threw, m_expr, m_assert_type, m_file, m_line);
+            } else if(m_assert_type & assertType::is_throws_as) {
+                logAssertThrowsAs(m_threw, m_threw_as, m_exception_type, m_expr, m_assert_type,
                                   m_file, m_line);
-            } else if(m_assert_type == assertType::nothrow) {
-                logAssertNothrow(m_threw, m_expr, m_assert_name, m_file, m_line);
+            } else if(m_assert_type & assertType::is_nothrow) {
+                logAssertNothrow(m_threw, m_expr, m_assert_type, m_file, m_line);
             }
         }
 
         if(m_failed) {
-            addFailedAssert(m_assert_name);
+            addFailedAssert(m_assert_type);
             if(isDebuggerActive() && !DOCTEST_GCS().no_breaks)
                 return true; // should break into the debugger
         }
         return false;
     }
     void ResultBuilder::react() const {
-        if(m_failed && checkIfShouldThrow(m_assert_name))
+        if(m_failed && checkIfShouldThrow(m_assert_type))
             throwException();
     }
 

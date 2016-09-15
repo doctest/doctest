@@ -64,6 +64,7 @@
 #pragma GCC diagnostic ignored "-Wstrict-overflow"
 #pragma GCC diagnostic ignored "-Wmissing-declarations"
 #pragma GCC diagnostic ignored "-Winline"
+#pragma GCC diagnostic ignored "-Wswitch"
 #pragma GCC diagnostic ignored "-Wswitch-default"
 #if __GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ > 6)
 #pragma GCC diagnostic ignored "-Wzero-as-null-pointer-constant"
@@ -179,6 +180,16 @@
 #else // __COUNTER__
 #define DOCTEST_ANONYMOUS(x) DOCTEST_CAT(x, __LINE__)
 #endif // __COUNTER__
+
+// macro for making a string out of an identifier
+#define DOCTEST_TOSTR_IMPL(x) #x
+#define DOCTEST_TOSTR(x) DOCTEST_TOSTR_IMPL(x)
+
+// for concatenating 2 literals and making the result a string
+#define DOCTEST_STR_CONCAT_TOSTR(s1, s2) DOCTEST_TOSTR(s1) DOCTEST_TOSTR(s2)
+
+// counts the number of elements in a C string
+#define DOCTEST_COUNTOF(x) (sizeof(x) / sizeof(x[0]))
 
 // not using __APPLE__ because... this is how Catch does it
 #if defined(__MAC_OS_X_VERSION_MIN_REQUIRED)
@@ -504,6 +515,203 @@ namespace detail
     // the function type this library works with
     typedef void (*funcType)(void);
 
+    namespace assertType
+    {
+        enum Enum
+        {
+            // macro traits
+
+            is_warn    = 1,
+            is_check   = 2,
+            is_require = 4,
+
+            is_throws    = 8,
+            is_throws_as = 16,
+            is_nothrow   = 32,
+
+            is_normal = 64,
+            is_false  = 128,
+            is_unary  = 256,
+
+            is_eq = 512,
+            is_ne = 1024,
+
+            is_lt = 2048,
+            is_gt = 4096,
+
+            is_ge = 8192,
+            is_le = 16384,
+
+            is_fast = 32768,
+
+            // macro types
+
+            DT_WARN    = is_normal | is_warn,
+            DT_CHECK   = is_normal | is_check,
+            DT_REQUIRE = is_normal | is_require,
+
+            DT_WARN_FALSE    = is_false | is_warn,
+            DT_CHECK_FALSE   = is_false | is_check,
+            DT_REQUIRE_FALSE = is_false | is_require,
+
+            DT_WARN_THROWS    = is_throws | is_warn,
+            DT_CHECK_THROWS   = is_throws | is_check,
+            DT_REQUIRE_THROWS = is_throws | is_require,
+
+            DT_WARN_THROWS_AS    = is_throws_as | is_warn,
+            DT_CHECK_THROWS_AS   = is_throws_as | is_check,
+            DT_REQUIRE_THROWS_AS = is_throws_as | is_require,
+
+            DT_WARN_NOTHROW    = is_nothrow | is_warn,
+            DT_CHECK_NOTHROW   = is_nothrow | is_check,
+            DT_REQUIRE_NOTHROW = is_nothrow | is_require,
+
+            DT_WARN_EQ    = is_normal | is_eq | is_warn,
+            DT_CHECK_EQ   = is_normal | is_eq | is_check,
+            DT_REQUIRE_EQ = is_normal | is_eq | is_require,
+
+            DT_WARN_NE    = is_normal | is_ne | is_warn,
+            DT_CHECK_NE   = is_normal | is_ne | is_check,
+            DT_REQUIRE_NE = is_normal | is_ne | is_require,
+
+            DT_WARN_GT    = is_normal | is_gt | is_warn,
+            DT_CHECK_GT   = is_normal | is_gt | is_check,
+            DT_REQUIRE_GT = is_normal | is_gt | is_require,
+
+            DT_WARN_LT    = is_normal | is_lt | is_warn,
+            DT_CHECK_LT   = is_normal | is_lt | is_check,
+            DT_REQUIRE_LT = is_normal | is_lt | is_require,
+
+            DT_WARN_GE    = is_normal | is_ge | is_warn,
+            DT_CHECK_GE   = is_normal | is_ge | is_check,
+            DT_REQUIRE_GE = is_normal | is_ge | is_require,
+
+            DT_WARN_LE    = is_normal | is_le | is_warn,
+            DT_CHECK_LE   = is_normal | is_le | is_check,
+            DT_REQUIRE_LE = is_normal | is_le | is_require,
+
+            DT_WARN_UNARY    = is_normal | is_unary | is_warn,
+            DT_CHECK_UNARY   = is_normal | is_unary | is_check,
+            DT_REQUIRE_UNARY = is_normal | is_unary | is_require,
+
+            DT_WARN_UNARY_FALSE    = is_false | is_unary | is_warn,
+            DT_CHECK_UNARY_FALSE   = is_false | is_unary | is_check,
+            DT_REQUIRE_UNARY_FALSE = is_false | is_unary | is_require,
+
+            DT_FAST_WARN_EQ    = is_fast | is_eq | is_warn,
+            DT_FAST_CHECK_EQ   = is_fast | is_eq | is_check,
+            DT_FAST_REQUIRE_EQ = is_fast | is_eq | is_require,
+
+            DT_FAST_WARN_NE    = is_fast | is_ne | is_warn,
+            DT_FAST_CHECK_NE   = is_fast | is_ne | is_check,
+            DT_FAST_REQUIRE_NE = is_fast | is_ne | is_require,
+
+            DT_FAST_WARN_GT    = is_fast | is_gt | is_warn,
+            DT_FAST_CHECK_GT   = is_fast | is_gt | is_check,
+            DT_FAST_REQUIRE_GT = is_fast | is_gt | is_require,
+
+            DT_FAST_WARN_LT    = is_fast | is_lt | is_warn,
+            DT_FAST_CHECK_LT   = is_fast | is_lt | is_check,
+            DT_FAST_REQUIRE_LT = is_fast | is_lt | is_require,
+
+            DT_FAST_WARN_GE    = is_fast | is_ge | is_warn,
+            DT_FAST_CHECK_GE   = is_fast | is_ge | is_check,
+            DT_FAST_REQUIRE_GE = is_fast | is_ge | is_require,
+
+            DT_FAST_WARN_LE    = is_fast | is_le | is_warn,
+            DT_FAST_CHECK_LE   = is_fast | is_le | is_check,
+            DT_FAST_REQUIRE_LE = is_fast | is_le | is_require,
+
+            DT_FAST_WARN_UNARY    = is_fast | is_unary | is_warn,
+            DT_FAST_CHECK_UNARY   = is_fast | is_unary | is_check,
+            DT_FAST_REQUIRE_UNARY = is_fast | is_unary | is_require,
+
+            DT_FAST_WARN_UNARY_FALSE    = is_fast | is_false | is_unary | is_warn,
+            DT_FAST_CHECK_UNARY_FALSE   = is_fast | is_false | is_unary | is_check,
+            DT_FAST_REQUIRE_UNARY_FALSE = is_fast | is_false | is_unary | is_require
+        };
+    } // namespace assertType
+
+    // @TODO: move this to the impl part
+    inline const char* getAssertString(assertType::Enum val) {
+        switch(val) {
+            // clang-format off
+            case assertType::DT_WARN                    : return DOCTEST_TOSTR(WARN                    );
+            case assertType::DT_CHECK                   : return DOCTEST_TOSTR(CHECK                   );
+            case assertType::DT_REQUIRE                 : return DOCTEST_TOSTR(REQUIRE                 );
+
+            case assertType::DT_WARN_FALSE              : return DOCTEST_TOSTR(WARN_FALSE              );
+            case assertType::DT_CHECK_FALSE             : return DOCTEST_TOSTR(CHECK_FALSE             );
+            case assertType::DT_REQUIRE_FALSE           : return DOCTEST_TOSTR(REQUIRE_FALSE           );
+
+            case assertType::DT_WARN_THROWS             : return DOCTEST_TOSTR(WARN_THROWS             );
+            case assertType::DT_CHECK_THROWS            : return DOCTEST_TOSTR(CHECK_THROWS            );
+            case assertType::DT_REQUIRE_THROWS          : return DOCTEST_TOSTR(REQUIRE_THROWS          );
+
+            case assertType::DT_WARN_THROWS_AS          : return DOCTEST_TOSTR(WARN_THROWS_AS          );
+            case assertType::DT_CHECK_THROWS_AS         : return DOCTEST_TOSTR(CHECK_THROWS_AS         );
+            case assertType::DT_REQUIRE_THROWS_AS       : return DOCTEST_TOSTR(REQUIRE_THROWS_AS       );
+
+            case assertType::DT_WARN_NOTHROW            : return DOCTEST_TOSTR(WARN_NOTHROW            );
+            case assertType::DT_CHECK_NOTHROW           : return DOCTEST_TOSTR(CHECK_NOTHROW           );
+            case assertType::DT_REQUIRE_NOTHROW         : return DOCTEST_TOSTR(REQUIRE_NOTHROW         );
+
+            case assertType::DT_WARN_EQ                 : return DOCTEST_TOSTR(WARN_EQ                 );
+            case assertType::DT_CHECK_EQ                : return DOCTEST_TOSTR(CHECK_EQ                );
+            case assertType::DT_REQUIRE_EQ              : return DOCTEST_TOSTR(REQUIRE_EQ              );
+            case assertType::DT_WARN_NE                 : return DOCTEST_TOSTR(WARN_NE                 );
+            case assertType::DT_CHECK_NE                : return DOCTEST_TOSTR(CHECK_NE                );
+            case assertType::DT_REQUIRE_NE              : return DOCTEST_TOSTR(REQUIRE_NE              );
+            case assertType::DT_WARN_GT                 : return DOCTEST_TOSTR(WARN_GT                 );
+            case assertType::DT_CHECK_GT                : return DOCTEST_TOSTR(CHECK_GT                );
+            case assertType::DT_REQUIRE_GT              : return DOCTEST_TOSTR(REQUIRE_GT              );
+            case assertType::DT_WARN_LT                 : return DOCTEST_TOSTR(WARN_LT                 );
+            case assertType::DT_CHECK_LT                : return DOCTEST_TOSTR(CHECK_LT                );
+            case assertType::DT_REQUIRE_LT              : return DOCTEST_TOSTR(REQUIRE_LT              );
+            case assertType::DT_WARN_GE                 : return DOCTEST_TOSTR(WARN_GE                 );
+            case assertType::DT_CHECK_GE                : return DOCTEST_TOSTR(CHECK_GE                );
+            case assertType::DT_REQUIRE_GE              : return DOCTEST_TOSTR(REQUIRE_GE              );
+            case assertType::DT_WARN_LE                 : return DOCTEST_TOSTR(WARN_LE                 );
+            case assertType::DT_CHECK_LE                : return DOCTEST_TOSTR(CHECK_LE                );
+            case assertType::DT_REQUIRE_LE              : return DOCTEST_TOSTR(REQUIRE_LE              );
+
+            case assertType::DT_WARN_UNARY              : return DOCTEST_TOSTR(WARN_UNARY              );
+            case assertType::DT_CHECK_UNARY             : return DOCTEST_TOSTR(CHECK_UNARY             );
+            case assertType::DT_REQUIRE_UNARY           : return DOCTEST_TOSTR(REQUIRE_UNARY           );
+            case assertType::DT_WARN_UNARY_FALSE        : return DOCTEST_TOSTR(WARN_UNARY_FALSE        );
+            case assertType::DT_CHECK_UNARY_FALSE       : return DOCTEST_TOSTR(CHECK_UNARY_FALSE       );
+            case assertType::DT_REQUIRE_UNARY_FALSE     : return DOCTEST_TOSTR(REQUIRE_UNARY_FALSE     );
+
+            case assertType::DT_FAST_WARN_EQ            : return DOCTEST_TOSTR(FAST_WARN_EQ            );
+            case assertType::DT_FAST_CHECK_EQ           : return DOCTEST_TOSTR(FAST_CHECK_EQ           );
+            case assertType::DT_FAST_REQUIRE_EQ         : return DOCTEST_TOSTR(FAST_REQUIRE_EQ         );
+            case assertType::DT_FAST_WARN_NE            : return DOCTEST_TOSTR(FAST_WARN_NE            );
+            case assertType::DT_FAST_CHECK_NE           : return DOCTEST_TOSTR(FAST_CHECK_NE           );
+            case assertType::DT_FAST_REQUIRE_NE         : return DOCTEST_TOSTR(FAST_REQUIRE_NE         );
+            case assertType::DT_FAST_WARN_GT            : return DOCTEST_TOSTR(FAST_WARN_GT            );
+            case assertType::DT_FAST_CHECK_GT           : return DOCTEST_TOSTR(FAST_CHECK_GT           );
+            case assertType::DT_FAST_REQUIRE_GT         : return DOCTEST_TOSTR(FAST_REQUIRE_GT         );
+            case assertType::DT_FAST_WARN_LT            : return DOCTEST_TOSTR(FAST_WARN_LT            );
+            case assertType::DT_FAST_CHECK_LT           : return DOCTEST_TOSTR(FAST_CHECK_LT           );
+            case assertType::DT_FAST_REQUIRE_LT         : return DOCTEST_TOSTR(FAST_REQUIRE_LT         );
+            case assertType::DT_FAST_WARN_GE            : return DOCTEST_TOSTR(FAST_WARN_GE            );
+            case assertType::DT_FAST_CHECK_GE           : return DOCTEST_TOSTR(FAST_CHECK_GE           );
+            case assertType::DT_FAST_REQUIRE_GE         : return DOCTEST_TOSTR(FAST_REQUIRE_GE         );
+            case assertType::DT_FAST_WARN_LE            : return DOCTEST_TOSTR(FAST_WARN_LE            );
+            case assertType::DT_FAST_CHECK_LE           : return DOCTEST_TOSTR(FAST_CHECK_LE           );
+            case assertType::DT_FAST_REQUIRE_LE         : return DOCTEST_TOSTR(FAST_REQUIRE_LE         );
+
+            case assertType::DT_FAST_WARN_UNARY         : return DOCTEST_TOSTR(FAST_WARN_UNARY         );
+            case assertType::DT_FAST_CHECK_UNARY        : return DOCTEST_TOSTR(FAST_CHECK_UNARY        );
+            case assertType::DT_FAST_REQUIRE_UNARY      : return DOCTEST_TOSTR(FAST_REQUIRE_UNARY      );
+            case assertType::DT_FAST_WARN_UNARY_FALSE   : return DOCTEST_TOSTR(FAST_WARN_UNARY_FALSE   );
+            case assertType::DT_FAST_CHECK_UNARY_FALSE  : return DOCTEST_TOSTR(FAST_CHECK_UNARY_FALSE  );
+            case assertType::DT_FAST_REQUIRE_UNARY_FALSE: return DOCTEST_TOSTR(FAST_REQUIRE_UNARY_FALSE);
+                // clang-format on
+        }
+        return "";
+    }
+
     // clang-format off
     template<class T>               struct decay_array       { typedef T type; };
     template<class T, unsigned N>   struct decay_array<T[N]> { typedef T* type; };
@@ -522,7 +730,7 @@ namespace detail
     struct TestFailureException
     {};
 
-    bool checkIfShouldThrow(const char* assert_name);
+    bool checkIfShouldThrow(assertType::Enum assert_type);
     void throwException();
     bool always_false();
 
@@ -575,7 +783,7 @@ namespace detail
 
     template <typename L, typename R>
     String stringifyBinaryExpr(const L& lhs, const char* op, const R& rhs) {
-        return toString(lhs) + " " + op + " " + toString(rhs);
+        return toString(lhs) + op + toString(rhs);
     }
 
     struct Result
@@ -725,12 +933,12 @@ namespace detail
         operator Result() { return Result(!!lhs, toString(lhs)); }
 
         // clang-format off
-        template <typename R> Result operator==(const R& rhs) { return Result(eq(lhs, rhs), stringifyBinaryExpr(lhs, "==", rhs)); }
-        template <typename R> Result operator!=(const R& rhs) { return Result(ne(lhs, rhs), stringifyBinaryExpr(lhs, "!=", rhs)); }
-        template <typename R> Result operator< (const R& rhs) { return Result(lt(lhs, rhs), stringifyBinaryExpr(lhs, "<" , rhs)); }
-        template <typename R> Result operator<=(const R& rhs) { return Result(le(lhs, rhs), stringifyBinaryExpr(lhs, "<=", rhs)); }
-        template <typename R> Result operator> (const R& rhs) { return Result(gt(lhs, rhs), stringifyBinaryExpr(lhs, ">" , rhs)); }
-        template <typename R> Result operator>=(const R& rhs) { return Result(ge(lhs, rhs), stringifyBinaryExpr(lhs, ">=", rhs)); }
+        template <typename R> Result operator==(const R& rhs) { return Result(eq(lhs, rhs), stringifyBinaryExpr(lhs, " == ", rhs)); }
+        template <typename R> Result operator!=(const R& rhs) { return Result(ne(lhs, rhs), stringifyBinaryExpr(lhs, " != ", rhs)); }
+        template <typename R> Result operator< (const R& rhs) { return Result(lt(lhs, rhs), stringifyBinaryExpr(lhs, " < " , rhs)); }
+        template <typename R> Result operator<=(const R& rhs) { return Result(le(lhs, rhs), stringifyBinaryExpr(lhs, " <= ", rhs)); }
+        template <typename R> Result operator> (const R& rhs) { return Result(gt(lhs, rhs), stringifyBinaryExpr(lhs, " > " , rhs)); }
+        template <typename R> Result operator>=(const R& rhs) { return Result(ge(lhs, rhs), stringifyBinaryExpr(lhs, " >= ", rhs)); }
         // clang-format on
 
         // clang-format off
@@ -770,7 +978,7 @@ namespace detail
     int regTest(void (*f)(void), unsigned line, const char* file, const char* name);
     int setTestSuiteName(const char* name);
 
-    void addFailedAssert(const char* assert_name);
+    void addFailedAssert(assertType::Enum assert_type);
 
     void logTestStart(const char* name, const char* file, unsigned line);
     void logTestEnd();
@@ -778,16 +986,16 @@ namespace detail
     void logTestCrashed();
 
     void logAssert(bool passed, const char* decomposition, bool threw, const char* expr,
-                   const char* assert_name, const char* file, int line);
+                   assertType::Enum assert_type, const char* file, int line);
 
-    void logAssertThrows(bool threw, const char* expr, const char* assert_name, const char* file,
-                         int line);
+    void logAssertThrows(bool threw, const char* expr, assertType::Enum assert_type,
+                         const char* file, int line);
 
     void logAssertThrowsAs(bool threw, bool threw_as, const char* as, const char* expr,
-                           const char* assert_name, const char* file, int line);
+                           assertType::Enum assert_type, const char* file, int line);
 
-    void logAssertNothrow(bool threw, const char* expr, const char* assert_name, const char* file,
-                          int line);
+    void logAssertNothrow(bool threw, const char* expr, assertType::Enum assert_type,
+                          const char* file, int line);
 
     bool isDebuggerActive();
     void writeToDebugConsole(const String&);
@@ -806,34 +1014,20 @@ namespace detail
 
     TestAccessibleContextState* getTestsContextState();
 
-    namespace assertType
-    {
-        enum assertTypeEnum
-        {
-            normal,
-            negated,
-            throws,
-            throws_as,
-            nothrow
-        };
-    } // namespace assertType
-
     struct ResultBuilder
     {
-        const char*                m_assert_name;
-        assertType::assertTypeEnum m_assert_type;
-        const char*                m_file;
-        int                        m_line;
-        const char*                m_expr;
-        const char*                m_exception_type;
+        assertType::Enum m_assert_type;
+        const char*      m_file;
+        int              m_line;
+        const char*      m_expr;
+        const char*      m_exception_type;
 
         Result m_res;
         bool   m_threw;
         bool   m_threw_as;
         bool   m_failed;
 
-        ResultBuilder(const char* assert_name, assertType::assertTypeEnum assert_type,
-                      const char* file, int line, const char* expr,
+        ResultBuilder(assertType::Enum assert_type, const char* file, int line, const char* expr,
                       const char* exception_type = "");
 
 // to fix gcc 4.7 "-Winline" warnings
@@ -872,45 +1066,25 @@ namespace detail
         };
     } // namespace fastAssertComparison
 
-#if defined(__clang__)
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wunreachable-code"
-#endif // __clang__
-    inline const char* getCmpString(fastAssertComparison::Enum val) {
-        switch(val) {
-            case fastAssertComparison::eq: return "==";
-            case fastAssertComparison::ne: return "!=";
-            case fastAssertComparison::gt: return ">";
-            case fastAssertComparison::lt: return "<";
-            case fastAssertComparison::ge: return ">=";
-            case fastAssertComparison::le: return "<=";
-        }
-        return "";
-    }
-#if defined(__clang__)
-#pragma clang diagnostic pop
-#endif // __clang__
-
     // clang-format off
-    template <int, class L, class R> struct FastComparator     { bool operator()(const L&,     const R&    ) const { return true;       } };
-    template <class L, class R> struct FastComparator<0, L, R> { bool operator()(const L& lhs, const R& rhs) const { return lhs == rhs; } };
-    template <class L, class R> struct FastComparator<1, L, R> { bool operator()(const L& lhs, const R& rhs) const { return lhs != rhs; } };
-    template <class L, class R> struct FastComparator<2, L, R> { bool operator()(const L& lhs, const R& rhs) const { return lhs >  rhs; } };
-    template <class L, class R> struct FastComparator<3, L, R> { bool operator()(const L& lhs, const R& rhs) const { return lhs <  rhs; } };
-    template <class L, class R> struct FastComparator<4, L, R> { bool operator()(const L& lhs, const R& rhs) const { return lhs >= rhs; } };
-    template <class L, class R> struct FastComparator<5, L, R> { bool operator()(const L& lhs, const R& rhs) const { return lhs <= rhs; } };
+    template <int, class L, class R> struct FastComparator     { bool operator()(const L&,     const R&    ) const { return true;         } };
+    template <class L, class R> struct FastComparator<0, L, R> { bool operator()(const L& lhs, const R& rhs) const { return eq(lhs, rhs); } };
+    template <class L, class R> struct FastComparator<1, L, R> { bool operator()(const L& lhs, const R& rhs) const { return ne(lhs, rhs); } };
+    template <class L, class R> struct FastComparator<2, L, R> { bool operator()(const L& lhs, const R& rhs) const { return gt(lhs, rhs); } };
+    template <class L, class R> struct FastComparator<3, L, R> { bool operator()(const L& lhs, const R& rhs) const { return lt(lhs, rhs); } };
+    template <class L, class R> struct FastComparator<4, L, R> { bool operator()(const L& lhs, const R& rhs) const { return ge(lhs, rhs); } };
+    template <class L, class R> struct FastComparator<5, L, R> { bool operator()(const L& lhs, const R& rhs) const { return le(lhs, rhs); } };
     // clang-format on
 
     template <int comparison, typename L, typename R>
-    int fast_assert(const char* assert_name, const char* file, int line, const char* lhs_str,
+    int fast_assert(assertType::Enum assert_type, const char* file, int line, const char* lhs_str,
                     const char* rhs_str, const L& lhs, const R& rhs) {
-        const char*   comp_str = getCmpString(static_cast<fastAssertComparison::Enum>(comparison));
-        String        expr     = String(lhs_str) + " " + comp_str + " " + rhs_str;
+        String        expr     = String(lhs_str) + ", " + rhs_str;
         const char*   expr_str = expr.c_str();
-        ResultBuilder rb(assert_name, doctest::detail::assertType::normal, file, line, expr_str);
+        ResultBuilder rb(assert_type, file, line, expr_str);
         try {
             rb.m_res.m_passed        = FastComparator<comparison, L, R>()(lhs, rhs);
-            rb.m_res.m_decomposition = stringifyBinaryExpr(lhs, comp_str, rhs);
+            rb.m_res.m_decomposition = stringifyBinaryExpr(lhs, ", ", rhs);
         } catch(...) { rb.m_threw = true; }
 
         int res = 0;
@@ -918,16 +1092,16 @@ namespace detail
         if(rb.log())
             res |= fastAssertAction::dbgbreak;
 
-        if(rb.m_failed && checkIfShouldThrow(assert_name))
+        if(rb.m_failed && checkIfShouldThrow(assert_type))
             res |= fastAssertAction::shouldthrow;
 
         return res;
     }
 
     template <typename T>
-    int fast_assert_unary(const char* assert_name, const char* file, int line, const char* expr,
-                          const T& val, bool is_false) {
-        ResultBuilder rb(assert_name, doctest::detail::assertType::normal, file, line, expr);
+    int fast_assert_unary(assertType::Enum assert_type, const char* file, int line,
+                          const char* expr, const T& val, bool is_false) {
+        ResultBuilder rb(assert_type, file, line, expr);
         try {
             rb.m_res.m_passed        = !!val;
             rb.m_res.m_decomposition = toString(val);
@@ -940,7 +1114,7 @@ namespace detail
         if(rb.log())
             res |= fastAssertAction::dbgbreak;
 
-        if(rb.m_failed && checkIfShouldThrow(assert_name))
+        if(rb.m_failed && checkIfShouldThrow(assert_type))
             res |= fastAssertAction::shouldthrow;
 
         return res;
@@ -1083,42 +1257,42 @@ public:
         DOCTEST_BREAK_INTO_DEBUGGER();                                                             \
     rb.react()
 
-#define DOCTEST_ASSERT_IMPLEMENT(expr, assert_name, assert_type)                                   \
-    doctest::detail::ResultBuilder _DOCTEST_RB(                                                    \
-            assert_name, doctest::detail::assertType::assert_type, __FILE__, __LINE__, #expr);     \
+#define DOCTEST_ASSERT_IMPLEMENT(expr, assert_type)                                                \
+    doctest::detail::ResultBuilder _DOCTEST_RB(doctest::detail::assertType::assert_type, __FILE__, \
+                                               __LINE__, #expr);                                   \
     try {                                                                                          \
         _DOCTEST_RB.setResult(doctest::detail::ExpressionDecomposer() << expr);                    \
     } catch(...) { _DOCTEST_RB.m_threw = true; }                                                   \
     DOCTEST_ASSERT_LOG_AND_REACT(_DOCTEST_RB);
 
 #if defined(__clang__)
-#define DOCTEST_ASSERT_PROXY(expr, assert_name, assert_type)                                       \
+#define DOCTEST_ASSERT_PROXY(expr, assert_type)                                                    \
     do {                                                                                           \
         _Pragma("clang diagnostic push")                                                           \
                 _Pragma("clang diagnostic ignored \"-Woverloaded-shift-op-parentheses\"")          \
-                        DOCTEST_ASSERT_IMPLEMENT(expr, assert_name, assert_type)                   \
+                        DOCTEST_ASSERT_IMPLEMENT(expr, assert_type)                                \
                                 _Pragma("clang diagnostic pop")                                    \
     } while(doctest::detail::always_false())
 #else // __clang__
-#define DOCTEST_ASSERT_PROXY(expr, assert_name, assert_type)                                       \
+#define DOCTEST_ASSERT_PROXY(expr, assert_type)                                                    \
     do {                                                                                           \
-        DOCTEST_ASSERT_IMPLEMENT(expr, assert_name, assert_type)                                   \
+        DOCTEST_ASSERT_IMPLEMENT(expr, assert_type)                                                \
     } while(doctest::detail::always_false())
 #endif // __clang__
 
-#define DOCTEST_WARN(expr) DOCTEST_ASSERT_PROXY(expr, "WARN", normal)
-#define DOCTEST_CHECK(expr) DOCTEST_ASSERT_PROXY(expr, "CHECK", normal)
-#define DOCTEST_REQUIRE(expr) DOCTEST_ASSERT_PROXY(expr, "REQUIRE", normal)
+#define DOCTEST_WARN(expr) DOCTEST_ASSERT_PROXY(expr, DT_WARN)
+#define DOCTEST_CHECK(expr) DOCTEST_ASSERT_PROXY(expr, DT_CHECK)
+#define DOCTEST_REQUIRE(expr) DOCTEST_ASSERT_PROXY(expr, DT_REQUIRE)
 
-#define DOCTEST_WARN_FALSE(expr) DOCTEST_ASSERT_PROXY(expr, "WARN_FALSE", negated)
-#define DOCTEST_CHECK_FALSE(expr) DOCTEST_ASSERT_PROXY(expr, "CHECK_FALSE", negated)
-#define DOCTEST_REQUIRE_FALSE(expr) DOCTEST_ASSERT_PROXY(expr, "REQUIRE_FALSE", negated)
+#define DOCTEST_WARN_FALSE(expr) DOCTEST_ASSERT_PROXY(expr, DT_WARN_FALSE)
+#define DOCTEST_CHECK_FALSE(expr) DOCTEST_ASSERT_PROXY(expr, DT_CHECK_FALSE)
+#define DOCTEST_REQUIRE_FALSE(expr) DOCTEST_ASSERT_PROXY(expr, DT_REQUIRE_FALSE)
 
-#define DOCTEST_ASSERT_THROWS(expr, assert_name)                                                   \
+#define DOCTEST_ASSERT_THROWS(expr, assert_type)                                                   \
     do {                                                                                           \
         if(!DOCTEST_GCS().no_throw) {                                                              \
-            doctest::detail::ResultBuilder _DOCTEST_RB(                                            \
-                    assert_name, doctest::detail::assertType::throws, __FILE__, __LINE__, #expr);  \
+            doctest::detail::ResultBuilder _DOCTEST_RB(doctest::detail::assertType::assert_type,   \
+                                                       __FILE__, __LINE__, #expr);                 \
             try {                                                                                  \
                 expr;                                                                              \
             } catch(...) { _DOCTEST_RB.m_threw = true; }                                           \
@@ -1126,11 +1300,10 @@ public:
         }                                                                                          \
     } while(doctest::detail::always_false())
 
-#define DOCTEST_ASSERT_THROWS_AS(expr, as, assert_name)                                            \
+#define DOCTEST_ASSERT_THROWS_AS(expr, as, assert_type)                                            \
     do {                                                                                           \
         if(!DOCTEST_GCS().no_throw) {                                                              \
-            doctest::detail::ResultBuilder _DOCTEST_RB(assert_name,                                \
-                                                       doctest::detail::assertType::throws_as,     \
+            doctest::detail::ResultBuilder _DOCTEST_RB(doctest::detail::assertType::assert_type,   \
                                                        __FILE__, __LINE__, #expr, #as);            \
             try {                                                                                  \
                 expr;                                                                              \
@@ -1142,11 +1315,11 @@ public:
         }                                                                                          \
     } while(doctest::detail::always_false())
 
-#define DOCTEST_ASSERT_NOTHROW(expr, assert_name)                                                  \
+#define DOCTEST_ASSERT_NOTHROW(expr, assert_type)                                                  \
     do {                                                                                           \
         if(!DOCTEST_GCS().no_throw) {                                                              \
-            doctest::detail::ResultBuilder _DOCTEST_RB(                                            \
-                    assert_name, doctest::detail::assertType::nothrow, __FILE__, __LINE__, #expr); \
+            doctest::detail::ResultBuilder _DOCTEST_RB(doctest::detail::assertType::assert_type,   \
+                                                       __FILE__, __LINE__, #expr);                 \
             try {                                                                                  \
                 expr;                                                                              \
             } catch(...) { _DOCTEST_RB.m_threw = true; }                                           \
@@ -1154,64 +1327,64 @@ public:
         }                                                                                          \
     } while(doctest::detail::always_false())
 
-#define DOCTEST_WARN_THROWS(expr) DOCTEST_ASSERT_THROWS(expr, "WARN_THROWS")
-#define DOCTEST_CHECK_THROWS(expr) DOCTEST_ASSERT_THROWS(expr, "CHECK_THROWS")
-#define DOCTEST_REQUIRE_THROWS(expr) DOCTEST_ASSERT_THROWS(expr, "REQUIRE_THROWS")
+#define DOCTEST_WARN_THROWS(expr) DOCTEST_ASSERT_THROWS(expr, DT_WARN_THROWS)
+#define DOCTEST_CHECK_THROWS(expr) DOCTEST_ASSERT_THROWS(expr, DT_CHECK_THROWS)
+#define DOCTEST_REQUIRE_THROWS(expr) DOCTEST_ASSERT_THROWS(expr, DT_REQUIRE_THROWS)
 
-#define DOCTEST_WARN_THROWS_AS(expr, ex) DOCTEST_ASSERT_THROWS_AS(expr, ex, "WARN_THROWS_AS")
-#define DOCTEST_CHECK_THROWS_AS(expr, ex) DOCTEST_ASSERT_THROWS_AS(expr, ex, "CHECK_THROWS_AS")
-#define DOCTEST_REQUIRE_THROWS_AS(expr, ex) DOCTEST_ASSERT_THROWS_AS(expr, ex, "REQUIRE_THROWS_AS")
+#define DOCTEST_WARN_THROWS_AS(expr, ex) DOCTEST_ASSERT_THROWS_AS(expr, ex, DT_WARN_THROWS_AS)
+#define DOCTEST_CHECK_THROWS_AS(expr, ex) DOCTEST_ASSERT_THROWS_AS(expr, ex, DT_CHECK_THROWS_AS)
+#define DOCTEST_REQUIRE_THROWS_AS(expr, ex) DOCTEST_ASSERT_THROWS_AS(expr, ex, DT_REQUIRE_THROWS_AS)
 
-#define DOCTEST_WARN_NOTHROW(expr) DOCTEST_ASSERT_NOTHROW(expr, "WARN_NOTHROW")
-#define DOCTEST_CHECK_NOTHROW(expr) DOCTEST_ASSERT_NOTHROW(expr, "CHECK_NOTHROW")
-#define DOCTEST_REQUIRE_NOTHROW(expr) DOCTEST_ASSERT_NOTHROW(expr, "REQUIRE_NOTHROW")
+#define DOCTEST_WARN_NOTHROW(expr) DOCTEST_ASSERT_NOTHROW(expr, DT_WARN_NOTHROW)
+#define DOCTEST_CHECK_NOTHROW(expr) DOCTEST_ASSERT_NOTHROW(expr, DT_CHECK_NOTHROW)
+#define DOCTEST_REQUIRE_NOTHROW(expr) DOCTEST_ASSERT_NOTHROW(expr, DT_REQUIRE_NOTHROW)
 
-#define DOCTEST_FAST_ASSERTION(assert_name, lhs, rhs, comparison)                                  \
+#define DOCTEST_FAST_ASSERTION(assert_type, lhs, rhs, comparison)                                  \
     do {                                                                                           \
         int res = doctest::detail::fast_assert<doctest::detail::fastAssertComparison::comparison>( \
-                assert_name, __FILE__, __LINE__, #lhs, #rhs, lhs, rhs);                            \
+                doctest::detail::assertType::assert_type, __FILE__, __LINE__, #lhs, #rhs, lhs,     \
+                rhs);                                                                              \
         if(res & doctest::detail::fastAssertAction::dbgbreak)                                      \
             DOCTEST_BREAK_INTO_DEBUGGER();                                                         \
         if(res & doctest::detail::fastAssertAction::shouldthrow)                                   \
             doctest::detail::throwException();                                                     \
     } while(doctest::detail::always_false())
 
-#define DOCTEST_FAST_ASSERTION_UNARY(assert_name, val, is_false)                                   \
+#define DOCTEST_FAST_ASSERTION_UNARY(assert_type, val)                                             \
     do {                                                                                           \
-        int res = doctest::detail::fast_assert_unary(assert_name, __FILE__, __LINE__, #val, val,   \
-                                                     is_false);                                    \
+        int res = doctest::detail::fast_assert_unary(doctest::detail::assertType::assert_type,     \
+                                                     __FILE__, __LINE__, #val, val);               \
         if(res & doctest::detail::fastAssertAction::dbgbreak)                                      \
             DOCTEST_BREAK_INTO_DEBUGGER();                                                         \
         if(res & doctest::detail::fastAssertAction::shouldthrow)                                   \
             doctest::detail::throwException();                                                     \
     } while(doctest::detail::always_false())
 
-#define DOCTEST_WARN_EQ(lhs, rhs) DOCTEST_FAST_ASSERTION("WARN_EQ", lhs, rhs, eq)
-#define DOCTEST_CHECK_EQ(lhs, rhs) DOCTEST_FAST_ASSERTION("CHECK_EQ", lhs, rhs, eq)
-#define DOCTEST_REQUIRE_EQ(lhs, rhs) DOCTEST_FAST_ASSERTION("REQUIRE_EQ", lhs, rhs, eq)
-#define DOCTEST_WARN_NE(lhs, rhs) DOCTEST_FAST_ASSERTION("WARN_NE", lhs, rhs, ne)
-#define DOCTEST_CHECK_NE(lhs, rhs) DOCTEST_FAST_ASSERTION("CHECK_NE", lhs, rhs, ne)
-#define DOCTEST_REQUIRE_NE(lhs, rhs) DOCTEST_FAST_ASSERTION("REQUIRE_NE", lhs, rhs, ne)
-#define DOCTEST_WARN_GT(lhs, rhs) DOCTEST_FAST_ASSERTION("WARN_GT", lhs, rhs, gt)
-#define DOCTEST_CHECK_GT(lhs, rhs) DOCTEST_FAST_ASSERTION("CHECK_GT", lhs, rhs, gt)
-#define DOCTEST_REQUIRE_GT(lhs, rhs) DOCTEST_FAST_ASSERTION("REQUIRE_GT", lhs, rhs, gt)
-#define DOCTEST_WARN_LT(lhs, rhs) DOCTEST_FAST_ASSERTION("WARN_LT", lhs, rhs, lt)
-#define DOCTEST_CHECK_LT(lhs, rhs) DOCTEST_FAST_ASSERTION("CHECK_LT", lhs, rhs, lt)
-#define DOCTEST_REQUIRE_LT(lhs, rhs) DOCTEST_FAST_ASSERTION("REQUIRE_LT", lhs, rhs, lt)
-#define DOCTEST_WARN_GE(lhs, rhs) DOCTEST_FAST_ASSERTION("WARN_GE", lhs, rhs, ge)
-#define DOCTEST_CHECK_GE(lhs, rhs) DOCTEST_FAST_ASSERTION("CHECK_GE", lhs, rhs, ge)
-#define DOCTEST_REQUIRE_GE(lhs, rhs) DOCTEST_FAST_ASSERTION("REQUIRE_GE", lhs, rhs, ge)
-#define DOCTEST_WARN_LE(lhs, rhs) DOCTEST_FAST_ASSERTION("WARN_LE", lhs, rhs, le)
-#define DOCTEST_CHECK_LE(lhs, rhs) DOCTEST_FAST_ASSERTION("CHECK_LE", lhs, rhs, le)
-#define DOCTEST_REQUIRE_LE(lhs, rhs) DOCTEST_FAST_ASSERTION("REQUIRE_LE", lhs, rhs, le)
+#define DOCTEST_WARN_EQ(lhs, rhs) DOCTEST_FAST_ASSERTION(DT_WARN_EQ, lhs, rhs, eq)
+#define DOCTEST_CHECK_EQ(lhs, rhs) DOCTEST_FAST_ASSERTION(DT_CHECK_EQ, lhs, rhs, eq)
+#define DOCTEST_REQUIRE_EQ(lhs, rhs) DOCTEST_FAST_ASSERTION(DT_REQUIRE_EQ, lhs, rhs, eq)
+#define DOCTEST_WARN_NE(lhs, rhs) DOCTEST_FAST_ASSERTION(DT_WARN_NE, lhs, rhs, ne)
+#define DOCTEST_CHECK_NE(lhs, rhs) DOCTEST_FAST_ASSERTION(DT_CHECK_NE, lhs, rhs, ne)
+#define DOCTEST_REQUIRE_NE(lhs, rhs) DOCTEST_FAST_ASSERTION(DT_REQUIRE_NE, lhs, rhs, ne)
+#define DOCTEST_WARN_GT(lhs, rhs) DOCTEST_FAST_ASSERTION(DT_WARN_GT, lhs, rhs, gt)
+#define DOCTEST_CHECK_GT(lhs, rhs) DOCTEST_FAST_ASSERTION(DT_CHECK_GT, lhs, rhs, gt)
+#define DOCTEST_REQUIRE_GT(lhs, rhs) DOCTEST_FAST_ASSERTION(DT_REQUIRE_GT, lhs, rhs, gt)
+#define DOCTEST_WARN_LT(lhs, rhs) DOCTEST_FAST_ASSERTION(DT_WARN_LT, lhs, rhs, lt)
+#define DOCTEST_CHECK_LT(lhs, rhs) DOCTEST_FAST_ASSERTION(DT_CHECK_LT, lhs, rhs, lt)
+#define DOCTEST_REQUIRE_LT(lhs, rhs) DOCTEST_FAST_ASSERTION(DT_REQUIRE_LT, lhs, rhs, lt)
+#define DOCTEST_WARN_GE(lhs, rhs) DOCTEST_FAST_ASSERTION(DT_WARN_GE, lhs, rhs, ge)
+#define DOCTEST_CHECK_GE(lhs, rhs) DOCTEST_FAST_ASSERTION(DT_CHECK_GE, lhs, rhs, ge)
+#define DOCTEST_REQUIRE_GE(lhs, rhs) DOCTEST_FAST_ASSERTION(DT_REQUIRE_GE, lhs, rhs, ge)
+#define DOCTEST_WARN_LE(lhs, rhs) DOCTEST_FAST_ASSERTION(DT_WARN_LE, lhs, rhs, le)
+#define DOCTEST_CHECK_LE(lhs, rhs) DOCTEST_FAST_ASSERTION(DT_CHECK_LE, lhs, rhs, le)
+#define DOCTEST_REQUIRE_LE(lhs, rhs) DOCTEST_FAST_ASSERTION(DT_REQUIRE_LE, lhs, rhs, le)
 
-#define DOCTEST_WARN_UNARY(val) DOCTEST_FAST_ASSERTION_UNARY("WARN_UNARY", val, false)
-#define DOCTEST_CHECK_UNARY(val) DOCTEST_FAST_ASSERTION_UNARY("CHECK_UNARY", val, false)
-#define DOCTEST_REQUIRE_UNARY(val) DOCTEST_FAST_ASSERTION_UNARY("REQUIRE_UNARY", val, false)
-#define DOCTEST_WARN_UNARY_FALSE(val) DOCTEST_FAST_ASSERTION_UNARY("WARN_UNARY_FALSE", val, true)
-#define DOCTEST_CHECK_UNARY_FALSE(val) DOCTEST_FAST_ASSERTION_UNARY("CHECK_UNARY_FALSE", val, true)
-#define DOCTEST_REQUIRE_UNARY_FALSE(val)                                                           \
-    DOCTEST_FAST_ASSERTION_UNARY("REQUIRE_UNARY_FALSE", val, true)
+#define DOCTEST_WARN_UNARY(val) DOCTEST_FAST_ASSERTION_UNARY(DT_WARN_UNARY, val)
+#define DOCTEST_CHECK_UNARY(val) DOCTEST_FAST_ASSERTION_UNARY(DT_CHECK_UNARY, val)
+#define DOCTEST_REQUIRE_UNARY(val) DOCTEST_FAST_ASSERTION_UNARY(DT_REQUIRE_UNARY, val)
+#define DOCTEST_WARN_UNARY_FALSE(val) DOCTEST_FAST_ASSERTION_UNARY(DT_WARN_UNARY_FALSE, val)
+#define DOCTEST_CHECK_UNARY_FALSE(val) DOCTEST_FAST_ASSERTION_UNARY(DT_CHECK_UNARY_FALSE, val)
+#define DOCTEST_REQUIRE_UNARY_FALSE(val) DOCTEST_FAST_ASSERTION_UNARY(DT_REQUIRE_UNARY_FALSE, val)
 
 // =================================================================================================
 // == WHAT FOLLOWS IS VERSIONS OF THE MACROS THAT DO NOT DO ANY REGISTERING!                      ==
@@ -1412,6 +1585,7 @@ DOCTEST_TEST_SUITE_END();
 #pragma GCC diagnostic ignored "-Wstrict-overflow"
 #pragma GCC diagnostic ignored "-Wmissing-declarations"
 #pragma GCC diagnostic ignored "-Winline"
+#pragma GCC diagnostic ignored "-Wswitch"
 #pragma GCC diagnostic ignored "-Wswitch-default"
 #pragma GCC diagnostic ignored "-Wunsafe-loop-optimizations"
 #if __GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ > 6)
@@ -1443,15 +1617,6 @@ DOCTEST_TEST_SUITE_END();
 #include "doctest_fwd.h"
 #endif // DOCTEST_SINGLE_HEADER
 
-// macro for making a string
-#define DOCTEST_TOSTR_IMPL(x) #x
-#define DOCTEST_TOSTR(x) DOCTEST_TOSTR_IMPL(x)
-
-// for concatenating 2 literals and making the result a string
-#define DOCTEST_STR_CONCAT_TOSTR(s1, s2) DOCTEST_TOSTR(s1) DOCTEST_TOSTR(s2)
-
-#define DOCTEST_COUNTOF(x) (sizeof(x) / sizeof(x[0]))
-
 // snprintf() not in the C++98 standard
 #ifdef _MSC_VER
 #define DOCTEST_SNPRINTF _snprintf
@@ -1476,6 +1641,7 @@ DOCTEST_TEST_SUITE_END();
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include <cassert>
 #include <limits>
 #include <utility>
 #include <sstream>
@@ -1858,11 +2024,11 @@ namespace detail
         return strcmp(m_file, other.m_file) < 0;
     }
 
-    bool checkIfShouldThrow(const char* assert_name) {
-        if(strncmp(assert_name, "REQUIRE", 7) == 0)
+    bool checkIfShouldThrow(assertType::Enum assert_type) {
+        if(assert_type & assertType::is_require)
             return true;
 
-        if(strncmp(assert_name, "CHECK", 5) == 0 && getContextState()->abort_after > 0) {
+        if((assert_type & assertType::is_check) && getContextState()->abort_after > 0) {
             if(getContextState()->numFailedAssertions >= getContextState()->abort_after)
                 return true;
         }
@@ -2238,8 +2404,8 @@ namespace detail
             myOutputDebugString(text.c_str());
     }
 
-    void addFailedAssert(const char* assert_name) {
-        if(strncmp(assert_name, "WARN", 4) != 0) {
+    void addFailedAssert(assertType::Enum assert_type) {
+        if((assert_type & assertType::is_warn) == 0) {
             getContextState()->numFailedAssertionsForCurrentTestcase++;
             getContextState()->numFailedAssertions++;
         }
@@ -2286,7 +2452,7 @@ namespace detail
     }
 
     void logAssert(bool passed, const char* decomposition, bool threw, const char* expr,
-                   const char* assert_name, const char* file, int line) {
+                   assertType::Enum assert_type, const char* file, int line) {
         char loc[DOCTEST_SNPRINTF_BUFFER_LENGTH];
         DOCTEST_SNPRINTF(loc, DOCTEST_COUNTOF(loc), "%s(%d)", fileForOutput(file), line);
 
@@ -2298,7 +2464,8 @@ namespace detail
                              (threw ? "(threw exception)" : ""));
 
         char info1[DOCTEST_SNPRINTF_BUFFER_LENGTH];
-        DOCTEST_SNPRINTF(info1, DOCTEST_COUNTOF(info1), "  %s( %s )\n", assert_name, expr);
+        DOCTEST_SNPRINTF(info1, DOCTEST_COUNTOF(info1), "  %s( %s )\n",
+                         getAssertString(assert_type), expr);
 
         char info2[DOCTEST_SNPRINTF_BUFFER_LENGTH];
         char info3[DOCTEST_SNPRINTF_BUFFER_LENGTH];
@@ -2306,8 +2473,8 @@ namespace detail
         info3[0] = 0;
         if(!threw) {
             DOCTEST_SNPRINTF(info2, DOCTEST_COUNTOF(info2), "with expansion:\n");
-            DOCTEST_SNPRINTF(info3, DOCTEST_COUNTOF(info3), "  %s( %s )\n", assert_name,
-                             decomposition);
+            DOCTEST_SNPRINTF(info3, DOCTEST_COUNTOF(info3), "  %s( %s )\n",
+                             getAssertString(assert_type), decomposition);
         }
 
         DOCTEST_PRINTF_COLORED(loc, Color::LightGrey);
@@ -2320,8 +2487,8 @@ namespace detail
         printToDebugConsole(String(loc) + msg + info1 + info2 + info3 + "\n");
     }
 
-    void logAssertThrows(bool threw, const char* expr, const char* assert_name, const char* file,
-                         int line) {
+    void logAssertThrows(bool threw, const char* expr, assertType::Enum assert_type,
+                         const char* file, int line) {
         char loc[DOCTEST_SNPRINTF_BUFFER_LENGTH];
         DOCTEST_SNPRINTF(loc, DOCTEST_COUNTOF(loc), "%s(%d)", fileForOutput(file), line);
 
@@ -2332,7 +2499,8 @@ namespace detail
             DOCTEST_SNPRINTF(msg, DOCTEST_COUNTOF(msg), " FAILED!\n");
 
         char info1[DOCTEST_SNPRINTF_BUFFER_LENGTH];
-        DOCTEST_SNPRINTF(info1, DOCTEST_COUNTOF(info1), "  %s( %s )\n\n", assert_name, expr);
+        DOCTEST_SNPRINTF(info1, DOCTEST_COUNTOF(info1), "  %s( %s )\n\n",
+                         getAssertString(assert_type), expr);
 
         DOCTEST_PRINTF_COLORED(loc, Color::LightGrey);
         DOCTEST_PRINTF_COLORED(msg, threw ? Color::BrightGreen : Color::Red);
@@ -2342,7 +2510,7 @@ namespace detail
     }
 
     void logAssertThrowsAs(bool threw, bool threw_as, const char* as, const char* expr,
-                           const char* assert_name, const char* file, int line) {
+                           assertType::Enum assert_type, const char* file, int line) {
         char loc[DOCTEST_SNPRINTF_BUFFER_LENGTH];
         DOCTEST_SNPRINTF(loc, DOCTEST_COUNTOF(loc), "%s(%d)", fileForOutput(file), line);
 
@@ -2354,8 +2522,8 @@ namespace detail
                              (threw ? "(threw something else)" : "(didn't throw at all)"));
 
         char info1[DOCTEST_SNPRINTF_BUFFER_LENGTH];
-        DOCTEST_SNPRINTF(info1, DOCTEST_COUNTOF(info1), "  %s( %s, %s )\n\n", assert_name, expr,
-                         as);
+        DOCTEST_SNPRINTF(info1, DOCTEST_COUNTOF(info1), "  %s( %s, %s )\n\n",
+                         getAssertString(assert_type), expr, as);
 
         DOCTEST_PRINTF_COLORED(loc, Color::LightGrey);
         DOCTEST_PRINTF_COLORED(msg, threw_as ? Color::BrightGreen : Color::Red);
@@ -2364,8 +2532,8 @@ namespace detail
         printToDebugConsole(String(loc) + msg + info1);
     }
 
-    void logAssertNothrow(bool threw, const char* expr, const char* assert_name, const char* file,
-                          int line) {
+    void logAssertNothrow(bool threw, const char* expr, assertType::Enum assert_type,
+                          const char* file, int line) {
         char loc[DOCTEST_SNPRINTF_BUFFER_LENGTH];
         DOCTEST_SNPRINTF(loc, DOCTEST_COUNTOF(loc), "%s(%d)", fileForOutput(file), line);
 
@@ -2376,7 +2544,8 @@ namespace detail
             DOCTEST_SNPRINTF(msg, DOCTEST_COUNTOF(msg), " FAILED!\n");
 
         char info1[DOCTEST_SNPRINTF_BUFFER_LENGTH];
-        DOCTEST_SNPRINTF(info1, DOCTEST_COUNTOF(info1), "  %s( %s )\n\n", assert_name, expr);
+        DOCTEST_SNPRINTF(info1, DOCTEST_COUNTOF(info1), "  %s( %s )\n\n",
+                         getAssertString(assert_type), expr);
 
         DOCTEST_PRINTF_COLORED(loc, Color::LightGrey);
         DOCTEST_PRINTF_COLORED(msg, !threw ? Color::BrightGreen : Color::Red);
@@ -2385,11 +2554,9 @@ namespace detail
         printToDebugConsole(String(loc) + msg + info1);
     }
 
-    ResultBuilder::ResultBuilder(const char* assert_name, assertType::assertTypeEnum assert_type,
-                                 const char* file, int line, const char* expr,
-                                 const char* exception_type)
-            : m_assert_name(assert_name)
-            , m_assert_type(assert_type)
+    ResultBuilder::ResultBuilder(assertType::Enum assert_type, const char* file, int line,
+                                 const char* expr, const char* exception_type)
+            : m_assert_type(assert_type)
             , m_file(file)
             , m_line(line)
             , m_expr(expr)
@@ -2399,47 +2566,49 @@ namespace detail
             , m_failed(false) {}
 
     bool ResultBuilder::log() {
-        if(strncmp(m_assert_name, "WARN", 4) != 0)
+        if((m_assert_type & assertType::is_warn) == 0)
             DOCTEST_GCS().numAssertionsForCurrentTestcase++;
 
-        if(m_assert_type == assertType::normal) {
+        if(m_assert_type & assertType::is_normal) {
             m_failed = m_res;
-        } else if(m_assert_type == assertType::negated) {
+        } else if(m_assert_type & assertType::is_false) {
             m_res.invert();
             m_failed = m_res;
-        } else if(m_assert_type == assertType::throws) {
+        } else if(m_assert_type & assertType::is_throws) {
             m_failed = !m_threw;
-        } else if(m_assert_type == assertType::throws_as) {
+        } else if(m_assert_type & assertType::is_throws_as) {
             m_failed = !m_threw_as;
-        } else if(m_assert_type == assertType::nothrow) {
+        } else if(m_assert_type & assertType::is_nothrow) {
             m_failed = m_threw;
+        } else {
+            assert(false);
         }
 
         if(m_failed || DOCTEST_GCS().success) {
             DOCTEST_LOG_START();
 
-            if(m_assert_type == assertType::normal || m_assert_type == assertType::negated) {
+            if(m_assert_type & (assertType::is_normal | assertType::is_false)) {
                 logAssert(m_res.m_passed, m_res.m_decomposition.c_str(), m_threw, m_expr,
-                          m_assert_name, m_file, m_line);
-            } else if(m_assert_type == assertType::throws) {
-                logAssertThrows(m_threw, m_expr, m_assert_name, m_file, m_line);
-            } else if(m_assert_type == assertType::throws_as) {
-                logAssertThrowsAs(m_threw, m_threw_as, m_exception_type, m_expr, m_assert_name,
+                          m_assert_type, m_file, m_line);
+            } else if(m_assert_type & assertType::is_throws) {
+                logAssertThrows(m_threw, m_expr, m_assert_type, m_file, m_line);
+            } else if(m_assert_type & assertType::is_throws_as) {
+                logAssertThrowsAs(m_threw, m_threw_as, m_exception_type, m_expr, m_assert_type,
                                   m_file, m_line);
-            } else if(m_assert_type == assertType::nothrow) {
-                logAssertNothrow(m_threw, m_expr, m_assert_name, m_file, m_line);
+            } else if(m_assert_type & assertType::is_nothrow) {
+                logAssertNothrow(m_threw, m_expr, m_assert_type, m_file, m_line);
             }
         }
 
         if(m_failed) {
-            addFailedAssert(m_assert_name);
+            addFailedAssert(m_assert_type);
             if(isDebuggerActive() && !DOCTEST_GCS().no_breaks)
                 return true; // should break into the debugger
         }
         return false;
     }
     void ResultBuilder::react() const {
-        if(m_failed && checkIfShouldThrow(m_assert_name))
+        if(m_failed && checkIfShouldThrow(m_assert_type))
             throwException();
     }
 
