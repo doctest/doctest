@@ -9,4 +9,4 @@ include_directories("../../doctest/")
 
 add_executable(${PROJECT_NAME} main.cpp f1.cpp f2.cpp hdr.h)
 
-add_test(NAME ${PROJECT_NAME} COMMAND $<TARGET_FILE:${PROJECT_NAME}>)
+doctest_add_test(NAME ${PROJECT_NAME} COMMAND $<TARGET_FILE:${PROJECT_NAME}>)

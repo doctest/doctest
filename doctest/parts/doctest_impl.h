@@ -9,6 +9,7 @@
 #pragma clang diagnostic ignored "-Wshorten-64-to-32"
 #pragma clang diagnostic ignored "-Wmissing-variable-declarations"
 #pragma clang diagnostic ignored "-Wswitch"
+#pragma clang diagnostic ignored "-Wswitch-enum"
 #pragma clang diagnostic ignored "-Wcovered-switch-default"
 #pragma clang diagnostic ignored "-Wmissing-noreturn"
 #pragma clang diagnostic ignored "-Wunused-local-typedef"
@@ -26,6 +27,7 @@
 #pragma GCC diagnostic ignored "-Wmissing-declarations"
 #pragma GCC diagnostic ignored "-Winline"
 #pragma GCC diagnostic ignored "-Wswitch"
+#pragma GCC diagnostic ignored "-Wswitch-enum"
 #pragma GCC diagnostic ignored "-Wswitch-default"
 #pragma GCC diagnostic ignored "-Wunsafe-loop-optimizations"
 #if __GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ > 6)
@@ -462,6 +464,86 @@ namespace detail
         if(m_line != other.m_line)
             return m_line < other.m_line;
         return strcmp(m_file, other.m_file) < 0;
+    }
+
+    const char* getAssertString(assertType::Enum val) {
+        switch(val) {
+            // clang-format off
+            case assertType::DT_WARN                    : return "WARN";
+            case assertType::DT_CHECK                   : return "CHECK";
+            case assertType::DT_REQUIRE                 : return "REQUIRE";
+
+            case assertType::DT_WARN_FALSE              : return "WARN_FALSE";
+            case assertType::DT_CHECK_FALSE             : return "CHECK_FALSE";
+            case assertType::DT_REQUIRE_FALSE           : return "REQUIRE_FALSE";
+
+            case assertType::DT_WARN_THROWS             : return "WARN_THROWS";
+            case assertType::DT_CHECK_THROWS            : return "CHECK_THROWS";
+            case assertType::DT_REQUIRE_THROWS          : return "REQUIRE_THROWS";
+
+            case assertType::DT_WARN_THROWS_AS          : return "WARN_THROWS_AS";
+            case assertType::DT_CHECK_THROWS_AS         : return "CHECK_THROWS_AS";
+            case assertType::DT_REQUIRE_THROWS_AS       : return "REQUIRE_THROWS_AS";
+
+            case assertType::DT_WARN_NOTHROW            : return "WARN_NOTHROW";
+            case assertType::DT_CHECK_NOTHROW           : return "CHECK_NOTHROW";
+            case assertType::DT_REQUIRE_NOTHROW         : return "REQUIRE_NOTHROW";
+
+            case assertType::DT_WARN_EQ                 : return "WARN_EQ";
+            case assertType::DT_CHECK_EQ                : return "CHECK_EQ";
+            case assertType::DT_REQUIRE_EQ              : return "REQUIRE_EQ";
+            case assertType::DT_WARN_NE                 : return "WARN_NE";
+            case assertType::DT_CHECK_NE                : return "CHECK_NE";
+            case assertType::DT_REQUIRE_NE              : return "REQUIRE_NE";
+            case assertType::DT_WARN_GT                 : return "WARN_GT";
+            case assertType::DT_CHECK_GT                : return "CHECK_GT";
+            case assertType::DT_REQUIRE_GT              : return "REQUIRE_GT";
+            case assertType::DT_WARN_LT                 : return "WARN_LT";
+            case assertType::DT_CHECK_LT                : return "CHECK_LT";
+            case assertType::DT_REQUIRE_LT              : return "REQUIRE_LT";
+            case assertType::DT_WARN_GE                 : return "WARN_GE";
+            case assertType::DT_CHECK_GE                : return "CHECK_GE";
+            case assertType::DT_REQUIRE_GE              : return "REQUIRE_GE";
+            case assertType::DT_WARN_LE                 : return "WARN_LE";
+            case assertType::DT_CHECK_LE                : return "CHECK_LE";
+            case assertType::DT_REQUIRE_LE              : return "REQUIRE_LE";
+
+            case assertType::DT_WARN_UNARY              : return "WARN_UNARY";
+            case assertType::DT_CHECK_UNARY             : return "CHECK_UNARY";
+            case assertType::DT_REQUIRE_UNARY           : return "REQUIRE_UNARY";
+            case assertType::DT_WARN_UNARY_FALSE        : return "WARN_UNARY_FALSE";
+            case assertType::DT_CHECK_UNARY_FALSE       : return "CHECK_UNARY_FALSE";
+            case assertType::DT_REQUIRE_UNARY_FALSE     : return "REQUIRE_UNARY_FALSE";
+
+            case assertType::DT_FAST_WARN_EQ            : return "FAST_WARN_EQ";
+            case assertType::DT_FAST_CHECK_EQ           : return "FAST_CHECK_EQ";
+            case assertType::DT_FAST_REQUIRE_EQ         : return "FAST_REQUIRE_EQ";
+            case assertType::DT_FAST_WARN_NE            : return "FAST_WARN_NE";
+            case assertType::DT_FAST_CHECK_NE           : return "FAST_CHECK_NE";
+            case assertType::DT_FAST_REQUIRE_NE         : return "FAST_REQUIRE_NE";
+            case assertType::DT_FAST_WARN_GT            : return "FAST_WARN_GT";
+            case assertType::DT_FAST_CHECK_GT           : return "FAST_CHECK_GT";
+            case assertType::DT_FAST_REQUIRE_GT         : return "FAST_REQUIRE_GT";
+            case assertType::DT_FAST_WARN_LT            : return "FAST_WARN_LT";
+            case assertType::DT_FAST_CHECK_LT           : return "FAST_CHECK_LT";
+            case assertType::DT_FAST_REQUIRE_LT         : return "FAST_REQUIRE_LT";
+            case assertType::DT_FAST_WARN_GE            : return "FAST_WARN_GE";
+            case assertType::DT_FAST_CHECK_GE           : return "FAST_CHECK_GE";
+            case assertType::DT_FAST_REQUIRE_GE         : return "FAST_REQUIRE_GE";
+            case assertType::DT_FAST_WARN_LE            : return "FAST_WARN_LE";
+            case assertType::DT_FAST_CHECK_LE           : return "FAST_CHECK_LE";
+            case assertType::DT_FAST_REQUIRE_LE         : return "FAST_REQUIRE_LE";
+
+            case assertType::DT_FAST_WARN_UNARY         : return "FAST_WARN_UNARY";
+            case assertType::DT_FAST_CHECK_UNARY        : return "FAST_CHECK_UNARY";
+            case assertType::DT_FAST_REQUIRE_UNARY      : return "FAST_REQUIRE_UNARY";
+            case assertType::DT_FAST_WARN_UNARY_FALSE   : return "FAST_WARN_UNARY_FALSE";
+            case assertType::DT_FAST_CHECK_UNARY_FALSE  : return "FAST_CHECK_UNARY_FALSE";
+            case assertType::DT_FAST_REQUIRE_UNARY_FALSE: return "FAST_REQUIRE_UNARY_FALSE";
+            default: assert(false);
+                // clang-format on
+        }
+        return "";
     }
 
     bool checkIfShouldThrow(assertType::Enum assert_type) {

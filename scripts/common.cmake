@@ -13,11 +13,11 @@ enable_testing()
 set(TEST_MODE "COMPARE" CACHE STRING "Test mode - normal/run through valgrind/collect output/compare with output")
 set_property(CACHE TEST_MODE PROPERTY STRINGS "NORMAL;VALGRIND;COLLECT;COMPARE")
 
-# override add_test() to suite my needs
-function(add_test)
+# a custom version of add_test() to suite my needs
+function(doctest_add_test)
     cmake_parse_arguments(ARG "NO_VALGRIND;NO_OUTPUT" "NAME" "COMMAND" ${ARGN})
     if(NOT "${ARG_UNPARSED_ARGUMENTS}" STREQUAL "" OR "${ARG_NAME}" STREQUAL "" OR "${ARG_COMMAND}" STREQUAL "")
-        message(FATAL_ERROR "add_test() called with wrong options!")
+        message(FATAL_ERROR "doctest_add_test() called with wrong options!")
     endif()
     
     set(the_test_mode NORMAL)
@@ -49,7 +49,7 @@ function(add_test)
     
     list(APPEND ADDITIONAL_FLAGS -DTEST_MODE=${the_test_mode})
     
-    _add_test(NAME ${ARG_NAME} COMMAND ${CMAKE_COMMAND} -DCOMMAND=${the_command} ${ADDITIONAL_FLAGS} -P ${CURRENT_LIST_DIR_CACHED}/exec_test.cmake)
+    add_test(NAME ${ARG_NAME} COMMAND ${CMAKE_COMMAND} -DCOMMAND=${the_command} ${ADDITIONAL_FLAGS} -P ${CURRENT_LIST_DIR_CACHED}/exec_test.cmake)
 endfunction()
 
 macro(add_compiler_flags)

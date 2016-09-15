@@ -20,4 +20,4 @@ add_library(dll SHARED dll.cpp)
 add_executable(${PROJECT_NAME} main.cpp)
 target_link_libraries(${PROJECT_NAME} dll)
 
-add_test(NO_OUTPUT NAME ${PROJECT_NAME} COMMAND $<TARGET_FILE:${PROJECT_NAME}>)
+doctest_add_test(NO_OUTPUT NAME ${PROJECT_NAME} COMMAND $<TARGET_FILE:${PROJECT_NAME}>)

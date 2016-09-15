@@ -1,10 +1,8 @@
-- move functions from fwd to impl that can (the remapping ones with a switch for example)
-
 - fix unary/binary assertion macros
 
 - implement the fast unary/binary assertion macros
 
-- do not override add_test in CMake
+- fix coverage again...
 
 
 
