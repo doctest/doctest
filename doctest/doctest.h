@@ -941,7 +941,7 @@ namespace detail
         const char*      m_expr;
         const char*      m_exception_type;
 
-        Result m_res;
+        Result m_result;
         bool   m_threw;
         bool   m_threw_as;
         bool   m_failed;
@@ -956,13 +956,13 @@ namespace detail
         ~ResultBuilder() {
         }
 
-        void setResult(const Result& res) { m_res = res; }
+        void setResult(const Result& res) { m_result = res; }
 
         bool log();
         void react() const;
     };
 
-    namespace fastAssertAction
+    namespace binaryAssertAction
     {
         enum Enum
         {
@@ -970,9 +970,9 @@ namespace detail
             dbgbreak    = 1,
             shouldthrow = 2
         };
-    } // namespace fastAssertAction
+    } // namespace binaryAssertAction
 
-    namespace fastAssertComparison
+    namespace binaryAssertComparison
     {
         enum Enum
         {
@@ -983,7 +983,7 @@ namespace detail
             ge,
             le
         };
-    } // namespace fastAssertComparison
+    } // namespace binaryAssertComparison
 
     // clang-format off
     template <int, class L, class R> struct FastComparator     { bool operator()(const L&,     const R&    ) const { return false;        } };
@@ -995,48 +995,65 @@ namespace detail
     template <class L, class R> struct FastComparator<5, L, R> { bool operator()(const L& lhs, const R& rhs) const { return le(lhs, rhs); } };
     // clang-format on
 
+    struct ResultForBinaryAssert
+    {
+        bool   m_passed;
+        bool   m_threw;
+        String m_decomp;
+        int    m_action;
+        ResultForBinaryAssert(bool passed = false, bool threw = false, String decomp = "",
+                              int action = 0)
+                : m_passed(passed)
+                , m_threw(threw)
+                , m_decomp(decomp)
+                , m_action(action) {}
+    };
+
     template <int comparison, typename L, typename R>
-    int fast_assert(assertType::Enum assert_type, const char* file, int line, const char* lhs_str,
-                    const char* rhs_str, const L& lhs, const R& rhs) {
+    void binary_comp(const L& lhs, const R& rhs, ResultForBinaryAssert& res) {
+        res.m_result = FastComparator<comparison, L, R>()(lhs, rhs);
+        res.m_decomp = stringifyBinaryExpr(lhs, ", ", rhs);
+    }
+
+    template <typename L>
+    void unary_eval(const L& val, ResultForBinaryAssert& res) {
+        res.m_passed = !!val;
+        res.m_decomp = toString(val);
+    }
+
+    // @TODO: move out of here
+    inline void binary_assert(assertType::Enum assert_type, const char* file, int line,
+                              const char* lhs_str, const char* rhs_str,
+                              ResultForBinaryAssert& res) {
         String        expr     = String(lhs_str) + ", " + rhs_str;
         const char*   expr_str = expr.c_str();
         ResultBuilder rb(assert_type, file, line, expr_str);
-        try {
-            rb.m_res.m_passed        = FastComparator<comparison, L, R>()(lhs, rhs);
-            rb.m_res.m_decomposition = stringifyBinaryExpr(lhs, ", ", rhs);
-        } catch(...) { rb.m_threw = true; }
 
-        int res = 0;
+        rb.m_result.m_passed        = res.m_passed;
+        rb.m_result.m_decomposition = res.m_decomp;
+        rb.m_threw                  = res.m_threw;
 
         if(rb.log())
-            res |= fastAssertAction::dbgbreak;
+            res.m_action |= binaryAssertAction::dbgbreak;
 
         if(rb.m_failed && checkIfShouldThrow(assert_type))
-            res |= fastAssertAction::shouldthrow;
-
-        return res;
+            res.m_action |= binaryAssertAction::shouldthrow;
     }
 
-    template <typename T>
-    int fast_assert_unary(assertType::Enum assert_type, const char* file, int line,
-                          const char* expr, const T& val, bool is_false) {
+    // @TODO: move out of here
+    inline void unary_assert(assertType::Enum assert_type, const char* file, int line,
+                             const char* expr, ResultForBinaryAssert& res) {
         ResultBuilder rb(assert_type, file, line, expr);
-        try {
-            rb.m_res.m_passed        = !!val;
-            rb.m_res.m_decomposition = toString(val);
-            if(is_false)
-                rb.m_res.m_passed = !rb.m_res.m_passed;
-        } catch(...) { rb.m_threw = true; }
 
-        int res = 0;
+        rb.m_result.m_passed        = res.m_passed;
+        rb.m_result.m_decomposition = res.m_decomp;
+        rb.m_threw                  = res.m_threw;
 
         if(rb.log())
-            res |= fastAssertAction::dbgbreak;
+            res.m_action |= binaryAssertAction::dbgbreak;
 
         if(rb.m_failed && checkIfShouldThrow(assert_type))
-            res |= fastAssertAction::shouldthrow;
-
-        return res;
+            res.m_action |= binaryAssertAction::shouldthrow;
     }
 } // namespace detail
 
@@ -1258,52 +1275,90 @@ public:
 #define DOCTEST_CHECK_NOTHROW(expr) DOCTEST_ASSERT_NOTHROW(expr, DT_CHECK_NOTHROW)
 #define DOCTEST_REQUIRE_NOTHROW(expr) DOCTEST_ASSERT_NOTHROW(expr, DT_REQUIRE_NOTHROW)
 
-#define DOCTEST_FAST_ASSERTION(assert_type, lhs, rhs, comparison)                                  \
+//#define DOCTEST_ASSERT_IMPLEMENT(expr, assert_type)
+//    doctest::detail::ResultBuilder _DOCTEST_RB(doctest::detail::assertType::assert_type, __FILE__,
+//                                               __LINE__, #expr);
+//    try {
+//        _DOCTEST_RB.setResult(doctest::detail::ExpressionDecomposer() << expr);
+//    } catch(...) { _DOCTEST_RB.m_threw = true; }
+//    DOCTEST_ASSERT_LOG_AND_REACT(_DOCTEST_RB);
+
+#define DOCTEST_BINARY_ASSERTION(assert_type, lhs, rhs, comparison)                                \
     do {                                                                                           \
-        int res = doctest::detail::fast_assert<doctest::detail::fastAssertComparison::comparison>( \
-                doctest::detail::assertType::assert_type, __FILE__, __LINE__, #lhs, #rhs, lhs,     \
-                rhs);                                                                              \
-        if(res & doctest::detail::fastAssertAction::dbgbreak)                                      \
+        doctest::detail::ResultForBinaryAssert _DOCTEST_RES;                                       \
+        try {                                                                                      \
+            doctest::detail::binary_comp<doctest::detail::binaryAssertComparison::comparison>(     \
+                    lhs, rhs, _DOCTEST_RES);                                                       \
+        } catch(...) { _DOCTEST_RES.m_threw = true; }                                              \
+        doctest::detail::binary_assert(doctest::detail::assertType::assert_type, __FILE__,         \
+                                       __LINE__, #lhs, #rhs, _DOCTEST_RES);                        \
+        if(_DOCTEST_RES.m_action & doctest::detail::binaryAssertAction::dbgbreak)                  \
             DOCTEST_BREAK_INTO_DEBUGGER();                                                         \
-        if(res & doctest::detail::fastAssertAction::shouldthrow)                                   \
+        if(_DOCTEST_RES.m_action & doctest::detail::binaryAssertAction::shouldthrow)               \
             doctest::detail::throwException();                                                     \
     } while(doctest::detail::always_false())
 
-#define DOCTEST_FAST_ASSERTION_UNARY(assert_type, val)                                             \
+#define DOCTEST_UNARY_ASSERTION(assert_type, val)                                                  \
     do {                                                                                           \
-        int res = doctest::detail::fast_assert_unary(doctest::detail::assertType::assert_type,     \
-                                                     __FILE__, __LINE__, #val, val);               \
-        if(res & doctest::detail::fastAssertAction::dbgbreak)                                      \
+        doctest::detail::ResultForBinaryAssert _DOCTEST_RES;                                       \
+        try {                                                                                      \
+            doctest::detail::unary_eval(val, _DOCTEST_RES);                                        \
+        } catch(...) { _DOCTEST_RES.m_threw = true; }                                              \
+        doctest::detail::unary_assert(doctest::detail::assertType::assert_type, __FILE__,          \
+                                      __LINE__, #val, _DOCTEST_RES);                               \
+        if(_DOCTEST_RES.m_action & doctest::detail::binaryAssertAction::dbgbreak)                  \
             DOCTEST_BREAK_INTO_DEBUGGER();                                                         \
-        if(res & doctest::detail::fastAssertAction::shouldthrow)                                   \
+        if(_DOCTEST_RES.m_action & doctest::detail::binaryAssertAction::shouldthrow)               \
             doctest::detail::throwException();                                                     \
     } while(doctest::detail::always_false())
 
-#define DOCTEST_WARN_EQ(lhs, rhs) DOCTEST_FAST_ASSERTION(DT_WARN_EQ, lhs, rhs, eq)
-#define DOCTEST_CHECK_EQ(lhs, rhs) DOCTEST_FAST_ASSERTION(DT_CHECK_EQ, lhs, rhs, eq)
-#define DOCTEST_REQUIRE_EQ(lhs, rhs) DOCTEST_FAST_ASSERTION(DT_REQUIRE_EQ, lhs, rhs, eq)
-#define DOCTEST_WARN_NE(lhs, rhs) DOCTEST_FAST_ASSERTION(DT_WARN_NE, lhs, rhs, ne)
-#define DOCTEST_CHECK_NE(lhs, rhs) DOCTEST_FAST_ASSERTION(DT_CHECK_NE, lhs, rhs, ne)
-#define DOCTEST_REQUIRE_NE(lhs, rhs) DOCTEST_FAST_ASSERTION(DT_REQUIRE_NE, lhs, rhs, ne)
-#define DOCTEST_WARN_GT(lhs, rhs) DOCTEST_FAST_ASSERTION(DT_WARN_GT, lhs, rhs, gt)
-#define DOCTEST_CHECK_GT(lhs, rhs) DOCTEST_FAST_ASSERTION(DT_CHECK_GT, lhs, rhs, gt)
-#define DOCTEST_REQUIRE_GT(lhs, rhs) DOCTEST_FAST_ASSERTION(DT_REQUIRE_GT, lhs, rhs, gt)
-#define DOCTEST_WARN_LT(lhs, rhs) DOCTEST_FAST_ASSERTION(DT_WARN_LT, lhs, rhs, lt)
-#define DOCTEST_CHECK_LT(lhs, rhs) DOCTEST_FAST_ASSERTION(DT_CHECK_LT, lhs, rhs, lt)
-#define DOCTEST_REQUIRE_LT(lhs, rhs) DOCTEST_FAST_ASSERTION(DT_REQUIRE_LT, lhs, rhs, lt)
-#define DOCTEST_WARN_GE(lhs, rhs) DOCTEST_FAST_ASSERTION(DT_WARN_GE, lhs, rhs, ge)
-#define DOCTEST_CHECK_GE(lhs, rhs) DOCTEST_FAST_ASSERTION(DT_CHECK_GE, lhs, rhs, ge)
-#define DOCTEST_REQUIRE_GE(lhs, rhs) DOCTEST_FAST_ASSERTION(DT_REQUIRE_GE, lhs, rhs, ge)
-#define DOCTEST_WARN_LE(lhs, rhs) DOCTEST_FAST_ASSERTION(DT_WARN_LE, lhs, rhs, le)
-#define DOCTEST_CHECK_LE(lhs, rhs) DOCTEST_FAST_ASSERTION(DT_CHECK_LE, lhs, rhs, le)
-#define DOCTEST_REQUIRE_LE(lhs, rhs) DOCTEST_FAST_ASSERTION(DT_REQUIRE_LE, lhs, rhs, le)
+//#define DOCTEST_BINARY_ASSERTION(assert_type, lhs, rhs, comparison)
+//    do {
+//        int res = doctest::detail::binary_assert<
+//                doctest::detail::binaryAssertComparison::comparison>(
+//                doctest::detail::assertType::assert_type, __FILE__, __LINE__, #lhs, #rhs, lhs,
+//                rhs);
+//        if(res & doctest::detail::binaryAssertAction::dbgbreak)
+//            DOCTEST_BREAK_INTO_DEBUGGER();
+//        if(res & doctest::detail::binaryAssertAction::shouldthrow)
+//            doctest::detail::throwException();
+//    } while(doctest::detail::always_false())
 
-#define DOCTEST_WARN_UNARY(val) DOCTEST_FAST_ASSERTION_UNARY(DT_WARN_UNARY, val)
-#define DOCTEST_CHECK_UNARY(val) DOCTEST_FAST_ASSERTION_UNARY(DT_CHECK_UNARY, val)
-#define DOCTEST_REQUIRE_UNARY(val) DOCTEST_FAST_ASSERTION_UNARY(DT_REQUIRE_UNARY, val)
-#define DOCTEST_WARN_UNARY_FALSE(val) DOCTEST_FAST_ASSERTION_UNARY(DT_WARN_UNARY_FALSE, val)
-#define DOCTEST_CHECK_UNARY_FALSE(val) DOCTEST_FAST_ASSERTION_UNARY(DT_CHECK_UNARY_FALSE, val)
-#define DOCTEST_REQUIRE_UNARY_FALSE(val) DOCTEST_FAST_ASSERTION_UNARY(DT_REQUIRE_UNARY_FALSE, val)
+//#define DOCTEST_BINARY_ASSERTION_UNARY(assert_type, val)
+//    do {
+//        int res = doctest::detail::unary_assert(doctest::detail::assertType::assert_type,
+//                                                __FILE__, __LINE__, #val, val);
+//        if(res & doctest::detail::binaryAssertAction::dbgbreak)
+//            DOCTEST_BREAK_INTO_DEBUGGER();
+//        if(res & doctest::detail::binaryAssertAction::shouldthrow)
+//            doctest::detail::throwException();
+//    } while(doctest::detail::always_false())
+
+#define DOCTEST_WARN_EQ(lhs, rhs) DOCTEST_BINARY_ASSERTION(DT_WARN_EQ, lhs, rhs, eq)
+#define DOCTEST_CHECK_EQ(lhs, rhs) DOCTEST_BINARY_ASSERTION(DT_CHECK_EQ, lhs, rhs, eq)
+#define DOCTEST_REQUIRE_EQ(lhs, rhs) DOCTEST_BINARY_ASSERTION(DT_REQUIRE_EQ, lhs, rhs, eq)
+#define DOCTEST_WARN_NE(lhs, rhs) DOCTEST_BINARY_ASSERTION(DT_WARN_NE, lhs, rhs, ne)
+#define DOCTEST_CHECK_NE(lhs, rhs) DOCTEST_BINARY_ASSERTION(DT_CHECK_NE, lhs, rhs, ne)
+#define DOCTEST_REQUIRE_NE(lhs, rhs) DOCTEST_BINARY_ASSERTION(DT_REQUIRE_NE, lhs, rhs, ne)
+#define DOCTEST_WARN_GT(lhs, rhs) DOCTEST_BINARY_ASSERTION(DT_WARN_GT, lhs, rhs, gt)
+#define DOCTEST_CHECK_GT(lhs, rhs) DOCTEST_BINARY_ASSERTION(DT_CHECK_GT, lhs, rhs, gt)
+#define DOCTEST_REQUIRE_GT(lhs, rhs) DOCTEST_BINARY_ASSERTION(DT_REQUIRE_GT, lhs, rhs, gt)
+#define DOCTEST_WARN_LT(lhs, rhs) DOCTEST_BINARY_ASSERTION(DT_WARN_LT, lhs, rhs, lt)
+#define DOCTEST_CHECK_LT(lhs, rhs) DOCTEST_BINARY_ASSERTION(DT_CHECK_LT, lhs, rhs, lt)
+#define DOCTEST_REQUIRE_LT(lhs, rhs) DOCTEST_BINARY_ASSERTION(DT_REQUIRE_LT, lhs, rhs, lt)
+#define DOCTEST_WARN_GE(lhs, rhs) DOCTEST_BINARY_ASSERTION(DT_WARN_GE, lhs, rhs, ge)
+#define DOCTEST_CHECK_GE(lhs, rhs) DOCTEST_BINARY_ASSERTION(DT_CHECK_GE, lhs, rhs, ge)
+#define DOCTEST_REQUIRE_GE(lhs, rhs) DOCTEST_BINARY_ASSERTION(DT_REQUIRE_GE, lhs, rhs, ge)
+#define DOCTEST_WARN_LE(lhs, rhs) DOCTEST_BINARY_ASSERTION(DT_WARN_LE, lhs, rhs, le)
+#define DOCTEST_CHECK_LE(lhs, rhs) DOCTEST_BINARY_ASSERTION(DT_CHECK_LE, lhs, rhs, le)
+#define DOCTEST_REQUIRE_LE(lhs, rhs) DOCTEST_BINARY_ASSERTION(DT_REQUIRE_LE, lhs, rhs, le)
+
+#define DOCTEST_WARN_UNARY(val) DOCTEST_UNARY_ASSERTION(DT_WARN_UNARY, val)
+#define DOCTEST_CHECK_UNARY(val) DOCTEST_UNARY_ASSERTION(DT_CHECK_UNARY, val)
+#define DOCTEST_REQUIRE_UNARY(val) DOCTEST_UNARY_ASSERTION(DT_REQUIRE_UNARY, val)
+#define DOCTEST_WARN_UNARY_FALSE(val) DOCTEST_UNARY_ASSERTION(DT_WARN_UNARY_FALSE, val)
+#define DOCTEST_CHECK_UNARY_FALSE(val) DOCTEST_UNARY_ASSERTION(DT_CHECK_UNARY_FALSE, val)
+#define DOCTEST_REQUIRE_UNARY_FALSE(val) DOCTEST_UNARY_ASSERTION(DT_REQUIRE_UNARY_FALSE, val)
 
 // =================================================================================================
 // == WHAT FOLLOWS IS VERSIONS OF THE MACROS THAT DO NOT DO ANY REGISTERING!                      ==
@@ -2572,10 +2627,10 @@ namespace detail
             DOCTEST_GCS().numAssertionsForCurrentTestcase++;
 
         if(m_assert_type & assertType::is_normal) {
-            m_failed = m_res;
+            m_failed = m_result;
         } else if(m_assert_type & assertType::is_false) {
-            m_res.invert();
-            m_failed = m_res;
+            m_result.invert();
+            m_failed = m_result;
         } else if(m_assert_type & assertType::is_throws) {
             m_failed = !m_threw;
         } else if(m_assert_type & assertType::is_throws_as) {
@@ -2590,7 +2645,7 @@ namespace detail
             DOCTEST_LOG_START();
 
             if(m_assert_type & (assertType::is_normal | assertType::is_false)) {
-                logAssert(m_res.m_passed, m_res.m_decomposition.c_str(), m_threw, m_expr,
+                logAssert(m_result.m_passed, m_result.m_decomposition.c_str(), m_threw, m_expr,
                           m_assert_type, m_file, m_line);
             } else if(m_assert_type & assertType::is_throws) {
                 logAssertThrows(m_threw, m_expr, m_assert_type, m_file, m_line);

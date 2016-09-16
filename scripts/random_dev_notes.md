@@ -6,6 +6,8 @@
 
 
 
+- the project is in need of sponsors!
+
 - integrate patreon
 
 - examples
@@ -25,6 +27,7 @@
     - faq - why macros - http://accu.org/index.php/journals/2064
     - FAQ - how is it different from Catch (or what is lacking)
     - faq - why c++
+    - faq - require macros not working properly when using -fno-exceptions
     - FAQ - static libraries - also mention https://github.com/pthom/doctest_registerlibrary
     - default options should be mentioned
     - mention the new asserts
