@@ -1,10 +1,6 @@
-- move stuff from fwd to impl
-
 - benchmark new assertion macros
 
-- see how much lines of code they are
-
-- maybe put them in a separate header...
+- see how much lines of code they are - and maybe put them in a separate header...
 
 
 
