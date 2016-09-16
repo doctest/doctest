@@ -1,6 +1,12 @@
-- fix unary/binary assertion macros
+- move stuff from fwd to impl
 
-- implement the fast unary/binary assertion macros
+- benchmark new assertion macros
+
+- see how much lines of code they are
+
+- maybe put them in a separate header...
+
+
 
 - fix coverage again...
 

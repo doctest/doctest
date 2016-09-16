@@ -1091,9 +1091,7 @@ namespace detail
         if((m_assert_type & assertType::is_warn) == 0)
             DOCTEST_GCS().numAssertionsForCurrentTestcase++;
 
-        if(m_assert_type & assertType::is_normal) {
-            m_failed = m_result;
-        } else if(m_assert_type & assertType::is_false) {
+        if(m_assert_type & assertType::is_false) {
             m_result.invert();
             m_failed = m_result;
         } else if(m_assert_type & assertType::is_throws) {
@@ -1103,22 +1101,22 @@ namespace detail
         } else if(m_assert_type & assertType::is_nothrow) {
             m_failed = m_threw;
         } else {
-            assert(false);
+            m_failed = m_result;
         }
 
         if(m_failed || DOCTEST_GCS().success) {
             DOCTEST_LOG_START();
 
-            if(m_assert_type & (assertType::is_normal | assertType::is_false)) {
-                logAssert(m_result.m_passed, m_result.m_decomposition.c_str(), m_threw, m_expr,
-                          m_assert_type, m_file, m_line);
-            } else if(m_assert_type & assertType::is_throws) {
+            if(m_assert_type & assertType::is_throws) {
                 logAssertThrows(m_threw, m_expr, m_assert_type, m_file, m_line);
             } else if(m_assert_type & assertType::is_throws_as) {
                 logAssertThrowsAs(m_threw, m_threw_as, m_exception_type, m_expr, m_assert_type,
                                   m_file, m_line);
             } else if(m_assert_type & assertType::is_nothrow) {
                 logAssertNothrow(m_threw, m_expr, m_assert_type, m_file, m_line);
+            } else {
+                logAssert(m_result.m_passed, m_result.m_decomposition.c_str(), m_threw, m_expr,
+                          m_assert_type, m_file, m_line);
             }
         }
 
