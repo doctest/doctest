@@ -45,6 +45,7 @@ TEST_CASE("doctest internals") {
     a += doctest::detail::fileForOutput("a");
     std::ostringstream oss;
     oss << a;
+    oss << doctest::detail::getAssertString(static_cast<doctest::detail::assertType::Enum>(1));
     a += oss.str().c_str();
     CHECK(doctest::detail::rawMemoryToString(a).length() > 0u);
 }
