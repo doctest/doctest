@@ -179,7 +179,7 @@
 #define DOCTEST_TOSTR_IMPL(x) #x
 #define DOCTEST_TOSTR(x) DOCTEST_TOSTR_IMPL(x)
 
-// for concatenating 2 literals and making the result a string
+// for concatenating literals and making the result a string
 #define DOCTEST_STR_CONCAT_TOSTR(s1, s2) DOCTEST_TOSTR(s1) DOCTEST_TOSTR(s2)
 
 // counts the number of elements in a C string
@@ -319,6 +319,7 @@ std::ostream& operator<<(std::ostream& stream, const String& in);
 
 namespace detail
 {
+#ifndef DOCTEST_CONFIG_WITH_STATIC_ASSERT
     namespace static_assert_impl
     {
         template <bool>
@@ -331,8 +332,8 @@ namespace detail
         template <int i>
         struct StaticAssertionTest
         {};
-
-    } // namespace static_assert_impl
+    }  // namespace static_assert_impl
+#endif // DOCTEST_CONFIG_WITH_STATIC_ASSERT
 
     template <typename T>
     struct deferred_false
@@ -645,6 +646,7 @@ namespace detail
     {};
 
     bool checkIfShouldThrow(assertType::Enum assert_type);
+    void fastAssertThrowIfFlagSet(int flags);
     void throwException();
     bool always_false();
 
@@ -928,6 +930,29 @@ namespace detail
 
     TestAccessibleContextState* getTestsContextState();
 
+    namespace binaryAssertComparison
+    {
+        enum Enum
+        {
+            eq = 0,
+            ne,
+            gt,
+            lt,
+            ge,
+            le
+        };
+    } // namespace binaryAssertComparison
+
+    // clang-format off
+    template <int, class L, class R> struct RelationalComparator     { bool operator()(const L&,     const R&    ) const { return false;        } };
+    template <class L, class R> struct RelationalComparator<0, L, R> { bool operator()(const L& lhs, const R& rhs) const { return eq(lhs, rhs); } };
+    template <class L, class R> struct RelationalComparator<1, L, R> { bool operator()(const L& lhs, const R& rhs) const { return ne(lhs, rhs); } };
+    template <class L, class R> struct RelationalComparator<2, L, R> { bool operator()(const L& lhs, const R& rhs) const { return gt(lhs, rhs); } };
+    template <class L, class R> struct RelationalComparator<3, L, R> { bool operator()(const L& lhs, const R& rhs) const { return lt(lhs, rhs); } };
+    template <class L, class R> struct RelationalComparator<4, L, R> { bool operator()(const L& lhs, const R& rhs) const { return ge(lhs, rhs); } };
+    template <class L, class R> struct RelationalComparator<5, L, R> { bool operator()(const L& lhs, const R& rhs) const { return le(lhs, rhs); } };
+    // clang-format on
+
     struct ResultBuilder
     {
         assertType::Enum m_assert_type;
@@ -953,6 +978,18 @@ namespace detail
 
         void setResult(const Result& res) { m_result = res; }
 
+        template <int comparison, typename L, typename R>
+        void binary_assert(const L& lhs, const R& rhs) {
+            m_result.m_passed        = RelationalComparator<comparison, L, R>()(lhs, rhs);
+            m_result.m_decomposition = stringifyBinaryExpr(lhs, ", ", rhs);
+        }
+
+        template <typename L>
+        void unary_assert(const L& val) {
+            m_result.m_passed        = !!val;
+            m_result.m_decomposition = toString(val);
+        }
+
         bool log();
         void react() const;
     };
@@ -967,61 +1004,6 @@ namespace detail
         };
     } // namespace binaryAssertAction
 
-    namespace binaryAssertComparison
-    {
-        enum Enum
-        {
-            eq = 0,
-            ne,
-            gt,
-            lt,
-            ge,
-            le
-        };
-    } // namespace binaryAssertComparison
-
-    // clang-format off
-    template <int, class L, class R> struct FastComparator     { bool operator()(const L&,     const R&    ) const { return false;        } };
-    template <class L, class R> struct FastComparator<0, L, R> { bool operator()(const L& lhs, const R& rhs) const { return eq(lhs, rhs); } };
-    template <class L, class R> struct FastComparator<1, L, R> { bool operator()(const L& lhs, const R& rhs) const { return ne(lhs, rhs); } };
-    template <class L, class R> struct FastComparator<2, L, R> { bool operator()(const L& lhs, const R& rhs) const { return gt(lhs, rhs); } };
-    template <class L, class R> struct FastComparator<3, L, R> { bool operator()(const L& lhs, const R& rhs) const { return lt(lhs, rhs); } };
-    template <class L, class R> struct FastComparator<4, L, R> { bool operator()(const L& lhs, const R& rhs) const { return ge(lhs, rhs); } };
-    template <class L, class R> struct FastComparator<5, L, R> { bool operator()(const L& lhs, const R& rhs) const { return le(lhs, rhs); } };
-    // clang-format on
-
-    struct ResultForBinaryAssert
-    {
-        bool   m_passed;
-        bool   m_threw;
-        String m_decomp;
-        int    m_action;
-        ResultForBinaryAssert(bool passed = false, bool threw = false, String decomp = "",
-                              int action = 0)
-                : m_passed(passed)
-                , m_threw(threw)
-                , m_decomp(decomp)
-                , m_action(action) {}
-    };
-
-    template <int comparison, typename L, typename R>
-    void binary_comp(const L& lhs, const R& rhs, ResultForBinaryAssert& res) {
-        res.m_passed = FastComparator<comparison, L, R>()(lhs, rhs);
-        res.m_decomp = stringifyBinaryExpr(lhs, ", ", rhs);
-    }
-
-    template <typename L>
-    void unary_eval(const L& val, ResultForBinaryAssert& res) {
-        res.m_passed = !!val;
-        res.m_decomp = toString(val);
-    }
-
-    void binary_assert(assertType::Enum assert_type, const char* file, int line,
-                       const char* lhs_str, const char* rhs_str, ResultForBinaryAssert& res);
-
-    void unary_assert(assertType::Enum assert_type, const char* file, int line, const char* expr,
-                      ResultForBinaryAssert& res);
-
     template <int comparison, typename L, typename R>
     int fast_binary_assert(assertType::Enum assert_type, const char* file, int line,
                            const char* lhs_str, const char* rhs_str, const L& lhs, const R& rhs) {
@@ -1029,7 +1011,7 @@ namespace detail
         const char*   expr_str = expr.c_str();
         ResultBuilder rb(assert_type, file, line, expr_str);
 
-        rb.m_result.m_passed        = FastComparator<comparison, L, R>()(lhs, rhs);
+        rb.m_result.m_passed        = RelationalComparator<comparison, L, R>()(lhs, rhs);
         rb.m_result.m_decomposition = stringifyBinaryExpr(lhs, ", ", rhs);
 
         int res = 0;
@@ -1281,33 +1263,24 @@ public:
 #define DOCTEST_CHECK_NOTHROW(expr) DOCTEST_ASSERT_NOTHROW(expr, DT_CHECK_NOTHROW)
 #define DOCTEST_REQUIRE_NOTHROW(expr) DOCTEST_ASSERT_NOTHROW(expr, DT_REQUIRE_NOTHROW)
 
-#define DOCTEST_BINARY_ASSERTION(assert_type, lhs, rhs, comparison)                                \
+#define DOCTEST_BINARY_ASSERTION(assert_type, lhs, rhs, comp)                                      \
     do {                                                                                           \
-        doctest::detail::ResultForBinaryAssert _DOCTEST_RES;                                       \
+        doctest::detail::ResultBuilder _DOCTEST_RB(doctest::detail::assertType::assert_type,       \
+                                                   __FILE__, __LINE__, #lhs ", " #rhs);            \
         try {                                                                                      \
-            doctest::detail::binary_comp<doctest::detail::binaryAssertComparison::comparison>(     \
-                    lhs, rhs, _DOCTEST_RES);                                                       \
-        } catch(...) { _DOCTEST_RES.m_threw = true; }                                              \
-        doctest::detail::binary_assert(doctest::detail::assertType::assert_type, __FILE__,         \
-                                       __LINE__, #lhs, #rhs, _DOCTEST_RES);                        \
-        if(_DOCTEST_RES.m_action & doctest::detail::binaryAssertAction::dbgbreak)                  \
-            DOCTEST_BREAK_INTO_DEBUGGER();                                                         \
-        if(_DOCTEST_RES.m_action & doctest::detail::binaryAssertAction::shouldthrow)               \
-            doctest::detail::throwException();                                                     \
+            _DOCTEST_RB.binary_assert<doctest::detail::binaryAssertComparison::comp>(lhs, rhs);    \
+        } catch(...) { _DOCTEST_RB.m_threw = true; }                                               \
+        DOCTEST_ASSERT_LOG_AND_REACT(_DOCTEST_RB);                                                 \
     } while(doctest::detail::always_false())
 
 #define DOCTEST_UNARY_ASSERTION(assert_type, val)                                                  \
     do {                                                                                           \
-        doctest::detail::ResultForBinaryAssert _DOCTEST_RES;                                       \
+        doctest::detail::ResultBuilder _DOCTEST_RB(doctest::detail::assertType::assert_type,       \
+                                                   __FILE__, __LINE__, #val);                      \
         try {                                                                                      \
-            doctest::detail::unary_eval(val, _DOCTEST_RES);                                        \
-        } catch(...) { _DOCTEST_RES.m_threw = true; }                                              \
-        doctest::detail::unary_assert(doctest::detail::assertType::assert_type, __FILE__,          \
-                                      __LINE__, #val, _DOCTEST_RES);                               \
-        if(_DOCTEST_RES.m_action & doctest::detail::binaryAssertAction::dbgbreak)                  \
-            DOCTEST_BREAK_INTO_DEBUGGER();                                                         \
-        if(_DOCTEST_RES.m_action & doctest::detail::binaryAssertAction::shouldthrow)               \
-            doctest::detail::throwException();                                                     \
+            _DOCTEST_RB.unary_assert(val);                                                         \
+        } catch(...) { _DOCTEST_RB.m_threw = true; }                                               \
+        DOCTEST_ASSERT_LOG_AND_REACT(_DOCTEST_RB);                                                 \
     } while(doctest::detail::always_false())
 
 #define DOCTEST_WARN_EQ(lhs, rhs) DOCTEST_BINARY_ASSERTION(DT_WARN_EQ, lhs, rhs, eq)
@@ -1344,8 +1317,7 @@ public:
                 rhs);                                                                              \
         if(res & doctest::detail::binaryAssertAction::dbgbreak)                                    \
             DOCTEST_BREAK_INTO_DEBUGGER();                                                         \
-        if(res & doctest::detail::binaryAssertAction::shouldthrow)                                 \
-            doctest::detail::throwException();                                                     \
+        doctest::detail::fastAssertThrowIfFlagSet(res);                                            \
     } while(doctest::detail::always_false())
 
 #define DOCTEST_FAST_UNARY_ASSERTION(assert_type, val)                                             \
@@ -1354,8 +1326,7 @@ public:
                                                      __FILE__, __LINE__, #val, val);               \
         if(res & doctest::detail::binaryAssertAction::dbgbreak)                                    \
             DOCTEST_BREAK_INTO_DEBUGGER();                                                         \
-        if(res & doctest::detail::binaryAssertAction::shouldthrow)                                 \
-            doctest::detail::throwException();                                                     \
+        doctest::detail::fastAssertThrowIfFlagSet(res);                                            \
     } while(doctest::detail::always_false())
 
 #define DOCTEST_FAST_WARN_EQ(l, r) DOCTEST_FAST_BINARY_ASSERTION(DT_FAST_WARN_EQ, l, r, eq)

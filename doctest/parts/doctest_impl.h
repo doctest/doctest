@@ -557,6 +557,10 @@ namespace detail
 
         return false;
     }
+    void fastAssertThrowIfFlagSet(int flags) {
+        if(flags & binaryAssertAction::shouldthrow)
+            throwException();
+    }
     void throwException() { throw TestFailureException(); }
     bool always_false() { return false; }
 
@@ -1127,41 +1131,10 @@ namespace detail
         }
         return false;
     }
+
     void ResultBuilder::react() const {
         if(m_failed && checkIfShouldThrow(m_assert_type))
             throwException();
-    }
-
-    void binary_assert(assertType::Enum assert_type, const char* file, int line,
-                       const char* lhs_str, const char* rhs_str, ResultForBinaryAssert& res) {
-        String        expr     = String(lhs_str) + ", " + rhs_str;
-        const char*   expr_str = expr.c_str();
-        ResultBuilder rb(assert_type, file, line, expr_str);
-
-        rb.m_result.m_passed        = res.m_passed;
-        rb.m_result.m_decomposition = res.m_decomp;
-        rb.m_threw                  = res.m_threw;
-
-        if(rb.log())
-            res.m_action |= binaryAssertAction::dbgbreak;
-
-        if(rb.m_failed && checkIfShouldThrow(assert_type))
-            res.m_action |= binaryAssertAction::shouldthrow;
-    }
-
-    void unary_assert(assertType::Enum assert_type, const char* file, int line, const char* expr,
-                      ResultForBinaryAssert& res) {
-        ResultBuilder rb(assert_type, file, line, expr);
-
-        rb.m_result.m_passed        = res.m_passed;
-        rb.m_result.m_decomposition = res.m_decomp;
-        rb.m_threw                  = res.m_threw;
-
-        if(rb.log())
-            res.m_action |= binaryAssertAction::dbgbreak;
-
-        if(rb.m_failed && checkIfShouldThrow(assert_type))
-            res.m_action |= binaryAssertAction::shouldthrow;
     }
 
     // the implementation of parseFlag()

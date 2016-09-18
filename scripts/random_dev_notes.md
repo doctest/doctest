@@ -4,7 +4,7 @@
 
 
 
-- fix coverage again...
+- fix coverage again... clearFilters and new assertion macros
 
 
 

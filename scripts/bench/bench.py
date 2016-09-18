@@ -16,6 +16,11 @@ doctest_disable     = 0
 the_folder = 'project'
 
 doctest_header = 'doctest.h'
+#doctest_header = 'doctest_1_0.h'
+#macro = "FAST_CHECK_EQ"
+macro = "CHECK"
+operator = " == "
+#operator = ", "
 
 GCC_cmake_generator     = '"MinGW Makefiles"'
 MSVC_cmake_generator    = '"Visual Studio 14 Win64"' # MSVC 2015
@@ -60,8 +65,7 @@ for i in range(0, numFiles):
             for a in range(0, with_num_assertions):
                 f.write('    int a' + str(a) + ' = 5;\n')
                 f.write('    int b' + str(a) + ' = 6;\n')
-                f.write('    CHECK(a' + str(a) + ' == b' + str(a) + ');\n')
-                #f.write('    CHECK_EQ(a' + str(a) + ', b' + str(a) + ');\n')
+                f.write('    ' + macro + '(a' + str(a) + operator + 'b' + str(a) + ');\n')
             f.write('}\n\n')
     f.write('int f' + str(i) + '() { return ' + str(i) + '; }\n\n')
     f.close()
