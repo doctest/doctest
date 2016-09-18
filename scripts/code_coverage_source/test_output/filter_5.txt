@@ -34,11 +34,11 @@ test.cpp(47) FAILED! (didn't throw at all)
   REQUIRE_THROWS_AS( throws(false), bool )
 
 ===============================================================================
-test.cpp(50)
+test.cpp(116)
 throws
 
 TEST CASE FAILED! (threw exception)
 
 ===============================================================================
-[doctest] test cases:    2 |    0 passed |    2 failed |    3 skipped
-[doctest] assertions:   11 |    4 passed |    7 failed |
+[doctest] test cases:    3 |    1 passed |    2 failed |    3 skipped
+[doctest] assertions:   53 |   46 passed |    7 failed |

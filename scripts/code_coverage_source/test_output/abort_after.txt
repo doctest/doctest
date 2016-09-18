@@ -25,5 +25,5 @@ with expansion:
   CHECK_FALSE( 1 )
 
 ===============================================================================
-[doctest] test cases:    4 |    2 passed |    2 failed |    1 skipped
+[doctest] test cases:    4 |    2 passed |    2 failed |    2 skipped
 [doctest] assertions:    9 |    6 passed |    3 failed |

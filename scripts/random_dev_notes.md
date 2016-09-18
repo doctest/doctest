@@ -1,10 +1,7 @@
 - benchmark new assertion macros
 
-- see how much lines of code they are - and maybe put them in a separate header...
 
 
-
-- fix coverage again... clearFilters and new assertion macros
 
 
 

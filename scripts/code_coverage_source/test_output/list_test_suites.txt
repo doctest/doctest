@@ -4,4 +4,4 @@
 
 ts1
 ===============================================================================
-[doctest] number of tests passing the current filters: 5
+[doctest] number of tests passing the current filters: 6

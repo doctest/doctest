@@ -34,5 +34,5 @@ test.cpp(47) FAILED! (didn't throw at all)
   REQUIRE_THROWS_AS( throws(false), bool )
 
 ===============================================================================
-[doctest] test cases:    1 |    0 passed |    1 failed |    4 skipped
-[doctest] assertions:   11 |    4 passed |    7 failed |
+[doctest] test cases:    2 |    1 passed |    1 failed |    4 skipped
+[doctest] assertions:   53 |   46 passed |    7 failed |

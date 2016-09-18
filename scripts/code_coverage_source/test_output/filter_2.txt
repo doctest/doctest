@@ -11,11 +11,11 @@ with expansion:
   CHECK( 0 )
 
 ===============================================================================
-test.cpp(50)
+test.cpp(116)
 throws
 
 TEST CASE FAILED! (threw exception)
 
 ===============================================================================
-[doctest] test cases:    4 |    2 passed |    2 failed |    1 skipped
+[doctest] test cases:    4 |    2 passed |    2 failed |    2 skipped
 [doctest] assertions:    6 |    5 passed |    1 failed |

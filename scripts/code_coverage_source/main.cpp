@@ -51,6 +51,7 @@ TEST_CASE("doctest internals") {
 
 int main(int argc, char** argv) {
     doctest::Context context;
+    context.clearFilters();
 
     context.addFilter("test-case-exclude", "*math*");
     context.setOption("no-breaks", true);
