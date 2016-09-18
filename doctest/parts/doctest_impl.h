@@ -558,7 +558,7 @@ namespace detail
         return false;
     }
     void fastAssertThrowIfFlagSet(int flags) {
-        if(flags & binaryAssertAction::shouldthrow)
+        if(flags & assertAction::shouldthrow)
             throwException();
     }
     void throwException() { throw TestFailureException(); }

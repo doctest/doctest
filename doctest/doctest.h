@@ -188,6 +188,12 @@
 // counts the number of elements in a C string
 #define DOCTEST_COUNTOF(x) (sizeof(x) / sizeof(x[0]))
 
+#ifndef DOCTEST_CONFIG_ASSERTION_PARAMETERS_BY_VALUE
+#define DOCTEST_REF_WRAP(x) x&
+#else // DOCTEST_CONFIG_ASSERTION_PARAMETERS_BY_VALUE
+#define DOCTEST_REF_WRAP(x) x
+#endif // DOCTEST_CONFIG_ASSERTION_PARAMETERS_BY_VALUE
+
 // not using __APPLE__ because... this is how Catch does it
 #if defined(__MAC_OS_X_VERSION_MIN_REQUIRED)
 #define DOCTEST_PLATFORM_MAC
@@ -350,7 +356,7 @@ namespace detail
         struct any_t
         {
             template <typename T>
-            any_t(const T&);
+            any_t(const DOCTEST_REF_WRAP(T));
         };
 
         yes& testStreamable(std::ostream&);
@@ -362,8 +368,8 @@ namespace detail
         struct has_insertion_operator
         {
             static std::ostream& s;
-            static const T&      t;
-            static const bool    value = sizeof(testStreamable(s << t)) == sizeof(yes);
+            static const DOCTEST_REF_WRAP(T) t;
+            static const bool value = sizeof(testStreamable(s << t)) == sizeof(yes);
         };
     } // namespace has_insertion_operator_impl
 
@@ -379,7 +385,7 @@ namespace detail
     struct StringMakerBase
     {
         template <typename T>
-        static String convert(const T&) {
+        static String convert(const DOCTEST_REF_WRAP(T)) {
             return "{?}";
         }
     };
@@ -388,7 +394,7 @@ namespace detail
     struct StringMakerBase<true>
     {
         template <typename T>
-        static String convert(const T& in) {
+        static String convert(const DOCTEST_REF_WRAP(T) in) {
             std::ostream* stream = createStream();
             *stream << in;
             String result = getStreamResult(stream);
@@ -400,7 +406,7 @@ namespace detail
     String rawMemoryToString(const void* object, unsigned size);
 
     template <typename T>
-    String rawMemoryToString(const T& object) {
+    String rawMemoryToString(const DOCTEST_REF_WRAP(T) object) {
         return rawMemoryToString(&object, sizeof(object));
     }
 } // namespace detail
@@ -433,7 +439,7 @@ struct StringMaker<R C::*>
 };
 
 template <typename T>
-String toString(const T& value) {
+String toString(const DOCTEST_REF_WRAP(T) value) {
     return StringMaker<T>::convert(value);
 }
 
@@ -502,7 +508,7 @@ private:
 };
 
 template <>
-inline String toString<Approx>(Approx const& value) {
+inline String toString<Approx>(const DOCTEST_REF_WRAP(Approx) value) {
     return value.toString();
 }
 
@@ -701,7 +707,8 @@ namespace detail
     };
 
     template <typename L, typename R>
-    String stringifyBinaryExpr(const L& lhs, const char* op, const R& rhs) {
+    String stringifyBinaryExpr(const DOCTEST_REF_WRAP(L) lhs, const char* op,
+                               const DOCTEST_REF_WRAP(R) rhs) {
         return toString(lhs) + op + toString(rhs);
     }
 
@@ -800,17 +807,17 @@ namespace detail
 
     // clang-format off
     template <typename L, typename R>
-    typename enable_if<can_use_op<L>::value || can_use_op<R>::value, bool>::type eq(const L& lhs, const R& rhs) { return lhs == rhs; }
+    typename enable_if<can_use_op<L>::value || can_use_op<R>::value, bool>::type eq(const DOCTEST_REF_WRAP(L) lhs, const DOCTEST_REF_WRAP(R) rhs) { return lhs == rhs; }
     template <typename L, typename R>
-    typename enable_if<can_use_op<L>::value || can_use_op<R>::value, bool>::type ne(const L& lhs, const R& rhs) { return lhs != rhs; }
+    typename enable_if<can_use_op<L>::value || can_use_op<R>::value, bool>::type ne(const DOCTEST_REF_WRAP(L) lhs, const DOCTEST_REF_WRAP(R) rhs) { return lhs != rhs; }
     template <typename L, typename R>
-    typename enable_if<can_use_op<L>::value || can_use_op<R>::value, bool>::type lt(const L& lhs, const R& rhs) { return lhs < rhs; }
+    typename enable_if<can_use_op<L>::value || can_use_op<R>::value, bool>::type lt(const DOCTEST_REF_WRAP(L) lhs, const DOCTEST_REF_WRAP(R) rhs) { return lhs < rhs; }
     template <typename L, typename R>
-    typename enable_if<can_use_op<L>::value || can_use_op<R>::value, bool>::type gt(const L& lhs, const R& rhs) { return lhs > rhs; }
+    typename enable_if<can_use_op<L>::value || can_use_op<R>::value, bool>::type gt(const DOCTEST_REF_WRAP(L) lhs, const DOCTEST_REF_WRAP(R) rhs) { return lhs > rhs; }
     template <typename L, typename R>
-    typename enable_if<can_use_op<L>::value || can_use_op<R>::value, bool>::type le(const L& lhs, const R& rhs) { return ne(lhs, rhs) ? lhs < rhs : true; }
+    typename enable_if<can_use_op<L>::value || can_use_op<R>::value, bool>::type le(const DOCTEST_REF_WRAP(L) lhs, const DOCTEST_REF_WRAP(R) rhs) { return ne(lhs, rhs) ? lhs < rhs : true; }
     template <typename L, typename R>
-    typename enable_if<can_use_op<L>::value || can_use_op<R>::value, bool>::type ge(const L& lhs, const R& rhs) { return ne(lhs, rhs) ? lhs > rhs : true; }
+    typename enable_if<can_use_op<L>::value || can_use_op<R>::value, bool>::type ge(const DOCTEST_REF_WRAP(L) lhs, const DOCTEST_REF_WRAP(R) rhs) { return ne(lhs, rhs) ? lhs > rhs : true; }
 
     inline bool eq(const char* lhs, const char* rhs) { return String(lhs) == String(rhs); }
     inline bool ne(const char* lhs, const char* rhs) { return String(lhs) != String(rhs); }
@@ -852,12 +859,12 @@ namespace detail
         operator Result() { return Result(!!lhs, toString(lhs)); }
 
         // clang-format off
-        template <typename R> Result operator==(const R& rhs) { return Result(eq(lhs, rhs), stringifyBinaryExpr(lhs, " == ", rhs)); }
-        template <typename R> Result operator!=(const R& rhs) { return Result(ne(lhs, rhs), stringifyBinaryExpr(lhs, " != ", rhs)); }
-        template <typename R> Result operator< (const R& rhs) { return Result(lt(lhs, rhs), stringifyBinaryExpr(lhs, " < " , rhs)); }
-        template <typename R> Result operator<=(const R& rhs) { return Result(le(lhs, rhs), stringifyBinaryExpr(lhs, " <= ", rhs)); }
-        template <typename R> Result operator> (const R& rhs) { return Result(gt(lhs, rhs), stringifyBinaryExpr(lhs, " > " , rhs)); }
-        template <typename R> Result operator>=(const R& rhs) { return Result(ge(lhs, rhs), stringifyBinaryExpr(lhs, " >= ", rhs)); }
+        template <typename R> Result operator==(const DOCTEST_REF_WRAP(R) rhs) { return Result(eq(lhs, rhs), stringifyBinaryExpr(lhs, " == ", rhs)); }
+        template <typename R> Result operator!=(const DOCTEST_REF_WRAP(R) rhs) { return Result(ne(lhs, rhs), stringifyBinaryExpr(lhs, " != ", rhs)); }
+        template <typename R> Result operator< (const DOCTEST_REF_WRAP(R) rhs) { return Result(lt(lhs, rhs), stringifyBinaryExpr(lhs, " < " , rhs)); }
+        template <typename R> Result operator<=(const DOCTEST_REF_WRAP(R) rhs) { return Result(le(lhs, rhs), stringifyBinaryExpr(lhs, " <= ", rhs)); }
+        template <typename R> Result operator> (const DOCTEST_REF_WRAP(R) rhs) { return Result(gt(lhs, rhs), stringifyBinaryExpr(lhs, " > " , rhs)); }
+        template <typename R> Result operator>=(const DOCTEST_REF_WRAP(R) rhs) { return Result(ge(lhs, rhs), stringifyBinaryExpr(lhs, " >= ", rhs)); }
         // clang-format on
 
         // clang-format off
@@ -888,8 +895,8 @@ namespace detail
     struct ExpressionDecomposer
     {
         template <typename L>
-        Expression_lhs<const L&> operator<<(const L& operand) {
-            return Expression_lhs<const L&>(operand);
+        Expression_lhs<const DOCTEST_REF_WRAP(L)> operator<<(const DOCTEST_REF_WRAP(L) operand) {
+            return Expression_lhs<const DOCTEST_REF_WRAP(L)>(operand);
         }
     };
 
@@ -947,13 +954,13 @@ namespace detail
     } // namespace binaryAssertComparison
 
     // clang-format off
-    template <int, class L, class R> struct RelationalComparator     { bool operator()(const L&,     const R&    ) const { return false;        } };
-    template <class L, class R> struct RelationalComparator<0, L, R> { bool operator()(const L& lhs, const R& rhs) const { return eq(lhs, rhs); } };
-    template <class L, class R> struct RelationalComparator<1, L, R> { bool operator()(const L& lhs, const R& rhs) const { return ne(lhs, rhs); } };
-    template <class L, class R> struct RelationalComparator<2, L, R> { bool operator()(const L& lhs, const R& rhs) const { return gt(lhs, rhs); } };
-    template <class L, class R> struct RelationalComparator<3, L, R> { bool operator()(const L& lhs, const R& rhs) const { return lt(lhs, rhs); } };
-    template <class L, class R> struct RelationalComparator<4, L, R> { bool operator()(const L& lhs, const R& rhs) const { return ge(lhs, rhs); } };
-    template <class L, class R> struct RelationalComparator<5, L, R> { bool operator()(const L& lhs, const R& rhs) const { return le(lhs, rhs); } };
+    template <int, class L, class R> struct RelationalComparator     { bool operator()(const DOCTEST_REF_WRAP(L),     const DOCTEST_REF_WRAP(R)    ) const { return false;        } };
+    template <class L, class R> struct RelationalComparator<0, L, R> { bool operator()(const DOCTEST_REF_WRAP(L) lhs, const DOCTEST_REF_WRAP(R) rhs) const { return eq(lhs, rhs); } };
+    template <class L, class R> struct RelationalComparator<1, L, R> { bool operator()(const DOCTEST_REF_WRAP(L) lhs, const DOCTEST_REF_WRAP(R) rhs) const { return ne(lhs, rhs); } };
+    template <class L, class R> struct RelationalComparator<2, L, R> { bool operator()(const DOCTEST_REF_WRAP(L) lhs, const DOCTEST_REF_WRAP(R) rhs) const { return gt(lhs, rhs); } };
+    template <class L, class R> struct RelationalComparator<3, L, R> { bool operator()(const DOCTEST_REF_WRAP(L) lhs, const DOCTEST_REF_WRAP(R) rhs) const { return lt(lhs, rhs); } };
+    template <class L, class R> struct RelationalComparator<4, L, R> { bool operator()(const DOCTEST_REF_WRAP(L) lhs, const DOCTEST_REF_WRAP(R) rhs) const { return ge(lhs, rhs); } };
+    template <class L, class R> struct RelationalComparator<5, L, R> { bool operator()(const DOCTEST_REF_WRAP(L) lhs, const DOCTEST_REF_WRAP(R) rhs) const { return le(lhs, rhs); } };
     // clang-format on
 
     struct ResultBuilder
@@ -982,13 +989,13 @@ namespace detail
         void setResult(const Result& res) { m_result = res; }
 
         template <int comparison, typename L, typename R>
-        void binary_assert(const L& lhs, const R& rhs) {
+        void binary_assert(const DOCTEST_REF_WRAP(L) lhs, const DOCTEST_REF_WRAP(R) rhs) {
             m_result.m_passed        = RelationalComparator<comparison, L, R>()(lhs, rhs);
             m_result.m_decomposition = stringifyBinaryExpr(lhs, ", ", rhs);
         }
 
         template <typename L>
-        void unary_assert(const L& val) {
+        void unary_assert(const DOCTEST_REF_WRAP(L) val) {
             m_result.m_passed        = !!val;
             m_result.m_decomposition = toString(val);
         }
@@ -997,7 +1004,7 @@ namespace detail
         void react() const;
     };
 
-    namespace binaryAssertAction
+    namespace assertAction
     {
         enum Enum
         {
@@ -1005,11 +1012,11 @@ namespace detail
             dbgbreak    = 1,
             shouldthrow = 2
         };
-    } // namespace binaryAssertAction
+    } // namespace assertAction
 
     template <int comparison, typename L, typename R>
     int fast_binary_assert(assertType::Enum assert_type, const char* file, int line,
-                           const char* lhs_str, const char* rhs_str, const L& lhs, const R& rhs) {
+                           const char* lhs_str, const char* rhs_str, const DOCTEST_REF_WRAP(L) lhs, const DOCTEST_REF_WRAP(R) rhs) {
         String        expr     = String(lhs_str) + ", " + rhs_str;
         const char*   expr_str = expr.c_str();
         ResultBuilder rb(assert_type, file, line, expr_str);
@@ -1020,17 +1027,17 @@ namespace detail
         int res = 0;
 
         if(rb.log())
-            res |= binaryAssertAction::dbgbreak;
+            res |= assertAction::dbgbreak;
 
         if(rb.m_failed && checkIfShouldThrow(assert_type))
-            res |= binaryAssertAction::shouldthrow;
+            res |= assertAction::shouldthrow;
 
 #ifdef DOCTEST_CONFIG_SUPER_FAST_ASSERTS
         // #########################################################################################
         // IF THE DEBUGGER BREAKS HERE - GO 1 LEVEL UP IN THE CALLSTACK TO SEE THE FAILING ASSERTION
         // THIS IS THE EFFECT OF HAVING 'DOCTEST_CONFIG_SUPER_FAST_ASSERTS' DEFINED
         // #########################################################################################
-        if(res & binaryAssertAction::dbgbreak)
+        if(res & assertAction::dbgbreak)
             DOCTEST_BREAK_INTO_DEBUGGER();
         fastAssertThrowIfFlagSet(res);
 #endif // DOCTEST_CONFIG_SUPER_FAST_ASSERTS
@@ -1040,7 +1047,7 @@ namespace detail
 
     template <typename L>
     int fast_unary_assert(assertType::Enum assert_type, const char* file, int line,
-                          const char* val_str, const L& val) {
+                          const char* val_str, const DOCTEST_REF_WRAP(L) val) {
         ResultBuilder rb(assert_type, file, line, val_str);
 
         rb.m_result.m_passed        = !!val;
@@ -1049,17 +1056,17 @@ namespace detail
         int res = 0;
 
         if(rb.log())
-            res |= binaryAssertAction::dbgbreak;
+            res |= assertAction::dbgbreak;
 
         if(rb.m_failed && checkIfShouldThrow(assert_type))
-            res |= binaryAssertAction::shouldthrow;
+            res |= assertAction::shouldthrow;
 
 #ifdef DOCTEST_CONFIG_SUPER_FAST_ASSERTS
         // #########################################################################################
         // IF THE DEBUGGER BREAKS HERE - GO 1 LEVEL UP IN THE CALLSTACK TO SEE THE FAILING ASSERTION
         // THIS IS THE EFFECT OF HAVING 'DOCTEST_CONFIG_SUPER_FAST_ASSERTS' DEFINED
         // #########################################################################################
-        if(res & binaryAssertAction::dbgbreak)
+        if(res & assertAction::dbgbreak)
             DOCTEST_BREAK_INTO_DEBUGGER();
         fastAssertThrowIfFlagSet(res);
 #endif // DOCTEST_CONFIG_SUPER_FAST_ASSERTS
@@ -1340,7 +1347,7 @@ public:
                 doctest::detail::binaryAssertComparison::comparison>(                              \
                 doctest::detail::assertType::assert_type, __FILE__, __LINE__, #lhs, #rhs, lhs,     \
                 rhs);                                                                              \
-        if(_DOCTEST_FAST_RES & doctest::detail::binaryAssertAction::dbgbreak)                      \
+        if(_DOCTEST_FAST_RES & doctest::detail::assertAction::dbgbreak)                            \
             DOCTEST_BREAK_INTO_DEBUGGER();                                                         \
         doctest::detail::fastAssertThrowIfFlagSet(_DOCTEST_FAST_RES);                              \
     } while(doctest::detail::always_false())
@@ -1349,7 +1356,7 @@ public:
     do {                                                                                           \
         int _DOCTEST_FAST_RES = doctest::detail::fast_unary_assert(                                \
                 doctest::detail::assertType::assert_type, __FILE__, __LINE__, #val, val);          \
-        if(_DOCTEST_FAST_RES & doctest::detail::binaryAssertAction::dbgbreak)                      \
+        if(_DOCTEST_FAST_RES & doctest::detail::assertAction::dbgbreak)                            \
             DOCTEST_BREAK_INTO_DEBUGGER();                                                         \
         doctest::detail::fastAssertThrowIfFlagSet(_DOCTEST_FAST_RES);                              \
     } while(doctest::detail::always_false())
@@ -2177,7 +2184,7 @@ namespace detail
         return false;
     }
     void fastAssertThrowIfFlagSet(int flags) {
-        if(flags & binaryAssertAction::shouldthrow)
+        if(flags & assertAction::shouldthrow)
             throwException();
     }
     void throwException() { throw TestFailureException(); }
