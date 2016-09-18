@@ -1025,6 +1025,16 @@ namespace detail
         if(rb.m_failed && checkIfShouldThrow(assert_type))
             res |= binaryAssertAction::shouldthrow;
 
+#ifdef DOCTEST_CONFIG_SUPER_FAST_ASSERTS
+        // #########################################################################################
+        // IF THE DEBUGGER BREAKS HERE - GO 1 LEVEL UP IN THE CALLSTACK TO SEE THE FAILING ASSERTION
+        // THIS IS THE EFFECT OF HAVING 'DOCTEST_CONFIG_SUPER_FAST_ASSERTS' DEFINED
+        // #########################################################################################
+        if(res & binaryAssertAction::dbgbreak)
+            DOCTEST_BREAK_INTO_DEBUGGER();
+        fastAssertThrowIfFlagSet(res);
+#endif // DOCTEST_CONFIG_SUPER_FAST_ASSERTS
+
         return res;
     }
 
@@ -1043,6 +1053,16 @@ namespace detail
 
         if(rb.m_failed && checkIfShouldThrow(assert_type))
             res |= binaryAssertAction::shouldthrow;
+
+#ifdef DOCTEST_CONFIG_SUPER_FAST_ASSERTS
+        // #########################################################################################
+        // IF THE DEBUGGER BREAKS HERE - GO 1 LEVEL UP IN THE CALLSTACK TO SEE THE FAILING ASSERTION
+        // THIS IS THE EFFECT OF HAVING 'DOCTEST_CONFIG_SUPER_FAST_ASSERTS' DEFINED
+        // #########################################################################################
+        if(res & binaryAssertAction::dbgbreak)
+            DOCTEST_BREAK_INTO_DEBUGGER();
+        fastAssertThrowIfFlagSet(res);
+#endif // DOCTEST_CONFIG_SUPER_FAST_ASSERTS
 
         return res;
     }
@@ -1312,25 +1332,39 @@ public:
 #define DOCTEST_CHECK_UNARY_FALSE(v) DOCTEST_UNARY_ASSERT(DT_CHECK_UNARY_FALSE, v)
 #define DOCTEST_REQUIRE_UNARY_FALSE(v) DOCTEST_UNARY_ASSERT(DT_REQUIRE_UNARY_FALSE, v)
 
+#ifndef DOCTEST_CONFIG_SUPER_FAST_ASSERTS
+
 #define DOCTEST_FAST_BINARY_ASSERT(assert_type, lhs, rhs, comparison)                              \
     do {                                                                                           \
-        int res = doctest::detail::fast_binary_assert<                                             \
+        int _DOCTEST_FAST_RES = doctest::detail::fast_binary_assert<                               \
                 doctest::detail::binaryAssertComparison::comparison>(                              \
                 doctest::detail::assertType::assert_type, __FILE__, __LINE__, #lhs, #rhs, lhs,     \
                 rhs);                                                                              \
-        if(res & doctest::detail::binaryAssertAction::dbgbreak)                                    \
+        if(_DOCTEST_FAST_RES & doctest::detail::binaryAssertAction::dbgbreak)                      \
             DOCTEST_BREAK_INTO_DEBUGGER();                                                         \
-        doctest::detail::fastAssertThrowIfFlagSet(res);                                            \
+        doctest::detail::fastAssertThrowIfFlagSet(_DOCTEST_FAST_RES);                              \
     } while(doctest::detail::always_false())
 
 #define DOCTEST_FAST_UNARY_ASSERT(assert_type, val)                                                \
     do {                                                                                           \
-        int res = doctest::detail::fast_unary_assert(doctest::detail::assertType::assert_type,     \
-                                                     __FILE__, __LINE__, #val, val);               \
-        if(res & doctest::detail::binaryAssertAction::dbgbreak)                                    \
+        int _DOCTEST_FAST_RES = doctest::detail::fast_unary_assert(                                \
+                doctest::detail::assertType::assert_type, __FILE__, __LINE__, #val, val);          \
+        if(_DOCTEST_FAST_RES & doctest::detail::binaryAssertAction::dbgbreak)                      \
             DOCTEST_BREAK_INTO_DEBUGGER();                                                         \
-        doctest::detail::fastAssertThrowIfFlagSet(res);                                            \
+        doctest::detail::fastAssertThrowIfFlagSet(_DOCTEST_FAST_RES);                              \
     } while(doctest::detail::always_false())
+
+#else // DOCTEST_CONFIG_SUPER_FAST_ASSERTS
+
+#define DOCTEST_FAST_BINARY_ASSERT(assert_type, lhs, rhs, comparison)                              \
+    doctest::detail::fast_binary_assert<doctest::detail::binaryAssertComparison::comparison>(      \
+            doctest::detail::assertType::assert_type, __FILE__, __LINE__, #lhs, #rhs, lhs, rhs);
+
+#define DOCTEST_FAST_UNARY_ASSERT(assert_type, val)                                                \
+    doctest::detail::fast_unary_assert(doctest::detail::assertType::assert_type, __FILE__,         \
+                                       __LINE__, #val, val);
+
+#endif // DOCTEST_CONFIG_SUPER_FAST_ASSERTS
 
 #define DOCTEST_FAST_WARN_EQ(l, r) DOCTEST_FAST_BINARY_ASSERT(DT_FAST_WARN_EQ, l, r, eq)
 #define DOCTEST_FAST_CHECK_EQ(l, r) DOCTEST_FAST_BINARY_ASSERT(DT_FAST_CHECK_EQ, l, r, eq)

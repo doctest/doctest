@@ -15,15 +15,17 @@ doctest_disable     = 0
 
 the_folder = 'project'
 
+#doctest_configs = ''
+doctest_configs = '#define DOCTEST_CONFIG_SUPER_FAST_ASSERTS'
+
 doctest_header = 'doctest.h'
 #doctest_header = 'doctest_1_0.h'
+
 #macro = "FAST_CHECK_EQ"
 macro = "CHECK"
+
 operator = " == "
 #operator = ", "
-
-GCC_cmake_generator     = '"MinGW Makefiles"'
-MSVC_cmake_generator    = '"Visual Studio 14 Win64"' # MSVC 2015
 
 # ==============================================================================
 # ==============================================================================
@@ -37,6 +39,9 @@ import multiprocessing
 from datetime import datetime
 import shutil
 from time import sleep
+
+GCC_cmake_generator     = '"MinGW Makefiles"'
+MSVC_cmake_generator    = '"Visual Studio 14 Win64"' # MSVC 2015
 
 if os.name != "nt":
     GCC_cmake_generator = "Makefiles"
@@ -57,6 +62,7 @@ for i in range(0, numFiles):
         if with_doctest:
             if doctest_disable:
                 f.write('#define DOCTEST_CONFIG_DISABLE\n')
+            f.write(doctest_configs + '\n')
             f.write('#include "' + doctest_header + '"\n\n')
         else:
             f.write('#include "catch.hpp"\n\n')
@@ -76,6 +82,7 @@ if with_implement:
     if with_doctest:
         if doctest_disable:
             f.write('#define DOCTEST_CONFIG_DISABLE\n')
+        f.write(doctest_configs + '\n')
         f.write('#define DOCTEST_CONFIG_IMPLEMENT\n')
         f.write('#include "' + doctest_header + '"\n\n')
     else:
