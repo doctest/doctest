@@ -1263,7 +1263,7 @@ public:
 #define DOCTEST_CHECK_NOTHROW(expr) DOCTEST_ASSERT_NOTHROW(expr, DT_CHECK_NOTHROW)
 #define DOCTEST_REQUIRE_NOTHROW(expr) DOCTEST_ASSERT_NOTHROW(expr, DT_REQUIRE_NOTHROW)
 
-#define DOCTEST_BINARY_ASSERTION(assert_type, lhs, rhs, comp)                                      \
+#define DOCTEST_BINARY_ASSERT(assert_type, lhs, rhs, comp)                                         \
     do {                                                                                           \
         doctest::detail::ResultBuilder _DOCTEST_RB(doctest::detail::assertType::assert_type,       \
                                                    __FILE__, __LINE__, #lhs ", " #rhs);            \
@@ -1273,7 +1273,7 @@ public:
         DOCTEST_ASSERT_LOG_AND_REACT(_DOCTEST_RB);                                                 \
     } while(doctest::detail::always_false())
 
-#define DOCTEST_UNARY_ASSERTION(assert_type, val)                                                  \
+#define DOCTEST_UNARY_ASSERT(assert_type, val)                                                     \
     do {                                                                                           \
         doctest::detail::ResultBuilder _DOCTEST_RB(doctest::detail::assertType::assert_type,       \
                                                    __FILE__, __LINE__, #val);                      \
@@ -1283,33 +1283,33 @@ public:
         DOCTEST_ASSERT_LOG_AND_REACT(_DOCTEST_RB);                                                 \
     } while(doctest::detail::always_false())
 
-#define DOCTEST_WARN_EQ(lhs, rhs) DOCTEST_BINARY_ASSERTION(DT_WARN_EQ, lhs, rhs, eq)
-#define DOCTEST_CHECK_EQ(lhs, rhs) DOCTEST_BINARY_ASSERTION(DT_CHECK_EQ, lhs, rhs, eq)
-#define DOCTEST_REQUIRE_EQ(lhs, rhs) DOCTEST_BINARY_ASSERTION(DT_REQUIRE_EQ, lhs, rhs, eq)
-#define DOCTEST_WARN_NE(lhs, rhs) DOCTEST_BINARY_ASSERTION(DT_WARN_NE, lhs, rhs, ne)
-#define DOCTEST_CHECK_NE(lhs, rhs) DOCTEST_BINARY_ASSERTION(DT_CHECK_NE, lhs, rhs, ne)
-#define DOCTEST_REQUIRE_NE(lhs, rhs) DOCTEST_BINARY_ASSERTION(DT_REQUIRE_NE, lhs, rhs, ne)
-#define DOCTEST_WARN_GT(lhs, rhs) DOCTEST_BINARY_ASSERTION(DT_WARN_GT, lhs, rhs, gt)
-#define DOCTEST_CHECK_GT(lhs, rhs) DOCTEST_BINARY_ASSERTION(DT_CHECK_GT, lhs, rhs, gt)
-#define DOCTEST_REQUIRE_GT(lhs, rhs) DOCTEST_BINARY_ASSERTION(DT_REQUIRE_GT, lhs, rhs, gt)
-#define DOCTEST_WARN_LT(lhs, rhs) DOCTEST_BINARY_ASSERTION(DT_WARN_LT, lhs, rhs, lt)
-#define DOCTEST_CHECK_LT(lhs, rhs) DOCTEST_BINARY_ASSERTION(DT_CHECK_LT, lhs, rhs, lt)
-#define DOCTEST_REQUIRE_LT(lhs, rhs) DOCTEST_BINARY_ASSERTION(DT_REQUIRE_LT, lhs, rhs, lt)
-#define DOCTEST_WARN_GE(lhs, rhs) DOCTEST_BINARY_ASSERTION(DT_WARN_GE, lhs, rhs, ge)
-#define DOCTEST_CHECK_GE(lhs, rhs) DOCTEST_BINARY_ASSERTION(DT_CHECK_GE, lhs, rhs, ge)
-#define DOCTEST_REQUIRE_GE(lhs, rhs) DOCTEST_BINARY_ASSERTION(DT_REQUIRE_GE, lhs, rhs, ge)
-#define DOCTEST_WARN_LE(lhs, rhs) DOCTEST_BINARY_ASSERTION(DT_WARN_LE, lhs, rhs, le)
-#define DOCTEST_CHECK_LE(lhs, rhs) DOCTEST_BINARY_ASSERTION(DT_CHECK_LE, lhs, rhs, le)
-#define DOCTEST_REQUIRE_LE(lhs, rhs) DOCTEST_BINARY_ASSERTION(DT_REQUIRE_LE, lhs, rhs, le)
+#define DOCTEST_WARN_EQ(lhs, rhs) DOCTEST_BINARY_ASSERT(DT_WARN_EQ, lhs, rhs, eq)
+#define DOCTEST_CHECK_EQ(lhs, rhs) DOCTEST_BINARY_ASSERT(DT_CHECK_EQ, lhs, rhs, eq)
+#define DOCTEST_REQUIRE_EQ(lhs, rhs) DOCTEST_BINARY_ASSERT(DT_REQUIRE_EQ, lhs, rhs, eq)
+#define DOCTEST_WARN_NE(lhs, rhs) DOCTEST_BINARY_ASSERT(DT_WARN_NE, lhs, rhs, ne)
+#define DOCTEST_CHECK_NE(lhs, rhs) DOCTEST_BINARY_ASSERT(DT_CHECK_NE, lhs, rhs, ne)
+#define DOCTEST_REQUIRE_NE(lhs, rhs) DOCTEST_BINARY_ASSERT(DT_REQUIRE_NE, lhs, rhs, ne)
+#define DOCTEST_WARN_GT(lhs, rhs) DOCTEST_BINARY_ASSERT(DT_WARN_GT, lhs, rhs, gt)
+#define DOCTEST_CHECK_GT(lhs, rhs) DOCTEST_BINARY_ASSERT(DT_CHECK_GT, lhs, rhs, gt)
+#define DOCTEST_REQUIRE_GT(lhs, rhs) DOCTEST_BINARY_ASSERT(DT_REQUIRE_GT, lhs, rhs, gt)
+#define DOCTEST_WARN_LT(lhs, rhs) DOCTEST_BINARY_ASSERT(DT_WARN_LT, lhs, rhs, lt)
+#define DOCTEST_CHECK_LT(lhs, rhs) DOCTEST_BINARY_ASSERT(DT_CHECK_LT, lhs, rhs, lt)
+#define DOCTEST_REQUIRE_LT(lhs, rhs) DOCTEST_BINARY_ASSERT(DT_REQUIRE_LT, lhs, rhs, lt)
+#define DOCTEST_WARN_GE(lhs, rhs) DOCTEST_BINARY_ASSERT(DT_WARN_GE, lhs, rhs, ge)
+#define DOCTEST_CHECK_GE(lhs, rhs) DOCTEST_BINARY_ASSERT(DT_CHECK_GE, lhs, rhs, ge)
+#define DOCTEST_REQUIRE_GE(lhs, rhs) DOCTEST_BINARY_ASSERT(DT_REQUIRE_GE, lhs, rhs, ge)
+#define DOCTEST_WARN_LE(lhs, rhs) DOCTEST_BINARY_ASSERT(DT_WARN_LE, lhs, rhs, le)
+#define DOCTEST_CHECK_LE(lhs, rhs) DOCTEST_BINARY_ASSERT(DT_CHECK_LE, lhs, rhs, le)
+#define DOCTEST_REQUIRE_LE(lhs, rhs) DOCTEST_BINARY_ASSERT(DT_REQUIRE_LE, lhs, rhs, le)
 
-#define DOCTEST_WARN_UNARY(v) DOCTEST_UNARY_ASSERTION(DT_WARN_UNARY, v)
-#define DOCTEST_CHECK_UNARY(v) DOCTEST_UNARY_ASSERTION(DT_CHECK_UNARY, v)
-#define DOCTEST_REQUIRE_UNARY(v) DOCTEST_UNARY_ASSERTION(DT_REQUIRE_UNARY, v)
-#define DOCTEST_WARN_UNARY_FALSE(v) DOCTEST_UNARY_ASSERTION(DT_WARN_UNARY_FALSE, v)
-#define DOCTEST_CHECK_UNARY_FALSE(v) DOCTEST_UNARY_ASSERTION(DT_CHECK_UNARY_FALSE, v)
-#define DOCTEST_REQUIRE_UNARY_FALSE(v) DOCTEST_UNARY_ASSERTION(DT_REQUIRE_UNARY_FALSE, v)
+#define DOCTEST_WARN_UNARY(v) DOCTEST_UNARY_ASSERT(DT_WARN_UNARY, v)
+#define DOCTEST_CHECK_UNARY(v) DOCTEST_UNARY_ASSERT(DT_CHECK_UNARY, v)
+#define DOCTEST_REQUIRE_UNARY(v) DOCTEST_UNARY_ASSERT(DT_REQUIRE_UNARY, v)
+#define DOCTEST_WARN_UNARY_FALSE(v) DOCTEST_UNARY_ASSERT(DT_WARN_UNARY_FALSE, v)
+#define DOCTEST_CHECK_UNARY_FALSE(v) DOCTEST_UNARY_ASSERT(DT_CHECK_UNARY_FALSE, v)
+#define DOCTEST_REQUIRE_UNARY_FALSE(v) DOCTEST_UNARY_ASSERT(DT_REQUIRE_UNARY_FALSE, v)
 
-#define DOCTEST_FAST_BINARY_ASSERTION(assert_type, lhs, rhs, comparison)                           \
+#define DOCTEST_FAST_BINARY_ASSERT(assert_type, lhs, rhs, comparison)                              \
     do {                                                                                           \
         int res = doctest::detail::fast_binary_assert<                                             \
                 doctest::detail::binaryAssertComparison::comparison>(                              \
@@ -1320,7 +1320,7 @@ public:
         doctest::detail::fastAssertThrowIfFlagSet(res);                                            \
     } while(doctest::detail::always_false())
 
-#define DOCTEST_FAST_UNARY_ASSERTION(assert_type, val)                                             \
+#define DOCTEST_FAST_UNARY_ASSERT(assert_type, val)                                                \
     do {                                                                                           \
         int res = doctest::detail::fast_unary_assert(doctest::detail::assertType::assert_type,     \
                                                      __FILE__, __LINE__, #val, val);               \
@@ -1329,32 +1329,32 @@ public:
         doctest::detail::fastAssertThrowIfFlagSet(res);                                            \
     } while(doctest::detail::always_false())
 
-#define DOCTEST_FAST_WARN_EQ(l, r) DOCTEST_FAST_BINARY_ASSERTION(DT_FAST_WARN_EQ, l, r, eq)
-#define DOCTEST_FAST_CHECK_EQ(l, r) DOCTEST_FAST_BINARY_ASSERTION(DT_FAST_CHECK_EQ, l, r, eq)
-#define DOCTEST_FAST_REQUIRE_EQ(l, r) DOCTEST_FAST_BINARY_ASSERTION(DT_FAST_REQUIRE_EQ, l, r, eq)
-#define DOCTEST_FAST_WARN_NE(l, r) DOCTEST_FAST_BINARY_ASSERTION(DT_FAST_WARN_NE, l, r, ne)
-#define DOCTEST_FAST_CHECK_NE(l, r) DOCTEST_FAST_BINARY_ASSERTION(DT_FAST_CHECK_NE, l, r, ne)
-#define DOCTEST_FAST_REQUIRE_NE(l, r) DOCTEST_FAST_BINARY_ASSERTION(DT_FAST_REQUIRE_NE, l, r, ne)
-#define DOCTEST_FAST_WARN_GT(l, r) DOCTEST_FAST_BINARY_ASSERTION(DT_FAST_WARN_GT, l, r, gt)
-#define DOCTEST_FAST_CHECK_GT(l, r) DOCTEST_FAST_BINARY_ASSERTION(DT_FAST_CHECK_GT, l, r, gt)
-#define DOCTEST_FAST_REQUIRE_GT(l, r) DOCTEST_FAST_BINARY_ASSERTION(DT_FAST_REQUIRE_GT, l, r, gt)
-#define DOCTEST_FAST_WARN_LT(l, r) DOCTEST_FAST_BINARY_ASSERTION(DT_FAST_WARN_LT, l, r, lt)
-#define DOCTEST_FAST_CHECK_LT(l, r) DOCTEST_FAST_BINARY_ASSERTION(DT_FAST_CHECK_LT, l, r, lt)
-#define DOCTEST_FAST_REQUIRE_LT(l, r) DOCTEST_FAST_BINARY_ASSERTION(DT_FAST_REQUIRE_LT, l, r, lt)
-#define DOCTEST_FAST_WARN_GE(l, r) DOCTEST_FAST_BINARY_ASSERTION(DT_FAST_WARN_GE, l, r, ge)
-#define DOCTEST_FAST_CHECK_GE(l, r) DOCTEST_FAST_BINARY_ASSERTION(DT_FAST_CHECK_GE, l, r, ge)
-#define DOCTEST_FAST_REQUIRE_GE(l, r) DOCTEST_FAST_BINARY_ASSERTION(DT_FAST_REQUIRE_GE, l, r, ge)
-#define DOCTEST_FAST_WARN_LE(l, r) DOCTEST_FAST_BINARY_ASSERTION(DT_FAST_WARN_LE, l, r, le)
-#define DOCTEST_FAST_CHECK_LE(l, r) DOCTEST_FAST_BINARY_ASSERTION(DT_FAST_CHECK_LE, l, r, le)
-#define DOCTEST_FAST_REQUIRE_LE(l, r) DOCTEST_FAST_BINARY_ASSERTION(DT_FAST_REQUIRE_LE, l, r, le)
+#define DOCTEST_FAST_WARN_EQ(l, r) DOCTEST_FAST_BINARY_ASSERT(DT_FAST_WARN_EQ, l, r, eq)
+#define DOCTEST_FAST_CHECK_EQ(l, r) DOCTEST_FAST_BINARY_ASSERT(DT_FAST_CHECK_EQ, l, r, eq)
+#define DOCTEST_FAST_REQUIRE_EQ(l, r) DOCTEST_FAST_BINARY_ASSERT(DT_FAST_REQUIRE_EQ, l, r, eq)
+#define DOCTEST_FAST_WARN_NE(l, r) DOCTEST_FAST_BINARY_ASSERT(DT_FAST_WARN_NE, l, r, ne)
+#define DOCTEST_FAST_CHECK_NE(l, r) DOCTEST_FAST_BINARY_ASSERT(DT_FAST_CHECK_NE, l, r, ne)
+#define DOCTEST_FAST_REQUIRE_NE(l, r) DOCTEST_FAST_BINARY_ASSERT(DT_FAST_REQUIRE_NE, l, r, ne)
+#define DOCTEST_FAST_WARN_GT(l, r) DOCTEST_FAST_BINARY_ASSERT(DT_FAST_WARN_GT, l, r, gt)
+#define DOCTEST_FAST_CHECK_GT(l, r) DOCTEST_FAST_BINARY_ASSERT(DT_FAST_CHECK_GT, l, r, gt)
+#define DOCTEST_FAST_REQUIRE_GT(l, r) DOCTEST_FAST_BINARY_ASSERT(DT_FAST_REQUIRE_GT, l, r, gt)
+#define DOCTEST_FAST_WARN_LT(l, r) DOCTEST_FAST_BINARY_ASSERT(DT_FAST_WARN_LT, l, r, lt)
+#define DOCTEST_FAST_CHECK_LT(l, r) DOCTEST_FAST_BINARY_ASSERT(DT_FAST_CHECK_LT, l, r, lt)
+#define DOCTEST_FAST_REQUIRE_LT(l, r) DOCTEST_FAST_BINARY_ASSERT(DT_FAST_REQUIRE_LT, l, r, lt)
+#define DOCTEST_FAST_WARN_GE(l, r) DOCTEST_FAST_BINARY_ASSERT(DT_FAST_WARN_GE, l, r, ge)
+#define DOCTEST_FAST_CHECK_GE(l, r) DOCTEST_FAST_BINARY_ASSERT(DT_FAST_CHECK_GE, l, r, ge)
+#define DOCTEST_FAST_REQUIRE_GE(l, r) DOCTEST_FAST_BINARY_ASSERT(DT_FAST_REQUIRE_GE, l, r, ge)
+#define DOCTEST_FAST_WARN_LE(l, r) DOCTEST_FAST_BINARY_ASSERT(DT_FAST_WARN_LE, l, r, le)
+#define DOCTEST_FAST_CHECK_LE(l, r) DOCTEST_FAST_BINARY_ASSERT(DT_FAST_CHECK_LE, l, r, le)
+#define DOCTEST_FAST_REQUIRE_LE(l, r) DOCTEST_FAST_BINARY_ASSERT(DT_FAST_REQUIRE_LE, l, r, le)
 
-#define DOCTEST_FAST_WARN_UNARY(v) DOCTEST_FAST_UNARY_ASSERTION(DT_FAST_WARN_UNARY, v)
-#define DOCTEST_FAST_CHECK_UNARY(v) DOCTEST_FAST_UNARY_ASSERTION(DT_FAST_CHECK_UNARY, v)
-#define DOCTEST_FAST_REQUIRE_UNARY(v) DOCTEST_FAST_UNARY_ASSERTION(DT_FAST_REQUIRE_UNARY, v)
-#define DOCTEST_FAST_WARN_UNARY_FALSE(v) DOCTEST_FAST_UNARY_ASSERTION(DT_FAST_WARN_UNARY_FALSE, v)
-#define DOCTEST_FAST_CHECK_UNARY_FALSE(v) DOCTEST_FAST_UNARY_ASSERTION(DT_FAST_CHECK_UNARY_FALSE, v)
+#define DOCTEST_FAST_WARN_UNARY(v) DOCTEST_FAST_UNARY_ASSERT(DT_FAST_WARN_UNARY, v)
+#define DOCTEST_FAST_CHECK_UNARY(v) DOCTEST_FAST_UNARY_ASSERT(DT_FAST_CHECK_UNARY, v)
+#define DOCTEST_FAST_REQUIRE_UNARY(v) DOCTEST_FAST_UNARY_ASSERT(DT_FAST_REQUIRE_UNARY, v)
+#define DOCTEST_FAST_WARN_UNARY_FALSE(v) DOCTEST_FAST_UNARY_ASSERT(DT_FAST_WARN_UNARY_FALSE, v)
+#define DOCTEST_FAST_CHECK_UNARY_FALSE(v) DOCTEST_FAST_UNARY_ASSERT(DT_FAST_CHECK_UNARY_FALSE, v)
 #define DOCTEST_FAST_REQUIRE_UNARY_FALSE(v)                                                        \
-    DOCTEST_FAST_UNARY_ASSERTION(DT_FAST_REQUIRE_UNARY_FALSE, v)
+    DOCTEST_FAST_UNARY_ASSERT(DT_FAST_REQUIRE_UNARY_FALSE, v)
 
 // =================================================================================================
 // == WHAT FOLLOWS IS VERSIONS OF THE MACROS THAT DO NOT DO ANY REGISTERING!                      ==
