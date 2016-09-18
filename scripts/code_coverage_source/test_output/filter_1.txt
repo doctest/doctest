@@ -34,5 +34,14 @@ test.cpp(47) FAILED! (didn't throw at all)
   REQUIRE_THROWS_AS( throws(false), bool )
 
 ===============================================================================
-[doctest] test cases:    2 |    1 passed |    1 failed |    4 skipped
-[doctest] assertions:   53 |   46 passed |    7 failed |
+test.cpp(50)
+assertions - all of them
+
+test.cpp(113) FAILED! 
+  FAST_REQUIRE_UNARY_FALSE( 1 )
+with expansion:
+  FAST_REQUIRE_UNARY_FALSE( 1 )
+
+===============================================================================
+[doctest] test cases:    2 |    0 passed |    2 failed |    4 skipped
+[doctest] assertions:   53 |   45 passed |    8 failed |

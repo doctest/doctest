@@ -989,7 +989,7 @@ namespace detail
         void setResult(const Result& res) { m_result = res; }
 
         template <int comparison, typename L, typename R>
-        void binary_assert(const DOCTEST_REF_WRAP(L) lhs, const DOCTEST_REF_WRAP(R) rhs) {
+        void          binary_assert(const DOCTEST_REF_WRAP(L) lhs, const DOCTEST_REF_WRAP(R) rhs) {
             m_result.m_passed        = RelationalComparator<comparison, L, R>()(lhs, rhs);
             m_result.m_decomposition = stringifyBinaryExpr(lhs, ", ", rhs);
         }
@@ -1016,7 +1016,8 @@ namespace detail
 
     template <int comparison, typename L, typename R>
     int fast_binary_assert(assertType::Enum assert_type, const char* file, int line,
-                           const char* lhs_str, const char* rhs_str, const DOCTEST_REF_WRAP(L) lhs, const DOCTEST_REF_WRAP(R) rhs) {
+                           const char* lhs_str, const char* rhs_str, const DOCTEST_REF_WRAP(L) lhs,
+                           const DOCTEST_REF_WRAP(R) rhs) {
         String        expr     = String(lhs_str) + ", " + rhs_str;
         const char*   expr_str = expr.c_str();
         ResultBuilder rb(assert_type, file, line, expr_str);
@@ -1709,7 +1710,6 @@ DOCTEST_TEST_SUITE_END();
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
-#include <cassert>
 #include <limits>
 #include <utility>
 #include <sstream>
@@ -2166,7 +2166,6 @@ namespace detail
             case assertType::DT_FAST_WARN_UNARY_FALSE   : return "FAST_WARN_UNARY_FALSE";
             case assertType::DT_FAST_CHECK_UNARY_FALSE  : return "FAST_CHECK_UNARY_FALSE";
             case assertType::DT_FAST_REQUIRE_UNARY_FALSE: return "FAST_REQUIRE_UNARY_FALSE";
-            default: assert(false);
                 // clang-format on
         }
         return "";

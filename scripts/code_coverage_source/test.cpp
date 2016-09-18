@@ -110,7 +110,7 @@ TEST_CASE("assertions - all of them") {
     FAST_REQUIRE_UNARY(1);
     FAST_WARN_UNARY_FALSE(0);
     FAST_CHECK_UNARY_FALSE(0);
-    FAST_REQUIRE_UNARY_FALSE(0);
+    FAST_REQUIRE_UNARY_FALSE(1);
 }
 
 TEST_CASE("throws") { throws(true); }

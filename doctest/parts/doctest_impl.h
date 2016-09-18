@@ -83,7 +83,6 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
-#include <cassert>
 #include <limits>
 #include <utility>
 #include <sstream>
@@ -540,7 +539,6 @@ namespace detail
             case assertType::DT_FAST_WARN_UNARY_FALSE   : return "FAST_WARN_UNARY_FALSE";
             case assertType::DT_FAST_CHECK_UNARY_FALSE  : return "FAST_CHECK_UNARY_FALSE";
             case assertType::DT_FAST_REQUIRE_UNARY_FALSE: return "FAST_REQUIRE_UNARY_FALSE";
-            default: assert(false);
                 // clang-format on
         }
         return "";

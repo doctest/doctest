@@ -357,10 +357,10 @@ test.cpp(112) PASSED!
 with expansion:
   FAST_CHECK_UNARY_FALSE( 0 )
 
-test.cpp(113) PASSED!
-  FAST_REQUIRE_UNARY_FALSE( 0 )
+test.cpp(113) FAILED! 
+  FAST_REQUIRE_UNARY_FALSE( 1 )
 with expansion:
-  FAST_REQUIRE_UNARY_FALSE( 0 )
+  FAST_REQUIRE_UNARY_FALSE( 1 )
 
 ===============================================================================
 test.cpp(116)
@@ -369,5 +369,5 @@ throws
 TEST CASE FAILED! (threw exception)
 
 ===============================================================================
-[doctest] test cases:    4 |    1 passed |    3 failed |    2 skipped
-[doctest] assertions:   54 |   46 passed |    8 failed |
+[doctest] test cases:    4 |    0 passed |    4 failed |    2 skipped
+[doctest] assertions:   54 |   45 passed |    9 failed |
