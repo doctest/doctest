@@ -2,7 +2,7 @@
 [doctest] run with "--help" for options
 ===============================================================================
 f1.cpp(3)
-
+f1.cpp
 
 f1.cpp(4) FAILED! 
   CHECK( 1 == 0 )
@@ -10,5 +10,23 @@ with expansion:
   CHECK( 1 == 0 )
 
 ===============================================================================
-[doctest] test cases:    1 |    0 passed |    1 failed |    0 skipped
-[doctest] assertions:    1 |    0 passed |    1 failed |
+f2.cpp(3)
+f2.cpp
+
+f2.cpp(4) FAILED! 
+  CHECK( 1 == 0 )
+with expansion:
+  CHECK( 1 == 0 )
+
+===============================================================================
+hdr.h(6)
+hdr.h
+
+hdr.h(7) FAILED! 
+  CHECK( 1 == 0 )
+with expansion:
+  CHECK( 1 == 0 )
+
+===============================================================================
+[doctest] test cases:    3 |    0 passed |    3 failed |    0 skipped
+[doctest] assertions:    3 |    0 passed |    3 failed |

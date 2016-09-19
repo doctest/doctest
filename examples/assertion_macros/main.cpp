@@ -26,6 +26,11 @@ TEST_CASE("normal macros") {
     CHECK_FALSE(!(a == b));
 
     REQUIRE(a == b);
+
+    CHECK_EQ(a, b);
+
+    FAST_CHECK_EQ(a, b);
+
     // commented out because 32 vs 64 bit builds will fail when the output is compared
     //WARN(reinterpret_cast<void*>(1000) == reinterpret_cast<void*>(1004));
 

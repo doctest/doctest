@@ -13,7 +13,7 @@ normal macros
 main.cpp(24) FAILED! (threw exception)
   CHECK( throws(true) == 42 )
 
-main.cpp(33) FAILED! 
+main.cpp(38) FAILED! 
   CHECK( Approx(0.502) == 0.501 )
 with expansion:
   CHECK( Approx( 0.502 ) == 0.501 )
@@ -21,21 +21,21 @@ with expansion:
 TEST CASE FAILED! (threw exception)
 
 ===============================================================================
-main.cpp(42)
+main.cpp(47)
 exceptions-related macros
 
-main.cpp(43) FAILED!
+main.cpp(48) FAILED!
   CHECK_THROWS( throws(false) )
 
-main.cpp(44) FAILED! (didn't throw at all)
+main.cpp(49) FAILED! (didn't throw at all)
   CHECK_THROWS_AS( throws(false), int )
 
-main.cpp(46) FAILED! (threw something else)
+main.cpp(51) FAILED! (threw something else)
   CHECK_THROWS_AS( throws(true), char )
 
-main.cpp(48) FAILED!
+main.cpp(53) FAILED!
   REQUIRE_NOTHROW( throws(true) )
 
 ===============================================================================
 [doctest] test cases:    4 |    1 passed |    3 failed |    0 skipped
-[doctest] assertions:   11 |    5 passed |    6 failed |
+[doctest] assertions:   13 |    7 passed |    6 failed |

@@ -11,47 +11,38 @@ with expansion:
   CHECK( 0 )
 
 ===============================================================================
-test.cpp(35)
+test.cpp(47)
 assertions
 
-test.cpp(37) FAILED! 
+test.cpp(49) FAILED! 
   CHECK( 1 == 0 )
 with expansion:
   CHECK( 1 == 0 )
 
-test.cpp(38) FAILED! 
+test.cpp(50) FAILED! 
   CHECK_FALSE( 1 )
 with expansion:
   CHECK_FALSE( 1 )
 
-test.cpp(39) FAILED! 
+test.cpp(51) FAILED! 
   CHECK( myType() == myType() )
 with expansion:
   CHECK( myType! == myType! )
 
-test.cpp(40) FAILED! 
+test.cpp(52) FAILED! 
   CHECK( Approx(0.1) == 0.2 )
 with expansion:
   CHECK( Approx( 0.1 ) == 0.2 )
 
-test.cpp(43) FAILED!
+test.cpp(55) FAILED!
   CHECK_THROWS( throws(false) )
 
-test.cpp(45) FAILED!
+test.cpp(57) FAILED!
   CHECK_NOTHROW( throws(true) )
 
-test.cpp(47) FAILED! (didn't throw at all)
+test.cpp(59) FAILED! (didn't throw at all)
   REQUIRE_THROWS_AS( throws(false), bool )
 
 ===============================================================================
-test.cpp(50)
-assertions - all of them
-
-test.cpp(113) FAILED! 
-  FAST_REQUIRE_UNARY_FALSE( 1 )
-with expansion:
-  FAST_REQUIRE_UNARY_FALSE( 1 )
-
-===============================================================================
-[doctest] test cases:    6 |    3 passed |    3 failed |    0 skipped
-[doctest] assertions:   59 |   50 passed |    9 failed |
+[doctest] test cases:    7 |    5 passed |    2 failed |    0 skipped
+[doctest] assertions:   19 |   11 passed |    8 failed |

@@ -11,19 +11,19 @@ with expansion:
   CHECK( 0 )
 
 ===============================================================================
-test.cpp(35)
+test.cpp(47)
 assertions
 
-test.cpp(37) FAILED! 
+test.cpp(49) FAILED! 
   CHECK( 1 == 0 )
 with expansion:
   CHECK( 1 == 0 )
 
-test.cpp(38) FAILED! 
+test.cpp(50) FAILED! 
   CHECK_FALSE( 1 )
 with expansion:
   CHECK_FALSE( 1 )
 
 ===============================================================================
-[doctest] test cases:    4 |    2 passed |    2 failed |    2 skipped
-[doctest] assertions:    9 |    6 passed |    3 failed |
+[doctest] test cases:    5 |    3 passed |    2 failed |    2 skipped
+[doctest] assertions:   11 |    8 passed |    3 failed |

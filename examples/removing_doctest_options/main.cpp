@@ -15,10 +15,10 @@ public:
         for(; *argv; ++argv)
             if(!starts_with(*argv, "--dt-"))
                 vec.push_back(*argv);
-#if !defined(__clang__) && (__GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ > 6)) // > gcc 4.6
+#if __GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ > 6)
 #pragma GCC diagnostic ignored "-Wzero-as-null-pointer-constant"
-#endif
-        vec.push_back(NULL); // C++11: nullptr
+#endif // > gcc 4.6
+        vec.push_back(NULL);
     }
 
     int          argc() { return static_cast<int>(vec.size()) - 1; }

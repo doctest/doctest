@@ -11,5 +11,5 @@ with expansion:
   CHECK( 0 )
 
 ===============================================================================
-[doctest] test cases:    3 |    2 passed |    1 failed |    3 skipped
+[doctest] test cases:    3 |    2 passed |    1 failed |    4 skipped
 [doctest] assertions:    6 |    5 passed |    1 failed |

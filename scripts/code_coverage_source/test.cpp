@@ -23,7 +23,13 @@ static int throws(bool in) {
 }
 
 struct myType
-{};
+{
+    myType() {}
+
+private:
+    myType(const myType&);            // non-copyable
+    myType& operator=(const myType&); // non-assignable
+};
 
 static std::ostream& operator<<(std::ostream& stream, const myType&) {
     stream << "myType!";
@@ -31,6 +37,12 @@ static std::ostream& operator<<(std::ostream& stream, const myType&) {
 }
 
 static bool operator==(const myType&, const myType&) { return false; }
+
+TEST_CASE("expressions should be evaluated only once") {
+    int a = 5;
+    REQUIRE(++a == 6);
+    REQUIRE_EQ(++a, 7);
+}
 
 TEST_CASE("assertions") {
     CHECK(true);

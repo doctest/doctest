@@ -31,7 +31,7 @@ This allows the library to be used in more ways than any other - tests can be wr
 - This makes the barrier for writing tests **much lower** - you don't have to: **1.** make a separate source file **2.** include a bunch of stuff in it **3.** add it to the build system and **4.** add it to source control - You can just write the tests for a class or a piece of functionality at the bottom of it's source file - or even header file!
 - Tests in the production code can be thought of as documentation or up-to-date comments - showing how an API is used
 - Tests can be shipped to the customer with the software to diagnose a bug faster
-- [**TDD**](https://en.wikipedia.org/wiki/Test-driven_development) in C++ has never been easier!
+- [**Test-driven development**](https://en.wikipedia.org/wiki/Test-driven_development) in C++ has never been easier!
 
 The library can be used like any other if you don't like the idea of mixing production code and tests - check out the [**features**](doc/markdown/features.md)
 
@@ -54,8 +54,8 @@ Support the development of the project with donations! There is a list of planne
 
 If you work for a company using doctest or have the means to do so, please consider financial support.
 
-[![Patreon](https://cloud.githubusercontent.com/assets/8225057/5990484/70413560-a9ab-11e4-8942-1a63607c0b00.png)](http://www.patreon.com/onqtam)
 [![Pledgie](https://pledgie.com/campaigns/31280.png)](https://pledgie.com/campaigns/31280)
+[![Patreon](https://cloud.githubusercontent.com/assets/8225057/5990484/70413560-a9ab-11e4-8942-1a63607c0b00.png)](http://www.patreon.com/onqtam)
 [![PayPal](https://www.paypalobjects.com/en_US/i/btn/btn_donate_LG.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=3K423Q6TK48BN)
 
 Contributions in the form of issues and pull requests are welcome as well - check out the [**Contributing**](doc/markdown/contributing.md) page.

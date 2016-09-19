@@ -5,14 +5,6 @@
 
 
 
-- examples
-    - using the fast assertions
-    - a test in a header in one binary with multiple cpp files
-
-- write tests for the library itself
-    - macros should evaluate expressions only once
-    - macros should work with noncopyable types
-
 - better docs
     - char ptr comparison - not what u'd expect
     - not just for c++98
