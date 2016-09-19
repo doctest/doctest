@@ -1,6 +1,6 @@
 #!/usr/bin/python2.7
 
-with_gcc = 0
+with_gcc = 1
 is_debug = 1
 
 numFiles = 200
@@ -45,7 +45,7 @@ GCC_cmake_generator     = '"MinGW Makefiles"'
 MSVC_cmake_generator    = '"Visual Studio 14 Win64"' # MSVC 2015
 
 if os.name != "nt":
-    GCC_cmake_generator = "Makefiles"
+    GCC_cmake_generator = '"Unix Makefiles"'
 
 # clean and make the folder
 if os.path.exists(the_folder):
