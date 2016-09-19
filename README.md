@@ -84,10 +84,16 @@ Documentation
 Sponsors
 --------
 
-###Gold sponsors
+###Gold sponsors ( >= 100$ )
 
-###Silver sponsors
+- Pascal Thomet
 
-###Bronze sponsors
+###Silver sponsors ( >= 20$ )
 
+- Manuel Freiberger
+
+###Bronze sponsors ( >= 5$ )
+
+- Zahari Karadzhov
+- Sébastien Feldis
 - Mario Kostadinov

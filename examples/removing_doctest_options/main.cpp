@@ -10,11 +10,11 @@ int program(int argc, const char** argv);
 class dt_removed
 {
 public:
-    dt_removed(const char** argv)
+    dt_removed(const char** argv_in)
             : vec(0) {
-        for(; *argv; ++argv)
-            if(!starts_with(*argv, "--dt-"))
-                vec.push_back(*argv);
+        for(; *argv_in; ++argv_in)
+            if(!starts_with(*argv_in, "--dt-"))
+                vec.push_back(*argv_in);
 #if __GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ > 6)
 #pragma GCC diagnostic ignored "-Wzero-as-null-pointer-constant"
 #endif // > gcc 4.6
