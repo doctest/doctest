@@ -1,15 +1,15 @@
 #!/usr/bin/python2.7
 
-with_gcc = 1
+with_gcc = 0
 is_debug = 1
 
-numFiles = 10
+numFiles = 200
 
 with_doctest = 1
 
 with_implement      = 1
 with_header         = 1
-with_num_tests      = 25
+with_num_tests      = 0
 with_num_assertions = 100
 doctest_disable     = 0
 
@@ -18,8 +18,8 @@ the_folder = 'project'
 #doctest_configs = ''
 doctest_configs = '#define DOCTEST_CONFIG_SUPER_FAST_ASSERTS'
 
-#doctest_header = 'doctest.h'
-doctest_header = 'doctest_1_0.h'
+doctest_header = 'doctest.h'
+#doctest_header = 'doctest_1_0.h'
 
 #macro = "FAST_CHECK_EQ"
 #macro = "CHECK_EQ"
@@ -68,11 +68,9 @@ for i in range(0, numFiles):
         else:
             f.write('#include "catch.hpp"\n\n')
         for t in range(0, with_num_tests):
-            f.write('TEST_CASE("") {\n')
+            f.write('TEST_CASE("") {\n    int a = 5;\n    int b = 6;\n')
             for a in range(0, with_num_assertions):
-                f.write('    int a' + str(a) + ' = 5;\n')
-                f.write('    int b' + str(a) + ' = 6;\n')
-                f.write('    ' + macro + '(a' + str(a) + operator + 'b' + str(a) + ');\n')
+                f.write('    ' + macro + '(a' + operator + 'b);\n')
             f.write('}\n\n')
     f.write('int f' + str(i) + '() { return ' + str(i) + '; }\n\n')
     f.close()
