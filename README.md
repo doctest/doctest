@@ -8,13 +8,13 @@ A complete example with a self-registering test that compiles to an executable l
 
 ![cover-example](doc/data/cover.png)
 
-Note how a standard C++ operator for the comparison is used - **doctest** has only one core [**assertion macro**](doc/markdown/assertions.md) (instead of many for *less than*, *equals*, *greater than*...) - yet the full expression is decomposed and the left and right values are logged.
+Note how a standard C++ operator for equality comparison is used - **doctest** has one core [**assertion macro**](doc/markdown/assertions.md) (it also has for *less than*, *equals*, *greater than*...) - yet the full expression is decomposed and the left and right values are logged.
 
 It is modeled after [**Catch**](https://github.com/philsquared/Catch) which is currently the most popular and easy to use alternative for testing in C++
 
 ---------
 
-There are many C++ testing frameworks - [Catch](https://github.com/philsquared/Catch), [Boost.Test](http://www.boost.org/doc/libs/1_60_0/libs/test/doc/html/index.html), [mettle](https://github.com/jimporter/mettle), [UnitTest++](https://github.com/unittest-cpp/unittest-cpp), [lest](https://github.com/martinmoene/lest), [bandit](http://banditcpp.org/), [igloo](http://igloo-testing.org/), [xUnit++](https://bitbucket.org/moswald/xunit/wiki/Home), [CppTest](http://cpptest.sourceforge.net/), [CppUnit](https://sourceforge.net/projects/cppunit/), [CxxTest](https://github.com/CxxTest/cxxtest), [cpputest](https://github.com/cpputest/cpputest), [googletest](https://github.com/google/googletest), [cute](https://github.com/Kosta-Github/cute) and many [other](https://en.wikipedia.org/wiki/List_of_unit_testing_frameworks#C.2B.2B).
+There are many C++ testing frameworks - [Catch](https://github.com/philsquared/Catch), [Boost.Test](http://www.boost.org/doc/libs/1_60_0/libs/test/doc/html/index.html), [UnitTest++](https://github.com/unittest-cpp/unittest-cpp), [cpputest](https://github.com/cpputest/cpputest), [googletest](https://github.com/google/googletest) and many [other](https://en.wikipedia.org/wiki/List_of_unit_testing_frameworks#C.2B.2B).
 
 What makes **doctest** different is that it is ultra light on compile times (by [**orders of magnitude**](doc/markdown/benchmarks.md)) and is unintrusive.
 
@@ -29,7 +29,7 @@ The **key** differences between it and other testing libraries are:
 This allows the library to be used in more ways than any other - tests can be written directly in the production code!
 
 - This makes the barrier for writing tests **much lower** - you don't have to: **1.** make a separate source file **2.** include a bunch of stuff in it **3.** add it to the build system and **4.** add it to source control - You can just write the tests for a class or a piece of functionality at the bottom of it's source file - or even header file!
-- Tests in the production code can be thought of as documentation or up to date comments - showing how an API is used
+- Tests in the production code can be thought of as documentation or up-to-date comments - showing how an API is used
 - Tests can be shipped to the customer with the software to diagnose a bug faster
 - [**TDD**](https://en.wikipedia.org/wiki/Test-driven_development) in C++ has never been easier!
 
@@ -46,6 +46,17 @@ The library can be used like any other if you don't like the idea of mixing prod
 | master branch  |   Linux/OSX   [![Linux/OSX Status](https://travis-ci.org/onqtam/doctest.svg?branch=master)](https://travis-ci.org/onqtam/doctest) |   Windows   [![Windows status](https://ci.appveyor.com/api/projects/status/j89qxtahyw1dp4gd/branch/master?svg=true)](https://ci.appveyor.com/project/onqtam/doctest/branch/master) | [![Coverage Status](https://coveralls.io/repos/github/onqtam/doctest/badge.svg?branch=master)](https://coveralls.io/github/onqtam/doctest?branch=master) | [![Static Analysis](https://scan.coverity.com/projects/7865/badge.svg)](https://scan.coverity.com/projects/onqtam-doctest) |
 |----------------|-----------------------------------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------|
 | **dev branch** | **Linux/OSX** [![Linux/OSX Status](https://travis-ci.org/onqtam/doctest.svg?branch=dev)](https://travis-ci.org/onqtam/doctest)    | **Windows** [![Windows status](https://ci.appveyor.com/api/projects/status/j89qxtahyw1dp4gd/branch/dev?svg=true)](https://ci.appveyor.com/project/onqtam/doctest/branch/dev)       | [![Coverage Status](https://coveralls.io/repos/github/onqtam/doctest/badge.svg?branch=dev)](https://coveralls.io/github/onqtam/doctest?branch=dev)       |  |
+
+Contributing
+------------
+
+Support the development of the project with donations! There is a list of planned features which are all important and big - see the [**roadmap**](doc/markdown/roadmap.md). I took a break from working in the industry to make open source software so every cent is a big deal.
+
+[![Pledgie](https://pledgie.com/campaigns/31280.png)](https://pledgie.com/campaigns/31280)
+[![Patreon](https://cloud.githubusercontent.com/assets/8225057/5990484/70413560-a9ab-11e4-8942-1a63607c0b00.png)](http://www.patreon.com/onqtam)
+[![PayPal](https://www.paypalobjects.com/en_US/i/btn/btn_donate_LG.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=3K423Q6TK48BN)
+
+Contributions in the form of issues and pull requests are welcome as well - check out the [**Contributing**](doc/markdown/contributing.md) page.
 
 
 Documentation
@@ -68,11 +79,13 @@ Documentation
 - [```main()``` entry point and dealing with shared objects](doc/markdown/main.md)
 - [FAQ](doc/markdown/faq.md)
 
-Contributing
-------------
+Sponsors
+--------
 
-Support the development of the project with donations! There is a list of planned features which are all important and big - see the [**roadmap**](doc/markdown/roadmap.md). I took a break from working in the industry to make open source software so every cent is a big deal.
+###Gold sponsors
 
-[![Donate to support](https://pledgie.com/campaigns/31280.png)](https://pledgie.com/campaigns/31280)
+###Silver sponsors
 
-Contributions in the form of issues and pull requests are welcome as well - check out the [**Contributing**](doc/markdown/contributing.md) page.
+###Bronze sponsors
+
+- Mario Kostadinov

@@ -7,8 +7,6 @@
 
 - the project is in need of sponsors!
 
-- integrate patreon
-
 - examples
     - removing everything with -dt- from the command line - https://github.com/onqtam/doctest/issues/20
     - using the fast assertions
