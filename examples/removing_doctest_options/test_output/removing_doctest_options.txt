@@ -1,0 +1,18 @@
+[doctest] doctest version is "1.0.0"
+[doctest] run with "--help" for options
+===============================================================================
+main.cpp(48)
+Fail
+
+main.cpp(48) FAILED! 
+  REQUIRE( 0 )
+with expansion:
+  REQUIRE( 0 )
+
+===============================================================================
+[doctest] test cases:    2 |    1 passed |    1 failed |    0 skipped
+[doctest] assertions:    2 |    1 passed |    1 failed |
+Program: 3 arguments received:
+'--version'
+'--my-option="abcdef"'
+'123'

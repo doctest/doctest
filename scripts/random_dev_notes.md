@@ -5,10 +5,7 @@
 
 
 
-- the project is in need of sponsors!
-
 - examples
-    - removing everything with -dt- from the command line - https://github.com/onqtam/doctest/issues/20
     - using the fast assertions
     - a test in a header in one binary with multiple cpp files
 
@@ -30,13 +27,16 @@
     - mention the new asserts
     - document the new config identifiers
     - for power users - separate headers
+    - how to write tests in header-only libraries (DOCTEST_LIBRARY_INCLUDED, and a tag)
     - post the traffic screenshot in the FAQ - "how epic was the initial release"
 
-post in reddit for 1.1!
+- the project is in need of sponsors!
 
-
-
-
+cpp
+hackernews
+programming
+cplusplus
+isocpp.org
 
 
 
