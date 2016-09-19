@@ -48,7 +48,9 @@ TEST_CASE("assertions") {
     CHECK(true);
     CHECK(1 == 0);
     CHECK_FALSE(1);
-    CHECK(myType() == myType());
+    myType a;
+    myType b;
+    CHECK(a == b);
     CHECK(Approx(0.1) == 0.2);
 
     CHECK_THROWS(throws(true));

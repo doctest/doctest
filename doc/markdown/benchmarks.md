@@ -1,8 +1,10 @@
-# Benchmarks
+# Compile time benchmarks
 
-The benchmarks are done with [**this**](../../scripts/bench/bench.py) script using CMake.
+The benchmarks are done with [**this**](../../scripts/bench/bench.py) script using CMake. There are 2 benchmarking scenarios:
+- [the cost of including the header](#cost-of-including-the-header)
+- [the cost of an assertion macro](#cost-of-an-assertion-macro)
 
-GCC performs much better on Unix - but even there the speedup ratios are similar (clang should be the similar).
+GCC performs much better on Unix - and there the speedup ratios are similar (clang should be the similar as well).
 
 Compilers used:
 - Microsoft Visual Studio Community 2015 - Version 14.0.25431.01 Update 3
@@ -23,7 +25,7 @@ This is a benchmark that is relevant only to single header and header only frame
 
 The script generates 201 source files and in 200 of them makes a function in the form of ```int f135() { return 135; }``` and in ```main.cpp``` it forward declares all the 200 such dummy functions and accumulates their result to return from the ```main()``` function. This is done to ensure that all source files are built and that the linker doesn't remove/optimize anything.
 
-- **baseline** - how much time the source files need for a single threaded build with ```msbuild```/```mingw32-make``` 
+- **baseline** - how much time the source files need for a single threaded build with ```msbuild```/```make```
 - **+ implement** - only in ```main.cpp``` the header is included with a ```#define``` before it so the test runner gets implemented:
 
     ```c++
@@ -46,14 +48,14 @@ The script generates 201 source files and in 200 of them makes a function in the
 
 ### Catch
 
-| &nbsp;                 | baseline | + implement | + header everywhere | &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; |
-|------------------------|----------|-------------|---------------------|------------|
-| MSVC Debug             | 5.9      | 8.5         | 102                 |            |
-| MSVC Release           | 5.4      | 10.3        | 96                  |            |
-| MinGW-w64 GCC Debug    | 9.4      | 24.5        | 125                 |            |
-| MinGW-w64 GCC Release  | 9.6      | 18.4        | 113                 |            |
-| Linux GCC Debug        | 6.3      | 10.4        | 59                  |            |
-| Linux GCC Release      | 6.5      | 14.1        | 64                  |            |
+| &nbsp;                 | baseline | + implement | + header everywhere |
+|------------------------|----------|-------------|---------------------|
+| MSVC Debug             | 5.9      | 8.5         | 102                 |
+| MSVC Release           | 5.4      | 10.3        | 96                  |
+| MinGW-w64 GCC Debug    | 9.4      | 24.5        | 125                 |
+| MinGW-w64 GCC Release  | 9.6      | 18.4        | 113                 |
+| Linux GCC Debug        | 6.3      | 10.4        | 59                  |
+| Linux GCC Release      | 6.5      | 14.1        | 64                  |
 
 ### Conclusion
 
@@ -74,7 +76,7 @@ So on a modern developer machine:
 
 ----------
 
-So if ```doctest.h``` costs 8ms and ```catch.hpp``` costs 430ms on MSVC - then the **doctest** header is >> **54** << times lighter! 
+So if ```doctest.h``` costs 8ms and ```catch.hpp``` costs 430ms on MSVC - then the **doctest** header is >> **54** << times lighter!
 
 ----------
 
@@ -84,7 +86,18 @@ The reason the **doctest** header is so light on compile times is because it for
 
 ## Cost of an assertion macro
 
-coming soon
+The script generates 11 source files and in 10 of them makes 10 test cases with 250 assertion macros in them.
+
+- **baseline** - how much time it takes for a single threaded build with the header included everywhere - ```msbuild```/```make```
+- **+ implement** - only in ```main.cpp``` the header is included with a ```#define``` before it so the test runner gets implemented:
+
+    ```c++
+#define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
+#include "doctest.h"
+    ```
+- **+ header everywhere** - the framework header is also included in all the other source files
+- **+ disabled** - **doctest** specific - only this framework can remove everything related to it from the binary
+
 
 ---------------
 

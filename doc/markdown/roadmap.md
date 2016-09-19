@@ -74,9 +74,7 @@ And here is a list of things that are being considered but not part of the roadm
 - hierarchical test suites - using a stack for the pushed ones - should be easy
 - put everything from the ```detail``` namespace also in a nested anonymous namespace to make them with internal linkage
 - ability to re-run only newly compiled tests based on time stamps using ```__DATE__``` and ```__TIME__``` - stored in some file
-- submit to [boost](http://www.boost.org/development/requirements.html)?
-- fix all the hacks in the cmake scripts for OSX (they are mainly for gcc 4.4)
-- the [range_based_execution](../../examples/range_based_execution/) example sometimes leaves one subprocess running and hangs ctest - should fix probably the python script
+- add option to not report line numbers - getting annoyed of re-committing reference output files with changed line reports from a tiny change...
 
 ---------------
 

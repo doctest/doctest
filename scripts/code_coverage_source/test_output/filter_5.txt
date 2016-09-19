@@ -14,36 +14,36 @@ test.cpp(50) FAILED!
 with expansion:
   CHECK_FALSE( 1 )
 
-test.cpp(51) FAILED! 
-  CHECK( myType() == myType() )
+test.cpp(53) FAILED! 
+  CHECK( a == b )
 with expansion:
   CHECK( myType! == myType! )
 
-test.cpp(52) FAILED! 
+test.cpp(54) FAILED! 
   CHECK( Approx(0.1) == 0.2 )
 with expansion:
   CHECK( Approx( 0.1 ) == 0.2 )
 
-test.cpp(55) FAILED!
+test.cpp(57) FAILED!
   CHECK_THROWS( throws(false) )
 
-test.cpp(57) FAILED!
+test.cpp(59) FAILED!
   CHECK_NOTHROW( throws(true) )
 
-test.cpp(59) FAILED! (didn't throw at all)
+test.cpp(61) FAILED! (didn't throw at all)
   REQUIRE_THROWS_AS( throws(false), bool )
 
 ===============================================================================
-test.cpp(62)
+test.cpp(64)
 assertions - all of them
 
-test.cpp(125) FAILED! 
+test.cpp(127) FAILED! 
   FAST_REQUIRE_UNARY_FALSE( 1 )
 with expansion:
   FAST_REQUIRE_UNARY_FALSE( 1 )
 
 ===============================================================================
-test.cpp(128)
+test.cpp(130)
 throws
 
 TEST CASE FAILED! (threw exception)

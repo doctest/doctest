@@ -11,7 +11,7 @@ with expansion:
   CHECK( 0 )
 
 ===============================================================================
-test.cpp(128)
+test.cpp(130)
 throws
 
 TEST CASE FAILED! (threw exception)
