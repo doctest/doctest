@@ -1,10 +1,10 @@
 [doctest] doctest version is "1.0.0"
 [doctest] run with "--help" for options
 ===============================================================================
-main.cpp(48)
+main.cpp(55)
 Fail
 
-main.cpp(48) FAILED! 
+main.cpp(55) FAILED! 
   REQUIRE( 0 )
 with expansion:
   REQUIRE( 0 )

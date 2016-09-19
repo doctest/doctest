@@ -2,6 +2,10 @@
 #define DOCTEST_CONFIG_IMPLEMENT
 #include "doctest.h"
 
+#if __GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ > 6)
+#pragma GCC diagnostic ignored "-Wzero-as-null-pointer-constant"
+#endif // > gcc 4.6
+
 #include <string>
 #include <vector>
 
@@ -15,12 +19,15 @@ public:
         for(; *argv_in; ++argv_in)
             if(!starts_with(*argv_in, "--dt-"))
                 vec.push_back(*argv_in);
-#if __GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ > 6)
-#pragma GCC diagnostic ignored "-Wzero-as-null-pointer-constant"
-#endif // > gcc 4.6
         vec.push_back(NULL);
     }
 
+// to fix gcc 4.7 "-Winline" warnings
+#if defined(__GNUC__) && !defined(__clang__)
+    __attribute__((noinline))
+#endif
+    ~dt_removed() {}
+    
     int          argc() { return static_cast<int>(vec.size()) - 1; }
     const char** argv() { return &vec[0]; } // Note: non-const char **:
 

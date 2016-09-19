@@ -30,4 +30,6 @@ build/*
 build-mingw/*
 examples/*/build/*
 examples/*/build-mingw/*
+scripts/*/build/*
+scripts/*/build-mingw/*
 *.pyc
