@@ -6,18 +6,7 @@ The **doctest** library is inspired by the [**```unittest {}```**](https://wiki.
 
 A complete example with a self-registering test that compiles to an executable looks like this:
 
-```c++
-#define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
-#include "doctest.h"
-
-int factorial(int number) { return number <= 1 ? number : factorial(number - 1) * number; }
-
-TEST_CASE("testing the factorial function") {
-    CHECK(factorial(1) == 1);
-    CHECK(factorial(2) == 2);
-    CHECK(factorial(10) == 3628800);
-}
-```
+![cover-example](doc/data/cover.png)
 
 Note how a standard C++ operator for the comparison is used - **doctest** has only one core [**assertion macro**](doc/markdown/assertions.md) (instead of many for *less than*, *equals*, *greater than*...) - yet the full expression is decomposed and the left and right values are logged.
 

@@ -1,6 +1,6 @@
 #!/usr/bin/python2.7
 
-with_gcc = 0
+with_gcc = 1
 is_debug = 1
 
 numFiles = 10
@@ -18,10 +18,11 @@ the_folder = 'project'
 #doctest_configs = ''
 doctest_configs = '#define DOCTEST_CONFIG_SUPER_FAST_ASSERTS'
 
-doctest_header = 'doctest.h'
-#doctest_header = 'doctest_1_0.h'
+#doctest_header = 'doctest.h'
+doctest_header = 'doctest_1_0.h'
 
 #macro = "FAST_CHECK_EQ"
+#macro = "CHECK_EQ"
 macro = "CHECK"
 
 operator = " == "
