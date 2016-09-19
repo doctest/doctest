@@ -9,14 +9,14 @@ with_doctest = 1
 
 with_implement      = 1
 with_header         = 1
-with_num_tests      = 0
+with_num_tests      = 10
 with_num_assertions = 100
 doctest_disable     = 0
 
 the_folder = 'project'
 
-#doctest_configs = ''
-doctest_configs = '#define DOCTEST_CONFIG_SUPER_FAST_ASSERTS'
+doctest_configs = ''
+#doctest_configs = '#define DOCTEST_CONFIG_SUPER_FAST_ASSERTS'
 
 doctest_header = 'doctest.h'
 #doctest_header = 'doctest_1_0.h'

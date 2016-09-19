@@ -37,25 +37,25 @@ The script generates 201 source files and in 200 of them makes a function in the
 
 ### doctest
 
-| &nbsp;                 | baseline | + implement | + header everywhere | + disabled |
-|------------------------|----------|-------------|---------------------|------------|
-| MSVC Debug             | 5.9      | 7.1         | 8.3                 | 7.0        |
-| MSVC Release           | 5.4      | 6.9         | 8.7                 | 6.5        |
-| MinGW-w64 GCC Debug    | 9.4      | 11.7        | 14.4                | 11.1       |
-| MinGW-w64 GCC Release  | 9.6      | 12.3        | 14.9                | 11.4       |
-| Linux GCC Debug        | 6.3      | 7.1         | 10.2                | 7.4        |
-| Linux GCC Release      | 6.5      | 8.4         | 10.8                | 7.8        |
+| &nbsp;                | baseline | + implement | + header everywhere | + disabled |
+|-----------------------|----------|-------------|---------------------|------------|
+| MSVC Debug            | 5.9      | 7.1         | 8.3                 | 7.0        |
+| MSVC Release          | 5.4      | 6.9         | 8.7                 | 6.5        |
+| MinGW-w64 GCC Debug   | 9.4      | 11.7        | 14.4                | 11.1       |
+| MinGW-w64 GCC Release | 9.6      | 12.3        | 14.9                | 11.4       |
+| Linux GCC Debug       | 6.3      | 7.1         | 10.2                | 7.4        |
+| Linux GCC Release     | 6.5      | 8.4         | 10.8                | 7.8        |
 
 ### Catch
 
-| &nbsp;                 | baseline | + implement | + header everywhere |
-|------------------------|----------|-------------|---------------------|
-| MSVC Debug             | 5.9      | 8.5         | 102                 |
-| MSVC Release           | 5.4      | 10.3        | 96                  |
-| MinGW-w64 GCC Debug    | 9.4      | 24.5        | 125                 |
-| MinGW-w64 GCC Release  | 9.6      | 18.4        | 113                 |
-| Linux GCC Debug        | 6.3      | 10.4        | 59                  |
-| Linux GCC Release      | 6.5      | 14.1        | 64                  |
+| &nbsp;                | baseline | + implement | + header everywhere |
+|-----------------------|----------|-------------|---------------------|
+| MSVC Debug            | 5.9      | 8.5         | 102                 |
+| MSVC Release          | 5.4      | 10.3        | 96                  |
+| MinGW-w64 GCC Debug   | 9.4      | 24.5        | 125                 |
+| MinGW-w64 GCC Release | 9.6      | 18.4        | 113                 |
+| Linux GCC Debug       | 6.3      | 10.4        | 59                  |
+| Linux GCC Release     | 6.5      | 14.1        | 64                  |
 
 ### Conclusion
 
@@ -86,18 +86,39 @@ The reason the **doctest** header is so light on compile times is because it for
 
 ## Cost of an assertion macro
 
-The script generates 11 source files and in 10 of them makes 10 test cases with 250 assertion macros in them.
+The script generates 11 source files and in 10 of them makes 10 test cases with 100 assertion macros in them (of the form ```CHECK(a == b);``` where a and b are always the same integer variables). In ```main.cpp``` the testing framework gets implemented.
 
-- **baseline** - how much time it takes for a single threaded build with the header included everywhere - ```msbuild```/```make```
-- **+ implement** - only in ```main.cpp``` the header is included with a ```#define``` before it so the test runner gets implemented:
+- **baseline** - how much time it takes for a single threaded build with the header included everywhere - no test cases or asserts!
+- **asserts** - will add ```CHECK()``` asserts which decompose the expression with template machinery
 
-    ```c++
-#define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
-#include "doctest.h"
-    ```
-- **+ header everywhere** - the framework header is also included in all the other source files
-- **+ disabled** - **doctest** specific - only this framework can remove everything related to it from the binary
+**doctest** specific:
 
+- **+ disabled** - all the test case and assertion macros will be disabled
+- **normal asserts** - will use ```CHECK_EQ(a, b)``` instead of the expression decomposing ones
+- **fast asserts** - will use ```FAST_CHECK_EQ(a, b)``` instead of the expression decomposing ones
+- **+ extra fast asserts** - will add ```DOCTEST_CONFIG_SUPER_FAST_ASSERTS``` for even faster asserts
+
+### doctest
+
+| &nbsp;                 | baseline | asserts | + disabled | normal asserts | fast asserts | + extra normal asserts |
+|------------------------|----------|---------|------------|----------------|--------------|------------------------|
+| MSVC Debug             |          |         |            |                |              |                        |
+| MSVC Release           |          |         |            |                |              |                        |
+| MinGW-w64 GCC Debug    |          |         |            |                |              |                        |
+| MinGW-w64 GCC Release  |          |         |            |                |              |                        |
+| Linux GCC Debug        |          |         |            |                |              |                        |
+| Linux GCC Release      |          |         |            |                |              |                        |
+
+### Catch
+
+| &nbsp;                 | baseline | asserts |
+|------------------------|----------|---------|
+| MSVC Debug             |          |         |
+| MSVC Release           |          |         |
+| MinGW-w64 GCC Debug    |          |         |
+| MinGW-w64 GCC Release  |          |         |
+| Linux GCC Debug        |          |         |
+| Linux GCC Release      |          |         |
 
 ---------------
 
