@@ -13,9 +13,9 @@ Reference
 - [Assertion macros](assertions.md)
 - [Test cases, subcases and test fixtures](testcases.md)
 - [Command line](commandline.md)
+- [```main()``` entry point](main.md)
 - [Configuration](configuration.md)
 - [String conversions](stringification.md)
-- [```main()``` entry point and dealing with shared objects](main.md)
 - [FAQ](faq.md)
 
 Support the development of the project with donations! There is a list of planned features which are all important and big - see the [**roadmap**](roadmap.md). I took a break from working in the industry to make open source software so every cent is a big deal.

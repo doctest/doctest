@@ -2,6 +2,8 @@
 
 **doctest** is designed to "just work" as much as possible. It also allows configuring how it is built with a set of identifiers. 
 
+The identifiers should be defined before the inclusion of the framework header.
+
 For most people the only configuration needed is telling **doctest** which source file should host all the implementation code:
 
 ### **```DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN```**
@@ -11,57 +13,135 @@ For most people the only configuration needed is telling **doctest** which sourc
 #include "doctest.h"
 ```
 
-This should be done in only one source file! Otherwise there will be linker errors and slower build times.
+This should be defined only in the source file where the library is implemented.
 
 ### **```DOCTEST_CONFIG_IMPLEMENT```**
 
-if the client wants to [**supply the ```main()``` function**](main.md) (either to set an option with some value from the code or to integrate the framework into his existing project codebase) this define should be used.
+If the client wants to [**supply the ```main()``` function**](main.md) (either to set an option with some value from the code or to integrate the framework into his existing project codebase) this identifier should be used.
+
+This should be defined only in the source file where the library is implemented.
 
 ### **```DOCTEST_CONFIG_DISABLE```**
 
-the next most important configuration option - when defined globally in the whole project before the inclusion of the framework header - everything testing - related is removed from the binary - including most of the framework implementation and every test case written anywhere! This is one of the most unique features of **doctest**.
+One of the most most important configuration option - everything testing-related is removed from the binary - including most of the framework implementation and every test case written anywhere! This is one of the most unique features of **doctest**.
+
+This should be defined globally.
 
 ### **```DOCTEST_CONFIG_NO_SHORT_MACRO_NAMES```**
 
-this will remove all macros from **doctest** that don't have the **```DOCTEST_```** prefix - like **```CHECK```**, **```TEST_CASE```** and **```SUBCASE```**. Then only the full macro names will be available - **```DOCTEST_CHECK```**, **```DOCTEST_TEST_CASE```** and **```DOCTEST_SUBCASE```**. The user is free to make his own short versions of these macros - [**example**](../../examples/alternative_macros/)
+This will remove all macros from **doctest** that don't have the **```DOCTEST_```** prefix - like **```CHECK```**, **```TEST_CASE```** and **```SUBCASE```**. Then only the full macro names will be available - **```DOCTEST_CHECK```**, **```DOCTEST_TEST_CASE```** and **```DOCTEST_SUBCASE```**. The user is free to make his own short versions of these macros - [**example**](../../examples/alternative_macros/).
 
-### **```DOCTEST_CONFIG_NO_UNPREFIXED_OPTIONS```**
+This can be defined both globally and in specific source files only.
 
-this will disable the short versions of the [**command line**](commandline.md) options and only the versions with ```-dt-``` prefix will be parsed by **doctest** - this is possible for easy interoperability with client command line option handling when the testing framework is integrated within a client codebase - so there are no clashes and so that the user can exclude everything starting with ```-dt-``` from their option parsing. This configuration option is relevant only for the source file where the library is implemented
+### **```DOCTEST_CONFIG_TREAT_CHAR_STAR_AS_STRING```**
 
-### **```DOCTEST_CONFIG_COLORS_NONE```**
+By default ```char*``` is being treated as a pointer. With this option comparing ```char*``` pointers will switch to string comparison and when stringified the string will be printed instead of the pointer value. 
 
-this will remove support for colors in the console output of the framework. This configuration option is relevant only for the source file where the library is implemented
+This should be defined globally.
 
-### **```DOCTEST_CONFIG_COLORS_WINDOWS```**
+### **```DOCTEST_CONFIG_SUPER_FAST_ASSERTS```**
 
-this will force the support for colors in the console output to use the Windows APIs and headers. This configuration option is relevant only for the source file where the library is implemented
+This makes the fast assert macros (```FAST_CHECK_EQ(a,b)``` - with a ```FAST_``` prefix) compile [**even faster**](benchmarks.md#cost-of-an-assertion-macro)! (35-80%)
 
-### **```DOCTEST_CONFIG_COLORS_ANSI```**
+Each fast assert is turned into a single function call - the only downside of this is: if an assert fails and a debugger is attached - when it breaks it will be in an internal function - the user will have to go 1 level up in the callstack to see the actual assert.
 
-this will force the support for colors in the console output to use ANSI escape codes. This configuration option is relevant only for the source file where the library is implemented
+This can be defined both globally and in specific source files only.
 
 ### **```DOCTEST_CONFIG_USE_IOSFWD```**
 
-the library by default provides a forward declaration of ```std::ostream``` in order to support the ```operator<<``` [**stringification**](stringification.md) mechanism. This is forbidden by the standard (even though it works everywhere on all tested compilers). However if the user wishes to be 100% standards compliant - then this configuration option can be used to force the inclusion of ```<iosfwd>```. It should be defined everywhere before the framework header is included.
+The library by default provides a forward declaration of ```std::ostream``` in order to support the ```operator<<``` [**stringification**](stringification.md) mechanism. This is forbidden by the standard (even though it works everywhere on all tested compilers). However if the user wishes to be 100% standards compliant - then this configuration option can be used to force the inclusion of ```<iosfwd>```.
+
+Also it is possible that some STL implementation of a compiler with niche usage defines them differently - then there will be compilation errors in STL headers and using this option should fix the problem.  
+
+This should be defined globally.
+
+### **```DOCTEST_CONFIG_NO_COMPARISON_WARNING_SUPPRESSION```**
+
+By default the library suppresses warnings about comparing signed and unsigned types, etc.
+
+- g++/clang ```-Wsign-conversion```
+- g++/clang ```-Wsign-compare```
+- g++/clang ```-Wdouble-promotion```
+- msvc ```C4389``` 'operator' : signed/unsigned mismatch
+- msvc ```C4018``` 'expression' : signed/unsigned mismatch
+
+You can checkout [**this**](http://stackoverflow.com/questions/39106893) or [**this**](http://stackoverflow.com/questions/39075223) StackOverflow question to better understand why I suppress these warnings by default.
+
+This can be defined both globally and in specific source files only.
+
+### **```DOCTEST_CONFIG_NO_UNPREFIXED_OPTIONS```**
+
+This will disable the short versions of the [**command line**](commandline.md) options and only the versions with ```--dt-``` prefix will be parsed by **doctest** - this is possible for easy interoperability with client command line option handling when the testing framework is integrated within a client codebase - so there are no clashes and so that the user can exclude everything starting with ```--dt-``` from their option parsing.
+
+This should be defined only in the source file where the library is implemented (it's relevant only there).
+
+### **```DOCTEST_CONFIG_ASSERTION_PARAMETERS_BY_VALUE```**
+
+This option forces all doctest asserts to copy by value the expressions they are given instead of binding them to const references. This might be useful to avoid ODR-usage of static constants (which might lead to linker errors with g++/clang):
+
+```c++
+template<typename T> struct type_traits { static const bool value = false; };
+
+// unless DOCTEST_CONFIG_ASSERTION_PARAMETERS_BY_VALUE is defined the following assertion
+// will lead to a linker error if type_traits<T>::value isn't defined in a translation unit
+CHECK(type_traits::value == false);
+```
+
+This can be defined both globally and in specific source files only.
+
+### **```DOCTEST_CONFIG_COLORS_NONE```**
+
+This will remove support for colors in the console output of the framework.
+
+This should be defined only in the source file where the library is implemented (it's relevant only there).
+
+### **```DOCTEST_CONFIG_COLORS_WINDOWS```**
+
+This will force the support for colors in the console output to use the Windows APIs and headers.
+
+This should be defined only in the source file where the library is implemented (it's relevant only there).
+
+### **```DOCTEST_CONFIG_COLORS_ANSI```**
+
+This will force the support for colors in the console output to use ANSI escape codes.
+
+This should be defined only in the source file where the library is implemented (it's relevant only there).
+
+### **```DOCTEST_CONFIG_WITH_NULLPTR```**
+
+doctest tries to detect if c++11 ```nullptr``` is available but if it doesn't detect it - the user might define this.
+
+This should be defined globally.
 
 ### **```DOCTEST_CONFIG_WITH_LONG_LONG```**
 
-by default the library includes support for stringifying ```long long``` only if the value of ```__cplusplus``` is at least ```201103L``` (C++11) or if the compiler is MSVC 2003 or newer. Many compilers that don't fully support C++11 have it as an extension but it errors for GCC/Clang when the ```-std=c++98``` option is used and this cannot be detected with the preprocessor in any way. Use this configuration option if your compiler supports ```long long``` but doesn't yet support the full C++11 standard. It should be defined everywhere before the framework header is included.
+doctest tries to detect if c++11 ```long long``` is available but if it doesn't detect it - the user might define this.
 
-DOCTEST_CONFIG_WITH_NULLPTR
-DOCTEST_CONFIG_WITH_LONG_LONG
-DOCTEST_CONFIG_WITH_STATIC_ASSERT
+This should be defined globally.
 
-DOCTEST_CONFIG_NO_NULLPTR
-DOCTEST_CONFIG_NO_LONG_LONG
-DOCTEST_CONFIG_NO_STATIC_ASSERT
+### **```DOCTEST_CONFIG_WITH_STATIC_ASSERT```**
 
-DOCTEST_CONFIG_ASSERTION_PARAMETERS_BY_VALUE
-DOCTEST_CONFIG_TREAT_CHAR_STAR_AS_STRING
-DOCTEST_CONFIG_NO_COMPARISON_WARNING_SUPPRESSION
+doctest tries to detect if c++11 ```static_assert()``` is available but if it doesn't detect it - the user might define this.
 
-DOCTEST_CONFIG_SUPER_FAST_ASSERTS
+This should be defined globally.
+
+### **```DOCTEST_CONFIG_NO_NULLPTR```**
+
+If doctest detects c++11 ```nullptr``` support as available but the user knows better - this can be defined to disable it.
+
+This should be defined globally.
+
+### **```DOCTEST_CONFIG_NO_LONG_LONG```**
+
+If doctest detects c++11 ```long long``` support as available but the user knows better - this can be defined to disable it.
+
+This should be defined globally.
+
+### **```DOCTEST_CONFIG_NO_STATIC_ASSERT```**
+
+If doctest detects c++11 ```static_assert()``` support as available but the user knows better - this can be defined to disable it.
+
+This should be defined globally.
 
 ---------------
 

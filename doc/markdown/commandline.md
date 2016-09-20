@@ -1,6 +1,6 @@
 ## Command line
 
-**doctest** works quite nicely without any command line options at all - but for more control there are a bunch that are available.
+**doctest** works quite nicely without any command line options at all - but for more control a bunch are available.
 
 **Query flags** - after the result is printed the program quits without executing any test cases (and if the framework is integrated into a client codebase which [**supplies it's own ```main()``` entry point**](main.md) - the program should check the result of ```doctest::Context::shouldExit()``` after calling ```doctest::Context::run()``` and should exit - this is left up to the user).
 
@@ -11,7 +11,7 @@
 **Filters** use wildcards for matching values - where ```*``` means "match any sequence" and ```?``` means "match any one character".
 To pass a pattern with an interval use ```""``` like this:  ```--test-case="*no sound*,vaguely named test number ?"```.
 
-All the options can also be set with code if the user [**supplies the ```main()``` function**](main.md) so an option is always with some value.
+All the options can also be set with code (defaults/overrides) if the user [**supplies the ```main()``` function**](main.md).
 
 | Query Flags | Description |
 |:------------|-------------|
@@ -44,11 +44,13 @@ All the options can also be set with code if the user [**supplies the ```main()`
 | ```-npf``` ```--no-path-filenames=<bool>``` | Paths are removed from the output when a filename is printed - useful if you want the same output from the testing framework on different environments |
 | &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| |
 
-All the flags/options also come with a prefixed version (with ```-dt-``` at the front) - for example ```--version``` can be used also with ```--dt-version``` or ```-dt-v```.
+All the flags/options also come with a prefixed version (with ```--dt-``` at the front) - for example ```--version``` can be used also with ```--dt-version``` or ```--dt-v```.
 
-All the unprefixed versions listed here can be disabled with the [**```DOCTEST_CONFIG_NO_UNPREFIXED_OPTIONS```**](configuration.md) define.
+All the unprefixed versions listed here can be disabled with the [**```DOCTEST_CONFIG_NO_UNPREFIXED_OPTIONS```**](configuration.md#doctest_config_no_unprefixed_options) define.
 
-This is done for easy interoperability with client command line option handling when the testing framework is integrated within a client codebase - all **doctest** related flags/options can be prefixed so there are no clashes and so that the user can exclude everything starting with ```-dt-``` from their option parsing.
+This is done for easy interoperability with client command line option handling when the testing framework is integrated within a client codebase - all **doctest** related flags/options can be prefixed so there are no clashes and so that the user can exclude everything starting with ```--dt-``` from their option parsing.
+
+If there isn't an option to exclude everything starting with ```--dt-``` then the [**removing_doctest_options**](../../examples/removing_doctest_options/) example might help.
 
 ---------------
 
