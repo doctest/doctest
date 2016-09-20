@@ -37,10 +37,6 @@ TEST_CASE("normal macros") {
     CHECK(Approx(0.1000001) == 0.1000002);
     CHECK(Approx(0.502) == 0.501);
 
-    const char* c_string = "test_test";
-
-    CHECK(c_string == "test_test");
-
     throws(true);
 }
 

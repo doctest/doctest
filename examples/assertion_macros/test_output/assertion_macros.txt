@@ -21,21 +21,21 @@ with expansion:
 TEST CASE FAILED! (threw exception)
 
 ===============================================================================
-main.cpp(47)
+main.cpp(43)
 exceptions-related macros
 
-main.cpp(48) FAILED!
+main.cpp(44) FAILED!
   CHECK_THROWS( throws(false) )
 
-main.cpp(49) FAILED! (didn't throw at all)
+main.cpp(45) FAILED! (didn't throw at all)
   CHECK_THROWS_AS( throws(false), int )
 
-main.cpp(51) FAILED! (threw something else)
+main.cpp(47) FAILED! (threw something else)
   CHECK_THROWS_AS( throws(true), char )
 
-main.cpp(53) FAILED!
+main.cpp(49) FAILED!
   REQUIRE_NOTHROW( throws(true) )
 
 ===============================================================================
 [doctest] test cases:    4 |    1 passed |    3 failed |    0 skipped
-[doctest] assertions:   13 |    7 passed |    6 failed |
+[doctest] assertions:   12 |    6 passed |    6 failed |
