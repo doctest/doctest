@@ -52,8 +52,8 @@ int main(int argc, const char** argv) {
     return test_result + app_result;
 }
 
-TEST_CASE("Fail") { REQUIRE(0); }
-TEST_CASE("Pass") { REQUIRE(1); }
+TEST_CASE("Fail") { CHECK(0); }
+TEST_CASE("Pass") { CHECK(1); }
 
 int program(int argc, const char** argv) {
     printf("Program: %d arguments received:\n", argc - 1);

@@ -5,9 +5,9 @@ main.cpp(55)
 Fail
 
 main.cpp(55) FAILED! 
-  REQUIRE( 0 )
+  CHECK( 0 )
 with expansion:
-  REQUIRE( 0 )
+  CHECK( 0 )
 
 ===============================================================================
 [doctest] test cases:    2 |    1 passed |    1 failed |    0 skipped
