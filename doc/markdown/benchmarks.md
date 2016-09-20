@@ -4,12 +4,11 @@ The benchmarks are done with [**this**](../../scripts/bench/bench.py) script usi
 - [the cost of including the header](#cost-of-including-the-header)
 - [the cost of an assertion macro](#cost-of-an-assertion-macro)
 
-GCC performs much better on Unix - and there the speedup ratios are similar (clang should be the similar as well).
-
 Compilers used:
-- Microsoft Visual Studio Community 2015 - Version 14.0.25431.01 Update 3
-- gcc 6.2.0 (x86_64-posix-seh-rev0, Built by MinGW-W64 project)
-- gcc 5.2.1 20151010 (Ubuntu 5.2.1-22ubuntu2)
+- WINDOWS: Microsoft Visual Studio Community 2015 - Version 14.0.25431.01 Update 3
+- WINDOWS: gcc 6.2.0 (x86_64-posix-seh-rev0, Built by MinGW-W64 project)
+- LINUX: gcc 5.2.1 20151010 (Ubuntu 5.2.1-22ubuntu2)
+- LINUX: clang 3.6.2-1 (tags/RELEASE_362/final) (based on LLVM 3.6.2) Ubuntu - Target: x86_64-pc-linux-gnu
 
 Environment used (Intel i7 3770k, 16g RAM)
 - Windows 7 - on an SSD
@@ -35,9 +34,7 @@ The script generates 201 source files and in 200 of them makes a function in the
 - **+ header everywhere** - the framework header is also included in all the other source files
 - **+ disabled** - **doctest** specific - only this framework can remove everything related to it from the binary
 
-### doctest
-
-| &nbsp;                | baseline | + implement | + header everywhere | + disabled |
+| doctest               | baseline | + implement | + header everywhere | + disabled |
 |-----------------------|----------|-------------|---------------------|------------|
 | MSVC Debug            | 5.9      | 7.1         | 8.3                 | 7.0        |
 | MSVC Release          | 5.4      | 6.9         | 8.7                 | 6.5        |
@@ -45,10 +42,10 @@ The script generates 201 source files and in 200 of them makes a function in the
 | MinGW-w64 GCC Release | 9.6      | 12.3        | 14.9                | 11.4       |
 | Linux GCC Debug       | 6.3      | 7.1         | 10.2                | 7.4        |
 | Linux GCC Release     | 6.5      | 8.4         | 10.8                | 7.8        |
+| Linux Clang Debug     | 6.9      | 7.6         | 10.6                | 8.2        |
+| Linux Clang Release   | 7.2      | 8.4         | 11.4                | 8.4        |
 
-### Catch
-
-| &nbsp;                | baseline | + implement | + header everywhere |
+| Catch                 | baseline | + implement | + header everywhere |
 |-----------------------|----------|-------------|---------------------|
 | MSVC Debug            | 5.9      | 8.5         | 102                 |
 | MSVC Release          | 5.4      | 10.3        | 96                  |
@@ -56,10 +53,10 @@ The script generates 201 source files and in 200 of them makes a function in the
 | MinGW-w64 GCC Release | 9.6      | 18.4        | 113                 |
 | Linux GCC Debug       | 6.3      | 10.4        | 59                  |
 | Linux GCC Release     | 6.5      | 14.1        | 64                  |
+| Linux Clang Debug     | 6.9      | 9.8         | 64                  |
+| Linux Clang Release   | 7.2      | 12.8        | 67                  |
 
 ### Conclusion
-
-So on a modern developer machine:
 
 #### doctest
 
@@ -86,39 +83,56 @@ The reason the **doctest** header is so light on compile times is because it for
 
 ## Cost of an assertion macro
 
-The script generates 11 source files and in 10 of them makes 50 test cases with 100 asserts in them (of the form ```CHECK(a == b);``` where a and b are always the same integer variables) - 50k asserts total. The testing framework gets implemented in ```main.cpp```.
+The script generates 11 source files and in 10 of them makes 50 test cases with 100 asserts in them (of the form ```CHECK(a == b);``` where ```a``` and ```b``` are always the same ```int``` variables) - 50k asserts! The testing framework gets implemented in ```main.cpp```.
 
 - **baseline** - how much time a single threaded build takes with the header included everywhere - no test cases or asserts!
-- **asserts** - will add ```CHECK()``` asserts which decompose the expression with template machinery
+- ```CHECK(a == b)``` - will add ```CHECK()``` asserts which decompose the expression with template machinery
 
 **doctest** specific:
 
 - **+ disabled** - all test case and assert macros will be disabled with [**```DOCTEST_CONFIG_DISABLE```**](configuration.md)
-- **normal** - will use ```CHECK_EQ(a, b)``` instead of the expression decomposing ones
-- **fast** - will use ```FAST_CHECK_EQ(a, b)``` instead of the expression decomposing ones
+- ```CHECK_EQ(a, b)``` - will use ```CHECK_EQ(a, b)``` instead of the expression decomposing ones
+- ```CHECK_EQ_FAST(a, b)``` - will use ```FAST_CHECK_EQ(a, b)``` instead of the expression decomposing ones
 - **+ extra fast** - will add [**```DOCTEST_CONFIG_SUPER_FAST_ASSERTS```**](configuration.md) which speeds up ```FAST_CHECK_EQ(a, b)``` even more
 
-### doctest
+| doctest               | baseline | ```CHECK(a == b)``` | + disabled | ```CHECK_EQ(a, b)``` | ```CHECK_EQ_FAST(a, b)``` | + extra fast | ```doctest 1.0``` |
+|-----------------------|----------|---------------------|------------|----------------------|---------------------------|--------------|-------------------|
+| MSVC Debug            | 2.5      | 21                  | 2.2        | 16.2                 | 6.7                       | 4.4          | 58                |
+| MSVC Release          | 2.6      | 64                  | 1.8        | 55                   | 63                        | 5.3          | 367               |
+| MinGW-w64 GCC Debug   | 3.2      | 77                  | 1.6        | 52                   | 29.5                      | 12.2         | 202               |
+| MinGW-w64 GCC Release | 3.9      | 425                 | 1.9        | 295                  | 81                        | 18.6         | 1257              |
+| Linux GCC Debug       | 1.3      | 72                  | 0.9        | 48                   | 20.3                      | 9.5          | 204               |
+| Linux GCC Release     | 2.3      | 339                 | 1.3        | 210                  | 42                        | 18.3         | 1090              |
+| Linux Clang Debug     | 1.3      | 70                  | 0.9        | 46                   | 18.8                      | 7.0          | 167               |
+| Linux Clang Release   | 1.8      | 205                 | 1.1        | 136                  | 30                        | 10.8         | 494               |
 
-| &nbsp;                 | baseline | asserts | doctest 1.0 | + disabled | normal | fast | + extra fast |
-|------------------------|----------|---------|-------------|------------|--------|------|--------------|
-| MSVC Debug             | 2.5      | 21      | 58          | 2.2        | 17.4   | 6.7  | 4.4          |
-| MSVC Release           | 2.6      | 62      | 367         | 1.8        | 60     | 63   | 5.3          |
-| MinGW-w64 GCC Debug    | 3.2      | 77      | 202         | 1.6        | 58     | 29.5 | 12.4         |
-| MinGW-w64 GCC Release  | 3.9      | 425     | 1257        | 1.9        | 300    | 81   | 18.6         |
-| Linux GCC Debug        |          |         |             |            |        |      |              |
-| Linux GCC Release      |          |         |             |            |        |      |              |
+The last column is with normal ```CHECK(a == b);``` asserts using ```doctest 1.0``` (it didn't have any other) which was released on 2016.05.22 so there's been **```QUITE ```** the improvement since then!
 
-### Catch
+| Catch                 | baseline | ```CHECK(a == b)``` |
+|-----------------------|----------|---------------------|
+| MSVC Debug            | 8.4      | 34                  |
+| MSVC Release          | 9.7      | 77                  |
+| MinGW-w64 GCC Debug   | 20.5     | 115                 |
+| MinGW-w64 GCC Release | 15.1     | 496                 |
+| Linux GCC Debug       | 7.3      | 101                 |
+| Linux GCC Release     | 10.3     | 435                 |
+| Linux Clang Debug     | 6.0      | 91                  |
+| Linux Clang Release   | 8.5      | 159                 |
 
-| &nbsp;                 | baseline | asserts |
-|------------------------|----------|---------|
-| MSVC Debug             | 8.4      | 34      |
-| MSVC Release           | 9.7      | 77      |
-| MinGW-w64 GCC Debug    | 20.5     | 115     |
-| MinGW-w64 GCC Release  | 15.1     | 496     |
-| Linux GCC Debug        |          |         |
-| Linux GCC Release      |          |         |
+| doctest 1.0           | ```CHECK(a == b)``` |
+|-----------------------|---------------------|
+| MSVC Debug            | 58                  |
+| MSVC Release          | 367                 |
+| MinGW-w64 GCC Debug   | 202                 |
+| MinGW-w64 GCC Release | 1257                |
+| Linux GCC Debug       | 204                 |
+| Linux GCC Release     | 1090                |
+| Linux Clang Debug     | 167                 |
+| Linux Clang Release   | 494                 |
+
+### Conclusion
+
+lol
 
 ---------------
 

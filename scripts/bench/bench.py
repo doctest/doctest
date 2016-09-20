@@ -1,7 +1,9 @@
 #!/usr/bin/python2.7
 
-with_gcc = 1
-is_debug = 0
+# to change compilers under linux use 'export CXX=clang++' or 'export CXX=g++' before running this script
+
+with_gcc = 0
+is_debug = 1
 
 numFiles = 10
 
@@ -11,22 +13,15 @@ with_implement      = 1
 with_header         = 1
 with_num_tests      = 50
 with_num_assertions = 100
+
 doctest_disable     = 0
+doctest_super_fast  = 0
 
 the_folder = 'project'
-
-doctest_configs = ''
-#doctest_configs = '#define DOCTEST_CONFIG_SUPER_FAST_ASSERTS'
-
-#doctest_header = 'doctest.h'
-doctest_header = 'doctest_1_0.h'
 
 #macro = "FAST_CHECK_EQ"
 #macro = "CHECK_EQ"
 macro = "CHECK"
-
-operator = " == "
-#operator = ", "
 
 # ==============================================================================
 # ==============================================================================
@@ -40,6 +35,14 @@ import multiprocessing
 from datetime import datetime
 import shutil
 from time import sleep
+
+operator = " == "
+if macro != "CHECK":
+    operator = ", "
+
+doctest_configs = ''
+if doctest_super_fast:
+    doctest_configs = '#define DOCTEST_CONFIG_SUPER_FAST_ASSERTS'
 
 GCC_cmake_generator     = '"MinGW Makefiles"'
 MSVC_cmake_generator    = '"Visual Studio 14 Win64"' # MSVC 2015
@@ -64,7 +67,7 @@ for i in range(0, numFiles):
             if doctest_disable:
                 f.write('#define DOCTEST_CONFIG_DISABLE\n')
             f.write(doctest_configs + '\n')
-            f.write('#include "' + doctest_header + '"\n\n')
+            f.write('#include "doctest.h"\n\n')
         else:
             f.write('#include "catch.hpp"\n\n')
         for t in range(0, with_num_tests):
@@ -87,7 +90,7 @@ if with_implement:
             f.write('#define DOCTEST_CONFIG_DISABLE\n')
         f.write(doctest_configs + '\n')
         f.write('#define DOCTEST_CONFIG_IMPLEMENT\n')
-        f.write('#include "' + doctest_header + '"\n\n')
+        f.write('#include "doctest.h"\n\n')
     else:
         f.write('#define CATCH_CONFIG_RUNNER\n')
         f.write('#include "catch.hpp"\n\n')

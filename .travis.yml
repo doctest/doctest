@@ -254,6 +254,12 @@ matrix:
       os: osx
 
   allow_failures:
+    # for some reason the builds started to hang while installing g++6 from homebrew...
+    # https://travis-ci.org/onqtam/doctest/jobs/161273024
+    # No output has been received in the last 10m0s, this potentially indicates a stalled build or something wrong with the build itself.
+    - env: COMPILER=g++-6 HAS_ASAN_32=true HAS_UBSAN_32=true HAS_ASAN_64=true HAS_UBSAN_64=true
+      compiler: gcc
+      os: osx
 
 before_install:
   - git submodule update --init --recursive
