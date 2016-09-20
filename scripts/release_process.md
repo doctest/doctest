@@ -9,7 +9,7 @@
 - create github release with the same semver tag as the changelog
 - merge master in dev
 
-on big releases spam in:
+on big releases spam (and also interlink) in:
 - hackernews
 - reddit (cpp/gamedev/Cplusplus/programming)
 - isocpp.org

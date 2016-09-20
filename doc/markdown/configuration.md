@@ -4,6 +4,26 @@
 
 The identifiers should be defined before the inclusion of the framework header.
 
+- [**```DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN```**](#doctest_config_implement_with_main)
+- [**```DOCTEST_CONFIG_IMPLEMENT```**](#doctest_config_implement)
+- [**```DOCTEST_CONFIG_DISABLE```**](#doctest_config_disable)
+- [**```DOCTEST_CONFIG_NO_SHORT_MACRO_NAMES```**](#doctest_config_no_short_macro_names)
+- [**```DOCTEST_CONFIG_TREAT_CHAR_STAR_AS_STRING```**](#doctest_config_treat_char_star_as_string)
+- [**```DOCTEST_CONFIG_SUPER_FAST_ASSERTS```**](#doctest_config_super_fast_asserts)
+- [**```DOCTEST_CONFIG_USE_IOSFWD```**](#doctest_config_use_iosfwd)
+- [**```DOCTEST_CONFIG_NO_COMPARISON_WARNING_SUPPRESSION```**](#doctest_config_no_comparison_warning_suppression)
+- [**```DOCTEST_CONFIG_NO_UNPREFIXED_OPTIONS```**](#doctest_config_no_unprefixed_options)
+- [**```DOCTEST_CONFIG_ASSERTION_PARAMETERS_BY_VALUE```**](#doctest_config_assertion_parameters_by_value)
+- [**```DOCTEST_CONFIG_COLORS_NONE```**](#doctest_config_colors_none)
+- [**```DOCTEST_CONFIG_COLORS_WINDOWS```**](#doctest_config_colors_windows)
+- [**```DOCTEST_CONFIG_COLORS_ANSI```**](#doctest_config_colors_ansi)
+- [**```DOCTEST_CONFIG_WITH_NULLPTR```**](#doctest_config_with_nullptr)
+- [**```DOCTEST_CONFIG_WITH_LONG_LONG```**](#doctest_config_with_long_long)
+- [**```DOCTEST_CONFIG_WITH_STATIC_ASSERT```**](#doctest_config_with_static_assert)
+- [**```DOCTEST_CONFIG_NO_NULLPTR```**](#doctest_config_no_nullptr)
+- [**```DOCTEST_CONFIG_NO_LONG_LONG```**](#doctest_config_no_long_long)
+- [**```DOCTEST_CONFIG_NO_STATIC_ASSERT```**](#doctest_config_no_static_assert)
+
 For most people the only configuration needed is telling **doctest** which source file should host all the implementation code:
 
 ### **```DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN```**
@@ -35,7 +55,7 @@ This can be defined both globally and in specific source files only.
 
 ### **```DOCTEST_CONFIG_TREAT_CHAR_STAR_AS_STRING```**
 
-By default ```char*``` is being treated as a pointer. With this option comparing ```char*``` pointers will switch to string comparison and when stringified the string will be printed instead of the pointer value. 
+By default ```char*``` is being treated as a pointer. With this option comparing ```char*``` pointers will switch to using ```strcmp()``` for comparisons and when stringified the string will be printed instead of the pointer value. 
 
 This should be defined globally.
 

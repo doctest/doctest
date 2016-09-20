@@ -8,13 +8,13 @@ If you work for a company using doctest or have the means to do so, please consi
 [![Patreon](https://cloud.githubusercontent.com/assets/8225057/5990484/70413560-a9ab-11e4-8942-1a63607c0b00.png)](http://www.patreon.com/onqtam)
 [![PayPal](https://www.paypalobjects.com/en_US/i/btn/btn_donate_LG.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=3K423Q6TK48BN)
 
-This is a list of planned features for future releases (maybe in the given order).
+This is a list of planned features for future releases (not in the given order).
 
 - option to output summary only
+- ability to customize the colors in the console output
 - add support for <=, >= to Approx - like requested with [catch](https://github.com/philsquared/Catch/issues/651)
 - the set holding all registered tests should use a specialized allocator to minimize program startup time
 - pool allocator for the ```String``` class - currently very unoptimized
-- ability to have no output when everything succeeds
 - a mechanism for translating exceptions - users should be able to teach the framework about their types (look at Catch for this)
 - support for ```std::exception``` and derivatives (mainly for calling the ```.what()``` method when caught unexpectedly)
 - crash handling: signals on UNIX platforms or structured exceptions on Windows (should also have DOCTEST_CONFIG_NO_SIGNAL_CATCHING)
@@ -49,31 +49,36 @@ This is a list of planned features for future releases (maybe in the given order
     - also look into similar Xcode integration - https://github.com/philsquared/Catch/pull/454
 - matchers - should investigate what they are :D
 - generators? - look at Catch - and investigate what they are (also in [boost](http://www.boost.org/doc/libs/1_61_0/libs/test/doc/html/boost_test/tests_organization/test_cases/test_case_generation.html)
-- ability to customize the colors in the console output
-- mocking - investigate google mock assertion macros and interop with doctest
-- look at property based testing (for example https://github.com/emil-e/rapidcheck)
+- mocking - investigate google mock assertion macros and interop with doctest (also [mockitopp](https://github.com/tpounds/mockitopp)) - and write in FAQ
+- look at property based testing (for example [rapidcheck](https://github.com/emil-e/rapidcheck)) - and write in FAQ
 
 And here is a list of things that are being considered but not part of the roadmap yet:
 
-- test with missed warning flags for GCC - look into https://github.com/Barro/compiler-warnings
+- ability to have no output when everything succeeds
 - integrate static analysis on the CI: **msvc**, **clang**, **cppcheck**
 - add C++11 builds for gcc/clang (with -std=c++0x)
-- experiment with wrapping assertion internals in anonymous c++11 lambdas - to see if compile times speed up!
 - option to list files in which there are test cases who match the current filters
-- handle ```wchar``` strings
+- support for doing assertions in multiple threads - synchronize their access to shared doctest state
+- support for running tests in parallel in multiple threads
 - a progress reporter
-- add underscores to all preprocessor identifiers not intended for use by the user
 - ability to filter not just TEST_CASE names but also SUBCASE names (and maybe tags when they are introduced)
 - doctest in a GUI environment? with no console? APIs for attaching a console? querying if there is one? should investigate...
 - ability to specify ASC/DESC for the order option
 - command line error handling/reporting
 - ability for the user to extend the command line - as requested [here](https://github.com/philsquared/Catch/issues/622)
-- utf8? not sure if this should be here
+
+THe following list is with things that are very unlikely to enter the roadmap:
+
+- test with missed warning flags for GCC - look into https://github.com/Barro/compiler-warnings
+- utf8???
+- handle ```wchar``` strings???
 - print a warning when no assertion is encountered in a test case
 - hierarchical test suites - using a stack for the pushed ones - should be easy
-- put everything from the ```detail``` namespace also in a nested anonymous namespace to make them with internal linkage
 - ability to re-run only newly compiled tests based on time stamps using ```__DATE__``` and ```__TIME__``` - stored in some file
 - add option to not report line numbers - getting annoyed of re-committing reference output files with changed line reports from a tiny change...
+- add underscores to all preprocessor identifiers not intended for use by the user
+- put everything from the ```detail``` namespace also in a nested anonymous namespace to make them with internal linkage
+- ability to put everything from doctest into an anonymous namespace - to allow the use of multiple different versions of **doctest** within the same binary (executable/dll) - like the [**stb**](https://github.com/nothings/stb) libraries can
 
 ---------------
 

@@ -1,62 +1,91 @@
 ## FAQ
 
-#TODO...
+TODO: contents
 
-- how is it different from Catch (or what is lacking)
+### How is **doctest** different from Catch?
 
-- require macros not working properly when using -fno-exceptions
+// **doctest** is modeled after Catch and currently doesn't have big features that Catch doesn't 
 
-- static libraries - also mention https://github.com/pthom/doctest_registerlibrary
+doctest has some small features which Catch doesn't but currently nothing big.
 
-- char* comparisons
+doctest can still be thought of as a very polished, light, stable and clean subset of Catch but this will change in the future as more features are added.
 
-- how to get the most out of the library - fast asserts, custom macro names, etc.
+- has some nice little features like [range-based]() execution of tests
 
-- how to write tests in header-only libraries (DOCTEST_LIBRARY_INCLUDED, and a tag)
+- more actively maintained
 
-- linker issues? Make sure you have instantiated the test runner in only one source file.
+- ultra light on compile times
 
-- compiler errors in STL headers when including the doctest header
+- transparend - no namespace/macro pollution
 
-  try using [**```DOCTEST_CONFIG_USE_IOSFWD```**](configuration.md#DOCTEST_CONFIG_USE_IOSFWD)
+- Doesn't produce any warnings even on the most aggressive warning levels for MSVC/GCC/Clang
 
-- stringification issues - if operator<<(ostream for a type is visible only in one source file...
+- per commit tested with 220+ builds on much more compilers - and through valgrind/sanitizers
 
-- why macros - aren't they evil? - http://accu.org/index.php/journals/2064
+- viable for use in production code - everything testing-related can be removed from the binary with [**```DOCTEST_CONFIG_DISABLE```**](configuration.md)
 
-- why no regex and only wildcards
+### How to get the best compile-time performance with the framework?
 
-- tests are ran serially - no multi-threaded execution planned for now 
+Using the fast family of asserts in combination with ......... // TODO: TOMORROW :(
 
-- mocking is not included because it is orthogonal to testing and a different third party library may be used for that (google mock)
-https://github.com/tpounds/mockitopp
+fast asserts, custom macro names, etc.
 
-- linker errors for ```doctest::detail::...``` when using ```DOCTEST_CONFIG_DISABLE```
-    solution: don't use anything from detail
+### Is **doctest** thread-aware?
 
-- property based testing - what it is and how to use it with doctest
+Currently no. Asserts cannot be used in multiple threads and test cases cannot be ran in parallel. These are long-term features that are planned on the [**roadmap**](roadmap.md).
 
-- tests in headers... might end up in different test suites - and only 1 of them will get registered? or might have ifdef-ed parts that get compiled differently based on how/where the header is included...... so not a good practice to write tests in header files
+For now tests are ran serially and doing asserts in multiple user threads will lead to crashes.
 
-- how subcases work - http://pastebin.com/rwghFzK4 - or look in the repo
+There is an option to run a [**range**](commandline.md) of tests from an executable - so tests can be ran in parallel with multiple process invocations - see [**the example**](../../examples/range_based_execution/) (the **run.py** script).
 
-- why c++98? because.
+### Why are my tests in a static library not getting registered?
 
-- I'm a power user - is there anything else I should know?
+This is a [**common**](https://github.com/google/googletest/blob/master/googletest/docs/V1_7_Primer.md#important-note-for-visual-c-users) [**problem**](https://groups.google.com/forum/#!msg/catch-forum/FV0Qo62DvgY/jxEO6c9_q3kJ) and it affects all modern compilers on all platforms.
 
-   separate headers
+The problem is that when a static library is being linked to a binary (executable or dll) - only object files from the static library that define a synbol being required from the binary will get pulled in (this is a linker/dependency optimization).
 
-- will the library support checking for memory leaks? no. use tools like valgrind or the sanitizers.
+I have created a CMake function that forces every object file from a static library to be linked into a binary target - it is called [**```doctest_force_link_static_lib_in_target()```**](../../examples/exe_with_static_libs/doctest_force_link_static_lib_in_target.cmake). It is unintrusive - no source file gets changed - everything is done with compiler flags per source files. An example project using it can be found [**here**](../../examples/exe_with_static_libs).
 
-- mixing different versions of the framework within the same executable?
-    - unfortunately what single header libraries like [stb](https://github.com/nothings/stb) are doing is not feasible with this library.
-    - it could be done if tests are written only in source files where the library has been implemented with the ```DOCTEST_CONFIG_IMPLEMENT``` macro but that is very limiting.
+It doesn't work in 2 scenarios:
+- either the target or the library uses a precompiled header - see the end of [**this**](https://github.com/onqtam/doctest/issues/21) issue for details
+- either the target or the library is an imported target (pre-built) and not built within the current cmake tree
 
-- is the VC++6 support full?
-    - no
-        - the stringification with ```ostream& operator<<(ostream&, myType)``` is disabled
-        - comparing C strings will compare the pointers and not the actual strings
-        - VC6 subcases not working - set a bounty on this: http://stackoverflow.com/questions/36940730/preprocessor-problems-with-vc6
+For an alternative you can checkout the [**pthom/doctest_registerlibrary**](https://github.com/pthom/doctest_registerlibrary) repository.
+
+### Why is comparing C strings (```char*```) actually comparing pointers?
+
+**doctest** by default treats ```char*``` as normal pointers. Using the [**```DOCTEST_CONFIG_TREAT_CHAR_STAR_AS_STRING```**](configuration.md#doctest_config_treat_char_star_as_string) config option will change that.
+
+### How to write tests in header-only libraries?
+
+There are 2 options:
+
+- just include the doctest header in your headers and write the tests - the doctest header should be shipped with your headers and the user will have to implement the doctest runner in one of his source files.
+- don't include the doctest header and guard your test cases with ```#ifdef DOCTEST_LIBRARY_INCLUDED``` and ```#endif``` - that way your tests will be compiled and registered if the user includes the doctest header before your headers (and he will also have to implement the test runner somewhere).
+
+Also note that it would be a good idea to add a tag in your test case names (like this: ```TEST_CASE("[the_lib] testing foo")```) so the user can easily filter them out with ```--test-case-exclude=*the_lib*``` if he wishes to.
+
+### Does the framework use exceptions?
+
+Yes. The ```REQUIRE``` family of asserts uses exceptions to terminate the current test case when they fail. An exception is used instead of a simple ```return;``` because asserts can be used not only in the test case itself but also in functions called by the test cases.
+
+It hasn't been tested yet what happens when compiling with ```-fno-exceptions```.
+
+### Why do I get compiler errors in STL headers when including the doctest header?
+
+Try using the [**```DOCTEST_CONFIG_USE_IOSFWD```**](configuration.md#doctest_config_use_iosfwd) configuration identifier.
+
+### Why is doctest using macros?
+
+Aren't they evil and not *modern*? - Check out the answer Phil Nash (the creator of Catch) gives to this question [**here**](http://accu.org/index.php/journals/2064).
+
+### How are subcases implemented?
+
+Look at [**this example**](../../scripts/how_subcases_work/main.cpp) in the repository.
+
+### Can different versions of the framework be used within the same binary (executable/dll)?
+
+Currently no. Single header libraries like [**stb**](https://github.com/nothings/stb) have this as an option (everything gets declared static - making it with internal linkage) but it isn't very logical for **doctest** - the main point is to write tests in any source file of the project and have the test runner implemented in only one source file.
 
 ---------------
 

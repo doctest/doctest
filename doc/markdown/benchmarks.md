@@ -89,11 +89,11 @@ The script generates 11 ```.cpp``` files and in 10 of them makes 50 test cases w
 **doctest** specific:
 
 - ```CHECK_EQ(a,b)``` - will use ```CHECK_EQ(a,b)``` instead of the expression decomposing ones
-- ```CHECK_EQ_FAST(a,b)``` - will use ```FAST_CHECK_EQ(a,b)``` instead of the expression decomposing ones
+- ```FAST_CHECK_EQ(a,b)``` - will use ```FAST_CHECK_EQ(a,b)``` instead of the expression decomposing ones
 - **+faster** - will add [**```DOCTEST_CONFIG_SUPER_FAST_ASSERTS```**](configuration.md) which speeds up ```FAST_CHECK_EQ(a,b)``` even more
 - **+disabled** - all test case and assert macros will be disabled with [**```DOCTEST_CONFIG_DISABLE```**](configuration.md)
 
-| doctest             | baseline | ```CHECK(a==b)``` | ```CHECK_EQ(a,b)``` | ```CHECK_EQ_FAST(a,b)``` | +faster | +disabled |
+| doctest             | baseline | ```CHECK(a==b)``` | ```CHECK_EQ(a,b)``` | ```FAST_CHECK_EQ(a,b)``` | +faster | +disabled |
 |---------------------|----------|-------------------|---------------------|--------------------------|---------|-----------|
 | MSVC Debug          | 2.5      | 21                | 16.2                | 6.7                      | 4.4     | 2.2       |
 | MSVC Release        | 2.6      | 64                | 55                  | 63                       | 5.3     | 1.8       |
