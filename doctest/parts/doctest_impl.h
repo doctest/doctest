@@ -307,7 +307,10 @@ bool operator==(double lhs, Approx const& rhs) {
 
 String Approx::toString() const { return String("Approx( ") + doctest::toString(m_value) + " )"; }
 
+#ifdef DOCTEST_CONFIG_TREAT_CHAR_STAR_AS_STRING
+String toString(char* in) { return toString(static_cast<const char*>(in)); }
 String toString(const char* in) { return String("\"") + (in ? in : "{null string}") + "\""; }
+#endif // DOCTEST_CONFIG_TREAT_CHAR_STAR_AS_STRING
 String toString(bool in) { return in ? "true" : "false"; }
 String toString(float in) { return detail::fpToString(in, 5) + "f"; }
 String toString(double in) { return detail::fpToString(in, 10); }

@@ -2,7 +2,7 @@
 
 #include <cstdio>
 
-TEST_CASE("custom macros") {
+TEST_CASE("stuff") {
     printf("Hello world!\n");
 
     CHECK(1 == 1);
@@ -18,14 +18,3 @@ TEST_CASE("custom macros") {
         printf("end\n"); //
     }
 }
-
-//TEST_CASE("captain obvious") {
-//    bool b = false;
-//    CHECK(b);
-//
-//    CHECK_UNARY_FALSE(true);
-//
-//    WARN_GT(false, false);
-//    CHECK_EQ(false, true);
-//    REQUIRE_EQ(false, true);
-//}

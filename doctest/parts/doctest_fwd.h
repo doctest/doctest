@@ -440,7 +440,10 @@ String toString(const DOCTEST_REF_WRAP(T) value) {
     return StringMaker<T>::convert(value);
 }
 
+#ifdef DOCTEST_CONFIG_TREAT_CHAR_STAR_AS_STRING
+String toString(char* in);
 String toString(const char* in);
+#endif // DOCTEST_CONFIG_TREAT_CHAR_STAR_AS_STRING
 String toString(bool in);
 String toString(float in);
 String toString(double in);
@@ -802,45 +805,26 @@ namespace detail
 
 #endif // DOCTEST_CONFIG_NO_COMPARISON_WARNING_SUPPRESSION
 
-    // clang-format off
-    template <typename L, typename R>
-    typename enable_if<can_use_op<L>::value || can_use_op<R>::value, bool>::type eq(const DOCTEST_REF_WRAP(L) lhs, const DOCTEST_REF_WRAP(R) rhs) { return lhs == rhs; }
-    template <typename L, typename R>
-    typename enable_if<can_use_op<L>::value || can_use_op<R>::value, bool>::type ne(const DOCTEST_REF_WRAP(L) lhs, const DOCTEST_REF_WRAP(R) rhs) { return lhs != rhs; }
-    template <typename L, typename R>
-    typename enable_if<can_use_op<L>::value || can_use_op<R>::value, bool>::type lt(const DOCTEST_REF_WRAP(L) lhs, const DOCTEST_REF_WRAP(R) rhs) { return lhs < rhs; }
-    template <typename L, typename R>
-    typename enable_if<can_use_op<L>::value || can_use_op<R>::value, bool>::type gt(const DOCTEST_REF_WRAP(L) lhs, const DOCTEST_REF_WRAP(R) rhs) { return lhs > rhs; }
-    template <typename L, typename R>
-    typename enable_if<can_use_op<L>::value || can_use_op<R>::value, bool>::type le(const DOCTEST_REF_WRAP(L) lhs, const DOCTEST_REF_WRAP(R) rhs) { return ne(lhs, rhs) ? lhs < rhs : true; }
-    template <typename L, typename R>
-    typename enable_if<can_use_op<L>::value || can_use_op<R>::value, bool>::type ge(const DOCTEST_REF_WRAP(L) lhs, const DOCTEST_REF_WRAP(R) rhs) { return ne(lhs, rhs) ? lhs > rhs : true; }
-
+// clang-format off
+#ifndef DOCTEST_CONFIG_TREAT_CHAR_STAR_AS_STRING
+#define DOCTEST_COMPARISON_RETURN_TYPE bool
+#else // DOCTEST_CONFIG_TREAT_CHAR_STAR_AS_STRING
+#define DOCTEST_COMPARISON_RETURN_TYPE typename enable_if<can_use_op<L>::value || can_use_op<R>::value, bool>::type
     inline bool eq(const char* lhs, const char* rhs) { return String(lhs) == String(rhs); }
     inline bool ne(const char* lhs, const char* rhs) { return String(lhs) != String(rhs); }
     inline bool lt(const char* lhs, const char* rhs) { return String(lhs) <  String(rhs); }
     inline bool gt(const char* lhs, const char* rhs) { return String(lhs) >  String(rhs); }
     inline bool le(const char* lhs, const char* rhs) { return String(lhs) <= String(rhs); }
     inline bool ge(const char* lhs, const char* rhs) { return String(lhs) >= String(rhs); }
-// clang-format on
+#endif // DOCTEST_CONFIG_TREAT_CHAR_STAR_AS_STRING
 
-#ifndef DOCTEST_CONFIG_NO_COMPARISON_WARNING_SUPPRESSION
-
-#if defined(__clang__)
-#pragma clang diagnostic pop
-#endif // __clang__
-
-#if defined(__GNUC__) && !defined(__clang__)
-#if __GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ > 6)
-#pragma GCC diagnostic pop
-#endif // > gcc 4.6
-#endif // __GNUC__
-
-#ifdef _MSC_VER
-#pragma warning(pop)
-#endif // _MSC_VER
-
-#endif // DOCTEST_CONFIG_NO_COMPARISON_WARNING_SUPPRESSION
+    template <typename L, typename R> DOCTEST_COMPARISON_RETURN_TYPE eq(const DOCTEST_REF_WRAP(L) lhs, const DOCTEST_REF_WRAP(R) rhs) { return lhs == rhs; }
+    template <typename L, typename R> DOCTEST_COMPARISON_RETURN_TYPE ne(const DOCTEST_REF_WRAP(L) lhs, const DOCTEST_REF_WRAP(R) rhs) { return lhs != rhs; }
+    template <typename L, typename R> DOCTEST_COMPARISON_RETURN_TYPE lt(const DOCTEST_REF_WRAP(L) lhs, const DOCTEST_REF_WRAP(R) rhs) { return lhs <  rhs; }
+    template <typename L, typename R> DOCTEST_COMPARISON_RETURN_TYPE gt(const DOCTEST_REF_WRAP(L) lhs, const DOCTEST_REF_WRAP(R) rhs) { return lhs >  rhs; }
+    template <typename L, typename R> DOCTEST_COMPARISON_RETURN_TYPE le(const DOCTEST_REF_WRAP(L) lhs, const DOCTEST_REF_WRAP(R) rhs) { return lhs <= rhs; }
+    template <typename L, typename R> DOCTEST_COMPARISON_RETURN_TYPE ge(const DOCTEST_REF_WRAP(L) lhs, const DOCTEST_REF_WRAP(R) rhs) { return lhs >= rhs; }
+    // clang-format on
 
     template <typename L>
     struct Expression_lhs
@@ -855,13 +839,22 @@ namespace detail
 
         operator Result() { return Result(!!lhs, toString(lhs)); }
 
-        // clang-format off
+// clang-format off
+#ifndef DOCTEST_CONFIG_TREAT_CHAR_STAR_AS_STRING
+        template <typename R> Result operator==(const DOCTEST_REF_WRAP(R) rhs) { return Result(lhs == rhs, stringifyBinaryExpr(lhs, " == ", rhs)); }
+        template <typename R> Result operator!=(const DOCTEST_REF_WRAP(R) rhs) { return Result(lhs != rhs, stringifyBinaryExpr(lhs, " != ", rhs)); }
+        template <typename R> Result operator< (const DOCTEST_REF_WRAP(R) rhs) { return Result(lhs <  rhs, stringifyBinaryExpr(lhs, " < " , rhs)); }
+        template <typename R> Result operator<=(const DOCTEST_REF_WRAP(R) rhs) { return Result(lhs <= rhs, stringifyBinaryExpr(lhs, " <= ", rhs)); }
+        template <typename R> Result operator> (const DOCTEST_REF_WRAP(R) rhs) { return Result(lhs >  rhs, stringifyBinaryExpr(lhs, " > " , rhs)); }
+        template <typename R> Result operator>=(const DOCTEST_REF_WRAP(R) rhs) { return Result(lhs >= rhs, stringifyBinaryExpr(lhs, " >= ", rhs)); }
+#else  // DOCTEST_CONFIG_TREAT_CHAR_STAR_AS_STRING
         template <typename R> Result operator==(const DOCTEST_REF_WRAP(R) rhs) { return Result(eq(lhs, rhs), stringifyBinaryExpr(lhs, " == ", rhs)); }
         template <typename R> Result operator!=(const DOCTEST_REF_WRAP(R) rhs) { return Result(ne(lhs, rhs), stringifyBinaryExpr(lhs, " != ", rhs)); }
         template <typename R> Result operator< (const DOCTEST_REF_WRAP(R) rhs) { return Result(lt(lhs, rhs), stringifyBinaryExpr(lhs, " < " , rhs)); }
         template <typename R> Result operator<=(const DOCTEST_REF_WRAP(R) rhs) { return Result(le(lhs, rhs), stringifyBinaryExpr(lhs, " <= ", rhs)); }
         template <typename R> Result operator> (const DOCTEST_REF_WRAP(R) rhs) { return Result(gt(lhs, rhs), stringifyBinaryExpr(lhs, " > " , rhs)); }
         template <typename R> Result operator>=(const DOCTEST_REF_WRAP(R) rhs) { return Result(ge(lhs, rhs), stringifyBinaryExpr(lhs, " >= ", rhs)); }
+#endif // DOCTEST_CONFIG_TREAT_CHAR_STAR_AS_STRING
         // clang-format on
 
         // clang-format off
@@ -888,6 +881,24 @@ namespace detail
         template <typename R> int operator>> (const R&) { DOCTEST_STATIC_ASSERT(deferred_false<R>::value, Please_Surround_The_Right_Shift_Operation_With_Parenthesis); return int(); }
         // clang-format on
     };
+
+#ifndef DOCTEST_CONFIG_NO_COMPARISON_WARNING_SUPPRESSION
+
+#if defined(__clang__)
+#pragma clang diagnostic pop
+#endif // __clang__
+
+#if defined(__GNUC__) && !defined(__clang__)
+#if __GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ > 6)
+#pragma GCC diagnostic pop
+#endif // > gcc 4.6
+#endif // __GNUC__
+
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif // _MSC_VER
+
+#endif // DOCTEST_CONFIG_NO_COMPARISON_WARNING_SUPPRESSION
 
     struct ExpressionDecomposer
     {
@@ -1363,11 +1374,11 @@ public:
 
 #define DOCTEST_FAST_BINARY_ASSERT(assert_type, lhs, rhs, comparison)                              \
     doctest::detail::fast_binary_assert<doctest::detail::binaryAssertComparison::comparison>(      \
-            doctest::detail::assertType::assert_type, __FILE__, __LINE__, #lhs, #rhs, lhs, rhs);
+            doctest::detail::assertType::assert_type, __FILE__, __LINE__, #lhs, #rhs, lhs, rhs)
 
 #define DOCTEST_FAST_UNARY_ASSERT(assert_type, val)                                                \
     doctest::detail::fast_unary_assert(doctest::detail::assertType::assert_type, __FILE__,         \
-                                       __LINE__, #val, val);
+                                       __LINE__, #val, val)
 
 #endif // DOCTEST_CONFIG_SUPER_FAST_ASSERTS
 
