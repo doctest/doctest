@@ -86,37 +86,37 @@ The reason the **doctest** header is so light on compile times is because it for
 
 ## Cost of an assertion macro
 
-The script generates 11 source files and in 10 of them makes 10 test cases with 100 assertion macros in them (of the form ```CHECK(a == b);``` where a and b are always the same integer variables). In ```main.cpp``` the testing framework gets implemented.
+The script generates 11 source files and in 10 of them makes 50 test cases with 100 asserts in them (of the form ```CHECK(a == b);``` where a and b are always the same integer variables) - 50k asserts total. The testing framework gets implemented in ```main.cpp```.
 
-- **baseline** - how much time it takes for a single threaded build with the header included everywhere - no test cases or asserts!
+- **baseline** - how much time a single threaded build takes with the header included everywhere - no test cases or asserts!
 - **asserts** - will add ```CHECK()``` asserts which decompose the expression with template machinery
 
 **doctest** specific:
 
-- **+ disabled** - all the test case and assertion macros will be disabled
-- **normal asserts** - will use ```CHECK_EQ(a, b)``` instead of the expression decomposing ones
-- **fast asserts** - will use ```FAST_CHECK_EQ(a, b)``` instead of the expression decomposing ones
-- **+ extra fast asserts** - will add ```DOCTEST_CONFIG_SUPER_FAST_ASSERTS``` for even faster asserts
+- **+ disabled** - all test case and assert macros will be disabled with [**```DOCTEST_CONFIG_DISABLE```**](configuration.md)
+- **normal** - will use ```CHECK_EQ(a, b)``` instead of the expression decomposing ones
+- **fast** - will use ```FAST_CHECK_EQ(a, b)``` instead of the expression decomposing ones
+- **+ extra fast** - will add [**```DOCTEST_CONFIG_SUPER_FAST_ASSERTS```**](configuration.md) which speeds up ```FAST_CHECK_EQ(a, b)``` even more
 
 ### doctest
 
-| &nbsp;                 | baseline | asserts | + disabled | normal asserts | fast asserts | + extra normal asserts |
-|------------------------|----------|---------|------------|----------------|--------------|------------------------|
-| MSVC Debug             |          |         |            |                |              |                        |
-| MSVC Release           |          |         |            |                |              |                        |
-| MinGW-w64 GCC Debug    |          |         |            |                |              |                        |
-| MinGW-w64 GCC Release  |          |         |            |                |              |                        |
-| Linux GCC Debug        |          |         |            |                |              |                        |
-| Linux GCC Release      |          |         |            |                |              |                        |
+| &nbsp;                 | baseline | asserts | doctest 1.0 | + disabled | normal | fast | + extra fast |
+|------------------------|----------|---------|-------------|------------|--------|------|--------------|
+| MSVC Debug             | 2.5      | 21      | 58          | 2.2        | 17.4   | 6.7  | 4.4          |
+| MSVC Release           | 2.6      | 62      | 367         | 1.8        | 60     | 63   | 5.3          |
+| MinGW-w64 GCC Debug    | 3.2      | 77      | 202         | 1.6        | 58     | 29.5 | 12.4         |
+| MinGW-w64 GCC Release  | 3.9      | 425     | 1257        | 1.9        | 300    | 81   | 18.6         |
+| Linux GCC Debug        |          |         |             |            |        |      |              |
+| Linux GCC Release      |          |         |             |            |        |      |              |
 
 ### Catch
 
 | &nbsp;                 | baseline | asserts |
 |------------------------|----------|---------|
-| MSVC Debug             |          |         |
-| MSVC Release           |          |         |
-| MinGW-w64 GCC Debug    |          |         |
-| MinGW-w64 GCC Release  |          |         |
+| MSVC Debug             | 8.4      | 34      |
+| MSVC Release           | 9.7      | 77      |
+| MinGW-w64 GCC Debug    | 20.5     | 115     |
+| MinGW-w64 GCC Release  | 15.1     | 496     |
 | Linux GCC Debug        |          |         |
 | Linux GCC Release      |          |         |
 
