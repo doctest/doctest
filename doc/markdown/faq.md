@@ -2,9 +2,27 @@
 
 #TODO...
 
+- how is it different from Catch (or what is lacking)
+
+- require macros not working properly when using -fno-exceptions
+
+- static libraries - also mention https://github.com/pthom/doctest_registerlibrary
+
+- char* comparisons
+
+- how to get the most out of the library - fast asserts, custom macro names, etc.
+
+- how to write tests in header-only libraries (DOCTEST_LIBRARY_INCLUDED, and a tag)
+
 - linker issues? Make sure you have instantiated the test runner in only one source file.
 
+- compiler errors in STL headers when including the doctest header
+
+  try using [**```DOCTEST_CONFIG_USE_IOSFWD```**](configuration.md#DOCTEST_CONFIG_USE_IOSFWD)
+
 - stringification issues - if operator<<(ostream for a type is visible only in one source file...
+
+- why macros - aren't they evil? - http://accu.org/index.php/journals/2064
 
 - why no regex and only wildcards
 
@@ -23,6 +41,10 @@ https://github.com/tpounds/mockitopp
 - how subcases work - http://pastebin.com/rwghFzK4 - or look in the repo
 
 - why c++98? because.
+
+- I'm a power user - is there anything else I should know?
+
+   separate headers
 
 - will the library support checking for memory leaks? no. use tools like valgrind or the sanitizers.
 

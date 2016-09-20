@@ -3,13 +3,13 @@ Reference
 
 - [Features and design goals](features.md) - the complete list of features
 - [Roadmap](roadmap.md) - upcoming features
-- [Tutorial](tutorial.md) - make sure you have read it before the other parts of the documentation
 - [Benchmarks](benchmarks.md) - compile time supremacy
 - [Contributing](contributing.md)
 - [Examples](../../examples)
 
 -------------
 
+- [Tutorial](tutorial.md) - make sure you have read it before the other parts of the documentation
 - [Assertion macros](assertions.md)
 - [Test cases, subcases and test fixtures](testcases.md)
 - [Command line](commandline.md)

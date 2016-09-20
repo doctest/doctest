@@ -10,21 +10,23 @@ A complete example with a self-registering test that compiles to an executable l
 
 Note how a standard C++ operator for equality comparison is used - **doctest** has one core [**assertion macro**](doc/markdown/assertions.md) (it also has for *less than*, *equals*, *greater than*...) - yet the full expression is decomposed and the left and right values are logged.
 
-It is modeled after [**Catch**](https://github.com/philsquared/Catch) which is currently the most popular and easy to use alternative for testing in C++
+It is modeled after [**Catch**](https://github.com/philsquared/Catch) which is currently the most popular alternative for testing in C++ - check out [**the differences**](doc/markdown/faq.md).
 
 ---------
 
 There are many C++ testing frameworks - [Catch](https://github.com/philsquared/Catch), [Boost.Test](http://www.boost.org/doc/libs/1_60_0/libs/test/doc/html/index.html), [UnitTest++](https://github.com/unittest-cpp/unittest-cpp), [cpputest](https://github.com/cpputest/cpputest), [googletest](https://github.com/google/googletest) and many [other](https://en.wikipedia.org/wiki/List_of_unit_testing_frameworks#C.2B.2B).
 
-What makes **doctest** different is that it is ultra light on compile times (by [**orders of magnitude**](doc/markdown/benchmarks.md)) and is unintrusive.
+What makes **doctest** different is that it is ultra light on compile times (by [**orders of magnitude**](doc/markdown/benchmarks.md#cost-of-including-the-header)) and is unintrusive.
 
 The **key** differences between it and other testing libraries are:
-- Ultra light - [**below 10ms**](doc/markdown/benchmarks.md) of compile time overhead for including the header in a source file
+- Ultra light - [**below 10ms**](doc/markdown/benchmarks.md#cost-of-including-the-header) of compile time overhead for including the header in a source file
+- The [**fastest possible**](doc/markdown/benchmarks.md#cost-of-an-assertion-macro) assertion macros - 50k asserts can compile for under 30 seconds (even under 10 sec)
+- [**Subcases**](doc/markdown/tutorial.md#test-cases-and-subcases) - an intuitive way to share common setup and teardown code for test cases
 - Offers a way to remove **everything** testing-related from the binary with the [**```DOCTEST_CONFIG_DISABLE```**](doc/markdown/configuration.md) identifier
 - Doesn't pollute the global namespace (everything is in the ```doctest``` namespace) and doesn't drag **any** headers with it
 - Doesn't produce any warnings even on the [**most aggressive**](scripts/common.cmake#L71) warning levels for **MSVC**/**GCC**/**Clang**
-- Very [**portable and well tested**](doc/markdown/features.md#extremely-portable) C++98 - per commit tested on CI with over 200 different builds (valgrind, sanitizers...)
-- Just one header and no external dependencies apart from the C/C++ standard library! (well... same as [**Catch**](https://github.com/philsquared/Catch)...)
+- Very [**portable and well tested**](doc/markdown/features.md#extremely-portable) C++98 - per commit tested on CI with over 220 different builds (valgrind, sanitizers...)
+- Just one header and no external dependencies apart from the C/C++ standard library
 
 This allows the library to be used in more ways than any other - tests can be written directly in the production code!
 
@@ -65,14 +67,14 @@ Documentation
 -------------
 
 - [Features and design goals](doc/markdown/features.md) - the complete list of features
-- [Roadmap](doc/markdown/roadmap.md#roadmap) - upcoming features
-- [Tutorial](doc/markdown/tutorial.md#tutorial) - make sure you have read it before the other parts of the documentation
+- [Roadmap](doc/markdown/roadmap.md) - upcoming features
 - [Benchmarks](doc/markdown/benchmarks.md) - compile-time supremacy
 - [Contributing](doc/markdown/contributing.md)
 - [Examples](examples)
 
 -------------
 
+- [Tutorial](doc/markdown/tutorial.md) - make sure you have read it before the other parts of the documentation
 - [Assertion macros](doc/markdown/assertions.md)
 - [Test cases, subcases and test fixtures](doc/markdown/testcases.md)
 - [Command line](doc/markdown/commandline.md)
@@ -84,15 +86,17 @@ Documentation
 Sponsors
 --------
 
-###Gold sponsors ( >= 100$ )
+### Rockstar sponsors ( >= 1000$ )
+
+### Gold sponsors ( >= 100$ )
 
 - Pascal Thomet
 
-###Silver sponsors ( >= 20$ )
+### Silver sponsors ( >= 20$ )
 
 - Manuel Freiberger
 
-###Bronze sponsors ( >= 5$ )
+### Bronze sponsors ( >= 5$ )
 
 - Zahari Karadzhov
 - Sébastien Feldis
