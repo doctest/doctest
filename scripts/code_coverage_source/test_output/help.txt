@@ -1,4 +1,4 @@
-[doctest] doctest version is "1.0.0"
+[doctest] doctest version is "1.1.0"
 [doctest]
 [doctest] boolean values: "1/on/yes/true" or "0/off/no/false"
 [doctest] filter  values: "str1,str2,str3" (comma separated strings)
