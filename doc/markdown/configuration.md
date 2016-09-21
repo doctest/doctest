@@ -85,7 +85,7 @@ By default the library suppresses warnings about comparing signed and unsigned t
 - msvc ```C4389``` 'operator' : signed/unsigned mismatch
 - msvc ```C4018``` 'expression' : signed/unsigned mismatch
 
-You can checkout [**this**](http://stackoverflow.com/questions/39106893) or [**this**](http://stackoverflow.com/questions/39075223) StackOverflow question to better understand why I suppress these warnings by default.
+You can checkout [**this**](https://github.com/onqtam/doctest/issues/16#issuecomment-246803303) issue to better understand why I suppress these warnings by default.
 
 This can be defined both globally and in specific source files only.
 

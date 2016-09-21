@@ -67,7 +67,7 @@ And here is a list of things that are being considered but not part of the roadm
 - command line error handling/reporting
 - ability for the user to extend the command line - as requested [here](https://github.com/philsquared/Catch/issues/622)
 
-THe following list is with things that are very unlikely to enter the roadmap:
+The following list is with things that are very unlikely to enter the roadmap:
 
 - test with missed warning flags for GCC - look into https://github.com/Barro/compiler-warnings
 - utf8???

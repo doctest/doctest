@@ -24,13 +24,13 @@ Pros of **doctest**:
 - per commit tested with 220+ builds on [**much more compilers**](features.md#extremely-portable) - and through valgrind/sanitizers
 - test cases can be written in headers - the framework will still register the tests only once - no duplicates
 - more actively maintained on GitHub
-- no feature is left undocumented
+- everything is documented (an undocumented feature is as good as a missing feature)
 
 Aside from everything mentioned so far doctest has some [**small features**](features.md#other-features) which [**Catch**](https://github.com/philsquared/Catch) doesn't but currently nothing big.
 
 Missing stuff:
 
-- exception translation - cannot extend the framework and derivatives of ```std::exception``` don't get their ```.what()``` method called
+- exception translation - derivatives of ```std::exception``` don't get their ```.what()``` method called
 - no support for tags (the user can add *tags* in the test case names like this: ```TEST_CASE("[myTag] test name")```)
 - a reporter system - to a file, to xml, ability for the user to write their own reporter, etc.
 - measuring how much time a test case executes

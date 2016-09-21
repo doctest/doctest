@@ -10,7 +10,7 @@ A complete example with a self-registering test that compiles to an executable l
 
 Note how a standard C++ operator for equality comparison is used - **doctest** has one core [**assertion macro**](doc/markdown/assertions.md) (it also has for *less than*, *equals*, *greater than*...) - yet the full expression is decomposed and the left and right values are logged.
 
-It is modeled after [**Catch**](https://github.com/philsquared/Catch) which is currently the most popular alternative for testing in C++ - check out [**the differences**](doc/markdown/faq.md).
+It is modeled after [**Catch**](https://github.com/philsquared/Catch) which is currently the most popular alternative for testing in C++ - check out [**the differences**](doc/markdown/faq.md#how-is-doctest-different-from-catch).
 
 ---------
 
@@ -85,6 +85,8 @@ Documentation
 
 Sponsors
 --------
+
+Want to see your name or the name of your company here? Consider donating!
 
 ### Rockstar sponsors ( >= 1000$ )
 
