@@ -2,9 +2,11 @@
 
 **doctest** has been designed from the start to be as **light** and **unintrusive** as possible. These key features should be kept.
 
+It is modeled after [**Catch**](https://github.com/philsquared/Catch) which is currently the most popular alternative for testing in C++ - check out [**the differences**](faq.md#how-is-doctest-different-from-catch).
+
 ## Unintrusive (transparent):
 
-- everything testing-related can be removed from the binary executable by defining the [**```DOCTEST_CONFIG_DISABLE```**](configuration.md) identifier
+- everything testing-related can be removed from the binary executable by defining the [**```DOCTEST_CONFIG_DISABLE```**](configuration.md#doctest_config_disable) identifier
 - very small and easy to integrate - single header - **extremely** low footprint on compile times - see the [**benchmarks**](benchmarks.md)
 - doesn't drag any headers when included (except for in the translation unit where the library gets implemented)
 - everything is in the ```doctest``` namespace (and the implementation details are in a nested ```detail``` namespace)
@@ -36,7 +38,7 @@
 
 - really easy to get started - it's just 1 header file - see the [**tutorial**](tutorial.md)
 - **very** light, unintrusive and portable - see the sections above - and also the [**benchmarks**](benchmarks.md)
-- offers a way to remove **everything** testing-related from the binary with the [**```DOCTEST_CONFIG_DISABLE```**](configuration.md) macro
+- offers a way to remove **everything** testing-related from the binary with the [**```DOCTEST_CONFIG_DISABLE```**](configuration.md#doctest_config_disable) macro
 - tests are registered automatically - no need to add them to a collection manually
 - supports [**subcases**](testcases.md) for easy setup/teardown of tests (also supports the retro [**test fixtures**](testcases.md#) with classes)
 - output from all compilers on all platforms is the same - byte by byte
@@ -50,7 +52,7 @@
 - tests can be [**filtered**](commandline.md) based on their name/file/test suite using wildcards
 - failures can (optionally) break into the debugger on Windows and Mac
 - integration with the output window of Visual Studio for failing tests
-- a ```main()``` can be provided when implementing the library with the [**```DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN```**](main.md) identifier
+- a ```main()``` can be provided when implementing the library with the [**```DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN```**](main.md#doctest_config_implement_with_main) identifier
 - can write tests in headers - they will still be registered only once in the executable/shared object
 - [**range-based**](commandline.md) execution of tests - see the [**range_based_execution**](../../examples/range_based_execution/) example (the **run.py** script)
 - colored output in the console

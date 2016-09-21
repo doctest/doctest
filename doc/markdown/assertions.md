@@ -6,7 +6,7 @@ Most test frameworks have a large collection of assertion macros to capture all 
 
 There are 3 levels of assert severity for all assertion macros:
 
-- ```REQUIRE``` - this level will immediately quit the test case if the assert fails.
+- ```REQUIRE``` - this level will immediately quit the test case if the assert fails and will mark the test case as failed.
 - ```CHECK``` - this level will mark the test case as failed if the assert fails but will continue with the test case.
 - ```WARN``` - this level will only print a message if the assert fails but will not mark the test case as failed.
 
@@ -82,7 +82,7 @@ There is also the [**```DOCTEST_CONFIG_SUPER_FAST_ASSERTS```**](configuration.md
 
 - ```<LEVEL>_THROWS(expression)```
 
-Expects that an exception (of any type) is be thrown during evaluation of the expression.
+Expects that an exception (of any type) is thrown during evaluation of the expression.
 
 * ```<LEVEL>_THROWS_AS(expression, exception_type)```
 
