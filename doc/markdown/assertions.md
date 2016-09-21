@@ -41,7 +41,9 @@ Example:
 REQUIRE_FALSE(thisReturnsFalse());
 ```
 
-### Floating point comparisons
+## Fast asserts
+
+## Floating point comparisons
 
 When comparing floating point numbers - especially if at least one of them has been computed - great care must be taken to allow for rounding errors and inexact representations.
 

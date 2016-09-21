@@ -39,7 +39,7 @@ This should be defined only in the source file where the library is implemented.
 
 If the client wants to [**supply the ```main()``` function**](main.md) (either to set an option with some value from the code or to integrate the framework into his existing project codebase) this identifier should be used.
 
-This should be defined only in the source file where the library is implemented.
+This should be defined only in the source file where the library is implemented. It also creates a ```main()``` entry point.
 
 ### **```DOCTEST_CONFIG_DISABLE```**
 

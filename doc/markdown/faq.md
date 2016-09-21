@@ -1,34 +1,44 @@
 ## FAQ
 
-TODO: contents
+- [**How is doctest different from Catch?**](#how-is-doctest-different-from-catch)
+- [**How to get the best compile-time performance with the framework?**](#how-to-get-the-best-compile-time-performance-with-the-framework)
+- [**Is doctest thread-aware?**](#is-doctest-thread-aware)
+- [**Why are my tests in a static library not getting registered?**](#why-are-my-tests-in-a-static-library-not-getting-registered)
+- [**Why is comparing C strings (```char*```) actually comparing pointers?**](#why-is-comparing-c-strings-char-actually-comparing-pointers)
+- [**How to write tests in header-only libraries?**](#how-to-write-tests-in-header-only-libraries)
+- [**Does the framework use exceptions?**](#does-the-framework-use-exceptions)
+- [**Why do I get compiler errors in STL headers when including the doctest header?**](#why-do-i-get-compiler-errors-in-stl-headers-when-including-the-doctest-header)
+- [**Why is doctest using macros?**](#why-is-doctest-using-macros)
+- [**How are subcases implemented?**](#how-are-subcases-implemented)
+- [**Can different versions of the framework be used within the same binary (executable/dll)?**](#can-different-versions-of-the-framework-be-used-within-the-same-binary-executabledll)
 
 ### How is **doctest** different from Catch?
 
-// **doctest** is modeled after Catch and currently doesn't have big features that Catch doesn't 
+- including the **doctest** header is [**over 50 times lighter**](benchmarks.md#cost-of-including-the-header) on compile times than that of [**Catch**](https://github.com/philsquared/Catch)
+- the asserts in **doctest** can be [**many times faster**](benchmarks.md#cost-of-an-assertion-macro) than those of [**Catch**](https://github.com/philsquared/Catch)
+- everything testing-related can be removed from the binary by defining the [**```DOCTEST_CONFIG_DISABLE```**](configuration.md#doctest_config_disable) identifier (a unique feature of **doctest**)
+- doesn't drag any headers when included (except for in the translation unit where the library gets implemented)
+- 0 warnings even with the most aggresive flags (on all tested compilers!!!)
+- doesn't produce any warnings even on the [**most aggressive**](../../scripts/common.cmake#L71) warning levels for MSVC/GCC/Clang
+- per commit tested with 220+ builds on [**much more compilers**](features.md#extremely-portable) - and through valgrind/sanitizers
+- more actively maintained on GitHub
+- no feature is left undocumented
 
-doctest has some small features which Catch doesn't but currently nothing big.
+Aside from everything mentioned so far doctest has some [**small features**](features.md#other-features) which [**Catch**](https://github.com/philsquared/Catch) doesn't but currently nothing big.
 
-doctest can still be thought of as a very polished, light, stable and clean subset of Catch but this will change in the future as more features are added.
-
-- has some nice little features like [range-based]() execution of tests
-
-- more actively maintained
-
-- ultra light on compile times
-
-- transparend - no namespace/macro pollution
-
-- Doesn't produce any warnings even on the most aggressive warning levels for MSVC/GCC/Clang
-
-- per commit tested with 220+ builds on much more compilers - and through valgrind/sanitizers
-
-- viable for use in production code - everything testing-related can be removed from the binary with [**```DOCTEST_CONFIG_DISABLE```**](configuration.md)
+**doctest** can be thought of as a very polished, light, stable and clean subset (or reimplementation) of [**Catch**](https://github.com/philsquared/Catch) but this will change in the future as more features are added.
 
 ### How to get the best compile-time performance with the framework?
 
-Using the fast family of asserts in combination with ......... // TODO: TOMORROW :(
+Using the [**fast family**](assertions.md#fast-asserts) of asserts in combination with [**```DOCTEST_CONFIG_SUPER_FAST_ASSERTS```**](configuration.md#doctest_config_super_fast_asserts) yelds the [**fastest possible**](benchmarks.md#cost-of-an-assertion-macro) compile time results.
 
-fast asserts, custom macro names, etc.
+There are only 2 drawbacks of this approach:
+- using fast asserts (40-80% [**faster**](benchmarks.md#cost-of-an-assertion-macro) than ```CHECK(a==b)```) means that there is no ```try/catch``` block in each assert so if an expression throws the whole test case ends.
+- defining the [**```DOCTEST_CONFIG_SUPER_FAST_ASSERTS```**](configuration.md#doctest_config_super_fast_asserts) config identifier will result in even [**faster**](benchmarks.md#cost-of-an-assertion-macro) fast asserts (30-80%) at the cost of only one thing: when an assert fails and a debugger is present - the framework will break inside a doctest function so the user will have to go 1 level up in the callstack to see where the actual assert is in the source code.
+
+These 2 things can be considered negligible if you are dealing mainly with arithmetic (expressions are unlikely to throw exceptions) and all the tests usually pass (you don't need to often navigate to a failing assert with a debugger attached)
+
+If you want better aliases for the asserts instead of the long ones you could use [**```DOCTEST_CONFIG_NO_SHORT_MACRO_NAMES```**](configuration.md#doctest_config_no_short_macro_names) and then define your aliases like this: ```#define CHECK_EQ DOCTEST_FAST_CHECK_EQ``` (example in [**here**](../../examples/alternative_macros)).
 
 ### Is **doctest** thread-aware?
 
@@ -77,7 +87,7 @@ Try using the [**```DOCTEST_CONFIG_USE_IOSFWD```**](configuration.md#doctest_con
 
 ### Why is doctest using macros?
 
-Aren't they evil and not *modern*? - Check out the answer Phil Nash (the creator of Catch) gives to this question [**here**](http://accu.org/index.php/journals/2064).
+Aren't they evil and not *modern*? - Check out the answer Phil Nash (the creator of [**Catch**](https://github.com/philsquared/Catch)) gives to this question [**here**](http://accu.org/index.php/journals/2064).
 
 ### How are subcases implemented?
 
