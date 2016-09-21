@@ -6,16 +6,19 @@
 # Compile time benchmarks
 
 The benchmarks are done with [**this**](../../scripts/bench/bench.py) script using CMake. There are 2 benchmarking scenarios:
+
 - [the cost of including the header](#cost-of-including-the-header)
 - [the cost of an assertion macro](#cost-of-an-assertion-macro)
 
 Compilers used:
+
 - WINDOWS: Microsoft Visual Studio Community 2015 - Version 14.0.25431.01 Update 3
 - WINDOWS: gcc 6.2.0 (x86_64-posix-seh-rev0, Built by MinGW-W64 project)
 - LINUX: gcc 5.2.1 20151010 (Ubuntu 5.2.1-22ubuntu2)
 - LINUX: clang 3.6.2-1 (tags/RELEASE_362/final) (based on LLVM 3.6.2) Ubuntu - Target: x86_64-pc-linux-gnu
 
-Environment used (Intel i7 3770k, 16g RAM)
+Environment used (Intel i7 3770k, 16g RAM):
+
 - Windows 7 - on an SSD
 - Ubuntu 15.10 in a VirtualBox VM - on a HDD
 

@@ -26,5 +26,6 @@ Code should be formatted with a recent-enough ```clang-format``` using the confi
 
 Testing with compilers different from GCC/Clang/MSVC (and more platforms) is something the project would benefit from.
 
+---------------
 
-
+[Home](readme.md#reference)

@@ -1,5 +1,10 @@
 #!/usr/bin/python2.7
 
+# STUFF THAT DOESN'T WORK:
+# - before doing a list with '-' make sure to put an empty line before it
+# - external links with '.md' in them get broken - gets replaced with '.html'
+# - anchors that work in github don't work in the generated html so all interlinking with anchors doesn't work
+
 import os
 
 html_dir = "../doc/html_generated/"
