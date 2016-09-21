@@ -1717,6 +1717,9 @@ DOCTEST_TEST_SUITE_END();
 // required includes - will go only in one translation unit!
 #include <ctime>
 #include <cmath>
+#ifdef __BORLANDC__
+#include <math.h>
+#endif
 #include <new>
 #include <cstdio>
 #include <cstdlib>
