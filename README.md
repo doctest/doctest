@@ -88,18 +88,13 @@ Sponsors
 
 Want to see your name or the name of your company here? Consider donating!
 
-### Rockstar sponsors ( >= 1000$ )
+### :zap: Rockstar sponsors :zap:
 
-### Gold sponsors ( >= 100$ )
+### :gem: Gold sponsors :gem:
 
-- Pascal Thomet
+### :cake: Silver sponsors :cake:
 
-### Silver sponsors ( >= 20$ )
-
-- Manuel Freiberger
-
-### Bronze sponsors ( >= 5$ )
+### :hamburger: Bronze sponsors :hamburger:
 
 - Zahari Karadzhov
-- Sébastien Feldis
 - Mario Kostadinov
