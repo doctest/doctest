@@ -1,5 +1,38 @@
 # Change Log
 
+## [1.1.0](https://github.com/onqtam/doctest/tree/1.1.0) (2016-09-21)
+[Full Changelog](https://github.com/onqtam/doctest/compare/1.0.0...1.1.0)
+
+**Closed issues:**
+
+- char\* comparison uses the contents, not the pointer [\#36](https://github.com/onqtam/doctest/issues/36)
+- add configuration preprocessor identifier for passing by value in assertions instead of by reference [\#35](https://github.com/onqtam/doctest/issues/35)
+- restrict expressions in assertion macros to binary comparisons at most with a static assert [\#34](https://github.com/onqtam/doctest/issues/34)
+- Add clearFilters\(\) to doctest::Context [\#33](https://github.com/onqtam/doctest/issues/33)
+- A way to refrain from polluting “\#define” space for users of tested code? [\#32](https://github.com/onqtam/doctest/issues/32)
+- drop VC++6 support [\#31](https://github.com/onqtam/doctest/issues/31)
+- False positive test [\#30](https://github.com/onqtam/doctest/issues/30)
+- Turn off coloring after tests are finished? [\#28](https://github.com/onqtam/doctest/issues/28)
+- C++11 nullptr [\#27](https://github.com/onqtam/doctest/issues/27)
+- Only one SUBCASE per line is executed [\#25](https://github.com/onqtam/doctest/issues/25)
+- creative formatting of chars [\#24](https://github.com/onqtam/doctest/issues/24)
+- DOCTEST\_BREAK\_INTO\_DEBUGGER undefined under OSX [\#22](https://github.com/onqtam/doctest/issues/22)
+- Tests inside a static library [\#21](https://github.com/onqtam/doctest/issues/21)
+- Add example how to remove doctest options from the command line for the program after the tests run [\#20](https://github.com/onqtam/doctest/issues/20)
+- Single-letter options active even without leading '-' \(dash\) [\#19](https://github.com/onqtam/doctest/issues/19)
+- pointer stringification not working for compilers different from MSVC [\#18](https://github.com/onqtam/doctest/issues/18)
+- Tests that accompany code run and produce output at default [\#17](https://github.com/onqtam/doctest/issues/17)
+- GCC 5.3.1 Compiler warning: sign compare [\#16](https://github.com/onqtam/doctest/issues/16)
+- Slower than Catch in realistic test cases [\#14](https://github.com/onqtam/doctest/issues/14)
+- Rename doctest::detail::Result res; in DOCTEST\_ASSERT\_IMPLEMENT [\#10](https://github.com/onqtam/doctest/issues/10)
+- No red when all tests pass [\#7](https://github.com/onqtam/doctest/issues/7)
+- UNIX line feedings on GitHub please [\#6](https://github.com/onqtam/doctest/issues/6)
+
+**Merged pull requests:**
+
+- dont show green when tests fail [\#26](https://github.com/onqtam/doctest/pull/26) ([ferkulat](https://github.com/ferkulat))
+- Include "program code" in example [\#15](https://github.com/onqtam/doctest/pull/15) ([martinmoene](https://github.com/martinmoene))
+
 ## [1.0.0](https://github.com/onqtam/doctest/tree/1.0.0) (2016-05-22)
 **Merged pull requests:**
 
