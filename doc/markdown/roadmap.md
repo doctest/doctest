@@ -15,7 +15,7 @@ This is a list of planned features for future releases (not in the given order).
 - add support for <=, >= to Approx - like requested with [catch](https://github.com/philsquared/Catch/issues/651)
 - the set holding all registered tests should use a specialized allocator to minimize program startup time
 - pool allocator for the ```String``` class - currently very unoptimized
-- a mechanism for translating exceptions - users should be able to teach the framework about their types (look at Catch for this)
+- a mechanism for translating exceptions - users should be able to teach the framework about their types (look at Catch)
 - support for ```std::exception``` and derivatives (mainly for calling the ```.what()``` method when caught unexpectedly)
 - crash handling: signals on UNIX platforms or structured exceptions on Windows (should also have DOCTEST_CONFIG_NO_SIGNAL_CATCHING)
 - support for tags
@@ -62,7 +62,7 @@ And here is a list of things that are being considered but not part of the roadm
 - support for running tests in parallel in multiple threads
 - a progress reporter
 - ability to filter not just TEST_CASE names but also SUBCASE names (and maybe tags when they are introduced)
-- doctest in a GUI environment? with no console? APIs for attaching a console? querying if there is one? should investigate...
+- doctest in a GUI environment? with no console? APIs for attaching a console? querying if there is one? investigate...
 - ability to specify ASC/DESC for the order option
 - command line error handling/reporting
 - ability for the user to extend the command line - as requested [here](https://github.com/philsquared/Catch/issues/622)
