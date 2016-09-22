@@ -1717,6 +1717,10 @@ DOCTEST_TEST_SUITE_END();
 // required includes - will go only in one translation unit!
 #include <ctime>
 #include <cmath>
+// borland (Embarcadero) compiler requires math.h and not cmath - https://github.com/onqtam/doctest/pull/37
+#ifdef __BORLANDC__
+#include <math.h>
+#endif // __BORLANDC__
 #include <new>
 #include <cstdio>
 #include <cstdlib>
