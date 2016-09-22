@@ -1,4 +1,4 @@
-[doctest] doctest version is "1.1.0"
+[doctest] doctest version is "1.1.1"
 [doctest] run with "--help" for options
 hello from <lib_1_src1.cpp>
 hello from <lib_1_src2.cpp>
