@@ -41,7 +41,7 @@ This is a list of planned features for future releases (not in the given order).
     - restricting duration of test cases
     - killing a test that exceeds a time limit (will perhaps require threading or processes)
 - adding contextual info to asserts (logging) - with an ```INFO```/```CONTEXT``` /```TRACEPOINT``` macro (also look at [this](https://github.com/philsquared/Catch/issues/601))
-- add ```ERROR```/```FAIL``` macros
+- add ```ERROR```/```FAIL``` macros (also ```ADD_FAILURE_AT(file, line);```)
 - running tests a few times
 - marking a test to run X times (should also multiply with the global test run times)
 - test execution in separate processes - ```fork()``` for UNIX and [this](https://github.com/nemequ/munit/issues/2) for Windows
@@ -51,10 +51,11 @@ This is a list of planned features for future releases (not in the given order).
 - look into MSTest integration
     - http://accu.org/index.php/journals/1851
     - https://msdn.microsoft.com/en-us/library/hh270865.aspx
+    - https://msdn.microsoft.com/en-us/library/hh598953.aspx
     - also look into similar Xcode integration - https://github.com/philsquared/Catch/pull/454
-- matchers - should investigate what they are :D
-- generators? - look at Catch - and investigate what they are (also in [boost](http://www.boost.org/doc/libs/1_61_0/libs/test/doc/html/boost_test/tests_organization/test_cases/test_case_generation.html)
-- mocking - investigate google mock assertion macros and interop with doctest (also [mockitopp](https://github.com/tpounds/mockitopp)) - and write in FAQ
+- matchers - should investigate what they are
+- generators? - look at Catch - and investigate what they are (also in [boost](http://www.boost.org/doc/libs/1_61_0/libs/test/doc/html/boost_test/tests_organization/test_cases/test_case_generation.html))
+- mocking - investigate google mock assertion macros and interop with doctest (also [mockitopp](https://github.com/tpounds/mockitopp) and [trompeloeil](https://github.com/rollbear/trompeloeil)) - and write in FAQ
 - look at property based testing (for example [rapidcheck](https://github.com/emil-e/rapidcheck)) - and write in FAQ
 
 And here is a list of things that are being considered but not part of the roadmap yet:
