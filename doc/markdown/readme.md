@@ -1,13 +1,14 @@
 Reference
 =======
 
+Project:
+
 - [Features and design goals](features.md) - the complete list of features
 - [Roadmap](roadmap.md) - upcoming features
 - [Benchmarks](benchmarks.md) - compile time supremacy
-- [Contributing](contributing.md)
-- [Examples](../../examples)
+- [Contributing](contributing.md) - how to make a proper pull request
 
--------------
+Usage:
 
 - [Tutorial](tutorial.md) - make sure you have read it before the other parts of the documentation
 - [Assertion macros](assertions.md)
@@ -17,6 +18,7 @@ Reference
 - [Configuration](configuration.md)
 - [String conversions](stringification.md)
 - [FAQ](faq.md)
+- [Examples](../../examples)
 
 Support the development of the project with donations! There is a list of planned features which are all important and big - see the [**roadmap**](roadmap.md). I took a break from working in the industry to make open source software so every cent is a big deal.
 

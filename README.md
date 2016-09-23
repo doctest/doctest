@@ -12,6 +12,8 @@ Note how a standard C++ operator for equality comparison is used - **doctest** h
 
 It is modeled after [**Catch**](https://github.com/philsquared/Catch) which is currently the most popular alternative for testing in C++ - check out [**the differences**](doc/markdown/faq.md#how-is-doctest-different-from-catch).
 
+---------
+
 There are many C++ testing frameworks - [Catch](https://github.com/philsquared/Catch), [Boost.Test](http://www.boost.org/doc/libs/1_60_0/libs/test/doc/html/index.html), [UnitTest++](https://github.com/unittest-cpp/unittest-cpp), [cpputest](https://github.com/cpputest/cpputest), [googletest](https://github.com/google/googletest) and many [other](https://en.wikipedia.org/wiki/List_of_unit_testing_frameworks#C.2B.2B).
 
 What makes **doctest** different is that it is ultra light on compile times (by [**orders of magnitude**](doc/markdown/benchmarks.md#cost-of-including-the-header)) and is unintrusive.
@@ -41,7 +43,7 @@ The library can be used like any other if you don't like the idea of mixing prod
 [![Version](https://badge.fury.io/gh/onqtam%2Fdoctest.svg)](https://github.com/onqtam/doctest/releases)
 [![download](https://img.shields.io/badge/latest%20version%20%20-download-blue.svg)](https://raw.githubusercontent.com/onqtam/doctest/master/doctest/doctest.h)
 [![Join the chat at https://gitter.im/onqtam/doctest](https://badges.gitter.im/onqtam/doctest.svg)](https://gitter.im/onqtam/doctest?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
-[![Try it online](https://img.shields.io/badge/try%20it-online-orange.svg)](http://melpon.org/wandbox/permlink/vj10RKPooyTzq0cF)
+[![Try it online](https://img.shields.io/badge/try%20it-online-orange.svg)](http://melpon.org/wandbox/permlink/U5JN08TXgUF929jh)
 
 | master branch  |   Linux/OSX   [![Linux/OSX Status](https://travis-ci.org/onqtam/doctest.svg?branch=master)](https://travis-ci.org/onqtam/doctest) |   Windows   [![Windows status](https://ci.appveyor.com/api/projects/status/j89qxtahyw1dp4gd/branch/master?svg=true)](https://ci.appveyor.com/project/onqtam/doctest/branch/master) | [![Coverage Status](https://coveralls.io/repos/github/onqtam/doctest/badge.svg?branch=master)](https://coveralls.io/github/onqtam/doctest?branch=master) | [![Static Analysis](https://scan.coverity.com/projects/7865/badge.svg)](https://scan.coverity.com/projects/onqtam-doctest) |
 |----------------|-----------------------------------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------|
@@ -64,13 +66,15 @@ Contributions in the form of issues and pull requests are welcome as well - chec
 Documentation
 -------------
 
+Project:
+
 - [Features and design goals](doc/markdown/features.md) - the complete list of features
 - [Roadmap](doc/markdown/roadmap.md) - upcoming features
 - [Benchmarks](doc/markdown/benchmarks.md) - compile-time supremacy
-- [Contributing](doc/markdown/contributing.md)
-- [Examples](examples)
+- [Contributing](doc/markdown/contributing.md) - how to make a proper pull request
+- [Changelog](CHANGELOG.md) - generated changelog based on closed issues/PRs
 
--------------
+Usage:
 
 - [Tutorial](doc/markdown/tutorial.md) - make sure you have read it before the other parts of the documentation
 - [Assertion macros](doc/markdown/assertions.md)
@@ -80,6 +84,7 @@ Documentation
 - [Configuration](doc/markdown/configuration.md)
 - [String conversions](doc/markdown/stringification.md)
 - [FAQ](doc/markdown/faq.md)
+- [Examples](examples)
 
 Sponsors
 --------
