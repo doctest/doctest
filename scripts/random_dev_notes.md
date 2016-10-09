@@ -2,6 +2,19 @@
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
 == where to post an article about it:
 
 http://www.methodsandtools.com/tools/tools.php
@@ -19,22 +32,8 @@ news.ycombinator.com
 isocpp.org
 reddit.com/r/cpp
 reddit.com/r/programming
-reddit.com/r/cplusplus
-reddit.com/r/coding
 reddit.com/r/gamedev
-reddit.com/r/coding
-reddit.com/r/coolgithubprojects
-reddit.com/r/opensource
-reddit.com/r/software
-
-
-
-
-
-
-
-
-
+reddit.com/r/cplusplus
 
 
 

@@ -31,7 +31,7 @@ What makes **doctest** different is that it is ultra light on compile times (by 
 The **key** differences between it and other testing libraries are:
 - Ultra light - [**below 10ms**](doc/markdown/benchmarks.md#cost-of-including-the-header) of compile time overhead for including the header in a source file
 - The [**fastest possible**](doc/markdown/benchmarks.md#cost-of-an-assertion-macro) assertion macros - 50k asserts can compile for under 30 seconds (even under 10 sec)
-- [**Subcases**](doc/markdown/tutorial.md#test-cases-and-subcases) - an intuitive way to share common setup and teardown code for test cases
+- [**Subcases**](doc/markdown/tutorial.md#test-cases-and-subcases) - an intuitive way to share common setup and teardown code for test cases (alternative to fixtures)
 - Offers a way to remove **everything** testing-related from the binary with the [**```DOCTEST_CONFIG_DISABLE```**](doc/markdown/configuration.md#doctest_config_disable) identifier
 - Doesn't pollute the global namespace (everything is in the ```doctest``` namespace) and doesn't drag **any** headers with it
 - Doesn't produce any warnings even on the [**most aggressive**](scripts/common.cmake#L71) warning levels for **MSVC**/**GCC**/**Clang**
@@ -40,7 +40,7 @@ The **key** differences between it and other testing libraries are:
 
 This allows the library to be used in more ways than any other - tests can be written directly in the production code!
 
-- This makes the barrier for writing tests **much lower** - you don't have to: **1.** make a separate source file **2.** include a bunch of stuff in it **3.** add it to the build system and **4.** add it to source control - You can just write the tests for a class or a piece of functionality at the bottom of it's source file - or even header file!
+- This makes the barrier for writing tests **much lower** - you don't have to: **1.** make a separate source file **2.** include a bunch of stuff in it **3.** add it to the build system and **4.** add it to source control - You can just write the tests for a class or a piece of functionality at the bottom of its source file - or even header file!
 - Tests in the production code can be thought of as documentation or up-to-date comments - showing how an API is used
 - Tests can be shipped to the customer with the software to diagnose a bug faster
 - [**Test-driven development**](https://en.wikipedia.org/wiki/Test-driven_development) in C++ has never been easier!
@@ -53,7 +53,7 @@ The library can be used like any other if you don't like the idea of mixing prod
 [![Version](https://badge.fury.io/gh/onqtam%2Fdoctest.svg)](https://github.com/onqtam/doctest/releases)
 [![download](https://img.shields.io/badge/latest%20version%20%20-download-blue.svg)](https://raw.githubusercontent.com/onqtam/doctest/master/doctest/doctest.h)
 [![Join the chat at https://gitter.im/onqtam/doctest](https://badges.gitter.im/onqtam/doctest.svg)](https://gitter.im/onqtam/doctest?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
-[![Try it online](https://img.shields.io/badge/try%20it-online-orange.svg)](http://melpon.org/wandbox/permlink/U5JN08TXgUF929jh)
+[![Try it online](https://img.shields.io/badge/try%20it-online-orange.svg)](http://melpon.org/wandbox/permlink/PtF5hND66DsO16TM)
 
 Contributing
 ------------

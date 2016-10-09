@@ -66,7 +66,7 @@ There is an option to run a [**range**](commandline.md) of tests from an executa
 
 This is a [**common problem**](https://groups.google.com/forum/#!msg/catch-forum/FV0Qo62DvgY/jxEO6c9_q3kJ) and it affects all modern compilers on all platforms.
 
-The problem is that when a static library is being linked to a binary (executable or dll) - only object files from the static library that define a synbol being required from the binary will get pulled in (this is a linker/dependency optimization).
+The problem is that when a static library is being linked to a binary (executable or dll) - only object files from the static library that define a symbol being required from the binary will get pulled in (this is a linker/dependency optimization).
 
 I have created a CMake function that forces every object file from a static library to be linked into a binary target - it is called [**```doctest_force_link_static_lib_in_target()```**](../../examples/exe_with_static_libs/doctest_force_link_static_lib_in_target.cmake). It is unintrusive - no source file gets changed - everything is done with compiler flags per source files. An example project using it can be found [**here**](../../examples/exe_with_static_libs).
 

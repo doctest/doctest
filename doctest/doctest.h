@@ -159,7 +159,7 @@
 #if defined(_MSC_VER) && (_MSC_VER >= 1600) // MSVC 2010
 #define DOCTEST_CONFIG_WITH_STATIC_ASSERT
 #endif // _MSC_VER
-#endif // DOCTEST_CONFIG_WITH_NULLPTR
+#endif // DOCTEST_CONFIG_WITH_STATIC_ASSERT
 
 #if defined(DOCTEST_CONFIG_NO_STATIC_ASSERT) && defined(DOCTEST_CONFIG_WITH_STATIC_ASSERT)
 #undef DOCTEST_CONFIG_WITH_STATIC_ASSERT
@@ -1127,18 +1127,18 @@ public:
 // registers the test by initializing a dummy var with a function
 #if defined(__GNUC__) && !defined(__clang__)
 #define DOCTEST_REGISTER_FUNCTION(f, name)                                                         \
-    static int DOCTEST_ANONYMOUS(DOCTEST_ANON_VAR_) __attribute__((unused)) =                      \
+    static int DOCTEST_ANONYMOUS(_DOCTEST_ANON_VAR_) __attribute__((unused)) =                     \
             doctest::detail::regTest(f, __LINE__, __FILE__, name);
 #elif defined(__clang__)
 #define DOCTEST_REGISTER_FUNCTION(f, name)                                                         \
     _Pragma("clang diagnostic push")                                                               \
             _Pragma("clang diagnostic ignored \"-Wglobal-constructors\"") static int               \
-                    DOCTEST_ANONYMOUS(DOCTEST_ANON_VAR_) =                                         \
+                    DOCTEST_ANONYMOUS(_DOCTEST_ANON_VAR_) =                                        \
                             doctest::detail::regTest(f, __LINE__, __FILE__, name);                 \
     _Pragma("clang diagnostic pop")
 #else // MSVC
 #define DOCTEST_REGISTER_FUNCTION(f, name)                                                         \
-    static int DOCTEST_ANONYMOUS(DOCTEST_ANON_VAR_) =                                              \
+    static int DOCTEST_ANONYMOUS(_DOCTEST_ANON_VAR_) =                                             \
             doctest::detail::regTest(f, __LINE__, __FILE__, name);
 #endif // MSVC
 
@@ -1162,60 +1162,60 @@ public:
 
 // for registering tests
 #define DOCTEST_TEST_CASE(name)                                                                    \
-    DOCTEST_CREATE_AND_REGISTER_FUNCTION(DOCTEST_ANONYMOUS(DOCTEST_ANON_FUNC_), name)
+    DOCTEST_CREATE_AND_REGISTER_FUNCTION(DOCTEST_ANONYMOUS(_DOCTEST_ANON_FUNC_), name)
 
 // for registering tests with a fixture
 #define DOCTEST_TEST_CASE_FIXTURE(c, name)                                                         \
-    DOCTEST_IMPLEMENT_FIXTURE(DOCTEST_ANONYMOUS(DOCTEST_ANON_CLASS_), c,                           \
-                              DOCTEST_ANONYMOUS(DOCTEST_ANON_FUNC_), name)
+    DOCTEST_IMPLEMENT_FIXTURE(DOCTEST_ANONYMOUS(_DOCTEST_ANON_CLASS_), c,                          \
+                              DOCTEST_ANONYMOUS(_DOCTEST_ANON_FUNC_), name)
 
 // for subcases
 #if defined(__GNUC__)
 #define DOCTEST_SUBCASE(name)                                                                      \
-    if(const doctest::detail::Subcase & DOCTEST_ANONYMOUS(DOCTEST_ANON_SUBCASE_)                   \
+    if(const doctest::detail::Subcase & DOCTEST_ANONYMOUS(_DOCTEST_ANON_SUBCASE_)                  \
                                                 __attribute__((unused)) =                          \
                doctest::detail::Subcase(name, __FILE__, __LINE__))
 #else // __GNUC__
 #define DOCTEST_SUBCASE(name)                                                                      \
-    if(const doctest::detail::Subcase & DOCTEST_ANONYMOUS(DOCTEST_ANON_SUBCASE_) =                 \
+    if(const doctest::detail::Subcase & DOCTEST_ANONYMOUS(_DOCTEST_ANON_SUBCASE_) =                \
                doctest::detail::Subcase(name, __FILE__, __LINE__))
 #endif // __GNUC__
 
 // for starting a testsuite block
 #if defined(__GNUC__) && !defined(__clang__)
 #define DOCTEST_TEST_SUITE(name)                                                                   \
-    static int DOCTEST_ANONYMOUS(DOCTEST_ANON_VAR_) __attribute__((unused)) =                      \
+    static int DOCTEST_ANONYMOUS(_DOCTEST_ANON_VAR_) __attribute__((unused)) =                     \
             doctest::detail::setTestSuiteName(name);                                               \
-    void DOCTEST_ANONYMOUS(DOCTEST_ANON_FOR_SEMICOLON_)()
+    typedef int DOCTEST_ANONYMOUS(_DOCTEST_ANON_FOR_SEMICOLON_)
 #elif defined(__clang__)
 #define DOCTEST_TEST_SUITE(name)                                                                   \
     _Pragma("clang diagnostic push")                                                               \
             _Pragma("clang diagnostic ignored \"-Wglobal-constructors\"") static int               \
-                    DOCTEST_ANONYMOUS(DOCTEST_ANON_VAR_) =                                         \
+                    DOCTEST_ANONYMOUS(_DOCTEST_ANON_VAR_) =                                        \
                             doctest::detail::setTestSuiteName(name);                               \
-    _Pragma("clang diagnostic pop") void DOCTEST_ANONYMOUS(DOCTEST_ANON_FOR_SEMICOLON_)()
+    _Pragma("clang diagnostic pop") typedef int DOCTEST_ANONYMOUS(_DOCTEST_ANON_FOR_SEMICOLON_)
 #else // MSVC
 #define DOCTEST_TEST_SUITE(name)                                                                   \
-    static int DOCTEST_ANONYMOUS(DOCTEST_ANON_VAR_) = doctest::detail::setTestSuiteName(name);     \
-    void       DOCTEST_ANONYMOUS(DOCTEST_ANON_FOR_SEMICOLON_)()
+    static int  DOCTEST_ANONYMOUS(_DOCTEST_ANON_VAR_) = doctest::detail::setTestSuiteName(name);   \
+    typedef int DOCTEST_ANONYMOUS(_DOCTEST_ANON_FOR_SEMICOLON_)
 #endif // MSVC
 
 // for ending a testsuite block
 #if defined(__GNUC__) && !defined(__clang__)
 #define DOCTEST_TEST_SUITE_END                                                                     \
-    static int DOCTEST_ANONYMOUS(DOCTEST_ANON_VAR_) __attribute__((unused)) =                      \
+    static int DOCTEST_ANONYMOUS(_DOCTEST_ANON_VAR_) __attribute__((unused)) =                     \
             doctest::detail::setTestSuiteName("");                                                 \
-    void DOCTEST_ANONYMOUS(DOCTEST_ANON_FOR_SEMICOLON_)
+    typedef int DOCTEST_ANONYMOUS(_DOCTEST_ANON_FOR_SEMICOLON_)
 #elif defined(__clang__)
-#define DOCTEST_TEST_SUITE_END                                                                                         \
-    _Pragma("clang diagnostic push")                                                                                   \
-            _Pragma("clang diagnostic ignored \"-Wglobal-constructors\"") static int                                   \
-                                         DOCTEST_ANONYMOUS(DOCTEST_ANON_VAR_) = doctest::detail::setTestSuiteName(""); \
-    _Pragma("clang diagnostic pop") void DOCTEST_ANONYMOUS(DOCTEST_ANON_FOR_SEMICOLON_)
+#define DOCTEST_TEST_SUITE_END                                                                                                 \
+    _Pragma("clang diagnostic push")                                                                                           \
+            _Pragma("clang diagnostic ignored \"-Wglobal-constructors\"") static int                                           \
+                                                DOCTEST_ANONYMOUS(_DOCTEST_ANON_VAR_) = doctest::detail::setTestSuiteName(""); \
+    _Pragma("clang diagnostic pop") typedef int DOCTEST_ANONYMOUS(_DOCTEST_ANON_FOR_SEMICOLON_)
 #else // MSVC
 #define DOCTEST_TEST_SUITE_END                                                                     \
-    static int DOCTEST_ANONYMOUS(DOCTEST_ANON_VAR_) = doctest::detail::setTestSuiteName("");       \
-    void       DOCTEST_ANONYMOUS(DOCTEST_ANON_FOR_SEMICOLON_)
+    static int  DOCTEST_ANONYMOUS(_DOCTEST_ANON_VAR_) = doctest::detail::setTestSuiteName("");     \
+    typedef int DOCTEST_ANONYMOUS(_DOCTEST_ANON_FOR_SEMICOLON_)
 #endif // MSVC
 
 #define DOCTEST_ASSERT_LOG_AND_REACT(rb)                                                           \
@@ -1434,21 +1434,21 @@ public:
 
 // for registering tests
 #define DOCTEST_TEST_CASE(name)                                                                    \
-    DOCTEST_CREATE_AND_REGISTER_FUNCTION(DOCTEST_ANONYMOUS(DOCTEST_ANON_FUNC_), name)
+    DOCTEST_CREATE_AND_REGISTER_FUNCTION(DOCTEST_ANONYMOUS(_DOCTEST_ANON_FUNC_), name)
 
 // for registering tests with a fixture
 #define DOCTEST_TEST_CASE_FIXTURE(x, name)                                                         \
-    DOCTEST_IMPLEMENT_FIXTURE(DOCTEST_ANONYMOUS(DOCTEST_ANON_CLASS_), x,                           \
-                              DOCTEST_ANONYMOUS(DOCTEST_ANON_FUNC_), name)
+    DOCTEST_IMPLEMENT_FIXTURE(DOCTEST_ANONYMOUS(_DOCTEST_ANON_CLASS_), x,                          \
+                              DOCTEST_ANONYMOUS(_DOCTEST_ANON_FUNC_), name)
 
 // for subcases
 #define DOCTEST_SUBCASE(name)
 
 // for starting a testsuite block
-#define DOCTEST_TEST_SUITE(name) void DOCTEST_ANONYMOUS(DOCTEST_ANON_FOR_SEMICOLON_)()
+#define DOCTEST_TEST_SUITE(name) typedef int DOCTEST_ANONYMOUS(_DOCTEST_ANON_FOR_SEMICOLON_)
 
 // for ending a testsuite block
-#define DOCTEST_TEST_SUITE_END void DOCTEST_ANONYMOUS(DOCTEST_ANON_FOR_SEMICOLON_)
+#define DOCTEST_TEST_SUITE_END typedef int DOCTEST_ANONYMOUS(_DOCTEST_ANON_FOR_SEMICOLON_)
 
 #define DOCTEST_WARN(expr) ((void)0)
 #define DOCTEST_WARN_FALSE(expr) ((void)0)

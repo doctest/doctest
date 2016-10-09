@@ -17,7 +17,7 @@ This is a list of planned features for future releases (not in the given order).
 
 - option to output summary only
 - ability to customize the colors in the console output
-- add support for <=, >= to Approx - like requested with [catch](https://github.com/philsquared/Catch/issues/651)
+- add support for <=, >= to Approx - like [requested](https://github.com/philsquared/Catch/pull/715) with [catch](https://github.com/philsquared/Catch/issues/651)
 - the set holding all registered tests should use a specialized allocator to minimize program startup time
 - pool allocator for the ```String``` class - currently very unoptimized
 - a mechanism for translating exceptions - users should be able to teach the framework about their types (look at Catch)
@@ -57,12 +57,14 @@ This is a list of planned features for future releases (not in the given order).
 - generators? - look at Catch - and investigate what they are (also in [boost](http://www.boost.org/doc/libs/1_61_0/libs/test/doc/html/boost_test/tests_organization/test_cases/test_case_generation.html))
 - mocking - investigate google mock assertion macros and interop with doctest (also [mockitopp](https://github.com/tpounds/mockitopp) and [trompeloeil](https://github.com/rollbear/trompeloeil)) - and write in FAQ
 - look at property based testing (for example [rapidcheck](https://github.com/emil-e/rapidcheck)) - and write in FAQ
+- [symbolizer](https://github.com/facebook/folly/tree/master/folly/experimental/symbolizer) - for a stack trace - when an assertion fails - and it's in a user function with some deep callstack away from the current test case - how to know the exact code path that lead to the failing assert
 
 And here is a list of things that are being considered but not part of the roadmap yet:
 
 - ability to have no output when everything succeeds
 - integrate static analysis on the CI: **msvc**, **clang**, **cppcheck**
 - add C++11 builds for gcc/clang (with -std=c++0x)
+- extend Approx for types that have operator double - see [here](https://github.com/philsquared/Catch/issues/652) and [here](https://github.com/philsquared/Catch/pull/658)
 - option to list files in which there are test cases who match the current filters
 - support for doing assertions in multiple threads - synchronize their access to shared doctest state
 - support for running tests in parallel in multiple threads
