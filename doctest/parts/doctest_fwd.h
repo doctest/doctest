@@ -84,8 +84,8 @@
 
 #define DOCTEST_VERSION_MAJOR 1
 #define DOCTEST_VERSION_MINOR 1
-#define DOCTEST_VERSION_PATCH 1
-#define DOCTEST_VERSION_STR "1.1.1"
+#define DOCTEST_VERSION_PATCH 2
+#define DOCTEST_VERSION_STR "1.1.2"
 
 #define DOCTEST_VERSION                                                                            \
     (DOCTEST_VERSION_MAJOR * 10000 + DOCTEST_VERSION_MINOR * 100 + DOCTEST_VERSION_PATCH)
@@ -161,6 +161,16 @@
 #if defined(DOCTEST_CONFIG_NO_STATIC_ASSERT) && defined(DOCTEST_CONFIG_WITH_STATIC_ASSERT)
 #undef DOCTEST_CONFIG_WITH_STATIC_ASSERT
 #endif // DOCTEST_CONFIG_NO_STATIC_ASSERT
+
+#if defined(DOCTEST_CONFIG_WITH_NULLPTR) || defined(DOCTEST_CONFIG_WITH_LONG_LONG) ||              \
+        defined(DOCTEST_CONFIG_WITH_STATIC_ASSERT)
+#define DOCTEST_NO_CPP11_COMPAT
+#endif // c++11 stuff
+
+#if defined(__clang__) && defined(DOCTEST_NO_CPP11_COMPAT)
+#pragma clang diagnostic ignored "-Wc++98-compat"
+#pragma clang diagnostic ignored "-Wc++98-compat-pedantic"
+#endif // __clang__ && DOCTEST_NO_CPP11_COMPAT
 
 // =================================================================================================
 // == MODERN C++ FEATURE DETECTION END =============================================================
@@ -701,6 +711,7 @@ namespace detail
         bool             m_entered;
 
         Subcase(const char* name, const char* file, int line);
+        Subcase(const Subcase& other);
         ~Subcase();
 
         operator bool() const { return m_entered; }
@@ -727,6 +738,10 @@ namespace detail
         Result(bool passed = false, const String& decomposition = String())
                 : m_passed(passed)
                 , m_decomposition(decomposition) {}
+
+        Result(const Result& other)
+                : m_passed(other.m_passed)
+                , m_decomposition(other.m_decomposition) {}
 
 // to fix gcc 4.7 "-Winline" warnings
 #if defined(__GNUC__) && !defined(__clang__)

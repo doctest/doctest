@@ -12,6 +12,7 @@ enable_testing()
 
 set(TEST_MODE "COMPARE" CACHE STRING "Test mode - normal/run through valgrind/collect output/compare with output")
 set_property(CACHE TEST_MODE PROPERTY STRINGS "NORMAL;VALGRIND;COLLECT;COMPARE")
+option(WITH_CPP11 "With C++11 enabled" OFF)
 
 # a custom version of add_test() to suite my needs
 function(doctest_add_test)
@@ -60,11 +61,16 @@ endmacro()
 
 if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
     add_compiler_flags(-Werror)
-    add_compiler_flags(-std=c++98)
     add_compiler_flags(-pedantic)
     add_compiler_flags(-pedantic-errors)
     add_compiler_flags(-fvisibility=hidden)
     add_compiler_flags(-fstrict-aliasing)
+    
+    if(WITH_CPP11)
+        add_compiler_flags(-std=c++0x)
+    else()
+        add_compiler_flags(-std=c++98)
+    endif()
 endif()
 
 if(CMAKE_CXX_COMPILER_ID MATCHES "GNU")

@@ -211,41 +211,49 @@ matrix:
     # OSX GCC 4.4
     - env: COMPILER=g++-4.4
       compiler: gcc
+      osx_image: beta-xcode6.3
       os: osx
 
     # OSX GCC 4.5
     - env: COMPILER=g++-4.5
       compiler: gcc
+      osx_image: beta-xcode6.3
       os: osx
 
     # OSX GCC 4.6
     - env: COMPILER=g++-4.6
       compiler: gcc
+      osx_image: beta-xcode6.3
       os: osx
 
     # OSX GCC 4.7
     - env: COMPILER=g++-4.7
       compiler: gcc
+      osx_image: beta-xcode6.3
       os: osx
 
     # OSX GCC 4.8
     - env: COMPILER=g++-4.8 HAS_ASAN_32=true HAS_ASAN_64=true
       compiler: gcc
+      osx_image: beta-xcode6.3
       os: osx
 
     # OSX GCC 4.9
-    - env: COMPILER=g++-4.9 HAS_UBSAN_32=true HAS_UBSAN_64=true # ASAN_32/ASAN_64 dropped weird errors when using ASAN_OPTIONS - most probably g++ 4.9 bug
+    - env: COMPILER=g++-4.9 HAS_UBSAN_32=true HAS_UBSAN_64=true # ASAN_32/ASAN_64 dropped weird errors when using ASAN_OPTIONS - probably g++ 4.9 bug
       compiler: gcc
+      osx_image: beta-xcode6.3
       os: osx
 
     # OSX GCC 5
     - env: COMPILER=g++-5 HAS_ASAN_32=true HAS_UBSAN_32=true HAS_ASAN_64=true HAS_UBSAN_64=true
       compiler: gcc
+      osx_image: beta-xcode6.3
       os: osx
 
     # OSX GCC 6
     - env: COMPILER=g++-6 HAS_ASAN_32=true HAS_UBSAN_32=true HAS_ASAN_64=true HAS_UBSAN_64=true
       compiler: gcc
+      osx_image: beta-xcode6.3
       os: osx
 
     # OSX LLVM-GCC
@@ -254,11 +262,36 @@ matrix:
       os: osx
 
   allow_failures:
-    # for some reason the builds started to hang while installing g++6 from homebrew...
-    # https://travis-ci.org/onqtam/doctest/jobs/161273024
-    # No output has been received in the last 10m0s, this potentially indicates a stalled build or something wrong with the build itself.
-    - env: COMPILER=g++-6 HAS_ASAN_32=true HAS_UBSAN_32=true HAS_ASAN_64=true HAS_UBSAN_64=true
+    # for some reason these builds fail...
+
+    # OSX GCC 4.4
+    - env: COMPILER=g++-4.4
       compiler: gcc
+      osx_image: beta-xcode6.3
+      os: osx
+
+    # OSX GCC 4.5
+    - env: COMPILER=g++-4.5
+      compiler: gcc
+      osx_image: beta-xcode6.3
+      os: osx
+
+    # OSX GCC 4.6
+    - env: COMPILER=g++-4.6
+      compiler: gcc
+      osx_image: beta-xcode6.3
+      os: osx
+
+    # OSX GCC 4.7
+    - env: COMPILER=g++-4.7
+      compiler: gcc
+      osx_image: beta-xcode6.3
+      os: osx
+
+    # OSX GCC 4.8
+    - env: COMPILER=g++-4.8 HAS_ASAN_32=true HAS_ASAN_64=true
+      compiler: gcc
+      osx_image: beta-xcode6.3
       os: osx
 
 before_install:
@@ -354,13 +387,13 @@ script:
   - make clean && make -k -j2
   # valgrind for 64bit under osx fails TOO
   - if [[ "${TRAVIS_OS_NAME}" == "linux" ]]; then cmake -DTEST_MODE=VALGRIND . && ctest --output-on-failure ; fi
-  - cmake -DTEST_MODE=COMPARE  . && ctest --output-on-failure
+  - cmake -DTEST_MODE=COMPARE . && ctest --output-on-failure
   # release x64
   - cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="${ADDITIONAL_CXX_FLAGS} -m64" .
   - make clean && make -k -j2
   # valgrind for 64bit under osx fails TOO
   - if [[ "${TRAVIS_OS_NAME}" == "linux" ]]; then cmake -DTEST_MODE=VALGRIND . && ctest --output-on-failure ; fi
-  - cmake -DTEST_MODE=COMPARE  . && ctest --output-on-failure
+  - cmake -DTEST_MODE=COMPARE . && ctest --output-on-failure
   # debug x86
   - cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_FLAGS="${ADDITIONAL_CXX_FLAGS} -m32" .
   - make clean && make -k -j2
@@ -386,6 +419,10 @@ script:
   - if [[ "${HAS_UBSAN_32}" = "true" ]]; then cmake -DCMAKE_BUILD_TYPE=Debug   -DCMAKE_CXX_FLAGS="${ADDITIONAL_CXX_FLAGS} -g -fno-omit-frame-pointer -m32 -fsanitize=undefined" . && make clean && make -k -j2 && UBSAN_OPTIONS=verbosity=2                                                                                     ctest --output-on-failure ; fi
   - if [[ "${HAS_UBSAN_64}" = "true" ]]; then cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="${ADDITIONAL_CXX_FLAGS} -g -fno-omit-frame-pointer -m64 -fsanitize=undefined" . && make clean && make -k -j2 && UBSAN_OPTIONS=verbosity=2                                                                                     ctest --output-on-failure ; fi
   - if [[ "${HAS_UBSAN_32}" = "true" ]]; then cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="${ADDITIONAL_CXX_FLAGS} -g -fno-omit-frame-pointer -m32 -fsanitize=undefined" . && make clean && make -k -j2 && UBSAN_OPTIONS=verbosity=2                                                                                     ctest --output-on-failure ; fi
+
+  # test c++0x mode for warnings
+  - cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_FLAGS="${ADDITIONAL_CXX_FLAGS} -m64" -DWITH_CPP11=1 .
+  - make clean && make -k -j2
 
 #  - ccache -s
 

@@ -1,7 +1,7 @@
 - update version in version.txt
 - run update_stuff.py from the scripts folder
 - regenerate test output by running cmake with -DTEST_MODE=COLLECT and then running ctest
-- run update_stuff.py from the scripts folder AGAIN so the updated doctest.h is sent to wandbox
+- run update_wandbox_link.py
 - commit in dev
 - merge dev in master and coverity_scan (and rebase them?)
 - push all branches (git push --all)

@@ -59,6 +59,11 @@
 #include "doctest_fwd.h"
 #endif // DOCTEST_SINGLE_HEADER
 
+#if defined(__clang__) && defined(DOCTEST_NO_CPP11_COMPAT)
+#pragma clang diagnostic ignored "-Wc++98-compat"
+#pragma clang diagnostic ignored "-Wc++98-compat-pedantic"
+#endif // __clang__ && DOCTEST_NO_CPP11_COMPAT
+
 // snprintf() not in the C++98 standard
 #ifdef _MSC_VER
 #define DOCTEST_SNPRINTF _snprintf
@@ -670,6 +675,11 @@ namespace detail
         s->subcasesEnteredLevels.insert(s->subcasesCurrentLevel++);
         m_entered = true;
     }
+
+    Subcase::Subcase(const Subcase& other)
+            : m_signature(other.m_signature.m_name, other.m_signature.m_file,
+                          other.m_signature.m_line)
+            , m_entered(other.m_entered) {}
 
     Subcase::~Subcase() {
         if(m_entered) {
