@@ -1,5 +1,16 @@
 # Change Log
 
+## [1.1.2](https://github.com/onqtam/doctest/tree/1.1.2) (2016-10-10)
+[Full Changelog](https://github.com/onqtam/doctest/compare/1.1.1...1.1.2)
+
+**Closed issues:**
+
+- clang warnings when using C++11 or newer [\#42](https://github.com/onqtam/doctest/issues/42)
+- \[support\] identical names for test suites? [\#40](https://github.com/onqtam/doctest/issues/40)
+
+## [1.1.1](https://github.com/onqtam/doctest/tree/1.1.1) (2016-09-22)
+[Full Changelog](https://github.com/onqtam/doctest/compare/1.1.0...1.1.1)
+
 ## [1.1.0](https://github.com/onqtam/doctest/tree/1.1.0) (2016-09-21)
 [Full Changelog](https://github.com/onqtam/doctest/compare/1.0.0...1.1.0)
 
