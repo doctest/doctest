@@ -172,6 +172,18 @@
 #pragma clang diagnostic ignored "-Wc++98-compat-pedantic"
 #endif // __clang__ && DOCTEST_NO_CPP11_COMPAT
 
+#ifndef DOCTEST_CONFIG_NO_EXCEPTIONS
+#if defined(__GNUC__) && !defined(__EXCEPTIONS)
+#define DOCTEST_CONFIG_NO_EXCEPTIONS
+#endif // clang and gcc
+// in MSVC _HAS_EXCEPTIONS is defined in a header instead of as a project define
+// so we can't do the automatic detection for MSVC without including some header
+#endif // DOCTEST_CONFIG_NO_EXCEPTIONS
+
+#if defined(DOCTEST_CONFIG_NO_EXCEPTIONS) && !defined(DOCTEST_CONFIG_NO_TRY_CATCH_IN_ASSERTS)
+#define DOCTEST_CONFIG_NO_TRY_CATCH_IN_ASSERTS
+#endif // DOCTEST_CONFIG_NO_EXCEPTIONS && !DOCTEST_CONFIG_NO_TRY_CATCH_IN_ASSERTS
+
 // =================================================================================================
 // == MODERN C++ FEATURE DETECTION END =============================================================
 // =================================================================================================
@@ -1235,12 +1247,19 @@ public:
         DOCTEST_BREAK_INTO_DEBUGGER();                                                             \
     rb.react()
 
+#ifdef DOCTEST_CONFIG_NO_TRY_CATCH_IN_ASSERTS
+#define DOCTEST_WRAP_IN_TRY(x) x;
+#else // DOCTEST_CONFIG_NO_TRY_CATCH_IN_ASSERTS
+#define DOCTEST_WRAP_IN_TRY(x)                                                                     \
+    try {                                                                                          \
+        x;                                                                                         \
+    } catch(...) { _DOCTEST_RB.m_threw = true; }
+#endif // DOCTEST_CONFIG_NO_TRY_CATCH_IN_ASSERTS
+
 #define DOCTEST_ASSERT_IMPLEMENT(expr, assert_type)                                                \
     doctest::detail::ResultBuilder _DOCTEST_RB(doctest::detail::assertType::assert_type, __FILE__, \
                                                __LINE__, #expr);                                   \
-    try {                                                                                          \
-        _DOCTEST_RB.setResult(doctest::detail::ExpressionDecomposer() << expr);                    \
-    } catch(...) { _DOCTEST_RB.m_threw = true; }                                                   \
+    DOCTEST_WRAP_IN_TRY(_DOCTEST_RB.setResult(doctest::detail::ExpressionDecomposer() << expr))    \
     DOCTEST_ASSERT_LOG_AND_REACT(_DOCTEST_RB);
 
 #if defined(__clang__)
@@ -1321,9 +1340,9 @@ public:
     do {                                                                                           \
         doctest::detail::ResultBuilder _DOCTEST_RB(doctest::detail::assertType::assert_type,       \
                                                    __FILE__, __LINE__, #lhs ", " #rhs);            \
-        try {                                                                                      \
-            _DOCTEST_RB.binary_assert<doctest::detail::binaryAssertComparison::comp>(lhs, rhs);    \
-        } catch(...) { _DOCTEST_RB.m_threw = true; }                                               \
+        DOCTEST_WRAP_IN_TRY(                                                                       \
+                _DOCTEST_RB.binary_assert<doctest::detail::binaryAssertComparison::comp>(lhs,      \
+                                                                                         rhs))     \
         DOCTEST_ASSERT_LOG_AND_REACT(_DOCTEST_RB);                                                 \
     } while(doctest::detail::always_false())
 
@@ -1331,9 +1350,7 @@ public:
     do {                                                                                           \
         doctest::detail::ResultBuilder _DOCTEST_RB(doctest::detail::assertType::assert_type,       \
                                                    __FILE__, __LINE__, #val);                      \
-        try {                                                                                      \
-            _DOCTEST_RB.unary_assert(val);                                                         \
-        } catch(...) { _DOCTEST_RB.m_threw = true; }                                               \
+        DOCTEST_WRAP_IN_TRY(_DOCTEST_RB.unary_assert(val))                                         \
         DOCTEST_ASSERT_LOG_AND_REACT(_DOCTEST_RB);                                                 \
     } while(doctest::detail::always_false())
 
@@ -1423,6 +1440,38 @@ public:
 #define DOCTEST_FAST_CHECK_UNARY_FALSE(v) DOCTEST_FAST_UNARY_ASSERT(DT_FAST_CHECK_UNARY_FALSE, v)
 #define DOCTEST_FAST_REQUIRE_UNARY_FALSE(v)                                                        \
     DOCTEST_FAST_UNARY_ASSERT(DT_FAST_REQUIRE_UNARY_FALSE, v)
+
+#ifdef DOCTEST_CONFIG_NO_EXCEPTIONS
+#undef DOCTEST_REQUIRE
+#undef DOCTEST_REQUIRE_FALSE
+
+#undef DOCTEST_WARN_THROWS
+#undef DOCTEST_CHECK_THROWS
+#undef DOCTEST_REQUIRE_THROWS
+#undef DOCTEST_WARN_THROWS_AS
+#undef DOCTEST_CHECK_THROWS_AS
+#undef DOCTEST_REQUIRE_THROWS_AS
+#undef DOCTEST_WARN_NOTHROW
+#undef DOCTEST_CHECK_NOTHROW
+#undef DOCTEST_REQUIRE_NOTHROW
+
+#undef DOCTEST_REQUIRE_EQ
+#undef DOCTEST_REQUIRE_NE
+#undef DOCTEST_REQUIRE_GT
+#undef DOCTEST_REQUIRE_LT
+#undef DOCTEST_REQUIRE_GE
+#undef DOCTEST_REQUIRE_LE
+#undef DOCTEST_REQUIRE_UNARY
+#undef DOCTEST_REQUIRE_UNARY_FALSE
+#undef DOCTEST_FAST_REQUIRE_EQ
+#undef DOCTEST_FAST_REQUIRE_NE
+#undef DOCTEST_FAST_REQUIRE_GT
+#undef DOCTEST_FAST_REQUIRE_LT
+#undef DOCTEST_FAST_REQUIRE_GE
+#undef DOCTEST_FAST_REQUIRE_LE
+#undef DOCTEST_FAST_REQUIRE_UNARY
+#undef DOCTEST_FAST_REQUIRE_UNARY_FALSE
+#endif // DOCTEST_CONFIG_NO_EXCEPTIONS
 
 // =================================================================================================
 // == WHAT FOLLOWS IS VERSIONS OF THE MACROS THAT DO NOT DO ANY REGISTERING!                      ==

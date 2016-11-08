@@ -13,6 +13,8 @@ The identifiers should be defined before the inclusion of the framework header.
 - [**```DOCTEST_CONFIG_USE_IOSFWD```**](#doctest_config_use_iosfwd)
 - [**```DOCTEST_CONFIG_NO_COMPARISON_WARNING_SUPPRESSION```**](#doctest_config_no_comparison_warning_suppression)
 - [**```DOCTEST_CONFIG_NO_UNPREFIXED_OPTIONS```**](#doctest_config_no_unprefixed_options)
+- [**```DOCTEST_CONFIG_NO_TRY_CATCH_IN_ASSERTS```**](#doctest_config_no_try_catch_in_asserts)
+- [**```DOCTEST_CONFIG_NO_EXCEPTIONS```**](#doctest_config_no_exceptions)
 - [**```DOCTEST_CONFIG_ASSERTION_PARAMETERS_BY_VALUE```**](#doctest_config_assertion_parameters_by_value)
 - [**```DOCTEST_CONFIG_COLORS_NONE```**](#doctest_config_colors_none)
 - [**```DOCTEST_CONFIG_COLORS_WINDOWS```**](#doctest_config_colors_windows)
@@ -94,6 +96,34 @@ This can be defined both globally and in specific source files only.
 This will disable the short versions of the [**command line**](commandline.md) options and only the versions with ```--dt-``` prefix will be parsed by **doctest** - this is possible for easy interoperability with client command line option handling when the testing framework is integrated within a client codebase - so there are no clashes and so that the user can exclude everything starting with ```--dt-``` from their option parsing.
 
 This should be defined only in the source file where the library is implemented (it's relevant only there).
+
+### **```DOCTEST_CONFIG_NO_TRY_CATCH_IN_ASSERTS```**
+
+This will remove all ```try``` / ```catch``` sections from:
+
+- the [normal asserts](assertions.md#expression-decomposing-asserts)
+- the [binary and unary asserts](assertions.md#expression-decomposing-asserts)
+
+so exceptions thrown while evaluating the expression in an assert will terminate the current test case.
+
+This can be defined both globally and in specific source files only.
+
+### **```DOCTEST_CONFIG_NO_EXCEPTIONS```**
+
+This will remove everything that uses exceptions from the framework - it is also auto detectable for some compilers (GCC, Clang) if exceptions are disabled with ```-fno-exceptions```. For MSVC ```_HAS_EXCEPTIONS``` cannot be used for auto detecting because it is defined in system headers instead of as a project define - and doctest will not include a header just for that. 
+
+What gets changed:
+
+- asserts that evaluate the expression in a ```try``` / ```catch``` section no longer evaluate in such a context
+- ```REQUIRE``` macros are gone
+- [exception macros](assertions.md#exceptions) are gone
+- the ```abort-after``` option won't be fully working because an exception is used to terminate test cases
+
+The ```REQUIRE``` family of asserts uses exceptions to terminate the current test case when they fail. An exception is used instead of a simple ```return;``` because asserts can be used not only in a test case but also in functions called by a test case.
+
+[**```DOCTEST_CONFIG_NO_EXCEPTIONS```**](#doctest_config_no_exceptions) implies [**```DOCTEST_CONFIG_NO_TRY_CATCH_IN_ASSERTS```**](#doctest_config_no_try_catch_in_asserts)
+
+This should be defined globally.
 
 ### **```DOCTEST_CONFIG_ASSERTION_PARAMETERS_BY_VALUE```**
 

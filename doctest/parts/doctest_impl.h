@@ -48,6 +48,8 @@
 #pragma warning(disable : 4706) // assignment within conditional expression
 #pragma warning(disable : 4512) // 'class' : assignment operator could not be generated
 #pragma warning(disable : 4127) // conditional expression is constant
+#pragma warning(disable : 4530) // C++ exception handler used, but unwind semantics are not enabled
+#pragma warning(disable : 4577) // 'noexcept' used with no exception handling mode specified
 #endif                          // _MSC_VER
 
 #if defined(DOCTEST_CONFIG_IMPLEMENT) || defined(DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN) ||            \
@@ -572,7 +574,11 @@ namespace detail
         if(flags & assertAction::shouldthrow)
             throwException();
     }
-    void throwException() { throw TestFailureException(); }
+    void throwException() {
+#ifndef DOCTEST_CONFIG_NO_EXCEPTIONS
+        throw TestFailureException();
+#endif // DOCTEST_CONFIG_NO_EXCEPTIONS
+    }
     bool always_false() { return false; }
 
     // lowers ascii letters
@@ -867,15 +873,19 @@ namespace detail
     // this is needed because MSVC does not permit mixing 2 exception handling schemes in a function
     int callTestFunc(funcType f) {
         int res = EXIT_SUCCESS;
+#ifndef DOCTEST_CONFIG_NO_EXCEPTIONS
         try {
+#endif // DOCTEST_CONFIG_NO_EXCEPTIONS
             f();
             if(getContextState()->numFailedAssertionsForCurrentTestcase)
                 res = EXIT_FAILURE;
+#ifndef DOCTEST_CONFIG_NO_EXCEPTIONS
         } catch(const TestFailureException&) { res = EXIT_FAILURE; } catch(...) {
             DOCTEST_LOG_START();
             logTestCrashed();
             res = EXIT_FAILURE;
         }
+#endif // DOCTEST_CONFIG_NO_EXCEPTIONS
         return res;
     }
 
