@@ -35,6 +35,9 @@ reddit.com/r/programming
 reddit.com/r/gamedev
 reddit.com/r/cplusplus
 
+https://www.facebook.com/groups/cppEnthusiasts/
+
+twitter
 
 
 

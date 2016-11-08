@@ -1,4 +1,3 @@
-[doctest] doctest version is "1.1.2"
 [doctest] run with "--help" for options
 Hello world!
 Hello world!

@@ -107,5 +107,6 @@ Want to see your name or the name of your company here? Consider donating!
 
 ### :hamburger: Bronze sponsors :hamburger:
 
+- Sebastien Feldis
 - Zahari Karadzhov
 - Mario Kostadinov

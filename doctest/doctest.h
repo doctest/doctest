@@ -1856,6 +1856,7 @@ namespace detail
         bool exit;           // if the program should be exited after the tests are ran/whatever
         bool no_exitcode;    // if the framework should return 0 as the exitcode
         bool no_run;         // to not run the tests at all (can be done with an "*" exclude)
+        bool no_version;     // to not print the version of the framework
         bool no_colors;      // if output to the console should be colorized
         bool no_path_in_filenames; // if the path to files should be removed from the output
 
@@ -2933,8 +2934,10 @@ namespace detail
     }
 
     void printVersion() {
-        DOCTEST_PRINTF_COLORED("[doctest] ", Color::Cyan);
-        printf("doctest version is \"%s\"\n", DOCTEST_VERSION_STR);
+        if(getContextState()->no_version == false) {
+            DOCTEST_PRINTF_COLORED("[doctest] ", Color::Cyan);
+            printf("doctest version is \"%s\"\n", DOCTEST_VERSION_STR);
+        }
     }
 
     void printHelp() {
@@ -2985,6 +2988,7 @@ namespace detail
         printf(" -nt,  --no-throw=<bool>               skips exceptions-related assert checks\n");
         printf(" -ne,  --no-exitcode=<bool>            returns (or exits) always with success\n");
         printf(" -nr,  --no-run=<bool>                 skips all runtime doctest operations\n");
+        printf(" -nv,  --no-version=<bool>             omit the framework version in the output\n");
         printf(" -nc,  --no-colors=<bool>              disables colors in output\n");
         printf(" -nb,  --no-breaks=<bool>              disables breakpoints in debuggers\n");
         printf(" -npf, --no-path-filenames=<bool>      only filenames and no paths in output\n\n");
@@ -3063,6 +3067,7 @@ void Context::parseArgs(int argc, const char* const* argv, bool withDefaults) {
     DOCTEST_PARSE_AS_BOOL_OR_FLAG(dt-no-throw, dt-nt, no_throw, 0);
     DOCTEST_PARSE_AS_BOOL_OR_FLAG(dt-no-exitcode, dt-ne, no_exitcode, 0);
     DOCTEST_PARSE_AS_BOOL_OR_FLAG(dt-no-run, dt-nr, no_run, 0);
+    DOCTEST_PARSE_AS_BOOL_OR_FLAG(dt-no-version, dt-nv, no_version, 0);
     DOCTEST_PARSE_AS_BOOL_OR_FLAG(dt-no-colors, dt-nc, no_colors, 0);
     DOCTEST_PARSE_AS_BOOL_OR_FLAG(dt-no-breaks, dt-nb, no_breaks, 0);
     DOCTEST_PARSE_AS_BOOL_OR_FLAG(dt-no-path-filenames, dt-npf, no_path_in_filenames, 0);

@@ -36,6 +36,8 @@ function(doctest_add_test)
     set(the_command "${the_command} --dt-no-path-filenames=1")
     # append the argument for ignoring the exit code of the test programs because some are intended to have failing tests
     set(the_command "${the_command} --dt-no-exitcode=1")
+    # append the argument for not printing the framework version so reference output doesn't have to be recommitted when the version is bumped
+    set(the_command "${the_command} --dt-no-version=1")
     
     string(STRIP ${the_command} the_command)
     

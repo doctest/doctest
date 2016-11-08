@@ -1,4 +1,3 @@
-[doctest] doctest version is "1.1.2"
 [doctest]
 [doctest] boolean values: "1/on/yes/true" or "0/off/no/false"
 [doctest] filter  values: "str1,str2,str3" (comma separated strings)
@@ -41,6 +40,7 @@
  -nt,  --no-throw=<bool>               skips exceptions-related assert checks
  -ne,  --no-exitcode=<bool>            returns (or exits) always with success
  -nr,  --no-run=<bool>                 skips all runtime doctest operations
+ -nv,  --no-version=<bool>             omit the framework version in the output
  -nc,  --no-colors=<bool>              disables colors in output
  -nb,  --no-breaks=<bool>              disables breakpoints in debuggers
  -npf, --no-path-filenames=<bool>      only filenames and no paths in output
