@@ -15,6 +15,7 @@ The identifiers should be defined before the inclusion of the framework header.
 - [**```DOCTEST_CONFIG_NO_UNPREFIXED_OPTIONS```**](#doctest_config_no_unprefixed_options)
 - [**```DOCTEST_CONFIG_NO_TRY_CATCH_IN_ASSERTS```**](#doctest_config_no_try_catch_in_asserts)
 - [**```DOCTEST_CONFIG_NO_EXCEPTIONS```**](#doctest_config_no_exceptions)
+- [**```DOCTEST_CONFIG_NO_EXCEPTIONS_BUT_WITH_ALL_ASSERTS```**](#doctest_config_no_exceptions_but_with_all_asserts)
 - [**```DOCTEST_CONFIG_ASSERTION_PARAMETERS_BY_VALUE```**](#doctest_config_assertion_parameters_by_value)
 - [**```DOCTEST_CONFIG_COLORS_NONE```**](#doctest_config_colors_none)
 - [**```DOCTEST_CONFIG_COLORS_WINDOWS```**](#doctest_config_colors_windows)
@@ -102,7 +103,7 @@ This should be defined only in the source file where the library is implemented 
 This will remove all ```try``` / ```catch``` sections from:
 
 - the [normal asserts](assertions.md#expression-decomposing-asserts)
-- the [binary and unary asserts](assertions.md#expression-decomposing-asserts)
+- the [binary and unary asserts](assertions.md#binary-and-unary-asserts)
 
 so exceptions thrown while evaluating the expression in an assert will terminate the current test case.
 
@@ -115,15 +116,29 @@ This will remove everything that uses exceptions from the framework - it is also
 What gets changed:
 
 - asserts that evaluate the expression in a ```try``` / ```catch``` section no longer evaluate in such a context
-- ```REQUIRE``` macros are gone
-- [exception macros](assertions.md#exceptions) are gone
+- ```REQUIRE``` macros are gone (undefined)
+- [exception macros](assertions.md#exceptions) are gone (undefined)
 - the ```abort-after``` option won't be fully working because an exception is used to terminate test cases
 
 The ```REQUIRE``` family of asserts uses exceptions to terminate the current test case when they fail. An exception is used instead of a simple ```return;``` because asserts can be used not only in a test case but also in functions called by a test case.
 
 [**```DOCTEST_CONFIG_NO_EXCEPTIONS```**](#doctest_config_no_exceptions) implies [**```DOCTEST_CONFIG_NO_TRY_CATCH_IN_ASSERTS```**](#doctest_config_no_try_catch_in_asserts)
 
+If you wish to use asserts that deal with exceptions and only sometimes build without exceptions - check the [**```DOCTEST_CONFIG_NO_EXCEPTIONS_BUT_WITH_ALL_ASSERTS```**](#doctest_config_no_exceptions_but_with_all_asserts) config option.
+
 This should be defined globally.
+
+
+### **```DOCTEST_CONFIG_NO_EXCEPTIONS_BUT_WITH_ALL_ASSERTS```**
+
+When building with no exceptions (see [**```DOCTEST_CONFIG_NO_EXCEPTIONS```**](#doctest_config_no_exceptions)) ```REQUIRE``` asserts and the ones about dealing with exceptions are gone.
+
+If however you want your code to use these assertions and only sometimes build without exceptions - then using this config will be of help. The effects of using it are the following:
+
+- ```REQUIRE``` asserts are not gone - but they act like ```CHECK``` asserts - when one of them fails the whole test case will be marked as failed but will not be exited immediately
+- the [asserts for dealing with exceptions](assertions.md#exceptions) are turned into a no-op (instead of being totally undefined)
+
+This can be defined both globally and in specific source files only.
 
 ### **```DOCTEST_CONFIG_ASSERTION_PARAMETERS_BY_VALUE```**
 

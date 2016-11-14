@@ -48,6 +48,7 @@ addons:
       - llvm-toolchain-precise-3.6
       - llvm-toolchain-precise-3.7
       - llvm-toolchain-precise-3.8
+      - llvm-toolchain-precise-3.9
       - llvm-toolchain-precise
 
 compiler: clang
@@ -162,6 +163,13 @@ matrix:
       addons: &clang38
         apt:
           packages: ["clang-3.8", "valgrind", "g++-multilib", "libc6-dbg", "libc6-dbg:i386", "g++-6"]
+          sources: *apt_sources
+
+    # Clang 3.9
+    - env: COMPILER=clang++-3.9 HAS_ASAN_64=true HAS_UBSAN_64=true
+      addons: &clang39
+        apt:
+          packages: ["clang-3.9", "valgrind", "g++-multilib", "libc6-dbg", "libc6-dbg:i386", "g++-6"]
           sources: *apt_sources
 
     # Xcode 6.1 Clang

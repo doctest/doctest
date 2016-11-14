@@ -1441,9 +1441,13 @@ public:
 #define DOCTEST_FAST_REQUIRE_UNARY_FALSE(v)                                                        \
     DOCTEST_FAST_UNARY_ASSERT(DT_FAST_REQUIRE_UNARY_FALSE, v)
 
+
+
+// OMGOMGOMG trqbva da napravq teq da sa no-op - a ne prosto da ne gi undef-vam
+
+
+
 #ifdef DOCTEST_CONFIG_NO_EXCEPTIONS
-#undef DOCTEST_REQUIRE
-#undef DOCTEST_REQUIRE_FALSE
 
 #undef DOCTEST_WARN_THROWS
 #undef DOCTEST_CHECK_THROWS
@@ -1455,6 +1459,22 @@ public:
 #undef DOCTEST_CHECK_NOTHROW
 #undef DOCTEST_REQUIRE_NOTHROW
 
+#ifdef DOCTEST_CONFIG_NO_EXCEPTIONS_BUT_WITH_ALL_ASSERTS
+
+#define DOCTEST_WARN_THROWS(expr) ((void)0)
+#define DOCTEST_WARN_THROWS_AS(expr, ex) ((void)0)
+#define DOCTEST_WARN_NOTHROW(expr) ((void)0)
+#define DOCTEST_CHECK_THROWS(expr) ((void)0)
+#define DOCTEST_CHECK_THROWS_AS(expr, ex) ((void)0)
+#define DOCTEST_CHECK_NOTHROW(expr) ((void)0)
+#define DOCTEST_REQUIRE_THROWS(expr) ((void)0)
+#define DOCTEST_REQUIRE_THROWS_AS(expr, ex) ((void)0)
+#define DOCTEST_REQUIRE_NOTHROW(expr) ((void)0)
+
+#else // DOCTEST_CONFIG_NO_EXCEPTIONS_BUT_WITH_ALL_ASSERTS
+
+#undef DOCTEST_REQUIRE
+#undef DOCTEST_REQUIRE_FALSE
 #undef DOCTEST_REQUIRE_EQ
 #undef DOCTEST_REQUIRE_NE
 #undef DOCTEST_REQUIRE_GT
@@ -1471,6 +1491,9 @@ public:
 #undef DOCTEST_FAST_REQUIRE_LE
 #undef DOCTEST_FAST_REQUIRE_UNARY
 #undef DOCTEST_FAST_REQUIRE_UNARY_FALSE
+
+#endif // DOCTEST_CONFIG_NO_EXCEPTIONS_BUT_WITH_ALL_ASSERTS
+
 #endif // DOCTEST_CONFIG_NO_EXCEPTIONS
 
 // =================================================================================================
