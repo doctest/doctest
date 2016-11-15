@@ -38,11 +38,11 @@ The **key** differences between it and other testing libraries are:
 - Very [**portable and well tested**](doc/markdown/features.md#extremely-portable) C++98 - per commit tested on CI with over 220 different builds (valgrind, sanitizers...)
 - Just one header and no external dependencies apart from the C/C++ standard library
 
-This allows the library to be used in more ways than any other - tests can be written directly in the production code!
+This allows the framework to be used in more ways than any other - tests can be written directly in the production code!
 
 - This makes the barrier for writing tests **much lower** - you don't have to: **1.** make a separate source file **2.** include a bunch of stuff in it **3.** add it to the build system and **4.** add it to source control - You can just write the tests for a class or a piece of functionality at the bottom of its source file - or even header file!
 - Tests in the production code can be thought of as documentation or up-to-date comments - showing how an API is used
-- Tests can be shipped to the customer with the software to diagnose a bug faster
+- Testing internals that are not exposed through the public API and headers becomes easier!
 - [**Test-driven development**](https://en.wikipedia.org/wiki/Test-driven_development) in C++ has never been easier!
 
 The library can be used like any other if you don't like the idea of mixing production code and tests - check out the [**features**](doc/markdown/features.md)
@@ -52,8 +52,9 @@ The library can be used like any other if you don't like the idea of mixing prod
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 [![Version](https://badge.fury.io/gh/onqtam%2Fdoctest.svg)](https://github.com/onqtam/doctest/releases)
 [![download](https://img.shields.io/badge/latest%20version%20%20-download-blue.svg)](https://raw.githubusercontent.com/onqtam/doctest/master/doctest/doctest.h)
+[![documentation](https://img.shields.io/badge/documentation%20%20-online-blue.svg)](https://github.com/onqtam/doctest/blob/master/doc/markdown/readme.md#reference)
 [![Join the chat at https://gitter.im/onqtam/doctest](https://badges.gitter.im/onqtam/doctest.svg)](https://gitter.im/onqtam/doctest?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
-[![Try it online](https://img.shields.io/badge/try%20it-online-orange.svg)](http://melpon.org/wandbox/permlink/4gPfNjBxv451KETt)
+[![Try it online](https://img.shields.io/badge/try%20it-online-orange.svg)](http://melpon.org/wandbox/permlink/98bXGRVLiIHjlZcK)
 
 Contributing
 ------------

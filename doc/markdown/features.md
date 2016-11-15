@@ -7,13 +7,15 @@ It is modeled after [**Catch**](https://github.com/philsquared/Catch) which is c
 ## Unintrusive (transparent):
 
 - everything testing-related can be removed from the binary executable by defining the [**```DOCTEST_CONFIG_DISABLE```**](configuration.md#doctest_config_disable) identifier
-- very small and easy to integrate - single header - **extremely** low footprint on compile times - see the [**benchmarks**](benchmarks.md)
+- very small and easy to integrate - single header
+- **Extremely** low footprint on compile times - [**below 10ms**](benchmarks.md#cost-of-including-the-header) of compile time overhead for including the header in a source file
+- The [**fastest possible**](benchmarks.md#cost-of-an-assertion-macro) assertion macros - 50k asserts can compile for under 30 seconds (even under 10 sec)
 - doesn't drag any headers when included (except for in the translation unit where the library gets implemented)
 - everything is in the ```doctest``` namespace (and the implementation details are in a nested ```detail``` namespace)
 - all macros have prefixes - some by default have unprefixed versions as well but that is optional - see [**configuration**](configuration.md)
 - 0 warnings even with the most aggresive flags (on all tested compilers!!!)
 	- ```-Weverything -pedantic``` for **clang**
-	- ```-Wall -Wextra -pedantic``` and **>> over 50 <<** other warnings **not** covered by these flags for **GCC**!!! - see [**here**](../../scripts/common.cmake#L59)
+	- ```-Wall -Wextra -pedantic``` and **>> over 50 <<** other warnings **not** covered by these flags for **GCC**!!! - see [**here**](../../scripts/common.cmake#L77)
 	- ```/W4``` for **MSVC** (```/Wall``` is too much there - even their own headers produce **thousands** of warnings with that option)
 - doesn't error on unrecognized [**command line**](commandline.md) options and supports prefixes for interop with client command line parsing
 - can set options [**procedurally**](main.md) and not deal with passing ```argc```/```argv``` from the command line
@@ -23,7 +25,7 @@ It is modeled after [**Catch**](https://github.com/philsquared/Catch) which is c
 
 - Standards compliant **C++98** code - should work with any **C++98** compiler
 - tested with **GCC**: **4.4**, **4.5**, **4.6**, **4.7**, **4.8**, **4.9**, **5**, **6**
-- tested with **Clang**: **3.4**, **3.5**, **3.6**, **3.7**, **3.8**
+- tested with **Clang**: **3.4**, **3.5**, **3.6**, **3.7**, **3.8**, **3.9**
 - tested with **MSVC**: **2008**, **2010**, **2012**, **2013**, **2015**
 - per-commit tested on **travis** and **appveyor** CI services
 	- warnings as errors even on the most aggressive warning levels - see [**here**](../../scripts/common.cmake#L71)
@@ -33,6 +35,17 @@ It is modeled after [**Catch**](https://github.com/philsquared/Catch) which is c
 	- all tests ran through **address** and **UB** sanitizers under **Linux**/**OSX**
 	- tests are ran in more than **200** different configurations on UNIX (Linux + OSX) on **travis** CI
 	- tests are ran in a total of **20** different configurations on Windows on **appveyor** CI
+
+---------------
+
+This allows the library to be used in more ways than any other - tests can be written directly in the production code!
+
+- This makes the barrier for writing tests **much lower** - you don't have to: **1.** make a separate source file **2.** include a bunch of stuff in it **3.** add it to the build system and **4.** add it to source control - You can just write the tests for a class or a piece of functionality at the bottom of its source file - or even header file!
+- Tests in the production code can be thought of as documentation or up-to-date comments - showing how an API is used
+- Testing internals that are not exposed through the public API and headers becomes easier!
+- [**Test-driven development**](https://en.wikipedia.org/wiki/Test-driven_development) in C++ has never been easier!
+
+The library can be used like any other if you don't like the idea of mixing production code and tests.
 
 ## Other features:
 

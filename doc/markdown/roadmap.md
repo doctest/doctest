@@ -1,8 +1,7 @@
 ## Roadmap
 
-Support the development of the project with donations! I work on this project in my spare time and every cent is a big deal.
+This library is free, and will stay free but needs your support to sustain its development. There are lots of [**new features**](roadmap.md) and maintenance to do. If you work for a company using **doctest** or have the means to do so, please consider financial support.
 
-If you work for a company using doctest or have the means to do so, please consider financial support.
 
 [![Pledgie](https://pledgie.com/campaigns/31280.png)](https://pledgie.com/campaigns/31280)
 [![Patreon](https://cloud.githubusercontent.com/assets/8225057/5990484/70413560-a9ab-11e4-8942-1a63607c0b00.png)](http://www.patreon.com/onqtam)

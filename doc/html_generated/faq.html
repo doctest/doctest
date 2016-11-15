@@ -97,9 +97,7 @@ Also note that it would be a good idea to add a tag in your test case names (lik
 
 ### Does the framework use exceptions?
 
-Yes. The ```REQUIRE``` family of asserts uses exceptions to terminate the current test case when they fail. An exception is used instead of a simple ```return;``` because asserts can be used not only in a test case but also in functions called by a test case.
-
-It hasn't been tested yet what happens when compiling with ```-fno-exceptions```.
+Yes - but they can be disabled - see the [**```DOCTEST_CONFIG_NO_EXCEPTIONS```**](configuration.html#doctest_config_no_exceptions) config identifier.
 
 ### Why do I get compiler errors in STL headers when including the doctest header?
 
