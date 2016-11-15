@@ -1,5 +1,12 @@
 # Change Log
 
+## [1.1.3](https://github.com/onqtam/doctest/tree/1.1.3) (2016-11-15)
+[Full Changelog](https://github.com/onqtam/doctest/compare/1.1.2...1.1.3)
+
+**Closed issues:**
+
+- Exception handlers cause warnings when exceptions are disabled [\#44](https://github.com/onqtam/doctest/issues/44)
+
 ## [1.1.2](https://github.com/onqtam/doctest/tree/1.1.2) (2016-10-10)
 [Full Changelog](https://github.com/onqtam/doctest/compare/1.1.1...1.1.2)
 
