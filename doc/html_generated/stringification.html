@@ -34,17 +34,19 @@ std::ostream& T::operator<<(std::ostream& os) const {
 
 ## ```doctest::toString``` overload
 
-If you don't want to provide an ```operator<<``` overload, or you want to convert your type differently for testing purposes, you can provide an overload for ```doctest::toString()``` for your type.
+If you don't want to provide an ```operator<<``` overload, or you want to convert your type differently for testing purposes, you can provide an overload for ```toString()``` for your type which returns ```doctest::String```.
 
 ```
-namespace doctest {
-	String toString(const T& value) {
+namespace user {
+    struct udt {};
+    
+	doctest::String toString(const udt& value) {
 		return convertMyTypeToString(value);
 	}
 }
 ```
 
-Again ```T``` is your type and ```convertMyTypeToString``` is where you'll write whatever code is necessary to make your type printable. Note that the function must be in the **doctest** namespace which itself must be in the global namespace.
+Note that the function must be in the same namespace as your type. If the type is not in any namespace - then the overload should be in the global namespace as well. ```convertMyTypeToString``` is where you'll write whatever code is necessary to make your type printable.
 
 ## ```doctest::StringMaker<T>``` specialisation
 

@@ -69,19 +69,17 @@ std::ostream& operator<<(std::ostream& stream, const MyType<T, K>& in) {
     return stream;
 }
 
+namespace Bar {
 struct Foo
 {};
-
 static bool operator==(const Foo&, const Foo&) { return false; }
 
-// as a third option you may specialize the doctest::toString() template function
-namespace doctest
-{
-template <>
-String toString(const Foo&) {
+doctest::String toString(const Foo&); // to silence -Wmissing-declarations
+// as a third option you may provide an overload of toString()
+doctest::String toString(const Foo&) {
     return "Foo{}";
 }
-}
+} // namespace Bar
 
 TEST_CASE("the only test") {
     MyTypeInherited<int> bla1;
@@ -91,8 +89,8 @@ TEST_CASE("the only test") {
     bla2.one = 5;
     bla2.two = 6.0f;
 
-    Foo f1;
-    Foo f2;
+    Bar::Foo f1;
+    Bar::Foo f2;
     CHECK(f1 == f2);
 
     // std::string already has an operator<< working with std::ostream
