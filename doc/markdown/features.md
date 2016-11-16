@@ -8,7 +8,7 @@ It is modeled after [**Catch**](https://github.com/philsquared/Catch) which is c
 
 - everything testing-related can be removed from the binary executable by defining the [**```DOCTEST_CONFIG_DISABLE```**](configuration.md#doctest_config_disable) identifier
 - very small and easy to integrate - single header
-- **Extremely** low footprint on compile times - [**below 10ms**](benchmarks.md#cost-of-including-the-header) of compile time overhead for including the header in a source file
+- **Extremely** low footprint on compile times - [**below 10ms**](benchmarks.md#cost-of-including-the-header) of compile time overhead for including the header in a file
 - The [**fastest possible**](benchmarks.md#cost-of-an-assertion-macro) assertion macros - 50k asserts can compile for under 30 seconds (even under 10 sec)
 - doesn't drag any headers when included (except for in the translation unit where the library gets implemented)
 - everything is in the ```doctest``` namespace (and the implementation details are in a nested ```detail``` namespace)
