@@ -1,0 +1,191 @@
+== doctest - the lightest C++ unit testing framework
+
+doctest is a fully open source light and feature-rich C++98 / C++11 single-header testing framework for unit tests and TDD.
+
+It is inspired by the unittest {} functionality of the D programming language and Python's docstrings - tests can be considered a form of documentation and should be able to reside near the production code which they test. This isn't possible (or at least practical) with any other testing framework for C++.
+
+Web Site:  https://github.com/onqtam/doctest
+Version tested: 1.1.3
+System requirements: C++98 or newer
+License & Pricing: MIT, free
+Support: as issues through the GitHub project page
+
+== Introduction
+
+A complete example with a self-registering test that compiles to an executable looks like this:
+
+#define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
+#include "doctest.h"
+
+int fact(int n) { return n <= 1 ? n : fact(n - 1) * n; }
+
+TEST_CASE("testing the factorial function") {
+    CHECK(fact(0) == 1); // will fail
+    CHECK(fact(1) == 1);
+    CHECK(fact(2) == 2);
+    CHECK(fact(10) == 3628800);
+}
+
+And the output from that program is the following:
+
+[doctest] doctest version is "1.1.3"
+[doctest] run with "--help" for options
+========================================================
+main.cpp(6)
+testing the factorial function
+
+main.cpp(7) FAILED!
+  CHECK( fact(0) == 1 )
+with expansion:
+  CHECK( 0 == 1 )
+
+========================================================
+[doctest] test cases:    1 |    0 passed |    1 failed |
+[doctest] assertions:    4 |    3 passed |    1 failed |
+
+Note how a standard C++ operator for equality comparison is used - doctest has one core assertion macro (it also has for less than, equals, greater than...) - yet the full expression is decomposed and the left and right values are logged. This is done with expression templates and C++ trickery. Also the test case is automatically registered - you don't need to manually insert it to a list.
+
+Doctest is modeled after Catch [1] which is currently the most popular alternative for testing in C++ - check out the differences in the FAQ [7]. Currently a few things which Catch has are missing but doctest will eventually become a superset of Catch.
+
+== Motivation behind the framework - how is it different
+
+There are many C++ testing frameworks - Catch [1], Boost.Test [2], UnitTest++ [3], cpputest [4], googletest [5] and many other [6].
+
+What makes doctest different is that it is ultra light on compile times (by orders of magnitude) and is unintrusive.
+
+The key differences between it and the others are:
+
+- Ultra light - below 10ms of compile time overhead for including the header in a source file
+- The fastest possible assertion macros - 50 000 asserts can compile for under 30 seconds (even under 10 sec)
+- Subcases - an intuitive way to share common setup and teardown code for test cases (alternative to fixtures)
+- Offers a way to remove everything testing-related from the binary with the DOCTEST_CONFIG_DISABLE identifier
+- Doesn't pollute the global namespace (everything is in the doctest namespace) and doesn't drag any headers with it
+- Doesn't produce any warnings even on the most aggressive warning levels for MSVC / GCC / Clang
+    * -Weverything for Clang
+    * /W4 for MSVC
+    * -Wall -Wextra -pedantic and over 50 other flags!
+- Very portable and well tested C++98 - per commit tested on CI with over 220 different builds with different compilers and configurations (gcc 4.4-6.1 / clang 3.4-3.9 / MSVC 2008-2015, debug / release, x86/x64, linux / windows / osx, valgrind, sanitizers...)
+- Just one header and no external dependencies apart from the C / C++ standard library (which are used only in the test runner)
+
+== The unique ability that this framework provides
+
+All the previously listed pros allow the framework to be used in more ways than any other - tests can be written directly in the production code!
+
+- This makes the barrier for writing tests much lower - you don't have to: 1. make a separate source file 2. include a bunch of stuff in it 3. add it to the build system and 4. add it to source control - You can just write the tests for a class or a piece of functionality at the bottom of its source file - or even header file!
+- Tests in the production code can be thought of as documentation or up-to-date comments - showing how an API is used (correctness enforced by the compiler).
+- Testing internals that are not exposed through the public API and headers becomes easier.
+- Test-driven development in C++ has never been easier!
+
+The framework can still be used like any other even if the idea of writing tests in the production code doesn't appeal to you - but this is the biggest power of the framework - which nothing else offers!
+
+There are many other features [8] and a lot more are planned in the roadmap [9].
+
+== The main() entry point
+
+As we saw in the example above - a main() entry point for the program can be provided by the framework. If however you are writing the tests in your production code you probably already have a main() function. The following code example shows how doctest is used from a user main():
+
+#define DOCTEST_CONFIG_IMPLEMENT
+#include "doctest.h"
+int main(int argc, char** argv) {
+    doctest::Context ctx;
+    ctx.setOption("abort-after", 5);  // default - stop after 5 failed asserts
+    ctx.applyCommandLine(argc, argv); // apply command line - argc / argv
+    ctx.setOption("no-breaks", true); // override - don't break in the debugger
+    int res = ctx.run();              // run test cases unless with --no-run
+    if(ctx.shouldExit())              // query flags (and --exit) rely on this
+        return res;                   // propagate the result of the tests
+    // your code goes here
+    return res; // + your_program_res
+}
+
+With this setup the following 3 scenarios are possible:
+- running only the tests (with the --exit option)
+- running only the user code (with the --no-run option)
+- running both the tests and the user code
+
+This must be possible if you are going to write the tests directly in the production code.
+
+Also this example shows how defaults and overrides can be set for command line options.
+
+Note that the DOCTEST_CONFIG_IMPLEMENT or DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN identifiers should be defined before including the framework header - but only in one source file - where the test runner will get implemented. Everywhere else just include the header and write some tests. This is a common practice for single-header libraries that need a part of them to be compiled in one source file (in this case the test runner).
+
+== Removing everything testing-related from the binary
+
+You might want to remove the tests from your production code when building the release build that will be shipped to customers. The way this is done using doctest is by defining the DOCTEST_CONFIG_DISABLE preprocessor identifier in your whole project.
+
+The effect that identifier has on the TEST_CASE macro for example is the following - it gets turned into an anonymous template that never gets instantiated:
+
+#define TEST_CASE(name)                       \
+    template <typename T>                     \
+    static inline void ANONYMOUS(ANON_FUNC_)()
+
+This means that all test cases are trimmed out of the resulting binary - even in Debug mode! The linker doesn't ever see the anonymous test case functions because they are never instantiated.
+
+The ANONYMOUS() macro is used to get unique identifiers each time it's called - it uses the __COUNTER__ preprocessor macro which returns an integer with 1 greater than the last time each time it gets used. For example:
+
+int ANONYMOUS(ANON_VAR_); // int ANON_VAR_5;
+int ANONYMOUS(ANON_VAR_); // int ANON_VAR_6;
+
+== Subcases - the easiest way to share setup / teardown code between test cases
+
+Suppose you want to open a file in a few test cases and read from it. If you don't want to copy / paste the same setup code a few times you might use the Subcases mechanism of doctest.
+
+TEST_CASE("testing file stuff") {
+    printf("opening the file\n");
+    FILE* fp = fopen("path/to/file", "r");
+    
+    SUBCASE("seeking in file") {
+        printf("seeking\n");
+        // fseek()
+    }
+    SUBCASE("reading from file") {
+        printf("reading\n");
+        // fread()
+    }
+    printf("closing...\n");
+    fclose(fp);
+}
+
+The following text will be printed:
+
+opening the file
+seeking
+closing...
+opening the file
+reading
+closing...
+
+As you can see the test case was entered twice - and each time a different subcase was entered. Subcases can also be infinitely nested. The execution model resembles a DFS traversal - each time starting from the start of the test case and traversing the "tree" until a leaf node is reached (one that hasn't been traversed yet) - then the test case is exited by popping the stack of entered nested subcases.
+
+== Compile time benchmarks
+
+So there are 3 types of compile time benchmarks that are relevant for doctest:
+- cost of including the header
+- cost of assertion macros
+- how much the build times drop when all tests are removed with the DOCTEST_CONFIG_DISABLE identifier
+
+In summary:
+- Including the doctest header costs around 10ms compared to 430ms of Catch - so doctest is 25-50 times lighter
+- 50 000 asserts compile for roughly 60 seconds which is around 25% faster than Catch
+- 50 000 asserts can compile for as low as 10 seconds if alternative assert macros are used (for power users)
+- 50 000 asserts spread in 500 test cases just vanish when disabled with DOCTEST_CONFIG_DISABLE - less than 2 seconds!
+
+In the benchmarks page [10] you can see the setup and more details for the benchmarks.
+
+== Conclusion
+
+The doctest framework is really easy to get started with and is fully transparent and unintrusive - including it and writing tests will be unnoticeable both in terms of compile times and integration (warnings, build system, etc). Using it will speed up your development process as much as possible - no other framework is so easy to use!
+
+The development of doctest is supported with donations.
+
+[1] https://github.com/philsquared/Catch
+[2] http://www.boost.org/doc/libs/1_60_0/libs/test/doc/html/index.html
+[3] https://github.com/unittest-cpp/unittest-cpp
+[4] https://github.com/cpputest/cpputest
+[5] https://github.com/google/googletest
+[6] https://en.wikipedia.org/wiki/List_of_unit_testing_frameworks#C.2B.2B
+[7] https://github.com/onqtam/doctest/blob/master/doc/markdown/faq.md#how-is-doctest-different-from-catch
+[8] https://github.com/onqtam/doctest/blob/master/doc/markdown/features.md
+[9] https://github.com/onqtam/doctest/blob/master/doc/markdown/roadmap.md
+[10] https://github.com/onqtam/doctest/blob/master/doc/markdown/benchmarks.md
+
