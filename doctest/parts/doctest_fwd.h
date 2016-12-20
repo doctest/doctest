@@ -945,6 +945,7 @@ namespace detail
     void logTestEnd();
 
     void logTestCrashed();
+    void logTestException(const char* what);
 
     void logAssert(bool passed, const char* decomposition, bool threw, const char* expr,
                    assertType::Enum assert_type, const char* file, int line);
