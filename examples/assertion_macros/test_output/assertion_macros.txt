@@ -1,18 +1,24 @@
 [doctest] run with "--help" for options
 ===============================================================================
-main.cpp(16)
+main.cpp(22)
 an empty test that will fail because of an exception
 
 TEST CASE FAILED! (threw exception)
 
 ===============================================================================
-main.cpp(20)
+main.cpp(24)
+an empty test that will fail because of a std::exception
+
+TEST CASE FAILED! (threw exception: Exception)
+
+===============================================================================
+main.cpp(28)
 normal macros
 
-main.cpp(24) FAILED! (threw exception)
+main.cpp(32) FAILED! (threw exception)
   CHECK( throws(true) == 42 )
 
-main.cpp(38) FAILED! 
+main.cpp(46) FAILED! 
   CHECK( Approx(0.502) == 0.501 )
 with expansion:
   CHECK( Approx( 0.502 ) == 0.501 )
@@ -20,21 +26,51 @@ with expansion:
 TEST CASE FAILED! (threw exception)
 
 ===============================================================================
-main.cpp(43)
-exceptions-related macros
+main.cpp(51)
+normal macros with std::exception
 
-main.cpp(44) FAILED!
-  CHECK_THROWS( throws(false) )
+main.cpp(55) FAILED! (threw exception)
+  CHECK( throws_stdexcept(true) == 42 )
 
-main.cpp(45) FAILED! (didn't throw at all)
-  CHECK_THROWS_AS( throws(false), int )
+main.cpp(69) FAILED! 
+  CHECK( Approx(0.502) == 0.501 )
+with expansion:
+  CHECK( Approx( 0.502 ) == 0.501 )
 
-main.cpp(47) FAILED! (threw something else)
-  CHECK_THROWS_AS( throws(true), char )
-
-main.cpp(49) FAILED!
-  REQUIRE_NOTHROW( throws(true) )
+TEST CASE FAILED! (threw exception)
 
 ===============================================================================
-[doctest] test cases:    4 |    1 passed |    3 failed |    0 skipped
-[doctest] assertions:   12 |    6 passed |    6 failed |
+main.cpp(74)
+exceptions-related macros
+
+main.cpp(75) FAILED!
+  CHECK_THROWS( throws(false) )
+
+main.cpp(76) FAILED! (didn't throw at all)
+  CHECK_THROWS_AS( throws(false), int )
+
+main.cpp(78) FAILED! (threw something else)
+  CHECK_THROWS_AS( throws(true), char )
+
+main.cpp(80) FAILED!
+  CHECK_NOTHROW( throws(true) )
+
+===============================================================================
+main.cpp(83)
+exceptions-related macros for std::exception
+
+main.cpp(84) FAILED!
+  CHECK_THROWS( throws_stdexcept(false) )
+
+main.cpp(85) FAILED! (didn't throw at all)
+  CHECK_THROWS_AS( throws_stdexcept(false), std::exception )
+
+main.cpp(87) FAILED! (threw something else)
+  CHECK_THROWS_AS( throws_stdexcept(true), int )
+
+main.cpp(89) FAILED!
+  REQUIRE_NOTHROW( throws_stdexcept(true) )
+
+===============================================================================
+[doctest] test cases:    7 |    1 passed |    6 failed |    0 skipped
+[doctest] assertions:   24 |   12 passed |   12 failed |
