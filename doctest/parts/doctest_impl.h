@@ -100,6 +100,7 @@
 #include <iomanip>
 #include <vector>
 #include <set>
+#include <stdexcept>
 
 namespace doctest
 {
@@ -880,7 +881,13 @@ namespace detail
             if(getContextState()->numFailedAssertionsForCurrentTestcase)
                 res = EXIT_FAILURE;
 #ifndef DOCTEST_CONFIG_NO_EXCEPTIONS
-        } catch(const TestFailureException&) { res = EXIT_FAILURE; } catch(...) {
+        } catch(const TestFailureException&) {
+            res = EXIT_FAILURE;
+        } catch(const std::exception &e) {
+            DOCTEST_LOG_START();
+            logTestException(e.what());
+            res = EXIT_FAILURE;
+        } catch(...) {
             DOCTEST_LOG_START();
             logTestCrashed();
             res = EXIT_FAILURE;
@@ -997,6 +1004,16 @@ namespace detail
         char msg[DOCTEST_SNPRINTF_BUFFER_LENGTH];
 
         DOCTEST_SNPRINTF(msg, DOCTEST_COUNTOF(msg), "TEST CASE FAILED! (threw exception)\n\n");
+
+        DOCTEST_PRINTF_COLORED(msg, Color::Red);
+
+        printToDebugConsole(String(msg));
+    }
+
+    void logTestException(const char *what) {
+        char msg[DOCTEST_SNPRINTF_BUFFER_LENGTH];
+
+        DOCTEST_SNPRINTF(msg, DOCTEST_COUNTOF(msg), "TEST CASE FAILED! (threw exception: %s)\n\n", what);
 
         DOCTEST_PRINTF_COLORED(msg, Color::Red);
 
