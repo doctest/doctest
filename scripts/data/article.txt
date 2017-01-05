@@ -2,13 +2,19 @@
 
 doctest is a fully open source light and feature-rich C++98 / C++11 single-header testing framework for unit tests and TDD.
 
-It is inspired by the unittest {} functionality of the D programming language and Python's docstrings - tests can be considered a form of documentation and should be able to reside near the production code which they test. This isn't possible (or at least practical) with any other testing framework for C++.
+It is inspired by the unittest {} functionality of the D programming language and Python's docstrings - tests can be considered a form of documentation and should be able to reside near the production code (for example in the same source file a class is implemented) which they test. This isn't possible (or at least practical) with any other testing framework for C++.
+
+A few reasons you might want to do that:
+- testing private parts (unexposed through the public API of a module) becomes possible
+- lower barrier for writing tests - no separate source files in the build system and source control
+- faster iteration times - TDD becomes a lot easier
+- code and tests stay in sync
 
 Web Site:  https://github.com/onqtam/doctest
 Version tested: 1.1.3
 System requirements: C++98 or newer
 License & Pricing: MIT, free
-Support: as issues through the GitHub project page
+Support: through the GitHub project page
 
 == Introduction
 
@@ -43,7 +49,7 @@ with expansion:
 [doctest] test cases:    1 |    0 passed |    1 failed |
 [doctest] assertions:    4 |    3 passed |    1 failed |
 
-Note how a standard C++ operator for equality comparison is used - doctest has one core assertion macro (it also has for less than, equals, greater than...) - yet the full expression is decomposed and the left and right values are logged. This is done with expression templates and C++ trickery. Also the test case is automatically registered - you don't need to manually insert it to a list.
+Note how a standard C++ operator for equality comparison is used - doctest has one core assertion macro (it also has macros for less than, equals, greater than...) - yet the full expression is decomposed and the left and right values are logged. This is done with expression templates and C++ trickery. Also the test case is automatically registered - you don't need to manually insert it to a list.
 
 Doctest is modeled after Catch [1] which is currently the most popular alternative for testing in C++ - check out the differences in the FAQ [7]. Currently a few things which Catch has are missing but doctest will eventually become a superset of Catch.
 
@@ -51,11 +57,11 @@ Doctest is modeled after Catch [1] which is currently the most popular alternati
 
 There are many C++ testing frameworks - Catch [1], Boost.Test [2], UnitTest++ [3], cpputest [4], googletest [5] and many other [6].
 
-What makes doctest different is that it is ultra light on compile times (by orders of magnitude) and is unintrusive.
+What makes doctest different is that it is ultra light on compile times (by orders of magnitude - further details are in the "Compile time benchmarks" section) and is unintrusive.
 
 The key differences between it and the others are:
 
-- Ultra light - below 10ms of compile time overhead for including the header in a source file
+- Ultra light - below 10ms of compile time overhead for including the header in a source file - see the "Compile time benchmarks" section
 - The fastest possible assertion macros - 50 000 asserts can compile for under 30 seconds (even under 10 sec)
 - Subcases - an intuitive way to share common setup and teardown code for test cases (alternative to fixtures)
 - Offers a way to remove everything testing-related from the binary with the DOCTEST_CONFIG_DISABLE identifier
@@ -72,7 +78,7 @@ The key differences between it and the others are:
 All the previously listed pros allow the framework to be used in more ways than any other - tests can be written directly in the production code!
 
 - This makes the barrier for writing tests much lower - you don't have to: 1. make a separate source file 2. include a bunch of stuff in it 3. add it to the build system and 4. add it to source control - You can just write the tests for a class or a piece of functionality at the bottom of its source file - or even header file!
-- Tests in the production code can be thought of as documentation or up-to-date comments - showing how an API is used (correctness enforced by the compiler).
+- Tests in the production code can be thought of as active documentation or up-to-date comments - showing how an API is used (correctness enforced by the compiler).
 - Testing internals that are not exposed through the public API and headers becomes easier.
 - Test-driven development in C++ has never been easier!
 
@@ -132,28 +138,27 @@ Suppose you want to open a file in a few test cases and read from it. If you don
 
 TEST_CASE("testing file stuff") {
     printf("opening the file\n");
-    FILE* fp = fopen("path/to/file", "r");
+    std::ifstream is ("test.txt", std::ifstream::binary);
     
     SUBCASE("seeking in file") {
         printf("seeking\n");
-        // fseek()
+        // is.seekg()
     }
     SUBCASE("reading from file") {
         printf("reading\n");
-        // fread()
+        // is.read()
     }
-    printf("closing...\n");
-    fclose(fp);
+    printf("closing... (by the destructor)\n");
 }
 
 The following text will be printed:
 
 opening the file
 seeking
-closing...
+closing... (by the destructor)
 opening the file
 reading
-closing...
+closing... (by the destructor)
 
 As you can see the test case was entered twice - and each time a different subcase was entered. Subcases can also be infinitely nested. The execution model resembles a DFS traversal - each time starting from the start of the test case and traversing the "tree" until a leaf node is reached (one that hasn't been traversed yet) - then the test case is exited by popping the stack of entered nested subcases.
 
@@ -170,7 +175,7 @@ In summary:
 - 50 000 asserts can compile for as low as 10 seconds if alternative assert macros are used (for power users)
 - 50 000 asserts spread in 500 test cases just vanish when disabled with DOCTEST_CONFIG_DISABLE - less than 2 seconds!
 
-In the benchmarks page [10] you can see the setup and more details for the benchmarks.
+In the benchmarks page [10] of the project documentation you can see the setup and more details for the benchmarks.
 
 == Conclusion
 
