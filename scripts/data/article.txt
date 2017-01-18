@@ -2,15 +2,7 @@
 
 doctest is a fully open source light and feature-rich C++98 / C++11 single-header testing framework for unit tests and TDD.
 
-It is inspired by the unittest {} functionality of the D programming language and Python's docstrings - tests can be considered a form of documentation and should be able to reside near the production code (for example in the same source file a class is implemented) which they test. This isn't possible (or at least practical) with any other testing framework for C++.
-
-A few reasons you might want to do that:
-- testing private parts (unexposed through the public API of a module) becomes possible
-- lower barrier for writing tests - no separate source files in the build system and source control
-- faster iteration times - TDD becomes a lot easier
-- code and tests stay in sync
-
-Web Site:  https://github.com/onqtam/doctest
+Web Site: https://github.com/onqtam/doctest
 Version tested: 1.1.3
 System requirements: C++98 or newer
 License & Pricing: MIT, free
@@ -51,40 +43,52 @@ with expansion:
 
 Note how a standard C++ operator for equality comparison is used - doctest has one core assertion macro (it also has macros for less than, equals, greater than...) - yet the full expression is decomposed and the left and right values are logged. This is done with expression templates and C++ trickery. Also the test case is automatically registered - you don't need to manually insert it to a list.
 
-Doctest is modeled after Catch [1] which is currently the most popular alternative for testing in C++ - check out the differences in the FAQ [7]. Currently a few things which Catch has are missing but doctest will eventually become a superset of Catch.
+Doctest is modeled after Catch [1] which is currently the most popular alternative for testing in C++ (along with googletest [5]) - check out the differences in the FAQ [7]. Currently a few things which Catch has are missing but doctest aims to eventually become a superset of Catch.
 
 == Motivation behind the framework - how is it different
 
-There are many C++ testing frameworks - Catch [1], Boost.Test [2], UnitTest++ [3], cpputest [4], googletest [5] and many other [6].
+doctest is inspired by the unittest {} functionality of the D programming language and Python's docstrings - tests can be considered a form of documentation and should be able to reside near the production code which they test (for example in the same source file a class is implemented).
+
+A few reasons you might want to do that:
+
+- Testing internals that are not exposed through the public API and headers of a module becomes easier.
+- Lower barrier for writing tests - you don't have to:
+    1. make a separate source file
+    2. include a bunch of stuff in it
+    3. add it to the build system
+    4. add it to source control
+  You can just write the tests for a class or a piece of functionality at the bottom of its source file - or even header file!
+- Faster iteration times - TDD becomes a lot easier.
+- Tests in the production code stay in sync and can be thought of as active documentation or up-to-date comments - showing how an API is used.
+
+The framework can still be used like any other even if the idea of writing tests in the production code doesn't appeal to you - but this is the biggest power of the framework - and nothing else comes close to being so practical in achieving this - details below.
+
+There are many other features [8] and a lot more are planned in the roadmap [9].
+
+This isn't possible (or at least practical) with any other testing framework for C++ - Catch [1], Boost.Test [2], UnitTest++ [3], cpputest [4], googletest [5] and many others [6].
 
 What makes doctest different is that it is ultra light on compile times (by orders of magnitude - further details are in the "Compile time benchmarks" section) and is unintrusive.
 
 The key differences between it and the others are:
 
-- Ultra light - below 10ms of compile time overhead for including the header in a source file - see the "Compile time benchmarks" section
+- Ultra light - below 10ms of compile time overhead for including the header in a source file (compared to ~430ms for Catch) - see the "Compile time benchmarks" section
 - The fastest possible assertion macros - 50 000 asserts can compile for under 30 seconds (even under 10 sec)
-- Subcases - an intuitive way to share common setup and teardown code for test cases (alternative to fixtures)
 - Offers a way to remove everything testing-related from the binary with the DOCTEST_CONFIG_DISABLE identifier
 - Doesn't pollute the global namespace (everything is in the doctest namespace) and doesn't drag any headers with it
 - Doesn't produce any warnings even on the most aggressive warning levels for MSVC / GCC / Clang
     * -Weverything for Clang
     * /W4 for MSVC
-    * -Wall -Wextra -pedantic and over 50 other flags!
+    * -Wall -Wextra -pedantic and over 50 other flags not included in these!
 - Very portable and well tested C++98 - per commit tested on CI with over 220 different builds with different compilers and configurations (gcc 4.4-6.1 / clang 3.4-3.9 / MSVC 2008-2015, debug / release, x86/x64, linux / windows / osx, valgrind, sanitizers...)
 - Just one header and no external dependencies apart from the C / C++ standard library (which are used only in the test runner)
 
-== The unique ability that this framework provides
+So if doctest is included in 1000 source files (globally in a big project) the overall build slowdown will be only ~10 seconds. If Catch is used - this would mean ~430 seconds just for including the header everywhere.
 
-All the previously listed pros allow the framework to be used in more ways than any other - tests can be written directly in the production code!
+If you have 50 000 asserts spread across your project (which is quite a lot) you should expect to see roughly 60-100 seconds of increased build time if using the normal expression-decomposing asserts or 10-40 seconds if you have used the fast form [11] of the asserts.
 
-- This makes the barrier for writing tests much lower - you don't have to: 1. make a separate source file 2. include a bunch of stuff in it 3. add it to the build system and 4. add it to source control - You can just write the tests for a class or a piece of functionality at the bottom of its source file - or even header file!
-- Tests in the production code can be thought of as active documentation or up-to-date comments - showing how an API is used (correctness enforced by the compiler).
-- Testing internals that are not exposed through the public API and headers becomes easier.
-- Test-driven development in C++ has never been easier!
+These numbers pale in comparison to the build times of a 1000 source file project. Further details are in the "Compile time benchmarks" section.
 
-The framework can still be used like any other even if the idea of writing tests in the production code doesn't appeal to you - but this is the biggest power of the framework - which nothing else offers!
-
-There are many other features [8] and a lot more are planned in the roadmap [9].
+You also won't see any warnings or unnecessarily imported symbols from doctest - nor will you see a valgrind or a sanitizer error caused by the framework - it is truly transparent.
 
 == The main() entry point
 
@@ -162,6 +166,55 @@ closing... (by the destructor)
 
 As you can see the test case was entered twice - and each time a different subcase was entered. Subcases can also be infinitely nested. The execution model resembles a DFS traversal - each time starting from the start of the test case and traversing the "tree" until a leaf node is reached (one that hasn't been traversed yet) - then the test case is exited by popping the stack of entered nested subcases.
 
+== Examples of how to embed tests in production code
+
+If shipping libraries with tests - it is a good idea to add a tag in your test case names (like this: TEST_CASE("[the_lib] testing foo")) so the user can easily filter them out with --test-case-exclude=*[the_lib]* if he wishes to.
+
+- If you are shipping a header-only library there are mainly 2 options:
+
+1. You could surround your tests with an ifdef to check if doctest is included before your headers - like this:
+
+// fact.h
+#pragma once
+
+inline int fact(int n) { return n <= 1 ? n : fact(n - 1) * n; }
+
+#ifdef DOCTEST_LIBRARY_INCLUDED
+TEST_CASE("[fact] testing the factorial function") {
+    CHECK(fact(0) == 1); // will fail
+    CHECK(fact(1) == 1);
+    CHECK(fact(2) == 2);
+    CHECK(fact(10) == 3628800);
+}
+#endif // DOCTEST_LIBRARY_INCLUDED
+
+2. You could use a preprocessor identifier (like FACT_WITH_TESTS) to conditionally use the tests - like this:
+
+// fact.h
+#pragma once
+
+inline int fact(int n) { return n <= 1 ? n : fact(n - 1) * n; }
+
+#ifdef FACT_WITH_TESTS
+
+#ifndef DOCTEST_LIBRARY_INCLUDED
+#include "doctest.h"
+#endif // DOCTEST_LIBRARY_INCLUDED
+
+TEST_CASE("[fact] testing the factorial function") {
+    CHECK(fact(0) == 1); // will fail
+    CHECK(fact(1) == 1);
+    CHECK(fact(2) == 2);
+    CHECK(fact(10) == 3628800);
+}
+#endif // FACT_WITH_TESTS
+
+In both of these cases the user of the header-only library will have to implement the test runner of the framework somewhere in his executable/shared object.
+
+- If you are developing an end product and not a library for developers - then you can just mix code and tests and implement the test runner like described in the section "The main() entry point".
+
+- If you are developing a library which is not header-only - you could again write tests in your headers like shown above, and you could also make use of the DOCTEST_CONFIG_DISABLE identifier to optionally remove the tests from the source files when shipping it - or figure out a custom scheme like the use of a preprocessor identifier to optionally ship the tests - MY_LIB_WITH_TESTS.
+
 == Compile time benchmarks
 
 So there are 3 types of compile time benchmarks that are relevant for doctest:
@@ -172,14 +225,20 @@ So there are 3 types of compile time benchmarks that are relevant for doctest:
 In summary:
 - Including the doctest header costs around 10ms compared to 430ms of Catch - so doctest is 25-50 times lighter
 - 50 000 asserts compile for roughly 60 seconds which is around 25% faster than Catch
-- 50 000 asserts can compile for as low as 10 seconds if alternative assert macros are used (for power users)
-- 50 000 asserts spread in 500 test cases just vanish when disabled with DOCTEST_CONFIG_DISABLE - less than 2 seconds!
+- 50 000 asserts can compile for as low as 30 seconds (or even 10) if alternative assert macros [11] are used (for power users)
+- 50 000 asserts spread in 500 test cases just vanish when disabled with DOCTEST_CONFIG_DISABLE - all of it takes less than 2 seconds!
+
+The lightness of the header was achieved by forward declaring everything and not including anything in the main part of the header. There are includes in the test runner implementation part of the header but that resides in only one translation unit - where the library gets implemented (by defining the DOCTEST_CONFIG_IMPLEMENT preprocessor identifier before including it).
+
+Regarding the cost of asserts - note that this is for trivial asserts comparing 2 integers - if you need to construct more complex objects and have more setup code for your test cases then there will be an additional amount of time spent compiling - this depends very much on what is being tested. A user of doctest provides a real world example of this in his article [12].
 
 In the benchmarks page [10] of the project documentation you can see the setup and more details for the benchmarks.
 
 == Conclusion
 
 The doctest framework is really easy to get started with and is fully transparent and unintrusive - including it and writing tests will be unnoticeable both in terms of compile times and integration (warnings, build system, etc). Using it will speed up your development process as much as possible - no other framework is so easy to use!
+
+Note that Catch 2 is on it's way (not public yet) and when it is released there will be a new set of benchmarks.
 
 The development of doctest is supported with donations.
 
@@ -193,4 +252,5 @@ The development of doctest is supported with donations.
 [8] https://github.com/onqtam/doctest/blob/master/doc/markdown/features.md
 [9] https://github.com/onqtam/doctest/blob/master/doc/markdown/roadmap.md
 [10] https://github.com/onqtam/doctest/blob/master/doc/markdown/benchmarks.md
-
+[11] https://github.com/onqtam/doctest/blob/master/doc/markdown/assertions.md#fast-asserts
+[12] http://baptiste-wicht.com/posts/2016/09/blazing-fast-unit-test-compilation-with-doctest-11.html
