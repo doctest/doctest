@@ -40,7 +40,7 @@ This is a list of planned features for future releases (not in the given order).
     - restricting duration of test cases
     - killing a test that exceeds a time limit (will perhaps require threading or processes)
 - adding contextual info to asserts (logging) - with an ```INFO```/```CONTEXT``` /```TRACEPOINT``` macro (also look at [this](https://github.com/philsquared/Catch/issues/601))
-- add ```ERROR```/```FAIL``` macros (also ```ADD_FAILURE_AT(file, line);```)
+- add ```ERROR```/```FAIL``` macros (also ```ADD_FAILURE_AT(file, line);``` and extend the asserts to have ```_AT``` variants)
 - running tests a few times
 - marking a test to run X times (should also multiply with the global test run times)
 - test execution in separate processes - ```fork()``` for UNIX and [this](https://github.com/nemequ/munit/issues/2) for Windows
