@@ -1192,7 +1192,7 @@ public:
 #define DOCTEST_CREATE_AND_REGISTER_FUNCTION(f, name)                                              \
     static void f();                                                                               \
     DOCTEST_REGISTER_FUNCTION(f, name)                                                             \
-    inline void f()
+    static void f()
 
 // for registering tests
 #define DOCTEST_TEST_CASE(name)                                                                    \
