@@ -212,18 +212,6 @@ matrix:
       osx_image: xcode8.2
       os: osx
 
-    # OSX GCC 4.4
-    - env: COMPILER=g++-4.4
-      compiler: gcc
-      osx_image: beta-xcode6.2
-      os: osx
-
-    # OSX GCC 4.5
-    - env: COMPILER=g++-4.5
-      compiler: gcc
-      osx_image: beta-xcode6.3
-      os: osx
-
     # OSX GCC 4.6
     - env: COMPILER=g++-4.6
       compiler: gcc
@@ -267,22 +255,7 @@ matrix:
 
   allow_failures:
 
-    # Clang 3.9 - failing because the llvm 3.9 ppa is not yet whitelisted...
-    - env: COMPILER=clang++-3.9 HAS_ASAN_64=true HAS_UBSAN_64=true
-
     # for some reason some of these builds fail sometimes...
-
-    # OSX GCC 4.4
-    - env: COMPILER=g++-4.4
-      compiler: gcc
-      osx_image: beta-xcode6.2
-      os: osx
-
-    # OSX GCC 4.5
-    - env: COMPILER=g++-4.5
-      compiler: gcc
-      osx_image: beta-xcode6.3
-      os: osx
 
     # OSX GCC 4.6
     - env: COMPILER=g++-4.6
