@@ -1932,6 +1932,7 @@ namespace detail
         bool no_run;         // to not run the tests at all (can be done with an "*" exclude)
         bool no_version;     // to not print the version of the framework
         bool no_colors;      // if output to the console should be colorized
+        bool force_colors;
         bool no_path_in_filenames; // if the path to files should be removed from the output
 
         bool help;             // to print the help
@@ -2530,7 +2531,7 @@ namespace detail
         if(p->no_colors)
             return;
 #ifdef DOCTEST_CONFIG_COLORS_ANSI
-        if(isatty(STDOUT_FILENO)) {
+        if(p->force_colors || isatty(STDOUT_FILENO)) {
             const char* col = "";
             // clang-format off
             switch(code) {
@@ -3072,6 +3073,7 @@ namespace detail
         printf(" -nr,  --no-run=<bool>                 skips all runtime doctest operations\n");
         printf(" -nv,  --no-version=<bool>             omit the framework version in the output\n");
         printf(" -nc,  --no-colors=<bool>              disables colors in output\n");
+        printf(" -fc,  --force-colors=<bool>           disables colors in output\n");
         printf(" -nb,  --no-breaks=<bool>              disables breakpoints in debuggers\n");
         printf(" -npf, --no-path-filenames=<bool>      only filenames and no paths in output\n\n");
         // ==================================================================================== << 79
@@ -3151,6 +3153,7 @@ void Context::parseArgs(int argc, const char* const* argv, bool withDefaults) {
     DOCTEST_PARSE_AS_BOOL_OR_FLAG(dt-no-run, dt-nr, no_run, 0);
     DOCTEST_PARSE_AS_BOOL_OR_FLAG(dt-no-version, dt-nv, no_version, 0);
     DOCTEST_PARSE_AS_BOOL_OR_FLAG(dt-no-colors, dt-nc, no_colors, 0);
+    DOCTEST_PARSE_AS_BOOL_OR_FLAG(dt-force-colors, dt-fc, force_colors, 0);
     DOCTEST_PARSE_AS_BOOL_OR_FLAG(dt-no-breaks, dt-nb, no_breaks, 0);
     DOCTEST_PARSE_AS_BOOL_OR_FLAG(dt-no-path-filenames, dt-npf, no_path_in_filenames, 0);
 // clang-format on
