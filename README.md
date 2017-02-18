@@ -16,7 +16,7 @@ The **doctest** library is inspired by the [**```unittest {}```**](https://wiki.
 
 A complete example with a self-registering test that compiles to an executable looks like this:
 
-![cover-example](doc/data/cover_888px_wide.png)
+![cover-example](scripts/data/cover_888px_wide.png)
 
 Note how a standard C++ operator for equality comparison is used - **doctest** has one core [**assertion macro**](doc/markdown/assertions.md) (it also has for *less than*, *equals*, *greater than*...) - yet the full expression is decomposed and the left and right values are logged.
 
