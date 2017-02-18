@@ -1,5 +1,18 @@
 # Change Log
 
+## [1.1.4](https://github.com/onqtam/doctest/tree/1.1.4) (2017-02-18)
+[Full Changelog](https://github.com/onqtam/doctest/compare/1.1.3...1.1.4)
+
+**Closed issues:**
+
+- Add option --force-colors - for when a tty is not detected for stdout [\#51](https://github.com/onqtam/doctest/issues/51)
+- Issue with using lambdas in tests in gcc [\#49](https://github.com/onqtam/doctest/issues/49)
+- Add the include file to releases [\#47](https://github.com/onqtam/doctest/issues/47)
+
+**Merged pull requests:**
+
+- Add translation of std::exception for exceptions that terminate a test case [\#46](https://github.com/onqtam/doctest/pull/46) ([eliaskosunen](https://github.com/eliaskosunen))
+
 ## [1.1.3](https://github.com/onqtam/doctest/tree/1.1.3) (2016-11-15)
 [Full Changelog](https://github.com/onqtam/doctest/compare/1.1.2...1.1.3)
 
