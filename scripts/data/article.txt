@@ -71,7 +71,7 @@ What makes doctest different is that it is ultra light on compile times (by orde
 
 The key differences between it and the others are:
 
-- Ultra light - below 10ms of compile time overhead for including the header in a source file (compared to ~430ms for Catch) - see the "Compile time benchmarks" section
+- Ultra light - below 10ms of compile time overhead for including the header in a source file (compared to 250-460 ms for Catch) - see the "Compile time benchmarks" section
 - The fastest possible assertion macros - 50 000 asserts can compile for under 30 seconds (even under 10 sec)
 - Offers a way to remove everything testing-related from the binary with the DOCTEST_CONFIG_DISABLE identifier
 - Doesn't pollute the global namespace (everything is in the doctest namespace) and doesn't drag any headers with it
@@ -82,7 +82,7 @@ The key differences between it and the others are:
 - Very portable and well tested C++98 - per commit tested on CI with over 220 different builds with different compilers and configurations (gcc 4.4-6.1 / clang 3.4-3.9 / MSVC 2008-2015, debug / release, x86/x64, linux / windows / osx, valgrind, sanitizers...)
 - Just one header and no external dependencies apart from the C / C++ standard library (which are used only in the test runner)
 
-So if doctest is included in 1000 source files (globally in a big project) the overall build slowdown will be only ~10 seconds. If Catch is used - this would mean ~430 seconds just for including the header everywhere.
+So if doctest is included in 1000 source files (globally in a big project) the overall build slowdown will be only ~10 seconds. If Catch is used - this would mean 350+ seconds just for including the header everywhere.
 
 If you have 50 000 asserts spread across your project (which is quite a lot) you should expect to see roughly 60-100 seconds of increased build time if using the normal expression-decomposing asserts or 10-40 seconds if you have used the fast form [11] of the asserts.
 
@@ -223,7 +223,7 @@ So there are 3 types of compile time benchmarks that are relevant for doctest:
 - how much the build times drop when all tests are removed with the DOCTEST_CONFIG_DISABLE identifier
 
 In summary:
-- Including the doctest header costs around 10ms compared to 430ms of Catch - so doctest is 25-50 times lighter
+- Including the doctest header costs under 10ms compared to 250-460 ms of Catch - so doctest is 25-50 times lighter
 - 50 000 asserts compile for roughly 60 seconds which is around 25% faster than Catch
 - 50 000 asserts can compile for as low as 30 seconds (or even 10) if alternative assert macros [11] are used (for power users)
 - 50 000 asserts spread in 500 test cases just vanish when disabled with DOCTEST_CONFIG_DISABLE - all of it takes less than 2 seconds!

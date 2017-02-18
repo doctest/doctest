@@ -1,12 +1,44 @@
 
 
 
+add a wait key option
+https://github.com/philsquared/Catch/issues/477#issuecomment-256417686
+
+
+
+
+check if this is possible:
+REQUIRE_THROWS({
+    item.next();
+    item.skip();
+});
+
+
+
+add a build with "-fno-rtti"
+
+
+for the exceptions related macros:
+static_cast<void>(expr);
+or maybe not:
+https://github.com/philsquared/Catch/issues/798
+
+
+
+I suspect -Wsign-compare is not being silenced by the pragmas...
+see this build - https://travis-ci.org/onqtam/game/jobs/196987454
+check_eq(numDigits(0), 1);     numDigits returns uint32
+
 
 
 make the bench.py script more friendly for users
 
 
 
+https://github.com/philsquared/Catch/issues/579
+
+
+runtime performance: lazily stringify expressions - only when needed
 
 
 document that the approx helper uses relative percentage and not absolute value as the epsilon
@@ -43,6 +75,26 @@ https://github.com/philsquared/Catch/pull/585
 
 
 
+list users of doctest - like this:
+https://github.com/philsquared/Catch/blob/master/docs/opensource-users.md
+
+
+
+
+compilation errors with operator<< - should test this!
+https://github.com/philsquared/Catch/issues/757
+
+
+- ability to transfer registered tests between binaries - so the runner of the executable can execute the ones from the shared objects as well!
+- ability to not have a test runner in the shared object? so registration symbols should be imported... idk
+
+
+
+add way to explicitly register a test - for the static libs issue...
+
+my current way of gettin the test registry vs nifty counter - https://en.wikibooks.org/wiki/More_C%2B%2B_Idioms/Nifty_Counter
+
+
 
 == when making a new release:
 
@@ -55,8 +107,22 @@ reddit.com/r/cplusplus
 
 https://www.facebook.com/groups/cppEnthusiasts/
 
+https://www.facebook.com/groups/226823534127108/
+https://plus.google.com/communities/116007775542700637383
+https://www.linkedin.com/groups/86782/profile
+http://webchat.freenode.net/?channels=c++
+
+and some pages...
+https://www.facebook.com/cplusplus/
+https://www.facebook.com/cpptovlee/
+https://www.facebook.com/CPPprogram/
+https://www.facebook.com/itsaji.vb.page
+https://www.facebook.com/CppInstitute
+
+
 twitter
 
+slashdot?
 
 
 
