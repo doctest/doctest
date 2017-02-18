@@ -23,7 +23,6 @@ Pros of **doctest**:
 - 0 warnings even on the [**most aggressive**](../../scripts/common.cmake#L71) warning levels for MSVC/GCC/Clang
 - per commit tested with 220+ builds on [**much more compilers**](features.md#extremely-portable) - and through valgrind/sanitizers
 - test cases can be written in headers - the framework will still register the tests only once - no duplicates
-- more actively maintained on GitHub
 - everything is documented (an undocumented feature is as good as a missing feature)
 
 Aside from everything mentioned so far doctest has some [**small features**](features.md#other-features) which [**Catch**](https://github.com/philsquared/Catch) doesn't but currently nothing big.
