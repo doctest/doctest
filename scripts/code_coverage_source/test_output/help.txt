@@ -42,6 +42,7 @@
  -nr,  --no-run=<bool>                 skips all runtime doctest operations
  -nv,  --no-version=<bool>             omit the framework version in the output
  -nc,  --no-colors=<bool>              disables colors in output
+ -fc,  --force-colors=<bool>           use colors even when not in a tty
  -nb,  --no-breaks=<bool>              disables breakpoints in debuggers
  -npf, --no-path-filenames=<bool>      only filenames and no paths in output
 
