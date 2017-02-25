@@ -10,10 +10,11 @@ This library is free, and will stay free but needs your support to sustain its d
 This is a list of planned features for future releases (not in the given order).
 
 - option to output summary only
-- ability to customize the colors in the console output
-- add support for <=, >= to Approx - like [requested](https://github.com/philsquared/Catch/pull/715) with [catch](https://github.com/philsquared/Catch/issues/651)
-- the set holding all registered tests should use a specialized allocator to minimize program startup time
-- pool allocator for the ```String``` class - currently very unoptimized
+- ability to customize the colors in the console output (may also use styles - based on [this](https://github.com/agauniyal/rang))
+- runtime performance
+    - the set holding all registered tests should use a specialized allocator to minimize program startup time
+    - lazily stringify expressions - only when needed
+    - pool allocator for the ```String``` class - currently very unoptimized
 - a mechanism for translating exceptions - users should be able to teach the framework about their types (look at Catch)
 - support for ```std::exception``` and derivatives (mainly for calling the ```.what()``` method when caught unexpectedly)
 - crash handling: signals on UNIX platforms or structured exceptions on Windows (should also have DOCTEST_CONFIG_NO_SIGNAL_CATCHING)
@@ -49,12 +50,14 @@ This is a list of planned features for future releases (not in the given order).
     - also look into similar Xcode integration - https://github.com/philsquared/Catch/pull/454
 - matchers - should investigate what they are - look at google test and Catch
 - generators? - look at Catch - and investigate what they are (also in [boost](http://www.boost.org/doc/libs/1_61_0/libs/test/doc/html/boost_test/tests_organization/test_cases/test_case_generation.html))
-- mocking - investigate google mock assertion macros and interop with doctest (also [mockitopp](https://github.com/tpounds/mockitopp) and [trompeloeil](https://github.com/rollbear/trompeloeil)) - and write in FAQ
+- mocking - investigate google mock assertion macros and interop with doctest (also [mockitopp](https://github.com/tpounds/mockitopp) and [trompeloeil](https://github.com/rollbear/trompeloeil)) - and write in FAQ - lest integrates with trompeloeil like [this](https://github.com/martinmoene/lest/commit/d347460642c80b227a5930bd92420726a9f085b3)
 - look at property based testing (for example [rapidcheck](https://github.com/emil-e/rapidcheck)) - and write in FAQ
 - [symbolizer](https://github.com/facebook/folly/tree/master/folly/experimental/symbolizer) - for a stack trace - when an assertion fails - and it's in a user function with some deep callstack away from the current test case - how to know the exact code path that lead to the failing assert
 
 And here is a list of things that are being considered but not part of the roadmap yet:
 
+- add a "wait key" option - as requested [here](https://github.com/philsquared/Catch/issues/477#issuecomment-256417686)
+- add Approx ability to compare with absolute epsilon - [Catch PR](https://github.com/philsquared/Catch/pull/538)
 - ability to have no output when everything succeeds
 - integrate static analysis on the CI: **msvc**, **clang**, **cppcheck**
 - extend Approx for types that have operator double - see [here](https://github.com/philsquared/Catch/issues/652) and [here](https://github.com/philsquared/Catch/pull/658)
