@@ -2,7 +2,7 @@
 
 Most test frameworks have a large collection of assertion macros to capture all possible conditional forms (```_EQUALS```, ```_NOTEQUALS```, ```_GREATER_THAN``` etc).
 
-**doctest** is different (but it's like [**Catch**](https://github.com/philsquared/Catch) in this regard). Because it decomposes comparison expressions most of these forms are reduced to one or two that you will use all the time. That said there is a rich set of auxiliary macros as well.
+**doctest** is different (but it's like [**Catch**](https://github.com/philsquared/Catch) in this regard). Because it decomposes comparison expressions most of these forms are reduced to one or two that you will use all the time. That said, there is a rich set of auxiliary macros as well.
 
 There are 3 levels of assert severity for all assertion macros:
 
@@ -96,16 +96,16 @@ Expects that no exception is thrown during evaluation of the expression.
 
 When comparing floating point numbers - especially if at least one of them has been computed - great care must be taken to allow for rounding errors and inexact representations.
 
-**doctest** provides a way to perform tolerant comparisons of floating point values through use of a wrapper class called ```doctest::Approx```. ```doctest::Approx``` can be used on either side of a comparison expression. It overloads the comparisons operators to take a tolerance into account. Here's a simple example:
+**doctest** provides a way to perform tolerant comparisons of floating point values through the use of a wrapper class called ```doctest::Approx```. ```doctest::Approx``` can be used on either side of a comparison expression. It overloads the comparisons operators to take a relative tolerance into account. Here's a simple example:
 
 ```c++
 REQUIRE(performComputation() == doctest::Approx(2.1));
 ```
 
-By default a small epsilon value is used that covers many simple cases of rounding errors. When this is insufficient the epsilon value (the amount within which a difference either way is ignored) can be specified by calling the ```epsilon()``` method on the ```doctest::Approx``` instance. e.g.:
+By default a small epsilon value (relative - in percentages) is used that covers many simple cases of rounding errors. When this is insufficient the epsilon value (the amount within which a difference either way is ignored) can be specified by calling the ```epsilon()``` method on the ```doctest::Approx``` instance. e.g.:
 
 ```c++
-REQUIRE(22.0/7 == doctest::Approx(3.141).epsilon(0.01));
+REQUIRE(22.0/7 == doctest::Approx(3.141).epsilon(0.01)); // allow for a 1% error
 ```
 
 When dealing with very large or very small numbers it can be useful to specify a scale, which can be achieved by calling the ```scale()``` method on the ```doctest::Approx``` instance.

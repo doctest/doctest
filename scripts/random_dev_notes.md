@@ -1,20 +1,6 @@
 
 
-
-
-
-
-add a wait key option
-https://github.com/philsquared/Catch/issues/477#issuecomment-256417686
-
-
-
-
-
-for the exceptions related macros:
-static_cast<void>(expr);
-or maybe not:
-https://github.com/philsquared/Catch/issues/798
+add link to overload in main readme and in docs folder
 
 
 
@@ -25,17 +11,6 @@ check_eq(numDigits(0), 1);     numDigits returns uint32
 
 
 make the bench.py script more friendly for users
-
-
-
-https://github.com/philsquared/Catch/issues/579
-
-
-runtime performance: lazily stringify expressions - only when needed
-
-
-document that the approx helper uses relative percentage and not absolute value as the epsilon
-https://github.com/philsquared/Catch/issues/499#issuecomment-262398916
 
 
 
@@ -57,12 +32,6 @@ https://github.com/chadaustin/sajson/blob/master/tests/test.cpp
 
 
 
-
-better color stuffs in console (also styles - underline, bold, etc)
-https://github.com/agauniyal/rang
-
-
-
 linux debugger support
 https://github.com/philsquared/Catch/pull/585
 
@@ -72,10 +41,6 @@ list users of doctest - like this:
 https://github.com/philsquared/Catch/blob/master/docs/opensource-users.md
 
 
-
-
-compilation errors with operator<< - should test this!
-https://github.com/philsquared/Catch/issues/757
 
 
 - ability to transfer registered tests between binaries - so the runner of the executable can execute the ones from the shared objects as well!
@@ -126,3 +91,6 @@ slashdot?
 == how to deal with pull requests for the main branch instead of the dev branch
 - http://stackoverflow.com/questions/9135913/merge-pull-request-to-a-different-branch-than-default-in-github
 - git fetch origin pull/ID/head:BRANCHNAME
+
+== other
+- compilation errors with operator<< - happens with doctest - in case it comes up... https://github.com/philsquared/Catch/issues/757
