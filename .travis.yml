@@ -337,12 +337,6 @@ install:
         brew install cmake
       fi
       # gcc
-      if [[ "${COMPILER}" = "g++-4.4" ]]; then
-        brew install gcc44
-      fi
-      if [[ "${COMPILER}" = "g++-4.5" ]]; then
-        brew install gcc45
-      fi
       if [[ "${COMPILER}" = "g++-4.6" ]]; then
         brew install gcc46
       fi
@@ -421,6 +415,10 @@ script:
 
   # test c++0x mode for warnings
   - cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_FLAGS="${ADDITIONAL_CXX_FLAGS} -m64" -DWITH_CPP11=1 .
+  - make clean && make -k -j2
+
+  # test without rtti
+  - cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_FLAGS="${ADDITIONAL_CXX_FLAGS} -m64 -fno-rtti" -DWITH_CPP11=0 .
   - make clean && make -k -j2
 
 #  - ccache -s

@@ -4,12 +4,6 @@ project(all)
 
 include(scripts/common.cmake)
 
-# when on Travis CI force 64 bit for gcc 4.4 under OSX because -m32 fails
-# saying that it cannot find 'std::exception' as a symbol (or others) for i386
-if(DEFINED ENV{TRAVIS} AND APPLE AND CMAKE_CXX_COMPILER_ID MATCHES "GNU" AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS 4.5)
-    add_compiler_flags(-m64)
-endif()
-
 include_directories("doctest/") # needed here so the coverage tools work - otherwise the "../../doctest" relative path fucks up
 
 # setup coverage stuff only when COVERALLS_SERVICE_NAME is set (usually on travis CI)
