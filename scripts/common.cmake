@@ -123,6 +123,11 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
         add_compiler_flags(-Wnull-dereference)
         add_compiler_flags(-Wduplicated-cond)
     endif()
+    
+    if(CMAKE_CXX_COMPILER_VERSION VERSION_EQUAL 7.0 OR CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 7.0)
+        add_compiler_flags(-Walloc-zero)
+        add_compiler_flags(-Walloca)
+    endif()
 endif()
 
 if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")

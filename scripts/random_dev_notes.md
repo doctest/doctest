@@ -1,21 +1,14 @@
 
 
 
+
+
+
 add a wait key option
 https://github.com/philsquared/Catch/issues/477#issuecomment-256417686
 
 
 
-
-check if this is possible:
-REQUIRE_THROWS({
-    item.next();
-    item.skip();
-});
-
-
-
-add a build with "-fno-rtti"
 
 
 for the exceptions related macros:
