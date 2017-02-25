@@ -515,10 +515,20 @@ public:
         return approx;
     }
 
+    // clang-format off
     friend bool operator==(double lhs, Approx const& rhs);
     friend bool operator==(Approx const& lhs, double rhs) { return operator==(rhs, lhs); }
     friend bool operator!=(double lhs, Approx const& rhs) { return !operator==(lhs, rhs); }
     friend bool operator!=(Approx const& lhs, double rhs) { return !operator==(rhs, lhs); }
+    friend bool operator<=(double lhs, Approx const& rhs) { return lhs < rhs.m_value || lhs == rhs; }
+    friend bool operator<=(Approx const& lhs, double rhs) { return lhs.m_value < rhs || lhs == rhs; }
+    friend bool operator>=(double lhs, Approx const& rhs) { return lhs > rhs.m_value || lhs == rhs; }
+    friend bool operator>=(Approx const& lhs, double rhs) { return lhs.m_value > rhs || lhs == rhs; }
+    friend bool operator< (double lhs, Approx const& rhs) { return lhs < rhs.m_value && lhs != rhs; }
+    friend bool operator< (Approx const& lhs, double rhs) { return lhs.m_value < rhs && lhs != rhs; }
+    friend bool operator> (double lhs, Approx const& rhs) { return lhs > rhs.m_value && lhs != rhs; }
+    friend bool operator> (Approx const& lhs, double rhs) { return lhs.m_value > rhs && lhs != rhs; }
+    // clang-format on
 
     Approx& epsilon(double newEpsilon) {
         m_epsilon = newEpsilon;
