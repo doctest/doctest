@@ -543,7 +543,7 @@ public:
     }
 
     // clang-format off
-    friend bool operator==(double lhs, Approx const& rhs);
+    DOCTEST_INTERFACE friend bool operator==(double lhs, Approx const& rhs);
     friend bool operator==(Approx const& lhs, double rhs) { return operator==(rhs, lhs); }
     friend bool operator!=(double lhs, Approx const& rhs) { return !operator==(lhs, rhs); }
     friend bool operator!=(Approx const& lhs, double rhs) { return !operator==(rhs, lhs); }
