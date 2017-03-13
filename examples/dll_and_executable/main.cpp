@@ -15,7 +15,6 @@ TEST_CASE("executable") {
 #else // _MSC_VER
 #define LoadDynamicLib(lib) LoadLibrary("lib" lib ".dll")
 #endif // _MSC_VER
-#define GetProc GetProcAddress
 #else // _WIN32
 #include <dlfcn.h>
 #ifdef __APPLE__
@@ -23,7 +22,6 @@ TEST_CASE("executable") {
 #else // __APPLE__
 #define LoadDynamicLib(lib) dlopen("lib" lib ".so", RTLD_NOW)
 #endif // __APPLE__
-#define GetProc dlsym
 #endif // _WIN32
 
 int main(int argc, char** argv) {
