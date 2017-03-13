@@ -61,7 +61,9 @@ To export the test runner from a binary simply use [**```DOCTEST_CONFIG_IMPLEMEN
 
 Checkout the [**example**](../../examples/dll_and_executable/) - it shows how to have the test runner implemented in a dll (and there are even tests in a plugin which is dynamically loaded).
 
-This should be defined globally.
+This should be defined globally in binaries that import the symbols.
+
+This should be defined only in the source file where the library is implemented for binaries that export the test runner.
 
 ### **```DOCTEST_CONFIG_NO_SHORT_MACRO_NAMES```**
 
