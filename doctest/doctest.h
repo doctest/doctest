@@ -197,8 +197,6 @@
 #define DOCTEST_CONFIG_IMPLEMENT
 #endif // DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 
-#ifdef DOCTEST_CONFIG_IMPLEMENTATION_IN_DLL
-
 #if defined _WIN32 || defined __CYGWIN__
 #ifdef __GNUC__
 #define DOCTEST_SYMBOL_EXPORT __attribute__((dllexport))
@@ -212,17 +210,15 @@
 #define DOCTEST_SYMBOL_IMPORT
 #endif // _WIN32
 
+#ifdef DOCTEST_CONFIG_IMPLEMENTATION_IN_DLL
 #ifdef DOCTEST_CONFIG_IMPLEMENT
 #define DOCTEST_INTERFACE DOCTEST_SYMBOL_EXPORT
 #else // DOCTEST_CONFIG_IMPLEMENT
 #define DOCTEST_INTERFACE DOCTEST_SYMBOL_IMPORT
 #endif // DOCTEST_CONFIG_IMPLEMENT
-
-#endif // DOCTEST_CONFIG_IMPLEMENTATION_IN_DLL
-
-#ifndef DOCTEST_INTERFACE
+#else // DOCTEST_CONFIG_IMPLEMENTATION_IN_DLL
 #define DOCTEST_INTERFACE
-#endif // DOCTEST_INTERFACE
+#endif // DOCTEST_CONFIG_IMPLEMENTATION_IN_DLL
 
 // =================================================================================================
 // == FEATURE DETECTION END ========================================================================
