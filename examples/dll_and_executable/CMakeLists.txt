@@ -27,6 +27,10 @@ add_executable(${PROJECT_NAME} main.cpp)
 target_link_libraries(${PROJECT_NAME} dll)
 target_link_libraries(${PROJECT_NAME} implementation)
 
+if(NOT WIN32)
+    target_link_libraries(${PROJECT_NAME} dl)
+endif()
+
 # have the executable depend on the plugin so it gets built as well when building/starting only the executable
 add_dependencies(${PROJECT_NAME} plugin)
 
