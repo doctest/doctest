@@ -4,9 +4,12 @@
 
 The identifiers should be defined before the inclusion of the framework header.
 
+Defining something ```globally``` means for every source file of the binary (executable / shared object).
+
 - [**```DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN```**](#doctest_config_implement_with_main)
 - [**```DOCTEST_CONFIG_IMPLEMENT```**](#doctest_config_implement)
 - [**```DOCTEST_CONFIG_DISABLE```**](#doctest_config_disable)
+- [**```DOCTEST_CONFIG_IMPLEMENTATION_IN_DLL```**](#doctest_config_implementation_in_dll)
 - [**```DOCTEST_CONFIG_NO_SHORT_MACRO_NAMES```**](#doctest_config_no_short_macro_names)
 - [**```DOCTEST_CONFIG_TREAT_CHAR_STAR_AS_STRING```**](#doctest_config_treat_char_star_as_string)
 - [**```DOCTEST_CONFIG_SUPER_FAST_ASSERTS```**](#doctest_config_super_fast_asserts)
@@ -47,6 +50,16 @@ This should be defined only in the source file where the library is implemented.
 ### **```DOCTEST_CONFIG_DISABLE```**
 
 One of the most most important configuration option - everything testing-related is removed from the binary - including most of the framework implementation and every test case written anywhere! This is one of the most unique features of **doctest**.
+
+This should be defined globally.
+
+### **```DOCTEST_CONFIG_IMPLEMENTATION_IN_DLL```**
+
+This will affect the public interface of doctest - all necessary forward declarations for writing tests will be turned into imported symbols. That way the test runner doesn't have to be implemented in the binary (executable / shared object) and can be reused from another binary where it is built and exported.
+
+To export the test runner from a binary simply use [**```DOCTEST_CONFIG_IMPLEMENTATION_IN_DLL```**](#doctest_config_implementation_in_dll) together with [**```DOCTEST_CONFIG_IMPLEMENT```**](#doctest_config_implement) (or [**```DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN```**](#doctest_config_implement_with_main) but then the other binaries will have to link to the executable) in whatever source file the test runner gets implemented into. Note that this identifier should not be defined in the other source files of the binary which exports the doctest test runner - or there will be linker conflicts - having the same symbols as both imported and exported within the same binary.
+
+Checkout the [**example**](../../examples/dll_and_executable/) - it shows how to have the test runner implemented in a dll (and there are even tests in a plugin which is dynamically loaded).
 
 This should be defined globally.
 

@@ -1,15 +1,40 @@
-#include "common.h"
+#define DOCTEST_CONFIG_IMPLEMENTATION_IN_DLL
+#include "doctest.h"
+
+#include <cstdio>
 
 TEST_CASE("executable") {
     printf("I am a test from the executable!\n");
 }
 
+#ifdef _WIN32
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
+#ifdef _MSC_VER
+#define LoadDynamicLib(lib) LoadLibrary(lib ".dll")
+#else // _MSC_VER
+#define LoadDynamicLib(lib) LoadLibrary("lib" lib ".dll")
+#endif // _MSC_VER
+#define GetProc GetProcAddress
+#else // _WIN32
+#include <dlfcn.h>
+#ifdef __APPLE__
+#define LoadDynamicLib(lib) dlopen("lib" lib ".dylib", RTLD_NOW)
+#else // __APPLE__
+#define LoadDynamicLib(lib) dlopen("lib" lib ".so", RTLD_NOW)
+#endif // __APPLE__
+#define GetProc dlsym
+#endif // _WIN32
+
 int main(int argc, char** argv) {
+    // force the use of a symbol from the dll so tests from it get registered
+    DOCTEST_SYMBOL_IMPORT void from_dll(); from_dll();
+
+    LoadDynamicLib("plugin"); // load the plugin so tests from it get registered
+
     doctest::Context context(argc, argv);
     int res = context.run();
     
-    res += call_tests_from_dll(argc, argv);
-
     if(context.shouldExit()) // important - query flags (and --exit) rely on the user doing this
         return res;          // propagate the result of the tests
 

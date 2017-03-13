@@ -8,10 +8,10 @@ int main(int argc, char** argv) {
     context.setOption("no-breaks", true); // don't break in the debugger when assertions fail
     context.setOption("abort-after", 5);  // stop test execution after 5 failed assertions
 
-	context.applyCommandLine(argc, argv);
+    context.applyCommandLine(argc, argv);
 
-	// overrides
-	context.setOption("sort", "name");    // sort the test cases by their name
+    // overrides
+    context.setOption("sort", "name");    // sort the test cases by their name
 
     int res = context.run(); // run
 

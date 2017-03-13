@@ -15,9 +15,19 @@ endif()
 
 include_directories("../../doctest/")
 
+add_library(implementation SHARED implementation.cpp implementation_2.cpp)
+
 add_library(dll SHARED dll.cpp)
+target_link_libraries(dll implementation)
+
+add_library(plugin SHARED plugin.cpp)
+target_link_libraries(plugin implementation)
 
 add_executable(${PROJECT_NAME} main.cpp)
 target_link_libraries(${PROJECT_NAME} dll)
+target_link_libraries(${PROJECT_NAME} implementation)
 
-doctest_add_test(NO_OUTPUT NAME ${PROJECT_NAME} COMMAND $<TARGET_FILE:${PROJECT_NAME}>)
+# have the executable depend on the plugin so it gets built as well when building/starting only the executable
+add_dependencies(${PROJECT_NAME} plugin)
+
+doctest_add_test(NAME ${PROJECT_NAME} COMMAND $<TARGET_FILE:${PROJECT_NAME}>)

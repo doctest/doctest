@@ -1,4 +1,8 @@
 
+add VS 2017 build on appveyor when the image is officially added:
+https://www.appveyor.com/docs/installed-software/
+
+
 
 add link to overload in main readme and in docs folder
 
@@ -42,15 +46,18 @@ https://github.com/philsquared/Catch/blob/master/docs/opensource-users.md
 
 
 
-
-- ability to transfer registered tests between binaries - so the runner of the executable can execute the ones from the shared objects as well!
-- ability to not have a test runner in the shared object? so registration symbols should be imported... idk
-
-
-
 add way to explicitly register a test - for the static libs issue...
 
 my current way of gettin the test registry vs nifty counter - https://en.wikibooks.org/wiki/More_C%2B%2B_Idioms/Nifty_Counter
+
+
+think about this:
+https://github.com/philsquared/Catch/issues/734
+
+
+about executing tests in a separate process:
+https://github.com/philsquared/Catch/issues/853
+
 
 
 

@@ -1,0 +1,9 @@
+[doctest] run with "--help" for options
+I am a test from the dll!
+I am a test from the implementation!
+I am a test from the implementation_2!
+I am a test from the executable!
+I am a test from the plugin!
+===============================================================================
+[doctest] test cases:    5 |    5 passed |    0 failed |    0 skipped
+[doctest] assertions:    0 |    0 passed |    0 failed |

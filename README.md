@@ -106,6 +106,8 @@ Want to see your name or the name of your company here? Consider donating!
 
 ### :cake: Silver sponsors :cake:
 
+- Dan Nissenbaum
+
 ### :hamburger: Bronze sponsors :hamburger:
 
 - Sebastien Feldis
