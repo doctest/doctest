@@ -47,9 +47,11 @@ Note the call to ```.shouldExit()``` on the context - that is very important - i
 
 ### Dealing with shared objects (DLLs)
 
-When integrating the framework in production code which gets built as a shared object (dll) everything still works. Many shared objects and an executable can have tests in them and can even use different versions of the **doctest** framework.
+The framework can be used separately in binaries (executables / shared objects) with each having it's own test runner - this way even different versions of doctest can be used - but there will be no simple way to execute the tests from all loaded binaries and have the results aggregated and summarized.
 
-Check out [**this**](../../examples/dll_and_executable/) example which showcases how to call the tests in a shared object from the executable (and it also showcases that if a file with a test case is included both in the shared object and the executable then the test is registered in both places). 
+There is also an option to have the test runner (implementation) built in a binary and shared with others (so there is a single test registry) by exporting it's public symbols (the ones needed for writing tests by the user - all the forward declarations of the framework).
+
+For more info on that checkout the [**```DOCTEST_CONFIG_IMPLEMENTATION_IN_DLL```**](configuration.md#doctest_config_implementation_in_dll) config identifier and [**this example**](../../examples/dll_and_executable/).
 
 ---------------
 

@@ -9,12 +9,6 @@ include_directories("../../doctest/")
 
 add_executable(${PROJECT_NAME} main.cpp test.cpp)
 
-if(DEFINED ENV{TRAVIS} AND APPLE AND CMAKE_CXX_COMPILER_ID MATCHES "GNU" AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS 4.5)
-    # don't do tests for GCC 4.4 on OSX - the output will be different from the reference output
-    # for some reason the summary after the tests run isn't printed... see this build - https://travis-ci.org/onqtam/doctest/jobs/135979391
-    return()
-endif()
-
 # queries
 doctest_add_test(NAME help              COMMAND $<TARGET_FILE:${PROJECT_NAME}> -dt-h)
 doctest_add_test(NAME version           COMMAND $<TARGET_FILE:${PROJECT_NAME}> -v)

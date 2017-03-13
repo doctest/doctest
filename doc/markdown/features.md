@@ -55,6 +55,7 @@ The library can be used like any other if you don't like the idea of mixing prod
 - tests are registered automatically - no need to add them to a collection manually
 - supports [**subcases**](testcases.md) for easy setup/teardown of tests (also supports the retro [**test fixtures**](testcases.md#) with classes)
 - output from all compilers on all platforms is the same - byte by byte
+- binaries (exe/dll) can use the test runner of another binary - so tests end up in a single registry - [**example**](../../examples/dll_and_executable/)
 - supports [**BDD style**](testcases.md) tests
 - only one core [**assertion macro**](assertions.md) for comparisons - standard C++ operators are used for the comparison (less than, equal, greater than...) - yet the full expression is decomposed and left and right values of the expression are logged
 - assertion macros for [**exceptions**](assertions.md) - if something should or shouldn't throw

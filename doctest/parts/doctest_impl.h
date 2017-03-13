@@ -52,8 +52,7 @@
 #pragma warning(disable : 4577) // 'noexcept' used with no exception handling mode specified
 #endif                          // _MSC_VER
 
-#if defined(DOCTEST_CONFIG_IMPLEMENT) || defined(DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN) ||            \
-        !defined(DOCTEST_SINGLE_HEADER)
+#if defined(DOCTEST_CONFIG_IMPLEMENT) || !defined(DOCTEST_SINGLE_HEADER)
 #ifndef DOCTEST_LIBRARY_IMPLEMENTATION
 #define DOCTEST_LIBRARY_IMPLEMENTATION
 
@@ -1738,14 +1737,13 @@ int Context::run() {
 } // namespace doctest
 
 #endif // DOCTEST_CONFIG_DISABLE
+
+#ifdef DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
+int main(int argc, char** argv) { return doctest::Context(argc, argv).run(); }
+#endif // DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
+
 #endif // DOCTEST_LIBRARY_IMPLEMENTATION
 #endif // DOCTEST_CONFIG_IMPLEMENT
-
-// == THIS SUPPLIES A MAIN FUNCTION AND SHOULD BE DONE ONLY IN ONE TRANSLATION UNIT
-#if defined(DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN) && !defined(DOCTEST_MAIN_CONFIGURED)
-#define DOCTEST_MAIN_CONFIGURED
-int main(int argc, char** argv) { return doctest::Context(argc, argv).run(); }
-#endif // DOCTEST_MAIN_CONFIGURED
 
 #if defined(__clang__)
 #pragma clang diagnostic pop

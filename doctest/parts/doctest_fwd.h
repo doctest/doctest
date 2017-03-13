@@ -91,7 +91,7 @@
     (DOCTEST_VERSION_MAJOR * 10000 + DOCTEST_VERSION_MINOR * 100 + DOCTEST_VERSION_PATCH)
 
 // =================================================================================================
-// == MODERN C++ FEATURE DETECTION =================================================================
+// == FEATURE DETECTION ============================================================================
 // =================================================================================================
 
 #if __cplusplus >= 201103L
@@ -190,8 +190,39 @@
 #define DOCTEST_CONFIG_NO_TRY_CATCH_IN_ASSERTS
 #endif // DOCTEST_CONFIG_NO_EXCEPTIONS && !DOCTEST_CONFIG_NO_TRY_CATCH_IN_ASSERTS
 
+#if defined(DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN) && !defined(DOCTEST_CONFIG_IMPLEMENT)
+#define DOCTEST_CONFIG_IMPLEMENT
+#endif // DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
+
+#ifdef DOCTEST_CONFIG_IMPLEMENTATION_IN_DLL
+
+#if defined _WIN32 || defined __CYGWIN__
+#ifdef __GNUC__
+#define DOCTEST_SYMBOL_EXPORT __attribute__((dllexport))
+#define DOCTEST_SYMBOL_IMPORT __attribute__((dllimport))
+#else // __GNUC__
+#define DOCTEST_SYMBOL_EXPORT __declspec(dllexport)
+#define DOCTEST_SYMBOL_IMPORT __declspec(dllimport)
+#endif // __GNUC__
+#else  // _WIN32
+#define DOCTEST_SYMBOL_EXPORT __attribute__((visibility("default")))
+#define DOCTEST_SYMBOL_IMPORT
+#endif // _WIN32
+
+#ifdef DOCTEST_CONFIG_IMPLEMENT
+#define DOCTEST_INTERFACE DOCTEST_SYMBOL_EXPORT
+#else // DOCTEST_CONFIG_IMPLEMENT
+#define DOCTEST_INTERFACE DOCTEST_SYMBOL_IMPORT
+#endif // DOCTEST_CONFIG_IMPLEMENT
+
+#endif // DOCTEST_CONFIG_IMPLEMENTATION_IN_DLL
+
+#ifndef DOCTEST_INTERFACE
+#define DOCTEST_INTERFACE
+#endif // DOCTEST_INTERFACE
+
 // =================================================================================================
-// == MODERN C++ FEATURE DETECTION END =============================================================
+// == FEATURE DETECTION END ========================================================================
 // =================================================================================================
 
 // internal macros for string concatenation and anonymous variable name generation
@@ -311,7 +342,7 @@ namespace std
 
 namespace doctest
 {
-class String
+class DOCTEST_INTERFACE String
 {
     char* m_str;
 
@@ -349,7 +380,7 @@ inline bool operator<=(const String& lhs, const String& rhs) { return (lhs != rh
 inline bool operator>=(const String& lhs, const String& rhs) { return (lhs != rhs) ? lhs.compare(rhs) > 0 : true; }
 // clang-format on
 
-std::ostream& operator<<(std::ostream& stream, const String& in);
+DOCTEST_INTERFACE std::ostream& operator<<(std::ostream& stream, const String& in);
 
 namespace detail
 {
@@ -402,9 +433,9 @@ namespace detail
     struct has_insertion_operator : has_insertion_operator_impl::has_insertion_operator<T>
     {};
 
-    std::ostream* createStream();
-    String        getStreamResult(std::ostream*);
-    void          freeStream(std::ostream*);
+    DOCTEST_INTERFACE std::ostream* createStream();
+    DOCTEST_INTERFACE String        getStreamResult(std::ostream*);
+    DOCTEST_INTERFACE void          freeStream(std::ostream*);
 
     template <bool C>
     struct StringMakerBase
@@ -428,7 +459,7 @@ namespace detail
         }
     };
 
-    String rawMemoryToString(const void* object, unsigned size);
+    DOCTEST_INTERFACE String rawMemoryToString(const void* object, unsigned size);
 
     template <typename T>
     String rawMemoryToString(const DOCTEST_REF_WRAP(T) object) {
@@ -469,33 +500,33 @@ String toString(const DOCTEST_REF_WRAP(T) value) {
 }
 
 #ifdef DOCTEST_CONFIG_TREAT_CHAR_STAR_AS_STRING
-String toString(char* in);
-String toString(const char* in);
+DOCTEST_INTERFACE String toString(char* in);
+DOCTEST_INTERFACE String toString(const char* in);
 #endif // DOCTEST_CONFIG_TREAT_CHAR_STAR_AS_STRING
-String toString(bool in);
-String toString(float in);
-String toString(double in);
-String toString(double long in);
+DOCTEST_INTERFACE String toString(bool in);
+DOCTEST_INTERFACE String toString(float in);
+DOCTEST_INTERFACE String toString(double in);
+DOCTEST_INTERFACE String toString(double long in);
 
-String toString(char in);
-String toString(char unsigned in);
-String toString(int short in);
-String toString(int short unsigned in);
-String toString(int in);
-String toString(int unsigned in);
-String toString(int long in);
-String toString(int long unsigned in);
+DOCTEST_INTERFACE String toString(char in);
+DOCTEST_INTERFACE String toString(char unsigned in);
+DOCTEST_INTERFACE String toString(int short in);
+DOCTEST_INTERFACE String toString(int short unsigned in);
+DOCTEST_INTERFACE String toString(int in);
+DOCTEST_INTERFACE String toString(int unsigned in);
+DOCTEST_INTERFACE String toString(int long in);
+DOCTEST_INTERFACE String toString(int long unsigned in);
 
 #ifdef DOCTEST_CONFIG_WITH_LONG_LONG
-String toString(int long long in);
-String toString(int long long unsigned in);
+DOCTEST_INTERFACE String toString(int long long in);
+DOCTEST_INTERFACE String toString(int long long unsigned in);
 #endif // DOCTEST_CONFIG_WITH_LONG_LONG
 
 #ifdef DOCTEST_CONFIG_WITH_NULLPTR
-String toString(std::nullptr_t in);
+DOCTEST_INTERFACE String toString(std::nullptr_t in);
 #endif // DOCTEST_CONFIG_WITH_NULLPTR
 
-class Approx
+class DOCTEST_INTERFACE Approx
 {
 public:
     explicit Approx(double value);
@@ -672,7 +703,7 @@ namespace detail
         };
     } // namespace assertType
 
-    const char* getAssertString(assertType::Enum val);
+    DOCTEST_INTERFACE const char* getAssertString(assertType::Enum val);
 
     // clang-format off
     template<class T>               struct decay_array       { typedef T type; };
@@ -692,13 +723,13 @@ namespace detail
     struct TestFailureException
     {};
 
-    bool checkIfShouldThrow(assertType::Enum assert_type);
-    void fastAssertThrowIfFlagSet(int flags);
-    void throwException();
-    bool always_false();
+    DOCTEST_INTERFACE bool checkIfShouldThrow(assertType::Enum assert_type);
+    DOCTEST_INTERFACE void fastAssertThrowIfFlagSet(int flags);
+    DOCTEST_INTERFACE void throwException();
+    DOCTEST_INTERFACE bool always_false();
 
     // a struct defining a registered test callback
-    struct TestData
+    struct DOCTEST_INTERFACE TestData
     {
         // not used for determining uniqueness
         const char* m_suite; // the test suite in which the test was added
@@ -719,7 +750,7 @@ namespace detail
         bool operator<(const TestData& other) const;
     };
 
-    struct SubcaseSignature
+    struct DOCTEST_INTERFACE SubcaseSignature
     {
         const char* m_name;
         const char* m_file;
@@ -733,7 +764,7 @@ namespace detail
         bool operator<(const SubcaseSignature& other) const;
     };
 
-    struct Subcase
+    struct DOCTEST_INTERFACE Subcase
     {
         SubcaseSignature m_signature;
         bool             m_entered;
@@ -751,7 +782,7 @@ namespace detail
         return toString(lhs) + op + toString(rhs);
     }
 
-    struct Result
+    struct DOCTEST_INTERFACE Result
     {
         bool   m_passed;
         String m_decomposition;
@@ -952,31 +983,31 @@ namespace detail
     };
 
     // forward declarations of functions used by the macros
-    int regTest(void (*f)(void), unsigned line, const char* file, const char* name);
-    int setTestSuiteName(const char* name);
+    DOCTEST_INTERFACE int regTest(void (*f)(void), unsigned line, const char* file, const char* name);
+    DOCTEST_INTERFACE int setTestSuiteName(const char* name);
 
-    void addFailedAssert(assertType::Enum assert_type);
+    DOCTEST_INTERFACE void addFailedAssert(assertType::Enum assert_type);
 
-    void logTestStart(const char* name, const char* file, unsigned line);
-    void logTestEnd();
+    DOCTEST_INTERFACE void logTestStart(const char* name, const char* file, unsigned line);
+    DOCTEST_INTERFACE void logTestEnd();
 
-    void logTestCrashed();
-    void logTestException(const char* what);
+    DOCTEST_INTERFACE void logTestCrashed();
+    DOCTEST_INTERFACE void logTestException(const char* what);
 
-    void logAssert(bool passed, const char* decomposition, bool threw, const char* expr,
+    DOCTEST_INTERFACE void logAssert(bool passed, const char* decomposition, bool threw, const char* expr,
                    assertType::Enum assert_type, const char* file, int line);
 
-    void logAssertThrows(bool threw, const char* expr, assertType::Enum assert_type,
+    DOCTEST_INTERFACE void logAssertThrows(bool threw, const char* expr, assertType::Enum assert_type,
                          const char* file, int line);
 
-    void logAssertThrowsAs(bool threw, bool threw_as, const char* as, const char* expr,
+    DOCTEST_INTERFACE void logAssertThrowsAs(bool threw, bool threw_as, const char* as, const char* expr,
                            assertType::Enum assert_type, const char* file, int line);
 
-    void logAssertNothrow(bool threw, const char* expr, assertType::Enum assert_type,
+    DOCTEST_INTERFACE void logAssertNothrow(bool threw, const char* expr, assertType::Enum assert_type,
                           const char* file, int line);
 
-    bool isDebuggerActive();
-    void writeToDebugConsole(const String&);
+    DOCTEST_INTERFACE bool isDebuggerActive();
+    DOCTEST_INTERFACE void writeToDebugConsole(const String&);
 
     struct TestAccessibleContextState
     {
@@ -1015,7 +1046,7 @@ namespace detail
     template <class L, class R> struct RelationalComparator<5, L, R> { bool operator()(const DOCTEST_REF_WRAP(L) lhs, const DOCTEST_REF_WRAP(R) rhs) const { return le(lhs, rhs); } };
     // clang-format on
 
-    struct ResultBuilder
+    struct DOCTEST_INTERFACE ResultBuilder
     {
         assertType::Enum m_assert_type;
         const char*      m_file;
@@ -1130,7 +1161,7 @@ namespace detail
 
 #endif // DOCTEST_CONFIG_DISABLE
 
-class Context
+class DOCTEST_INTERFACE Context
 {
 #if !defined(DOCTEST_CONFIG_DISABLE)
     detail::ContextState* p;

@@ -23,7 +23,6 @@ Pros of **doctest**:
 - 0 warnings even on the [**most aggressive**](../../scripts/common.cmake#L71) warning levels for MSVC/GCC/Clang
 - per commit tested with 220+ builds on [**much more compilers**](features.md#extremely-portable) - and through valgrind/sanitizers
 - test cases can be written in headers - the framework will still register the tests only once - no duplicates
-- everything is documented (an undocumented feature is as good as a missing feature)
 
 Aside from everything mentioned so far doctest has some [**small features**](features.md#other-features) which [**Catch**](https://github.com/philsquared/Catch) doesn't but currently nothing big.
 
@@ -34,7 +33,9 @@ Missing stuff:
 - a reporter system - to a file, to xml, ability for the user to write their own reporter, etc.
 - measuring how much time a test case executes
 - adding contextual info to asserts with ```INFO```/```CONTEXT```
+- signal handling
 - matchers and generators
+- other small stuff
 
 But all these things (and more!) are planned in the [**roadmap**](roadmap.md)!
 
