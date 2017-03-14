@@ -69,17 +69,21 @@ The two test cases here will create uniquely-named derived classes of UniqueTest
 
 ## Test suites
 
-Test cases can be grouped into test suites. This is done with the ```TEST_SUITE()``` and ```TEST_SUITE_END()``` macros.
+Test cases can be grouped into test suites. This is done with ```TEST_SUITE()``` (or with ```TEST_SUITE_BEGIN()``` and ```TEST_SUITE_END()```).
 
 For example:
 
 ```c++
 TEST_CASE("") {} // not part of any test suite
 
-TEST_SUITE("math");
+TEST_SUITE("math") {
+    TEST_CASE("") {} // part of the math test suite
+    TEST_CASE("") {} // part of the math test suite
+}
 
-TEST_CASE("") {} // part of the math test suite
-TEST_CASE("") {} // part of the math test suite
+TEST_SUITE_BEGIN("utils");
+
+TEST_CASE("") {} // part of the utils test suite
 
 TEST_SUITE_END();
 
@@ -90,7 +94,8 @@ Then test cases from specific test suites can be executed with the help of filte
 
 ------
 
-- Check out the [**example**](../../examples/subcases_and_bdd/main.cpp)
+- Check out the [**subcases and BDD example**](../../examples/subcases_and_bdd/main.cpp)
+- Check out the [**assertion macros example**](../../examples/assertion_macros/main.cpp) to see how test suites are used
 - Tests are registered from top to bottom of each processed cpp after the headers have been preprocessed and included but there is no ordering between cpp files.
 
 ---------------

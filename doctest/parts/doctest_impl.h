@@ -472,6 +472,14 @@ extern "C" __declspec(dllimport) int __stdcall IsDebuggerPresent();
 
 #endif // DOCTEST_CONFIG_COLORS_WINDOWS
 
+namespace doctest_detail_test_suite_ns {
+    // holds the current test suite
+    const char*& getCurrentTestSuite() {
+        static const char* data = 0;
+        return data;
+    }
+} // namespace doctest_detail_test_suite_ns
+
 namespace doctest
 {
 namespace detail
@@ -745,15 +753,9 @@ namespace detail
         return suiteOrderComparator(a, b);
     }
 
-    // holds the current test suite
-    const char*& getCurrentTestSuite() {
-        static const char* data = 0;
-        return data;
-    }
-
     // sets the current test suite
     int setTestSuiteName(const char* name) {
-        getCurrentTestSuite() = name;
+        doctest_detail_test_suite_ns::getCurrentTestSuite() = name;
         return 0;
     }
 
@@ -764,8 +766,8 @@ namespace detail
     }
 
     // used by the macros for registering tests
-    int regTest(funcType f, unsigned line, const char* file, const char* name) {
-        getRegisteredTests().insert(TestData(getCurrentTestSuite(), name, f, file, line));
+    int regTest(funcType f, unsigned line, const char* file, const char* name, const char* suite) {
+        getRegisteredTests().insert(TestData(suite, name, f, file, line));
         return 0;
     }
 

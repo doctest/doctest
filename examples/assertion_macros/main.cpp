@@ -15,11 +15,13 @@ static int throws_stdexcept(bool in) {
 
 using doctest::Approx;
 
-TEST_SUITE("meaningless macros");
+TEST_SUITE("meaningless macros") {
+    TEST_CASE("an empty test that will succeed") {}
+    
+    TEST_CASE("an empty test that will fail because of an exception") { throws(true); }
+}
 
-TEST_CASE("an empty test that will succeed") {}
-
-TEST_CASE("an empty test that will fail because of an exception") { throws(true); }
+TEST_SUITE_BEGIN("meaningless macros");
 
 TEST_CASE("an empty test that will fail because of a std::exception") { throws_stdexcept(true); }
 
