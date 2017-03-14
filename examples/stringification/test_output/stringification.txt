@@ -1,24 +1,24 @@
 [doctest] run with "--help" for options
 ===============================================================================
-main.cpp(84)
+main.cpp(0)
 the only test
 
-main.cpp(94) FAILED! 
+main.cpp(0) FAILED! 
   CHECK( f1 == f2 )
 with expansion:
   CHECK( Foo{} == Foo{} )
 
-main.cpp(100) FAILED! 
+main.cpp(0) FAILED! 
   CHECK( dummy1 == dummy2 )
 with expansion:
   CHECK( omg == tralala )
 
-main.cpp(112) FAILED! 
+main.cpp(0) FAILED! 
   CHECK( vec1 == vec2 )
 with expansion:
   CHECK( [1, 2, 3] == [1, 2, 4] )
 
-main.cpp(124) FAILED! 
+main.cpp(0) FAILED! 
   CHECK( lst_1 == lst_2 )
 with expansion:
   CHECK( [1, 42, 3, ] == [1, 2, 666, ] )

@@ -46,5 +46,7 @@
  -nb,  --no-breaks=<bool>              disables breakpoints in debuggers
  -npf, --no-path-filenames=<bool>      only filenames and no paths in output
 
+ -nln, --no-line-numbers=<bool>        0 instead of real line numbers in output
+
 [doctest] for more information visit the project documentation
 

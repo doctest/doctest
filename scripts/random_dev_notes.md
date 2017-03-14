@@ -1,8 +1,5 @@
 
 
-- add option to not report line numbers - getting annoyed of re-committing reference output files with changed line reports from a tiny change...
-
-
 add VS 2017 build on appveyor when the image is officially added:
 https://www.appveyor.com/docs/installed-software/
 

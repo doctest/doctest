@@ -79,7 +79,6 @@ The following list is with things that are very unlikely to enter the roadmap:
 - print a warning when no assertion is encountered in a test case
 - hierarchical test suites - using a stack for the pushed ones - should be easy
 - ability to re-run only newly compiled tests based on time stamps using ```__DATE__``` and ```__TIME__``` - stored in some file
-- add option to not report line numbers - getting annoyed of re-committing reference output files with changed line reports from a tiny change...
 - add underscores to all preprocessor identifiers not intended for use by the user
 - put everything from the ```detail``` namespace also in a nested anonymous namespace to make them with internal linkage
 - ability to put everything from doctest into an anonymous namespace - to allow the use of multiple different versions of **doctest** within the same binary (executable/dll) - like the [**stb**](https://github.com/nothings/stb) libraries can

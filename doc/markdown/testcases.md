@@ -69,7 +69,7 @@ The two test cases here will create uniquely-named derived classes of UniqueTest
 
 ## Test suites
 
-Test cases can be grouped into test suites. This is done with ```TEST_SUITE()``` (or with ```TEST_SUITE_BEGIN()``` and ```TEST_SUITE_END()```).
+Test cases can be grouped into test suites. This is done with ```TEST_SUITE()``` or ```TEST_SUITE_BEGIN()``` / ```TEST_SUITE_END()```.
 
 For example:
 
