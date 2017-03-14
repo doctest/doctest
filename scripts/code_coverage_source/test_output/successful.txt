@@ -1,382 +1,382 @@
 [doctest] run with "--help" for options
 ===============================================================================
-test.cpp(6)
+test.cpp(0)
 subcases
 
 ===============================================================================
-test.cpp(6)
+test.cpp(0)
 subcases
   2
 
-test.cpp(11) FAILED! 
+test.cpp(0) FAILED! 
   CHECK( 0 )
 with expansion:
   CHECK( 0 )
 
 ===============================================================================
-test.cpp(41)
+test.cpp(0)
 expressions should be evaluated only once
 
-test.cpp(43) PASSED!
+test.cpp(0) PASSED!
   REQUIRE( ++a == 6 )
 with expansion:
   REQUIRE( 6 == 6 )
 
-test.cpp(44) PASSED!
+test.cpp(0) PASSED!
   REQUIRE_EQ( ++a, 7 )
 with expansion:
   REQUIRE_EQ( 7, 7 )
 
 ===============================================================================
-test.cpp(47)
+test.cpp(0)
 assertions
 
-test.cpp(48) PASSED!
+test.cpp(0) PASSED!
   CHECK( true )
 with expansion:
   CHECK( true )
 
-test.cpp(49) FAILED! 
+test.cpp(0) FAILED! 
   CHECK( 1 == 0 )
 with expansion:
   CHECK( 1 == 0 )
 
-test.cpp(50) FAILED! 
+test.cpp(0) FAILED! 
   CHECK_FALSE( 1 )
 with expansion:
   CHECK_FALSE( 1 )
 
-test.cpp(53) FAILED! 
+test.cpp(0) FAILED! 
   CHECK( a == b )
 with expansion:
   CHECK( myType! == myType! )
 
-test.cpp(54) FAILED! 
+test.cpp(0) FAILED! 
   CHECK( Approx(0.1) == 0.2 )
 with expansion:
   CHECK( Approx( 0.1 ) == 0.2 )
 
-test.cpp(56) PASSED!
+test.cpp(0) PASSED!
   CHECK_THROWS( throws(true) )
 
-test.cpp(57) FAILED!
+test.cpp(0) FAILED!
   CHECK_THROWS( throws(false) )
 
-test.cpp(58) PASSED!
+test.cpp(0) PASSED!
   CHECK_NOTHROW( throws(false) )
 
-test.cpp(59) FAILED!
+test.cpp(0) FAILED!
   CHECK_NOTHROW( throws(true) )
 
-test.cpp(60) PASSED!
+test.cpp(0) PASSED!
   CHECK_THROWS_AS( throws(true), bool )
 
-test.cpp(61) FAILED! (didn't throw at all)
+test.cpp(0) FAILED! (didn't throw at all)
   REQUIRE_THROWS_AS( throws(false), bool )
 
 ===============================================================================
-test.cpp(64)
+test.cpp(0)
 assertions - all of them
 
-test.cpp(65) PASSED!
+test.cpp(0) PASSED!
   WARN( true )
 with expansion:
   WARN( true )
 
-test.cpp(66) PASSED!
+test.cpp(0) PASSED!
   CHECK( true )
 with expansion:
   CHECK( true )
 
-test.cpp(67) PASSED!
+test.cpp(0) PASSED!
   REQUIRE( true )
 with expansion:
   REQUIRE( true )
 
-test.cpp(68) PASSED!
+test.cpp(0) PASSED!
   WARN_FALSE( false )
 with expansion:
   WARN_FALSE( false )
 
-test.cpp(69) PASSED!
+test.cpp(0) PASSED!
   CHECK_FALSE( false )
 with expansion:
   CHECK_FALSE( false )
 
-test.cpp(70) PASSED!
+test.cpp(0) PASSED!
   REQUIRE_FALSE( false )
 with expansion:
   REQUIRE_FALSE( false )
 
-test.cpp(71) PASSED!
+test.cpp(0) PASSED!
   WARN_THROWS( throws(true) )
 
-test.cpp(72) PASSED!
+test.cpp(0) PASSED!
   CHECK_THROWS( throws(true) )
 
-test.cpp(73) PASSED!
+test.cpp(0) PASSED!
   REQUIRE_THROWS( throws(true) )
 
-test.cpp(74) PASSED!
+test.cpp(0) PASSED!
   WARN_THROWS_AS( throws(true), bool )
 
-test.cpp(75) PASSED!
+test.cpp(0) PASSED!
   CHECK_THROWS_AS( throws(true), bool )
 
-test.cpp(76) PASSED!
+test.cpp(0) PASSED!
   REQUIRE_THROWS_AS( throws(true), bool )
 
-test.cpp(77) PASSED!
+test.cpp(0) PASSED!
   WARN_NOTHROW( throws(false) )
 
-test.cpp(78) PASSED!
+test.cpp(0) PASSED!
   CHECK_NOTHROW( throws(false) )
 
-test.cpp(79) PASSED!
+test.cpp(0) PASSED!
   REQUIRE_NOTHROW( throws(false) )
 
-test.cpp(80) PASSED!
+test.cpp(0) PASSED!
   WARN_EQ( 1, 1 )
 with expansion:
   WARN_EQ( 1, 1 )
 
-test.cpp(81) PASSED!
+test.cpp(0) PASSED!
   CHECK_EQ( 1, 1 )
 with expansion:
   CHECK_EQ( 1, 1 )
 
-test.cpp(82) PASSED!
+test.cpp(0) PASSED!
   REQUIRE_EQ( 1, 1 )
 with expansion:
   REQUIRE_EQ( 1, 1 )
 
-test.cpp(83) PASSED!
+test.cpp(0) PASSED!
   WARN_NE( 1, 0 )
 with expansion:
   WARN_NE( 1, 0 )
 
-test.cpp(84) PASSED!
+test.cpp(0) PASSED!
   CHECK_NE( 1, 0 )
 with expansion:
   CHECK_NE( 1, 0 )
 
-test.cpp(85) PASSED!
+test.cpp(0) PASSED!
   REQUIRE_NE( 1, 0 )
 with expansion:
   REQUIRE_NE( 1, 0 )
 
-test.cpp(86) PASSED!
+test.cpp(0) PASSED!
   WARN_GT( 1, 0 )
 with expansion:
   WARN_GT( 1, 0 )
 
-test.cpp(87) PASSED!
+test.cpp(0) PASSED!
   CHECK_GT( 1, 0 )
 with expansion:
   CHECK_GT( 1, 0 )
 
-test.cpp(88) PASSED!
+test.cpp(0) PASSED!
   REQUIRE_GT( 1, 0 )
 with expansion:
   REQUIRE_GT( 1, 0 )
 
-test.cpp(89) PASSED!
+test.cpp(0) PASSED!
   WARN_LT( 0, 1 )
 with expansion:
   WARN_LT( 0, 1 )
 
-test.cpp(90) PASSED!
+test.cpp(0) PASSED!
   CHECK_LT( 0, 1 )
 with expansion:
   CHECK_LT( 0, 1 )
 
-test.cpp(91) PASSED!
+test.cpp(0) PASSED!
   REQUIRE_LT( 0, 1 )
 with expansion:
   REQUIRE_LT( 0, 1 )
 
-test.cpp(92) PASSED!
+test.cpp(0) PASSED!
   WARN_GE( 1, 1 )
 with expansion:
   WARN_GE( 1, 1 )
 
-test.cpp(93) PASSED!
+test.cpp(0) PASSED!
   CHECK_GE( 1, 1 )
 with expansion:
   CHECK_GE( 1, 1 )
 
-test.cpp(94) PASSED!
+test.cpp(0) PASSED!
   REQUIRE_GE( 1, 1 )
 with expansion:
   REQUIRE_GE( 1, 1 )
 
-test.cpp(95) PASSED!
+test.cpp(0) PASSED!
   WARN_LE( 1, 1 )
 with expansion:
   WARN_LE( 1, 1 )
 
-test.cpp(96) PASSED!
+test.cpp(0) PASSED!
   CHECK_LE( 1, 1 )
 with expansion:
   CHECK_LE( 1, 1 )
 
-test.cpp(97) PASSED!
+test.cpp(0) PASSED!
   REQUIRE_LE( 1, 1 )
 with expansion:
   REQUIRE_LE( 1, 1 )
 
-test.cpp(98) PASSED!
+test.cpp(0) PASSED!
   WARN_UNARY( 1 )
 with expansion:
   WARN_UNARY( 1 )
 
-test.cpp(99) PASSED!
+test.cpp(0) PASSED!
   CHECK_UNARY( 1 )
 with expansion:
   CHECK_UNARY( 1 )
 
-test.cpp(100) PASSED!
+test.cpp(0) PASSED!
   REQUIRE_UNARY( 1 )
 with expansion:
   REQUIRE_UNARY( 1 )
 
-test.cpp(101) PASSED!
+test.cpp(0) PASSED!
   WARN_UNARY_FALSE( 0 )
 with expansion:
   WARN_UNARY_FALSE( 0 )
 
-test.cpp(102) PASSED!
+test.cpp(0) PASSED!
   CHECK_UNARY_FALSE( 0 )
 with expansion:
   CHECK_UNARY_FALSE( 0 )
 
-test.cpp(103) PASSED!
+test.cpp(0) PASSED!
   REQUIRE_UNARY_FALSE( 0 )
 with expansion:
   REQUIRE_UNARY_FALSE( 0 )
 
-test.cpp(104) PASSED!
+test.cpp(0) PASSED!
   FAST_WARN_EQ( 1, 1 )
 with expansion:
   FAST_WARN_EQ( 1, 1 )
 
-test.cpp(105) PASSED!
+test.cpp(0) PASSED!
   FAST_CHECK_EQ( 1, 1 )
 with expansion:
   FAST_CHECK_EQ( 1, 1 )
 
-test.cpp(106) PASSED!
+test.cpp(0) PASSED!
   FAST_REQUIRE_EQ( 1, 1 )
 with expansion:
   FAST_REQUIRE_EQ( 1, 1 )
 
-test.cpp(107) PASSED!
+test.cpp(0) PASSED!
   FAST_WARN_NE( 1, 0 )
 with expansion:
   FAST_WARN_NE( 1, 0 )
 
-test.cpp(108) PASSED!
+test.cpp(0) PASSED!
   FAST_CHECK_NE( 1, 0 )
 with expansion:
   FAST_CHECK_NE( 1, 0 )
 
-test.cpp(109) PASSED!
+test.cpp(0) PASSED!
   FAST_REQUIRE_NE( 1, 0 )
 with expansion:
   FAST_REQUIRE_NE( 1, 0 )
 
-test.cpp(110) PASSED!
+test.cpp(0) PASSED!
   FAST_WARN_GT( 1, 0 )
 with expansion:
   FAST_WARN_GT( 1, 0 )
 
-test.cpp(111) PASSED!
+test.cpp(0) PASSED!
   FAST_CHECK_GT( 1, 0 )
 with expansion:
   FAST_CHECK_GT( 1, 0 )
 
-test.cpp(112) PASSED!
+test.cpp(0) PASSED!
   FAST_REQUIRE_GT( 1, 0 )
 with expansion:
   FAST_REQUIRE_GT( 1, 0 )
 
-test.cpp(113) PASSED!
+test.cpp(0) PASSED!
   FAST_WARN_LT( 0, 1 )
 with expansion:
   FAST_WARN_LT( 0, 1 )
 
-test.cpp(114) PASSED!
+test.cpp(0) PASSED!
   FAST_CHECK_LT( 0, 1 )
 with expansion:
   FAST_CHECK_LT( 0, 1 )
 
-test.cpp(115) PASSED!
+test.cpp(0) PASSED!
   FAST_REQUIRE_LT( 0, 1 )
 with expansion:
   FAST_REQUIRE_LT( 0, 1 )
 
-test.cpp(116) PASSED!
+test.cpp(0) PASSED!
   FAST_WARN_GE( 1, 1 )
 with expansion:
   FAST_WARN_GE( 1, 1 )
 
-test.cpp(117) PASSED!
+test.cpp(0) PASSED!
   FAST_CHECK_GE( 1, 1 )
 with expansion:
   FAST_CHECK_GE( 1, 1 )
 
-test.cpp(118) PASSED!
+test.cpp(0) PASSED!
   FAST_REQUIRE_GE( 1, 1 )
 with expansion:
   FAST_REQUIRE_GE( 1, 1 )
 
-test.cpp(119) PASSED!
+test.cpp(0) PASSED!
   FAST_WARN_LE( 1, 1 )
 with expansion:
   FAST_WARN_LE( 1, 1 )
 
-test.cpp(120) PASSED!
+test.cpp(0) PASSED!
   FAST_CHECK_LE( 1, 1 )
 with expansion:
   FAST_CHECK_LE( 1, 1 )
 
-test.cpp(121) PASSED!
+test.cpp(0) PASSED!
   FAST_REQUIRE_LE( 1, 1 )
 with expansion:
   FAST_REQUIRE_LE( 1, 1 )
 
-test.cpp(122) PASSED!
+test.cpp(0) PASSED!
   FAST_WARN_UNARY( 1 )
 with expansion:
   FAST_WARN_UNARY( 1 )
 
-test.cpp(123) PASSED!
+test.cpp(0) PASSED!
   FAST_CHECK_UNARY( 1 )
 with expansion:
   FAST_CHECK_UNARY( 1 )
 
-test.cpp(124) PASSED!
+test.cpp(0) PASSED!
   FAST_REQUIRE_UNARY( 1 )
 with expansion:
   FAST_REQUIRE_UNARY( 1 )
 
-test.cpp(125) PASSED!
+test.cpp(0) PASSED!
   FAST_WARN_UNARY_FALSE( 0 )
 with expansion:
   FAST_WARN_UNARY_FALSE( 0 )
 
-test.cpp(126) PASSED!
+test.cpp(0) PASSED!
   FAST_CHECK_UNARY_FALSE( 0 )
 with expansion:
   FAST_CHECK_UNARY_FALSE( 0 )
 
-test.cpp(127) FAILED! 
+test.cpp(0) FAILED! 
   FAST_REQUIRE_UNARY_FALSE( 1 )
 with expansion:
   FAST_REQUIRE_UNARY_FALSE( 1 )
 
 ===============================================================================
-test.cpp(130)
+test.cpp(0)
 throws
 
 TEST CASE FAILED! (threw exception)

@@ -34,6 +34,8 @@ function(doctest_add_test)
     endforeach()
     # append the argument for removing paths from filenames in the output so tests give the same output everywhere
     set(the_command "${the_command} --dt-no-path-filenames=1")
+    # append the argument for substituting source line numbers with 0 in the output so tests give the same output when lines change a bit
+    set(the_command "${the_command} --dt-no-line-numbers=1")
     # append the argument for ignoring the exit code of the test programs because some are intended to have failing tests
     set(the_command "${the_command} --dt-no-exitcode=1")
     # append the argument for not printing the framework version so reference output doesn't have to be recommitted when the version is bumped

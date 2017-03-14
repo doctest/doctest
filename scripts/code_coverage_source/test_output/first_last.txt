@@ -1,45 +1,45 @@
 [doctest] run with "--help" for options
 ===============================================================================
-test.cpp(6)
+test.cpp(0)
 subcases
   2
 
-test.cpp(11) FAILED! 
+test.cpp(0) FAILED! 
   CHECK( 0 )
 with expansion:
   CHECK( 0 )
 
 ===============================================================================
-test.cpp(47)
+test.cpp(0)
 assertions
 
-test.cpp(49) FAILED! 
+test.cpp(0) FAILED! 
   CHECK( 1 == 0 )
 with expansion:
   CHECK( 1 == 0 )
 
-test.cpp(50) FAILED! 
+test.cpp(0) FAILED! 
   CHECK_FALSE( 1 )
 with expansion:
   CHECK_FALSE( 1 )
 
-test.cpp(53) FAILED! 
+test.cpp(0) FAILED! 
   CHECK( a == b )
 with expansion:
   CHECK( myType! == myType! )
 
-test.cpp(54) FAILED! 
+test.cpp(0) FAILED! 
   CHECK( Approx(0.1) == 0.2 )
 with expansion:
   CHECK( Approx( 0.1 ) == 0.2 )
 
-test.cpp(57) FAILED!
+test.cpp(0) FAILED!
   CHECK_THROWS( throws(false) )
 
-test.cpp(59) FAILED!
+test.cpp(0) FAILED!
   CHECK_NOTHROW( throws(true) )
 
-test.cpp(61) FAILED! (didn't throw at all)
+test.cpp(0) FAILED! (didn't throw at all)
   REQUIRE_THROWS_AS( throws(false), bool )
 
 ===============================================================================

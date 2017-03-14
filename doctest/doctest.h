@@ -1995,6 +1995,7 @@ namespace detail
         bool no_colors;      // if output to the console should be colorized
         bool force_colors;   // forces the use of colors even when a tty cannot be detected
         bool no_path_in_filenames; // if the path to files should be removed from the output
+        bool no_line_numbers;      // if source code line numbers should be omitted from the output
 
         bool help;             // to print the help
         bool version;          // to print the version
@@ -2703,6 +2704,13 @@ namespace detail
         return file;
     }
 
+    // depending on the current options this will substitute the line numbers with 0
+    int lineForOutput(int line) {
+        if(getContextState()->no_line_numbers)
+            return 0;
+        return line;
+    }
+
 #ifdef DOCTEST_PLATFORM_MAC
 #include <sys/types.h>
 #include <unistd.h>
@@ -2767,7 +2775,7 @@ namespace detail
         const char* newLine = "\n";
 
         char loc[DOCTEST_SNPRINTF_BUFFER_LENGTH];
-        DOCTEST_SNPRINTF(loc, DOCTEST_COUNTOF(loc), "%s(%d)\n", fileForOutput(file), line);
+        DOCTEST_SNPRINTF(loc, DOCTEST_COUNTOF(loc), "%s(%d)\n", fileForOutput(file), lineForOutput(line));
 
         char msg[DOCTEST_SNPRINTF_BUFFER_LENGTH];
         DOCTEST_SNPRINTF(msg, DOCTEST_COUNTOF(msg), "%s\n", name);
@@ -2817,7 +2825,7 @@ namespace detail
     void logAssert(bool passed, const char* decomposition, bool threw, const char* expr,
                    assertType::Enum assert_type, const char* file, int line) {
         char loc[DOCTEST_SNPRINTF_BUFFER_LENGTH];
-        DOCTEST_SNPRINTF(loc, DOCTEST_COUNTOF(loc), "%s(%d)", fileForOutput(file), line);
+        DOCTEST_SNPRINTF(loc, DOCTEST_COUNTOF(loc), "%s(%d)", fileForOutput(file), lineForOutput(line));
 
         char msg[DOCTEST_SNPRINTF_BUFFER_LENGTH];
         if(passed)
@@ -2853,7 +2861,7 @@ namespace detail
     void logAssertThrows(bool threw, const char* expr, assertType::Enum assert_type,
                          const char* file, int line) {
         char loc[DOCTEST_SNPRINTF_BUFFER_LENGTH];
-        DOCTEST_SNPRINTF(loc, DOCTEST_COUNTOF(loc), "%s(%d)", fileForOutput(file), line);
+        DOCTEST_SNPRINTF(loc, DOCTEST_COUNTOF(loc), "%s(%d)", fileForOutput(file), lineForOutput(line));
 
         char msg[DOCTEST_SNPRINTF_BUFFER_LENGTH];
         if(threw)
@@ -2875,7 +2883,7 @@ namespace detail
     void logAssertThrowsAs(bool threw, bool threw_as, const char* as, const char* expr,
                            assertType::Enum assert_type, const char* file, int line) {
         char loc[DOCTEST_SNPRINTF_BUFFER_LENGTH];
-        DOCTEST_SNPRINTF(loc, DOCTEST_COUNTOF(loc), "%s(%d)", fileForOutput(file), line);
+        DOCTEST_SNPRINTF(loc, DOCTEST_COUNTOF(loc), "%s(%d)", fileForOutput(file), lineForOutput(line));
 
         char msg[DOCTEST_SNPRINTF_BUFFER_LENGTH];
         if(threw_as)
@@ -2898,7 +2906,7 @@ namespace detail
     void logAssertNothrow(bool threw, const char* expr, assertType::Enum assert_type,
                           const char* file, int line) {
         char loc[DOCTEST_SNPRINTF_BUFFER_LENGTH];
-        DOCTEST_SNPRINTF(loc, DOCTEST_COUNTOF(loc), "%s(%d)", fileForOutput(file), line);
+        DOCTEST_SNPRINTF(loc, DOCTEST_COUNTOF(loc), "%s(%d)", fileForOutput(file), lineForOutput(line));
 
         char msg[DOCTEST_SNPRINTF_BUFFER_LENGTH];
         if(!threw)
@@ -3161,6 +3169,7 @@ namespace detail
         printf(" -fc,  --force-colors=<bool>           use colors even when not in a tty\n");
         printf(" -nb,  --no-breaks=<bool>              disables breakpoints in debuggers\n");
         printf(" -npf, --no-path-filenames=<bool>      only filenames and no paths in output\n\n");
+        printf(" -nln, --no-line-numbers=<bool>        0 instead of real line numbers in output\n\n");
         // ==================================================================================== << 79
 
         DOCTEST_PRINTF_COLORED("[doctest] ", Color::Cyan);
@@ -3241,6 +3250,7 @@ void Context::parseArgs(int argc, const char* const* argv, bool withDefaults) {
     DOCTEST_PARSE_AS_BOOL_OR_FLAG(dt-force-colors, dt-fc, force_colors, 0);
     DOCTEST_PARSE_AS_BOOL_OR_FLAG(dt-no-breaks, dt-nb, no_breaks, 0);
     DOCTEST_PARSE_AS_BOOL_OR_FLAG(dt-no-path-filenames, dt-npf, no_path_in_filenames, 0);
+    DOCTEST_PARSE_AS_BOOL_OR_FLAG(dt-no-line-numbers, dt-nln, no_line_numbers, 0);
 // clang-format on
 
 #undef DOCTEST_PARSE_STR_OPTION

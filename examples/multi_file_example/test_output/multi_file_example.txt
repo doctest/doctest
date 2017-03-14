@@ -1,27 +1,27 @@
 [doctest] run with "--help" for options
 ===============================================================================
-f1.cpp(3)
+f1.cpp(0)
 f1.cpp
 
-f1.cpp(4) FAILED! 
+f1.cpp(0) FAILED! 
   CHECK( 1 == 0 )
 with expansion:
   CHECK( 1 == 0 )
 
 ===============================================================================
-f2.cpp(3)
+f2.cpp(0)
 f2.cpp
 
-f2.cpp(4) FAILED! 
+f2.cpp(0) FAILED! 
   CHECK( 1 == 0 )
 with expansion:
   CHECK( 1 == 0 )
 
 ===============================================================================
-hdr.h(6)
+hdr.h(0)
 hdr.h
 
-hdr.h(7) FAILED! 
+hdr.h(0) FAILED! 
   CHECK( 1 == 0 )
 with expansion:
   CHECK( 1 == 0 )

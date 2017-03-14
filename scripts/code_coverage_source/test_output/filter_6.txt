@@ -1,10 +1,10 @@
 [doctest] run with "--help" for options
 ===============================================================================
-test.cpp(6)
+test.cpp(0)
 subcases
   2
 
-test.cpp(11) FAILED! 
+test.cpp(0) FAILED! 
   CHECK( 0 )
 with expansion:
   CHECK( 0 )
