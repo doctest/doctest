@@ -1,5 +1,7 @@
 # http://www.appveyor.com/docs/appveyor-yml
 
+image: Visual Studio 2017
+
 notifications:
   - provider: Email
     on_build_status_changed: false
@@ -77,6 +79,13 @@ build_script:
   - mkdir 2015
   - cd 2015
   - set gen=Visual Studio 14 2015%VS_GEN%
+  - cmake .. -G "%gen%"
+  - msbuild all.sln /p:Configuration=%Configuration%;Platform=%arch% /maxcpucount
+  - ctest -C %configuration% --output-on-failure
+  - cd ..
+  - mkdir 2017
+  - cd 2017
+  - set gen=Visual Studio 15 2017%VS_GEN%
   - cmake .. -G "%gen%"
   - msbuild all.sln /p:Configuration=%Configuration%;Platform=%arch% /maxcpucount
   - ctest -C %configuration% --output-on-failure
