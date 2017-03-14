@@ -12,6 +12,7 @@
 #define my_testcase_fixture         DOCTEST_TEST_CASE_FIXTURE
 #define my_subcase                  DOCTEST_SUBCASE
 #define my_testsuite                DOCTEST_TEST_SUITE
+#define my_testsuite_begin          DOCTEST_TEST_SUITE_BEGIN
 #define my_testsuite_end            DOCTEST_TEST_SUITE_END
 #define my_warn                     DOCTEST_WARN
 #define my_warn_false               DOCTEST_WARN_FALSE

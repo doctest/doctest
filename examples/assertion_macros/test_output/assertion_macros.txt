@@ -1,24 +1,24 @@
 [doctest] run with "--help" for options
 ===============================================================================
-main.cpp(22)
+main.cpp(21)
 an empty test that will fail because of an exception
 
 TEST CASE FAILED! (threw exception)
 
 ===============================================================================
-main.cpp(24)
+main.cpp(26)
 an empty test that will fail because of a std::exception
 
 TEST CASE FAILED! (threw exception: Exception)
 
 ===============================================================================
-main.cpp(28)
+main.cpp(30)
 normal macros
 
-main.cpp(32) FAILED! (threw exception)
+main.cpp(34) FAILED! (threw exception)
   CHECK( throws(true) == 42 )
 
-main.cpp(46) FAILED! 
+main.cpp(48) FAILED! 
   CHECK( Approx(0.502) == 0.501 )
 with expansion:
   CHECK( Approx( 0.502 ) == 0.501 )
@@ -26,13 +26,13 @@ with expansion:
 TEST CASE FAILED! (threw exception)
 
 ===============================================================================
-main.cpp(51)
+main.cpp(53)
 normal macros with std::exception
 
-main.cpp(55) FAILED! (threw exception)
+main.cpp(57) FAILED! (threw exception)
   CHECK( throws_stdexcept(true) == 42 )
 
-main.cpp(69) FAILED! 
+main.cpp(71) FAILED! 
   CHECK( Approx(0.502) == 0.501 )
 with expansion:
   CHECK( Approx( 0.502 ) == 0.501 )
@@ -40,35 +40,35 @@ with expansion:
 TEST CASE FAILED! (threw exception)
 
 ===============================================================================
-main.cpp(74)
+main.cpp(76)
 exceptions-related macros
 
-main.cpp(75) FAILED!
+main.cpp(77) FAILED!
   CHECK_THROWS( throws(false) )
 
-main.cpp(76) FAILED! (didn't throw at all)
+main.cpp(78) FAILED! (didn't throw at all)
   CHECK_THROWS_AS( throws(false), int )
 
-main.cpp(78) FAILED! (threw something else)
+main.cpp(80) FAILED! (threw something else)
   CHECK_THROWS_AS( throws(true), char )
 
-main.cpp(80) FAILED!
+main.cpp(82) FAILED!
   CHECK_NOTHROW( throws(true) )
 
 ===============================================================================
-main.cpp(83)
+main.cpp(85)
 exceptions-related macros for std::exception
 
-main.cpp(84) FAILED!
+main.cpp(86) FAILED!
   CHECK_THROWS( throws_stdexcept(false) )
 
-main.cpp(85) FAILED! (didn't throw at all)
+main.cpp(87) FAILED! (didn't throw at all)
   CHECK_THROWS_AS( throws_stdexcept(false), std::exception )
 
-main.cpp(87) FAILED! (threw something else)
+main.cpp(89) FAILED! (threw something else)
   CHECK_THROWS_AS( throws_stdexcept(true), int )
 
-main.cpp(89) FAILED!
+main.cpp(91) FAILED!
   REQUIRE_NOTHROW( throws_stdexcept(true) )
 
 ===============================================================================

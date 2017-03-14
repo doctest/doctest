@@ -12,7 +12,7 @@ TEST_CASE("subcases") {
     SUBCASE("3") {}
 }
 
-TEST_SUITE("ts1");
+TEST_SUITE_BEGIN("ts1");
 
 using doctest::Approx;
 

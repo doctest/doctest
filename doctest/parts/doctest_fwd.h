@@ -336,6 +336,13 @@ namespace std
 #endif // _LIBCPP_VERSION
 #endif // DOCTEST_CONFIG_WITH_NULLPTR
 
+// in a separate namespace outside of doctest because the DOCTEST_TEST_SUITE macro 
+// introduces an anonymous namespace in which getCurrentTestSuite gets overrided
+namespace doctest_detail_test_suite_ns
+{
+DOCTEST_INTERFACE const char*& getCurrentTestSuite();
+} // namespace doctest_detail_test_suite_ns
+
 namespace doctest
 {
 class DOCTEST_INTERFACE String
@@ -979,7 +986,7 @@ namespace detail
     };
 
     // forward declarations of functions used by the macros
-    DOCTEST_INTERFACE int regTest(void (*f)(void), unsigned line, const char* file, const char* name);
+    DOCTEST_INTERFACE int regTest(void (*f)(void), unsigned line, const char* file, const char* name, const char* suite);
     DOCTEST_INTERFACE int setTestSuiteName(const char* name);
 
     DOCTEST_INTERFACE void addFailedAssert(assertType::Enum assert_type);
@@ -1196,18 +1203,18 @@ public:
 #if defined(__GNUC__) && !defined(__clang__)
 #define DOCTEST_REGISTER_FUNCTION(f, name)                                                         \
     static int DOCTEST_ANONYMOUS(_DOCTEST_ANON_VAR_) __attribute__((unused)) =                     \
-            doctest::detail::regTest(f, __LINE__, __FILE__, name);
+            doctest::detail::regTest(f, __LINE__, __FILE__, name, doctest_detail_test_suite_ns::getCurrentTestSuite());
 #elif defined(__clang__)
 #define DOCTEST_REGISTER_FUNCTION(f, name)                                                         \
     _Pragma("clang diagnostic push")                                                               \
             _Pragma("clang diagnostic ignored \"-Wglobal-constructors\"") static int               \
                     DOCTEST_ANONYMOUS(_DOCTEST_ANON_VAR_) =                                        \
-                            doctest::detail::regTest(f, __LINE__, __FILE__, name);                 \
+                            doctest::detail::regTest(f, __LINE__, __FILE__, name, doctest_detail_test_suite_ns::getCurrentTestSuite()); \
     _Pragma("clang diagnostic pop")
 #else // MSVC
 #define DOCTEST_REGISTER_FUNCTION(f, name)                                                         \
     static int DOCTEST_ANONYMOUS(_DOCTEST_ANON_VAR_) =                                             \
-            doctest::detail::regTest(f, __LINE__, __FILE__, name);
+            doctest::detail::regTest(f, __LINE__, __FILE__, name, doctest_detail_test_suite_ns::getCurrentTestSuite());
 #endif // MSVC
 
 #define DOCTEST_IMPLEMENT_FIXTURE(der, base, func, name)                                           \
@@ -1249,21 +1256,33 @@ public:
                doctest::detail::Subcase(name, __FILE__, __LINE__))
 #endif // __GNUC__
 
+#define DOCTEST_TEST_SUITE_IMPL(name, ns_name)                                                     \
+    namespace ns_name {                                                                            \
+        namespace doctest_detail_test_suite_ns {                                                   \
+            inline const char* getCurrentTestSuite() {                                             \
+                return name;                                                                       \
+            }                                                                                      \
+        }                                                                                          \
+    }                                                                                              \
+    namespace ns_name
+
+#define DOCTEST_TEST_SUITE(name) DOCTEST_TEST_SUITE_IMPL(name, DOCTEST_ANONYMOUS(_DOCTEST_ANON_SUITE_))
+
 // for starting a testsuite block
 #if defined(__GNUC__) && !defined(__clang__)
-#define DOCTEST_TEST_SUITE(name)                                                                   \
+#define DOCTEST_TEST_SUITE_BEGIN(name)                                                             \
     static int DOCTEST_ANONYMOUS(_DOCTEST_ANON_VAR_) __attribute__((unused)) =                     \
             doctest::detail::setTestSuiteName(name);                                               \
     typedef int DOCTEST_ANONYMOUS(_DOCTEST_ANON_FOR_SEMICOLON_)
 #elif defined(__clang__)
-#define DOCTEST_TEST_SUITE(name)                                                                   \
+#define DOCTEST_TEST_SUITE_BEGIN(name)                                                             \
     _Pragma("clang diagnostic push")                                                               \
             _Pragma("clang diagnostic ignored \"-Wglobal-constructors\"") static int               \
                     DOCTEST_ANONYMOUS(_DOCTEST_ANON_VAR_) =                                        \
                             doctest::detail::setTestSuiteName(name);                               \
     _Pragma("clang diagnostic pop") typedef int DOCTEST_ANONYMOUS(_DOCTEST_ANON_FOR_SEMICOLON_)
 #else // MSVC
-#define DOCTEST_TEST_SUITE(name)                                                                   \
+#define DOCTEST_TEST_SUITE_BEGIN(name)                                                             \
     static int  DOCTEST_ANONYMOUS(_DOCTEST_ANON_VAR_) = doctest::detail::setTestSuiteName(name);   \
     typedef int DOCTEST_ANONYMOUS(_DOCTEST_ANON_FOR_SEMICOLON_)
 #endif // MSVC
@@ -1566,8 +1585,11 @@ public:
 // for subcases
 #define DOCTEST_SUBCASE(name)
 
+// for a testsuite block
+#define DOCTEST_TEST_SUITE(name) namespace
+
 // for starting a testsuite block
-#define DOCTEST_TEST_SUITE(name) typedef int DOCTEST_ANONYMOUS(_DOCTEST_ANON_FOR_SEMICOLON_)
+#define DOCTEST_TEST_SUITE_BEGIN(name) typedef int DOCTEST_ANONYMOUS(_DOCTEST_ANON_FOR_SEMICOLON_)
 
 // for ending a testsuite block
 #define DOCTEST_TEST_SUITE_END typedef int DOCTEST_ANONYMOUS(_DOCTEST_ANON_FOR_SEMICOLON_)
@@ -1659,6 +1681,7 @@ public:
 #define TEST_CASE_FIXTURE DOCTEST_TEST_CASE_FIXTURE
 #define SUBCASE DOCTEST_SUBCASE
 #define TEST_SUITE DOCTEST_TEST_SUITE
+#define TEST_SUITE_BEGIN DOCTEST_TEST_SUITE_BEGIN
 #define TEST_SUITE_END DOCTEST_TEST_SUITE_END
 #define WARN DOCTEST_WARN
 #define WARN_FALSE DOCTEST_WARN_FALSE

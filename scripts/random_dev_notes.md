@@ -1,4 +1,8 @@
 
+
+- add option to not report line numbers - getting annoyed of re-committing reference output files with changed line reports from a tiny change...
+
+
 add VS 2017 build on appveyor when the image is officially added:
 https://www.appveyor.com/docs/installed-software/
 
@@ -25,30 +29,16 @@ Fix for sigsegv stack overflow behavior
 
 
 
-https://github.com/linuxfoundation/cii-best-practices-badge
-
-
-
-
-look into UnitTest++ and how it does test suites
-https://github.com/chadaustin/sajson/blob/master/tests/test.cpp
-
-
-
 
 linux debugger support
 https://github.com/philsquared/Catch/pull/585
 
 
 
-list users of doctest - like this:
-https://github.com/philsquared/Catch/blob/master/docs/opensource-users.md
-
-
 
 add way to explicitly register a test - for the static libs issue...
 
-my current way of gettin the test registry vs nifty counter - https://en.wikibooks.org/wiki/More_C%2B%2B_Idioms/Nifty_Counter
+
 
 
 think about this:

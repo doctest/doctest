@@ -18,7 +18,7 @@ static int throws(bool in) {
     return 42;
 }
 
-TEST_SUITE("the testsuite!");
+TEST_SUITE_BEGIN("the testsuite!");
 
 #define DO_STUFF()                                                                                 \
     CHECK(1 == 0);                                                                                 \
@@ -68,7 +68,9 @@ struct TheFixture
     }
 };
 
-TEST_CASE_FIXTURE(TheFixture, "test with a fixture - 1") {
-    data /= 2;
-    CHECK(data == 21);
+TEST_SUITE("the testsuite!") {
+    TEST_CASE_FIXTURE(TheFixture, "test with a fixture - 1") {
+        data /= 2;
+        CHECK(data == 21);
+    }
 }
