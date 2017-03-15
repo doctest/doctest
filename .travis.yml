@@ -263,6 +263,15 @@ matrix:
 
   allow_failures:
 
+    # https://travis-ci.org/onqtam/doctest/jobs/211341945 - Disallowing sources: llvm-toolchain-precise-4.0
+    
+    # Clang 4.0
+    - env: COMPILER=clang++-4.0 HAS_ASAN_64=true HAS_UBSAN_64=true
+      addons: &clang40
+        apt:
+          packages: ["clang-4.0", "valgrind", "g++-multilib", "libc6-dbg", "libc6-dbg:i386", "g++-6"]
+          sources: *apt_sources
+
     # for some reason some of these builds fail sometimes...
 
     # OSX GCC 4.6
@@ -318,7 +327,7 @@ install:
 
   - |
     if [[ "${TRAVIS_OS_NAME}" == "linux" ]]; then
-      CMAKE_URL="http://www.cmake.org/files/v3.5/cmake-3.5.2-Linux-x86_64.tar.gz"
+      CMAKE_URL="http://www.cmake.org/files/v3.7/cmake-3.7.2-Linux-x86_64.tar.gz"
       mkdir cmake && travis_retry wget --no-check-certificate --quiet -O - ${CMAKE_URL} | tar --strip-components=1 -xz -C cmake
       export PATH=${DEPS_DIR}/cmake/bin:${PATH}
     fi
