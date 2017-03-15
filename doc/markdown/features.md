@@ -15,7 +15,7 @@ It is modeled after [**Catch**](https://github.com/philsquared/Catch) which is c
 - all macros have prefixes - some by default have unprefixed versions as well but that is optional - see [**configuration**](configuration.md)
 - 0 warnings even with the most aggresive flags (on all tested compilers!!!)
 	- ```-Weverything -pedantic``` for **clang**
-	- ```-Wall -Wextra -pedantic``` and **>> over 50 <<** other warnings **not** covered by these flags for **GCC**!!! - see [**here**](../../scripts/common.cmake#L77)
+	- ```-Wall -Wextra -pedantic``` and **>> over 35 <<** other warnings **not** covered by these flags for **GCC**!!! - see [**here**](../../scripts/common.cmake#L77)
 	- ```/W4``` for **MSVC** (```/Wall``` is too much there - even their own headers produce **thousands** of warnings with that option)
 - doesn't error on unrecognized [**command line**](commandline.md) options and supports prefixes for interop with client command line parsing
 - can set options [**procedurally**](main.md) and not deal with passing ```argc```/```argv``` from the command line
@@ -33,8 +33,8 @@ It is modeled after [**Catch**](https://github.com/philsquared/Catch) which is c
 	- all tests built and ran in **Debug**/**Release** and also in **32**/**64** bit modes
 	- all tests ran through **valgrind** under **Linux**/**OSX**
 	- all tests ran through **address** and **UB** sanitizers under **Linux**/**OSX**
-	- tests are ran in more than **200** different configurations on UNIX (Linux + OSX) on **travis** CI
-	- tests are ran in a total of **20** different configurations on Windows on **appveyor** CI
+	- tests are ran in more than **222** different configurations on UNIX (Linux + OSX) on **travis** CI
+	- tests are ran in a total of **24** different configurations on Windows on **appveyor** CI
 
 ---------------
 
