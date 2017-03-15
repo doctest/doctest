@@ -1,10 +1,5 @@
 
 
-add VS 2017 build on appveyor when the image is officially added:
-https://www.appveyor.com/docs/installed-software/
-
-
-
 add link to overload in main readme and in docs folder
 
 
