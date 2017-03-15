@@ -1,44 +1,7 @@
 
 
-add link to overload in main readme and in docs folder
 
 
-
-I suspect -Wsign-compare is not being silenced by the pragmas...
-see this build - https://travis-ci.org/onqtam/game/jobs/196987454
-check_eq(numDigits(0), 1);     numDigits returns uint32
-
-
-
-make the bench.py script more friendly for users
-
-
-
-
-https://github.com/philsquared/Catch/pull/753
-https://www.reddit.com/r/cpp/comments/5h6sq2/trying_googletest/db0q5h1/
-Fix for sigsegv stack overflow behavior
-
-
-
-
-linux debugger support
-https://github.com/philsquared/Catch/pull/585
-
-
-
-
-add way to explicitly register a test - for the static libs issue...
-
-
-
-
-think about this:
-https://github.com/philsquared/Catch/issues/734
-
-
-about executing tests in a separate process:
-https://github.com/philsquared/Catch/issues/853
 
 
 
@@ -83,3 +46,7 @@ slashdot?
 
 == other
 - compilation errors with operator<< - happens with doctest - in case it comes up... https://github.com/philsquared/Catch/issues/757
+
+- I suspect -Wsign-compare is not being silenced by the pragmas...
+  see this build - https://travis-ci.org/onqtam/game/jobs/196987454
+  check_eq(numDigits(0), 1);     numDigits returns uint32
