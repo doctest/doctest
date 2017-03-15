@@ -1,7 +1,5 @@
 # http://www.appveyor.com/docs/appveyor-yml
 
-image: Visual Studio 2017
-
 notifications:
   - provider: Email
     on_build_status_changed: false
@@ -26,6 +24,7 @@ matrix:
 environment:
   matrix:
   - platform: x86
+    image: Visual Studio 2017
     configuration: Debug
     arch: "Win32"
     VS_GEN: ""
