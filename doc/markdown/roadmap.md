@@ -24,6 +24,7 @@ Planned features for future releases - order not guaranteed.
 
 ### For 1.3:
 
+- builds with GCC 7 when it is released (should be in late April)
 - reporters
     - output to file
     - a system for writing custom reporters
