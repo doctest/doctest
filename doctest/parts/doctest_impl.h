@@ -72,6 +72,9 @@
 #define DOCTEST_SNPRINTF snprintf
 #endif
 
+#undef DOCTEST_GCS
+#define DOCTEST_GCS() (*doctest::detail::getContextState())
+
 #define DOCTEST_LOG_START()                                                                        \
     do {                                                                                           \
         if(!DOCTEST_GCS().hasLoggedCurrentTestStart) {                                             \
@@ -187,6 +190,28 @@ namespace detail
 
 #ifndef DOCTEST_CONFIG_DISABLE
 
+    // a struct defining a registered test callback
+    struct TestData
+    {
+        // not used for determining uniqueness
+        const char* m_suite; // the test suite in which the test was added
+        const char* m_name;  // name of the test function
+        funcType    m_f;     // a function pointer to the test function
+
+        // fields by which uniqueness of test cases shall be determined
+        const char* m_file; // the file in which the test was registered
+        unsigned    m_line; // the line where the test was registered
+
+        TestData(const char* suite, const char* name, funcType f, const char* file, unsigned line)
+                : m_suite(suite)
+                , m_name(name)
+                , m_f(f)
+                , m_file(file)
+                , m_line(line) {}
+
+        bool operator<(const TestData& other) const;
+    };
+
     // this holds both parameters for the command line and runtime data for tests
     struct ContextState : TestAccessibleContextState
     {
@@ -201,6 +226,7 @@ namespace detail
         unsigned last;  // the last (matching) test to be executed
 
         int  abort_after;    // stop tests after this many failed assertions
+        bool success;        // include successful assertions in output
         bool case_sensitive; // if filtering should be case sensitive
         bool exit;           // if the program should be exited after the tests are ran/whatever
         bool no_exitcode;    // if the framework should return 0 as the exitcode
@@ -219,9 +245,12 @@ namespace detail
 
         // == data for the tests being ran
 
-        int numAssertions;
-        int numFailedAssertions;
-        int numFailedAssertionsForCurrentTestcase;
+        const TestData* currentTest;
+        bool            hasLoggedCurrentTestStart;
+        int             numAssertionsForCurrentTestcase;
+        int             numAssertions;
+        int             numFailedAssertions;
+        int             numFailedAssertionsForCurrentTestcase;
 
         // stuff for subcases
         std::set<SubcaseSignature> subcasesPassed;
