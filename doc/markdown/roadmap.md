@@ -10,9 +10,6 @@ Planned features for future releases - order may change.
 
 ### For 1.2:
 
-- a mechanism for translating exceptions - users should be able to teach the framework about their types (look at Catch)
-- support for ```std::exception``` and derivatives (mainly for calling the ```.what()``` method when caught unexpectedly)
-
 - add the ability to query if code is currently being ran in a test -  ```doctest::isRunningInTest()```
 - add/expose a way to explicitly register a test (could be useful for the static libs issue)
 - running tests a few times

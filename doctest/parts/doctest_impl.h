@@ -909,6 +909,38 @@ namespace detail
 #endif // DOCTEST_CONFIG_COLORS_WINDOWS
     }
 
+    std::vector<const IExceptionTranslator*>& getExceptionTranslators() {
+        static std::vector<const IExceptionTranslator*> data;
+        return data;
+    }
+
+    void registerExceptionTranslatorImpl(const IExceptionTranslator* translateFunction) {   
+        getExceptionTranslators().push_back(translateFunction);
+    }
+
+    String translateActiveException() {
+        ExceptionTranslatorResult res;
+        std::vector<const IExceptionTranslator*>& translators = getExceptionTranslators();
+        for(size_t i = 0; i < translators.size() && res.success == false; ++i)
+            res = translators[i]->translate();
+        if(res.success == false) {
+            try {
+                throw;
+            } catch(TestFailureException&) {
+                throw;
+            } catch(std::exception& ex) {
+                res.result = ex.what();
+            } catch(std::string& msg) {
+                res.result = msg.c_str();
+            } catch(const char* msg) {
+                res.result = msg;
+            } catch(...) {
+                res.result = "unknown exception";
+            }
+        }
+        return res.result;
+    }
+
     // this is needed because MSVC does not permit mixing 2 exception handling schemes in a function
     int callTestFunc(funcType f) {
         int res = EXIT_SUCCESS;
@@ -921,13 +953,9 @@ namespace detail
 #ifndef DOCTEST_CONFIG_NO_EXCEPTIONS
         } catch(const TestFailureException&) {
             res = EXIT_FAILURE;
-        } catch(const std::exception& e) {
-            DOCTEST_LOG_START();
-            logTestException(e.what());
-            res = EXIT_FAILURE;
         } catch(...) {
             DOCTEST_LOG_START();
-            logTestCrashed();
+            logTestException(translateActiveException());
             res = EXIT_FAILURE;
         }
 #endif // DOCTEST_CONFIG_NO_EXCEPTIONS
@@ -1003,6 +1031,8 @@ namespace detail
         return "===============================================================================\n";
     }
 
+    const char* getNewLine() { return "\n"; }
+
     void printToDebugConsole(const String& text) {
         if(isDebuggerActive())
             myOutputDebugString(text.c_str());
@@ -1016,8 +1046,6 @@ namespace detail
     }
 
     void logTestStart(const char* name, const char* file, unsigned line) {
-        const char* newLine = "\n";
-
         char loc[DOCTEST_SNPRINTF_BUFFER_LENGTH];
         DOCTEST_SNPRINTF(loc, DOCTEST_COUNTOF(loc), "%s(%d)\n", fileForOutput(file), lineForOutput(line));
 
@@ -1038,30 +1066,22 @@ namespace detail
             subcaseStuff += subcase;
         }
 
-        DOCTEST_PRINTF_COLORED(newLine, Color::None);
+        DOCTEST_PRINTF_COLORED(getNewLine(), Color::None);
 
-        printToDebugConsole(String(getSeparator()) + loc + msg + subcaseStuff.c_str() + newLine);
+        printToDebugConsole(String(getSeparator()) + loc + msg + subcaseStuff.c_str() + getNewLine());
     }
 
     void logTestEnd() {}
 
-    void logTestCrashed() {
+    void logTestException(String what) {
         char msg[DOCTEST_SNPRINTF_BUFFER_LENGTH];
 
-        DOCTEST_SNPRINTF(msg, DOCTEST_COUNTOF(msg), "TEST CASE FAILED! (threw exception)\n\n");
+        DOCTEST_SNPRINTF(msg, DOCTEST_COUNTOF(msg), "TEST CASE FAILED! (threw exception: %s)\n",
+                         what.c_str());
 
         DOCTEST_PRINTF_COLORED(msg, Color::Red);
 
-        printToDebugConsole(String(msg));
-    }
-
-    void logTestException(const char* what) {
-        char msg[DOCTEST_SNPRINTF_BUFFER_LENGTH];
-
-        DOCTEST_SNPRINTF(msg, DOCTEST_COUNTOF(msg), "TEST CASE FAILED! (threw exception: %s)\n\n",
-                         what);
-
-        DOCTEST_PRINTF_COLORED(msg, Color::Red);
+        DOCTEST_PRINTF_COLORED(getNewLine(), Color::None);
 
         printToDebugConsole(String(msg));
     }
@@ -1722,7 +1742,7 @@ int Context::run() {
         }
     }
 
-    DOCTEST_PRINTF_COLORED(getSeparator(), numFailed > 0 ? Color::Red : Color::Green);
+    DOCTEST_PRINTF_COLORED(getSeparator(), Color::Yellow);
     if(p->count || p->list_test_cases || p->list_test_suites) {
         DOCTEST_PRINTF_COLORED("[doctest] ", Color::Cyan);
         printf("number of tests passing the current filters: %d\n", numTestsPassingFilters);
