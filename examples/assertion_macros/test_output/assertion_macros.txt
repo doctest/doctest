@@ -15,10 +15,10 @@ TEST CASE FAILED! (threw exception: Exception)
 main.cpp(0)
 normal macros
 
-main.cpp(0) FAILED! (threw exception)
+main.cpp(0) FAILED! (threw exception: unknown exception)
   CHECK( throws(true) == 42 )
 
-main.cpp(0) FAILED! 
+main.cpp(0) FAILED!
   CHECK( Approx(0.502) == 0.501 )
 with expansion:
   CHECK( Approx( 0.502 ) == 0.501 )
@@ -29,10 +29,10 @@ TEST CASE FAILED! (threw exception: unknown exception)
 main.cpp(0)
 normal macros with std::exception
 
-main.cpp(0) FAILED! (threw exception)
+main.cpp(0) FAILED! (threw exception: Exception)
   CHECK( throws_stdexcept(true) == 42 )
 
-main.cpp(0) FAILED! 
+main.cpp(0) FAILED!
   CHECK( Approx(0.502) == 0.501 )
 with expansion:
   CHECK( Approx( 0.502 ) == 0.501 )
@@ -49,10 +49,10 @@ main.cpp(0) FAILED!
 main.cpp(0) FAILED! (didn't throw at all)
   CHECK_THROWS_AS( throws(false), int )
 
-main.cpp(0) FAILED! (threw something else)
+main.cpp(0) FAILED! (threw exception: unknown exception)
   CHECK_THROWS_AS( throws(true), char )
 
-main.cpp(0) FAILED!
+main.cpp(0) FAILED! (threw exception: unknown exception)
   CHECK_NOTHROW( throws(true) )
 
 ===============================================================================
@@ -65,10 +65,10 @@ main.cpp(0) FAILED!
 main.cpp(0) FAILED! (didn't throw at all)
   CHECK_THROWS_AS( throws_stdexcept(false), std::exception )
 
-main.cpp(0) FAILED! (threw something else)
+main.cpp(0) FAILED! (threw exception: Exception)
   CHECK_THROWS_AS( throws_stdexcept(true), int )
 
-main.cpp(0) FAILED!
+main.cpp(0) FAILED! (threw exception: Exception)
   REQUIRE_NOTHROW( throws_stdexcept(true) )
 
 ===============================================================================

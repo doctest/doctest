@@ -985,16 +985,16 @@ namespace detail
 
     DOCTEST_INTERFACE void logTestException(String what);
 
-    DOCTEST_INTERFACE void logAssert(bool passed, const char* decomposition, bool threw, const char* expr,
+    DOCTEST_INTERFACE void logAssert(bool passed, const char* decomposition, bool threw, const String& exception, const char* expr,
                    assertType::Enum assert_type, const char* file, int line);
 
     DOCTEST_INTERFACE void logAssertThrows(bool threw, const char* expr, assertType::Enum assert_type,
                          const char* file, int line);
 
-    DOCTEST_INTERFACE void logAssertThrowsAs(bool threw, bool threw_as, const char* as, const char* expr,
+    DOCTEST_INTERFACE void logAssertThrowsAs(bool threw, bool threw_as, const char* as, const String& exception, const char* expr,
                            assertType::Enum assert_type, const char* file, int line);
 
-    DOCTEST_INTERFACE void logAssertNothrow(bool threw, const char* expr, assertType::Enum assert_type,
+    DOCTEST_INTERFACE void logAssertNothrow(bool threw, const String& exception, const char* expr, assertType::Enum assert_type,
                           const char* file, int line);
 
     DOCTEST_INTERFACE bool isDebuggerActive();
@@ -1045,6 +1045,7 @@ namespace detail
         bool   m_threw;
         bool   m_threw_as;
         bool   m_failed;
+        String m_exception;
 
         ResultBuilder(assertType::Enum assert_type, const char* file, int line, const char* expr,
                       const char* exception_type = "");
@@ -1069,6 +1070,8 @@ namespace detail
             m_result.m_passed        = !!val;
             m_result.m_decomposition = toString(val);
         }
+
+        void unexpectedExceptionOccurred();
 
         bool log();
         void react() const;
@@ -1153,19 +1156,8 @@ namespace detail
             success(false) {}
     };
 
-    template<typename T>
-    ExceptionTranslatorResult exceptionTranslator() {
-        ExceptionTranslatorResult res;
-        try {
-            throw;
-        } catch(T&) {
-            res.success = true;
-        } catch(...) {}
-        return res;
-    }
-
     struct IExceptionTranslator {
-        virtual ~IExceptionTranslator() {};
+        virtual ~IExceptionTranslator() {}
         virtual ExceptionTranslatorResult translate() const = 0;
     };
 
@@ -1339,27 +1331,27 @@ public:
 #define DOCTEST_WRAP_IN_TRY(x)                                                                     \
     try {                                                                                          \
         x;                                                                                         \
-    } catch(...) { _DOCTEST_RB.m_threw = true; }
+    } catch(...) { _DOCTEST_RB.unexpectedExceptionOccurred(); }
 #endif // DOCTEST_CONFIG_NO_TRY_CATCH_IN_ASSERTS
 
 #define DOCTEST_ASSERT_IMPLEMENT(expr, assert_type)                                                \
     doctest::detail::ResultBuilder _DOCTEST_RB(doctest::detail::assertType::assert_type, __FILE__, \
                                                __LINE__, #expr);                                   \
     DOCTEST_WRAP_IN_TRY(_DOCTEST_RB.setResult(doctest::detail::ExpressionDecomposer() << expr))    \
-    DOCTEST_ASSERT_LOG_AND_REACT(_DOCTEST_RB);
+    DOCTEST_ASSERT_LOG_AND_REACT(_DOCTEST_RB)
 
 #if defined(__clang__)
 #define DOCTEST_ASSERT_PROXY(expr, assert_type)                                                    \
     do {                                                                                           \
         _Pragma("clang diagnostic push")                                                           \
                 _Pragma("clang diagnostic ignored \"-Woverloaded-shift-op-parentheses\"")          \
-                        DOCTEST_ASSERT_IMPLEMENT(expr, assert_type)                                \
+                        DOCTEST_ASSERT_IMPLEMENT(expr, assert_type);                               \
                                 _Pragma("clang diagnostic pop")                                    \
     } while(doctest::detail::always_false())
 #else // __clang__
 #define DOCTEST_ASSERT_PROXY(expr, assert_type)                                                    \
     do {                                                                                           \
-        DOCTEST_ASSERT_IMPLEMENT(expr, assert_type)                                                \
+        DOCTEST_ASSERT_IMPLEMENT(expr, assert_type);                                               \
     } while(doctest::detail::always_false())
 #endif // __clang__
 
@@ -1393,7 +1385,7 @@ public:
             } catch(as) {                                                                          \
                 _DOCTEST_RB.m_threw    = true;                                                     \
                 _DOCTEST_RB.m_threw_as = true;                                                     \
-            } catch(...) { _DOCTEST_RB.m_threw = true; }                                           \
+            } catch(...) { _DOCTEST_RB.unexpectedExceptionOccurred(); }                            \
             DOCTEST_ASSERT_LOG_AND_REACT(_DOCTEST_RB);                                             \
         }                                                                                          \
     } while(doctest::detail::always_false())
@@ -1405,7 +1397,7 @@ public:
                                                        __FILE__, __LINE__, #expr);                 \
             try {                                                                                  \
                 expr;                                                                              \
-            } catch(...) { _DOCTEST_RB.m_threw = true; }                                           \
+            } catch(...) { _DOCTEST_RB.unexpectedExceptionOccurred(); }                            \
             DOCTEST_ASSERT_LOG_AND_REACT(_DOCTEST_RB);                                             \
         }                                                                                          \
     } while(doctest::detail::always_false())
