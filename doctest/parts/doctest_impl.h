@@ -909,6 +909,8 @@ namespace detail
 #endif // DOCTEST_CONFIG_COLORS_WINDOWS
     }
 
+    IExceptionTranslator::~IExceptionTranslator() {}
+
     std::vector<const IExceptionTranslator*>& getExceptionTranslators() {
         static std::vector<const IExceptionTranslator*> data;
         return data;
@@ -1031,8 +1033,6 @@ namespace detail
         return "===============================================================================\n";
     }
 
-    const char* getNewLine() { return "\n"; }
-
     void printToDebugConsole(const String& text) {
         if(isDebuggerActive())
             myOutputDebugString(text.c_str());
@@ -1066,9 +1066,9 @@ namespace detail
             subcaseStuff += subcase;
         }
 
-        DOCTEST_PRINTF_COLORED(getNewLine(), Color::None);
+        DOCTEST_PRINTF_COLORED("\n", Color::None);
 
-        printToDebugConsole(String(getSeparator()) + loc + msg + subcaseStuff.c_str() + getNewLine());
+        printToDebugConsole(String(getSeparator()) + loc + msg + subcaseStuff.c_str() + "\n");
     }
 
     void logTestEnd() {}
@@ -1076,14 +1076,21 @@ namespace detail
     void logTestException(String what) {
         char msg[DOCTEST_SNPRINTF_BUFFER_LENGTH];
 
-        DOCTEST_SNPRINTF(msg, DOCTEST_COUNTOF(msg), "TEST CASE FAILED! (threw exception: %s)\n",
-                         what.c_str());
+        DOCTEST_SNPRINTF(msg, DOCTEST_COUNTOF(msg), "TEST CASE FAILED!\n");
+
+        char info1[DOCTEST_SNPRINTF_BUFFER_LENGTH];
+        char info2[DOCTEST_SNPRINTF_BUFFER_LENGTH];
+        info1[0] = 0;
+        info2[0] = 0;
+        DOCTEST_SNPRINTF(info1, DOCTEST_COUNTOF(info1), "threw exception:\n");
+        DOCTEST_SNPRINTF(info2, DOCTEST_COUNTOF(info2), "  %s\n", what.c_str());
 
         DOCTEST_PRINTF_COLORED(msg, Color::Red);
+        DOCTEST_PRINTF_COLORED(info1, Color::None);
+        DOCTEST_PRINTF_COLORED(info2, Color::Cyan);
+        DOCTEST_PRINTF_COLORED("\n", Color::None);
 
-        DOCTEST_PRINTF_COLORED(getNewLine(), Color::None);
-
-        printToDebugConsole(String(msg));
+        printToDebugConsole(String(msg) + info1 + info2 + "\n");
     }
 
     void logAssert(bool passed, const char* decomposition, bool threw, const String& exception, const char* expr,
@@ -1092,12 +1099,7 @@ namespace detail
         DOCTEST_SNPRINTF(loc, DOCTEST_COUNTOF(loc), "%s(%d)", fileForOutput(file), lineForOutput(line));
 
         char msg[DOCTEST_SNPRINTF_BUFFER_LENGTH];
-        if(passed)
-            DOCTEST_SNPRINTF(msg, DOCTEST_COUNTOF(msg), " PASSED!\n");
-        else if(threw)
-            DOCTEST_SNPRINTF(msg, DOCTEST_COUNTOF(msg), " FAILED! (threw exception: %s)\n", exception.c_str());
-        else
-            DOCTEST_SNPRINTF(msg, DOCTEST_COUNTOF(msg), " FAILED!\n");
+        DOCTEST_SNPRINTF(msg, DOCTEST_COUNTOF(msg), passed ? " PASSED!\n" : " FAILED!\n");
 
         char info1[DOCTEST_SNPRINTF_BUFFER_LENGTH];
         DOCTEST_SNPRINTF(info1, DOCTEST_COUNTOF(info1), "  %s( %s )\n",
@@ -1111,6 +1113,9 @@ namespace detail
             DOCTEST_SNPRINTF(info2, DOCTEST_COUNTOF(info2), "with expansion:\n");
             DOCTEST_SNPRINTF(info3, DOCTEST_COUNTOF(info3), "  %s( %s )\n",
                              getAssertString(assert_type), decomposition);
+        } else {
+            DOCTEST_SNPRINTF(info2, DOCTEST_COUNTOF(info2), "threw exception:\n");
+            DOCTEST_SNPRINTF(info3, DOCTEST_COUNTOF(info3), "  %s\n", exception.c_str());
         }
 
         DOCTEST_PRINTF_COLORED(loc, Color::LightGrey);
@@ -1129,20 +1134,25 @@ namespace detail
         DOCTEST_SNPRINTF(loc, DOCTEST_COUNTOF(loc), "%s(%d)", fileForOutput(file), lineForOutput(line));
 
         char msg[DOCTEST_SNPRINTF_BUFFER_LENGTH];
-        if(threw)
-            DOCTEST_SNPRINTF(msg, DOCTEST_COUNTOF(msg), " PASSED!\n");
-        else
-            DOCTEST_SNPRINTF(msg, DOCTEST_COUNTOF(msg), " FAILED!\n");
+        DOCTEST_SNPRINTF(msg, DOCTEST_COUNTOF(msg), threw ? " PASSED!\n" : " FAILED!\n");
 
         char info1[DOCTEST_SNPRINTF_BUFFER_LENGTH];
-        DOCTEST_SNPRINTF(info1, DOCTEST_COUNTOF(info1), "  %s( %s )\n\n",
+        DOCTEST_SNPRINTF(info1, DOCTEST_COUNTOF(info1), "  %s( %s )\n",
                          getAssertString(assert_type), expr);
+
+        char info2[DOCTEST_SNPRINTF_BUFFER_LENGTH];
+        info2[0] = 0;
+
+        if(!threw)
+            DOCTEST_SNPRINTF(info2, DOCTEST_COUNTOF(info2), "didn't throw at all\n");
 
         DOCTEST_PRINTF_COLORED(loc, Color::LightGrey);
         DOCTEST_PRINTF_COLORED(msg, threw ? Color::BrightGreen : Color::Red);
         DOCTEST_PRINTF_COLORED(info1, Color::Cyan);
+        DOCTEST_PRINTF_COLORED(info2, Color::None);
+        DOCTEST_PRINTF_COLORED("\n", Color::None);
 
-        printToDebugConsole(String(loc) + msg + info1);
+        printToDebugConsole(String(loc) + msg + info1 + info2 + "\n");
     }
 
     void logAssertThrowsAs(bool threw, bool threw_as, const char* as, const String& exception, const char* expr,
@@ -1151,22 +1161,32 @@ namespace detail
         DOCTEST_SNPRINTF(loc, DOCTEST_COUNTOF(loc), "%s(%d)", fileForOutput(file), lineForOutput(line));
 
         char msg[DOCTEST_SNPRINTF_BUFFER_LENGTH];
-        if(threw_as)
-            DOCTEST_SNPRINTF(msg, DOCTEST_COUNTOF(msg), " PASSED!\n");
-        else if(threw)
-            DOCTEST_SNPRINTF(msg, DOCTEST_COUNTOF(msg), " FAILED! (threw exception: %s)\n", exception.c_str());
-        else
-            DOCTEST_SNPRINTF(msg, DOCTEST_COUNTOF(msg), " FAILED! (didn't throw at all)\n");
+        DOCTEST_SNPRINTF(msg, DOCTEST_COUNTOF(msg), threw_as ? " PASSED!\n" : " FAILED!\n");
 
         char info1[DOCTEST_SNPRINTF_BUFFER_LENGTH];
-        DOCTEST_SNPRINTF(info1, DOCTEST_COUNTOF(info1), "  %s( %s, %s )\n\n",
+        DOCTEST_SNPRINTF(info1, DOCTEST_COUNTOF(info1), "  %s( %s, %s )\n",
                          getAssertString(assert_type), expr, as);
+
+        char info2[DOCTEST_SNPRINTF_BUFFER_LENGTH];
+        char info3[DOCTEST_SNPRINTF_BUFFER_LENGTH];
+        info2[0] = 0;
+        info3[0] = 0;
+
+        if(!threw) {
+            DOCTEST_SNPRINTF(info2, DOCTEST_COUNTOF(info2), "didn't throw at all\n");
+        } else if(!threw_as) {
+            DOCTEST_SNPRINTF(info2, DOCTEST_COUNTOF(info2), "threw a different exception:\n");
+            DOCTEST_SNPRINTF(info3, DOCTEST_COUNTOF(info3), "  %s\n", exception.c_str());
+        }
 
         DOCTEST_PRINTF_COLORED(loc, Color::LightGrey);
         DOCTEST_PRINTF_COLORED(msg, threw_as ? Color::BrightGreen : Color::Red);
         DOCTEST_PRINTF_COLORED(info1, Color::Cyan);
+        DOCTEST_PRINTF_COLORED(info2, Color::None);
+        DOCTEST_PRINTF_COLORED(info3, Color::Cyan);
+        DOCTEST_PRINTF_COLORED("\n", Color::None);
 
-        printToDebugConsole(String(loc) + msg + info1);
+        printToDebugConsole(String(loc) + msg + info1 + info2 + info3 + "\n");
     }
 
     void logAssertNothrow(bool threw, const String& exception, const char* expr, assertType::Enum assert_type,
@@ -1175,20 +1195,29 @@ namespace detail
         DOCTEST_SNPRINTF(loc, DOCTEST_COUNTOF(loc), "%s(%d)", fileForOutput(file), lineForOutput(line));
 
         char msg[DOCTEST_SNPRINTF_BUFFER_LENGTH];
-        if(!threw)
-            DOCTEST_SNPRINTF(msg, DOCTEST_COUNTOF(msg), " PASSED!\n");
-        else
-            DOCTEST_SNPRINTF(msg, DOCTEST_COUNTOF(msg), " FAILED! (threw exception: %s)\n", exception.c_str());
+        DOCTEST_SNPRINTF(msg, DOCTEST_COUNTOF(msg), !threw ? " PASSED!\n" : " FAILED!\n");
 
         char info1[DOCTEST_SNPRINTF_BUFFER_LENGTH];
-        DOCTEST_SNPRINTF(info1, DOCTEST_COUNTOF(info1), "  %s( %s )\n\n",
+        DOCTEST_SNPRINTF(info1, DOCTEST_COUNTOF(info1), "  %s( %s )\n",
                          getAssertString(assert_type), expr);
+
+        char info2[DOCTEST_SNPRINTF_BUFFER_LENGTH];
+        char info3[DOCTEST_SNPRINTF_BUFFER_LENGTH];
+        info2[0] = 0;
+        info3[0] = 0;
+        if(threw) {
+            DOCTEST_SNPRINTF(info2, DOCTEST_COUNTOF(info2), "threw exception:\n");
+            DOCTEST_SNPRINTF(info3, DOCTEST_COUNTOF(info3), "  %s\n", exception.c_str());
+        }
 
         DOCTEST_PRINTF_COLORED(loc, Color::LightGrey);
         DOCTEST_PRINTF_COLORED(msg, !threw ? Color::BrightGreen : Color::Red);
         DOCTEST_PRINTF_COLORED(info1, Color::Cyan);
+        DOCTEST_PRINTF_COLORED(info2, Color::None);
+        DOCTEST_PRINTF_COLORED(info3, Color::Cyan);
+        DOCTEST_PRINTF_COLORED("\n", Color::None);
 
-        printToDebugConsole(String(loc) + msg + info1);
+        printToDebugConsole(String(loc) + msg + info1 + info2 + info3 + "\n");
     }
 
     ResultBuilder::ResultBuilder(assertType::Enum assert_type, const char* file, int line,

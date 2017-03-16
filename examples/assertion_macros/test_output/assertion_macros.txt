@@ -3,41 +3,53 @@
 main.cpp(0)
 an empty test that will fail because of an exception
 
-TEST CASE FAILED! (threw exception: unknown exception)
+TEST CASE FAILED!
+threw exception:
+  unknown exception
 
 ===============================================================================
 main.cpp(0)
 an empty test that will fail because of a std::exception
 
-TEST CASE FAILED! (threw exception: Exception)
+TEST CASE FAILED!
+threw exception:
+  Exception
 
 ===============================================================================
 main.cpp(0)
 normal macros
 
-main.cpp(0) FAILED! (threw exception: unknown exception)
+main.cpp(0) FAILED!
   CHECK( throws(true) == 42 )
+threw exception:
+  unknown exception
 
 main.cpp(0) FAILED!
   CHECK( Approx(0.502) == 0.501 )
 with expansion:
   CHECK( Approx( 0.502 ) == 0.501 )
 
-TEST CASE FAILED! (threw exception: unknown exception)
+TEST CASE FAILED!
+threw exception:
+  unknown exception
 
 ===============================================================================
 main.cpp(0)
 normal macros with std::exception
 
-main.cpp(0) FAILED! (threw exception: Exception)
+main.cpp(0) FAILED!
   CHECK( throws_stdexcept(true) == 42 )
+threw exception:
+  Exception
 
 main.cpp(0) FAILED!
   CHECK( Approx(0.502) == 0.501 )
 with expansion:
   CHECK( Approx( 0.502 ) == 0.501 )
 
-TEST CASE FAILED! (threw exception: unknown exception)
+TEST CASE FAILED!
+threw exception:
+  unknown exception
 
 ===============================================================================
 main.cpp(0)
@@ -45,15 +57,21 @@ exceptions-related macros
 
 main.cpp(0) FAILED!
   CHECK_THROWS( throws(false) )
+didn't throw at all
 
-main.cpp(0) FAILED! (didn't throw at all)
+main.cpp(0) FAILED!
   CHECK_THROWS_AS( throws(false), int )
+didn't throw at all
 
-main.cpp(0) FAILED! (threw exception: unknown exception)
+main.cpp(0) FAILED!
   CHECK_THROWS_AS( throws(true), char )
+threw a different exception:
+  unknown exception
 
-main.cpp(0) FAILED! (threw exception: unknown exception)
+main.cpp(0) FAILED!
   CHECK_NOTHROW( throws(true) )
+threw exception:
+  unknown exception
 
 ===============================================================================
 main.cpp(0)
@@ -61,15 +79,21 @@ exceptions-related macros for std::exception
 
 main.cpp(0) FAILED!
   CHECK_THROWS( throws_stdexcept(false) )
+didn't throw at all
 
-main.cpp(0) FAILED! (didn't throw at all)
+main.cpp(0) FAILED!
   CHECK_THROWS_AS( throws_stdexcept(false), std::exception )
+didn't throw at all
 
-main.cpp(0) FAILED! (threw exception: Exception)
+main.cpp(0) FAILED!
   CHECK_THROWS_AS( throws_stdexcept(true), int )
+threw a different exception:
+  Exception
 
-main.cpp(0) FAILED! (threw exception: Exception)
+main.cpp(0) FAILED!
   REQUIRE_NOTHROW( throws_stdexcept(true) )
+threw exception:
+  Exception
 
 ===============================================================================
 [doctest] test cases:    7 |    1 passed |    6 failed |    0 skipped

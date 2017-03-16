@@ -14,7 +14,9 @@ root
 main.cpp(0)
 lots of nested subcases
 
-TEST CASE FAILED! (threw exception: unknown exception)
+TEST CASE FAILED!
+threw exception:
+  unknown exception
 
 ===============================================================================
 main.cpp(0)
