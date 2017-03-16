@@ -2,6 +2,15 @@
 
 
 
+exception translation mechanism - #12
+- implement for test cases
+- implement for asserts
+- test with DOCTEST_CONFIG_NO_EXCEPTIONS
+- exported symbols?
+- edit examples - disabled and stringification
+- write in docs
+    - REGISTER_EXCEPTION_TRANSLATOR - can catch by value and by reference
+    - doctest::registerExceptionTranslator<int>([](int in){ return doctest::String("int: ") + doctest::toString(in); });
 
 
 

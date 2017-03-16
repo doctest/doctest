@@ -983,8 +983,7 @@ namespace detail
     DOCTEST_INTERFACE void logTestStart(const char* name, const char* file, unsigned line);
     DOCTEST_INTERFACE void logTestEnd();
 
-    DOCTEST_INTERFACE void logTestCrashed();
-    DOCTEST_INTERFACE void logTestException(const char* what);
+    DOCTEST_INTERFACE void logTestException(String what);
 
     DOCTEST_INTERFACE void logAssert(bool passed, const char* decomposition, bool threw, const char* expr,
                    assertType::Enum assert_type, const char* file, int line);
@@ -1145,9 +1144,72 @@ namespace detail
 
         return res;
     }
+
+    struct ExceptionTranslatorResult {
+        bool success;
+        String result;
+
+        ExceptionTranslatorResult() :
+            success(false) {}
+    };
+
+    template<typename T>
+    ExceptionTranslatorResult exceptionTranslator() {
+        ExceptionTranslatorResult res;
+        try {
+            throw;
+        } catch(T&) {
+            res.success = true;
+        } catch(...) {}
+        return res;
+    }
+
+    struct IExceptionTranslator {
+        virtual ~IExceptionTranslator() {};
+        virtual ExceptionTranslatorResult translate() const = 0;
+    };
+
+    template<typename T>
+    class ExceptionTranslator : public IExceptionTranslator {
+    public:
+
+        ExceptionTranslator(String(*translateFunction)(T))
+            : m_translateFunction(translateFunction)
+        {}
+
+        ExceptionTranslatorResult translate() const {
+            ExceptionTranslatorResult res;
+            try {
+                throw;
+            } catch(T ex) {
+                res.result = m_translateFunction(ex);
+                res.success = true;
+            } catch(...) {}
+            return res;
+        }
+
+    protected:
+        String(*m_translateFunction)(T);
+    };
+
+    DOCTEST_INTERFACE void registerExceptionTranslatorImpl(const IExceptionTranslator* translateFunction);
+
 } // namespace detail
 
 #endif // DOCTEST_CONFIG_DISABLE
+
+template<typename T>
+int registerExceptionTranslator(String(*
+#ifndef DOCTEST_CONFIG_DISABLE
+    translateFunction
+#endif // DOCTEST_CONFIG_DISABLE
+    )(T)) {
+#ifndef DOCTEST_CONFIG_DISABLE
+    static detail::ExceptionTranslator<T> exceptionTranslator(translateFunction);
+    detail::registerExceptionTranslatorImpl(&exceptionTranslator);
+#endif // DOCTEST_CONFIG_DISABLE
+    return 0;
+}
 
 class DOCTEST_INTERFACE Context
 {
@@ -1229,6 +1291,7 @@ public:
                doctest::detail::Subcase(name, __FILE__, __LINE__))
 #endif // __GNUC__
 
+// for grouping tests in test suites by using code blocks
 #define DOCTEST_TEST_SUITE_IMPL(name, ns_name)                                                     \
     namespace ns_name {                                                                            \
         namespace doctest_detail_test_suite_ns {                                                   \
@@ -1253,6 +1316,18 @@ public:
     DOCTEST_GLOBAL_NO_WARNINGS_END()                                                               \
     typedef int DOCTEST_ANONYMOUS(_DOCTEST_ANON_FOR_SEMICOLON_)
 
+// for registering exception translators
+#define DOCTEST_REGISTER_EXCEPTION_TRANSLATOR_IMPL(translatorName, signature)                      \
+    static doctest::String translatorName(signature);                                              \
+    DOCTEST_GLOBAL_NO_WARNINGS(DOCTEST_ANONYMOUS(_DOCTEST_ANON_TRANSLATOR_)) =                     \
+            doctest::registerExceptionTranslator(&translatorName);                                 \
+    DOCTEST_GLOBAL_NO_WARNINGS_END()                                                               \
+    static doctest::String translatorName(signature)
+
+#define DOCTEST_REGISTER_EXCEPTION_TRANSLATOR(signature) \
+    DOCTEST_REGISTER_EXCEPTION_TRANSLATOR_IMPL(DOCTEST_ANONYMOUS(_DOCTEST_ANON_TRANSLATOR_), signature)
+
+// common code in asserts - for convenience
 #define DOCTEST_ASSERT_LOG_AND_REACT(rb)                                                           \
     if(rb.log())                                                                                   \
         DOCTEST_BREAK_INTO_DEBUGGER();                                                             \
@@ -1542,6 +1617,10 @@ public:
 // for ending a testsuite block
 #define DOCTEST_TEST_SUITE_END typedef int DOCTEST_ANONYMOUS(_DOCTEST_ANON_FOR_SEMICOLON_)
 
+#define DOCTEST_REGISTER_EXCEPTION_TRANSLATOR(signature)                                           \
+    template <typename T>                                                                          \
+    static inline doctest::String DOCTEST_ANONYMOUS(_DOCTEST_ANON_TRANSLATOR_)(signature)
+
 #define DOCTEST_WARN(expr) ((void)0)
 #define DOCTEST_WARN_FALSE(expr) ((void)0)
 #define DOCTEST_WARN_THROWS(expr) ((void)0)
@@ -1631,6 +1710,8 @@ public:
 #define TEST_SUITE DOCTEST_TEST_SUITE
 #define TEST_SUITE_BEGIN DOCTEST_TEST_SUITE_BEGIN
 #define TEST_SUITE_END DOCTEST_TEST_SUITE_END
+#define REGISTER_EXCEPTION_TRANSLATOR DOCTEST_REGISTER_EXCEPTION_TRANSLATOR
+
 #define WARN DOCTEST_WARN
 #define WARN_FALSE DOCTEST_WARN_FALSE
 #define WARN_THROWS DOCTEST_WARN_THROWS

@@ -45,7 +45,7 @@ with expansion:
 test.cpp(0)
 throws
 
-TEST CASE FAILED! (threw exception)
+TEST CASE FAILED! (threw exception: unknown exception)
 
 ===============================================================================
 [doctest] test cases:    4 |    1 passed |    3 failed |    3 skipped
