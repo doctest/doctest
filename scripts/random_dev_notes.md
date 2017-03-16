@@ -3,7 +3,6 @@
 
 
 exception translation mechanism - #12
-- print the "threw exception: ..." on new lines - like the expansion of expressions
 - test with DOCTEST_CONFIG_NO_EXCEPTIONS
 - exported symbols?
 - edit examples - disabled and stringification

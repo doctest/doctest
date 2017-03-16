@@ -1156,8 +1156,8 @@ namespace detail
             success(false) {}
     };
 
-    struct IExceptionTranslator {
-        virtual ~IExceptionTranslator() {}
+    struct DOCTEST_INTERFACE IExceptionTranslator {
+        virtual ~IExceptionTranslator();
         virtual ExceptionTranslatorResult translate() const = 0;
     };
 

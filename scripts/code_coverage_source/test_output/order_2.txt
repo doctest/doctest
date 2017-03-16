@@ -25,12 +25,16 @@ with expansion:
 
 test.cpp(0) FAILED!
   CHECK_THROWS( throws(false) )
+didn't throw at all
 
-test.cpp(0) FAILED! (threw exception: unknown exception)
+test.cpp(0) FAILED!
   CHECK_NOTHROW( throws(true) )
+threw exception:
+  unknown exception
 
-test.cpp(0) FAILED! (didn't throw at all)
+test.cpp(0) FAILED!
   REQUIRE_THROWS_AS( throws(false), bool )
+didn't throw at all
 
 ===============================================================================
 test.cpp(0)
@@ -55,7 +59,9 @@ with expansion:
 test.cpp(0)
 throws
 
-TEST CASE FAILED! (threw exception: unknown exception)
+TEST CASE FAILED!
+threw exception:
+  unknown exception
 
 ===============================================================================
 [doctest] test cases:    7 |    3 passed |    4 failed |    0 skipped
