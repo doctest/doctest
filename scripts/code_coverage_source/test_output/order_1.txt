@@ -4,7 +4,7 @@ test.cpp(0)
 subcases
   2
 
-test.cpp(0) FAILED! 
+test.cpp(0) FAILED!
   CHECK( 0 )
 with expansion:
   CHECK( 0 )
@@ -13,22 +13,22 @@ with expansion:
 test.cpp(0)
 assertions
 
-test.cpp(0) FAILED! 
+test.cpp(0) FAILED!
   CHECK( 1 == 0 )
 with expansion:
   CHECK( 1 == 0 )
 
-test.cpp(0) FAILED! 
+test.cpp(0) FAILED!
   CHECK_FALSE( 1 )
 with expansion:
   CHECK_FALSE( 1 )
 
-test.cpp(0) FAILED! 
+test.cpp(0) FAILED!
   CHECK( a == b )
 with expansion:
   CHECK( myType! == myType! )
 
-test.cpp(0) FAILED! 
+test.cpp(0) FAILED!
   CHECK( Approx(0.1) == 0.2 )
 with expansion:
   CHECK( Approx( 0.1 ) == 0.2 )
@@ -36,7 +36,7 @@ with expansion:
 test.cpp(0) FAILED!
   CHECK_THROWS( throws(false) )
 
-test.cpp(0) FAILED!
+test.cpp(0) FAILED! (threw exception: unknown exception)
   CHECK_NOTHROW( throws(true) )
 
 test.cpp(0) FAILED! (didn't throw at all)
@@ -46,7 +46,7 @@ test.cpp(0) FAILED! (didn't throw at all)
 test.cpp(0)
 assertions - all of them
 
-test.cpp(0) FAILED! 
+test.cpp(0) FAILED!
   FAST_REQUIRE_UNARY_FALSE( 1 )
 with expansion:
   FAST_REQUIRE_UNARY_FALSE( 1 )

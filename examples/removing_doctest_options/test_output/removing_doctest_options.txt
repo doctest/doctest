@@ -3,7 +3,7 @@
 main.cpp(0)
 Fail
 
-main.cpp(0) FAILED! 
+main.cpp(0) FAILED!
   CHECK( 0 )
 with expansion:
   CHECK( 0 )

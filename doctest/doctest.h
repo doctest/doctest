@@ -988,16 +988,16 @@ namespace detail
 
     DOCTEST_INTERFACE void logTestException(String what);
 
-    DOCTEST_INTERFACE void logAssert(bool passed, const char* decomposition, bool threw, const char* expr,
+    DOCTEST_INTERFACE void logAssert(bool passed, const char* decomposition, bool threw, const String& exception, const char* expr,
                    assertType::Enum assert_type, const char* file, int line);
 
     DOCTEST_INTERFACE void logAssertThrows(bool threw, const char* expr, assertType::Enum assert_type,
                          const char* file, int line);
 
-    DOCTEST_INTERFACE void logAssertThrowsAs(bool threw, bool threw_as, const char* as, const char* expr,
+    DOCTEST_INTERFACE void logAssertThrowsAs(bool threw, bool threw_as, const char* as, const String& exception, const char* expr,
                            assertType::Enum assert_type, const char* file, int line);
 
-    DOCTEST_INTERFACE void logAssertNothrow(bool threw, const char* expr, assertType::Enum assert_type,
+    DOCTEST_INTERFACE void logAssertNothrow(bool threw, const String& exception, const char* expr, assertType::Enum assert_type,
                           const char* file, int line);
 
     DOCTEST_INTERFACE bool isDebuggerActive();
@@ -1048,6 +1048,7 @@ namespace detail
         bool   m_threw;
         bool   m_threw_as;
         bool   m_failed;
+        String m_exception;
 
         ResultBuilder(assertType::Enum assert_type, const char* file, int line, const char* expr,
                       const char* exception_type = "");
@@ -1072,6 +1073,8 @@ namespace detail
             m_result.m_passed        = !!val;
             m_result.m_decomposition = toString(val);
         }
+
+        void unexpectedExceptionOccurred();
 
         bool log();
         void react() const;
@@ -1156,19 +1159,8 @@ namespace detail
             success(false) {}
     };
 
-    template<typename T>
-    ExceptionTranslatorResult exceptionTranslator() {
-        ExceptionTranslatorResult res;
-        try {
-            throw;
-        } catch(T&) {
-            res.success = true;
-        } catch(...) {}
-        return res;
-    }
-
     struct IExceptionTranslator {
-        virtual ~IExceptionTranslator() {};
+        virtual ~IExceptionTranslator() {}
         virtual ExceptionTranslatorResult translate() const = 0;
     };
 
@@ -1342,27 +1334,27 @@ public:
 #define DOCTEST_WRAP_IN_TRY(x)                                                                     \
     try {                                                                                          \
         x;                                                                                         \
-    } catch(...) { _DOCTEST_RB.m_threw = true; }
+    } catch(...) { _DOCTEST_RB.unexpectedExceptionOccurred(); }
 #endif // DOCTEST_CONFIG_NO_TRY_CATCH_IN_ASSERTS
 
 #define DOCTEST_ASSERT_IMPLEMENT(expr, assert_type)                                                \
     doctest::detail::ResultBuilder _DOCTEST_RB(doctest::detail::assertType::assert_type, __FILE__, \
                                                __LINE__, #expr);                                   \
     DOCTEST_WRAP_IN_TRY(_DOCTEST_RB.setResult(doctest::detail::ExpressionDecomposer() << expr))    \
-    DOCTEST_ASSERT_LOG_AND_REACT(_DOCTEST_RB);
+    DOCTEST_ASSERT_LOG_AND_REACT(_DOCTEST_RB)
 
 #if defined(__clang__)
 #define DOCTEST_ASSERT_PROXY(expr, assert_type)                                                    \
     do {                                                                                           \
         _Pragma("clang diagnostic push")                                                           \
                 _Pragma("clang diagnostic ignored \"-Woverloaded-shift-op-parentheses\"")          \
-                        DOCTEST_ASSERT_IMPLEMENT(expr, assert_type)                                \
+                        DOCTEST_ASSERT_IMPLEMENT(expr, assert_type);                               \
                                 _Pragma("clang diagnostic pop")                                    \
     } while(doctest::detail::always_false())
 #else // __clang__
 #define DOCTEST_ASSERT_PROXY(expr, assert_type)                                                    \
     do {                                                                                           \
-        DOCTEST_ASSERT_IMPLEMENT(expr, assert_type)                                                \
+        DOCTEST_ASSERT_IMPLEMENT(expr, assert_type);                                               \
     } while(doctest::detail::always_false())
 #endif // __clang__
 
@@ -1396,7 +1388,7 @@ public:
             } catch(as) {                                                                          \
                 _DOCTEST_RB.m_threw    = true;                                                     \
                 _DOCTEST_RB.m_threw_as = true;                                                     \
-            } catch(...) { _DOCTEST_RB.m_threw = true; }                                           \
+            } catch(...) { _DOCTEST_RB.unexpectedExceptionOccurred(); }                            \
             DOCTEST_ASSERT_LOG_AND_REACT(_DOCTEST_RB);                                             \
         }                                                                                          \
     } while(doctest::detail::always_false())
@@ -1408,7 +1400,7 @@ public:
                                                        __FILE__, __LINE__, #expr);                 \
             try {                                                                                  \
                 expr;                                                                              \
-            } catch(...) { _DOCTEST_RB.m_threw = true; }                                           \
+            } catch(...) { _DOCTEST_RB.unexpectedExceptionOccurred(); }                            \
             DOCTEST_ASSERT_LOG_AND_REACT(_DOCTEST_RB);                                             \
         }                                                                                          \
     } while(doctest::detail::always_false())
@@ -2901,7 +2893,7 @@ namespace detail
         printToDebugConsole(String(msg));
     }
 
-    void logAssert(bool passed, const char* decomposition, bool threw, const char* expr,
+    void logAssert(bool passed, const char* decomposition, bool threw, const String& exception, const char* expr,
                    assertType::Enum assert_type, const char* file, int line) {
         char loc[DOCTEST_SNPRINTF_BUFFER_LENGTH];
         DOCTEST_SNPRINTF(loc, DOCTEST_COUNTOF(loc), "%s(%d)", fileForOutput(file), lineForOutput(line));
@@ -2909,9 +2901,10 @@ namespace detail
         char msg[DOCTEST_SNPRINTF_BUFFER_LENGTH];
         if(passed)
             DOCTEST_SNPRINTF(msg, DOCTEST_COUNTOF(msg), " PASSED!\n");
+        else if(threw)
+            DOCTEST_SNPRINTF(msg, DOCTEST_COUNTOF(msg), " FAILED! (threw exception: %s)\n", exception.c_str());
         else
-            DOCTEST_SNPRINTF(msg, DOCTEST_COUNTOF(msg), " FAILED! %s\n",
-                             (threw ? "(threw exception)" : ""));
+            DOCTEST_SNPRINTF(msg, DOCTEST_COUNTOF(msg), " FAILED!\n");
 
         char info1[DOCTEST_SNPRINTF_BUFFER_LENGTH];
         DOCTEST_SNPRINTF(info1, DOCTEST_COUNTOF(info1), "  %s( %s )\n",
@@ -2959,7 +2952,7 @@ namespace detail
         printToDebugConsole(String(loc) + msg + info1);
     }
 
-    void logAssertThrowsAs(bool threw, bool threw_as, const char* as, const char* expr,
+    void logAssertThrowsAs(bool threw, bool threw_as, const char* as, const String& exception, const char* expr,
                            assertType::Enum assert_type, const char* file, int line) {
         char loc[DOCTEST_SNPRINTF_BUFFER_LENGTH];
         DOCTEST_SNPRINTF(loc, DOCTEST_COUNTOF(loc), "%s(%d)", fileForOutput(file), lineForOutput(line));
@@ -2967,9 +2960,10 @@ namespace detail
         char msg[DOCTEST_SNPRINTF_BUFFER_LENGTH];
         if(threw_as)
             DOCTEST_SNPRINTF(msg, DOCTEST_COUNTOF(msg), " PASSED!\n");
+        else if(threw)
+            DOCTEST_SNPRINTF(msg, DOCTEST_COUNTOF(msg), " FAILED! (threw exception: %s)\n", exception.c_str());
         else
-            DOCTEST_SNPRINTF(msg, DOCTEST_COUNTOF(msg), " FAILED! %s\n",
-                             (threw ? "(threw something else)" : "(didn't throw at all)"));
+            DOCTEST_SNPRINTF(msg, DOCTEST_COUNTOF(msg), " FAILED! (didn't throw at all)\n");
 
         char info1[DOCTEST_SNPRINTF_BUFFER_LENGTH];
         DOCTEST_SNPRINTF(info1, DOCTEST_COUNTOF(info1), "  %s( %s, %s )\n\n",
@@ -2982,7 +2976,7 @@ namespace detail
         printToDebugConsole(String(loc) + msg + info1);
     }
 
-    void logAssertNothrow(bool threw, const char* expr, assertType::Enum assert_type,
+    void logAssertNothrow(bool threw, const String& exception, const char* expr, assertType::Enum assert_type,
                           const char* file, int line) {
         char loc[DOCTEST_SNPRINTF_BUFFER_LENGTH];
         DOCTEST_SNPRINTF(loc, DOCTEST_COUNTOF(loc), "%s(%d)", fileForOutput(file), lineForOutput(line));
@@ -2991,7 +2985,7 @@ namespace detail
         if(!threw)
             DOCTEST_SNPRINTF(msg, DOCTEST_COUNTOF(msg), " PASSED!\n");
         else
-            DOCTEST_SNPRINTF(msg, DOCTEST_COUNTOF(msg), " FAILED!\n");
+            DOCTEST_SNPRINTF(msg, DOCTEST_COUNTOF(msg), " FAILED! (threw exception: %s)\n", exception.c_str());
 
         char info1[DOCTEST_SNPRINTF_BUFFER_LENGTH];
         DOCTEST_SNPRINTF(info1, DOCTEST_COUNTOF(info1), "  %s( %s )\n\n",
@@ -3014,6 +3008,12 @@ namespace detail
             , m_threw(false)
             , m_threw_as(false)
             , m_failed(false) {}
+
+    void ResultBuilder::unexpectedExceptionOccurred() {
+        m_threw = true;
+
+        m_exception = translateActiveException();
+    }
 
     bool ResultBuilder::log() {
         if((m_assert_type & assertType::is_warn) == 0)
@@ -3038,12 +3038,12 @@ namespace detail
             if(m_assert_type & assertType::is_throws) {
                 logAssertThrows(m_threw, m_expr, m_assert_type, m_file, m_line);
             } else if(m_assert_type & assertType::is_throws_as) {
-                logAssertThrowsAs(m_threw, m_threw_as, m_exception_type, m_expr, m_assert_type,
+                logAssertThrowsAs(m_threw, m_threw_as, m_exception_type, m_exception, m_expr, m_assert_type,
                                   m_file, m_line);
             } else if(m_assert_type & assertType::is_nothrow) {
-                logAssertNothrow(m_threw, m_expr, m_assert_type, m_file, m_line);
+                logAssertNothrow(m_threw, m_exception, m_expr, m_assert_type, m_file, m_line);
             } else {
-                logAssert(m_result.m_passed, m_result.m_decomposition.c_str(), m_threw, m_expr,
+                logAssert(m_result.m_passed, m_result.m_decomposition.c_str(), m_threw, m_exception, m_expr,
                           m_assert_type, m_file, m_line);
             }
         }
