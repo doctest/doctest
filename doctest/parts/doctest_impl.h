@@ -102,6 +102,7 @@
 #include <iomanip>
 #include <vector>
 #include <set>
+#include <exception>
 #include <stdexcept>
 
 namespace doctest
