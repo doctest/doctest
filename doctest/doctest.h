@@ -262,6 +262,17 @@
 
 #define DOCTEST_GCS() (*doctest::detail::getTestsContextState())
 
+#if defined(__clang__)
+#define DOCTEST_GLOBAL_NO_WARNINGS(var) _Pragma("clang diagnostic push") _Pragma("clang diagnostic ignored \"-Wglobal-constructors\"") static int var
+#define DOCTEST_GLOBAL_NO_WARNINGS_END() _Pragma("clang diagnostic pop")
+#elif defined(__GNUC__)
+#define DOCTEST_GLOBAL_NO_WARNINGS(var) static int var __attribute__((unused))
+#define DOCTEST_GLOBAL_NO_WARNINGS_END()
+#else // MSVC / other
+#define DOCTEST_GLOBAL_NO_WARNINGS(var) static int var
+#define DOCTEST_GLOBAL_NO_WARNINGS_END()
+#endif // MSVC / other
+
 // should probably take a look at https://github.com/scottt/debugbreak
 #ifdef DOCTEST_PLATFORM_MAC
 // The following code snippet based on:
@@ -1177,22 +1188,10 @@ public:
 #if !defined(DOCTEST_CONFIG_DISABLE)
 
 // registers the test by initializing a dummy var with a function
-#if defined(__GNUC__) && !defined(__clang__)
 #define DOCTEST_REGISTER_FUNCTION(f, name)                                                         \
-    static int DOCTEST_ANONYMOUS(_DOCTEST_ANON_VAR_) __attribute__((unused)) =                     \
-            doctest::detail::regTest(f, __LINE__, __FILE__, name, doctest_detail_test_suite_ns::getCurrentTestSuite());
-#elif defined(__clang__)
-#define DOCTEST_REGISTER_FUNCTION(f, name)                                                         \
-    _Pragma("clang diagnostic push")                                                               \
-            _Pragma("clang diagnostic ignored \"-Wglobal-constructors\"") static int               \
-                    DOCTEST_ANONYMOUS(_DOCTEST_ANON_VAR_) =                                        \
-                            doctest::detail::regTest(f, __LINE__, __FILE__, name, doctest_detail_test_suite_ns::getCurrentTestSuite()); \
-    _Pragma("clang diagnostic pop")
-#else // MSVC
-#define DOCTEST_REGISTER_FUNCTION(f, name)                                                         \
-    static int DOCTEST_ANONYMOUS(_DOCTEST_ANON_VAR_) =                                             \
-            doctest::detail::regTest(f, __LINE__, __FILE__, name, doctest_detail_test_suite_ns::getCurrentTestSuite());
-#endif // MSVC
+    DOCTEST_GLOBAL_NO_WARNINGS(DOCTEST_ANONYMOUS(_DOCTEST_ANON_VAR_)) = doctest::detail::regTest(  \
+            f, __LINE__, __FILE__, name, doctest_detail_test_suite_ns::getCurrentTestSuite());     \
+    DOCTEST_GLOBAL_NO_WARNINGS_END()
 
 #define DOCTEST_IMPLEMENT_FIXTURE(der, base, func, name)                                           \
     namespace                                                                                      \
@@ -1246,41 +1245,16 @@ public:
 #define DOCTEST_TEST_SUITE(name) DOCTEST_TEST_SUITE_IMPL(name, DOCTEST_ANONYMOUS(_DOCTEST_ANON_SUITE_))
 
 // for starting a testsuite block
-#if defined(__GNUC__) && !defined(__clang__)
 #define DOCTEST_TEST_SUITE_BEGIN(name)                                                             \
-    static int DOCTEST_ANONYMOUS(_DOCTEST_ANON_VAR_) __attribute__((unused)) =                     \
-            doctest::detail::setTestSuiteName(name);                                               \
+    DOCTEST_GLOBAL_NO_WARNINGS(DOCTEST_ANONYMOUS(_DOCTEST_ANON_VAR_)) = doctest::detail::setTestSuiteName(name); \
+    DOCTEST_GLOBAL_NO_WARNINGS_END()                                                               \
     typedef int DOCTEST_ANONYMOUS(_DOCTEST_ANON_FOR_SEMICOLON_)
-#elif defined(__clang__)
-#define DOCTEST_TEST_SUITE_BEGIN(name)                                                             \
-    _Pragma("clang diagnostic push")                                                               \
-            _Pragma("clang diagnostic ignored \"-Wglobal-constructors\"") static int               \
-                    DOCTEST_ANONYMOUS(_DOCTEST_ANON_VAR_) =                                        \
-                            doctest::detail::setTestSuiteName(name);                               \
-    _Pragma("clang diagnostic pop") typedef int DOCTEST_ANONYMOUS(_DOCTEST_ANON_FOR_SEMICOLON_)
-#else // MSVC
-#define DOCTEST_TEST_SUITE_BEGIN(name)                                                             \
-    static int  DOCTEST_ANONYMOUS(_DOCTEST_ANON_VAR_) = doctest::detail::setTestSuiteName(name);   \
-    typedef int DOCTEST_ANONYMOUS(_DOCTEST_ANON_FOR_SEMICOLON_)
-#endif // MSVC
 
 // for ending a testsuite block
-#if defined(__GNUC__) && !defined(__clang__)
 #define DOCTEST_TEST_SUITE_END                                                                     \
-    static int DOCTEST_ANONYMOUS(_DOCTEST_ANON_VAR_) __attribute__((unused)) =                     \
-            doctest::detail::setTestSuiteName("");                                                 \
+    DOCTEST_GLOBAL_NO_WARNINGS(DOCTEST_ANONYMOUS(_DOCTEST_ANON_VAR_)) = doctest::detail::setTestSuiteName(""); \
+    DOCTEST_GLOBAL_NO_WARNINGS_END()                                                               \
     typedef int DOCTEST_ANONYMOUS(_DOCTEST_ANON_FOR_SEMICOLON_)
-#elif defined(__clang__)
-#define DOCTEST_TEST_SUITE_END                                                                                                 \
-    _Pragma("clang diagnostic push")                                                                                           \
-            _Pragma("clang diagnostic ignored \"-Wglobal-constructors\"") static int                                           \
-                                                DOCTEST_ANONYMOUS(_DOCTEST_ANON_VAR_) = doctest::detail::setTestSuiteName(""); \
-    _Pragma("clang diagnostic pop") typedef int DOCTEST_ANONYMOUS(_DOCTEST_ANON_FOR_SEMICOLON_)
-#else // MSVC
-#define DOCTEST_TEST_SUITE_END                                                                     \
-    static int  DOCTEST_ANONYMOUS(_DOCTEST_ANON_VAR_) = doctest::detail::setTestSuiteName("");     \
-    typedef int DOCTEST_ANONYMOUS(_DOCTEST_ANON_FOR_SEMICOLON_)
-#endif // MSVC
 
 #define DOCTEST_ASSERT_LOG_AND_REACT(rb)                                                           \
     if(rb.log())                                                                                   \
@@ -1862,6 +1836,7 @@ DOCTEST_TEST_SUITE_END();
 #include <iomanip>
 #include <vector>
 #include <set>
+#include <exception>
 #include <stdexcept>
 
 namespace doctest
