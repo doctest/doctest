@@ -38,7 +38,7 @@ main.cpp(0)
 normal macros with std::exception
 
 main.cpp(0) FAILED!
-  CHECK( conditional_throw(true) == 42 )
+  CHECK( conditional_throw(true, 0) == 42 )
 threw exception:
   unknown exception
 
@@ -56,20 +56,20 @@ main.cpp(0)
 exceptions-related macros
 
 main.cpp(0) FAILED!
-  CHECK_THROWS( conditional_throw(false) )
+  CHECK_THROWS( conditional_throw(false, 0) )
 didn't throw at all
 
 main.cpp(0) FAILED!
-  CHECK_THROWS_AS( conditional_throw(false), int )
+  CHECK_THROWS_AS( conditional_throw(false, 0), int )
 didn't throw at all
 
 main.cpp(0) FAILED!
-  CHECK_THROWS_AS( conditional_throw(true), char )
+  CHECK_THROWS_AS( conditional_throw(true, 0), char )
 threw a different exception:
   unknown exception
 
 main.cpp(0) FAILED!
-  CHECK_NOTHROW( conditional_throw(true) )
+  CHECK_NOTHROW( conditional_throw(true, 0) )
 threw exception:
   unknown exception
 
@@ -78,7 +78,7 @@ main.cpp(0)
 exceptions-related macros for std::exception
 
 main.cpp(0) FAILED!
-  CHECK_THROWS( conditional_throw(false) )
+  CHECK_THROWS( conditional_throw(false, 0) )
 didn't throw at all
 
 main.cpp(0) FAILED!

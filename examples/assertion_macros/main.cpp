@@ -1,16 +1,15 @@
 #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 #include "doctest.h"
 
-// throws an int(0) by default
-template<typename T = int>
-static int conditional_throw(bool in, const T& ex = T()) { if(in) throw ex; return 42; }
+template<typename T>
+static int conditional_throw(bool in, const T& ex) { if(in) throw ex; return 42; }
 
 using doctest::Approx;
 
 TEST_SUITE("meaningless macros") {
     TEST_CASE("an empty test that will succeed") {}
     
-    TEST_CASE("an empty test that will fail because of an exception") { conditional_throw(true); }
+    TEST_CASE("an empty test that will fail because of an exception") { conditional_throw(true, 0); }
 }
 
 TEST_SUITE_BEGIN("meaningless macros");
@@ -39,14 +38,14 @@ TEST_CASE("normal macros") {
     CHECK(Approx(0.1000001) == 0.1000002);
     CHECK(Approx(0.502) == 0.501);
 
-    conditional_throw(true);
+    conditional_throw(true, 0);
 }
 
 TEST_CASE("normal macros with std::exception") {
     int a = 5;
     int b = 5;
 
-    CHECK(conditional_throw(true) == 42);
+    CHECK(conditional_throw(true, 0) == 42);
 
     CHECK_FALSE(!(a == b));
 
@@ -62,20 +61,20 @@ TEST_CASE("normal macros with std::exception") {
     CHECK(Approx(0.1000001) == 0.1000002);
     CHECK(Approx(0.502) == 0.501);
 
-    conditional_throw(true);
+    conditional_throw(true, 0);
 }
 
 TEST_CASE("exceptions-related macros") {
-    CHECK_THROWS(conditional_throw(false));
-    CHECK_THROWS_AS(conditional_throw(false), int);
-    CHECK_THROWS_AS(conditional_throw(true), int);
-    CHECK_THROWS_AS(conditional_throw(true), char);
+    CHECK_THROWS(conditional_throw(false, 0));
+    CHECK_THROWS_AS(conditional_throw(false, 0), int);
+    CHECK_THROWS_AS(conditional_throw(true, 0), int);
+    CHECK_THROWS_AS(conditional_throw(true, 0), char);
 
-    CHECK_NOTHROW(conditional_throw(true));
+    CHECK_NOTHROW(conditional_throw(true, 0));
 }
 
 TEST_CASE("exceptions-related macros for std::exception") {
-    CHECK_THROWS(conditional_throw(false));
+    CHECK_THROWS(conditional_throw(false, 0));
     CHECK_THROWS_AS(conditional_throw(false, std::runtime_error("whops!")), std::exception);
     CHECK_THROWS_AS(conditional_throw(true, std::runtime_error("whops!")), std::exception);
     CHECK_THROWS_AS(conditional_throw(true, std::runtime_error("whops!")), int);

@@ -33,7 +33,7 @@ a test case that registers an exception translator for int and then throws one
 
 TEST CASE FAILED!
 threw exception:
-  int: 0
+  int: 5
 
 ===============================================================================
 [doctest] test cases:    2 |    0 passed |    2 failed |    0 skipped

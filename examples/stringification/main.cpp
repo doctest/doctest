@@ -47,9 +47,8 @@ struct StringMaker<std::list<T> >
 #pragma GCC diagnostic ignored "-Weffc++"
 #endif // __GNUC__
 
-// throws an int(0) by default
-template<typename T = int>
-static int conditional_throw(bool in, const T& ex = T()) { if(in) throw ex; return 42; }
+template<typename T>
+static int conditional_throw(bool in, const T& ex) { if(in) throw ex; return 42; }
 
 template <typename T, typename K>
 struct MyType
@@ -143,5 +142,5 @@ TEST_CASE("a test case that registers an exception translator for int and then t
     // in main() or somewhere before executing the tests - but here I'm lazy to write my own main...
     doctest::registerExceptionTranslator(intTranslator);
     
-    conditional_throw(true);
+    conditional_throw(true, 5);
 }
