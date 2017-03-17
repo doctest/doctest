@@ -1170,12 +1170,14 @@ namespace detail
 
         ExceptionTranslatorResult translate() const {
             ExceptionTranslatorResult res;
+#ifndef DOCTEST_CONFIG_NO_EXCEPTIONS
             try {
                 throw;
             } catch(T ex) {
                 res.result = m_translateFunction(ex);
                 res.success = true;
             } catch(...) {}
+#endif // DOCTEST_CONFIG_NO_EXCEPTIONS
             return res;
         }
 

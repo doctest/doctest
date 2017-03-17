@@ -14,7 +14,11 @@ using doctest::Approx;
 
 static int throws(bool in) {
     if(in)
+#ifndef DOCTEST_CONFIG_NO_EXCEPTIONS
         throw "whops!";
+#else // DOCTEST_CONFIG_NO_EXCEPTIONS
+        return 0;
+#endif // DOCTEST_CONFIG_NO_EXCEPTIONS
     return 42;
 }
 
