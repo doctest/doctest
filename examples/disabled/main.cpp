@@ -3,7 +3,15 @@
 #define DOCTEST_CONFIG_IMPLEMENT
 #include "doctest.h"
 
+// set an exception translator for double - as a reference
+REGISTER_EXCEPTION_TRANSLATOR(double& e) {
+    return doctest::String("double: ") + doctest::toString(e);
+}
+
 int main(int argc, char** argv) {
+    // set an exception translator for int
+    doctest::registerExceptionTranslator<int>([](int in){ return doctest::String("int: ") + doctest::toString(in); });
+    
     doctest::Context context; // initialize
 
     // defaults

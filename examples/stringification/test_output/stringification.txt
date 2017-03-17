@@ -23,6 +23,18 @@ main.cpp(0) FAILED!
 with expansion:
   CHECK( [1, 42, 3, ] == [1, 2, 666, ] )
 
+TEST CASE FAILED!
+threw exception:
+  MyTypeInherited<int>(5, 4.0f)
+
 ===============================================================================
-[doctest] test cases:    1 |    0 passed |    1 failed |    0 skipped
+main.cpp(0)
+a test case that registers an exception translator for int and then throws one
+
+TEST CASE FAILED!
+threw exception:
+  int: 42
+
+===============================================================================
+[doctest] test cases:    2 |    0 passed |    2 failed |    0 skipped
 [doctest] assertions:    4 |    0 passed |    4 failed |

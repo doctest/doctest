@@ -5,6 +5,7 @@
 
 TEST_CASE("executable") {
     printf("I am a test from the executable!\n");
+    throw 'a';
 }
 
 #ifdef _WIN32
@@ -23,6 +24,11 @@ TEST_CASE("executable") {
 #define LoadDynamicLib(lib) dlopen("lib" lib ".so", RTLD_NOW)
 #endif // __APPLE__
 #endif // _WIN32
+
+// set an exception translator for double
+REGISTER_EXCEPTION_TRANSLATOR(double& e) {
+    return doctest::String("double: ") + doctest::toString(e);
+}
 
 int main(int argc, char** argv) {
     // force the use of a symbol from the dll so tests from it get registered
