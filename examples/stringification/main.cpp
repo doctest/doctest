@@ -132,10 +132,12 @@ TEST_CASE("the only test") {
     throw bla1;
 }
 
+static doctest::String intTranslator(int ex) { return doctest::String("int: ") + doctest::toString(ex); }
+
 TEST_CASE("a test case that registers an exception translator for int and then throws one") {
     // set an exception translator for int - note that this shouldn't be done in a test case but
     // in main() or somewhere before executing the tests - but here I'm lazy to write my own main...
-    doctest::registerExceptionTranslator<int>([](int in){ return doctest::String("int: ") + doctest::toString(in); });
+    doctest::registerExceptionTranslator(intTranslator);
     
     throw 42;
 }
