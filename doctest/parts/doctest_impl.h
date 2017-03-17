@@ -922,6 +922,7 @@ namespace detail
     }
 
     String translateActiveException() {
+#ifndef DOCTEST_CONFIG_NO_EXCEPTIONS
         ExceptionTranslatorResult res;
         std::vector<const IExceptionTranslator*>& translators = getExceptionTranslators();
         for(size_t i = 0; i < translators.size() && res.success == false; ++i)
@@ -942,6 +943,9 @@ namespace detail
             }
         }
         return res.result;
+#else // DOCTEST_CONFIG_NO_EXCEPTIONS
+        return "";
+#endif // DOCTEST_CONFIG_NO_EXCEPTIONS
     }
 
     // this is needed because MSVC does not permit mixing 2 exception handling schemes in a function

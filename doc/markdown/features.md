@@ -33,7 +33,7 @@ It is modeled after [**Catch**](https://github.com/philsquared/Catch) which is c
 	- all tests built and ran in **Debug**/**Release** and also in **32**/**64** bit modes
 	- all tests ran through **valgrind** under **Linux**/**OSX**
 	- all tests ran through **address** and **UB** sanitizers under **Linux**/**OSX**
-	- tests are ran in more than **222** different configurations on UNIX (Linux + OSX) on **travis** CI
+	- tests are ran in more than **300** different configurations on UNIX (Linux + OSX) on **travis** CI
 	- tests are ran in a total of **24** different configurations on Windows on **appveyor** CI
 
 ---------------
