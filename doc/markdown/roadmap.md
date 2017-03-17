@@ -52,10 +52,9 @@ Planned features for future releases - order may change.
     - get rid of local statics on the hot path - like in getContextState() - they have synchronisation in C++11
 - benchmarking
     - make the bench.py script more usable - with command line arguments
-    - redo the compile time ones
-    - remove old benchmarks
+    - redo the compile time ones - also look into CATCH_CONFIG_FAST_COMPILE
+    - remove old benchmarks for doctest 1.0
     - add runtime benchmarks
-- add runtime benchmarks
 - test execution in [separate processes](https://github.com/philsquared/Catch/issues/853) - ```fork()``` for UNIX and [this](https://github.com/nemequ/munit/issues/2) for Windows
 - [symbolizer](https://github.com/facebook/folly/tree/master/folly/experimental/symbolizer) - for a stack trace - when an assertion fails - and it's in a user function with some deep callstack away from the current test case - how to know the exact code path that lead to the failing assert
 
