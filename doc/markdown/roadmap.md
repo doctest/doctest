@@ -10,19 +10,18 @@ Planned features for future releases - order may change.
 
 ### For 1.2:
 
-- add/expose a way to explicitly register a test (could be useful for the static libs issue)
 - running tests a few times
 - ability to filter not just TEST_CASE names but also SUBCASE names (and maybe tags when they are introduced)
 
 - adding contextual info to asserts (logging) - with an ```INFO```/```CONTEXT``` /```TRACEPOINT``` macro (also look at [this](https://github.com/philsquared/Catch/issues/601))
 - add ```ERROR```/```FAIL``` macros (also ```ADD_FAILURE_AT(file, line);``` and extend the asserts to have ```_AT``` variants)
-- Parametric test cases - https://github.com/onqtam/doctest/issues/38
+- Parametric test cases (Value/Type-parameterized tests) - https://github.com/onqtam/doctest/issues/38
 - crash handling: signals on UNIX platforms or structured exceptions on Windows (should also have DOCTEST_CONFIG_NO_SIGNAL_CATCHING)
 - change docs a bit - mainly what is in the landing page (add link to overload)
 
 ### For 1.3:
 
-- builds with GCC 7 when it is released (should be in late April)
+- builds with GCC 7 when it is released (should be in late April) - also by then the precise (ubuntu 12.04) ppa for clang 4.0 should be whitelisted by travis
 - reporters
     - output to file
     - a system for writing custom reporters
@@ -89,6 +88,7 @@ Planned features for future releases - order may change.
     - also look into similar Xcode integration - https://github.com/philsquared/Catch/pull/454
 - ability to provide a temp folder that is cleared between each test case
 - ability to make the framework not capture unexpected exceptions - as requested [here](https://github.com/onqtam/doctest/issues/12#issuecomment-235334585)
+- rework the examples folder - so the test runner is compiled only a few times - CI builds take a ton of time!
 
 ### Things that are very unlikely to enter the roadmap:
 
