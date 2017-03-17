@@ -78,7 +78,7 @@ Planned features for future releases - order may change.
 - option to list files in which there are test cases who match the current filters
 - support for doing assertions in multiple threads - synchronize their access to shared doctest state
 - support for running tests in parallel in multiple threads
-- doctest in a GUI environment? with no console? APIs for attaching a console? querying if there is one? investigate...
+- doctest in a GUI environment? with no console? APIs for attaching a console? querying if there is one? [investigate...](https://github.com/philsquared/Catch/blob/master/docs/configuration.md#stdout)
 - ability to specify ASC/DESC for the order option
 - command line error handling/reporting
 - ability for the user to extend the command line - as requested [here](https://github.com/philsquared/Catch/issues/622)
