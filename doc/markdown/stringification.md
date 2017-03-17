@@ -59,11 +59,11 @@ namespace doctest {
 
 ## Translating exceptions
 
-By default all exceptions deriving from ```std::exception``` will be translated to strings by calling the what() method. For exception types that do not derive from ```std::exception``` - or if ```what()``` does not return a suitable string - use ```REGISTER_EXCEPTION_TRANSLATOR```. This defines a function that takes your exception type and returns a ```doctest::String```. It can appear anywhere in the code - it doesn't have to be in the same translation unit. For example:
+By default all exceptions deriving from ```std::exception``` will be translated to strings by calling the ```what()``` method. For exception types that do not derive from ```std::exception``` - or if ```what()``` does not return a suitable string - use ```REGISTER_EXCEPTION_TRANSLATOR```. This defines a function that takes your exception type and returns a ```doctest::String```. It can appear anywhere in the code - it doesn't have to be in the same translation unit. For example:
 
 ```c++
 REGISTER_EXCEPTION_TRANSLATOR(MyType& ex) {
-	return doctest::String(ex.message());
+    return doctest::String(ex.message());
 }
 ```
 
@@ -73,7 +73,7 @@ An alternative way to register an exception translator is to do the following in
 
 ```c++
     // adding a lambda - the signature required as a function pointer is `doctest::String(*)(exception_type)`
-    doctest::registerExceptionTranslator<int>([](int in){ return doctest::String("int: ") + doctest::toString(in); });
+    doctest::registerExceptionTranslator<int>([](int in){ return doctest::toString(in); });
 ```
 
 The order of registering exception translators can be controlled - simply call the explicit function in the required order or list the exception translators with the macro in a top-to-bottom fashion in a single translation unit - everything that auto-registers in doctest works in a top-to-bottom way for a single translation unit (source file).

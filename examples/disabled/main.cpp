@@ -8,9 +8,11 @@ REGISTER_EXCEPTION_TRANSLATOR(double& e) {
     return doctest::String("double: ") + doctest::toString(e);
 }
 
+static doctest::String intTranslator(int ex) { return doctest::String("int: ") + doctest::toString(ex); }
+
 int main(int argc, char** argv) {
     // set an exception translator for int
-    doctest::registerExceptionTranslator<int>([](int in){ return doctest::String("int: ") + doctest::toString(in); });
+    doctest::registerExceptionTranslator(intTranslator);
     
     doctest::Context context; // initialize
 
