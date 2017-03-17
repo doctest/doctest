@@ -60,7 +60,7 @@ The library can be used like any other if you don't like the idea of mixing prod
 - only one core [**assertion macro**](assertions.md) for comparisons - standard C++ operators are used for the comparison (less than, equal, greater than...) - yet the full expression is decomposed and left and right values of the expression are logged
 - assertion macros for [**exceptions**](assertions.md) - if something should or shouldn't throw
 - floating point comparison support - see the [**```Approx()```**](assertions.md#floating-point-comparisons) helper
-- powerful mechanism for [**stringification**](stringification.md) of user types
+- powerful mechanism for [**stringification**](stringification.md) of user types - including [**exceptions**](stringification.md#translating-exceptions)!
 - tests can be grouped in [**test suites**](testcases.md#test-suites)
 - can be used without exceptions and rtti - checkout [**```DOCTEST_CONFIG_NO_EXCEPTIONS```**](configuration.md#doctest_config_no_exceptions)
 - powerful [**command line**](commandline.md) with lots of options
