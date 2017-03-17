@@ -1,7 +1,7 @@
 //
 // doctest.h - the lightest feature-rich C++ single-header testing framework for unit tests and TDD
 //
-// Copyright (c) 2017 Viktor Kirilov
+// Copyright (c) 2016-2017 Viktor Kirilov
 //
 // Distributed under the MIT Software License
 // See accompanying file LICENSE.txt or copy at
@@ -1186,25 +1186,27 @@ namespace detail
 
 #endif // DOCTEST_CONFIG_DISABLE
 
+#ifndef DOCTEST_CONFIG_DISABLE
+template<typename T>
+int registerExceptionTranslator(String(*translateFunction)(T)) {
 #if defined(__clang__)
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wexit-time-destructors"
 #endif // __clang__
-template<typename T>
-int registerExceptionTranslator(String(*
-#ifndef DOCTEST_CONFIG_DISABLE
-    translateFunction
-#endif // DOCTEST_CONFIG_DISABLE
-    )(T)) {
-#ifndef DOCTEST_CONFIG_DISABLE
     static detail::ExceptionTranslator<T> exceptionTranslator(translateFunction);
-    detail::registerExceptionTranslatorImpl(&exceptionTranslator);
-#endif // DOCTEST_CONFIG_DISABLE
-    return 0;
-}
 #if defined(__clang__)
 #pragma clang diagnostic pop
 #endif // __clang__
+    detail::registerExceptionTranslatorImpl(&exceptionTranslator);
+    return 0;
+}
+
+#else // DOCTEST_CONFIG_DISABLE
+template<typename T>
+int registerExceptionTranslator(String(*)(T)) { return 0; }
+#endif // DOCTEST_CONFIG_DISABLE
+
+DOCTEST_INTERFACE bool isRunningInTest();
 
 class DOCTEST_INTERFACE Context
 {

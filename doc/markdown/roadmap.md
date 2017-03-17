@@ -10,7 +10,6 @@ Planned features for future releases - order may change.
 
 ### For 1.2:
 
-- add the ability to query if code is currently being ran in a test -  ```doctest::isRunningInTest()```
 - add/expose a way to explicitly register a test (could be useful for the static libs issue)
 - running tests a few times
 - ability to filter not just TEST_CASE names but also SUBCASE names (and maybe tags when they are introduced)
