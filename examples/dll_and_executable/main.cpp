@@ -4,7 +4,15 @@
 #include <cstdio>
 
 template<typename T>
-static int conditional_throw(bool in, const T& ex) { if(in) throw ex; return 42; }
+static int conditional_throw(bool in, const T& ex) {
+    if(in)
+#ifndef DOCTEST_CONFIG_NO_EXCEPTIONS
+        throw ex;
+#else // DOCTEST_CONFIG_NO_EXCEPTIONS
+        ((void)ex);
+#endif // DOCTEST_CONFIG_NO_EXCEPTIONS
+    return 42;
+}
 
 TEST_CASE("executable") {
     printf("I am a test from the executable!\n");
