@@ -14,6 +14,7 @@ Planned features for future releases - order may change.
 - add/expose a way to explicitly register a test (could be useful for the static libs issue)
 - running tests a few times
 - ability to filter not just TEST_CASE names but also SUBCASE names (and maybe tags when they are introduced)
+
 - adding contextual info to asserts (logging) - with an ```INFO```/```CONTEXT``` /```TRACEPOINT``` macro (also look at [this](https://github.com/philsquared/Catch/issues/601))
 - add ```ERROR```/```FAIL``` macros (also ```ADD_FAILURE_AT(file, line);``` and extend the asserts to have ```_AT``` variants)
 - Parametric test cases - https://github.com/onqtam/doctest/issues/38
@@ -31,6 +32,7 @@ Planned features for future releases - order may change.
     - a progress reporter
     - an xml reporter
     - jUnit/xUnit reporters
+    - a listener interface - similar to a reporter - look at Catch
 - time stuff
     - reporting running time of tests
     - count a test case as failed if it exceeds X ms (but no force-killing!)
@@ -48,6 +50,7 @@ Planned features for future releases - order may change.
     - the set holding all registered tests should use a specialized allocator to minimize program startup time
     - lazily stringify expressions - only when needed
     - pool allocator for the ```String``` class - currently very unoptimized
+    - get rid of local statics on the hot path - like in getContextState() - they have synchronisation in C++11
 - benchmarking
     - make the bench.py script more usable - with command line arguments
     - redo the compile time ones

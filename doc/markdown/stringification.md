@@ -72,7 +72,7 @@ Note that the exception may be accepted without a reference but it is considered
 An alternative way to register an exception translator is to do the following in some function - before executing any tests:
 
 ```c++
-    // adding a lambda - the signature required as a function pointer is `doctest::String(*)(exception_type)`
+    // adding a lambda - the signature required is `doctest::String(exception_type)`
     doctest::registerExceptionTranslator<int>([](int in){ return doctest::toString(in); });
 ```
 

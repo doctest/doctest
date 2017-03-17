@@ -289,10 +289,6 @@ extern "C" __declspec(dllimport) void __stdcall DebugBreak();
 #define DOCTEST_BREAK_INTO_DEBUGGER() ((void)0)
 #endif // linux
 
-#define DOCTEST_BREAK_INTO_DEBUGGER_CHECKED()                                                      \
-    if(doctest::detail::isDebuggerActive() && !DOCTEST_GCS().no_breaks)                            \
-        DOCTEST_BREAK_INTO_DEBUGGER();
-
 #ifdef __clang__
 // to detect if libc++ is being used with clang (the _LIBCPP_VERSION identifier)
 #include <ciso646>
@@ -1008,7 +1004,7 @@ namespace detail
 
     struct ContextState;
 
-    TestAccessibleContextState* getTestsContextState();
+    DOCTEST_INTERFACE TestAccessibleContextState* getTestsContextState();
 
     namespace binaryAssertComparison
     {
