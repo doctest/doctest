@@ -28,9 +28,8 @@ Aside from everything mentioned so far doctest has some [**small features**](fea
 
 Missing stuff:
 
-- exception translation - derivatives of ```std::exception``` don't get their ```.what()``` method called
 - no support for tags (the user can add *tags* in the test case names like this: ```TEST_CASE("[myTag] test name")```)
-- a reporter system - to a file, to xml, ability for the user to write their own reporter, etc.
+- a reporter/listener system - to a file, to xml, ability for the user to write their own reporter, etc.
 - measuring how much time a test case executes
 - adding contextual info to asserts with ```INFO```/```CONTEXT```
 - signal handling
@@ -39,7 +38,19 @@ Missing stuff:
 
 But all these things (and more!) are planned in the [**roadmap**](roadmap.md)!
 
-**doctest** can be thought of as a very polished, light, stable and clean subset (or reimplementation) of [**Catch**](https://github.com/philsquared/Catch) but this will change in the future as more features are added.
+**doctest** can be thought of as a very polished, light, stable and clean subset (or reimplementation) of [**Catch**](https://github.com/philsquared/Catch) but this might change in the future as more features are added.
+
+A quick and easy way to migrate most of your Catch tests to doctest is to change the ```TEST_CASE``` (if using tags) and ```SECTION``` macros as follows:
+
+```c++
+#include "path/to/doctest.h"
+
+#undef TEST_CASE
+#define TEST_CASE(name, tags) DOCTEST_TEST_CASE(tags " " name) // will concatenate the tags and test name string literals to one
+#define SECTION(name) DOCTEST_SUBCASE(name)
+using doctest::Approx; // catch exposes this by default outside of its namespace
+
+```
 
 ### How to get the best compile-time performance with the framework?
 
