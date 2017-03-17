@@ -2,12 +2,6 @@
 
 
 
-exception translation mechanism - #12
-- write in docs
-    - REGISTER_EXCEPTION_TRANSLATOR - can catch by value and by reference
-    - doctest::registerExceptionTranslator<int>([](int in){ return doctest::String("int: ") + doctest::toString(in); });
-
-
 
 
 == when making a new release:

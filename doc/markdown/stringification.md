@@ -57,10 +57,31 @@ namespace doctest {
 }
 ```
 
+## Translating exceptions
+
+By default all exceptions deriving from ```std::exception``` will be translated to strings by calling the what() method. For exception types that do not derive from ```std::exception``` - or if ```what()``` does not return a suitable string - use ```REGISTER_EXCEPTION_TRANSLATOR```. This defines a function that takes your exception type and returns a ```doctest::String```. It can appear anywhere in the code - it doesn't have to be in the same translation unit. For example:
+
+```c++
+REGISTER_EXCEPTION_TRANSLATOR(MyType& ex) {
+	return doctest::String(ex.message());
+}
+```
+
+Note that the exception may be accepted without a reference but it is considered bad practice in C++.
+
+An alternative way to register an exception translator is to do the following in some function - before executing any tests:
+
+```c++
+    // adding a lambda - the signature required as a function pointer is `doctest::String(*)(exception_type)`
+    doctest::registerExceptionTranslator<int>([](int in){ return doctest::String("int: ") + doctest::toString(in); });
+```
+
+The order of registering exception translators can be controlled - simply call the explicit function in the required order or list the exception translators with the macro in a top-to-bottom fashion in a single translation unit - everything that auto-registers in doctest works in a top-to-bottom way for a single translation unit (source file).
+
 ------
 
-- Check out the [**example**](../../examples/stringification/main.cpp) which shows how to stringify ```std::vector<T>``` and other types.
-- Note that the type ```String``` is used when specializing ```StringMaker<T>``` or overloading ```toString()``` - it is the string type **doctest** works with. ```std::string``` is not an option for the library because then it would have to drag the ```<string>``` header with it.
+- Check out the [**example**](../../examples/stringification/main.cpp) which shows how to stringify ```std::vector<T>``` and other types/exceptions.
+- Note that the type ```String``` is used when specializing ```StringMaker<T>``` or overloading ```toString()``` - it is the string type **doctest** works with. ```std::string``` is not an option because doctest would have to include the ```<string>``` header.
 - To support the ```operator<<(std::ostream&...``` stringification the library has to offer a forward declaration of ```std::ostream``` and that is what the library does - but it is forbidden by the standard. It currently works everywhere - on all tested compilers - but if the user wishes to be 100% standards compliant - then the [**```DOCTEST_CONFIG_USE_IOSFWD```**](configuration.md#doctest_config_use_iosfwd) identifier can be used to force the inclusion of ```<iosfwd>```. The reason the header is not included by default is that on MSVC (for example) it drags a whole bunch of stuff with it - and after the preprocessor is finished the translation unit has grown to 42k lines of C++ code - while Clang and the libc++ are so well implemented that including ```<iosfwd>``` there results in 400 lines of code. 
 
 ---
