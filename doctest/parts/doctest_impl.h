@@ -430,6 +430,7 @@ String toString(std::nullptr_t) { return "nullptr"; }
 #if defined(DOCTEST_CONFIG_DISABLE)
 namespace doctest
 {
+bool isRunningInTest() { return false; }
 Context::Context(int, const char* const*) {}
 Context::~Context() {}
 void Context::applyCommandLine(int, const char* const*) {}
@@ -1477,6 +1478,8 @@ namespace detail
         printf("for more information visit the project documentation\n\n");
     }
 } // namespace detail
+
+bool isRunningInTest() { return detail::getContextState() != 0; }
 
 Context::Context(int argc, const char* const* argv)
         : p(new detail::ContextState) {

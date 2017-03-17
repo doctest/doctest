@@ -73,6 +73,7 @@ The library can be used like any other if you don't like the idea of mixing prod
 - colored output in the console
 - controlling the order of test execution
 - different ```doctest::Context```s can be created and ran many times within a single execution of the program
+- ability to query if code is currently being ran in a test -  ```doctest::isRunningInTest()```
 
 There is a list of planned features which are all important and big - see the [**roadmap**](roadmap.md).
 
