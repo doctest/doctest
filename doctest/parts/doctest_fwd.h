@@ -1190,6 +1190,10 @@ namespace detail
 
 #endif // DOCTEST_CONFIG_DISABLE
 
+#if defined(__clang__)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wexit-time-destructors"
+#endif // __clang__
 template<typename T>
 int registerExceptionTranslator(String(*
 #ifndef DOCTEST_CONFIG_DISABLE
@@ -1202,6 +1206,9 @@ int registerExceptionTranslator(String(*
 #endif // DOCTEST_CONFIG_DISABLE
     return 0;
 }
+#if defined(__clang__)
+#pragma clang diagnostic pop
+#endif // __clang__
 
 class DOCTEST_INTERFACE Context
 {

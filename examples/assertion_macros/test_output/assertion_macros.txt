@@ -13,16 +13,16 @@ an empty test that will fail because of a std::exception
 
 TEST CASE FAILED!
 threw exception:
-  Exception
+  whops!
 
 ===============================================================================
 main.cpp(0)
 normal macros
 
 main.cpp(0) FAILED!
-  CHECK( throws(true) == 42 )
+  CHECK( conditional_throw(true, std::runtime_error("whops!")) == 42 )
 threw exception:
-  unknown exception
+  whops!
 
 main.cpp(0) FAILED!
   CHECK( Approx(0.502) == 0.501 )
@@ -38,9 +38,9 @@ main.cpp(0)
 normal macros with std::exception
 
 main.cpp(0) FAILED!
-  CHECK( throws_stdexcept(true) == 42 )
+  CHECK( conditional_throw(true) == 42 )
 threw exception:
-  Exception
+  unknown exception
 
 main.cpp(0) FAILED!
   CHECK( Approx(0.502) == 0.501 )
@@ -56,20 +56,20 @@ main.cpp(0)
 exceptions-related macros
 
 main.cpp(0) FAILED!
-  CHECK_THROWS( throws(false) )
+  CHECK_THROWS( conditional_throw(false) )
 didn't throw at all
 
 main.cpp(0) FAILED!
-  CHECK_THROWS_AS( throws(false), int )
+  CHECK_THROWS_AS( conditional_throw(false), int )
 didn't throw at all
 
 main.cpp(0) FAILED!
-  CHECK_THROWS_AS( throws(true), char )
+  CHECK_THROWS_AS( conditional_throw(true), char )
 threw a different exception:
   unknown exception
 
 main.cpp(0) FAILED!
-  CHECK_NOTHROW( throws(true) )
+  CHECK_NOTHROW( conditional_throw(true) )
 threw exception:
   unknown exception
 
@@ -78,22 +78,22 @@ main.cpp(0)
 exceptions-related macros for std::exception
 
 main.cpp(0) FAILED!
-  CHECK_THROWS( throws_stdexcept(false) )
+  CHECK_THROWS( conditional_throw(false) )
 didn't throw at all
 
 main.cpp(0) FAILED!
-  CHECK_THROWS_AS( throws_stdexcept(false), std::exception )
+  CHECK_THROWS_AS( conditional_throw(false, std::runtime_error("whops!")), std::exception )
 didn't throw at all
 
 main.cpp(0) FAILED!
-  CHECK_THROWS_AS( throws_stdexcept(true), int )
+  CHECK_THROWS_AS( conditional_throw(true, std::runtime_error("whops!")), int )
 threw a different exception:
-  Exception
+  whops!
 
 main.cpp(0) FAILED!
-  REQUIRE_NOTHROW( throws_stdexcept(true) )
+  REQUIRE_NOTHROW( conditional_throw(true, std::runtime_error("whops!")) )
 threw exception:
-  Exception
+  whops!
 
 ===============================================================================
 [doctest] test cases:    7 |    1 passed |    6 failed |    0 skipped

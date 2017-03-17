@@ -3,9 +3,13 @@
 
 #include <cstdio>
 
+// throws an int(0) by default
+template<typename T = int>
+static int conditional_throw(bool in, const T& ex = T()) { if(in) throw ex; return 42; }
+
 TEST_CASE("executable") {
     printf("I am a test from the executable!\n");
-    throw 'a';
+    conditional_throw(true, 'a');
 }
 
 #ifdef _WIN32
