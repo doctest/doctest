@@ -6,7 +6,6 @@ int main(int argc, char** argv) {
     // defaults
     context.addFilter("test-case-exclude", "*math*"); // exclude test cases with "math" in the name
     context.setOption("no-breaks", true); // don't break in the debugger when assertions fail
-    context.setOption("abort-after", 5);  // stop test execution after 5 failed assertions
 
     context.applyCommandLine(argc, argv);
 

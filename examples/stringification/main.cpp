@@ -81,6 +81,11 @@ doctest::String toString(const Foo&) {
 }
 } // namespace Bar
 
+// set an exception translator for MyTypeInherited<int>
+REGISTER_EXCEPTION_TRANSLATOR(MyTypeInherited<int>& ex) {
+    return doctest::String("MyTypeInherited<int>(") + doctest::toString(ex.one) + ", " + doctest::toString(ex.two) + ")";
+}
+
 TEST_CASE("the only test") {
     MyTypeInherited<int> bla1;
     bla1.one = 5;
@@ -122,4 +127,15 @@ TEST_CASE("the only test") {
     lst_2.push_back(666);
 
     CHECK(lst_1 == lst_2);
+    
+    // lets see if this exception gets translated
+    throw bla1;
+}
+
+TEST_CASE("a test case that registers an exception translator for int and then throws one") {
+    // set an exception translator for int - note that this shouldn't be done in a test case but
+    // in main() or somewhere before executing the tests - but here I'm lazy to write my own main...
+    doctest::registerExceptionTranslator<int>([](int in){ return doctest::String("int: ") + doctest::toString(in); });
+    
+    throw 42;
 }
