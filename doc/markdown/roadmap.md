@@ -10,7 +10,7 @@ Planned features for future releases - order may change.
 
 ### For 1.2:
 
-- running tests a few times
+- running tests a [few times](https://github.com/google/googletest/blob/master/googletest/docs/AdvancedGuide.md#repeating-the-tests)
 - ability to filter not just TEST_CASE names but also SUBCASE names (and maybe tags when they are introduced)
 
 - adding contextual info to asserts (logging) - with an ```INFO```/```CONTEXT``` /```TRACEPOINT``` macro (also look at [this](https://github.com/philsquared/Catch/issues/601))
