@@ -395,25 +395,21 @@ script:
   # debug x64
   - cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_FLAGS="${ADDITIONAL_CXX_FLAGS} -m64" .
   - make clean && make -k -j2
-  # valgrind for 64bit under osx fails TOO
   - if [[ "${TRAVIS_OS_NAME}" == "linux" ]]; then cmake -DTEST_MODE=VALGRIND . && ctest --output-on-failure ; fi
   - cmake -DTEST_MODE=COMPARE . && ctest --output-on-failure
   # release x64
   - cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="${ADDITIONAL_CXX_FLAGS} -m64" .
   - make clean && make -k -j2
-  # valgrind for 64bit under osx fails TOO
   - if [[ "${TRAVIS_OS_NAME}" == "linux" ]]; then cmake -DTEST_MODE=VALGRIND . && ctest --output-on-failure ; fi
   - cmake -DTEST_MODE=COMPARE . && ctest --output-on-failure
   # debug x86
   - cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_FLAGS="${ADDITIONAL_CXX_FLAGS} -m32" .
   - make clean && make -k -j2
-  # valgrind for 32bit under osx fails
   - if [[ "${TRAVIS_OS_NAME}" == "linux" ]]; then cmake -DTEST_MODE=VALGRIND . && ctest --output-on-failure ; fi
   - cmake -DTEST_MODE=COMPARE . && ctest --output-on-failure
   # release x86
   - cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="${ADDITIONAL_CXX_FLAGS} -m32" .
   - make clean && make -k -j2
-  # valgrind for 32bit under osx fails
   - if [[ "${TRAVIS_OS_NAME}" == "linux" ]]; then cmake -DTEST_MODE=VALGRIND . && ctest --output-on-failure ; fi
   - cmake -DTEST_MODE=COMPARE . && ctest --output-on-failure
 
@@ -430,15 +426,17 @@ script:
   - if [[ "${HAS_UBSAN_64}" = "true" ]]; then cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="${ADDITIONAL_CXX_FLAGS} -g -fno-omit-frame-pointer -m64 -fsanitize=undefined" . && make clean && make -k -j2 && UBSAN_OPTIONS=verbosity=2                                                                                     ctest --output-on-failure ; fi
   - if [[ "${HAS_UBSAN_32}" = "true" ]]; then cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="${ADDITIONAL_CXX_FLAGS} -g -fno-omit-frame-pointer -m32 -fsanitize=undefined" . && make clean && make -k -j2 && UBSAN_OPTIONS=verbosity=2                                                                                     ctest --output-on-failure ; fi
 
-  # test only compilation in c++0x mode for warnings
+  # test in c++0x mode - just Debug/x64
   - cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_FLAGS="${ADDITIONAL_CXX_FLAGS} -m64" -DWITH_CPP11=1 .
   - make clean && make -k -j2
+  - cmake -DTEST_MODE=COMPARE . && ctest --output-on-failure
 
-  # test only compilation without rtti
+  # test without rtti - just Debug/x64
   - cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_FLAGS="${ADDITIONAL_CXX_FLAGS} -m64 -fno-rtti" -DWITH_CPP11=0 .
   - make clean && make -k -j2
+  - cmake -DTEST_MODE=COMPARE . && ctest --output-on-failure
 
-  # test only compilation without exceptions
+  # test only compilation without exceptions - just Debug/x64
   - cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_FLAGS="${ADDITIONAL_CXX_FLAGS} -m64 -fno-exceptions -DDOCTEST_CONFIG_NO_EXCEPTIONS_BUT_WITH_ALL_ASSERTS" -DWITH_CPP11=0 .
   - make clean && make -k -j2
 
