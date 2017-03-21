@@ -10,9 +10,6 @@ Planned features for future releases - order may change.
 
 ### For 1.2:
 
-- running tests a [few times](https://github.com/google/googletest/blob/master/googletest/docs/AdvancedGuide.md#repeating-the-tests)
-- ability to filter not just TEST_CASE names but also SUBCASE names (and maybe tags when they are introduced)
-
 - adding contextual info to asserts (logging) - with an ```INFO```/```CONTEXT``` /```TRACEPOINT``` macro (also look at [this](https://github.com/philsquared/Catch/issues/601))
 - add ```ERROR```/```FAIL``` macros (also ```ADD_FAILURE_AT(file, line);``` and extend the asserts to have ```_AT``` variants)
 - Parametric test cases (Value/Type-parameterized tests) - https://github.com/onqtam/doctest/issues/38
@@ -44,6 +41,7 @@ Planned features for future releases - order may change.
 
 ### For 1.4:
 
+- running tests a [few times](https://github.com/google/googletest/blob/master/googletest/docs/AdvancedGuide.md#repeating-the-tests)
 - runtime performance
     - the set holding all registered tests should use a specialized allocator to minimize program startup time
     - lazily stringify expressions - only when needed

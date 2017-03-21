@@ -65,6 +65,7 @@ The library can be used like any other if you don't like the idea of mixing prod
 - can be used without exceptions and rtti - checkout [**```DOCTEST_CONFIG_NO_EXCEPTIONS```**](configuration.md#doctest_config_no_exceptions)
 - powerful [**command line**](commandline.md) with lots of options
 - tests can be [**filtered**](commandline.md) based on their name/file/test suite using wildcards
+- can [**filter**](commandline.md) subcases using wildcards and by specifying the nesting levels for which those filters should work
 - failures can (optionally) break into the debugger on Windows and Mac
 - integration with the output window of Visual Studio for failing tests
 - a ```main()``` can be provided when implementing the library with the [**```DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN```**](main.md#doctest_config_implement_with_main) identifier

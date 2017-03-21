@@ -11,7 +11,7 @@ This should be done in exactly one source file and is even a good idea to do thi
 
 However if you need more control - want to set options with code to the execution context or want to integrate the framework in your production code - then the default ```main()``` just won't do the job. In that case use [**```DOCTEST_CONFIG_IMPLEMENT```**](configuration.md#doctest_config_implement).
 
-All the [**command line**](commandline.md) options can be set like this (flags cannot because it wouldn't make sense). Filters can only be appended or cleared with ```Context::clearFilters()``` - the user cannot remove a specific filter with code. 
+All the [**command line**](commandline.md) options can be set like this (flags cannot because it wouldn't make sense). Filters can only be appended or cleared with the ```addFilter()``` or ```clearFilters()``` method of a ```doctest::Context``` object - the user cannot remove a specific filter with code.
 
 ```c++
 #define DOCTEST_CONFIG_IMPLEMENT
