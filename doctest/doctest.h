@@ -2040,7 +2040,8 @@ namespace detail
         unsigned first; // the first (matching) test to be executed
         unsigned last;  // the last (matching) test to be executed
 
-        int  abort_after;    // stop tests after this many failed assertions
+        int  abort_after;           // stop tests after this many failed assertions
+        int  subcase_filter_levels; // apply the subcase filters for the first N levels
         bool success;        // include successful assertions in output
         bool case_sensitive; // if filtering should be case sensitive
         bool exit;           // if the program should be exited after the tests are ran/whatever
@@ -2080,7 +2081,7 @@ namespace detail
         }
 
         ContextState()
-                : filters(6) // 6 different filters total
+                : filters(8) // 8 different filters total
         {
             resetRunData();
         }
@@ -2142,9 +2143,7 @@ int String::compare(const char* other, bool no_case) const {
 }
 
 int String::compare(const String& other, bool no_case) const {
-    if(no_case)
-        return detail::stricmp(m_str, other.m_str);
-    return strcmp(m_str, other.m_str);
+    return compare(other.c_str(), no_case);
 }
 
 std::ostream& operator<<(std::ostream& stream, const String& in) {
@@ -2523,6 +2522,14 @@ namespace detail
         // if we have already completed it
         if(s->subcasesPassed.count(m_signature) != 0)
             return;
+
+        // check subcase filters
+        if(s->subcasesCurrentLevel < s->subcase_filter_levels) {
+            if(!matchesAny(m_signature.m_name, s->filters[6], 1, s->case_sensitive))
+                return;
+            if(matchesAny(m_signature.m_name, s->filters[7], 0, s->case_sensitive))
+                return;
+        }
 
         // if a Subcase on the same level has already been entered
         if(s->subcasesEnteredLevels.count(s->subcasesCurrentLevel) != 0) {
@@ -3268,6 +3275,8 @@ namespace detail
         printf(" -sfe, --source-file-exclude=<filters> filters OUT tests by their file\n");
         printf(" -ts,  --test-suite=<filters>          filters     tests by their test suite\n");
         printf(" -tse, --test-suite-exclude=<filters>  filters OUT tests by their test suite\n");
+        printf(" -sc,  --subcase=<filters>             filters     subcases by their name\n");
+        printf(" -sce, --subcase-exclude=<filters>     filters OUT subcases by their name\n");
         printf(" -ob,  --order-by=<string>             how the tests should be ordered\n");
         printf("                                       <string> - by [file/suite/name/rand]\n");
         printf(" -rs,  --rand-seed=<int>               seed for random ordering\n");
@@ -3275,7 +3284,8 @@ namespace detail
         printf("                                       execute - for range-based execution\n");
         printf(" -l,   --last=<int>                    the last test passing the filters to\n");
         printf("                                       execute - for range-based execution\n");
-        printf(" -aa,  --abort-after=<int>             stop after <int> failed assertions\n\n");
+        printf(" -aa,  --abort-after=<int>             stop after <int> failed assertions\n");
+        printf(" -scfl,--subcase-filter-levels=<int>   apply filters for the first <int> levels\n\n");
         DOCTEST_PRINTF_COLORED("[doctest] ", Color::Cyan);
         printf("Bool options - can be used like flags and true is assumed. Available:\n\n");
         printf(" -s,   --success=<bool>                include successful assertions in output\n");
@@ -3288,7 +3298,7 @@ namespace detail
         printf(" -nc,  --no-colors=<bool>              disables colors in output\n");
         printf(" -fc,  --force-colors=<bool>           use colors even when not in a tty\n");
         printf(" -nb,  --no-breaks=<bool>              disables breakpoints in debuggers\n");
-        printf(" -npf, --no-path-filenames=<bool>      only filenames and no paths in output\n\n");
+        printf(" -npf, --no-path-filenames=<bool>      only filenames and no paths in output\n");
         printf(" -nln, --no-line-numbers=<bool>        0 instead of real line numbers in output\n\n");
         // ==================================================================================== << 79
 
@@ -3325,6 +3335,10 @@ void Context::parseArgs(int argc, const char* const* argv, bool withDefaults) {
     parseCommaSepArgs(argc, argv, "dt-tc=",                 p->filters[4]);
     parseCommaSepArgs(argc, argv, "dt-test-case-exclude=",  p->filters[5]);
     parseCommaSepArgs(argc, argv, "dt-tce=",                p->filters[5]);
+    parseCommaSepArgs(argc, argv, "dt-subcase=",            p->filters[6]);
+    parseCommaSepArgs(argc, argv, "dt-sc=",                 p->filters[6]);
+    parseCommaSepArgs(argc, argv, "dt-subcase-exclude=",    p->filters[7]);
+    parseCommaSepArgs(argc, argv, "dt-sce=",                p->filters[7]);
     // clang-format on
 
     int    intRes = 0;
@@ -3360,6 +3374,7 @@ void Context::parseArgs(int argc, const char* const* argv, bool withDefaults) {
     DOCTEST_PARSE_INT_OPTION(dt-last, dt-l, last, 0);
 
     DOCTEST_PARSE_INT_OPTION(dt-abort-after, dt-aa, abort_after, 0);
+    DOCTEST_PARSE_INT_OPTION(dt-subcase-filter-levels, dt-scfl, subcase_filter_levels, 2000000000);
 
     DOCTEST_PARSE_AS_BOOL_OR_FLAG(dt-success, dt-s, success, 0);
     DOCTEST_PARSE_AS_BOOL_OR_FLAG(dt-case-sensitive, dt-cs, case_sensitive, 0);

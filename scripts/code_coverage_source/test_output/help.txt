@@ -23,6 +23,8 @@
  -sfe, --source-file-exclude=<filters> filters OUT tests by their file
  -ts,  --test-suite=<filters>          filters     tests by their test suite
  -tse, --test-suite-exclude=<filters>  filters OUT tests by their test suite
+ -sc,  --subcase=<filters>             filters     subcases by their name
+ -sce, --subcase-exclude=<filters>     filters OUT subcases by their name
  -ob,  --order-by=<string>             how the tests should be ordered
                                        <string> - by [file/suite/name/rand]
  -rs,  --rand-seed=<int>               seed for random ordering
@@ -31,6 +33,7 @@
  -l,   --last=<int>                    the last test passing the filters to
                                        execute - for range-based execution
  -aa,  --abort-after=<int>             stop after <int> failed assertions
+ -scfl,--subcase-filter-levels=<int>   apply filters for the first <int> levels
 
 [doctest] Bool options - can be used like flags and true is assumed. Available:
 
@@ -45,7 +48,6 @@
  -fc,  --force-colors=<bool>           use colors even when not in a tty
  -nb,  --no-breaks=<bool>              disables breakpoints in debuggers
  -npf, --no-path-filenames=<bool>      only filenames and no paths in output
-
  -nln, --no-line-numbers=<bool>        0 instead of real line numbers in output
 
 [doctest] for more information visit the project documentation
