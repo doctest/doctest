@@ -118,7 +118,7 @@ This should be defined only in the source file where the library is implemented 
 This will remove all ```try``` / ```catch``` sections from:
 
 - the [normal asserts](assertions.md#expression-decomposing-asserts)
-- the [binary and unary asserts](assertions.md#binary-and-unary-asserts)
+- the [binary and unary asserts](assertions.md#binary-and-unary-asserts) - making them functionally the same as the [**fast asserts**](assertions.md#fast-asserts) (but not for compile time speed)
 
 so exceptions thrown while evaluating the expression in an assert will terminate the current test case.
 
