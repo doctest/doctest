@@ -28,13 +28,13 @@ All the options can also be set with code (defaults/overrides) if the user [**su
 | ```-ts``` &nbsp; ```--test-suite=<filters>``` | Same as ```--test-case=<filters>``` but filters based on the test suite in which test cases are in |
 | ```-tse``` ```--test-suite-exclude=<filters>``` | Same as ```--test-case-exclude=<filters>``` but filters based on the test suite in which test cases are in |
 | ```-sc``` &nbsp; ```--subcase=<filters>``` | Same as ```--test-case=<filters>``` but filters subcases based on their names |
-| ```-sce``` ```--subcase-exclude=<filters>``` | Same as ```--test-case-exclude=<filters>``` but filters subcases based on their names |
+| ```-sce``` ```--subcase-exclude=<filters>``` | Same as ```--test-case-exclude=<filters>``` but filters based on subcase names |
 | ```-ob``` &nbsp; ```--order-by=<string>``` | Test cases will be sorted before being executed either by **the file in which they are** / **the test suite they are in** / **their name** / **random**. The possible values of ```<string>``` are ```file```/```suite```/```name```/```rand```. The default is ```file``` |
 | ```-rs``` &nbsp; ```--rand-seed=<int>``` | The seed for random ordering |
 | ```-f``` &nbsp;&nbsp;&nbsp; ```--first=<int>``` | The **first** test case to execute which passes the current filters - for range-based execution - see [**the example**](../../examples/range_based_execution/) (the **run.py** script) |
 | ```-l``` &nbsp;&nbsp;&nbsp; ```--last=<int>``` | The **last** test case to execute which passes the current filters - for range-based execution - see [**the example**](../../examples/range_based_execution/) (the **run.py** script) |
 | ```-aa``` &nbsp; ```--abort-after=<int>``` | The testing framework will stop executing test cases/assertions after this many failed assertions. The default is 0 which means don't stop at all |
-| ```-scfl``` &nbsp; ```--subcase-filter-levels=<int>``` | Apply subcase filters only for the first ```<int>``` levels of nested subcases and just run the ones nested deeper. Default is a very high number which means *filter any subcase* |
+| ```-scfl``` ```--subcase-filter-levels=<int>``` | Apply subcase filters only for the first ```<int>``` levels of nested subcases and just run the ones nested deeper. Default is a very high number which means *filter any subcase* |
 | **Bool Options** | <hr> |
 | ```-s``` &nbsp;&nbsp;&nbsp; ```--success=<bool>``` | To include successful assertions in the output |
 | ```-cs``` &nbsp; ```--case-sensitive=<bool>``` | Filters being treated as case sensitive |
