@@ -153,7 +153,8 @@
 #if defined(_MSC_VER) && (_MSC_VER >= 1400)
 #define DOCTEST_CONFIG_WITH_LONG_LONG
 #endif // _MSC_VER
-#if defined(__GNUC__) && ((__GNUC__ == 4 && __GNUC_MINOR__ >= 1) || __GNUC__ > 4) && defined(__GXX_EXPERIMENTAL_CXX0X__)
+#if (defined(__clang__) || (defined(__GNUC__) && ((__GNUC__ == 4 && __GNUC_MINOR__ >= 5) || __GNUC__ > 4))) \
+    && defined(__GXX_EXPERIMENTAL_CXX0X__)
 #define DOCTEST_CONFIG_WITH_LONG_LONG
 #endif // __GNUC__ and clang
 #endif // DOCTEST_CONFIG_WITH_LONG_LONG
