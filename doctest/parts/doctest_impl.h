@@ -228,7 +228,6 @@ namespace detail
 
         int  abort_after;           // stop tests after this many failed assertions
         int  subcase_filter_levels; // apply the subcase filters for the first N levels
-        bool success;        // include successful assertions in output
         bool case_sensitive; // if filtering should be case sensitive
         bool exit;           // if the program should be exited after the tests are ran/whatever
         bool no_exitcode;    // if the framework should return 0 as the exitcode
@@ -236,6 +235,7 @@ namespace detail
         bool no_version;     // to not print the version of the framework
         bool no_colors;      // if output to the console should be colorized
         bool force_colors;   // forces the use of colors even when a tty cannot be detected
+        bool no_breaks;      // to not break into the debugger
         bool no_path_in_filenames; // if the path to files should be removed from the output
         bool no_line_numbers;      // if source code line numbers should be omitted from the output
 
@@ -754,6 +754,15 @@ namespace detail
         }
     }
 
+    Result::~Result() {}
+
+    Result& Result::operator=(const Result& other) {
+        m_passed        = other.m_passed;
+        m_decomposition = other.m_decomposition;
+
+        return *this;
+    }
+
     // for sorting tests by file/line
     int fileOrderComparator(const void* a, const void* b) {
         const TestData* lhs = *static_cast<TestData* const*>(a);
@@ -1246,6 +1255,14 @@ namespace detail
             ++m_expr;
     }
 
+    ResultBuilder::~ResultBuilder() {}
+
+    void ResultBuilder::setResult(const Result& res) {
+        m_result = res;
+        if(m_assert_type & assertType::is_false)
+            m_result.invert();
+    }
+
     void ResultBuilder::unexpectedExceptionOccurred() {
         m_threw = true;
 
@@ -1256,10 +1273,7 @@ namespace detail
         if((m_assert_type & assertType::is_warn) == 0)
             DOCTEST_GCS().numAssertionsForCurrentTestcase++;
 
-        if(m_assert_type & assertType::is_false) {
-            m_result.invert();
-            m_failed = m_result;
-        } else if(m_assert_type & assertType::is_throws) {
+        if(m_assert_type & assertType::is_throws) {
             m_failed = !m_threw;
         } else if(m_assert_type & assertType::is_throws_as) {
             m_failed = !m_threw_as;

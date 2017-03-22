@@ -796,12 +796,7 @@ namespace detail
         bool   m_passed;
         String m_decomposition;
 
-// to fix gcc 4.7 "-Winline" warnings
-#if defined(__GNUC__) && !defined(__clang__)
-        __attribute__((noinline))
-#endif
-        ~Result() {
-        }
+        ~Result();
 
         Result(bool passed = false, const String& decomposition = String())
                 : m_passed(passed)
@@ -811,17 +806,7 @@ namespace detail
                 : m_passed(other.m_passed)
                 , m_decomposition(other.m_decomposition) {}
 
-// to fix gcc 4.7 "-Winline" warnings
-#if defined(__GNUC__) && !defined(__clang__)
-        __attribute__((noinline))
-#endif
-        Result&
-        operator=(const Result& other) {
-            m_passed        = other.m_passed;
-            m_decomposition = other.m_decomposition;
-
-            return *this;
-        }
+        Result& operator=(const Result& other);
 
         operator bool() { return !m_passed; }
 
@@ -1019,8 +1004,8 @@ namespace detail
 
     struct TestAccessibleContextState
     {
-        bool            no_throw;  // to skip exceptions-related assertion macros
-        bool            no_breaks; // to not break into the debugger
+        bool success;  // include successful assertions in output
+        bool no_throw; // to skip exceptions-related assertion macros
     };
 
     struct ContextState;
@@ -1067,25 +1052,26 @@ namespace detail
         ResultBuilder(assertType::Enum assert_type, const char* file, int line, const char* expr,
                       const char* exception_type = "");
 
-// to fix gcc 4.7 "-Winline" warnings
-#if defined(__GNUC__) && !defined(__clang__)
-        __attribute__((noinline))
-#endif
-        ~ResultBuilder() {
-        }
+        ~ResultBuilder();
 
-        void setResult(const Result& res) { m_result = res; }
+        void setResult(const Result& res);
 
         template <int comparison, typename L, typename R>
         void          binary_assert(const DOCTEST_REF_WRAP(L) lhs, const DOCTEST_REF_WRAP(R) rhs) {
             m_result.m_passed        = RelationalComparator<comparison, L, R>()(lhs, rhs);
             m_result.m_decomposition = stringifyBinaryExpr(lhs, ", ", rhs);
+
+            if(m_assert_type & assertType::is_false)
+                m_result.invert();
         }
 
         template <typename L>
         void unary_assert(const DOCTEST_REF_WRAP(L) val) {
             m_result.m_passed        = !!val;
             m_result.m_decomposition = toString(val);
+
+            if(m_assert_type & assertType::is_false)
+                m_result.invert();
         }
 
         void unexpectedExceptionOccurred();
@@ -1110,7 +1096,11 @@ namespace detail
                            const DOCTEST_REF_WRAP(R) rhs) {
         ResultBuilder rb(assert_type, file, line, expr);
 
-        rb.m_result.m_passed        = RelationalComparator<comparison, L, R>()(lhs, rhs);
+        rb.m_result.m_passed = RelationalComparator<comparison, L, R>()(lhs, rhs);
+
+        if(assert_type & assertType::is_false)
+            rb.m_result.invert();
+
         rb.m_result.m_decomposition = stringifyBinaryExpr(lhs, ", ", rhs);
 
         int res = 0;
@@ -1139,7 +1129,11 @@ namespace detail
                           const char* val_str, const DOCTEST_REF_WRAP(L) val) {
         ResultBuilder rb(assert_type, file, line, val_str);
 
-        rb.m_result.m_passed        = !!val;
+        rb.m_result.m_passed = !!val;
+
+        if(assert_type & assertType::is_false)
+            rb.m_result.invert();
+
         rb.m_result.m_decomposition = toString(val);
 
         int res = 0;
@@ -1241,10 +1235,6 @@ class DOCTEST_INTERFACE Context
 public:
     Context(int argc = 0, const char* const* argv = 0);
 
-// to fix gcc 4.7 "-Winline" warnings
-#if defined(__GNUC__) && !defined(__clang__)
-    __attribute__((noinline))
-#endif
     ~Context();
 
     void applyCommandLine(int argc, const char* const* argv);
