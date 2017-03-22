@@ -9,3 +9,4 @@
 - commit in master and push
 - create github release with the same semver tag as the changelog
 - merge master in dev
+- update vcpkg package with a PR - https://github.com/Microsoft/vcpkg/tree/master/ports/doctest
