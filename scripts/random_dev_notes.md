@@ -1,6 +1,7 @@
 
 
 
+CAPTURE/INFO - relates #48 relates #23
 
 
 

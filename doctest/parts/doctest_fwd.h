@@ -117,11 +117,9 @@
 #define DOCTEST_CONFIG_WITH_NULLPTR
 #endif // __has_feature(cxx_nullptr)
 #endif // __clang__
-
-#if defined(__GNUC__) && __GNUC__ == 4 && __GNUC_MINOR__ >= 6 && defined(__GXX_EXPERIMENTAL_CXX0X__)
+#if defined(__GNUC__) && ((__GNUC__ == 4 && __GNUC_MINOR__ >= 6) || __GNUC__ > 4) && defined(__GXX_EXPERIMENTAL_CXX0X__)
 #define DOCTEST_CONFIG_WITH_NULLPTR
 #endif // __GNUC__
-
 #if defined(_MSC_VER) && (_MSC_VER >= 1600) // MSVC 2010
 #define DOCTEST_CONFIG_WITH_NULLPTR
 #endif // _MSC_VER
@@ -134,10 +132,12 @@
 // variadic macros
 
 #ifndef DOCTEST_CONFIG_WITH_VARIADIC_MACROS
-#if (defined _MSC_VER && _MSC_VER > 1400 && !defined __EDGE__) || \
-    (defined __WAVE__ && __WAVE_HAS_VARIADICS)
+#if defined(_MSC_VER) && _MSC_VER > 1400 && !defined(__EDGE__)
 #define DOCTEST_CONFIG_WITH_VARIADIC_MACROS
-#endif // var arg detection stuff
+#endif // _MSC_VER
+#if defined(__GNUC__) && ((__GNUC__ == 4 && __GNUC_MINOR__ >= 1) || __GNUC__ > 4) && defined(__GXX_EXPERIMENTAL_CXX0X__)
+#define DOCTEST_CONFIG_WITH_VARIADIC_MACROS
+#endif // __GNUC__ and clang
 #endif // DOCTEST_CONFIG_WITH_VARIADIC_MACROS
 
 #if defined(DOCTEST_CONFIG_NO_VARIADIC_MACROS) && defined(DOCTEST_CONFIG_WITH_VARIADIC_MACROS)
@@ -147,9 +147,12 @@
 // long long
 
 #ifndef DOCTEST_CONFIG_WITH_LONG_LONG
-#if !defined(DOCTEST_CONFIG_WITH_LONG_LONG) && defined(_MSC_VER) && (_MSC_VER >= 1400)
+#if defined(_MSC_VER) && (_MSC_VER >= 1400)
 #define DOCTEST_CONFIG_WITH_LONG_LONG
 #endif // _MSC_VER
+#if defined(__GNUC__) && ((__GNUC__ == 4 && __GNUC_MINOR__ >= 1) || __GNUC__ > 4) && defined(__GXX_EXPERIMENTAL_CXX0X__)
+#define DOCTEST_CONFIG_WITH_LONG_LONG
+#endif // __GNUC__ and clang
 #endif // DOCTEST_CONFIG_WITH_LONG_LONG
 
 #if defined(DOCTEST_CONFIG_NO_LONG_LONG) && defined(DOCTEST_CONFIG_WITH_LONG_LONG)
@@ -164,11 +167,9 @@
 #define DOCTEST_CONFIG_WITH_STATIC_ASSERT
 #endif // __has_feature(cxx_static_assert)
 #endif // __clang__
-
-#if defined(__GNUC__) && __GNUC__ == 4 && __GNUC_MINOR__ >= 3 && defined(__GXX_EXPERIMENTAL_CXX0X__)
+#if defined(__GNUC__) && ((__GNUC__ == 4 && __GNUC_MINOR__ >= 3) || __GNUC__ > 4) && defined(__GXX_EXPERIMENTAL_CXX0X__)
 #define DOCTEST_CONFIG_WITH_STATIC_ASSERT
 #endif // __GNUC__
-
 #if defined(_MSC_VER) && (_MSC_VER >= 1600) // MSVC 2010
 #define DOCTEST_CONFIG_WITH_STATIC_ASSERT
 #endif // _MSC_VER
@@ -177,6 +178,8 @@
 #if defined(DOCTEST_CONFIG_NO_STATIC_ASSERT) && defined(DOCTEST_CONFIG_WITH_STATIC_ASSERT)
 #undef DOCTEST_CONFIG_WITH_STATIC_ASSERT
 #endif // DOCTEST_CONFIG_NO_STATIC_ASSERT
+
+// other stuff...
 
 #if defined(DOCTEST_CONFIG_WITH_NULLPTR) || defined(DOCTEST_CONFIG_WITH_LONG_LONG) ||              \
         defined(DOCTEST_CONFIG_WITH_STATIC_ASSERT)

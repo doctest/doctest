@@ -14,7 +14,6 @@ Planned features for future releases - order may change.
 - add ```ERROR```/```FAIL``` macros (also ```ADD_FAILURE_AT(file, line);``` and extend the asserts to have ```_AT``` variants)
 - Parametric test cases (Value/Type-parameterized tests) - https://github.com/onqtam/doctest/issues/38
 - crash handling: signals on UNIX platforms or structured exceptions on Windows (should also have DOCTEST_CONFIG_NO_SIGNAL_CATCHING)
-- add a "wait key" option - as requested [here](https://github.com/philsquared/Catch/issues/477#issuecomment-256417686)
 - runtime performance
     - the set holding all registered tests should use a specialized allocator to minimize program startup time
     - lazily stringify expressions - only when needed
@@ -26,6 +25,7 @@ Planned features for future releases - order may change.
     - remove old benchmarks for doctest 1.0
     - add runtime benchmarks
 - change docs a bit - mainly what is in the landing page (add link to overload)
+- address the coverage issue...
 
 ### For 1.3:
 
@@ -95,6 +95,7 @@ Planned features for future releases - order may change.
 - utf8???
 - handle ```wchar``` strings???
 - hierarchical test suites - using a stack for the pushed ones
+- add a "wait key" option - as requested [here](https://github.com/philsquared/Catch/issues/477#issuecomment-256417686)
 - ability to specify the width of the terminal in terms of characters (for example 60 - less than 80 - the default)
 - ability to re-run only newly compiled tests based on time stamps using ```__DATE__``` and ```__TIME__``` - stored in some file
 - add underscores to all preprocessor identifiers not intended for use by the user
