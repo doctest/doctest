@@ -107,6 +107,9 @@
 #ifndef DOCTEST_CONFIG_WITH_STATIC_ASSERT
 #define DOCTEST_CONFIG_WITH_STATIC_ASSERT
 #endif // DOCTEST_CONFIG_WITH_STATIC_ASSERT
+#ifndef DOCTEST_CONFIG_WITH_VARIADIC_MACROS
+#define DOCTEST_CONFIG_WITH_VARIADIC_MACROS
+#endif // DOCTEST_CONFIG_WITH_VARIADIC_MACROS
 #endif // __cplusplus >= 201103L
 
 // nullptr
@@ -130,6 +133,19 @@
 #if defined(DOCTEST_CONFIG_NO_NULLPTR) && defined(DOCTEST_CONFIG_WITH_NULLPTR)
 #undef DOCTEST_CONFIG_WITH_NULLPTR
 #endif // DOCTEST_CONFIG_NO_NULLPTR
+
+// variadic macros
+
+#ifndef DOCTEST_CONFIG_WITH_VARIADIC_MACROS
+#if (defined _MSC_VER && _MSC_VER > 1400 && !defined __EDGE__) || \
+    (defined __WAVE__ && __WAVE_HAS_VARIADICS)
+#define DOCTEST_CONFIG_WITH_VARIADIC_MACROS
+#endif // var arg detection stuff
+#endif // DOCTEST_CONFIG_WITH_VARIADIC_MACROS
+
+#if defined(DOCTEST_CONFIG_NO_VARIADIC_MACROS) && defined(DOCTEST_CONFIG_WITH_VARIADIC_MACROS)
+#undef DOCTEST_CONFIG_WITH_VARIADIC_MACROS
+#endif // DOCTEST_CONFIG_NO_VARIADIC_MACROS
 
 // long long
 
@@ -234,8 +250,13 @@
 #endif // __COUNTER__
 
 // macro for making a string out of an identifier
+#ifdef DOCTEST_CONFIG_WITH_VARIADIC_MACROS
+#define DOCTEST_TOSTR_IMPL(...) #__VA_ARGS__
+#define DOCTEST_TOSTR(...) DOCTEST_TOSTR_IMPL(__VA_ARGS__)
+#else // DOCTEST_CONFIG_WITH_VARIADIC_MACROS
 #define DOCTEST_TOSTR_IMPL(x) #x
 #define DOCTEST_TOSTR(x) DOCTEST_TOSTR_IMPL(x)
+#endif // DOCTEST_CONFIG_WITH_VARIADIC_MACROS
 
 // for concatenating literals and making the result a string
 #define DOCTEST_STR_CONCAT_TOSTR(s1, s2) DOCTEST_TOSTR(s1) DOCTEST_TOSTR(s2)
@@ -1088,11 +1109,9 @@ namespace detail
 
     template <int comparison, typename L, typename R>
     int fast_binary_assert(assertType::Enum assert_type, const char* file, int line,
-                           const char* lhs_str, const char* rhs_str, const DOCTEST_REF_WRAP(L) lhs,
+                           const char* expr, const DOCTEST_REF_WRAP(L) lhs,
                            const DOCTEST_REF_WRAP(R) rhs) {
-        String        expr     = String(lhs_str) + ", " + rhs_str;
-        const char*   expr_str = expr.c_str();
-        ResultBuilder rb(assert_type, file, line, expr_str);
+        ResultBuilder rb(assert_type, file, line, expr);
 
         rb.m_result.m_passed        = RelationalComparator<comparison, L, R>()(lhs, rhs);
         rb.m_result.m_decomposition = stringifyBinaryExpr(lhs, ", ", rhs);
@@ -1344,10 +1363,20 @@ public:
     } catch(...) { _DOCTEST_RB.unexpectedExceptionOccurred(); }
 #endif // DOCTEST_CONFIG_NO_TRY_CATCH_IN_ASSERTS
 
+#ifdef DOCTEST_CONFIG_WITH_VARIADIC_MACROS
+#define DOCTEST_EXPAND_VA_ARGS(...) __VA_ARGS__
+#else // DOCTEST_CONFIG_WITH_VARIADIC_MACROS
+#define DOCTEST_EXPAND_VA_ARGS
+#endif // DOCTEST_CONFIG_WITH_VARIADIC_MACROS
+
+#define DOCTEST_STRIP_PARENS(x) x
+#define DOCTEST_HANDLE_EXPR(expr) DOCTEST_STRIP_PARENS(DOCTEST_EXPAND_VA_ARGS expr)
+
 #define DOCTEST_ASSERT_IMPLEMENT(expr, assert_type)                                                \
     doctest::detail::ResultBuilder _DOCTEST_RB(doctest::detail::assertType::assert_type, __FILE__, \
-                                               __LINE__, #expr);                                   \
-    DOCTEST_WRAP_IN_TRY(_DOCTEST_RB.setResult(doctest::detail::ExpressionDecomposer() << expr))    \
+            __LINE__, DOCTEST_TOSTR(DOCTEST_HANDLE_EXPR(expr)));                                   \
+    DOCTEST_WRAP_IN_TRY(_DOCTEST_RB.setResult(doctest::detail::ExpressionDecomposer()              \
+                        << DOCTEST_HANDLE_EXPR(expr)))                                             \
     DOCTEST_ASSERT_LOG_AND_REACT(_DOCTEST_RB)
 
 #if defined(__clang__)
@@ -1365,13 +1394,21 @@ public:
     } while(doctest::detail::always_false())
 #endif // __clang__
 
+#ifdef DOCTEST_CONFIG_WITH_VARIADIC_MACROS
+#define DOCTEST_WARN(...) DOCTEST_ASSERT_PROXY((__VA_ARGS__), DT_WARN)
+#define DOCTEST_CHECK(...) DOCTEST_ASSERT_PROXY((__VA_ARGS__), DT_CHECK)
+#define DOCTEST_REQUIRE(...) DOCTEST_ASSERT_PROXY((__VA_ARGS__), DT_REQUIRE)
+#define DOCTEST_WARN_FALSE(...) DOCTEST_ASSERT_PROXY((__VA_ARGS__), DT_WARN_FALSE)
+#define DOCTEST_CHECK_FALSE(...) DOCTEST_ASSERT_PROXY((__VA_ARGS__), DT_CHECK_FALSE)
+#define DOCTEST_REQUIRE_FALSE(...) DOCTEST_ASSERT_PROXY((__VA_ARGS__), DT_REQUIRE_FALSE)
+#else // DOCTEST_CONFIG_WITH_VARIADIC_MACROS
 #define DOCTEST_WARN(expr) DOCTEST_ASSERT_PROXY(expr, DT_WARN)
 #define DOCTEST_CHECK(expr) DOCTEST_ASSERT_PROXY(expr, DT_CHECK)
 #define DOCTEST_REQUIRE(expr) DOCTEST_ASSERT_PROXY(expr, DT_REQUIRE)
-
 #define DOCTEST_WARN_FALSE(expr) DOCTEST_ASSERT_PROXY(expr, DT_WARN_FALSE)
 #define DOCTEST_CHECK_FALSE(expr) DOCTEST_ASSERT_PROXY(expr, DT_CHECK_FALSE)
 #define DOCTEST_REQUIRE_FALSE(expr) DOCTEST_ASSERT_PROXY(expr, DT_REQUIRE_FALSE)
+#endif // DOCTEST_CONFIG_WITH_VARIADIC_MACROS
 
 #define DOCTEST_ASSERT_THROWS(expr, assert_type)                                                   \
     do {                                                                                           \
@@ -1389,10 +1426,10 @@ public:
     do {                                                                                           \
         if(!DOCTEST_GCS().no_throw) {                                                              \
             doctest::detail::ResultBuilder _DOCTEST_RB(doctest::detail::assertType::assert_type,   \
-                                                       __FILE__, __LINE__, #expr, #as);            \
+                    __FILE__, __LINE__, #expr, DOCTEST_TOSTR(DOCTEST_HANDLE_EXPR(as)));            \
             try {                                                                                  \
                 expr;                                                                              \
-            } catch(as) {                                                                          \
+            } catch(DOCTEST_HANDLE_EXPR(as)) {                                                     \
                 _DOCTEST_RB.m_threw    = true;                                                     \
                 _DOCTEST_RB.m_threw_as = true;                                                     \
             } catch(...) { _DOCTEST_RB.unexpectedExceptionOccurred(); }                            \
@@ -1416,32 +1453,76 @@ public:
 #define DOCTEST_CHECK_THROWS(expr) DOCTEST_ASSERT_THROWS(expr, DT_CHECK_THROWS)
 #define DOCTEST_REQUIRE_THROWS(expr) DOCTEST_ASSERT_THROWS(expr, DT_REQUIRE_THROWS)
 
+#ifdef DOCTEST_CONFIG_WITH_VARIADIC_MACROS
+#define DOCTEST_WARN_THROWS_AS(expr, ...) DOCTEST_ASSERT_THROWS_AS(expr, (__VA_ARGS__), DT_WARN_THROWS_AS)
+#define DOCTEST_CHECK_THROWS_AS(expr, ...) DOCTEST_ASSERT_THROWS_AS(expr, (__VA_ARGS__), DT_CHECK_THROWS_AS)
+#define DOCTEST_REQUIRE_THROWS_AS(expr, ...) DOCTEST_ASSERT_THROWS_AS(expr, (__VA_ARGS__), DT_REQUIRE_THROWS_AS)
+#else // DOCTEST_CONFIG_WITH_VARIADIC_MACROS
 #define DOCTEST_WARN_THROWS_AS(expr, ex) DOCTEST_ASSERT_THROWS_AS(expr, ex, DT_WARN_THROWS_AS)
 #define DOCTEST_CHECK_THROWS_AS(expr, ex) DOCTEST_ASSERT_THROWS_AS(expr, ex, DT_CHECK_THROWS_AS)
 #define DOCTEST_REQUIRE_THROWS_AS(expr, ex) DOCTEST_ASSERT_THROWS_AS(expr, ex, DT_REQUIRE_THROWS_AS)
+#endif // DOCTEST_CONFIG_WITH_VARIADIC_MACROS
 
 #define DOCTEST_WARN_NOTHROW(expr) DOCTEST_ASSERT_NOTHROW(expr, DT_WARN_NOTHROW)
 #define DOCTEST_CHECK_NOTHROW(expr) DOCTEST_ASSERT_NOTHROW(expr, DT_CHECK_NOTHROW)
 #define DOCTEST_REQUIRE_NOTHROW(expr) DOCTEST_ASSERT_NOTHROW(expr, DT_REQUIRE_NOTHROW)
 
+#ifdef DOCTEST_CONFIG_WITH_VARIADIC_MACROS
+#define DOCTEST_BINARY_ASSERT(assert_type, expr, comp)                                             \
+    do {                                                                                           \
+        doctest::detail::ResultBuilder _DOCTEST_RB(doctest::detail::assertType::assert_type,       \
+                __FILE__, __LINE__, DOCTEST_TOSTR(DOCTEST_HANDLE_EXPR(expr)));                     \
+        DOCTEST_WRAP_IN_TRY(                                                                       \
+                _DOCTEST_RB.binary_assert<doctest::detail::binaryAssertComparison::comp>(          \
+                        DOCTEST_HANDLE_EXPR(expr)))                                                \
+        DOCTEST_ASSERT_LOG_AND_REACT(_DOCTEST_RB);                                                 \
+    } while(doctest::detail::always_false())
+#else // DOCTEST_CONFIG_WITH_VARIADIC_MACROS
 #define DOCTEST_BINARY_ASSERT(assert_type, lhs, rhs, comp)                                         \
     do {                                                                                           \
         doctest::detail::ResultBuilder _DOCTEST_RB(doctest::detail::assertType::assert_type,       \
-                                                   __FILE__, __LINE__, #lhs ", " #rhs);            \
+                __FILE__, __LINE__, #lhs ", " #rhs);                                               \
         DOCTEST_WRAP_IN_TRY(                                                                       \
-                _DOCTEST_RB.binary_assert<doctest::detail::binaryAssertComparison::comp>(lhs,      \
-                                                                                         rhs))     \
+                _DOCTEST_RB.binary_assert<doctest::detail::binaryAssertComparison::comp>(lhs, rhs))\
         DOCTEST_ASSERT_LOG_AND_REACT(_DOCTEST_RB);                                                 \
     } while(doctest::detail::always_false())
+#endif // DOCTEST_CONFIG_WITH_VARIADIC_MACROS
 
-#define DOCTEST_UNARY_ASSERT(assert_type, val)                                                     \
+#define DOCTEST_UNARY_ASSERT(assert_type, expr)                                                    \
     do {                                                                                           \
         doctest::detail::ResultBuilder _DOCTEST_RB(doctest::detail::assertType::assert_type,       \
-                                                   __FILE__, __LINE__, #val);                      \
-        DOCTEST_WRAP_IN_TRY(_DOCTEST_RB.unary_assert(val))                                         \
+                __FILE__, __LINE__, DOCTEST_TOSTR(DOCTEST_HANDLE_EXPR(expr)));                     \
+        DOCTEST_WRAP_IN_TRY(_DOCTEST_RB.unary_assert(DOCTEST_HANDLE_EXPR(expr)))                   \
         DOCTEST_ASSERT_LOG_AND_REACT(_DOCTEST_RB);                                                 \
     } while(doctest::detail::always_false())
 
+#ifdef DOCTEST_CONFIG_WITH_VARIADIC_MACROS
+#define DOCTEST_WARN_EQ(...) DOCTEST_BINARY_ASSERT(DT_WARN_EQ, (__VA_ARGS__), eq)
+#define DOCTEST_CHECK_EQ(...) DOCTEST_BINARY_ASSERT(DT_CHECK_EQ, (__VA_ARGS__), eq)
+#define DOCTEST_REQUIRE_EQ(...) DOCTEST_BINARY_ASSERT(DT_REQUIRE_EQ, (__VA_ARGS__), eq)
+#define DOCTEST_WARN_NE(...) DOCTEST_BINARY_ASSERT(DT_WARN_NE, (__VA_ARGS__), ne)
+#define DOCTEST_CHECK_NE(...) DOCTEST_BINARY_ASSERT(DT_CHECK_NE, (__VA_ARGS__), ne)
+#define DOCTEST_REQUIRE_NE(...) DOCTEST_BINARY_ASSERT(DT_REQUIRE_NE, (__VA_ARGS__), ne)
+#define DOCTEST_WARN_GT(...) DOCTEST_BINARY_ASSERT(DT_WARN_GT, (__VA_ARGS__), gt)
+#define DOCTEST_CHECK_GT(...) DOCTEST_BINARY_ASSERT(DT_CHECK_GT, (__VA_ARGS__), gt)
+#define DOCTEST_REQUIRE_GT(...) DOCTEST_BINARY_ASSERT(DT_REQUIRE_GT, (__VA_ARGS__), gt)
+#define DOCTEST_WARN_LT(...) DOCTEST_BINARY_ASSERT(DT_WARN_LT, (__VA_ARGS__), lt)
+#define DOCTEST_CHECK_LT(...) DOCTEST_BINARY_ASSERT(DT_CHECK_LT, (__VA_ARGS__), lt)
+#define DOCTEST_REQUIRE_LT(...) DOCTEST_BINARY_ASSERT(DT_REQUIRE_LT, (__VA_ARGS__), lt)
+#define DOCTEST_WARN_GE(...) DOCTEST_BINARY_ASSERT(DT_WARN_GE, (__VA_ARGS__), ge)
+#define DOCTEST_CHECK_GE(...) DOCTEST_BINARY_ASSERT(DT_CHECK_GE, (__VA_ARGS__), ge)
+#define DOCTEST_REQUIRE_GE(...) DOCTEST_BINARY_ASSERT(DT_REQUIRE_GE, (__VA_ARGS__), ge)
+#define DOCTEST_WARN_LE(...) DOCTEST_BINARY_ASSERT(DT_WARN_LE, (__VA_ARGS__), le)
+#define DOCTEST_CHECK_LE(...) DOCTEST_BINARY_ASSERT(DT_CHECK_LE, (__VA_ARGS__), le)
+#define DOCTEST_REQUIRE_LE(...) DOCTEST_BINARY_ASSERT(DT_REQUIRE_LE, (__VA_ARGS__), le)
+
+#define DOCTEST_WARN_UNARY(...) DOCTEST_UNARY_ASSERT(DT_WARN_UNARY, (__VA_ARGS__))
+#define DOCTEST_CHECK_UNARY(...) DOCTEST_UNARY_ASSERT(DT_CHECK_UNARY, (__VA_ARGS__))
+#define DOCTEST_REQUIRE_UNARY(...) DOCTEST_UNARY_ASSERT(DT_REQUIRE_UNARY, (__VA_ARGS__))
+#define DOCTEST_WARN_UNARY_FALSE(...) DOCTEST_UNARY_ASSERT(DT_WARN_UNARY_FALSE, (__VA_ARGS__))
+#define DOCTEST_CHECK_UNARY_FALSE(...) DOCTEST_UNARY_ASSERT(DT_CHECK_UNARY_FALSE, (__VA_ARGS__))
+#define DOCTEST_REQUIRE_UNARY_FALSE(...) DOCTEST_UNARY_ASSERT(DT_REQUIRE_UNARY_FALSE, (__VA_ARGS__))
+#else // DOCTEST_CONFIG_WITH_VARIADIC_MACROS
 #define DOCTEST_WARN_EQ(lhs, rhs) DOCTEST_BINARY_ASSERT(DT_WARN_EQ, lhs, rhs, eq)
 #define DOCTEST_CHECK_EQ(lhs, rhs) DOCTEST_BINARY_ASSERT(DT_CHECK_EQ, lhs, rhs, eq)
 #define DOCTEST_REQUIRE_EQ(lhs, rhs) DOCTEST_BINARY_ASSERT(DT_REQUIRE_EQ, lhs, rhs, eq)
@@ -1467,24 +1548,39 @@ public:
 #define DOCTEST_WARN_UNARY_FALSE(v) DOCTEST_UNARY_ASSERT(DT_WARN_UNARY_FALSE, v)
 #define DOCTEST_CHECK_UNARY_FALSE(v) DOCTEST_UNARY_ASSERT(DT_CHECK_UNARY_FALSE, v)
 #define DOCTEST_REQUIRE_UNARY_FALSE(v) DOCTEST_UNARY_ASSERT(DT_REQUIRE_UNARY_FALSE, v)
+#endif // DOCTEST_CONFIG_WITH_VARIADIC_MACROS
 
 #ifndef DOCTEST_CONFIG_SUPER_FAST_ASSERTS
 
+#ifdef DOCTEST_CONFIG_WITH_VARIADIC_MACROS
+#define DOCTEST_FAST_BINARY_ASSERT(assert_type, expr, comparison)                                  \
+    do {                                                                                           \
+        int _DOCTEST_FAST_RES = doctest::detail::fast_binary_assert<                               \
+                doctest::detail::binaryAssertComparison::comparison>(                              \
+                doctest::detail::assertType::assert_type, __FILE__, __LINE__,                      \
+                        DOCTEST_TOSTR(DOCTEST_HANDLE_EXPR(expr)), DOCTEST_HANDLE_EXPR(expr));      \
+        if(_DOCTEST_FAST_RES & doctest::detail::assertAction::dbgbreak)                            \
+            DOCTEST_BREAK_INTO_DEBUGGER();                                                         \
+        doctest::detail::fastAssertThrowIfFlagSet(_DOCTEST_FAST_RES);                              \
+    } while(doctest::detail::always_false())
+#else // DOCTEST_CONFIG_WITH_VARIADIC_MACROS
 #define DOCTEST_FAST_BINARY_ASSERT(assert_type, lhs, rhs, comparison)                              \
     do {                                                                                           \
         int _DOCTEST_FAST_RES = doctest::detail::fast_binary_assert<                               \
                 doctest::detail::binaryAssertComparison::comparison>(                              \
-                doctest::detail::assertType::assert_type, __FILE__, __LINE__, #lhs, #rhs, lhs,     \
+                doctest::detail::assertType::assert_type, __FILE__, __LINE__, #lhs ", " #rhs, lhs, \
                 rhs);                                                                              \
         if(_DOCTEST_FAST_RES & doctest::detail::assertAction::dbgbreak)                            \
             DOCTEST_BREAK_INTO_DEBUGGER();                                                         \
         doctest::detail::fastAssertThrowIfFlagSet(_DOCTEST_FAST_RES);                              \
     } while(doctest::detail::always_false())
+#endif // DOCTEST_CONFIG_WITH_VARIADIC_MACROS
 
-#define DOCTEST_FAST_UNARY_ASSERT(assert_type, val)                                                \
+#define DOCTEST_FAST_UNARY_ASSERT(assert_type, expr)                                               \
     do {                                                                                           \
         int _DOCTEST_FAST_RES = doctest::detail::fast_unary_assert(                                \
-                doctest::detail::assertType::assert_type, __FILE__, __LINE__, #val, val);          \
+                doctest::detail::assertType::assert_type, __FILE__, __LINE__,                      \
+                        DOCTEST_TOSTR(DOCTEST_HANDLE_EXPR(expr)), DOCTEST_HANDLE_EXPR(expr));      \
         if(_DOCTEST_FAST_RES & doctest::detail::assertAction::dbgbreak)                            \
             DOCTEST_BREAK_INTO_DEBUGGER();                                                         \
         doctest::detail::fastAssertThrowIfFlagSet(_DOCTEST_FAST_RES);                              \
@@ -1492,16 +1588,50 @@ public:
 
 #else // DOCTEST_CONFIG_SUPER_FAST_ASSERTS
 
+#ifdef DOCTEST_CONFIG_WITH_VARIADIC_MACROS
+#define DOCTEST_FAST_BINARY_ASSERT(assert_type, expr, comparison)                                  \
+    doctest::detail::fast_binary_assert<doctest::detail::binaryAssertComparison::comparison>(      \
+            doctest::detail::assertType::assert_type, __FILE__, __LINE__,                          \
+            DOCTEST_TOSTR(DOCTEST_HANDLE_EXPR(expr)), DOCTEST_HANDLE_EXPR(expr))
+#else // DOCTEST_CONFIG_WITH_VARIADIC_MACROS
 #define DOCTEST_FAST_BINARY_ASSERT(assert_type, lhs, rhs, comparison)                              \
     doctest::detail::fast_binary_assert<doctest::detail::binaryAssertComparison::comparison>(      \
-            doctest::detail::assertType::assert_type, __FILE__, __LINE__, #lhs, #rhs, lhs, rhs)
+            doctest::detail::assertType::assert_type, __FILE__, __LINE__, #lhs ", " #rhs, lhs, rhs)
+#endif // DOCTEST_CONFIG_WITH_VARIADIC_MACROS
 
-#define DOCTEST_FAST_UNARY_ASSERT(assert_type, val)                                                \
+#define DOCTEST_FAST_UNARY_ASSERT(assert_type, expr)                                               \
     doctest::detail::fast_unary_assert(doctest::detail::assertType::assert_type, __FILE__,         \
-                                       __LINE__, #val, val)
+            __LINE__, DOCTEST_TOSTR(DOCTEST_HANDLE_EXPR(expr)), DOCTEST_HANDLE_EXPR(expr))
 
 #endif // DOCTEST_CONFIG_SUPER_FAST_ASSERTS
 
+#ifdef DOCTEST_CONFIG_WITH_VARIADIC_MACROS
+#define DOCTEST_FAST_WARN_EQ(...) DOCTEST_FAST_BINARY_ASSERT(DT_FAST_WARN_EQ, (__VA_ARGS__), eq)
+#define DOCTEST_FAST_CHECK_EQ(...) DOCTEST_FAST_BINARY_ASSERT(DT_FAST_CHECK_EQ, (__VA_ARGS__), eq)
+#define DOCTEST_FAST_REQUIRE_EQ(...) DOCTEST_FAST_BINARY_ASSERT(DT_FAST_REQUIRE_EQ, (__VA_ARGS__), eq)
+#define DOCTEST_FAST_WARN_NE(...) DOCTEST_FAST_BINARY_ASSERT(DT_FAST_WARN_NE, (__VA_ARGS__), ne)
+#define DOCTEST_FAST_CHECK_NE(...) DOCTEST_FAST_BINARY_ASSERT(DT_FAST_CHECK_NE, (__VA_ARGS__), ne)
+#define DOCTEST_FAST_REQUIRE_NE(...) DOCTEST_FAST_BINARY_ASSERT(DT_FAST_REQUIRE_NE, (__VA_ARGS__), ne)
+#define DOCTEST_FAST_WARN_GT(...) DOCTEST_FAST_BINARY_ASSERT(DT_FAST_WARN_GT, (__VA_ARGS__), gt)
+#define DOCTEST_FAST_CHECK_GT(...) DOCTEST_FAST_BINARY_ASSERT(DT_FAST_CHECK_GT, (__VA_ARGS__), gt)
+#define DOCTEST_FAST_REQUIRE_GT(...) DOCTEST_FAST_BINARY_ASSERT(DT_FAST_REQUIRE_GT, (__VA_ARGS__), gt)
+#define DOCTEST_FAST_WARN_LT(...) DOCTEST_FAST_BINARY_ASSERT(DT_FAST_WARN_LT, (__VA_ARGS__), lt)
+#define DOCTEST_FAST_CHECK_LT(...) DOCTEST_FAST_BINARY_ASSERT(DT_FAST_CHECK_LT, (__VA_ARGS__), lt)
+#define DOCTEST_FAST_REQUIRE_LT(...) DOCTEST_FAST_BINARY_ASSERT(DT_FAST_REQUIRE_LT, (__VA_ARGS__), lt)
+#define DOCTEST_FAST_WARN_GE(...) DOCTEST_FAST_BINARY_ASSERT(DT_FAST_WARN_GE, (__VA_ARGS__), ge)
+#define DOCTEST_FAST_CHECK_GE(...) DOCTEST_FAST_BINARY_ASSERT(DT_FAST_CHECK_GE, (__VA_ARGS__), ge)
+#define DOCTEST_FAST_REQUIRE_GE(...) DOCTEST_FAST_BINARY_ASSERT(DT_FAST_REQUIRE_GE, (__VA_ARGS__), ge)
+#define DOCTEST_FAST_WARN_LE(...) DOCTEST_FAST_BINARY_ASSERT(DT_FAST_WARN_LE, (__VA_ARGS__), le)
+#define DOCTEST_FAST_CHECK_LE(...) DOCTEST_FAST_BINARY_ASSERT(DT_FAST_CHECK_LE, (__VA_ARGS__), le)
+#define DOCTEST_FAST_REQUIRE_LE(...) DOCTEST_FAST_BINARY_ASSERT(DT_FAST_REQUIRE_LE, (__VA_ARGS__), le)
+
+#define DOCTEST_FAST_WARN_UNARY(...) DOCTEST_FAST_UNARY_ASSERT(DT_FAST_WARN_UNARY, (__VA_ARGS__))
+#define DOCTEST_FAST_CHECK_UNARY(...) DOCTEST_FAST_UNARY_ASSERT(DT_FAST_CHECK_UNARY, (__VA_ARGS__))
+#define DOCTEST_FAST_REQUIRE_UNARY(...) DOCTEST_FAST_UNARY_ASSERT(DT_FAST_REQUIRE_UNARY, (__VA_ARGS__))
+#define DOCTEST_FAST_WARN_UNARY_FALSE(...) DOCTEST_FAST_UNARY_ASSERT(DT_FAST_WARN_UNARY_FALSE, (__VA_ARGS__))
+#define DOCTEST_FAST_CHECK_UNARY_FALSE(...) DOCTEST_FAST_UNARY_ASSERT(DT_FAST_CHECK_UNARY_FALSE, (__VA_ARGS__))
+#define DOCTEST_FAST_REQUIRE_UNARY_FALSE(...) DOCTEST_FAST_UNARY_ASSERT(DT_FAST_REQUIRE_UNARY_FALSE, (__VA_ARGS__))
+#else // DOCTEST_CONFIG_WITH_VARIADIC_MACROS
 #define DOCTEST_FAST_WARN_EQ(l, r) DOCTEST_FAST_BINARY_ASSERT(DT_FAST_WARN_EQ, l, r, eq)
 #define DOCTEST_FAST_CHECK_EQ(l, r) DOCTEST_FAST_BINARY_ASSERT(DT_FAST_CHECK_EQ, l, r, eq)
 #define DOCTEST_FAST_REQUIRE_EQ(l, r) DOCTEST_FAST_BINARY_ASSERT(DT_FAST_REQUIRE_EQ, l, r, eq)
@@ -1526,8 +1656,8 @@ public:
 #define DOCTEST_FAST_REQUIRE_UNARY(v) DOCTEST_FAST_UNARY_ASSERT(DT_FAST_REQUIRE_UNARY, v)
 #define DOCTEST_FAST_WARN_UNARY_FALSE(v) DOCTEST_FAST_UNARY_ASSERT(DT_FAST_WARN_UNARY_FALSE, v)
 #define DOCTEST_FAST_CHECK_UNARY_FALSE(v) DOCTEST_FAST_UNARY_ASSERT(DT_FAST_CHECK_UNARY_FALSE, v)
-#define DOCTEST_FAST_REQUIRE_UNARY_FALSE(v)                                                        \
-    DOCTEST_FAST_UNARY_ASSERT(DT_FAST_REQUIRE_UNARY_FALSE, v)
+#define DOCTEST_FAST_REQUIRE_UNARY_FALSE(v) DOCTEST_FAST_UNARY_ASSERT(DT_FAST_REQUIRE_UNARY_FALSE, v)
+#endif // DOCTEST_CONFIG_WITH_VARIADIC_MACROS
 
 #ifdef DOCTEST_CONFIG_NO_EXCEPTIONS
 
@@ -1544,13 +1674,19 @@ public:
 #ifdef DOCTEST_CONFIG_NO_EXCEPTIONS_BUT_WITH_ALL_ASSERTS
 
 #define DOCTEST_WARN_THROWS(expr) ((void)0)
-#define DOCTEST_WARN_THROWS_AS(expr, ex) ((void)0)
-#define DOCTEST_WARN_NOTHROW(expr) ((void)0)
 #define DOCTEST_CHECK_THROWS(expr) ((void)0)
-#define DOCTEST_CHECK_THROWS_AS(expr, ex) ((void)0)
-#define DOCTEST_CHECK_NOTHROW(expr) ((void)0)
 #define DOCTEST_REQUIRE_THROWS(expr) ((void)0)
+#ifdef DOCTEST_CONFIG_WITH_VARIADIC_MACROS
+#define DOCTEST_WARN_THROWS_AS(expr, ex) ((void)0)
+#define DOCTEST_CHECK_THROWS_AS(expr, ex) ((void)0)
 #define DOCTEST_REQUIRE_THROWS_AS(expr, ex) ((void)0)
+#else // DOCTEST_CONFIG_WITH_VARIADIC_MACROS
+#define DOCTEST_WARN_THROWS_AS(expr, ...) ((void)0)
+#define DOCTEST_CHECK_THROWS_AS(expr, ...) ((void)0)
+#define DOCTEST_REQUIRE_THROWS_AS(expr, ...) ((void)0)
+#endif // DOCTEST_CONFIG_WITH_VARIADIC_MACROS
+#define DOCTEST_WARN_NOTHROW(expr) ((void)0)
+#define DOCTEST_CHECK_NOTHROW(expr) ((void)0)
 #define DOCTEST_REQUIRE_NOTHROW(expr) ((void)0)
 
 #else // DOCTEST_CONFIG_NO_EXCEPTIONS_BUT_WITH_ALL_ASSERTS
@@ -1623,21 +1759,93 @@ public:
     template <typename T>                                                                          \
     static inline doctest::String DOCTEST_ANONYMOUS(_DOCTEST_ANON_TRANSLATOR_)(signature)
 
+#ifdef DOCTEST_CONFIG_WITH_VARIADIC_MACROS
+#define DOCTEST_WARN(...) ((void)0)
+#define DOCTEST_CHECK(...) ((void)0)
+#define DOCTEST_REQUIRE(...) ((void)0)
+#define DOCTEST_WARN_FALSE(...) ((void)0)
+#define DOCTEST_CHECK_FALSE(...) ((void)0)
+#define DOCTEST_REQUIRE_FALSE(...) ((void)0)
+#else // DOCTEST_CONFIG_WITH_VARIADIC_MACROS
 #define DOCTEST_WARN(expr) ((void)0)
-#define DOCTEST_WARN_FALSE(expr) ((void)0)
-#define DOCTEST_WARN_THROWS(expr) ((void)0)
-#define DOCTEST_WARN_THROWS_AS(expr, ex) ((void)0)
-#define DOCTEST_WARN_NOTHROW(expr) ((void)0)
 #define DOCTEST_CHECK(expr) ((void)0)
-#define DOCTEST_CHECK_FALSE(expr) ((void)0)
-#define DOCTEST_CHECK_THROWS(expr) ((void)0)
-#define DOCTEST_CHECK_THROWS_AS(expr, ex) ((void)0)
-#define DOCTEST_CHECK_NOTHROW(expr) ((void)0)
 #define DOCTEST_REQUIRE(expr) ((void)0)
+#define DOCTEST_WARN_FALSE(expr) ((void)0)
+#define DOCTEST_CHECK_FALSE(expr) ((void)0)
 #define DOCTEST_REQUIRE_FALSE(expr) ((void)0)
+#endif // DOCTEST_CONFIG_WITH_VARIADIC_MACROS
+
+#define DOCTEST_WARN_THROWS(expr) ((void)0)
+#define DOCTEST_CHECK_THROWS(expr) ((void)0)
 #define DOCTEST_REQUIRE_THROWS(expr) ((void)0)
+#ifdef DOCTEST_CONFIG_WITH_VARIADIC_MACROS
+#define DOCTEST_WARN_THROWS_AS(expr, ...) ((void)0)
+#define DOCTEST_CHECK_THROWS_AS(expr, ...) ((void)0)
+#define DOCTEST_REQUIRE_THROWS_AS(expr, ...) ((void)0)
+#else // DOCTEST_CONFIG_WITH_VARIADIC_MACROS
+#define DOCTEST_WARN_THROWS_AS(expr, ex) ((void)0)
+#define DOCTEST_CHECK_THROWS_AS(expr, ex) ((void)0)
 #define DOCTEST_REQUIRE_THROWS_AS(expr, ex) ((void)0)
+#endif // DOCTEST_CONFIG_WITH_VARIADIC_MACROS
+#define DOCTEST_WARN_NOTHROW(expr) ((void)0)
+#define DOCTEST_CHECK_NOTHROW(expr) ((void)0)
 #define DOCTEST_REQUIRE_NOTHROW(expr) ((void)0)
+
+#ifdef DOCTEST_CONFIG_WITH_VARIADIC_MACROS
+
+#define DOCTEST_WARN_EQ(...) ((void)0)
+#define DOCTEST_CHECK_EQ(...) ((void)0)
+#define DOCTEST_REQUIRE_EQ(...) ((void)0)
+#define DOCTEST_WARN_NE(...) ((void)0)
+#define DOCTEST_CHECK_NE(...) ((void)0)
+#define DOCTEST_REQUIRE_NE(...) ((void)0)
+#define DOCTEST_WARN_GT(...) ((void)0)
+#define DOCTEST_CHECK_GT(...) ((void)0)
+#define DOCTEST_REQUIRE_GT(...) ((void)0)
+#define DOCTEST_WARN_LT(...) ((void)0)
+#define DOCTEST_CHECK_LT(...) ((void)0)
+#define DOCTEST_REQUIRE_LT(...) ((void)0)
+#define DOCTEST_WARN_GE(...) ((void)0)
+#define DOCTEST_CHECK_GE(...) ((void)0)
+#define DOCTEST_REQUIRE_GE(...) ((void)0)
+#define DOCTEST_WARN_LE(...) ((void)0)
+#define DOCTEST_CHECK_LE(...) ((void)0)
+#define DOCTEST_REQUIRE_LE(...) ((void)0)
+
+#define DOCTEST_WARN_UNARY(...) ((void)0)
+#define DOCTEST_CHECK_UNARY(...) ((void)0)
+#define DOCTEST_REQUIRE_UNARY(...) ((void)0)
+#define DOCTEST_WARN_UNARY_FALSE(...) ((void)0)
+#define DOCTEST_CHECK_UNARY_FALSE(...) ((void)0)
+#define DOCTEST_REQUIRE_UNARY_FALSE(...) ((void)0)
+
+#define DOCTEST_FAST_WARN_EQ(...) ((void)0)
+#define DOCTEST_FAST_CHECK_EQ(...) ((void)0)
+#define DOCTEST_FAST_REQUIRE_EQ(...) ((void)0)
+#define DOCTEST_FAST_WARN_NE(...) ((void)0)
+#define DOCTEST_FAST_CHECK_NE(...) ((void)0)
+#define DOCTEST_FAST_REQUIRE_NE(...) ((void)0)
+#define DOCTEST_FAST_WARN_GT(...) ((void)0)
+#define DOCTEST_FAST_CHECK_GT(...) ((void)0)
+#define DOCTEST_FAST_REQUIRE_GT(...) ((void)0)
+#define DOCTEST_FAST_WARN_LT(...) ((void)0)
+#define DOCTEST_FAST_CHECK_LT(...) ((void)0)
+#define DOCTEST_FAST_REQUIRE_LT(...) ((void)0)
+#define DOCTEST_FAST_WARN_GE(...) ((void)0)
+#define DOCTEST_FAST_CHECK_GE(...) ((void)0)
+#define DOCTEST_FAST_REQUIRE_GE(...) ((void)0)
+#define DOCTEST_FAST_WARN_LE(...) ((void)0)
+#define DOCTEST_FAST_CHECK_LE(...) ((void)0)
+#define DOCTEST_FAST_REQUIRE_LE(...) ((void)0)
+
+#define DOCTEST_FAST_WARN_UNARY(...) ((void)0)
+#define DOCTEST_FAST_CHECK_UNARY(...) ((void)0)
+#define DOCTEST_FAST_REQUIRE_UNARY(...) ((void)0)
+#define DOCTEST_FAST_WARN_UNARY_FALSE(...) ((void)0)
+#define DOCTEST_FAST_CHECK_UNARY_FALSE(...) ((void)0)
+#define DOCTEST_FAST_REQUIRE_UNARY_FALSE(...) ((void)0)
+
+#else // DOCTEST_CONFIG_WITH_VARIADIC_MACROS
 
 #define DOCTEST_WARN_EQ(lhs, rhs) ((void)0)
 #define DOCTEST_CHECK_EQ(lhs, rhs) ((void)0)
@@ -1690,6 +1898,8 @@ public:
 #define DOCTEST_FAST_WARN_UNARY_FALSE(val) ((void)0)
 #define DOCTEST_FAST_CHECK_UNARY_FALSE(val) ((void)0)
 #define DOCTEST_FAST_REQUIRE_UNARY_FALSE(val) ((void)0)
+
+#endif // DOCTEST_CONFIG_WITH_VARIADIC_MACROS
 
 #endif // DOCTEST_CONFIG_DISABLE
 
@@ -3055,7 +3265,10 @@ namespace detail
             , m_exception_type(exception_type)
             , m_threw(false)
             , m_threw_as(false)
-            , m_failed(false) {}
+            , m_failed(false) {
+        if(m_expr[0] == ' ') // this happens when variadic macros are disabled
+            ++m_expr;
+    }
 
     void ResultBuilder::unexpectedExceptionOccurred() {
         m_threw = true;

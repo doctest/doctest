@@ -1241,7 +1241,10 @@ namespace detail
             , m_exception_type(exception_type)
             , m_threw(false)
             , m_threw_as(false)
-            , m_failed(false) {}
+            , m_failed(false) {
+        if(m_expr[0] == ' ') // this happens when variadic macros are disabled
+            ++m_expr;
+    }
 
     void ResultBuilder::unexpectedExceptionOccurred() {
         m_threw = true;
