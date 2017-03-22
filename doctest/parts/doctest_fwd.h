@@ -1674,13 +1674,13 @@ public:
 #define DOCTEST_CHECK_THROWS(expr) ((void)0)
 #define DOCTEST_REQUIRE_THROWS(expr) ((void)0)
 #ifdef DOCTEST_CONFIG_WITH_VARIADIC_MACROS
-#define DOCTEST_WARN_THROWS_AS(expr, ex) ((void)0)
-#define DOCTEST_CHECK_THROWS_AS(expr, ex) ((void)0)
-#define DOCTEST_REQUIRE_THROWS_AS(expr, ex) ((void)0)
-#else // DOCTEST_CONFIG_WITH_VARIADIC_MACROS
 #define DOCTEST_WARN_THROWS_AS(expr, ...) ((void)0)
 #define DOCTEST_CHECK_THROWS_AS(expr, ...) ((void)0)
 #define DOCTEST_REQUIRE_THROWS_AS(expr, ...) ((void)0)
+#else // DOCTEST_CONFIG_WITH_VARIADIC_MACROS
+#define DOCTEST_WARN_THROWS_AS(expr, ex) ((void)0)
+#define DOCTEST_CHECK_THROWS_AS(expr, ex) ((void)0)
+#define DOCTEST_REQUIRE_THROWS_AS(expr, ex) ((void)0)
 #endif // DOCTEST_CONFIG_WITH_VARIADIC_MACROS
 #define DOCTEST_WARN_NOTHROW(expr) ((void)0)
 #define DOCTEST_CHECK_NOTHROW(expr) ((void)0)
