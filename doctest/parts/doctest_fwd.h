@@ -95,6 +95,9 @@
 // =================================================================================================
 
 #if __cplusplus >= 201103L
+#ifndef DOCTEST_CONFIG_WITH_DELETED_FUNCTIONS
+#define DOCTEST_CONFIG_WITH_DELETED_FUNCTIONS
+#endif // DOCTEST_CONFIG_WITH_DELETED_FUNCTIONS
 #ifndef DOCTEST_CONFIG_WITH_RVALUE_REFERENCES
 #define DOCTEST_CONFIG_WITH_RVALUE_REFERENCES
 #endif // DOCTEST_CONFIG_WITH_RVALUE_REFERENCES
@@ -112,6 +115,10 @@
 #endif // DOCTEST_CONFIG_WITH_VARIADIC_MACROS
 #endif // __cplusplus >= 201103L
 
+#ifndef __has_feature
+#define __has_feature(x) 0
+#endif // __has_feature
+
 // MSVC C++11 feature support table: https://msdn.microsoft.com/en-us/library/hh567368.aspx
 // GCC C++11 feature support table: https://gcc.gnu.org/projects/cxx-status.html
 // MSVC version table:
@@ -123,9 +130,23 @@
 // MSVC++ 9.0  _MSC_VER == 1500 (Visual Studio 2008)
 // MSVC++ 8.0  _MSC_VER == 1400 (Visual Studio 2005)
 
-#ifndef __has_feature
-#define __has_feature(x) 0
-#endif // __has_feature
+// deleted functions
+
+#ifndef DOCTEST_CONFIG_WITH_DELETED_FUNCTIONS
+#if defined(_MSC_VER) && (_MSC_VER >= 1800)
+#define DOCTEST_CONFIG_WITH_DELETED_FUNCTIONS
+#endif // _MSC_VER
+#if defined(__clang__) && __has_feature(cxx_deleted_functions)
+#define DOCTEST_CONFIG_WITH_DELETED_FUNCTIONS
+#endif // __clang__
+#if defined(__GNUC__) && ((__GNUC__ == 4 && __GNUC_MINOR__ >= 4) || __GNUC__ > 4) && defined(__GXX_EXPERIMENTAL_CXX0X__)
+#define DOCTEST_CONFIG_WITH_DELETED_FUNCTIONS
+#endif // __GNUC__
+#endif // DOCTEST_CONFIG_WITH_DELETED_FUNCTIONS
+
+#if defined(DOCTEST_CONFIG_NO_DELETED_FUNCTIONS) && defined(DOCTEST_CONFIG_WITH_DELETED_FUNCTIONS)
+#undef DOCTEST_CONFIG_WITH_DELETED_FUNCTIONS
+#endif // DOCTEST_CONFIG_NO_DELETED_FUNCTIONS
 
 // rvalue references
 
