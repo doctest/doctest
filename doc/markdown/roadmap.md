@@ -15,10 +15,9 @@ Planned features for future releases - order may change.
 - Parametric test cases (Value/Type-parameterized tests) - https://github.com/onqtam/doctest/issues/38
 - crash handling: signals on UNIX platforms or structured exceptions on Windows (should also have DOCTEST_CONFIG_NO_SIGNAL_CATCHING)
 - runtime performance
-    - the set holding all registered tests should use a specialized allocator to minimize program startup time
     - lazily stringify expressions - only when needed
-    - pool allocator for the ```String``` class - currently very unoptimized
     - get rid of local statics on the hot path - like in getContextState()
+    - make a pool allocator for the ```String``` class - currently very unoptimized
 - benchmarking
     - make the bench.py script more usable - with command line arguments
     - redo the compile time ones - also look into CATCH_CONFIG_FAST_COMPILE
@@ -40,6 +39,7 @@ Planned features for future releases - order may change.
     - jUnit/xUnit reporters
     - a listener interface - similar to a reporter - look at Catch
 - ability to have no output when everything succeeds
+- option to output summary only
 - time stuff
     - reporting running time of tests
     - count a test case as failed if it exceeds X ms (but no force-killing!)
@@ -66,7 +66,6 @@ Planned features for future releases - order may change.
 - failure reporting should print out previous SECTIONs for data-driven testing - as requested [here](https://github.com/philsquared/Catch/issues/734)
 - ```Bitwise()``` class that has overloaded operators for comparison - to be used to check objects bitwise against each other
 - detect floating point exceptions
-- option to output summary only
 - support for tags
     - may fail tag
     - invisible tag
@@ -75,7 +74,7 @@ Planned features for future releases - order may change.
 - integrate static analysis on the CI: **msvc**, **clang**, **cppcheck**
 - extend Approx for types that have operator double - see [here](https://github.com/philsquared/Catch/issues/652) and [here](https://github.com/philsquared/Catch/pull/658)
 - option to list files in which there are test cases who match the current filters
-- support for doing assertions in multiple threads - synchronize their access to shared doctest state
+- thread safety - asserts/subcases/captures should be safe to be used by multiple threads simultaneously
 - support for running tests in parallel in multiple threads
 - doctest in a GUI environment? with no console? APIs for attaching a console? querying if there is one? [investigate...](https://github.com/philsquared/Catch/blob/master/docs/configuration.md#stdout)
 - ability to specify ASC/DESC for the order option
@@ -86,6 +85,7 @@ Planned features for future releases - order may change.
     - https://msdn.microsoft.com/en-us/library/hh270865.aspx
     - https://msdn.microsoft.com/en-us/library/hh598953.aspx
     - also look into similar Xcode integration - https://github.com/philsquared/Catch/pull/454
+- the set holding all registered tests should use a specialized allocator to minimize program startup time
 - ability to provide a temp folder that is cleared between each test case
 - rework the examples folder - so the test runner is compiled only a few times - CI builds take a ton of time!
 
