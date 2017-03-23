@@ -49,3 +49,48 @@ slashdot?
 - I suspect -Wsign-compare is not being silenced by the pragmas...
   see this build - https://travis-ci.org/onqtam/game/jobs/196987454
   check_eq(numDigits(0), 1);     numDigits returns uint32
+
+== complete feature detection for deleted and defaulted functions
+
+//#ifndef DOCTEST_CONFIG_WITH_DELETED_FUNCTIONS
+//#define DOCTEST_CONFIG_WITH_DELETED_FUNCTIONS
+//#endif // DOCTEST_CONFIG_WITH_DELETED_FUNCTIONS
+//#ifndef DOCTEST_CONFIG_WITH_DEFAULTED_FUNCTIONS
+//#define DOCTEST_CONFIG_WITH_DEFAULTED_FUNCTIONS
+//#endif // DOCTEST_CONFIG_WITH_DEFAULTED_FUNCTIONS
+
+// deleted functions
+
+//#ifndef DOCTEST_CONFIG_WITH_DELETED_FUNCTIONS
+//#if defined(_MSC_VER) && (_MSC_VER >= 1800)
+//#define DOCTEST_CONFIG_WITH_DELETED_FUNCTIONS
+//#endif // _MSC_VER
+//#if defined(__clang__) && __has_feature(cxx_deleted_functions)
+//#define DOCTEST_CONFIG_WITH_DELETED_FUNCTIONS
+//#endif // __clang__
+//#if defined(__GNUC__) && ((__GNUC__ == 4 && __GNUC_MINOR__ >= 4) || __GNUC__ > 4) && defined(__GXX_EXPERIMENTAL_CXX0X__)
+//#define DOCTEST_CONFIG_WITH_DELETED_FUNCTIONS
+//#endif // __GNUC__
+//#endif // DOCTEST_CONFIG_WITH_DELETED_FUNCTIONS
+//
+//#if defined(DOCTEST_CONFIG_NO_DELETED_FUNCTIONS) && defined(DOCTEST_CONFIG_WITH_DELETED_FUNCTIONS)
+//#undef DOCTEST_CONFIG_WITH_DELETED_FUNCTIONS
+//#endif // DOCTEST_CONFIG_NO_DELETED_FUNCTIONS
+
+// defaulted functions
+
+//#ifndef DOCTEST_CONFIG_WITH_DEFAULTED_FUNCTIONS
+//#if defined(_MSC_VER) && (_MSC_VER >= 1900)
+//#define DOCTEST_CONFIG_WITH_DEFAULTED_FUNCTIONS
+//#endif // _MSC_VER
+//#if defined(__clang__) && __has_feature(cxx_defaulted_functions)
+//#define DOCTEST_CONFIG_WITH_DEFAULTED_FUNCTIONS
+//#endif // clang
+//#if defined(__GNUC__) && ((__GNUC__ == 4 && __GNUC_MINOR__ >= 4) || __GNUC__ > 4) && defined(__GXX_EXPERIMENTAL_CXX0X__)
+//#define DOCTEST_CONFIG_WITH_DEFAULTED_FUNCTIONS
+//#endif // __GNUC__
+//#endif // DOCTEST_CONFIG_WITH_DEFAULTED_FUNCTIONS
+//
+//#if defined(DOCTEST_CONFIG_NO_DEFAULTED_FUNCTIONS) && defined(DOCTEST_CONFIG_WITH_DEFAULTED_FUNCTIONS)
+//#undef DOCTEST_CONFIG_WITH_DEFAULTED_FUNCTIONS
+//#endif // DOCTEST_CONFIG_NO_DEFAULTED_FUNCTIONS

@@ -95,6 +95,9 @@
 // =================================================================================================
 
 #if __cplusplus >= 201103L
+#ifndef DOCTEST_CONFIG_WITH_RVALUE_REFERENCES
+#define DOCTEST_CONFIG_WITH_RVALUE_REFERENCES
+#endif // DOCTEST_CONFIG_WITH_RVALUE_REFERENCES
 #ifndef DOCTEST_CONFIG_WITH_NULLPTR
 #define DOCTEST_CONFIG_WITH_NULLPTR
 #endif // DOCTEST_CONFIG_WITH_NULLPTR
@@ -109,13 +112,44 @@
 #endif // DOCTEST_CONFIG_WITH_VARIADIC_MACROS
 #endif // __cplusplus >= 201103L
 
+// MSVC C++11 feature support table: https://msdn.microsoft.com/en-us/library/hh567368.aspx
+// GCC C++11 feature support table: https://gcc.gnu.org/projects/cxx-status.html
+// MSVC version table:
+// MSVC++ xxxx _MSC_VER == xxxx (Visual Studio 2017)
+// MSVC++ 14.0 _MSC_VER == 1900 (Visual Studio 2015)
+// MSVC++ 12.0 _MSC_VER == 1800 (Visual Studio 2013)
+// MSVC++ 11.0 _MSC_VER == 1700 (Visual Studio 2012)
+// MSVC++ 10.0 _MSC_VER == 1600 (Visual Studio 2010)
+// MSVC++ 9.0  _MSC_VER == 1500 (Visual Studio 2008)
+// MSVC++ 8.0  _MSC_VER == 1400 (Visual Studio 2005)
+
+#ifndef __has_feature
+#define __has_feature(x) 0
+#endif // __has_feature
+
+// rvalue references
+
+#ifndef DOCTEST_CONFIG_WITH_RVALUE_REFERENCES
+#if defined(_MSC_VER) && (_MSC_VER >= 1600)
+#define DOCTEST_CONFIG_WITH_RVALUE_REFERENCES
+#endif // _MSC_VER
+#if defined(__clang__) && __has_feature(cxx_rvalue_references)
+#define DOCTEST_CONFIG_WITH_RVALUE_REFERENCES
+#endif // __clang__
+#if defined(__GNUC__) && ((__GNUC__ == 4 && __GNUC_MINOR__ >= 3) || __GNUC__ > 4) && defined(__GXX_EXPERIMENTAL_CXX0X__)
+#define DOCTEST_CONFIG_WITH_RVALUE_REFERENCES
+#endif // __GNUC__
+#endif // DOCTEST_CONFIG_WITH_RVALUE_REFERENCES
+
+#if defined(DOCTEST_CONFIG_NO_RVALUE_REFERENCES) && defined(DOCTEST_CONFIG_WITH_RVALUE_REFERENCES)
+#undef DOCTEST_CONFIG_WITH_RVALUE_REFERENCES
+#endif // DOCTEST_CONFIG_NO_RVALUE_REFERENCES
+
 // nullptr
 
 #ifndef DOCTEST_CONFIG_WITH_NULLPTR
-#ifdef __clang__
-#if __has_feature(cxx_nullptr)
+#if defined(__clang__) && __has_feature(cxx_nullptr)
 #define DOCTEST_CONFIG_WITH_NULLPTR
-#endif // __has_feature(cxx_nullptr)
 #endif // __clang__
 #if defined(__GNUC__) && ((__GNUC__ == 4 && __GNUC_MINOR__ >= 6) || __GNUC__ > 4) && defined(__GXX_EXPERIMENTAL_CXX0X__)
 #define DOCTEST_CONFIG_WITH_NULLPTR
@@ -163,10 +197,8 @@
 // static_assert
 
 #ifndef DOCTEST_CONFIG_WITH_STATIC_ASSERT
-#ifdef __clang__
-#if __has_feature(cxx_static_assert)
+#if defined(__clang__) && __has_feature(cxx_static_assert)
 #define DOCTEST_CONFIG_WITH_STATIC_ASSERT
-#endif // __has_feature(cxx_static_assert)
 #endif // __clang__
 #if defined(__GNUC__) && ((__GNUC__ == 4 && __GNUC_MINOR__ >= 3) || __GNUC__ > 4) && defined(__GXX_EXPERIMENTAL_CXX0X__)
 #define DOCTEST_CONFIG_WITH_STATIC_ASSERT
