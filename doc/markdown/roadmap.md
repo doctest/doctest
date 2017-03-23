@@ -91,6 +91,7 @@ Planned features for future releases - order may change.
 
 ### Things that are very unlikely to enter the roadmap:
 
+- stop using underscores for the begining of identifiers - the anonymous variables - against the standard...
 - test with missed warning flags for GCC - look into https://github.com/Barro/compiler-warnings
 - utf8???
 - handle ```wchar``` strings???

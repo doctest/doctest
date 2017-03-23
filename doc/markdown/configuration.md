@@ -26,11 +26,13 @@ Defining something ```globally``` means for every source file of the binary (exe
 
 Detection of modern C++ features:
 
+- [**```DOCTEST_CONFIG_WITH_DELETED_FUNCTIONS```**](#doctest_config_with_deleted_functions)
 - [**```DOCTEST_CONFIG_WITH_RVALUE_REFERENCES```**](#doctest_config_with_rvalue_references)
 - [**```DOCTEST_CONFIG_WITH_VARIADIC_MACROS```**](#doctest_config_with_variadic_macros)
 - [**```DOCTEST_CONFIG_WITH_NULLPTR```**](#doctest_config_with_nullptr)
 - [**```DOCTEST_CONFIG_WITH_LONG_LONG```**](#doctest_config_with_long_long)
 - [**```DOCTEST_CONFIG_WITH_STATIC_ASSERT```**](#doctest_config_with_static_assert)
+- [**```DOCTEST_CONFIG_NO_DELETED_FUNCTIONS```**](#doctest_config_no_deleted_functions)
 - [**```DOCTEST_CONFIG_NO_RVALUE_REFERENCES```**](#doctest_config_no_rvalue_references)
 - [**```DOCTEST_CONFIG_NO_VARIADIC_MACROS```**](#doctest_config_no_variadic_macros)
 - [**```DOCTEST_CONFIG_NO_NULLPTR```**](#doctest_config_no_nullptr)
@@ -194,6 +196,12 @@ This will force the support for colors in the console output to use ANSI escape 
 
 This should be defined only in the source file where the library is implemented (it's relevant only there).
 
+### **```DOCTEST_CONFIG_WITH_DELETED_FUNCTIONS```**
+
+doctest tries to detect if c++11 deleted functions are available but if it doesn't detect it - the user might define this.
+
+This should be defined globally.
+
 ### **```DOCTEST_CONFIG_WITH_RVALUE_REFERENCES```**
 
 doctest tries to detect if c++11 rvalue references are available but if it doesn't detect it - the user might define this.
@@ -221,6 +229,12 @@ This should be defined globally.
 ### **```DOCTEST_CONFIG_WITH_STATIC_ASSERT```**
 
 doctest tries to detect if c++11 ```static_assert()``` is available but if it doesn't detect it - the user might define this.
+
+This should be defined globally.
+
+### **```DOCTEST_CONFIG_NO_DELETED_FUNCTIONS```**
+
+If doctest detects c++11 deleted functions support as available but the user knows better - this can be defined to disable it.
 
 This should be defined globally.
 
