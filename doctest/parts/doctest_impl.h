@@ -254,6 +254,8 @@ namespace detail
         int             numFailedAssertions;
         int             numFailedAssertionsForCurrentTestcase;
 
+        std::vector<IContextScope*> contexts; // for logging with INFO() and friends
+
         // stuff for subcases
         std::set<SubcaseSignature> subcasesPassed;
         std::set<int>              subcasesEnteredLevels;
@@ -622,6 +624,13 @@ namespace detail
     }
     bool always_false() { return false; }
 
+    void my_memcpy(void* dest, void* src, int num) {
+        char* csrc = static_cast<char*>(src);
+        char* cdest = static_cast<char*>(dest);
+        for(int i = 0; i < num; ++i)
+            cdest[i] = csrc[i];
+    }
+
     // lowers ascii letters
     char tolower(const char c) { return ((c >= 'A' && c <= 'Z') ? static_cast<char>(c + 32) : c); }
 
@@ -964,6 +973,9 @@ namespace detail
 #endif // DOCTEST_CONFIG_NO_EXCEPTIONS
     }
 
+    void addToContexts(IContextScope* ptr) { getContextState()->contexts.push_back(ptr); }
+    void popFromContexts() { getContextState()->contexts.pop_back(); }
+
     // this is needed because MSVC does not permit mixing 2 exception handling schemes in a function
     int callTestFunc(funcType f) {
         int res = EXIT_SUCCESS;
@@ -1114,6 +1126,19 @@ namespace detail
         printToDebugConsole(String(msg) + info1 + info2 + "\n");
     }
 
+    String logContext() {
+        std::ostringstream stream;
+        std::vector<IContextScope*>& contexts = getContextState()->contexts;
+        if(contexts.size() > 0)
+            stream << "with context:\n";
+        for(size_t i = 0; i < contexts.size(); ++i) {
+            stream << "  ";
+            contexts[i]->build(stream);
+            stream << "\n";
+        }
+        return stream.str().c_str();
+    }
+
     void logAssert(bool passed, const char* decomposition, bool threw, const String& exception, const char* expr,
                    assertType::Enum assert_type, const char* file, int line) {
         char loc[DOCTEST_SNPRINTF_BUFFER_LENGTH];
@@ -1144,9 +1169,11 @@ namespace detail
         DOCTEST_PRINTF_COLORED(info1, Color::Cyan);
         DOCTEST_PRINTF_COLORED(info2, Color::None);
         DOCTEST_PRINTF_COLORED(info3, Color::Cyan);
+        String context = logContext();
+        DOCTEST_PRINTF_COLORED(context.c_str(), Color::None);
         DOCTEST_PRINTF_COLORED("\n", Color::None);
 
-        printToDebugConsole(String(loc) + msg + info1 + info2 + info3 + "\n");
+        printToDebugConsole(String(loc) + msg + info1 + info2 + info3 + context.c_str() + "\n");
     }
 
     void logAssertThrows(bool threw, const char* expr, assertType::Enum assert_type,
@@ -1171,9 +1198,11 @@ namespace detail
         DOCTEST_PRINTF_COLORED(msg, threw ? Color::BrightGreen : Color::Red);
         DOCTEST_PRINTF_COLORED(info1, Color::Cyan);
         DOCTEST_PRINTF_COLORED(info2, Color::None);
+        String context = logContext();
+        DOCTEST_PRINTF_COLORED(context.c_str(), Color::None);
         DOCTEST_PRINTF_COLORED("\n", Color::None);
 
-        printToDebugConsole(String(loc) + msg + info1 + info2 + "\n");
+        printToDebugConsole(String(loc) + msg + info1 + info2 + context.c_str() + "\n");
     }
 
     void logAssertThrowsAs(bool threw, bool threw_as, const char* as, const String& exception, const char* expr,
@@ -1205,9 +1234,11 @@ namespace detail
         DOCTEST_PRINTF_COLORED(info1, Color::Cyan);
         DOCTEST_PRINTF_COLORED(info2, Color::None);
         DOCTEST_PRINTF_COLORED(info3, Color::Cyan);
+        String context = logContext();
+        DOCTEST_PRINTF_COLORED(context.c_str(), Color::None);
         DOCTEST_PRINTF_COLORED("\n", Color::None);
 
-        printToDebugConsole(String(loc) + msg + info1 + info2 + info3 + "\n");
+        printToDebugConsole(String(loc) + msg + info1 + info2 + info3 + context.c_str() + "\n");
     }
 
     void logAssertNothrow(bool threw, const String& exception, const char* expr, assertType::Enum assert_type,
@@ -1236,9 +1267,11 @@ namespace detail
         DOCTEST_PRINTF_COLORED(info1, Color::Cyan);
         DOCTEST_PRINTF_COLORED(info2, Color::None);
         DOCTEST_PRINTF_COLORED(info3, Color::Cyan);
+        String context = logContext();
+        DOCTEST_PRINTF_COLORED(context.c_str(), Color::None);
         DOCTEST_PRINTF_COLORED("\n", Color::None);
 
-        printToDebugConsole(String(loc) + msg + info1 + info2 + info3 + "\n");
+        printToDebugConsole(String(loc) + msg + info1 + info2 + info3 + context.c_str() + "\n");
     }
 
     ResultBuilder::ResultBuilder(assertType::Enum assert_type, const char* file, int line,

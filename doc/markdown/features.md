@@ -54,6 +54,7 @@ The library can be used like any other if you don't like the idea of mixing prod
 - offers a way to remove **everything** testing-related from the binary with the [**```DOCTEST_CONFIG_DISABLE```**](configuration.md#doctest_config_disable) macro
 - tests are registered automatically - no need to add them to a collection manually
 - supports [**subcases**](testcases.md) for easy setup/teardown of tests (also supports the retro [**test fixtures**](testcases.md#) with classes)
+- supports [**logging macros**](logging.md) for capturing local variables and strings - as a message for when an assert fails - with lazy stringification and no allocations when possible!
 - output from all compilers on all platforms is the same - byte by byte
 - binaries (exe/dll) can use the test runner of another binary - so tests end up in a single registry - [**example**](../../examples/dll_and_executable/)
 - supports [**BDD style**](testcases.md) tests

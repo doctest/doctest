@@ -1,13 +1,40 @@
 
 
+todo:
+- MESSAGE (like WARN in catch and MESSAGE in boost test)
+- FAIL (like in catch)
+- FAIL_CHECK (like in catch)
 
-CAPTURE/INFO - relates #48 relates #23
-note that the lazy stringification means the values will be stringified when an assert fails and not at the point of capture - so the value might have changed
+- checkpoint
+- passpoint
+http://www.boost.org/doc/libs/1_63_0/libs/test/doc/html/boost_test/test_output/test_tools_support_for_logging/checkpoints.html
+
+- #define IREQUIRE(cond, msg) do { INFO(msg); REQUIRE(cond); } while(0)
+BOOST_WARN_MESSAGE(predicate, message);
+BOOST_CHECK_MESSAGE(predicate, message);
+BOOST_REQUIRE_MESSAGE(predicate, message);
+http://stackoverflow.com/questions/24009797/how-can-i-retrieve-the-last-argument-of-a-c99-variadic-macro
+
+
+look at boost test again:
+http://www.boost.org/doc/libs/1_63_0/libs/test/doc/html/index.html
+
+document that the exception in the _THROWS_AS macros is used as-is and users should use const ref
+
+
+note in all custom mains with a comment that the defaults/overrides are just an example and users shouldn't just copy/paste them!
+
 
 Rust #[test]
 
+dont rule out boost.test as not mainstream - its right there with catch and google test
 
-Nothing is better than documentation with examples. Nothing is worse than examples that don't actually work, because the code has changed since the documentation has been written.
+Nothing is better than documentation with examples. Nothing is worse than examples that don't actually work, because the code has changed since the documentation has been (was) written.
+
+
+
+try if there are warnings for unused variables when tests are disabled
+
 
 
 == when making a new release:
