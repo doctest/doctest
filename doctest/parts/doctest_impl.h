@@ -1133,7 +1133,7 @@ namespace detail
             stream << "with context:\n";
         for(size_t i = 0; i < contexts.size(); ++i) {
             stream << "  ";
-            contexts[i]->build(stream);
+            contexts[i]->build(&stream);
             stream << "\n";
         }
         return stream.str().c_str();
