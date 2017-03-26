@@ -48,6 +48,8 @@
 #if defined(__clang__)
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wunknown-pragmas"
+#pragma clang diagnostic ignored "-Wnon-virtual-dtor"
+#pragma clang diagnostic ignored "-Wweak-vtables"
 #pragma clang diagnostic ignored "-Wpadded"
 #pragma clang diagnostic ignored "-Wmissing-prototypes"
 #pragma clang diagnostic ignored "-Wshorten-64-to-32"
@@ -61,7 +63,9 @@
 #pragma GCC diagnostic ignored "-Wunknown-pragmas"
 #pragma GCC diagnostic ignored "-Weffc++"
 #pragma GCC diagnostic ignored "-Wstrict-overflow"
+#pragma GCC diagnostic ignored "-Wstrict-aliasing"
 #pragma GCC diagnostic ignored "-Wmissing-declarations"
+#pragma GCC diagnostic ignored "-Wnon-virtual-dtor"
 #pragma GCC diagnostic ignored "-Winline"
 #if __GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ > 6)
 #pragma GCC diagnostic ignored "-Wzero-as-null-pointer-constant"
@@ -292,6 +296,12 @@
 #else // DOCTEST_CONFIG_IMPLEMENTATION_IN_DLL
 #define DOCTEST_INTERFACE
 #endif // DOCTEST_CONFIG_IMPLEMENTATION_IN_DLL
+
+// other
+
+#ifndef DOCTEST_CONFIG_NUM_CAPTURES_ON_STACK
+#define DOCTEST_CONFIG_NUM_CAPTURES_ON_STACK 5
+#endif // DOCTEST_CONFIG_NUM_CAPTURES_ON_STACK
 
 // =================================================================================================
 // == FEATURE DETECTION END ========================================================================
@@ -818,6 +828,7 @@ namespace detail
     DOCTEST_INTERFACE void fastAssertThrowIfFlagSet(int flags);
     DOCTEST_INTERFACE void throwException();
     DOCTEST_INTERFACE bool always_false();
+    DOCTEST_INTERFACE void my_memcpy(void* dest, void* src, int num);
 
     struct DOCTEST_INTERFACE SubcaseSignature
     {
@@ -1256,7 +1267,175 @@ namespace detail
     };
 
     DOCTEST_INTERFACE void registerExceptionTranslatorImpl(const IExceptionTranslator* translateFunction);
+    
+    template <bool C>
+    struct StringStreamBase
+    {
+        template <typename T>
+        static std::ostream& convert(std::ostream& stream, const T& in) {
+            stream << toString(in);
+            return stream;
+        }
+    };
 
+    template <>
+    struct StringStreamBase<true>
+    {
+        template <typename T>
+        static std::ostream& convert(std::ostream& stream, const T& in) {
+            stream << in;
+            return stream;
+        }
+    };
+
+    template <typename T>
+    struct StringStream : StringStreamBase<has_insertion_operator<T>::value>
+    {};
+
+    template <typename T>
+    std::ostream& toStream(std::ostream& stream, const DOCTEST_REF_WRAP(T) value) {
+        return StringStream<T>::convert(stream, value);
+    }
+
+    struct IContextScope {
+        virtual void build(std::ostream&) const = 0;
+    };
+
+    DOCTEST_INTERFACE void addToContexts(IContextScope* ptr);
+    DOCTEST_INTERFACE void popFromContexts();
+
+    class ContextBuilder {
+        friend class ContextScope;
+
+        struct ICapture {
+            virtual std::ostream& toStream(std::ostream&) const = 0;
+        };
+
+        template<typename T>
+        struct Capture : ICapture {
+            const T* capture;
+
+            Capture(const T* in)
+                : capture(in)
+            {}
+            virtual std::ostream& toStream(std::ostream& stream) const { // override
+                doctest::detail::toStream(stream, *capture);
+                return stream;
+            }
+        };
+
+        struct Chunk {
+            char buf[sizeof(Capture<char>)]; // place to construct a Capture<T>
+        };
+
+        struct Node {
+            Chunk chunk;
+            Node* next;
+        };
+
+        Chunk stackChunks[DOCTEST_CONFIG_NUM_CAPTURES_ON_STACK];
+        int numCaptures;
+        Node* head;
+        Node* tail;
+
+        void build(std::ostream& stream) const {
+            int curr = 0;
+            // iterate over small buffer
+            while(curr < numCaptures && curr < DOCTEST_CONFIG_NUM_CAPTURES_ON_STACK)
+                reinterpret_cast<const ICapture*>(stackChunks[curr++].buf)->toStream(stream);
+            // iterate over list
+            Node* curr_elem = head;
+            while(curr < numCaptures) {
+                reinterpret_cast<const ICapture*>(curr_elem->chunk.buf)->toStream(stream);
+                curr_elem = curr_elem->next;
+                ++curr;
+            }
+        }
+
+        // steal the contents of the other - acting as a move constructor...
+        ContextBuilder(ContextBuilder& other)
+            : numCaptures(other.numCaptures)
+            , head(other.head)
+            , tail(other.tail)
+        {
+            other.numCaptures = 0;
+            other.head = 0;
+            other.tail = 0;
+            my_memcpy(stackChunks, other.stackChunks, sizeof(Chunk) * DOCTEST_CONFIG_NUM_CAPTURES_ON_STACK);
+        }
+
+    public:
+
+        ContextBuilder()
+            : numCaptures(0)
+            , head(0)
+            , tail(0)
+        {}
+
+        template<typename T>
+        ContextBuilder& operator<<(const T& in) {
+            Capture<T> temp(&in);
+
+            // construct either on stack or on heap
+            // copy the bytes for the whole object - including the vtable because we cant construct
+            // the object directly in the buffer using placement new - need the <new> header...
+            if(numCaptures < DOCTEST_CONFIG_NUM_CAPTURES_ON_STACK) {
+                my_memcpy(stackChunks[numCaptures].buf, &temp, sizeof(Chunk));
+            } else {
+                Node* curr = new Node;
+                curr->next = 0;
+                if(tail) {
+                    tail->next = curr;
+                    tail = curr;
+                } else {
+                    head = tail = curr;
+                }
+
+                my_memcpy(tail->chunk.buf, &temp, sizeof(Chunk));
+            }
+            ++numCaptures;
+            return *this;
+        }
+    
+        ~ContextBuilder() {
+            // free the linked list - the ones on the stack are left as-is
+            // no destructors are called at all - there is no need
+            while(head) {
+                Node* next = head->next;
+                delete head;
+                head = next;
+            }
+        }
+
+#ifdef DOCTEST_CONFIG_WITH_RVALUE_REFERENCES
+#ifdef DOCTEST_CONFIG_WITH_DELETED_FUNCTIONS
+        template<typename T>
+        ContextBuilder& operator<<(const T&&) = delete;
+#else // DOCTEST_CONFIG_WITH_DELETED_FUNCTIONS
+    private:
+        template<typename T>
+        ContextBuilder& operator<<(const T&&);
+#endif // DOCTEST_CONFIG_WITH_DELETED_FUNCTIONS
+#endif // DOCTEST_CONFIG_WITH_RVALUE_REFERENCES
+    };
+
+    class ContextScope : public IContextScope {
+        ContextBuilder contextBuilder;
+    public:
+        ContextScope(ContextBuilder& temp)
+            : contextBuilder(temp)
+        {
+            addToContexts(this);
+        }
+
+        ~ContextScope() {
+            popFromContexts();
+        }
+
+        void build(std::ostream& stream) const {
+            contextBuilder.build(stream);
+        }
+    };
 } // namespace detail
 
 #endif // DOCTEST_CONFIG_DISABLE
@@ -1394,6 +1573,10 @@ public:
 
 #define DOCTEST_REGISTER_EXCEPTION_TRANSLATOR(signature) \
     DOCTEST_REGISTER_EXCEPTION_TRANSLATOR_IMPL(DOCTEST_ANONYMOUS(_DOCTEST_ANON_TRANSLATOR_), signature)
+
+// for logging
+#define DOCTEST_INFO(x) doctest::detail::ContextScope DOCTEST_ANONYMOUS(_DOCTEST_CAPTURE_)(doctest::detail::ContextBuilder() << x)
+#define DOCTEST_CAPTURE(x) DOCTEST_INFO(#x " := " << x)
 
 // common code in asserts - for convenience
 #define DOCTEST_ASSERT_LOG_AND_REACT(rb)                                                           \
@@ -1806,6 +1989,9 @@ public:
     template <typename T>                                                                          \
     static inline doctest::String DOCTEST_ANONYMOUS(_DOCTEST_ANON_TRANSLATOR_)(signature)
 
+#define DOCTEST_INFO(x) ((void)0)
+#define DOCTEST_CAPTURE(x) ((void)0)
+
 #ifdef DOCTEST_CONFIG_WITH_VARIADIC_MACROS
 #define DOCTEST_WARN(...) ((void)0)
 #define DOCTEST_CHECK(...) ((void)0)
@@ -1970,6 +2156,8 @@ public:
 #define TEST_SUITE_BEGIN DOCTEST_TEST_SUITE_BEGIN
 #define TEST_SUITE_END DOCTEST_TEST_SUITE_END
 #define REGISTER_EXCEPTION_TRANSLATOR DOCTEST_REGISTER_EXCEPTION_TRANSLATOR
+#define INFO DOCTEST_INFO
+#define CAPTURE DOCTEST_CAPTURE
 
 #define WARN DOCTEST_WARN
 #define WARN_FALSE DOCTEST_WARN_FALSE
@@ -2324,6 +2512,8 @@ namespace detail
         int             numAssertions;
         int             numFailedAssertions;
         int             numFailedAssertionsForCurrentTestcase;
+
+        std::vector<IContextScope*> contexts; // for logging with INFO() and friends
 
         // stuff for subcases
         std::set<SubcaseSignature> subcasesPassed;
@@ -2693,6 +2883,13 @@ namespace detail
     }
     bool always_false() { return false; }
 
+    void my_memcpy(void* dest, void* src, int num) {
+        char* csrc = static_cast<char*>(src);
+        char* cdest = static_cast<char*>(dest);
+        for(int i = 0; i < num; ++i)
+            cdest[i] = csrc[i];
+    }
+
     // lowers ascii letters
     char tolower(const char c) { return ((c >= 'A' && c <= 'Z') ? static_cast<char>(c + 32) : c); }
 
@@ -3035,6 +3232,9 @@ namespace detail
 #endif // DOCTEST_CONFIG_NO_EXCEPTIONS
     }
 
+    void addToContexts(IContextScope* ptr) { getContextState()->contexts.push_back(ptr); }
+    void popFromContexts() { getContextState()->contexts.pop_back(); }
+
     // this is needed because MSVC does not permit mixing 2 exception handling schemes in a function
     int callTestFunc(funcType f) {
         int res = EXIT_SUCCESS;
@@ -3185,6 +3385,19 @@ namespace detail
         printToDebugConsole(String(msg) + info1 + info2 + "\n");
     }
 
+    String logContext() {
+        std::ostringstream stream;
+        std::vector<IContextScope*>& contexts = getContextState()->contexts;
+        if(contexts.size() > 0)
+            stream << "with context:\n";
+        for(size_t i = 0; i < contexts.size(); ++i) {
+            stream << "  ";
+            contexts[i]->build(stream);
+            stream << "\n";
+        }
+        return stream.str().c_str();
+    }
+
     void logAssert(bool passed, const char* decomposition, bool threw, const String& exception, const char* expr,
                    assertType::Enum assert_type, const char* file, int line) {
         char loc[DOCTEST_SNPRINTF_BUFFER_LENGTH];
@@ -3215,9 +3428,11 @@ namespace detail
         DOCTEST_PRINTF_COLORED(info1, Color::Cyan);
         DOCTEST_PRINTF_COLORED(info2, Color::None);
         DOCTEST_PRINTF_COLORED(info3, Color::Cyan);
+        String context = logContext();
+        DOCTEST_PRINTF_COLORED(context.c_str(), Color::None);
         DOCTEST_PRINTF_COLORED("\n", Color::None);
 
-        printToDebugConsole(String(loc) + msg + info1 + info2 + info3 + "\n");
+        printToDebugConsole(String(loc) + msg + info1 + info2 + info3 + context.c_str() + "\n");
     }
 
     void logAssertThrows(bool threw, const char* expr, assertType::Enum assert_type,
@@ -3242,9 +3457,11 @@ namespace detail
         DOCTEST_PRINTF_COLORED(msg, threw ? Color::BrightGreen : Color::Red);
         DOCTEST_PRINTF_COLORED(info1, Color::Cyan);
         DOCTEST_PRINTF_COLORED(info2, Color::None);
+        String context = logContext();
+        DOCTEST_PRINTF_COLORED(context.c_str(), Color::None);
         DOCTEST_PRINTF_COLORED("\n", Color::None);
 
-        printToDebugConsole(String(loc) + msg + info1 + info2 + "\n");
+        printToDebugConsole(String(loc) + msg + info1 + info2 + context.c_str() + "\n");
     }
 
     void logAssertThrowsAs(bool threw, bool threw_as, const char* as, const String& exception, const char* expr,
@@ -3276,9 +3493,11 @@ namespace detail
         DOCTEST_PRINTF_COLORED(info1, Color::Cyan);
         DOCTEST_PRINTF_COLORED(info2, Color::None);
         DOCTEST_PRINTF_COLORED(info3, Color::Cyan);
+        String context = logContext();
+        DOCTEST_PRINTF_COLORED(context.c_str(), Color::None);
         DOCTEST_PRINTF_COLORED("\n", Color::None);
 
-        printToDebugConsole(String(loc) + msg + info1 + info2 + info3 + "\n");
+        printToDebugConsole(String(loc) + msg + info1 + info2 + info3 + context.c_str() + "\n");
     }
 
     void logAssertNothrow(bool threw, const String& exception, const char* expr, assertType::Enum assert_type,
@@ -3307,9 +3526,11 @@ namespace detail
         DOCTEST_PRINTF_COLORED(info1, Color::Cyan);
         DOCTEST_PRINTF_COLORED(info2, Color::None);
         DOCTEST_PRINTF_COLORED(info3, Color::Cyan);
+        String context = logContext();
+        DOCTEST_PRINTF_COLORED(context.c_str(), Color::None);
         DOCTEST_PRINTF_COLORED("\n", Color::None);
 
-        printToDebugConsole(String(loc) + msg + info1 + info2 + info3 + "\n");
+        printToDebugConsole(String(loc) + msg + info1 + info2 + info3 + context.c_str() + "\n");
     }
 
     ResultBuilder::ResultBuilder(assertType::Enum assert_type, const char* file, int line,

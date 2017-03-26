@@ -13,6 +13,7 @@ Usage:
 - [Tutorial](tutorial.md) - make sure you have read it before the other parts of the documentation
 - [Assertion macros](assertions.md)
 - [Test cases, subcases and test fixtures](testcases.md)
+- [Logging macros](logging.md)
 - [Command line](commandline.md)
 - [```main()``` entry point](main.md)
 - [Configuration](configuration.md)

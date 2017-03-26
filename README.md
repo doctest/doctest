@@ -87,6 +87,7 @@ Usage:
 - [Assertion macros](doc/markdown/assertions.md)
 - [Test cases, subcases and test fixtures](doc/markdown/testcases.md)
 - [Command line](doc/markdown/commandline.md)
+- [Logging macros](doc/markdown/logging.md)
 - [```main()``` entry point](doc/markdown/main.md)
 - [Configuration](doc/markdown/configuration.md)
 - [String conversions](doc/markdown/stringification.md)

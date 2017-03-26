@@ -6,18 +6,18 @@ This library is free, and will stay free but needs your support to sustain its d
 [![Patreon](https://cloud.githubusercontent.com/assets/8225057/5990484/70413560-a9ab-11e4-8942-1a63607c0b00.png)](http://www.patreon.com/onqtam)
 [![PayPal](https://www.paypalobjects.com/en_US/i/btn/btn_donate_LG.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=3K423Q6TK48BN)
 
-Planned features for future releases - order may change.
+Planned features for future releases - order changes constantly...
 
 ### For 1.2:
 
-- adding contextual info to asserts (logging) - with an ```INFO```/```CONTEXT```/```CAPTURE```/```TRACEPOINT``` macro (also look at [this](https://github.com/philsquared/Catch/issues/601))
 - add ```ERROR```/```FAIL``` macros (also ```ADD_FAILURE_AT(file, line);``` and extend the asserts to have ```_AT``` variants)
 - Parametric test cases (Value/Type-parameterized tests) - https://github.com/onqtam/doctest/issues/38
-- crash handling: signals on UNIX platforms or structured exceptions on Windows (should also have DOCTEST_CONFIG_NO_SIGNAL_CATCHING)
+- crash handling: signals on UNIX platforms or structured exceptions on Windows (should also have DOCTEST_CONFIG_NO_SIGNAL_CATCHING) - look at [Using a Separate Signal Stack](https://www.gnu.org/software/libc/manual/html_node/Signal-Stack.html) - and what is a core dump?
 - runtime performance
     - lazily stringify expressions - only when needed
     - get rid of local statics on the hot path - like in getContextState()
     - make a pool allocator for the ```String``` class - currently very unoptimized
+    - add move semantics to the ```String``` class
 - benchmarking
     - make the bench.py script more usable - with command line arguments
     - redo the compile time ones - also look into CATCH_CONFIG_FAST_COMPILE
@@ -34,7 +34,7 @@ Planned features for future releases - order may change.
     - a system for writing custom reporters
     - ability to use multiple reporters at once (but only 1 to stdout)
     - a compact reporter
-    - a progress reporter
+    - a progress reporter - or maybe just an option for the console reporter
     - an xml reporter
     - jUnit/xUnit reporters
     - a listener interface - similar to a reporter - look at Catch
@@ -74,6 +74,8 @@ Planned features for future releases - order may change.
 - integrate static analysis on the CI: **msvc**, **clang**, **cppcheck**
 - extend Approx for types that have operator double - see [here](https://github.com/philsquared/Catch/issues/652) and [here](https://github.com/philsquared/Catch/pull/658)
 - option to list files in which there are test cases who match the current filters
+- option to list test suites and test cases in a tree view
+- decorators for test cases - like in boost test - like "description" - alternative (and broader) mechanism to tags
 - thread safety - asserts/subcases/captures should be safe to be used by multiple threads simultaneously
 - support for running tests in parallel in multiple threads
 - doctest in a GUI environment? with no console? APIs for attaching a console? querying if there is one? [investigate...](https://github.com/philsquared/Catch/blob/master/docs/configuration.md#stdout)
