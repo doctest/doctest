@@ -1272,9 +1272,8 @@ namespace detail
     struct StringStreamBase
     {
         template <typename T>
-        static std::ostream& convert(std::ostream& stream, const T& in) {
-            stream << toString(in);
-            return stream;
+        static void convert(std::ostream* stream, const T& in) {
+            *stream << toString(in);
         }
     };
 
@@ -1282,9 +1281,8 @@ namespace detail
     struct StringStreamBase<true>
     {
         template <typename T>
-        static std::ostream& convert(std::ostream& stream, const T& in) {
-            stream << in;
-            return stream;
+        static void convert(std::ostream* stream, const T& in) {
+            *stream << in;
         }
     };
 
@@ -1293,12 +1291,12 @@ namespace detail
     {};
 
     template <typename T>
-    std::ostream& toStream(std::ostream& stream, const DOCTEST_REF_WRAP(T) value) {
-        return StringStream<T>::convert(stream, value);
+    void toStream(std::ostream* stream, const DOCTEST_REF_WRAP(T) value) {
+        StringStream<T>::convert(stream, value);
     }
 
     struct IContextScope {
-        virtual void build(std::ostream&) const = 0;
+        virtual void build(std::ostream*) const = 0;
     };
 
     DOCTEST_INTERFACE void addToContexts(IContextScope* ptr);
@@ -1308,7 +1306,7 @@ namespace detail
         friend class ContextScope;
 
         struct ICapture {
-            virtual std::ostream& toStream(std::ostream&) const = 0;
+            virtual void toStream(std::ostream*) const = 0;
         };
 
         template<typename T>
@@ -1318,9 +1316,8 @@ namespace detail
             Capture(const T* in)
                 : capture(in)
             {}
-            virtual std::ostream& toStream(std::ostream& stream) const { // override
+            virtual void toStream(std::ostream* stream) const { // override
                 doctest::detail::toStream(stream, *capture);
-                return stream;
             }
         };
 
@@ -1338,7 +1335,7 @@ namespace detail
         Node* head;
         Node* tail;
 
-        void build(std::ostream& stream) const {
+        void build(std::ostream* stream) const {
             int curr = 0;
             // iterate over small buffer
             while(curr < numCaptures && curr < DOCTEST_CONFIG_NUM_CAPTURES_ON_STACK)
@@ -1361,7 +1358,7 @@ namespace detail
             other.numCaptures = 0;
             other.head = 0;
             other.tail = 0;
-            my_memcpy(stackChunks, other.stackChunks, sizeof(Chunk) * DOCTEST_CONFIG_NUM_CAPTURES_ON_STACK);
+            my_memcpy(stackChunks, other.stackChunks, sizeof(Chunk) * unsigned(DOCTEST_CONFIG_NUM_CAPTURES_ON_STACK));
         }
 
     public:
@@ -1432,7 +1429,7 @@ namespace detail
             popFromContexts();
         }
 
-        void build(std::ostream& stream) const {
+        void build(std::ostream* stream) const {
             contextBuilder.build(stream);
         }
     };
@@ -3392,7 +3389,7 @@ namespace detail
             stream << "with context:\n";
         for(size_t i = 0; i < contexts.size(); ++i) {
             stream << "  ";
-            contexts[i]->build(stream);
+            contexts[i]->build(&stream);
             stream << "\n";
         }
         return stream.str().c_str();
