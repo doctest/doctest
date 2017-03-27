@@ -1265,12 +1265,16 @@ namespace detail
 
     DOCTEST_INTERFACE void registerExceptionTranslatorImpl(const IExceptionTranslator* translateFunction);
     
+    // FIX FOR VISUAL STUDIO VERSIONS PRIOR TO 2015 - they failed to compile the call to operator<< with
+    // std::ostream passed as a reference noting that there is a use of an undefined type (which there isn't)
+    DOCTEST_INTERFACE void writeStringToStream(std::ostream* stream, const String& str);
+
     template <bool C>
     struct StringStreamBase
     {
         template <typename T>
         static void convert(std::ostream* stream, const T& in) {
-            *stream << toString(in);
+            writeStringToStream(stream, toString(in));
         }
     };
 
@@ -1355,7 +1359,7 @@ namespace detail
             other.numCaptures = 0;
             other.head = 0;
             other.tail = 0;
-            my_memcpy(stackChunks, other.stackChunks, sizeof(Chunk) * unsigned(DOCTEST_CONFIG_NUM_CAPTURES_ON_STACK));
+            my_memcpy(stackChunks, other.stackChunks, int(sizeof(Chunk)) * DOCTEST_CONFIG_NUM_CAPTURES_ON_STACK);
         }
 
     public:

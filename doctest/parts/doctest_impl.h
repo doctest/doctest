@@ -973,6 +973,10 @@ namespace detail
 #endif // DOCTEST_CONFIG_NO_EXCEPTIONS
     }
 
+    void writeStringToStream(std::ostream* stream, const String& str) {
+        *stream << str;
+    }
+
     void addToContexts(IContextScope* ptr) { getContextState()->contexts.push_back(ptr); }
     void popFromContexts() { getContextState()->contexts.pop_back(); }
 
