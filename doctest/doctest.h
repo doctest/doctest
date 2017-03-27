@@ -1279,6 +1279,12 @@ namespace detail
         static void convert(std::ostream* stream, const T& in) {
             writeStringToStream(stream, toString(in));
         }
+
+        // always treat char* as a string in this context - no matter
+        // if DOCTEST_CONFIG_TREAT_CHAR_STAR_AS_STRING is defined
+        static void convert(std::ostream* stream, const char* in) {
+            writeStringToStream(stream, String(in));
+        }
     };
 
     template <>
