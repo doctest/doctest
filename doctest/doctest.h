@@ -3406,13 +3406,20 @@ namespace detail
         return stream.str().c_str();
     }
 
+    const char* getFailString(assertType::Enum assert_type) {
+        if(assert_type & assertType::is_warn) return "WARNING";
+        if(assert_type & assertType::is_check) return "ERROR";
+        if(assert_type & assertType::is_require) return "FATAL ERROR";
+        return "";
+    }
+
     void logAssert(bool passed, const char* decomposition, bool threw, const String& exception, const char* expr,
                    assertType::Enum assert_type, const char* file, int line) {
         char loc[DOCTEST_SNPRINTF_BUFFER_LENGTH];
         DOCTEST_SNPRINTF(loc, DOCTEST_COUNTOF(loc), "%s(%d)", fileForOutput(file), lineForOutput(line));
 
         char msg[DOCTEST_SNPRINTF_BUFFER_LENGTH];
-        DOCTEST_SNPRINTF(msg, DOCTEST_COUNTOF(msg), passed ? " PASSED!\n" : " FAILED!\n");
+        DOCTEST_SNPRINTF(msg, DOCTEST_COUNTOF(msg), " %s!\n", passed ? "PASSED" : getFailString(assert_type));
 
         char info1[DOCTEST_SNPRINTF_BUFFER_LENGTH];
         DOCTEST_SNPRINTF(info1, DOCTEST_COUNTOF(info1), "  %s( %s )\n",
@@ -3432,7 +3439,7 @@ namespace detail
         }
 
         DOCTEST_PRINTF_COLORED(loc, Color::LightGrey);
-        DOCTEST_PRINTF_COLORED(msg, passed ? Color::BrightGreen : Color::Red);
+        DOCTEST_PRINTF_COLORED(msg, passed ? Color::BrightGreen : (assert_type & assertType::is_warn) ? Color::Yellow : Color::Red);
         DOCTEST_PRINTF_COLORED(info1, Color::Cyan);
         DOCTEST_PRINTF_COLORED(info2, Color::None);
         DOCTEST_PRINTF_COLORED(info3, Color::Cyan);
@@ -3449,7 +3456,7 @@ namespace detail
         DOCTEST_SNPRINTF(loc, DOCTEST_COUNTOF(loc), "%s(%d)", fileForOutput(file), lineForOutput(line));
 
         char msg[DOCTEST_SNPRINTF_BUFFER_LENGTH];
-        DOCTEST_SNPRINTF(msg, DOCTEST_COUNTOF(msg), threw ? " PASSED!\n" : " FAILED!\n");
+        DOCTEST_SNPRINTF(msg, DOCTEST_COUNTOF(msg), " %s!\n", threw ? "PASSED" : getFailString(assert_type));
 
         char info1[DOCTEST_SNPRINTF_BUFFER_LENGTH];
         DOCTEST_SNPRINTF(info1, DOCTEST_COUNTOF(info1), "  %s( %s )\n",
@@ -3462,7 +3469,7 @@ namespace detail
             DOCTEST_SNPRINTF(info2, DOCTEST_COUNTOF(info2), "didn't throw at all\n");
 
         DOCTEST_PRINTF_COLORED(loc, Color::LightGrey);
-        DOCTEST_PRINTF_COLORED(msg, threw ? Color::BrightGreen : Color::Red);
+        DOCTEST_PRINTF_COLORED(msg, threw ? Color::BrightGreen : (assert_type & assertType::is_warn) ? Color::Yellow : Color::Red);
         DOCTEST_PRINTF_COLORED(info1, Color::Cyan);
         DOCTEST_PRINTF_COLORED(info2, Color::None);
         String context = logContext();
@@ -3478,7 +3485,7 @@ namespace detail
         DOCTEST_SNPRINTF(loc, DOCTEST_COUNTOF(loc), "%s(%d)", fileForOutput(file), lineForOutput(line));
 
         char msg[DOCTEST_SNPRINTF_BUFFER_LENGTH];
-        DOCTEST_SNPRINTF(msg, DOCTEST_COUNTOF(msg), threw_as ? " PASSED!\n" : " FAILED!\n");
+        DOCTEST_SNPRINTF(msg, DOCTEST_COUNTOF(msg), " %s!\n", threw_as ? "PASSED" : getFailString(assert_type));
 
         char info1[DOCTEST_SNPRINTF_BUFFER_LENGTH];
         DOCTEST_SNPRINTF(info1, DOCTEST_COUNTOF(info1), "  %s( %s, %s )\n",
@@ -3497,7 +3504,7 @@ namespace detail
         }
 
         DOCTEST_PRINTF_COLORED(loc, Color::LightGrey);
-        DOCTEST_PRINTF_COLORED(msg, threw_as ? Color::BrightGreen : Color::Red);
+        DOCTEST_PRINTF_COLORED(msg, threw_as ? Color::BrightGreen : (assert_type & assertType::is_warn) ? Color::Yellow : Color::Red);
         DOCTEST_PRINTF_COLORED(info1, Color::Cyan);
         DOCTEST_PRINTF_COLORED(info2, Color::None);
         DOCTEST_PRINTF_COLORED(info3, Color::Cyan);
@@ -3514,7 +3521,7 @@ namespace detail
         DOCTEST_SNPRINTF(loc, DOCTEST_COUNTOF(loc), "%s(%d)", fileForOutput(file), lineForOutput(line));
 
         char msg[DOCTEST_SNPRINTF_BUFFER_LENGTH];
-        DOCTEST_SNPRINTF(msg, DOCTEST_COUNTOF(msg), !threw ? " PASSED!\n" : " FAILED!\n");
+        DOCTEST_SNPRINTF(msg, DOCTEST_COUNTOF(msg), " %s!\n", !threw ? "PASSED" : getFailString(assert_type));
 
         char info1[DOCTEST_SNPRINTF_BUFFER_LENGTH];
         DOCTEST_SNPRINTF(info1, DOCTEST_COUNTOF(info1), "  %s( %s )\n",
@@ -3530,7 +3537,7 @@ namespace detail
         }
 
         DOCTEST_PRINTF_COLORED(loc, Color::LightGrey);
-        DOCTEST_PRINTF_COLORED(msg, !threw ? Color::BrightGreen : Color::Red);
+        DOCTEST_PRINTF_COLORED(msg, !threw ? Color::BrightGreen : (assert_type & assertType::is_warn) ? Color::Yellow : Color::Red);
         DOCTEST_PRINTF_COLORED(info1, Color::Cyan);
         DOCTEST_PRINTF_COLORED(info2, Color::None);
         DOCTEST_PRINTF_COLORED(info3, Color::Cyan);

@@ -19,12 +19,12 @@ threw exception:
 main.cpp(0)
 normal macros
 
-main.cpp(0) FAILED!
+main.cpp(0) ERROR!
   CHECK( conditional_throw(true, std::runtime_error("whops!")) == 42 )
 threw exception:
   whops!
 
-main.cpp(0) FAILED!
+main.cpp(0) ERROR!
   CHECK( Approx(0.502) == 0.501 )
 with expansion:
   CHECK( Approx( 0.502 ) == 0.501 )
@@ -37,12 +37,12 @@ threw exception:
 main.cpp(0)
 normal macros with std::exception
 
-main.cpp(0) FAILED!
+main.cpp(0) ERROR!
   CHECK( conditional_throw(true, 0) == 42 )
 threw exception:
   unknown exception
 
-main.cpp(0) FAILED!
+main.cpp(0) ERROR!
   CHECK( Approx(0.502) == 0.501 )
 with expansion:
   CHECK( Approx( 0.502 ) == 0.501 )
@@ -55,20 +55,20 @@ threw exception:
 main.cpp(0)
 exceptions-related macros
 
-main.cpp(0) FAILED!
+main.cpp(0) ERROR!
   CHECK_THROWS( conditional_throw(false, 0) )
 didn't throw at all
 
-main.cpp(0) FAILED!
+main.cpp(0) ERROR!
   CHECK_THROWS_AS( conditional_throw(false, 0), int )
 didn't throw at all
 
-main.cpp(0) FAILED!
+main.cpp(0) ERROR!
   CHECK_THROWS_AS( conditional_throw(true, 0), char )
 threw a different exception:
   unknown exception
 
-main.cpp(0) FAILED!
+main.cpp(0) ERROR!
   CHECK_NOTHROW( conditional_throw(true, 0) )
 threw exception:
   unknown exception
@@ -77,20 +77,20 @@ threw exception:
 main.cpp(0)
 exceptions-related macros for std::exception
 
-main.cpp(0) FAILED!
+main.cpp(0) ERROR!
   CHECK_THROWS( conditional_throw(false, 0) )
 didn't throw at all
 
-main.cpp(0) FAILED!
+main.cpp(0) ERROR!
   CHECK_THROWS_AS( conditional_throw(false, std::runtime_error("whops!")), std::exception )
 didn't throw at all
 
-main.cpp(0) FAILED!
+main.cpp(0) ERROR!
   CHECK_THROWS_AS( conditional_throw(true, std::runtime_error("whops!")), int )
 threw a different exception:
   whops!
 
-main.cpp(0) FAILED!
+main.cpp(0) FATAL ERROR!
   REQUIRE_NOTHROW( conditional_throw(true, std::runtime_error("whops!")) )
 threw exception:
   whops!

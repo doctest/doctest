@@ -4,7 +4,7 @@ test.cpp(0)
 subcases
   2
 
-test.cpp(0) FAILED!
+test.cpp(0) ERROR!
   CHECK( 0 )
 with expansion:
   CHECK( 0 )

@@ -3,7 +3,7 @@
 main.cpp(0)
 testing the factorial function
 
-main.cpp(0) FAILED!
+main.cpp(0) ERROR!
   CHECK( factorial(0) == 1 )
 with expansion:
   CHECK( 0 == 1 )
