@@ -19,7 +19,7 @@ The message is **NOT** constructed right away - instead it gets lazily stringifi
 Some notes:
 
 - the lazy stringification means the values will be stringified when an assert fails and not at the point of capture - so the value might have changed
-- if the library is built with C++11 rvalue reference support (see [**```DOCTEST_CONFIG_WITH_RVALUE_REFERENCES```**](configuration.md#doctest_config_with_rvalue_references)) then deleted overloads are provided to prohibit rvalues from being captured in an **```INFO()```** call - since the lazy stringification actually caches pointers to the objects
+- if the library is built with C++11 rvalue reference support (see [**```DOCTEST_CONFIG_WITH_RVALUE_REFERENCES```**](configuration.md#doctest_config_with_rvalue_references)) then deleted overloads are provided to prohibit rvalues from being captured in an **```INFO()```** call - since the lazy stringification actually caches pointers to the objects. For C++98 temporaries will again not work but there will be horrible compilation errors
 - the [**```DOCTEST_CONFIG_NUM_CAPTURES_ON_STACK```**](configuration.md#doctest_config_num_captures_on_stack) config identifier can be used to control how much stack space is used to avoid heap allocations for the streaming macros
 - stream manipulators (from ```<iomanip>```) can be used but need to be created as local variables and used as lvalues
 
