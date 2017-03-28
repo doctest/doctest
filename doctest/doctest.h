@@ -1642,7 +1642,7 @@ public:
 #define DOCTEST_STRIP_PARENS(x) x
 #define DOCTEST_HANDLE_EXPR(expr) DOCTEST_STRIP_PARENS(DOCTEST_EXPAND_VA_ARGS expr)
 
-#define DOCTEST_ASSERT_IMPLEMENT(expr, assert_type)                                                \
+#define DOCTEST_ASSERT_IMPLEMENT_3(expr, assert_type)                                              \
     doctest::detail::ResultBuilder _DOCTEST_RB(doctest::detail::assertType::assert_type, __FILE__, \
             __LINE__, DOCTEST_TOSTR(DOCTEST_HANDLE_EXPR(expr)));                                   \
     DOCTEST_WRAP_IN_TRY(_DOCTEST_RB.setResult(doctest::detail::ExpressionDecomposer()              \
@@ -1650,35 +1650,54 @@ public:
     DOCTEST_ASSERT_LOG_AND_REACT(_DOCTEST_RB)
 
 #if defined(__clang__)
-#define DOCTEST_ASSERT_PROXY(expr, assert_type)                                                    \
-    do {                                                                                           \
+#define DOCTEST_ASSERT_IMPLEMENT_2(expr, assert_type)                                              \
         _Pragma("clang diagnostic push")                                                           \
                 _Pragma("clang diagnostic ignored \"-Woverloaded-shift-op-parentheses\"")          \
-                        DOCTEST_ASSERT_IMPLEMENT(expr, assert_type);                               \
-                                _Pragma("clang diagnostic pop")                                    \
-    } while(doctest::detail::always_false())
+                        DOCTEST_ASSERT_IMPLEMENT_3(expr, assert_type);                             \
+                                _Pragma("clang diagnostic pop")
 #else // __clang__
-#define DOCTEST_ASSERT_PROXY(expr, assert_type)                                                    \
-    do {                                                                                           \
-        DOCTEST_ASSERT_IMPLEMENT(expr, assert_type);                                               \
-    } while(doctest::detail::always_false())
+#define DOCTEST_ASSERT_IMPLEMENT_2(expr, assert_type)                                              \
+        DOCTEST_ASSERT_IMPLEMENT_3(expr, assert_type);
 #endif // __clang__
 
+#define DOCTEST_ASSERT_IMPLEMENT_1(expr, assert_type)                                              \
+    do {                                                                                           \
+        DOCTEST_ASSERT_IMPLEMENT_2(expr, assert_type);                                             \
+    } while(doctest::detail::always_false())
+
 #ifdef DOCTEST_CONFIG_WITH_VARIADIC_MACROS
-#define DOCTEST_WARN(...) DOCTEST_ASSERT_PROXY((__VA_ARGS__), DT_WARN)
-#define DOCTEST_CHECK(...) DOCTEST_ASSERT_PROXY((__VA_ARGS__), DT_CHECK)
-#define DOCTEST_REQUIRE(...) DOCTEST_ASSERT_PROXY((__VA_ARGS__), DT_REQUIRE)
-#define DOCTEST_WARN_FALSE(...) DOCTEST_ASSERT_PROXY((__VA_ARGS__), DT_WARN_FALSE)
-#define DOCTEST_CHECK_FALSE(...) DOCTEST_ASSERT_PROXY((__VA_ARGS__), DT_CHECK_FALSE)
-#define DOCTEST_REQUIRE_FALSE(...) DOCTEST_ASSERT_PROXY((__VA_ARGS__), DT_REQUIRE_FALSE)
+#define DOCTEST_WARN(...) DOCTEST_ASSERT_IMPLEMENT_1((__VA_ARGS__), DT_WARN)
+#define DOCTEST_CHECK(...) DOCTEST_ASSERT_IMPLEMENT_1((__VA_ARGS__), DT_CHECK)
+#define DOCTEST_REQUIRE(...) DOCTEST_ASSERT_IMPLEMENT_1((__VA_ARGS__), DT_REQUIRE)
+#define DOCTEST_WARN_FALSE(...) DOCTEST_ASSERT_IMPLEMENT_1((__VA_ARGS__), DT_WARN_FALSE)
+#define DOCTEST_CHECK_FALSE(...) DOCTEST_ASSERT_IMPLEMENT_1((__VA_ARGS__), DT_CHECK_FALSE)
+#define DOCTEST_REQUIRE_FALSE(...) DOCTEST_ASSERT_IMPLEMENT_1((__VA_ARGS__), DT_REQUIRE_FALSE)
 #else // DOCTEST_CONFIG_WITH_VARIADIC_MACROS
-#define DOCTEST_WARN(expr) DOCTEST_ASSERT_PROXY(expr, DT_WARN)
-#define DOCTEST_CHECK(expr) DOCTEST_ASSERT_PROXY(expr, DT_CHECK)
-#define DOCTEST_REQUIRE(expr) DOCTEST_ASSERT_PROXY(expr, DT_REQUIRE)
-#define DOCTEST_WARN_FALSE(expr) DOCTEST_ASSERT_PROXY(expr, DT_WARN_FALSE)
-#define DOCTEST_CHECK_FALSE(expr) DOCTEST_ASSERT_PROXY(expr, DT_CHECK_FALSE)
-#define DOCTEST_REQUIRE_FALSE(expr) DOCTEST_ASSERT_PROXY(expr, DT_REQUIRE_FALSE)
+#define DOCTEST_WARN(expr) DOCTEST_ASSERT_IMPLEMENT_1(expr, DT_WARN)
+#define DOCTEST_CHECK(expr) DOCTEST_ASSERT_IMPLEMENT_1(expr, DT_CHECK)
+#define DOCTEST_REQUIRE(expr) DOCTEST_ASSERT_IMPLEMENT_1(expr, DT_REQUIRE)
+#define DOCTEST_WARN_FALSE(expr) DOCTEST_ASSERT_IMPLEMENT_1(expr, DT_WARN_FALSE)
+#define DOCTEST_CHECK_FALSE(expr) DOCTEST_ASSERT_IMPLEMENT_1(expr, DT_CHECK_FALSE)
+#define DOCTEST_REQUIRE_FALSE(expr) DOCTEST_ASSERT_IMPLEMENT_1(expr, DT_REQUIRE_FALSE)
 #endif // DOCTEST_CONFIG_WITH_VARIADIC_MACROS
+
+// clang-format off
+#ifdef DOCTEST_CONFIG_WITH_VARIADIC_MACROS
+#define DOCTEST_WARN_MESSAGE(cond, msg) do { DOCTEST_INFO(msg); DOCTEST_ASSERT_IMPLEMENT_2((cond), DT_WARN); } while(doctest::detail::always_false())
+#define DOCTEST_CHECK_MESSAGE(cond, msg) do { DOCTEST_INFO(msg); DOCTEST_ASSERT_IMPLEMENT_2((cond), DT_CHECK); } while(doctest::detail::always_false())
+#define DOCTEST_REQUIRE_MESSAGE(cond, msg) do { DOCTEST_INFO(msg); DOCTEST_ASSERT_IMPLEMENT_2((cond), DT_REQUIRE); } while(doctest::detail::always_false())
+#define DOCTEST_WARN_FALSE_MESSAGE(cond, msg) do { DOCTEST_INFO(msg); DOCTEST_ASSERT_IMPLEMENT_2((cond), DT_WARN_FALSE); } while(doctest::detail::always_false())
+#define DOCTEST_CHECK_FALSE_MESSAGE(cond, msg) do { DOCTEST_INFO(msg); DOCTEST_ASSERT_IMPLEMENT_2((cond), DT_CHECK_FALSE); } while(doctest::detail::always_false())
+#define DOCTEST_REQUIRE_FALSE_MESSAGE(cond, msg) do { DOCTEST_INFO(msg); DOCTEST_ASSERT_IMPLEMENT_2((cond), DT_REQUIRE_FALSE); } while(doctest::detail::always_false())
+#else // DOCTEST_CONFIG_WITH_VARIADIC_MACROS
+#define DOCTEST_WARN_MESSAGE(cond, msg) do { DOCTEST_INFO(msg); DOCTEST_ASSERT_IMPLEMENT_2(cond, DT_WARN); } while(doctest::detail::always_false())
+#define DOCTEST_CHECK_MESSAGE(cond, msg) do { DOCTEST_INFO(msg); DOCTEST_ASSERT_IMPLEMENT_2(cond, DT_CHECK); } while(doctest::detail::always_false())
+#define DOCTEST_REQUIRE_MESSAGE(cond, msg) do { DOCTEST_INFO(msg); DOCTEST_ASSERT_IMPLEMENT_2(cond, DT_REQUIRE); } while(doctest::detail::always_false())
+#define DOCTEST_WARN_FALSE_MESSAGE(cond, msg) do { DOCTEST_INFO(msg); DOCTEST_ASSERT_IMPLEMENT_2(cond, DT_WARN_FALSE); } while(doctest::detail::always_false())
+#define DOCTEST_CHECK_FALSE_MESSAGE(cond, msg) do { DOCTEST_INFO(msg); DOCTEST_ASSERT_IMPLEMENT_2(cond, DT_CHECK_FALSE); } while(doctest::detail::always_false())
+#define DOCTEST_REQUIRE_FALSE_MESSAGE(cond, msg) do { DOCTEST_INFO(msg); DOCTEST_ASSERT_IMPLEMENT_2(cond, DT_REQUIRE_FALSE); } while(doctest::detail::always_false())
+#endif // DOCTEST_CONFIG_WITH_VARIADIC_MACROS
+// clang-format on
 
 #define DOCTEST_ASSERT_THROWS(expr, assert_type)                                                   \
     do {                                                                                           \
@@ -1736,6 +1755,18 @@ public:
 #define DOCTEST_WARN_NOTHROW(expr) DOCTEST_ASSERT_NOTHROW(expr, DT_WARN_NOTHROW)
 #define DOCTEST_CHECK_NOTHROW(expr) DOCTEST_ASSERT_NOTHROW(expr, DT_CHECK_NOTHROW)
 #define DOCTEST_REQUIRE_NOTHROW(expr) DOCTEST_ASSERT_NOTHROW(expr, DT_REQUIRE_NOTHROW)
+
+// clang-format off
+#define DOCTEST_WARN_THROWS_MESSAGE(expr, msg) do { DOCTEST_INFO(msg); DOCTEST_WARN_THROWS(expr); } while(doctest::detail::always_false())
+#define DOCTEST_CHECK_THROWS_MESSAGE(expr, msg) do { DOCTEST_INFO(msg); DOCTEST_CHECK_THROWS(expr); } while(doctest::detail::always_false())
+#define DOCTEST_REQUIRE_THROWS_MESSAGE(expr, msg) do { DOCTEST_INFO(msg); DOCTEST_REQUIRE_THROWS(expr); } while(doctest::detail::always_false())
+#define DOCTEST_WARN_THROWS_AS_MESSAGE(expr, ex, msg) do { DOCTEST_INFO(msg); DOCTEST_WARN_THROWS_AS(expr, ex); } while(doctest::detail::always_false())
+#define DOCTEST_CHECK_THROWS_AS_MESSAGE(expr, ex, msg) do { DOCTEST_INFO(msg); DOCTEST_CHECK_THROWS_AS(expr, ex); } while(doctest::detail::always_false())
+#define DOCTEST_REQUIRE_THROWS_AS_MESSAGE(expr, ex, msg) do { DOCTEST_INFO(msg); DOCTEST_REQUIRE_THROWS_AS(expr, ex); } while(doctest::detail::always_false())
+#define DOCTEST_WARN_NOTHROW_MESSAGE(expr, msg) do { DOCTEST_INFO(msg); DOCTEST_WARN_NOTHROW(expr); } while(doctest::detail::always_false())
+#define DOCTEST_CHECK_NOTHROW_MESSAGE(expr, msg) do { DOCTEST_INFO(msg); DOCTEST_CHECK_NOTHROW(expr); } while(doctest::detail::always_false())
+#define DOCTEST_REQUIRE_NOTHROW_MESSAGE(expr, msg) do { DOCTEST_INFO(msg); DOCTEST_REQUIRE_NOTHROW(expr); } while(doctest::detail::always_false())
+// clang-format on
 
 #ifdef DOCTEST_CONFIG_WITH_VARIADIC_MACROS
 #define DOCTEST_BINARY_ASSERT(assert_type, expr, comp)                                             \
@@ -2054,6 +2085,13 @@ public:
 #define DOCTEST_REQUIRE_FALSE(expr) ((void)0)
 #endif // DOCTEST_CONFIG_WITH_VARIADIC_MACROS
 
+#define DOCTEST_WARN_MESSAGE(cond, msg) ((void)0)
+#define DOCTEST_CHECK_MESSAGE(cond, msg) ((void)0)
+#define DOCTEST_REQUIRE_MESSAGE(cond, msg) ((void)0)
+#define DOCTEST_WARN_FALSE_MESSAGE(cond, msg) ((void)0)
+#define DOCTEST_CHECK_FALSE_MESSAGE(cond, msg) ((void)0)
+#define DOCTEST_REQUIRE_FALSE_MESSAGE(cond, msg) ((void)0)
+
 #define DOCTEST_WARN_THROWS(expr) ((void)0)
 #define DOCTEST_CHECK_THROWS(expr) ((void)0)
 #define DOCTEST_REQUIRE_THROWS(expr) ((void)0)
@@ -2069,6 +2107,16 @@ public:
 #define DOCTEST_WARN_NOTHROW(expr) ((void)0)
 #define DOCTEST_CHECK_NOTHROW(expr) ((void)0)
 #define DOCTEST_REQUIRE_NOTHROW(expr) ((void)0)
+
+#define DOCTEST_WARN_THROWS_MESSAGE(expr, msg) ((void)0)
+#define DOCTEST_CHECK_THROWS_MESSAGE(expr, msg) ((void)0)
+#define DOCTEST_REQUIRE_THROWS_MESSAGE(expr, msg) ((void)0)
+#define DOCTEST_WARN_THROWS_AS_MESSAGE(expr, ex, msg) ((void)0)
+#define DOCTEST_CHECK_THROWS_AS_MESSAGE(expr, ex, msg) ((void)0)
+#define DOCTEST_REQUIRE_THROWS_AS_MESSAGE(expr, ex, msg) ((void)0)
+#define DOCTEST_WARN_NOTHROW_MESSAGE(expr, msg) ((void)0)
+#define DOCTEST_CHECK_NOTHROW_MESSAGE(expr, msg) ((void)0)
+#define DOCTEST_REQUIRE_NOTHROW_MESSAGE(expr, msg) ((void)0)
 
 #ifdef DOCTEST_CONFIG_WITH_VARIADIC_MACROS
 
@@ -2226,6 +2274,22 @@ public:
 #define REQUIRE_THROWS DOCTEST_REQUIRE_THROWS
 #define REQUIRE_THROWS_AS DOCTEST_REQUIRE_THROWS_AS
 #define REQUIRE_NOTHROW DOCTEST_REQUIRE_NOTHROW
+
+#define WARN_MESSAGE DOCTEST_WARN_MESSAGE
+#define WARN_FALSE_MESSAGE DOCTEST_WARN_FALSE_MESSAGE
+#define WARN_THROWS_MESSAGE DOCTEST_WARN_THROWS_MESSAGE
+#define WARN_THROWS_AS_MESSAGE DOCTEST_WARN_THROWS_AS_MESSAGE
+#define WARN_NOTHROW_MESSAGE DOCTEST_WARN_NOTHROW_MESSAGE
+#define CHECK_MESSAGE DOCTEST_CHECK_MESSAGE
+#define CHECK_FALSE_MESSAGE DOCTEST_CHECK_FALSE_MESSAGE
+#define CHECK_THROWS_MESSAGE DOCTEST_CHECK_THROWS_MESSAGE
+#define CHECK_THROWS_AS_MESSAGE DOCTEST_CHECK_THROWS_AS_MESSAGE
+#define CHECK_NOTHROW_MESSAGE DOCTEST_CHECK_NOTHROW_MESSAGE
+#define REQUIRE_MESSAGE DOCTEST_REQUIRE_MESSAGE
+#define REQUIRE_FALSE_MESSAGE DOCTEST_REQUIRE_FALSE_MESSAGE
+#define REQUIRE_THROWS_MESSAGE DOCTEST_REQUIRE_THROWS_MESSAGE
+#define REQUIRE_THROWS_AS_MESSAGE DOCTEST_REQUIRE_THROWS_AS_MESSAGE
+#define REQUIRE_NOTHROW_MESSAGE DOCTEST_REQUIRE_NOTHROW_MESSAGE
 
 #define SCENARIO DOCTEST_SCENARIO
 #define GIVEN DOCTEST_GIVEN

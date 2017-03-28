@@ -92,6 +92,7 @@ Planned features for future releases - order changes constantly...
 - the set holding all registered tests should use a specialized allocator to minimize program startup time
 - ability to provide a temp folder that is cleared between each test case
 - rework the examples folder - so the test runner is compiled only a few times - CI builds take a ton of time!
+- make the _MESSAGE assert macros work with variadic arguments - and maybe write the ones for binary/unary/fast asserts as well
 
 ### Things that are very unlikely to enter the roadmap:
 

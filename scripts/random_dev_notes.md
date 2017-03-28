@@ -1,10 +1,6 @@
 
 
 
-#define CHECK_MSG(cond, msg) do { INFO(msg); CHECK(cond); } while(doctest::detail::always_false())
-#define CHECK_MESSAGE(cond, msg) do { INFO(msg); CHECK(cond); } while(doctest::detail::always_false())
-http://stackoverflow.com/questions/24009797/how-can-i-retrieve-the-last-argument-of-a-c99-variadic-macro
-
 
 look at boost test again:
 http://www.boost.org/doc/libs/1_63_0/libs/test/doc/html/index.html

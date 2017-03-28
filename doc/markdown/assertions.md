@@ -40,6 +40,20 @@ Example:
 REQUIRE_FALSE(thisReturnsFalse());
 ```
 
+Note that these asserts also have a ```_MESSAGE``` form - like ```CHECK_MESSAGE(expression, message)``` which is basically a code block ```{}``` with a scoped [**```INFO()```**](logging.md#info) logging macro together with the ```CHECK``` macro - that way the message will be relevant only to that assert. All the other binary/unary/fast asserts don't have this variation.
+
+Examples:
+
+```c++
+INFO("this is relevant to all asserts, and here is some var: " << local);
+
+CHECK_MESSAGE(a < b, "relevant only to this assert " << other_local << "more text!");
+
+CHECK(b < c); // here only the first INFO() will be relevant
+```
+
+For more information about the ```INFO()``` macro and logging with the streaming ```operator<<``` visit the [logging page](logging.md).
+
 ## Binary and unary asserts
 
 These asserts don't use templates to decompose the comparison expressions for the left and right parts.
@@ -91,6 +105,8 @@ Expects that an exception of the _specified type_ is thrown during evaluation of
 * ```<LEVEL>_NOTHROW(expression)```
 
 Expects that no exception is thrown during evaluation of the expression.
+
+Note that these asserts also have a ```_MESSAGE``` form - like ```CHECK_THROWS_MESSAGE(expression, message)``` - these work identically to the ```_MESSAGE``` form of the normal macros (```CHECK_MESSAGE(a < b, "this shouldn't fail")```) described earlier.
 
 ## Floating point comparisons
 
