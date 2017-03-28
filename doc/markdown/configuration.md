@@ -160,12 +160,13 @@ What gets changed:
 
 The ```REQUIRE``` family of asserts uses exceptions to terminate the current test case when they fail. An exception is used instead of a simple ```return;``` because asserts can be used not only in a test case but also in functions called by a test case.
 
+Also some of the [**logging macros**](logging.md#messages-which-can-optionally-fail-test-cases) which act like a ```REQUIRE``` assert (terminating the test case) - like ```FAIL()``` - start to work differently - like a ```FAIL_CHECK()```.
+
 [**```DOCTEST_CONFIG_NO_EXCEPTIONS```**](#doctest_config_no_exceptions) implies [**```DOCTEST_CONFIG_NO_TRY_CATCH_IN_ASSERTS```**](#doctest_config_no_try_catch_in_asserts)
 
 If you wish to use asserts that deal with exceptions and only sometimes build without exceptions - check the [**```DOCTEST_CONFIG_NO_EXCEPTIONS_BUT_WITH_ALL_ASSERTS```**](#doctest_config_no_exceptions_but_with_all_asserts) config option.
 
 This should be defined globally.
-
 
 ### **```DOCTEST_CONFIG_NO_EXCEPTIONS_BUT_WITH_ALL_ASSERTS```**
 

@@ -1,14 +1,8 @@
 
 
-todo:
-- MESSAGE (like WARN in catch and MESSAGE in boost test)
-- FAIL
-- FATAL
 
 #define CHECK_MSG(cond, msg) do { INFO(msg); CHECK(cond); } while(doctest::detail::always_false())
-BOOST_WARN_MESSAGE(predicate, message);
-BOOST_CHECK_MESSAGE(predicate, message);
-BOOST_REQUIRE_MESSAGE(predicate, message);
+#define CHECK_MESSAGE(cond, msg) do { INFO(msg); CHECK(cond); } while(doctest::detail::always_false())
 http://stackoverflow.com/questions/24009797/how-can-i-retrieve-the-last-argument-of-a-c99-variadic-macro
 
 

@@ -35,7 +35,35 @@ This will handle the stringification of the variable name for you (actually it w
 
 This would log something like:
 
-some_variable := 42
+```c++
+  some_variable := 42
+```
+
+## Messages which can optionally fail test cases
+
+There are a few other macros for logging information:
+
+- ```MESSAGE(message)```
+- ```FAIL_CHECK(message)```
+- ```FAIL(message)```
+
+```FAIL()``` is like a ```REQUIRE``` assert - fails the test case and exits it. ```FAIL_CHECK()``` acts like a ```CHECK``` assert - fails the test case but continues with the execution. ```MESSAGE()``` just prints a message.
+
+In all these macros the messages are again composed using the ```<<``` streaming operator - like this:
+
+```c++
+FAIL("This is not supposed to happen! some var: " << var);
+```
+
+Also there is no lazy stringification here - strings are always constructed and printed and thus there are no limitations to the values being logged - temporaries and rvalues are accepted - unlike with the ```INFO()``` macro.
+
+There are also a few more intended for use by third party libraries such as mocking frameworks:
+
+- ```ADD_MESSAGE_AT(file, line, message)```
+- ```ADD_FAIL_CHECK_AT(file, line, message)```
+- ```ADD_FAIL_AT(file, line, message)```
+
+They can be useful when integrating asserts from a different framework with doctest.
 
 ---
 

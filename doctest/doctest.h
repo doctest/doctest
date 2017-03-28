@@ -1075,7 +1075,6 @@ namespace detail
 
     struct TestAccessibleContextState
     {
-        bool success;  // include successful assertions in output
         bool no_throw; // to skip exceptions-related assertion macros
     };
 
@@ -1440,6 +1439,26 @@ namespace detail
             contextBuilder.build(stream);
         }
     };
+
+    class DOCTEST_INTERFACE MessageBuilder {
+        std::ostream* m_stream;
+        const char* m_file;
+        int m_line;
+        doctest::detail::assertType::Enum m_severity;
+    public:
+
+        MessageBuilder(const char* file, int line, doctest::detail::assertType::Enum severity);
+        ~MessageBuilder();
+
+        template<typename T>
+        MessageBuilder& operator<<(const T& in) {
+            doctest::detail::toStream(m_stream, in);
+            return *this;
+        }
+        
+        bool log();
+        void react();
+    };
 } // namespace detail
 
 #endif // DOCTEST_CONFIG_DISABLE
@@ -1581,6 +1600,23 @@ public:
 // for logging
 #define DOCTEST_INFO(x) doctest::detail::ContextScope DOCTEST_ANONYMOUS(_DOCTEST_CAPTURE_)(doctest::detail::ContextBuilder() << x)
 #define DOCTEST_CAPTURE(x) DOCTEST_INFO(#x " := " << x)
+
+#define DOCTEST_ADD_AT_IMPL(type, file, line, mb, x)                                               \
+    do {                                                                                           \
+        doctest::detail::MessageBuilder mb(file, line, doctest::detail::assertType::type);         \
+        mb << x;                                                                                   \
+        if(mb.log())                                                                               \
+            DOCTEST_BREAK_INTO_DEBUGGER();                                                         \
+        mb.react();                                                                                \
+    } while(doctest::detail::always_false())
+
+#define DOCTEST_ADD_MESSAGE_AT(file, line, x) DOCTEST_ADD_AT_IMPL(is_warn, file, line, DOCTEST_ANONYMOUS(_DOCTEST_MESSAGE_), x)
+#define DOCTEST_ADD_FAIL_CHECK_AT(file, line, x) DOCTEST_ADD_AT_IMPL(is_check, file, line, DOCTEST_ANONYMOUS(_DOCTEST_MESSAGE_), x)
+#define DOCTEST_ADD_FAIL_AT(file, line, x) DOCTEST_ADD_AT_IMPL(is_require, file, line, DOCTEST_ANONYMOUS(_DOCTEST_MESSAGE_), x)
+
+#define DOCTEST_MESSAGE(x) DOCTEST_ADD_MESSAGE_AT(__FILE__, __LINE__, x)
+#define DOCTEST_FAIL_CHECK(x) DOCTEST_ADD_FAIL_CHECK_AT(__FILE__, __LINE__, x)
+#define DOCTEST_FAIL(x) DOCTEST_ADD_FAIL_AT(__FILE__, __LINE__, x)
 
 // common code in asserts - for convenience
 #define DOCTEST_ASSERT_LOG_AND_REACT(rb)                                                           \
@@ -1995,6 +2031,12 @@ public:
 
 #define DOCTEST_INFO(x) ((void)0)
 #define DOCTEST_CAPTURE(x) ((void)0)
+#define DOCTEST_ADD_MESSAGE_AT(file, line, x) ((void)0)
+#define DOCTEST_ADD_FAIL_CHECK_AT(file, line, x) ((void)0)
+#define DOCTEST_ADD_FAIL_AT(file, line, x) ((void)0)
+#define DOCTEST_MESSAGE(x) ((void)0)
+#define DOCTEST_FAIL_CHECK(x) ((void)0)
+#define DOCTEST_FAIL(x) ((void)0)
 
 #ifdef DOCTEST_CONFIG_WITH_VARIADIC_MACROS
 #define DOCTEST_WARN(...) ((void)0)
@@ -2162,6 +2204,12 @@ public:
 #define REGISTER_EXCEPTION_TRANSLATOR DOCTEST_REGISTER_EXCEPTION_TRANSLATOR
 #define INFO DOCTEST_INFO
 #define CAPTURE DOCTEST_CAPTURE
+#define ADD_MESSAGE_AT DOCTEST_ADD_MESSAGE_AT
+#define ADD_FAIL_CHECK_AT DOCTEST_ADD_FAIL_CHECK_AT
+#define ADD_FAIL_AT DOCTEST_ADD_FAIL_AT
+#define MESSAGE DOCTEST_MESSAGE
+#define FAIL_CHECK DOCTEST_FAIL_CHECK
+#define FAIL DOCTEST_FAIL
 
 #define WARN DOCTEST_WARN
 #define WARN_FALSE DOCTEST_WARN_FALSE
@@ -2491,6 +2539,7 @@ namespace detail
 
         int  abort_after;           // stop tests after this many failed assertions
         int  subcase_filter_levels; // apply the subcase filters for the first N levels
+        bool success;        // include successful assertions in output
         bool case_sensitive; // if filtering should be case sensitive
         bool exit;           // if the program should be exited after the tests are ran/whatever
         bool no_exitcode;    // if the framework should return 0 as the exitcode
@@ -2515,7 +2564,7 @@ namespace detail
         int             numAssertionsForCurrentTestcase;
         int             numAssertions;
         int             numFailedAssertions;
-        int             numFailedAssertionsForCurrentTestcase;
+        int             hasCurrentTestFailed;
 
         std::vector<IContextScope*> contexts; // for logging with INFO() and friends
 
@@ -3250,7 +3299,7 @@ namespace detail
         try {
 #endif // DOCTEST_CONFIG_NO_EXCEPTIONS
             f();
-            if(getContextState()->numFailedAssertionsForCurrentTestcase)
+            if(getContextState()->hasCurrentTestFailed)
                 res = EXIT_FAILURE;
 #ifndef DOCTEST_CONFIG_NO_EXCEPTIONS
         } catch(const TestFailureException&) {
@@ -3340,7 +3389,7 @@ namespace detail
 
     void addFailedAssert(assertType::Enum assert_type) {
         if((assert_type & assertType::is_warn) == 0) {
-            getContextState()->numFailedAssertionsForCurrentTestcase++;
+            getContextState()->hasCurrentTestFailed = true;
             getContextState()->numFailedAssertions++;
         }
     }
@@ -3617,6 +3666,55 @@ namespace detail
     void ResultBuilder::react() const {
         if(m_failed && checkIfShouldThrow(m_assert_type))
             throwException();
+    }
+
+    MessageBuilder::MessageBuilder(const char* file, int line, doctest::detail::assertType::Enum severity)
+        : m_stream(createStream())
+        , m_file(file)
+        , m_line(line)
+        , m_severity(severity)
+    {}
+
+    bool MessageBuilder::log() {
+        DOCTEST_LOG_START();
+
+        bool is_warn = m_severity & doctest::detail::assertType::is_warn;
+
+        if(!is_warn)
+            getContextState()->hasCurrentTestFailed = true;
+
+        {
+            char loc[DOCTEST_SNPRINTF_BUFFER_LENGTH];
+            DOCTEST_SNPRINTF(loc, DOCTEST_COUNTOF(loc), "%s(%d)", fileForOutput(m_file), lineForOutput(m_line));
+            char msg[DOCTEST_SNPRINTF_BUFFER_LENGTH];
+            DOCTEST_SNPRINTF(msg, DOCTEST_COUNTOF(msg), " %s!\n", is_warn ? "MESSAGE" : getFailString(m_severity));
+
+            DOCTEST_PRINTF_COLORED(loc, Color::LightGrey);
+            DOCTEST_PRINTF_COLORED(msg, is_warn ? Color::Yellow : Color::Red);
+
+            String info = getStreamResult(m_stream);
+            DOCTEST_PRINTF_COLORED("  ", Color::None);
+            DOCTEST_PRINTF_COLORED(info.c_str(), Color::None);
+            DOCTEST_PRINTF_COLORED("\n", Color::None);
+            String context = logContext();
+            DOCTEST_PRINTF_COLORED(context.c_str(), Color::None);
+            DOCTEST_PRINTF_COLORED("\n", Color::None);
+
+            printToDebugConsole(String(loc) + msg + "  " + info.c_str() + "\n" + context.c_str() + "\n");
+        }
+
+        if(isDebuggerActive() && !DOCTEST_GCS().no_breaks && !is_warn)
+            return true; // should break into the debugger
+        return false;
+    }
+
+    void MessageBuilder::react() {
+        if(m_severity & doctest::detail::assertType::is_require)
+            throwException();
+    }
+    
+    MessageBuilder::~MessageBuilder() {
+        freeStream(m_stream);
     }
 
     // the implementation of parseFlag()
@@ -4086,8 +4184,8 @@ int Context::run() {
             p->subcasesPassed.clear();
             do {
                 // reset the assertion state
-                p->numAssertionsForCurrentTestcase       = 0;
-                p->numFailedAssertionsForCurrentTestcase = 0;
+                p->numAssertionsForCurrentTestcase = 0;
+                p->hasCurrentTestFailed = false;
 
                 // reset some of the fields for subcases (except for the set of fully passed ones)
                 p->subcasesHasSkipped   = false;
