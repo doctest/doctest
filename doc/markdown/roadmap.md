@@ -10,7 +10,6 @@ Planned features for future releases - order changes constantly...
 
 ### For 1.2:
 
-- add ```ERROR```/```FAIL``` macros (also ```ADD_FAILURE_AT(file, line);``` and extend the asserts to have ```_AT``` variants)
 - Parametric test cases (Value/Type-parameterized tests) - https://github.com/onqtam/doctest/issues/38
 - crash handling: signals on UNIX platforms or structured exceptions on Windows (should also have DOCTEST_CONFIG_NO_SIGNAL_CATCHING) - look at [Using a Separate Signal Stack](https://www.gnu.org/software/libc/manual/html_node/Signal-Stack.html) - and what is a core dump?
 - runtime performance
@@ -25,7 +24,7 @@ Planned features for future releases - order changes constantly...
     - remove old benchmarks for doctest 1.0
     - add runtime benchmarks
 - change docs a bit - mainly what is in the landing page (add link to overload)
-- address the coverage issue...
+- address the coverage issue... look at how this project does it: https://github.com/rollbear/trompeloeil
 
 ### For 1.3:
 

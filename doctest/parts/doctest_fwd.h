@@ -1072,7 +1072,6 @@ namespace detail
 
     struct TestAccessibleContextState
     {
-        bool success;  // include successful assertions in output
         bool no_throw; // to skip exceptions-related assertion macros
     };
 
@@ -1437,6 +1436,26 @@ namespace detail
             contextBuilder.build(stream);
         }
     };
+
+    class DOCTEST_INTERFACE MessageBuilder {
+        std::ostream* m_stream;
+        const char* m_file;
+        int m_line;
+        doctest::detail::assertType::Enum m_severity;
+    public:
+
+        MessageBuilder(const char* file, int line, doctest::detail::assertType::Enum severity);
+        ~MessageBuilder();
+
+        template<typename T>
+        MessageBuilder& operator<<(const T& in) {
+            doctest::detail::toStream(m_stream, in);
+            return *this;
+        }
+        
+        bool log();
+        void react();
+    };
 } // namespace detail
 
 #endif // DOCTEST_CONFIG_DISABLE
@@ -1578,6 +1597,23 @@ public:
 // for logging
 #define DOCTEST_INFO(x) doctest::detail::ContextScope DOCTEST_ANONYMOUS(_DOCTEST_CAPTURE_)(doctest::detail::ContextBuilder() << x)
 #define DOCTEST_CAPTURE(x) DOCTEST_INFO(#x " := " << x)
+
+#define DOCTEST_ADD_AT_IMPL(type, file, line, mb, x)                                               \
+    do {                                                                                           \
+        doctest::detail::MessageBuilder mb(file, line, doctest::detail::assertType::type);         \
+        mb << x;                                                                                   \
+        if(mb.log())                                                                               \
+            DOCTEST_BREAK_INTO_DEBUGGER();                                                         \
+        mb.react();                                                                                \
+    } while(doctest::detail::always_false())
+
+#define DOCTEST_ADD_MESSAGE_AT(file, line, x) DOCTEST_ADD_AT_IMPL(is_warn, file, line, DOCTEST_ANONYMOUS(_DOCTEST_MESSAGE_), x)
+#define DOCTEST_ADD_FAIL_CHECK_AT(file, line, x) DOCTEST_ADD_AT_IMPL(is_check, file, line, DOCTEST_ANONYMOUS(_DOCTEST_MESSAGE_), x)
+#define DOCTEST_ADD_FAIL_AT(file, line, x) DOCTEST_ADD_AT_IMPL(is_require, file, line, DOCTEST_ANONYMOUS(_DOCTEST_MESSAGE_), x)
+
+#define DOCTEST_MESSAGE(x) DOCTEST_ADD_MESSAGE_AT(__FILE__, __LINE__, x)
+#define DOCTEST_FAIL_CHECK(x) DOCTEST_ADD_FAIL_CHECK_AT(__FILE__, __LINE__, x)
+#define DOCTEST_FAIL(x) DOCTEST_ADD_FAIL_AT(__FILE__, __LINE__, x)
 
 // common code in asserts - for convenience
 #define DOCTEST_ASSERT_LOG_AND_REACT(rb)                                                           \
@@ -1992,6 +2028,12 @@ public:
 
 #define DOCTEST_INFO(x) ((void)0)
 #define DOCTEST_CAPTURE(x) ((void)0)
+#define DOCTEST_ADD_MESSAGE_AT(file, line, x) ((void)0)
+#define DOCTEST_ADD_FAIL_CHECK_AT(file, line, x) ((void)0)
+#define DOCTEST_ADD_FAIL_AT(file, line, x) ((void)0)
+#define DOCTEST_MESSAGE(x) ((void)0)
+#define DOCTEST_FAIL_CHECK(x) ((void)0)
+#define DOCTEST_FAIL(x) ((void)0)
 
 #ifdef DOCTEST_CONFIG_WITH_VARIADIC_MACROS
 #define DOCTEST_WARN(...) ((void)0)
@@ -2159,6 +2201,12 @@ public:
 #define REGISTER_EXCEPTION_TRANSLATOR DOCTEST_REGISTER_EXCEPTION_TRANSLATOR
 #define INFO DOCTEST_INFO
 #define CAPTURE DOCTEST_CAPTURE
+#define ADD_MESSAGE_AT DOCTEST_ADD_MESSAGE_AT
+#define ADD_FAIL_CHECK_AT DOCTEST_ADD_FAIL_CHECK_AT
+#define ADD_FAIL_AT DOCTEST_ADD_FAIL_AT
+#define MESSAGE DOCTEST_MESSAGE
+#define FAIL_CHECK DOCTEST_FAIL_CHECK
+#define FAIL DOCTEST_FAIL
 
 #define WARN DOCTEST_WARN
 #define WARN_FALSE DOCTEST_WARN_FALSE
