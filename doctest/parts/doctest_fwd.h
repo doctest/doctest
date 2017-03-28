@@ -1298,7 +1298,7 @@ namespace detail
     {};
 
     template <typename T>
-    void toStream(std::ostream* stream, const DOCTEST_REF_WRAP(T) value) {
+    void toStream(std::ostream* stream, const T& value) {
         StringStream<T>::convert(stream, value);
     }
 
@@ -1377,7 +1377,7 @@ namespace detail
         {}
 
         template<typename T>
-        ContextBuilder& operator<<(const T& in) {
+        ContextBuilder& operator<<(T& in) {
             Capture<T> temp(&in);
 
             // construct either on stack or on heap
