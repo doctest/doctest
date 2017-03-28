@@ -1415,14 +1415,11 @@ namespace detail
         }
 
 #ifdef DOCTEST_CONFIG_WITH_RVALUE_REFERENCES
-#ifdef DOCTEST_CONFIG_WITH_DELETED_FUNCTIONS
         template<typename T>
-        ContextBuilder& operator<<(const T&&) = delete;
-#else // DOCTEST_CONFIG_WITH_DELETED_FUNCTIONS
-    private:
-        template<typename T>
-        ContextBuilder& operator<<(const T&&);
-#endif // DOCTEST_CONFIG_WITH_DELETED_FUNCTIONS
+        ContextBuilder& operator<<(const T&&) {
+            DOCTEST_STATIC_ASSERT(deferred_false<T>::value, Cannot_pass_temporaries_or_rvalues_to_the_streaming_operator_because_it_caches_pointers_to_the_passed_objects_for_lazy_evaluation);
+            return *this;
+        }
 #endif // DOCTEST_CONFIG_WITH_RVALUE_REFERENCES
     };
 
