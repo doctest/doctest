@@ -25,7 +25,7 @@ main.cpp(0)
       When: the size is increased
       Then: the size and capacity change
 
-main.cpp(0) FAILED!
+main.cpp(0) ERROR!
   CHECK( v.size() == 20 )
 with expansion:
   CHECK( 10 == 20 )
@@ -37,7 +37,7 @@ main.cpp(0)
       When: less capacity is reserved
       Then: neither size nor capacity are changed
 
-main.cpp(0) FAILED!
+main.cpp(0) ERROR!
   CHECK( v.size() == 10 )
 with expansion:
   CHECK( 5 == 10 )
@@ -46,7 +46,7 @@ with expansion:
 main.cpp(0)
 test with a fixture - 2
 
-main.cpp(0) FAILED!
+main.cpp(0) ERROR!
   CHECK( data == 85 )
 with expansion:
   CHECK( 84 == 85 )

@@ -3,7 +3,7 @@
 f1.cpp(0)
 f1.cpp
 
-f1.cpp(0) FAILED!
+f1.cpp(0) ERROR!
   CHECK( 1 == 0 )
 with expansion:
   CHECK( 1 == 0 )
@@ -12,7 +12,7 @@ with expansion:
 f2.cpp(0)
 f2.cpp
 
-f2.cpp(0) FAILED!
+f2.cpp(0) ERROR!
   CHECK( 1 == 0 )
 with expansion:
   CHECK( 1 == 0 )
@@ -21,7 +21,7 @@ with expansion:
 hdr.h(0)
 hdr.h
 
-hdr.h(0) FAILED!
+hdr.h(0) ERROR!
   CHECK( 1 == 0 )
 with expansion:
   CHECK( 1 == 0 )

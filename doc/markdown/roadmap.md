@@ -15,6 +15,7 @@ Planned features for future releases - order changes constantly...
 - crash handling: signals on UNIX platforms or structured exceptions on Windows (should also have DOCTEST_CONFIG_NO_SIGNAL_CATCHING) - look at [Using a Separate Signal Stack](https://www.gnu.org/software/libc/manual/html_node/Signal-Stack.html) - and what is a core dump?
 - runtime performance
     - lazily stringify expressions - only when needed
+    - optimize createStream/freeStream to reuse a pool of ostringstream objects
     - get rid of local statics on the hot path - like in getContextState()
     - make a pool allocator for the ```String``` class - currently very unoptimized
     - add move semantics to the ```String``` class
@@ -66,6 +67,8 @@ Planned features for future releases - order changes constantly...
 - failure reporting should print out previous SECTIONs for data-driven testing - as requested [here](https://github.com/philsquared/Catch/issues/734)
 - ```Bitwise()``` class that has overloaded operators for comparison - to be used to check objects bitwise against each other
 - detect floating point exceptions
+- checkpoint/passpoint - like in [boost test](http://www.boost.org/doc/libs/1_63_0/libs/test/doc/html/boost_test/test_output/test_tools_support_for_logging/checkpoints.html)
+- log levels - like in [boost test](http://www.boost.org/doc/libs/1_63_0/libs/test/doc/html/boost_test/utf_reference/rt_param_reference/log_level.html)
 - support for tags
     - may fail tag
     - invisible tag
