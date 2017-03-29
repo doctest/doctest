@@ -5,8 +5,6 @@
 look at boost test again:
 http://www.boost.org/doc/libs/1_63_0/libs/test/doc/html/index.html
 
-document that the exception in the _THROWS_AS macros is used as-is and users should use const ref
-
 
 note in all custom mains with a comment that the defaults/overrides are just an example and users shouldn't just copy/paste them!
 
@@ -64,6 +62,7 @@ slashdot?
 
 == other
 - compilation errors with operator<< - happens with doctest - in case it comes up... https://github.com/philsquared/Catch/issues/757
+- operator<< trouble - https://github.com/philsquared/Catch/issues/872
 
 - I suspect -Wsign-compare is not being silenced by the pragmas...
   see this build - https://travis-ci.org/onqtam/game/jobs/196987454
