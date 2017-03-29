@@ -228,15 +228,15 @@ namespace detail
 
         int  abort_after;           // stop tests after this many failed assertions
         int  subcase_filter_levels; // apply the subcase filters for the first N levels
-        bool success;        // include successful assertions in output
-        bool case_sensitive; // if filtering should be case sensitive
-        bool exit;           // if the program should be exited after the tests are ran/whatever
-        bool no_exitcode;    // if the framework should return 0 as the exitcode
-        bool no_run;         // to not run the tests at all (can be done with an "*" exclude)
-        bool no_version;     // to not print the version of the framework
-        bool no_colors;      // if output to the console should be colorized
-        bool force_colors;   // forces the use of colors even when a tty cannot be detected
-        bool no_breaks;      // to not break into the debugger
+        bool success;               // include successful assertions in output
+        bool case_sensitive;        // if filtering should be case sensitive
+        bool exit;         // if the program should be exited after the tests are ran/whatever
+        bool no_exitcode;  // if the framework should return 0 as the exitcode
+        bool no_run;       // to not run the tests at all (can be done with an "*" exclude)
+        bool no_version;   // to not print the version of the framework
+        bool no_colors;    // if output to the console should be colorized
+        bool force_colors; // forces the use of colors even when a tty cannot be detected
+        bool no_breaks;    // to not break into the debugger
         bool no_path_in_filenames; // if the path to files should be removed from the output
         bool no_line_numbers;      // if source code line numbers should be omitted from the output
 
@@ -506,12 +506,13 @@ extern "C" __declspec(dllimport) int __stdcall IsDebuggerPresent();
 
 #endif // DOCTEST_CONFIG_COLORS_WINDOWS
 
-namespace doctest_detail_test_suite_ns {
-    // holds the current test suite
-    const char*& getCurrentTestSuite() {
-        static const char* data = 0;
-        return data;
-    }
+namespace doctest_detail_test_suite_ns
+{
+// holds the current test suite
+const char*& getCurrentTestSuite() {
+    static const char* data = 0;
+    return data;
+}
 } // namespace doctest_detail_test_suite_ns
 
 namespace doctest
@@ -626,9 +627,9 @@ namespace detail
     bool always_false() { return false; }
 
     void my_memcpy(void* dest, void* src, int num) {
-        char* csrc = static_cast<char*>(src);
+        char* csrc  = static_cast<char*>(src);
         char* cdest = static_cast<char*>(dest);
-        for(int i = 0; i < num; ++i)
+        for(int i    = 0; i < num; ++i)
             cdest[i] = csrc[i];
     }
 
@@ -943,43 +944,35 @@ namespace detail
         return data;
     }
 
-    void registerExceptionTranslatorImpl(const IExceptionTranslator* translateFunction) {   
+    void registerExceptionTranslatorImpl(const IExceptionTranslator* translateFunction) {
         getExceptionTranslators().push_back(translateFunction);
     }
 
     String translateActiveException() {
 #ifndef DOCTEST_CONFIG_NO_EXCEPTIONS
-        ExceptionTranslatorResult res;
+        ExceptionTranslatorResult                 res;
         std::vector<const IExceptionTranslator*>& translators = getExceptionTranslators();
         for(size_t i = 0; i < translators.size() && res.success == false; ++i)
             res = translators[i]->translate();
         if(res.success == false) {
             try {
                 throw;
-            } catch(TestFailureException&) {
-                throw;
-            } catch(std::exception& ex) {
+            } catch(TestFailureException&) { throw; } catch(std::exception& ex) {
                 res.result = ex.what();
-            } catch(std::string& msg) {
-                res.result = msg.c_str();
-            } catch(const char* msg) {
+            } catch(std::string& msg) { res.result = msg.c_str(); } catch(const char* msg) {
                 res.result = msg;
-            } catch(...) {
-                res.result = "unknown exception";
-            }
+            } catch(...) { res.result = "unknown exception"; }
         }
         return res.result;
-#else // DOCTEST_CONFIG_NO_EXCEPTIONS
+#else  // DOCTEST_CONFIG_NO_EXCEPTIONS
         return "";
 #endif // DOCTEST_CONFIG_NO_EXCEPTIONS
     }
 
-    void writeStringToStream(std::ostream* stream, const String& str) {
-        *stream << str;
-    }
+    void writeStringToStream(std::ostream* stream, const String& str) { *stream << str; }
 
     void addToContexts(IContextScope* ptr) { getContextState()->contexts.push_back(ptr); }
-    void popFromContexts() { getContextState()->contexts.pop_back(); }
+    void                              popFromContexts() { getContextState()->contexts.pop_back(); }
 
     // this is needed because MSVC does not permit mixing 2 exception handling schemes in a function
     int callTestFunc(funcType f) {
@@ -991,9 +984,7 @@ namespace detail
             if(getContextState()->hasCurrentTestFailed)
                 res = EXIT_FAILURE;
 #ifndef DOCTEST_CONFIG_NO_EXCEPTIONS
-        } catch(const TestFailureException&) {
-            res = EXIT_FAILURE;
-        } catch(...) {
+        } catch(const TestFailureException&) { res = EXIT_FAILURE; } catch(...) {
             DOCTEST_LOG_START();
             logTestException(translateActiveException());
             res = EXIT_FAILURE;
@@ -1055,7 +1046,7 @@ namespace detail
         return ((info.kp_proc.p_flag & P_TRACED) != 0);
     }
 #elif defined(_MSC_VER) || defined(__MINGW32__)
-    bool    isDebuggerActive() { return ::IsDebuggerPresent() != 0; }
+    bool isDebuggerActive() { return ::IsDebuggerPresent() != 0; }
 #else
     bool isDebuggerActive() { return false; }
 #endif // Platform
@@ -1085,7 +1076,8 @@ namespace detail
 
     void logTestStart(const char* name, const char* file, unsigned line) {
         char loc[DOCTEST_SNPRINTF_BUFFER_LENGTH];
-        DOCTEST_SNPRINTF(loc, DOCTEST_COUNTOF(loc), "%s(%d)\n", fileForOutput(file), lineForOutput(line));
+        DOCTEST_SNPRINTF(loc, DOCTEST_COUNTOF(loc), "%s(%d)\n", fileForOutput(file),
+                         lineForOutput(line));
 
         char msg[DOCTEST_SNPRINTF_BUFFER_LENGTH];
         DOCTEST_SNPRINTF(msg, DOCTEST_COUNTOF(msg), "%s\n", name);
@@ -1132,7 +1124,7 @@ namespace detail
     }
 
     String logContext() {
-        std::ostringstream stream;
+        std::ostringstream           stream;
         std::vector<IContextScope*>& contexts = getContextState()->contexts;
         if(contexts.size() > 0)
             stream << "with context:\n";
@@ -1145,19 +1137,24 @@ namespace detail
     }
 
     const char* getFailString(assertType::Enum assert_type) {
-        if(assert_type & assertType::is_warn) return "WARNING";
-        if(assert_type & assertType::is_check) return "ERROR";
-        if(assert_type & assertType::is_require) return "FATAL ERROR";
+        if(assert_type & assertType::is_warn)
+            return "WARNING";
+        if(assert_type & assertType::is_check)
+            return "ERROR";
+        if(assert_type & assertType::is_require)
+            return "FATAL ERROR";
         return "";
     }
 
-    void logAssert(bool passed, const char* decomposition, bool threw, const String& exception, const char* expr,
-                   assertType::Enum assert_type, const char* file, int line) {
+    void logAssert(bool passed, const char* decomposition, bool threw, const String& exception,
+                   const char* expr, assertType::Enum assert_type, const char* file, int line) {
         char loc[DOCTEST_SNPRINTF_BUFFER_LENGTH];
-        DOCTEST_SNPRINTF(loc, DOCTEST_COUNTOF(loc), "%s(%d)", fileForOutput(file), lineForOutput(line));
+        DOCTEST_SNPRINTF(loc, DOCTEST_COUNTOF(loc), "%s(%d)", fileForOutput(file),
+                         lineForOutput(line));
 
         char msg[DOCTEST_SNPRINTF_BUFFER_LENGTH];
-        DOCTEST_SNPRINTF(msg, DOCTEST_COUNTOF(msg), " %s!\n", passed ? "PASSED" : getFailString(assert_type));
+        DOCTEST_SNPRINTF(msg, DOCTEST_COUNTOF(msg), " %s!\n",
+                         passed ? "PASSED" : getFailString(assert_type));
 
         char info1[DOCTEST_SNPRINTF_BUFFER_LENGTH];
         DOCTEST_SNPRINTF(info1, DOCTEST_COUNTOF(info1), "  %s( %s )\n",
@@ -1177,7 +1174,10 @@ namespace detail
         }
 
         DOCTEST_PRINTF_COLORED(loc, Color::LightGrey);
-        DOCTEST_PRINTF_COLORED(msg, passed ? Color::BrightGreen : (assert_type & assertType::is_warn) ? Color::Yellow : Color::Red);
+        DOCTEST_PRINTF_COLORED(msg,
+                               passed ? Color::BrightGreen :
+                                        (assert_type & assertType::is_warn) ? Color::Yellow :
+                                                                              Color::Red);
         DOCTEST_PRINTF_COLORED(info1, Color::Cyan);
         DOCTEST_PRINTF_COLORED(info2, Color::None);
         DOCTEST_PRINTF_COLORED(info3, Color::Cyan);
@@ -1191,10 +1191,12 @@ namespace detail
     void logAssertThrows(bool threw, const char* expr, assertType::Enum assert_type,
                          const char* file, int line) {
         char loc[DOCTEST_SNPRINTF_BUFFER_LENGTH];
-        DOCTEST_SNPRINTF(loc, DOCTEST_COUNTOF(loc), "%s(%d)", fileForOutput(file), lineForOutput(line));
+        DOCTEST_SNPRINTF(loc, DOCTEST_COUNTOF(loc), "%s(%d)", fileForOutput(file),
+                         lineForOutput(line));
 
         char msg[DOCTEST_SNPRINTF_BUFFER_LENGTH];
-        DOCTEST_SNPRINTF(msg, DOCTEST_COUNTOF(msg), " %s!\n", threw ? "PASSED" : getFailString(assert_type));
+        DOCTEST_SNPRINTF(msg, DOCTEST_COUNTOF(msg), " %s!\n",
+                         threw ? "PASSED" : getFailString(assert_type));
 
         char info1[DOCTEST_SNPRINTF_BUFFER_LENGTH];
         DOCTEST_SNPRINTF(info1, DOCTEST_COUNTOF(info1), "  %s( %s )\n",
@@ -1207,7 +1209,10 @@ namespace detail
             DOCTEST_SNPRINTF(info2, DOCTEST_COUNTOF(info2), "didn't throw at all\n");
 
         DOCTEST_PRINTF_COLORED(loc, Color::LightGrey);
-        DOCTEST_PRINTF_COLORED(msg, threw ? Color::BrightGreen : (assert_type & assertType::is_warn) ? Color::Yellow : Color::Red);
+        DOCTEST_PRINTF_COLORED(msg,
+                               threw ? Color::BrightGreen :
+                                       (assert_type & assertType::is_warn) ? Color::Yellow :
+                                                                             Color::Red);
         DOCTEST_PRINTF_COLORED(info1, Color::Cyan);
         DOCTEST_PRINTF_COLORED(info2, Color::None);
         String context = logContext();
@@ -1217,13 +1222,16 @@ namespace detail
         printToDebugConsole(String(loc) + msg + info1 + info2 + context.c_str() + "\n");
     }
 
-    void logAssertThrowsAs(bool threw, bool threw_as, const char* as, const String& exception, const char* expr,
-                           assertType::Enum assert_type, const char* file, int line) {
+    void logAssertThrowsAs(bool threw, bool threw_as, const char* as, const String& exception,
+                           const char* expr, assertType::Enum assert_type, const char* file,
+                           int line) {
         char loc[DOCTEST_SNPRINTF_BUFFER_LENGTH];
-        DOCTEST_SNPRINTF(loc, DOCTEST_COUNTOF(loc), "%s(%d)", fileForOutput(file), lineForOutput(line));
+        DOCTEST_SNPRINTF(loc, DOCTEST_COUNTOF(loc), "%s(%d)", fileForOutput(file),
+                         lineForOutput(line));
 
         char msg[DOCTEST_SNPRINTF_BUFFER_LENGTH];
-        DOCTEST_SNPRINTF(msg, DOCTEST_COUNTOF(msg), " %s!\n", threw_as ? "PASSED" : getFailString(assert_type));
+        DOCTEST_SNPRINTF(msg, DOCTEST_COUNTOF(msg), " %s!\n",
+                         threw_as ? "PASSED" : getFailString(assert_type));
 
         char info1[DOCTEST_SNPRINTF_BUFFER_LENGTH];
         DOCTEST_SNPRINTF(info1, DOCTEST_COUNTOF(info1), "  %s( %s, %s )\n",
@@ -1242,7 +1250,10 @@ namespace detail
         }
 
         DOCTEST_PRINTF_COLORED(loc, Color::LightGrey);
-        DOCTEST_PRINTF_COLORED(msg, threw_as ? Color::BrightGreen : (assert_type & assertType::is_warn) ? Color::Yellow : Color::Red);
+        DOCTEST_PRINTF_COLORED(msg,
+                               threw_as ? Color::BrightGreen :
+                                          (assert_type & assertType::is_warn) ? Color::Yellow :
+                                                                                Color::Red);
         DOCTEST_PRINTF_COLORED(info1, Color::Cyan);
         DOCTEST_PRINTF_COLORED(info2, Color::None);
         DOCTEST_PRINTF_COLORED(info3, Color::Cyan);
@@ -1253,13 +1264,15 @@ namespace detail
         printToDebugConsole(String(loc) + msg + info1 + info2 + info3 + context.c_str() + "\n");
     }
 
-    void logAssertNothrow(bool threw, const String& exception, const char* expr, assertType::Enum assert_type,
-                          const char* file, int line) {
+    void logAssertNothrow(bool threw, const String& exception, const char* expr,
+                          assertType::Enum assert_type, const char* file, int line) {
         char loc[DOCTEST_SNPRINTF_BUFFER_LENGTH];
-        DOCTEST_SNPRINTF(loc, DOCTEST_COUNTOF(loc), "%s(%d)", fileForOutput(file), lineForOutput(line));
+        DOCTEST_SNPRINTF(loc, DOCTEST_COUNTOF(loc), "%s(%d)", fileForOutput(file),
+                         lineForOutput(line));
 
         char msg[DOCTEST_SNPRINTF_BUFFER_LENGTH];
-        DOCTEST_SNPRINTF(msg, DOCTEST_COUNTOF(msg), " %s!\n", !threw ? "PASSED" : getFailString(assert_type));
+        DOCTEST_SNPRINTF(msg, DOCTEST_COUNTOF(msg), " %s!\n",
+                         !threw ? "PASSED" : getFailString(assert_type));
 
         char info1[DOCTEST_SNPRINTF_BUFFER_LENGTH];
         DOCTEST_SNPRINTF(info1, DOCTEST_COUNTOF(info1), "  %s( %s )\n",
@@ -1275,7 +1288,10 @@ namespace detail
         }
 
         DOCTEST_PRINTF_COLORED(loc, Color::LightGrey);
-        DOCTEST_PRINTF_COLORED(msg, !threw ? Color::BrightGreen : (assert_type & assertType::is_warn) ? Color::Yellow : Color::Red);
+        DOCTEST_PRINTF_COLORED(msg,
+                               !threw ? Color::BrightGreen :
+                                        (assert_type & assertType::is_warn) ? Color::Yellow :
+                                                                              Color::Red);
         DOCTEST_PRINTF_COLORED(info1, Color::Cyan);
         DOCTEST_PRINTF_COLORED(info2, Color::None);
         DOCTEST_PRINTF_COLORED(info3, Color::Cyan);
@@ -1334,13 +1350,13 @@ namespace detail
             if(m_assert_type & assertType::is_throws) {
                 logAssertThrows(m_threw, m_expr, m_assert_type, m_file, m_line);
             } else if(m_assert_type & assertType::is_throws_as) {
-                logAssertThrowsAs(m_threw, m_threw_as, m_exception_type, m_exception, m_expr, m_assert_type,
-                                  m_file, m_line);
+                logAssertThrowsAs(m_threw, m_threw_as, m_exception_type, m_exception, m_expr,
+                                  m_assert_type, m_file, m_line);
             } else if(m_assert_type & assertType::is_nothrow) {
                 logAssertNothrow(m_threw, m_exception, m_expr, m_assert_type, m_file, m_line);
             } else {
-                logAssert(m_result.m_passed, m_result.m_decomposition.c_str(), m_threw, m_exception, m_expr,
-                          m_assert_type, m_file, m_line);
+                logAssert(m_result.m_passed, m_result.m_decomposition.c_str(), m_threw, m_exception,
+                          m_expr, m_assert_type, m_file, m_line);
             }
         }
 
@@ -1357,12 +1373,12 @@ namespace detail
             throwException();
     }
 
-    MessageBuilder::MessageBuilder(const char* file, int line, doctest::detail::assertType::Enum severity)
-        : m_stream(createStream())
-        , m_file(file)
-        , m_line(line)
-        , m_severity(severity)
-    {}
+    MessageBuilder::MessageBuilder(const char* file, int line,
+                                   doctest::detail::assertType::Enum severity)
+            : m_stream(createStream())
+            , m_file(file)
+            , m_line(line)
+            , m_severity(severity) {}
 
     bool MessageBuilder::log() {
         DOCTEST_LOG_START();
@@ -1374,9 +1390,11 @@ namespace detail
 
         {
             char loc[DOCTEST_SNPRINTF_BUFFER_LENGTH];
-            DOCTEST_SNPRINTF(loc, DOCTEST_COUNTOF(loc), "%s(%d)", fileForOutput(m_file), lineForOutput(m_line));
+            DOCTEST_SNPRINTF(loc, DOCTEST_COUNTOF(loc), "%s(%d)", fileForOutput(m_file),
+                             lineForOutput(m_line));
             char msg[DOCTEST_SNPRINTF_BUFFER_LENGTH];
-            DOCTEST_SNPRINTF(msg, DOCTEST_COUNTOF(msg), " %s!\n", is_warn ? "MESSAGE" : getFailString(m_severity));
+            DOCTEST_SNPRINTF(msg, DOCTEST_COUNTOF(msg), " %s!\n",
+                             is_warn ? "MESSAGE" : getFailString(m_severity));
 
             DOCTEST_PRINTF_COLORED(loc, Color::LightGrey);
             DOCTEST_PRINTF_COLORED(msg, is_warn ? Color::Yellow : Color::Red);
@@ -1389,7 +1407,8 @@ namespace detail
             DOCTEST_PRINTF_COLORED(context.c_str(), Color::None);
             DOCTEST_PRINTF_COLORED("\n", Color::None);
 
-            printToDebugConsole(String(loc) + msg + "  " + info.c_str() + "\n" + context.c_str() + "\n");
+            printToDebugConsole(String(loc) + msg + "  " + info.c_str() + "\n" + context.c_str() +
+                                "\n");
         }
 
         if(isDebuggerActive() && !DOCTEST_GCS().no_breaks && !is_warn)
@@ -1401,10 +1420,8 @@ namespace detail
         if(m_severity & doctest::detail::assertType::is_require)
             throwException();
     }
-    
-    MessageBuilder::~MessageBuilder() {
-        freeStream(m_stream);
-    }
+
+    MessageBuilder::~MessageBuilder() { freeStream(m_stream); }
 
     // the implementation of parseFlag()
     bool parseFlagImpl(int argc, const char* const* argv, const char* pattern) {
@@ -1582,7 +1599,8 @@ namespace detail
         printf(" -l,   --last=<int>                    the last test passing the filters to\n");
         printf("                                       execute - for range-based execution\n");
         printf(" -aa,  --abort-after=<int>             stop after <int> failed assertions\n");
-        printf(" -scfl,--subcase-filter-levels=<int>   apply filters for the first <int> levels\n\n");
+        printf(" -scfl,--subcase-filter-levels=<int>   apply filters for the first <int> "
+               "levels\n\n");
         DOCTEST_PRINTF_COLORED("[doctest] ", Color::Cyan);
         printf("Bool options - can be used like flags and true is assumed. Available:\n\n");
         printf(" -s,   --success=<bool>                include successful assertions in output\n");
@@ -1596,7 +1614,8 @@ namespace detail
         printf(" -fc,  --force-colors=<bool>           use colors even when not in a tty\n");
         printf(" -nb,  --no-breaks=<bool>              disables breakpoints in debuggers\n");
         printf(" -npf, --no-path-filenames=<bool>      only filenames and no paths in output\n");
-        printf(" -nln, --no-line-numbers=<bool>        0 instead of real line numbers in output\n\n");
+        printf(" -nln, --no-line-numbers=<bool>        0 instead of real line numbers in "
+               "output\n\n");
         // ==================================================================================== << 79
 
         DOCTEST_PRINTF_COLORED("[doctest] ", Color::Cyan);
@@ -1874,7 +1893,7 @@ int Context::run() {
             do {
                 // reset the assertion state
                 p->numAssertionsForCurrentTestcase = 0;
-                p->hasCurrentTestFailed = false;
+                p->hasCurrentTestFailed            = false;
 
                 // reset some of the fields for subcases (except for the set of fully passed ones)
                 p->subcasesHasSkipped   = false;
