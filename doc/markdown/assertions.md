@@ -102,6 +102,12 @@ Expects that an exception (of any type) is thrown during evaluation of the expre
 
 Expects that an exception of the _specified type_ is thrown during evaluation of the expression.
 
+Note that the exception type is used as-is - no const or reference is added - so users are expected to specify them since the standard practice for exceptions in C++ is ```Throw by value, catch by reference```.
+
+```c++
+CHECK_THROWS_AS(func(), const std::exception&); // note the reference and the const
+```
+
 * ```<LEVEL>_NOTHROW(expression)```
 
 Expects that no exception is thrown during evaluation of the expression.
