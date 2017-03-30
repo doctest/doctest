@@ -187,8 +187,8 @@ This option forces all doctest asserts to copy by value the expressions they are
 template<typename T> struct type_traits { static const bool value = false; };
 
 // unless DOCTEST_CONFIG_ASSERTION_PARAMETERS_BY_VALUE is defined the following assertion
-// will lead to a linker error if type_traits<T>::value isn't defined in a translation unit
-CHECK(type_traits::value == false);
+// will lead to a linker error if type_traits<int>::value isn't defined in a translation unit
+CHECK(type_traits<int>::value == false);
 ```
 
 This can be defined both globally and in specific source files only.
