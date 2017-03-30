@@ -25,6 +25,7 @@ Planned features for future releases - order changes constantly...
     - add runtime benchmarks
 - change docs a bit - mainly what is in the landing page (add link to overload)
 - address the coverage issue... look at how this project does it: https://github.com/rollbear/trompeloeil
+- resolve pull/60 (merge in dev, move cmake folder in scripts, maybe change/remove some of the 2 new SKIP options)
 
 ### For 1.3:
 
@@ -48,7 +49,10 @@ Planned features for future releases - order changes constantly...
 - convolution support for the assertion macros (with a predicate)
 - generators? - look at Catch - and investigate what they are (also in [boost](http://www.boost.org/doc/libs/1_61_0/libs/test/doc/html/boost_test/tests_organization/test_cases/test_case_generation.html))
 - mocking - investigate google mock assertion macros and interop with doctest (also [mockitopp](https://github.com/tpounds/mockitopp) and [trompeloeil](https://github.com/rollbear/trompeloeil)) - and write in FAQ - lest integrates with trompeloeil like [this](https://github.com/martinmoene/lest/commit/d347460642c80b227a5930bd92420726a9f085b3)
-- look at property based testing (for example [rapidcheck](https://github.com/emil-e/rapidcheck)) - and write in FAQ
+- look at property based testing
+    - [rapidcheck](https://github.com/emil-e/rapidcheck)
+    - [autocheck](https://github.com/thejohnfreeman/autocheck)
+    - [CppQuickCheck](https://github.com/grogers0/CppQuickCheck)
 
 ### For 1.4:
 
