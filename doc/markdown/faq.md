@@ -31,7 +31,6 @@ Missing stuff:
 - no support for tags (the user can add *tags* in the test case names like this: ```TEST_CASE("[myTag] test name")```)
 - a reporter/listener system - to a file, to xml, ability for the user to write their own reporter, etc.
 - measuring how much time a test case executes
-- adding contextual info to asserts with ```INFO```/```CONTEXT```
 - signal handling
 - matchers and generators
 - other small stuff

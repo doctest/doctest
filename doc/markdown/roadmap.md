@@ -18,6 +18,12 @@ Planned features for future releases - order changes constantly...
     - get rid of local statics on the hot path - like in getContextState()
     - make a pool allocator for the ```String``` class - currently very unoptimized
     - add move semantics to the ```String``` class
+- mocking - interop with doctest (+ maybe send PRs with doctest integration info)
+    - google mock
+    - https://github.com/eranpeer/FakeIt
+    - https://github.com/tpounds/mockitopp
+    - https://github.com/rollbear/trompeloeil
+    - https://github.com/dascandy/hippomocks
 - benchmarking
     - make the bench.py script more usable - with command line arguments
     - redo the compile time ones - also look into CATCH_CONFIG_FAST_COMPILE
@@ -37,7 +43,7 @@ Planned features for future releases - order changes constantly...
     - a compact reporter
     - a progress reporter - or maybe just an option for the console reporter
     - an xml reporter
-    - jUnit/xUnit reporters
+    - xUnit reporter
     - a listener interface - similar to a reporter - look at Catch
 - ability to have no output when everything succeeds
 - option to output summary only
@@ -47,8 +53,7 @@ Planned features for future releases - order changes constantly...
     - killing a test that exceeds a time limit (will perhaps require threading or processes)
 - matchers - should investigate what they are - look at google test and Catch
 - convolution support for the assertion macros (with a predicate)
-- generators? - look at Catch - and investigate what they are (also in [boost](http://www.boost.org/doc/libs/1_61_0/libs/test/doc/html/boost_test/tests_organization/test_cases/test_case_generation.html))
-- mocking - investigate google mock assertion macros and interop with doctest (also [mockitopp](https://github.com/tpounds/mockitopp) and [trompeloeil](https://github.com/rollbear/trompeloeil)) - and write in FAQ - lest integrates with trompeloeil like [this](https://github.com/martinmoene/lest/commit/d347460642c80b227a5930bd92420726a9f085b3)
+- generators? - look at Catch - and investigate what they are
 - look at property based testing
     - [rapidcheck](https://github.com/emil-e/rapidcheck)
     - [autocheck](https://github.com/thejohnfreeman/autocheck)
@@ -66,6 +71,7 @@ Planned features for future releases - order changes constantly...
 
 ### Things that are being considered but not part of the roadmap yet:
 
+- think about preserving context from ```INFO()``` contexts when the test case ends from an exception - Catch PR [here](https://github.com/philsquared/Catch/pull/876)
 - when no assertion is encountered in a test case it should fail
 - failure reporting should print out previous SECTIONs for data-driven testing - as requested [here](https://github.com/philsquared/Catch/issues/734)
 - ```Bitwise()``` class that has overloaded operators for comparison - to be used to check objects bitwise against each other
