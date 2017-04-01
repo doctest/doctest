@@ -1,10 +1,30 @@
 [doctest] run with "--help" for options
 Hello world!
-foo
-end
-Hello world!
-baz
-end
+===============================================================================
+test.cpp(0)
+stuff
+
+test.cpp(0) MESSAGE!
+  lala: 542
+with context:
+  5
+
+test.cpp(0) WARNING!
+  WARN( 1 == throws(true) )
+threw exception:
+  unknown exception
+with context:
+  5
+  sdf5
+
+test.cpp(0) WARNING!
+  WARN_THROWS_AS( throws(true), char )
+threw a different exception:
+  unknown exception
+with context:
+  5
+  sad
+
 ===============================================================================
 [doctest] test cases:    1 |    1 passed |    0 failed |    0 skipped
-[doctest] assertions:    2 |    2 passed |    0 failed |
+[doctest] assertions:    0 |    0 passed |    0 failed |

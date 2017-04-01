@@ -331,9 +331,6 @@
 #define DOCTEST_TOSTR(x) DOCTEST_TOSTR_IMPL(x)
 #endif // DOCTEST_CONFIG_WITH_VARIADIC_MACROS
 
-// for concatenating literals and making the result a string
-#define DOCTEST_STR_CONCAT_TOSTR(s1, s2) DOCTEST_TOSTR(s1) DOCTEST_TOSTR(s2)
-
 // counts the number of elements in a C string
 #define DOCTEST_COUNTOF(x) (sizeof(x) / sizeof(x[0]))
 
@@ -1055,12 +1052,14 @@ namespace detail
 
     // forward declarations of functions used by the macros
     DOCTEST_INTERFACE int regTest(void (*f)(void), unsigned line, const char* file,
-                                  const char* name, const char* suite);
+                                  const char* name, const char* suite, const char* type = "",
+                                  int template_id = 0);
     DOCTEST_INTERFACE int setTestSuiteName(const char* name);
 
     DOCTEST_INTERFACE void addFailedAssert(assertType::Enum assert_type);
 
-    DOCTEST_INTERFACE void logTestStart(const char* name, const char* file, unsigned line);
+    DOCTEST_INTERFACE void logTestStart(const char* name, const char* type_name, const char* file,
+                                        unsigned line);
     DOCTEST_INTERFACE void logTestEnd();
 
     DOCTEST_INTERFACE void logTestException(String what);
@@ -2486,9 +2485,9 @@ DOCTEST_TEST_SUITE_END();
 #define DOCTEST_LOG_START()                                                                        \
     do {                                                                                           \
         if(!DOCTEST_GCS().hasLoggedCurrentTestStart) {                                             \
-            doctest::detail::logTestStart(DOCTEST_GCS().currentTest->m_name,                       \
-                                          DOCTEST_GCS().currentTest->m_file,                       \
-                                          DOCTEST_GCS().currentTest->m_line);                      \
+            doctest::detail::logTestStart(                                                         \
+                    DOCTEST_GCS().currentTest->m_name, DOCTEST_GCS().currentTest->m_type_name,     \
+                    DOCTEST_GCS().currentTest->m_file, DOCTEST_GCS().currentTest->m_line);         \
             DOCTEST_GCS().hasLoggedCurrentTestStart = true;                                        \
         }                                                                                          \
     } while(doctest::detail::always_false())
@@ -2603,20 +2602,25 @@ namespace detail
     struct TestData
     {
         // not used for determining uniqueness
-        const char* m_suite; // the test suite in which the test was added
-        const char* m_name;  // name of the test function
-        funcType    m_f;     // a function pointer to the test function
+        const char* m_suite;     // the test suite in which the test was added
+        const char* m_name;      // name of the test function
+        const char* m_type_name; // the type for a templated test case
+        funcType    m_f;         // a function pointer to the test function
 
         // fields by which uniqueness of test cases shall be determined
         const char* m_file; // the file in which the test was registered
         unsigned    m_line; // the line where the test was registered
+        int m_template_id; // an ID used to distinguish between the different versions of a templated test case
 
-        TestData(const char* suite, const char* name, funcType f, const char* file, unsigned line)
+        TestData(const char* suite, const char* name, funcType f, const char* file, unsigned line,
+                 const char* type_name, int template_id)
                 : m_suite(suite)
                 , m_name(name)
+                , m_type_name(type_name)
                 , m_f(f)
                 , m_file(file)
-                , m_line(line) {}
+                , m_line(line)
+                , m_template_id(template_id) {}
 
         bool operator<(const TestData& other) const;
     };
@@ -2930,7 +2934,10 @@ namespace detail
     bool TestData::operator<(const TestData& other) const {
         if(m_line != other.m_line)
             return m_line < other.m_line;
-        return strcmp(m_file, other.m_file) < 0;
+        int file_cmp = strcmp(m_file, other.m_file);
+        if(file_cmp != 0)
+            return file_cmp < 0;
+        return m_template_id < other.m_template_id;
     }
 
     const char* getAssertString(assertType::Enum val) {
@@ -3233,8 +3240,9 @@ namespace detail
     }
 
     // used by the macros for registering tests
-    int regTest(funcType f, unsigned line, const char* file, const char* name, const char* suite) {
-        getRegisteredTests().insert(TestData(suite, name, f, file, line));
+    int regTest(funcType f, unsigned line, const char* file, const char* name, const char* suite,
+                const char* type, int template_id) {
+        getRegisteredTests().insert(TestData(suite, name, f, file, line, type, template_id));
         return 0;
     }
 
@@ -3465,9 +3473,13 @@ namespace detail
     // TODO: integration with XCode and other IDEs
     void myOutputDebugString(const String&) {}
 #endif // Platform
-
+    
     const char* getSeparator() {
         return "===============================================================================\n";
+    }
+
+    const char* getTestCaseSeparator() {
+        return "== TEST CASE ==================================================================\n";
     }
 
     void printToDebugConsole(const String& text) {
@@ -3482,15 +3494,15 @@ namespace detail
         }
     }
 
-    void logTestStart(const char* name, const char* file, unsigned line) {
+    void logTestStart(const char* name, const char* type_name, const char* file, unsigned line) {
         char loc[DOCTEST_SNPRINTF_BUFFER_LENGTH];
         DOCTEST_SNPRINTF(loc, DOCTEST_COUNTOF(loc), "%s(%d)\n", fileForOutput(file),
                          lineForOutput(line));
 
         char msg[DOCTEST_SNPRINTF_BUFFER_LENGTH];
-        DOCTEST_SNPRINTF(msg, DOCTEST_COUNTOF(msg), "%s\n", name);
+        DOCTEST_SNPRINTF(msg, DOCTEST_COUNTOF(msg), "%s%s\n", name, type_name ? type_name : "");
 
-        DOCTEST_PRINTF_COLORED(getSeparator(), Color::Yellow);
+        DOCTEST_PRINTF_COLORED(getTestCaseSeparator(), Color::Yellow);
         DOCTEST_PRINTF_COLORED(loc, Color::LightGrey);
         DOCTEST_PRINTF_COLORED(msg, Color::None);
 
@@ -3506,7 +3518,7 @@ namespace detail
 
         DOCTEST_PRINTF_COLORED("\n", Color::None);
 
-        printToDebugConsole(String(getSeparator()) + loc + msg + subcaseStuff.c_str() + "\n");
+        printToDebugConsole(String(getTestCaseSeparator()) + loc + msg + subcaseStuff.c_str() + "\n");
     }
 
     void logTestEnd() {}
@@ -4069,8 +4081,8 @@ void Context::parseArgs(int argc, const char* const* argv, bool withDefaults) {
     String strRes;
 
 #define DOCTEST_PARSE_AS_BOOL_OR_FLAG(name, sname, var, default)                                   \
-    if(parseIntOption(argc, argv, DOCTEST_STR_CONCAT_TOSTR(name, =), option_bool, intRes) ||       \
-       parseIntOption(argc, argv, DOCTEST_STR_CONCAT_TOSTR(sname, =), option_bool, intRes))        \
+    if(parseIntOption(argc, argv, DOCTEST_TOSTR(name) "=", option_bool, intRes) ||                 \
+       parseIntOption(argc, argv, DOCTEST_TOSTR(name) "=", option_bool, intRes))                   \
         p->var = !!intRes;                                                                         \
     else if(parseFlag(argc, argv, #name) || parseFlag(argc, argv, #sname))                         \
         p->var = 1;                                                                                \
@@ -4078,16 +4090,15 @@ void Context::parseArgs(int argc, const char* const* argv, bool withDefaults) {
     p->var = default
 
 #define DOCTEST_PARSE_INT_OPTION(name, sname, var, default)                                        \
-    if(parseIntOption(argc, argv, DOCTEST_STR_CONCAT_TOSTR(name, =), option_int, intRes) ||        \
-       parseIntOption(argc, argv, DOCTEST_STR_CONCAT_TOSTR(sname, =), option_int, intRes))         \
+    if(parseIntOption(argc, argv, DOCTEST_TOSTR(name) "=", option_int, intRes) ||                  \
+       parseIntOption(argc, argv, DOCTEST_TOSTR(name) "=", option_int, intRes))                    \
         p->var = intRes;                                                                           \
     else if(withDefaults)                                                                          \
     p->var = default
 
 #define DOCTEST_PARSE_STR_OPTION(name, sname, var, default)                                        \
-    if(parseOption(argc, argv, DOCTEST_STR_CONCAT_TOSTR(name, =), strRes, default) ||              \
-       parseOption(argc, argv, DOCTEST_STR_CONCAT_TOSTR(sname, =), strRes, default) ||             \
-       withDefaults)                                                                               \
+    if(parseOption(argc, argv, DOCTEST_TOSTR(name) "=", strRes, default) ||                        \
+       parseOption(argc, argv, DOCTEST_TOSTR(name) "=", strRes, default) || withDefaults)          \
     p->var = strRes
 
     // clang-format off

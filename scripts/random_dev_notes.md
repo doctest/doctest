@@ -1,5 +1,13 @@
 
 
+
+type-parameterized tests
+- test with subcase/info
+- test with disabled
+- test with sorting - shouldn't the type be a part of the name? heap alloc? :(
+
+rework console reporter - print test case name in the separator (but that will break the BDD macros!)
+
 Approx float-to-double warnings
 https://github.com/philsquared/Catch/issues/873
 
@@ -9,11 +17,6 @@ http://www.boost.org/doc/libs/1_63_0/libs/test/doc/html/index.html
 
 note in all custom mains with a comment that the defaults/overrides are just an example and users shouldn't just copy/paste them!
 
-
-Rust #[test]
-also Nim
-
-dont rule out boost.test as not mainstream - its right there with catch and google test
 
 Nothing is better than documentation with examples. Nothing is worse than examples that don't actually work, because the code has changed since the documentation has been (was) written.
 

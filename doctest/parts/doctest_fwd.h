@@ -328,9 +328,6 @@
 #define DOCTEST_TOSTR(x) DOCTEST_TOSTR_IMPL(x)
 #endif // DOCTEST_CONFIG_WITH_VARIADIC_MACROS
 
-// for concatenating literals and making the result a string
-#define DOCTEST_STR_CONCAT_TOSTR(s1, s2) DOCTEST_TOSTR(s1) DOCTEST_TOSTR(s2)
-
 // counts the number of elements in a C string
 #define DOCTEST_COUNTOF(x) (sizeof(x) / sizeof(x[0]))
 
@@ -1052,12 +1049,14 @@ namespace detail
 
     // forward declarations of functions used by the macros
     DOCTEST_INTERFACE int regTest(void (*f)(void), unsigned line, const char* file,
-                                  const char* name, const char* suite);
+                                  const char* name, const char* suite, const char* type = "",
+                                  int template_id = 0);
     DOCTEST_INTERFACE int setTestSuiteName(const char* name);
 
     DOCTEST_INTERFACE void addFailedAssert(assertType::Enum assert_type);
 
-    DOCTEST_INTERFACE void logTestStart(const char* name, const char* file, unsigned line);
+    DOCTEST_INTERFACE void logTestStart(const char* name, const char* type_name, const char* file,
+                                        unsigned line);
     DOCTEST_INTERFACE void logTestEnd();
 
     DOCTEST_INTERFACE void logTestException(String what);
