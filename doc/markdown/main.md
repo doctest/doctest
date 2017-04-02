@@ -18,12 +18,14 @@ All the [**command line**](commandline.md) options can be set like this (flags c
 #include "doctest.h"
 
 int main(int argc, char** argv) {
-    doctest::Context context; // initialize
+    doctest::Context context;
+
+	// !!! THIS IS JUST AN EXAMPLE SHOWING HOW DEFAULTS/OVERRIDES ARE SET !!!
 
     // defaults
     context.addFilter("test-case-exclude", "*math*"); // exclude test cases with "math" in their name
     context.setOption("abort-after", 5);              // stop test execution after 5 failed assertions
-    context.setOption("sort", "name");                // sort the test cases by their name
+    context.setOption("order_by", "name");            // sort the test cases by their name
 
     context.applyCommandLine(argc, argv);
 

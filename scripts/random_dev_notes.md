@@ -4,7 +4,8 @@
 type-parameterized tests
 - test with subcase/info
 - test with disabled
-- test with sorting - shouldn't the type be a part of the name? heap alloc? :(
+- test with sorting - shouldn't the type be a part of the name?
+- test in header
 
 rework console reporter - print test case name in the separator (but that will break the BDD macros!)
 
@@ -14,11 +15,6 @@ https://github.com/philsquared/Catch/issues/873
 
 look at boost test again:
 http://www.boost.org/doc/libs/1_63_0/libs/test/doc/html/index.html
-
-note in all custom mains with a comment that the defaults/overrides are just an example and users shouldn't just copy/paste them!
-
-
-Nothing is better than documentation with examples. Nothing is worse than examples that don't actually work, because the code has changed since the documentation has been (was) written.
 
 
 
@@ -65,8 +61,10 @@ slashdot?
 - git fetch origin pull/ID/head:BRANCHNAME
 
 == other
-- compilation errors with operator<< - happens with doctest - in case it comes up... https://github.com/philsquared/Catch/issues/757
-- operator<< trouble - https://github.com/philsquared/Catch/issues/872
+- operator<< trouble
+    - https://github.com/philsquared/Catch/issues/757
+    - https://github.com/philsquared/Catch/issues/872
+    - https://github.com/philsquared/Catch/pull/877
 - toString trouble - https://github.com/philsquared/Catch/issues/741
 
 - I suspect -Wsign-compare is not being silenced by the pragmas...
