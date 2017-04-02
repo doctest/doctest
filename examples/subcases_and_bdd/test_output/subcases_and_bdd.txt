@@ -10,7 +10,7 @@ root
 
 root
 2
-===============================================================================
+== TEST CASE ==================================================================
 main.cpp(0)
 lots of nested subcases
 
@@ -18,7 +18,7 @@ TEST CASE FAILED!
 threw exception:
   unknown exception
 
-===============================================================================
+== TEST CASE ==================================================================
 main.cpp(0)
   Scenario: vectors can be sized and resized
      Given: A vector with some items
@@ -30,7 +30,7 @@ main.cpp(0) ERROR!
 with expansion:
   CHECK( 10 == 20 )
 
-===============================================================================
+== TEST CASE ==================================================================
 main.cpp(0)
   Scenario: vectors can be sized and resized
      Given: A vector with some items
@@ -42,7 +42,7 @@ main.cpp(0) ERROR!
 with expansion:
   CHECK( 5 == 10 )
 
-===============================================================================
+== TEST CASE ==================================================================
 main.cpp(0)
 test with a fixture - 2
 

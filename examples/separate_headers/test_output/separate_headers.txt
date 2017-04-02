@@ -1,30 +1,92 @@
 [doctest] run with "--help" for options
-Hello world!
-===============================================================================
+== TEST CASE ==================================================================
 test.cpp(0)
-stuff
+trololo<?>
+
+test.cpp(0) ERROR!
+  CHECK( sizeof(typename T::A) == static_cast<unsigned>(4) )
+with expansion:
+  CHECK( 1 == 4 )
+
+== TEST CASE ==================================================================
+test.cpp(0)
+trololo<?>
+
+test.cpp(0) ERROR!
+  CHECK( sizeof(typename T::B) == static_cast<unsigned>(4) )
+with expansion:
+  CHECK( 1 == 4 )
+
+== TEST CASE ==================================================================
+test.cpp(0)
+separate<int>
 
 test.cpp(0) MESSAGE!
-  lala: 542
-with context:
-  5
+  aaa
 
-test.cpp(0) WARNING!
-  WARN( 1 == throws(true) )
-threw exception:
-  unknown exception
-with context:
-  5
-  sdf5
+== TEST CASE ==================================================================
+test.cpp(0)
+separate<char>
 
-test.cpp(0) WARNING!
-  WARN_THROWS_AS( throws(true), char )
-threw a different exception:
-  unknown exception
-with context:
-  5
-  sad
+test.cpp(0) MESSAGE!
+  aaa
+
+== TEST CASE ==================================================================
+test.cpp(0)
+separate<?>
+
+test.cpp(0) MESSAGE!
+  aaa
+
+== TEST CASE ==================================================================
+test.cpp(0)
+separate<double>
+
+test.cpp(0) MESSAGE!
+  aaa
+
+== TEST CASE ==================================================================
+test.cpp(0)
+separate<int>
+
+test.cpp(0) MESSAGE!
+  aaa
+
+== TEST CASE ==================================================================
+test.cpp(0)
+separate<int>
+
+test.cpp(0) MESSAGE!
+  aaa
+
+== TEST CASE ==================================================================
+test.cpp(0)
+separate<char>
+
+test.cpp(0) MESSAGE!
+  aaa
+
+== TEST CASE ==================================================================
+test.cpp(0)
+separate<?>
+
+test.cpp(0) MESSAGE!
+  aaa
+
+== TEST CASE ==================================================================
+test.cpp(0)
+separate<double>
+
+test.cpp(0) MESSAGE!
+  aaa
+
+== TEST CASE ==================================================================
+test.cpp(0)
+separate<int>
+
+test.cpp(0) MESSAGE!
+  aaa
 
 ===============================================================================
-[doctest] test cases:    1 |    1 passed |    0 failed |    0 skipped
-[doctest] assertions:    0 |    0 passed |    0 failed |
+[doctest] test cases:   12 |   10 passed |    2 failed |    0 skipped
+[doctest] assertions:    4 |    2 passed |    2 failed |

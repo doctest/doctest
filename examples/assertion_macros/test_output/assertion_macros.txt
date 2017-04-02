@@ -1,5 +1,5 @@
 [doctest] run with "--help" for options
-===============================================================================
+== TEST CASE ==================================================================
 main.cpp(0)
 an empty test that will fail because of an exception
 
@@ -7,7 +7,7 @@ TEST CASE FAILED!
 threw exception:
   unknown exception
 
-===============================================================================
+== TEST CASE ==================================================================
 main.cpp(0)
 an empty test that will fail because of a std::exception
 
@@ -15,7 +15,7 @@ TEST CASE FAILED!
 threw exception:
   whops!
 
-===============================================================================
+== TEST CASE ==================================================================
 main.cpp(0)
 normal macros
 
@@ -33,7 +33,7 @@ TEST CASE FAILED!
 threw exception:
   unknown exception
 
-===============================================================================
+== TEST CASE ==================================================================
 main.cpp(0)
 normal macros with std::exception
 
@@ -51,7 +51,7 @@ TEST CASE FAILED!
 threw exception:
   unknown exception
 
-===============================================================================
+== TEST CASE ==================================================================
 main.cpp(0)
 exceptions-related macros
 
@@ -73,7 +73,7 @@ main.cpp(0) ERROR!
 threw exception:
   unknown exception
 
-===============================================================================
+== TEST CASE ==================================================================
 main.cpp(0)
 exceptions-related macros for std::exception
 
