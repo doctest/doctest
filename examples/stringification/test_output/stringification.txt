@@ -1,5 +1,5 @@
 [doctest] run with "--help" for options
-===============================================================================
+== TEST CASE ==================================================================
 main.cpp(0)
 the only test
 
@@ -27,7 +27,7 @@ TEST CASE FAILED!
 threw exception:
   MyTypeInherited<int>(5, 4.0f)
 
-===============================================================================
+== TEST CASE ==================================================================
 main.cpp(0)
 a test case that registers an exception translator for int and then throws one
 

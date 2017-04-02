@@ -1677,8 +1677,8 @@ void Context::parseArgs(int argc, const char* const* argv, bool withDefaults) {
     String strRes;
 
 #define DOCTEST_PARSE_AS_BOOL_OR_FLAG(name, sname, var, default)                                   \
-    if(parseIntOption(argc, argv, DOCTEST_TOSTR(name) "=", option_bool, intRes) ||                 \
-       parseIntOption(argc, argv, DOCTEST_TOSTR(name) "=", option_bool, intRes))                   \
+    if(parseIntOption(argc, argv, DOCTEST_STR_CONCAT_TOSTR(name, =), option_bool, intRes) ||       \
+       parseIntOption(argc, argv, DOCTEST_STR_CONCAT_TOSTR(sname, =), option_bool, intRes))        \
         p->var = !!intRes;                                                                         \
     else if(parseFlag(argc, argv, #name) || parseFlag(argc, argv, #sname))                         \
         p->var = 1;                                                                                \
@@ -1686,15 +1686,16 @@ void Context::parseArgs(int argc, const char* const* argv, bool withDefaults) {
     p->var = default
 
 #define DOCTEST_PARSE_INT_OPTION(name, sname, var, default)                                        \
-    if(parseIntOption(argc, argv, DOCTEST_TOSTR(name) "=", option_int, intRes) ||                  \
-       parseIntOption(argc, argv, DOCTEST_TOSTR(name) "=", option_int, intRes))                    \
+    if(parseIntOption(argc, argv, DOCTEST_STR_CONCAT_TOSTR(name, =), option_int, intRes) ||        \
+       parseIntOption(argc, argv, DOCTEST_STR_CONCAT_TOSTR(sname, =), option_int, intRes))         \
         p->var = intRes;                                                                           \
     else if(withDefaults)                                                                          \
     p->var = default
 
 #define DOCTEST_PARSE_STR_OPTION(name, sname, var, default)                                        \
-    if(parseOption(argc, argv, DOCTEST_TOSTR(name) "=", strRes, default) ||                        \
-       parseOption(argc, argv, DOCTEST_TOSTR(name) "=", strRes, default) || withDefaults)          \
+    if(parseOption(argc, argv, DOCTEST_STR_CONCAT_TOSTR(name, =), strRes, default) ||              \
+       parseOption(argc, argv, DOCTEST_STR_CONCAT_TOSTR(sname, =), strRes, default) ||             \
+       withDefaults)                                                                               \
     p->var = strRes
 
     // clang-format off
