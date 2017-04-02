@@ -98,6 +98,7 @@ As we saw in the example above - a main() entry point for the program can be pro
 #include "doctest.h"
 int main(int argc, char** argv) {
     doctest::Context ctx;
+	// !!! THIS IS JUST AN EXAMPLE SHOWING HOW DEFAULTS/OVERRIDES ARE SET !!!
     ctx.setOption("abort-after", 5);  // default - stop after 5 failed asserts
     ctx.applyCommandLine(argc, argv); // apply command line - argc / argv
     ctx.setOption("no-breaks", true); // override - don't break in the debugger

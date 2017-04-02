@@ -255,7 +255,7 @@ typedef doctest::detail::MakeTypelist<
     TypePair<char, int>
 >::Result pairs;
 
-TYPE_TO_STRING(TypePair<char, int>)
+//TYPE_TO_STRING(TypePair<char, int>)
 
 TEST_CASE_TEMPLATE("trololo", T, pairs) {
     CHECK(sizeof(typename T::A) == static_cast<unsigned>(4));
@@ -266,17 +266,18 @@ TEST_CASE_TEMPLATE("trololo", T, pairs) {
 }
 
 TEST_CASE_TEMPLATE_DEFINE("separate", T, it) {
-    T a = T();
-    ++a;
-    SUBCASE("root") {
-        ++a;
-        SUBCASE("1") {
-            CHECK(doctest::Approx(a) == T());
-        }
-        SUBCASE("2") {
-            CHECK(doctest::Approx(a) == T());
-        }
-    }
+    MESSAGE("aaa");
+    //T a = T();
+    //++a;
+    //SUBCASE("root") {
+    //    ++a;
+    //    SUBCASE("1") {
+    //        CHECK(doctest::Approx(a) == T());
+    //    }
+    //    SUBCASE("2") {
+    //        CHECK(doctest::Approx(a) == T());
+    //    }
+    //}
 }
 
 TEST_CASE_TEMPLATE_INSTANTIATE(it, the_types)

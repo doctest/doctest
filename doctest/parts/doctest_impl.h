@@ -814,9 +814,12 @@ namespace detail
         const TestData* lhs = *static_cast<TestData* const*>(a);
         const TestData* rhs = *static_cast<TestData* const*>(b);
 
-        int res = strcmp(lhs->m_name, rhs->m_name);
-        if(res != 0)
-            return res;
+        int res_name = strcmp(lhs->m_name, rhs->m_name);
+        if(res_name != 0)
+            return res_name;
+        int res_type_name = strcmp(lhs->m_type_name, rhs->m_type_name);
+        if(res_type_name != 0)
+            return res_type_name;
         return suiteOrderComparator(a, b);
     }
 

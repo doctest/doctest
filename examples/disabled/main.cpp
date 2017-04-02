@@ -14,7 +14,9 @@ int main(int argc, char** argv) {
     // set an exception translator for int
     doctest::registerExceptionTranslator(intTranslator);
     
-    doctest::Context context; // initialize
+    doctest::Context context;
+
+    // !!! THIS IS JUST AN EXAMPLE SHOWING HOW DEFAULTS/OVERRIDES ARE SET !!!
 
     // defaults
     context.addFilter("test-case-exclude", "*math*"); // exclude test cases with "math" in the name
@@ -23,8 +25,8 @@ int main(int argc, char** argv) {
     context.applyCommandLine(argc, argv);
 
     // overrides
-    context.setOption("abort-after", 5); // stop test execution after 5 failed assertions
-    context.setOption("sort", "name");   // sort the test cases by their name
+    context.setOption("abort-after", 5);   // stop test execution after 5 failed assertions
+    context.setOption("order_by", "name"); // sort the test cases by their name
 
     int res = context.run(); // run
 
