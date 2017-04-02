@@ -129,7 +129,7 @@
 // MSVC C++11 feature support table: https://msdn.microsoft.com/en-us/library/hh567368.aspx
 // GCC C++11 feature support table: https://gcc.gnu.org/projects/cxx-status.html
 // MSVC version table:
-// MSVC++ xxxx _MSC_VER == xxxx (Visual Studio 2017)
+// MSVC++ 15.0 _MSC_VER == 1910 (Visual Studio 2017)
 // MSVC++ 14.0 _MSC_VER == 1900 (Visual Studio 2015)
 // MSVC++ 12.0 _MSC_VER == 1800 (Visual Studio 2013)
 // MSVC++ 11.0 _MSC_VER == 1700 (Visual Studio 2012)

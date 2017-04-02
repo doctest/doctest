@@ -102,6 +102,11 @@ namespace detail
         ForEachTypeImpl(Callable& callable)
                 : ForEachTypeImpl<Tail, Callable>(callable) {
             callable.template operator()<value, Head>();
+#if defined(_MSC_VER) && _MSC_VER <= 1900
+            callable.operator()<value, Head>();
+#else  // _MSC_VER
+            callable.template operator()<value, Head>();
+#endif // _MSC_VER
         }
     };
 
@@ -115,7 +120,13 @@ namespace detail
             value = 0
         };
 
-        ForEachTypeImpl(Callable& callable) { callable.template operator()<value, Head>(); }
+        ForEachTypeImpl(Callable& callable) {
+#if defined(_MSC_VER) && _MSC_VER <= 1900
+            callable.operator()<value, Head>();
+#else  // _MSC_VER
+            callable.template operator()<value, Head>();
+#endif // _MSC_VER
+        }
     };
 
     struct OrderPolicyForward;
@@ -244,16 +255,14 @@ TYPE_TO_STRING(double)
 
 typedef doctest::detail::MakeTypelist<int, char, float, double, int>::Result the_types;
 
-template<typename first, typename second>
-struct TypePair {
-    typedef first A;
+template <typename first, typename second>
+struct TypePair
+{
+    typedef first  A;
     typedef second B;
 };
 
-typedef doctest::detail::MakeTypelist<
-    TypePair<int, char>,
-    TypePair<char, int>
->::Result pairs;
+typedef doctest::detail::MakeTypelist<TypePair<int, char>, TypePair<char, int> >::Result pairs;
 
 //TYPE_TO_STRING(TypePair<char, int>)
 
