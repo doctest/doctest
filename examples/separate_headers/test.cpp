@@ -101,7 +101,6 @@ namespace detail
 
         ForEachTypeImpl(Callable& callable)
                 : ForEachTypeImpl<Tail, Callable>(callable) {
-            callable.template operator()<value, Head>();
 #if defined(_MSC_VER) && _MSC_VER <= 1900
             callable.operator()<value, Head>();
 #else  // _MSC_VER
