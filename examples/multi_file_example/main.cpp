@@ -14,7 +14,7 @@ int main(int argc, char** argv) {
 
     // overrides
     context.setOption("abort-after", 5);   // stop test execution after 5 failed assertions
-    context.setOption("order_by", "name"); // sort the test cases by their name
+    context.setOption("order-by", "name"); // sort the test cases by their name
 
     int res = context.run(); // run
 

@@ -56,7 +56,7 @@ int main(int argc, char** argv) {
 
     context.addFilter("test-case-exclude", "*math*");
     context.setOption("no-breaks", true);
-    context.setOption("order_by", "name");
+    context.setOption("order-by", "name");
 
     context.applyCommandLine(argc, argv);
 
