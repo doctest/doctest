@@ -1,16 +1,6 @@
 [doctest] run with "--help" for options
 == TEST CASE ==================================================================
 test.cpp(0)
-subcases
-  2
-
-test.cpp(0) ERROR!
-  CHECK( 0 )
-with expansion:
-  CHECK( 0 )
-
-== TEST CASE ==================================================================
-test.cpp(0)
 assertions
 
 test.cpp(0) ERROR!
@@ -23,6 +13,11 @@ test.cpp(0) ERROR!
 with expansion:
   CHECK_FALSE( 1 )
 
+test.cpp(0) ERROR!
+  CHECK( a == b )
+with expansion:
+  CHECK( myType! == myType! )
+
 ===============================================================================
-[doctest] test cases:    5 |    3 passed |    2 failed |    2 skipped
-[doctest] assertions:   11 |    8 passed |    3 failed |
+[doctest] test cases:    1 |    0 passed |    1 failed |    6 skipped
+[doctest] assertions:    4 |    1 passed |    3 failed |

@@ -1,12 +1,73 @@
 [doctest] run with "--help" for options
 == TEST CASE ==================================================================
 test.cpp(0)
-trololo<?>
+separate<?>
 
-test.cpp(0) ERROR!
-  CHECK( sizeof(typename T::A) == static_cast<unsigned>(4) )
-with expansion:
-  CHECK( 1 == 4 )
+test.cpp(0) MESSAGE!
+  aaa
+
+== TEST CASE ==================================================================
+test.cpp(0)
+separate<?>
+
+test.cpp(0) MESSAGE!
+  aaa
+
+== TEST CASE ==================================================================
+test.cpp(0)
+separate<char>
+
+test.cpp(0) MESSAGE!
+  aaa
+
+== TEST CASE ==================================================================
+test.cpp(0)
+separate<char>
+
+test.cpp(0) MESSAGE!
+  aaa
+
+== TEST CASE ==================================================================
+test.cpp(0)
+separate<double>
+
+test.cpp(0) MESSAGE!
+  aaa
+
+== TEST CASE ==================================================================
+test.cpp(0)
+separate<double>
+
+test.cpp(0) MESSAGE!
+  aaa
+
+== TEST CASE ==================================================================
+test.cpp(0)
+separate<int>
+
+test.cpp(0) MESSAGE!
+  aaa
+
+== TEST CASE ==================================================================
+test.cpp(0)
+separate<int>
+
+test.cpp(0) MESSAGE!
+  aaa
+
+== TEST CASE ==================================================================
+test.cpp(0)
+separate<int>
+
+test.cpp(0) MESSAGE!
+  aaa
+
+== TEST CASE ==================================================================
+test.cpp(0)
+separate<int>
+
+test.cpp(0) MESSAGE!
+  aaa
 
 == TEST CASE ==================================================================
 test.cpp(0)
@@ -19,73 +80,12 @@ with expansion:
 
 == TEST CASE ==================================================================
 test.cpp(0)
-separate<int>
+trololo<?>
 
-test.cpp(0) MESSAGE!
-  aaa
-
-== TEST CASE ==================================================================
-test.cpp(0)
-separate<char>
-
-test.cpp(0) MESSAGE!
-  aaa
-
-== TEST CASE ==================================================================
-test.cpp(0)
-separate<?>
-
-test.cpp(0) MESSAGE!
-  aaa
-
-== TEST CASE ==================================================================
-test.cpp(0)
-separate<double>
-
-test.cpp(0) MESSAGE!
-  aaa
-
-== TEST CASE ==================================================================
-test.cpp(0)
-separate<int>
-
-test.cpp(0) MESSAGE!
-  aaa
-
-== TEST CASE ==================================================================
-test.cpp(0)
-separate<int>
-
-test.cpp(0) MESSAGE!
-  aaa
-
-== TEST CASE ==================================================================
-test.cpp(0)
-separate<char>
-
-test.cpp(0) MESSAGE!
-  aaa
-
-== TEST CASE ==================================================================
-test.cpp(0)
-separate<?>
-
-test.cpp(0) MESSAGE!
-  aaa
-
-== TEST CASE ==================================================================
-test.cpp(0)
-separate<double>
-
-test.cpp(0) MESSAGE!
-  aaa
-
-== TEST CASE ==================================================================
-test.cpp(0)
-separate<int>
-
-test.cpp(0) MESSAGE!
-  aaa
+test.cpp(0) ERROR!
+  CHECK( sizeof(typename T::A) == static_cast<unsigned>(4) )
+with expansion:
+  CHECK( 1 == 4 )
 
 ===============================================================================
 [doctest] test cases:   12 |   10 passed |    2 failed |    0 skipped

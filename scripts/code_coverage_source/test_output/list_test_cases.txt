@@ -1,11 +1,11 @@
 [doctest] run with "--help" for options
 [doctest] listing all test case names
-subcases
-doctest internals
-subcases
-expressions should be evaluated only once
 assertions
 assertions - all of them
+doctest internals
+expressions should be evaluated only once
+subcases
+subcases
 throws
 ===============================================================================
 [doctest] number of tests passing the current filters: 7

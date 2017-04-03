@@ -12,7 +12,7 @@ int main(int argc, char** argv) {
     context.applyCommandLine(argc, argv);
 
     // overrides
-    context.setOption("order_by", "name"); // sort the test cases by their name
+    context.setOption("order-by", "name"); // sort the test cases by their name
 
     int res = context.run(); // run
 

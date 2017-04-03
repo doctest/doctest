@@ -1,34 +1,6 @@
 [doctest] run with "--help" for options
 == TEST CASE ==================================================================
 test.cpp(0)
-subcases
-
-== TEST CASE ==================================================================
-test.cpp(0)
-subcases
-  2
-
-test.cpp(0) ERROR!
-  CHECK( 0 )
-with expansion:
-  CHECK( 0 )
-
-== TEST CASE ==================================================================
-test.cpp(0)
-expressions should be evaluated only once
-
-test.cpp(0) PASSED!
-  REQUIRE( ++a == 6 )
-with expansion:
-  REQUIRE( 6 == 6 )
-
-test.cpp(0) PASSED!
-  REQUIRE_EQ( ++a, 7 )
-with expansion:
-  REQUIRE_EQ( 7, 7 )
-
-== TEST CASE ==================================================================
-test.cpp(0)
 assertions
 
 test.cpp(0) PASSED!
@@ -378,6 +350,34 @@ test.cpp(0) FATAL ERROR!
   FAST_REQUIRE_UNARY_FALSE( 1 )
 with expansion:
   FAST_REQUIRE_UNARY_FALSE( 1 )
+
+== TEST CASE ==================================================================
+test.cpp(0)
+expressions should be evaluated only once
+
+test.cpp(0) PASSED!
+  REQUIRE( ++a == 6 )
+with expansion:
+  REQUIRE( 6 == 6 )
+
+test.cpp(0) PASSED!
+  REQUIRE_EQ( ++a, 7 )
+with expansion:
+  REQUIRE_EQ( 7, 7 )
+
+== TEST CASE ==================================================================
+test.cpp(0)
+subcases
+
+== TEST CASE ==================================================================
+test.cpp(0)
+subcases
+  2
+
+test.cpp(0) ERROR!
+  CHECK( 0 )
+with expansion:
+  CHECK( 0 )
 
 == TEST CASE ==================================================================
 test.cpp(0)
