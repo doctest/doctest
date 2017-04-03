@@ -185,21 +185,6 @@ matrix:
       osx_image: xcode6.4
       os: osx
 
-    # Xcode 7 Clang
-    - env: COMPILER=clang++ HAS_ASAN_32=true HAS_ASAN_64=true
-      osx_image: xcode7
-      os: osx
-
-    # Xcode 7.1 Clang
-    - env: COMPILER=clang++ HAS_ASAN_32=true HAS_ASAN_64=true
-      osx_image: xcode7.1
-      os: osx
-
-    # Xcode 7.2 Clang
-    - env: COMPILER=clang++ HAS_ASAN_32=true HAS_ASAN_64=true
-      osx_image: xcode7.2
-      os: osx
-
     # Xcode 7.3 Clang
     - env: COMPILER=clang++ HAS_ASAN_32=true HAS_ASAN_64=true
       osx_image: xcode7.3
@@ -228,37 +213,37 @@ matrix:
     # OSX GCC 4.6
     - env: COMPILER=g++-4.6
       compiler: gcc
-      osx_image: beta-xcode6.3
+      osx_image: xcode8.3
       os: osx
 
     # OSX GCC 4.7
     - env: COMPILER=g++-4.7
       compiler: gcc
-      osx_image: beta-xcode6.3
+      osx_image: xcode8.3
       os: osx
 
     # OSX GCC 4.8
     - env: COMPILER=g++-4.8 HAS_ASAN_32=true HAS_ASAN_64=true
       compiler: gcc
-      osx_image: beta-xcode6.3
+      osx_image: xcode8.3
       os: osx
 
     # OSX GCC 4.9
     - env: COMPILER=g++-4.9 HAS_UBSAN_32=true HAS_UBSAN_64=true # no ASAN_32/ASAN_64 - errors when using ASAN_OPTIONS - probably g++ 4.9 bug
       compiler: gcc
-      osx_image: beta-xcode6.3
+      osx_image: xcode8.3
       os: osx
 
     # OSX GCC 5
     - env: COMPILER=g++-5 HAS_ASAN_32=true HAS_UBSAN_32=true HAS_ASAN_64=true HAS_UBSAN_64=true
       compiler: gcc
-      osx_image: beta-xcode6.3
+      osx_image: xcode8.3
       os: osx
 
     # OSX GCC 6
     - env: COMPILER=g++-6 HAS_ASAN_32=true HAS_UBSAN_32=true HAS_ASAN_64=true HAS_UBSAN_64=true
       compiler: gcc
-      osx_image: beta-xcode6.3
+      osx_image: xcode8.3
       os: osx
 
     # OSX LLVM-GCC
@@ -282,37 +267,37 @@ matrix:
     # OSX GCC 4.6
     - env: COMPILER=g++-4.6
       compiler: gcc
-      osx_image: beta-xcode6.3
+      osx_image: xcode8.3
       os: osx
 
     # OSX GCC 4.7
     - env: COMPILER=g++-4.7
       compiler: gcc
-      osx_image: beta-xcode6.3
+      osx_image: xcode8.3
       os: osx
 
     # OSX GCC 4.8
     - env: COMPILER=g++-4.8 HAS_ASAN_32=true HAS_ASAN_64=true
       compiler: gcc
-      osx_image: beta-xcode6.3
+      osx_image: xcode8.3
       os: osx
 
     # OSX GCC 4.9
     - env: COMPILER=g++-4.9 HAS_UBSAN_32=true HAS_UBSAN_64=true # no ASAN_32/ASAN_64 - errors when using ASAN_OPTIONS - probably g++ 4.9 bug
       compiler: gcc
-      osx_image: beta-xcode6.3
+      osx_image: xcode8.3
       os: osx
 
     # OSX GCC 5
     - env: COMPILER=g++-5 HAS_ASAN_32=true HAS_UBSAN_32=true HAS_ASAN_64=true HAS_UBSAN_64=true
       compiler: gcc
-      osx_image: beta-xcode6.3
+      osx_image: xcode8.3
       os: osx
 
     # OSX GCC 6
     - env: COMPILER=g++-6 HAS_ASAN_32=true HAS_UBSAN_32=true HAS_ASAN_64=true HAS_UBSAN_64=true
       compiler: gcc
-      osx_image: beta-xcode6.3
+      osx_image: xcode8.3
       os: osx
 
 before_install:
