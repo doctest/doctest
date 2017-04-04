@@ -12,7 +12,7 @@ using doctest::Types;
 typedef Types<TypePair<int, char>, TypePair<char, int> > pairs;
 typedef Types<int, char, float, double, int> the_types;
 
-//TYPE_TO_STRING(TypePair<char, int>)
+//TYPE_TO_STRING(TypePair<char, int>);
 
 TEST_CASE_TEMPLATE("trololo", T, pairs) {
     //typedef typename T::A A;
@@ -39,5 +39,5 @@ TEST_CASE_TEMPLATE_DEFINE("separate", T, it) {
     //}
 }
 
-TEST_CASE_TEMPLATE_INSTANTIATE(it, the_types)
-TEST_CASE_TEMPLATE_INSTANTIATE(it, the_types)
+TEST_CASE_TEMPLATE_INSTANTIATE(it, the_types);
+TEST_CASE_TEMPLATE_INSTANTIATE(it, the_types);
