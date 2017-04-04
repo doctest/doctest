@@ -73,10 +73,8 @@ test.cpp(0) MESSAGE!
 test.cpp(0)
 trololo<>
 
-test.cpp(0) ERROR!
-  CHECK( sizeof(A) == static_cast<unsigned>(4) )
-with expansion:
-  CHECK( {?} == 4 )
+test.cpp(0) MESSAGE!
+  how do I feel?
 with context:
   sad :(
 
@@ -84,13 +82,11 @@ with context:
 test.cpp(0)
 trololo<>
 
-test.cpp(0) ERROR!
-  CHECK( sizeof(B) == static_cast<unsigned>(4) )
-with expansion:
-  CHECK( {?} == 4 )
+test.cpp(0) MESSAGE!
+  how do I feel?
 with context:
   sad :(
 
 ===============================================================================
-[doctest] test cases:   12 |   10 passed |    2 failed |    0 skipped
-[doctest] assertions:    4 |    2 passed |    2 failed |
+[doctest] test cases:   12 |   12 passed |    0 failed |    0 skipped
+[doctest] assertions:    0 |    0 passed |    0 failed |

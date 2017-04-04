@@ -15,11 +15,10 @@ typedef Types<int, char, float, double, int> the_types;
 //TYPE_TO_STRING(TypePair<char, int>)
 
 TEST_CASE_TEMPLATE("trololo", T, pairs) {
-    typedef typename T::A A;
-    typedef typename T::B B;
+    //typedef typename T::A A;
+    //typedef typename T::B B;
     INFO("sad :(");
-    CHECK(sizeof(A) == static_cast<unsigned>(4));
-    CHECK(sizeof(B) == static_cast<unsigned>(4));
+    MESSAGE("how do I feel?");
     //T a = T();
     //++a;
     //CHECK(doctest::Approx(a) == T());
