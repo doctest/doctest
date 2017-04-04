@@ -34,10 +34,10 @@ There are 2 ways to do it:
     }
 
     typedef doctest::Types<char, short, int, long long int> the_types;
-    TEST_CASE_TEMPLATE_INSTANTIATE(test_id, the_types)
+    TEST_CASE_TEMPLATE_INSTANTIATE(test_id, the_types);
 
     typedef doctest::Types<float, double> the_types_2;
-    TEST_CASE_TEMPLATE_INSTANTIATE(test_id, the_types_2)
+    TEST_CASE_TEMPLATE_INSTANTIATE(test_id, the_types_2);
     ```
     If you are designing an interface or concept, you can define a suite of type-parameterized tests to verify properties that any valid implementation of the interface/concept should have. Then, the author of each implementation can just instantiate the test suite with his type to verify that it conforms to the requirements, without having to write similar tests repeatedly.
 

@@ -1780,7 +1780,7 @@ public:
         return 0;                                                                                  \
     }                                                                                              \
     DOCTEST_GLOBAL_NO_WARNINGS(DOCTEST_CAT(anon, DUMMY)) = DOCTEST_CAT(anon, REG_FUNC)();          \
-    DOCTEST_GLOBAL_NO_WARNINGS_END()
+    DOCTEST_GLOBAL_NO_WARNINGS_END() typedef int DOCTEST_ANONYMOUS(_DOCTEST_ANON_FOR_SEMICOLON_)
 
 #ifdef DOCTEST_CONFIG_WITH_VARIADIC_MACROS
 #define DOCTEST_TEST_CASE_TEMPLATE_INSTANTIATE(id, ...)                                            \
@@ -2301,10 +2301,10 @@ public:
 
 // for converting types to strings without the <typeinfo> header and demangling
 #ifdef DOCTEST_CONFIG_WITH_VARIADIC_MACROS
-#define DOCTEST_TYPE_TO_STRING(...)
+#define DOCTEST_TYPE_TO_STRING(...) typedef int DOCTEST_ANONYMOUS(_DOCTEST_ANON_FOR_SEMICOLON_)
 #define DOCTEST_TYPE_TO_STRING_IMPL(...)
 #else // DOCTEST_CONFIG_WITH_VARIADIC_MACROS
-#define DOCTEST_TYPE_TO_STRING(x)
+#define DOCTEST_TYPE_TO_STRING(x) typedef int DOCTEST_ANONYMOUS(_DOCTEST_ANON_FOR_SEMICOLON_)
 #define DOCTEST_TYPE_TO_STRING_IMPL(x)
 #endif // DOCTEST_CONFIG_WITH_VARIADIC_MACROS
 
@@ -2317,7 +2317,8 @@ public:
     template <typename type>                                                                       \
     inline void DOCTEST_ANONYMOUS(_DOCTEST_ANON_TMP_)()
 
-#define DOCTEST_TEST_CASE_TEMPLATE_INSTANTIATE(id, types)
+#define DOCTEST_TEST_CASE_TEMPLATE_INSTANTIATE(id, types)                                          \
+    typedef int DOCTEST_ANONYMOUS(_DOCTEST_ANON_FOR_SEMICOLON_)
 
 // for subcases
 #define DOCTEST_SUBCASE(name)
