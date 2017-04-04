@@ -67,7 +67,7 @@ If you work for a company using doctest or have the means to do so, please consi
 [![Patreon](https://cloud.githubusercontent.com/assets/8225057/5990484/70413560-a9ab-11e4-8942-1a63607c0b00.png)](http://www.patreon.com/onqtam)
 [![PayPal](https://www.paypalobjects.com/en_US/i/btn/btn_donate_LG.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=3K423Q6TK48BN)
 
-Contributions in the form of issues and pull requests are welcome as well - check out the [**Contributing**](doc/markdown/contributing.md) page.
+Contributions in the form of issues and pull requests are welcome as well - check out the [**Contributing**](CONTRIBUTING.md) page.
 
 
 Documentation
@@ -78,7 +78,7 @@ Project:
 - [Features and design goals](doc/markdown/features.md) - the complete list of features
 - [Roadmap](doc/markdown/roadmap.md) - upcoming features
 - [Benchmarks](doc/markdown/benchmarks.md) - compile-time supremacy
-- [Contributing](doc/markdown/contributing.md) - how to make a proper pull request
+- [Contributing](CONTRIBUTING.md) - how to make a proper pull request
 - [Changelog](CHANGELOG.md) - generated changelog based on closed issues/PRs
 
 Usage:
@@ -86,6 +86,7 @@ Usage:
 - [Tutorial](doc/markdown/tutorial.md) - make sure you have read it before the other parts of the documentation
 - [Assertion macros](doc/markdown/assertions.md)
 - [Test cases, subcases and test fixtures](doc/markdown/testcases.md)
+- [Parameterized test cases](doc/markdown/parameterized-tests.md)
 - [Command line](doc/markdown/commandline.md)
 - [Logging macros](doc/markdown/logging.md)
 - [```main()``` entry point](doc/markdown/main.md)

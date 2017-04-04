@@ -78,9 +78,9 @@
 #define DOCTEST_LOG_START()                                                                        \
     do {                                                                                           \
         if(!DOCTEST_GCS().hasLoggedCurrentTestStart) {                                             \
-            doctest::detail::logTestStart(                                                         \
-                    DOCTEST_GCS().currentTest->m_name, DOCTEST_GCS().currentTest->m_type_name,     \
-                    DOCTEST_GCS().currentTest->m_file, DOCTEST_GCS().currentTest->m_line);         \
+            doctest::detail::logTestStart(DOCTEST_GCS().currentTest->m_name,                       \
+                                          DOCTEST_GCS().currentTest->m_file,                       \
+                                          DOCTEST_GCS().currentTest->m_line);                      \
             DOCTEST_GCS().hasLoggedCurrentTestStart = true;                                        \
         }                                                                                          \
     } while(doctest::detail::always_false())
@@ -195,10 +195,10 @@ namespace detail
     struct TestData
     {
         // not used for determining uniqueness
-        const char* m_suite;     // the test suite in which the test was added
-        const char* m_name;      // name of the test function
-        const char* m_type_name; // the type for a templated test case
-        funcType    m_f;         // a function pointer to the test function
+        const char* m_suite; // the test suite in which the test was added
+        const char* m_name;  // name of the test function
+        funcType    m_f;     // a function pointer to the test function
+        String m_full_name; // contains the name (only for templated test cases!) + the template type
 
         // fields by which uniqueness of test cases shall be determined
         const char* m_file; // the file in which the test was registered
@@ -209,11 +209,31 @@ namespace detail
                  const char* type_name, int template_id)
                 : m_suite(suite)
                 , m_name(name)
-                , m_type_name(type_name)
                 , m_f(f)
                 , m_file(file)
                 , m_line(line)
-                , m_template_id(template_id) {}
+                , m_template_id(template_id) {
+            if(m_template_id != -1) {
+                m_full_name = String(name) + type_name;
+                // redirect the name to point to the newly constructed full name
+                m_name = m_full_name.c_str();
+            }
+        }
+
+        TestData(const TestData& other) { *this = other; }
+
+        TestData& operator=(const TestData& other) {
+            m_suite       = other.m_suite;
+            m_name        = other.m_name;
+            m_f           = other.m_f;
+            m_full_name   = other.m_full_name;
+            m_file        = other.m_file;
+            m_line        = other.m_line;
+            m_template_id = other.m_template_id;
+            if(m_template_id != -1)
+                m_name = m_full_name.c_str();
+            return *this;
+        }
 
         bool operator<(const TestData& other) const;
     };
@@ -368,6 +388,12 @@ String toString(double in) { return detail::fpToString(in, 10); }
 String toString(double long in) { return detail::fpToString(in, 15); }
 
 String toString(char in) {
+    char buf[64];
+    sprintf(buf, "%d", in);
+    return buf;
+}
+
+String toString(char signed in) {
     char buf[64];
     sprintf(buf, "%d", in);
     return buf;
@@ -817,9 +843,6 @@ namespace detail
         int res_name = strcmp(lhs->m_name, rhs->m_name);
         if(res_name != 0)
             return res_name;
-        int res_type_name = strcmp(lhs->m_type_name, rhs->m_type_name);
-        if(res_type_name != 0)
-            return res_type_name;
         return suiteOrderComparator(a, b);
     }
 
@@ -1069,7 +1092,7 @@ namespace detail
     // TODO: integration with XCode and other IDEs
     void myOutputDebugString(const String&) {}
 #endif // Platform
-    
+
     const char* getSeparator() {
         return "===============================================================================\n";
     }
@@ -1090,13 +1113,13 @@ namespace detail
         }
     }
 
-    void logTestStart(const char* name, const char* type_name, const char* file, unsigned line) {
+    void logTestStart(const char* name, const char* file, unsigned line) {
         char loc[DOCTEST_SNPRINTF_BUFFER_LENGTH];
         DOCTEST_SNPRINTF(loc, DOCTEST_COUNTOF(loc), "%s(%d)\n", fileForOutput(file),
                          lineForOutput(line));
 
         char msg[DOCTEST_SNPRINTF_BUFFER_LENGTH];
-        DOCTEST_SNPRINTF(msg, DOCTEST_COUNTOF(msg), "%s%s\n", name, type_name ? type_name : "");
+        DOCTEST_SNPRINTF(msg, DOCTEST_COUNTOF(msg), "%s\n", name);
 
         DOCTEST_PRINTF_COLORED(getTestCaseSeparator(), Color::Yellow);
         DOCTEST_PRINTF_COLORED(loc, Color::LightGrey);
@@ -1114,7 +1137,8 @@ namespace detail
 
         DOCTEST_PRINTF_COLORED("\n", Color::None);
 
-        printToDebugConsole(String(getTestCaseSeparator()) + loc + msg + subcaseStuff.c_str() + "\n");
+        printToDebugConsole(String(getTestCaseSeparator()) + loc + msg + subcaseStuff.c_str() +
+                            "\n");
     }
 
     void logTestEnd() {}

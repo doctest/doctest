@@ -6,13 +6,14 @@ Project:
 - [Features and design goals](features.md) - the complete list of features
 - [Roadmap](roadmap.md) - upcoming features
 - [Benchmarks](benchmarks.md) - compile time supremacy
-- [Contributing](contributing.md) - how to make a proper pull request
+- [Contributing](../../CONTRIBUTING.md) - how to make a proper pull request
 
 Usage:
 
 - [Tutorial](tutorial.md) - make sure you have read it before the other parts of the documentation
 - [Assertion macros](assertions.md)
 - [Test cases, subcases and test fixtures](testcases.md)
+- [Parameterized test cases](parameterized-tests.md)
 - [Logging macros](logging.md)
 - [Command line](commandline.md)
 - [```main()``` entry point](main.md)

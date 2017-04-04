@@ -13,6 +13,8 @@ _test name_ and _subcase name_ are free form, quoted, strings. Test names don't 
 
 For examples see the [Tutorial](tutorial.md)
 
+Test cases can also be parameterized - see the [documentation](parameterized-tests.md)
+
 Test cases and subcases can be filtered through the use of the [**command line**](commandline.md)
 
 ## BDD-style test cases
