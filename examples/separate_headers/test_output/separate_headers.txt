@@ -1,20 +1,6 @@
 [doctest] run with "--help" for options
 == TEST CASE ==================================================================
 test.cpp(0)
-separate<?>
-
-test.cpp(0) MESSAGE!
-  aaa
-
-== TEST CASE ==================================================================
-test.cpp(0)
-separate<?>
-
-test.cpp(0) MESSAGE!
-  aaa
-
-== TEST CASE ==================================================================
-test.cpp(0)
 separate<char>
 
 test.cpp(0) MESSAGE!
@@ -43,7 +29,14 @@ test.cpp(0) MESSAGE!
 
 == TEST CASE ==================================================================
 test.cpp(0)
-separate<int>
+separate<float>
+
+test.cpp(0) MESSAGE!
+  aaa
+
+== TEST CASE ==================================================================
+test.cpp(0)
+separate<float>
 
 test.cpp(0) MESSAGE!
   aaa
@@ -71,21 +64,32 @@ test.cpp(0) MESSAGE!
 
 == TEST CASE ==================================================================
 test.cpp(0)
-trololo<?>
+separate<int>
+
+test.cpp(0) MESSAGE!
+  aaa
+
+== TEST CASE ==================================================================
+test.cpp(0)
+trololo<>
 
 test.cpp(0) ERROR!
-  CHECK( sizeof(typename T::B) == static_cast<unsigned>(4) )
+  CHECK( sizeof(A) == static_cast<unsigned>(4) )
 with expansion:
-  CHECK( 1 == 4 )
+  CHECK( {?} == 4 )
+with context:
+  sad :(
 
 == TEST CASE ==================================================================
 test.cpp(0)
-trololo<?>
+trololo<>
 
 test.cpp(0) ERROR!
-  CHECK( sizeof(typename T::A) == static_cast<unsigned>(4) )
+  CHECK( sizeof(B) == static_cast<unsigned>(4) )
 with expansion:
-  CHECK( 1 == 4 )
+  CHECK( {?} == 4 )
+with context:
+  sad :(
 
 ===============================================================================
 [doctest] test cases:   12 |   10 passed |    2 failed |    0 skipped

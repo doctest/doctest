@@ -32,6 +32,12 @@
 // which uses the Boost Software License - Version 1.0
 // see here - https://github.com/martinmoene/lest/blob/master/LICENSE_1_0.txt
 //
+// The type list and the foreach algorithm on it for C++98 are taken from Loki
+// - http://loki-lib.sourceforge.net/
+// - https://en.wikipedia.org/wiki/Loki_%28C%2B%2B%29
+// - https://github.com/snaewe/loki-lib
+// which uses the MIT Software License
+//
 // =================================================================================================
 // =================================================================================================
 // =================================================================================================
@@ -248,8 +254,9 @@
 
 // other stuff...
 
-#if defined(DOCTEST_CONFIG_WITH_NULLPTR) || defined(DOCTEST_CONFIG_WITH_LONG_LONG) ||              \
-        defined(DOCTEST_CONFIG_WITH_STATIC_ASSERT)
+#if defined(DOCTEST_CONFIG_WITH_RVALUE_REFERENCES) || defined(DOCTEST_CONFIG_WITH_LONG_LONG) ||    \
+        defined(DOCTEST_CONFIG_WITH_DELETED_FUNCTIONS) || defined(DOCTEST_CONFIG_WITH_NULLPTR) ||  \
+        defined(DOCTEST_CONFIG_WITH_VARIADIC_MACROS) || defined(DOCTEST_CONFIG_WITH_STATIC_ASSERT)
 #define DOCTEST_NO_CPP11_COMPAT
 #endif // c++11 stuff
 
@@ -572,7 +579,111 @@ namespace detail
     String rawMemoryToString(const DOCTEST_REF_WRAP(T) object) {
         return rawMemoryToString(&object, sizeof(object));
     }
+
+    class NullType
+    {};
+
+    template <class T, class U>
+    struct Typelist
+    {
+        typedef T Head;
+        typedef U Tail;
+    };
+
+    // type of recursive function
+    template <class TList, class Callable>
+    struct ForEachType;
+
+    // Recursion rule
+    template <class Head, class Tail, class Callable>
+    struct ForEachType<Typelist<Head, Tail>, Callable> : public ForEachType<Tail, Callable>
+    {
+        enum
+        {
+            value = 1 + ForEachType<Tail, Callable>::value
+        };
+
+        ForEachType(Callable& callable)
+                : ForEachType<Tail, Callable>(callable) {
+#if defined(_MSC_VER) && _MSC_VER <= 1900
+            callable.operator()<value, Head>();
+#else  // _MSC_VER
+            callable.template operator()<value, Head>();
+#endif // _MSC_VER
+        }
+    };
+
+    // Recursion end
+    template <class Head, class Callable>
+    struct ForEachType<Typelist<Head, NullType>, Callable>
+    {
+    public:
+        enum
+        {
+            value = 0
+        };
+
+        ForEachType(Callable& callable) {
+#if defined(_MSC_VER) && _MSC_VER <= 1900
+            callable.operator()<value, Head>();
+#else  // _MSC_VER
+            callable.template operator()<value, Head>();
+#endif // _MSC_VER
+        }
+    };
+
+    template <typename T>
+    const char* type_to_string() {
+        return "<>";
+    }
 } // namespace detail
+
+template <typename T1 = detail::NullType, typename T2 = detail::NullType,
+          typename T3 = detail::NullType, typename T4 = detail::NullType,
+          typename T5 = detail::NullType, typename T6 = detail::NullType,
+          typename T7 = detail::NullType, typename T8 = detail::NullType,
+          typename T9 = detail::NullType, typename T10 = detail::NullType,
+          typename T11 = detail::NullType, typename T12 = detail::NullType,
+          typename T13 = detail::NullType, typename T14 = detail::NullType,
+          typename T15 = detail::NullType, typename T16 = detail::NullType,
+          typename T17 = detail::NullType, typename T18 = detail::NullType,
+          typename T19 = detail::NullType, typename T20 = detail::NullType,
+          typename T21 = detail::NullType, typename T22 = detail::NullType,
+          typename T23 = detail::NullType, typename T24 = detail::NullType,
+          typename T25 = detail::NullType, typename T26 = detail::NullType,
+          typename T27 = detail::NullType, typename T28 = detail::NullType,
+          typename T29 = detail::NullType, typename T30 = detail::NullType,
+          typename T31 = detail::NullType, typename T32 = detail::NullType,
+          typename T33 = detail::NullType, typename T34 = detail::NullType,
+          typename T35 = detail::NullType, typename T36 = detail::NullType,
+          typename T37 = detail::NullType, typename T38 = detail::NullType,
+          typename T39 = detail::NullType, typename T40 = detail::NullType,
+          typename T41 = detail::NullType, typename T42 = detail::NullType,
+          typename T43 = detail::NullType, typename T44 = detail::NullType,
+          typename T45 = detail::NullType, typename T46 = detail::NullType,
+          typename T47 = detail::NullType, typename T48 = detail::NullType,
+          typename T49 = detail::NullType, typename T50 = detail::NullType,
+          typename T51 = detail::NullType, typename T52 = detail::NullType,
+          typename T53 = detail::NullType, typename T54 = detail::NullType,
+          typename T55 = detail::NullType, typename T56 = detail::NullType,
+          typename T57 = detail::NullType, typename T58 = detail::NullType,
+          typename T59 = detail::NullType, typename T60 = detail::NullType>
+struct Types
+{
+private:
+    typedef typename Types<T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17,
+                           T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31,
+                           T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45,
+                           T46, T47, T48, T49, T50, T51, T52, T53, T54, T55, T56, T57, T58, T59,
+                           T60>::Result TailResult;
+
+public:
+    typedef detail::Typelist<T1, TailResult> Result;
+};
+
+template <>
+struct Types<>
+{ typedef detail::NullType Result; };
 
 template <typename T>
 struct StringMaker : detail::StringMakerBase<detail::has_insertion_operator<T>::value>
@@ -616,6 +727,7 @@ DOCTEST_INTERFACE String toString(double in);
 DOCTEST_INTERFACE String toString(double long in);
 
 DOCTEST_INTERFACE String toString(char in);
+DOCTEST_INTERFACE String toString(char signed in);
 DOCTEST_INTERFACE String toString(char unsigned in);
 DOCTEST_INTERFACE String toString(int short in);
 DOCTEST_INTERFACE String toString(int short unsigned in);
@@ -1056,13 +1168,12 @@ namespace detail
     // forward declarations of functions used by the macros
     DOCTEST_INTERFACE int regTest(void (*f)(void), unsigned line, const char* file,
                                   const char* name, const char* suite, const char* type = "",
-                                  int template_id = 0);
+                                  int template_id = -1);
     DOCTEST_INTERFACE int setTestSuiteName(const char* name);
 
     DOCTEST_INTERFACE void addFailedAssert(assertType::Enum assert_type);
 
-    DOCTEST_INTERFACE void logTestStart(const char* name, const char* type_name, const char* file,
-                                        unsigned line);
+    DOCTEST_INTERFACE void logTestStart(const char* name, const char* file, unsigned line);
     DOCTEST_INTERFACE void logTestEnd();
 
     DOCTEST_INTERFACE void logTestException(String what);
@@ -1533,6 +1644,15 @@ public:
 // if registering is not disabled
 #if !defined(DOCTEST_CONFIG_DISABLE)
 
+#ifdef DOCTEST_CONFIG_WITH_VARIADIC_MACROS
+#define DOCTEST_EXPAND_VA_ARGS(...) __VA_ARGS__
+#else // DOCTEST_CONFIG_WITH_VARIADIC_MACROS
+#define DOCTEST_EXPAND_VA_ARGS
+#endif // DOCTEST_CONFIG_WITH_VARIADIC_MACROS
+
+#define DOCTEST_STRIP_PARENS(x) x
+#define DOCTEST_HANDLE_BRACED_VA_ARGS(expr) DOCTEST_STRIP_PARENS(DOCTEST_EXPAND_VA_ARGS expr)
+
 // registers the test by initializing a dummy var with a function
 #define DOCTEST_REGISTER_FUNCTION(f, name)                                                         \
     DOCTEST_GLOBAL_NO_WARNINGS(DOCTEST_ANONYMOUS(_DOCTEST_ANON_VAR_)) = doctest::detail::regTest(  \
@@ -1565,6 +1685,111 @@ public:
 #define DOCTEST_TEST_CASE_FIXTURE(c, name)                                                         \
     DOCTEST_IMPLEMENT_FIXTURE(DOCTEST_ANONYMOUS(_DOCTEST_ANON_CLASS_), c,                          \
                               DOCTEST_ANONYMOUS(_DOCTEST_ANON_FUNC_), name)
+
+// for converting types to strings without the <typeinfo> header and demangling
+#ifdef DOCTEST_CONFIG_WITH_VARIADIC_MACROS
+#define DOCTEST_TYPE_TO_STRING_IMPL(...)                                                           \
+    template <>                                                                                    \
+    inline const char* type_to_string<__VA_ARGS__>() {                                             \
+        return "<" #__VA_ARGS__ ">";                                                               \
+    }
+#define DOCTEST_TYPE_TO_STRING(...)                                                                \
+    namespace doctest                                                                              \
+    {                                                                                              \
+        namespace detail                                                                           \
+        { DOCTEST_TYPE_TO_STRING_IMPL(__VA_ARGS__) }                                               \
+    }                                                                                              \
+    typedef int DOCTEST_ANONYMOUS(_DOCTEST_ANON_FOR_SEMICOLON_)
+#else // DOCTEST_CONFIG_WITH_VARIADIC_MACROS
+#define DOCTEST_TYPE_TO_STRING_IMPL(x)                                                             \
+    template <>                                                                                    \
+    inline const char* type_to_string<x>() {                                                       \
+        return "<" #x ">";                                                                         \
+    }
+#define DOCTEST_TYPE_TO_STRING(x)                                                                  \
+    namespace doctest                                                                              \
+    {                                                                                              \
+        namespace detail                                                                           \
+        { DOCTEST_TYPE_TO_STRING_IMPL(x) }                                                         \
+    }                                                                                              \
+    typedef int DOCTEST_ANONYMOUS(_DOCTEST_ANON_FOR_SEMICOLON_)
+#endif // DOCTEST_CONFIG_WITH_VARIADIC_MACROS
+
+// for typed tests
+#define DOCTEST_TEST_CASE_TEMPLATE_IMPL(name, T, types, anon)                                      \
+    template <typename T>                                                                          \
+    inline void anon();                                                                            \
+    struct DOCTEST_CAT(anon, FUNCTOR)                                                              \
+    {                                                                                              \
+        template <int Index, typename Type>                                                        \
+        void          operator()() {                                                               \
+            doctest::detail::regTest(anon<Type>, __LINE__, __FILE__, name,                         \
+                                     doctest_detail_test_suite_ns::getCurrentTestSuite(),          \
+                                     doctest::detail::type_to_string<Type>(), Index);              \
+        }                                                                                          \
+    };                                                                                             \
+    inline int DOCTEST_CAT(anon, REG_FUNC)() {                                                     \
+        DOCTEST_CAT(anon, FUNCTOR) registrar;                                                      \
+        doctest::detail::ForEachType<DOCTEST_HANDLE_BRACED_VA_ARGS(types)::Result,                 \
+                                     DOCTEST_CAT(anon, FUNCTOR)>                                   \
+                doIt(registrar);                                                                   \
+        return 0;                                                                                  \
+    }                                                                                              \
+    DOCTEST_GLOBAL_NO_WARNINGS(DOCTEST_CAT(anon, DUMMY)) = DOCTEST_CAT(anon, REG_FUNC)();          \
+    DOCTEST_GLOBAL_NO_WARNINGS_END()                                                               \
+    template <typename T>                                                                          \
+    inline void anon()
+
+#ifdef DOCTEST_CONFIG_WITH_VARIADIC_MACROS
+#define DOCTEST_TEST_CASE_TEMPLATE(name, T, ...)                                                   \
+    DOCTEST_TEST_CASE_TEMPLATE_IMPL(name, T, (__VA_ARGS__), DOCTEST_ANONYMOUS(_DOCTEST_ANON_TMP_))
+#else // DOCTEST_CONFIG_WITH_VARIADIC_MACROS
+#define DOCTEST_TEST_CASE_TEMPLATE(name, T, types)                                                 \
+    DOCTEST_TEST_CASE_TEMPLATE_IMPL(name, T, types, DOCTEST_ANONYMOUS(_DOCTEST_ANON_TMP_))
+#endif // DOCTEST_CONFIG_WITH_VARIADIC_MACROS
+
+#define DOCTEST_TEST_CASE_TEMPLATE_DEFINE_IMPL(name, T, id, anon)                                  \
+    template <typename T>                                                                          \
+    inline void anon();                                                                            \
+    struct DOCTEST_CAT(id, _FUNCTOR)                                                               \
+    {                                                                                              \
+        int m_line;                                                                                \
+        DOCTEST_CAT(id, _FUNCTOR)                                                                  \
+        (int line)                                                                                 \
+                : m_line(line) {}                                                                  \
+        template <int Index, typename Type>                                                        \
+        void          operator()() {                                                               \
+            doctest::detail::regTest(anon<Type>, __LINE__, __FILE__, name,                         \
+                                     doctest_detail_test_suite_ns::getCurrentTestSuite(),          \
+                                     doctest::detail::type_to_string<Type>(),                      \
+                                     m_line * 1000 + Index);                                       \
+        }                                                                                          \
+    };                                                                                             \
+    template <typename T>                                                                          \
+    inline void anon()
+
+#define DOCTEST_TEST_CASE_TEMPLATE_DEFINE(name, T, id)                                             \
+    DOCTEST_TEST_CASE_TEMPLATE_DEFINE_IMPL(name, T, id, DOCTEST_ANONYMOUS(_DOCTEST_ANON_TMP_))
+
+#define DOCTEST_TEST_CASE_TEMPLATE_INSTANTIATE_IMPL(id, types, anon)                               \
+    static int DOCTEST_CAT(anon, REG_FUNC)() {                                                     \
+        DOCTEST_CAT(id, _FUNCTOR) registrar(__LINE__);                                             \
+        doctest::detail::ForEachType<DOCTEST_HANDLE_BRACED_VA_ARGS(types)::Result,                 \
+                                     DOCTEST_CAT(id, _FUNCTOR)>                                    \
+                doIt(registrar);                                                                   \
+        return 0;                                                                                  \
+    }                                                                                              \
+    DOCTEST_GLOBAL_NO_WARNINGS(DOCTEST_CAT(anon, DUMMY)) = DOCTEST_CAT(anon, REG_FUNC)();          \
+    DOCTEST_GLOBAL_NO_WARNINGS_END()
+
+#ifdef DOCTEST_CONFIG_WITH_VARIADIC_MACROS
+#define DOCTEST_TEST_CASE_TEMPLATE_INSTANTIATE(id, ...)                                            \
+    DOCTEST_TEST_CASE_TEMPLATE_INSTANTIATE_IMPL(id, (__VA_ARGS__),                                 \
+                                                DOCTEST_ANONYMOUS(_DOCTEST_ANON_TMP_))
+#else // DOCTEST_CONFIG_WITH_VARIADIC_MACROS
+#define DOCTEST_TEST_CASE_TEMPLATE_INSTANTIATE(id, types)                                          \
+    DOCTEST_TEST_CASE_TEMPLATE_INSTANTIATE_IMPL(id, types, DOCTEST_ANONYMOUS(_DOCTEST_ANON_TMP_))
+#endif // DOCTEST_CONFIG_WITH_VARIADIC_MACROS
 
 // for subcases
 #if defined(__GNUC__)
@@ -1658,21 +1883,12 @@ public:
     } catch(...) { _DOCTEST_RB.unexpectedExceptionOccurred(); }
 #endif // DOCTEST_CONFIG_NO_TRY_CATCH_IN_ASSERTS
 
-#ifdef DOCTEST_CONFIG_WITH_VARIADIC_MACROS
-#define DOCTEST_EXPAND_VA_ARGS(...) __VA_ARGS__
-#else // DOCTEST_CONFIG_WITH_VARIADIC_MACROS
-#define DOCTEST_EXPAND_VA_ARGS
-#endif // DOCTEST_CONFIG_WITH_VARIADIC_MACROS
-
-#define DOCTEST_STRIP_PARENS(x) x
-#define DOCTEST_HANDLE_EXPR(expr) DOCTEST_STRIP_PARENS(DOCTEST_EXPAND_VA_ARGS expr)
-
 #define DOCTEST_ASSERT_IMPLEMENT_3(expr, assert_type)                                              \
-    doctest::detail::ResultBuilder _DOCTEST_RB(doctest::detail::assertType::assert_type, __FILE__, \
-                                               __LINE__,                                           \
-                                               DOCTEST_TOSTR(DOCTEST_HANDLE_EXPR(expr)));          \
+    doctest::detail::ResultBuilder _DOCTEST_RB(                                                    \
+            doctest::detail::assertType::assert_type, __FILE__, __LINE__,                          \
+            DOCTEST_TOSTR(DOCTEST_HANDLE_BRACED_VA_ARGS(expr)));                                   \
     DOCTEST_WRAP_IN_TRY(_DOCTEST_RB.setResult(doctest::detail::ExpressionDecomposer()              \
-                                              << DOCTEST_HANDLE_EXPR(expr)))                       \
+                                              << DOCTEST_HANDLE_BRACED_VA_ARGS(expr)))             \
     DOCTEST_ASSERT_LOG_AND_REACT(_DOCTEST_RB)
 
 #if defined(__clang__)
@@ -1739,12 +1955,12 @@ public:
 #define DOCTEST_ASSERT_THROWS_AS(expr, as, assert_type)                                            \
     do {                                                                                           \
         if(!DOCTEST_GCS().no_throw) {                                                              \
-            doctest::detail::ResultBuilder _DOCTEST_RB(doctest::detail::assertType::assert_type,   \
-                                                       __FILE__, __LINE__, #expr,                  \
-                                                       DOCTEST_TOSTR(DOCTEST_HANDLE_EXPR(as)));    \
+            doctest::detail::ResultBuilder _DOCTEST_RB(                                            \
+                    doctest::detail::assertType::assert_type, __FILE__, __LINE__, #expr,           \
+                    DOCTEST_TOSTR(DOCTEST_HANDLE_BRACED_VA_ARGS(as)));                             \
             try {                                                                                  \
                 expr;                                                                              \
-            } catch(DOCTEST_HANDLE_EXPR(as)) {                                                     \
+            } catch(DOCTEST_HANDLE_BRACED_VA_ARGS(as)) {                                           \
                 _DOCTEST_RB.m_threw    = true;                                                     \
                 _DOCTEST_RB.m_threw_as = true;                                                     \
             } catch(...) { _DOCTEST_RB.unexpectedExceptionOccurred(); }                            \
@@ -1799,12 +2015,12 @@ public:
 #ifdef DOCTEST_CONFIG_WITH_VARIADIC_MACROS
 #define DOCTEST_BINARY_ASSERT(assert_type, expr, comp)                                             \
     do {                                                                                           \
-        doctest::detail::ResultBuilder _DOCTEST_RB(doctest::detail::assertType::assert_type,       \
-                                                   __FILE__, __LINE__,                             \
-                                                   DOCTEST_TOSTR(DOCTEST_HANDLE_EXPR(expr)));      \
+        doctest::detail::ResultBuilder _DOCTEST_RB(                                                \
+                doctest::detail::assertType::assert_type, __FILE__, __LINE__,                      \
+                DOCTEST_TOSTR(DOCTEST_HANDLE_BRACED_VA_ARGS(expr)));                               \
         DOCTEST_WRAP_IN_TRY(                                                                       \
                 _DOCTEST_RB.binary_assert<doctest::detail::binaryAssertComparison::comp>(          \
-                        DOCTEST_HANDLE_EXPR(expr)))                                                \
+                        DOCTEST_HANDLE_BRACED_VA_ARGS(expr)))                                      \
         DOCTEST_ASSERT_LOG_AND_REACT(_DOCTEST_RB);                                                 \
     } while(doctest::detail::always_false())
 #else // DOCTEST_CONFIG_WITH_VARIADIC_MACROS
@@ -1821,10 +2037,10 @@ public:
 
 #define DOCTEST_UNARY_ASSERT(assert_type, expr)                                                    \
     do {                                                                                           \
-        doctest::detail::ResultBuilder _DOCTEST_RB(doctest::detail::assertType::assert_type,       \
-                                                   __FILE__, __LINE__,                             \
-                                                   DOCTEST_TOSTR(DOCTEST_HANDLE_EXPR(expr)));      \
-        DOCTEST_WRAP_IN_TRY(_DOCTEST_RB.unary_assert(DOCTEST_HANDLE_EXPR(expr)))                   \
+        doctest::detail::ResultBuilder _DOCTEST_RB(                                                \
+                doctest::detail::assertType::assert_type, __FILE__, __LINE__,                      \
+                DOCTEST_TOSTR(DOCTEST_HANDLE_BRACED_VA_ARGS(expr)));                               \
+        DOCTEST_WRAP_IN_TRY(_DOCTEST_RB.unary_assert(DOCTEST_HANDLE_BRACED_VA_ARGS(expr)))         \
         DOCTEST_ASSERT_LOG_AND_REACT(_DOCTEST_RB);                                                 \
     } while(doctest::detail::always_false())
 
@@ -1890,7 +2106,8 @@ public:
         int _DOCTEST_FAST_RES = doctest::detail::fast_binary_assert<                               \
                 doctest::detail::binaryAssertComparison::comparison>(                              \
                 doctest::detail::assertType::assert_type, __FILE__, __LINE__,                      \
-                DOCTEST_TOSTR(DOCTEST_HANDLE_EXPR(expr)), DOCTEST_HANDLE_EXPR(expr));              \
+                DOCTEST_TOSTR(DOCTEST_HANDLE_BRACED_VA_ARGS(expr)),                                \
+                DOCTEST_HANDLE_BRACED_VA_ARGS(expr));                                              \
         if(_DOCTEST_FAST_RES & doctest::detail::assertAction::dbgbreak)                            \
             DOCTEST_BREAK_INTO_DEBUGGER();                                                         \
         doctest::detail::fastAssertThrowIfFlagSet(_DOCTEST_FAST_RES);                              \
@@ -1912,7 +2129,8 @@ public:
     do {                                                                                           \
         int _DOCTEST_FAST_RES = doctest::detail::fast_unary_assert(                                \
                 doctest::detail::assertType::assert_type, __FILE__, __LINE__,                      \
-                DOCTEST_TOSTR(DOCTEST_HANDLE_EXPR(expr)), DOCTEST_HANDLE_EXPR(expr));              \
+                DOCTEST_TOSTR(DOCTEST_HANDLE_BRACED_VA_ARGS(expr)),                                \
+                DOCTEST_HANDLE_BRACED_VA_ARGS(expr));                                              \
         if(_DOCTEST_FAST_RES & doctest::detail::assertAction::dbgbreak)                            \
             DOCTEST_BREAK_INTO_DEBUGGER();                                                         \
         doctest::detail::fastAssertThrowIfFlagSet(_DOCTEST_FAST_RES);                              \
@@ -1924,7 +2142,8 @@ public:
 #define DOCTEST_FAST_BINARY_ASSERT(assert_type, expr, comparison)                                  \
     doctest::detail::fast_binary_assert<doctest::detail::binaryAssertComparison::comparison>(      \
             doctest::detail::assertType::assert_type, __FILE__, __LINE__,                          \
-            DOCTEST_TOSTR(DOCTEST_HANDLE_EXPR(expr)), DOCTEST_HANDLE_EXPR(expr))
+            DOCTEST_TOSTR(DOCTEST_HANDLE_BRACED_VA_ARGS(expr)),                                    \
+            DOCTEST_HANDLE_BRACED_VA_ARGS(expr))
 #else // DOCTEST_CONFIG_WITH_VARIADIC_MACROS
 #define DOCTEST_FAST_BINARY_ASSERT(assert_type, lhs, rhs, comparison)                              \
     doctest::detail::fast_binary_assert<doctest::detail::binaryAssertComparison::comparison>(      \
@@ -1934,8 +2153,9 @@ public:
 
 #define DOCTEST_FAST_UNARY_ASSERT(assert_type, expr)                                               \
     doctest::detail::fast_unary_assert(doctest::detail::assertType::assert_type, __FILE__,         \
-                                       __LINE__, DOCTEST_TOSTR(DOCTEST_HANDLE_EXPR(expr)),         \
-                                       DOCTEST_HANDLE_EXPR(expr))
+                                       __LINE__,                                                   \
+                                       DOCTEST_TOSTR(DOCTEST_HANDLE_BRACED_VA_ARGS(expr)),         \
+                                       DOCTEST_HANDLE_BRACED_VA_ARGS(expr))
 
 #endif // DOCTEST_CONFIG_SUPER_FAST_ASSERTS
 
@@ -2078,6 +2298,26 @@ public:
 #define DOCTEST_TEST_CASE_FIXTURE(x, name)                                                         \
     DOCTEST_IMPLEMENT_FIXTURE(DOCTEST_ANONYMOUS(_DOCTEST_ANON_CLASS_), x,                          \
                               DOCTEST_ANONYMOUS(_DOCTEST_ANON_FUNC_), name)
+
+// for converting types to strings without the <typeinfo> header and demangling
+#ifdef DOCTEST_CONFIG_WITH_VARIADIC_MACROS
+#define DOCTEST_TYPE_TO_STRING(...)
+#define DOCTEST_TYPE_TO_STRING_IMPL(...)
+#else // DOCTEST_CONFIG_WITH_VARIADIC_MACROS
+#define DOCTEST_TYPE_TO_STRING(x)
+#define DOCTEST_TYPE_TO_STRING_IMPL(x)
+#endif // DOCTEST_CONFIG_WITH_VARIADIC_MACROS
+
+// for typed tests
+#define DOCTEST_TEST_CASE_TEMPLATE(name, type, types)                                              \
+    template <typename type>                                                                       \
+    inline void DOCTEST_ANONYMOUS(_DOCTEST_ANON_TMP_)()
+
+#define DOCTEST_TEST_CASE_TEMPLATE_DEFINE(name, type, id)                                          \
+    template <typename type>                                                                       \
+    inline void DOCTEST_ANONYMOUS(_DOCTEST_ANON_TMP_)()
+
+#define DOCTEST_TEST_CASE_TEMPLATE_INSTANTIATE(id, types)
 
 // for subcases
 #define DOCTEST_SUBCASE(name)
@@ -2280,6 +2520,10 @@ public:
 
 #define TEST_CASE DOCTEST_TEST_CASE
 #define TEST_CASE_FIXTURE DOCTEST_TEST_CASE_FIXTURE
+#define TYPE_TO_STRING DOCTEST_TYPE_TO_STRING
+#define TEST_CASE_TEMPLATE DOCTEST_TEST_CASE_TEMPLATE
+#define TEST_CASE_TEMPLATE_DEFINE DOCTEST_TEST_CASE_TEMPLATE_DEFINE
+#define TEST_CASE_TEMPLATE_INSTANTIATE DOCTEST_TEST_CASE_TEMPLATE_INSTANTIATE
 #define SUBCASE DOCTEST_SUBCASE
 #define TEST_SUITE DOCTEST_TEST_SUITE
 #define TEST_SUITE_BEGIN DOCTEST_TEST_SUITE_BEGIN
@@ -2388,6 +2632,32 @@ public:
 // this is here to clear the 'current test suite' for the current translation unit - at the top
 DOCTEST_TEST_SUITE_END();
 
+// add stringification for primitive/fundamental types
+namespace doctest
+{
+namespace detail
+{
+    DOCTEST_TYPE_TO_STRING_IMPL(bool)
+    DOCTEST_TYPE_TO_STRING_IMPL(float)
+    DOCTEST_TYPE_TO_STRING_IMPL(double)
+    DOCTEST_TYPE_TO_STRING_IMPL(long double)
+    DOCTEST_TYPE_TO_STRING_IMPL(char)
+    DOCTEST_TYPE_TO_STRING_IMPL(signed char)
+    DOCTEST_TYPE_TO_STRING_IMPL(unsigned char)
+    DOCTEST_TYPE_TO_STRING_IMPL(wchar_t)
+    DOCTEST_TYPE_TO_STRING_IMPL(short int)
+    DOCTEST_TYPE_TO_STRING_IMPL(unsigned short int)
+    DOCTEST_TYPE_TO_STRING_IMPL(int)
+    DOCTEST_TYPE_TO_STRING_IMPL(unsigned int)
+    DOCTEST_TYPE_TO_STRING_IMPL(long int)
+    DOCTEST_TYPE_TO_STRING_IMPL(unsigned long int)
+#ifdef DOCTEST_CONFIG_WITH_LONG_LONG
+    DOCTEST_TYPE_TO_STRING_IMPL(long long int)
+    DOCTEST_TYPE_TO_STRING_IMPL(unsigned long long int)
+#endif // DOCTEST_CONFIG_WITH_LONG_LONG
+} // namespace detail
+} // namespace doctest
+
 #endif // DOCTEST_LIBRARY_INCLUDED
 
 #if defined(__clang__)
@@ -2488,9 +2758,9 @@ DOCTEST_TEST_SUITE_END();
 #define DOCTEST_LOG_START()                                                                        \
     do {                                                                                           \
         if(!DOCTEST_GCS().hasLoggedCurrentTestStart) {                                             \
-            doctest::detail::logTestStart(                                                         \
-                    DOCTEST_GCS().currentTest->m_name, DOCTEST_GCS().currentTest->m_type_name,     \
-                    DOCTEST_GCS().currentTest->m_file, DOCTEST_GCS().currentTest->m_line);         \
+            doctest::detail::logTestStart(DOCTEST_GCS().currentTest->m_name,                       \
+                                          DOCTEST_GCS().currentTest->m_file,                       \
+                                          DOCTEST_GCS().currentTest->m_line);                      \
             DOCTEST_GCS().hasLoggedCurrentTestStart = true;                                        \
         }                                                                                          \
     } while(doctest::detail::always_false())
@@ -2605,10 +2875,10 @@ namespace detail
     struct TestData
     {
         // not used for determining uniqueness
-        const char* m_suite;     // the test suite in which the test was added
-        const char* m_name;      // name of the test function
-        const char* m_type_name; // the type for a templated test case
-        funcType    m_f;         // a function pointer to the test function
+        const char* m_suite; // the test suite in which the test was added
+        const char* m_name;  // name of the test function
+        funcType    m_f;     // a function pointer to the test function
+        String m_full_name; // contains the name (only for templated test cases!) + the template type
 
         // fields by which uniqueness of test cases shall be determined
         const char* m_file; // the file in which the test was registered
@@ -2619,11 +2889,31 @@ namespace detail
                  const char* type_name, int template_id)
                 : m_suite(suite)
                 , m_name(name)
-                , m_type_name(type_name)
                 , m_f(f)
                 , m_file(file)
                 , m_line(line)
-                , m_template_id(template_id) {}
+                , m_template_id(template_id) {
+            if(m_template_id != -1) {
+                m_full_name = String(name) + type_name;
+                // redirect the name to point to the newly constructed full name
+                m_name = m_full_name.c_str();
+            }
+        }
+
+        TestData(const TestData& other) { *this = other; }
+
+        TestData& operator=(const TestData& other) {
+            m_suite       = other.m_suite;
+            m_name        = other.m_name;
+            m_f           = other.m_f;
+            m_full_name   = other.m_full_name;
+            m_file        = other.m_file;
+            m_line        = other.m_line;
+            m_template_id = other.m_template_id;
+            if(m_template_id != -1)
+                m_name = m_full_name.c_str();
+            return *this;
+        }
 
         bool operator<(const TestData& other) const;
     };
@@ -2778,6 +3068,12 @@ String toString(double in) { return detail::fpToString(in, 10); }
 String toString(double long in) { return detail::fpToString(in, 15); }
 
 String toString(char in) {
+    char buf[64];
+    sprintf(buf, "%d", in);
+    return buf;
+}
+
+String toString(char signed in) {
     char buf[64];
     sprintf(buf, "%d", in);
     return buf;
@@ -3227,9 +3523,6 @@ namespace detail
         int res_name = strcmp(lhs->m_name, rhs->m_name);
         if(res_name != 0)
             return res_name;
-        int res_type_name = strcmp(lhs->m_type_name, rhs->m_type_name);
-        if(res_type_name != 0)
-            return res_type_name;
         return suiteOrderComparator(a, b);
     }
 
@@ -3479,7 +3772,7 @@ namespace detail
     // TODO: integration with XCode and other IDEs
     void myOutputDebugString(const String&) {}
 #endif // Platform
-    
+
     const char* getSeparator() {
         return "===============================================================================\n";
     }
@@ -3500,13 +3793,13 @@ namespace detail
         }
     }
 
-    void logTestStart(const char* name, const char* type_name, const char* file, unsigned line) {
+    void logTestStart(const char* name, const char* file, unsigned line) {
         char loc[DOCTEST_SNPRINTF_BUFFER_LENGTH];
         DOCTEST_SNPRINTF(loc, DOCTEST_COUNTOF(loc), "%s(%d)\n", fileForOutput(file),
                          lineForOutput(line));
 
         char msg[DOCTEST_SNPRINTF_BUFFER_LENGTH];
-        DOCTEST_SNPRINTF(msg, DOCTEST_COUNTOF(msg), "%s%s\n", name, type_name ? type_name : "");
+        DOCTEST_SNPRINTF(msg, DOCTEST_COUNTOF(msg), "%s\n", name);
 
         DOCTEST_PRINTF_COLORED(getTestCaseSeparator(), Color::Yellow);
         DOCTEST_PRINTF_COLORED(loc, Color::LightGrey);
@@ -3524,7 +3817,8 @@ namespace detail
 
         DOCTEST_PRINTF_COLORED("\n", Color::None);
 
-        printToDebugConsole(String(getTestCaseSeparator()) + loc + msg + subcaseStuff.c_str() + "\n");
+        printToDebugConsole(String(getTestCaseSeparator()) + loc + msg + subcaseStuff.c_str() +
+                            "\n");
     }
 
     void logTestEnd() {}

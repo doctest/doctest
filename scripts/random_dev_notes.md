@@ -1,24 +1,12 @@
 
 
 
-type-parameterized tests
-- test with subcase/info
-- test with disabled
-- test with sorting - shouldn't the type be a part of the name?
-- test in header
+try if there are warnings for unused variables when tests are disabled
 
-rework console reporter - print test case name in the separator (but that will break the BDD macros!)
-
-Approx float-to-double warnings
-https://github.com/philsquared/Catch/issues/873
 
 
 look at boost test again:
 http://www.boost.org/doc/libs/1_63_0/libs/test/doc/html/index.html
-
-
-
-try if there are warnings for unused variables when tests are disabled
 
 
 
@@ -48,12 +36,6 @@ https://www.facebook.com/CppInstitute
 
 twitter
 
-slashdot?
-
-
-
-
-
 
 
 == how to deal with pull requests for the main branch instead of the dev branch
@@ -65,6 +47,7 @@ slashdot?
     - https://github.com/philsquared/Catch/issues/757
     - https://github.com/philsquared/Catch/issues/872
     - https://github.com/philsquared/Catch/pull/877
+    - https://github.com/philsquared/Catch/issues/880
 - toString trouble - https://github.com/philsquared/Catch/issues/741
 
 - I suspect -Wsign-compare is not being silenced by the pragmas...

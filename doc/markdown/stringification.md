@@ -35,9 +35,9 @@ If you don't want to provide an ```operator<<``` overload, or you want to conver
 namespace user {
     struct udt {};
     
-	doctest::String toString(const udt& value) {
-		return convertMyTypeToString(value);
-	}
+    doctest::String toString(const udt& value) {
+        return convertMyTypeToString(value);
+    }
 }
 ```
 

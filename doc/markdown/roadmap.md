@@ -10,7 +10,7 @@ Planned features for future releases - order changes constantly...
 
 ### For 1.2:
 
-- Parametric test cases (Value/Type-parameterized tests) - https://github.com/onqtam/doctest/issues/38
+- Value-Parameterized test cases - https://github.com/onqtam/doctest/issues/38
 - crash handling: signals on UNIX platforms or structured exceptions on Windows (should also have DOCTEST_CONFIG_NO_SIGNAL_CATCHING) - look at [Using a Separate Signal Stack](https://www.gnu.org/software/libc/manual/html_node/Signal-Stack.html) - and what is a core dump?
 - runtime performance
     - lazily stringify expressions - only when needed
@@ -69,6 +69,10 @@ Planned features for future releases - order changes constantly...
 - ability to customize the colors in the console output (may also use styles - based on [this](https://github.com/agauniyal/rang))
 - implement breaking into the debugger under linux - see [here](https://github.com/philsquared/Catch/pull/585) and [here](https://github.com/scottt/debugbreak)
 
+### For 2.0:
+
+- remove C++98 support - and update code like type lists to C++11
+
 ### Things that are being considered but not part of the roadmap yet:
 
 - think about preserving context from ```INFO()``` contexts when the test case ends from an exception - Catch PR [here](https://github.com/philsquared/Catch/pull/876)
@@ -84,7 +88,7 @@ Planned features for future releases - order changes constantly...
     - look at Catch - https://github.com/philsquared/Catch/blob/master/docs/test-cases-and-sections.md#special-tags
 - marking a test to run X times (should also multiply with the global test run times)
 - integrate static analysis on the CI: **msvc**, **clang**, **cppcheck**
-- extend Approx for types that have operator double - see [here](https://github.com/philsquared/Catch/issues/652) and [here](https://github.com/philsquared/Catch/pull/658)
+- extend Approx for types that have operator double - see [here](https://github.com/philsquared/Catch/issues/652) and [here](https://github.com/philsquared/Catch/pull/658) and [here](https://github.com/philsquared/Catch/issues/873) and [here](https://github.com/philsquared/Catch/commit/0354d50278d725d52084601300eb955cee6756d8)
 - option to list files in which there are test cases who match the current filters
 - option to list test suites and test cases in a tree view
 - decorators for test cases - like in boost test - like "description" - alternative (and broader) mechanism to tags
