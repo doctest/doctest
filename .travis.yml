@@ -213,37 +213,37 @@ matrix:
     # OSX GCC 4.6
     - env: COMPILER=g++-4.6
       compiler: gcc
-      osx_image: xcode8.3
+      osx_image: xcode7.3
       os: osx
 
     # OSX GCC 4.7
     - env: COMPILER=g++-4.7
       compiler: gcc
-      osx_image: xcode8.3
+      osx_image: xcode7.3
       os: osx
 
     # OSX GCC 4.8
     - env: COMPILER=g++-4.8 HAS_ASAN_32=true HAS_ASAN_64=true
       compiler: gcc
-      osx_image: xcode8.3
+      osx_image: xcode7.3
       os: osx
 
     # OSX GCC 4.9
     - env: COMPILER=g++-4.9 HAS_UBSAN_32=true HAS_UBSAN_64=true # no ASAN_32/ASAN_64 - errors when using ASAN_OPTIONS - probably g++ 4.9 bug
       compiler: gcc
-      osx_image: xcode8.3
+      osx_image: xcode7.3
       os: osx
 
     # OSX GCC 5
     - env: COMPILER=g++-5 HAS_ASAN_32=true HAS_UBSAN_32=true HAS_ASAN_64=true HAS_UBSAN_64=true
       compiler: gcc
-      osx_image: xcode8.3
+      osx_image: xcode7.3
       os: osx
 
     # OSX GCC 6
     - env: COMPILER=g++-6 HAS_ASAN_32=true HAS_UBSAN_32=true HAS_ASAN_64=true HAS_UBSAN_64=true
       compiler: gcc
-      osx_image: xcode8.3
+      osx_image: xcode7.3
       os: osx
 
     # OSX LLVM-GCC
@@ -267,37 +267,37 @@ matrix:
     # OSX GCC 4.6
     - env: COMPILER=g++-4.6
       compiler: gcc
-      osx_image: xcode8.3
+      osx_image: xcode7.3
       os: osx
 
     # OSX GCC 4.7
     - env: COMPILER=g++-4.7
       compiler: gcc
-      osx_image: xcode8.3
+      osx_image: xcode7.3
       os: osx
 
     # OSX GCC 4.8
     - env: COMPILER=g++-4.8 HAS_ASAN_32=true HAS_ASAN_64=true
       compiler: gcc
-      osx_image: xcode8.3
+      osx_image: xcode7.3
       os: osx
 
     # OSX GCC 4.9
     - env: COMPILER=g++-4.9 HAS_UBSAN_32=true HAS_UBSAN_64=true # no ASAN_32/ASAN_64 - errors when using ASAN_OPTIONS - probably g++ 4.9 bug
       compiler: gcc
-      osx_image: xcode8.3
+      osx_image: xcode7.3
       os: osx
 
     # OSX GCC 5
     - env: COMPILER=g++-5 HAS_ASAN_32=true HAS_UBSAN_32=true HAS_ASAN_64=true HAS_UBSAN_64=true
       compiler: gcc
-      osx_image: xcode8.3
+      osx_image: xcode7.3
       os: osx
 
     # OSX GCC 6
     - env: COMPILER=g++-6 HAS_ASAN_32=true HAS_UBSAN_32=true HAS_ASAN_64=true HAS_UBSAN_64=true
       compiler: gcc
-      osx_image: xcode8.3
+      osx_image: xcode7.3
       os: osx
 
 before_install:
@@ -336,7 +336,7 @@ install:
     if [[ "${TRAVIS_OS_NAME}" == "osx" ]]; then
       brew update
       # brew install ccache
-      brew install valgrind
+      # brew install valgrind
       # cmake
       if brew list -1 | grep -q "^cmake\$"; then
         brew outdated cmake || brew upgrade cmake
