@@ -61,6 +61,8 @@ Other testing frameworks use the header ```<typeinfo>``` in addition to demangli
 Some notes:
 
 - types are NOT filtered for uniqueness - the same templated test case can be instantiated multiple times for the same type - preventing that is left up to the user
+- you don't need to provide stringification for every type as that plays a role only in the test case name - the default is ```<>``` - the tests will still work and be distinct
+- the ```doctest::Types<>``` template accepts up to 60 type arguments
 - if variadic macros are enabled (see [**```DOCTEST_CONFIG_WITH_VARIADIC_MACROS```**](configuration.md#doctest_config_with_variadic_macros)) the typedefs can be skipped and the type lists can be constructed directly in the macros - otherwise the compiler will think that each comma in the type list introduces a new macro argument. With variadic macro support the ```TYPE_TO_STRING``` macro will also be able to work with types such as ```std::pair<int, float>```.
 - if you need parameterization on more than 1 type you can package multiple types in a single one like this:
 
