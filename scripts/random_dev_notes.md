@@ -1,8 +1,25 @@
 
 
+remove silencing of -Wdouble-promotion
 
-try if there are warnings for unused variables when tests are disabled
 
+rework expression decomposition to use <= instead of << (file an issue and liberate that operator)
+http://en.cppreference.com/w/cpp/language/operator_precedence
+
+
+add faq entry about compilation errors using INFO() with temporaries
+
+
+note that doctest has a really simple interface - unlike google test
+
+
+note in the docs about using the REQUIRE level of asserts in destructors (also abort-after option)
+
+
+templated fixture tests?
+
+
+rewrite color printing stuff to use streams and not printf functions
 
 
 look at boost test again:
