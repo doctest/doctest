@@ -67,6 +67,7 @@
 #pragma GCC diagnostic ignored "-Weffc++"
 #pragma GCC diagnostic ignored "-Wstrict-overflow"
 #pragma GCC diagnostic ignored "-Wstrict-aliasing"
+#pragma GCC diagnostic ignored "-Wctor-dtor-privacy"
 #pragma GCC diagnostic ignored "-Wmissing-declarations"
 #pragma GCC diagnostic ignored "-Wnon-virtual-dtor"
 #pragma GCC diagnostic ignored "-Winline"
@@ -511,6 +512,220 @@ namespace detail
     }  // namespace static_assert_impl
 #endif // DOCTEST_CONFIG_WITH_STATIC_ASSERT
 
+    namespace traits
+    {
+        template <typename T>
+        struct remove_const
+        { typedef T type; };
+
+        template <typename T>
+        struct remove_const<const T>
+        { typedef T type; };
+
+        template <typename T>
+        struct remove_volatile
+        { typedef T type; };
+
+        template <typename T>
+        struct remove_volatile<volatile T>
+        { typedef T type; };
+
+        template <typename T>
+        struct remove_cv
+        { typedef typename remove_volatile<typename remove_const<T>::type>::type type; };
+
+        template <typename T>
+        struct is_pointer_helper
+        { static const bool value = false; };
+
+        template <typename T>
+        struct is_pointer_helper<T*>
+        { static const bool value = true; };
+
+        template <typename T>
+        struct is_pointer
+        { static const bool value = is_pointer_helper<typename remove_cv<T>::type>::value; };
+
+        template <bool CONDITION, typename TYPE = void>
+        struct enable_if
+        {};
+
+        template <typename TYPE>
+        struct enable_if<true, TYPE>
+        { typedef TYPE type; };
+
+        template <typename T>
+        struct remove_reference
+        { typedef T type; };
+
+        template <typename T>
+        struct remove_reference<T&>
+        { typedef T type; };
+
+        template <typename T, typename AT_1 = void, typename AT_2 = void, typename AT_3 = void,
+                  typename AT_4 = void>
+        class is_constructible_impl
+        {
+        private:
+            template <typename C_T, typename C_AT_1, typename C_AT_2, typename C_AT_3,
+                      typename C_AT_4>
+            static bool
+            test(typename enable_if<
+                    sizeof(C_T) ==
+                    sizeof(C_T(static_cast<C_AT_1>(
+                                       *static_cast<typename remove_reference<C_AT_1>::type*>(0)),
+                               static_cast<C_AT_2>(
+                                       *static_cast<typename remove_reference<C_AT_2>::type*>(0)),
+                               static_cast<C_AT_3>(
+                                       *static_cast<typename remove_reference<C_AT_3>::type*>(0)),
+                               static_cast<C_AT_4>(
+                                       *static_cast<typename remove_reference<C_AT_4>::type*>(
+                                               0))))>::type*);
+
+            template <typename, typename, typename, typename, typename>
+            static int test(...);
+
+        public:
+            static const bool value = (sizeof(test<T, AT_1, AT_2, AT_3, AT_4>(0)) == sizeof(bool));
+        };
+
+        template <typename T, typename AT_1, typename AT_2, typename AT_3>
+        class is_constructible_impl<T, AT_1, AT_2, AT_3, void>
+        {
+        private:
+            template <typename C_T, typename C_AT_1, typename C_AT_2, typename C_AT_3>
+            static bool test(typename enable_if<
+                             sizeof(C_T) ==
+                             sizeof(C_T(static_cast<C_AT_1>(*static_cast<typename remove_reference<
+                                                                    C_AT_1>::type*>(0)),
+                                        static_cast<C_AT_2>(*static_cast<typename remove_reference<
+                                                                    C_AT_2>::type*>(0)),
+                                        static_cast<C_AT_3>(*static_cast<typename remove_reference<
+                                                                    C_AT_3>::type*>(0))))>::type*);
+
+            template <typename, typename, typename, typename>
+            static int test(...);
+
+        public:
+            static const bool value = (sizeof(test<T, AT_1, AT_2, AT_3>(0)) == sizeof(bool));
+        };
+
+        template <typename T, typename AT_1, typename AT_2>
+        class is_constructible_impl<T, AT_1, AT_2, void, void>
+        {
+        private:
+            template <typename C_T, typename C_AT_1, typename C_AT_2>
+            static bool test(typename enable_if<
+                             sizeof(C_T) ==
+                             sizeof(C_T(static_cast<C_AT_1>(*static_cast<typename remove_reference<
+                                                                    C_AT_1>::type*>(0)),
+                                        static_cast<C_AT_2>(*static_cast<typename remove_reference<
+                                                                    C_AT_2>::type*>(0))))>::type*);
+
+            template <typename, typename, typename>
+            static int test(...);
+
+        public:
+            static const bool value = (sizeof(test<T, AT_1, AT_2>(0)) == sizeof(bool));
+        };
+
+        template <typename T, typename AT_1>
+        class is_constructible_impl<T, AT_1, void, void, void>
+        {
+        private:
+            template <typename C_T, typename C_AT_1>
+            static bool test(typename enable_if<
+                             sizeof(C_T) ==
+                             sizeof(C_T(static_cast<C_AT_1>(
+                                     *static_cast<typename remove_reference<C_AT_1>::type*>(
+                                             0))))>::type*);
+
+            template <typename, typename>
+            static int test(...);
+
+        public:
+            static const bool value = (sizeof(test<T, AT_1>(0)) == sizeof(bool));
+        };
+
+        template <typename T>
+        class is_constructible_impl<T, void, void, void, void>
+        {
+        private:
+            template <typename C_T>
+            static C_T testFun(C_T);
+
+            template <typename C_T>
+            static bool test(typename enable_if<sizeof(C_T) == sizeof(testFun(C_T()))>::type*);
+
+            template <typename>
+            static int test(...);
+
+        public:
+            static const bool value = (sizeof(test<T>(0)) == sizeof(bool));
+        };
+
+        template <typename T, typename AT_1 = void, typename AT_2 = void, typename AT_3 = void,
+                  typename AT_4 = void>
+        class is_constructible_impl_ptr
+        {
+        public:
+            static const bool value = false;
+        };
+
+        template <typename T, typename AT_1>
+        class is_constructible_impl_ptr<
+                T, AT_1, typename enable_if<is_pointer<typename remove_reference<T>::type>::value,
+                                            void>::type,
+                void, void>
+        {
+        private:
+            template <typename C_T>
+            static bool test(C_T);
+
+            template <typename>
+            static int test(...);
+
+        public:
+            static const bool value = (sizeof(test<T>(static_cast<AT_1>(0))) == sizeof(bool));
+        };
+
+        template <typename T>
+        class is_constructible_impl_ptr<T, void, void, void, void>
+        {
+        public:
+            static const bool value = true;
+        };
+
+// is_constructible<> taken from here: http://stackoverflow.com/a/40443701/3162383
+// for GCC/Clang gives the same results as std::is_constructible<> - see here: https://wandbox.org/permlink/bNWr7Ii2fuz4Vf7A
+// MSVC support:
+// - only 1 argument
+// - for versions before 2012 read the CAUTION comment below
+// currently intended for use only in the Approx() helper for strong typedefs of double
+#ifndef _MSC_VER
+        template <typename T, typename AT_1 = void, typename AT_2 = void, typename AT_3 = void,
+                  typename AT_4 = void>
+        class is_constructible
+        {
+        public:
+            static const bool value =
+                    (is_pointer<typename remove_reference<T>::type>::value ?
+                             is_constructible_impl_ptr<T, AT_1, AT_2, AT_3, AT_4>::value :
+                             is_constructible_impl<T, AT_1, AT_2, AT_3, AT_4>::value);
+        };
+#elif defined(_MSC_VER) && (_MSC_VER >= 1700)
+        template <typename T, typename AT_1>
+        struct is_constructible
+        { static const bool value = __is_constructible(T, AT_1); };
+#elif defined(_MSC_VER)
+        // !!! USE WITH CAUTION !!!
+        // will always return false - unable to implement this for versions of MSVC older than 2012 for now...
+        template <typename T, typename AT_1>
+        struct is_constructible
+        { static const bool value = false; };
+#endif // _MSC_VER
+    }  // namespace traits
+
     template <typename T>
     struct deferred_false
     { static const bool value = false; };
@@ -752,14 +967,22 @@ public:
             , m_scale(other.m_scale)
             , m_value(other.m_value) {}
 
-    Approx operator()(double value) {
+    Approx operator()(double value) const {
         Approx approx(value);
         approx.epsilon(m_epsilon);
         approx.scale(m_scale);
         return approx;
     }
 
+    template <typename T>
+    explicit Approx(typename detail::traits::enable_if<
+                    detail::traits::is_constructible<double, T>::value, T>::type value) {
+        *this = Approx(static_cast<double>(value));
+    }
+
     // clang-format off
+    // overloads for double - the first one is necessary as it is in the implementation part of doctest
+    // as for the others - keeping them for potentially faster compile times
     DOCTEST_INTERFACE friend bool operator==(double lhs, Approx const& rhs);
     friend bool operator==(Approx const& lhs, double rhs) { return operator==(rhs, lhs); }
     friend bool operator!=(double lhs, Approx const& rhs) { return !operator==(lhs, rhs); }
@@ -772,6 +995,23 @@ public:
     friend bool operator< (Approx const& lhs, double rhs) { return lhs.m_value < rhs && lhs != rhs; }
     friend bool operator> (double lhs, Approx const& rhs) { return lhs > rhs.m_value && lhs != rhs; }
     friend bool operator> (Approx const& lhs, double rhs) { return lhs.m_value > rhs && lhs != rhs; }
+
+#define DOCTEST_APPROX_PREFIX \
+    template <typename T> friend typename detail::traits::enable_if<detail::traits::is_constructible<double, T>::value, bool>::type
+
+    DOCTEST_APPROX_PREFIX operator==(const T& lhs, const Approx& rhs) { return operator==(double(lhs), rhs); }
+    DOCTEST_APPROX_PREFIX operator==(const Approx& lhs, const T& rhs) { return operator==(rhs, lhs); }
+    DOCTEST_APPROX_PREFIX operator!=(const T& lhs, const Approx& rhs) { return !operator==(lhs, rhs); }
+    DOCTEST_APPROX_PREFIX operator!=(const Approx& lhs, const T& rhs) { return !operator==(rhs, lhs); }
+    DOCTEST_APPROX_PREFIX operator<=(const T& lhs, const Approx& rhs) { return double(lhs) < rhs.m_value || lhs == rhs; }
+    DOCTEST_APPROX_PREFIX operator<=(const Approx& lhs, const T& rhs) { return lhs.m_value < double(rhs) || lhs == rhs; }
+    DOCTEST_APPROX_PREFIX operator>=(const T& lhs, const Approx& rhs) { return double(lhs) > rhs.m_value || lhs == rhs; }
+    DOCTEST_APPROX_PREFIX operator>=(const Approx& lhs, const T& rhs) { return lhs.m_value > double(rhs) || lhs == rhs; }
+    DOCTEST_APPROX_PREFIX operator< (const T& lhs, const Approx& rhs) { return double(lhs) < rhs.m_value && lhs != rhs; }
+    DOCTEST_APPROX_PREFIX operator< (const Approx& lhs, const T& rhs) { return lhs.m_value < double(rhs) && lhs != rhs; }
+    DOCTEST_APPROX_PREFIX operator> (const T& lhs, const Approx& rhs) { return double(lhs) > rhs.m_value && lhs != rhs; }
+    DOCTEST_APPROX_PREFIX operator> (const Approx& lhs, const T& rhs) { return lhs.m_value > double(rhs) && lhs != rhs; }
+#undef DOCTEST_APPROX_PREFIX
     // clang-format on
 
     Approx& epsilon(double newEpsilon) {
@@ -931,9 +1171,6 @@ namespace detail
     template<>          struct not_char_pointer<const char*> { enum { value = false }; };
 
     template<class T> struct can_use_op : not_char_pointer<typename decay_array<T>::type> {};
-
-    template<bool, class = void> struct enable_if {};
-    template<class T> struct enable_if<true, T> { typedef T type; };
     // clang-format on
 
     struct TestFailureException
@@ -1063,7 +1300,7 @@ namespace detail
 #ifndef DOCTEST_CONFIG_TREAT_CHAR_STAR_AS_STRING
 #define DOCTEST_COMPARISON_RETURN_TYPE bool
 #else // DOCTEST_CONFIG_TREAT_CHAR_STAR_AS_STRING
-#define DOCTEST_COMPARISON_RETURN_TYPE typename enable_if<can_use_op<L>::value || can_use_op<R>::value, bool>::type
+#define DOCTEST_COMPARISON_RETURN_TYPE typename traits::enable_if<can_use_op<L>::value || can_use_op<R>::value, bool>::type
     inline bool eq(const char* lhs, const char* rhs) { return String(lhs) == String(rhs); }
     inline bool ne(const char* lhs, const char* rhs) { return String(lhs) != String(rhs); }
     inline bool lt(const char* lhs, const char* rhs) { return String(lhs) <  String(rhs); }

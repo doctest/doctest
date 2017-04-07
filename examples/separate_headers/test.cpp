@@ -1,43 +1,34 @@
 #include "parts/doctest_fwd.h"
 
-template <typename first, typename second>
-struct TypePair
+#include <iostream>
+using namespace std;
+
+using doctest::Approx;
+
+class Volatility
 {
-    typedef first  A;
-    typedef second B;
+    double underlying_;
+
+public:
+    explicit Volatility(double u)
+            : underlying_(u) {}
+    //explicit
+    operator double() const { return underlying_; }
 };
 
-using doctest::Types;
+TEST_CASE("") {
+    Volatility asd(1.0);
+    CHECK(static_cast<double>(asd) == Approx(1));
+    CHECK(asd == Approx(1));
+    CHECK(Approx(1) == asd);
 
-typedef Types<TypePair<int, char>, TypePair<char, int> > pairs;
-typedef Types<int, char, float, double, int> the_types;
-
-//TYPE_TO_STRING(TypePair<char, int>);
-
-TEST_CASE_TEMPLATE("trololo", T, pairs) {
-    //typedef typename T::A A;
-    //typedef typename T::B B;
-    INFO("sad :(");
-    MESSAGE("how do I feel?");
-    //T a = T();
-    //++a;
-    //CHECK(doctest::Approx(a) == T());
+    CHECK(Approx(1) == 2);
+    CHECK(Approx(1) == 2.0);
+    CHECK(Approx(1) == 2.f);
+    CHECK(Approx(1.0) == 2);
+    CHECK(Approx(1.0) == 2.0);
+    CHECK(Approx(1.0) == 2.f);
+    CHECK(Approx(1.f) == 2);
+    CHECK(Approx(1.f) == 2.0);
+    CHECK(Approx(1.f) == 2.f);
 }
-
-TEST_CASE_TEMPLATE_DEFINE("separate", T, it) {
-    MESSAGE("aaa");
-    //T a = T();
-    //++a;
-    //SUBCASE("root") {
-    //    ++a;
-    //    SUBCASE("1") {
-    //        CHECK(doctest::Approx(a) == T());
-    //    }
-    //    SUBCASE("2") {
-    //        CHECK(doctest::Approx(a) == T());
-    //    }
-    //}
-}
-
-TEST_CASE_TEMPLATE_INSTANTIATE(it, the_types);
-TEST_CASE_TEMPLATE_INSTANTIATE(it, the_types);

@@ -11,6 +11,15 @@ Planned features for future releases - order changes constantly...
 ### For 1.2:
 
 - Value-Parameterized test cases - https://github.com/onqtam/doctest/issues/38
+- decorators for test cases - like in boost test
+    - description
+    - disabled
+    - shouldFail
+    - mayFail
+    - alternative mechanism to tags
+    - time constraints?
+    - run X times (should also multiply with the global test run times)
+    - !!! and think about how these will be accessed and filtered from the command line
 - crash handling: signals on UNIX platforms or structured exceptions on Windows (should also have DOCTEST_CONFIG_NO_SIGNAL_CATCHING) - look at [Using a Separate Signal Stack](https://www.gnu.org/software/libc/manual/html_node/Signal-Stack.html) - and what is a core dump?
 - runtime performance
     - lazily stringify expressions - only when needed
@@ -29,6 +38,7 @@ Planned features for future releases - order changes constantly...
     - redo the compile time ones - also look into CATCH_CONFIG_FAST_COMPILE
     - remove old benchmarks for doctest 1.0
     - add runtime benchmarks
+- rework the examples folder - so the test runner is compiled only a few times - CI builds take a ton of time!
 - change docs a bit - mainly what is in the landing page (add link to overload)
 - address the coverage issue... look at how this project does it: https://github.com/rollbear/trompeloeil
 - resolve pull/60 (merge in dev, move cmake folder in scripts, maybe change/remove some of the 2 new SKIP options)
@@ -51,7 +61,7 @@ Planned features for future releases - order changes constantly...
     - reporting running time of tests
     - count a test case as failed if it exceeds X ms (but no force-killing!)
     - killing a test that exceeds a time limit (will perhaps require threading or processes)
-- matchers - should investigate what they are - look at google test and Catch
+- matchers - should investigate what they are - look at google test/mock and Catch (also predicates and boost test)
 - convolution support for the assertion macros (with a predicate)
 - generators? - look at Catch - and investigate what they are
 - look at property based testing
@@ -71,7 +81,11 @@ Planned features for future releases - order changes constantly...
 
 ### For 2.0:
 
-- remove C++98 support - and update code like type lists to C++11
+- remove C++98 support
+    - remove the config identifiers for C++11 features
+    - use variadic templates where appropriate
+    - update type lists to C++11
+    - update traits - use declval, etc.
 
 ### Things that are being considered but not part of the roadmap yet:
 
@@ -82,18 +96,18 @@ Planned features for future releases - order changes constantly...
 - detect floating point exceptions
 - checkpoint/passpoint - like in [boost test](http://www.boost.org/doc/libs/1_63_0/libs/test/doc/html/boost_test/test_output/test_tools_support_for_logging/checkpoints.html)
 - log levels - like in [boost test](http://www.boost.org/doc/libs/1_63_0/libs/test/doc/html/boost_test/utf_reference/rt_param_reference/log_level.html)
-- support for tags
-    - may fail tag
-    - invisible tag
-    - look at Catch - https://github.com/philsquared/Catch/blob/master/docs/test-cases-and-sections.md#special-tags
-- marking a test to run X times (should also multiply with the global test run times)
 - integrate static analysis on the CI: **msvc**, **clang**, **cppcheck**
-- extend Approx for types that have operator double - see [here](https://github.com/philsquared/Catch/issues/652) and [here](https://github.com/philsquared/Catch/pull/658) and [here](https://github.com/philsquared/Catch/issues/873) and [here](https://github.com/philsquared/Catch/commit/0354d50278d725d52084601300eb955cee6756d8)
 - option to list files in which there are test cases who match the current filters
 - option to list test suites and test cases in a tree view
-- decorators for test cases - like in boost test - like "description" - alternative (and broader) mechanism to tags
+- queries for the current test case - name (and probably decorators)
 - thread safety - asserts/subcases/captures should be safe to be used by multiple threads simultaneously
 - support for running tests in parallel in multiple threads
+- death tests - as in [google test](https://github.com/google/googletest/blob/master/googletest/docs/AdvancedGuide.md#death-tests)
+- setup / teardown support
+    - global setup / teardown - can be currently achieved by providing a custom main function
+    - per test suite
+    - perhaps for fixtures in addition to the constructor / destructor - since throwing in the destructor might terminate the program
+    - or just ignore all of this this - it would require globals or classes and inheritance - and we already have subcases
 - doctest in a GUI environment? with no console? APIs for attaching a console? querying if there is one? [investigate...](https://github.com/philsquared/Catch/blob/master/docs/configuration.md#stdout)
 - ability to specify ASC/DESC for the order option
 - command line error handling/reporting
@@ -105,12 +119,12 @@ Planned features for future releases - order changes constantly...
     - also look into similar Xcode integration - https://github.com/philsquared/Catch/pull/454
 - the set holding all registered tests should use a specialized allocator to minimize program startup time
 - ability to provide a temp folder that is cleared between each test case
-- rework the examples folder - so the test runner is compiled only a few times - CI builds take a ton of time!
 - make the _MESSAGE assert macros work with variadic arguments - and maybe write the ones for binary/unary/fast asserts as well
 
 ### Things that are very unlikely to enter the roadmap:
 
 - stop using underscores for the begining of identifiers - the anonymous variables - against the standard...
+- templated fixture test cases
 - test with missed warning flags for GCC - look into https://github.com/Barro/compiler-warnings
 - utf8???
 - handle ```wchar``` strings???
