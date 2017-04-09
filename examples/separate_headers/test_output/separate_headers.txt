@@ -50,4 +50,4 @@ with expansion:
 
 ===============================================================================
 [doctest] test cases:    1 |    0 passed |    1 failed |    0 skipped
-[doctest] assertions:   12 |    3 passed |    9 failed |
+[doctest] assertions:   13 |    4 passed |    9 failed |

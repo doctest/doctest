@@ -21,6 +21,7 @@ TEST_CASE("") {
     CHECK(static_cast<double>(asd) == Approx(1));
     CHECK(asd == Approx(1));
     CHECK(Approx(1) == asd);
+    CHECK(Approx(asd) == 1.0);
 
     CHECK(Approx(1) == 2);
     CHECK(Approx(1) == 2.0);
