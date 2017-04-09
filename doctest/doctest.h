@@ -978,8 +978,10 @@ public:
     }
 
     template <typename T>
-    explicit Approx(typename detail::traits::enable_if<
-                    detail::traits::is_constructible<double, T>::value, T>::type value) {
+    explicit Approx(const T& value,
+                    typename detail::traits::enable_if<
+                            detail::traits::is_constructible<double, T>::value>::type* =
+                            static_cast<T*>(0)) {
         *this = Approx(static_cast<double>(value));
     }
 
