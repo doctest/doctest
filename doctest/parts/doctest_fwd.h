@@ -1171,7 +1171,7 @@ namespace detail
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wsign-conversion"
 #pragma clang diagnostic ignored "-Wsign-compare"
-#pragma clang diagnostic ignored "-Wdouble-promotion"
+//#pragma clang diagnostic ignored "-Wdouble-promotion"
 //#pragma clang diagnostic ignored "-Wconversion"
 //#pragma clang diagnostic ignored "-Wfloat-equal"
 #endif // __clang__
@@ -1183,7 +1183,7 @@ namespace detail
 #pragma GCC diagnostic ignored "-Wsign-conversion"
 #pragma GCC diagnostic ignored "-Wsign-compare"
 #if __GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ > 5)
-#pragma GCC diagnostic ignored "-Wdouble-promotion"
+//#pragma GCC diagnostic ignored "-Wdouble-promotion"
 #endif // > gcc 4.5
 //#pragma GCC diagnostic ignored "-Wconversion"
 //#pragma GCC diagnostic ignored "-Wfloat-equal"
