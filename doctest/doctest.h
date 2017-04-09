@@ -1301,6 +1301,10 @@ namespace detail
 
     struct ExpressionDecomposer
     {
+        // The right operator for capturing expressions is "<=" instead of "<<" (based on the operator precedence table)
+        // but then there will be warnings from GCC about "-Wparentheses" and since "_Pragma()" is problematic this will stay for now...
+        // https://github.com/philsquared/Catch/issues/870
+        // https://github.com/philsquared/Catch/issues/565
         template <typename L>
         Expression_lhs<const DOCTEST_REF_WRAP(L)> operator<<(const DOCTEST_REF_WRAP(L) operand) {
             return Expression_lhs<const DOCTEST_REF_WRAP(L)>(operand);
