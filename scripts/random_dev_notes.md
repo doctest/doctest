@@ -1,8 +1,5 @@
 
 
-remove silencing of -Wdouble-promotion
-
-
 rework expression decomposition to use <= instead of << (file an issue and liberate that operator)
 http://en.cppreference.com/w/cpp/language/operator_precedence
 
