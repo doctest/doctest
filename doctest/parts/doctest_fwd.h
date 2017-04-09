@@ -54,8 +54,8 @@
 #pragma clang diagnostic ignored "-Wnon-virtual-dtor"
 #pragma clang diagnostic ignored "-Wweak-vtables"
 #pragma clang diagnostic ignored "-Wpadded"
+#pragma clang diagnostic ignored "-Wdeprecated"
 #pragma clang diagnostic ignored "-Wmissing-prototypes"
-#pragma clang diagnostic ignored "-Wshorten-64-to-32"
 #pragma clang diagnostic ignored "-Wunused-local-typedef"
 #endif // __clang__
 
@@ -65,7 +65,6 @@
 #endif // > gcc 4.6
 #pragma GCC diagnostic ignored "-Wunknown-pragmas"
 #pragma GCC diagnostic ignored "-Weffc++"
-#pragma GCC diagnostic ignored "-Wstrict-overflow"
 #pragma GCC diagnostic ignored "-Wstrict-aliasing"
 #pragma GCC diagnostic ignored "-Wctor-dtor-privacy"
 #pragma GCC diagnostic ignored "-Wmissing-declarations"
@@ -631,6 +630,9 @@ namespace detail
     struct deferred_false
     { static const bool value = false; };
 
+    // to silence the warning "-Wzero-as-null-pointer-constant" only for gcc 5 for the approx template ctor - pragmas don't work for it...
+    inline void* getNull() { return 0; }
+
     namespace has_insertion_operator_impl
     {
         typedef char no;
@@ -879,7 +881,7 @@ public:
     explicit Approx(const T& value,
                     typename detail::traits::enable_if<
                             detail::traits::is_constructible<double, T>::value>::type* =
-                            static_cast<T*>(0)) {
+                            static_cast<T*>(detail::getNull())) {
         *this = Approx(static_cast<double>(value));
     }
 
