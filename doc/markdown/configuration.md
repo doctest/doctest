@@ -122,7 +122,6 @@ By default the library suppresses warnings about comparing signed and unsigned t
 
 - g++/clang ```-Wsign-conversion```
 - g++/clang ```-Wsign-compare```
-- g++/clang ```-Wdouble-promotion```
 - msvc ```C4389``` 'operator' : signed/unsigned mismatch
 - msvc ```C4018``` 'expression' : signed/unsigned mismatch
 
