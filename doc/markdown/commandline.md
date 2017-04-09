@@ -33,7 +33,7 @@ All the options can also be set with code (defaults/overrides) if the user [**su
 | ```-rs``` &nbsp; ```--rand-seed=<int>``` | The seed for random ordering |
 | ```-f``` &nbsp;&nbsp;&nbsp; ```--first=<int>``` | The **first** test case to execute which passes the current filters - for range-based execution - see [**the example**](../../examples/range_based_execution/) (the **run.py** script) |
 | ```-l``` &nbsp;&nbsp;&nbsp; ```--last=<int>``` | The **last** test case to execute which passes the current filters - for range-based execution - see [**the example**](../../examples/range_based_execution/) (the **run.py** script) |
-| ```-aa``` &nbsp; ```--abort-after=<int>``` | The testing framework will stop executing test cases/assertions after this many failed assertions. The default is 0 which means don't stop at all |
+| ```-aa``` &nbsp; ```--abort-after=<int>``` | The testing framework will stop executing test cases/assertions after this many failed assertions. The default is 0 which means don't stop at all. Note that the framework uses an exception to stop the current test case regardless of the level of the assert (```CHECK```/```REQUIRE```) - so be careful with asserts in destructors... |
 | ```-scfl``` ```--subcase-filter-levels=<int>``` | Apply subcase filters only for the first ```<int>``` levels of nested subcases and just run the ones nested deeper. Default is a very high number which means *filter any subcase* |
 | **Bool Options** | <hr> |
 | ```-s``` &nbsp;&nbsp;&nbsp; ```--success=<bool>``` | To include successful assertions in the output |

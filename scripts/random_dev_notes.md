@@ -1,17 +1,5 @@
 
 
-add faq entry about compilation errors using INFO() with temporaries
-
-
-note that doctest has a really simple interface - unlike google test
-
-
-note in the docs about using the REQUIRE level of asserts in destructors (also abort-after option)
-
-
-templated fixture tests?
-
-
 rewrite color printing stuff to use streams and not printf functions
 
 

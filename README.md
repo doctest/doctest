@@ -36,7 +36,7 @@ The **key** differences between it and other testing libraries are:
 - Doesn't pollute the global namespace (everything is in the ```doctest``` namespace) and doesn't drag **any** headers with it
 - Doesn't produce any warnings even on the [**most aggressive**](scripts/common.cmake#L71) warning levels for **MSVC**/**GCC**/**Clang**
 - Very [**portable and well tested**](doc/markdown/features.md#extremely-portable) C++98 - per commit tested on CI with over 300 different builds (valgrind, sanitizers...)
-- Just one header and no external dependencies apart from the C/C++ standard library
+- Just one header with a simple interface and no external dependencies apart from the C/C++ standard library
 
 This allows the framework to be used in more ways than any other - tests can be written directly in the production code!
 
