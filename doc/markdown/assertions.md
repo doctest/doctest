@@ -14,6 +14,8 @@ The ```CHECK``` level is mostly useful if you have a series of essentially ortho
 
 All asserts evaluate the expressions only once and if they fail - the values are [**stringified**](stringification.md) properly. 
 
+Note that the ```REQUIRE``` level of asserts uses exceptions to end the current test case. It might be dangerous to use this level of asserts inside destructors of user-defined classes - if a destructor is called during stack unwinding due to an exception and a ```REQUIRE``` assert fails then the program will terminate. Also since C++11 all destructors are by default ```noexcept(true)``` unless specified otherwise so such an assert will lead to ```std::terminate()``` being called.
+
 ## Expression decomposing asserts
 
 These are of the form ```CHECK(expression)```  (Same for ```REQUIRE``` and ```WARN```).

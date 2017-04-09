@@ -120,6 +120,7 @@ Planned features for future releases - order changes constantly...
 - the set holding all registered tests should use a specialized allocator to minimize program startup time
 - ability to provide a temp folder that is cleared between each test case
 - make the _MESSAGE assert macros work with variadic arguments - and maybe write the ones for binary/unary/fast asserts as well
+- move from operator "<<" to "<=" for capturing the left operand when decomposing binary expressions with templates
 
 ### Things that are very unlikely to enter the roadmap:
 
