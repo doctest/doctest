@@ -562,75 +562,8 @@ namespace detail
         struct remove_reference<T&>
         { typedef T type; };
 
-        template <typename T, typename AT_1 = void, typename AT_2 = void, typename AT_3 = void,
-                  typename AT_4 = void>
+        template <typename T, typename AT_1 = void>
         class is_constructible_impl
-        {
-        private:
-            template <typename C_T, typename C_AT_1, typename C_AT_2, typename C_AT_3,
-                      typename C_AT_4>
-            static bool
-            test(typename enable_if<
-                    sizeof(C_T) ==
-                    sizeof(C_T(static_cast<C_AT_1>(
-                                       *static_cast<typename remove_reference<C_AT_1>::type*>(0)),
-                               static_cast<C_AT_2>(
-                                       *static_cast<typename remove_reference<C_AT_2>::type*>(0)),
-                               static_cast<C_AT_3>(
-                                       *static_cast<typename remove_reference<C_AT_3>::type*>(0)),
-                               static_cast<C_AT_4>(
-                                       *static_cast<typename remove_reference<C_AT_4>::type*>(
-                                               0))))>::type*);
-
-            template <typename, typename, typename, typename, typename>
-            static int test(...);
-
-        public:
-            static const bool value = (sizeof(test<T, AT_1, AT_2, AT_3, AT_4>(0)) == sizeof(bool));
-        };
-
-        template <typename T, typename AT_1, typename AT_2, typename AT_3>
-        class is_constructible_impl<T, AT_1, AT_2, AT_3, void>
-        {
-        private:
-            template <typename C_T, typename C_AT_1, typename C_AT_2, typename C_AT_3>
-            static bool test(typename enable_if<
-                             sizeof(C_T) ==
-                             sizeof(C_T(static_cast<C_AT_1>(*static_cast<typename remove_reference<
-                                                                    C_AT_1>::type*>(0)),
-                                        static_cast<C_AT_2>(*static_cast<typename remove_reference<
-                                                                    C_AT_2>::type*>(0)),
-                                        static_cast<C_AT_3>(*static_cast<typename remove_reference<
-                                                                    C_AT_3>::type*>(0))))>::type*);
-
-            template <typename, typename, typename, typename>
-            static int test(...);
-
-        public:
-            static const bool value = (sizeof(test<T, AT_1, AT_2, AT_3>(0)) == sizeof(bool));
-        };
-
-        template <typename T, typename AT_1, typename AT_2>
-        class is_constructible_impl<T, AT_1, AT_2, void, void>
-        {
-        private:
-            template <typename C_T, typename C_AT_1, typename C_AT_2>
-            static bool test(typename enable_if<
-                             sizeof(C_T) ==
-                             sizeof(C_T(static_cast<C_AT_1>(*static_cast<typename remove_reference<
-                                                                    C_AT_1>::type*>(0)),
-                                        static_cast<C_AT_2>(*static_cast<typename remove_reference<
-                                                                    C_AT_2>::type*>(0))))>::type*);
-
-            template <typename, typename, typename>
-            static int test(...);
-
-        public:
-            static const bool value = (sizeof(test<T, AT_1, AT_2>(0)) == sizeof(bool));
-        };
-
-        template <typename T, typename AT_1>
-        class is_constructible_impl<T, AT_1, void, void, void>
         {
         private:
             template <typename C_T, typename C_AT_1>
@@ -648,7 +581,7 @@ namespace detail
         };
 
         template <typename T>
-        class is_constructible_impl<T, void, void, void, void>
+        class is_constructible_impl<T, void>
         {
         private:
             template <typename C_T>
@@ -664,54 +597,22 @@ namespace detail
             static const bool value = (sizeof(test<T>(0)) == sizeof(bool));
         };
 
-        template <typename T, typename AT_1 = void, typename AT_2 = void, typename AT_3 = void,
-                  typename AT_4 = void>
-        class is_constructible_impl_ptr
-        {
-        public:
-            static const bool value = false;
-        };
-
-        template <typename T, typename AT_1>
-        class is_constructible_impl_ptr<
-                T, AT_1, typename enable_if<is_pointer<typename remove_reference<T>::type>::value,
-                                            void>::type,
-                void, void>
-        {
-        private:
-            template <typename C_T>
-            static bool test(C_T);
-
-            template <typename>
-            static int test(...);
-
-        public:
-            static const bool value = (sizeof(test<T>(static_cast<AT_1>(0))) == sizeof(bool));
-        };
-
-        template <typename T>
-        class is_constructible_impl_ptr<T, void, void, void, void>
-        {
-        public:
-            static const bool value = true;
-        };
-
 // is_constructible<> taken from here: http://stackoverflow.com/a/40443701/3162383
 // for GCC/Clang gives the same results as std::is_constructible<> - see here: https://wandbox.org/permlink/bNWr7Ii2fuz4Vf7A
+// modifications:
+// - reworked to support only 1 argument (mainly because of MSVC...)
+// - removed pointer support
 // MSVC support:
-// - only 1 argument
 // - for versions before 2012 read the CAUTION comment below
-// currently intended for use only in the Approx() helper for strong typedefs of double
+// currently intended for use only in the Approx() helper for strong typedefs of double - see issue #62
 #ifndef _MSC_VER
-        template <typename T, typename AT_1 = void, typename AT_2 = void, typename AT_3 = void,
-                  typename AT_4 = void>
+        template <typename T, typename AT_1 = void>
         class is_constructible
         {
         public:
-            static const bool value =
-                    (is_pointer<typename remove_reference<T>::type>::value ?
-                             is_constructible_impl_ptr<T, AT_1, AT_2, AT_3, AT_4>::value :
-                             is_constructible_impl<T, AT_1, AT_2, AT_3, AT_4>::value);
+            static const bool value = (is_pointer<typename remove_reference<T>::type>::value ?
+                                               false :
+                                               is_constructible_impl<T, AT_1>::value);
         };
 #elif defined(_MSC_VER) && (_MSC_VER >= 1700)
         template <typename T, typename AT_1>
