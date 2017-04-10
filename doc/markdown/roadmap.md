@@ -20,6 +20,9 @@ Planned features for future releases - order changes constantly...
     - time constraints?
     - run X times (should also multiply with the global test run times)
     - !!! and think about how these will be accessed and filtered from the command line
+- time stuff
+    - reporting running time of tests
+    - count a test case as failed if it exceeds X ms (but no force-killing!)
 - crash handling: signals on UNIX platforms or structured exceptions on Windows (should also have DOCTEST_CONFIG_NO_SIGNAL_CATCHING) - look at [Using a Separate Signal Stack](https://www.gnu.org/software/libc/manual/html_node/Signal-Stack.html) - and what is a core dump?
 - runtime performance
     - lazily stringify expressions - only when needed
@@ -57,10 +60,6 @@ Planned features for future releases - order changes constantly...
     - a listener interface - similar to a reporter - look at Catch
 - ability to have no output when everything succeeds
 - option to output summary only
-- time stuff
-    - reporting running time of tests
-    - count a test case as failed if it exceeds X ms (but no force-killing!)
-    - killing a test that exceeds a time limit (will perhaps require threading or processes)
 - matchers - should investigate what they are - look at google test/mock and Catch (also predicates and boost test)
 - convolution support for the assertion macros (with a predicate)
 - generators? - look at Catch - and investigate what they are
@@ -73,6 +72,7 @@ Planned features for future releases - order changes constantly...
 
 - running tests a [few times](https://github.com/google/googletest/blob/master/googletest/docs/AdvancedGuide.md#repeating-the-tests)
 - test execution in [separate processes](https://github.com/philsquared/Catch/issues/853) - ```fork()``` for UNIX and [this](https://github.com/nemequ/munit/issues/2) for Windows
+- killing a test that exceeds a time limit (will perhaps require threading or processes)
 - [symbolizer](https://github.com/facebook/folly/tree/master/folly/experimental/symbolizer) - for a stack trace - when an assertion fails - and it's in a user function with some deep callstack away from the current test case - how to know the exact code path that lead to the failing assert
 - ability to make the framework not capture unexpected exceptions - as requested [here](https://github.com/onqtam/doctest/issues/12#issuecomment-235334585)
 - add Approx ability to compare with absolute epsilon - [Catch PR](https://github.com/philsquared/Catch/pull/538)
@@ -89,7 +89,6 @@ Planned features for future releases - order changes constantly...
 
 ### Things that are being considered but not part of the roadmap yet:
 
-- think about preserving context from ```INFO()``` contexts when the test case ends from an exception - Catch PR [here](https://github.com/philsquared/Catch/pull/876)
 - when no assertion is encountered in a test case it should fail
 - failure reporting should print out previous SECTIONs for data-driven testing - as requested [here](https://github.com/philsquared/Catch/issues/734)
 - ```Bitwise()``` class that has overloaded operators for comparison - to be used to check objects bitwise against each other
@@ -98,6 +97,7 @@ Planned features for future releases - order changes constantly...
 - log levels - like in [boost test](http://www.boost.org/doc/libs/1_63_0/libs/test/doc/html/boost_test/utf_reference/rt_param_reference/log_level.html)
 - integrate static analysis on the CI: **msvc**, **clang**, **cppcheck**
 - option to list files in which there are test cases who match the current filters
+- option for filters to switch from "match any" to "match all" mode
 - option to list test suites and test cases in a tree view
 - queries for the current test case - name (and probably decorators)
 - thread safety - asserts/subcases/captures should be safe to be used by multiple threads simultaneously

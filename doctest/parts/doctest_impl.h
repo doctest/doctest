@@ -280,7 +280,8 @@ namespace detail
         int             numFailedAssertions;
         int             hasCurrentTestFailed;
 
-        std::vector<IContextScope*> contexts; // for logging with INFO() and friends
+        std::vector<IContextScope*> contexts;            // for logging with INFO() and friends
+        std::vector<std::string>    exceptionalContexts; // logging from INFO() due to an exception
 
         // stuff for subcases
         std::set<SubcaseSignature> subcasesPassed;
@@ -1008,6 +1009,13 @@ namespace detail
 
     void addToContexts(IContextScope* ptr) { getContextState()->contexts.push_back(ptr); }
     void                              popFromContexts() { getContextState()->contexts.pop_back(); }
+    void useContextIfExceptionOccurred(IContextScope* ptr) {
+        if(std::uncaught_exception()) {
+            std::ostringstream stream;
+            ptr->build(&stream);
+            getContextState()->exceptionalContexts.push_back(stream.str());
+        }
+    }
 
     // this is needed because MSVC does not permit mixing 2 exception handling schemes in a function
     int callTestFunc(funcType f) {
@@ -1155,12 +1163,25 @@ namespace detail
         DOCTEST_SNPRINTF(info1, DOCTEST_COUNTOF(info1), "threw exception:\n");
         DOCTEST_SNPRINTF(info2, DOCTEST_COUNTOF(info2), "  %s\n", what.c_str());
 
+        std::string contextStr;
+
+        ContextState*& cs = getContextState();
+        if(cs->exceptionalContexts.size()) {
+            contextStr += "with context:\n";
+            for(size_t i = 0; i < cs->exceptionalContexts.size(); ++i) {
+                contextStr += "  ";
+                contextStr += cs->exceptionalContexts[i];
+                contextStr += "\n";
+            }
+        }
+
         DOCTEST_PRINTF_COLORED(msg, Color::Red);
         DOCTEST_PRINTF_COLORED(info1, Color::None);
         DOCTEST_PRINTF_COLORED(info2, Color::Cyan);
+        DOCTEST_PRINTF_COLORED(contextStr.c_str(), Color::None);
         DOCTEST_PRINTF_COLORED("\n", Color::None);
 
-        printToDebugConsole(String(msg) + info1 + info2 + "\n");
+        printToDebugConsole(String(msg) + info1 + info2 + contextStr.c_str() + "\n");
     }
 
     String logContext() {
@@ -1939,6 +1960,9 @@ int Context::run() {
                 p->subcasesHasSkipped   = false;
                 p->subcasesCurrentLevel = 0;
                 p->subcasesEnteredLevels.clear();
+
+                // reset stuff for logging with INFO()
+                p->exceptionalContexts.clear();
 
                 // execute the test
                 didFail += callTestFunc(data.m_f);

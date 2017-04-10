@@ -1576,10 +1576,11 @@ namespace detail
     }
 
     struct IContextScope
-    { virtual void build(std::ostream*) const = 0; };
+    { virtual void build(std::ostream*) = 0; };
 
     DOCTEST_INTERFACE void addToContexts(IContextScope* ptr);
     DOCTEST_INTERFACE void popFromContexts();
+    DOCTEST_INTERFACE void useContextIfExceptionOccurred(IContextScope* ptr);
 
     class ContextBuilder
     {
@@ -1697,16 +1698,25 @@ namespace detail
     class ContextScope : public IContextScope
     {
         ContextBuilder contextBuilder;
+        bool           built;
 
     public:
         ContextScope(ContextBuilder& temp)
-                : contextBuilder(temp) {
+                : contextBuilder(temp)
+                , built(false) {
             addToContexts(this);
         }
 
-        ~ContextScope() { popFromContexts(); }
+        ~ContextScope() {
+            if(!built)
+                useContextIfExceptionOccurred(this);
+            popFromContexts();
+        }
 
-        void build(std::ostream* stream) const { contextBuilder.build(stream); }
+        void build(std::ostream* stream) {
+            built = true;
+            contextBuilder.build(stream);
+        }
     };
 
     class DOCTEST_INTERFACE MessageBuilder
