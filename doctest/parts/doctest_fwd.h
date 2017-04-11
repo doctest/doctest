@@ -24,6 +24,7 @@
 // - the Approx() helper class for floating point comparison
 // - colors in the console
 // - breaking into a debugger
+// - signal / SEH handling
 //
 // The expression decomposing templates are taken from lest - https://github.com/martinmoene/lest
 // which uses the Boost Software License - Version 1.0
@@ -262,6 +263,20 @@
 #pragma clang diagnostic ignored "-Wc++98-compat"
 #pragma clang diagnostic ignored "-Wc++98-compat-pedantic"
 #endif // __clang__ && DOCTEST_NO_CPP11_COMPAT
+
+#if defined(_MSC_VER) && !defined(DOCTEST_CONFIG_WINDOWS_SEH)
+#define DOCTEST_CONFIG_WINDOWS_SEH
+#endif // _MSC_VER
+#if defined(DOCTEST_CONFIG_NO_WINDOWS_SEH) && defined(DOCTEST_CONFIG_WINDOWS_SEH)
+#undef DOCTEST_CONFIG_WINDOWS_SEH
+#endif // DOCTEST_CONFIG_NO_WINDOWS_SEH
+
+#if !defined(_WIN32) && !defined(DOCTEST_CONFIG_POSIX_SIGNALS)
+#define DOCTEST_CONFIG_POSIX_SIGNALS
+#endif // _WIN32
+#if defined(DOCTEST_CONFIG_NO_POSIX_SIGNALS) && defined(DOCTEST_CONFIG_POSIX_SIGNALS)
+#undef DOCTEST_CONFIG_POSIX_SIGNALS
+#endif // DOCTEST_CONFIG_NO_POSIX_SIGNALS
 
 #ifndef DOCTEST_CONFIG_NO_EXCEPTIONS
 #if defined(__GNUC__) && !defined(__EXCEPTIONS)
@@ -1320,7 +1335,7 @@ namespace detail
     DOCTEST_INTERFACE void logTestStart(const char* name, const char* file, unsigned line);
     DOCTEST_INTERFACE void logTestEnd();
 
-    DOCTEST_INTERFACE void logTestException(String what);
+    DOCTEST_INTERFACE void logTestException(const String& what, bool crash = false);
 
     DOCTEST_INTERFACE void logAssert(bool passed, const char* decomposition, bool threw,
                                      const String& exception, const char* expr,
