@@ -646,7 +646,7 @@ namespace detail
     struct deferred_false
     { static const bool value = false; };
 
-    // to silence the warning "-Wzero-as-null-pointer-constant" only for gcc 5 for the approx template ctor - pragmas don't work for it...
+    // to silence the warning "-Wzero-as-null-pointer-constant" only for gcc 5 for the Approx template ctor - pragmas don't work for it...
     inline void* getNull() { return 0; }
 
     namespace has_insertion_operator_impl
@@ -935,13 +935,19 @@ public:
 #undef DOCTEST_APPROX_PREFIX
     // clang-format on
 
-    Approx& epsilon(double newEpsilon) {
-        m_epsilon = newEpsilon;
+    template <typename T>
+    typename detail::traits::enable_if<detail::traits::is_constructible<double, T>::value,
+                                       Approx&>::type
+    epsilon(const T& newEpsilon) {
+        m_epsilon = static_cast<double>(newEpsilon);
         return *this;
     }
 
-    Approx& scale(double newScale) {
-        m_scale = newScale;
+    template <typename T>
+    typename detail::traits::enable_if<detail::traits::is_constructible<double, T>::value,
+                                       Approx&>::type
+    scale(const T& newScale) {
+        m_scale = static_cast<double>(newScale);
         return *this;
     }
 
