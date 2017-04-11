@@ -23,7 +23,6 @@ Planned features for future releases - order changes constantly...
 - time stuff
     - reporting running time of tests
     - count a test case as failed if it exceeds X ms (but no force-killing!)
-- crash handling: signals on UNIX platforms or structured exceptions on Windows (should also have DOCTEST_CONFIG_NO_SIGNAL_CATCHING) - look at [Using a Separate Signal Stack](https://www.gnu.org/software/libc/manual/html_node/Signal-Stack.html) - and what is a core dump?
 - runtime performance
     - lazily stringify expressions - only when needed
     - optimize createStream/freeStream to reuse a pool of ostringstream objects
@@ -93,7 +92,7 @@ Planned features for future releases - order changes constantly...
 - failure reporting should print out previous SECTIONs for data-driven testing - as requested [here](https://github.com/philsquared/Catch/issues/734)
 - ```Bitwise()``` class that has overloaded operators for comparison - to be used to check objects bitwise against each other
 - detect floating point exceptions
-- checkpoint/passpoint - like in [boost test](http://www.boost.org/doc/libs/1_63_0/libs/test/doc/html/boost_test/test_output/test_tools_support_for_logging/checkpoints.html)
+- checkpoint/passpoint - like in [boost test](http://www.boost.org/doc/libs/1_63_0/libs/test/doc/html/boost_test/test_output/test_tools_support_for_logging/checkpoints.html) (also make all assert/subcase/logging macros to act as passpoints and print the last one on crashes or exceptions)
 - log levels - like in [boost test](http://www.boost.org/doc/libs/1_63_0/libs/test/doc/html/boost_test/utf_reference/rt_param_reference/log_level.html)
 - integrate static analysis on the CI: **msvc**, **clang**, **cppcheck**
 - option to list files in which there are test cases who match the current filters
@@ -126,7 +125,9 @@ Planned features for future releases - order changes constantly...
 
 - stop using underscores for the begining of identifiers - the anonymous variables - against the standard...
 - templated fixture test cases
-- test with missed warning flags for GCC - look into https://github.com/Barro/compiler-warnings
+- test with missed warning flags for GCC
+    - https://github.com/Barro/compiler-warnings
+    - http://stackoverflow.com/a/34971392/3162383
 - utf8???
 - handle ```wchar``` strings???
 - hierarchical test suites - using a stack for the pushed ones

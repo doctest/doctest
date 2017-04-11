@@ -27,6 +27,7 @@
 // - the Approx() helper class for floating point comparison
 // - colors in the console
 // - breaking into a debugger
+// - signal / SEH handling
 //
 // The expression decomposing templates are taken from lest - https://github.com/martinmoene/lest
 // which uses the Boost Software License - Version 1.0
@@ -265,6 +266,20 @@
 #pragma clang diagnostic ignored "-Wc++98-compat"
 #pragma clang diagnostic ignored "-Wc++98-compat-pedantic"
 #endif // __clang__ && DOCTEST_NO_CPP11_COMPAT
+
+#if defined(_MSC_VER) && !defined(DOCTEST_CONFIG_WINDOWS_SEH)
+#define DOCTEST_CONFIG_WINDOWS_SEH
+#endif // _MSC_VER
+#if defined(DOCTEST_CONFIG_NO_WINDOWS_SEH) && defined(DOCTEST_CONFIG_WINDOWS_SEH)
+#undef DOCTEST_CONFIG_WINDOWS_SEH
+#endif // DOCTEST_CONFIG_NO_WINDOWS_SEH
+
+#if !defined(_WIN32) && !defined(DOCTEST_CONFIG_POSIX_SIGNALS)
+#define DOCTEST_CONFIG_POSIX_SIGNALS
+#endif // _WIN32
+#if defined(DOCTEST_CONFIG_NO_POSIX_SIGNALS) && defined(DOCTEST_CONFIG_POSIX_SIGNALS)
+#undef DOCTEST_CONFIG_POSIX_SIGNALS
+#endif // DOCTEST_CONFIG_NO_POSIX_SIGNALS
 
 #ifndef DOCTEST_CONFIG_NO_EXCEPTIONS
 #if defined(__GNUC__) && !defined(__EXCEPTIONS)
@@ -1323,7 +1338,7 @@ namespace detail
     DOCTEST_INTERFACE void logTestStart(const char* name, const char* file, unsigned line);
     DOCTEST_INTERFACE void logTestEnd();
 
-    DOCTEST_INTERFACE void logTestException(String what);
+    DOCTEST_INTERFACE void logTestException(const String& what, bool crash = false);
 
     DOCTEST_INTERFACE void logAssert(bool passed, const char* decomposition, bool threw,
                                      const String& exception, const char* expr,
@@ -2964,6 +2979,7 @@ namespace detail
 #include <set>
 #include <exception>
 #include <stdexcept>
+#include <csignal>
 
 namespace doctest
 {
@@ -3133,6 +3149,8 @@ namespace detail
 
         // == data for the tests being ran
 
+        unsigned        numTestsPassingFilters;
+        unsigned        numFailed;
         const TestData* currentTest;
         bool            hasLoggedCurrentTestStart;
         int             numAssertionsForCurrentTestcase;
@@ -3151,8 +3169,10 @@ namespace detail
         bool                       subcasesHasSkipped;
 
         void resetRunData() {
-            numAssertions       = 0;
-            numFailedAssertions = 0;
+            numTestsPassingFilters = 0;
+            numFailed              = 0;
+            numAssertions          = 0;
+            numFailedAssertions    = 0;
         }
 
         ContextState()
@@ -3877,24 +3897,161 @@ namespace detail
         }
     }
 
-    // this is needed because MSVC does not permit mixing 2 exception handling schemes in a function
-    int callTestFunc(funcType f) {
-        int res = EXIT_SUCCESS;
-#ifndef DOCTEST_CONFIG_NO_EXCEPTIONS
-        try {
-#endif // DOCTEST_CONFIG_NO_EXCEPTIONS
-            f();
-            if(getContextState()->hasCurrentTestFailed)
-                res = EXIT_FAILURE;
-#ifndef DOCTEST_CONFIG_NO_EXCEPTIONS
-        } catch(const TestFailureException&) { res = EXIT_FAILURE; } catch(...) {
-            DOCTEST_LOG_START();
-            logTestException(translateActiveException());
-            res = EXIT_FAILURE;
-        }
-#endif // DOCTEST_CONFIG_NO_EXCEPTIONS
-        return res;
+    void printSummary();
+    void reportFatal(std::string const& message) {
+        DOCTEST_LOG_START();
+
+        detail::ContextState* p = getContextState();
+        p->numAssertions += p->numAssertionsForCurrentTestcase;
+        logTestException(message.c_str(), true);
+        logTestEnd();
+        p->numFailed++;
+
+        printSummary();
     }
+
+#if !defined(DOCTEST_CONFIG_POSIX_SIGNALS) && !defined(DOCTEST_CONFIG_WINDOWS_SEH)
+    struct FatalConditionHandler
+    {
+        void reset() {}
+    };
+#else // DOCTEST_CONFIG_POSIX_SIGNALS || DOCTEST_CONFIG_WINDOWS_SEH
+#ifdef DOCTEST_PLATFORM_WINDOWS
+
+    struct SignalDefs
+    {
+        DWORD       id;
+        const char* name;
+    };
+    // There is no 1-1 mapping between signals and windows exceptions.
+    // Windows can easily distinguish between SO and SigSegV,
+    // but SigInt, SigTerm, etc are handled differently.
+    SignalDefs signalDefs[] = {
+            {EXCEPTION_ILLEGAL_INSTRUCTION, "SIGILL - Illegal instruction signal"},
+            {EXCEPTION_STACK_OVERFLOW, "SIGSEGV - Stack overflow"},
+            {EXCEPTION_ACCESS_VIOLATION, "SIGSEGV - Segmentation violation signal"},
+            {EXCEPTION_INT_DIVIDE_BY_ZERO, "Divide by zero error"},
+    };
+
+    struct FatalConditionHandler
+    {
+        static LONG CALLBACK handleVectoredException(PEXCEPTION_POINTERS ExceptionInfo) {
+            for(size_t i = 0; i < sizeof(signalDefs) / sizeof(SignalDefs); ++i) {
+                if(ExceptionInfo->ExceptionRecord->ExceptionCode == signalDefs[i].id) {
+                    reportFatal(signalDefs[i].name);
+                }
+            }
+            // If its not an exception we care about, pass it along.
+            // This stops us from eating debugger breaks etc.
+            return EXCEPTION_CONTINUE_SEARCH;
+        }
+
+        FatalConditionHandler() {
+            isSet = true;
+            // 32k seems enough for doctest to handle stack overflow,
+            // but the value was found experimentally, so there is no strong guarantee
+            guaranteeSize          = 32 * 1024;
+            exceptionHandlerHandle = 0;
+            // Register as first handler in current chain
+            exceptionHandlerHandle = AddVectoredExceptionHandler(1, handleVectoredException);
+            // Pass in guarantee size to be filled
+            SetThreadStackGuarantee(&guaranteeSize);
+        }
+
+        static void reset() {
+            if(isSet) {
+                // Unregister handler and restore the old guarantee
+                RemoveVectoredExceptionHandler(exceptionHandlerHandle);
+                SetThreadStackGuarantee(&guaranteeSize);
+                exceptionHandlerHandle = 0;
+                isSet                  = false;
+            }
+        }
+
+        ~FatalConditionHandler() { reset(); }
+
+    private:
+        static bool  isSet;
+        static ULONG guaranteeSize;
+        static PVOID exceptionHandlerHandle;
+    };
+
+    bool  FatalConditionHandler::isSet                  = false;
+    ULONG FatalConditionHandler::guaranteeSize          = 0;
+    PVOID FatalConditionHandler::exceptionHandlerHandle = 0;
+
+#else // DOCTEST_PLATFORM_WINDOWS
+
+    struct SignalDefs
+    {
+        int         id;
+        const char* name;
+    };
+    SignalDefs signalDefs[] = {{SIGINT, "SIGINT - Terminal interrupt signal"},
+                               {SIGILL, "SIGILL - Illegal instruction signal"},
+                               {SIGFPE, "SIGFPE - Floating point error signal"},
+                               {SIGSEGV, "SIGSEGV - Segmentation violation signal"},
+                               {SIGTERM, "SIGTERM - Termination request signal"},
+                               {SIGABRT, "SIGABRT - Abort (abnormal termination) signal"}};
+
+    struct FatalConditionHandler
+    {
+        static bool      isSet;
+        static sigaction oldSigActions[sizeof(signalDefs) / sizeof(SignalDefs)];
+        static stack_t   oldSigStack;
+        static char      altStackMem[SIGSTKSZ];
+
+        static void handleSignal(int sig) {
+            std::string name = "<unknown signal>";
+            for(std::size_t i = 0; i < sizeof(signalDefs) / sizeof(SignalDefs); ++i) {
+                SignalDefs& def = signalDefs[i];
+                if(sig == def.id) {
+                    name = def.name;
+                    break;
+                }
+            }
+            reset();
+            reportFatal(name);
+            raise(sig);
+        }
+
+        FatalConditionHandler() {
+            isSet = true;
+            stack_t sigStack;
+            sigStack.ss_sp    = altStackMem;
+            sigStack.ss_size  = SIGSTKSZ;
+            sigStack.ss_flags = 0;
+            sigaltstack(&sigStack, &oldSigStack);
+            sigaction sa = {0};
+
+            sa.sa_handler = handleSignal;
+            sa.sa_flags   = SA_ONSTACK;
+            for(std::size_t i = 0; i < sizeof(signalDefs) / sizeof(SignalDefs); ++i) {
+                sigaction(signalDefs[i].id, &sa, &oldSigActions[i]);
+            }
+        }
+
+        ~FatalConditionHandler() { reset(); }
+        static void reset() {
+            if(isSet) {
+                // Set signals back to previous values -- hopefully nobody overwrote them in the meantime
+                for(std::size_t i = 0; i < sizeof(signalDefs) / sizeof(SignalDefs); ++i) {
+                    sigaction(signalDefs[i].id, &oldSigActions[i], 0);
+                }
+                // Return the old stack
+                sigaltstack(&oldSigStack, 0);
+                isSet = false;
+            }
+        }
+    };
+
+    bool      FatalConditionHandler::isSet                                                  = false;
+    sigaction FatalConditionHandler::oldSigActions[sizeof(signalDefs) / sizeof(SignalDefs)] = {};
+    stack_t   FatalConditionHandler::oldSigStack                                            = {};
+    char      FatalConditionHandler::altStackMem[SIGSTKSZ]                                  = {};
+
+#endif // DOCTEST_PLATFORM_WINDOWS
+#endif // DOCTEST_CONFIG_POSIX_SIGNALS || DOCTEST_CONFIG_WINDOWS_SEH
 
     // depending on the current options this will remove the path of filenames
     const char* fileForOutput(const char* file) {
@@ -3926,9 +4083,9 @@ namespace detail
     // Returns true if the current process is being debugged (either
     // running under the debugger or has a debugger attached post facto).
     bool isDebuggerActive() {
-        int               mib[4];
-        struct kinfo_proc info;
-        size_t            size;
+        int        mib[4];
+        kinfo_proc info;
+        size_t     size;
         // Initialize the flags so that, if sysctl fails for some bizarre
         // reason, we get a predictable result.
         info.kp_proc.p_flag = 0;
@@ -3949,7 +4106,7 @@ namespace detail
         return ((info.kp_proc.p_flag & P_TRACED) != 0);
     }
 #elif defined(_MSC_VER) || defined(__MINGW32__)
-    bool isDebuggerActive() { return ::IsDebuggerPresent() != 0; }
+    bool  isDebuggerActive() { return ::IsDebuggerPresent() != 0; }
 #else
     bool isDebuggerActive() { return false; }
 #endif // Platform
@@ -4011,7 +4168,7 @@ namespace detail
 
     void logTestEnd() {}
 
-    void logTestException(String what) {
+    void logTestException(const String& what, bool crash) {
         char msg[DOCTEST_SNPRINTF_BUFFER_LENGTH];
 
         DOCTEST_SNPRINTF(msg, DOCTEST_COUNTOF(msg), "TEST CASE FAILED!\n");
@@ -4020,7 +4177,8 @@ namespace detail
         char info2[DOCTEST_SNPRINTF_BUFFER_LENGTH];
         info1[0] = 0;
         info2[0] = 0;
-        DOCTEST_SNPRINTF(info1, DOCTEST_COUNTOF(info1), "threw exception:\n");
+        DOCTEST_SNPRINTF(info1, DOCTEST_COUNTOF(info1),
+                         crash ? "crashed:\n" : "threw exception:\n");
         DOCTEST_SNPRINTF(info2, DOCTEST_COUNTOF(info2), "  %s\n", what.c_str());
 
         std::string contextStr;
@@ -4542,6 +4700,60 @@ namespace detail
         DOCTEST_PRINTF_COLORED("[doctest] ", Color::Cyan);
         printf("for more information visit the project documentation\n\n");
     }
+
+    void printSummary() {
+        detail::ContextState* p = getContextState();
+
+        DOCTEST_PRINTF_COLORED(getSeparator(), Color::Yellow);
+        if(p->count || p->list_test_cases || p->list_test_suites) {
+            DOCTEST_PRINTF_COLORED("[doctest] ", Color::Cyan);
+            printf("number of tests passing the current filters: %d\n", p->numTestsPassingFilters);
+        } else {
+            char buff[DOCTEST_SNPRINTF_BUFFER_LENGTH];
+
+            DOCTEST_PRINTF_COLORED("[doctest] ", Color::Cyan);
+
+            DOCTEST_SNPRINTF(buff, DOCTEST_COUNTOF(buff), "test cases: %4d",
+                             p->numTestsPassingFilters);
+            DOCTEST_PRINTF_COLORED(buff, Color::None);
+            DOCTEST_SNPRINTF(buff, DOCTEST_COUNTOF(buff), " | ");
+            DOCTEST_PRINTF_COLORED(buff, Color::None);
+            DOCTEST_SNPRINTF(buff, DOCTEST_COUNTOF(buff), "%4d passed",
+                             p->numTestsPassingFilters - p->numFailed);
+            DOCTEST_PRINTF_COLORED(buff, p->numFailed > 0 ? Color::None : Color::Green);
+            DOCTEST_SNPRINTF(buff, DOCTEST_COUNTOF(buff), " | ");
+            DOCTEST_PRINTF_COLORED(buff, Color::None);
+            DOCTEST_SNPRINTF(buff, DOCTEST_COUNTOF(buff), "%4d failed", p->numFailed);
+            DOCTEST_PRINTF_COLORED(buff, p->numFailed > 0 ? Color::Red : Color::None);
+
+            DOCTEST_SNPRINTF(buff, DOCTEST_COUNTOF(buff), " | ");
+            DOCTEST_PRINTF_COLORED(buff, Color::None);
+            DOCTEST_SNPRINTF(buff, DOCTEST_COUNTOF(buff), "%4d skipped\n",
+                             static_cast<unsigned>(getRegisteredTests().size()) -
+                                     p->numTestsPassingFilters);
+            DOCTEST_PRINTF_COLORED(buff, Color::None);
+
+            DOCTEST_PRINTF_COLORED("[doctest] ", Color::Cyan);
+
+            DOCTEST_SNPRINTF(buff, DOCTEST_COUNTOF(buff), "assertions: %4d", p->numAssertions);
+            DOCTEST_PRINTF_COLORED(buff, Color::None);
+            DOCTEST_SNPRINTF(buff, DOCTEST_COUNTOF(buff), " | ");
+            DOCTEST_PRINTF_COLORED(buff, Color::None);
+            DOCTEST_SNPRINTF(buff, DOCTEST_COUNTOF(buff), "%4d passed",
+                             p->numAssertions - p->numFailedAssertions);
+            DOCTEST_PRINTF_COLORED(buff, p->numFailed > 0 ? Color::None : Color::Green);
+            DOCTEST_SNPRINTF(buff, DOCTEST_COUNTOF(buff), " | ");
+            DOCTEST_PRINTF_COLORED(buff, Color::None);
+            DOCTEST_SNPRINTF(buff, DOCTEST_COUNTOF(buff), "%4d failed", p->numFailedAssertions);
+            DOCTEST_PRINTF_COLORED(buff, p->numFailedAssertions > 0 ? Color::Red : Color::None);
+
+            DOCTEST_SNPRINTF(buff, DOCTEST_COUNTOF(buff), " |\n");
+            DOCTEST_PRINTF_COLORED(buff, Color::None);
+        }
+
+        // remove any coloring
+        DOCTEST_PRINTF_COLORED("", Color::None);
+    }
 } // namespace detail
 
 bool isRunningInTest() { return detail::getContextState() != 0; }
@@ -4752,8 +4964,6 @@ int Context::run() {
         printf("listing all test suites\n");
     }
 
-    unsigned numTestsPassingFilters = 0;
-    unsigned numFailed              = 0;
     // invoke the registered functions if they match the filter criteria (or just count them)
     for(i = 0; i < testArray.size(); i++) {
         const TestData& data = *testArray[i];
@@ -4770,7 +4980,7 @@ int Context::run() {
         if(matchesAny(data.m_name, p->filters[5], 0, p->case_sensitive))
             continue;
 
-        numTestsPassingFilters++;
+        p->numTestsPassingFilters++;
 
         // do not execute the test if we are to only count the number of filter passing tests
         if(p->count)
@@ -4792,16 +5002,12 @@ int Context::run() {
         }
 
         // skip the test if it is not in the execution range
-        if((p->last < numTestsPassingFilters && p->first <= p->last) ||
-           (p->first > numTestsPassingFilters))
+        if((p->last < p->numTestsPassingFilters && p->first <= p->last) ||
+           (p->first > p->numTestsPassingFilters))
             continue;
 
         // execute the test if it passes all the filtering
         {
-#ifdef _MSC_VER
-//__try {
-#endif // _MSC_VER
-
             p->currentTest = &data;
 
             // if logging successful tests - force the start log
@@ -4809,7 +5015,7 @@ int Context::run() {
             if(p->success)
                 DOCTEST_LOG_START();
 
-            unsigned didFail = 0;
+            bool failed = false;
             p->subcasesPassed.clear();
             do {
                 // reset the assertion state
@@ -4824,8 +5030,23 @@ int Context::run() {
                 // reset stuff for logging with INFO()
                 p->exceptionalContexts.clear();
 
-                // execute the test
-                didFail += callTestFunc(data.m_f);
+// execute the test
+#ifndef DOCTEST_CONFIG_NO_EXCEPTIONS
+                try {
+#endif // DOCTEST_CONFIG_NO_EXCEPTIONS
+                    FatalConditionHandler fatalConditionHandler; // Handle signals
+                    data.m_f();
+                    fatalConditionHandler.reset();
+                    if(getContextState()->hasCurrentTestFailed)
+                        failed = true;
+#ifndef DOCTEST_CONFIG_NO_EXCEPTIONS
+                } catch(const TestFailureException&) { failed = true; } catch(...) {
+                    DOCTEST_LOG_START();
+                    logTestException(translateActiveException());
+                    failed = true;
+                }
+#endif // DOCTEST_CONFIG_NO_EXCEPTIONS
+
                 p->numAssertions += p->numAssertionsForCurrentTestcase;
 
                 // exit this loop if enough assertions have failed
@@ -4839,73 +5060,20 @@ int Context::run() {
 
             } while(p->subcasesHasSkipped == true);
 
-            if(didFail > 0)
-                numFailed++;
+            if(failed) // if any subcase has failed - the whole test case has failed
+                p->numFailed++;
 
             // stop executing tests if enough assertions have failed
             if(p->abort_after > 0 && p->numFailedAssertions >= p->abort_after)
                 break;
-
-#ifdef _MSC_VER
-//} __except(1) {
-//    printf("Unknown SEH exception caught!\n");
-//    numFailed++;
-//}
-#endif // _MSC_VER
         }
     }
 
-    DOCTEST_PRINTF_COLORED(getSeparator(), Color::Yellow);
-    if(p->count || p->list_test_cases || p->list_test_suites) {
-        DOCTEST_PRINTF_COLORED("[doctest] ", Color::Cyan);
-        printf("number of tests passing the current filters: %d\n", numTestsPassingFilters);
-    } else {
-        char buff[DOCTEST_SNPRINTF_BUFFER_LENGTH];
-
-        DOCTEST_PRINTF_COLORED("[doctest] ", Color::Cyan);
-
-        DOCTEST_SNPRINTF(buff, DOCTEST_COUNTOF(buff), "test cases: %4d", numTestsPassingFilters);
-        DOCTEST_PRINTF_COLORED(buff, Color::None);
-        DOCTEST_SNPRINTF(buff, DOCTEST_COUNTOF(buff), " | ");
-        DOCTEST_PRINTF_COLORED(buff, Color::None);
-        DOCTEST_SNPRINTF(buff, DOCTEST_COUNTOF(buff), "%4d passed",
-                         numTestsPassingFilters - numFailed);
-        DOCTEST_PRINTF_COLORED(buff, numFailed > 0 ? Color::None : Color::Green);
-        DOCTEST_SNPRINTF(buff, DOCTEST_COUNTOF(buff), " | ");
-        DOCTEST_PRINTF_COLORED(buff, Color::None);
-        DOCTEST_SNPRINTF(buff, DOCTEST_COUNTOF(buff), "%4d failed", numFailed);
-        DOCTEST_PRINTF_COLORED(buff, numFailed > 0 ? Color::Red : Color::None);
-
-        DOCTEST_SNPRINTF(buff, DOCTEST_COUNTOF(buff), " | ");
-        DOCTEST_PRINTF_COLORED(buff, Color::None);
-        DOCTEST_SNPRINTF(buff, DOCTEST_COUNTOF(buff), "%4d skipped\n",
-                         static_cast<unsigned>(testArray.size()) - numTestsPassingFilters);
-        DOCTEST_PRINTF_COLORED(buff, Color::None);
-
-        DOCTEST_PRINTF_COLORED("[doctest] ", Color::Cyan);
-
-        DOCTEST_SNPRINTF(buff, DOCTEST_COUNTOF(buff), "assertions: %4d", p->numAssertions);
-        DOCTEST_PRINTF_COLORED(buff, Color::None);
-        DOCTEST_SNPRINTF(buff, DOCTEST_COUNTOF(buff), " | ");
-        DOCTEST_PRINTF_COLORED(buff, Color::None);
-        DOCTEST_SNPRINTF(buff, DOCTEST_COUNTOF(buff), "%4d passed",
-                         p->numAssertions - p->numFailedAssertions);
-        DOCTEST_PRINTF_COLORED(buff, numFailed > 0 ? Color::None : Color::Green);
-        DOCTEST_SNPRINTF(buff, DOCTEST_COUNTOF(buff), " | ");
-        DOCTEST_PRINTF_COLORED(buff, Color::None);
-        DOCTEST_SNPRINTF(buff, DOCTEST_COUNTOF(buff), "%4d failed", p->numFailedAssertions);
-        DOCTEST_PRINTF_COLORED(buff, p->numFailedAssertions > 0 ? Color::Red : Color::None);
-
-        DOCTEST_SNPRINTF(buff, DOCTEST_COUNTOF(buff), " |\n");
-        DOCTEST_PRINTF_COLORED(buff, Color::None);
-    }
-
-    // remove any coloring
-    DOCTEST_PRINTF_COLORED("", Color::None);
+    printSummary();
 
     getContextState() = 0;
 
-    if(numFailed && !p->no_exitcode)
+    if(p->numFailed && !p->no_exitcode)
         return EXIT_FAILURE;
     return EXIT_SUCCESS;
 }

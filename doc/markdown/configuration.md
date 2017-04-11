@@ -24,6 +24,10 @@ Defining something ```globally``` means for every source file of the binary (exe
 - [**```DOCTEST_CONFIG_COLORS_NONE```**](#doctest_config_colors_none)
 - [**```DOCTEST_CONFIG_COLORS_WINDOWS```**](#doctest_config_colors_windows)
 - [**```DOCTEST_CONFIG_COLORS_ANSI```**](#doctest_config_colors_ansi)
+- [**```DOCTEST_CONFIG_WINDOWS_SEH```**](#doctest_config_windows_seh)
+- [**```DOCTEST_CONFIG_NO_WINDOWS_SEH```**](#doctest_config_no_windows_seh)
+- [**```DOCTEST_CONFIG_POSIX_SIGNALS```**](#doctest_config_posix_signals)
+- [**```DOCTEST_CONFIG_NO_POSIX_SIGNALS```**](#doctest_config_no_posix_signals)
 
 Detection of modern C++ features:
 
@@ -207,6 +211,30 @@ This should be defined only in the source file where the library is implemented 
 ### **```DOCTEST_CONFIG_COLORS_ANSI```**
 
 This will force the support for colors in the console output to use ANSI escape codes.
+
+This should be defined only in the source file where the library is implemented (it's relevant only there).
+
+### **```DOCTEST_CONFIG_WINDOWS_SEH```**
+
+This will enable SEH handling on Windows. Currently enabled only when compiled with MSVC, because some versions of MinGW do not have the necessary Win32 API support. The user may choose to enable this explicitly - it is known to work with the MinGW-w64 project.
+
+This should be defined only in the source file where the library is implemented (it's relevant only there).
+
+### **```DOCTEST_CONFIG_NO_WINDOWS_SEH```**
+
+This can be used to disable **```DOCTEST_CONFIG_WINDOWS_SEH```** when it is auto-selected by the library.
+
+This should be defined only in the source file where the library is implemented (it's relevant only there).
+
+### **```DOCTEST_CONFIG_POSIX_SIGNALS```**
+
+This will enable the use of signals under UNIX for handling crashes. On by default.
+
+This should be defined only in the source file where the library is implemented (it's relevant only there).
+
+### **```DOCTEST_CONFIG_NO_POSIX_SIGNALS```**
+
+This can be used to disable **```DOCTEST_CONFIG_POSIX_SIGNALS```** when it is auto-selected by the library.
 
 This should be defined only in the source file where the library is implemented (it's relevant only there).
 

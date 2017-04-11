@@ -56,6 +56,7 @@ The library can be used like any other if you don't like the idea of mixing prod
 - supports [**subcases**](testcases.md) for easy setup/teardown of tests (also supports the retro [**test fixtures**](testcases.md#) with classes)
 - [templated test cases](parameterized-tests.md#templated-test-cases---parameterized-by-type) - parameterized by type
 - supports [**logging macros**](logging.md) for capturing local variables and strings - as a message for when an assert fails - with lazy stringification and no allocations when possible!
+- crash handling support - uses signals for UNIX and SEH for Windows
 - output from all compilers on all platforms is the same - byte by byte
 - binaries (exe/dll) can use the test runner of another binary - so tests end up in a single registry - [**example**](../../examples/dll_and_executable/)
 - supports [**BDD style**](testcases.md) tests
