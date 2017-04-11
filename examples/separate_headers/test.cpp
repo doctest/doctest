@@ -16,7 +16,7 @@ public:
     operator double() const { return underlying_; }
 };
 
-static int throws(bool in) { if(in) throw 42; return 42; }
+//static int throws(bool in) { if(in) throw 42; return 42; }
 
 TEST_CASE("") {
     Volatility asd(1.0);
@@ -26,7 +26,7 @@ TEST_CASE("") {
     CHECK(Approx(asd) == 1.0);
 
     INFO("aaaa" << "sad :(");
-    throws(true);
+    //throws(true);
 
     CHECK(Approx(1) == 2);
     CHECK(Approx(1) == 2.0);
