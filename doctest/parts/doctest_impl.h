@@ -525,7 +525,7 @@ extern "C" __declspec(dllimport) int __stdcall IsDebuggerPresent();
 #include <unistd.h>
 #endif // DOCTEST_CONFIG_COLORS_ANSI
 
-#ifdef DOCTEST_CONFIG_COLORS_WINDOWS
+#ifdef _WIN32
 
 // defines for a leaner windows.h
 #ifndef WIN32_MEAN_AND_LEAN
@@ -546,7 +546,7 @@ extern "C" __declspec(dllimport) int __stdcall IsDebuggerPresent();
 #endif
 #include <io.h>
 
-#endif // DOCTEST_CONFIG_COLORS_WINDOWS
+#endif // _WIN32
 
 namespace doctest_detail_test_suite_ns
 {
