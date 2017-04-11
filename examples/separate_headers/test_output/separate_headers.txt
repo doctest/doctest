@@ -3,12 +3,69 @@
 test.cpp(0)
 
 
-TEST CASE FAILED!
-threw exception:
-  unknown exception
+test.cpp(0) ERROR!
+  CHECK( Approx(1) == 2 )
+with expansion:
+  CHECK( Approx( 1.0 ) == 2 )
+with context:
+  aaaasad :(
+
+test.cpp(0) ERROR!
+  CHECK( Approx(1) == 2.0 )
+with expansion:
+  CHECK( Approx( 1.0 ) == 2.0 )
+with context:
+  aaaasad :(
+
+test.cpp(0) ERROR!
+  CHECK( Approx(1) == 2.f )
+with expansion:
+  CHECK( Approx( 1.0 ) == 2.0f )
+with context:
+  aaaasad :(
+
+test.cpp(0) ERROR!
+  CHECK( Approx(1.0) == 2 )
+with expansion:
+  CHECK( Approx( 1.0 ) == 2 )
+with context:
+  aaaasad :(
+
+test.cpp(0) ERROR!
+  CHECK( Approx(1.0) == 2.0 )
+with expansion:
+  CHECK( Approx( 1.0 ) == 2.0 )
+with context:
+  aaaasad :(
+
+test.cpp(0) ERROR!
+  CHECK( Approx(1.0) == 2.f )
+with expansion:
+  CHECK( Approx( 1.0 ) == 2.0f )
+with context:
+  aaaasad :(
+
+test.cpp(0) ERROR!
+  CHECK( Approx(1.f) == 2 )
+with expansion:
+  CHECK( Approx( 1.0 ) == 2 )
+with context:
+  aaaasad :(
+
+test.cpp(0) ERROR!
+  CHECK( Approx(1.f) == 2.0 )
+with expansion:
+  CHECK( Approx( 1.0 ) == 2.0 )
+with context:
+  aaaasad :(
+
+test.cpp(0) ERROR!
+  CHECK( Approx(1.f) == 2.f )
+with expansion:
+  CHECK( Approx( 1.0 ) == 2.0f )
 with context:
   aaaasad :(
 
 ===============================================================================
 [doctest] test cases:    1 |    0 passed |    1 failed |    0 skipped
-[doctest] assertions:    4 |    4 passed |    0 failed |
+[doctest] assertions:   13 |    4 passed |    9 failed |
