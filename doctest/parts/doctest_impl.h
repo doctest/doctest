@@ -1121,10 +1121,10 @@ namespace detail
 
     struct FatalConditionHandler
     {
-        static bool      isSet;
-        static sigaction oldSigActions[sizeof(signalDefs) / sizeof(SignalDefs)];
-        static stack_t   oldSigStack;
-        static char      altStackMem[SIGSTKSZ];
+        static bool             isSet;
+        static struct sigaction oldSigActions[sizeof(signalDefs) / sizeof(SignalDefs)];
+        static stack_t          oldSigStack;
+        static char             altStackMem[SIGSTKSZ];
 
         static void handleSignal(int sig) {
             std::string name = "<unknown signal>";
@@ -1147,7 +1147,7 @@ namespace detail
             sigStack.ss_size  = SIGSTKSZ;
             sigStack.ss_flags = 0;
             sigaltstack(&sigStack, &oldSigStack);
-            sigaction sa = {0};
+            struct sigaction sa = {0};
 
             sa.sa_handler = handleSignal;
             sa.sa_flags   = SA_ONSTACK;
@@ -1170,10 +1170,11 @@ namespace detail
         }
     };
 
-    bool      FatalConditionHandler::isSet                                                  = false;
-    sigaction FatalConditionHandler::oldSigActions[sizeof(signalDefs) / sizeof(SignalDefs)] = {};
-    stack_t   FatalConditionHandler::oldSigStack                                            = {};
-    char      FatalConditionHandler::altStackMem[SIGSTKSZ]                                  = {};
+    bool             FatalConditionHandler::isSet = false;
+    struct sigaction FatalConditionHandler::oldSigActions[sizeof(signalDefs) / sizeof(SignalDefs)] =
+            {};
+    stack_t FatalConditionHandler::oldSigStack           = {};
+    char    FatalConditionHandler::altStackMem[SIGSTKSZ] = {};
 
 #endif // DOCTEST_PLATFORM_WINDOWS
 #endif // DOCTEST_CONFIG_POSIX_SIGNALS || DOCTEST_CONFIG_WINDOWS_SEH
