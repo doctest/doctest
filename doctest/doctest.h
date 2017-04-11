@@ -938,11 +938,21 @@ public:
 #undef DOCTEST_APPROX_PREFIX
     // clang-format on
 
+    Approx& epsilon(double newEpsilon) {
+        m_epsilon = (newEpsilon);
+        return *this;
+    }
+
     template <typename T>
     typename detail::traits::enable_if<detail::traits::is_constructible<double, T>::value,
                                        Approx&>::type
     epsilon(const T& newEpsilon) {
         m_epsilon = static_cast<double>(newEpsilon);
+        return *this;
+    }
+
+    Approx& scale(double newScale) {
+        m_scale = (newScale);
         return *this;
     }
 
