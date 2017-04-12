@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.0)
 
 set(PROJECT_NAME doctest)
-project(${PROJECT_NAME} VERSION 1.1.4)
+project(${PROJECT_NAME})
 
 option(DOCTEST_SKIP_COVERAGE "Skip coverage" OFF)
 option(DOCTEST_SKIP_EXAMPLES "Skip examples" OFF)
@@ -48,9 +48,10 @@ set(project_config "${generated_dir}/${PROJECT_NAME}Config.cmake")
 set(targets_export_name "${PROJECT_NAME}Targets")
 set(namespace "${PROJECT_NAME}::")
 
+file(READ ${PROJECT_SOURCE_DIR}/scripts/version.txt PROJECT_VERSION)
 include(CMakePackageConfigHelpers)
 write_basic_package_version_file(
-    "${version_config}" COMPATIBILITY SameMajorVersion
+    "${version_config}" VERSION ${PROJECT_VERSION} COMPATIBILITY SameMajorVersion
 )
 
 configure_file("cmake/Config.cmake.in" "${project_config}" @ONLY)
