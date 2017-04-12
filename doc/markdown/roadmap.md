@@ -95,22 +95,24 @@ Planned features for future releases - order changes constantly...
 - checkpoint/passpoint - like in [boost test](http://www.boost.org/doc/libs/1_63_0/libs/test/doc/html/boost_test/test_output/test_tools_support_for_logging/checkpoints.html) (also make all assert/subcase/logging macros to act as passpoints and print the last one on crashes or exceptions)
 - log levels - like in [boost test](http://www.boost.org/doc/libs/1_63_0/libs/test/doc/html/boost_test/utf_reference/rt_param_reference/log_level.html)
 - integrate static analysis on the CI: **msvc**, **clang**, **cppcheck**
-- option to list files in which there are test cases who match the current filters
-- option for filters to switch from "match any" to "match all" mode
-- option to list test suites and test cases in a tree view
 - queries for the current test case - name (and probably decorators)
 - thread safety - asserts/subcases/captures should be safe to be used by multiple threads simultaneously
 - support for running tests in parallel in multiple threads
 - death tests - as in [google test](https://github.com/google/googletest/blob/master/googletest/docs/AdvancedGuide.md#death-tests)
+- command line
+    - ability to specify ASC/DESC for the order option
+    - command line error handling/reporting
+    - ability for the user to extend the command line - as requested [here](https://github.com/philsquared/Catch/issues/622)
+    - option to list files in which there are test cases who match the current filters
+    - option for filters to switch from "match any" to "match all" mode
+    - option to list test suites and test cases in a tree view
+    - add a "wait key" option - as requested [here](https://github.com/philsquared/Catch/issues/477#issuecomment-256417686)
 - setup / teardown support
     - global setup / teardown - can be currently achieved by providing a custom main function
     - per test suite
     - perhaps for fixtures in addition to the constructor / destructor - since throwing in the destructor might terminate the program
     - or just ignore all of this this - it would require globals or classes and inheritance - and we already have subcases
 - doctest in a GUI environment? with no console? APIs for attaching a console? querying if there is one? [investigate...](https://github.com/philsquared/Catch/blob/master/docs/configuration.md#stdout)
-- ability to specify ASC/DESC for the order option
-- command line error handling/reporting
-- ability for the user to extend the command line - as requested [here](https://github.com/philsquared/Catch/issues/622)
 - look into MSTest integration
     - http://accu.org/index.php/journals/1851
     - https://msdn.microsoft.com/en-us/library/hh270865.aspx
@@ -131,7 +133,6 @@ Planned features for future releases - order changes constantly...
 - utf8???
 - handle ```wchar``` strings???
 - hierarchical test suites - using a stack for the pushed ones
-- add a "wait key" option - as requested [here](https://github.com/philsquared/Catch/issues/477#issuecomment-256417686)
 - ability to specify the width of the terminal in terms of characters (for example 60 - less than 80 - the default)
 - ability to re-run only newly compiled tests based on time stamps using ```__DATE__``` and ```__TIME__``` - stored in some file
 - add underscores to all preprocessor identifiers not intended for use by the user
