@@ -1552,6 +1552,7 @@ namespace detail
                 return true;
             } catch(...) {}
 #endif // DOCTEST_CONFIG_NO_EXCEPTIONS
+            ((void)res); // to silence -Wunused-parameter
             return false;
         }
 
