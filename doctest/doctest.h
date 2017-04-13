@@ -1530,19 +1530,10 @@ namespace detail
         return res;
     }
 
-    struct ExceptionTranslatorResult
-    {
-        bool   success;
-        String result;
-
-        ExceptionTranslatorResult()
-                : success(false) {}
-    };
-
     struct DOCTEST_INTERFACE IExceptionTranslator
     {
         virtual ~IExceptionTranslator();
-        virtual ExceptionTranslatorResult translate() const = 0;
+        virtual bool translate(String&) const = 0;
     };
 
     template <typename T>
@@ -1552,17 +1543,16 @@ namespace detail
         ExceptionTranslator(String (*translateFunction)(T))
                 : m_translateFunction(translateFunction) {}
 
-        ExceptionTranslatorResult translate() const {
-            ExceptionTranslatorResult res;
+        bool translate(String& res) const {
 #ifndef DOCTEST_CONFIG_NO_EXCEPTIONS
             try {
                 throw;
             } catch(T ex) {
-                res.result  = m_translateFunction(ex);
-                res.success = true;
+                res = m_translateFunction(ex);
+                return true;
             } catch(...) {}
 #endif // DOCTEST_CONFIG_NO_EXCEPTIONS
-            return res;
+            return false;
         }
 
     protected:
@@ -3887,20 +3877,24 @@ namespace detail
 
     String translateActiveException() {
 #ifndef DOCTEST_CONFIG_NO_EXCEPTIONS
-        ExceptionTranslatorResult                 res;
+        String                                    res;
         std::vector<const IExceptionTranslator*>& translators = getExceptionTranslators();
-        for(size_t i = 0; i < translators.size() && res.success == false; ++i)
-            res = translators[i]->translate();
-        if(res.success == false) {
-            try {
-                throw;
-            } catch(TestFailureException&) { throw; } catch(std::exception& ex) {
-                res.result = ex.what();
-            } catch(std::string& msg) { res.result = msg.c_str(); } catch(const char* msg) {
-                res.result = msg;
-            } catch(...) { res.result = "unknown exception"; }
+        for(size_t i = 0; i < translators.size(); ++i)
+            if(translators[i]->translate(res))
+                return res;
+        // clang-format off
+        try {
+            throw;
+        } catch(std::exception& ex) {
+            return ex.what();
+        } catch(std::string& msg) {
+            return msg.c_str();
+        } catch(const char* msg) {
+            return msg;
+        } catch(...) {
+            return "unknown exception";
         }
-        return res.result;
+// clang-format on
 #else  // DOCTEST_CONFIG_NO_EXCEPTIONS
         return "";
 #endif // DOCTEST_CONFIG_NO_EXCEPTIONS

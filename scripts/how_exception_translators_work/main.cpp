@@ -1,5 +1,4 @@
 #include <vector>
-#include <utility>
 #include <iostream>
 #include <stdexcept>
 using namespace std;
@@ -9,32 +8,33 @@ using namespace std;
 #define ANONYMOUS(x) CAT(x, __COUNTER__)
 
 struct ITranslator {
-    virtual pair<bool, string> translate() const = 0;
+    virtual bool translate(string&) = 0;
 };
 
 template<typename T>
 struct Translator : ITranslator {
     Translator(string(*func)(T)) : m_func(func) {}
 
-    pair<bool, string> translate() const {
+    bool translate(string& res) {
         try {
             throw;
         } catch(T ex) {
-            return pair<bool, string>(true, m_func(ex));
+            res = m_func(ex);
+            return true;
         } catch(...) {
-            return pair<bool, string>(false, "");
+            return false;
         }
     }
 
     string(*m_func)(T);
 };
 
-void regTranslatorImpl(const ITranslator* translator); // fwd decl
+void regTranslatorImpl(ITranslator* t); // fwd decl
 
 template<typename T>
 int regTranslator(string(*func)(T)) {
-    static Translator<T> Translator(func);
-    regTranslatorImpl(&Translator);
+    static Translator<T> t(func);
+    regTranslatorImpl(&t);
     return 0;
 }
 
@@ -47,32 +47,30 @@ int regTranslator(string(*func)(T)) {
 
 // impl
 
-vector<const ITranslator*> translators;
+vector<ITranslator*> translators;
 
-void regTranslatorImpl(const ITranslator* translator) {   
-    translators.push_back(translator);
+void regTranslatorImpl(ITranslator* t) {   
+    translators.push_back(t);
 }
 
 string translate() {
-    pair<bool, string> res(false, "");
     // try translators
-    for(size_t i = 0; i < translators.size() && res.first == false; ++i)
-        res = translators[i]->translate();
+    string res;
+    for(size_t i = 0; i < translators.size(); ++i)
+        if(translators[i]->translate(res))
+            return res;
     // proceed with default translation
-    if(res.first == false) {
-        try {
-            throw;
-        } catch(exception& ex) {
-            res.second = ex.what();
-        } catch(string& msg) {
-            res.second = msg;
-        } catch(const char* msg) {
-            res.second = msg;
-        } catch(...) {
-            res.second = "Unknown exception!";
-        }
+    try {
+        throw;
+    } catch(exception& ex) {
+        return ex.what();
+    } catch(string& msg) {
+        return msg;
+    } catch(const char* msg) {
+        return msg;
+    } catch(...) {
+        return "Unknown exception!";
     }
-    return res.second;
 }
 
 // usage

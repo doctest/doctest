@@ -1,11 +1,6 @@
 
 
 
-
-
-rewrite color printing stuff to use streams and not printf functions
-
-
 look at boost test again:
 http://www.boost.org/doc/libs/1_63_0/libs/test/doc/html/index.html
 

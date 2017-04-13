@@ -40,14 +40,14 @@ Planned features for future releases - order changes constantly...
     - redo the compile time ones - also look into CATCH_CONFIG_FAST_COMPILE
     - remove old benchmarks for doctest 1.0
     - add runtime benchmarks
+- resolve pull/60 (merge in dev, move cmake folder in scripts, maybe change/remove some of the 2 new SKIP options)
 - rework the examples folder - so the test runner is compiled only a few times - CI builds take a ton of time!
 - change docs a bit - mainly what is in the landing page (add link to overload)
 - address the coverage issue... look at how this project does it: https://github.com/rollbear/trompeloeil
-- resolve pull/60 (merge in dev, move cmake folder in scripts, maybe change/remove some of the 2 new SKIP options)
+- builds with GCC 7 when it is released (should be in late April) - also by then the precise (ubuntu 12.04) ppa for clang 4.0 should be whitelisted by travis
 
 ### For 1.3:
 
-- builds with GCC 7 when it is released (should be in late April) - also by then the precise (ubuntu 12.04) ppa for clang 4.0 should be whitelisted by travis
 - reporters
     - output to file
     - a system for writing custom reporters

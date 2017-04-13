@@ -1527,19 +1527,10 @@ namespace detail
         return res;
     }
 
-    struct ExceptionTranslatorResult
-    {
-        bool   success;
-        String result;
-
-        ExceptionTranslatorResult()
-                : success(false) {}
-    };
-
     struct DOCTEST_INTERFACE IExceptionTranslator
     {
         virtual ~IExceptionTranslator();
-        virtual ExceptionTranslatorResult translate() const = 0;
+        virtual bool translate(String&) const = 0;
     };
 
     template <typename T>
@@ -1549,17 +1540,16 @@ namespace detail
         ExceptionTranslator(String (*translateFunction)(T))
                 : m_translateFunction(translateFunction) {}
 
-        ExceptionTranslatorResult translate() const {
-            ExceptionTranslatorResult res;
+        bool translate(String& res) const {
 #ifndef DOCTEST_CONFIG_NO_EXCEPTIONS
             try {
                 throw;
             } catch(T ex) {
-                res.result  = m_translateFunction(ex);
-                res.success = true;
+                res = m_translateFunction(ex);
+                return true;
             } catch(...) {}
 #endif // DOCTEST_CONFIG_NO_EXCEPTIONS
-            return res;
+            return false;
         }
 
     protected:
