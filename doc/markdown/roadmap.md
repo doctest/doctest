@@ -66,6 +66,17 @@ Planned features for future releases - order changes constantly...
     - [rapidcheck](https://github.com/emil-e/rapidcheck)
     - [autocheck](https://github.com/thejohnfreeman/autocheck)
     - [CppQuickCheck](https://github.com/grogers0/CppQuickCheck)
+- IDE integration
+    - https://www.reddit.com/r/cpp/comments/65c0f1/run_cpp_unit_tests_from_xcode_and_visual_studio/
+    - https://github.com/k-brac/CUTI
+    - MSTest
+        - http://accu.org/index.php/journals/1851
+        - https://msdn.microsoft.com/en-us/library/hh270865.aspx
+        - https://msdn.microsoft.com/en-us/library/hh598953.aspx
+    - XCode - https://github.com/philsquared/Catch/pull/454
+    - CLion
+        - https://www.jetbrains.com/clion/features/unit-testing.html
+        - https://blog.jetbrains.com/clion/2017/03/clion-2017-1-released/#catch
 
 ### For 1.4:
 
@@ -113,11 +124,6 @@ Planned features for future releases - order changes constantly...
     - perhaps for fixtures in addition to the constructor / destructor - since throwing in the destructor might terminate the program
     - or just ignore all of this this - it would require globals or classes and inheritance - and we already have subcases
 - doctest in a GUI environment? with no console? APIs for attaching a console? querying if there is one? [investigate...](https://github.com/philsquared/Catch/blob/master/docs/configuration.md#stdout)
-- look into MSTest integration
-    - http://accu.org/index.php/journals/1851
-    - https://msdn.microsoft.com/en-us/library/hh270865.aspx
-    - https://msdn.microsoft.com/en-us/library/hh598953.aspx
-    - also look into similar Xcode integration - https://github.com/philsquared/Catch/pull/454
 - the set holding all registered tests should use a specialized allocator to minimize program startup time
 - ability to provide a temp folder that is cleared between each test case
 - make the _MESSAGE assert macros work with variadic arguments - and maybe write the ones for binary/unary/fast asserts as well
