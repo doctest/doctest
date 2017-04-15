@@ -88,7 +88,7 @@
                                           DOCTEST_GCS().currentTest->m_line);                      \
             DOCTEST_GCS().hasLoggedCurrentTestStart = true;                                        \
         }                                                                                          \
-    } while(doctest::detail::always_false())
+    } while(false)
 
 // required includes - will go only in one translation unit!
 #include <ctime>
@@ -503,7 +503,7 @@ int  Context::run() { return 0; }
             doctest::detail::Color col(color);                                                     \
             printf("%s", buffer);                                                                  \
         }                                                                                          \
-    } while(doctest::detail::always_false())
+    } while(false)
 
 // the buffer size used for snprintf() calls
 #if !defined(DOCTEST_SNPRINTF_BUFFER_LENGTH)
@@ -669,7 +669,6 @@ namespace detail
         throw TestFailureException();
 #endif // DOCTEST_CONFIG_NO_EXCEPTIONS
     }
-    bool always_false() { return false; }
 
     void my_memcpy(void* dest, void* src, int num) {
         char* csrc  = static_cast<char*>(src);

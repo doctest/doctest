@@ -1119,7 +1119,6 @@ namespace detail
     DOCTEST_INTERFACE bool checkIfShouldThrow(assertType::Enum assert_type);
     DOCTEST_INTERFACE void fastAssertThrowIfFlagSet(int flags);
     DOCTEST_INTERFACE void throwException();
-    DOCTEST_INTERFACE bool always_false();
     DOCTEST_INTERFACE void my_memcpy(void* dest, void* src, int num);
 
     struct DOCTEST_INTERFACE SubcaseSignature
@@ -1551,7 +1550,7 @@ namespace detail
                 res = m_translateFunction(ex);
                 return true;
             } catch(...) {}
-#endif // DOCTEST_CONFIG_NO_EXCEPTIONS
+#endif                   // DOCTEST_CONFIG_NO_EXCEPTIONS
             ((void)res); // to silence -Wunused-parameter
             return false;
         }
@@ -2035,7 +2034,7 @@ public:
         if(mb.log())                                                                               \
             DOCTEST_BREAK_INTO_DEBUGGER();                                                         \
         mb.react();                                                                                \
-    } while(doctest::detail::always_false())
+    } while((void)0, 0)
 
 // clang-format off
 #define DOCTEST_ADD_MESSAGE_AT(file, line, x) DOCTEST_ADD_AT_IMPL(is_warn, file, line, DOCTEST_ANONYMOUS(_DOCTEST_MESSAGE_), x)
@@ -2083,7 +2082,7 @@ public:
 #define DOCTEST_ASSERT_IMPLEMENT_1(expr, assert_type)                                              \
     do {                                                                                           \
         DOCTEST_ASSERT_IMPLEMENT_2(expr, assert_type);                                             \
-    } while(doctest::detail::always_false())
+    } while((void)0, 0)
 
 #ifdef DOCTEST_CONFIG_WITH_VARIADIC_MACROS
 #define DOCTEST_WARN(...) DOCTEST_ASSERT_IMPLEMENT_1((__VA_ARGS__), DT_WARN)
@@ -2103,19 +2102,19 @@ public:
 
 // clang-format off
 #ifdef DOCTEST_CONFIG_WITH_VARIADIC_MACROS
-#define DOCTEST_WARN_MESSAGE(cond, msg) do { DOCTEST_INFO(msg); DOCTEST_ASSERT_IMPLEMENT_2((cond), DT_WARN); } while(doctest::detail::always_false())
-#define DOCTEST_CHECK_MESSAGE(cond, msg) do { DOCTEST_INFO(msg); DOCTEST_ASSERT_IMPLEMENT_2((cond), DT_CHECK); } while(doctest::detail::always_false())
-#define DOCTEST_REQUIRE_MESSAGE(cond, msg) do { DOCTEST_INFO(msg); DOCTEST_ASSERT_IMPLEMENT_2((cond), DT_REQUIRE); } while(doctest::detail::always_false())
-#define DOCTEST_WARN_FALSE_MESSAGE(cond, msg) do { DOCTEST_INFO(msg); DOCTEST_ASSERT_IMPLEMENT_2((cond), DT_WARN_FALSE); } while(doctest::detail::always_false())
-#define DOCTEST_CHECK_FALSE_MESSAGE(cond, msg) do { DOCTEST_INFO(msg); DOCTEST_ASSERT_IMPLEMENT_2((cond), DT_CHECK_FALSE); } while(doctest::detail::always_false())
-#define DOCTEST_REQUIRE_FALSE_MESSAGE(cond, msg) do { DOCTEST_INFO(msg); DOCTEST_ASSERT_IMPLEMENT_2((cond), DT_REQUIRE_FALSE); } while(doctest::detail::always_false())
+#define DOCTEST_WARN_MESSAGE(cond, msg) do { DOCTEST_INFO(msg); DOCTEST_ASSERT_IMPLEMENT_2((cond), DT_WARN); } while((void)0, 0)
+#define DOCTEST_CHECK_MESSAGE(cond, msg) do { DOCTEST_INFO(msg); DOCTEST_ASSERT_IMPLEMENT_2((cond), DT_CHECK); } while((void)0, 0)
+#define DOCTEST_REQUIRE_MESSAGE(cond, msg) do { DOCTEST_INFO(msg); DOCTEST_ASSERT_IMPLEMENT_2((cond), DT_REQUIRE); } while((void)0, 0)
+#define DOCTEST_WARN_FALSE_MESSAGE(cond, msg) do { DOCTEST_INFO(msg); DOCTEST_ASSERT_IMPLEMENT_2((cond), DT_WARN_FALSE); } while((void)0, 0)
+#define DOCTEST_CHECK_FALSE_MESSAGE(cond, msg) do { DOCTEST_INFO(msg); DOCTEST_ASSERT_IMPLEMENT_2((cond), DT_CHECK_FALSE); } while((void)0, 0)
+#define DOCTEST_REQUIRE_FALSE_MESSAGE(cond, msg) do { DOCTEST_INFO(msg); DOCTEST_ASSERT_IMPLEMENT_2((cond), DT_REQUIRE_FALSE); } while((void)0, 0)
 #else // DOCTEST_CONFIG_WITH_VARIADIC_MACROS
-#define DOCTEST_WARN_MESSAGE(cond, msg) do { DOCTEST_INFO(msg); DOCTEST_ASSERT_IMPLEMENT_2(cond, DT_WARN); } while(doctest::detail::always_false())
-#define DOCTEST_CHECK_MESSAGE(cond, msg) do { DOCTEST_INFO(msg); DOCTEST_ASSERT_IMPLEMENT_2(cond, DT_CHECK); } while(doctest::detail::always_false())
-#define DOCTEST_REQUIRE_MESSAGE(cond, msg) do { DOCTEST_INFO(msg); DOCTEST_ASSERT_IMPLEMENT_2(cond, DT_REQUIRE); } while(doctest::detail::always_false())
-#define DOCTEST_WARN_FALSE_MESSAGE(cond, msg) do { DOCTEST_INFO(msg); DOCTEST_ASSERT_IMPLEMENT_2(cond, DT_WARN_FALSE); } while(doctest::detail::always_false())
-#define DOCTEST_CHECK_FALSE_MESSAGE(cond, msg) do { DOCTEST_INFO(msg); DOCTEST_ASSERT_IMPLEMENT_2(cond, DT_CHECK_FALSE); } while(doctest::detail::always_false())
-#define DOCTEST_REQUIRE_FALSE_MESSAGE(cond, msg) do { DOCTEST_INFO(msg); DOCTEST_ASSERT_IMPLEMENT_2(cond, DT_REQUIRE_FALSE); } while(doctest::detail::always_false())
+#define DOCTEST_WARN_MESSAGE(cond, msg) do { DOCTEST_INFO(msg); DOCTEST_ASSERT_IMPLEMENT_2(cond, DT_WARN); } while((void)0, 0)
+#define DOCTEST_CHECK_MESSAGE(cond, msg) do { DOCTEST_INFO(msg); DOCTEST_ASSERT_IMPLEMENT_2(cond, DT_CHECK); } while((void)0, 0)
+#define DOCTEST_REQUIRE_MESSAGE(cond, msg) do { DOCTEST_INFO(msg); DOCTEST_ASSERT_IMPLEMENT_2(cond, DT_REQUIRE); } while((void)0, 0)
+#define DOCTEST_WARN_FALSE_MESSAGE(cond, msg) do { DOCTEST_INFO(msg); DOCTEST_ASSERT_IMPLEMENT_2(cond, DT_WARN_FALSE); } while((void)0, 0)
+#define DOCTEST_CHECK_FALSE_MESSAGE(cond, msg) do { DOCTEST_INFO(msg); DOCTEST_ASSERT_IMPLEMENT_2(cond, DT_CHECK_FALSE); } while((void)0, 0)
+#define DOCTEST_REQUIRE_FALSE_MESSAGE(cond, msg) do { DOCTEST_INFO(msg); DOCTEST_ASSERT_IMPLEMENT_2(cond, DT_REQUIRE_FALSE); } while((void)0, 0)
 #endif // DOCTEST_CONFIG_WITH_VARIADIC_MACROS
 // clang-format on
 
@@ -2129,7 +2128,7 @@ public:
             } catch(...) { _DOCTEST_RB.m_threw = true; }                                           \
             DOCTEST_ASSERT_LOG_AND_REACT(_DOCTEST_RB);                                             \
         }                                                                                          \
-    } while(doctest::detail::always_false())
+    } while((void)0, 0)
 
 #define DOCTEST_ASSERT_THROWS_AS(expr, as, assert_type)                                            \
     do {                                                                                           \
@@ -2145,7 +2144,7 @@ public:
             } catch(...) { _DOCTEST_RB.unexpectedExceptionOccurred(); }                            \
             DOCTEST_ASSERT_LOG_AND_REACT(_DOCTEST_RB);                                             \
         }                                                                                          \
-    } while(doctest::detail::always_false())
+    } while((void)0, 0)
 
 #define DOCTEST_ASSERT_NOTHROW(expr, assert_type)                                                  \
     do {                                                                                           \
@@ -2157,7 +2156,7 @@ public:
             } catch(...) { _DOCTEST_RB.unexpectedExceptionOccurred(); }                            \
             DOCTEST_ASSERT_LOG_AND_REACT(_DOCTEST_RB);                                             \
         }                                                                                          \
-    } while(doctest::detail::always_false())
+    } while((void)0, 0)
 
 #define DOCTEST_WARN_THROWS(expr) DOCTEST_ASSERT_THROWS(expr, DT_WARN_THROWS)
 #define DOCTEST_CHECK_THROWS(expr) DOCTEST_ASSERT_THROWS(expr, DT_CHECK_THROWS)
@@ -2180,15 +2179,15 @@ public:
 #define DOCTEST_REQUIRE_NOTHROW(expr) DOCTEST_ASSERT_NOTHROW(expr, DT_REQUIRE_NOTHROW)
 
 // clang-format off
-#define DOCTEST_WARN_THROWS_MESSAGE(expr, msg) do { DOCTEST_INFO(msg); DOCTEST_WARN_THROWS(expr); } while(doctest::detail::always_false())
-#define DOCTEST_CHECK_THROWS_MESSAGE(expr, msg) do { DOCTEST_INFO(msg); DOCTEST_CHECK_THROWS(expr); } while(doctest::detail::always_false())
-#define DOCTEST_REQUIRE_THROWS_MESSAGE(expr, msg) do { DOCTEST_INFO(msg); DOCTEST_REQUIRE_THROWS(expr); } while(doctest::detail::always_false())
-#define DOCTEST_WARN_THROWS_AS_MESSAGE(expr, ex, msg) do { DOCTEST_INFO(msg); DOCTEST_WARN_THROWS_AS(expr, ex); } while(doctest::detail::always_false())
-#define DOCTEST_CHECK_THROWS_AS_MESSAGE(expr, ex, msg) do { DOCTEST_INFO(msg); DOCTEST_CHECK_THROWS_AS(expr, ex); } while(doctest::detail::always_false())
-#define DOCTEST_REQUIRE_THROWS_AS_MESSAGE(expr, ex, msg) do { DOCTEST_INFO(msg); DOCTEST_REQUIRE_THROWS_AS(expr, ex); } while(doctest::detail::always_false())
-#define DOCTEST_WARN_NOTHROW_MESSAGE(expr, msg) do { DOCTEST_INFO(msg); DOCTEST_WARN_NOTHROW(expr); } while(doctest::detail::always_false())
-#define DOCTEST_CHECK_NOTHROW_MESSAGE(expr, msg) do { DOCTEST_INFO(msg); DOCTEST_CHECK_NOTHROW(expr); } while(doctest::detail::always_false())
-#define DOCTEST_REQUIRE_NOTHROW_MESSAGE(expr, msg) do { DOCTEST_INFO(msg); DOCTEST_REQUIRE_NOTHROW(expr); } while(doctest::detail::always_false())
+#define DOCTEST_WARN_THROWS_MESSAGE(expr, msg) do { DOCTEST_INFO(msg); DOCTEST_WARN_THROWS(expr); } while((void)0, 0)
+#define DOCTEST_CHECK_THROWS_MESSAGE(expr, msg) do { DOCTEST_INFO(msg); DOCTEST_CHECK_THROWS(expr); } while((void)0, 0)
+#define DOCTEST_REQUIRE_THROWS_MESSAGE(expr, msg) do { DOCTEST_INFO(msg); DOCTEST_REQUIRE_THROWS(expr); } while((void)0, 0)
+#define DOCTEST_WARN_THROWS_AS_MESSAGE(expr, ex, msg) do { DOCTEST_INFO(msg); DOCTEST_WARN_THROWS_AS(expr, ex); } while((void)0, 0)
+#define DOCTEST_CHECK_THROWS_AS_MESSAGE(expr, ex, msg) do { DOCTEST_INFO(msg); DOCTEST_CHECK_THROWS_AS(expr, ex); } while((void)0, 0)
+#define DOCTEST_REQUIRE_THROWS_AS_MESSAGE(expr, ex, msg) do { DOCTEST_INFO(msg); DOCTEST_REQUIRE_THROWS_AS(expr, ex); } while((void)0, 0)
+#define DOCTEST_WARN_NOTHROW_MESSAGE(expr, msg) do { DOCTEST_INFO(msg); DOCTEST_WARN_NOTHROW(expr); } while((void)0, 0)
+#define DOCTEST_CHECK_NOTHROW_MESSAGE(expr, msg) do { DOCTEST_INFO(msg); DOCTEST_CHECK_NOTHROW(expr); } while((void)0, 0)
+#define DOCTEST_REQUIRE_NOTHROW_MESSAGE(expr, msg) do { DOCTEST_INFO(msg); DOCTEST_REQUIRE_NOTHROW(expr); } while((void)0, 0)
 // clang-format on
 
 #ifdef DOCTEST_CONFIG_WITH_VARIADIC_MACROS
@@ -2201,7 +2200,7 @@ public:
                 _DOCTEST_RB.binary_assert<doctest::detail::binaryAssertComparison::comp>(          \
                         DOCTEST_HANDLE_BRACED_VA_ARGS(expr)))                                      \
         DOCTEST_ASSERT_LOG_AND_REACT(_DOCTEST_RB);                                                 \
-    } while(doctest::detail::always_false())
+    } while((void)0, 0)
 #else // DOCTEST_CONFIG_WITH_VARIADIC_MACROS
 #define DOCTEST_BINARY_ASSERT(assert_type, lhs, rhs, comp)                                         \
     do {                                                                                           \
@@ -2211,7 +2210,7 @@ public:
                 _DOCTEST_RB.binary_assert<doctest::detail::binaryAssertComparison::comp>(lhs,      \
                                                                                          rhs))     \
         DOCTEST_ASSERT_LOG_AND_REACT(_DOCTEST_RB);                                                 \
-    } while(doctest::detail::always_false())
+    } while((void)0, 0)
 #endif // DOCTEST_CONFIG_WITH_VARIADIC_MACROS
 
 #define DOCTEST_UNARY_ASSERT(assert_type, expr)                                                    \
@@ -2221,7 +2220,7 @@ public:
                 DOCTEST_TOSTR(DOCTEST_HANDLE_BRACED_VA_ARGS(expr)));                               \
         DOCTEST_WRAP_IN_TRY(_DOCTEST_RB.unary_assert(DOCTEST_HANDLE_BRACED_VA_ARGS(expr)))         \
         DOCTEST_ASSERT_LOG_AND_REACT(_DOCTEST_RB);                                                 \
-    } while(doctest::detail::always_false())
+    } while((void)0, 0)
 
 #ifdef DOCTEST_CONFIG_WITH_VARIADIC_MACROS
 #define DOCTEST_WARN_EQ(...) DOCTEST_BINARY_ASSERT(DT_WARN_EQ, (__VA_ARGS__), eq)
@@ -2290,7 +2289,7 @@ public:
         if(_DOCTEST_FAST_RES & doctest::detail::assertAction::dbgbreak)                            \
             DOCTEST_BREAK_INTO_DEBUGGER();                                                         \
         doctest::detail::fastAssertThrowIfFlagSet(_DOCTEST_FAST_RES);                              \
-    } while(doctest::detail::always_false())
+    } while((void)0, 0)
 #else // DOCTEST_CONFIG_WITH_VARIADIC_MACROS
 #define DOCTEST_FAST_BINARY_ASSERT(assert_type, lhs, rhs, comparison)                              \
     do {                                                                                           \
@@ -2301,7 +2300,7 @@ public:
         if(_DOCTEST_FAST_RES & doctest::detail::assertAction::dbgbreak)                            \
             DOCTEST_BREAK_INTO_DEBUGGER();                                                         \
         doctest::detail::fastAssertThrowIfFlagSet(_DOCTEST_FAST_RES);                              \
-    } while(doctest::detail::always_false())
+    } while((void)0, 0)
 #endif // DOCTEST_CONFIG_WITH_VARIADIC_MACROS
 
 #define DOCTEST_FAST_UNARY_ASSERT(assert_type, expr)                                               \
@@ -2313,7 +2312,7 @@ public:
         if(_DOCTEST_FAST_RES & doctest::detail::assertAction::dbgbreak)                            \
             DOCTEST_BREAK_INTO_DEBUGGER();                                                         \
         doctest::detail::fastAssertThrowIfFlagSet(_DOCTEST_FAST_RES);                              \
-    } while(doctest::detail::always_false())
+    } while((void)0, 0)
 
 #else // DOCTEST_CONFIG_SUPER_FAST_ASSERTS
 
@@ -2970,7 +2969,7 @@ namespace detail
                                           DOCTEST_GCS().currentTest->m_line);                      \
             DOCTEST_GCS().hasLoggedCurrentTestStart = true;                                        \
         }                                                                                          \
-    } while(doctest::detail::always_false())
+    } while(false)
 
 // required includes - will go only in one translation unit!
 #include <ctime>
@@ -3385,7 +3384,7 @@ int  Context::run() { return 0; }
             doctest::detail::Color col(color);                                                     \
             printf("%s", buffer);                                                                  \
         }                                                                                          \
-    } while(doctest::detail::always_false())
+    } while(false)
 
 // the buffer size used for snprintf() calls
 #if !defined(DOCTEST_SNPRINTF_BUFFER_LENGTH)
@@ -3551,7 +3550,6 @@ namespace detail
         throw TestFailureException();
 #endif // DOCTEST_CONFIG_NO_EXCEPTIONS
     }
-    bool always_false() { return false; }
 
     void my_memcpy(void* dest, void* src, int num) {
         char* csrc  = static_cast<char*>(src);
