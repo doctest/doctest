@@ -16,9 +16,9 @@ If you're going to change something in the library itself - make sure you don't 
 
 This framework has some design goals which must be kept. Make sure you have read the [**features and design goals**](features.md) page.
 
-If your changes also change the output of the library - you should also update the reference output for the tests or otherwise the CI builds (```travis``` and ```appveyor```) will fail when they compare the latest output to the outdated reference output (which is committed in the repository). To do this run CMake with the ```TEST_MODE``` variable set to ```COLLECT``` (making the new reference output) and then run ```ctest``` and commit the changed ```.txt``` files too. The default ```TEST_MODE``` is ```COMPARE```. 
+If your changes also change the output of the library - you should also update the reference output for the tests or otherwise the CI builds (```travis``` and ```appveyor```) will fail when they compare the latest output to the outdated reference output (which is committed in the repository). To do this run CMake with the ```DOCTEST_TEST_MODE``` variable set to ```COLLECT``` (making the new reference output) and then run ```ctest``` and commit the changed ```.txt``` files too. The default ```DOCTEST_TEST_MODE``` is ```COMPARE```. 
 
-Example: ```cmake -DTEST_MODE=COLLECT path/to/sources && ctest```
+Example: ```cmake -DDOCTEST_TEST_MODE=COLLECT path/to/sources && ctest```
 
 Code should be formatted with a recent-enough ```clang-format``` using the config file in the root of the repo (or I will do it...)
 
