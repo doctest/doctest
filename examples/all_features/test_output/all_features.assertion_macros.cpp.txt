@@ -1,0 +1,51 @@
+[doctest] run with "--help" for options
+== TEST CASE ==================================================================
+assertion_macros.cpp(0)
+an empty test that will fail because of a std::exception
+
+TEST CASE FAILED!
+threw exception:
+  whops!
+
+== TEST CASE ==================================================================
+assertion_macros.cpp(0)
+an empty test that will fail because of an exception
+
+TEST CASE FAILED!
+threw exception:
+  unknown exception
+
+== TEST CASE ==================================================================
+assertion_macros.cpp(0)
+exceptions-related macros
+
+assertion_macros.cpp(0) ERROR!
+  CHECK_THROWS( conditional_throw(false, 0) )
+didn't throw at all
+
+assertion_macros.cpp(0) ERROR!
+  CHECK_THROWS_AS( conditional_throw(false, 0), int )
+didn't throw at all
+
+assertion_macros.cpp(0) ERROR!
+  CHECK_THROWS_AS( conditional_throw(true, 0), char )
+threw a different exception:
+  unknown exception
+
+assertion_macros.cpp(0) ERROR!
+  CHECK_NOTHROW( conditional_throw(true, 0) )
+threw exception:
+  unknown exception
+
+== TEST CASE ==================================================================
+assertion_macros.cpp(0)
+exceptions-related macros for std::exception
+
+assertion_macros.cpp(0) ERROR!
+  CHECK_THROWS( conditional_throw(false, 0) )
+didn't throw at all
+
+===============================================================================
+[doctest] test cases:    5 |    1 passed |    4 failed |   16 skipped
+[doctest] assertions:    6 |    1 passed |    5 failed |
+Program code.
