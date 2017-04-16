@@ -68,7 +68,7 @@ Currently no. Asserts cannot be used in multiple threads and test cases cannot b
 
 For now tests are ran serially and doing asserts in multiple user threads will lead to crashes.
 
-There is an option to run a [**range**](commandline.md) of tests from an executable - so tests can be ran in parallel with multiple process invocations - see [**the example**](../../examples/range_based_execution/) (the **run.py** script).
+There is an option to run a [**range**](commandline.md) of tests from an executable - so tests can be ran in parallel with multiple process invocations - see [**the example python script**](../../examples/range_based_execution.py).
 
 ### Why are my tests in a static library not getting registered?
 
