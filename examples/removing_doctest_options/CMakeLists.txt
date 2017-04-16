@@ -7,6 +7,6 @@ include(../../scripts/cmake/common.cmake)
 
 include_directories("../../doctest/")
 
-add_executable(${PROJECT_NAME} main.cpp)
+doctest_add_executable(${PROJECT_NAME} main.cpp)
 
 doctest_add_test(NAME ${PROJECT_NAME} COMMAND $<TARGET_FILE:${PROJECT_NAME}> --dt-no-colors=true --version --my-option="abcdef" 123)

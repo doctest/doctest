@@ -7,6 +7,6 @@ include(../../scripts/cmake/common.cmake)
 
 include_directories("../../doctest/")
 
-add_executable(${PROJECT_NAME} main.cpp f1.cpp f2.cpp hdr.h)
+doctest_add_executable(${PROJECT_NAME} main.cpp f1.cpp f2.cpp hdr.h)
 
 doctest_add_test(NAME ${PROJECT_NAME} COMMAND $<TARGET_FILE:${PROJECT_NAME}>)
