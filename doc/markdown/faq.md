@@ -10,7 +10,6 @@
 - [**Why do I get compiler errors in STL headers when including the doctest header?**](#why-do-i-get-compiler-errors-in-stl-headers-when-including-the-doctest-header)
 - [**Can different versions of the framework be used within the same binary (executable/dll)?**](#can-different-versions-of-the-framework-be-used-within-the-same-binary-executabledll)
 - [**Why is doctest using macros?**](#why-is-doctest-using-macros)
-- [**How are subcases implemented?**](#how-are-subcases-implemented)
 
 ### How is **doctest** different from Catch?
 
@@ -114,10 +113,6 @@ Currently no. Single header libraries like [**stb**](https://github.com/nothings
 ### Why is doctest using macros?
 
 Aren't they evil and not *modern*? - Check out the answer Phil Nash gives to this question [**here**](http://accu.org/index.php/journals/2064) (the creator of [**Catch**](https://github.com/philsquared/Catch)).
-
-### How are subcases implemented?
-
-Look at [**this example**](../../scripts/how_subcases_work/main.cpp) in the repository.
 
 ---------------
 
