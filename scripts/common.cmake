@@ -117,7 +117,6 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
         add_compiler_flags(-Wzero-as-null-pointer-constant)
         add_compiler_flags(-Wuseless-cast)
         add_compiler_flags(-Wvector-operation-performance)
-        add_compiler_flags(-Wsized-deallocation)
     endif()
     
     if(CMAKE_CXX_COMPILER_VERSION VERSION_EQUAL 6.0 OR CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 6.0)

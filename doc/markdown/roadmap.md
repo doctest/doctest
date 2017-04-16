@@ -42,7 +42,9 @@ Planned features for future releases - order changes constantly...
     - add runtime benchmarks
 - resolve pull/60 (merge in dev, move cmake folder in scripts, maybe change/remove some of the 2 new SKIP options)
 - rework the examples folder - so the test runner is compiled only a few times - CI builds take a ton of time!
-- change docs a bit - mainly what is in the landing page (add link to overload)
+- change docs a bit
+    - mainly what is in the landing page (add link to overload)
+    - https://www.paypal.me/onqtam
 - address the coverage issue... look at how this project does it: https://github.com/rollbear/trompeloeil
 - builds with GCC 7 when it is released (should be in late April) - also by then the precise (ubuntu 12.04) ppa for clang 4.0 should be whitelisted by travis
 
@@ -99,6 +101,7 @@ Planned features for future releases - order changes constantly...
 
 ### Things that are being considered but not part of the roadmap yet:
 
+- think about removing the binary asserts (leaving only the fast binary asserts) because normal asserts + no try/catch in asserts are almost the same
 - when no assertion is encountered in a test case it should fail
 - failure reporting should print out previous SECTIONs for data-driven testing - as requested [here](https://github.com/philsquared/Catch/issues/734)
 - ```Bitwise()``` class that has overloaded operators for comparison - to be used to check objects bitwise against each other
@@ -131,6 +134,7 @@ Planned features for future releases - order changes constantly...
 
 ### Things that are very unlikely to enter the roadmap:
 
+- move the "react()" part (the one that throws for REQUIRE asserts - or for when "abort-after=<int>" is reached) to a function call in the while() part of the asserts
 - stop using underscores for the begining of identifiers - the anonymous variables - against the standard...
 - templated fixture test cases
 - test with missed warning flags for GCC
