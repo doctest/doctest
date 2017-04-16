@@ -54,7 +54,7 @@ The library can be used like any other if you don't like the idea of mixing prod
 - offers a way to remove **everything** testing-related from the binary with the [**```DOCTEST_CONFIG_DISABLE```**](configuration.md#doctest_config_disable) macro
 - tests are registered automatically - no need to add them to a collection manually
 - supports [**subcases**](testcases.md) for easy setup/teardown of tests (also supports the retro [**test fixtures**](testcases.md#) with classes)
-- [templated test cases](parameterized-tests.md#templated-test-cases---parameterized-by-type) - parameterized by type
+- [**templated test cases**](parameterized-tests.md#templated-test-cases---parameterized-by-type) - parameterized by type
 - supports [**logging macros**](logging.md) for capturing local variables and strings - as a message for when an assert fails - with lazy stringification and no allocations when possible!
 - crash handling support - uses signals for UNIX and SEH for Windows
 - output from all compilers on all platforms is the same - byte by byte
@@ -73,7 +73,7 @@ The library can be used like any other if you don't like the idea of mixing prod
 - integration with the output window of Visual Studio for failing tests
 - a ```main()``` can be provided when implementing the library with the [**```DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN```**](main.md#doctest_config_implement_with_main) identifier
 - can write tests in headers - they will still be registered only once in the executable/shared object
-- [**range-based**](commandline.md) execution of tests - see the [**range_based_execution**](../../examples/range_based_execution/) example (the **run.py** script)
+- [**range-based**](commandline.md) execution of tests - see the [**example python script**](../../examples/range_based_execution.py)
 - colored output in the console
 - controlling the order of test execution
 - different ```doctest::Context```s can be created and ran many times within a single execution of the program

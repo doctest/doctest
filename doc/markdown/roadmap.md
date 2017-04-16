@@ -106,7 +106,6 @@ Planned features for future releases - order changes constantly...
 
 ### Things that are being considered but not part of the roadmap yet:
 
-- think about removing the binary asserts (leaving only the fast binary asserts) because normal asserts + no try/catch in asserts are almost the same
 - when no assertion is encountered in a test case it should fail
 - failure reporting should print out previous SECTIONs for data-driven testing - as requested [here](https://github.com/philsquared/Catch/issues/734)
 - ```Bitwise()``` class that has overloaded operators for comparison - to be used to check objects bitwise against each other
@@ -136,9 +135,11 @@ Planned features for future releases - order changes constantly...
 - ability to provide a temp folder that is cleared between each test case
 - make the _MESSAGE assert macros work with variadic arguments - and maybe write the ones for binary/unary/fast asserts as well
 - move from operator "<<" to "<=" for capturing the left operand when decomposing binary expressions with templates
+- think about silencing warnings about unused variables when DOCTEST_CONFIG_DISABLE is used - see commit 6b61e8aa3818c5ea100cedc1bb48a60ea10df6e8 or issue #61
 
 ### Things that are very unlikely to enter the roadmap:
 
+- think about removing the binary asserts (leaving only the fast binary asserts) because normal asserts + no try/catch in asserts are almost the same
 - move the "react()" part (the one that throws for REQUIRE asserts - or for when "abort-after=<int>" is reached) to a function call in the while() part of the asserts
 - stop using underscores for the begining of identifiers - the anonymous variables - against the standard...
 - templated fixture test cases
