@@ -65,25 +65,25 @@ build_script:
   - IF NOT "%gen%" == "MinGW Makefiles" IF NOT "%gen%" == "Visual Studio 9 2008" mkdir debug_64
   - IF NOT "%gen%" == "MinGW Makefiles" IF NOT "%gen%" == "Visual Studio 9 2008" cd debug_64
   - IF NOT "%gen%" == "MinGW Makefiles" IF NOT "%gen%" == "Visual Studio 9 2008" cmake .. -G "%gen% Win64"
-  - IF NOT "%gen%" == "MinGW Makefiles" IF NOT "%gen%" == "Visual Studio 9 2008" msbuild all.sln /p:Configuration=Debug;Platform=x64 /maxcpucount
+  - IF NOT "%gen%" == "MinGW Makefiles" IF NOT "%gen%" == "Visual Studio 9 2008" msbuild doctest.sln /p:Configuration=Debug;Platform=x64 /maxcpucount
   - IF NOT "%gen%" == "MinGW Makefiles" IF NOT "%gen%" == "Visual Studio 9 2008" ctest -C Debug --output-on-failure
   - IF NOT "%gen%" == "MinGW Makefiles" IF NOT "%gen%" == "Visual Studio 9 2008" cd ..
   - IF NOT "%gen%" == "MinGW Makefiles" IF NOT "%gen%" == "Visual Studio 9 2008" mkdir release_64
   - IF NOT "%gen%" == "MinGW Makefiles" IF NOT "%gen%" == "Visual Studio 9 2008" cd release_64
   - IF NOT "%gen%" == "MinGW Makefiles" IF NOT "%gen%" == "Visual Studio 9 2008" cmake .. -G "%gen% Win64"
-  - IF NOT "%gen%" == "MinGW Makefiles" IF NOT "%gen%" == "Visual Studio 9 2008" msbuild all.sln /p:Configuration=Release;Platform=x64 /maxcpucount
+  - IF NOT "%gen%" == "MinGW Makefiles" IF NOT "%gen%" == "Visual Studio 9 2008" msbuild doctest.sln /p:Configuration=Release;Platform=x64 /maxcpucount
   - IF NOT "%gen%" == "MinGW Makefiles" IF NOT "%gen%" == "Visual Studio 9 2008" ctest -C Release --output-on-failure
   - IF NOT "%gen%" == "MinGW Makefiles" IF NOT "%gen%" == "Visual Studio 9 2008" cd ..
   # x86
   - IF NOT "%gen%" == "MinGW Makefiles" mkdir debug_86
   - IF NOT "%gen%" == "MinGW Makefiles" cd debug_86
   - IF NOT "%gen%" == "MinGW Makefiles" cmake .. -G "%gen%"
-  - IF NOT "%gen%" == "MinGW Makefiles" msbuild all.sln /p:Configuration=Debug;Platform=Win32 /maxcpucount
+  - IF NOT "%gen%" == "MinGW Makefiles" msbuild doctest.sln /p:Configuration=Debug;Platform=Win32 /maxcpucount
   - IF NOT "%gen%" == "MinGW Makefiles" ctest -C Debug --output-on-failure
   - IF NOT "%gen%" == "MinGW Makefiles" cd ..
   - IF NOT "%gen%" == "MinGW Makefiles" mkdir release_86
   - IF NOT "%gen%" == "MinGW Makefiles" cd release_86
   - IF NOT "%gen%" == "MinGW Makefiles" cmake .. -G "%gen%"
-  - IF NOT "%gen%" == "MinGW Makefiles" msbuild all.sln /p:Configuration=Release;Platform=Win32 /maxcpucount
+  - IF NOT "%gen%" == "MinGW Makefiles" msbuild doctest.sln /p:Configuration=Release;Platform=Win32 /maxcpucount
   - IF NOT "%gen%" == "MinGW Makefiles" ctest -C Release --output-on-failure
   - IF NOT "%gen%" == "MinGW Makefiles" cd ..
