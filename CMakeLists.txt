@@ -18,7 +18,7 @@ target_include_directories(${PROJECT_NAME} INTERFACE $<BUILD_INTERFACE:${CMAKE_C
 
 if(${DOCTEST_WITH_TESTS})
     include(scripts/cmake/common.cmake)
-
+    
     # setup coverage stuff only when COVERALLS_SERVICE_NAME is set (usually on travis CI)
     if(DEFINED ENV{COVERALLS_SERVICE_NAME})
         set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/scripts/coveralls-cmake/cmake)
@@ -27,13 +27,11 @@ if(${DOCTEST_WITH_TESTS})
         
         coveralls_setup("${CMAKE_CURRENT_SOURCE_DIR}/doctest/doctest.h" ON "${CMAKE_CURRENT_SOURCE_DIR}/scripts/coveralls-cmake/cmake")
         
-        add_subdirectory(scripts/code_coverage_source)
+        add_subdirectory(examples/all_features)
         
         return()
     endif()
-
-    add_subdirectory(scripts/code_coverage_source)
-
+    
     file(GLOB subdir_list "${CMAKE_CURRENT_SOURCE_DIR}/examples/*")
     foreach(dir ${subdir_list})
         if(IS_DIRECTORY ${dir})
