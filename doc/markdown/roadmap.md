@@ -44,7 +44,6 @@ Planned features for future releases - order changes constantly...
 - change docs a bit
     - mainly what is in the landing page (add link to overload)
     - https://www.paypal.me/onqtam
-    - update docs (contributing) about the new doctest cmake options
     - add a new page for build systems and integration
         - copying the header directly
         - getting the header with a cmake script - perhaps using ExternalProject() or something like that
