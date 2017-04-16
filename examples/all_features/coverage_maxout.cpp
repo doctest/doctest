@@ -1,8 +1,17 @@
 #include "doctest.h"
 
 #include <ostream>
+#include <sstream>
+
+#if __GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ > 6)
+#pragma GCC diagnostic ignored "-Wzero-as-null-pointer-constant"
+#endif // > gcc 4.6
+
+#ifndef DOCTEST_CONFIG_DISABLE
 
 TEST_CASE("doctest internals") {
+    using namespace doctest;
+
     // string stuff
     doctest::String       a(0);
     const doctest::String const_str("omgomgomg");
@@ -22,9 +31,9 @@ TEST_CASE("doctest internals") {
          + toString(static_cast<unsigned short>(1));
 
     // others
-    a += doctest::detail::fileForOutput("c:\\a");
-    a += doctest::detail::fileForOutput("c:/a");
-    a += doctest::detail::fileForOutput("a");
+    //a += doctest::detail::fileForOutput("c:\\a");
+    //a += doctest::detail::fileForOutput("c:/a");
+    //a += doctest::detail::fileForOutput("a");
     std::ostringstream oss;
     oss << a;
     oss << doctest::detail::getAssertString(static_cast<doctest::detail::assertType::Enum>(3));
@@ -154,3 +163,5 @@ TEST_CASE("assertions - all of them") {
 TEST_CASE("throws") { throws(true); }
 
 TEST_SUITE_END();
+
+#endif // DOCTEST_CONFIG_DISABLE

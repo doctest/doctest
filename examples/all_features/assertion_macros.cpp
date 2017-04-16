@@ -1,11 +1,13 @@
 #include "doctest.h"
 
-template<typename T>
+#include <stdexcept>
+
+template <typename T>
 static int conditional_throw(bool in, const T& ex) {
     if(in)
 #ifndef DOCTEST_CONFIG_NO_EXCEPTIONS
         throw ex;
-#else // DOCTEST_CONFIG_NO_EXCEPTIONS
+#else  // DOCTEST_CONFIG_NO_EXCEPTIONS
         ((void)ex);
 #endif // DOCTEST_CONFIG_NO_EXCEPTIONS
     return 42;
@@ -15,13 +17,17 @@ using doctest::Approx;
 
 TEST_SUITE("meaningless macros") {
     TEST_CASE("an empty test that will succeed") {}
-    
-    TEST_CASE("an empty test that will fail because of an exception") { conditional_throw(true, 0); }
+
+    TEST_CASE("an empty test that will fail because of an exception") {
+        conditional_throw(true, 0);
+    }
 }
 
 TEST_SUITE_BEGIN("meaningless macros");
 
-TEST_CASE("an empty test that will fail because of a std::exception") { conditional_throw(true, std::runtime_error("whops!")); }
+TEST_CASE("an empty test that will fail because of a std::exception") {
+    conditional_throw(true, std::runtime_error("whops!"));
+}
 
 TEST_SUITE_END();
 
