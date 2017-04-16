@@ -145,8 +145,8 @@ endif()
 # add a custom target that assembles the single header when any of the parts are touched
 
 set(cat_cmd "cat")
-set(doctest_include_folder "${CURRENT_LIST_DIR_CACHED}/../doctest/")
-set(doctest_parts_folder "${CURRENT_LIST_DIR_CACHED}/../doctest/parts/")
+set(doctest_include_folder "${CURRENT_LIST_DIR_CACHED}/../../doctest/")
+set(doctest_parts_folder "${CURRENT_LIST_DIR_CACHED}/../../doctest/parts/")
 if(WIN32)
     set(cat_cmd "type")
     STRING(REGEX REPLACE "/" "\\\\" doctest_include_folder ${doctest_include_folder})

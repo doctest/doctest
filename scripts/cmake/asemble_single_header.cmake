@@ -1,4 +1,4 @@
-set(doctest_include_folder "${CMAKE_CURRENT_LIST_DIR}/../doctest/")
+set(doctest_include_folder "${CMAKE_CURRENT_LIST_DIR}/../../doctest/")
 
 file(READ ${doctest_include_folder}/parts/doctest_fwd.h  fwd)
 file(READ ${doctest_include_folder}/parts/doctest_impl.h impl)
