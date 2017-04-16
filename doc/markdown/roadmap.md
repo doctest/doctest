@@ -44,6 +44,13 @@ Planned features for future releases - order changes constantly...
 - change docs a bit
     - mainly what is in the landing page (add link to overload)
     - https://www.paypal.me/onqtam
+    - update docs (contributing) about the new doctest cmake options
+    - add a new page for build systems and integration
+        - copying the header directly
+        - getting the header with a cmake script - perhaps using ExternalProject() or something like that
+        - using cmake directly
+        - using it as a package (the install target)
+        - getting it from vcpkg/hunter/etc.
 - address the coverage issue... look at how this project does it: https://github.com/rollbear/trompeloeil
 - builds with GCC 7 when it is released (should be in late April) - also by then the precise (ubuntu 12.04) ppa for clang 4.0 should be whitelisted by travis
 

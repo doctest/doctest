@@ -1,8 +1,3 @@
-if(common_included)
-    return()
-endif()
-set(common_included true)
-
 include(CMakeParseArguments)
 
 # cache this for use inside of the function
@@ -154,11 +149,9 @@ endif()
 
 # add a custom target that assembles the single header when any of the parts are touched
 
-set(cat_cmd "cat")
 set(doctest_include_folder "${CURRENT_LIST_DIR_CACHED}/../../doctest/")
 set(doctest_parts_folder "${CURRENT_LIST_DIR_CACHED}/../../doctest/parts/")
 if(WIN32)
-    set(cat_cmd "type")
     STRING(REGEX REPLACE "/" "\\\\" doctest_include_folder ${doctest_include_folder})
     STRING(REGEX REPLACE "/" "\\\\" doctest_parts_folder ${doctest_parts_folder})
 endif()

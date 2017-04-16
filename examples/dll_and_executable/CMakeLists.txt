@@ -1,9 +1,5 @@
-cmake_minimum_required(VERSION 2.8)
-
 get_filename_component(PROJECT_NAME ${CMAKE_CURRENT_SOURCE_DIR} NAME)
 project(${PROJECT_NAME})
-
-include(../../scripts/cmake/common.cmake)
 
 if(APPLE)
     set(CMAKE_MACOSX_RPATH ON)
@@ -13,17 +9,19 @@ if(APPLE)
     endif()
 endif()
 
-include_directories("../../doctest/")
-
 doctest_add_library(implementation SHARED implementation.cpp implementation_2.cpp)
+target_link_libraries(implementation doctest)
 
 doctest_add_library(dll SHARED dll.cpp)
+target_link_libraries(dll doctest)
 target_link_libraries(dll implementation)
 
 doctest_add_library(plugin SHARED plugin.cpp)
+target_link_libraries(plugin doctest)
 target_link_libraries(plugin implementation)
 
 doctest_add_executable(${PROJECT_NAME} main.cpp)
+target_link_libraries(${PROJECT_NAME} doctest)
 target_link_libraries(${PROJECT_NAME} dll)
 target_link_libraries(${PROJECT_NAME} implementation)
 
