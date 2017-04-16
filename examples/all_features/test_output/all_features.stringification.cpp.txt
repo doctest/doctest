@@ -1,14 +1,6 @@
 [doctest] run with "--help" for options
 == TEST CASE ==================================================================
 stringification.cpp(0)
-a test case that registers an exception translator for int and then throws one
-
-TEST CASE FAILED!
-threw exception:
-  int: 5
-
-== TEST CASE ==================================================================
-stringification.cpp(0)
 the only test
 
 stringification.cpp(0) ERROR!
@@ -34,6 +26,14 @@ with expansion:
 TEST CASE FAILED!
 threw exception:
   MyTypeInherited<int>(5, 4.0f)
+
+== TEST CASE ==================================================================
+stringification.cpp(0)
+a test case that registers an exception translator for int and then throws one
+
+TEST CASE FAILED!
+threw exception:
+  int: 5
 
 ===============================================================================
 [doctest] test cases:    2 |    0 passed |    2 failed |   19 skipped

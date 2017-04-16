@@ -1,4 +1,23 @@
 [doctest] run with "--help" for options
+
+root
+1
+1.1
+
+root
+2
+2.1
+
+root
+2
+== TEST CASE ==================================================================
+subcases.cpp(0)
+lots of nested subcases
+
+TEST CASE FAILED!
+threw exception:
+  unknown exception
+
 == TEST CASE ==================================================================
 subcases.cpp(0)
   Scenario: vectors can be sized and resized
@@ -22,25 +41,6 @@ subcases.cpp(0) ERROR!
   CHECK( v.size() == 10 )
 with expansion:
   CHECK( 5 == 10 )
-
-
-root
-1
-1.1
-
-root
-2
-2.1
-
-root
-2
-== TEST CASE ==================================================================
-subcases.cpp(0)
-lots of nested subcases
-
-TEST CASE FAILED!
-threw exception:
-  unknown exception
 
 == TEST CASE ==================================================================
 subcases.cpp(0)

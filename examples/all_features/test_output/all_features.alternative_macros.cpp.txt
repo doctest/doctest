@@ -1,6 +1,4 @@
 [doctest] run with "--help" for options
-Hello world!
-Hello world!
 ===============================================================================
 [doctest] test cases:    1 |    1 passed |    0 failed |   20 skipped
 [doctest] assertions:    6 |    6 passed |    0 failed |
