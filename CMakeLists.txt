@@ -1,6 +1,11 @@
 cmake_minimum_required(VERSION 3.0)
 
-project(doctest)
+################################################################################
+## DOCTEST
+################################################################################
+
+file(READ ${CMAKE_CURRENT_SOURCE_DIR}/scripts/version.txt ver)
+project(doctest VERSION ${ver})
 
 option(DOCTEST_WITH_TESTS "Build tests/examples" ON)
 
@@ -52,7 +57,6 @@ set(project_config "${generated_dir}/${PROJECT_NAME}Config.cmake")
 set(targets_export_name "${PROJECT_NAME}Targets")
 set(namespace "${PROJECT_NAME}::")
 
-file(READ ${PROJECT_SOURCE_DIR}/scripts/version.txt PROJECT_VERSION)
 include(CMakePackageConfigHelpers)
 write_basic_package_version_file(
     "${version_config}" VERSION ${PROJECT_VERSION} COMPATIBILITY SameMajorVersion
