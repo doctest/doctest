@@ -25,11 +25,9 @@
 *.s
 
 # My garbage :)
+Win32/
+x64/
 scripts/bench/project/*
-build/*
-build-mingw/*
-examples/*/build/*
-examples/*/build-mingw/*
-scripts/*/build/*
-scripts/*/build-mingw/*
+build/
+build-mingw/
 *.pyc

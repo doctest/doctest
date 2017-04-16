@@ -1,3 +1,8 @@
+if(common_included)
+    return()
+endif()
+set(common_included true)
+
 include(CMakeParseArguments)
 
 # cache this for use inside of the function

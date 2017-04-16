@@ -39,6 +39,8 @@ if(${DOCTEST_WITH_TESTS})
             add_subdirectory(examples/${DIRNAME})
         endif()
     endforeach()
+    
+    add_subdirectory(scripts/playground)
 endif()
 
 ################################################################################
