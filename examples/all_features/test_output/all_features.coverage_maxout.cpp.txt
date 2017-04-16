@@ -1,0 +1,33 @@
+[doctest] run with "--help" for options
+== TEST CASE ==================================================================
+coverage_maxout.cpp(0)
+assertions
+
+coverage_maxout.cpp(0) ERROR!
+  CHECK( 1 == 0 )
+with expansion:
+  CHECK( 1 == 0 )
+
+coverage_maxout.cpp(0) ERROR!
+  CHECK_FALSE( 1 )
+with expansion:
+  CHECK_FALSE( 1 )
+
+coverage_maxout.cpp(0) ERROR!
+  CHECK( a == b )
+with expansion:
+  CHECK( myType! == myType! )
+
+coverage_maxout.cpp(0) ERROR!
+  CHECK( Approx(0.1) == 0.2 )
+with expansion:
+  CHECK( Approx( 0.1 ) == 0.2 )
+
+coverage_maxout.cpp(0) ERROR!
+  CHECK_THROWS( throws(false) )
+didn't throw at all
+
+===============================================================================
+[doctest] test cases:    1 |    0 passed |    1 failed |   20 skipped
+[doctest] assertions:    7 |    2 passed |    5 failed |
+Program code.

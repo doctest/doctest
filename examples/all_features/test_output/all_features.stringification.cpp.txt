@@ -1,0 +1,41 @@
+[doctest] run with "--help" for options
+== TEST CASE ==================================================================
+stringification.cpp(0)
+a test case that registers an exception translator for int and then throws one
+
+TEST CASE FAILED!
+threw exception:
+  int: 5
+
+== TEST CASE ==================================================================
+stringification.cpp(0)
+the only test
+
+stringification.cpp(0) ERROR!
+  CHECK( f1 == f2 )
+with expansion:
+  CHECK( Foo{} == Foo{} )
+
+stringification.cpp(0) ERROR!
+  CHECK( dummy1 == dummy2 )
+with expansion:
+  CHECK( omg == tralala )
+
+stringification.cpp(0) ERROR!
+  CHECK( vec1 == vec2 )
+with expansion:
+  CHECK( [1, 2, 3] == [1, 2, 4] )
+
+stringification.cpp(0) ERROR!
+  CHECK( lst_1 == lst_2 )
+with expansion:
+  CHECK( [1, 42, 3, ] == [1, 2, 666, ] )
+
+TEST CASE FAILED!
+threw exception:
+  MyTypeInherited<int>(5, 4.0f)
+
+===============================================================================
+[doctest] test cases:    2 |    0 passed |    2 failed |   19 skipped
+[doctest] assertions:    4 |    0 passed |    4 failed |
+Program code.
