@@ -7,10 +7,10 @@ include(../../scripts/cmake/common.cmake)
 
 include_directories("../../doctest/")
 
-add_library(lib_1 STATIC lib_1_src1.cpp lib_1_src2.cpp)
-add_library(lib_2 STATIC lib_2_src.cpp)
+doctest_add_library(lib_1 STATIC lib_1_src1.cpp lib_1_src2.cpp)
+doctest_add_library(lib_2 STATIC lib_2_src.cpp)
 
-add_executable(${PROJECT_NAME} main.cpp)
+doctest_add_executable(${PROJECT_NAME} main.cpp)
 target_link_libraries(${PROJECT_NAME} lib_1)
 target_link_libraries(${PROJECT_NAME} lib_2)
 

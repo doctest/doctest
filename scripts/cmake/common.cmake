@@ -57,6 +57,16 @@ function(doctest_add_test)
     add_test(NAME ${ARG_NAME} COMMAND ${CMAKE_COMMAND} -DCOMMAND=${the_command} ${ADDITIONAL_FLAGS} -P ${CURRENT_LIST_DIR_CACHED}/exec_test.cmake)
 endfunction()
 
+function(doctest_add_executable name)
+    add_executable(${name} ${ARGN})
+    add_dependencies(${name} assemble_single_header)
+endfunction()
+
+function(doctest_add_library name)
+    add_library(${name} ${ARGN})
+    add_dependencies(${name} assemble_single_header)
+endfunction()
+
 macro(add_compiler_flags)
     foreach(flag ${ARGV})
         set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${flag}")
@@ -162,15 +172,3 @@ add_custom_command(
     COMMENT "assembling the single header")
 
 add_custom_target(assemble_single_header ALL DEPENDS ${doctest_include_folder}doctest.h)
-
-# override add_executable() to add a dependency on the header assembly target
-function(add_executable name)
-    _add_executable(${name} ${ARGN})
-    add_dependencies(${name} assemble_single_header)
-endfunction()
-
-# override add_library() to add a dependency on the header assembly target
-function(add_library name)
-    _add_library(${name} ${ARGN})
-    add_dependencies(${name} assemble_single_header)
-endfunction()

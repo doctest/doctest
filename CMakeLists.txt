@@ -2,21 +2,25 @@ cmake_minimum_required(VERSION 3.0)
 
 project(doctest)
 
-option(DOCTEST_SKIP_COVERAGE "Skip coverage" OFF)
-option(DOCTEST_SKIP_EXAMPLES "Skip examples" OFF)
+option(DOCTEST_WITH_TESTS "Build tests/examples" ON)
 
-include(scripts/cmake/common.cmake)
+add_library(${PROJECT_NAME} INTERFACE)
+target_include_directories(${PROJECT_NAME} INTERFACE $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/doctest/>)
 
-include_directories("doctest/") # needed here so the coverage tools work - otherwise the "../../doctest" relative path fucks up
+################################################################################
+## TESTS/EXAMPLES
+################################################################################
 
-if(NOT ${DOCTEST_SKIP_COVERAGE})
+if(${DOCTEST_WITH_TESTS})
+    include(scripts/cmake/common.cmake)
+
     # setup coverage stuff only when COVERALLS_SERVICE_NAME is set (usually on travis CI)
     if(DEFINED ENV{COVERALLS_SERVICE_NAME})
-        set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_SOURCE_DIR}/scripts/coveralls-cmake/cmake)
+        set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/scripts/coveralls-cmake/cmake)
         include(Coveralls)
         coveralls_turn_on_coverage()
         
-        coveralls_setup("${CMAKE_SOURCE_DIR}/doctest/doctest.h" ON "${CMAKE_SOURCE_DIR}/scripts/coveralls-cmake/cmake")
+        coveralls_setup("${CMAKE_CURRENT_SOURCE_DIR}/doctest/doctest.h" ON "${CMAKE_CURRENT_SOURCE_DIR}/scripts/coveralls-cmake/cmake")
         
         add_subdirectory(scripts/code_coverage_source)
         
@@ -24,10 +28,8 @@ if(NOT ${DOCTEST_SKIP_COVERAGE})
     endif()
 
     add_subdirectory(scripts/code_coverage_source)
-endif()
 
-if(NOT ${DOCTEST_SKIP_EXAMPLES})
-    file(GLOB subdir_list "${CMAKE_SOURCE_DIR}/examples/*")
+    file(GLOB subdir_list "${CMAKE_CURRENT_SOURCE_DIR}/examples/*")
     foreach(dir ${subdir_list})
         if(IS_DIRECTORY ${dir})
             get_filename_component(DIRNAME ${dir} NAME)
@@ -36,7 +38,10 @@ if(NOT ${DOCTEST_SKIP_EXAMPLES})
     endforeach()
 endif()
 
-add_library(${PROJECT_NAME} INTERFACE)
+################################################################################
+## PACKAGE SUPPORT
+################################################################################
+
 set(generated_dir "${CMAKE_CURRENT_BINARY_DIR}/generated")
 
 set(include_install_dir "include/doctest/")
