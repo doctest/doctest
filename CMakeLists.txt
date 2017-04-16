@@ -1,12 +1,11 @@
 cmake_minimum_required(VERSION 3.0)
 
-set(PROJECT_NAME doctest)
-project(${PROJECT_NAME})
+project(doctest)
 
 option(DOCTEST_SKIP_COVERAGE "Skip coverage" OFF)
 option(DOCTEST_SKIP_EXAMPLES "Skip examples" OFF)
 
-include(scripts/common.cmake)
+include(scripts/cmake/common.cmake)
 
 include_directories("doctest/") # needed here so the coverage tools work - otherwise the "../../doctest" relative path fucks up
 
@@ -54,7 +53,7 @@ write_basic_package_version_file(
     "${version_config}" VERSION ${PROJECT_VERSION} COMPATIBILITY SameMajorVersion
 )
 
-configure_file("cmake/Config.cmake.in" "${project_config}" @ONLY)
+configure_file("scripts/cmake/Config.cmake.in" "${project_config}" @ONLY)
 
 install(
     TARGETS ${PROJECT_NAME}
