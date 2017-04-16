@@ -20,7 +20,7 @@ A complete example with a self-registering test that compiles to an executable l
 
 ![logo](scripts/data/logo_888px_wide.png)
 
-<img src="https://rawgit.com/onqtam/doctest/dev/data/logo_250px_wide" align="right">
+<img src="https://rawgit.com/onqtam/doctest/dev/scripts/data/logo_250px_wide.png" align="right">
 
 Note how a standard C++ operator for equality comparison is used - **doctest** has one core [**assertion macro**](doc/markdown/assertions.md) (it also has for *less than*, *equals*, *greater than*...) - yet the full expression is decomposed and the left and right values are logged.
 
