@@ -27,7 +27,33 @@ coverage_maxout.cpp(0) ERROR!
   CHECK_THROWS( throws(false) )
 didn't throw at all
 
+coverage_maxout.cpp(0) ERROR!
+  CHECK_NOTHROW( throws(true) )
+threw exception:
+  unknown exception
+
+coverage_maxout.cpp(0) FATAL ERROR!
+  REQUIRE_THROWS_AS( throws(false), bool )
+didn't throw at all
+
+== TEST CASE ==================================================================
+coverage_maxout.cpp(0)
+assertions - all of them
+
+coverage_maxout.cpp(0) FATAL ERROR!
+  FAST_REQUIRE_UNARY_FALSE( 1 )
+with expansion:
+  FAST_REQUIRE_UNARY_FALSE( 1 )
+
+== TEST CASE ==================================================================
+coverage_maxout.cpp(0)
+throws
+
+TEST CASE FAILED!
+threw exception:
+  unknown exception
+
 ===============================================================================
-[doctest] test cases:    1 |    0 passed |    1 failed |   20 skipped
-[doctest] assertions:    7 |    2 passed |    5 failed |
+[doctest] test cases:    5 |    2 passed |    3 failed |   16 skipped
+[doctest] assertions:   60 |   52 passed |    8 failed |
 Program code.

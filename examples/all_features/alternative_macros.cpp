@@ -1,10 +1,6 @@
 #include "doctest_proxy.h"
 
-#include <cstdio>
-
 my_testcase("custom macros") {
-    printf("Hello world!\n");
-    
     my_check(1 == 1);
     
     my_fast_check_eq(1, 1);
