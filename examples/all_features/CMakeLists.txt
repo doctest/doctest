@@ -3,6 +3,7 @@ project(${PROJECT_NAME})
 
 set(files
     main.cpp
+    doctest_proxy.h
     coverage_maxout.cpp
     alternative_macros.cpp
     assertion_macros.cpp
@@ -10,13 +11,19 @@ set(files
     subcases.cpp
 )
 
-doctest_add_executable(${PROJECT_NAME} ${files})
-target_link_libraries(${PROJECT_NAME} doctest)
-
 # add variation of the build with disabled tests - should still compile
-doctest_add_executable(${PROJECT_NAME}_disabled ${files})
-target_compile_definitions(trie_io_test PRIVATE DOCTEST_CONFIG_DISABLE)
-doctest_add_test(NAME ${PROJECT_NAME}.disabled COMMAND $<TARGET_FILE:${PROJECT_NAME}>)
+doctest_add_executable(disabled ${files})
+target_link_libraries(disabled doctest)
+if(MSVC)
+    target_compile_options(disabled PRIVATE /wd4505) # unreferenced local function has been removed
+endif()
+target_compile_definitions(disabled PRIVATE DOCTEST_CONFIG_DISABLE)
+doctest_add_test(NAME disabled COMMAND $<TARGET_FILE:disabled>)
+
+# add the normal build
+doctest_add_executable(${PROJECT_NAME} ${files})
+target_compile_definitions(${PROJECT_NAME} PRIVATE DOCTEST_CONFIG_COLORS_NONE) # easy way to fix test coverage
+target_link_libraries(${PROJECT_NAME} doctest)
 
 # add per-file tests
 foreach(f ${files})
