@@ -18,6 +18,10 @@ A complete example with a self-registering test that compiles to an executable l
 
 ![cover-example](scripts/data/cover_888px_wide.png)
 
+![logo](scripts/data/logo_888px_wide.png)
+
+<img src="https://rawgit.com/onqtam/doctest/dev/data/logo_250px_wide" align="right">
+
 Note how a standard C++ operator for equality comparison is used - **doctest** has one core [**assertion macro**](doc/markdown/assertions.md) (it also has for *less than*, *equals*, *greater than*...) - yet the full expression is decomposed and the left and right values are logged.
 
 It is modeled after [**Catch**](https://github.com/philsquared/Catch) which is currently the most popular alternative for testing in C++ - check out [**the differences**](doc/markdown/faq.md#how-is-doctest-different-from-catch).
