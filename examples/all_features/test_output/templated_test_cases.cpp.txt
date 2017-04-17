@@ -10,7 +10,16 @@ with expansion:
 
 == TEST CASE ==================================================================
 templated_test_cases.cpp(0)
-multiple types<bool_int_pair>
+multiple types<>
+
+templated_test_cases.cpp(0) ERROR!
+  CHECK( T2() != T2() )
+with expansion:
+  CHECK( 0 != 0 )
+
+== TEST CASE ==================================================================
+templated_test_cases.cpp(0)
+multiple types<>
 
 templated_test_cases.cpp(0) ERROR!
   CHECK( T2() != T2() )
@@ -28,7 +37,7 @@ with expansion:
 
 == TEST CASE ==================================================================
 templated_test_cases.cpp(0)
-multiple types<>
+bad stringification of type pair<int_pair>
 
 templated_test_cases.cpp(0) ERROR!
   CHECK( T2() != T2() )
@@ -36,6 +45,6 @@ with expansion:
   CHECK( 0 != 0 )
 
 ===============================================================================
-[doctest] test cases:   12 |    8 passed |    4 failed | 
-[doctest] assertions:   15 |   11 passed |    4 failed |
+[doctest] test cases:   14 |    9 passed |    5 failed | 
+[doctest] assertions:   18 |   13 passed |    5 failed |
 Program code.

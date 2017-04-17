@@ -4,7 +4,7 @@
 
 // typedefs are required if variadic macro support is not available (otherwise the commas are a problem)
 typedef doctest::Types<char, short, int> int_types;
-typedef doctest::Types<float, double> float_types;
+typedef doctest::Types<float, double, float> float_types; // note that types won't be filtered for uniqueness
 
 // =================================================================================================
 // NORMAL TEMPLATED TEST CASES
@@ -53,13 +53,20 @@ typedef doctest::Types<
     TypePair<bool, int>
 > pairs;
 
-
-// if variadic macros are supported then "TypePair<bool, int>" can be passed directly to the macro (otherwise the commas are a problem)
-// currently result will be "bool_int_pair" instead of "TypePair<bool, int>" because of the way the type stringification works
-typedef TypePair<bool, int> bool_int_pair;
-TYPE_TO_STRING(bool_int_pair);
-
 TEST_CASE_TEMPLATE("multiple types", T, pairs) {
+    typedef typename T::A T1;
+    typedef typename T::B T2;
+    // use T1 and T2 types
+    CHECK(T1() == T1());
+    CHECK(T2() != T2());
+}
+
+// if variadic macros are supported then "TypePair<int, int>" can be passed directly to the macro (otherwise the commas are a problem)
+// currently the string result will be "int_pair" instead of "TypePair<int, int>" because of the way the type stringification works
+typedef TypePair<int, int> int_pair;
+TYPE_TO_STRING(int_pair);
+
+TEST_CASE_TEMPLATE("bad stringification of type pair", T, doctest::Types<int_pair>) {
     typedef typename T::A T1;
     typedef typename T::B T2;
     // use T1 and T2 types
