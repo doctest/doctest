@@ -11,19 +11,23 @@ endif()
 
 doctest_add_library(implementation SHARED implementation.cpp implementation_2.cpp)
 target_link_libraries(implementation doctest)
+set_target_properties(implementation PROPERTIES FOLDER ${PROJECT_NAME})
 
 doctest_add_library(dll SHARED dll.cpp)
 target_link_libraries(dll doctest)
 target_link_libraries(dll implementation)
+set_target_properties(dll PROPERTIES FOLDER ${PROJECT_NAME})
 
 doctest_add_library(plugin SHARED plugin.cpp)
 target_link_libraries(plugin doctest)
 target_link_libraries(plugin implementation)
+set_target_properties(plugin PROPERTIES FOLDER ${PROJECT_NAME})
 
 doctest_add_executable(${PROJECT_NAME} main.cpp)
 target_link_libraries(${PROJECT_NAME} doctest)
 target_link_libraries(${PROJECT_NAME} dll)
 target_link_libraries(${PROJECT_NAME} implementation)
+set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER ${PROJECT_NAME})
 
 if(NOT WIN32)
     target_link_libraries(${PROJECT_NAME} dl)

@@ -9,6 +9,9 @@ set(files
     assertion_macros.cpp
     stringification.cpp
     subcases.cpp
+    logging.cpp
+    templated_test_cases.cpp
+    test_suites.cpp
 )
 
 # add the normal build
@@ -18,7 +21,7 @@ target_link_libraries(${PROJECT_NAME} doctest)
 
 # add per-file tests
 foreach(f ${files})
-    doctest_add_test(NAME ${PROJECT_NAME}.${f} COMMAND $<TARGET_FILE:${PROJECT_NAME}> --source-file=*${f})
+    doctest_add_test(NAME ${f} COMMAND $<TARGET_FILE:${PROJECT_NAME}> --dt-no-skipped-summary=1 --source-file=*${f})
 endforeach()
 
 ## queries

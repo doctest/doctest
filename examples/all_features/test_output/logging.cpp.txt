@@ -1,0 +1,57 @@
+[doctest] run with "--help" for options
+
+root
+1
+1.1
+
+root
+2
+2.1
+
+root
+2
+== TEST CASE ==================================================================
+logging.cpp(0)
+lots of nested subcases
+
+TEST CASE FAILED!
+threw exception:
+  unknown exception
+
+== TEST CASE ==================================================================
+logging.cpp(0)
+  Scenario: vectors can be sized and resized
+     Given: A vector with some items
+      When: the size is increased
+      Then: the size and capacity change
+
+logging.cpp(0) ERROR!
+  CHECK( v.size() == 20 )
+with expansion:
+  CHECK( 10 == 20 )
+
+== TEST CASE ==================================================================
+logging.cpp(0)
+  Scenario: vectors can be sized and resized
+     Given: A vector with some items
+      When: less capacity is reserved
+      Then: neither size nor capacity are changed
+
+logging.cpp(0) ERROR!
+  CHECK( v.size() == 10 )
+with expansion:
+  CHECK( 5 == 10 )
+
+== TEST CASE ==================================================================
+logging.cpp(0)
+test with a fixture - 2
+
+logging.cpp(0) ERROR!
+  CHECK( data == 85 )
+with expansion:
+  CHECK( 84 == 85 )
+
+===============================================================================
+[doctest] test cases:    4 |    1 passed |    3 failed | 
+[doctest] assertions:   18 |   15 passed |    3 failed |
+Program code.

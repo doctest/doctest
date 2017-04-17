@@ -29,8 +29,6 @@ int main(int argc, char** argv) {
     return res + client_stuff_return_code; // the result from doctest is propagated here as well
 }
 
-#include <string>
-
 TEST_CASE("[string] testing std::string") {
     std::string a("omg");
     CHECK(a == "omg");

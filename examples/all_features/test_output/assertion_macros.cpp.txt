@@ -96,6 +96,6 @@ threw exception:
   whops!
 
 ===============================================================================
-[doctest] test cases:    7 |    1 passed |    6 failed |   14 skipped
+[doctest] test cases:    7 |    1 passed |    6 failed | 
 [doctest] assertions:   24 |   12 passed |   12 failed |
 Program code.
