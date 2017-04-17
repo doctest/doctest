@@ -12,13 +12,13 @@ Consider opening an issue for a discussion before making a pull request to make 
 
 All pull requests should be made against the ```dev``` branch because the ```master``` is the stable one with the latest release.
 
-If you're going to change something in the library itself - make sure you don't modify ```doctest/doctest.h``` because it's generated from ```doctest/parts/doctest_fwd.h``` and ```doctest/parts/doctest_impl.h``` - they get concatenated by CMake - so make sure you do a CMake build after you modify them so the ```assemble_single_header``` target gets built. Also take into consideration how the change affects the code coverage - based on the project in ```scripts/code_coverage_source```. Also update any relevant examples in the ```examples``` folder.
+If you're going to change something in the library itself - make sure you don't modify ```doctest/doctest.h``` because it's generated from ```doctest/parts/doctest_fwd.h``` and ```doctest/parts/doctest_impl.h``` - they get concatenated by CMake - so make sure you do a CMake build after you modify them so the ```assemble_single_header``` target gets built. Also take into consideration how the change affects the code coverage - based on the project in ```examples/all_features```. Also update any relevant examples in the ```examples``` folder.
 
 This framework has some design goals which must be kept. Make sure you have read the [**features and design goals**](features.md) page.
 
-If your changes also change the output of the library - you should also update the reference output for the tests or otherwise the CI builds (```travis``` and ```appveyor```) will fail when they compare the latest output to the outdated reference output (which is committed in the repository). To do this run CMake with the ```DOCTEST_TEST_MODE``` variable set to ```COLLECT``` (making the new reference output) and then run ```ctest``` and commit the changed ```.txt``` files too. The default ```DOCTEST_TEST_MODE``` is ```COMPARE```. 
+If your changes also change the output of the library - you should also update the reference output for the tests or otherwise the CI builds (```travis``` and ```appveyor```) will fail when they compare the latest output to the outdated reference output (which is committed in the repository). To do this run CMake with the ```DOCTEST_TEST_MODE``` variable set to ```COLLECT``` (making the new reference output) and then run ```ctest``` and commit the changed (or newly created) ```.txt``` files in the ```test_output``` folders too. The default ```DOCTEST_TEST_MODE``` is ```COMPARE```. 
 
-Example: ```cmake -DDOCTEST_TEST_MODE=COLLECT path/to/sources && ctest```
+Example: ```cmake -DDOCTEST_TEST_MODE=COLLECT path/to/sources && cmake --build . && ctest```
 
 Code should be formatted with a recent-enough ```clang-format``` using the config file in the root of the repo (or I will do it...)
 

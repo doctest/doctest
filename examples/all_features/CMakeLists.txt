@@ -4,6 +4,7 @@ project(${PROJECT_NAME})
 set(files
     main.cpp
     doctest_proxy.h
+    header_with_tests.h
     coverage_maxout.cpp
     alternative_macros.cpp
     assertion_macros.cpp
@@ -17,7 +18,6 @@ set(files
 # add the normal build
 doctest_add_executable(${PROJECT_NAME} ${files})
 target_compile_definitions(${PROJECT_NAME} PRIVATE DOCTEST_CONFIG_COLORS_NONE) # easy way to fix test coverage
-target_link_libraries(${PROJECT_NAME} doctest)
 
 # add per-file tests
 foreach(f ${files})
@@ -47,13 +47,14 @@ endforeach()
 
 # add variation of the build with disabled tests - should still compile
 doctest_add_executable(disabled ${files})
-target_link_libraries(disabled doctest)
-if(MSVC)
-    target_compile_options(disabled PRIVATE /wd4505) # unreferenced local function has been removed
-endif()
-if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-    target_compile_options(disabled PRIVATE -Wno-unneeded-internal-declaration)
-    target_compile_options(disabled PRIVATE -Wno-unused-variable) # TODO: think about fixing this in a different way!
-endif()
 target_compile_definitions(disabled PRIVATE DOCTEST_CONFIG_DISABLE)
 doctest_add_test(NAME disabled COMMAND $<TARGET_FILE:disabled>)
+# TODO: think about fixing these in a different way! - see issue #61 or commit 6b61e8aa3818c5ea100cedc1bb48a60ea10df6e8
+if(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
+    target_compile_options(disabled PRIVATE /wd4505) # unreferenced local function has been removed
+elseif(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+    target_compile_options(disabled PRIVATE -Wno-unneeded-internal-declaration)
+    target_compile_options(disabled PRIVATE -Wno-unused-variable)
+elseif(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
+    target_compile_options(disabled PRIVATE -Wno-unused-local-typedefs)
+endif()
