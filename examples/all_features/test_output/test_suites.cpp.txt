@@ -1,57 +1,35 @@
 [doctest] run with "--help" for options
-
-root
-1
-1.1
-
-root
-2
-2.1
-
-root
-2
 == TEST CASE ==================================================================
 test_suites.cpp(0)
-lots of nested subcases
+not part of a test suite
 
-TEST CASE FAILED!
-threw exception:
-  unknown exception
+test_suites.cpp(0) FATAL ERROR!
 
 == TEST CASE ==================================================================
 test_suites.cpp(0)
-  Scenario: vectors can be sized and resized
-     Given: A vector with some items
-      When: the size is increased
-      Then: the size and capacity change
+part of scoped
 
-test_suites.cpp(0) ERROR!
-  CHECK( v.size() == 20 )
-with expansion:
-  CHECK( 10 == 20 )
+test_suites.cpp(0) FATAL ERROR!
 
 == TEST CASE ==================================================================
 test_suites.cpp(0)
-  Scenario: vectors can be sized and resized
-     Given: A vector with some items
-      When: less capacity is reserved
-      Then: neither size nor capacity are changed
+part of scoped 2
 
-test_suites.cpp(0) ERROR!
-  CHECK( v.size() == 10 )
-with expansion:
-  CHECK( 5 == 10 )
+test_suites.cpp(0) FATAL ERROR!
 
 == TEST CASE ==================================================================
 test_suites.cpp(0)
-test with a fixture - 2
+part of some TS
 
-test_suites.cpp(0) ERROR!
-  CHECK( data == 85 )
-with expansion:
-  CHECK( 84 == 85 )
+test_suites.cpp(0) FATAL ERROR!
+
+== TEST CASE ==================================================================
+test_suites.cpp(0)
+not part of a test suite 2
+
+test_suites.cpp(0) FATAL ERROR!
 
 ===============================================================================
-[doctest] test cases:    6 |    3 passed |    3 failed | 
-[doctest] assertions:   18 |   15 passed |    3 failed |
+[doctest] test cases:    5 |    0 passed |    5 failed | 
+[doctest] assertions:    0 |    0 passed |    0 failed |
 Program code.

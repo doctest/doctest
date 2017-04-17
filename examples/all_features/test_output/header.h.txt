@@ -1,0 +1,23 @@
+[doctest] run with "--help" for options
+== TEST CASE ==================================================================
+header.h(0)
+in TS
+
+header.h(0) FATAL ERROR!
+
+== TEST CASE ==================================================================
+header.h(0)
+template 1<char>
+
+header.h(0) FATAL ERROR!
+
+== TEST CASE ==================================================================
+header.h(0)
+template 2<doctest::String>
+
+header.h(0) FATAL ERROR!
+
+===============================================================================
+[doctest] test cases:    4 |    1 passed |    3 failed | 
+[doctest] assertions:    1 |    1 passed |    0 failed |
+Program code.

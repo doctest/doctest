@@ -14,9 +14,7 @@ root
 subcases.cpp(0)
 lots of nested subcases
 
-TEST CASE FAILED!
-threw exception:
-  unknown exception
+subcases.cpp(0) FATAL ERROR!
 
 == TEST CASE ==================================================================
 subcases.cpp(0)
@@ -42,16 +40,7 @@ subcases.cpp(0) ERROR!
 with expansion:
   CHECK( 5 == 10 )
 
-== TEST CASE ==================================================================
-subcases.cpp(0)
-test with a fixture - 2
-
-subcases.cpp(0) ERROR!
-  CHECK( data == 85 )
-with expansion:
-  CHECK( 84 == 85 )
-
 ===============================================================================
-[doctest] test cases:    4 |    1 passed |    3 failed | 
-[doctest] assertions:   18 |   15 passed |    3 failed |
+[doctest] test cases:    2 |    0 passed |    2 failed | 
+[doctest] assertions:   16 |   14 passed |    2 failed |
 Program code.

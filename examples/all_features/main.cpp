@@ -1,6 +1,8 @@
 #define DOCTEST_CONFIG_IMPLEMENT
 #include "doctest.h"
 
+#include "header.h"
+
 int program();
 
 int main(int argc, char** argv) {

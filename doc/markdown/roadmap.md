@@ -41,9 +41,9 @@ Planned features for future releases - order changes constantly...
     - redo the compile time ones - also look into CATCH_CONFIG_FAST_COMPILE
     - remove old benchmarks for doctest 1.0
     - add runtime benchmarks
-- rework the examples folder - so the test runner is compiled only a few times - CI builds take a ton of time!
 - change docs a bit
     - mainly what is in the landing page (add link to overload)
+    - update links to examples
     - https://www.paypal.me/onqtam
     - add a new page for build systems and integration
         - copying the header directly
@@ -137,6 +137,7 @@ Planned features for future releases - order changes constantly...
 - make the _MESSAGE assert macros work with variadic arguments - and maybe write the ones for binary/unary/fast asserts as well
 - move from operator "<<" to "<=" for capturing the left operand when decomposing binary expressions with templates
 - think about silencing warnings about unused variables when DOCTEST_CONFIG_DISABLE is used - see commit 6b61e8aa3818c5ea100cedc1bb48a60ea10df6e8 or issue #61
+- think about optionally using ```<typeinfo>``` and libcxxabi for demangling so users don't have to use ```TYPE_TO_STRING()```
 
 ### Things that are very unlikely to enter the roadmap:
 
