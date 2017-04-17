@@ -61,11 +61,13 @@ endfunction()
 function(doctest_add_executable name)
     add_executable(${name} ${ARGN})
     add_dependencies(${name} assemble_single_header)
+    target_link_libraries(${name} doctest)
 endfunction()
 
 function(doctest_add_library name)
     add_library(${name} ${ARGN})
     add_dependencies(${name} assemble_single_header)
+    target_link_libraries(${name} doctest)
 endfunction()
 
 macro(add_compiler_flags)
