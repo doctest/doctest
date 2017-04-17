@@ -1,10 +1,14 @@
 #include "doctest.h"
 
+#include "header.h"
+
 #include <ostream>
 #include <sstream>
 
+/*
+
 #if __GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ > 6)
-#pragma GCC diagnostic ignored "-Wzero-as-null-pointer-constant"
+//#pragma GCC diagnostic ignored "-Wzero-as-null-pointer-constant"
 #endif // > gcc 4.6
 
 #ifndef DOCTEST_CONFIG_DISABLE
@@ -44,16 +48,6 @@ TEST_CASE("doctest internals") {
 TEST_SUITE_BEGIN("ts1");
 
 using doctest::Approx;
-
-static int throws(bool in) {
-    if(in)
-#ifndef DOCTEST_CONFIG_NO_EXCEPTIONS
-        throw false;
-#else // DOCTEST_CONFIG_NO_EXCEPTIONS
-        return 0;
-#endif // DOCTEST_CONFIG_NO_EXCEPTIONS
-    return 42;
-}
 
 struct myType
 {
@@ -165,3 +159,5 @@ TEST_CASE("throws") { throws(true); }
 TEST_SUITE_END();
 
 #endif // DOCTEST_CONFIG_DISABLE
+
+*/

@@ -5,7 +5,7 @@ an empty test that will fail because of an exception
 
 TEST CASE FAILED!
 threw exception:
-  unknown exception
+  0
 
 == TEST CASE ==================================================================
 assertion_macros.cpp(0)
@@ -20,82 +20,64 @@ assertion_macros.cpp(0)
 normal macros
 
 assertion_macros.cpp(0) ERROR!
-  CHECK( conditional_throw(true, std::runtime_error("whops!")) == 42 )
+  CHECK( throw_if(true, std::runtime_error("whops!")) == 42 )
 threw exception:
   whops!
 
 assertion_macros.cpp(0) ERROR!
-  CHECK( Approx(0.502) == 0.501 )
+  CHECK( doctest::Approx(0.502) == 0.501 )
 with expansion:
   CHECK( Approx( 0.502 ) == 0.501 )
 
 TEST CASE FAILED!
 threw exception:
-  unknown exception
-
-== TEST CASE ==================================================================
-assertion_macros.cpp(0)
-normal macros with std::exception
-
-assertion_macros.cpp(0) ERROR!
-  CHECK( conditional_throw(true, 0) == 42 )
-threw exception:
-  unknown exception
-
-assertion_macros.cpp(0) ERROR!
-  CHECK( Approx(0.502) == 0.501 )
-with expansion:
-  CHECK( Approx( 0.502 ) == 0.501 )
-
-TEST CASE FAILED!
-threw exception:
-  unknown exception
+  0
 
 == TEST CASE ==================================================================
 assertion_macros.cpp(0)
 exceptions-related macros
 
 assertion_macros.cpp(0) ERROR!
-  CHECK_THROWS( conditional_throw(false, 0) )
+  CHECK_THROWS( throw_if(false, 0) )
 didn't throw at all
 
 assertion_macros.cpp(0) ERROR!
-  CHECK_THROWS_AS( conditional_throw(false, 0), int )
+  CHECK_THROWS_AS( throw_if(false, 0), int )
 didn't throw at all
 
 assertion_macros.cpp(0) ERROR!
-  CHECK_THROWS_AS( conditional_throw(true, 0), char )
+  CHECK_THROWS_AS( throw_if(true, 0), char )
 threw a different exception:
-  unknown exception
+  0
 
 assertion_macros.cpp(0) ERROR!
-  CHECK_NOTHROW( conditional_throw(true, 0) )
+  CHECK_NOTHROW( throw_if(true, 0) )
 threw exception:
-  unknown exception
+  0
 
 == TEST CASE ==================================================================
 assertion_macros.cpp(0)
 exceptions-related macros for std::exception
 
 assertion_macros.cpp(0) ERROR!
-  CHECK_THROWS( conditional_throw(false, 0) )
+  CHECK_THROWS( throw_if(false, 0) )
 didn't throw at all
 
 assertion_macros.cpp(0) ERROR!
-  CHECK_THROWS_AS( conditional_throw(false, std::runtime_error("whops!")), std::exception )
+  CHECK_THROWS_AS( throw_if(false, std::runtime_error("whops!")), std::exception& )
 didn't throw at all
 
 assertion_macros.cpp(0) ERROR!
-  CHECK_THROWS_AS( conditional_throw(true, std::runtime_error("whops!")), int )
+  CHECK_THROWS_AS( throw_if(true, std::runtime_error("whops!")), int )
 threw a different exception:
   whops!
 
 assertion_macros.cpp(0) FATAL ERROR!
-  REQUIRE_NOTHROW( conditional_throw(true, std::runtime_error("whops!")) )
+  REQUIRE_NOTHROW( throw_if(true, std::runtime_error("whops!")) )
 threw exception:
   whops!
 
 ===============================================================================
-[doctest] test cases:    7 |    1 passed |    6 failed | 
-[doctest] assertions:   24 |   12 passed |   12 failed |
+[doctest] test cases:    6 |    1 passed |    5 failed | 
+[doctest] assertions:   17 |    7 passed |   10 failed |
 Program code.

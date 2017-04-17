@@ -4169,11 +4169,13 @@ namespace detail
         String                subcaseStuff  = "";
         std::vector<Subcase>& subcasesStack = getContextState()->subcasesStack;
         for(unsigned i = 0; i < subcasesStack.size(); ++i) {
-            char subcase[DOCTEST_SNPRINTF_BUFFER_LENGTH];
-            DOCTEST_SNPRINTF(subcase, DOCTEST_COUNTOF(loc), "  %s\n",
-                             subcasesStack[i].m_signature.m_name);
-            DOCTEST_PRINTF_COLORED(subcase, Color::None);
-            subcaseStuff += subcase;
+            if(subcasesStack[i].m_signature.m_name[0] != '\0') {
+                char subcase[DOCTEST_SNPRINTF_BUFFER_LENGTH];
+                DOCTEST_SNPRINTF(subcase, DOCTEST_COUNTOF(loc), "  %s\n",
+                                 subcasesStack[i].m_signature.m_name);
+                DOCTEST_PRINTF_COLORED(subcase, Color::None);
+                subcaseStuff += subcase;
+            }
         }
 
         DOCTEST_PRINTF_COLORED("\n", Color::None);
@@ -4495,9 +4497,11 @@ namespace detail
             DOCTEST_PRINTF_COLORED(msg, is_warn ? Color::Yellow : Color::Red);
 
             String info = getStreamResult(m_stream);
-            DOCTEST_PRINTF_COLORED("  ", Color::None);
-            DOCTEST_PRINTF_COLORED(info.c_str(), Color::None);
-            DOCTEST_PRINTF_COLORED("\n", Color::None);
+            if(info.length()) {
+                DOCTEST_PRINTF_COLORED("  ", Color::None);
+                DOCTEST_PRINTF_COLORED(info.c_str(), Color::None);
+                DOCTEST_PRINTF_COLORED("\n", Color::None);
+            }
             String context = logContext();
             DOCTEST_PRINTF_COLORED(context.c_str(), Color::None);
             DOCTEST_PRINTF_COLORED("\n", Color::None);

@@ -1,7 +1,7 @@
 [doctest] run with "--help" for options
 == TEST CASE ==================================================================
 stringification.cpp(0)
-the only test
+all asserts should fail and show how the objects get stringified
 
 stringification.cpp(0) ERROR!
   CHECK( f1 == f2 )
@@ -33,7 +33,7 @@ a test case that registers an exception translator for int and then throws one
 
 TEST CASE FAILED!
 threw exception:
-  int: 5
+  5
 
 ===============================================================================
 [doctest] test cases:    2 |    0 passed |    2 failed | 

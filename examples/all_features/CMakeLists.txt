@@ -1,10 +1,14 @@
 get_filename_component(PROJECT_NAME ${CMAKE_CURRENT_SOURCE_DIR} NAME)
 project(${PROJECT_NAME})
 
+################################################################################
+## BUILD ALL EXAMPLE SOURCES INTO A SINGLE BINARY AND EXECUTE TESTS ON EACH FILE
+################################################################################
+
 set(files
     main.cpp
     doctest_proxy.h
-    header_with_tests.h
+    header.h
     coverage_maxout.cpp
     alternative_macros.cpp
     assertion_macros.cpp
@@ -15,7 +19,6 @@ set(files
     test_suites.cpp
 )
 
-# add the normal build
 doctest_add_executable(${PROJECT_NAME} ${files})
 target_compile_definitions(${PROJECT_NAME} PRIVATE DOCTEST_CONFIG_COLORS_NONE) # easy way to fix test coverage
 
@@ -45,10 +48,15 @@ endforeach()
 #doctest_add_test(NAME order_2           COMMAND $<TARGET_FILE:${PROJECT_NAME}> -ob=name)
 #doctest_add_test(NAME order_3           COMMAND $<TARGET_FILE:${PROJECT_NAME}> -ob=rand -rs=324 -sfe=*) # sfe=* to exclude all tests for no output
 
-# add variation of the build with disabled tests - should still compile
+################################################################################
+## VARIATION OF THE BUILD WITH DOCTEST DISABLED - SHOULD STILL COMPILE
+################################################################################
+
 doctest_add_executable(disabled ${files})
 target_compile_definitions(disabled PRIVATE DOCTEST_CONFIG_DISABLE)
+
 doctest_add_test(NAME disabled COMMAND $<TARGET_FILE:disabled>)
+
 # TODO: think about fixing these in a different way! - see issue #61 or commit 6b61e8aa3818c5ea100cedc1bb48a60ea10df6e8
 if(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
     target_compile_options(disabled PRIVATE /wd4505) # unreferenced local function has been removed

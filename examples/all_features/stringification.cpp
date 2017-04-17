@@ -1,5 +1,7 @@
 #include "doctest.h"
 
+#include "header.h"
+
 #include <string>
 #include <vector>
 #include <list>
@@ -42,20 +44,9 @@ struct StringMaker<std::list<T> >
 }
 
 // to silence GCC warnings when inheriting from the class MyType which has no virtual destructor
-#if defined(__GNUC__) && !defined(__clang__)
-#pragma GCC diagnostic ignored "-Weffc++"
-#endif // __GNUC__
-
-template <typename T>
-static int conditional_throw(bool in, const T& ex) {
-    if(in)
-#ifndef DOCTEST_CONFIG_NO_EXCEPTIONS
-        throw ex;
-#else  // DOCTEST_CONFIG_NO_EXCEPTIONS
-        ((void)ex);
-#endif // DOCTEST_CONFIG_NO_EXCEPTIONS
-    return 42;
-}
+//#if defined(__GNUC__) && !defined(__clang__)
+//#pragma GCC diagnostic ignored "-Weffc++"
+//#endif // __GNUC__
 
 template <typename T, typename K>
 struct MyType
@@ -86,9 +77,8 @@ struct Foo
     friend bool operator==(const Foo&, const Foo&) { return false; }
 };
 
-doctest::String toString(const Foo&); // to silence -Wmissing-declarations
 // as a third option you may provide an overload of toString()
-doctest::String toString(const Foo&) { return "Foo{}"; }
+inline doctest::String toString(const Foo&) { return "Foo{}"; }
 } // namespace Bar
 
 // set an exception translator for MyTypeInherited<int>
@@ -97,7 +87,7 @@ REGISTER_EXCEPTION_TRANSLATOR(MyTypeInherited<int>& ex) {
            doctest::toString(ex.two) + ")";
 }
 
-TEST_CASE("the only test") {
+TEST_CASE("all asserts should fail and show how the objects get stringified") {
     MyTypeInherited<int> bla1;
     bla1.one = 5;
     bla1.two = 4.0f;
@@ -140,7 +130,7 @@ TEST_CASE("the only test") {
     CHECK(lst_1 == lst_2);
 
     // lets see if this exception gets translated
-    conditional_throw(true, bla1);
+    throw_if(true, bla1);
 }
 
 static doctest::String intTranslator(int ex) {
@@ -149,8 +139,8 @@ static doctest::String intTranslator(int ex) {
 
 TEST_CASE("a test case that registers an exception translator for int and then throws one") {
     // set an exception translator for int - note that this shouldn't be done in a test case but
-    // in main() or somewhere before executing the tests - but here I'm lazy to write my own main...
+    // in main() or somewhere before executing the tests - but here I'm just lazy...
     doctest::registerExceptionTranslator(intTranslator);
 
-    conditional_throw(true, 5);
+    throw_if(true, 5);
 }
