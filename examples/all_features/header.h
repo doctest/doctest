@@ -39,10 +39,10 @@ TEST_CASE_TEMPLATE_DEFINE("template 2", T, header_test) {
 
 TEST_CASE_TEMPLATE_INSTANTIATE(header_test, doctest::Types<doctest::String>);
 
-// to silence GCC warnings when inheriting from the class SomeFixture which has no virtual destructor
-//#if defined(__GNUC__) && !defined(__clang__)
-//#pragma GCC diagnostic ignored "-Weffc++"
-//#endif // __GNUC__
+// to silence GCC warnings when inheriting from some class which has no virtual destructor - happens only on gcc 4.7/4.8
+#if defined(__GNUC__) && __GNUC__ == 4 && __GNUC_MINOR__ > 6 && __GNUC_MINOR__ < 9
+#pragma GCC diagnostic ignored "-Weffc++"
+#endif // __GNUC__
 
 struct SomeFixture
 {
