@@ -54,6 +54,6 @@ threw exception:
   unknown exception
 
 ===============================================================================
-[doctest] test cases:    5 |    2 passed |    3 failed |   16 skipped
+[doctest] test cases:    5 |    2 passed |    3 failed | 
 [doctest] assertions:   60 |   52 passed |    8 failed |
 Program code.

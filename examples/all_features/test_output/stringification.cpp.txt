@@ -36,6 +36,6 @@ threw exception:
   int: 5
 
 ===============================================================================
-[doctest] test cases:    2 |    0 passed |    2 failed |   19 skipped
+[doctest] test cases:    2 |    0 passed |    2 failed | 
 [doctest] assertions:    4 |    0 passed |    4 failed |
 Program code.

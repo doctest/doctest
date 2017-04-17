@@ -270,6 +270,7 @@ namespace detail
         bool no_breaks;    // to not break into the debugger
         bool no_path_in_filenames; // if the path to files should be removed from the output
         bool no_line_numbers;      // if source code line numbers should be omitted from the output
+        bool no_skipped_summary;   // don't print "skipped" in the summary !!! UNDOCUMENTED !!!
 
         bool help;             // to print the help
         bool version;          // to print the version
@@ -1812,9 +1813,8 @@ namespace detail
         printf(" -l,   --last=<int>                    the last test passing the filters to\n");
         printf("                                       execute - for range-based execution\n");
         printf(" -aa,  --abort-after=<int>             stop after <int> failed assertions\n");
-        printf(" -scfl,--subcase-filter-levels=<int>   apply filters for the first <int> "
-               "levels\n\n");
-        DOCTEST_PRINTF_COLORED("[doctest] ", Color::Cyan);
+        printf(" -scfl,--subcase-filter-levels=<int>   apply filters for the first <int> levels\n");
+        DOCTEST_PRINTF_COLORED("\n[doctest] ", Color::Cyan);
         printf("Bool options - can be used like flags and true is assumed. Available:\n\n");
         printf(" -s,   --success=<bool>                include successful assertions in output\n");
         printf(" -cs,  --case-sensitive=<bool>         filters being treated as case sensitive\n");
@@ -1827,11 +1827,10 @@ namespace detail
         printf(" -fc,  --force-colors=<bool>           use colors even when not in a tty\n");
         printf(" -nb,  --no-breaks=<bool>              disables breakpoints in debuggers\n");
         printf(" -npf, --no-path-filenames=<bool>      only filenames and no paths in output\n");
-        printf(" -nln, --no-line-numbers=<bool>        0 instead of real line numbers in "
-               "output\n\n");
+        printf(" -nln, --no-line-numbers=<bool>        0 instead of real line numbers in output\n");
         // ==================================================================================== << 79
 
-        DOCTEST_PRINTF_COLORED("[doctest] ", Color::Cyan);
+        DOCTEST_PRINTF_COLORED("\n[doctest] ", Color::Cyan);
         printf("for more information visit the project documentation\n\n");
     }
 
@@ -1862,10 +1861,13 @@ namespace detail
 
             DOCTEST_SNPRINTF(buff, DOCTEST_COUNTOF(buff), " | ");
             DOCTEST_PRINTF_COLORED(buff, Color::None);
-            DOCTEST_SNPRINTF(buff, DOCTEST_COUNTOF(buff), "%4d skipped\n",
-                             static_cast<unsigned>(getRegisteredTests().size()) -
-                                     p->numTestsPassingFilters);
-            DOCTEST_PRINTF_COLORED(buff, Color::None);
+            if(p->no_skipped_summary == false) {
+                DOCTEST_SNPRINTF(buff, DOCTEST_COUNTOF(buff), "%4d skipped",
+                                 static_cast<unsigned>(getRegisteredTests().size()) -
+                                         p->numTestsPassingFilters);
+                DOCTEST_PRINTF_COLORED(buff, Color::None);
+            }
+            DOCTEST_PRINTF_COLORED("\n", Color::None);
 
             DOCTEST_PRINTF_COLORED("[doctest] ", Color::Cyan);
 
@@ -1971,6 +1973,7 @@ void Context::parseArgs(int argc, const char* const* argv, bool withDefaults) {
     DOCTEST_PARSE_AS_BOOL_OR_FLAG(dt-no-breaks, dt-nb, no_breaks, 0);
     DOCTEST_PARSE_AS_BOOL_OR_FLAG(dt-no-path-filenames, dt-npf, no_path_in_filenames, 0);
     DOCTEST_PARSE_AS_BOOL_OR_FLAG(dt-no-line-numbers, dt-nln, no_line_numbers, 0);
+    DOCTEST_PARSE_AS_BOOL_OR_FLAG(dt-no-skipped-summary, dt-no-skipped-summary, no_skipped_summary, 0);
 // clang-format on
 
 #undef DOCTEST_PARSE_STR_OPTION

@@ -3,13 +3,17 @@ project(${PROJECT_NAME})
 
 doctest_add_library(lib_1 STATIC lib_1_src1.cpp lib_1_src2.cpp)
 target_link_libraries(lib_1 doctest)
+set_target_properties(lib_1 PROPERTIES FOLDER ${PROJECT_NAME})
+
 doctest_add_library(lib_2 STATIC lib_2_src.cpp)
 target_link_libraries(lib_2 doctest)
+set_target_properties(lib_2 PROPERTIES FOLDER ${PROJECT_NAME})
 
 doctest_add_executable(${PROJECT_NAME} main.cpp)
 target_link_libraries(${PROJECT_NAME} doctest)
 target_link_libraries(${PROJECT_NAME} lib_1)
 target_link_libraries(${PROJECT_NAME} lib_2)
+set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER ${PROJECT_NAME})
 
 doctest_add_test(NAME ${PROJECT_NAME} COMMAND $<TARGET_FILE:${PROJECT_NAME}>)
 
