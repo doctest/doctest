@@ -61,6 +61,7 @@ doctest_add_test(NAME disabled COMMAND $<TARGET_FILE:disabled>)
 if(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
     target_compile_options(disabled PRIVATE /wd4505) # unreferenced local function has been removed
 elseif(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+    target_compile_options(disabled PRIVATE -Wno-unknown-warning-option)
     target_compile_options(disabled PRIVATE -Wno-unneeded-internal-declaration)
     target_compile_options(disabled PRIVATE -Wno-unused-variable)
     target_compile_options(disabled PRIVATE -Wno-unused-local-typedef)
