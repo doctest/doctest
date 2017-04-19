@@ -2,9 +2,18 @@
 
 #include "header.h"
 
+static void doStuff() {
+    int a = 5;
+    a += 2;
+    if(doctest::isRunningInTest())
+        CHECK(a == 7); // asserts and other doctest functionality can be used in user code if checked for a testing context
+}
+
 TEST_CASE("an empty test that will succeed - not part of a test suite") {}
 
-TEST_CASE("an empty test that will fail because of an exception") {
+TEST_CASE("should fail because of an exception") {
+    doStuff();
+
     throw_if(true, 0);
 }
 

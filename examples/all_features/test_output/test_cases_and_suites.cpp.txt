@@ -1,7 +1,7 @@
 [doctest] run with "--help" for options
 == TEST CASE ==================================================================
 test_cases_and_suites.cpp(0)
-an empty test that will fail because of an exception
+should fail because of an exception
 
 TEST CASE FAILED!
 threw exception:
@@ -36,5 +36,5 @@ with expansion:
 
 ===============================================================================
 [doctest] test cases:    6 |    1 passed |    5 failed | 
-[doctest] assertions:    1 |    0 passed |    1 failed |
+[doctest] assertions:    2 |    1 passed |    1 failed |
 Program code.
