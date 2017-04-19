@@ -13,7 +13,7 @@ templated_test_cases.cpp(0)
 multiple types<>
 
 templated_test_cases.cpp(0) ERROR!
-  CHECK( T2() != T2() )
+  CHECK( t2 != T2() )
 with expansion:
   CHECK( 0 != 0 )
 
@@ -22,7 +22,7 @@ templated_test_cases.cpp(0)
 multiple types<>
 
 templated_test_cases.cpp(0) ERROR!
-  CHECK( T2() != T2() )
+  CHECK( t2 != T2() )
 with expansion:
   CHECK( 0 != 0 )
 
@@ -31,7 +31,7 @@ templated_test_cases.cpp(0)
 multiple types<>
 
 templated_test_cases.cpp(0) ERROR!
-  CHECK( T2() != T2() )
+  CHECK( t2 != T2() )
 with expansion:
   CHECK( 0 != 0 )
 
@@ -40,7 +40,7 @@ templated_test_cases.cpp(0)
 bad stringification of type pair<int_pair>
 
 templated_test_cases.cpp(0) ERROR!
-  CHECK( T2() != T2() )
+  CHECK( t2 != T2() )
 with expansion:
   CHECK( 0 != 0 )
 

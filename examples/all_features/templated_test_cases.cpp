@@ -56,9 +56,11 @@ typedef doctest::Types<
 TEST_CASE_TEMPLATE("multiple types", T, pairs) {
     typedef typename T::A T1;
     typedef typename T::B T2;
+    T1 t1;
+    T2 t2;
     // use T1 and T2 types
-    CHECK(T1() == T1());
-    CHECK(T2() != T2());
+    CHECK(t1 == T1());
+    CHECK(t2 != T2());
 }
 
 // if variadic macros are supported then "TypePair<int, int>" can be passed directly to the macro (otherwise the commas are a problem)
@@ -69,7 +71,9 @@ TYPE_TO_STRING(int_pair);
 TEST_CASE_TEMPLATE("bad stringification of type pair", T, doctest::Types<int_pair>) {
     typedef typename T::A T1;
     typedef typename T::B T2;
+    T1 t1;
+    T2 t2;
     // use T1 and T2 types
-    CHECK(T1() == T1());
-    CHECK(T2() != T2());
+    CHECK(t1 == T1());
+    CHECK(t2 != T2());
 }
