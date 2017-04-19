@@ -1,5 +1,91 @@
 [doctest] run with "--help" for options
+== TEST CASE ==================================================================
+logging.cpp(0)
+logging the counter of a loop
+
+logging.cpp(0) ERROR!
+  CHECK( vec[i] != (1 << i) )
+with expansion:
+  CHECK( 1 != 1 )
+with context:
+  current iteration of loop:
+  i := 0
+
+logging.cpp(0) ERROR!
+  CHECK( vec[i] != (1 << i) )
+with expansion:
+  CHECK( 2 != 2 )
+with context:
+  current iteration of loop:
+  i := 1
+
+logging.cpp(0) ERROR!
+  CHECK( vec[i] != (1 << i) )
+with expansion:
+  CHECK( 4 != 4 )
+with context:
+  current iteration of loop:
+  i := 2
+
+logging.cpp(0) ERROR!
+  CHECK( vec[i] != (1 << i) )
+with expansion:
+  CHECK( 8 != 8 )
+with context:
+  current iteration of loop:
+  i := 3
+
+logging.cpp(0) ERROR!
+  CHECK( vec[i] != (1 << i) )
+with expansion:
+  CHECK( 16 != 16 )
+with context:
+  current iteration of loop:
+  i := 4
+
+== TEST CASE ==================================================================
+logging.cpp(0)
+a test case that will end from an exception
+
+logging.cpp(0) ERROR!
+  CHECK( some_var == 666 )
+with expansion:
+  CHECK( 42 == 666 )
+with context:
+  someTests() returned: 42
+  this should be printed if an exception is thrown even if no assert has failed: 42
+  in a nested scope this should be printed as well: 42
+  why is this not 666 ?!
+
+TEST CASE FAILED!
+threw exception:
+  0
+
+== TEST CASE ==================================================================
+logging.cpp(0)
+third party asserts can report failures to doctest
+
+logging.cpp(0) ERROR!
+  MY_ASSERT(false)
+
+logging.cpp(0) FATAL ERROR!
+  MY_ASSERT_FATAL(false)
+
+== TEST CASE ==================================================================
+logging.cpp(0)
+explicit failures 1
+
+logging.cpp(0) ERROR!
+  this should not end the test case, but mark it as failing
+
+== TEST CASE ==================================================================
+logging.cpp(0)
+explicit failures 2
+
+logging.cpp(0) FATAL ERROR!
+  fail the test case and also end it
+
 ===============================================================================
-[doctest] test cases:    0 |    0 passed |    0 failed | 
-[doctest] assertions:    0 |    0 passed |    0 failed |
+[doctest] test cases:    5 |    0 passed |    5 failed | 
+[doctest] assertions:    6 |    0 passed |    6 failed |
 Program code.

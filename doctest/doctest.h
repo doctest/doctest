@@ -4204,9 +4204,9 @@ namespace detail
         ContextState*& cs = getContextState();
         if(cs->exceptionalContexts.size()) {
             contextStr += "with context:\n";
-            for(size_t i = 0; i < cs->exceptionalContexts.size(); ++i) {
+            for(size_t i = cs->exceptionalContexts.size(); i > 0; --i) {
                 contextStr += "  ";
-                contextStr += cs->exceptionalContexts[i];
+                contextStr += cs->exceptionalContexts[i - 1];
                 contextStr += "\n";
             }
         }

@@ -2,6 +2,7 @@
 
 asserts, logging macros
 all macros!!!
+asserts in separate functions?
 
 
 look at boost test again:
