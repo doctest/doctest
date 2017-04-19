@@ -56,8 +56,8 @@ typedef doctest::Types<
 TEST_CASE_TEMPLATE("multiple types", T, pairs) {
     typedef typename T::A T1;
     typedef typename T::B T2;
-    T1 t1;
-    T2 t2;
+    T1 t1 = T1();
+    T2 t2 = T2();
     // use T1 and T2 types
     CHECK(t1 == T1());
     CHECK(t2 != T2());
@@ -71,8 +71,8 @@ TYPE_TO_STRING(int_pair);
 TEST_CASE_TEMPLATE("bad stringification of type pair", T, doctest::Types<int_pair>) {
     typedef typename T::A T1;
     typedef typename T::B T2;
-    T1 t1;
-    T2 t2;
+    T1 t1 = T1();
+    T2 t2 = T2();
     // use T1 and T2 types
     CHECK(t1 == T1());
     CHECK(t2 != T2());
