@@ -141,6 +141,7 @@ Planned features for future releases - order changes constantly...
 
 ### Things that are very unlikely to enter the roadmap:
 
+- think about counting failures added with FAIL() or ADD_FAIL_AT() as failed asserts
 - think about removing the binary asserts (leaving only the fast binary asserts) because normal asserts + no try/catch in asserts are almost the same
 - move the "react()" part (the one that throws for REQUIRE asserts - or for when "abort-after=<int>" is reached) to a function call in the while() part of the asserts
 - stop using underscores for the begining of identifiers - the anonymous variables - against the standard...
