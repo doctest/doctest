@@ -4,16 +4,6 @@
 
 #include <stdexcept>
 
-TEST_CASE("an empty test that will succeed") {}
-
-TEST_CASE("an empty test that will fail because of an exception") {
-    throw_if(true, 0);
-}
-
-TEST_CASE("an empty test that will fail because of a std::exception") {
-    throw_if(true, std::runtime_error("whops!"));
-}
-
 TEST_CASE("normal macros") {
     int a = 5;
     int b = 5;

@@ -31,6 +31,19 @@ TEST_CASE("lots of nested subcases") {
     }
 }
 
+static void call_func() {
+    SUBCASE("sc1") {
+        MESSAGE("hello! from sc1");
+    }
+    SUBCASE("sc2") {
+        MESSAGE("hello! from sc2");
+    }
+}
+
+TEST_CASE("subcases can be used in a separate function as well") {
+    call_func();
+}
+
 SCENARIO("vectors can be sized and resized") {
     GIVEN("A vector with some items") {
         std::vector<int> v(5);

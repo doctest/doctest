@@ -78,6 +78,9 @@ explicit failures 1
 logging.cpp(0) ERROR!
   this should not end the test case, but mark it as failing
 
+logging.cpp(0) MESSAGE!
+  reached!
+
 == TEST CASE ==================================================================
 logging.cpp(0)
 explicit failures 2

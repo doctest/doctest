@@ -1,0 +1,40 @@
+[doctest] run with "--help" for options
+== TEST CASE ==================================================================
+test_cases_and_suites.cpp(0)
+an empty test that will fail because of an exception
+
+TEST CASE FAILED!
+threw exception:
+  0
+
+== TEST CASE ==================================================================
+test_cases_and_suites.cpp(0)
+part of scoped
+
+test_cases_and_suites.cpp(0) FATAL ERROR!
+
+== TEST CASE ==================================================================
+test_cases_and_suites.cpp(0)
+part of scoped 2
+
+test_cases_and_suites.cpp(0) FATAL ERROR!
+
+== TEST CASE ==================================================================
+test_cases_and_suites.cpp(0)
+part of some TS
+
+test_cases_and_suites.cpp(0) FATAL ERROR!
+
+== TEST CASE ==================================================================
+test_cases_and_suites.cpp(0)
+fixtured test - not part of a test suite
+
+test_cases_and_suites.cpp(0) ERROR!
+  CHECK( data == 85 )
+with expansion:
+  CHECK( 21 == 85 )
+
+===============================================================================
+[doctest] test cases:    6 |    1 passed |    5 failed | 
+[doctest] assertions:    1 |    0 passed |    1 failed |
+Program code.

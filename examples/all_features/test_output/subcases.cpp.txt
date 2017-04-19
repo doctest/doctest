@@ -18,6 +18,22 @@ subcases.cpp(0) FATAL ERROR!
 
 == TEST CASE ==================================================================
 subcases.cpp(0)
+subcases can be used in a separate function as well
+  sc1
+
+subcases.cpp(0) MESSAGE!
+  hello! from sc1
+
+== TEST CASE ==================================================================
+subcases.cpp(0)
+subcases can be used in a separate function as well
+  sc2
+
+subcases.cpp(0) MESSAGE!
+  hello! from sc2
+
+== TEST CASE ==================================================================
+subcases.cpp(0)
   Scenario: vectors can be sized and resized
      Given: A vector with some items
       When: the size is increased
@@ -41,6 +57,6 @@ with expansion:
   CHECK( 5 == 10 )
 
 ===============================================================================
-[doctest] test cases:    2 |    0 passed |    2 failed | 
+[doctest] test cases:    3 |    1 passed |    2 failed | 
 [doctest] assertions:   16 |   14 passed |    2 failed |
 Program code.
