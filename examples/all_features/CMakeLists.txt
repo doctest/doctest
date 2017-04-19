@@ -61,6 +61,7 @@ doctest_add_test(NAME disabled COMMAND $<TARGET_FILE:disabled>)
 if(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
     target_compile_options(disabled PRIVATE /wd4505) # unreferenced local function has been removed
     target_compile_options(disabled PRIVATE /wd4100) # unreferenced formal parameter
+    target_compile_options(disabled PRIVATE /wd4189) # local variable is initialized but not referenced
 elseif(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
     target_compile_options(disabled PRIVATE -Wno-unknown-warning-option)
     target_compile_options(disabled PRIVATE -Wno-unneeded-internal-declaration)
@@ -70,4 +71,5 @@ elseif(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
     target_compile_options(disabled PRIVATE -Wno-unused-local-typedefs)
     target_compile_options(disabled PRIVATE -Wno-unused-parameter)
     target_compile_options(disabled PRIVATE -Wno-unused-function)
+    target_compile_options(disabled PRIVATE -Wno-unused-variable)
 endif()

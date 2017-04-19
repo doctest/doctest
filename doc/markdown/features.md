@@ -60,7 +60,7 @@ The library can be used like any other if you don't like the idea of mixing prod
 - output from all compilers on all platforms is the same - byte by byte
 - binaries (exe/dll) can use the test runner of another binary - so tests end up in a single registry - [**example**](../../examples/dll_and_executable/)
 - supports [**BDD style**](testcases.md) tests
-- only one core [**assertion macro**](assertions.md) for comparisons - standard C++ operators are used for the comparison (less than, equal, greater than...) - yet the full expression is decomposed and left and right values of the expression are logged
+- one core [**assertion macro**](assertions.md) for comparisons - standard C++ operators are used for the comparison (less than, equal, greater than...) - yet the full expression is decomposed and left and right values of the expression are logged
 - assertion macros for [**exceptions**](assertions.md) - if something should or shouldn't throw
 - floating point comparison support - see the [**```Approx()```**](assertions.md#floating-point-comparisons) helper
 - powerful mechanism for [**stringification**](stringification.md) of user types - including [**exceptions**](stringification.md#translating-exceptions)!
