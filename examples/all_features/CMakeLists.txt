@@ -16,7 +16,7 @@ set(files
     subcases.cpp
     logging.cpp
     templated_test_cases.cpp
-    test_suites.cpp
+    test_cases_and_suites.cpp
 )
 
 doctest_add_executable(${PROJECT_NAME} ${files})
