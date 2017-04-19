@@ -45,4 +45,6 @@ TEST_CASE("doctest internals") {
     CHECK(doctest::detail::rawMemoryToString(a).length() > 0u);
 }
 
+#endif // DOCTEST_CONFIG_DISABLE
+
 */
