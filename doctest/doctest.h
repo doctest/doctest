@@ -2955,7 +2955,7 @@ namespace detail
 #ifdef _MSC_VER
 #define DOCTEST_SNPRINTF _snprintf
 #else
-#define DOCTEST_SNPRINTF snprintf
+#define DOCTEST_SNPRINTF std::snprintf
 #endif
 
 #undef DOCTEST_GCS
@@ -3005,6 +3005,9 @@ namespace detail
             ++temp;
         return temp - in;
     }
+
+    // lowers ascii letters
+    char tolower(const char c) { return ((c >= 'A' && c <= 'Z') ? static_cast<char>(c + 32) : c); }
 
     template <typename T>
     T my_max(const T& lhs, const T& rhs) {
@@ -3199,9 +3202,9 @@ namespace detail
 } // namespace detail
 
 String::String(const char* in)
-        : m_str(static_cast<char*>(malloc(detail::my_strlen(in) + 1))) {
+        : m_str(static_cast<char*>(std::malloc(detail::my_strlen(in) + 1))) {
     if(in)
-        strcpy(m_str, in);
+        std::strcpy(m_str, in);
     else
         m_str[0] = '\0';
 }
@@ -3213,12 +3216,12 @@ String::String(const String& other)
 
 void String::copy(const String& other) {
     if(m_str)
-        free(m_str);
-    m_str = static_cast<char*>(malloc(detail::my_strlen(other.m_str) + 1));
-    strcpy(m_str, other.m_str);
+        std::free(m_str);
+    m_str = static_cast<char*>(std::malloc(detail::my_strlen(other.m_str) + 1));
+    std::strcpy(m_str, other.m_str);
 }
 
-String::~String() { free(m_str); }
+String::~String() { std::free(m_str); }
 
 String& String::operator=(const String& other) {
     if(this != &other)
@@ -3231,10 +3234,11 @@ String String::operator+(const String& other) const { return String(m_str) += ot
 String& String::operator+=(const String& other) {
     using namespace detail;
     if(other.m_str != 0) {
-        char* newStr = static_cast<char*>(malloc(my_strlen(m_str) + my_strlen(other.m_str) + 1));
-        strcpy(newStr, m_str);
-        strcpy(newStr + my_strlen(m_str), other.m_str);
-        free(m_str);
+        char* newStr =
+                static_cast<char*>(std::malloc(my_strlen(m_str) + my_strlen(other.m_str) + 1));
+        std::strcpy(newStr, m_str);
+        std::strcpy(newStr + my_strlen(m_str), other.m_str);
+        std::free(m_str);
         m_str = newStr;
     }
     return *this;
@@ -3246,7 +3250,7 @@ unsigned String::length() const { return size(); }
 int String::compare(const char* other, bool no_case) const {
     if(no_case)
         return detail::stricmp(m_str, other);
-    return strcmp(m_str, other);
+    return std::strcmp(m_str, other);
 }
 
 int String::compare(const String& other, bool no_case) const {
@@ -3265,8 +3269,8 @@ Approx::Approx(double value)
 
 bool operator==(double lhs, Approx const& rhs) {
     // Thanks to Richard Harris for his help refining this formula
-    return fabs(lhs - rhs.m_value) <
-           rhs.m_epsilon * (rhs.m_scale + detail::my_max(fabs(lhs), fabs(rhs.m_value)));
+    return std::fabs(lhs - rhs.m_value) <
+           rhs.m_epsilon * (rhs.m_scale + detail::my_max(std::fabs(lhs), std::fabs(rhs.m_value)));
 }
 
 String Approx::toString() const { return String("Approx( ") + doctest::toString(m_value) + " )"; }
@@ -3282,67 +3286,67 @@ String toString(double long in) { return detail::fpToString(in, 15); }
 
 String toString(char in) {
     char buf[64];
-    sprintf(buf, "%d", in);
+    std::sprintf(buf, "%d", in);
     return buf;
 }
 
 String toString(char signed in) {
     char buf[64];
-    sprintf(buf, "%d", in);
+    std::sprintf(buf, "%d", in);
     return buf;
 }
 
 String toString(char unsigned in) {
     char buf[64];
-    sprintf(buf, "%ud", in);
+    std::sprintf(buf, "%ud", in);
     return buf;
 }
 
 String toString(int short in) {
     char buf[64];
-    sprintf(buf, "%d", in);
+    std::sprintf(buf, "%d", in);
     return buf;
 }
 
 String toString(int short unsigned in) {
     char buf[64];
-    sprintf(buf, "%u", in);
+    std::sprintf(buf, "%u", in);
     return buf;
 }
 
 String toString(int in) {
     char buf[64];
-    sprintf(buf, "%d", in);
+    std::sprintf(buf, "%d", in);
     return buf;
 }
 
 String toString(int unsigned in) {
     char buf[64];
-    sprintf(buf, "%u", in);
+    std::sprintf(buf, "%u", in);
     return buf;
 }
 
 String toString(int long in) {
     char buf[64];
-    sprintf(buf, "%ld", in);
+    std::sprintf(buf, "%ld", in);
     return buf;
 }
 
 String toString(int long unsigned in) {
     char buf[64];
-    sprintf(buf, "%lu", in);
+    std::sprintf(buf, "%lu", in);
     return buf;
 }
 
 #ifdef DOCTEST_CONFIG_WITH_LONG_LONG
 String toString(int long long in) {
     char buf[64];
-    sprintf(buf, "%lld", in);
+    std::sprintf(buf, "%lld", in);
     return buf;
 }
 String toString(int long long unsigned in) {
     char buf[64];
-    sprintf(buf, "%llu", in);
+    std::sprintf(buf, "%llu", in);
     return buf;
 }
 #endif // DOCTEST_CONFIG_WITH_LONG_LONG
@@ -3383,7 +3387,7 @@ int  Context::run() { return 0; }
     do {                                                                                           \
         if(buffer[0] != 0) {                                                                       \
             doctest::detail::Color col(color);                                                     \
-            printf("%s", buffer);                                                                  \
+            std::printf("%s", buffer);                                                             \
         }                                                                                          \
     } while(false)
 
@@ -3446,7 +3450,7 @@ namespace detail
     bool TestData::operator<(const TestData& other) const {
         if(m_line != other.m_line)
             return m_line < other.m_line;
-        int file_cmp = strcmp(m_file, other.m_file);
+        int file_cmp = std::strcmp(m_file, other.m_file);
         if(file_cmp != 0)
             return file_cmp < 0;
         return m_template_id < other.m_template_id;
@@ -3559,9 +3563,6 @@ namespace detail
             cdest[i] = csrc[i];
     }
 
-    // lowers ascii letters
-    char tolower(const char c) { return ((c >= 'A' && c <= 'Z') ? static_cast<char>(c + 32) : c); }
-
     // matching of a string against a wildcard mask (case sensitivity configurable) taken from
     // http://www.emoticode.net/c/simple-wildcard-string-compare-globbing-function.html
     int wildcmp(const char* str, const char* wild, bool caseSensitive) {
@@ -3632,9 +3633,9 @@ namespace detail
     bool SubcaseSignature::operator<(const SubcaseSignature& other) const {
         if(m_line != other.m_line)
             return m_line < other.m_line;
-        if(strcmp(m_file, other.m_file) != 0)
-            return strcmp(m_file, other.m_file) < 0;
-        return strcmp(m_name, other.m_name) < 0;
+        if(std::strcmp(m_file, other.m_file) != 0)
+            return std::strcmp(m_file, other.m_file) < 0;
+        return std::strcmp(m_name, other.m_name) < 0;
     }
 
     Subcase::Subcase(const char* name, const char* file, int line)
@@ -3709,7 +3710,7 @@ namespace detail
         // for __FILE__ when evaluated in a header and a source file
         int res = stricmp(lhs->m_file, rhs->m_file);
 #else  // _MSC_VER
-        int res = strcmp(lhs->m_file, rhs->m_file);
+        int res = std::strcmp(lhs->m_file, rhs->m_file);
 #endif // _MSC_VER
         if(res != 0)
             return res;
@@ -3721,7 +3722,7 @@ namespace detail
         const TestData* lhs = *static_cast<TestData* const*>(a);
         const TestData* rhs = *static_cast<TestData* const*>(b);
 
-        int res = strcmp(lhs->m_suite, rhs->m_suite);
+        int res = std::strcmp(lhs->m_suite, rhs->m_suite);
         if(res != 0)
             return res;
         return fileOrderComparator(a, b);
@@ -3732,7 +3733,7 @@ namespace detail
         const TestData* lhs = *static_cast<TestData* const*>(a);
         const TestData* rhs = *static_cast<TestData* const*>(b);
 
-        int res_name = strcmp(lhs->m_name, rhs->m_name);
+        int res_name = std::strcmp(lhs->m_name, rhs->m_name);
         if(res_name != 0)
             return res_name;
         return suiteOrderComparator(a, b);
@@ -3817,7 +3818,7 @@ namespace detail
             default:                 col = "[0m";
         }
         // clang-format on
-        printf("\033%s", col);
+        std::printf("\033%s", col);
 #endif // DOCTEST_CONFIG_COLORS_ANSI
 
 #ifdef DOCTEST_CONFIG_COLORS_WINDOWS
@@ -4072,8 +4073,8 @@ namespace detail
     // depending on the current options this will remove the path of filenames
     const char* fileForOutput(const char* file) {
         if(getContextState()->no_path_in_filenames) {
-            const char* back    = strrchr(file, '\\');
-            const char* forward = strrchr(file, '/');
+            const char* back    = std::strrchr(file, '\\');
+            const char* forward = std::strrchr(file, '/');
             if(back || forward) {
                 if(back > forward)
                     forward = back;
@@ -4525,7 +4526,7 @@ namespace detail
     // the implementation of parseFlag()
     bool parseFlagImpl(int argc, const char* const* argv, const char* pattern) {
         for(int i = argc - 1; i >= 0; --i) {
-            const char* temp = strstr(argv[i], pattern);
+            const char* temp = std::strstr(argv[i], pattern);
             if(temp && my_strlen(temp) == my_strlen(pattern)) {
                 // eliminate strings in which the chars before the option are not '-'
                 bool noBadCharsFound = true;
@@ -4556,7 +4557,7 @@ namespace detail
     // the implementation of parseOption()
     bool parseOptionImpl(int argc, const char* const* argv, const char* pattern, String& res) {
         for(int i = argc - 1; i >= 0; --i) {
-            const char* temp = strstr(argv[i], pattern);
+            const char* temp = std::strstr(argv[i], pattern);
             if(temp) {
                 // eliminate matches in which the chars before the option are not '-'
                 bool        noBadCharsFound = true;
@@ -4599,11 +4600,12 @@ namespace detail
         String filtersString;
         if(parseOption(argc, argv, pattern, filtersString)) {
             // tokenize with "," as a separator
-            char* pch = strtok(filtersString.c_str(), ","); // modifies the string
+            char* pch = std::strtok(filtersString.c_str(), ","); // modifies the string
             while(pch != 0) {
                 if(my_strlen(pch))
                     res.push_back(pch);
-                pch = strtok(0, ","); // uses the strtok() internal state to go to the next token
+                // uses the strtok() internal state to go to the next token
+                pch = std::strtok(0, ",");
             }
             return true;
         }
@@ -4639,7 +4641,7 @@ namespace detail
                 }
             } else {
                 // integer
-                int theInt = atoi(parsedValue.c_str());
+                int theInt = std::atoi(parsedValue.c_str());
                 if(theInt != 0) {
                     res = theInt;
                     return true;
@@ -4652,7 +4654,7 @@ namespace detail
     void printVersion() {
         if(getContextState()->no_version == false) {
             DOCTEST_PRINTF_COLORED("[doctest] ", Color::Cyan);
-            printf("doctest version is \"%s\"\n", DOCTEST_VERSION_STR);
+            std::printf("doctest version is \"%s\"\n", DOCTEST_VERSION_STR);
         }
     }
 
@@ -4660,63 +4662,77 @@ namespace detail
         printVersion();
         DOCTEST_PRINTF_COLORED("[doctest]\n", Color::Cyan);
         DOCTEST_PRINTF_COLORED("[doctest] ", Color::Cyan);
-        printf("boolean values: \"1/on/yes/true\" or \"0/off/no/false\"\n");
+        std::printf("boolean values: \"1/on/yes/true\" or \"0/off/no/false\"\n");
         DOCTEST_PRINTF_COLORED("[doctest] ", Color::Cyan);
-        printf("filter  values: \"str1,str2,str3\" (comma separated strings)\n");
+        std::printf("filter  values: \"str1,str2,str3\" (comma separated strings)\n");
         DOCTEST_PRINTF_COLORED("[doctest]\n", Color::Cyan);
         DOCTEST_PRINTF_COLORED("[doctest] ", Color::Cyan);
-        printf("filters use wildcards for matching strings\n");
+        std::printf("filters use wildcards for matching strings\n");
         DOCTEST_PRINTF_COLORED("[doctest] ", Color::Cyan);
-        printf("something passes a filter if any of the strings in a filter matches\n");
+        std::printf("something passes a filter if any of the strings in a filter matches\n");
         DOCTEST_PRINTF_COLORED("[doctest]\n", Color::Cyan);
         DOCTEST_PRINTF_COLORED("[doctest] ", Color::Cyan);
-        printf("ALL FLAGS, OPTIONS AND FILTERS ALSO AVAILABLE WITH A \"dt-\" PREFIX!!!\n");
+        std::printf("ALL FLAGS, OPTIONS AND FILTERS ALSO AVAILABLE WITH A \"dt-\" PREFIX!!!\n");
         DOCTEST_PRINTF_COLORED("[doctest]\n", Color::Cyan);
         DOCTEST_PRINTF_COLORED("[doctest] ", Color::Cyan);
-        printf("Query flags - the program quits after them. Available:\n\n");
-        printf(" -?,   --help, -h                      prints this message\n");
-        printf(" -v,   --version                       prints the version\n");
-        printf(" -c,   --count                         prints the number of matching tests\n");
-        printf(" -ltc, --list-test-cases               lists all matching tests by name\n");
-        printf(" -lts, --list-test-suites              lists all matching test suites\n\n");
+        std::printf("Query flags - the program quits after them. Available:\n\n");
+        std::printf(" -?,   --help, -h                      prints this message\n");
+        std::printf(" -v,   --version                       prints the version\n");
+        std::printf(" -c,   --count                         prints the number of matching tests\n");
+        std::printf(" -ltc, --list-test-cases               lists all matching tests by name\n");
+        std::printf(" -lts, --list-test-suites              lists all matching test suites\n\n");
         // ==================================================================================== << 79
         DOCTEST_PRINTF_COLORED("[doctest] ", Color::Cyan);
-        printf("The available <int>/<string> options/filters are:\n\n");
-        printf(" -tc,  --test-case=<filters>           filters     tests by their name\n");
-        printf(" -tce, --test-case-exclude=<filters>   filters OUT tests by their name\n");
-        printf(" -sf,  --source-file=<filters>         filters     tests by their file\n");
-        printf(" -sfe, --source-file-exclude=<filters> filters OUT tests by their file\n");
-        printf(" -ts,  --test-suite=<filters>          filters     tests by their test suite\n");
-        printf(" -tse, --test-suite-exclude=<filters>  filters OUT tests by their test suite\n");
-        printf(" -sc,  --subcase=<filters>             filters     subcases by their name\n");
-        printf(" -sce, --subcase-exclude=<filters>     filters OUT subcases by their name\n");
-        printf(" -ob,  --order-by=<string>             how the tests should be ordered\n");
-        printf("                                       <string> - by [file/suite/name/rand]\n");
-        printf(" -rs,  --rand-seed=<int>               seed for random ordering\n");
-        printf(" -f,   --first=<int>                   the first test passing the filters to\n");
-        printf("                                       execute - for range-based execution\n");
-        printf(" -l,   --last=<int>                    the last test passing the filters to\n");
-        printf("                                       execute - for range-based execution\n");
-        printf(" -aa,  --abort-after=<int>             stop after <int> failed assertions\n");
-        printf(" -scfl,--subcase-filter-levels=<int>   apply filters for the first <int> levels\n");
+        std::printf("The available <int>/<string> options/filters are:\n\n");
+        std::printf(" -tc,  --test-case=<filters>           filters     tests by their name\n");
+        std::printf(" -tce, --test-case-exclude=<filters>   filters OUT tests by their name\n");
+        std::printf(" -sf,  --source-file=<filters>         filters     tests by their file\n");
+        std::printf(" -sfe, --source-file-exclude=<filters> filters OUT tests by their file\n");
+        std::printf(
+                " -ts,  --test-suite=<filters>          filters     tests by their test suite\n");
+        std::printf(
+                " -tse, --test-suite-exclude=<filters>  filters OUT tests by their test suite\n");
+        std::printf(" -sc,  --subcase=<filters>             filters     subcases by their name\n");
+        std::printf(" -sce, --subcase-exclude=<filters>     filters OUT subcases by their name\n");
+        std::printf(" -ob,  --order-by=<string>             how the tests should be ordered\n");
+        std::printf(
+                "                                       <string> - by [file/suite/name/rand]\n");
+        std::printf(" -rs,  --rand-seed=<int>               seed for random ordering\n");
+        std::printf(
+                " -f,   --first=<int>                   the first test passing the filters to\n");
+        std::printf("                                       execute - for range-based execution\n");
+        std::printf(
+                " -l,   --last=<int>                    the last test passing the filters to\n");
+        std::printf("                                       execute - for range-based execution\n");
+        std::printf(" -aa,  --abort-after=<int>             stop after <int> failed assertions\n");
+        std::printf(" -scfl,--subcase-filter-levels=<int>   apply filters for the first <int> "
+                    "levels\n");
         DOCTEST_PRINTF_COLORED("\n[doctest] ", Color::Cyan);
-        printf("Bool options - can be used like flags and true is assumed. Available:\n\n");
-        printf(" -s,   --success=<bool>                include successful assertions in output\n");
-        printf(" -cs,  --case-sensitive=<bool>         filters being treated as case sensitive\n");
-        printf(" -e,   --exit=<bool>                   exits after the tests finish\n");
-        printf(" -nt,  --no-throw=<bool>               skips exceptions-related assert checks\n");
-        printf(" -ne,  --no-exitcode=<bool>            returns (or exits) always with success\n");
-        printf(" -nr,  --no-run=<bool>                 skips all runtime doctest operations\n");
-        printf(" -nv,  --no-version=<bool>             omit the framework version in the output\n");
-        printf(" -nc,  --no-colors=<bool>              disables colors in output\n");
-        printf(" -fc,  --force-colors=<bool>           use colors even when not in a tty\n");
-        printf(" -nb,  --no-breaks=<bool>              disables breakpoints in debuggers\n");
-        printf(" -npf, --no-path-filenames=<bool>      only filenames and no paths in output\n");
-        printf(" -nln, --no-line-numbers=<bool>        0 instead of real line numbers in output\n");
+        std::printf("Bool options - can be used like flags and true is assumed. Available:\n\n");
+        std::printf(
+                " -s,   --success=<bool>                include successful assertions in output\n");
+        std::printf(
+                " -cs,  --case-sensitive=<bool>         filters being treated as case sensitive\n");
+        std::printf(" -e,   --exit=<bool>                   exits after the tests finish\n");
+        std::printf(
+                " -nt,  --no-throw=<bool>               skips exceptions-related assert checks\n");
+        std::printf(
+                " -ne,  --no-exitcode=<bool>            returns (or exits) always with success\n");
+        std::printf(
+                " -nr,  --no-run=<bool>                 skips all runtime doctest operations\n");
+        std::printf(" -nv,  --no-version=<bool>             omit the framework version in the "
+                    "output\n");
+        std::printf(" -nc,  --no-colors=<bool>              disables colors in output\n");
+        std::printf(" -fc,  --force-colors=<bool>           use colors even when not in a tty\n");
+        std::printf(" -nb,  --no-breaks=<bool>              disables breakpoints in debuggers\n");
+        std::printf(
+                " -npf, --no-path-filenames=<bool>      only filenames and no paths in output\n");
+        std::printf(" -nln, --no-line-numbers=<bool>        0 instead of real line numbers in "
+                    "output\n");
         // ==================================================================================== << 79
 
         DOCTEST_PRINTF_COLORED("\n[doctest] ", Color::Cyan);
-        printf("for more information visit the project documentation\n\n");
+        std::printf("for more information visit the project documentation\n\n");
     }
 
     void printSummary() {
@@ -4725,7 +4741,8 @@ namespace detail
         DOCTEST_PRINTF_COLORED(getSeparator(), Color::Yellow);
         if(p->count || p->list_test_cases || p->list_test_suites) {
             DOCTEST_PRINTF_COLORED("[doctest] ", Color::Cyan);
-            printf("number of tests passing the current filters: %d\n", p->numTestsPassingFilters);
+            std::printf("number of tests passing the current filters: %d\n",
+                        p->numTestsPassingFilters);
         } else {
             char buff[DOCTEST_SNPRINTF_BUFFER_LENGTH];
 
@@ -4940,7 +4957,7 @@ int Context::run() {
 
     printVersion();
     DOCTEST_PRINTF_COLORED("[doctest] ", Color::Cyan);
-    printf("run with \"--help\" for options\n");
+    std::printf("run with \"--help\" for options\n");
 
     unsigned i = 0; // counter used for loops - here for VC6
 
@@ -4954,18 +4971,18 @@ int Context::run() {
     // sort the collected records
     if(testArray.size() > 0) {
         if(p->order_by.compare("file", true) == 0) {
-            qsort(&testArray[0], testArray.size(), sizeof(TestData*), fileOrderComparator);
+            std::qsort(&testArray[0], testArray.size(), sizeof(TestData*), fileOrderComparator);
         } else if(p->order_by.compare("suite", true) == 0) {
-            qsort(&testArray[0], testArray.size(), sizeof(TestData*), suiteOrderComparator);
+            std::qsort(&testArray[0], testArray.size(), sizeof(TestData*), suiteOrderComparator);
         } else if(p->order_by.compare("name", true) == 0) {
-            qsort(&testArray[0], testArray.size(), sizeof(TestData*), nameOrderComparator);
+            std::qsort(&testArray[0], testArray.size(), sizeof(TestData*), nameOrderComparator);
         } else if(p->order_by.compare("rand", true) == 0) {
-            srand(p->rand_seed);
+            std::srand(p->rand_seed);
 
             // random_shuffle implementation
             const TestData** first = &testArray[0];
             for(i = testArray.size() - 1; i > 0; --i) {
-                int idxToSwap = rand() % (i + 1);
+                int idxToSwap = std::rand() % (i + 1);
 
                 const TestData* temp = first[i];
 
@@ -4977,13 +4994,13 @@ int Context::run() {
 
     if(p->list_test_cases) {
         DOCTEST_PRINTF_COLORED("[doctest] ", Color::Cyan);
-        printf("listing all test case names\n");
+        std::printf("listing all test case names\n");
     }
 
     std::set<String> testSuitesPassingFilters;
     if(p->list_test_suites) {
         DOCTEST_PRINTF_COLORED("[doctest] ", Color::Cyan);
-        printf("listing all test suites\n");
+        std::printf("listing all test suites\n");
     }
 
     // invoke the registered functions if they match the filter criteria (or just count them)
@@ -5010,14 +5027,14 @@ int Context::run() {
 
         // print the name of the test and don't execute it
         if(p->list_test_cases) {
-            printf("%s\n", data.m_name);
+            std::printf("%s\n", data.m_name);
             continue;
         }
 
         // print the name of the test suite if not done already and don't execute it
         if(p->list_test_suites) {
             if(testSuitesPassingFilters.count(data.m_suite) == 0) {
-                printf("%s\n", data.m_suite);
+                std::printf("%s\n", data.m_suite);
                 testSuitesPassingFilters.insert(data.m_suite);
             }
             continue;
