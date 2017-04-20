@@ -81,6 +81,8 @@ Planned features for future releases - order changes constantly...
         - http://accu.org/index.php/journals/1851
         - https://msdn.microsoft.com/en-us/library/hh270865.aspx
         - https://msdn.microsoft.com/en-us/library/hh598953.aspx
+        - https://blogs.msdn.microsoft.com/vcblog/2017/04/19/cpp-testing-in-visual-studio/
+        - https://msdn.microsoft.com/en-us/library/hh419385.aspx
     - XCode - https://github.com/philsquared/Catch/pull/454
     - CLion
         - https://www.jetbrains.com/clion/features/unit-testing.html
