@@ -145,6 +145,7 @@ endif()
 
 if(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
     add_compiler_flags(/std:c++latest) # for post c++14 updates in MSVC
+    add_compiler_flags(/permissive-) # force standard conformance - this is the better flag than /Za
     add_compiler_flags(/WX)
     add_compiler_flags(/W4) # /Wall is too aggressive - even the standard C headers give thousands of errors...
 endif()
