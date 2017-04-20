@@ -125,6 +125,9 @@ namespace detail
         return temp - in;
     }
 
+    // lowers ascii letters
+    char tolower(const char c) { return ((c >= 'A' && c <= 'Z') ? static_cast<char>(c + 32) : c); }
+
     template <typename T>
     T my_max(const T& lhs, const T& rhs) {
         return lhs > rhs ? lhs : rhs;
@@ -677,9 +680,6 @@ namespace detail
         for(int i    = 0; i < num; ++i)
             cdest[i] = csrc[i];
     }
-
-    // lowers ascii letters
-    char tolower(const char c) { return ((c >= 'A' && c <= 'Z') ? static_cast<char>(c + 32) : c); }
 
     // matching of a string against a wildcard mask (case sensitivity configurable) taken from
     // http://www.emoticode.net/c/simple-wildcard-string-compare-globbing-function.html
