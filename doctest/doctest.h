@@ -2013,7 +2013,7 @@ public:
 #define DOCTEST_REGISTER_EXCEPTION_TRANSLATOR_IMPL(translatorName, signature)                      \
     static doctest::String translatorName(signature);                                              \
     DOCTEST_GLOBAL_NO_WARNINGS(DOCTEST_ANONYMOUS(_DOCTEST_ANON_TRANSLATOR_)) =                     \
-            doctest::registerExceptionTranslator(&translatorName);                                 \
+            doctest::registerExceptionTranslator(translatorName);                                  \
     DOCTEST_GLOBAL_NO_WARNINGS_END()                                                               \
     static doctest::String translatorName(signature)
 
