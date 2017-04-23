@@ -50,7 +50,8 @@ addons:
       - llvm-toolchain-precise-3.7
       - llvm-toolchain-precise-3.8
       - llvm-toolchain-precise-3.9
-      - llvm-toolchain-precise-4.0
+      - llvm-toolchain-trusty
+      - llvm-toolchain-trusty-4.0
 
 compiler: clang
 os: linux
@@ -132,7 +133,7 @@ matrix:
           sources: *apt_sources
 
     # Clang 3.4
-    - env: COMPILER=clang++ HAS_ASAN_64=true HAS_UBSAN_64=true
+    - env: COMPILER=clang++ HAS_ASAN_32=true HAS_UBSAN_32=true HAS_ASAN_64=true HAS_UBSAN_64=true
       addons: &clang
         apt:
           packages: [             "valgrind", "g++-multilib", "libc6-dbg", "libc6-dbg:i386", "g++-6"]
@@ -174,7 +175,8 @@ matrix:
           sources: *apt_sources
 
     # Clang 4.0
-    - env: COMPILER=clang++-4.0 HAS_ASAN_64=true HAS_UBSAN_64=true
+    - env: COMPILER=clang++-4.0 HAS_ASAN_32=true HAS_UBSAN_32=true HAS_ASAN_64=true HAS_UBSAN_64=true
+      dist: trusty
       addons: &clang40
         apt:
           packages: ["clang-4.0", "valgrind", "g++-multilib", "libc6-dbg", "libc6-dbg:i386", "g++-6"]
@@ -206,32 +208,32 @@ matrix:
       os: osx
 
     # Xcode 8.3 Clang
-    - env: COMPILER=clang++ HAS_ASAN_32=true HAS_ASAN_64=true
+    - env: COMPILER=clang++ HAS_ASAN_32=true HAS_UBSAN_32=true HAS_ASAN_64=true HAS_UBSAN_64=true
       osx_image: xcode8.3
       os: osx
 
     # OSX GCC 4.6
     - env: COMPILER=g++-4.6
       compiler: gcc
-      osx_image: xcode7.3
+      osx_image: xcode6.4
       os: osx
 
     # OSX GCC 4.7
     - env: COMPILER=g++-4.7
       compiler: gcc
-      osx_image: xcode7.3
+      osx_image: xcode6.4
       os: osx
 
     # OSX GCC 4.8
     - env: COMPILER=g++-4.8 HAS_ASAN_32=true HAS_ASAN_64=true
       compiler: gcc
-      osx_image: xcode7.3
+      osx_image: xcode6.4
       os: osx
 
     # OSX GCC 4.9
-    - env: COMPILER=g++-4.9 HAS_UBSAN_32=true HAS_UBSAN_64=true # no ASAN_32/ASAN_64 - errors when using ASAN_OPTIONS - probably g++ 4.9 bug
+    - env: COMPILER=g++-4.9 HAS_UBSAN_32=true HAS_ASAN_64=true HAS_UBSAN_64=true # no ASAN_32 - errors when using ASAN_OPTIONS - probably g++ 4.9 bug
       compiler: gcc
-      osx_image: xcode7.3
+      osx_image: xcode6.4
       os: osx
 
     # OSX GCC 5
@@ -247,52 +249,13 @@ matrix:
       os: osx
 
     # OSX LLVM-GCC
-    - env: COMPILER=g++
+    - env: COMPILER=g++ HAS_ASAN_32=true HAS_ASAN_64=true
       compiler: gcc
       os: osx
 
   allow_failures:
 
-    # https://travis-ci.org/onqtam/doctest/jobs/211341945 - Disallowing sources: llvm-toolchain-precise-4.0
-    
-    # Clang 4.0
-    - env: COMPILER=clang++-4.0 HAS_ASAN_64=true HAS_UBSAN_64=true
-      addons: &clang40
-        apt:
-          packages: ["clang-4.0", "valgrind", "g++-multilib", "libc6-dbg", "libc6-dbg:i386", "g++-6"]
-          sources: *apt_sources
-
     # for some reason some of these builds fail sometimes...
-
-    # OSX GCC 4.6
-    - env: COMPILER=g++-4.6
-      compiler: gcc
-      osx_image: xcode7.3
-      os: osx
-
-    # OSX GCC 4.7
-    - env: COMPILER=g++-4.7
-      compiler: gcc
-      osx_image: xcode7.3
-      os: osx
-
-    # OSX GCC 4.8
-    - env: COMPILER=g++-4.8 HAS_ASAN_32=true HAS_ASAN_64=true
-      compiler: gcc
-      osx_image: xcode7.3
-      os: osx
-
-    # OSX GCC 4.9
-    - env: COMPILER=g++-4.9 HAS_UBSAN_32=true HAS_UBSAN_64=true # no ASAN_32/ASAN_64 - errors when using ASAN_OPTIONS - probably g++ 4.9 bug
-      compiler: gcc
-      osx_image: xcode7.3
-      os: osx
-
-    # OSX GCC 5
-    - env: COMPILER=g++-5 HAS_ASAN_32=true HAS_UBSAN_32=true HAS_ASAN_64=true HAS_UBSAN_64=true
-      compiler: gcc
-      osx_image: xcode7.3
-      os: osx
 
     # OSX GCC 6
     - env: COMPILER=g++-6 HAS_ASAN_32=true HAS_UBSAN_32=true HAS_ASAN_64=true HAS_UBSAN_64=true

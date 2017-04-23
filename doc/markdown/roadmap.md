@@ -52,7 +52,7 @@ Planned features for future releases - order changes constantly...
         - using it as a package (the install target)
         - getting it from vcpkg/hunter/etc.
 - address the coverage issue... look at how this project does it: https://github.com/rollbear/trompeloeil
-- builds with GCC 7 when it is released (should be in late April) - also by then the precise (ubuntu 12.04) ppa for clang 4.0 should be whitelisted by travis
+- builds with GCC 7 when it is released (should be in late April)
 
 ### For 1.3:
 
