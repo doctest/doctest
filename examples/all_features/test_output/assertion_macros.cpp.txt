@@ -1,7 +1,7 @@
 [doctest] run with "--help" for options
-== TEST CASE ==================================================================
+===============================================================================
 assertion_macros.cpp(0)
-normal macros
+TEST CASE:  normal macros
 
 assertion_macros.cpp(0) ERROR!
   CHECK( throw_if(true, std::runtime_error("whops!")) == 42 )
@@ -13,9 +13,9 @@ assertion_macros.cpp(0) ERROR!
 with expansion:
   CHECK( Approx( 0.502 ) == 0.501 )
 
-== TEST CASE ==================================================================
+===============================================================================
 assertion_macros.cpp(0)
-exceptions-related macros
+TEST CASE:  exceptions-related macros
 
 assertion_macros.cpp(0) ERROR!
   CHECK_THROWS( throw_if(false, 0) )
@@ -35,9 +35,9 @@ assertion_macros.cpp(0) ERROR!
 threw exception:
   0
 
-== TEST CASE ==================================================================
+===============================================================================
 assertion_macros.cpp(0)
-exceptions-related macros for std::exception
+TEST CASE:  exceptions-related macros for std::exception
 
 assertion_macros.cpp(0) ERROR!
   CHECK_THROWS( throw_if(false, 0) )
@@ -57,9 +57,9 @@ assertion_macros.cpp(0) FATAL ERROR!
 threw exception:
   whops!
 
-== TEST CASE ==================================================================
+===============================================================================
 assertion_macros.cpp(0)
-WARN level of asserts don't fail the test case
+TEST CASE:  WARN level of asserts don't fail the test case
 
 assertion_macros.cpp(0) WARNING!
   WARN( 0 )
@@ -119,9 +119,9 @@ assertion_macros.cpp(0) WARNING!
 with expansion:
   FAST_WARN_UNARY_FALSE( 1 )
 
-== TEST CASE ==================================================================
+===============================================================================
 assertion_macros.cpp(0)
-CHECK level of asserts fail the test case but don't abort it
+TEST CASE:  CHECK level of asserts fail the test case but don't abort it
 
 assertion_macros.cpp(0) ERROR!
   CHECK( 0 )
@@ -184,106 +184,106 @@ with expansion:
 assertion_macros.cpp(0) MESSAGE!
   reached!
 
-== TEST CASE ==================================================================
+===============================================================================
 assertion_macros.cpp(0)
-REQUIRE level of asserts fail and abort the test case - 1
+TEST CASE:  REQUIRE level of asserts fail and abort the test case - 1
 
 assertion_macros.cpp(0) FATAL ERROR!
   REQUIRE( 0 )
 with expansion:
   REQUIRE( 0 )
 
-== TEST CASE ==================================================================
+===============================================================================
 assertion_macros.cpp(0)
-REQUIRE level of asserts fail and abort the test case - 2
+TEST CASE:  REQUIRE level of asserts fail and abort the test case - 2
 
 assertion_macros.cpp(0) FATAL ERROR!
   REQUIRE_FALSE( 1 )
 with expansion:
   REQUIRE_FALSE( 1 )
 
-== TEST CASE ==================================================================
+===============================================================================
 assertion_macros.cpp(0)
-REQUIRE level of asserts fail and abort the test case - 3
+TEST CASE:  REQUIRE level of asserts fail and abort the test case - 3
 
 assertion_macros.cpp(0) FATAL ERROR!
   REQUIRE_THROWS( throw_if(false, 0) )
 didn't throw at all
 
-== TEST CASE ==================================================================
+===============================================================================
 assertion_macros.cpp(0)
-REQUIRE level of asserts fail and abort the test case - 4
+TEST CASE:  REQUIRE level of asserts fail and abort the test case - 4
 
 assertion_macros.cpp(0) FATAL ERROR!
   REQUIRE_THROWS_AS( throw_if(false, 0), bool )
 didn't throw at all
 
-== TEST CASE ==================================================================
+===============================================================================
 assertion_macros.cpp(0)
-REQUIRE level of asserts fail and abort the test case - 5
+TEST CASE:  REQUIRE level of asserts fail and abort the test case - 5
 
 assertion_macros.cpp(0) FATAL ERROR!
   REQUIRE_THROWS_AS( throw_if(true, 0), bool )
 threw a different exception:
   0
 
-== TEST CASE ==================================================================
+===============================================================================
 assertion_macros.cpp(0)
-REQUIRE level of asserts fail and abort the test case - 6
+TEST CASE:  REQUIRE level of asserts fail and abort the test case - 6
 
 assertion_macros.cpp(0) FATAL ERROR!
   REQUIRE_NOTHROW( throw_if(true, 0) )
 threw exception:
   0
 
-== TEST CASE ==================================================================
+===============================================================================
 assertion_macros.cpp(0)
-REQUIRE level of asserts fail and abort the test case - 7
+TEST CASE:  REQUIRE level of asserts fail and abort the test case - 7
 
 assertion_macros.cpp(0) FATAL ERROR!
   REQUIRE_EQ( 1, 0 )
 with expansion:
   REQUIRE_EQ( 1, 0 )
 
-== TEST CASE ==================================================================
+===============================================================================
 assertion_macros.cpp(0)
-REQUIRE level of asserts fail and abort the test case - 8
+TEST CASE:  REQUIRE level of asserts fail and abort the test case - 8
 
 assertion_macros.cpp(0) FATAL ERROR!
   REQUIRE_UNARY( 0 )
 with expansion:
   REQUIRE_UNARY( 0 )
 
-== TEST CASE ==================================================================
+===============================================================================
 assertion_macros.cpp(0)
-REQUIRE level of asserts fail and abort the test case - 9
+TEST CASE:  REQUIRE level of asserts fail and abort the test case - 9
 
 assertion_macros.cpp(0) FATAL ERROR!
   REQUIRE_UNARY_FALSE( 1 )
 with expansion:
   REQUIRE_UNARY_FALSE( 1 )
 
-== TEST CASE ==================================================================
+===============================================================================
 assertion_macros.cpp(0)
-REQUIRE level of asserts fail and abort the test case - 10
+TEST CASE:  REQUIRE level of asserts fail and abort the test case - 10
 
 assertion_macros.cpp(0) FATAL ERROR!
   FAST_REQUIRE_EQ( 1, 0 )
 with expansion:
   FAST_REQUIRE_EQ( 1, 0 )
 
-== TEST CASE ==================================================================
+===============================================================================
 assertion_macros.cpp(0)
-REQUIRE level of asserts fail and abort the test case - 11
+TEST CASE:  REQUIRE level of asserts fail and abort the test case - 11
 
 assertion_macros.cpp(0) FATAL ERROR!
   FAST_REQUIRE_UNARY( 0 )
 with expansion:
   FAST_REQUIRE_UNARY( 0 )
 
-== TEST CASE ==================================================================
+===============================================================================
 assertion_macros.cpp(0)
-REQUIRE level of asserts fail and abort the test case - 12
+TEST CASE:  REQUIRE level of asserts fail and abort the test case - 12
 
 assertion_macros.cpp(0) FATAL ERROR!
   FAST_REQUIRE_UNARY_FALSE( 1 )

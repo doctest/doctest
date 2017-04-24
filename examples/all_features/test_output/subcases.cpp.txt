@@ -10,29 +10,29 @@ root
 
 root
 2
-== TEST CASE ==================================================================
+===============================================================================
 subcases.cpp(0)
-lots of nested subcases
+TEST CASE:  lots of nested subcases
 
 subcases.cpp(0) FATAL ERROR!
 
-== TEST CASE ==================================================================
+===============================================================================
 subcases.cpp(0)
-subcases can be used in a separate function as well
+TEST CASE:  subcases can be used in a separate function as well
   sc1
 
 subcases.cpp(0) MESSAGE!
   hello! from sc1
 
-== TEST CASE ==================================================================
+===============================================================================
 subcases.cpp(0)
-subcases can be used in a separate function as well
+TEST CASE:  subcases can be used in a separate function as well
   sc2
 
 subcases.cpp(0) MESSAGE!
   hello! from sc2
 
-== TEST CASE ==================================================================
+===============================================================================
 subcases.cpp(0)
   Scenario: vectors can be sized and resized
      Given: A vector with some items
@@ -44,7 +44,7 @@ subcases.cpp(0) ERROR!
 with expansion:
   CHECK( 10 == 20 )
 
-== TEST CASE ==================================================================
+===============================================================================
 subcases.cpp(0)
   Scenario: vectors can be sized and resized
      Given: A vector with some items

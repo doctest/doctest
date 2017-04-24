@@ -1,33 +1,36 @@
 [doctest] run with "--help" for options
-== TEST CASE ==================================================================
+===============================================================================
 test_cases_and_suites.cpp(0)
-should fail because of an exception
+TEST CASE:  should fail because of an exception
 
 TEST CASE FAILED!
 threw exception:
   0
 
-== TEST CASE ==================================================================
+===============================================================================
 test_cases_and_suites.cpp(0)
-part of scoped
+TEST SUITE: scoped test suite
+TEST CASE:  part of scoped
 
 test_cases_and_suites.cpp(0) FATAL ERROR!
 
-== TEST CASE ==================================================================
+===============================================================================
 test_cases_and_suites.cpp(0)
-part of scoped 2
+TEST SUITE: scoped test suite
+TEST CASE:  part of scoped 2
 
 test_cases_and_suites.cpp(0) FATAL ERROR!
 
-== TEST CASE ==================================================================
+===============================================================================
 test_cases_and_suites.cpp(0)
-part of some TS
+TEST SUITE: some TS
+TEST CASE:  part of some TS
 
 test_cases_and_suites.cpp(0) FATAL ERROR!
 
-== TEST CASE ==================================================================
+===============================================================================
 test_cases_and_suites.cpp(0)
-fixtured test - not part of a test suite
+TEST CASE:  fixtured test - not part of a test suite
 
 test_cases_and_suites.cpp(0) ERROR!
   CHECK( data == 85 )

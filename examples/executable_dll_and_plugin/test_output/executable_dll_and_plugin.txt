@@ -3,9 +3,9 @@ I am a test from the dll!
 I am a test from the implementation!
 I am a test from the implementation_2!
 I am a test from the executable!
-== TEST CASE ==================================================================
+===============================================================================
 main.cpp(0)
-executable
+TEST CASE:  executable
 
 TEST CASE FAILED!
 threw exception:

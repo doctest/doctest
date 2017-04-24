@@ -10,7 +10,6 @@ Planned features for future releases - order changes constantly...
 
 ### For 1.2:
 
-- print current test suite when logging a test case
 - Value-Parameterized test cases - https://github.com/onqtam/doctest/issues/38
 - decorators for test cases - like in boost test
     - description

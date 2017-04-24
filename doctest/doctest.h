@@ -1350,7 +1350,8 @@ namespace detail
 
     DOCTEST_INTERFACE void addFailedAssert(assertType::Enum assert_type);
 
-    DOCTEST_INTERFACE void logTestStart(const char* name, const char* file, unsigned line);
+    DOCTEST_INTERFACE void logTestStart(const char* name, const char* suite, const char* file,
+                                        unsigned line);
     DOCTEST_INTERFACE void logTestEnd();
 
     DOCTEST_INTERFACE void logTestException(const String& what, bool crash = false);
@@ -2964,9 +2965,9 @@ namespace detail
 #define DOCTEST_LOG_START()                                                                        \
     do {                                                                                           \
         if(!DOCTEST_GCS().hasLoggedCurrentTestStart) {                                             \
-            doctest::detail::logTestStart(DOCTEST_GCS().currentTest->m_name,                       \
-                                          DOCTEST_GCS().currentTest->m_file,                       \
-                                          DOCTEST_GCS().currentTest->m_line);                      \
+            doctest::detail::logTestStart(                                                         \
+                    DOCTEST_GCS().currentTest->m_name, DOCTEST_GCS().currentTest->m_suite,         \
+                    DOCTEST_GCS().currentTest->m_file, DOCTEST_GCS().currentTest->m_line);         \
             DOCTEST_GCS().hasLoggedCurrentTestStart = true;                                        \
         }                                                                                          \
     } while(false)
@@ -4139,10 +4140,6 @@ namespace detail
         return "===============================================================================\n";
     }
 
-    const char* getTestCaseSeparator() {
-        return "== TEST CASE ==================================================================\n";
-    }
-
     void printToDebugConsole(const String& text) {
         if(isDebuggerActive())
             myOutputDebugString(text.c_str());
@@ -4155,17 +4152,37 @@ namespace detail
         }
     }
 
-    void logTestStart(const char* name, const char* file, unsigned line) {
+    void logTestStart(const char* name, const char* suite, const char* file, unsigned line) {
         char loc[DOCTEST_SNPRINTF_BUFFER_LENGTH];
         DOCTEST_SNPRINTF(loc, DOCTEST_COUNTOF(loc), "%s(%d)\n", fileForOutput(file),
                          lineForOutput(line));
 
-        char msg[DOCTEST_SNPRINTF_BUFFER_LENGTH];
-        DOCTEST_SNPRINTF(msg, DOCTEST_COUNTOF(msg), "%s\n", name);
+        char ts1[DOCTEST_SNPRINTF_BUFFER_LENGTH];
+        DOCTEST_SNPRINTF(ts1, DOCTEST_COUNTOF(ts1), "TEST SUITE: ");
+        char ts2[DOCTEST_SNPRINTF_BUFFER_LENGTH];
+        DOCTEST_SNPRINTF(ts2, DOCTEST_COUNTOF(ts2), "%s\n", suite);
+        char n1[DOCTEST_SNPRINTF_BUFFER_LENGTH];
+        DOCTEST_SNPRINTF(n1, DOCTEST_COUNTOF(n1), "TEST CASE:  ");
+        char n2[DOCTEST_SNPRINTF_BUFFER_LENGTH];
+        DOCTEST_SNPRINTF(n2, DOCTEST_COUNTOF(n2), "%s\n", name);
 
-        DOCTEST_PRINTF_COLORED(getTestCaseSeparator(), Color::Yellow);
+        // hack for BDD style of macros - to not print "TEST CASE:"
+        char scenario[] = "  Scenario:";
+        if(std::string(name).substr(0, DOCTEST_COUNTOF(scenario) - 1) == scenario)
+            n1[0] = '\0';
+
+        DOCTEST_PRINTF_COLORED(getSeparator(), Color::Yellow);
         DOCTEST_PRINTF_COLORED(loc, Color::LightGrey);
-        DOCTEST_PRINTF_COLORED(msg, Color::None);
+
+        String TestSuiteForDebugConsole = "";
+        if(suite[0] != '\0') {
+            DOCTEST_PRINTF_COLORED(ts1, Color::Yellow);
+            DOCTEST_PRINTF_COLORED(ts2, Color::None);
+            TestSuiteForDebugConsole += ts1;
+            TestSuiteForDebugConsole += ts2;
+        }
+        DOCTEST_PRINTF_COLORED(n1, Color::Yellow);
+        DOCTEST_PRINTF_COLORED(n2, Color::None);
 
         String                subcaseStuff  = "";
         std::vector<Subcase>& subcasesStack = getContextState()->subcasesStack;
@@ -4181,8 +4198,8 @@ namespace detail
 
         DOCTEST_PRINTF_COLORED("\n", Color::None);
 
-        printToDebugConsole(String(getTestCaseSeparator()) + loc + msg + subcaseStuff.c_str() +
-                            "\n");
+        printToDebugConsole(String(getSeparator()) + loc + TestSuiteForDebugConsole.c_str() + n1 +
+                            n2 + subcaseStuff.c_str() + "\n");
     }
 
     void logTestEnd() {}

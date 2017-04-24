@@ -1347,7 +1347,8 @@ namespace detail
 
     DOCTEST_INTERFACE void addFailedAssert(assertType::Enum assert_type);
 
-    DOCTEST_INTERFACE void logTestStart(const char* name, const char* file, unsigned line);
+    DOCTEST_INTERFACE void logTestStart(const char* name, const char* suite, const char* file,
+                                        unsigned line);
     DOCTEST_INTERFACE void logTestEnd();
 
     DOCTEST_INTERFACE void logTestException(const String& what, bool crash = false);

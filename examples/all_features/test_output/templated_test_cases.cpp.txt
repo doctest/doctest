@@ -1,43 +1,43 @@
 [doctest] run with "--help" for options
-== TEST CASE ==================================================================
+===============================================================================
 templated_test_cases.cpp(0)
-vector stuff<std::vector<int>>
+TEST CASE:  vector stuff<std::vector<int>>
 
 templated_test_cases.cpp(0) ERROR!
   CHECK( vec.size() == 20 )
 with expansion:
   CHECK( 10 == 20 )
 
-== TEST CASE ==================================================================
+===============================================================================
 templated_test_cases.cpp(0)
-multiple types<>
+TEST CASE:  multiple types<>
 
 templated_test_cases.cpp(0) ERROR!
   CHECK( t2 != T2() )
 with expansion:
   CHECK( 0 != 0 )
 
-== TEST CASE ==================================================================
+===============================================================================
 templated_test_cases.cpp(0)
-multiple types<>
+TEST CASE:  multiple types<>
 
 templated_test_cases.cpp(0) ERROR!
   CHECK( t2 != T2() )
 with expansion:
   CHECK( 0 != 0 )
 
-== TEST CASE ==================================================================
+===============================================================================
 templated_test_cases.cpp(0)
-multiple types<>
+TEST CASE:  multiple types<>
 
 templated_test_cases.cpp(0) ERROR!
   CHECK( t2 != T2() )
 with expansion:
   CHECK( 0 != 0 )
 
-== TEST CASE ==================================================================
+===============================================================================
 templated_test_cases.cpp(0)
-bad stringification of type pair<int_pair>
+TEST CASE:  bad stringification of type pair<int_pair>
 
 templated_test_cases.cpp(0) ERROR!
   CHECK( t2 != T2() )
