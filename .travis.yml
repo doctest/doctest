@@ -366,7 +366,7 @@ script:
       echo -e "    CHECK(a == 6);" >> doctest.cpp
       echo -e "}" >> doctest.cpp
       
-      cppcheck doctest.cpp --enable=all --suppress=missingIncludeSystem --suppress=unusedFunction --suppress=functionConst --inline-suppr --platform=unix64 --inconclusive --std=posix --inconclusive --std=c++03 -v --error-exitcode=1 --template "{file}({line}): {severity} ({id}): {message}" -DDOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
+      cppcheck doctest.cpp --enable=all --suppress=missingIncludeSystem --suppress=unusedFunction --suppress=functionConst --inline-suppr --platform=unix64 --inconclusive --std=posix --inconclusive -v --error-exitcode=1 --template "{file}({line}): {severity} ({id}): {message}" -DDOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
       exit
     fi
 
