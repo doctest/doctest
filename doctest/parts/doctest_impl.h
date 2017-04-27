@@ -309,6 +309,7 @@ namespace detail
             numFailedAssertions    = 0;
         }
 
+        // cppcheck-suppress uninitMemberVar
         ContextState()
                 : filters(8) // 8 different filters total
         {
@@ -897,10 +898,10 @@ namespace detail
             LightGrey   = Bright | Grey,
             BrightWhite = Bright | White
         };
-        Color(Code code) { use(code); }
+        explicit Color(Code code) { use(code); }
         ~Color() { use(None); }
 
-        void use(Code code);
+        static void use(Code code);
 
     private:
         Color(Color const& other);
@@ -1735,11 +1736,13 @@ namespace detail
         String filtersString;
         if(parseOption(argc, argv, pattern, filtersString)) {
             // tokenize with "," as a separator
+            // cppcheck-suppress strtokCalled
             char* pch = std::strtok(filtersString.c_str(), ","); // modifies the string
             while(pch != 0) {
                 if(my_strlen(pch))
                     res.push_back(pch);
                 // uses the strtok() internal state to go to the next token
+                // cppcheck-suppress strtokCalled
                 pch = std::strtok(0, ",");
             }
             return true;
@@ -1876,14 +1879,14 @@ namespace detail
         DOCTEST_PRINTF_COLORED(getSeparator(), Color::Yellow);
         if(p->count || p->list_test_cases || p->list_test_suites) {
             DOCTEST_PRINTF_COLORED("[doctest] ", Color::Cyan);
-            std::printf("number of tests passing the current filters: %d\n",
+            std::printf("number of tests passing the current filters: %u\n",
                         p->numTestsPassingFilters);
         } else {
             char buff[DOCTEST_SNPRINTF_BUFFER_LENGTH];
 
             DOCTEST_PRINTF_COLORED("[doctest] ", Color::Cyan);
 
-            DOCTEST_SNPRINTF(buff, DOCTEST_COUNTOF(buff), "test cases: %4d",
+            DOCTEST_SNPRINTF(buff, DOCTEST_COUNTOF(buff), "test cases: %4u",
                              p->numTestsPassingFilters);
             DOCTEST_PRINTF_COLORED(buff, Color::None);
             DOCTEST_SNPRINTF(buff, DOCTEST_COUNTOF(buff), " | ");
@@ -1893,7 +1896,7 @@ namespace detail
             DOCTEST_PRINTF_COLORED(buff, p->numFailed > 0 ? Color::None : Color::Green);
             DOCTEST_SNPRINTF(buff, DOCTEST_COUNTOF(buff), " | ");
             DOCTEST_PRINTF_COLORED(buff, Color::None);
-            DOCTEST_SNPRINTF(buff, DOCTEST_COUNTOF(buff), "%4d failed", p->numFailed);
+            DOCTEST_SNPRINTF(buff, DOCTEST_COUNTOF(buff), "%4u failed", p->numFailed);
             DOCTEST_PRINTF_COLORED(buff, p->numFailed > 0 ? Color::Red : Color::None);
 
             DOCTEST_SNPRINTF(buff, DOCTEST_COUNTOF(buff), " | ");

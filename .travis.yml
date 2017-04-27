@@ -68,6 +68,13 @@ matrix:
         apt:
           packages: ["lcov", "curl"]
 
+    # coverage
+    - env: COMPILER=g++ CPPCHECK=true
+      compiler: gcc
+      addons:
+        apt:
+          packages: ["cppcheck"]
+
     # GCC 4.4
     - env: COMPILER=g++-4.4
       compiler: gcc
@@ -345,6 +352,21 @@ script:
     if [[ "${COVERALLS_SERVICE_NAME}" = "travis-ci" ]]; then
       cmake ${CMAKE_OPTIONS_GLOBAL} -DCMAKE_BUILD_TYPE=Debug .
       make -k -j2 && make coveralls
+      exit
+    fi
+
+  # cppcheck static code analysis
+  - |
+    if [[ "${CPPCHECK}" = "true" ]]; then
+      cp doctest/doctest.h doctest.cpp
+      echo -e "TEST_CASE(\"\") {" >> doctest.cpp
+      echo -e "    int a;" >> doctest.cpp
+      echo -e "    SUBCASE(\"ouch\") a = 5;" >> doctest.cpp
+      echo -e "    CAPTURE(a);" >> doctest.cpp
+      echo -e "    CHECK(a == 6);" >> doctest.cpp
+      echo -e "}" >> doctest.cpp
+      
+      cppcheck doctest.cpp --enable=all --suppress=missingIncludeSystem --suppress=unusedFunction --suppress=functionConst --inline-suppr --platform=unix64 --inconclusive --std=posix --inconclusive --std=c++03 -v --error-exitcode=1 --template "{file}({line}): {severity} ({id}): {message}" -DDOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
       exit
     fi
 

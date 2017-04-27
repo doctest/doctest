@@ -10,19 +10,36 @@ Planned features for future releases - order changes constantly...
 
 ### For 1.2:
 
-- Value-Parameterized test cases - https://github.com/onqtam/doctest/issues/38
+- integrate static analysis on the CI: **msvc**, **clang**, **cppcheck**
 - decorators for test cases - like in boost test
-    - description
-    - disabled
-    - shouldFail
+    - depends_on (decorator)
+    - description (decorator)
+    - enabled / disabled (decorator)
+    - enable_if (decorator)
+    - fixture (decorator)
+    - label (decorator)
+    - precondition (decorator)
+    - expected_failures (decorator)
+    - timeout (decorator)
+    - shouldFail => reported as "x failed as expected" (both asserts and test cases)
     - mayFail
     - alternative mechanism to tags
-    - time constraints?
     - run X times (should also multiply with the global test run times)
     - !!! and think about how these will be accessed and filtered from the command line
 - time stuff
     - reporting running time of tests
     - count a test case as failed if it exceeds X ms (but no force-killing!)
+        Entering test module "decorator_08"
+        test.cpp(6): Entering test case "test1"
+        test.cpp(6): Leaving test case "test1"; testing time: 1ms
+        test.cpp(11): Entering test case "test2"
+        test.cpp(13): error: in "test2": check false has failed
+        test.cpp(11): Leaving test case "test2"; testing time: 2ms
+        test.cpp(39): Entering test case "test3"
+        test.cpp(41): error: in "test3": check false has failed
+        test.cpp(39): Leaving test case "test3"; testing time: 2ms
+        test.cpp(45): Test case "test4" is skipped because test2 and test3 failed
+        Leaving test module "decorator_08"; testing time: 16ms
 - runtime performance
     - lazily stringify expressions - only when needed
     - optimize createStream/freeStream to reuse a pool of ostringstream objects
@@ -43,7 +60,10 @@ Planned features for future releases - order changes constantly...
 - change docs a bit
     - mainly what is in the landing page (add link to overload)
     - update links to examples
+    - write about static code analysis
+    - docs about sort-of data driven testing - with INFO and SUBCASE
     - https://www.paypal.me/onqtam
+    - https://github.com/jch/html-pipeline/blob/master/lib/html/pipeline/sanitization_filter.rb#L45-L48
     - add a new page for build systems and integration
         - copying the header directly
         - getting the header with a cmake script - perhaps using ExternalProject() or something like that
@@ -55,6 +75,7 @@ Planned features for future releases - order changes constantly...
 
 ### For 1.3:
 
+- Value-Parameterized test cases
 - reporters
     - output to file
     - a system for writing custom reporters
@@ -97,6 +118,9 @@ Planned features for future releases - order changes constantly...
 - add Approx ability to compare with absolute epsilon - [Catch PR](https://github.com/philsquared/Catch/pull/538)
 - ability to customize the colors in the console output (may also use styles - based on [this](https://github.com/agauniyal/rang))
 - implement breaking into the debugger under linux - see [here](https://github.com/philsquared/Catch/pull/585) and [here](https://github.com/scottt/debugbreak)
+- better testing of the library
+    - should unit test internals
+    - should test stuff that should not compile
 
 ### For 2.0:
 
@@ -105,6 +129,7 @@ Planned features for future releases - order changes constantly...
     - use variadic templates where appropriate
     - update type lists to C++11
     - update traits - use declval, etc.
+    - move initialization of fields from initializer lists to class bodies
 
 ### Things that are being considered but not part of the roadmap yet:
 
@@ -114,7 +139,6 @@ Planned features for future releases - order changes constantly...
 - detect floating point exceptions
 - checkpoint/passpoint - like in [boost test](http://www.boost.org/doc/libs/1_63_0/libs/test/doc/html/boost_test/test_output/test_tools_support_for_logging/checkpoints.html) (also make all assert/subcase/logging macros to act as passpoints and print the last one on crashes or exceptions)
 - log levels - like in [boost test](http://www.boost.org/doc/libs/1_63_0/libs/test/doc/html/boost_test/utf_reference/rt_param_reference/log_level.html)
-- integrate static analysis on the CI: **msvc**, **clang**, **cppcheck**
 - queries for the current test case - name (and probably decorators)
 - thread safety - asserts/subcases/captures should be safe to be used by multiple threads simultaneously
 - support for running tests in parallel in multiple threads
@@ -130,6 +154,7 @@ Planned features for future releases - order changes constantly...
 - setup / teardown support
     - global setup / teardown - can be currently achieved by providing a custom main function
     - per test suite
+    - see how it's done in boost test - with the fixture decorator
     - perhaps for fixtures in addition to the constructor / destructor - since throwing in the destructor might terminate the program
     - or just ignore all of this this - it would require globals or classes and inheritance - and we already have subcases
 - doctest in a GUI environment? with no console? APIs for attaching a console? querying if there is one? [investigate...](https://github.com/philsquared/Catch/blob/master/docs/configuration.md#stdout)

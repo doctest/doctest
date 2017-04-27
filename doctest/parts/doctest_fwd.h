@@ -469,6 +469,7 @@ class DOCTEST_INTERFACE String
     void copy(const String& other);
 
 public:
+    // cppcheck-suppress noExplicitConstructor
     String(const char* in = "");
     String(const String& other);
     ~String();
@@ -548,10 +549,12 @@ namespace detail
 
         template <typename T>
         struct is_pointer_helper<T*>
+        // cppcheck-suppress unusedStructMember
         { static const bool value = true; };
 
         template <typename T>
         struct is_pointer
+        // cppcheck-suppress unusedStructMember
         { static const bool value = is_pointer_helper<typename remove_cv<T>::type>::value; };
 
         template <bool CONDITION, typename TYPE = void>
@@ -637,6 +640,7 @@ namespace detail
 
     template <typename T>
     struct deferred_false
+    // cppcheck-suppress unusedStructMember
     { static const bool value = false; };
 
     // to silence the warning "-Wzero-as-null-pointer-constant" only for gcc 5 for the Approx template ctor - pragmas don't work for it...
@@ -650,6 +654,7 @@ namespace detail
         struct any_t
         {
             template <typename T>
+            // cppcheck-suppress noExplicitConstructor
             any_t(const DOCTEST_REF_WRAP(T));
         };
 
@@ -727,7 +732,7 @@ namespace detail
             value = 1 + ForEachType<Tail, Callable>::value
         };
 
-        ForEachType(Callable& callable)
+        explicit ForEachType(Callable& callable)
                 : ForEachType<Tail, Callable>(callable) {
 #if defined(_MSC_VER) && _MSC_VER <= 1900
             callable.operator()<value, Head>();
@@ -747,7 +752,7 @@ namespace detail
             value = 0
         };
 
-        ForEachType(Callable& callable) {
+        explicit ForEachType(Callable& callable) {
 #if defined(_MSC_VER) && _MSC_VER <= 1900
             callable.operator()<value, Head>();
 #else  // _MSC_VER
@@ -873,11 +878,6 @@ class DOCTEST_INTERFACE Approx
 {
 public:
     explicit Approx(double value);
-
-    Approx(Approx const& other)
-            : m_epsilon(other.m_epsilon)
-            , m_scale(other.m_scale)
-            , m_value(other.m_value) {}
 
     Approx operator()(double value) const {
         Approx approx(value);
@@ -1125,6 +1125,7 @@ namespace detail
         bool operator<(const SubcaseSignature& other) const;
     };
 
+    // cppcheck-suppress copyCtorAndEqOperator
     struct DOCTEST_INTERFACE Subcase
     {
         SubcaseSignature m_signature;
@@ -1247,11 +1248,12 @@ namespace detail
     // clang-format on
 
     template <typename L>
+    // cppcheck-suppress copyCtorAndEqOperator
     struct Expression_lhs
     {
         L lhs;
 
-        Expression_lhs(L in)
+        explicit Expression_lhs(L in)
                 : lhs(in) {}
 
         Expression_lhs(const Expression_lhs& other)
@@ -1340,7 +1342,8 @@ namespace detail
 
     DOCTEST_INTERFACE void addFailedAssert(assertType::Enum assert_type);
 
-    DOCTEST_INTERFACE void logTestStart(const char* name, const char* suite, const char* file, unsigned line);
+    DOCTEST_INTERFACE void logTestStart(const char* name, const char* suite, const char* file,
+                                        unsigned line);
     DOCTEST_INTERFACE void logTestEnd();
 
     DOCTEST_INTERFACE void logTestException(const String& what, bool crash = false);
@@ -1529,13 +1532,14 @@ namespace detail
     class ExceptionTranslator : public IExceptionTranslator
     {
     public:
-        ExceptionTranslator(String (*translateFunction)(T))
+        explicit ExceptionTranslator(String (*translateFunction)(T))
                 : m_translateFunction(translateFunction) {}
 
         bool translate(String& res) const {
 #ifndef DOCTEST_CONFIG_NO_EXCEPTIONS
             try {
                 throw;
+                // cppcheck-suppress catchExceptionByValue
             } catch(T ex) {
                 res = m_translateFunction(ex);
                 return true;
@@ -1596,6 +1600,7 @@ namespace detail
     DOCTEST_INTERFACE void popFromContexts();
     DOCTEST_INTERFACE void useContextIfExceptionOccurred(IContextScope* ptr);
 
+    // cppcheck-suppress copyCtorAndEqOperator
     class ContextBuilder
     {
         friend class ContextScope;
@@ -1608,7 +1613,7 @@ namespace detail
         {
             const T* capture;
 
-            Capture(const T* in)
+            explicit Capture(const T* in)
                     : capture(in) {}
             virtual void toStream(std::ostream* stream) const { // override
                 doctest::detail::toStream(stream, *capture);
@@ -1658,6 +1663,7 @@ namespace detail
         }
 
     public:
+        // cppcheck-suppress uninitMemberVar
         ContextBuilder()
                 : numCaptures(0)
                 , head(0)
@@ -1715,7 +1721,7 @@ namespace detail
         bool           built;
 
     public:
-        ContextScope(ContextBuilder& temp)
+        explicit ContextScope(ContextBuilder& temp)
                 : contextBuilder(temp)
                 , built(false) {
             addToContexts(this);
@@ -1781,6 +1787,7 @@ int registerExceptionTranslator(String (*)(T)) {
 
 DOCTEST_INTERFACE bool isRunningInTest();
 
+// cppcheck-suppress noCopyConstructor
 class DOCTEST_INTERFACE Context
 {
 #if !defined(DOCTEST_CONFIG_DISABLE)
@@ -1791,7 +1798,7 @@ class DOCTEST_INTERFACE Context
 #endif // DOCTEST_CONFIG_DISABLE
 
 public:
-    Context(int argc = 0, const char* const* argv = 0);
+    explicit Context(int argc = 0, const char* const* argv = 0);
 
     ~Context();
 
