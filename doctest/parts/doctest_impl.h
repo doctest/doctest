@@ -321,6 +321,12 @@ namespace detail
 #endif // DOCTEST_CONFIG_DISABLE
 } // namespace detail
 
+#ifdef _MSC_VER
+#pragma warning(push)
+#pragma warning(disable : 6011) // Dereferencing NULL pointer
+#pragma warning(disable : 6387) // This does not adhere to the specification for the function strcpy
+#endif                          // _MSC_VER
+
 String::String(const char* in)
         : m_str(static_cast<char*>(std::malloc(detail::my_strlen(in) + 1))) {
     if(in)
@@ -363,6 +369,10 @@ String& String::operator+=(const String& other) {
     }
     return *this;
 }
+
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif // _MSC_VER
 
 unsigned String::size() const { return m_str ? detail::my_strlen(m_str) : 0; }
 unsigned String::length() const { return size(); }

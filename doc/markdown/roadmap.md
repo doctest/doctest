@@ -10,7 +10,7 @@ Planned features for future releases - order changes constantly...
 
 ### For 1.2:
 
-- integrate static analysis on the CI: **msvc**, **clang**, **cppcheck**
+- integrate static analysis on the CI: **clang**
 - decorators for test cases - like in boost test
     - depends_on (decorator)
     - description (decorator)
@@ -41,6 +41,7 @@ Planned features for future releases - order changes constantly...
         test.cpp(45): Test case "test4" is skipped because test2 and test3 failed
         Leaving test module "decorator_08"; testing time: 16ms
 - runtime performance
+    - move string implementation to the fwd part - use new/delete
     - lazily stringify expressions - only when needed
     - optimize createStream/freeStream to reuse a pool of ostringstream objects
     - get rid of local statics on the hot path - like in getContextState()
@@ -70,7 +71,9 @@ Planned features for future releases - order changes constantly...
         - using cmake directly
         - using it as a package (the install target)
         - getting it from vcpkg/hunter/etc.
-- address the coverage issue... look at how this project does it: https://github.com/rollbear/trompeloeil
+- address the coverage issue... look at how these projects do it:
+    - https://github.com/rollbear/trompeloeil
+    - https://github.com/vietjtnguyen/argagg/blob/master/.travis.yml
 - builds with GCC 7 when it is released (should be in late April)
 
 ### For 1.3:
@@ -133,6 +136,8 @@ Planned features for future releases - order changes constantly...
 
 ### Things that are being considered but not part of the roadmap yet:
 
+- rpm package? like this: https://github.com/vietjtnguyen/argagg/blob/master/packaging/rpm/argagg.spec
+- get the current test case/section path - https://github.com/philsquared/Catch/issues/522
 - when no assertion is encountered in a test case it should fail
 - failure reporting should print out previous SECTIONs for data-driven testing - as requested [here](https://github.com/philsquared/Catch/issues/734)
 - ```Bitwise()``` class that has overloaded operators for comparison - to be used to check objects bitwise against each other

@@ -88,3 +88,9 @@ build_script:
   - msbuild doctest.sln /p:Configuration=Release;Platform=Win32 /maxcpucount
   - ctest -C Release --output-on-failure
   - cd ..
+  # static code analysis
+  - IF "%gen%" == "Visual Studio 15 2017" mkdir analysis
+  - IF "%gen%" == "Visual Studio 15 2017" cd analysis
+  - IF "%gen%" == "Visual Studio 15 2017" cmake .. -G "%gen% Win64"
+  - IF "%gen%" == "Visual Studio 15 2017" msbuild doctest.sln /p:Configuration=Debug;Platform=x64 /maxcpucount /p:RunCodeAnalysis=true /p:CodeAnalysisTreatWarningsAsErrors=true
+  - IF "%gen%" == "Visual Studio 15 2017" cd ..
