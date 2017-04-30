@@ -68,12 +68,13 @@ matrix:
         apt:
           packages: ["lcov", "curl"]
 
-    # coverage
-    - env: COMPILER=g++ CPPCHECK=true
-      compiler: gcc
-      addons:
+    # static code analysis
+    - env: COMPILER=clang++-4.0 STATIC_CODE_ANALYSIS=true
+      dist: trusty
+      addons: &clang40
         apt:
-          packages: ["cppcheck"]
+          packages: ["clang-4.0", "clang-tidy-4.0", "cppcheck"]
+          sources: *apt_sources
 
     # GCC 4.4
     - env: COMPILER=g++-4.4
@@ -350,14 +351,15 @@ script:
   # coverage - do not continue with other build configurations after that
   - |
     if [[ "${COVERALLS_SERVICE_NAME}" = "travis-ci" ]]; then
-      cmake ${CMAKE_OPTIONS_GLOBAL} -DCMAKE_BUILD_TYPE=Debug .
+      cmake ${CMAKE_OPTIONS_GLOBAL} ${CMAKE_OPTIONS} -DCMAKE_CXX_COMPILER=${CXX} -DCMAKE_BUILD_TYPE=Debug .
       make -k -j2 && make coveralls
       exit
     fi
 
-  # cppcheck static code analysis
+  # static code analysis - do not continue with other build configurations after that
   - |
-    if [[ "${CPPCHECK}" = "true" ]]; then
+    if [[ "${STATIC_CODE_ANALYSIS}" = "true" ]]; then
+      # cppcheck
       cp doctest/doctest.h doctest.cpp
       echo -e "TEST_CASE(\"\") {" >> doctest.cpp
       echo -e "    int a;" >> doctest.cpp
@@ -367,6 +369,12 @@ script:
       echo -e "}" >> doctest.cpp
       
       cppcheck doctest.cpp --enable=all --suppress=unmatchedSuppression --suppress=missingIncludeSystem --suppress=unusedFunction --suppress=functionConst --inline-suppr --platform=unix64 --inconclusive --std=posix --inconclusive -v --error-exitcode=1 --template "{file}({line}): {severity} ({id}): {message}" -DDOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
+      
+      # clang-tidy
+      cd scripts/playground
+      cmake ${CMAKE_OPTIONS_GLOBAL} ${CMAKE_OPTIONS} -DCMAKE_CXX_COMPILER=${CXX} .
+      clang-tidy-4.0 -p=. *.cpp -header-filter=.* -warnings-as-errors=* -checks='*,-misc-macro-parentheses,-misc-definitions-in-headers,-misc-unused-parameters,-llvm-header-guard,-llvm-include-order,-google-readability-braces-around-statements,-google-runtime-references,-google-readability-todo,-google-build-using-namespace,-google-explicit-constructor,-cert-err58-cpp,-cppcoreguidelines-pro-type-vararg,-cppcoreguidelines-pro-bounds-pointer-arithmetic,-cppcoreguidelines-pro-bounds-array-to-pointer-decay,-cppcoreguidelines-special-member-functions,-cppcoreguidelines-pro-type-reinterpret-cast,-cppcoreguidelines-pro-bounds-constant-array-index,-cppcoreguidelines-pro-type-member-init,-clang-analyzer-security.insecureAPI.strcpy,-modernize-use-nullptr,-modernize-use-equals-default,-modernize-loop-convert,-modernize-use-auto,-readability-braces-around-statements,-readability-named-parameter,-readability-else-after-return,-readability-redundant-declaration,-readability-implicit-bool-cast'
+      
       exit
     fi
 

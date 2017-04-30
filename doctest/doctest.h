@@ -424,7 +424,7 @@ struct char_traits<char>;
 template <class charT, class traits>
 class basic_ostream;
 typedef basic_ostream<char, char_traits<char> > ostream;
-}
+} // namespace std
 #else // DOCTEST_CONFIG_USE_IOSFWD
 #include <iosfwd>
 #endif // DOCTEST_CONFIG_USE_IOSFWD
@@ -975,7 +975,7 @@ inline String toString<Approx>(const DOCTEST_REF_WRAP(Approx) value) {
 namespace detail
 {
     // the function type this library works with
-    typedef void (*funcType)(void);
+    typedef void (*funcType)();
 
     namespace assertType
     {
@@ -1099,9 +1099,9 @@ namespace detail
     template<class T, unsigned N>   struct decay_array<T[N]> { typedef T* type; };
     template<class T>               struct decay_array<T[]>  { typedef T* type; };
 
-    template<class T>   struct not_char_pointer              { enum { value = true }; };
-    template<>          struct not_char_pointer<char*>       { enum { value = false }; };
-    template<>          struct not_char_pointer<const char*> { enum { value = false }; };
+    template<class T>   struct not_char_pointer              { enum { value = 1 }; };
+    template<>          struct not_char_pointer<char*>       { enum { value = 0 }; };
+    template<>          struct not_char_pointer<const char*> { enum { value = 0 }; };
 
     template<class T> struct can_use_op : not_char_pointer<typename decay_array<T>::type> {};
     // clang-format on
@@ -1170,28 +1170,28 @@ namespace detail
 
         // clang-format off
         // forbidding some expressions based on this table: http://en.cppreference.com/w/cpp/language/operator_precedence
-        template <typename R> Result operator&  (const R&) { DOCTEST_STATIC_ASSERT(deferred_false<R>::value, Expression_Too_Complex_Please_Rewrite_As_Binary_Comparison); return Result(); }
-        template <typename R> Result operator^  (const R&) { DOCTEST_STATIC_ASSERT(deferred_false<R>::value, Expression_Too_Complex_Please_Rewrite_As_Binary_Comparison); return Result(); }
-        template <typename R> Result operator|  (const R&) { DOCTEST_STATIC_ASSERT(deferred_false<R>::value, Expression_Too_Complex_Please_Rewrite_As_Binary_Comparison); return Result(); }
-        template <typename R> Result operator&& (const R&) { DOCTEST_STATIC_ASSERT(deferred_false<R>::value, Expression_Too_Complex_Please_Rewrite_As_Binary_Comparison); return Result(); }
-        template <typename R> Result operator|| (const R&) { DOCTEST_STATIC_ASSERT(deferred_false<R>::value, Expression_Too_Complex_Please_Rewrite_As_Binary_Comparison); return Result(); }
-        template <typename R> Result operator== (const R&) { DOCTEST_STATIC_ASSERT(deferred_false<R>::value, Expression_Too_Complex_Please_Rewrite_As_Binary_Comparison); return Result(); }
-        template <typename R> Result operator!= (const R&) { DOCTEST_STATIC_ASSERT(deferred_false<R>::value, Expression_Too_Complex_Please_Rewrite_As_Binary_Comparison); return Result(); }
-        template <typename R> Result operator<  (const R&) { DOCTEST_STATIC_ASSERT(deferred_false<R>::value, Expression_Too_Complex_Please_Rewrite_As_Binary_Comparison); return Result(); }
-        template <typename R> Result operator>  (const R&) { DOCTEST_STATIC_ASSERT(deferred_false<R>::value, Expression_Too_Complex_Please_Rewrite_As_Binary_Comparison); return Result(); }
-        template <typename R> Result operator<= (const R&) { DOCTEST_STATIC_ASSERT(deferred_false<R>::value, Expression_Too_Complex_Please_Rewrite_As_Binary_Comparison); return Result(); }
-        template <typename R> Result operator>= (const R&) { DOCTEST_STATIC_ASSERT(deferred_false<R>::value, Expression_Too_Complex_Please_Rewrite_As_Binary_Comparison); return Result(); }
-        template <typename R> Result operator=  (const R&) { DOCTEST_STATIC_ASSERT(deferred_false<R>::value, Expression_Too_Complex_Please_Rewrite_As_Binary_Comparison); return Result(); }
-        template <typename R> Result operator+= (const R&) { DOCTEST_STATIC_ASSERT(deferred_false<R>::value, Expression_Too_Complex_Please_Rewrite_As_Binary_Comparison); return Result(); }
-        template <typename R> Result operator-= (const R&) { DOCTEST_STATIC_ASSERT(deferred_false<R>::value, Expression_Too_Complex_Please_Rewrite_As_Binary_Comparison); return Result(); }
-        template <typename R> Result operator*= (const R&) { DOCTEST_STATIC_ASSERT(deferred_false<R>::value, Expression_Too_Complex_Please_Rewrite_As_Binary_Comparison); return Result(); }
-        template <typename R> Result operator/= (const R&) { DOCTEST_STATIC_ASSERT(deferred_false<R>::value, Expression_Too_Complex_Please_Rewrite_As_Binary_Comparison); return Result(); }
-        template <typename R> Result operator%= (const R&) { DOCTEST_STATIC_ASSERT(deferred_false<R>::value, Expression_Too_Complex_Please_Rewrite_As_Binary_Comparison); return Result(); }
-        template <typename R> Result operator<<=(const R&) { DOCTEST_STATIC_ASSERT(deferred_false<R>::value, Expression_Too_Complex_Please_Rewrite_As_Binary_Comparison); return Result(); }
-        template <typename R> Result operator>>=(const R&) { DOCTEST_STATIC_ASSERT(deferred_false<R>::value, Expression_Too_Complex_Please_Rewrite_As_Binary_Comparison); return Result(); }
-        template <typename R> Result operator&= (const R&) { DOCTEST_STATIC_ASSERT(deferred_false<R>::value, Expression_Too_Complex_Please_Rewrite_As_Binary_Comparison); return Result(); }
-        template <typename R> Result operator^= (const R&) { DOCTEST_STATIC_ASSERT(deferred_false<R>::value, Expression_Too_Complex_Please_Rewrite_As_Binary_Comparison); return Result(); }
-        template <typename R> Result operator|= (const R&) { DOCTEST_STATIC_ASSERT(deferred_false<R>::value, Expression_Too_Complex_Please_Rewrite_As_Binary_Comparison); return Result(); }
+        template <typename R> Result& operator&  (const R&) { DOCTEST_STATIC_ASSERT(deferred_false<R>::value, Expression_Too_Complex_Please_Rewrite_As_Binary_Comparison); return *this; }
+        template <typename R> Result& operator^  (const R&) { DOCTEST_STATIC_ASSERT(deferred_false<R>::value, Expression_Too_Complex_Please_Rewrite_As_Binary_Comparison); return *this; }
+        template <typename R> Result& operator|  (const R&) { DOCTEST_STATIC_ASSERT(deferred_false<R>::value, Expression_Too_Complex_Please_Rewrite_As_Binary_Comparison); return *this; }
+        template <typename R> Result& operator&& (const R&) { DOCTEST_STATIC_ASSERT(deferred_false<R>::value, Expression_Too_Complex_Please_Rewrite_As_Binary_Comparison); return *this; }
+        template <typename R> Result& operator|| (const R&) { DOCTEST_STATIC_ASSERT(deferred_false<R>::value, Expression_Too_Complex_Please_Rewrite_As_Binary_Comparison); return *this; }
+        template <typename R> Result& operator== (const R&) { DOCTEST_STATIC_ASSERT(deferred_false<R>::value, Expression_Too_Complex_Please_Rewrite_As_Binary_Comparison); return *this; }
+        template <typename R> Result& operator!= (const R&) { DOCTEST_STATIC_ASSERT(deferred_false<R>::value, Expression_Too_Complex_Please_Rewrite_As_Binary_Comparison); return *this; }
+        template <typename R> Result& operator<  (const R&) { DOCTEST_STATIC_ASSERT(deferred_false<R>::value, Expression_Too_Complex_Please_Rewrite_As_Binary_Comparison); return *this; }
+        template <typename R> Result& operator>  (const R&) { DOCTEST_STATIC_ASSERT(deferred_false<R>::value, Expression_Too_Complex_Please_Rewrite_As_Binary_Comparison); return *this; }
+        template <typename R> Result& operator<= (const R&) { DOCTEST_STATIC_ASSERT(deferred_false<R>::value, Expression_Too_Complex_Please_Rewrite_As_Binary_Comparison); return *this; }
+        template <typename R> Result& operator>= (const R&) { DOCTEST_STATIC_ASSERT(deferred_false<R>::value, Expression_Too_Complex_Please_Rewrite_As_Binary_Comparison); return *this; }
+        template <typename R> Result& operator=  (const R&) { DOCTEST_STATIC_ASSERT(deferred_false<R>::value, Expression_Too_Complex_Please_Rewrite_As_Binary_Comparison); return *this; }
+        template <typename R> Result& operator+= (const R&) { DOCTEST_STATIC_ASSERT(deferred_false<R>::value, Expression_Too_Complex_Please_Rewrite_As_Binary_Comparison); return *this; }
+        template <typename R> Result& operator-= (const R&) { DOCTEST_STATIC_ASSERT(deferred_false<R>::value, Expression_Too_Complex_Please_Rewrite_As_Binary_Comparison); return *this; }
+        template <typename R> Result& operator*= (const R&) { DOCTEST_STATIC_ASSERT(deferred_false<R>::value, Expression_Too_Complex_Please_Rewrite_As_Binary_Comparison); return *this; }
+        template <typename R> Result& operator/= (const R&) { DOCTEST_STATIC_ASSERT(deferred_false<R>::value, Expression_Too_Complex_Please_Rewrite_As_Binary_Comparison); return *this; }
+        template <typename R> Result& operator%= (const R&) { DOCTEST_STATIC_ASSERT(deferred_false<R>::value, Expression_Too_Complex_Please_Rewrite_As_Binary_Comparison); return *this; }
+        template <typename R> Result& operator<<=(const R&) { DOCTEST_STATIC_ASSERT(deferred_false<R>::value, Expression_Too_Complex_Please_Rewrite_As_Binary_Comparison); return *this; }
+        template <typename R> Result& operator>>=(const R&) { DOCTEST_STATIC_ASSERT(deferred_false<R>::value, Expression_Too_Complex_Please_Rewrite_As_Binary_Comparison); return *this; }
+        template <typename R> Result& operator&= (const R&) { DOCTEST_STATIC_ASSERT(deferred_false<R>::value, Expression_Too_Complex_Please_Rewrite_As_Binary_Comparison); return *this; }
+        template <typename R> Result& operator^= (const R&) { DOCTEST_STATIC_ASSERT(deferred_false<R>::value, Expression_Too_Complex_Please_Rewrite_As_Binary_Comparison); return *this; }
+        template <typename R> Result& operator|= (const R&) { DOCTEST_STATIC_ASSERT(deferred_false<R>::value, Expression_Too_Complex_Please_Rewrite_As_Binary_Comparison); return *this; }
         // clang-format on
     };
 
@@ -1284,26 +1284,26 @@ namespace detail
 
         // clang-format off
         // forbidding some expressions based on this table: http://en.cppreference.com/w/cpp/language/operator_precedence
-        template <typename R> int operator&  (const R&) { DOCTEST_STATIC_ASSERT(deferred_false<R>::value, Expression_Too_Complex_Please_Rewrite_As_Binary_Comparison); return int(); }
-        template <typename R> int operator^  (const R&) { DOCTEST_STATIC_ASSERT(deferred_false<R>::value, Expression_Too_Complex_Please_Rewrite_As_Binary_Comparison); return int(); }
-        template <typename R> int operator|  (const R&) { DOCTEST_STATIC_ASSERT(deferred_false<R>::value, Expression_Too_Complex_Please_Rewrite_As_Binary_Comparison); return int(); }
-        template <typename R> int operator&& (const R&) { DOCTEST_STATIC_ASSERT(deferred_false<R>::value, Expression_Too_Complex_Please_Rewrite_As_Binary_Comparison); return int(); }
-        template <typename R> int operator|| (const R&) { DOCTEST_STATIC_ASSERT(deferred_false<R>::value, Expression_Too_Complex_Please_Rewrite_As_Binary_Comparison); return int(); }
-        template <typename R> int operator=  (const R&) { DOCTEST_STATIC_ASSERT(deferred_false<R>::value, Expression_Too_Complex_Please_Rewrite_As_Binary_Comparison); return int(); }
-        template <typename R> int operator+= (const R&) { DOCTEST_STATIC_ASSERT(deferred_false<R>::value, Expression_Too_Complex_Please_Rewrite_As_Binary_Comparison); return int(); }
-        template <typename R> int operator-= (const R&) { DOCTEST_STATIC_ASSERT(deferred_false<R>::value, Expression_Too_Complex_Please_Rewrite_As_Binary_Comparison); return int(); }
-        template <typename R> int operator*= (const R&) { DOCTEST_STATIC_ASSERT(deferred_false<R>::value, Expression_Too_Complex_Please_Rewrite_As_Binary_Comparison); return int(); }
-        template <typename R> int operator/= (const R&) { DOCTEST_STATIC_ASSERT(deferred_false<R>::value, Expression_Too_Complex_Please_Rewrite_As_Binary_Comparison); return int(); }
-        template <typename R> int operator%= (const R&) { DOCTEST_STATIC_ASSERT(deferred_false<R>::value, Expression_Too_Complex_Please_Rewrite_As_Binary_Comparison); return int(); }
-        template <typename R> int operator<<=(const R&) { DOCTEST_STATIC_ASSERT(deferred_false<R>::value, Expression_Too_Complex_Please_Rewrite_As_Binary_Comparison); return int(); }
-        template <typename R> int operator>>=(const R&) { DOCTEST_STATIC_ASSERT(deferred_false<R>::value, Expression_Too_Complex_Please_Rewrite_As_Binary_Comparison); return int(); }
-        template <typename R> int operator&= (const R&) { DOCTEST_STATIC_ASSERT(deferred_false<R>::value, Expression_Too_Complex_Please_Rewrite_As_Binary_Comparison); return int(); }
-        template <typename R> int operator^= (const R&) { DOCTEST_STATIC_ASSERT(deferred_false<R>::value, Expression_Too_Complex_Please_Rewrite_As_Binary_Comparison); return int(); }
-        template <typename R> int operator|= (const R&) { DOCTEST_STATIC_ASSERT(deferred_false<R>::value, Expression_Too_Complex_Please_Rewrite_As_Binary_Comparison); return int(); }
+        template <typename R> Expression_lhs& operator&  (const R&) { DOCTEST_STATIC_ASSERT(deferred_false<R>::value, Expression_Too_Complex_Please_Rewrite_As_Binary_Comparison); return *this; }
+        template <typename R> Expression_lhs& operator^  (const R&) { DOCTEST_STATIC_ASSERT(deferred_false<R>::value, Expression_Too_Complex_Please_Rewrite_As_Binary_Comparison); return *this; }
+        template <typename R> Expression_lhs& operator|  (const R&) { DOCTEST_STATIC_ASSERT(deferred_false<R>::value, Expression_Too_Complex_Please_Rewrite_As_Binary_Comparison); return *this; }
+        template <typename R> Expression_lhs& operator&& (const R&) { DOCTEST_STATIC_ASSERT(deferred_false<R>::value, Expression_Too_Complex_Please_Rewrite_As_Binary_Comparison); return *this; }
+        template <typename R> Expression_lhs& operator|| (const R&) { DOCTEST_STATIC_ASSERT(deferred_false<R>::value, Expression_Too_Complex_Please_Rewrite_As_Binary_Comparison); return *this; }
+        template <typename R> Expression_lhs& operator=  (const R&) { DOCTEST_STATIC_ASSERT(deferred_false<R>::value, Expression_Too_Complex_Please_Rewrite_As_Binary_Comparison); return *this; }
+        template <typename R> Expression_lhs& operator+= (const R&) { DOCTEST_STATIC_ASSERT(deferred_false<R>::value, Expression_Too_Complex_Please_Rewrite_As_Binary_Comparison); return *this; }
+        template <typename R> Expression_lhs& operator-= (const R&) { DOCTEST_STATIC_ASSERT(deferred_false<R>::value, Expression_Too_Complex_Please_Rewrite_As_Binary_Comparison); return *this; }
+        template <typename R> Expression_lhs& operator*= (const R&) { DOCTEST_STATIC_ASSERT(deferred_false<R>::value, Expression_Too_Complex_Please_Rewrite_As_Binary_Comparison); return *this; }
+        template <typename R> Expression_lhs& operator/= (const R&) { DOCTEST_STATIC_ASSERT(deferred_false<R>::value, Expression_Too_Complex_Please_Rewrite_As_Binary_Comparison); return *this; }
+        template <typename R> Expression_lhs& operator%= (const R&) { DOCTEST_STATIC_ASSERT(deferred_false<R>::value, Expression_Too_Complex_Please_Rewrite_As_Binary_Comparison); return *this; }
+        template <typename R> Expression_lhs& operator<<=(const R&) { DOCTEST_STATIC_ASSERT(deferred_false<R>::value, Expression_Too_Complex_Please_Rewrite_As_Binary_Comparison); return *this; }
+        template <typename R> Expression_lhs& operator>>=(const R&) { DOCTEST_STATIC_ASSERT(deferred_false<R>::value, Expression_Too_Complex_Please_Rewrite_As_Binary_Comparison); return *this; }
+        template <typename R> Expression_lhs& operator&= (const R&) { DOCTEST_STATIC_ASSERT(deferred_false<R>::value, Expression_Too_Complex_Please_Rewrite_As_Binary_Comparison); return *this; }
+        template <typename R> Expression_lhs& operator^= (const R&) { DOCTEST_STATIC_ASSERT(deferred_false<R>::value, Expression_Too_Complex_Please_Rewrite_As_Binary_Comparison); return *this; }
+        template <typename R> Expression_lhs& operator|= (const R&) { DOCTEST_STATIC_ASSERT(deferred_false<R>::value, Expression_Too_Complex_Please_Rewrite_As_Binary_Comparison); return *this; }
         // these 2 are unfortunate because they should be allowed - they have higher precedence over the comparisons, but the
         // ExpressionDecomposer class uses the left shift operator to capture the left operand of the binary expression...
-        template <typename R> int operator<< (const R&) { DOCTEST_STATIC_ASSERT(deferred_false<R>::value, Please_Surround_The_Left_Shift_Operation_With_Parenthesis); return int(); }
-        template <typename R> int operator>> (const R&) { DOCTEST_STATIC_ASSERT(deferred_false<R>::value, Please_Surround_The_Right_Shift_Operation_With_Parenthesis); return int(); }
+        template <typename R> Expression_lhs& operator<< (const R&) { DOCTEST_STATIC_ASSERT(deferred_false<R>::value, Please_Surround_The_Left_Shift_Operation_With_Parenthesis); return *this; }
+        template <typename R> Expression_lhs& operator>> (const R&) { DOCTEST_STATIC_ASSERT(deferred_false<R>::value, Please_Surround_The_Right_Shift_Operation_With_Parenthesis); return *this; }
         // clang-format on
     };
 
@@ -1338,9 +1338,8 @@ namespace detail
     };
 
     // forward declarations of functions used by the macros
-    DOCTEST_INTERFACE int regTest(void (*f)(void), unsigned line, const char* file,
-                                  const char* name, const char* suite, const char* type = "",
-                                  int template_id = -1);
+    DOCTEST_INTERFACE int regTest(funcType f, unsigned line, const char* file, const char* name,
+                                  const char* suite, const char* type = "", int template_id = -1);
     DOCTEST_INTERFACE int setTestSuiteName(const char* name);
 
     DOCTEST_INTERFACE void addFailedAssert(assertType::Enum assert_type);
@@ -1543,7 +1542,7 @@ namespace detail
             try {
                 throw;
                 // cppcheck-suppress catchExceptionByValue
-            } catch(T ex) {
+            } catch(T ex) { // NOLINT
                 res = m_translateFunction(ex);
                 return true;
             } catch(...) {}
@@ -1667,7 +1666,7 @@ namespace detail
 
     public:
         // cppcheck-suppress uninitMemberVar
-        ContextBuilder()
+        ContextBuilder() // NOLINT
                 : numCaptures(0)
                 , head(0)
                 , tail(0) {}
@@ -3052,8 +3051,8 @@ namespace detail
                 char asChar[sizeof(int)];
             } u;
 
-            u.asInt = 1;
-            return (u.asChar[sizeof(int) - 1] == 1) ? Big : Little;
+            u.asInt = 1;                                            // NOLINT
+            return (u.asChar[sizeof(int) - 1] == 1) ? Big : Little; // NOLINT
         }
     };
 
@@ -3075,7 +3074,7 @@ namespace detail
 
     std::ostream* createStream() { return new std::ostringstream(); }
     String getStreamResult(std::ostream* in) {
-        return static_cast<std::ostringstream*>(in)->str().c_str();
+        return static_cast<std::ostringstream*>(in)->str().c_str(); // NOLINT
     }
     void freeStream(std::ostream* in) { delete in; }
 
@@ -3171,7 +3170,7 @@ namespace detail
         int             numAssertionsForCurrentTestcase;
         int             numAssertions;
         int             numFailedAssertions;
-        int             hasCurrentTestFailed;
+        bool            hasCurrentTestFailed;
 
         std::vector<IContextScope*> contexts;            // for logging with INFO() and friends
         std::vector<std::string>    exceptionalContexts; // logging from INFO() due to an exception
@@ -3209,7 +3208,7 @@ namespace detail
 #endif                          // _MSC_VER
 
 String::String(const char* in)
-        : m_str(static_cast<char*>(std::malloc(detail::my_strlen(in) + 1))) {
+        : m_str(new char[detail::my_strlen(in) + 1]) {
     if(in)
         std::strcpy(m_str, in);
     else
@@ -3223,12 +3222,12 @@ String::String(const String& other)
 
 void String::copy(const String& other) {
     if(m_str)
-        std::free(m_str);
-    m_str = static_cast<char*>(std::malloc(detail::my_strlen(other.m_str) + 1));
+        delete[] m_str;
+    m_str = new char[detail::my_strlen(other.m_str) + 1];
     std::strcpy(m_str, other.m_str);
 }
 
-String::~String() { std::free(m_str); }
+String::~String() { delete[] m_str; }
 
 String& String::operator=(const String& other) {
     if(this != &other)
@@ -3241,11 +3240,10 @@ String String::operator+(const String& other) const { return String(m_str) += ot
 String& String::operator+=(const String& other) {
     using namespace detail;
     if(other.m_str != 0) {
-        char* newStr =
-                static_cast<char*>(std::malloc(my_strlen(m_str) + my_strlen(other.m_str) + 1));
+        char* newStr = new char[my_strlen(m_str) + my_strlen(other.m_str) + 1];
         std::strcpy(newStr, m_str);
         std::strcpy(newStr + my_strlen(m_str), other.m_str);
-        std::free(m_str);
+        delete[] m_str;
         m_str = newStr;
     }
     return *this;
@@ -3623,14 +3621,14 @@ namespace detail
     //}
 
     // checks if the name matches any of the filters (and can be configured what to do when empty)
-    int matchesAny(const char* name, std::vector<String> filters, int matchEmpty,
-                   bool caseSensitive) {
-        if(filters.size() == 0 && matchEmpty)
-            return 1;
+    bool matchesAny(const char* name, std::vector<String> filters, int matchEmpty,
+                    bool caseSensitive) {
+        if(filters.empty() && matchEmpty)
+            return true;
         for(unsigned i = 0; i < filters.size(); ++i)
             if(wildcmp(name, filters[i].c_str(), caseSensitive))
-                return 1;
-        return 0;
+                return true;
+        return false;
     }
 
     // the current ContextState with which tests are being executed
@@ -3695,7 +3693,7 @@ namespace detail
             if(s->subcasesHasSkipped == false)
                 s->subcasesPassed.insert(m_signature);
 
-            if(s->subcasesStack.size() > 0)
+            if(!s->subcasesStack.empty())
                 s->subcasesStack.pop_back();
             if(s->hasLoggedCurrentTestStart)
                 logTestEnd();
@@ -3793,9 +3791,6 @@ namespace detail
         ~Color() { use(None); }
 
         static void use(Code code);
-
-    private:
-        Color(Color const& other);
     };
 
     void Color::use(Code
@@ -4051,7 +4046,7 @@ namespace detail
             sigaltstack(&sigStack, &oldSigStack);
             struct sigaction sa = {0};
 
-            sa.sa_handler = handleSignal;
+            sa.sa_handler = handleSignal; // NOLINT
             sa.sa_flags   = SA_ONSTACK;
             for(std::size_t i = 0; i < sizeof(signalDefs) / sizeof(SignalDefs); ++i) {
                 sigaction(signalDefs[i].id, &sa, &oldSigActions[i]);
@@ -4230,7 +4225,7 @@ namespace detail
         std::string contextStr;
 
         ContextState*& cs = getContextState();
-        if(cs->exceptionalContexts.size()) {
+        if(!cs->exceptionalContexts.empty()) {
             contextStr += "with context:\n";
             for(size_t i = cs->exceptionalContexts.size(); i > 0; --i) {
                 contextStr += "  ";
@@ -4251,7 +4246,7 @@ namespace detail
     String logContext() {
         std::ostringstream           stream;
         std::vector<IContextScope*>& contexts = getContextState()->contexts;
-        if(contexts.size() > 0)
+        if(!contexts.empty())
             stream << "with context:\n";
         for(size_t i = 0; i < contexts.size(); ++i) {
             stream << "  ";
@@ -4485,12 +4480,10 @@ namespace detail
             }
         }
 
-        if(m_failed) {
+        if(m_failed)
             addFailedAssert(m_assert_type);
-            if(isDebuggerActive() && !DOCTEST_GCS().no_breaks)
-                return true; // should break into the debugger
-        }
-        return false;
+
+        return m_failed && isDebuggerActive() && !DOCTEST_GCS().no_breaks; // break into debugger
     }
 
     void ResultBuilder::react() const {
@@ -4538,9 +4531,7 @@ namespace detail
                                 "\n");
         }
 
-        if(isDebuggerActive() && !DOCTEST_GCS().no_breaks && !is_warn)
-            return true; // should break into the debugger
-        return false;
+        return isDebuggerActive() && !DOCTEST_GCS().no_breaks && !is_warn; // break into debugger
     }
 
     void MessageBuilder::react() {
@@ -4670,7 +4661,7 @@ namespace detail
                 }
             } else {
                 // integer
-                int theInt = std::atoi(parsedValue.c_str());
+                int theInt = std::atoi(parsedValue.c_str()); // NOLINT
                 if(theInt != 0) {
                     res = theInt;
                     return true;
@@ -4865,7 +4856,7 @@ void Context::parseArgs(int argc, const char* const* argv, bool withDefaults) {
        parseIntOption(argc, argv, DOCTEST_STR_CONCAT_TOSTR(sname, =), option_bool, intRes))        \
         p->var = !!intRes;                                                                         \
     else if(parseFlag(argc, argv, #name) || parseFlag(argc, argv, #sname))                         \
-        p->var = 1;                                                                                \
+        p->var = true;                                                                             \
     else if(withDefaults)                                                                          \
     p->var = default
 
@@ -4892,19 +4883,19 @@ void Context::parseArgs(int argc, const char* const* argv, bool withDefaults) {
     DOCTEST_PARSE_INT_OPTION(dt-abort-after, dt-aa, abort_after, 0);
     DOCTEST_PARSE_INT_OPTION(dt-subcase-filter-levels, dt-scfl, subcase_filter_levels, 2000000000);
 
-    DOCTEST_PARSE_AS_BOOL_OR_FLAG(dt-success, dt-s, success, 0);
-    DOCTEST_PARSE_AS_BOOL_OR_FLAG(dt-case-sensitive, dt-cs, case_sensitive, 0);
-    DOCTEST_PARSE_AS_BOOL_OR_FLAG(dt-exit, dt-e, exit, 0);
-    DOCTEST_PARSE_AS_BOOL_OR_FLAG(dt-no-throw, dt-nt, no_throw, 0);
-    DOCTEST_PARSE_AS_BOOL_OR_FLAG(dt-no-exitcode, dt-ne, no_exitcode, 0);
-    DOCTEST_PARSE_AS_BOOL_OR_FLAG(dt-no-run, dt-nr, no_run, 0);
-    DOCTEST_PARSE_AS_BOOL_OR_FLAG(dt-no-version, dt-nv, no_version, 0);
-    DOCTEST_PARSE_AS_BOOL_OR_FLAG(dt-no-colors, dt-nc, no_colors, 0);
-    DOCTEST_PARSE_AS_BOOL_OR_FLAG(dt-force-colors, dt-fc, force_colors, 0);
-    DOCTEST_PARSE_AS_BOOL_OR_FLAG(dt-no-breaks, dt-nb, no_breaks, 0);
-    DOCTEST_PARSE_AS_BOOL_OR_FLAG(dt-no-path-filenames, dt-npf, no_path_in_filenames, 0);
-    DOCTEST_PARSE_AS_BOOL_OR_FLAG(dt-no-line-numbers, dt-nln, no_line_numbers, 0);
-    DOCTEST_PARSE_AS_BOOL_OR_FLAG(dt-no-skipped-summary, dt-no-skipped-summary, no_skipped_summary, 0);
+    DOCTEST_PARSE_AS_BOOL_OR_FLAG(dt-success, dt-s, success, false);
+    DOCTEST_PARSE_AS_BOOL_OR_FLAG(dt-case-sensitive, dt-cs, case_sensitive, false);
+    DOCTEST_PARSE_AS_BOOL_OR_FLAG(dt-exit, dt-e, exit, false);
+    DOCTEST_PARSE_AS_BOOL_OR_FLAG(dt-no-throw, dt-nt, no_throw, false);
+    DOCTEST_PARSE_AS_BOOL_OR_FLAG(dt-no-exitcode, dt-ne, no_exitcode, false);
+    DOCTEST_PARSE_AS_BOOL_OR_FLAG(dt-no-run, dt-nr, no_run, false);
+    DOCTEST_PARSE_AS_BOOL_OR_FLAG(dt-no-version, dt-nv, no_version, false);
+    DOCTEST_PARSE_AS_BOOL_OR_FLAG(dt-no-colors, dt-nc, no_colors, false);
+    DOCTEST_PARSE_AS_BOOL_OR_FLAG(dt-force-colors, dt-fc, force_colors, false);
+    DOCTEST_PARSE_AS_BOOL_OR_FLAG(dt-no-breaks, dt-nb, no_breaks, false);
+    DOCTEST_PARSE_AS_BOOL_OR_FLAG(dt-no-path-filenames, dt-npf, no_path_in_filenames, false);
+    DOCTEST_PARSE_AS_BOOL_OR_FLAG(dt-no-line-numbers, dt-nln, no_line_numbers, false);
+    DOCTEST_PARSE_AS_BOOL_OR_FLAG(dt-no-skipped-summary, dt-no-skipped-summary, no_skipped_summary, false);
 // clang-format on
 
 #undef DOCTEST_PARSE_STR_OPTION
@@ -4998,7 +4989,7 @@ int Context::run() {
         testArray.push_back(&(*it));
 
     // sort the collected records
-    if(testArray.size() > 0) {
+    if(!testArray.empty()) {
         if(p->order_by.compare("file", true) == 0) {
             std::qsort(&testArray[0], testArray.size(), sizeof(TestData*), fileOrderComparator);
         } else if(p->order_by.compare("suite", true) == 0) {
@@ -5011,7 +5002,7 @@ int Context::run() {
             // random_shuffle implementation
             const TestData** first = &testArray[0];
             for(i = testArray.size() - 1; i > 0; --i) {
-                int idxToSwap = std::rand() % (i + 1);
+                int idxToSwap = std::rand() % (i + 1); // NOLINT
 
                 const TestData* temp = first[i];
 

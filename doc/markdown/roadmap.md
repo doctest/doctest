@@ -10,7 +10,6 @@ Planned features for future releases - order changes constantly...
 
 ### For 1.2:
 
-- integrate static analysis on the CI: **clang**
 - decorators for test cases - like in boost test
     - depends_on (decorator)
     - description (decorator)
@@ -133,9 +132,11 @@ Planned features for future releases - order changes constantly...
     - update type lists to C++11
     - update traits - use declval, etc.
     - move initialization of fields from initializer lists to class bodies
+    - update static code analysis - less warning suppressing
 
 ### Things that are being considered but not part of the roadmap yet:
 
+- consider the following 2 properties for the MSVC static code analyzer: EnableCppCoreCheck, EnableExperimentalCppCoreCheck
 - rpm package? like this: https://github.com/vietjtnguyen/argagg/blob/master/packaging/rpm/argagg.spec
 - get the current test case/section path - https://github.com/philsquared/Catch/issues/522
 - when no assertion is encountered in a test case it should fail
