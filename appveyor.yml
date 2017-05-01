@@ -1,96 +1,97 @@
-# http://www.appveyor.com/docs/appveyor-yml
-
-notifications:
-  - provider: Email
-    on_build_status_changed: false
-    on_build_failure: false
-    on_build_success: false
-  # gitter
-  - provider: Webhook
-    url: https://webhooks.gitter.im/e/3a78202a235c0325e516
-    on_build_status_changed: true
-    on_build_failure: true
-    on_build_success: false
-
-clone_depth: 500
-branches:
-  except:
-    - gh-pages
-    - coverity_scan
-
-matrix:
-  fast_finish: false
-
-environment:
-  matrix:
-  - gen: "MinGW Makefiles"
-  - gen: "Visual Studio 9 2008"
-  - gen: "Visual Studio 10 2010"
-  - gen: "Visual Studio 11 2012"
-  - gen: "Visual Studio 12 2013"
-  - gen: "Visual Studio 14 2015"
-  - gen: "Visual Studio 15 2017"
-    APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
-
-install:
-  - IF "%gen%" == "MinGW Makefiles" appveyor-retry appveyor DownloadFile http://downloads.sourceforge.net/mingw-w64/x86_64-6.3.0-release-posix-seh-rt_v5-rev1.7z
-  - IF "%gen%" == "MinGW Makefiles" 7z x x86_64-6.3.0-release-posix-seh-rt_v5-rev1.7z -oc:\mingw > nul
-
-build_script:
-  # workaround for CMake not wanting sh.exe on PATH for MinGW
-  - IF "%gen%" == "MinGW Makefiles" set PATH=%PATH:C:\Program Files\Git\usr\bin;=%
-  - IF "%gen%" == "MinGW Makefiles" set PATH=C:\mingw\mingw64\bin;%PATH%
-  # generate and build everything for debug and release
-  - IF "%gen%" == "MinGW Makefiles" mkdir debug_64
-  - IF "%gen%" == "MinGW Makefiles" cd debug_64
-  - IF "%gen%" == "MinGW Makefiles" cmake .. -G "MinGW Makefiles" -DCMAKE_BUILD_TYPE=Debug
-  - IF "%gen%" == "MinGW Makefiles" cmake --build .
-  - IF "%gen%" == "MinGW Makefiles" cd ..
-  - IF "%gen%" == "MinGW Makefiles" mkdir release_64
-  - IF "%gen%" == "MinGW Makefiles" cd release_64
-  - IF "%gen%" == "MinGW Makefiles" cmake .. -G "MinGW Makefiles" -DCMAKE_BUILD_TYPE=Release
-  - IF "%gen%" == "MinGW Makefiles" cmake --build .
-  - IF "%gen%" == "MinGW Makefiles" cd ..
-  # adding git to the path again - for the dos2unix tool
-  - IF "%gen%" == "MinGW Makefiles" set PATH=%PATH%;C:\Program Files\Git\usr\bin
-  # execute tests
-  - IF "%gen%" == "MinGW Makefiles" cd debug_64
-  - IF "%gen%" == "MinGW Makefiles" ctest --output-on-failure
-  - IF "%gen%" == "MinGW Makefiles" cd ..
-  - IF "%gen%" == "MinGW Makefiles" cd release_64
-  - IF "%gen%" == "MinGW Makefiles" ctest --output-on-failure
-  - IF "%gen%" == "MinGW Makefiles" cd ..
-  - IF "%gen%" == "MinGW Makefiles" appveyor exit
-  # ============= VISUAL STUDIO
-  # x64 - not enabled for 2008 because cmake cannot find the compiler for Win64
-  - IF NOT "%gen%" == "Visual Studio 9 2008" mkdir debug_64
-  - IF NOT "%gen%" == "Visual Studio 9 2008" cd debug_64
-  - IF NOT "%gen%" == "Visual Studio 9 2008" cmake .. -G "%gen% Win64"
-  - IF NOT "%gen%" == "Visual Studio 9 2008" msbuild doctest.sln /p:Configuration=Debug;Platform=x64 /maxcpucount
-  - IF NOT "%gen%" == "Visual Studio 9 2008" ctest -C Debug --output-on-failure
-  - IF NOT "%gen%" == "Visual Studio 9 2008" cd ..
-  - IF NOT "%gen%" == "Visual Studio 9 2008" mkdir release_64
-  - IF NOT "%gen%" == "Visual Studio 9 2008" cd release_64
-  - IF NOT "%gen%" == "Visual Studio 9 2008" cmake .. -G "%gen% Win64"
-  - IF NOT "%gen%" == "Visual Studio 9 2008" msbuild doctest.sln /p:Configuration=Release;Platform=x64 /maxcpucount
-  - IF NOT "%gen%" == "Visual Studio 9 2008" ctest -C Release --output-on-failure
-  - IF NOT "%gen%" == "Visual Studio 9 2008" cd ..
-  # x86
-  - mkdir debug_86
-  - cd debug_86
-  - cmake .. -G "%gen%"
-  - msbuild doctest.sln /p:Configuration=Debug;Platform=Win32 /maxcpucount
-  - ctest -C Debug --output-on-failure
-  - cd ..
-  - mkdir release_86
-  - cd release_86
-  - cmake .. -G "%gen%"
-  - msbuild doctest.sln /p:Configuration=Release;Platform=Win32 /maxcpucount
-  - ctest -C Release --output-on-failure
-  - cd ..
-  # static code analysis
-  - IF "%gen%" == "Visual Studio 15 2017" mkdir analysis
-  - IF "%gen%" == "Visual Studio 15 2017" cd analysis
-  - IF "%gen%" == "Visual Studio 15 2017" cmake .. -G "%gen% Win64"
-  - IF "%gen%" == "Visual Studio 15 2017" msbuild doctest.sln /p:Configuration=Debug;Platform=x64 /maxcpucount /p:RunCodeAnalysis=true /p:CodeAnalysisTreatWarningsAsErrors=true
-  - IF "%gen%" == "Visual Studio 15 2017" cd ..
+## http://www.appveyor.com/docs/appveyor-yml
+#
+#notifications:
+#  - provider: Email
+#    on_build_status_changed: false
+#    on_build_failure: false
+#    on_build_success: false
+#  # gitter
+#  - provider: Webhook
+#    url: https://webhooks.gitter.im/e/3a78202a235c0325e516
+#    on_build_status_changed: true
+#    on_build_failure: true
+#    on_build_success: false
+#
+#clone_depth: 500
+#branches:
+#  except:
+#    - gh-pages
+#    - coverity_scan
+#
+#matrix:
+#  fast_finish: false
+#
+#environment:
+#  matrix:
+#  - gen: "MinGW Makefiles"
+#  - gen: "Visual Studio 9 2008"
+#  - gen: "Visual Studio 10 2010"
+#  - gen: "Visual Studio 11 2012"
+#  - gen: "Visual Studio 12 2013"
+#  - gen: "Visual Studio 14 2015"
+#  - gen: "Visual Studio 15 2017"
+#    APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+#
+#install:
+#  - IF "%gen%" == "MinGW Makefiles" appveyor-retry appveyor DownloadFile http://downloads.sourceforge.net/mingw-w64/x86_64-6.3.0-release-posix-seh-rt_v5-rev1.7z
+#  - IF "%gen%" == "MinGW Makefiles" 7z x x86_64-6.3.0-release-posix-seh-rt_v5-rev1.7z -oc:\mingw > nul
+#
+#build_script:
+#  # workaround for CMake not wanting sh.exe on PATH for MinGW
+#  - IF "%gen%" == "MinGW Makefiles" set PATH=%PATH:C:\Program Files\Git\usr\bin;=%
+#  - IF "%gen%" == "MinGW Makefiles" set PATH=C:\mingw\mingw64\bin;%PATH%
+#  # generate and build everything for debug and release
+#  - IF "%gen%" == "MinGW Makefiles" mkdir debug_64
+#  - IF "%gen%" == "MinGW Makefiles" cd debug_64
+#  - IF "%gen%" == "MinGW Makefiles" cmake .. -G "MinGW Makefiles" -DCMAKE_BUILD_TYPE=Debug
+#  - IF "%gen%" == "MinGW Makefiles" cmake --build .
+#  - IF "%gen%" == "MinGW Makefiles" cd ..
+#  - IF "%gen%" == "MinGW Makefiles" mkdir release_64
+#  - IF "%gen%" == "MinGW Makefiles" cd release_64
+#  - IF "%gen%" == "MinGW Makefiles" cmake .. -G "MinGW Makefiles" -DCMAKE_BUILD_TYPE=Release
+#  - IF "%gen%" == "MinGW Makefiles" cmake --build .
+#  - IF "%gen%" == "MinGW Makefiles" cd ..
+#  # adding git to the path again - for the dos2unix tool
+#  - IF "%gen%" == "MinGW Makefiles" set PATH=%PATH%;C:\Program Files\Git\usr\bin
+#  # execute tests
+#  - IF "%gen%" == "MinGW Makefiles" cd debug_64
+#  - IF "%gen%" == "MinGW Makefiles" ctest --output-on-failure
+#  - IF "%gen%" == "MinGW Makefiles" cd ..
+#  - IF "%gen%" == "MinGW Makefiles" cd release_64
+#  - IF "%gen%" == "MinGW Makefiles" ctest --output-on-failure
+#  - IF "%gen%" == "MinGW Makefiles" cd ..
+#  - IF "%gen%" == "MinGW Makefiles" appveyor exit
+#  # ============= VISUAL STUDIO
+#  # x64 - not enabled for 2008 because cmake cannot find the compiler for Win64
+#  - IF NOT "%gen%" == "Visual Studio 9 2008" mkdir debug_64
+#  - IF NOT "%gen%" == "Visual Studio 9 2008" cd debug_64
+#  - IF NOT "%gen%" == "Visual Studio 9 2008" cmake .. -G "%gen% Win64"
+#  - IF NOT "%gen%" == "Visual Studio 9 2008" msbuild doctest.sln /p:Configuration=Debug;Platform=x64 /maxcpucount
+#  - IF NOT "%gen%" == "Visual Studio 9 2008" ctest -C Debug --output-on-failure
+#  - IF NOT "%gen%" == "Visual Studio 9 2008" cd ..
+#  - IF NOT "%gen%" == "Visual Studio 9 2008" mkdir release_64
+#  - IF NOT "%gen%" == "Visual Studio 9 2008" cd release_64
+#  - IF NOT "%gen%" == "Visual Studio 9 2008" cmake .. -G "%gen% Win64"
+#  - IF NOT "%gen%" == "Visual Studio 9 2008" msbuild doctest.sln /p:Configuration=Release;Platform=x64 /maxcpucount
+#  - IF NOT "%gen%" == "Visual Studio 9 2008" ctest -C Release --output-on-failure
+#  - IF NOT "%gen%" == "Visual Studio 9 2008" cd ..
+#  # x86
+#  - mkdir debug_86
+#  - cd debug_86
+#  - cmake .. -G "%gen%"
+#  - msbuild doctest.sln /p:Configuration=Debug;Platform=Win32 /maxcpucount
+#  - ctest -C Debug --output-on-failure
+#  - cd ..
+#  - mkdir release_86
+#  - cd release_86
+#  - cmake .. -G "%gen%"
+#  - msbuild doctest.sln /p:Configuration=Release;Platform=Win32 /maxcpucount
+#  - ctest -C Release --output-on-failure
+#  - cd ..
+#  # static code analysis
+#  - IF "%gen%" == "Visual Studio 15 2017" mkdir analysis
+#  - IF "%gen%" == "Visual Studio 15 2017" cd analysis
+#  - IF "%gen%" == "Visual Studio 15 2017" cmake .. -G "%gen% Win64"
+#  - IF "%gen%" == "Visual Studio 15 2017" msbuild doctest.sln /p:Configuration=Debug;Platform=x64 /maxcpucount /p:RunCodeAnalysis=true /p:CodeAnalysisTreatWarningsAsErrors=true
+#  - IF "%gen%" == "Visual Studio 15 2017" cd ..
+#
