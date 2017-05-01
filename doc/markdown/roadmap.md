@@ -74,7 +74,6 @@ Planned features for future releases - order changes constantly...
 
 ### For 1.3:
 
-- Value-Parameterized test cases
 - reporters
     - output to file
     - a system for writing custom reporters
@@ -88,6 +87,7 @@ Planned features for future releases - order changes constantly...
 - option to output summary only
 - matchers - should investigate what they are - look at google test/mock and Catch (also predicates and boost test)
 - convolution support for the assertion macros (with a predicate)
+- Value-Parameterized test cases
 - generators? - look at Catch - and investigate what they are
 - look at property based testing
     - [rapidcheck](https://github.com/emil-e/rapidcheck)
@@ -120,6 +120,7 @@ Planned features for future releases - order changes constantly...
 - better testing of the library
     - should unit test internals
     - should test stuff that should not compile
+    - should test crash handling
 
 ### For 2.0:
 

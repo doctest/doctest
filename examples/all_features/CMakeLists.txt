@@ -20,20 +20,22 @@ set(files
 )
 
 doctest_add_executable(${PROJECT_NAME} ${files})
-target_compile_definitions(${PROJECT_NAME} PRIVATE DOCTEST_CONFIG_COLORS_NONE) # easy way to fix test coverage
+target_compile_definitions(${PROJECT_NAME} PRIVATE DOCTEST_CONFIG_COLORS_NONE DOCTEST_CONFIG_NO_POSIX_SIGNALS) # easy way to fix test coverage
 
 # add per-file tests
 foreach(f ${files})
     doctest_add_test(NAME ${f} COMMAND $<TARGET_FILE:${PROJECT_NAME}> --dt-no-skipped-summary=1 --source-file=*${f})
 endforeach()
 
-## queries
-#doctest_add_test(NAME help              COMMAND $<TARGET_FILE:${PROJECT_NAME}> -dt-h)
-#doctest_add_test(NAME version           COMMAND $<TARGET_FILE:${PROJECT_NAME}> -v)
-#doctest_add_test(NAME count             COMMAND $<TARGET_FILE:${PROJECT_NAME}> -c)
-#doctest_add_test(NAME list_test_cases   COMMAND $<TARGET_FILE:${PROJECT_NAME}> -ltc)
-#doctest_add_test(NAME list_test_suites  COMMAND $<TARGET_FILE:${PROJECT_NAME}> -lts)
-#
+# queries
+doctest_add_test(NAME help                  COMMAND $<TARGET_FILE:${PROJECT_NAME}> -dt-h)
+doctest_add_test(NAME version               COMMAND $<TARGET_FILE:${PROJECT_NAME}> -v)
+doctest_add_test(NAME count                 COMMAND $<TARGET_FILE:${PROJECT_NAME}> -c)
+doctest_add_test(NAME list_test_cases       COMMAND $<TARGET_FILE:${PROJECT_NAME}> -ltc)
+doctest_add_test(NAME list_test_suites      COMMAND $<TARGET_FILE:${PROJECT_NAME}> -lts)
+
+doctest_add_test(NAME all_binary_success    COMMAND $<TARGET_FILE:${PROJECT_NAME}> --test-case="all binary assertions" --success)
+
 ## options
 #doctest_add_test(NAME successful        COMMAND $<TARGET_FILE:${PROJECT_NAME}> -s=true -e=Off -sfe=*main*) # exclude main because of RawMemoryToStr
 #doctest_add_test(NAME abort_after       COMMAND $<TARGET_FILE:${PROJECT_NAME}> -aa=3 -no-colors)

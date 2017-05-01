@@ -5,18 +5,20 @@
 #include <ostream>
 #include <sstream>
 
-/*
-
 #if __GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ > 6)
-//#pragma GCC diagnostic ignored "-Wzero-as-null-pointer-constant"
+#pragma GCC diagnostic ignored "-Wzero-as-null-pointer-constant"
 #endif // > gcc 4.6
 
 #ifndef DOCTEST_CONFIG_DISABLE
 
+// =================================================================================================
+// !!! THESE ARE NOT PROPER EXAMPLES OF LIBRARY USAGE !!! THESE ARE MEANT FOR CODE COVERAGE ONLY !!!
+// =================================================================================================
+
 TEST_CASE("doctest internals") {
     using namespace doctest;
 
-    // string stuff
+    // trigger code path for string with nullptr
     doctest::String       a(0);
     const doctest::String const_str("omgomgomg");
     a = const_str.c_str();
@@ -40,11 +42,11 @@ TEST_CASE("doctest internals") {
     //a += doctest::detail::fileForOutput("a");
     std::ostringstream oss;
     oss << a;
+    // trigger code path for assert string of a non-existent assert type
     oss << doctest::detail::getAssertString(static_cast<doctest::detail::assertType::Enum>(3));
     a += oss.str().c_str();
+    // trigger code path for rawMemoryToString
     CHECK(doctest::detail::rawMemoryToString(a).length() > 0u);
 }
 
 #endif // DOCTEST_CONFIG_DISABLE
-
-*/

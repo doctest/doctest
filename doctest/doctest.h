@@ -4680,6 +4680,7 @@ namespace detail
 
     void printHelp() {
         printVersion();
+        // clang-format off
         DOCTEST_PRINTF_COLORED("[doctest]\n", Color::Cyan);
         DOCTEST_PRINTF_COLORED("[doctest] ", Color::Cyan);
         std::printf("boolean values: \"1/on/yes/true\" or \"0/off/no/false\"\n");
@@ -4708,48 +4709,35 @@ namespace detail
         std::printf(" -tce, --test-case-exclude=<filters>   filters OUT tests by their name\n");
         std::printf(" -sf,  --source-file=<filters>         filters     tests by their file\n");
         std::printf(" -sfe, --source-file-exclude=<filters> filters OUT tests by their file\n");
-        std::printf(
-                " -ts,  --test-suite=<filters>          filters     tests by their test suite\n");
-        std::printf(
-                " -tse, --test-suite-exclude=<filters>  filters OUT tests by their test suite\n");
+        std::printf(" -ts,  --test-suite=<filters>          filters     tests by their test suite\n");
+        std::printf(" -tse, --test-suite-exclude=<filters>  filters OUT tests by their test suite\n");
         std::printf(" -sc,  --subcase=<filters>             filters     subcases by their name\n");
         std::printf(" -sce, --subcase-exclude=<filters>     filters OUT subcases by their name\n");
         std::printf(" -ob,  --order-by=<string>             how the tests should be ordered\n");
-        std::printf(
-                "                                       <string> - by [file/suite/name/rand]\n");
+        std::printf("                                       <string> - by [file/suite/name/rand]\n");
         std::printf(" -rs,  --rand-seed=<int>               seed for random ordering\n");
-        std::printf(
-                " -f,   --first=<int>                   the first test passing the filters to\n");
+        std::printf(" -f,   --first=<int>                   the first test passing the filters to\n");
         std::printf("                                       execute - for range-based execution\n");
-        std::printf(
-                " -l,   --last=<int>                    the last test passing the filters to\n");
+        std::printf(" -l,   --last=<int>                    the last test passing the filters to\n");
         std::printf("                                       execute - for range-based execution\n");
         std::printf(" -aa,  --abort-after=<int>             stop after <int> failed assertions\n");
-        std::printf(" -scfl,--subcase-filter-levels=<int>   apply filters for the first <int> "
-                    "levels\n");
+        std::printf(" -scfl,--subcase-filter-levels=<int>   apply filters for the first <int> levels\n");
         DOCTEST_PRINTF_COLORED("\n[doctest] ", Color::Cyan);
         std::printf("Bool options - can be used like flags and true is assumed. Available:\n\n");
-        std::printf(
-                " -s,   --success=<bool>                include successful assertions in output\n");
-        std::printf(
-                " -cs,  --case-sensitive=<bool>         filters being treated as case sensitive\n");
+        std::printf(" -s,   --success=<bool>                include successful assertions in output\n");
+        std::printf(" -cs,  --case-sensitive=<bool>         filters being treated as case sensitive\n");
         std::printf(" -e,   --exit=<bool>                   exits after the tests finish\n");
-        std::printf(
-                " -nt,  --no-throw=<bool>               skips exceptions-related assert checks\n");
-        std::printf(
-                " -ne,  --no-exitcode=<bool>            returns (or exits) always with success\n");
-        std::printf(
-                " -nr,  --no-run=<bool>                 skips all runtime doctest operations\n");
-        std::printf(" -nv,  --no-version=<bool>             omit the framework version in the "
-                    "output\n");
+        std::printf(" -nt,  --no-throw=<bool>               skips exceptions-related assert checks\n");
+        std::printf(" -ne,  --no-exitcode=<bool>            returns (or exits) always with success\n");
+        std::printf(" -nr,  --no-run=<bool>                 skips all runtime doctest operations\n");
+        std::printf(" -nv,  --no-version=<bool>             omit the framework version in the output\n");
         std::printf(" -nc,  --no-colors=<bool>              disables colors in output\n");
         std::printf(" -fc,  --force-colors=<bool>           use colors even when not in a tty\n");
         std::printf(" -nb,  --no-breaks=<bool>              disables breakpoints in debuggers\n");
-        std::printf(
-                " -npf, --no-path-filenames=<bool>      only filenames and no paths in output\n");
-        std::printf(" -nln, --no-line-numbers=<bool>        0 instead of real line numbers in "
-                    "output\n");
+        std::printf(" -npf, --no-path-filenames=<bool>      only filenames and no paths in output\n");
+        std::printf(" -nln, --no-line-numbers=<bool>        0 instead of real line numbers in output\n");
         // ==================================================================================== << 79
+        // clang-format on
 
         DOCTEST_PRINTF_COLORED("\n[doctest] ", Color::Cyan);
         std::printf("for more information visit the project documentation\n\n");

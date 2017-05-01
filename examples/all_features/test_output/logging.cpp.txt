@@ -48,6 +48,11 @@ logging.cpp(0)
 TEST CASE:  a test case that will end from an exception
 
 logging.cpp(0) ERROR!
+  forcing the many captures (including those on the heap) to be stringified
+with context:
+  lots of captures - some on heap: 42 42 42;
+
+logging.cpp(0) ERROR!
   CHECK( some_var == 666 )
 with expansion:
   CHECK( 42 == 666 )

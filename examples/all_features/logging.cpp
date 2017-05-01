@@ -21,7 +21,8 @@ TEST_CASE("logging the counter of a loop") {
 
 static int someTests() {
     int some_var = 42;
-    INFO("lots of captures - some on heap: " << some_var << " " << some_var << " " << some_var);
+    INFO("lots of captures - some on heap: " << some_var << " " << some_var << " " << some_var << ";");
+    FAIL_CHECK("forcing the many captures (including those on the heap) to be stringified");
     return some_var;
 }
 
