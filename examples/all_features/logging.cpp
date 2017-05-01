@@ -43,6 +43,11 @@ TEST_CASE("a test case that will end from an exception") {
     }
 }
 
+TEST_CASE("a test case that will end from an exception and should print the unprinted context") {
+    INFO("should be printed even if an exception is thrown and no assert fails before that");
+    throw_if(true, 0);
+}
+
 static void thirdPartyAssert(bool result, bool is_fatal, const char* file, int line) {
     if(result == false) {
         if(is_fatal)

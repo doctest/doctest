@@ -1,5 +1,21 @@
 [doctest] run with "--help" for options
 ===============================================================================
-[doctest] test cases:    1 |    1 passed |    0 failed | 
+coverage_maxout.cpp(0)
+TEST CASE:  will end from a std::string exception
+
+TEST CASE FAILED!
+threw exception:
+  std::string!
+
+===============================================================================
+coverage_maxout.cpp(0)
+TEST CASE:  will end from a const char* exception
+
+TEST CASE FAILED!
+threw exception:
+  const char*!
+
+===============================================================================
+[doctest] test cases:    3 |    1 passed |    2 failed | 
 [doctest] assertions:    5 |    5 passed |    0 failed |
 Program code.

@@ -1040,7 +1040,16 @@ namespace detail
     }
 
     void printSummary();
-    void reportFatal(std::string const& message) {
+
+#if !defined(DOCTEST_CONFIG_POSIX_SIGNALS) && !defined(DOCTEST_CONFIG_WINDOWS_SEH)
+    void reportFatal(const std::string&) {}
+    struct FatalConditionHandler
+    {
+        void reset() {}
+    };
+#else // DOCTEST_CONFIG_POSIX_SIGNALS || DOCTEST_CONFIG_WINDOWS_SEH
+
+    void reportFatal(const std::string& message) {
         DOCTEST_LOG_START();
 
         detail::ContextState* p = getContextState();
@@ -1052,12 +1061,6 @@ namespace detail
         printSummary();
     }
 
-#if !defined(DOCTEST_CONFIG_POSIX_SIGNALS) && !defined(DOCTEST_CONFIG_WINDOWS_SEH)
-    struct FatalConditionHandler
-    {
-        void reset() {}
-    };
-#else // DOCTEST_CONFIG_POSIX_SIGNALS || DOCTEST_CONFIG_WINDOWS_SEH
 #ifdef DOCTEST_PLATFORM_WINDOWS
 
     struct SignalDefs

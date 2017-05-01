@@ -349,7 +349,7 @@ script:
   # coverage - do not continue with other build configurations after that
   - |
     if [[ "${CODE_COVERAGE}" = "true" ]]; then
-      cmake ${CMAKE_OPTIONS_GLOBAL} ${CMAKE_OPTIONS} -DCMAKE_CXX_COMPILER=${CXX} -DCMAKE_CXX_FLAGS="-fprofile-arcs -ftest-coverage" -DCMAKE_BUILD_TYPE=Debug .
+      cmake ${CMAKE_OPTIONS_GLOBAL} ${CMAKE_OPTIONS} -DCMAKE_CXX_COMPILER=${CXX} -DCMAKE_CXX_FLAGS="-fprofile-arcs -ftest-coverage -std=c++98" -DCMAKE_BUILD_TYPE=Debug .
       make -k -j2
       ctest --output-on-failure
 

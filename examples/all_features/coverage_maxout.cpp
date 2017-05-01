@@ -28,8 +28,13 @@ TEST_CASE("doctest internals") {
     CHECK(a.compare("omgomgomg", false) == 0);
 
     // toString
-    a += toString("aaa") + toString(0.5f) + toString('c') + toString(true) +
-         toString(static_cast<long double>(0.1))   //
+    a += toString("aaa")                           //
+         + toString(true)                          //
+         + toString(0.5f)                          //
+         + toString(0.5)                           //
+         + toString(static_cast<long double>(0.1)) //
+         + toString('c')                           //
+         + toString(static_cast<signed char>('c')) //
          + toString(static_cast<unsigned char>(1)) //
          + toString(static_cast<short>(1))         //
          + toString(static_cast<long>(1))          //
@@ -40,13 +45,23 @@ TEST_CASE("doctest internals") {
     //a += doctest::detail::fileForOutput("c:\\a");
     //a += doctest::detail::fileForOutput("c:/a");
     //a += doctest::detail::fileForOutput("a");
+
     std::ostringstream oss;
+    // trigger code path for String to ostream through operator<<
     oss << a;
     // trigger code path for assert string of a non-existent assert type
     oss << doctest::detail::getAssertString(static_cast<doctest::detail::assertType::Enum>(3));
     a += oss.str().c_str();
     // trigger code path for rawMemoryToString
     CHECK(doctest::detail::rawMemoryToString(a).length() > 0u);
+}
+
+TEST_CASE("will end from a std::string exception") {
+    throw_if(true, std::string("std::string!"));
+}
+
+TEST_CASE("will end from a const char* exception") {
+    throw_if(true, "const char*!");
 }
 
 #endif // DOCTEST_CONFIG_DISABLE
