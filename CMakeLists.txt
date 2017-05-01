@@ -18,29 +18,11 @@ target_include_directories(${PROJECT_NAME} INTERFACE $<BUILD_INTERFACE:${CMAKE_C
 
 if(${DOCTEST_WITH_TESTS})
     include(scripts/cmake/common.cmake)
-    
-    # setup coverage stuff only when COVERALLS_SERVICE_NAME is set (usually on travis CI)
-    if(DEFINED ENV{COVERALLS_SERVICE_NAME})
-        set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/scripts/coveralls-cmake/cmake)
-        include(Coveralls)
-        coveralls_turn_on_coverage()
-        
-        coveralls_setup("${CMAKE_CURRENT_SOURCE_DIR}/doctest/doctest.h" ON "${CMAKE_CURRENT_SOURCE_DIR}/scripts/coveralls-cmake/cmake")
-        
-        add_subdirectory(examples/all_features)
-        
-        return()
-    endif()
-    
-    file(GLOB subdir_list "${CMAKE_CURRENT_SOURCE_DIR}/examples/*")
-    foreach(dir ${subdir_list})
-        if(IS_DIRECTORY ${dir})
-            get_filename_component(DIRNAME ${dir} NAME)
-            add_subdirectory(examples/${DIRNAME})
-        endif()
-    endforeach()
-    
-    add_subdirectory(scripts/playground)
+
+    add_subdirectory(examples/all_features)
+    #add_subdirectory(examples/exe_with_static_libs)
+    #add_subdirectory(examples/executable_dll_and_plugin)
+    #add_subdirectory(scripts/playground)
 endif()
 
 ################################################################################

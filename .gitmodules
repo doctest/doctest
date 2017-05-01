@@ -1,6 +1,3 @@
-[submodule "scripts/coveralls-cmake"]
-	path = scripts/coveralls-cmake
-	url = https://github.com/JoakimSoderberg/coveralls-cmake.git
 [submodule "scripts/bench/catch"]
 	path = scripts/bench/catch
 	url = https://github.com/philsquared/Catch.git

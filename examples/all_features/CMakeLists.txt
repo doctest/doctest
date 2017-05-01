@@ -52,6 +52,8 @@ endforeach()
 ## VARIATION OF THE BUILD WITH DOCTEST DISABLED - SHOULD STILL COMPILE
 ################################################################################
 
+return() # temp hack
+
 doctest_add_executable(disabled ${files})
 target_compile_definitions(disabled PRIVATE DOCTEST_CONFIG_DISABLE)
 
