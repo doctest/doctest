@@ -70,7 +70,6 @@ Planned features for future releases - order changes constantly...
         - using cmake directly
         - using it as a package (the install target)
         - getting it from vcpkg/hunter/etc.
-- builds with GCC 7 when it is released (should be in late April)
 
 ### For 1.3:
 

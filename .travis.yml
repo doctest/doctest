@@ -140,6 +140,14 @@ matrix:
 #          packages: ["g++-6",   "valgrind", "g++-6-multilib",   "libc6-dbg", "libc6-dbg:i386"]
 #          sources: *apt_sources
 #
+#    # GCC 7
+#    - env: COMPILER=g++-7 HAS_ASAN_32=true HAS_UBSAN_32=true HAS_ASAN_64=true HAS_UBSAN_64=true ADDITIONAL_CXX_FLAGS=" -fuse-ld=gold"
+#      compiler: gcc
+#      addons: &gcc7
+#        apt:
+#          packages: ["g++-7",   "valgrind", "g++-7-multilib",   "libc6-dbg", "libc6-dbg:i386"]
+#          sources: *apt_sources
+#
 #    # Clang 3.4
 #    - env: COMPILER=clang++ HAS_ASAN_32=true HAS_UBSAN_32=true HAS_ASAN_64=true HAS_UBSAN_64=true
 #      addons: &clang
@@ -256,6 +264,12 @@ matrix:
 #      osx_image: xcode7.3
 #      os: osx
 #
+#    # OSX GCC 7
+#    - env: COMPILER=g++-7 HAS_ASAN_32=true HAS_UBSAN_32=true HAS_ASAN_64=true HAS_UBSAN_64=true
+#      compiler: gcc
+#      osx_image: xcode7.3
+#      os: osx
+#
 #    # OSX LLVM-GCC
 #    - env: COMPILER=g++ HAS_ASAN_32=true HAS_ASAN_64=true
 #      compiler: gcc
@@ -263,7 +277,13 @@ matrix:
 #
 #  allow_failures:
 #
-#    # for some reason some of these builds fail sometimes...
+#    # GCC 7
+#    - env: COMPILER=g++-7 HAS_ASAN_32=true HAS_UBSAN_32=true HAS_ASAN_64=true HAS_UBSAN_64=true ADDITIONAL_CXX_FLAGS=" -fuse-ld=gold"
+#      compiler: gcc
+#      addons: &gcc7
+#        apt:
+#          packages: ["g++-7",   "valgrind", "g++-7-multilib",   "libc6-dbg", "libc6-dbg:i386"]
+#          sources: *apt_sources
 #
 #    # OSX GCC 4.8
 #    - env: COMPILER=g++-4.8 HAS_ASAN_32=true HAS_ASAN_64=true
@@ -273,6 +293,11 @@ matrix:
 #
 #    # OSX GCC 6
 #    - env: COMPILER=g++-6 HAS_ASAN_32=true HAS_UBSAN_32=true HAS_ASAN_64=true HAS_UBSAN_64=true
+#      compiler: gcc
+#      osx_image: xcode7.3
+#      os: osx
+#
+#    - env: COMPILER=g++-7 HAS_ASAN_32=true HAS_UBSAN_32=true HAS_ASAN_64=true HAS_UBSAN_64=true
 #      compiler: gcc
 #      osx_image: xcode7.3
 #      os: osx
@@ -335,6 +360,9 @@ install:
       fi
       if [[ "${COMPILER}" = "g++-6" ]]; then
         brew install gcc6
+      fi
+      if [[ "${COMPILER}" = "g++-7" ]]; then
+        brew install gcc7
       fi
     fi
 
