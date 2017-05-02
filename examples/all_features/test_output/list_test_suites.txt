@@ -2,4 +2,4 @@
 [doctest] listing all test suites
 
 ===============================================================================
-[doctest] number of tests passing the current filters: 3
+[doctest] number of tests passing the current filters: 4

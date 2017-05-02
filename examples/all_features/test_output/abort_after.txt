@@ -1,0 +1,24 @@
+[doctest] run with "--help" for options
+===============================================================================
+coverage_maxout.cpp(0)
+TEST CASE:  doctest internals
+
+coverage_maxout.cpp(0) ERROR!
+  CHECK( a.compare(const_str, true) != 0 )
+with expansion:
+  CHECK( 0 != 0 )
+with context:
+  should fail
+
+coverage_maxout.cpp(0) ERROR!
+  CHECK( a.compare("omgomgomg", false) != 0 )
+with expansion:
+  CHECK( 0 != 0 )
+with context:
+  should fail
+
+Aborting - too many failed asserts!
+===============================================================================
+[doctest] test cases:    1 |    0 passed |    1 failed | 
+[doctest] assertions:    4 |    2 passed |    2 failed |
+Program code.

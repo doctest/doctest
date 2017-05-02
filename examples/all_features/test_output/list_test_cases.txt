@@ -3,5 +3,6 @@
 doctest internals
 will end from a std::string exception
 will end from a const char* exception
+will end from an unknown exception
 ===============================================================================
-[doctest] number of tests passing the current filters: 3
+[doctest] number of tests passing the current filters: 4

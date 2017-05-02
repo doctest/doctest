@@ -1,31 +1,6 @@
 [doctest] run with "--help" for options
 ===============================================================================
 coverage_maxout.cpp(0)
-TEST CASE:  doctest internals
-
-coverage_maxout.cpp(0) ERROR!
-  CHECK( a.compare(const_str, true) != 0 )
-with expansion:
-  CHECK( 0 != 0 )
-with context:
-  should fail
-
-coverage_maxout.cpp(0) ERROR!
-  CHECK( a.compare("omgomgomg", false) != 0 )
-with expansion:
-  CHECK( 0 != 0 )
-with context:
-  should fail
-
-coverage_maxout.cpp(0) ERROR!
-  CHECK( detail::rawMemoryToString(a).length() == 0u )
-with expansion:
-  CHECK( 18 == 0 )
-with context:
-  should fail
-
-===============================================================================
-coverage_maxout.cpp(0)
 TEST CASE:  will end from a std::string exception
 
 TEST CASE FAILED!
@@ -49,6 +24,6 @@ threw exception:
   unknown exception
 
 ===============================================================================
-[doctest] test cases:    4 |    0 passed |    4 failed | 
-[doctest] assertions:    5 |    2 passed |    3 failed |
+[doctest] test cases:    4 |    1 passed |    3 failed | 
+[doctest] assertions:    0 |    0 passed |    0 failed |
 Program code.

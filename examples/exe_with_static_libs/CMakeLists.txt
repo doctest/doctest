@@ -12,7 +12,7 @@ target_link_libraries(${PROJECT_NAME} lib_1)
 target_link_libraries(${PROJECT_NAME} lib_2)
 set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER ${PROJECT_NAME})
 
-doctest_add_test(NAME ${PROJECT_NAME} COMMAND $<TARGET_FILE:${PROJECT_NAME}>)
+doctest_add_test(NAME ${PROJECT_NAME} COMMAND $<TARGET_FILE:${PROJECT_NAME}> --no-version)
 
 # pulls the force linking functionality
 include(doctest_force_link_static_lib_in_target.cmake)

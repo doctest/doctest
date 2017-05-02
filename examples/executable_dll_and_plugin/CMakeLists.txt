@@ -32,4 +32,4 @@ endif()
 # have the executable depend on the plugin so it gets built as well when building/starting only the executable
 add_dependencies(${PROJECT_NAME} plugin)
 
-doctest_add_test(NAME ${PROJECT_NAME} COMMAND $<TARGET_FILE:${PROJECT_NAME}>)
+doctest_add_test(NAME ${PROJECT_NAME} COMMAND $<TARGET_FILE:${PROJECT_NAME}> --no-version)

@@ -1555,8 +1555,10 @@ namespace detail
             , m_threw(false)
             , m_threw_as(false)
             , m_failed(false) {
-        if(m_expr[0] == ' ') // this happens when variadic macros are disabled
+#ifdef _MSC_VER
+        if(m_expr[0] == ' ') // this happens when variadic macros are disabled under MSVC
             ++m_expr;
+#endif // _MSC_VER
     }
 
     ResultBuilder::~ResultBuilder() {}
@@ -2006,7 +2008,7 @@ void Context::parseArgs(int argc, const char* const* argv, bool withDefaults) {
     DOCTEST_PARSE_AS_BOOL_OR_FLAG(dt-no-breaks, dt-nb, no_breaks, false);
     DOCTEST_PARSE_AS_BOOL_OR_FLAG(dt-no-path-filenames, dt-npf, no_path_in_filenames, false);
     DOCTEST_PARSE_AS_BOOL_OR_FLAG(dt-no-line-numbers, dt-nln, no_line_numbers, false);
-    DOCTEST_PARSE_AS_BOOL_OR_FLAG(dt-no-skipped-summary, dt-no-skipped-summary, no_skipped_summary, false);
+    DOCTEST_PARSE_AS_BOOL_OR_FLAG(dt-no-skipped-summary, dt-nss, no_skipped_summary, false);
 // clang-format on
 
 #undef DOCTEST_PARSE_STR_OPTION
@@ -2220,8 +2222,10 @@ int Context::run() {
                 p->numAssertions += p->numAssertionsForCurrentTestcase;
 
                 // exit this loop if enough assertions have failed
-                if(p->abort_after > 0 && p->numFailedAssertions >= p->abort_after)
+                if(p->abort_after > 0 && p->numFailedAssertions >= p->abort_after) {
                     p->subcasesHasSkipped = false;
+                    DOCTEST_PRINTF_COLORED("Aborting - too many failed asserts!\n", Color::Red);
+                }
 
                 // if the start has been logged
                 if(p->hasLoggedCurrentTestStart)

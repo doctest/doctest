@@ -15,17 +15,30 @@
 // !!! THESE ARE NOT PROPER EXAMPLES OF LIBRARY USAGE !!! THESE ARE MEANT FOR CODE COVERAGE ONLY !!!
 // =================================================================================================
 
+// forward declarations of internals
+namespace doctest
+{
+namespace detail
+{
+    const char* fileForOutput(const char* file);
+    void reportFatal(const std::string&);
+    int wildcmp(const char* str, const char* wild, bool caseSensitive);
+} // namespace detail
+} // namespace doctest
+
 TEST_CASE("doctest internals") {
     using namespace doctest;
+    detail::reportFatal("");
+    detail::wildcmp("str", "str*", false);
 
     // trigger code path for string with nullptr
-    doctest::String       a(0);
-    const doctest::String const_str("omgomgomg");
+    String       a(0);
+    const String const_str("omgomgomg");
     a = const_str.c_str();
     CHECK(a.size() == const_str.size());
     CHECK(a.length() == const_str.length());
-    CHECK(a.compare(const_str, true) == 0);
-    CHECK(a.compare("omgomgomg", false) == 0);
+    CHECK_MESSAGE(a.compare(const_str, true) != 0, "should fail");
+    CHECK_MESSAGE(a.compare("omgomgomg", false) != 0, "should fail");
 
     // toString
     a += toString("aaa")                           //
@@ -42,18 +55,18 @@ TEST_CASE("doctest internals") {
          + toString(static_cast<unsigned short>(1));
 
     // others
-    //a += doctest::detail::fileForOutput("c:\\a");
-    //a += doctest::detail::fileForOutput("c:/a");
-    //a += doctest::detail::fileForOutput("a");
+    a += detail::fileForOutput("c:\\a");
+    a += detail::fileForOutput("c:/a");
+    a += detail::fileForOutput("a");
 
     std::ostringstream oss;
     // trigger code path for String to ostream through operator<<
     oss << a;
     // trigger code path for assert string of a non-existent assert type
-    oss << doctest::detail::getAssertString(static_cast<doctest::detail::assertType::Enum>(3));
+    oss << detail::getAssertString(static_cast<detail::assertType::Enum>(3));
     a += oss.str().c_str();
     // trigger code path for rawMemoryToString
-    CHECK(doctest::detail::rawMemoryToString(a).length() > 0u);
+    CHECK_MESSAGE(detail::rawMemoryToString(a).length() == 0u, "should fail");
 }
 
 TEST_CASE("will end from a std::string exception") {
@@ -62,6 +75,10 @@ TEST_CASE("will end from a std::string exception") {
 
 TEST_CASE("will end from a const char* exception") {
     throw_if(true, "const char*!");
+}
+
+TEST_CASE("will end from an unknown exception") {
+    throw_if(true, doctest::String("unknown :("));
 }
 
 #endif // DOCTEST_CONFIG_DISABLE
