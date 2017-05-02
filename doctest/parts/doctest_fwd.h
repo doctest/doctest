@@ -1424,9 +1424,6 @@ namespace detail
         void          binary_assert(const DOCTEST_REF_WRAP(L) lhs, const DOCTEST_REF_WRAP(R) rhs) {
             m_result.m_passed        = RelationalComparator<comparison, L, R>()(lhs, rhs);
             m_result.m_decomposition = stringifyBinaryExpr(lhs, ", ", rhs);
-
-            if(m_assert_type & assertType::is_false)
-                m_result.invert();
         }
 
         template <typename L>
@@ -1461,9 +1458,6 @@ namespace detail
         ResultBuilder rb(assert_type, file, line, expr);
 
         rb.m_result.m_passed = RelationalComparator<comparison, L, R>()(lhs, rhs);
-
-        if(assert_type & assertType::is_false)
-            rb.m_result.invert();
 
         rb.m_result.m_decomposition = stringifyBinaryExpr(lhs, ", ", rhs);
 
