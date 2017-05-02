@@ -44,13 +44,12 @@ doctest_add_test(NAME list_test_suites  ${common_args} -lts -sf=*coverage*)
 doctest_add_test(NAME all_binary  ${common_args} -tc=all?binary* -s) # print all binary asserts - for getAssertString()
 doctest_add_test(NAME abort_after ${common_args} -aa=2 -e=off   -sf=*coverage*) # abort after 2 assert fails and parse a negative
 doctest_add_test(NAME first_last  ${common_args} -f=2 -l=4      -sf=*coverage*) # run a range
-doctest_add_test(NAME filter_1    ${common_args} -ts=none)  # should filter out all
-doctest_add_test(NAME filter_2    ${common_args} -tse=*)    # should filter out all
-doctest_add_test(NAME filter_3    ${common_args} -sc=_          -sf=*subcases*)
-doctest_add_test(NAME filter_4    ${common_args} -sce=*         -sf=*subcases*)
-doctest_add_test(NAME order_1     ${common_args} -ob=suite      -sf=*test_cases_and_suites*)
-doctest_add_test(NAME order_2     ${common_args} -ob=name       -sf=*test_cases_and_suites*)
-doctest_add_test(NAME order_3     ${common_args} -ob=rand       -sfe=*) # exclude everything for no output
+doctest_add_test(NAME filter_1    ${common_args} -ts=none) # should filter out all
+doctest_add_test(NAME filter_2    ${common_args} -tse=*) # should filter out all
+doctest_add_test(NAME filter_3    ${common_args} -sc=from*,sc* -sce=sc2 -sf=*subcases*) # enter a specific subcase - sc1
+doctest_add_test(NAME order_1     ${common_args} -ob=suite              -sf=*test_cases_and_suites*)
+doctest_add_test(NAME order_2     ${common_args} -ob=name               -sf=*test_cases_and_suites*)
+doctest_add_test(NAME order_3     ${common_args} -ob=rand               -sfe=*) # exclude everything for no output
 
 ################################################################################
 ## VARIATION OF THE BUILD WITH DOCTEST DISABLED - SHOULD STILL COMPILE

@@ -2,6 +2,23 @@
 
 root
 ===============================================================================
+subcases.cpp(0)
+TEST CASE:  subcases can be used in a separate function as well
+  from function...
+
+subcases.cpp(0) MESSAGE!
+  print me twice
+
+===============================================================================
+subcases.cpp(0)
+TEST CASE:  subcases can be used in a separate function as well
+  from function...
+  sc1
+
+subcases.cpp(0) MESSAGE!
+  hello! from sc1
+
+===============================================================================
 [doctest] test cases:    3 |    3 passed |    0 failed | 
 [doctest] assertions:    0 |    0 passed |    0 failed |
 Program code.
