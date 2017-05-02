@@ -19,6 +19,15 @@ subcases.cpp(0) FATAL ERROR!
 ===============================================================================
 subcases.cpp(0)
 TEST CASE:  subcases can be used in a separate function as well
+  from function...
+
+subcases.cpp(0) MESSAGE!
+  print me twice
+
+===============================================================================
+subcases.cpp(0)
+TEST CASE:  subcases can be used in a separate function as well
+  from function...
   sc1
 
 subcases.cpp(0) MESSAGE!
@@ -27,6 +36,15 @@ subcases.cpp(0) MESSAGE!
 ===============================================================================
 subcases.cpp(0)
 TEST CASE:  subcases can be used in a separate function as well
+  from function...
+
+subcases.cpp(0) MESSAGE!
+  print me twice
+
+===============================================================================
+subcases.cpp(0)
+TEST CASE:  subcases can be used in a separate function as well
+  from function...
   sc2
 
 subcases.cpp(0) MESSAGE!

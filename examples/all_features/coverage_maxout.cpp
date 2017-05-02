@@ -5,10 +5,6 @@
 #include <ostream>
 #include <sstream>
 
-#if __GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ > 6)
-#pragma GCC diagnostic ignored "-Wzero-as-null-pointer-constant"
-#endif // > gcc 4.6
-
 #ifndef DOCTEST_CONFIG_DISABLE
 
 // =================================================================================================
@@ -31,8 +27,11 @@ TEST_CASE("doctest internals") {
     detail::reportFatal("");
     detail::wildcmp("str", "str*", false);
 
+    // trigger code path for comparing the file in "operator<" of SubcaseSignature
+    CHECK(detail::SubcaseSignature("", "a.cpp", 0) < detail::SubcaseSignature("", "b.cpp", 0));
+
     // trigger code path for string with nullptr
-    String       a(0);
+    String       a(static_cast<const char*>(doctest::detail::getNull()));
     const String const_str("omgomgomg");
     a = const_str.c_str();
     CHECK(a.size() == const_str.size());

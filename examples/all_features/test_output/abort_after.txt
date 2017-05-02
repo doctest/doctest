@@ -20,5 +20,5 @@ with context:
 Aborting - too many failed asserts!
 ===============================================================================
 [doctest] test cases:    1 |    0 passed |    1 failed | 
-[doctest] assertions:    4 |    2 passed |    2 failed |
+[doctest] assertions:    5 |    3 passed |    2 failed |
 Program code.

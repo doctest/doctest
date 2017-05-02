@@ -32,11 +32,14 @@ TEST_CASE("lots of nested subcases") {
 }
 
 static void call_func() {
-    SUBCASE("sc1") {
-        MESSAGE("hello! from sc1");
-    }
-    SUBCASE("sc2") {
-        MESSAGE("hello! from sc2");
+    SUBCASE("from function...") {
+        MESSAGE("print me twice");
+        SUBCASE("sc1") {
+            MESSAGE("hello! from sc1");
+        }
+        SUBCASE("sc2") {
+            MESSAGE("hello! from sc2");
+        }
     }
 }
 

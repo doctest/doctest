@@ -26,33 +26,31 @@ target_compile_definitions(${PROJECT_NAME} PRIVATE
     DOCTEST_CONFIG_NO_POSIX_SIGNALS
     DOCTEST_CONFIG_NO_WINDOWS_SEH)
 
-set(common_test_args COMMAND $<TARGET_FILE:${PROJECT_NAME}> --no-skipped-summary --no-version)
+set(common_args COMMAND $<TARGET_FILE:${PROJECT_NAME}> --no-skipped-summary --no-version)
 
 # add per-file tests
 foreach(f ${files})
-    doctest_add_test(NAME ${f} ${common_test_args} -sf=*${f})
+    doctest_add_test(NAME ${f} ${common_args} -sf=*${f})
 endforeach()
-
-set(common_cov_args ${common_test_args} -sf=*coverage*)
 
 # queries
 doctest_add_test(NAME version COMMAND $<TARGET_FILE:${PROJECT_NAME}> -v)
-doctest_add_test(NAME help               ${common_cov_args} -h)
-doctest_add_test(NAME count              ${common_cov_args} -c)
-doctest_add_test(NAME list_test_cases    ${common_cov_args} -ltc)
-doctest_add_test(NAME list_test_suites   ${common_cov_args} -lts)
-
-# get all the binary asserts to be printed - to exercise all cases in getAssertString()
-doctest_add_test(NAME all_binary_success ${common_test_args} -tc=all?binary* -s)
+doctest_add_test(NAME help              ${common_args} -h)
+doctest_add_test(NAME count             ${common_args} -c   -sf=*coverage*)
+doctest_add_test(NAME list_test_cases   ${common_args} -ltc -sf=*coverage*)
+doctest_add_test(NAME list_test_suites  ${common_args} -lts -sf=*coverage*)
 
 # options
-doctest_add_test(NAME abort_after        ${common_cov_args} -aa=2 -e=off)    # abort after 2 failed asserts (and parse negative)
-doctest_add_test(NAME first_last         ${common_cov_args} -f=2 -l=4)       # run a range
-doctest_add_test(NAME filter_1           ${common_cov_args} -ts=nonexistent) # should filter out all
-doctest_add_test(NAME filter_2           ${common_cov_args} -tse=*)          # should filter out all
-doctest_add_test(NAME order_1            ${common_test_args} -ob=suite -sf=*test_cases_and_suites*)
-doctest_add_test(NAME order_2            ${common_test_args} -ob=name  -sf=*test_cases_and_suites*)
-doctest_add_test(NAME order_3            ${common_test_args} -ob=rand  -sfe=*) # exclude everything for no output
+doctest_add_test(NAME all_binary  ${common_args} -tc=all?binary* -s) # print all binary asserts - for getAssertString()
+doctest_add_test(NAME abort_after ${common_args} -aa=2 -e=off   -sf=*coverage*) # abort after 2 assert fails and parse a negative
+doctest_add_test(NAME first_last  ${common_args} -f=2 -l=4      -sf=*coverage*) # run a range
+doctest_add_test(NAME filter_1    ${common_args} -ts=none)  # should filter out all
+doctest_add_test(NAME filter_2    ${common_args} -tse=*)    # should filter out all
+doctest_add_test(NAME filter_3    ${common_args} -sc=_          -sf=*subcases*)
+doctest_add_test(NAME filter_4    ${common_args} -sce=*         -sf=*subcases*)
+doctest_add_test(NAME order_1     ${common_args} -ob=suite      -sf=*test_cases_and_suites*)
+doctest_add_test(NAME order_2     ${common_args} -ob=name       -sf=*test_cases_and_suites*)
+doctest_add_test(NAME order_3     ${common_args} -ob=rand       -sfe=*) # exclude everything for no output
 
 ################################################################################
 ## VARIATION OF THE BUILD WITH DOCTEST DISABLED - SHOULD STILL COMPILE
