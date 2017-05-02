@@ -1,5 +1,6 @@
 [doctest] run with "--help" for options
 [doctest] listing all test suites
-
 ===============================================================================
-[doctest] number of tests passing the current filters: 4
+===============================================================================
+[doctest] number of test cases passing the current filters: 4
+[doctest] number of test suites with test cases passing the current filters: 0

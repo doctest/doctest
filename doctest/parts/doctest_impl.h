@@ -284,6 +284,7 @@ namespace detail
         // == data for the tests being ran
 
         unsigned        numTestsPassingFilters;
+        unsigned        numTestSuitesPassingFilters;
         unsigned        numFailed;
         const TestData* currentTest;
         bool            hasLoggedCurrentTestStart;
@@ -303,10 +304,11 @@ namespace detail
         bool                       subcasesHasSkipped;
 
         void resetRunData() {
-            numTestsPassingFilters = 0;
-            numFailed              = 0;
-            numAssertions          = 0;
-            numFailedAssertions    = 0;
+            numTestsPassingFilters      = 0;
+            numTestSuitesPassingFilters = 0;
+            numFailed                   = 0;
+            numAssertions               = 0;
+            numFailedAssertions         = 0;
         }
 
         // cppcheck-suppress uninitMemberVar
@@ -1872,10 +1874,17 @@ namespace detail
         detail::ContextState* p = getContextState();
 
         DOCTEST_PRINTF_COLORED(getSeparator(), Color::Yellow);
-        if(p->count || p->list_test_cases || p->list_test_suites) {
+        if(p->count || p->list_test_cases) {
             DOCTEST_PRINTF_COLORED("[doctest] ", Color::Cyan);
-            std::printf("number of tests passing the current filters: %u\n",
+            std::printf("number of test cases passing the current filters: %u\n",
                         p->numTestsPassingFilters);
+        } else if(p->list_test_suites) {
+            DOCTEST_PRINTF_COLORED("[doctest] ", Color::Cyan);
+            std::printf("number of test cases passing the current filters: %u\n",
+                        p->numTestsPassingFilters);
+            DOCTEST_PRINTF_COLORED("[doctest] ", Color::Cyan);
+            std::printf("number of test suites with test cases passing the current filters: %u\n",
+                        p->numTestSuitesPassingFilters);
         } else {
             char buff[DOCTEST_SNPRINTF_BUFFER_LENGTH];
 
@@ -2128,12 +2137,14 @@ int Context::run() {
     if(p->list_test_cases) {
         DOCTEST_PRINTF_COLORED("[doctest] ", Color::Cyan);
         std::printf("listing all test case names\n");
+        DOCTEST_PRINTF_COLORED(getSeparator(), Color::Yellow);
     }
 
     std::set<String> testSuitesPassingFilters;
     if(p->list_test_suites) {
         DOCTEST_PRINTF_COLORED("[doctest] ", Color::Cyan);
         std::printf("listing all test suites\n");
+        DOCTEST_PRINTF_COLORED(getSeparator(), Color::Yellow);
     }
 
     // invoke the registered functions if they match the filter criteria (or just count them)
@@ -2166,9 +2177,10 @@ int Context::run() {
 
         // print the name of the test suite if not done already and don't execute it
         if(p->list_test_suites) {
-            if(testSuitesPassingFilters.count(data.m_suite) == 0) {
+            if((testSuitesPassingFilters.count(data.m_suite) == 0) && data.m_suite[0] != '\0') {
                 std::printf("%s\n", data.m_suite);
                 testSuitesPassingFilters.insert(data.m_suite);
+                p->numTestSuitesPassingFilters++;
             }
             continue;
         }

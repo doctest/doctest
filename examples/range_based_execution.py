@@ -20,7 +20,7 @@ for i in range(2, len(sys.argv)):
 result = subprocess.Popen(program_with_args, stdout = subprocess.PIPE).communicate()[0]
 result = result.splitlines(True)
 for line in result:
-    if line.startswith("[doctest] number of tests passing the current filters:"):
+    if line.startswith("[doctest] number of test cases passing the current filters:"):
         num_tests = int(line.rsplit(' ', 1)[-1])
 
 # calculate the ranges

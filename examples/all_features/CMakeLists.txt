@@ -20,8 +20,11 @@ set(files
 )
 
 doctest_add_executable(${PROJECT_NAME} ${files})
-# easy way to fix test coverage - disable colors and signals
-target_compile_definitions(${PROJECT_NAME} PRIVATE DOCTEST_CONFIG_COLORS_NONE DOCTEST_CONFIG_NO_POSIX_SIGNALS)
+# easy way to fix test coverage - disable colors and crash handling
+target_compile_definitions(${PROJECT_NAME} PRIVATE
+    DOCTEST_CONFIG_COLORS_NONE
+    DOCTEST_CONFIG_NO_POSIX_SIGNALS
+    DOCTEST_CONFIG_NO_WINDOWS_SEH)
 
 set(common_test_args COMMAND $<TARGET_FILE:${PROJECT_NAME}> --no-skipped-summary --no-version)
 

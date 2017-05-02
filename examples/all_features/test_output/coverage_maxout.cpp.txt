@@ -18,9 +18,9 @@ with context:
   should fail
 
 coverage_maxout.cpp(0) ERROR!
-  CHECK( detail::rawMemoryToString(a).length() == 0u )
+  CHECK( len_is_zero )
 with expansion:
-  CHECK( 18 == 0 )
+  CHECK( false )
 with context:
   should fail
 
