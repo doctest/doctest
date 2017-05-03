@@ -29,6 +29,8 @@ TEST_CASE("doctest internals") {
 
     // trigger code path for comparing the file in "operator<" of SubcaseSignature
     CHECK(detail::SubcaseSignature("", "a.cpp", 0) < detail::SubcaseSignature("", "b.cpp", 0));
+    // same for String
+    CHECK(String("a.cpp") < String("b.cpp"));
 
     // trigger code path for string with nullptr
     String       a(static_cast<const char*>(doctest::detail::getNull()));
@@ -69,16 +71,18 @@ TEST_CASE("doctest internals") {
     CHECK_MESSAGE(len_is_zero, "should fail");
 }
 
-TEST_CASE("will end from a std::string exception") {
-    throw_if(true, std::string("std::string!"));
-}
+TEST_SUITE("exception related") {
+    TEST_CASE("will end from a std::string exception") {
+        throw_if(true, std::string("std::string!"));
+    }
 
-TEST_CASE("will end from a const char* exception") {
-    throw_if(true, "const char*!");
-}
+    TEST_CASE("will end from a const char* exception") {
+        throw_if(true, "const char*!");
+    }
 
-TEST_CASE("will end from an unknown exception") {
-    throw_if(true, doctest::String("unknown :("));
+    TEST_CASE("will end from an unknown exception") {
+        throw_if(true, doctest::String("unknown :("));
+    }
 }
 
 #endif // DOCTEST_CONFIG_DISABLE

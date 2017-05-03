@@ -26,6 +26,7 @@ with context:
 
 ===============================================================================
 coverage_maxout.cpp(0)
+TEST SUITE: exception related
 TEST CASE:  will end from a std::string exception
 
 TEST CASE FAILED!
@@ -34,6 +35,7 @@ threw exception:
 
 ===============================================================================
 coverage_maxout.cpp(0)
+TEST SUITE: exception related
 TEST CASE:  will end from a const char* exception
 
 TEST CASE FAILED!
@@ -42,6 +44,7 @@ threw exception:
 
 ===============================================================================
 coverage_maxout.cpp(0)
+TEST SUITE: exception related
 TEST CASE:  will end from an unknown exception
 
 TEST CASE FAILED!
@@ -50,5 +53,5 @@ threw exception:
 
 ===============================================================================
 [doctest] test cases:    4 |    0 passed |    4 failed | 
-[doctest] assertions:    6 |    3 passed |    3 failed |
+[doctest] assertions:    7 |    4 passed |    3 failed |
 Program code.
