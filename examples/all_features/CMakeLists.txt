@@ -54,7 +54,9 @@ doctest_add_test(NAME order_3     ${common_args} -ob=rand               -sfe=*) 
 ## VARIATION OF THE BUILD WITH DOCTEST DISABLED - SHOULD STILL COMPILE
 ################################################################################
 
-return() # temp hack
+if(DEFINED ENV{CODE_COVERAGE})
+    return() # do not continue with the disabled example
+endif()
 
 doctest_add_executable(disabled ${files})
 target_compile_definitions(disabled PRIVATE DOCTEST_CONFIG_DISABLE)

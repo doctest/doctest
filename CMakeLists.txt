@@ -20,9 +20,12 @@ if(${DOCTEST_WITH_TESTS})
     include(scripts/cmake/common.cmake)
 
     add_subdirectory(examples/all_features)
-    #add_subdirectory(examples/exe_with_static_libs)
-    #add_subdirectory(examples/executable_dll_and_plugin)
-    #add_subdirectory(scripts/playground)
+    
+    if(NOT DEFINED ENV{CODE_COVERAGE})
+        add_subdirectory(examples/exe_with_static_libs)
+        add_subdirectory(examples/executable_dll_and_plugin)
+        add_subdirectory(scripts/playground)
+    endif()
 endif()
 
 ################################################################################
