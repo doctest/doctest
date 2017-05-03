@@ -2039,6 +2039,18 @@ public:
 #define DOCTEST_FAIL_CHECK(x) DOCTEST_ADD_FAIL_CHECK_AT(__FILE__, __LINE__, x)
 #define DOCTEST_FAIL(x) DOCTEST_ADD_FAIL_AT(__FILE__, __LINE__, x)
 
+#if __cplusplus >= 201402L || (defined(_MSC_VER) && _MSC_VER >= 1910)
+template <class T, T x>
+constexpr T to_lvalue = x;
+#define DOCTEST_TO_LVALUE(...) to_lvalue<decltype(__VA_ARGS__), __VA_ARGS__>
+#else
+#ifdef DOCTEST_CONFIG_WITH_VARIADIC_MACROS
+#define DOCTEST_TO_LVALUE(...) TO_LVALUE_CAN_BE_USED_ONLY_IN_CPP14_MODE_OR_WITH_VS_2017_OR_NEWER
+#else // DOCTEST_CONFIG_WITH_VARIADIC_MACROS
+#define DOCTEST_TO_LVALUE(x) TO_LVALUE_CAN_BE_USED_ONLY_IN_CPP14_MODE_OR_WITH_VS_2017_OR_NEWER
+#endif // DOCTEST_CONFIG_WITH_VARIADIC_MACROS
+#endif // TO_LVALUE hack for logging macros like INFO()
+
 // common code in asserts - for convenience
 #define DOCTEST_ASSERT_LOG_AND_REACT(rb)                                                           \
     if(rb.log())                                                                                   \
@@ -2731,6 +2743,7 @@ public:
 #define MESSAGE DOCTEST_MESSAGE
 #define FAIL_CHECK DOCTEST_FAIL_CHECK
 #define FAIL DOCTEST_FAIL
+#define TO_LVALUE DOCTEST_TO_LVALUE
 
 #define WARN DOCTEST_WARN
 #define WARN_FALSE DOCTEST_WARN_FALSE

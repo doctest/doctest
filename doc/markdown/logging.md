@@ -14,7 +14,17 @@ This message will be relevant to all asserts after it in the current scope or in
 
 Note that there is no initial ```<<``` - instead the insertion sequence is placed in parentheses.
 
-The message is **NOT** constructed right away - instead it gets lazily stringified only when needed. This means that rvalues (temporaries) cannot be passed to the ```INFO()``` macro.
+The message is **NOT** constructed right away - instead it gets lazily stringified only when needed. This means that rvalues (temporaries) cannot be passed to the ```INFO()``` macro. All literals are treated as rvalue references by the standard - except for C string literals (```"like this one"```). That means that even normal integer literals cannot be used directly - they need to be stored in a variable/constant before being passed to ```INFO()```. If C++14 is used (or Visual Studio 2017+) doctest provides the ```TO_LVALUE()``` macro to help in this regard - it turns any literal or constexpr value to an lvalue and can be used like this:
+
+```c++
+constexpr int foo() { return 42; }
+TEST_CASE("playing with literals and constexpr values") {
+    INFO(TO_LVALUE(6) << " and this is a C string literal " << TO_LVALUE(foo()));
+    CHECK(false);
+}
+```
+
+```TO_LVALUE()``` can also help in contexts where you might want to avoid a ```static constexpr``` member to be ODR-used - see [**```DOCTEST_CONFIG_ASSERTION_PARAMETERS_BY_VALUE```**](configuration.md#doctest_config_assertion_parameters_by_value).
 
 Some notes:
 
