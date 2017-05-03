@@ -1,4 +1,3 @@
-[doctest] doctest version is "1.1.4"
 [doctest] run with "--help" for options
 ===============================================================================
 [doctest] test cases:    0 |    0 passed |    0 failed |   62 skipped

@@ -42,6 +42,7 @@ twitter
     - https://github.com/philsquared/Catch/pull/877
     - https://github.com/philsquared/Catch/issues/880
 - toString trouble - https://github.com/philsquared/Catch/issues/741
+- https://github.com/philsquared/Catch/commit/33ed1773f40b406dbf3b7201bf52694bd86b1503
 
 - I suspect -Wsign-compare is not being silenced by the pragmas...
   see this build - https://travis-ci.org/onqtam/game/jobs/196987454

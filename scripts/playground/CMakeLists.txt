@@ -10,4 +10,4 @@ include_directories("../../doctest/")
 add_executable(${PROJECT_NAME} main.cpp test.cpp)
 add_dependencies(${PROJECT_NAME} assemble_single_header)
 
-doctest_add_test(NAME ${PROJECT_NAME} COMMAND $<TARGET_FILE:${PROJECT_NAME}>)
+doctest_add_test(NAME ${PROJECT_NAME} COMMAND $<TARGET_FILE:${PROJECT_NAME}> -nv)
