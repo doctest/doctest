@@ -458,10 +458,44 @@ namespace std
 #endif // _LIBCPP_VERSION
 #endif // DOCTEST_CONFIG_WITH_NULLPTR
 
+#ifndef DOCTEST_CONFIG_DISABLE
+namespace doctest
+{
+namespace detail
+{
+    struct TestSuite
+    {
+        const char* m_test_suite;
+        const char* m_description;
+        bool        m_skip;
+        bool        m_should_fail;
+
+        TestSuite& operator*(const char* in) {
+            m_test_suite = in;
+            // clear state
+            m_description = 0;
+            m_skip        = false;
+            m_should_fail = false;
+            return *this;
+        }
+
+        template <typename T>
+        TestSuite& operator*(const T& in) {
+            in.fill(*this);
+            return *this;
+        }
+    };
+} // namespace detail
+} // namespace doctest
+
 // in a separate namespace outside of doctest because the DOCTEST_TEST_SUITE macro
-// introduces an anonymous namespace in which getCurrentTestSuite gets overrided
+// introduces an anonymous namespace in which getCurrentTestSuite gets overridden
 namespace doctest_detail_test_suite_ns
-{ DOCTEST_INTERFACE const char*& getCurrentTestSuite(); } // namespace doctest_detail_test_suite_ns
+{
+DOCTEST_INTERFACE doctest::detail::TestSuite& getCurrentTestSuite();
+} // namespace doctest_detail_test_suite_ns
+
+#endif // DOCTEST_CONFIG_DISABLE
 
 namespace doctest
 {
@@ -1354,7 +1388,7 @@ namespace detail
         unsigned    m_line; // the line where the test was registered
         int m_template_id; // an ID used to distinguish between the different versions of a templated test case
 
-        TestCase(funcType test, const char* file, unsigned line, const char* test_suite,
+        TestCase(funcType test, const char* file, unsigned line, const TestSuite& test_suite,
                  const char* type = "", int template_id = -1);
 
         TestCase& operator*(const char* in);
@@ -1374,7 +1408,7 @@ namespace detail
 
     // forward declarations of functions used by the macros
     DOCTEST_INTERFACE int regTest(const TestCase& tc);
-    DOCTEST_INTERFACE int setTestSuiteName(const char* name);
+    DOCTEST_INTERFACE int setTestSuite(const TestSuite& ts);
 
     DOCTEST_INTERFACE void addFailedAssert(assertType::Enum assert_type);
 
@@ -2015,30 +2049,38 @@ public:
 #endif // __GNUC__
 
 // for grouping tests in test suites by using code blocks
-#define DOCTEST_TEST_SUITE_IMPL(name, ns_name)                                                     \
+#define DOCTEST_TEST_SUITE_IMPL(decorators, ns_name)                                               \
     namespace ns_name                                                                              \
     {                                                                                              \
         namespace doctest_detail_test_suite_ns                                                     \
         {                                                                                          \
-            inline const char* getCurrentTestSuite() { return name; }                              \
+            inline doctest::detail::TestSuite& getCurrentTestSuite() {                             \
+                static doctest::detail::TestSuite data;                                            \
+                static bool                       inited = false;                                  \
+                if(!inited) {                                                                      \
+                    data* decorators;                                                              \
+                    inited = true;                                                                 \
+                }                                                                                  \
+                return data;                                                                       \
+            }                                                                                      \
         }                                                                                          \
     }                                                                                              \
     namespace ns_name
 
-#define DOCTEST_TEST_SUITE(name)                                                                   \
-    DOCTEST_TEST_SUITE_IMPL(name, DOCTEST_ANONYMOUS(_DOCTEST_ANON_SUITE_))
+#define DOCTEST_TEST_SUITE(decorators)                                                             \
+    DOCTEST_TEST_SUITE_IMPL(decorators, DOCTEST_ANONYMOUS(_DOCTEST_ANON_SUITE_))
 
 // for starting a testsuite block
-#define DOCTEST_TEST_SUITE_BEGIN(name)                                                             \
+#define DOCTEST_TEST_SUITE_BEGIN(decorators)                                                       \
     DOCTEST_GLOBAL_NO_WARNINGS(DOCTEST_ANONYMOUS(_DOCTEST_ANON_VAR_)) =                            \
-            doctest::detail::setTestSuiteName(name);                                               \
+            doctest::detail::setTestSuite(doctest::detail::TestSuite() * decorators);              \
     DOCTEST_GLOBAL_NO_WARNINGS_END()                                                               \
     typedef int DOCTEST_ANONYMOUS(_DOCTEST_ANON_FOR_SEMICOLON_)
 
 // for ending a testsuite block
 #define DOCTEST_TEST_SUITE_END                                                                     \
     DOCTEST_GLOBAL_NO_WARNINGS(DOCTEST_ANONYMOUS(_DOCTEST_ANON_VAR_)) =                            \
-            doctest::detail::setTestSuiteName("");                                                 \
+            doctest::detail::setTestSuite(doctest::detail::TestSuite() * "");                      \
     DOCTEST_GLOBAL_NO_WARNINGS_END()                                                               \
     typedef int DOCTEST_ANONYMOUS(_DOCTEST_ANON_FOR_SEMICOLON_)
 
@@ -3447,8 +3489,8 @@ extern "C" __declspec(dllimport) int __stdcall IsDebuggerPresent();
 namespace doctest_detail_test_suite_ns
 {
 // holds the current test suite
-const char*& getCurrentTestSuite() {
-    static const char* data = 0;
+doctest::detail::TestSuite& getCurrentTestSuite() {
+    static doctest::detail::TestSuite data;
     return data;
 }
 } // namespace doctest_detail_test_suite_ns
@@ -3457,16 +3499,16 @@ namespace doctest
 {
 namespace detail
 {
-    TestCase::TestCase(funcType test, const char* file, unsigned line, const char* test_suite,
+    TestCase::TestCase(funcType test, const char* file, unsigned line, const TestSuite& test_suite,
                        const char* type, int template_id)
             : m_test(test)
             , m_full_name(0)
             , m_name(0)
             , m_type(type)
-            , m_test_suite(test_suite)
-            , m_description(0)
-            , m_skip(false)
-            , m_should_fail(false)
+            , m_test_suite(test_suite.m_test_suite)
+            , m_description(test_suite.m_description)
+            , m_skip(test_suite.m_skip)
+            , m_should_fail(test_suite.m_should_fail)
             , m_file(file)
             , m_line(line)
             , m_template_id(template_id) {}
@@ -3793,8 +3835,8 @@ namespace detail
     }
 
     // sets the current test suite
-    int setTestSuiteName(const char* name) {
-        doctest_detail_test_suite_ns::getCurrentTestSuite() = name;
+    int setTestSuite(const TestSuite& ts) {
+        doctest_detail_test_suite_ns::getCurrentTestSuite() = ts;
         return 0;
     }
 

@@ -520,8 +520,8 @@ extern "C" __declspec(dllimport) int __stdcall IsDebuggerPresent();
 namespace doctest_detail_test_suite_ns
 {
 // holds the current test suite
-const char*& getCurrentTestSuite() {
-    static const char* data = 0;
+doctest::detail::TestSuite& getCurrentTestSuite() {
+    static doctest::detail::TestSuite data;
     return data;
 }
 } // namespace doctest_detail_test_suite_ns
@@ -530,16 +530,16 @@ namespace doctest
 {
 namespace detail
 {
-    TestCase::TestCase(funcType test, const char* file, unsigned line, const char* test_suite,
+    TestCase::TestCase(funcType test, const char* file, unsigned line, const TestSuite& test_suite,
                        const char* type, int template_id)
             : m_test(test)
             , m_full_name(0)
             , m_name(0)
             , m_type(type)
-            , m_test_suite(test_suite)
-            , m_description(0)
-            , m_skip(false)
-            , m_should_fail(false)
+            , m_test_suite(test_suite.m_test_suite)
+            , m_description(test_suite.m_description)
+            , m_skip(test_suite.m_skip)
+            , m_should_fail(test_suite.m_should_fail)
             , m_file(file)
             , m_line(line)
             , m_template_id(template_id) {}
@@ -866,8 +866,8 @@ namespace detail
     }
 
     // sets the current test suite
-    int setTestSuiteName(const char* name) {
-        doctest_detail_test_suite_ns::getCurrentTestSuite() = name;
+    int setTestSuite(const TestSuite& ts) {
+        doctest_detail_test_suite_ns::getCurrentTestSuite() = ts;
         return 0;
     }
 
