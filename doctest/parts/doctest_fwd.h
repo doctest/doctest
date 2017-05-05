@@ -1334,15 +1334,48 @@ namespace detail
         }
     };
 
+    struct DOCTEST_INTERFACE TestCase
+    {
+        // not used for determining uniqueness
+        funcType m_test;    // a function pointer to the test case
+        String m_full_name; // contains the name (only for templated test cases!) + the template type
+        const char* m_name;       // name of the test case
+        const char* m_type;       // for templated test cases - gets appended to the real name
+        const char* m_test_suite; // the test suite in which the test was added
+        const char* m_description;
+        bool        m_skip;
+        bool        m_should_fail;
+
+        // fields by which uniqueness of test cases shall be determined
+        const char* m_file; // the file in which the test was registered
+        unsigned    m_line; // the line where the test was registered
+        int m_template_id; // an ID used to distinguish between the different versions of a templated test case
+
+        TestCase(funcType test, const char* file, unsigned line, const char* test_suite,
+                 const char* type = "", int template_id = -1);
+
+        TestCase& operator*(const char* in);
+
+        template <typename T>
+        TestCase& operator*(const T& in) {
+            in.fill(*this);
+            return *this;
+        }
+
+        TestCase(const TestCase& other) { *this = other; }
+
+        TestCase& operator=(const TestCase& other);
+
+        bool operator<(const TestCase& other) const;
+    };
+
     // forward declarations of functions used by the macros
-    DOCTEST_INTERFACE int regTest(funcType f, unsigned line, const char* file, const char* name,
-                                  const char* suite, const char* type = "", int template_id = -1);
+    DOCTEST_INTERFACE int regTest(const TestCase& tc);
     DOCTEST_INTERFACE int setTestSuiteName(const char* name);
 
     DOCTEST_INTERFACE void addFailedAssert(assertType::Enum assert_type);
 
-    DOCTEST_INTERFACE void logTestStart(const char* name, const char* suite, const char* file,
-                                        unsigned line);
+    DOCTEST_INTERFACE void logTestStart(const TestCase& tc);
     DOCTEST_INTERFACE void logTestEnd();
 
     DOCTEST_INTERFACE void logTestException(const String& what, bool crash = false);
@@ -1822,12 +1855,14 @@ public:
 #define DOCTEST_HANDLE_BRACED_VA_ARGS(expr) DOCTEST_STRIP_PARENS(DOCTEST_EXPAND_VA_ARGS expr)
 
 // registers the test by initializing a dummy var with a function
-#define DOCTEST_REGISTER_FUNCTION(f, name)                                                         \
+#define DOCTEST_REGISTER_FUNCTION(f, decorators)                                                   \
     DOCTEST_GLOBAL_NO_WARNINGS(DOCTEST_ANONYMOUS(_DOCTEST_ANON_VAR_)) = doctest::detail::regTest(  \
-            f, __LINE__, __FILE__, name, doctest_detail_test_suite_ns::getCurrentTestSuite());     \
+            doctest::detail::TestCase(f, __FILE__, __LINE__,                                       \
+                                      doctest_detail_test_suite_ns::getCurrentTestSuite()) *       \
+            decorators);                                                                           \
     DOCTEST_GLOBAL_NO_WARNINGS_END()
 
-#define DOCTEST_IMPLEMENT_FIXTURE(der, base, func, name)                                           \
+#define DOCTEST_IMPLEMENT_FIXTURE(der, base, func, decorators)                                     \
     namespace                                                                                      \
     {                                                                                              \
         struct der : base                                                                          \
@@ -1836,23 +1871,23 @@ public:
             der v;                                                                                 \
             v.f();                                                                                 \
         }                                                                                          \
-        DOCTEST_REGISTER_FUNCTION(func, name)                                                      \
+        DOCTEST_REGISTER_FUNCTION(func, decorators)                                                \
     }                                                                                              \
     inline void der::f()
 
-#define DOCTEST_CREATE_AND_REGISTER_FUNCTION(f, name)                                              \
+#define DOCTEST_CREATE_AND_REGISTER_FUNCTION(f, decorators)                                        \
     static void f();                                                                               \
-    DOCTEST_REGISTER_FUNCTION(f, name)                                                             \
+    DOCTEST_REGISTER_FUNCTION(f, decorators)                                                       \
     static void f()
 
 // for registering tests
-#define DOCTEST_TEST_CASE(name)                                                                    \
-    DOCTEST_CREATE_AND_REGISTER_FUNCTION(DOCTEST_ANONYMOUS(_DOCTEST_ANON_FUNC_), name)
+#define DOCTEST_TEST_CASE(decorators)                                                              \
+    DOCTEST_CREATE_AND_REGISTER_FUNCTION(DOCTEST_ANONYMOUS(_DOCTEST_ANON_FUNC_), decorators)
 
 // for registering tests with a fixture
-#define DOCTEST_TEST_CASE_FIXTURE(c, name)                                                         \
+#define DOCTEST_TEST_CASE_FIXTURE(c, decorators)                                                   \
     DOCTEST_IMPLEMENT_FIXTURE(DOCTEST_ANONYMOUS(_DOCTEST_ANON_CLASS_), c,                          \
-                              DOCTEST_ANONYMOUS(_DOCTEST_ANON_FUNC_), name)
+                              DOCTEST_ANONYMOUS(_DOCTEST_ANON_FUNC_), decorators)
 
 // for converting types to strings without the <typeinfo> header and demangling
 #ifdef DOCTEST_CONFIG_WITH_VARIADIC_MACROS
@@ -1884,16 +1919,18 @@ public:
 #endif // DOCTEST_CONFIG_WITH_VARIADIC_MACROS
 
 // for typed tests
-#define DOCTEST_TEST_CASE_TEMPLATE_IMPL(name, T, types, anon)                                      \
+#define DOCTEST_TEST_CASE_TEMPLATE_IMPL(decorators, T, types, anon)                                \
     template <typename T>                                                                          \
     inline void anon();                                                                            \
     struct DOCTEST_CAT(anon, FUNCTOR)                                                              \
     {                                                                                              \
         template <int Index, typename Type>                                                        \
         void          operator()() {                                                               \
-            doctest::detail::regTest(anon<Type>, __LINE__, __FILE__, name,                         \
-                                     doctest_detail_test_suite_ns::getCurrentTestSuite(),          \
-                                     doctest::detail::type_to_string<Type>(), Index);              \
+            doctest::detail::regTest(                                                              \
+                    doctest::detail::TestCase(anon<Type>, __FILE__, __LINE__,                      \
+                                              doctest_detail_test_suite_ns::getCurrentTestSuite(), \
+                                              doctest::detail::type_to_string<Type>(), Index) *    \
+                    decorators);                                                                   \
         }                                                                                          \
     };                                                                                             \
     inline int DOCTEST_CAT(anon, REG_FUNC)() {                                                     \
@@ -1909,14 +1946,15 @@ public:
     inline void anon()
 
 #ifdef DOCTEST_CONFIG_WITH_VARIADIC_MACROS
-#define DOCTEST_TEST_CASE_TEMPLATE(name, T, ...)                                                   \
-    DOCTEST_TEST_CASE_TEMPLATE_IMPL(name, T, (__VA_ARGS__), DOCTEST_ANONYMOUS(_DOCTEST_ANON_TMP_))
+#define DOCTEST_TEST_CASE_TEMPLATE(decorators, T, ...)                                             \
+    DOCTEST_TEST_CASE_TEMPLATE_IMPL(decorators, T, (__VA_ARGS__),                                  \
+                                    DOCTEST_ANONYMOUS(_DOCTEST_ANON_TMP_))
 #else // DOCTEST_CONFIG_WITH_VARIADIC_MACROS
-#define DOCTEST_TEST_CASE_TEMPLATE(name, T, types)                                                 \
-    DOCTEST_TEST_CASE_TEMPLATE_IMPL(name, T, types, DOCTEST_ANONYMOUS(_DOCTEST_ANON_TMP_))
+#define DOCTEST_TEST_CASE_TEMPLATE(decorators, T, types)                                           \
+    DOCTEST_TEST_CASE_TEMPLATE_IMPL(decorators, T, types, DOCTEST_ANONYMOUS(_DOCTEST_ANON_TMP_))
 #endif // DOCTEST_CONFIG_WITH_VARIADIC_MACROS
 
-#define DOCTEST_TEST_CASE_TEMPLATE_DEFINE_IMPL(name, T, id, anon)                                  \
+#define DOCTEST_TEST_CASE_TEMPLATE_DEFINE_IMPL(decorators, T, id, anon)                            \
     template <typename T>                                                                          \
     inline void anon();                                                                            \
     struct DOCTEST_CAT(id, _FUNCTOR)                                                               \
@@ -1927,17 +1965,19 @@ public:
                 : m_line(line) {}                                                                  \
         template <int Index, typename Type>                                                        \
         void          operator()() {                                                               \
-            doctest::detail::regTest(anon<Type>, __LINE__, __FILE__, name,                         \
-                                     doctest_detail_test_suite_ns::getCurrentTestSuite(),          \
-                                     doctest::detail::type_to_string<Type>(),                      \
-                                     m_line * 1000 + Index);                                       \
+            doctest::detail::regTest(                                                              \
+                    doctest::detail::TestCase(anon<Type>, __FILE__, __LINE__,                      \
+                                              doctest_detail_test_suite_ns::getCurrentTestSuite(), \
+                                              doctest::detail::type_to_string<Type>(),             \
+                                              m_line * 1000 + Index) *                             \
+                    decorators);                                                                   \
         }                                                                                          \
     };                                                                                             \
     template <typename T>                                                                          \
     inline void anon()
 
-#define DOCTEST_TEST_CASE_TEMPLATE_DEFINE(name, T, id)                                             \
-    DOCTEST_TEST_CASE_TEMPLATE_DEFINE_IMPL(name, T, id, DOCTEST_ANONYMOUS(_DOCTEST_ANON_TMP_))
+#define DOCTEST_TEST_CASE_TEMPLATE_DEFINE(decorators, T, id)                                       \
+    DOCTEST_TEST_CASE_TEMPLATE_DEFINE_IMPL(decorators, T, id, DOCTEST_ANONYMOUS(_DOCTEST_ANON_TMP_))
 
 #define DOCTEST_TEST_CASE_TEMPLATE_INSTANTIATE_IMPL(id, types, anon)                               \
     static int DOCTEST_CAT(anon, REG_FUNC)() {                                                     \

@@ -3,5 +3,5 @@
 ===============================================================================
 exception related
 ===============================================================================
-[doctest] number of test cases passing the current filters: 4
-[doctest] number of test suites with test cases passing the current filters: 1
+[doctest] unskipped test cases passing the current filters: 4
+[doctest] test suites with unskipped test cases passing the current filters: 1

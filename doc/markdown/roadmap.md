@@ -12,18 +12,19 @@ Planned features for future releases - order changes constantly...
 
 - decorators for test cases - like in boost test
     - depends_on (decorator)
-    - description (decorator)
-    - enabled / disabled (decorator)
-    - enable_if (decorator)
-    - fixture (decorator)
-    - label (decorator)
     - precondition (decorator)
-    - expected_failures (decorator)
-    - timeout (decorator)
-    - shouldFail => reported as "x failed as expected" (both asserts and test cases)
-    - mayFail
-    - alternative mechanism to tags
+    - fixture (decorator)
     - run X times (should also multiply with the global test run times)
+    - timeout (decorator)   can inherit from test suites
+    - label (tag)           can inherit from test suites
+    
+    - test_suite
+    - description           can inherit from test suites
+    - disabled (skip)       can inherit from test suites
+    - enable_if (skip_if)   can inherit from test suites
+    - shouldFail => reported as "x failed as expected" (both asserts and test cases) - like [!mayfail] but fails the test if it passes. This can be useful if you want to be notified of accidental, or third-party, fixes.
+    - expected_failures (decorator)
+    - mayFail
     - !!! and think about how these will be accessed and filtered from the command line
 - time stuff
     - reporting running time of tests
@@ -62,6 +63,7 @@ Planned features for future releases - order changes constantly...
     - update links to examples
     - write about static code analysis
     - docs about sort-of data driven testing - with INFO and SUBCASE
+    - docs about decorators
     - https://www.paypal.me/onqtam
     - https://github.com/jch/html-pipeline/blob/master/lib/html/pipeline/sanitization_filter.rb#L45-L48
     - add a new page for build systems and integration
@@ -121,6 +123,7 @@ Planned features for future releases - order changes constantly...
     - should test stuff that should not compile
     - should test crash handling
     - should test more config options
+    - test tricky stuff like expressions with commas in asserts
 
 ### For 2.0:
 

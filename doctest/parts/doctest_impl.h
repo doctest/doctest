@@ -83,9 +83,7 @@
 #define DOCTEST_LOG_START()                                                                        \
     do {                                                                                           \
         if(!DOCTEST_GCS().hasLoggedCurrentTestStart) {                                             \
-            doctest::detail::logTestStart(                                                         \
-                    DOCTEST_GCS().currentTest->m_name, DOCTEST_GCS().currentTest->m_suite,         \
-                    DOCTEST_GCS().currentTest->m_file, DOCTEST_GCS().currentTest->m_line);         \
+            doctest::detail::logTestStart(*DOCTEST_GCS().currentTest);                             \
             DOCTEST_GCS().hasLoggedCurrentTestStart = true;                                        \
         }                                                                                          \
     } while(false)
@@ -200,53 +198,6 @@ namespace detail
 
 #ifndef DOCTEST_CONFIG_DISABLE
 
-    // a struct defining a registered test callback
-    struct TestData
-    {
-        // not used for determining uniqueness
-        const char* m_suite; // the test suite in which the test was added
-        const char* m_name;  // name of the test function
-        funcType    m_f;     // a function pointer to the test function
-        String m_full_name; // contains the name (only for templated test cases!) + the template type
-
-        // fields by which uniqueness of test cases shall be determined
-        const char* m_file; // the file in which the test was registered
-        unsigned    m_line; // the line where the test was registered
-        int m_template_id; // an ID used to distinguish between the different versions of a templated test case
-
-        TestData(const char* suite, const char* name, funcType f, const char* file, unsigned line,
-                 const char* type_name, int template_id)
-                : m_suite(suite)
-                , m_name(name)
-                , m_f(f)
-                , m_file(file)
-                , m_line(line)
-                , m_template_id(template_id) {
-            if(m_template_id != -1) {
-                m_full_name = String(name) + type_name;
-                // redirect the name to point to the newly constructed full name
-                m_name = m_full_name.c_str();
-            }
-        }
-
-        TestData(const TestData& other) { *this = other; }
-
-        TestData& operator=(const TestData& other) {
-            m_suite       = other.m_suite;
-            m_name        = other.m_name;
-            m_f           = other.m_f;
-            m_full_name   = other.m_full_name;
-            m_file        = other.m_file;
-            m_line        = other.m_line;
-            m_template_id = other.m_template_id;
-            if(m_template_id != -1)
-                m_name = m_full_name.c_str();
-            return *this;
-        }
-
-        bool operator<(const TestData& other) const;
-    };
-
     // this holds both parameters for the command line and runtime data for tests
     struct ContextState : TestAccessibleContextState
     {
@@ -271,6 +222,7 @@ namespace detail
         bool no_colors;    // if output to the console should be colorized
         bool force_colors; // forces the use of colors even when a tty cannot be detected
         bool no_breaks;    // to not break into the debugger
+        bool no_skip;      // don't skip test cases which are marked to be skipped
         bool no_path_in_filenames; // if the path to files should be removed from the output
         bool no_line_numbers;      // if source code line numbers should be omitted from the output
         bool no_skipped_summary;   // don't print "skipped" in the summary !!! UNDOCUMENTED !!!
@@ -286,7 +238,7 @@ namespace detail
         unsigned        numTestsPassingFilters;
         unsigned        numTestSuitesPassingFilters;
         unsigned        numFailed;
-        const TestData* currentTest;
+        const TestCase* currentTest;
         bool            hasLoggedCurrentTestStart;
         int             numAssertionsForCurrentTestcase;
         int             numAssertions;
@@ -578,7 +530,50 @@ namespace doctest
 {
 namespace detail
 {
-    bool TestData::operator<(const TestData& other) const {
+    TestCase::TestCase(funcType test, const char* file, unsigned line, const char* test_suite,
+                       const char* type, int template_id)
+            : m_test(test)
+            , m_full_name(0)
+            , m_name(0)
+            , m_type(type)
+            , m_test_suite(test_suite)
+            , m_description(0)
+            , m_skip(false)
+            , m_should_fail(false)
+            , m_file(file)
+            , m_line(line)
+            , m_template_id(template_id) {}
+
+    TestCase& TestCase::operator*(const char* in) {
+        m_name = in;
+        // make a new name with an appended type for templated test case
+        if(m_template_id != -1) {
+            m_full_name = String(m_name) + m_type;
+            // redirect the name to point to the newly constructed full name
+            m_name = m_full_name.c_str();
+        }
+        return *this;
+    }
+
+    TestCase& TestCase::operator=(const TestCase& other) {
+        m_test        = other.m_test;
+        m_full_name   = other.m_full_name;
+        m_name        = other.m_name;
+        m_type        = other.m_type;
+        m_test_suite  = other.m_test_suite;
+        m_description = other.m_description;
+        m_skip        = other.m_skip;
+        m_should_fail = other.m_should_fail;
+        m_file        = other.m_file;
+        m_line        = other.m_line;
+        m_template_id = other.m_template_id;
+
+        if(m_template_id != -1)
+            m_name = m_full_name.c_str();
+        return *this;
+    }
+
+    bool TestCase::operator<(const TestCase& other) const {
         if(m_line != other.m_line)
             return m_line < other.m_line;
         int file_cmp = std::strcmp(m_file, other.m_file);
@@ -834,8 +829,8 @@ namespace detail
 
     // for sorting tests by file/line
     int fileOrderComparator(const void* a, const void* b) {
-        const TestData* lhs = *static_cast<TestData* const*>(a);
-        const TestData* rhs = *static_cast<TestData* const*>(b);
+        const TestCase* lhs = *static_cast<TestCase* const*>(a);
+        const TestCase* rhs = *static_cast<TestCase* const*>(b);
 #ifdef _MSC_VER
         // this is needed because MSVC gives different case for drive letters
         // for __FILE__ when evaluated in a header and a source file
@@ -850,10 +845,10 @@ namespace detail
 
     // for sorting tests by suite/file/line
     int suiteOrderComparator(const void* a, const void* b) {
-        const TestData* lhs = *static_cast<TestData* const*>(a);
-        const TestData* rhs = *static_cast<TestData* const*>(b);
+        const TestCase* lhs = *static_cast<TestCase* const*>(a);
+        const TestCase* rhs = *static_cast<TestCase* const*>(b);
 
-        int res = std::strcmp(lhs->m_suite, rhs->m_suite);
+        int res = std::strcmp(lhs->m_test_suite, rhs->m_test_suite);
         if(res != 0)
             return res;
         return fileOrderComparator(a, b);
@@ -861,8 +856,8 @@ namespace detail
 
     // for sorting tests by name/suite/file/line
     int nameOrderComparator(const void* a, const void* b) {
-        const TestData* lhs = *static_cast<TestData* const*>(a);
-        const TestData* rhs = *static_cast<TestData* const*>(b);
+        const TestCase* lhs = *static_cast<TestCase* const*>(a);
+        const TestCase* rhs = *static_cast<TestCase* const*>(b);
 
         int res_name = std::strcmp(lhs->m_name, rhs->m_name);
         if(res_name != 0)
@@ -877,15 +872,14 @@ namespace detail
     }
 
     // all the registered tests
-    std::set<TestData>& getRegisteredTests() {
-        static std::set<TestData> data;
+    std::set<TestCase>& getRegisteredTests() {
+        static std::set<TestCase> data;
         return data;
     }
 
     // used by the macros for registering tests
-    int regTest(funcType f, unsigned line, const char* file, const char* name, const char* suite,
-                const char* type, int template_id) {
-        getRegisteredTests().insert(TestData(suite, name, f, file, line, type, template_id));
+    int regTest(const TestCase& tc) {
+        getRegisteredTests().insert(tc);
         return 0;
     }
 
@@ -1282,34 +1276,44 @@ namespace detail
         }
     }
 
-    void logTestStart(const char* name, const char* suite, const char* file, unsigned line) {
+    void logTestStart(const TestCase& tc) {
         char loc[DOCTEST_SNPRINTF_BUFFER_LENGTH];
-        DOCTEST_SNPRINTF(loc, DOCTEST_COUNTOF(loc), "%s(%d)\n", fileForOutput(file),
-                         lineForOutput(line));
+        DOCTEST_SNPRINTF(loc, DOCTEST_COUNTOF(loc), "%s(%d)\n", fileForOutput(tc.m_file),
+                         lineForOutput(tc.m_line));
 
         char ts1[DOCTEST_SNPRINTF_BUFFER_LENGTH];
         DOCTEST_SNPRINTF(ts1, DOCTEST_COUNTOF(ts1), "TEST SUITE: ");
         char ts2[DOCTEST_SNPRINTF_BUFFER_LENGTH];
-        DOCTEST_SNPRINTF(ts2, DOCTEST_COUNTOF(ts2), "%s\n", suite);
+        DOCTEST_SNPRINTF(ts2, DOCTEST_COUNTOF(ts2), "%s\n", tc.m_test_suite);
         char n1[DOCTEST_SNPRINTF_BUFFER_LENGTH];
         DOCTEST_SNPRINTF(n1, DOCTEST_COUNTOF(n1), "TEST CASE:  ");
         char n2[DOCTEST_SNPRINTF_BUFFER_LENGTH];
-        DOCTEST_SNPRINTF(n2, DOCTEST_COUNTOF(n2), "%s\n", name);
+        DOCTEST_SNPRINTF(n2, DOCTEST_COUNTOF(n2), "%s\n", tc.m_name);
+        char d1[DOCTEST_SNPRINTF_BUFFER_LENGTH];
+        DOCTEST_SNPRINTF(d1, DOCTEST_COUNTOF(d1), "DESCRIPTION: ");
+        char d2[DOCTEST_SNPRINTF_BUFFER_LENGTH];
+        DOCTEST_SNPRINTF(d2, DOCTEST_COUNTOF(d2), "%s\n", tc.m_description);
 
         // hack for BDD style of macros - to not print "TEST CASE:"
         char scenario[] = "  Scenario:";
-        if(std::string(name).substr(0, DOCTEST_COUNTOF(scenario) - 1) == scenario)
+        if(std::string(tc.m_name).substr(0, DOCTEST_COUNTOF(scenario) - 1) == scenario)
             n1[0] = '\0';
 
         DOCTEST_PRINTF_COLORED(getSeparator(), Color::Yellow);
         DOCTEST_PRINTF_COLORED(loc, Color::LightGrey);
 
-        String TestSuiteForDebugConsole = "";
-        if(suite[0] != '\0') {
+        String forDebugConsole = "";
+        if(tc.m_description) {
+            DOCTEST_PRINTF_COLORED(d1, Color::Yellow);
+            DOCTEST_PRINTF_COLORED(d2, Color::None);
+            forDebugConsole += d1;
+            forDebugConsole += d2;
+        }
+        if(tc.m_test_suite[0] != '\0') {
             DOCTEST_PRINTF_COLORED(ts1, Color::Yellow);
             DOCTEST_PRINTF_COLORED(ts2, Color::None);
-            TestSuiteForDebugConsole += ts1;
-            TestSuiteForDebugConsole += ts2;
+            forDebugConsole += ts1;
+            forDebugConsole += ts2;
         }
         DOCTEST_PRINTF_COLORED(n1, Color::Yellow);
         DOCTEST_PRINTF_COLORED(n2, Color::None);
@@ -1328,8 +1332,8 @@ namespace detail
 
         DOCTEST_PRINTF_COLORED("\n", Color::None);
 
-        printToDebugConsole(String(getSeparator()) + loc + TestSuiteForDebugConsole.c_str() + n1 +
-                            n2 + subcaseStuff.c_str() + "\n");
+        printToDebugConsole(String(getSeparator()) + loc + forDebugConsole.c_str() + n1 + n2 +
+                            subcaseStuff.c_str() + "\n");
     }
 
     void logTestEnd() {}
@@ -1861,6 +1865,7 @@ namespace detail
         std::printf(" -nc,  --no-colors=<bool>              disables colors in output\n");
         std::printf(" -fc,  --force-colors=<bool>           use colors even when not in a tty\n");
         std::printf(" -nb,  --no-breaks=<bool>              disables breakpoints in debuggers\n");
+        std::printf(" -ns,  --no-skip=<bool>                don't skip test cases marked as skip\n");
         std::printf(" -npf, --no-path-filenames=<bool>      only filenames and no paths in output\n");
         std::printf(" -nln, --no-line-numbers=<bool>        0 instead of real line numbers in output\n");
         // ==================================================================================== << 79
@@ -1876,14 +1881,14 @@ namespace detail
         DOCTEST_PRINTF_COLORED(getSeparator(), Color::Yellow);
         if(p->count || p->list_test_cases) {
             DOCTEST_PRINTF_COLORED("[doctest] ", Color::Cyan);
-            std::printf("number of test cases passing the current filters: %u\n",
+            std::printf("unskipped test cases passing the current filters: %u\n",
                         p->numTestsPassingFilters);
         } else if(p->list_test_suites) {
             DOCTEST_PRINTF_COLORED("[doctest] ", Color::Cyan);
-            std::printf("number of test cases passing the current filters: %u\n",
+            std::printf("unskipped test cases passing the current filters: %u\n",
                         p->numTestsPassingFilters);
             DOCTEST_PRINTF_COLORED("[doctest] ", Color::Cyan);
-            std::printf("number of test suites with test cases passing the current filters: %u\n",
+            std::printf("test suites with unskipped test cases passing the current filters: %u\n",
                         p->numTestSuitesPassingFilters);
         } else {
             char buff[DOCTEST_SNPRINTF_BUFFER_LENGTH];
@@ -2015,6 +2020,7 @@ void Context::parseArgs(int argc, const char* const* argv, bool withDefaults) {
     DOCTEST_PARSE_AS_BOOL_OR_FLAG(dt-no-colors, dt-nc, no_colors, false);
     DOCTEST_PARSE_AS_BOOL_OR_FLAG(dt-force-colors, dt-fc, force_colors, false);
     DOCTEST_PARSE_AS_BOOL_OR_FLAG(dt-no-breaks, dt-nb, no_breaks, false);
+    DOCTEST_PARSE_AS_BOOL_OR_FLAG(dt-no-skip, dt-ns, no_skip, false);
     DOCTEST_PARSE_AS_BOOL_OR_FLAG(dt-no-path-filenames, dt-npf, no_path_in_filenames, false);
     DOCTEST_PARSE_AS_BOOL_OR_FLAG(dt-no-line-numbers, dt-nln, no_line_numbers, false);
     DOCTEST_PARSE_AS_BOOL_OR_FLAG(dt-no-skipped-summary, dt-nss, no_skipped_summary, false);
@@ -2103,30 +2109,30 @@ int Context::run() {
 
     unsigned i = 0; // counter used for loops - here for VC6
 
-    std::set<TestData>& registeredTests = getRegisteredTests();
+    std::set<TestCase>& registeredTests = getRegisteredTests();
 
-    std::vector<const TestData*> testArray;
-    for(std::set<TestData>::iterator it = registeredTests.begin(); it != registeredTests.end();
+    std::vector<const TestCase*> testArray;
+    for(std::set<TestCase>::iterator it = registeredTests.begin(); it != registeredTests.end();
         ++it)
         testArray.push_back(&(*it));
 
     // sort the collected records
     if(!testArray.empty()) {
         if(p->order_by.compare("file", true) == 0) {
-            std::qsort(&testArray[0], testArray.size(), sizeof(TestData*), fileOrderComparator);
+            std::qsort(&testArray[0], testArray.size(), sizeof(TestCase*), fileOrderComparator);
         } else if(p->order_by.compare("suite", true) == 0) {
-            std::qsort(&testArray[0], testArray.size(), sizeof(TestData*), suiteOrderComparator);
+            std::qsort(&testArray[0], testArray.size(), sizeof(TestCase*), suiteOrderComparator);
         } else if(p->order_by.compare("name", true) == 0) {
-            std::qsort(&testArray[0], testArray.size(), sizeof(TestData*), nameOrderComparator);
+            std::qsort(&testArray[0], testArray.size(), sizeof(TestCase*), nameOrderComparator);
         } else if(p->order_by.compare("rand", true) == 0) {
             std::srand(p->rand_seed);
 
             // random_shuffle implementation
-            const TestData** first = &testArray[0];
+            const TestCase** first = &testArray[0];
             for(i = testArray.size() - 1; i > 0; --i) {
                 int idxToSwap = std::rand() % (i + 1); // NOLINT
 
-                const TestData* temp = first[i];
+                const TestCase* temp = first[i];
 
                 first[i]         = first[idxToSwap];
                 first[idxToSwap] = temp;
@@ -2149,14 +2155,18 @@ int Context::run() {
 
     // invoke the registered functions if they match the filter criteria (or just count them)
     for(i = 0; i < testArray.size(); i++) {
-        const TestData& data = *testArray[i];
+        const TestCase& data = *testArray[i];
+
+        if(data.m_skip && !p->no_skip)
+            continue;
+
         if(!matchesAny(data.m_file, p->filters[0], 1, p->case_sensitive))
             continue;
         if(matchesAny(data.m_file, p->filters[1], 0, p->case_sensitive))
             continue;
-        if(!matchesAny(data.m_suite, p->filters[2], 1, p->case_sensitive))
+        if(!matchesAny(data.m_test_suite, p->filters[2], 1, p->case_sensitive))
             continue;
-        if(matchesAny(data.m_suite, p->filters[3], 0, p->case_sensitive))
+        if(matchesAny(data.m_test_suite, p->filters[3], 0, p->case_sensitive))
             continue;
         if(!matchesAny(data.m_name, p->filters[4], 1, p->case_sensitive))
             continue;
@@ -2177,9 +2187,10 @@ int Context::run() {
 
         // print the name of the test suite if not done already and don't execute it
         if(p->list_test_suites) {
-            if((testSuitesPassingFilters.count(data.m_suite) == 0) && data.m_suite[0] != '\0') {
-                std::printf("%s\n", data.m_suite);
-                testSuitesPassingFilters.insert(data.m_suite);
+            if((testSuitesPassingFilters.count(data.m_test_suite) == 0) &&
+               data.m_test_suite[0] != '\0') {
+                std::printf("%s\n", data.m_test_suite);
+                testSuitesPassingFilters.insert(data.m_test_suite);
                 p->numTestSuitesPassingFilters++;
             }
             continue;
@@ -2219,7 +2230,7 @@ int Context::run() {
                 try {
 #endif // DOCTEST_CONFIG_NO_EXCEPTIONS
                     FatalConditionHandler fatalConditionHandler; // Handle signals
-                    data.m_f();
+                    data.m_test();
                     fatalConditionHandler.reset();
                     if(getContextState()->hasCurrentTestFailed)
                         failed = true;
