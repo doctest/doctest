@@ -468,14 +468,18 @@ namespace detail
         const char* m_test_suite;
         const char* m_description;
         bool        m_skip;
+        bool        m_may_fail;
         bool        m_should_fail;
+        int         m_expected_failures;
 
         TestSuite& operator*(const char* in) {
             m_test_suite = in;
             // clear state
-            m_description = 0;
-            m_skip        = false;
-            m_should_fail = false;
+            m_description       = 0;
+            m_skip              = false;
+            m_may_fail          = false;
+            m_should_fail       = false;
+            m_expected_failures = 0;
             return *this;
         }
 
@@ -1381,7 +1385,9 @@ namespace detail
         const char* m_test_suite; // the test suite in which the test was added
         const char* m_description;
         bool        m_skip;
+        bool        m_may_fail;
         bool        m_should_fail;
+        int         m_expected_failures;
 
         // fields by which uniqueness of test cases shall be determined
         const char* m_file; // the file in which the test was registered
@@ -1823,6 +1829,65 @@ namespace detail
         void react();
     };
 } // namespace detail
+
+struct test_suite
+{
+    const char* data;
+    test_suite(const char* in)
+            : data(in) {}
+    void fill(detail::TestCase& state) const { state.m_test_suite = data; }
+};
+
+struct description
+{
+    const char* data;
+    description(const char* in)
+            : data(in) {}
+    void fill(detail::TestCase& state) const { state.m_description = data; }
+    void fill(detail::TestSuite& state) const { state.m_description = data; }
+};
+
+struct skip
+{
+    void fill(detail::TestCase& state) const { state.m_skip = true; }
+    void fill(detail::TestSuite& state) const { state.m_skip = true; }
+};
+
+struct skip_if
+{
+    bool data;
+    skip_if(bool in)
+            : data(in) {}
+    void fill(detail::TestCase& state) const { state.m_skip = data; }
+    void fill(detail::TestSuite& state) const { state.m_skip = data; }
+};
+
+struct may_fail
+{
+    bool data;
+    may_fail(bool in)
+            : data(in) {}
+    void fill(detail::TestCase& state) const { state.m_may_fail = data; }
+    void fill(detail::TestSuite& state) const { state.m_may_fail = data; }
+};
+
+struct should_fail
+{
+    bool data;
+    should_fail(bool in)
+            : data(in) {}
+    void fill(detail::TestCase& state) const { state.m_should_fail = data; }
+    void fill(detail::TestSuite& state) const { state.m_should_fail = data; }
+};
+
+struct expected_failures
+{
+    int data;
+    expected_failures(int in)
+            : data(in) {}
+    void fill(detail::TestCase& state) const { state.m_expected_failures = data; }
+    void fill(detail::TestSuite& state) const { state.m_expected_failures = data; }
+};
 
 #endif // DOCTEST_CONFIG_DISABLE
 
@@ -3508,7 +3573,9 @@ namespace detail
             , m_test_suite(test_suite.m_test_suite)
             , m_description(test_suite.m_description)
             , m_skip(test_suite.m_skip)
+            , m_may_fail(test_suite.m_may_fail)
             , m_should_fail(test_suite.m_should_fail)
+            , m_expected_failures(test_suite.m_expected_failures)
             , m_file(file)
             , m_line(line)
             , m_template_id(template_id) {}
@@ -3525,17 +3592,19 @@ namespace detail
     }
 
     TestCase& TestCase::operator=(const TestCase& other) {
-        m_test        = other.m_test;
-        m_full_name   = other.m_full_name;
-        m_name        = other.m_name;
-        m_type        = other.m_type;
-        m_test_suite  = other.m_test_suite;
-        m_description = other.m_description;
-        m_skip        = other.m_skip;
-        m_should_fail = other.m_should_fail;
-        m_file        = other.m_file;
-        m_line        = other.m_line;
-        m_template_id = other.m_template_id;
+        m_test              = other.m_test;
+        m_full_name         = other.m_full_name;
+        m_name              = other.m_name;
+        m_type              = other.m_type;
+        m_test_suite        = other.m_test_suite;
+        m_description       = other.m_description;
+        m_skip              = other.m_skip;
+        m_may_fail          = other.m_may_fail;
+        m_should_fail       = other.m_should_fail;
+        m_expected_failures = other.m_expected_failures;
+        m_file              = other.m_file;
+        m_line              = other.m_line;
+        m_template_id       = other.m_template_id;
 
         if(m_template_id != -1)
             m_name = m_full_name.c_str();

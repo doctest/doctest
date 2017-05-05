@@ -10,24 +10,19 @@ Planned features for future releases - order changes constantly...
 
 ### For 1.2:
 
-- decorators for test cases - like in boost test
-    - depends_on (decorator)
-    - precondition (decorator)
-    - fixture (decorator)
-    - run X times (should also multiply with the global test run times)
-    - timeout (decorator)   can inherit from test suites
-    - label (tag)           can inherit from test suites
-    
+- decorators
     - test_suite
     - description           can inherit from test suites
     - disabled (skip)       can inherit from test suites
     - enable_if (skip_if)   can inherit from test suites
-    - shouldFail => reported as "x failed as expected" (both asserts and test cases) - like [!mayfail] but fails the test if it passes. This can be useful if you want to be notified of accidental, or third-party, fixes.
+    - mayfail - doesn't fail the test if any given assertion fails (but still reports it). This can be useful to flag a work-in-progress, or a known issue that you don't want to immediately fix but still want to track in the your tests.
+    - shouldfail - like [!mayfail] but fails the test if it passes. This can be useful if you want to be notified of accidental, or third-party, fixes.
     - expected_failures (decorator)
-    - mayFail
+    - label (tag)           can inherit from test suites
     - !!! and think about how these will be accessed and filtered from the command line
 - time stuff
     - reporting running time of tests
+    - timeout (decorator)   can inherit from test suites
     - count a test case as failed if it exceeds X ms (but no force-killing!)
         Entering test module "decorator_08"
         test.cpp(6): Entering test case "test1"
@@ -47,6 +42,7 @@ Planned features for future releases - order changes constantly...
     - get rid of local statics on the hot path - like in getContextState()
     - make a pool allocator for the ```String``` class - currently very unoptimized
     - add move semantics to the ```String``` class
+    - see how many times operator new is called during startup (or runtime?..)
 - mocking - interop with doctest (+ maybe send PRs with doctest integration info)
     - google mock
     - https://github.com/eranpeer/FakeIt
@@ -86,6 +82,7 @@ Planned features for future releases - order changes constantly...
     - a listener interface - similar to a reporter - look at Catch
 - ability to have no output when everything succeeds
 - option to output summary only
+- log levels - like in [boost test](http://www.boost.org/doc/libs/1_63_0/libs/test/doc/html/boost_test/utf_reference/rt_param_reference/log_level.html)
 - matchers - should investigate what they are - look at google test/mock and Catch (also predicates and boost test)
 - convolution support for the assertion macros (with a predicate)
 - Value-Parameterized test cases
@@ -145,7 +142,6 @@ Planned features for future releases - order changes constantly...
 - ```Bitwise()``` class that has overloaded operators for comparison - to be used to check objects bitwise against each other
 - detect floating point exceptions
 - checkpoint/passpoint - like in [boost test](http://www.boost.org/doc/libs/1_63_0/libs/test/doc/html/boost_test/test_output/test_tools_support_for_logging/checkpoints.html) (also make all assert/subcase/logging macros to act as passpoints and print the last one on crashes or exceptions)
-- log levels - like in [boost test](http://www.boost.org/doc/libs/1_63_0/libs/test/doc/html/boost_test/utf_reference/rt_param_reference/log_level.html)
 - queries for the current test case - name (and probably decorators)
 - thread safety - asserts/subcases/captures should be safe to be used by multiple threads simultaneously
 - support for running tests in parallel in multiple threads
@@ -158,9 +154,15 @@ Planned features for future releases - order changes constantly...
     - option for filters to switch from "match any" to "match all" mode
     - option to list test suites and test cases in a tree view
     - add a "wait key" option - as requested [here](https://github.com/philsquared/Catch/issues/477#issuecomment-256417686)
+- decorators for test cases and test suites- like in boost test
+    - depends_on (decorator)
+    - precondition (decorator)
+    - fixture (decorator)
+    - run X times (should also multiply with (or just override) the global test run times)
 - setup / teardown support
     - global setup / teardown - can be currently achieved by providing a custom main function
-    - per test suite
+    - per test suite (block? only? and not all blocks of the same test suite?)
+    - as decorators
     - see how it's done in boost test - with the fixture decorator
     - perhaps for fixtures in addition to the constructor / destructor - since throwing in the destructor might terminate the program
     - or just ignore all of this this - it would require globals or classes and inheritance - and we already have subcases

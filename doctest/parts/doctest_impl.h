@@ -539,7 +539,9 @@ namespace detail
             , m_test_suite(test_suite.m_test_suite)
             , m_description(test_suite.m_description)
             , m_skip(test_suite.m_skip)
+            , m_may_fail(test_suite.m_may_fail)
             , m_should_fail(test_suite.m_should_fail)
+            , m_expected_failures(test_suite.m_expected_failures)
             , m_file(file)
             , m_line(line)
             , m_template_id(template_id) {}
@@ -556,17 +558,19 @@ namespace detail
     }
 
     TestCase& TestCase::operator=(const TestCase& other) {
-        m_test        = other.m_test;
-        m_full_name   = other.m_full_name;
-        m_name        = other.m_name;
-        m_type        = other.m_type;
-        m_test_suite  = other.m_test_suite;
-        m_description = other.m_description;
-        m_skip        = other.m_skip;
-        m_should_fail = other.m_should_fail;
-        m_file        = other.m_file;
-        m_line        = other.m_line;
-        m_template_id = other.m_template_id;
+        m_test              = other.m_test;
+        m_full_name         = other.m_full_name;
+        m_name              = other.m_name;
+        m_type              = other.m_type;
+        m_test_suite        = other.m_test_suite;
+        m_description       = other.m_description;
+        m_skip              = other.m_skip;
+        m_may_fail          = other.m_may_fail;
+        m_should_fail       = other.m_should_fail;
+        m_expected_failures = other.m_expected_failures;
+        m_file              = other.m_file;
+        m_line              = other.m_line;
+        m_template_id       = other.m_template_id;
 
         if(m_template_id != -1)
             m_name = m_full_name.c_str();
