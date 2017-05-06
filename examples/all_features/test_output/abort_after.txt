@@ -21,4 +21,5 @@ Aborting - too many failed asserts!
 ===============================================================================
 [doctest] test cases:    1 |    0 passed |    1 failed | 
 [doctest] assertions:    6 |    4 passed |    2 failed |
+[doctest] Status: FAILURE!
 Program code.

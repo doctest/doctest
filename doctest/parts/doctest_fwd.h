@@ -1833,6 +1833,7 @@ struct test_suite
     test_suite(const char* in)
             : data(in) {}
     void fill(detail::TestCase& state) const { state.m_test_suite = data; }
+    void fill(detail::TestSuite& state) const { state.m_test_suite = data; }
 };
 
 struct description
@@ -1846,14 +1847,8 @@ struct description
 
 struct skip
 {
-    void fill(detail::TestCase& state) const { state.m_skip = true; }
-    void fill(detail::TestSuite& state) const { state.m_skip = true; }
-};
-
-struct skip_if
-{
     bool data;
-    skip_if(bool in)
+    skip(bool in = true)
             : data(in) {}
     void fill(detail::TestCase& state) const { state.m_skip = data; }
     void fill(detail::TestSuite& state) const { state.m_skip = data; }
@@ -1862,7 +1857,7 @@ struct skip_if
 struct may_fail
 {
     bool data;
-    may_fail(bool in)
+    may_fail(bool in = true)
             : data(in) {}
     void fill(detail::TestCase& state) const { state.m_may_fail = data; }
     void fill(detail::TestSuite& state) const { state.m_may_fail = data; }
@@ -1871,7 +1866,7 @@ struct may_fail
 struct should_fail
 {
     bool data;
-    should_fail(bool in)
+    should_fail(bool in = true)
             : data(in) {}
     void fill(detail::TestCase& state) const { state.m_should_fail = data; }
     void fill(detail::TestSuite& state) const { state.m_should_fail = data; }

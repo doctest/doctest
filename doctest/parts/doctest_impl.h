@@ -242,6 +242,7 @@ namespace detail
         bool            hasLoggedCurrentTestStart;
         int             numAssertionsForCurrentTestcase;
         int             numAssertions;
+        int             numFailedAssertionsForCurrentTestcase;
         int             numFailedAssertions;
         bool            hasCurrentTestFailed;
 
@@ -256,11 +257,12 @@ namespace detail
         bool                       subcasesHasSkipped;
 
         void resetRunData() {
-            numTestsPassingFilters      = 0;
-            numTestSuitesPassingFilters = 0;
-            numFailed                   = 0;
-            numAssertions               = 0;
-            numFailedAssertions         = 0;
+            numTestsPassingFilters                = 0;
+            numTestSuitesPassingFilters           = 0;
+            numFailed                             = 0;
+            numAssertions                         = 0;
+            numFailedAssertions                   = 0;
+            numFailedAssertionsForCurrentTestcase = 0;
         }
 
         // cppcheck-suppress uninitMemberVar
@@ -1275,8 +1277,9 @@ namespace detail
 
     void addFailedAssert(assertType::Enum assert_type) {
         if((assert_type & assertType::is_warn) == 0) {
-            getContextState()->hasCurrentTestFailed = true;
             getContextState()->numFailedAssertions++;
+            getContextState()->numFailedAssertionsForCurrentTestcase++;
+            getContextState()->hasCurrentTestFailed = true;
         }
     }
 
@@ -1638,33 +1641,34 @@ namespace detail
 
         bool is_warn = m_severity & doctest::detail::assertType::is_warn;
 
-        if(!is_warn)
-            getContextState()->hasCurrentTestFailed = true;
-
-        {
-            char loc[DOCTEST_SNPRINTF_BUFFER_LENGTH];
-            DOCTEST_SNPRINTF(loc, DOCTEST_COUNTOF(loc), "%s(%d)", fileForOutput(m_file),
-                             lineForOutput(m_line));
-            char msg[DOCTEST_SNPRINTF_BUFFER_LENGTH];
-            DOCTEST_SNPRINTF(msg, DOCTEST_COUNTOF(msg), " %s!\n",
-                             is_warn ? "MESSAGE" : getFailString(m_severity));
-
-            DOCTEST_PRINTF_COLORED(loc, Color::LightGrey);
-            DOCTEST_PRINTF_COLORED(msg, is_warn ? Color::Yellow : Color::Red);
-
-            String info = getStreamResult(m_stream);
-            if(info.length()) {
-                DOCTEST_PRINTF_COLORED("  ", Color::None);
-                DOCTEST_PRINTF_COLORED(info.c_str(), Color::None);
-                DOCTEST_PRINTF_COLORED("\n", Color::None);
-            }
-            String context = logContext();
-            DOCTEST_PRINTF_COLORED(context.c_str(), Color::None);
-            DOCTEST_PRINTF_COLORED("\n", Color::None);
-
-            printToDebugConsole(String(loc) + msg + "  " + info.c_str() + "\n" + context.c_str() +
-                                "\n");
+        // warn is just a message in this context so we dont treat it as an assert
+        if(!is_warn) {
+            DOCTEST_GCS().numAssertionsForCurrentTestcase++;
+            addFailedAssert(m_severity);
         }
+
+        char loc[DOCTEST_SNPRINTF_BUFFER_LENGTH];
+        DOCTEST_SNPRINTF(loc, DOCTEST_COUNTOF(loc), "%s(%d)", fileForOutput(m_file),
+                         lineForOutput(m_line));
+        char msg[DOCTEST_SNPRINTF_BUFFER_LENGTH];
+        DOCTEST_SNPRINTF(msg, DOCTEST_COUNTOF(msg), " %s!\n",
+                         is_warn ? "MESSAGE" : getFailString(m_severity));
+
+        DOCTEST_PRINTF_COLORED(loc, Color::LightGrey);
+        DOCTEST_PRINTF_COLORED(msg, is_warn ? Color::Yellow : Color::Red);
+
+        String info = getStreamResult(m_stream);
+        if(info.length()) {
+            DOCTEST_PRINTF_COLORED("  ", Color::None);
+            DOCTEST_PRINTF_COLORED(info.c_str(), Color::None);
+            DOCTEST_PRINTF_COLORED("\n", Color::None);
+        }
+        String context = logContext();
+        DOCTEST_PRINTF_COLORED(context.c_str(), Color::None);
+        DOCTEST_PRINTF_COLORED("\n", Color::None);
+
+        printToDebugConsole(String(loc) + msg + "  " + info.c_str() + "\n" + context.c_str() +
+                            "\n");
 
         return isDebuggerActive() && !DOCTEST_GCS().no_breaks && !is_warn; // break into debugger
     }
@@ -1895,6 +1899,8 @@ namespace detail
             std::printf("test suites with unskipped test cases passing the current filters: %u\n",
                         p->numTestSuitesPassingFilters);
         } else {
+            bool anythingFailed = p->numFailed > 0 || p->numFailedAssertions > 0;
+
             char buff[DOCTEST_SNPRINTF_BUFFER_LENGTH];
 
             DOCTEST_PRINTF_COLORED("[doctest] ", Color::Cyan);
@@ -1906,7 +1912,10 @@ namespace detail
             DOCTEST_PRINTF_COLORED(buff, Color::None);
             DOCTEST_SNPRINTF(buff, DOCTEST_COUNTOF(buff), "%4d passed",
                              p->numTestsPassingFilters - p->numFailed);
-            DOCTEST_PRINTF_COLORED(buff, p->numFailed > 0 ? Color::None : Color::Green);
+            DOCTEST_PRINTF_COLORED(buff,
+                                   (p->numTestsPassingFilters == 0 || anythingFailed) ?
+                                           Color::None :
+                                           Color::Green);
             DOCTEST_SNPRINTF(buff, DOCTEST_COUNTOF(buff), " | ");
             DOCTEST_PRINTF_COLORED(buff, Color::None);
             DOCTEST_SNPRINTF(buff, DOCTEST_COUNTOF(buff), "%4u failed", p->numFailed);
@@ -1915,10 +1924,10 @@ namespace detail
             DOCTEST_SNPRINTF(buff, DOCTEST_COUNTOF(buff), " | ");
             DOCTEST_PRINTF_COLORED(buff, Color::None);
             if(p->no_skipped_summary == false) {
-                DOCTEST_SNPRINTF(buff, DOCTEST_COUNTOF(buff), "%4d skipped",
-                                 static_cast<unsigned>(getRegisteredTests().size()) -
-                                         p->numTestsPassingFilters);
-                DOCTEST_PRINTF_COLORED(buff, Color::None);
+                int numSkipped = static_cast<unsigned>(getRegisteredTests().size()) -
+                                 p->numTestsPassingFilters;
+                DOCTEST_SNPRINTF(buff, DOCTEST_COUNTOF(buff), "%4d skipped", numSkipped);
+                DOCTEST_PRINTF_COLORED(buff, numSkipped == 0 ? Color::None : Color::Yellow);
             }
             DOCTEST_PRINTF_COLORED("\n", Color::None);
 
@@ -1930,7 +1939,8 @@ namespace detail
             DOCTEST_PRINTF_COLORED(buff, Color::None);
             DOCTEST_SNPRINTF(buff, DOCTEST_COUNTOF(buff), "%4d passed",
                              p->numAssertions - p->numFailedAssertions);
-            DOCTEST_PRINTF_COLORED(buff, p->numFailed > 0 ? Color::None : Color::Green);
+            DOCTEST_PRINTF_COLORED(
+                    buff, (p->numAssertions == 0 || anythingFailed) ? Color::None : Color::Green);
             DOCTEST_SNPRINTF(buff, DOCTEST_COUNTOF(buff), " | ");
             DOCTEST_PRINTF_COLORED(buff, Color::None);
             DOCTEST_SNPRINTF(buff, DOCTEST_COUNTOF(buff), "%4d failed", p->numFailedAssertions);
@@ -1938,6 +1948,11 @@ namespace detail
 
             DOCTEST_SNPRINTF(buff, DOCTEST_COUNTOF(buff), " |\n");
             DOCTEST_PRINTF_COLORED(buff, Color::None);
+
+            DOCTEST_PRINTF_COLORED("[doctest] ", Color::Cyan);
+            DOCTEST_PRINTF_COLORED("Status: ", Color::None);
+            const char* result = (p->numFailed > 0) ? "FAILURE!\n" : "SUCCESS!\n";
+            DOCTEST_PRINTF_COLORED(result, p->numFailed > 0 ? Color::Red : Color::Green);
         }
 
         // remove any coloring
@@ -2214,7 +2229,8 @@ int Context::run() {
             if(p->success)
                 DOCTEST_LOG_START();
 
-            bool failed = false;
+            bool failed                              = false;
+            p->numFailedAssertionsForCurrentTestcase = 0;
             p->subcasesPassed.clear();
             do {
                 // reset the assertion state
@@ -2260,6 +2276,38 @@ int Context::run() {
                 p->hasLoggedCurrentTestStart = false;
 
             } while(p->subcasesHasSkipped == true);
+
+            if(data.m_should_fail) {
+                if(!failed) {
+                    failed = true;
+                    DOCTEST_PRINTF_COLORED("Should have failed but didn't! Marking it as failed!\n",
+                                           Color::Red);
+                } else {
+                    failed = false;
+                }
+            } else if(failed && data.m_may_fail) {
+                failed = false;
+                DOCTEST_PRINTF_COLORED("Allowed to fail so marking it as not failed\n",
+                                       Color::Yellow);
+            } else if(data.m_expected_failures > 0) {
+                char msg[DOCTEST_SNPRINTF_BUFFER_LENGTH];
+                if(p->numFailedAssertionsForCurrentTestcase == data.m_expected_failures) {
+                    failed = false;
+                    DOCTEST_SNPRINTF(msg, DOCTEST_COUNTOF(msg),
+                                     "Failed exactly %d times so marking it as not failed!\n",
+                                     data.m_expected_failures);
+                    DOCTEST_PRINTF_COLORED(msg, Color::Yellow);
+                } else {
+                    //DOCTEST_LOG_START();
+                    failed = true;
+                    DOCTEST_SNPRINTF(msg, DOCTEST_COUNTOF(msg),
+                                     "Didn't fail exactly %d times so marking it as failed!\n",
+                                     data.m_expected_failures);
+                    DOCTEST_PRINTF_COLORED(msg, Color::Red);
+                }
+            }
+
+            //if(failed &&
 
             if(failed) // if any subcase has failed - the whole test case has failed
                 p->numFailed++;

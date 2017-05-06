@@ -1,36 +1,14 @@
 [doctest] run with "--help" for options
 ===============================================================================
 test.cpp(0)
-TEST SUITE: omg
-TEST CASE:  dev stuff
-  sc1
+DESCRIPTION: override
+TEST SUITE: override
+TEST CASE:  asd 4
 
 test.cpp(0) ERROR!
-  CHECK( 4 == 5 )
-with expansion:
-  CHECK( 4 == 5 )
 
+Didn't fail exactly 2 times so marking it as failed!
 ===============================================================================
-test.cpp(0)
-TEST SUITE: omg
-TEST CASE:  dev stuff
-  sc2
-
-test.cpp(0) ERROR!
-  CHECK( 4 == 5 )
-with expansion:
-  CHECK( 4 == 5 )
-
-===============================================================================
-test.cpp(0)
-TEST SUITE: omg
-TEST CASE:  asd 2
-
-test.cpp(0) ERROR!
-  CHECK( 4 == 5 )
-with expansion:
-  CHECK( 4 == 5 )
-
-===============================================================================
-[doctest] test cases:    2 |    0 passed |    2 failed |    0 skipped
-[doctest] assertions:    3 |    0 passed |    3 failed |
+[doctest] test cases:    1 |    0 passed |    1 failed |    0 skipped
+[doctest] assertions:    1 |    0 passed |    1 failed |
+[doctest] Status: FAILURE!

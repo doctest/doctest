@@ -21,4 +21,5 @@ subcases.cpp(0) MESSAGE!
 ===============================================================================
 [doctest] test cases:    3 |    3 passed |    0 failed | 
 [doctest] assertions:    0 |    0 passed |    0 failed |
+[doctest] Status: SUCCESS!
 Program code.

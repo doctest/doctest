@@ -38,4 +38,5 @@ threw exception:
 ===============================================================================
 [doctest] test cases:    2 |    0 passed |    2 failed | 
 [doctest] assertions:    4 |    0 passed |    4 failed |
+[doctest] Status: FAILURE!
 Program code.

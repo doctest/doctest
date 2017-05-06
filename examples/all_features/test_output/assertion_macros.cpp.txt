@@ -293,4 +293,5 @@ with expansion:
 ===============================================================================
 [doctest] test cases:   20 |    4 passed |   16 failed | 
 [doctest] assertions:   88 |   54 passed |   34 failed |
+[doctest] Status: FAILURE!
 Program code.

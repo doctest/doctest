@@ -105,5 +105,6 @@ logging.cpp(0) FATAL ERROR!
 
 ===============================================================================
 [doctest] test cases:    6 |    0 passed |    6 failed | 
-[doctest] assertions:    6 |    0 passed |    6 failed |
+[doctest] assertions:   11 |    0 passed |   11 failed |
+[doctest] Status: FAILURE!
 Program code.

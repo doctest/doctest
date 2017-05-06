@@ -12,17 +12,15 @@ Planned features for future releases - order changes constantly...
 
 - decorators
     - test_suite
-    - description           can inherit from test suites
-    - disabled (skip)       can inherit from test suites
-    - enable_if (skip_if)   can inherit from test suites
-    - mayfail - doesn't fail the test if any given assertion fails (but still reports it). This can be useful to flag a work-in-progress, or a known issue that you don't want to immediately fix but still want to track in the your tests.
-    - shouldfail - like [!mayfail] but fails the test if it passes. This can be useful if you want to be notified of accidental, or third-party, fixes.
-    - expected_failures (decorator)
-    - label (tag)           can inherit from test suites
-    - !!! and think about how these will be accessed and filtered from the command line
+    - description
+    - skip
+    - may_fail - doesn't fail the test if any given assertion fails (but still reports it). This can be useful to flag a work-in-progress, or a known issue that you don't want to immediately fix but still want to track in the your tests.
+    - should_fail - like [!mayfail] but fails the test if it passes. This can be useful if you want to be notified of accidental, or third-party, fixes.
+    - expected_failures
+    - label (tag)
 - time stuff
     - reporting running time of tests
-    - timeout (decorator)   can inherit from test suites
+    - timeout (decorator)
     - count a test case as failed if it exceeds X ms (but no force-killing!)
         Entering test module "decorator_08"
         test.cpp(6): Entering test case "test1"
@@ -50,6 +48,7 @@ Planned features for future releases - order changes constantly...
     - https://github.com/rollbear/trompeloeil
     - https://github.com/dascandy/hippomocks
 - benchmarking
+    - remove catch as a submodule - fetch it by normal downloading
     - make the bench.py script more usable - with command line arguments
     - redo the compile time ones - also look into CATCH_CONFIG_FAST_COMPILE
     - remove old benchmarks for doctest 1.0
@@ -155,10 +154,11 @@ Planned features for future releases - order changes constantly...
     - option to list test suites and test cases in a tree view
     - add a "wait key" option - as requested [here](https://github.com/philsquared/Catch/issues/477#issuecomment-256417686)
 - decorators for test cases and test suites- like in boost test
-    - depends_on (decorator)
-    - precondition (decorator)
-    - fixture (decorator)
+    - depends_on
+    - precondition
+    - fixture
     - run X times (should also multiply with (or just override) the global test run times)
+    - throw an exception when incompatible decorators are given in the same list of decorators - like may_fail and should_fail
 - setup / teardown support
     - global setup / teardown - can be currently achieved by providing a custom main function
     - per test suite (block? only? and not all blocks of the same test suite?)
@@ -184,7 +184,8 @@ Planned features for future releases - order changes constantly...
 - test with missed warning flags for GCC
     - https://github.com/Barro/compiler-warnings
     - http://stackoverflow.com/a/34971392/3162383
-- utf8???
+- utf8 / unicode ???
+    - https://github.com/philsquared/Catch/pull/903
 - handle ```wchar``` strings???
 - hierarchical test suites - using a stack for the pushed ones
 - ability to specify the width of the terminal in terms of characters (for example 60 - less than 80 - the default)

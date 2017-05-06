@@ -1,23 +1,64 @@
+//#define DOCTEST_CONFIG_DISABLE
 #include "parts/doctest_fwd.h"
 
 #include <iostream>
 using namespace std;
 
-//static int throws(bool in) { if(in) throw 42; return 0; }
-TEST_SUITE("omg")
-//namespace
-{
-    TEST_CASE("dev stuff") {
-        SUBCASE("sc1") {
-            CHECK(4 == 5);
-        }
-        SUBCASE("sc2") {
-            CHECK(4 == 5);
-        }
-        //CHECK_THROWS(CHECK_THROWS(4 == 5));
-        //CHECK_THROWS({throws(true);});
-    }
-    TEST_CASE("asd 2") {
-        CHECK(4 == 5);
-    }
+TEST_CASE("asd 4"
+          * doctest::test_suite("override")
+          * doctest::description("override")
+          * doctest::skip(false)
+          //* doctest::should_fail()
+          * doctest::expected_failures(2)
+) {
+    FAIL_CHECK("");
+    //FAIL_CHECK("");
 }
+
+//TEST_CASE("") {
+//    CHECK(true);
+//}
+
+//TEST_SUITE_BEGIN("stack"
+//    * doctest::skip_if(true)
+//    * doctest::description("stack")
+//);
+//
+//TEST_SUITE("scope"
+//    * doctest::skip_if(false)
+//    * doctest::description("scope")
+//) {
+//    TEST_CASE("asd 1"
+//        * doctest::test_suite("override")
+//        * doctest::description("override")
+//        * doctest::skip_if(false)
+//    ) {
+//        FAIL("");
+//    }
+//    TEST_CASE("asd 2"
+//              //* doctest::test_suite("override")
+//              //* doctest::description("override")
+//              //* doctest::skip_if(false)
+//              ) {
+//        FAIL("");
+//    }
+//
+//} // scope ts end
+//
+//TEST_CASE("asd 3"
+//          //* doctest::test_suite("override")
+//          //* doctest::description("override")
+//          //* doctest::skip_if(false)
+//          ) {
+//    FAIL("");
+//}
+//
+//TEST_SUITE_END;
+//
+//TEST_CASE("asd 4"
+//          //* doctest::test_suite("override")
+//          //* doctest::description("override")
+//          //* doctest::skip_if(false)
+//          ) {
+//    FAIL("");
+//}

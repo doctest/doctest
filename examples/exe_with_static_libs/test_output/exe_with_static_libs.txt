@@ -6,3 +6,4 @@ hello from <main.cpp>
 ===============================================================================
 [doctest] test cases:    4 |    4 passed |    0 failed |    0 skipped
 [doctest] assertions:    0 |    0 passed |    0 failed |
+[doctest] Status: SUCCESS!
