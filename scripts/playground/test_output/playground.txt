@@ -6,9 +6,12 @@ TEST SUITE: override
 TEST CASE:  asd 4
 
 test.cpp(0) ERROR!
+  CHECK( false )
+with expansion:
+  CHECK( false )
 
-Didn't fail exactly 2 times so marking it as failed!
+Failed exactly 1 times as expected so marking it as not failed!
 ===============================================================================
-[doctest] test cases:    1 |    0 passed |    1 failed |    0 skipped
+[doctest] test cases:    1 |    1 passed |    0 failed |    0 skipped
 [doctest] assertions:    1 |    0 passed |    1 failed |
-[doctest] Status: FAILURE!
+[doctest] Status: SUCCESS!

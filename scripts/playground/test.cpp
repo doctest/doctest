@@ -9,9 +9,11 @@ TEST_CASE("asd 4"
           * doctest::description("override")
           * doctest::skip(false)
           //* doctest::should_fail()
-          * doctest::expected_failures(2)
+          //* doctest::may_fail()
+          * doctest::expected_failures(1)
 ) {
-    FAIL_CHECK("");
+    //FAIL_CHECK("");
+    CHECK(false);
     //FAIL_CHECK("");
 }
 

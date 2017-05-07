@@ -5253,15 +5253,20 @@ int Context::run() {
         {
             p->currentTest = &data;
 
-            // if logging successful tests - force the start log
-            p->hasLoggedCurrentTestStart = false;
-            if(p->success)
-                DOCTEST_LOG_START();
-
             bool failed                              = false;
+            p->hasLoggedCurrentTestStart             = false;
             p->numFailedAssertionsForCurrentTestcase = 0;
             p->subcasesPassed.clear();
             do {
+                // if the start has been logged from a previous iteration of this loop
+                if(p->hasLoggedCurrentTestStart)
+                    logTestEnd();
+                p->hasLoggedCurrentTestStart = false;
+
+                // if logging successful tests - force the start log
+                if(p->success)
+                    DOCTEST_LOG_START();
+
                 // reset the assertion state
                 p->numAssertionsForCurrentTestcase = 0;
                 p->hasCurrentTestFailed            = false;
@@ -5299,35 +5304,34 @@ int Context::run() {
                     DOCTEST_PRINTF_COLORED("Aborting - too many failed asserts!\n", Color::Red);
                 }
 
-                // if the start has been logged
-                if(p->hasLoggedCurrentTestStart)
-                    logTestEnd();
-                p->hasLoggedCurrentTestStart = false;
-
             } while(p->subcasesHasSkipped == true);
 
             if(data.m_should_fail) {
+                DOCTEST_LOG_START();
                 if(!failed) {
                     failed = true;
                     DOCTEST_PRINTF_COLORED("Should have failed but didn't! Marking it as failed!\n",
                                            Color::Red);
                 } else {
                     failed = false;
+                    DOCTEST_PRINTF_COLORED("Failed as expected so marking it as not failed\n",
+                                           Color::Yellow);
                 }
             } else if(failed && data.m_may_fail) {
+                DOCTEST_LOG_START();
                 failed = false;
                 DOCTEST_PRINTF_COLORED("Allowed to fail so marking it as not failed\n",
                                        Color::Yellow);
             } else if(data.m_expected_failures > 0) {
+                DOCTEST_LOG_START();
                 char msg[DOCTEST_SNPRINTF_BUFFER_LENGTH];
                 if(p->numFailedAssertionsForCurrentTestcase == data.m_expected_failures) {
                     failed = false;
                     DOCTEST_SNPRINTF(msg, DOCTEST_COUNTOF(msg),
-                                     "Failed exactly %d times so marking it as not failed!\n",
+                                     "Failed exactly %d times as expected so marking it as not failed!\n",
                                      data.m_expected_failures);
                     DOCTEST_PRINTF_COLORED(msg, Color::Yellow);
                 } else {
-                    //DOCTEST_LOG_START();
                     failed = true;
                     DOCTEST_SNPRINTF(msg, DOCTEST_COUNTOF(msg),
                                      "Didn't fail exactly %d times so marking it as failed!\n",
@@ -5336,7 +5340,8 @@ int Context::run() {
                 }
             }
 
-            //if(failed &&
+            if(p->hasLoggedCurrentTestStart)
+                logTestEnd();
 
             if(failed) // if any subcase has failed - the whole test case has failed
                 p->numFailed++;
