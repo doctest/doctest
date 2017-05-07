@@ -450,8 +450,8 @@ typedef basic_ostream<char, char_traits<char> > ostream;
                                         _),                                                        \
                             message);                                                              \
     };                                                                                             \
-    typedef doctest::detail::static_assert_impl::StaticAssertionTest<sizeof(                       \
-            DOCTEST_CAT(__static_assertion_at_line_, __LINE__))>                                   \
+    typedef doctest::detail::static_assert_impl::StaticAssertionTest<static_cast<int>(             \
+            sizeof(DOCTEST_CAT(__static_assertion_at_line_, __LINE__)))>                           \
             DOCTEST_CAT(__static_assertion_test_at_line_, __LINE__)
 #endif // DOCTEST_CONFIG_WITH_STATIC_ASSERT
 
