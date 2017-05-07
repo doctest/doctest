@@ -47,7 +47,7 @@ doctest_add_test(NAME first_last  ${common_args} -f=2 -l=4      -sf=*coverage*) 
 doctest_add_test(NAME filter_1    ${common_args} -ts=none) # should filter out all
 doctest_add_test(NAME filter_2    COMMAND $<TARGET_FILE:${PROJECT_NAME}> -tse=* -nv) # should filter out all + print skipped
 doctest_add_test(NAME filter_3    ${common_args} -sc=from*,sc* -sce=sc2 -sf=*subcases*) # enter a specific subcase - sc1
-doctest_add_test(NAME order_1     ${common_args} -ob=suite              -sf=*test_cases_and_suites*)
+doctest_add_test(NAME order_1     ${common_args} -ob=suite -ns          -sf=*test_cases_and_suites*)
 doctest_add_test(NAME order_2     ${common_args} -ob=name               -sf=*test_cases_and_suites*)
 doctest_add_test(NAME order_3     ${common_args} -ob=rand               -sfe=*) # exclude everything for no output
 

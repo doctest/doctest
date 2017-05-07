@@ -17,7 +17,6 @@ Planned features for future releases - order changes constantly...
     - may_fail - doesn't fail the test if any given assertion fails (but still reports it). This can be useful to flag a work-in-progress, or a known issue that you don't want to immediately fix but still want to track in the your tests.
     - should_fail - like [!mayfail] but fails the test if it passes. This can be useful if you want to be notified of accidental, or third-party, fixes.
     - expected_failures
-    - label (tag)
 - time stuff
     - reporting running time of tests
     - timeout (decorator)
@@ -157,6 +156,7 @@ Planned features for future releases - order changes constantly...
     - depends_on
     - precondition
     - fixture
+    - label (tag) - with the ability to have multiple labels (tags) for a test case and also the ability to list them
     - run X times (should also multiply with (or just override) the global test run times)
     - throw an exception when incompatible decorators are given in the same list of decorators - like may_fail and should_fail
 - setup / teardown support

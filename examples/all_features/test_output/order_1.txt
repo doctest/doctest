@@ -32,13 +32,73 @@ test_cases_and_suites.cpp(0) FATAL ERROR!
 
 ===============================================================================
 test_cases_and_suites.cpp(0)
+DESCRIPTION: this test has overrided its skip decorator
+TEST SUITE: skipped test cases
+TEST CASE:  unskipped
+
+test_cases_and_suites.cpp(0) FATAL ERROR!
+
+===============================================================================
+test_cases_and_suites.cpp(0)
+TEST SUITE: skipped test cases
+TEST CASE:  skipped - inherited from the test suite
+
+test_cases_and_suites.cpp(0) FATAL ERROR!
+
+===============================================================================
+test_cases_and_suites.cpp(0)
 TEST SUITE: some TS
 TEST CASE:  part of some TS
 
 test_cases_and_suites.cpp(0) FATAL ERROR!
 
 ===============================================================================
-[doctest] test cases:    6 |    1 passed |    5 failed | 
-[doctest] assertions:    5 |    1 passed |    4 failed |
+test_cases_and_suites.cpp(0)
+DESCRIPTION: regarding failures
+TEST SUITE: test suite with a description
+TEST CASE:  fails - and its allowed
+
+test_cases_and_suites.cpp(0) FATAL ERROR!
+
+Allowed to fail so marking it as not failed
+===============================================================================
+test_cases_and_suites.cpp(0)
+DESCRIPTION: regarding failures
+TEST SUITE: test suite with a description
+TEST CASE:  fails as it should
+
+test_cases_and_suites.cpp(0) FATAL ERROR!
+
+Failed as expected so marking it as not failed
+===============================================================================
+test_cases_and_suites.cpp(0)
+DESCRIPTION: regarding failures
+TEST SUITE: test suite with a description
+TEST CASE:  doesn't fail but it should have
+
+Should have failed but didn't! Marking it as failed!
+===============================================================================
+test_cases_and_suites.cpp(0)
+DESCRIPTION: regarding failures
+TEST SUITE: test suite with a description
+TEST CASE:  fails 1 time as it should
+
+test_cases_and_suites.cpp(0) FATAL ERROR!
+
+Failed exactly 1 times as expected so marking it as not failed!
+===============================================================================
+test_cases_and_suites.cpp(0)
+DESCRIPTION: regarding failures
+TEST SUITE: test suite with a description
+TEST CASE:  fails more times as it should
+
+test_cases_and_suites.cpp(0) ERROR!
+
+test_cases_and_suites.cpp(0) ERROR!
+
+Didn't fail exactly 1 times so marking it as failed!
+===============================================================================
+[doctest] test cases:   15 |    6 passed |    9 failed | 
+[doctest] assertions:   13 |    2 passed |   11 failed |
 [doctest] Status: FAILURE!
 Program code.

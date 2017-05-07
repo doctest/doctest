@@ -71,7 +71,7 @@ TEST_CASE("doctest internals") {
     CHECK_MESSAGE(len_is_zero, "should fail");
 }
 
-TEST_SUITE("exception related") {
+TEST_SUITE("will be overridden by a decorator" * doctest::test_suite("exception related")) {
     TEST_CASE("will end from a std::string exception") {
         throw_if(true, std::string("std::string!"));
     }
