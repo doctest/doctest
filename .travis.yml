@@ -399,8 +399,9 @@ script:
       echo -e "    CAPTURE(a);" >> doctest.cpp
       echo -e "    CHECK(a == 6);" >> doctest.cpp
       echo -e "}" >> doctest.cpp
+      
+      cppcheck doctest.cpp --enable=all --suppress=unmatchedSuppression --suppress=missingIncludeSystem --suppress=unusedFunction --suppress=functionConst --inline-suppr --platform=unix64 --inconclusive --std=posix --inconclusive -v --error-exitcode=1 --template "{file}({line}): {severity} ({id}): {message}" -DDOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
     fi
-  - if [[ "${STATIC_CODE_ANALYSIS}" = "true" ]]; then cppcheck doctest.cpp --enable=all --suppress=unmatchedSuppression --suppress=missingIncludeSystem --suppress=unusedFunction --suppress=functionConst --inline-suppr --platform=unix64 --inconclusive --std=posix --inconclusive -v --error-exitcode=1 --template "{file}({line}): {severity} ({id}): {message}" -DDOCTEST_CONFIG_IMPLEMENT_WITH_MAIN ; fi
 
   # clang-tidy
   - if [[ "${STATIC_CODE_ANALYSIS}" = "true" ]]; then cd scripts/playground ; fi
