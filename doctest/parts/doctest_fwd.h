@@ -363,6 +363,12 @@
 #define DOCTEST_REF_WRAP(x) x
 #endif // DOCTEST_CONFIG_ASSERTION_PARAMETERS_BY_VALUE
 
+#ifdef __GNUC__
+#define DOCTEST_NOINLINE __attribute__((noinline))
+#else // __GNUC__
+#define DOCTEST_NOINLINE
+#endif // __GNUC__
+
 // not using __APPLE__ because... this is how Catch does it
 #if defined(__MAC_OS_X_VERSION_MIN_REQUIRED)
 #define DOCTEST_PLATFORM_MAC
@@ -1394,6 +1400,8 @@ namespace detail
         TestCase(funcType test, const char* file, unsigned line, const TestSuite& test_suite,
                  const char* type = "", int template_id = -1);
 
+        DOCTEST_NOINLINE ~TestCase() {}
+
         TestCase& operator*(const char* in);
 
         template <typename T>
@@ -2111,7 +2119,7 @@ public:
     {                                                                                              \
         namespace doctest_detail_test_suite_ns                                                     \
         {                                                                                          \
-            inline doctest::detail::TestSuite& getCurrentTestSuite() {                             \
+            inline doctest::detail::TestSuite& DOCTEST_NOINLINE getCurrentTestSuite() {            \
                 static doctest::detail::TestSuite data;                                            \
                 static bool                       inited = false;                                  \
                 if(!inited) {                                                                      \

@@ -45,6 +45,7 @@ static void call_func() {
 
 TEST_CASE("subcases can be used in a separate function as well") {
     call_func();
+    MESSAGE("lala");
 }
 
 SCENARIO("vectors can be sized and resized") {
