@@ -39,6 +39,15 @@ with expansion:
 
 ===============================================================================
 test_cases_and_suites.cpp(0)
+TEST SUITE: ts1
+TEST CASE:  normal test in a test suite from a decorator
+
+test_cases_and_suites.cpp(0) MESSAGE!
+  failing because of the timeout decorator!
+
+Test case exceeded time limit of 0.000001!
+===============================================================================
+test_cases_and_suites.cpp(0)
 DESCRIPTION: this test has overrided its skip decorator
 TEST SUITE: skipped test cases
 TEST CASE:  unskipped
@@ -91,7 +100,7 @@ test_cases_and_suites.cpp(0) ERROR!
 
 Didn't fail exactly 1 times so marking it as failed!
 ===============================================================================
-[doctest] test cases:   14 |    6 passed |    8 failed | 
-[doctest] assertions:   12 |    2 passed |   10 failed |
+[doctest] test cases:     14 |      5 passed |      9 failed | 
+[doctest] assertions:     11 |      1 passed |     10 failed |
 [doctest] Status: FAILURE!
 Program code.

@@ -25,6 +25,7 @@
 // - colors in the console
 // - breaking into a debugger
 // - signal / SEH handling
+// - timer
 //
 // The expression decomposing templates are taken from lest - https://github.com/martinmoene/lest
 // which uses the Boost Software License - Version 1.0
@@ -58,6 +59,7 @@
 #pragma clang diagnostic ignored "-Wdeprecated"
 #pragma clang diagnostic ignored "-Wmissing-prototypes"
 #pragma clang diagnostic ignored "-Wunused-local-typedef"
+#pragma clang diagnostic ignored "-Wc++11-long-long"
 #endif // __clang__
 
 #if defined(__GNUC__) && !defined(__clang__)
@@ -72,6 +74,7 @@
 #pragma GCC diagnostic ignored "-Wmissing-declarations"
 #pragma GCC diagnostic ignored "-Wnon-virtual-dtor"
 #pragma GCC diagnostic ignored "-Winline"
+#pragma GCC diagnostic ignored "-Wlong-long"
 #if __GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ > 6)
 #pragma GCC diagnostic ignored "-Wzero-as-null-pointer-constant"
 #endif // > gcc 4.6
@@ -474,6 +477,7 @@ namespace detail
         bool        m_may_fail;
         bool        m_should_fail;
         int         m_expected_failures;
+        double      m_timeout;
 
         TestSuite& operator*(const char* in) {
             m_test_suite = in;
@@ -483,6 +487,7 @@ namespace detail
             m_may_fail          = false;
             m_should_fail       = false;
             m_expected_failures = 0;
+            m_timeout           = 0;
             return *this;
         }
 
@@ -1391,6 +1396,7 @@ namespace detail
         bool        m_may_fail;
         bool        m_should_fail;
         int         m_expected_failures;
+        double      m_timeout;
 
         // fields by which uniqueness of test cases shall be determined
         const char* m_file; // the file in which the test was registered
@@ -1860,6 +1866,15 @@ struct skip
             : data(in) {}
     void fill(detail::TestCase& state) const { state.m_skip = data; }
     void fill(detail::TestSuite& state) const { state.m_skip = data; }
+};
+
+struct timeout
+{
+    double data;
+    timeout(double in)
+            : data(in) {}
+    void fill(detail::TestCase& state) const { state.m_timeout = data; }
+    void fill(detail::TestSuite& state) const { state.m_timeout = data; }
 };
 
 struct may_fail

@@ -16,6 +16,7 @@
 #pragma clang diagnostic ignored "-Wdisabled-macro-expansion"
 #pragma clang diagnostic ignored "-Wmissing-braces"
 #pragma clang diagnostic ignored "-Wmissing-field-initializers"
+#pragma clang diagnostic ignored "-Wc++11-long-long"
 #endif // __clang__
 
 #if defined(__GNUC__) && !defined(__clang__)
@@ -35,6 +36,7 @@
 #pragma GCC diagnostic ignored "-Wswitch-enum"
 #pragma GCC diagnostic ignored "-Wswitch-default"
 #pragma GCC diagnostic ignored "-Wunsafe-loop-optimizations"
+#pragma GCC diagnostic ignored "-Wlong-long"
 #if __GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ > 6)
 #pragma GCC diagnostic ignored "-Wzero-as-null-pointer-constant"
 #endif // > gcc 4.6
@@ -108,6 +110,10 @@
 #include <exception>
 #include <stdexcept>
 #include <csignal>
+#include <cfloat>
+#ifndef _MSC_VER
+#include <stdint.h>
+#endif // _MSC_VER
 
 namespace doctest
 {
@@ -216,6 +222,7 @@ namespace detail
         bool success;               // include successful assertions in output
         bool case_sensitive;        // if filtering should be case sensitive
         bool exit;         // if the program should be exited after the tests are ran/whatever
+        bool duration;     // print the time duration of each test case
         bool no_exitcode;  // if the framework should return 0 as the exitcode
         bool no_run;       // to not run the tests at all (can be done with an "*" exclude)
         bool no_version;   // to not print the version of the framework
@@ -517,6 +524,10 @@ extern "C" __declspec(dllimport) int __stdcall IsDebuggerPresent();
 #endif
 #include <io.h>
 
+#else // _WIN32
+
+#include <sys/time.h>
+
 #endif // _WIN32
 
 namespace doctest_detail_test_suite_ns
@@ -544,6 +555,7 @@ namespace detail
             , m_may_fail(test_suite.m_may_fail)
             , m_should_fail(test_suite.m_should_fail)
             , m_expected_failures(test_suite.m_expected_failures)
+            , m_timeout(test_suite.m_timeout)
             , m_file(file)
             , m_line(line)
             , m_template_id(template_id) {}
@@ -570,6 +582,7 @@ namespace detail
         m_may_fail          = other.m_may_fail;
         m_should_fail       = other.m_should_fail;
         m_expected_failures = other.m_expected_failures;
+        m_timeout           = other.m_timeout;
         m_file              = other.m_file;
         m_line              = other.m_line;
         m_template_id       = other.m_template_id;
@@ -753,6 +766,46 @@ namespace detail
                 return true;
         return false;
     }
+
+    typedef unsigned long long UInt64;
+
+#ifdef _WIN32
+
+    UInt64 getCurrentTicks() {
+        static UInt64 hz = 0, hzo = 0;
+        if(!hz) {
+            QueryPerformanceFrequency(reinterpret_cast<LARGE_INTEGER*>(&hz));
+            QueryPerformanceCounter(reinterpret_cast<LARGE_INTEGER*>(&hzo));
+        }
+        UInt64 t;
+        QueryPerformanceCounter(reinterpret_cast<LARGE_INTEGER*>(&t));
+        return ((t - hzo) * 1000000) / hz;
+    }
+#else  // _WIN32
+    UInt64 getCurrentTicks() {
+        timeval t;
+        gettimeofday(&t, 0);
+        return static_cast<UInt64>(t.tv_sec) * 1000000ull + static_cast<UInt64>(t.tv_usec);
+    }
+#endif // _WIN32
+
+    class Timer
+    {
+    public:
+        Timer()
+                : m_ticks(0) {}
+        void         start() { m_ticks = getCurrentTicks(); }
+        unsigned int getElapsedMicroseconds() const {
+            return static_cast<unsigned int>(getCurrentTicks() - m_ticks);
+        }
+        unsigned int getElapsedMilliseconds() const {
+            return static_cast<unsigned int>(getElapsedMicroseconds() / 1000);
+        }
+        double getElapsedSeconds() const { return getElapsedMicroseconds() / 1000000.0; }
+
+    private:
+        UInt64 m_ticks;
+    };
 
     // the current ContextState with which tests are being executed
     ContextState*& getContextState() {
@@ -1841,7 +1894,7 @@ namespace detail
         std::printf(" -c,   --count                         prints the number of matching tests\n");
         std::printf(" -ltc, --list-test-cases               lists all matching tests by name\n");
         std::printf(" -lts, --list-test-suites              lists all matching test suites\n\n");
-        // ==================================================================================== << 79
+        // ========================================================================================= << 79
         DOCTEST_PRINTF_COLORED("[doctest] ", Color::Cyan);
         std::printf("The available <int>/<string> options/filters are:\n\n");
         std::printf(" -tc,  --test-case=<filters>           filters     tests by their name\n");
@@ -1866,6 +1919,7 @@ namespace detail
         std::printf(" -s,   --success=<bool>                include successful assertions in output\n");
         std::printf(" -cs,  --case-sensitive=<bool>         filters being treated as case sensitive\n");
         std::printf(" -e,   --exit=<bool>                   exits after the tests finish\n");
+        std::printf(" -d,   --duration=<bool>               prints the time duration of each test\n");
         std::printf(" -nt,  --no-throw=<bool>               skips exceptions-related assert checks\n");
         std::printf(" -ne,  --no-exitcode=<bool>            returns (or exits) always with success\n");
         std::printf(" -nr,  --no-run=<bool>                 skips all runtime doctest operations\n");
@@ -1876,7 +1930,7 @@ namespace detail
         std::printf(" -ns,  --no-skip=<bool>                don't skip test cases marked as skip\n");
         std::printf(" -npf, --no-path-filenames=<bool>      only filenames and no paths in output\n");
         std::printf(" -nln, --no-line-numbers=<bool>        0 instead of real line numbers in output\n");
-        // ==================================================================================== << 79
+        // ========================================================================================= << 79
         // clang-format on
 
         DOCTEST_PRINTF_COLORED("\n[doctest] ", Color::Cyan);
@@ -1905,12 +1959,12 @@ namespace detail
 
             DOCTEST_PRINTF_COLORED("[doctest] ", Color::Cyan);
 
-            DOCTEST_SNPRINTF(buff, DOCTEST_COUNTOF(buff), "test cases: %4u",
+            DOCTEST_SNPRINTF(buff, DOCTEST_COUNTOF(buff), "test cases: %6u",
                              p->numTestsPassingFilters);
             DOCTEST_PRINTF_COLORED(buff, Color::None);
             DOCTEST_SNPRINTF(buff, DOCTEST_COUNTOF(buff), " | ");
             DOCTEST_PRINTF_COLORED(buff, Color::None);
-            DOCTEST_SNPRINTF(buff, DOCTEST_COUNTOF(buff), "%4d passed",
+            DOCTEST_SNPRINTF(buff, DOCTEST_COUNTOF(buff), "%6d passed",
                              p->numTestsPassingFilters - p->numFailed);
             DOCTEST_PRINTF_COLORED(buff,
                                    (p->numTestsPassingFilters == 0 || anythingFailed) ?
@@ -1918,7 +1972,7 @@ namespace detail
                                            Color::Green);
             DOCTEST_SNPRINTF(buff, DOCTEST_COUNTOF(buff), " | ");
             DOCTEST_PRINTF_COLORED(buff, Color::None);
-            DOCTEST_SNPRINTF(buff, DOCTEST_COUNTOF(buff), "%4u failed", p->numFailed);
+            DOCTEST_SNPRINTF(buff, DOCTEST_COUNTOF(buff), "%6u failed", p->numFailed);
             DOCTEST_PRINTF_COLORED(buff, p->numFailed > 0 ? Color::Red : Color::None);
 
             DOCTEST_SNPRINTF(buff, DOCTEST_COUNTOF(buff), " | ");
@@ -1926,24 +1980,24 @@ namespace detail
             if(p->no_skipped_summary == false) {
                 int numSkipped = static_cast<unsigned>(getRegisteredTests().size()) -
                                  p->numTestsPassingFilters;
-                DOCTEST_SNPRINTF(buff, DOCTEST_COUNTOF(buff), "%4d skipped", numSkipped);
+                DOCTEST_SNPRINTF(buff, DOCTEST_COUNTOF(buff), "%6d skipped", numSkipped);
                 DOCTEST_PRINTF_COLORED(buff, numSkipped == 0 ? Color::None : Color::Yellow);
             }
             DOCTEST_PRINTF_COLORED("\n", Color::None);
 
             DOCTEST_PRINTF_COLORED("[doctest] ", Color::Cyan);
 
-            DOCTEST_SNPRINTF(buff, DOCTEST_COUNTOF(buff), "assertions: %4d", p->numAssertions);
+            DOCTEST_SNPRINTF(buff, DOCTEST_COUNTOF(buff), "assertions: %6d", p->numAssertions);
             DOCTEST_PRINTF_COLORED(buff, Color::None);
             DOCTEST_SNPRINTF(buff, DOCTEST_COUNTOF(buff), " | ");
             DOCTEST_PRINTF_COLORED(buff, Color::None);
-            DOCTEST_SNPRINTF(buff, DOCTEST_COUNTOF(buff), "%4d passed",
+            DOCTEST_SNPRINTF(buff, DOCTEST_COUNTOF(buff), "%6d passed",
                              p->numAssertions - p->numFailedAssertions);
             DOCTEST_PRINTF_COLORED(
                     buff, (p->numAssertions == 0 || anythingFailed) ? Color::None : Color::Green);
             DOCTEST_SNPRINTF(buff, DOCTEST_COUNTOF(buff), " | ");
             DOCTEST_PRINTF_COLORED(buff, Color::None);
-            DOCTEST_SNPRINTF(buff, DOCTEST_COUNTOF(buff), "%4d failed", p->numFailedAssertions);
+            DOCTEST_SNPRINTF(buff, DOCTEST_COUNTOF(buff), "%6d failed", p->numFailedAssertions);
             DOCTEST_PRINTF_COLORED(buff, p->numFailedAssertions > 0 ? Color::Red : Color::None);
 
             DOCTEST_SNPRINTF(buff, DOCTEST_COUNTOF(buff), " |\n");
@@ -2032,6 +2086,7 @@ void Context::parseArgs(int argc, const char* const* argv, bool withDefaults) {
     DOCTEST_PARSE_AS_BOOL_OR_FLAG(dt-success, dt-s, success, false);
     DOCTEST_PARSE_AS_BOOL_OR_FLAG(dt-case-sensitive, dt-cs, case_sensitive, false);
     DOCTEST_PARSE_AS_BOOL_OR_FLAG(dt-exit, dt-e, exit, false);
+    DOCTEST_PARSE_AS_BOOL_OR_FLAG(dt-duration, dt-d, duration, false);
     DOCTEST_PARSE_AS_BOOL_OR_FLAG(dt-no-throw, dt-nt, no_throw, false);
     DOCTEST_PARSE_AS_BOOL_OR_FLAG(dt-no-exitcode, dt-ne, no_exitcode, false);
     DOCTEST_PARSE_AS_BOOL_OR_FLAG(dt-no-run, dt-nr, no_run, false);
@@ -2228,6 +2283,9 @@ int Context::run() {
             p->hasLoggedCurrentTestStart             = false;
             p->numFailedAssertionsForCurrentTestcase = 0;
             p->subcasesPassed.clear();
+            double duration = 0;
+            Timer  timer;
+            timer.start();
             do {
                 // if the start has been logged from a previous iteration of this loop
                 if(p->hasLoggedCurrentTestStart)
@@ -2277,6 +2335,26 @@ int Context::run() {
 
             } while(p->subcasesHasSkipped == true);
 
+            duration = timer.getElapsedSeconds();
+
+            if(Approx(p->currentTest->m_timeout).epsilon(DBL_EPSILON) != 0 &&
+               Approx(duration).epsilon(DBL_EPSILON) > p->currentTest->m_timeout) {
+                failed = true;
+                DOCTEST_LOG_START();
+                char msg[DOCTEST_SNPRINTF_BUFFER_LENGTH];
+                DOCTEST_SNPRINTF(msg, DOCTEST_COUNTOF(msg),
+                                 "Test case exceeded time limit of %.6f!\n",
+                                 p->currentTest->m_timeout);
+                DOCTEST_PRINTF_COLORED(msg, Color::Red);
+            }
+
+            if(p->duration) {
+                char msg[DOCTEST_SNPRINTF_BUFFER_LENGTH];
+                DOCTEST_SNPRINTF(msg, DOCTEST_COUNTOF(msg), "%.6f s: %s\n", duration,
+                                 p->currentTest->m_name);
+                DOCTEST_PRINTF_COLORED(msg, Color::None);
+            }
+
             if(data.m_should_fail) {
                 DOCTEST_LOG_START();
                 if(!failed) {
@@ -2298,9 +2376,10 @@ int Context::run() {
                 char msg[DOCTEST_SNPRINTF_BUFFER_LENGTH];
                 if(p->numFailedAssertionsForCurrentTestcase == data.m_expected_failures) {
                     failed = false;
-                    DOCTEST_SNPRINTF(msg, DOCTEST_COUNTOF(msg),
-                                     "Failed exactly %d times as expected so marking it as not failed!\n",
-                                     data.m_expected_failures);
+                    DOCTEST_SNPRINTF(
+                            msg, DOCTEST_COUNTOF(msg),
+                            "Failed exactly %d times as expected so marking it as not failed!\n",
+                            data.m_expected_failures);
                     DOCTEST_PRINTF_COLORED(msg, Color::Yellow);
                 } else {
                     failed = true;

@@ -40,6 +40,7 @@
  -s,   --success=<bool>                include successful assertions in output
  -cs,  --case-sensitive=<bool>         filters being treated as case sensitive
  -e,   --exit=<bool>                   exits after the tests finish
+ -d,   --duration=<bool>               prints the time duration of each test
  -nt,  --no-throw=<bool>               skips exceptions-related assert checks
  -ne,  --no-exitcode=<bool>            returns (or exits) always with success
  -nr,  --no-run=<bool>                 skips all runtime doctest operations

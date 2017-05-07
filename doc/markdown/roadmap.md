@@ -10,28 +10,7 @@ Planned features for future releases - order changes constantly...
 
 ### For 1.2:
 
-- decorators
-    - test_suite
-    - description
-    - skip
-    - may_fail - doesn't fail the test if any given assertion fails (but still reports it). This can be useful to flag a work-in-progress, or a known issue that you don't want to immediately fix but still want to track in the your tests.
-    - should_fail - like [!mayfail] but fails the test if it passes. This can be useful if you want to be notified of accidental, or third-party, fixes.
-    - expected_failures
-- time stuff
-    - reporting running time of tests
-    - timeout (decorator)
-    - count a test case as failed if it exceeds X ms (but no force-killing!)
-        Entering test module "decorator_08"
-        test.cpp(6): Entering test case "test1"
-        test.cpp(6): Leaving test case "test1"; testing time: 1ms
-        test.cpp(11): Entering test case "test2"
-        test.cpp(13): error: in "test2": check false has failed
-        test.cpp(11): Leaving test case "test2"; testing time: 2ms
-        test.cpp(39): Entering test case "test3"
-        test.cpp(41): error: in "test3": check false has failed
-        test.cpp(39): Leaving test case "test3"; testing time: 2ms
-        test.cpp(45): Test case "test4" is skipped because test2 and test3 failed
-        Leaving test module "decorator_08"; testing time: 16ms
+- remove DOCTEST_CONFIG_WITH_LONG_LONG
 - runtime performance
     - move string implementation to the fwd part - use new/delete
     - lazily stringify expressions - only when needed
@@ -58,6 +37,13 @@ Planned features for future releases - order changes constantly...
     - write about static code analysis
     - docs about sort-of data driven testing - with INFO and SUBCASE
     - docs about decorators
+        - test_suite
+        - description
+        - skip
+        - may_fail - doesn't fail the test if any given assertion fails (but still reports it). This can be useful to flag a work-in-progress, or a known issue that you don't want to immediately fix but still want to track in the your tests.
+        - should_fail - like [!mayfail] but fails the test if it passes. This can be useful if you want to be notified of accidental, or third-party, fixes.
+        - expected_failures
+        - timeout
     - https://www.paypal.me/onqtam
     - https://github.com/jch/html-pipeline/blob/master/lib/html/pipeline/sanitization_filter.rb#L45-L48
     - add a new page for build systems and integration
@@ -144,8 +130,11 @@ Planned features for future releases - order changes constantly...
 - thread safety - asserts/subcases/captures should be safe to be used by multiple threads simultaneously
 - support for running tests in parallel in multiple threads
 - death tests - as in [google test](https://github.com/google/googletest/blob/master/googletest/docs/AdvancedGuide.md#death-tests)
-- command line
+- config options
+    - test case name uniqueness - reject the ones with identical names
+- command line options
     - ability to specify ASC/DESC for the order option
+    - global timeout option (per test or per entire session?)
     - command line error handling/reporting
     - ability for the user to extend the command line - as requested [here](https://github.com/philsquared/Catch/issues/622)
     - option to list files in which there are test cases who match the current filters

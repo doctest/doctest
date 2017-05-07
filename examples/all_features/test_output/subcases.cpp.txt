@@ -89,7 +89,7 @@ with expansion:
   CHECK( 5 == 10 )
 
 ===============================================================================
-[doctest] test cases:    3 |    1 passed |    2 failed | 
-[doctest] assertions:   17 |   14 passed |    3 failed |
+[doctest] test cases:      3 |      1 passed |      2 failed | 
+[doctest] assertions:     17 |     14 passed |      3 failed |
 [doctest] Status: FAILURE!
 Program code.

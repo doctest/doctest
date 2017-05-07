@@ -45,7 +45,7 @@ with expansion:
   CHECK( 0 != 0 )
 
 ===============================================================================
-[doctest] test cases:   14 |    9 passed |    5 failed | 
-[doctest] assertions:   18 |   13 passed |    5 failed |
+[doctest] test cases:     14 |      9 passed |      5 failed | 
+[doctest] assertions:     18 |     13 passed |      5 failed |
 [doctest] Status: FAILURE!
 Program code.

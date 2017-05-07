@@ -98,7 +98,16 @@ test_cases_and_suites.cpp(0) ERROR!
 
 Didn't fail exactly 1 times so marking it as failed!
 ===============================================================================
-[doctest] test cases:   15 |    6 passed |    9 failed | 
-[doctest] assertions:   13 |    2 passed |   11 failed |
+test_cases_and_suites.cpp(0)
+TEST SUITE: ts1
+TEST CASE:  normal test in a test suite from a decorator
+
+test_cases_and_suites.cpp(0) MESSAGE!
+  failing because of the timeout decorator!
+
+Test case exceeded time limit of 0.000001!
+===============================================================================
+[doctest] test cases:     15 |      5 passed |     10 failed | 
+[doctest] assertions:     12 |      1 passed |     11 failed |
 [doctest] Status: FAILURE!
 Program code.

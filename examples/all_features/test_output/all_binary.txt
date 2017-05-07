@@ -244,7 +244,7 @@ with expansion:
   FAST_REQUIRE_UNARY_FALSE( 0 )
 
 ===============================================================================
-[doctest] test cases:    1 |    1 passed |    0 failed | 
-[doctest] assertions:   32 |   32 passed |    0 failed |
+[doctest] test cases:      1 |      1 passed |      0 failed | 
+[doctest] assertions:     32 |     32 passed |      0 failed |
 [doctest] Status: SUCCESS!
 Program code.

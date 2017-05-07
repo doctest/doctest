@@ -13,6 +13,6 @@ threw exception:
 
 I am a test from the plugin!
 ===============================================================================
-[doctest] test cases:    5 |    4 passed |    1 failed |    0 skipped
-[doctest] assertions:    0 |    0 passed |    0 failed |
+[doctest] test cases:      5 |      4 passed |      1 failed |      0 skipped
+[doctest] assertions:      0 |      0 passed |      0 failed |
 [doctest] Status: FAILURE!
