@@ -767,9 +767,9 @@ namespace detail
         return false;
     }
 
-    typedef unsigned long long UInt64;
-
 #ifdef _WIN32
+
+    typedef unsigned long long UInt64;
 
     UInt64 getCurrentTicks() {
         static UInt64 hz = 0, hzo = 0;
@@ -782,6 +782,9 @@ namespace detail
         return ((t - hzo) * 1000000) / hz;
     }
 #else  // _WIN32
+
+    typedef uint64_t UInt64;
+
     UInt64 getCurrentTicks() {
         timeval t;
         gettimeofday(&t, 0);
