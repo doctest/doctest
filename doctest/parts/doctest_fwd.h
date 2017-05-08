@@ -1160,6 +1160,16 @@ namespace detail
     DOCTEST_INTERFACE void throwException();
     DOCTEST_INTERFACE void my_memcpy(void* dest, void* src, int num);
 
+    struct TestAccessibleContextState
+    {
+        bool no_throw; // to skip exceptions-related assertion macros
+        bool success;  // include successful assertions in output
+    };
+
+    struct ContextState;
+
+    DOCTEST_INTERFACE TestAccessibleContextState* getTestsContextState();
+
     struct DOCTEST_INTERFACE SubcaseSignature
     {
         const char* m_name;
@@ -1294,7 +1304,42 @@ namespace detail
     template <typename L, typename R> DOCTEST_COMPARISON_RETURN_TYPE gt(const DOCTEST_REF_WRAP(L) lhs, const DOCTEST_REF_WRAP(R) rhs) { return lhs >  rhs; }
     template <typename L, typename R> DOCTEST_COMPARISON_RETURN_TYPE le(const DOCTEST_REF_WRAP(L) lhs, const DOCTEST_REF_WRAP(R) rhs) { return lhs <= rhs; }
     template <typename L, typename R> DOCTEST_COMPARISON_RETURN_TYPE ge(const DOCTEST_REF_WRAP(L) lhs, const DOCTEST_REF_WRAP(R) rhs) { return lhs >= rhs; }
-    // clang-format on
+// clang-format on
+
+#ifndef DOCTEST_CONFIG_TREAT_CHAR_STAR_AS_STRING
+#define DOCTEST_CMP_EQ(l, r) l == r
+#define DOCTEST_CMP_NE(l, r) l != r
+#define DOCTEST_CMP_GT(l, r) l > r
+#define DOCTEST_CMP_LT(l, r) l < r
+#define DOCTEST_CMP_GE(l, r) l >= r
+#define DOCTEST_CMP_LE(l, r) l <= r
+#else // DOCTEST_CONFIG_TREAT_CHAR_STAR_AS_STRING
+#define DOCTEST_CMP_EQ(l, r) eq(l, r)
+#define DOCTEST_CMP_NE(l, r) ne(l, r)
+#define DOCTEST_CMP_GT(l, r) gt(l, r)
+#define DOCTEST_CMP_LT(l, r) lt(l, r)
+#define DOCTEST_CMP_GE(l, r) ge(l, r)
+#define DOCTEST_CMP_LE(l, r) le(l, r)
+#endif // DOCTEST_CONFIG_TREAT_CHAR_STAR_AS_STRING
+
+#define DOCTEST_DO_BINARY_EXPRESSION_COMPARISON(op, op_str, op_macro)                              \
+    template <typename R>                                                                          \
+    Result operator op(const DOCTEST_REF_WRAP(R) rhs) {                                            \
+        bool   res = op_macro(lhs, rhs);                                                           \
+        String str;                                                                                \
+        if(!res || DOCTEST_GCS().success)                                                          \
+            return Result(res, stringifyBinaryExpr(lhs, op_str, rhs));                             \
+        else                                                                                       \
+            return Result(res);                                                                    \
+    }
+
+#define DOCTEST_FORBIT_EXPRESSION(op)                                                              \
+    template <typename R>                                                                          \
+    Expression_lhs& operator op(const R&) {                                                        \
+        DOCTEST_STATIC_ASSERT(deferred_false<R>::value,                                            \
+                              Expression_Too_Complex_Please_Rewrite_As_Binary_Comparison);         \
+        return *this;                                                                              \
+    }
 
     template <typename L>
     // cppcheck-suppress copyCtorAndEqOperator
@@ -1308,49 +1353,42 @@ namespace detail
         Expression_lhs(const Expression_lhs& other)
                 : lhs(other.lhs) {}
 
-        operator Result() { return Result(!!lhs, toString(lhs)); }
+        operator Result() {
+            bool res = !!lhs;
+            if(!res || DOCTEST_GCS().success)
+                return Result(res, toString(lhs));
+            else
+                return Result(res);
+        }
 
-// clang-format off
-#ifndef DOCTEST_CONFIG_TREAT_CHAR_STAR_AS_STRING
-        template <typename R> Result operator==(const DOCTEST_REF_WRAP(R) rhs) { return Result(lhs == rhs, stringifyBinaryExpr(lhs, " == ", rhs)); }
-        template <typename R> Result operator!=(const DOCTEST_REF_WRAP(R) rhs) { return Result(lhs != rhs, stringifyBinaryExpr(lhs, " != ", rhs)); }
-        template <typename R> Result operator< (const DOCTEST_REF_WRAP(R) rhs) { return Result(lhs <  rhs, stringifyBinaryExpr(lhs, " < " , rhs)); }
-        template <typename R> Result operator<=(const DOCTEST_REF_WRAP(R) rhs) { return Result(lhs <= rhs, stringifyBinaryExpr(lhs, " <= ", rhs)); }
-        template <typename R> Result operator> (const DOCTEST_REF_WRAP(R) rhs) { return Result(lhs >  rhs, stringifyBinaryExpr(lhs, " > " , rhs)); }
-        template <typename R> Result operator>=(const DOCTEST_REF_WRAP(R) rhs) { return Result(lhs >= rhs, stringifyBinaryExpr(lhs, " >= ", rhs)); }
-#else  // DOCTEST_CONFIG_TREAT_CHAR_STAR_AS_STRING
-        template <typename R> Result operator==(const DOCTEST_REF_WRAP(R) rhs) { return Result(eq(lhs, rhs), stringifyBinaryExpr(lhs, " == ", rhs)); }
-        template <typename R> Result operator!=(const DOCTEST_REF_WRAP(R) rhs) { return Result(ne(lhs, rhs), stringifyBinaryExpr(lhs, " != ", rhs)); }
-        template <typename R> Result operator< (const DOCTEST_REF_WRAP(R) rhs) { return Result(lt(lhs, rhs), stringifyBinaryExpr(lhs, " < " , rhs)); }
-        template <typename R> Result operator<=(const DOCTEST_REF_WRAP(R) rhs) { return Result(le(lhs, rhs), stringifyBinaryExpr(lhs, " <= ", rhs)); }
-        template <typename R> Result operator> (const DOCTEST_REF_WRAP(R) rhs) { return Result(gt(lhs, rhs), stringifyBinaryExpr(lhs, " > " , rhs)); }
-        template <typename R> Result operator>=(const DOCTEST_REF_WRAP(R) rhs) { return Result(ge(lhs, rhs), stringifyBinaryExpr(lhs, " >= ", rhs)); }
-#endif // DOCTEST_CONFIG_TREAT_CHAR_STAR_AS_STRING
-        // clang-format on
+        DOCTEST_DO_BINARY_EXPRESSION_COMPARISON(==, " == ", DOCTEST_CMP_EQ)
+        DOCTEST_DO_BINARY_EXPRESSION_COMPARISON(!=, " != ", DOCTEST_CMP_NE)
+        DOCTEST_DO_BINARY_EXPRESSION_COMPARISON(>, " >  ", DOCTEST_CMP_GT)
+        DOCTEST_DO_BINARY_EXPRESSION_COMPARISON(<, " <  ", DOCTEST_CMP_LT)
+        DOCTEST_DO_BINARY_EXPRESSION_COMPARISON(>=, " >= ", DOCTEST_CMP_GE)
+        DOCTEST_DO_BINARY_EXPRESSION_COMPARISON(<=, " <= ", DOCTEST_CMP_LE)
 
-        // clang-format off
         // forbidding some expressions based on this table: http://en.cppreference.com/w/cpp/language/operator_precedence
-        template <typename R> Expression_lhs& operator&  (const R&) { DOCTEST_STATIC_ASSERT(deferred_false<R>::value, Expression_Too_Complex_Please_Rewrite_As_Binary_Comparison); return *this; }
-        template <typename R> Expression_lhs& operator^  (const R&) { DOCTEST_STATIC_ASSERT(deferred_false<R>::value, Expression_Too_Complex_Please_Rewrite_As_Binary_Comparison); return *this; }
-        template <typename R> Expression_lhs& operator|  (const R&) { DOCTEST_STATIC_ASSERT(deferred_false<R>::value, Expression_Too_Complex_Please_Rewrite_As_Binary_Comparison); return *this; }
-        template <typename R> Expression_lhs& operator&& (const R&) { DOCTEST_STATIC_ASSERT(deferred_false<R>::value, Expression_Too_Complex_Please_Rewrite_As_Binary_Comparison); return *this; }
-        template <typename R> Expression_lhs& operator|| (const R&) { DOCTEST_STATIC_ASSERT(deferred_false<R>::value, Expression_Too_Complex_Please_Rewrite_As_Binary_Comparison); return *this; }
-        template <typename R> Expression_lhs& operator=  (const R&) { DOCTEST_STATIC_ASSERT(deferred_false<R>::value, Expression_Too_Complex_Please_Rewrite_As_Binary_Comparison); return *this; }
-        template <typename R> Expression_lhs& operator+= (const R&) { DOCTEST_STATIC_ASSERT(deferred_false<R>::value, Expression_Too_Complex_Please_Rewrite_As_Binary_Comparison); return *this; }
-        template <typename R> Expression_lhs& operator-= (const R&) { DOCTEST_STATIC_ASSERT(deferred_false<R>::value, Expression_Too_Complex_Please_Rewrite_As_Binary_Comparison); return *this; }
-        template <typename R> Expression_lhs& operator*= (const R&) { DOCTEST_STATIC_ASSERT(deferred_false<R>::value, Expression_Too_Complex_Please_Rewrite_As_Binary_Comparison); return *this; }
-        template <typename R> Expression_lhs& operator/= (const R&) { DOCTEST_STATIC_ASSERT(deferred_false<R>::value, Expression_Too_Complex_Please_Rewrite_As_Binary_Comparison); return *this; }
-        template <typename R> Expression_lhs& operator%= (const R&) { DOCTEST_STATIC_ASSERT(deferred_false<R>::value, Expression_Too_Complex_Please_Rewrite_As_Binary_Comparison); return *this; }
-        template <typename R> Expression_lhs& operator<<=(const R&) { DOCTEST_STATIC_ASSERT(deferred_false<R>::value, Expression_Too_Complex_Please_Rewrite_As_Binary_Comparison); return *this; }
-        template <typename R> Expression_lhs& operator>>=(const R&) { DOCTEST_STATIC_ASSERT(deferred_false<R>::value, Expression_Too_Complex_Please_Rewrite_As_Binary_Comparison); return *this; }
-        template <typename R> Expression_lhs& operator&= (const R&) { DOCTEST_STATIC_ASSERT(deferred_false<R>::value, Expression_Too_Complex_Please_Rewrite_As_Binary_Comparison); return *this; }
-        template <typename R> Expression_lhs& operator^= (const R&) { DOCTEST_STATIC_ASSERT(deferred_false<R>::value, Expression_Too_Complex_Please_Rewrite_As_Binary_Comparison); return *this; }
-        template <typename R> Expression_lhs& operator|= (const R&) { DOCTEST_STATIC_ASSERT(deferred_false<R>::value, Expression_Too_Complex_Please_Rewrite_As_Binary_Comparison); return *this; }
+        DOCTEST_FORBIT_EXPRESSION(&)
+        DOCTEST_FORBIT_EXPRESSION (^)
+        DOCTEST_FORBIT_EXPRESSION(|)
+        DOCTEST_FORBIT_EXPRESSION(&&)
+        DOCTEST_FORBIT_EXPRESSION(||)
+        DOCTEST_FORBIT_EXPRESSION(=)
+        DOCTEST_FORBIT_EXPRESSION(+=)
+        DOCTEST_FORBIT_EXPRESSION(-=)
+        DOCTEST_FORBIT_EXPRESSION(*=)
+        DOCTEST_FORBIT_EXPRESSION(/=)
+        DOCTEST_FORBIT_EXPRESSION(%=)
+        DOCTEST_FORBIT_EXPRESSION(<<=)
+        DOCTEST_FORBIT_EXPRESSION(>>=)
+        DOCTEST_FORBIT_EXPRESSION(&=)
+        DOCTEST_FORBIT_EXPRESSION(^=)
+        DOCTEST_FORBIT_EXPRESSION(|=)
         // these 2 are unfortunate because they should be allowed - they have higher precedence over the comparisons, but the
         // ExpressionDecomposer class uses the left shift operator to capture the left operand of the binary expression...
-        template <typename R> Expression_lhs& operator<< (const R&) { DOCTEST_STATIC_ASSERT(deferred_false<R>::value, Please_Surround_The_Left_Shift_Operation_With_Parenthesis); return *this; }
-        template <typename R> Expression_lhs& operator>> (const R&) { DOCTEST_STATIC_ASSERT(deferred_false<R>::value, Please_Surround_The_Right_Shift_Operation_With_Parenthesis); return *this; }
-        // clang-format on
+        DOCTEST_FORBIT_EXPRESSION(<<)
+        DOCTEST_FORBIT_EXPRESSION(>>)
     };
 
 #ifndef DOCTEST_CONFIG_NO_COMPARISON_WARNING_SUPPRESSION
@@ -1454,15 +1492,6 @@ namespace detail
     DOCTEST_INTERFACE bool isDebuggerActive();
     DOCTEST_INTERFACE void writeToDebugConsole(const String&);
 
-    struct TestAccessibleContextState
-    {
-        bool no_throw; // to skip exceptions-related assertion macros
-    };
-
-    struct ContextState;
-
-    DOCTEST_INTERFACE TestAccessibleContextState* getTestsContextState();
-
     namespace binaryAssertComparison
     {
         enum Enum
@@ -1509,14 +1538,16 @@ namespace detail
 
         template <int comparison, typename L, typename R>
         void          binary_assert(const DOCTEST_REF_WRAP(L) lhs, const DOCTEST_REF_WRAP(R) rhs) {
-            m_result.m_passed        = RelationalComparator<comparison, L, R>()(lhs, rhs);
-            m_result.m_decomposition = stringifyBinaryExpr(lhs, ", ", rhs);
+            m_result.m_passed = RelationalComparator<comparison, L, R>()(lhs, rhs);
+            if(!m_result.m_passed || DOCTEST_GCS().success)
+                m_result.m_decomposition = stringifyBinaryExpr(lhs, ", ", rhs);
         }
 
         template <typename L>
         void unary_assert(const DOCTEST_REF_WRAP(L) val) {
-            m_result.m_passed        = !!val;
-            m_result.m_decomposition = toString(val);
+            m_result.m_passed = !!val;
+            if(!m_result.m_passed || DOCTEST_GCS().success)
+                m_result.m_decomposition = toString(val);
 
             if(m_assert_type & assertType::is_false)
                 m_result.invert();
@@ -1546,7 +1577,8 @@ namespace detail
 
         rb.m_result.m_passed = RelationalComparator<comparison, L, R>()(lhs, rhs);
 
-        rb.m_result.m_decomposition = stringifyBinaryExpr(lhs, ", ", rhs);
+        if(!rb.m_result.m_passed || DOCTEST_GCS().success)
+            rb.m_result.m_decomposition = stringifyBinaryExpr(lhs, ", ", rhs);
 
         int res = 0;
 
@@ -1579,7 +1611,8 @@ namespace detail
         if(assert_type & assertType::is_false)
             rb.m_result.invert();
 
-        rb.m_result.m_decomposition = toString(val);
+        if(!rb.m_result.m_passed || DOCTEST_GCS().success)
+            rb.m_result.m_decomposition = toString(val);
 
         int res = 0;
 

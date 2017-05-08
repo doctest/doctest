@@ -220,7 +220,6 @@ namespace detail
 
         int  abort_after;           // stop tests after this many failed assertions
         int  subcase_filter_levels; // apply the subcase filters for the first N levels
-        bool success;               // include successful assertions in output
         bool case_sensitive;        // if filtering should be case sensitive
         bool exit;         // if the program should be exited after the tests are ran/whatever
         bool duration;     // print the time duration of each test case
