@@ -3840,7 +3840,7 @@ namespace detail
     UInt64 getCurrentTicks() {
         timeval t;
         gettimeofday(&t, 0);
-        return static_cast<UInt64>(t.tv_sec) * 1000000ull + static_cast<UInt64>(t.tv_usec);
+        return static_cast<UInt64>(t.tv_sec) * 1000000 + static_cast<UInt64>(t.tv_usec);
     }
 #endif // _WIN32
 
