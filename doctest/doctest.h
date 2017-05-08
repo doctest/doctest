@@ -4055,7 +4055,35 @@ namespace detail
         ~Color() { use(None); }
 
         static void use(Code code);
+        static void init();
+
+        static HANDLE stdoutHandle;
+        static WORD   originalForegroundAttributes;
+        static WORD   originalBackgroundAttributes;
+        static bool   attrsInitted;
     };
+
+    HANDLE Color::stdoutHandle;
+    WORD   Color::originalForegroundAttributes;
+    WORD   Color::originalBackgroundAttributes;
+    bool   Color::attrsInitted = false;
+
+    void Color::init() {
+#ifdef DOCTEST_CONFIG_COLORS_WINDOWS
+        if(!attrsInitted) {
+            stdoutHandle = GetStdHandle(STD_OUTPUT_HANDLE);
+            attrsInitted = true;
+            CONSOLE_SCREEN_BUFFER_INFO csbiInfo;
+            GetConsoleScreenBufferInfo(stdoutHandle, &csbiInfo);
+            originalForegroundAttributes =
+                    csbiInfo.wAttributes &
+                    ~(BACKGROUND_GREEN | BACKGROUND_RED | BACKGROUND_BLUE | BACKGROUND_INTENSITY);
+            originalBackgroundAttributes =
+                    csbiInfo.wAttributes &
+                    ~(FOREGROUND_GREEN | FOREGROUND_RED | FOREGROUND_BLUE | FOREGROUND_INTENSITY);
+        }
+#endif // DOCTEST_CONFIG_COLORS_WINDOWS
+    }
 
     void Color::use(Code
 #ifndef DOCTEST_CONFIG_COLORS_NONE
@@ -4094,22 +4122,6 @@ namespace detail
 #ifdef DOCTEST_CONFIG_COLORS_WINDOWS
         if(isatty(fileno(stdout)) == false && p->force_colors == false)
             return;
-
-        static HANDLE stdoutHandle(GetStdHandle(STD_OUTPUT_HANDLE));
-        static WORD   originalForegroundAttributes;
-        static WORD   originalBackgroundAttributes;
-        static bool   attrsInitted = false;
-        if(!attrsInitted) {
-            attrsInitted = true;
-            CONSOLE_SCREEN_BUFFER_INFO csbiInfo;
-            GetConsoleScreenBufferInfo(stdoutHandle, &csbiInfo);
-            originalForegroundAttributes =
-                    csbiInfo.wAttributes &
-                    ~(BACKGROUND_GREEN | BACKGROUND_RED | BACKGROUND_BLUE | BACKGROUND_INTENSITY);
-            originalBackgroundAttributes =
-                    csbiInfo.wAttributes &
-                    ~(FOREGROUND_GREEN | FOREGROUND_RED | FOREGROUND_BLUE | FOREGROUND_INTENSITY);
-        }
 
 #define DOCTEST_SET_ATTR(x) SetConsoleTextAttribute(stdoutHandle, x | originalBackgroundAttributes)
 
@@ -5242,6 +5254,8 @@ bool Context::shouldExit() { return p->exit; }
 // the main function that does all the filtering and test running
 int Context::run() {
     using namespace detail;
+
+    Color::init();
 
     contextState = p;
     p->resetRunData();

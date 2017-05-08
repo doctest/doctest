@@ -13,7 +13,6 @@ Planned features for future releases - order changes constantly...
 - runtime performance
     - move string implementation to the fwd part - use new/delete
     - optimize createStream/freeStream to reuse a pool of ostringstream objects
-    - get rid of local statics on the hot path - like in getContextState()
     - make a pool allocator for the ```String``` class - currently very unoptimized
     - add move semantics to the ```String``` class
     - see how many times operator new is called during startup (or runtime?..)
