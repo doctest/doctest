@@ -374,22 +374,23 @@ before_script:
   - ${CXX} --version
 
 script:
-  # coverage - do not continue with other build configurations after that
-  - if [[ "${CODE_COVERAGE}" = "true" ]]; then cmake ${CMAKE_OPTIONS_GLOBAL} ${CMAKE_OPTIONS} -DCMAKE_CXX_COMPILER=${CXX} -DCMAKE_CXX_FLAGS="-fprofile-arcs -ftest-coverage -std=c++98" -DCMAKE_BUILD_TYPE=Debug . ; fi
-  - if [[ "${CODE_COVERAGE}" = "true" ]]; then make -k -j2 ; fi
-  - if [[ "${CODE_COVERAGE}" = "true" ]]; then ctest --output-on-failure ; fi
+  # coverage
   - |
     if [[ "${CODE_COVERAGE}" = "true" ]]; then
+      cmake ${CMAKE_OPTIONS_GLOBAL} ${CMAKE_OPTIONS} -DCMAKE_CXX_COMPILER=${CXX} -DCMAKE_CXX_FLAGS="-fprofile-arcs -ftest-coverage -std=c++98" -DCMAKE_BUILD_TYPE=Debug . || exit 1
+      make -k -j2 || exit 1
+      ctest --output-on-failure || exit 1
+
       lcov -d . -c -o coverage.info                                              # parse coverage data
       lcov -r coverage.info "/usr*" "$(readlink -f examples)/*" -o coverage.info # remove data for system headers and .cpp files
       lcov -l coverage.info                                                      # just list a short summary of the results
       coveralls-lcov --repo-token ${COVERALLS_REPO_TOKEN} coverage.info          # upload results
 
+      # do not continue with other build configurations after that
       exit
     fi
 
-  # static code analysis - do not continue with other build configurations after that
-  # cppcheck
+  # static code analysis
   - |
     if [[ "${STATIC_CODE_ANALYSIS}" = "true" ]]; then
       cp doctest/doctest.h doctest.cpp
@@ -399,15 +400,18 @@ script:
       echo -e "    CAPTURE(a);" >> doctest.cpp
       echo -e "    CHECK(a == 6);" >> doctest.cpp
       echo -e "}" >> doctest.cpp
-      
-      cppcheck doctest.cpp --enable=all --suppress=unmatchedSuppression --suppress=missingIncludeSystem --suppress=unusedFunction --suppress=functionConst --inline-suppr --platform=unix64 --inconclusive --std=posix --inconclusive -v --error-exitcode=1 --template "{file}({line}): {severity} ({id}): {message}" -DDOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
-    fi
 
-  # clang-tidy
-  - if [[ "${STATIC_CODE_ANALYSIS}" = "true" ]]; then cd scripts/playground ; fi
-  - if [[ "${STATIC_CODE_ANALYSIS}" = "true" ]]; then cmake ${CMAKE_OPTIONS_GLOBAL} ${CMAKE_OPTIONS} -DCMAKE_CXX_COMPILER=${CXX} . ; fi
-  - if [[ "${STATIC_CODE_ANALYSIS}" = "true" ]]; then clang-tidy-4.0 -p=. *.cpp -header-filter=.* -warnings-as-errors=* -checks='*,-misc-macro-parentheses,-misc-definitions-in-headers,-misc-unused-parameters,-llvm-header-guard,-llvm-include-order,-google-readability-braces-around-statements,-google-runtime-references,-google-readability-todo,-google-build-using-namespace,-google-explicit-constructor,-cert-err58-cpp,-cppcoreguidelines-pro-type-vararg,-cppcoreguidelines-pro-bounds-pointer-arithmetic,-cppcoreguidelines-pro-bounds-array-to-pointer-decay,-cppcoreguidelines-special-member-functions,-cppcoreguidelines-pro-type-reinterpret-cast,-cppcoreguidelines-pro-bounds-constant-array-index,-cppcoreguidelines-pro-type-member-init,-clang-analyzer-security.insecureAPI.strcpy,-modernize-use-nullptr,-modernize-use-equals-default,-modernize-loop-convert,-modernize-use-auto,-readability-braces-around-statements,-readability-named-parameter,-readability-else-after-return,-readability-redundant-declaration,-readability-implicit-bool-cast' ; fi
-  - if [[ "${STATIC_CODE_ANALYSIS}" = "true" ]]; then exit ; fi
+      # cppcheck
+      cppcheck doctest.cpp --enable=all --suppress=unmatchedSuppression --suppress=missingIncludeSystem --suppress=unusedFunction --suppress=functionConst --inline-suppr --platform=unix64 --inconclusive --std=posix --inconclusive -v --error-exitcode=1 --template "{file}({line}): {severity} ({id}): {message}" -DDOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
+
+      # clang-tidy
+      cd scripts/playground
+      cmake ${CMAKE_OPTIONS_GLOBAL} ${CMAKE_OPTIONS} -DCMAKE_CXX_COMPILER=${CXX} .
+      clang-tidy-4.0 -p=. *.cpp -header-filter=.* -warnings-as-errors=* -checks='*,-misc-macro-parentheses,-misc-definitions-in-headers,-misc-unused-parameters,-llvm-header-guard,-llvm-include-order,-google-readability-braces-around-statements,-google-runtime-references,-google-readability-todo,-google-build-using-namespace,-google-explicit-constructor,-cert-err58-cpp,-cppcoreguidelines-pro-type-vararg,-cppcoreguidelines-pro-bounds-pointer-arithmetic,-cppcoreguidelines-pro-bounds-array-to-pointer-decay,-cppcoreguidelines-special-member-functions,-cppcoreguidelines-pro-type-reinterpret-cast,-cppcoreguidelines-pro-bounds-constant-array-index,-cppcoreguidelines-pro-type-member-init,-clang-analyzer-security.insecureAPI.strcpy,-modernize-use-nullptr,-modernize-use-equals-default,-modernize-loop-convert,-modernize-use-auto,-readability-braces-around-statements,-readability-named-parameter,-readability-else-after-return,-readability-redundant-declaration,-readability-implicit-bool-cast' || exit 1
+
+      # do not continue with other build configurations after that
+      exit
+    fi
 
   # initial run with options
   - cmake ${CMAKE_OPTIONS_GLOBAL} ${CMAKE_OPTIONS} -DCMAKE_CXX_COMPILER=${CXX} .
