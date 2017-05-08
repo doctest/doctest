@@ -10,7 +10,6 @@ Planned features for future releases - order changes constantly...
 
 ### For 1.2:
 
-- remove DOCTEST_CONFIG_WITH_LONG_LONG
 - runtime performance
     - move string implementation to the fwd part - use new/delete
     - lazily stringify expressions - only when needed
