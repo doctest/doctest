@@ -80,14 +80,11 @@
 #define DOCTEST_SNPRINTF std::snprintf
 #endif
 
-#undef DOCTEST_GCS
-#define DOCTEST_GCS() (*doctest::detail::getContextState())
-
 #define DOCTEST_LOG_START()                                                                        \
     do {                                                                                           \
-        if(!DOCTEST_GCS().hasLoggedCurrentTestStart) {                                             \
-            doctest::detail::logTestStart(*DOCTEST_GCS().currentTest);                             \
-            DOCTEST_GCS().hasLoggedCurrentTestStart = true;                                        \
+        if(!contextState->hasLoggedCurrentTestStart) {                                             \
+            doctest::detail::logTestStart(*contextState->currentTest);                             \
+            contextState->hasLoggedCurrentTestStart = true;                                        \
         }                                                                                          \
     } while(false)
 
@@ -280,7 +277,7 @@ namespace detail
         }
     };
 
-    ContextState*& getContextState();
+    ContextState* contextState = 0;
 #endif // DOCTEST_CONFIG_DISABLE
 } // namespace detail
 
@@ -684,8 +681,8 @@ namespace detail
         if(assert_type & assertType::is_require)
             return true;
 
-        if((assert_type & assertType::is_check) && getContextState()->abort_after > 0) {
-            if(getContextState()->numFailedAssertions >= getContextState()->abort_after)
+        if((assert_type & assertType::is_check) && contextState->abort_after > 0) {
+            if(contextState->numFailedAssertions >= contextState->abort_after)
                 return true;
         }
 
@@ -810,13 +807,7 @@ namespace detail
         UInt64 m_ticks;
     };
 
-    // the current ContextState with which tests are being executed
-    ContextState*& getContextState() {
-        static ContextState* data = 0;
-        return data;
-    }
-
-    TestAccessibleContextState* getTestsContextState() { return getContextState(); }
+    TestAccessibleContextState* getTestsContextState() { return contextState; }
 
     bool SubcaseSignature::operator<(const SubcaseSignature& other) const {
         if(m_line != other.m_line)
@@ -829,7 +820,7 @@ namespace detail
     Subcase::Subcase(const char* name, const char* file, int line)
             : m_signature(name, file, line)
             , m_entered(false) {
-        ContextState* s = getContextState();
+        ContextState* s = contextState;
 
         // if we have already completed it
         if(s->subcasesPassed.count(m_signature) != 0)
@@ -865,7 +856,7 @@ namespace detail
 
     Subcase::~Subcase() {
         if(m_entered) {
-            ContextState* s = getContextState();
+            ContextState* s = contextState;
 
             s->subcasesCurrentLevel--;
             // only mark the subcase as passed if no subcases have been skipped
@@ -976,7 +967,7 @@ namespace detail
                             code
 #endif // DOCTEST_CONFIG_COLORS_NONE
                     ) {
-        ContextState* p = getContextState();
+        const ContextState* p = contextState;
         if(p->no_colors)
             return;
 #ifdef DOCTEST_CONFIG_COLORS_ANSI
@@ -1087,13 +1078,13 @@ namespace detail
 
     void writeStringToStream(std::ostream* stream, const String& str) { *stream << str; }
 
-    void addToContexts(IContextScope* ptr) { getContextState()->contexts.push_back(ptr); }
-    void                              popFromContexts() { getContextState()->contexts.pop_back(); }
+    void addToContexts(IContextScope* ptr) { contextState->contexts.push_back(ptr); }
+    void                              popFromContexts() { contextState->contexts.pop_back(); }
     void useContextIfExceptionOccurred(IContextScope* ptr) {
         if(std::uncaught_exception()) {
             std::ostringstream stream;
             ptr->build(&stream);
-            getContextState()->exceptionalContexts.push_back(stream.str());
+            contextState->exceptionalContexts.push_back(stream.str());
         }
     }
 
@@ -1110,11 +1101,10 @@ namespace detail
     void reportFatal(const std::string& message) {
         DOCTEST_LOG_START();
 
-        detail::ContextState* p = getContextState();
-        p->numAssertions += p->numAssertionsForCurrentTestcase;
+        contextState->numAssertions += contextState->numAssertionsForCurrentTestcase;
         logTestException(message.c_str(), true);
         logTestEnd();
-        p->numFailed++;
+        contextState->numFailed++;
 
         printSummary();
     }
@@ -1259,7 +1249,7 @@ namespace detail
 
     // depending on the current options this will remove the path of filenames
     const char* fileForOutput(const char* file) {
-        if(getContextState()->no_path_in_filenames) {
+        if(contextState->no_path_in_filenames) {
             const char* back    = std::strrchr(file, '\\');
             const char* forward = std::strrchr(file, '/');
             if(back || forward) {
@@ -1273,7 +1263,7 @@ namespace detail
 
     // depending on the current options this will substitute the line numbers with 0
     int lineForOutput(int line) {
-        if(getContextState()->no_line_numbers)
+        if(contextState->no_line_numbers)
             return 0;
         return line;
     }
@@ -1333,9 +1323,9 @@ namespace detail
 
     void addFailedAssert(assertType::Enum assert_type) {
         if((assert_type & assertType::is_warn) == 0) {
-            getContextState()->numFailedAssertions++;
-            getContextState()->numFailedAssertionsForCurrentTestcase++;
-            getContextState()->hasCurrentTestFailed = true;
+            contextState->numFailedAssertions++;
+            contextState->numFailedAssertionsForCurrentTestcase++;
+            contextState->hasCurrentTestFailed = true;
         }
     }
 
@@ -1382,7 +1372,7 @@ namespace detail
         DOCTEST_PRINTF_COLORED(n2, Color::None);
 
         String                subcaseStuff  = "";
-        std::vector<Subcase>& subcasesStack = getContextState()->subcasesStack;
+        std::vector<Subcase>& subcasesStack = contextState->subcasesStack;
         for(unsigned i = 0; i < subcasesStack.size(); ++i) {
             if(subcasesStack[i].m_signature.m_name[0] != '\0') {
                 char subcase[DOCTEST_SNPRINTF_BUFFER_LENGTH];
@@ -1416,12 +1406,11 @@ namespace detail
 
         std::string contextStr;
 
-        ContextState*& cs = getContextState();
-        if(!cs->exceptionalContexts.empty()) {
+        if(!contextState->exceptionalContexts.empty()) {
             contextStr += "with context:\n";
-            for(size_t i = cs->exceptionalContexts.size(); i > 0; --i) {
+            for(size_t i = contextState->exceptionalContexts.size(); i > 0; --i) {
                 contextStr += "  ";
-                contextStr += cs->exceptionalContexts[i - 1];
+                contextStr += contextState->exceptionalContexts[i - 1];
                 contextStr += "\n";
             }
         }
@@ -1437,7 +1426,7 @@ namespace detail
 
     String logContext() {
         std::ostringstream           stream;
-        std::vector<IContextScope*>& contexts = getContextState()->contexts;
+        std::vector<IContextScope*>& contexts = contextState->contexts;
         if(!contexts.empty())
             stream << "with context:\n";
         for(size_t i = 0; i < contexts.size(); ++i) {
@@ -1632,12 +1621,6 @@ namespace detail
 
     ResultBuilder::~ResultBuilder() {}
 
-    void ResultBuilder::setResult(const Result& res) {
-        m_result = res;
-        if(m_assert_type & assertType::is_false)
-            m_result.invert();
-    }
-
     void ResultBuilder::unexpectedExceptionOccurred() {
         m_threw = true;
 
@@ -1646,7 +1629,7 @@ namespace detail
 
     bool ResultBuilder::log() {
         if((m_assert_type & assertType::is_warn) == 0)
-            DOCTEST_GCS().numAssertionsForCurrentTestcase++;
+            contextState->numAssertionsForCurrentTestcase++;
 
         if(m_assert_type & assertType::is_throws) {
             m_failed = !m_threw;
@@ -1658,7 +1641,7 @@ namespace detail
             m_failed = m_result;
         }
 
-        if(m_failed || DOCTEST_GCS().success) {
+        if(m_failed || contextState->success) {
             DOCTEST_LOG_START();
 
             if(m_assert_type & assertType::is_throws) {
@@ -1677,7 +1660,7 @@ namespace detail
         if(m_failed)
             addFailedAssert(m_assert_type);
 
-        return m_failed && isDebuggerActive() && !DOCTEST_GCS().no_breaks; // break into debugger
+        return m_failed && isDebuggerActive() && !contextState->no_breaks; // break into debugger
     }
 
     void ResultBuilder::react() const {
@@ -1699,7 +1682,7 @@ namespace detail
 
         // warn is just a message in this context so we dont treat it as an assert
         if(!is_warn) {
-            DOCTEST_GCS().numAssertionsForCurrentTestcase++;
+            contextState->numAssertionsForCurrentTestcase++;
             addFailedAssert(m_severity);
         }
 
@@ -1726,7 +1709,7 @@ namespace detail
         printToDebugConsole(String(loc) + msg + "  " + info.c_str() + "\n" + context.c_str() +
                             "\n");
 
-        return isDebuggerActive() && !DOCTEST_GCS().no_breaks && !is_warn; // break into debugger
+        return isDebuggerActive() && !contextState->no_breaks && !is_warn; // break into debugger
     }
 
     void MessageBuilder::react() {
@@ -1867,7 +1850,7 @@ namespace detail
     }
 
     void printVersion() {
-        if(getContextState()->no_version == false) {
+        if(contextState->no_version == false) {
             DOCTEST_PRINTF_COLORED("[doctest] ", Color::Cyan);
             std::printf("doctest version is \"%s\"\n", DOCTEST_VERSION_STR);
         }
@@ -1941,7 +1924,7 @@ namespace detail
     }
 
     void printSummary() {
-        detail::ContextState* p = getContextState();
+        const ContextState* p = contextState;
 
         DOCTEST_PRINTF_COLORED(getSeparator(), Color::Yellow);
         if(p->count || p->list_test_cases) {
@@ -2017,7 +2000,7 @@ namespace detail
     }
 } // namespace detail
 
-bool isRunningInTest() { return detail::getContextState() != 0; }
+bool isRunningInTest() { return detail::contextState != 0; }
 
 Context::Context(int argc, const char* const* argv)
         : p(new detail::ContextState) {
@@ -2165,7 +2148,7 @@ bool Context::shouldExit() { return p->exit; }
 int Context::run() {
     using namespace detail;
 
-    getContextState() = p;
+    contextState = p;
     p->resetRunData();
 
     // handle version, help and no_run
@@ -2175,7 +2158,7 @@ int Context::run() {
         if(p->help)
             printHelp();
 
-        getContextState() = 0;
+        contextState = 0;
 
         return EXIT_SUCCESS;
     }
@@ -2318,7 +2301,7 @@ int Context::run() {
                     FatalConditionHandler fatalConditionHandler; // Handle signals
                     data.m_test();
                     fatalConditionHandler.reset();
-                    if(getContextState()->hasCurrentTestFailed)
+                    if(contextState->hasCurrentTestFailed)
                         failed = true;
 #ifndef DOCTEST_CONFIG_NO_EXCEPTIONS
                 } catch(const TestFailureException&) { failed = true; } catch(...) {
@@ -2407,7 +2390,7 @@ int Context::run() {
 
     printSummary();
 
-    getContextState() = 0;
+    contextState = 0;
 
     if(p->numFailed && !p->no_exitcode)
         return EXIT_FAILURE;

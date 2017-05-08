@@ -383,8 +383,6 @@
 #define DOCTEST_PLATFORM_LINUX
 #endif
 
-#define DOCTEST_GCS() (*doctest::detail::getTestsContextState())
-
 #if defined(__clang__)
 #define DOCTEST_GLOBAL_NO_WARNINGS(var)                                                            \
     _Pragma("clang diagnostic push")                                                               \
@@ -1222,8 +1220,6 @@ namespace detail
 
         operator bool() { return !m_passed; }
 
-        void invert() { m_passed = !m_passed; }
-
         // clang-format off
         // forbidding some expressions based on this table: http://en.cppreference.com/w/cpp/language/operator_precedence
         template <typename R> Result& operator&  (const R&) { DOCTEST_STATIC_ASSERT(deferred_false<R>::value, Expression_Too_Complex_Please_Rewrite_As_Binary_Comparison); return *this; }
@@ -1325,9 +1321,11 @@ namespace detail
 #define DOCTEST_DO_BINARY_EXPRESSION_COMPARISON(op, op_str, op_macro)                              \
     template <typename R>                                                                          \
     Result operator op(const DOCTEST_REF_WRAP(R) rhs) {                                            \
-        bool   res = op_macro(lhs, rhs);                                                           \
+        bool res = op_macro(lhs, rhs);                                                             \
+        if(m_assert_type & assertType::is_false)                                                   \
+            res = !res;                                                                            \
         String str;                                                                                \
-        if(!res || DOCTEST_GCS().success)                                                          \
+        if(!res || doctest::detail::getTestsContextState()->success)                               \
             return Result(res, stringifyBinaryExpr(lhs, op_str, rhs));                             \
         else                                                                                       \
             return Result(res);                                                                    \
@@ -1345,17 +1343,22 @@ namespace detail
     // cppcheck-suppress copyCtorAndEqOperator
     struct Expression_lhs
     {
-        L lhs;
+        L                lhs;
+        assertType::Enum m_assert_type;
 
-        explicit Expression_lhs(L in)
-                : lhs(in) {}
+        explicit Expression_lhs(L in, assertType::Enum assert_type)
+                : lhs(in)
+                , m_assert_type(assert_type) {}
 
         Expression_lhs(const Expression_lhs& other)
                 : lhs(other.lhs) {}
 
         operator Result() {
             bool res = !!lhs;
-            if(!res || DOCTEST_GCS().success)
+            if(m_assert_type & assertType::is_false)
+                res = !res;
+
+            if(!res || getTestsContextState()->success)
                 return Result(res, toString(lhs));
             else
                 return Result(res);
@@ -1411,13 +1414,18 @@ namespace detail
 
     struct ExpressionDecomposer
     {
+        assertType::Enum m_assert_type;
+
+        ExpressionDecomposer(assertType::Enum assert_type)
+                : m_assert_type(assert_type) {}
+
         // The right operator for capturing expressions is "<=" instead of "<<" (based on the operator precedence table)
         // but then there will be warnings from GCC about "-Wparentheses" and since "_Pragma()" is problematic this will stay for now...
         // https://github.com/philsquared/Catch/issues/870
         // https://github.com/philsquared/Catch/issues/565
         template <typename L>
         Expression_lhs<const DOCTEST_REF_WRAP(L)> operator<<(const DOCTEST_REF_WRAP(L) operand) {
-            return Expression_lhs<const DOCTEST_REF_WRAP(L)>(operand);
+            return Expression_lhs<const DOCTEST_REF_WRAP(L)>(operand, m_assert_type);
         }
     };
 
@@ -1534,23 +1542,24 @@ namespace detail
 
         ~ResultBuilder();
 
-        void setResult(const Result& res);
+        void setResult(const Result& res) { m_result = res; }
 
         template <int comparison, typename L, typename R>
         void          binary_assert(const DOCTEST_REF_WRAP(L) lhs, const DOCTEST_REF_WRAP(R) rhs) {
             m_result.m_passed = RelationalComparator<comparison, L, R>()(lhs, rhs);
-            if(!m_result.m_passed || DOCTEST_GCS().success)
+            if(!m_result.m_passed || getTestsContextState()->success)
                 m_result.m_decomposition = stringifyBinaryExpr(lhs, ", ", rhs);
         }
 
         template <typename L>
         void unary_assert(const DOCTEST_REF_WRAP(L) val) {
             m_result.m_passed = !!val;
-            if(!m_result.m_passed || DOCTEST_GCS().success)
-                m_result.m_decomposition = toString(val);
 
             if(m_assert_type & assertType::is_false)
-                m_result.invert();
+                m_result.m_passed = !m_result.m_passed;
+
+            if(!m_result.m_passed || getTestsContextState()->success)
+                m_result.m_decomposition = toString(val);
         }
 
         void unexpectedExceptionOccurred();
@@ -1577,7 +1586,7 @@ namespace detail
 
         rb.m_result.m_passed = RelationalComparator<comparison, L, R>()(lhs, rhs);
 
-        if(!rb.m_result.m_passed || DOCTEST_GCS().success)
+        if(!rb.m_result.m_passed || getTestsContextState()->success)
             rb.m_result.m_decomposition = stringifyBinaryExpr(lhs, ", ", rhs);
 
         int res = 0;
@@ -1609,9 +1618,9 @@ namespace detail
         rb.m_result.m_passed = !!val;
 
         if(assert_type & assertType::is_false)
-            rb.m_result.invert();
+            rb.m_result.m_passed = !rb.m_result.m_passed;
 
-        if(!rb.m_result.m_passed || DOCTEST_GCS().success)
+        if(!rb.m_result.m_passed || getTestsContextState()->success)
             rb.m_result.m_decomposition = toString(val);
 
         int res = 0;
@@ -2265,8 +2274,9 @@ constexpr T to_lvalue = x;
     doctest::detail::ResultBuilder _DOCTEST_RB(                                                    \
             doctest::detail::assertType::assert_type, __FILE__, __LINE__,                          \
             DOCTEST_TOSTR(DOCTEST_HANDLE_BRACED_VA_ARGS(expr)));                                   \
-    DOCTEST_WRAP_IN_TRY(_DOCTEST_RB.setResult(doctest::detail::ExpressionDecomposer()              \
-                                              << DOCTEST_HANDLE_BRACED_VA_ARGS(expr)))             \
+    DOCTEST_WRAP_IN_TRY(_DOCTEST_RB.setResult(                                                     \
+            doctest::detail::ExpressionDecomposer(doctest::detail::assertType::assert_type)        \
+            << DOCTEST_HANDLE_BRACED_VA_ARGS(expr)))                                               \
     DOCTEST_ASSERT_LOG_AND_REACT(_DOCTEST_RB)
 
 #if defined(__clang__)
@@ -2320,7 +2330,7 @@ constexpr T to_lvalue = x;
 
 #define DOCTEST_ASSERT_THROWS(expr, assert_type)                                                   \
     do {                                                                                           \
-        if(!DOCTEST_GCS().no_throw) {                                                              \
+        if(!doctest::detail::getTestsContextState()->no_throw) {                                   \
             doctest::detail::ResultBuilder _DOCTEST_RB(doctest::detail::assertType::assert_type,   \
                                                        __FILE__, __LINE__, #expr);                 \
             try {                                                                                  \
@@ -2332,7 +2342,7 @@ constexpr T to_lvalue = x;
 
 #define DOCTEST_ASSERT_THROWS_AS(expr, as, assert_type)                                            \
     do {                                                                                           \
-        if(!DOCTEST_GCS().no_throw) {                                                              \
+        if(!doctest::detail::getTestsContextState()->no_throw) {                                   \
             doctest::detail::ResultBuilder _DOCTEST_RB(                                            \
                     doctest::detail::assertType::assert_type, __FILE__, __LINE__, #expr,           \
                     DOCTEST_TOSTR(DOCTEST_HANDLE_BRACED_VA_ARGS(as)));                             \
@@ -2348,7 +2358,7 @@ constexpr T to_lvalue = x;
 
 #define DOCTEST_ASSERT_NOTHROW(expr, assert_type)                                                  \
     do {                                                                                           \
-        if(!DOCTEST_GCS().no_throw) {                                                              \
+        if(!doctest::detail::getTestsContextState()->no_throw) {                                   \
             doctest::detail::ResultBuilder _DOCTEST_RB(doctest::detail::assertType::assert_type,   \
                                                        __FILE__, __LINE__, #expr);                 \
             try {                                                                                  \
