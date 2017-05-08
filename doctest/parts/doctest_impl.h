@@ -754,7 +754,7 @@ namespace detail
     //}
 
     // checks if the name matches any of the filters (and can be configured what to do when empty)
-    bool matchesAny(const char* name, std::vector<String> filters, int matchEmpty,
+    bool matchesAny(const char* name, const std::vector<String>& filters, int matchEmpty,
                     bool caseSensitive) {
         if(filters.empty() && matchEmpty)
             return true;

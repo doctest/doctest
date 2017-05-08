@@ -12,8 +12,6 @@ Planned features for future releases - order changes constantly...
 
 - runtime performance
     - move string implementation to the fwd part - use new/delete
-    - optimize createStream/freeStream to reuse a pool of ostringstream objects
-    - make a pool allocator for the ```String``` class - currently very unoptimized
     - add move semantics to the ```String``` class
     - see how many times operator new is called during startup (or runtime?..)
 - mocking - interop with doctest (+ maybe send PRs with doctest integration info)
@@ -101,6 +99,7 @@ Planned features for future releases - order changes constantly...
     - should test stuff that should not compile
     - should test crash handling
     - should test more config options
+    - should test C++11 stuff - perhaps inspect the CMAKE_CXX_FLAGS for -std=c++11 on the CI and add more targets/tests
     - test tricky stuff like expressions with commas in asserts
 
 ### For 2.0:
@@ -153,7 +152,10 @@ Planned features for future releases - order changes constantly...
     - perhaps for fixtures in addition to the constructor / destructor - since throwing in the destructor might terminate the program
     - or just ignore all of this this - it would require globals or classes and inheritance - and we already have subcases
 - doctest in a GUI environment? with no console? APIs for attaching a console? querying if there is one? [investigate...](https://github.com/philsquared/Catch/blob/master/docs/configuration.md#stdout)
-- the set holding all registered tests should use a specialized allocator to minimize program startup time
+- runtime performance
+    - startup - the set holding all registered tests should use a specialized allocator to minimize program startup time
+    - failing - optimize createStream/freeStream to reuse a pool of ostringstream objects
+    - general - make a pool allocator for the ```String``` class
 - ability to provide a temp folder that is cleared between each test case
 - make the _MESSAGE assert macros work with variadic arguments - and maybe write the ones for binary/unary/fast asserts as well
 - move from operator "<<" to "<=" for capturing the left operand when decomposing binary expressions with templates
