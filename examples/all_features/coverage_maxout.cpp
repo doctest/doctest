@@ -33,11 +33,10 @@ TEST_CASE("doctest internals") {
     CHECK(String("a.cpp") < String("b.cpp"));
 
     // trigger code path for string with nullptr
-    String       a(static_cast<const char*>(doctest::detail::getNull()));
+    String       a;
     const String const_str("omgomgomg");
     a = const_str.c_str();
     CHECK(a.size() == const_str.size());
-    CHECK(a.length() == const_str.length());
     CHECK_MESSAGE(a.compare(const_str, true) != 0, "should fail");
     CHECK_MESSAGE(a.compare("omgomgomg", false) != 0, "should fail");
 
@@ -67,7 +66,7 @@ TEST_CASE("doctest internals") {
     oss << detail::getAssertString(static_cast<detail::assertType::Enum>(3));
     a += oss.str().c_str();
     // trigger code path for rawMemoryToString
-    bool len_is_zero = detail::rawMemoryToString(a).length() == 0u;
+    bool len_is_zero = detail::rawMemoryToString(a).size() == 0u;
     CHECK_MESSAGE(len_is_zero, "should fail");
 }
 

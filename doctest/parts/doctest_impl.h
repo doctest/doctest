@@ -117,16 +117,6 @@ namespace doctest
 {
 namespace detail
 {
-    // not using std::strlen() because of valgrind errors when optimizations are turned on
-    // 'Invalid read of size 4' when the test suite len (with '\0') is not a multiple of 4
-    // for details see http://stackoverflow.com/questions/35671155
-    size_t my_strlen(const char* in) {
-        const char* temp = in;
-        while(temp && *temp)
-            ++temp;
-        return temp - in;
-    }
-
     // lowers ascii letters
     char tolower(const char c) { return ((c >= 'A' && c <= 'Z') ? static_cast<char>(c + 32) : c); }
 
@@ -142,6 +132,23 @@ namespace detail
             if(d != 0 || !*a)
                 return d;
         }
+    }
+
+    void my_memcpy(void* dest, const void* src, unsigned num) {
+        const char* csrc  = static_cast<const char*>(src);
+        char*       cdest = static_cast<char*>(dest);
+        for(unsigned i = 0; i < num; ++i)
+            cdest[i]   = csrc[i];
+    }
+
+    // not using std::strlen() because of valgrind errors when optimizations are turned on
+    // 'Invalid read of size 4' when the test suite len (with '\0') is not a multiple of 4
+    // for details see http://stackoverflow.com/questions/35671155
+    unsigned my_strlen(const char* in) {
+        const char* temp = in;
+        while(temp && *temp)
+            ++temp;
+        return temp - in;
     }
 
     template <typename T>
@@ -287,59 +294,88 @@ namespace detail
 #pragma warning(disable : 6387) // This does not adhere to the specification for the function strcpy
 #endif                          // _MSC_VER
 
-String::String(const char* in)
-        : m_str(new char[detail::my_strlen(in) + 1]) {
-    if(in)
-        std::strcpy(m_str, in);
-    else
-        m_str[0] = '\0';
-}
-
-String::String(const String& other)
-        : m_str(0) {
-    copy(other);
-}
-
-void String::copy(const String& other) {
-    if(m_str)
-        delete[] m_str;
-    m_str = new char[detail::my_strlen(other.m_str) + 1];
-    std::strcpy(m_str, other.m_str);
-}
-
-String::~String() { delete[] m_str; }
-
-String& String::operator=(const String& other) {
-    if(this != &other)
-        copy(other);
-    return *this;
-}
-
-String String::operator+(const String& other) const { return String(m_str) += other; }
-
-String& String::operator+=(const String& other) {
-    using namespace detail;
-    if(other.m_str != 0) {
-        char* newStr = new char[my_strlen(m_str) + my_strlen(other.m_str) + 1];
-        std::strcpy(newStr, m_str);
-        std::strcpy(newStr + my_strlen(m_str), other.m_str);
-        delete[] m_str;
-        m_str = newStr;
-    }
-    return *this;
-}
-
 #ifdef _MSC_VER
 #pragma warning(pop)
 #endif // _MSC_VER
 
-unsigned String::size() const { return m_str ? detail::my_strlen(m_str) : 0; }
-unsigned String::length() const { return size(); }
+void String::copy(const String& other) {
+    if(other.isOnStack()) {
+        doctest::detail::my_memcpy(buf, other.buf, len);
+    } else {
+        setOnHeap();
+        data.size     = other.data.size;
+        data.capacity = data.size + 1;
+        data.ptr      = new char[data.capacity];
+        doctest::detail::my_memcpy(data.ptr, other.data.ptr, data.size + 1);
+    }
+}
+String::String(const char* in) {
+    unsigned in_len = doctest::detail::my_strlen(in);
+    if(in_len <= last) {
+        doctest::detail::my_memcpy(buf, in, in_len + 1);
+        setLast(last - in_len);
+    } else {
+        setOnHeap();
+        data.size     = in_len;
+        data.capacity = data.size + 1;
+        data.ptr      = new char[data.capacity];
+        doctest::detail::my_memcpy(data.ptr, in, in_len + 1);
+    }
+}
+
+String& String::operator+=(const String& other) {
+    unsigned my_old_size = size();
+    unsigned other_size  = other.size();
+    unsigned total_size  = my_old_size + other_size;
+    if(isOnStack()) {
+        if(total_size < len) {
+            // append to the current stack space
+            doctest::detail::my_memcpy(buf + my_old_size, other.c_str(), other_size + 1);
+            setLast(last - total_size);
+        } else {
+            // alloc new chunk
+            char* temp = new char[total_size + 1];
+            // copy current data to new location before writing in the union
+            doctest::detail::my_memcpy(temp, buf, my_old_size); // skip the +1 ('\0') for speed
+            // update data in union
+            setOnHeap();
+            data.size     = total_size;
+            data.capacity = data.size + 1;
+            data.ptr      = temp;
+            // transfer the rest of the data
+            doctest::detail::my_memcpy(data.ptr + my_old_size, other.c_str(), other_size + 1);
+        }
+    } else {
+        if(data.capacity > total_size) {
+            // append to the current heap block
+            data.size = total_size;
+            doctest::detail::my_memcpy(data.ptr + my_old_size, other.c_str(), other_size + 1);
+        } else {
+            // resize
+            data.capacity *= 2;
+            if(data.capacity <= total_size)
+                data.capacity = total_size + 1;
+            // alloc new chunk
+            char* temp = new char[data.capacity];
+            // copy current data to new location before releasing it
+            doctest::detail::my_memcpy(temp, data.ptr, my_old_size); // skip the +1 ('\0') for speed
+            // release old chunk
+            delete[] data.ptr;
+            // update the rest of the union members
+            data.size = total_size;
+            data.ptr  = temp;
+            // transfer the rest of the data
+            doctest::detail::my_memcpy(data.ptr + my_old_size, other.c_str(), other_size + 1);
+        }
+    }
+
+    return *this;
+}
 
 int String::compare(const char* other, bool no_case) const {
     if(no_case)
-        return detail::stricmp(m_str, other);
-    return std::strcmp(m_str, other);
+        return detail::stricmp(c_str(), other);
+    return std::strcmp(c_str(), other);
 }
 
 int String::compare(const String& other, bool no_case) const {
@@ -446,7 +482,7 @@ String toString(std::nullptr_t) { return "nullptr"; }
 
 } // namespace doctest
 
-#if defined(DOCTEST_CONFIG_DISABLE)
+#ifdef DOCTEST_CONFIG_DISABLE
 namespace doctest
 {
 bool isRunningInTest() { return false; }
@@ -543,7 +579,6 @@ namespace detail
     TestCase::TestCase(funcType test, const char* file, unsigned line, const TestSuite& test_suite,
                        const char* type, int template_id)
             : m_test(test)
-            , m_full_name(0)
             , m_name(0)
             , m_type(type)
             , m_test_suite(test_suite.m_test_suite)
@@ -696,13 +731,6 @@ namespace detail
 #ifndef DOCTEST_CONFIG_NO_EXCEPTIONS
         throw TestFailureException();
 #endif // DOCTEST_CONFIG_NO_EXCEPTIONS
-    }
-
-    void my_memcpy(void* dest, void* src, int num) {
-        char* csrc  = static_cast<char*>(src);
-        char* cdest = static_cast<char*>(dest);
-        for(int i    = 0; i < num; ++i)
-            cdest[i] = csrc[i];
     }
 
     // matching of a string against a wildcard mask (case sensitivity configurable) taken from
@@ -1367,7 +1395,7 @@ namespace detail
         DOCTEST_PRINTF_COLORED(getSeparator(), Color::Yellow);
         DOCTEST_PRINTF_COLORED(loc, Color::LightGrey);
 
-        String forDebugConsole = "";
+        String forDebugConsole;
         if(tc.m_description) {
             DOCTEST_PRINTF_COLORED(d1, Color::Yellow);
             DOCTEST_PRINTF_COLORED(d2, Color::None);
@@ -1383,7 +1411,7 @@ namespace detail
         DOCTEST_PRINTF_COLORED(n1, Color::Yellow);
         DOCTEST_PRINTF_COLORED(n2, Color::None);
 
-        String                subcaseStuff  = "";
+        String                subcaseStuff;
         std::vector<Subcase>& subcasesStack = contextState->subcasesStack;
         for(unsigned i = 0; i < subcasesStack.size(); ++i) {
             if(subcasesStack[i].m_signature.m_name[0] != '\0') {
@@ -1709,7 +1737,7 @@ namespace detail
         DOCTEST_PRINTF_COLORED(msg, is_warn ? Color::Yellow : Color::Red);
 
         String info = getStreamResult(m_stream);
-        if(info.length()) {
+        if(info.size()) {
             DOCTEST_PRINTF_COLORED("  ", Color::None);
             DOCTEST_PRINTF_COLORED(info.c_str(), Color::None);
             DOCTEST_PRINTF_COLORED("\n", Color::None);

@@ -11,7 +11,9 @@ Planned features for future releases - order changes constantly...
 ### For 1.2:
 
 - runtime performance
-    - move string implementation to the fwd part - use new/delete
+    - reimplement string class with a small buffer optimization
+    - unit test the string class
+    - move it to the header entirely
     - add move semantics to the ```String``` class
     - see how many times operator new is called during startup (or runtime?..)
 - mocking - interop with doctest (+ maybe send PRs with doctest integration info)
@@ -155,7 +157,6 @@ Planned features for future releases - order changes constantly...
 - runtime performance
     - startup - the set holding all registered tests should use a specialized allocator to minimize program startup time
     - failing - optimize createStream/freeStream to reuse a pool of ostringstream objects
-    - general - make a pool allocator for the ```String``` class
 - ability to provide a temp folder that is cleared between each test case
 - make the _MESSAGE assert macros work with variadic arguments - and maybe write the ones for binary/unary/fast asserts as well
 - move from operator "<<" to "<=" for capturing the left operand when decomposing binary expressions with templates

@@ -509,31 +509,104 @@ DOCTEST_INTERFACE doctest::detail::TestSuite& getCurrentTestSuite();
 
 namespace doctest
 {
+// A 32 byte string class that can hold strings with length of up to 31 bytes on the stack
+// before going on the heap - the last byte of the buffer is used for:
+// - "is small" bit - the highest bit - if "0" then it is small - otherwise its "1" (128)
+// - if small - capacity left - using the lowest 5 bits
+// - if small - 2 bits are left unused - the second and third highest ones
+// - if small - acts as a null terminator if strlen() is 31 (32 including the null terminator)
+//              and the "is small" bit remains "0" so all is good
+// Idea taken from this lecture about the string implementation of facebook/folly - fbstring
+// https://www.youtube.com/watch?v=kPR8h4-qZdk
+// TODO:
+// - optimizations - like not deleting memory unnecessarily in operator= and etc.
+// - resize/reserve/clear
+// - substr
+// - replace
+// - back/front
+// - insert/erase
+// - iterator stuff
+// - find & friends
+// - push_back/pop_back
+// - relational operators as free functions - taking const char* as one of the params
 class DOCTEST_INTERFACE String
 {
-    char* m_str;
+    static const unsigned len  = 4 * sizeof(void*);
+    static const unsigned last = len - 1;
+
+    struct view
+    {
+        char*    ptr;
+        unsigned size;
+        unsigned capacity;
+    };
+
+    union
+    {
+        char buf[len];
+        view data;
+    };
 
     void copy(const String& other);
 
+    void setOnHeap() { *reinterpret_cast<unsigned char*>(&buf[last]) = 128; }
+    void setLast(unsigned in = last) { buf[last] = char(in); }
+
 public:
-    // cppcheck-suppress noExplicitConstructor
-    String(const char* in = "");
-    String(const String& other);
-    ~String();
+    String() {
+        buf[0] = '\0';
+        setLast();
+    }
 
-    String& operator=(const String& other);
+    String(const char* in);
 
-    String operator+(const String& other) const;
+    String(const String& other) { copy(other); }
+
+    ~String() {
+        if(!isOnStack())
+            delete[] data.ptr;
+    }
+
+    String& operator=(const String& other) {
+        if(!isOnStack())
+            delete[] data.ptr;
+
+        copy(other);
+
+        return *this;
+    }
+
     String& operator+=(const String& other);
 
-    char& operator[](unsigned pos) { return m_str[pos]; }
-    const char& operator[](unsigned pos) const { return m_str[pos]; }
+    String operator+(const String& other) const { return String(*this) += other; }
 
-    char*       c_str() { return m_str; }
-    const char* c_str() const { return m_str; }
+    bool isOnStack() const { return (buf[last] & 128) == 0; }
 
-    unsigned size() const;
-    unsigned length() const;
+    char operator[](unsigned i) const { return const_cast<String*>(this)->operator[](i); }
+    char& operator[](unsigned i) {
+        if(isOnStack())
+            return reinterpret_cast<char*>(buf)[i];
+        return data.ptr[i];
+    }
+
+    const char* c_str() const { return const_cast<String*>(this)->c_str(); }
+    char*       c_str() {
+        if(isOnStack())
+            return reinterpret_cast<char*>(buf);
+        return data.ptr;
+    }
+
+    unsigned size() const {
+        if(isOnStack())
+            return last - (buf[last] & last);
+        return data.size;
+    }
+
+    unsigned capacity() const {
+        if(isOnStack())
+            return len;
+        return data.capacity;
+    }
 
     int compare(const char* other, bool no_case = false) const;
     int compare(const String& other, bool no_case = false) const;
@@ -722,6 +795,9 @@ namespace detail
     template <typename T>
     struct has_insertion_operator : has_insertion_operator_impl::has_insertion_operator<T>
     {};
+
+    DOCTEST_INTERFACE void my_memcpy(void* dest, const void* src, unsigned num);
+    DOCTEST_INTERFACE unsigned my_strlen(const char* in);
 
     DOCTEST_INTERFACE std::ostream* createStream();
     DOCTEST_INTERFACE String getStreamResult(std::ostream*);
@@ -1156,7 +1232,6 @@ namespace detail
     DOCTEST_INTERFACE bool checkIfShouldThrow(assertType::Enum assert_type);
     DOCTEST_INTERFACE void fastAssertThrowIfFlagSet(int flags);
     DOCTEST_INTERFACE void throwException();
-    DOCTEST_INTERFACE void my_memcpy(void* dest, void* src, int num);
 
     struct TestAccessibleContextState
     {
