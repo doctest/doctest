@@ -1864,7 +1864,7 @@ namespace detail
             other.head        = 0;
             other.tail        = 0;
             my_memcpy(stackChunks, other.stackChunks,
-                      int(sizeof(Chunk)) * DOCTEST_CONFIG_NUM_CAPTURES_ON_STACK);
+                      unsigned(int(sizeof(Chunk)) * DOCTEST_CONFIG_NUM_CAPTURES_ON_STACK));
         }
 
     public:
@@ -2115,7 +2115,7 @@ public:
         }                                                                                          \
         DOCTEST_REGISTER_FUNCTION(func, decorators)                                                \
     }                                                                                              \
-    inline void der::f()
+    inline void DOCTEST_NOINLINE der::f()
 
 #define DOCTEST_CREATE_AND_REGISTER_FUNCTION(f, decorators)                                        \
     static void f();                                                                               \
