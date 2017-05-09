@@ -512,13 +512,13 @@ DOCTEST_INTERFACE doctest::detail::TestSuite& getCurrentTestSuite();
 
 namespace doctest
 {
-// A 32 byte string class that can hold strings with length of up to 31 bytes on the stack
-// before going on the heap - the last byte of the buffer is used for:
+// A 32 byte string class (can be as small as 16) that can hold strings with length of up to
+// 31 chars on the stack before going on the heap - the last byte of the buffer is used for:
 // - "is small" bit - the highest bit - if "0" then it is small - otherwise its "1" (128)
-// - if small - capacity left - using the lowest 5 bits
+// - if small - capacity left before going on the heap - using the lowest 5 bits
 // - if small - 2 bits are left unused - the second and third highest ones
 // - if small - acts as a null terminator if strlen() is 31 (32 including the null terminator)
-//              and the "is small" bit remains "0" so all is good
+//              and the "is small" bit remains "0" ("as well as the capacity left") so its OK
 // Idea taken from this lecture about the string implementation of facebook/folly - fbstring
 // https://www.youtube.com/watch?v=kPR8h4-qZdk
 // TODO:
@@ -527,14 +527,14 @@ namespace doctest
 // - substr
 // - replace
 // - back/front
-// - insert/erase
 // - iterator stuff
 // - find & friends
 // - push_back/pop_back
+// - assign/insert/erase
 // - relational operators as free functions - taking const char* as one of the params
 class DOCTEST_INTERFACE String
 {
-    static const unsigned len  = 4 * sizeof(void*);
+    static const unsigned len  = 32;
     static const unsigned last = len - 1;
 
     struct view
@@ -578,10 +578,14 @@ public:
 
         return *this;
     }
-
     String& operator+=(const String& other);
 
     String operator+(const String& other) const { return String(*this) += other; }
+
+#ifdef DOCTEST_CONFIG_WITH_RVALUE_REFERENCES
+    String(String&& other);
+    String& operator=(String&& other);
+#endif // DOCTEST_CONFIG_WITH_RVALUE_REFERENCES
 
     bool isOnStack() const { return (buf[last] & 128) == 0; }
 
@@ -3461,7 +3465,6 @@ namespace detail
 #ifdef _MSC_VER
 #pragma warning(push)
 #pragma warning(disable : 6011) // Dereferencing NULL pointer
-#pragma warning(disable : 6387) // This does not adhere to the specification for the function strcpy
 #endif                          // _MSC_VER
 
 #ifdef _MSC_VER
@@ -3470,26 +3473,26 @@ namespace detail
 
 void String::copy(const String& other) {
     if(other.isOnStack()) {
-        doctest::detail::my_memcpy(buf, other.buf, len);
+        detail::my_memcpy(buf, other.buf, len);
     } else {
         setOnHeap();
         data.size     = other.data.size;
         data.capacity = data.size + 1;
         data.ptr      = new char[data.capacity];
-        doctest::detail::my_memcpy(data.ptr, other.data.ptr, data.size + 1);
+        detail::my_memcpy(data.ptr, other.data.ptr, data.size + 1);
     }
 }
 String::String(const char* in) {
-    unsigned in_len = doctest::detail::my_strlen(in);
+    unsigned in_len = detail::my_strlen(in);
     if(in_len <= last) {
-        doctest::detail::my_memcpy(buf, in, in_len + 1);
+        detail::my_memcpy(buf, in, in_len + 1);
         setLast(last - in_len);
     } else {
         setOnHeap();
         data.size     = in_len;
         data.capacity = data.size + 1;
         data.ptr      = new char[data.capacity];
-        doctest::detail::my_memcpy(data.ptr, in, in_len + 1);
+        detail::my_memcpy(data.ptr, in, in_len + 1);
     }
 }
 
@@ -3500,26 +3503,26 @@ String& String::operator+=(const String& other) {
     if(isOnStack()) {
         if(total_size < len) {
             // append to the current stack space
-            doctest::detail::my_memcpy(buf + my_old_size, other.c_str(), other_size + 1);
+            detail::my_memcpy(buf + my_old_size, other.c_str(), other_size + 1);
             setLast(last - total_size);
         } else {
             // alloc new chunk
             char* temp = new char[total_size + 1];
             // copy current data to new location before writing in the union
-            doctest::detail::my_memcpy(temp, buf, my_old_size); // skip the +1 ('\0') for speed
+            detail::my_memcpy(temp, buf, my_old_size); // skip the +1 ('\0') for speed
             // update data in union
             setOnHeap();
             data.size     = total_size;
             data.capacity = data.size + 1;
             data.ptr      = temp;
             // transfer the rest of the data
-            doctest::detail::my_memcpy(data.ptr + my_old_size, other.c_str(), other_size + 1);
+            detail::my_memcpy(data.ptr + my_old_size, other.c_str(), other_size + 1);
         }
     } else {
         if(data.capacity > total_size) {
             // append to the current heap block
             data.size = total_size;
-            doctest::detail::my_memcpy(data.ptr + my_old_size, other.c_str(), other_size + 1);
+            detail::my_memcpy(data.ptr + my_old_size, other.c_str(), other_size + 1);
         } else {
             // resize
             data.capacity *= 2;
@@ -3528,19 +3531,36 @@ String& String::operator+=(const String& other) {
             // alloc new chunk
             char* temp = new char[data.capacity];
             // copy current data to new location before releasing it
-            doctest::detail::my_memcpy(temp, data.ptr, my_old_size); // skip the +1 ('\0') for speed
+            detail::my_memcpy(temp, data.ptr, my_old_size); // skip the +1 ('\0') for speed
             // release old chunk
             delete[] data.ptr;
             // update the rest of the union members
             data.size = total_size;
             data.ptr  = temp;
             // transfer the rest of the data
-            doctest::detail::my_memcpy(data.ptr + my_old_size, other.c_str(), other_size + 1);
+            detail::my_memcpy(data.ptr + my_old_size, other.c_str(), other_size + 1);
         }
     }
 
     return *this;
 }
+
+#ifdef DOCTEST_CONFIG_WITH_RVALUE_REFERENCES
+String::String(String&& other) {
+    detail::my_memcpy(buf, other.buf, len);
+    other.buf[0] = '\0';
+    other.setLast();
+}
+
+String& String::operator=(String&& other) {
+    if(!isOnStack())
+        delete[] data.ptr;
+    detail::my_memcpy(buf, other.buf, len);
+    other.buf[0] = '\0';
+    other.setLast();
+    return *this;
+}
+#endif // DOCTEST_CONFIG_WITH_RVALUE_REFERENCES
 
 int String::compare(const char* other, bool no_case) const {
     if(no_case)

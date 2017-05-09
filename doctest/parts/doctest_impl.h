@@ -291,7 +291,6 @@ namespace detail
 #ifdef _MSC_VER
 #pragma warning(push)
 #pragma warning(disable : 6011) // Dereferencing NULL pointer
-#pragma warning(disable : 6387) // This does not adhere to the specification for the function strcpy
 #endif                          // _MSC_VER
 
 #ifdef _MSC_VER
@@ -300,26 +299,26 @@ namespace detail
 
 void String::copy(const String& other) {
     if(other.isOnStack()) {
-        doctest::detail::my_memcpy(buf, other.buf, len);
+        detail::my_memcpy(buf, other.buf, len);
     } else {
         setOnHeap();
         data.size     = other.data.size;
         data.capacity = data.size + 1;
         data.ptr      = new char[data.capacity];
-        doctest::detail::my_memcpy(data.ptr, other.data.ptr, data.size + 1);
+        detail::my_memcpy(data.ptr, other.data.ptr, data.size + 1);
     }
 }
 String::String(const char* in) {
-    unsigned in_len = doctest::detail::my_strlen(in);
+    unsigned in_len = detail::my_strlen(in);
     if(in_len <= last) {
-        doctest::detail::my_memcpy(buf, in, in_len + 1);
+        detail::my_memcpy(buf, in, in_len + 1);
         setLast(last - in_len);
     } else {
         setOnHeap();
         data.size     = in_len;
         data.capacity = data.size + 1;
         data.ptr      = new char[data.capacity];
-        doctest::detail::my_memcpy(data.ptr, in, in_len + 1);
+        detail::my_memcpy(data.ptr, in, in_len + 1);
     }
 }
 
@@ -330,26 +329,26 @@ String& String::operator+=(const String& other) {
     if(isOnStack()) {
         if(total_size < len) {
             // append to the current stack space
-            doctest::detail::my_memcpy(buf + my_old_size, other.c_str(), other_size + 1);
+            detail::my_memcpy(buf + my_old_size, other.c_str(), other_size + 1);
             setLast(last - total_size);
         } else {
             // alloc new chunk
             char* temp = new char[total_size + 1];
             // copy current data to new location before writing in the union
-            doctest::detail::my_memcpy(temp, buf, my_old_size); // skip the +1 ('\0') for speed
+            detail::my_memcpy(temp, buf, my_old_size); // skip the +1 ('\0') for speed
             // update data in union
             setOnHeap();
             data.size     = total_size;
             data.capacity = data.size + 1;
             data.ptr      = temp;
             // transfer the rest of the data
-            doctest::detail::my_memcpy(data.ptr + my_old_size, other.c_str(), other_size + 1);
+            detail::my_memcpy(data.ptr + my_old_size, other.c_str(), other_size + 1);
         }
     } else {
         if(data.capacity > total_size) {
             // append to the current heap block
             data.size = total_size;
-            doctest::detail::my_memcpy(data.ptr + my_old_size, other.c_str(), other_size + 1);
+            detail::my_memcpy(data.ptr + my_old_size, other.c_str(), other_size + 1);
         } else {
             // resize
             data.capacity *= 2;
@@ -358,19 +357,36 @@ String& String::operator+=(const String& other) {
             // alloc new chunk
             char* temp = new char[data.capacity];
             // copy current data to new location before releasing it
-            doctest::detail::my_memcpy(temp, data.ptr, my_old_size); // skip the +1 ('\0') for speed
+            detail::my_memcpy(temp, data.ptr, my_old_size); // skip the +1 ('\0') for speed
             // release old chunk
             delete[] data.ptr;
             // update the rest of the union members
             data.size = total_size;
             data.ptr  = temp;
             // transfer the rest of the data
-            doctest::detail::my_memcpy(data.ptr + my_old_size, other.c_str(), other_size + 1);
+            detail::my_memcpy(data.ptr + my_old_size, other.c_str(), other_size + 1);
         }
     }
 
     return *this;
 }
+
+#ifdef DOCTEST_CONFIG_WITH_RVALUE_REFERENCES
+String::String(String&& other) {
+    detail::my_memcpy(buf, other.buf, len);
+    other.buf[0] = '\0';
+    other.setLast();
+}
+
+String& String::operator=(String&& other) {
+    if(!isOnStack())
+        delete[] data.ptr;
+    detail::my_memcpy(buf, other.buf, len);
+    other.buf[0] = '\0';
+    other.setLast();
+    return *this;
+}
+#endif // DOCTEST_CONFIG_WITH_RVALUE_REFERENCES
 
 int String::compare(const char* other, bool no_case) const {
     if(no_case)

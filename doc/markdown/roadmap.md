@@ -10,24 +10,19 @@ Planned features for future releases - order changes constantly...
 
 ### For 1.2:
 
-- runtime performance
-    - reimplement string class with a small buffer optimization
-    - unit test the string class
-    - move it to the header entirely
-    - add move semantics to the ```String``` class
-    - see how many times operator new is called during startup (or runtime?..)
-- mocking - interop with doctest (+ maybe send PRs with doctest integration info)
-    - google mock
-    - https://github.com/eranpeer/FakeIt
-    - https://github.com/tpounds/mockitopp
-    - https://github.com/rollbear/trompeloeil
-    - https://github.com/dascandy/hippomocks
+- unit test the String class (and fix code coverage)
 - benchmarking
     - remove catch as a submodule - fetch it by normal downloading
     - make the bench.py script more usable - with command line arguments
     - redo the compile time ones - also look into CATCH_CONFIG_FAST_COMPILE
     - remove old benchmarks for doctest 1.0
     - add runtime benchmarks
+- mocking - interop with doctest (+ maybe send PRs with doctest integration info)
+    - google mock
+    - https://github.com/eranpeer/FakeIt
+    - https://github.com/tpounds/mockitopp
+    - https://github.com/rollbear/trompeloeil
+    - https://github.com/dascandy/hippomocks
 - change docs a bit
     - mainly what is in the landing page (add link to overload)
     - update links to examples
@@ -113,6 +108,11 @@ Planned features for future releases - order changes constantly...
     - update traits - use declval, etc.
     - move initialization of fields from initializer lists to class bodies
     - update static code analysis - less warning suppressing
+
+### For 3.0:
+
+- use modules - use ```std::string``` and whatever else comes from the standard - no more hand rolled traits and classes
+- minimize the use of the preprocessor
 
 ### Things that are being considered but not part of the roadmap yet:
 
