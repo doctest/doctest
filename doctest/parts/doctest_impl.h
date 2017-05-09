@@ -149,7 +149,7 @@ namespace detail
         const char* temp = in;
         while(temp && *temp)
             ++temp;
-        return temp - in;
+        return unsigned(temp - in);
     }
 
     template <typename T>

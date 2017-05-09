@@ -587,14 +587,14 @@ public:
 
     bool isOnStack() const { return (buf[last] & 128) == 0; }
 
-    char operator[](unsigned i) const { return const_cast<String*>(this)->operator[](i); }
+    char operator[](unsigned i) const { return const_cast<String*>(this)->operator[](i); } // NOLINT
     char& operator[](unsigned i) {
         if(isOnStack())
             return reinterpret_cast<char*>(buf)[i];
         return data.ptr[i];
     }
 
-    const char* c_str() const { return const_cast<String*>(this)->c_str(); }
+    const char* c_str() const { return const_cast<String*>(this)->c_str(); } // NOLINT
     char*       c_str() {
         if(isOnStack())
             return reinterpret_cast<char*>(buf);
