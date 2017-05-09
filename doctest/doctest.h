@@ -1407,7 +1407,6 @@ namespace detail
         bool res = op_macro(lhs, rhs);                                                             \
         if(m_assert_type & assertType::is_false)                                                   \
             res = !res;                                                                            \
-        String str;                                                                                \
         if(!res || doctest::detail::getTestsContextState()->success)                               \
             return Result(res, stringifyBinaryExpr(lhs, op_str, rhs));                             \
         else                                                                                       \
