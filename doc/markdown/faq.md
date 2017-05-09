@@ -27,13 +27,11 @@ Aside from everything mentioned so far doctest has some [**features**](features.
 
 Missing stuff:
 
-- no support for tags (the user can add *tags* in the test case names like this: ```TEST_CASE("[myTag] test name")```)
 - a reporter/listener system - to a file, to xml, ability for the user to write their own reporter, etc.
-- measuring how much time a test case executes
 - matchers and generators
 - other small stuff
 
-But all these things (and more!) are planned in the [**roadmap**](roadmap.md)!
+But these things (and more!) are planned in the [**roadmap**](roadmap.md)!
 
 **doctest** can be thought of as a very polished, light, stable and clean subset (or reimplementation) of [**Catch**](https://github.com/philsquared/Catch) but this might change in the future as more features are added.
 

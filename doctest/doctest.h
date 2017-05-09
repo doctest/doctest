@@ -513,12 +513,12 @@ DOCTEST_INTERFACE doctest::detail::TestSuite& getCurrentTestSuite();
 
 namespace doctest
 {
-// A 32 byte string class (can be as small as 16) that can hold strings with length of up to
-// 31 chars on the stack before going on the heap - the last byte of the buffer is used for:
+// A 24 byte string class (can be as small as 17 for x64 and 13 for x86) that can hold strings with length
+// of up to 23 chars on the stack before going on the heap - the last byte of the buffer is used for:
 // - "is small" bit - the highest bit - if "0" then it is small - otherwise its "1" (128)
 // - if small - capacity left before going on the heap - using the lowest 5 bits
 // - if small - 2 bits are left unused - the second and third highest ones
-// - if small - acts as a null terminator if strlen() is 31 (32 including the null terminator)
+// - if small - acts as a null terminator if strlen() is 23 (24 including the null terminator)
 //              and the "is small" bit remains "0" ("as well as the capacity left") so its OK
 // Idea taken from this lecture about the string implementation of facebook/folly - fbstring
 // https://www.youtube.com/watch?v=kPR8h4-qZdk
@@ -535,10 +535,10 @@ namespace doctest
 // - relational operators as free functions - taking const char* as one of the params
 class DOCTEST_INTERFACE String
 {
-    static const unsigned len  = 32;
+    static const unsigned len  = 24;
     static const unsigned last = len - 1;
 
-    struct view
+    struct view // len should be more than sizeof(view) - because of the final byte for flags
     {
         char*    ptr;
         unsigned size;
