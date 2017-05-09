@@ -59,6 +59,7 @@
 #pragma clang diagnostic ignored "-Wdeprecated"
 #pragma clang diagnostic ignored "-Wmissing-prototypes"
 #pragma clang diagnostic ignored "-Wunused-local-typedef"
+#pragma clang diagnostic ignored "-Wzero-as-null-pointer-constant"
 #pragma clang diagnostic ignored "-Wc++11-long-long"
 #endif // __clang__
 
@@ -602,7 +603,7 @@ public:
 
     unsigned size() const {
         if(isOnStack())
-            return last - (buf[last] & last);
+            return last - (unsigned(buf[last]) & last);
         return data.size;
     }
 

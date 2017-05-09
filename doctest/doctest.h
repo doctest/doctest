@@ -62,6 +62,7 @@
 #pragma clang diagnostic ignored "-Wdeprecated"
 #pragma clang diagnostic ignored "-Wmissing-prototypes"
 #pragma clang diagnostic ignored "-Wunused-local-typedef"
+#pragma clang diagnostic ignored "-Wzero-as-null-pointer-constant"
 #pragma clang diagnostic ignored "-Wc++11-long-long"
 #endif // __clang__
 
@@ -605,7 +606,7 @@ public:
 
     unsigned size() const {
         if(isOnStack())
-            return last - (buf[last] & last);
+            return last - (unsigned(buf[last]) & last);
         return data.size;
     }
 
@@ -3190,6 +3191,7 @@ namespace detail
 #pragma clang diagnostic ignored "-Wdisabled-macro-expansion"
 #pragma clang diagnostic ignored "-Wmissing-braces"
 #pragma clang diagnostic ignored "-Wmissing-field-initializers"
+#pragma clang diagnostic ignored "-Wzero-as-null-pointer-constant"
 #pragma clang diagnostic ignored "-Wc++11-long-long"
 #endif // __clang__
 
@@ -4179,29 +4181,26 @@ namespace detail
 
         static void use(Code code);
         static void init();
-
-        static HANDLE stdoutHandle;
-        static WORD   originalForegroundAttributes;
-        static WORD   originalBackgroundAttributes;
-        static bool   attrsInitted;
     };
 
-    HANDLE Color::stdoutHandle;
-    WORD   Color::originalForegroundAttributes;
-    WORD   Color::originalBackgroundAttributes;
-    bool   Color::attrsInitted = false;
+#ifdef DOCTEST_CONFIG_COLORS_WINDOWS
+    HANDLE g_stdoutHandle;
+    WORD   g_originalForegroundAttributes;
+    WORD   g_originalBackgroundAttributes;
+    bool   g_attrsInitted = false;
+#endif // DOCTEST_CONFIG_COLORS_WINDOWS
 
     void Color::init() {
 #ifdef DOCTEST_CONFIG_COLORS_WINDOWS
-        if(!attrsInitted) {
-            stdoutHandle = GetStdHandle(STD_OUTPUT_HANDLE);
-            attrsInitted = true;
+        if(!g_attrsInitted) {
+            g_stdoutHandle = GetStdHandle(STD_OUTPUT_HANDLE);
+            g_attrsInitted = true;
             CONSOLE_SCREEN_BUFFER_INFO csbiInfo;
-            GetConsoleScreenBufferInfo(stdoutHandle, &csbiInfo);
-            originalForegroundAttributes =
+            GetConsoleScreenBufferInfo(g_stdoutHandle, &csbiInfo);
+            g_originalForegroundAttributes =
                     csbiInfo.wAttributes &
                     ~(BACKGROUND_GREEN | BACKGROUND_RED | BACKGROUND_BLUE | BACKGROUND_INTENSITY);
-            originalBackgroundAttributes =
+            g_originalBackgroundAttributes =
                     csbiInfo.wAttributes &
                     ~(FOREGROUND_GREEN | FOREGROUND_RED | FOREGROUND_BLUE | FOREGROUND_INTENSITY);
         }
@@ -4246,7 +4245,8 @@ namespace detail
         if(isatty(fileno(stdout)) == false && p->force_colors == false)
             return;
 
-#define DOCTEST_SET_ATTR(x) SetConsoleTextAttribute(stdoutHandle, x | originalBackgroundAttributes)
+#define DOCTEST_SET_ATTR(x)                                                                        \
+    SetConsoleTextAttribute(g_stdoutHandle, x | g_originalBackgroundAttributes)
 
         // clang-format off
         switch (code) {
@@ -4263,7 +4263,7 @@ namespace detail
             case Color::BrightWhite: DOCTEST_SET_ATTR(FOREGROUND_INTENSITY | FOREGROUND_GREEN | FOREGROUND_RED | FOREGROUND_BLUE); break;
             case Color::None:
             case Color::Bright: // invalid
-            default:                 DOCTEST_SET_ATTR(originalForegroundAttributes);
+            default:                 DOCTEST_SET_ATTR(g_originalForegroundAttributes);
         }
 // clang-format on
 #undef DOCTEST_SET_ATTR
