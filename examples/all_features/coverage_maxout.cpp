@@ -66,7 +66,8 @@ TEST_CASE("doctest internals") {
     oss << detail::getAssertString(static_cast<detail::assertType::Enum>(3));
     a += oss.str().c_str();
     // trigger code path for rawMemoryToString
-    bool len_is_zero = detail::rawMemoryToString(a).size() == 0u;
+    bool isThereAnything = a.size() > 0u;
+    bool len_is_zero = detail::rawMemoryToString(isThereAnything).size() == 0u;
     CHECK_MESSAGE(len_is_zero, "should fail");
 }
 
