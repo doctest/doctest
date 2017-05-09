@@ -1875,7 +1875,7 @@ namespace detail
                 , tail(0) {}
 
         template <typename T>
-        ContextBuilder& operator<<(T& in) {
+        ContextBuilder& DOCTEST_NOINLINE operator<<(T& in) {
             Capture<T> temp(&in);
 
             // construct either on stack or on heap
