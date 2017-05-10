@@ -28,6 +28,7 @@
 Win32/
 x64/
 scripts/bench/project/*
+scripts/bench/catch*.hpp
 build/
 build-mingw/
 *.pyc

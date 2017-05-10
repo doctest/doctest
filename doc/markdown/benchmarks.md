@@ -7,19 +7,19 @@ The benchmarks are done with [**this**](../../scripts/bench/bench.py) script usi
 
 Compilers used:
 
-- WINDOWS: Microsoft Visual Studio Community 2015 - Version 14.0.25431.01 Update 3
-- WINDOWS: gcc 6.2.0 (x86_64-posix-seh-rev0, Built by MinGW-W64 project)
-- LINUX: gcc 5.2.1 20151010 (Ubuntu 5.2.1-22ubuntu2)
-- LINUX: clang 3.6.2-1 (tags/RELEASE_362/final) (based on LLVM 3.6.2) Ubuntu - Target: x86_64-pc-linux-gnu
+- WINDOWS: Microsoft Visual Studio Community 2017 - Version 15.1.26403.7
+- WINDOWS: gcc 7.1.0 (x86_64-posix-seh-rev0, Built by MinGW-W64 project)
+- LINUX: gcc 6.3.0 20170406 (Ubuntu 6.3.0-12ubuntu2)
+- LINUX: clang 4.0.0-1 (tags/RELEASE_400/rc1) Target: x86_64-pc-linux-gnu
 
 Environment used (Intel i7 3770k, 16g RAM):
 
 - Windows 7 - on an SSD
-- Ubuntu 15.10 in a VirtualBox VM - on a HDD
+- Ubuntu 17.04 in a VirtualBox VM - on a HDD
 
-**doctest** version: 1.1.0 (released on 2016.09.21)
+**doctest** version: 1.2.0 (released on 2017.05.12)
 
-[**Catch**](https://github.com/philsquared/Catch) version: 1.5.6 (released on 2016.06.09)
+[**Catch**](https://github.com/philsquared/Catch) version: 1.9.3 (released on 2017.04.25)
 
 ## Cost of including the header
 
@@ -30,10 +30,10 @@ The script generates 201 source files and in 200 of them makes a function in the
 - **baseline** - how much time the source files need for a single threaded build with ```msbuild```/```make```
 - **+ implement** - only in ```main.cpp``` the header is included with a ```#define``` before it so the test runner gets implemented:
 
-    ```c++
+```c++
 #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 #include "doctest.h"
-    ```
+```
 - **+ header everywhere** - the framework header is also included in all the other source files
 - **+ disabled** - **doctest** specific - only this framework can remove everything related to it from the binary
 
