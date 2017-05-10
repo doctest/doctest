@@ -107,28 +107,27 @@ The script generates 11 ```.cpp``` files and in 10 of them makes 50 test cases w
 | Linux Clang Debug   | 1.3      | 70                | 46                  | 18.8                     | 7.0     | 0.9       |
 | Linux Clang Release | 1.8      | 205               | 136                 | 30                       | 10.8    | 1.1       |
 
-And here are [**Catch**](https://github.com/philsquared/Catch) and **doctest 1.0** which only have normal ```CHECK(a==b)``` asserts:
+And here is [**Catch**](https://github.com/philsquared/Catch) which only has normal ```CHECK(a==b)``` asserts:
 
-| Catch               | baseline | ```CHECK(a==b)``` | &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; | doctest 1.0         | ```CHECK(a==b)``` |
-|---------------------|----------|-------------------|--------------------------------------------------------------------------------------------------------------------------------------------------|---------------------|-------------------|
-| MSVC Debug          | 8.4      | 34                |                                                                                                                                                  | MSVC Debug          | 58                |
-| MSVC Release        | 9.7      | 77                |                                                                                                                                                  | MSVC Release        | 367               |
-| MinGW GCC Debug     | 20.5     | 115               |                                                                                                                                                  | MinGW GCC Debug     | 202               |
-| MinGW GCC Release   | 15.1     | 496               |                                                                                                                                                  | MinGW GCC Release   | 1257              |
-| Linux GCC Debug     | 7.3      | 101               |                                                                                                                                                  | Linux GCC Debug     | 204               |
-| Linux GCC Release   | 10.3     | 435               |                                                                                                                                                  | Linux GCC Release   | 1090              |
-| Linux Clang Debug   | 6.0      | 91                |                                                                                                                                                  | Linux Clang Debug   | 167               |
-| Linux Clang Release | 8.5      | 159               |                                                                                                                                                  | Linux Clang Release | 494               |
+| Catch               | baseline | ```CHECK(a==b)``` |
+|---------------------|----------|-------------------|
+| MSVC Debug          | 8.4      | 34                |
+| MSVC Release        | 9.7      | 77                |
+| MinGW GCC Debug     | 20.5     | 115               |
+| MinGW GCC Release   | 15.1     | 496               |
+| Linux GCC Debug     | 7.3      | 101               |
+| Linux GCC Release   | 10.3     | 435               |
+| Linux Clang Debug   | 6.0      | 91                |
+| Linux Clang Release | 8.5      | 159               |
 
 ### Conclusion
 
-**doctest 1.1**:
+**doctest**:
 
-- improves the compile time of it's ```CHECK(a==b)``` asserts by roughly 3 times compared to **doctest** 1.0 (released 2016.05.22) 
 - is around 25% faster than [**Catch**](https://github.com/philsquared/Catch) when using expression decomposing ```CHECK(a==b)``` asserts
-- adds asserts of the form ```CHECK_EQ(a,b)``` with no expression decomposition - around 20% faster than ```CHECK(a==b)```
-- adds fast asserts like ```FAST_CHECK_EQ(a,b)``` with no ```try/catch``` blocks - around 30-70% faster than ```CHECK_EQ(a,b)```
-- adds the [**```DOCTEST_CONFIG_SUPER_FAST_ASSERTS```**](configuration.md#doctest_config_super_fast_asserts) identifier which makes the fast assertions even faster by another 35-80%
+- asserts of the form ```CHECK_EQ(a,b)``` with no expression decomposition - around 20% faster than ```CHECK(a==b)```
+- fast asserts like ```FAST_CHECK_EQ(a,b)``` with no ```try/catch``` blocks - around 30-70% faster than ```CHECK_EQ(a,b)```
+- the [**```DOCTEST_CONFIG_SUPER_FAST_ASSERTS```**](configuration.md#doctest_config_super_fast_asserts) identifier which makes the fast assertions even faster by another 35-80%
 - using the [**```DOCTEST_CONFIG_DISABLE```**](configuration.md#doctest_config_disable) identifier the assertions just disappear as if they were never written
 
 ----------

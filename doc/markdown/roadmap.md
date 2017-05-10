@@ -14,7 +14,6 @@ Planned features for future releases - order changes constantly...
     - remove catch as a submodule - fetch it by normal downloading
     - make the bench.py script more usable - with command line arguments
     - redo the compile time ones - also look into CATCH_CONFIG_FAST_COMPILE
-    - remove old benchmarks for doctest 1.0
     - add runtime benchmarks
 - mocking - interop with doctest (+ maybe send PRs with doctest integration info)
     - google mock
