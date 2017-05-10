@@ -1,3 +1,0 @@
-[submodule "scripts/bench/catch"]
-	path = scripts/bench/catch
-	url = https://github.com/philsquared/Catch.git

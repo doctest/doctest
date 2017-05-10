@@ -568,6 +568,8 @@ public:
             delete[] data.ptr;
     }
 
+    // GCC 4.9/5/6 report Wstrict-overflow when optimizations are ON and it got inlined in the vector class somewhere...
+    // see commit 574ef95f0cd379118be5011704664e4b5351f1e0 and build https://travis-ci.org/onqtam/doctest/builds/230671611
     String& DOCTEST_NOINLINE operator=(const String& other) {
         if(!isOnStack())
             delete[] data.ptr;

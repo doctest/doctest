@@ -10,7 +10,6 @@ Planned features for future releases - order changes constantly...
 
 ### For 1.2:
 
-- unit test the String class (and fix code coverage)
 - benchmarking
     - remove catch as a submodule - fetch it by normal downloading
     - make the bench.py script more usable - with command line arguments
@@ -92,6 +91,7 @@ Planned features for future releases - order changes constantly...
 - ability to customize the colors in the console output (may also use styles - based on [this](https://github.com/agauniyal/rang))
 - implement breaking into the debugger under linux - see [here](https://github.com/philsquared/Catch/pull/585) and [here](https://github.com/scottt/debugbreak)
 - better testing of the library
+    - unit test the String class
     - should unit test internals - currently even if a bug is caught by different output it's very difficult to track the reason
     - should test stuff that should not compile
     - should test crash handling
