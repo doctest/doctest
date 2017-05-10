@@ -568,7 +568,7 @@ public:
             delete[] data.ptr;
     }
 
-    String& operator=(const String& other) {
+    String& DOCTEST_NOINLINE operator=(const String& other) {
         if(!isOnStack())
             delete[] data.ptr;
 

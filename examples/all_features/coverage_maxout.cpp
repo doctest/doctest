@@ -68,6 +68,8 @@ TEST_CASE("doctest internals") {
     // trigger code path for rawMemoryToString
     bool isThereAnything = a.size() > 0u;
     bool len_is_zero = detail::rawMemoryToString(isThereAnything).size() == 0u;
+    String unknown = toString(skip()); // trigger code path for "{?}"
+    a = unknown; // trigger code path for deleting memory in operator=
     CHECK_MESSAGE(len_is_zero, "should fail");
 }
 
