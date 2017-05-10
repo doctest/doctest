@@ -603,7 +603,7 @@ public:
 
     unsigned size() const {
         if(isOnStack())
-            return last - (unsigned(buf[last]) & last);
+            return last - (unsigned(buf[last]) & 31); // using "last" would work only if "len" is 32
         return data.size;
     }
 
