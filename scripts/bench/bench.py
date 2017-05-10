@@ -16,14 +16,14 @@ from time import sleep
 # == ARGUMENTS =================================================================
 # ==============================================================================
 
-# to change compilers under linux use 'export CXX=clang++' or 'export CXX=g++' before running this script
-
 def addCommonFlags(parser):
-    parser.add_argument("--msvc",       action = "store_true",  help = "use msvc instead of gcc/clang")
+    compilers = parser.add_mutually_exclusive_group()
+    compilers.add_argument("--msvc",    action = "store_true",  help = "use msvc")
+    compilers.add_argument("--gcc",     action = "store_true",  help = "use gcc")
+    compilers.add_argument("--clang",   action = "store_true",  help = "use clang")
     parser.add_argument("--debug",      action = "store_true",  help = "build in debug")
-    group = parser.add_mutually_exclusive_group()
-    group.add_argument("--catch",       action = "store_true",  help = "use Catch instead of doctest")
-    group.add_argument("--disable",     action = "store_true",  help = "<doctest> define DOCTEST_CONFIG_DISABLE")
+    parser.add_argument("--catch",      action = "store_true",  help = "use Catch instead of doctest")
+    parser.add_argument("--disabled",   action = "store_true",  help = "<doctest> define DOCTEST_CONFIG_DISABLE")
     parser.add_argument("--fast",       action = "store_true",  help = "define the doctest/Catch fast config identifier")
     parser.add_argument("--files",      type=int, default=1,    help = "number of source files (besides the implementation)")
     parser.add_argument("--tests",      type=int, default=1,    help = "number of test cases per source file")
@@ -87,7 +87,7 @@ os.chdir(the_folder);
 
 # setup defines used
 defines = ""
-if args.disable:
+if args.disabled:
     defines += "#define DOCTEST_CONFIG_DISABLE\n"
 if args.catch and args.fast:
     defines += "#define CATCH_CONFIG_FAST_COMPILE\n"
@@ -140,12 +140,12 @@ for i in range(0, args.files):
 
 # the main file
 f = open('main.cpp', 'w')
-if args.runtime or args.implement:
+if args.runtime or args.implement or args.header:
     f.write(defines)
     f.write(define_implement)
     f.write(include)
 f.write('int main(int argc, char** argv) {\n')
-if args.runtime or args.implement:
+if args.runtime or args.implement or args.header:
     if not args.catch:  f.write('    int res = doctest::Context(argc, argv).run();\n')
     else:               f.write('    int res = Catch::Session().run(argc, argv);\n')
 else:
@@ -171,6 +171,12 @@ f.close()
 # == INVOKE CMAKE ==============================================================
 # ==============================================================================
 
+compiler = ""
+if args.clang:
+    compiler = " -DCMAKE_CXX_COMPILER=clang++"
+if args.gcc:
+    compiler = " -DCMAKE_CXX_COMPILER=g++"
+
 # setup cmake command
 cmake_command = 'cmake . -G "Visual Studio 15 Win64"' # MSVC 2017
 if not args.msvc:
@@ -178,7 +184,7 @@ if not args.msvc:
 if os.name != "nt":
     cmake_command = 'cmake .                      -DCMAKE_BUILD_TYPE=' + ('Debug' if args.debug else 'Release')
 
-os.system(cmake_command)
+os.system(cmake_command + compiler)
 
 # ==============================================================================
 # == BUILD PROJECT =============================================================
