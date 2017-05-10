@@ -3,6 +3,7 @@
 import os
 import sys
 import random
+import pprint
 import string
 import argparse
 import multiprocessing
@@ -24,9 +25,9 @@ def addCommonFlags(parser):
     group.add_argument("--catch",       action = "store_true",  help = "use Catch instead of doctest")
     group.add_argument("--disable",     action = "store_true",  help = "<doctest> define DOCTEST_CONFIG_DISABLE")
     parser.add_argument("--fast",       action = "store_true",  help = "define the doctest/Catch fast config identifier")
-    parser.add_argument("--files",      type=int, default=10,   help = "number of source files (besides the implementation)")
-    parser.add_argument("--tests",      type=int, default=50,   help = "number of test cases per source file")
-    parser.add_argument("--checks",     type=int, default=100,  help = "number of asserts per test case")
+    parser.add_argument("--files",      type=int, default=1,    help = "number of source files (besides the implementation)")
+    parser.add_argument("--tests",      type=int, default=1,    help = "number of test cases per source file")
+    parser.add_argument("--checks",     type=int, default=1,    help = "number of asserts per test case")
     parser.add_argument("--asserts",    choices=['normal', 'binary', 'fast'], default="normal",
                                                                 help = "<doctest> type of assert used - Catch: only normal")
 
@@ -39,6 +40,7 @@ parser_c.add_argument("--header",       action = "store_true",  help = "include 
 parser_r = subparsers.add_parser('runtime', help='benchmark runtime')
 addCommonFlags(parser_r)
 parser_r.add_argument("--loop-iters",   type=int, default=1000, help = "loop N times all asserts in each test case")
+parser_r.add_argument("--info",         action = "store_true",  help = "log the variables with INFO()")
 
 def compile(args): args.compile = True; args.runtime = False
 def runtime(args): args.compile = False; args.runtime = True
@@ -47,8 +49,8 @@ parser_r.set_defaults(func=runtime)
 args = parser.parse_args()
 args.func(args)
 
-print args
-#sys.exit(0)
+print("== PASSED OPTIONS TO BENCHMARK SCRIPT:")
+pprint.pprint(vars(args), width = 1)
 
 # ==============================================================================
 # == SETUP ENVIRONMENT =========================================================
@@ -124,6 +126,8 @@ for i in range(0, args.files):
             f.write('    int b = 5;\n')
             if args.runtime and args.loop_iters > 0:
                 f.write('    for(int i = 0; i < ' + str(args.loop_iters) + '; ++i) {\n')
+            if args.runtime and args.info:
+                f.write('        INFO(i);\n')
             for a in range(0, args.checks):
                 if args.runtime and args.loop_iters > 0:
                     f.write('    ')
@@ -206,7 +210,7 @@ if args.runtime:
         os.system('./bench')
     end = datetime.now()
 
-    print("Time for compiling (+ linking): " + str(end - start))
+    print("Time running the tests: " + str(end - start))
 
 # leave folder
 os.chdir("../");
