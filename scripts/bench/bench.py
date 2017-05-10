@@ -201,6 +201,7 @@ os.system('cmake --build .' + the_config)
 end = datetime.now()
 
 print("Time for compiling (+ linking): " + str(end - start))
+print(str(end - start))
 
 # ==============================================================================
 # == RUN PROJECT ===============================================================
@@ -217,6 +218,7 @@ if args.runtime:
     end = datetime.now()
 
     print("Time running the tests: " + str(end - start))
+    print(str(end - start))
 
 # leave folder
 os.chdir("../");
