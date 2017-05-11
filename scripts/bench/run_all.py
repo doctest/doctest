@@ -9,7 +9,7 @@ with open('tests.json') as data_file:
     data = json.load(data_file)
 
 def runBench(prog):
-    result = subprocess.Popen(prog, stdout = subprocess.PIPE).communicate()[0]
+    result = subprocess.Popen(prog.split(), stdout = subprocess.PIPE).communicate()[0]
     result = result.splitlines()
     for line in result:
         if line.startswith("Time running "):
