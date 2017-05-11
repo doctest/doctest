@@ -5,6 +5,8 @@ import sys
 import json
 import subprocess
 
+average_num_times = 5
+
 with open('tests.json') as data_file:    
     data = json.load(data_file)
 
@@ -16,8 +18,6 @@ def runBench(prog):
             return str(line.rsplit(' ', 1)[-1])
     return ""
 
-#print(runBench("python bench.py compile --msvc  --debug --files 200 --tests 0"))
-
 call = 'python ./bench.py'
 the_os = 'linux'
 if os.name == "nt":
@@ -25,19 +25,27 @@ if os.name == "nt":
     the_os = 'windows'
 
 f = open('results.txt', 'w')
-for test in ['header', 'asserts']:
-    print('************** ' + test)
+for test in ['header', 'asserts', 'runtime']:
+    print(  '\n************** ' + test + '\n')
+    f.write('\n************** ' + test + '\n')
     for framework in ['doctest', 'catch']:
-        print('== ' + framework)
+        print(  '== ' + framework)
+        f.write('== ' + framework)
         for config in data['compilers'][the_os]:
-            #print(config)
-            for curr in data[test]:
+            for curr in data[test][1]:
                 if curr[0] == framework or curr[0] == "any":
-                    command = call + config + curr[1] + (' --catch' if framework == 'catch' else '')
+                    command = call + data[test][0] + config + curr[1] + (' --catch' if framework == 'catch' else '')
                     print(command)
-                    res = runBench(command)
-                    print(res)
-                    f.write(res + " ")
+                    
+                    accum = float(0)
+                    for i in range(0, average_num_times):
+                        res = float(runBench(command))
+                        print(res)
+                        accum += res
+                    
+                    average = "{:7.2f}".format(round(accum / average_num_times, 2))
+                    print("AVERAGE: " + average)
+                    f.write(average + " | ")
             f.write("\n")
 
 f.close()

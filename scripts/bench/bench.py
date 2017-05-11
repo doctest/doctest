@@ -14,10 +14,7 @@ from time import sleep
 # ==============================================================================
 
 def addCommonFlags(parser):
-    compilers = parser.add_mutually_exclusive_group()
-    compilers.add_argument("--msvc",    action = "store_true",  help = "use msvc")
-    compilers.add_argument("--gcc",     action = "store_true",  help = "use gcc")
-    compilers.add_argument("--clang",   action = "store_true",  help = "use clang")
+    parser.add_argument("compiler",     choices=['msvc', 'gcc', 'clang'], default='msvc', help = "compiler to use")
     parser.add_argument("--debug",      action = "store_true",  help = "build in debug")
     parser.add_argument("--catch",      action = "store_true",  help = "use Catch instead of doctest")
     parser.add_argument("--disabled",   action = "store_true",  help = "<doctest> define DOCTEST_CONFIG_DISABLE")
@@ -27,7 +24,6 @@ def addCommonFlags(parser):
     parser.add_argument("--checks",     type=int, default=1,    help = "number of asserts per test case")
     parser.add_argument("--asserts",    choices=['normal', 'binary', 'fast'], default="normal",
                                                                 help = "<doctest> type of assert used - Catch: only normal")
-    parser.add_argument("--to-file",    action = "store_true",  help = "dumps the result to a file named result.txt")
 
 parser = argparse.ArgumentParser()
 subparsers = parser.add_subparsers()
@@ -38,7 +34,7 @@ parser_c.add_argument("--header",       action = "store_true",  help = "include 
 parser_r = subparsers.add_parser('runtime', help='benchmark runtime')
 addCommonFlags(parser_r)
 parser_r.add_argument("--loop-iters",   type=int, default=1000, help = "loop N times all asserts in each test case")
-parser_r.add_argument("--info",         action = "store_true",  help = "log the variables with INFO()")
+parser_r.add_argument("--info",         action = "store_true",  help = "log the loop variable with INFO()")
 
 def compile(args): args.compile = True; args.runtime = False
 def runtime(args): args.compile = False; args.runtime = True
@@ -170,14 +166,14 @@ f.close()
 # ==============================================================================
 
 compiler = ""
-if args.clang:
+if args.compiler == 'clang':
     compiler = " -DCMAKE_CXX_COMPILER=clang++"
-if args.gcc:
+if args.compiler == 'gcc':
     compiler = " -DCMAKE_CXX_COMPILER=g++"
 
 # setup cmake command
 cmake_command = 'cmake . -G "Visual Studio 15 Win64"' # MSVC 2017
-if not args.msvc:
+if args.compiler != 'msvc':
     cmake_command = 'cmake . -G "MinGW Makefiles" -DCMAKE_BUILD_TYPE=' + ('Debug' if args.debug else 'Release')
 if os.name != "nt":
     cmake_command = 'cmake .                      -DCMAKE_BUILD_TYPE=' + ('Debug' if args.debug else 'Release')
@@ -189,7 +185,7 @@ os.system(cmake_command + compiler)
 # ==============================================================================
 
 the_config = ''
-if args.msvc:
+if args.compiler == 'msvc':
     if args.debug:  the_config = ' --config Debug'
     else:           the_config = ' --config Release'
 
@@ -206,7 +202,7 @@ print("Time running compiler (+ linker) in seconds: " + str((end - start).total_
 
 if args.runtime:
     start = datetime.now()
-    if args.msvc:
+    if args.compiler == 'msvc':
         os.system(('Debug' if args.debug else 'Release') + '\\bench.exe')
     elif os.name == "nt":
         os.system('bench.exe')

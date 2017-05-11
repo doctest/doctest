@@ -1,31 +1,44 @@
 {
     "compilers": {
         "windows": [
-            " compile --msvc  --debug",
-            " compile --msvc",
-            " compile --gcc   --debug",
-            " compile --gcc"
+            " msvc  --debug",
+            " msvc",
+            " gcc   --debug",
+            " gcc"
         ],
         "linux": [
-            " compile --gcc   --debug",
-            " compile --gcc",
-            " compile --clang --debug",
-            " compile --clang"
+            " gcc   --debug",
+            " gcc",
+            " clang --debug",
+            " clang"
         ]
     },
     "header": [
-        ["any",     " --files 200 --tests 0"],
-        ["any",     " --files 200 --tests 0 --implement"],
-        ["any",     " --files 200 --tests 0 --implement --header"],
-        ["doctest", " --files 200 --tests 0 --implement --header --disabled"]
+        " compile",
+        [
+            ["any",     " --files 200 --tests 0"],
+            ["any",     " --files 200 --tests 0 --implement"],
+            ["any",     " --files 200 --tests 0 --implement --header"],
+            ["doctest", " --files 200 --tests 0 --implement --header --disabled"]
+        ]
     ],
     "asserts": [
-        ["any",     " --header --files 10 --tests 0  --checks 0"],
-        ["any",     " --header --files 10 --tests 50 --checks 100 --asserts normal"],
-        ["doctest", " --header --files 10 --tests 50 --checks 100 --asserts binary"],
-        ["doctest", " --header --files 10 --tests 50 --checks 100 --asserts fast"],
-        ["doctest", " --header --files 10 --tests 50 --checks 100 --asserts fast   --fast"],
-        ["doctest", " --header --files 10 --tests 50 --checks 100 --asserts normal --disabled"],
-        ["catch",   " --header --files 10 --tests 50 --checks 100 --asserts normal --fast"]
+        " compile",
+        [
+            ["any",     " --header --files 10 --tests 0  --checks 0"],
+            ["any",     " --header --files 10 --tests 50 --checks 100 --asserts normal"],
+            ["doctest", " --header --files 10 --tests 50 --checks 100 --asserts binary"],
+            ["doctest", " --header --files 10 --tests 50 --checks 100 --asserts fast"],
+            ["doctest", " --header --files 10 --tests 50 --checks 100 --asserts fast   --fast"],
+            ["doctest", " --header --files 10 --tests 50 --checks 100 --asserts normal --disabled"],
+            ["catch",   " --header --files 10 --tests 50 --checks 100 --asserts normal --fast"]
+        ]
+    ],
+    "runtime": [
+        " runtime",
+        [
+            ["any",     " --header --files 1 --tests 1  --checks 1 --loop-iters 10000000"],
+            ["any",     " --header --files 1 --tests 1  --checks 1 --loop-iters 10000000 --info"]
+        ]
     ]
 }
