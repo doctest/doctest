@@ -2,11 +2,8 @@
 
 import os
 import sys
-import random
 import pprint
-import string
 import argparse
-import multiprocessing
 import urllib
 from datetime import datetime
 import shutil
@@ -30,6 +27,7 @@ def addCommonFlags(parser):
     parser.add_argument("--checks",     type=int, default=1,    help = "number of asserts per test case")
     parser.add_argument("--asserts",    choices=['normal', 'binary', 'fast'], default="normal",
                                                                 help = "<doctest> type of assert used - Catch: only normal")
+    parser.add_argument("--to-file",    action = "store_true",  help = "dumps the result to a file named result.txt")
 
 parser = argparse.ArgumentParser()
 subparsers = parser.add_subparsers()
@@ -200,8 +198,7 @@ start = datetime.now()
 os.system('cmake --build .' + the_config)
 end = datetime.now()
 
-print("Time for compiling (+ linking): " + str(end - start))
-print(str(end - start))
+print("Time running compiler (+ linker) in seconds: " + str((end - start).total_seconds()))
 
 # ==============================================================================
 # == RUN PROJECT ===============================================================
@@ -217,8 +214,7 @@ if args.runtime:
         os.system('./bench')
     end = datetime.now()
 
-    print("Time running the tests: " + str(end - start))
-    print(str(end - start))
+    print("Time running the tests in seconds: " + str((end - start).total_seconds()))
 
 # leave folder
 os.chdir("../");
