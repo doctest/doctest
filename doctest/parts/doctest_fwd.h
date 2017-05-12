@@ -327,7 +327,11 @@
 #define DOCTEST_INTERFACE
 #endif // DOCTEST_CONFIG_IMPLEMENTATION_IN_DLL
 
-// other
+#ifdef _MSC_VER
+#define DOCTEST_NOINLINE __declspec(noinline)
+#else // _MSC_VER
+#define DOCTEST_NOINLINE __attribute__((noinline))
+#endif // _MSC_VER
 
 #ifndef DOCTEST_CONFIG_NUM_CAPTURES_ON_STACK
 #define DOCTEST_CONFIG_NUM_CAPTURES_ON_STACK 5
@@ -366,12 +370,6 @@
 #else // DOCTEST_CONFIG_ASSERTION_PARAMETERS_BY_VALUE
 #define DOCTEST_REF_WRAP(x) x
 #endif // DOCTEST_CONFIG_ASSERTION_PARAMETERS_BY_VALUE
-
-#ifdef __GNUC__
-#define DOCTEST_NOINLINE __attribute__((noinline))
-#else // __GNUC__
-#define DOCTEST_NOINLINE
-#endif // __GNUC__
 
 // not using __APPLE__ because... this is how Catch does it
 #if defined(__MAC_OS_X_VERSION_MIN_REQUIRED)
@@ -570,7 +568,7 @@ public:
 
     // GCC 4.9/5/6 report Wstrict-overflow when optimizations are ON and it got inlined in the vector class somewhere...
     // see commit 574ef95f0cd379118be5011704664e4b5351f1e0 and build https://travis-ci.org/onqtam/doctest/builds/230671611
-    String& DOCTEST_NOINLINE operator=(const String& other) {
+    DOCTEST_NOINLINE String& operator=(const String& other) {
         if(!isOnStack())
             delete[] data.ptr;
 
@@ -1290,11 +1288,11 @@ namespace detail
 
         ~Result();
 
-        Result(bool passed = false, const String& decomposition = String())
+        DOCTEST_NOINLINE Result(bool passed = false, const String& decomposition = String())
                 : m_passed(passed)
                 , m_decomposition(decomposition) {}
 
-        Result(const Result& other)
+        DOCTEST_NOINLINE Result(const Result& other)
                 : m_passed(other.m_passed)
                 , m_decomposition(other.m_decomposition) {}
 
@@ -1402,7 +1400,7 @@ namespace detail
 
 #define DOCTEST_DO_BINARY_EXPRESSION_COMPARISON(op, op_str, op_macro)                              \
     template <typename R>                                                                          \
-    Result operator op(const DOCTEST_REF_WRAP(R) rhs) {                                            \
+    DOCTEST_NOINLINE Result operator op(const DOCTEST_REF_WRAP(R) rhs) {                           \
         bool res = op_macro(lhs, rhs);                                                             \
         if(m_assert_type & assertType::is_false)                                                   \
             res = !res;                                                                            \
@@ -1434,7 +1432,7 @@ namespace detail
         Expression_lhs(const Expression_lhs& other)
                 : lhs(other.lhs) {}
 
-        operator Result() {
+        DOCTEST_NOINLINE operator Result() {
             bool res = !!lhs;
             if(m_assert_type & assertType::is_false)
                 res = !res;
@@ -1533,6 +1531,7 @@ namespace detail
         TestCase(funcType test, const char* file, unsigned line, const TestSuite& test_suite,
                  const char* type = "", int template_id = -1);
 
+        // for gcc 4.7
         DOCTEST_NOINLINE ~TestCase() {}
 
         TestCase& operator*(const char* in);
@@ -1625,15 +1624,16 @@ namespace detail
 
         void setResult(const Result& res) { m_result = res; }
 
-        template <int comparison, typename L, typename R>
-        void          binary_assert(const DOCTEST_REF_WRAP(L) lhs, const DOCTEST_REF_WRAP(R) rhs) {
+        template <int         comparison, typename L, typename R>
+        DOCTEST_NOINLINE void binary_assert(const DOCTEST_REF_WRAP(L) lhs,
+                                            const DOCTEST_REF_WRAP(R) rhs) {
             m_result.m_passed = RelationalComparator<comparison, L, R>()(lhs, rhs);
             if(!m_result.m_passed || getTestsContextState()->success)
                 m_result.m_decomposition = stringifyBinaryExpr(lhs, ", ", rhs);
         }
 
         template <typename L>
-        void unary_assert(const DOCTEST_REF_WRAP(L) val) {
+        DOCTEST_NOINLINE void unary_assert(const DOCTEST_REF_WRAP(L) val) {
             m_result.m_passed = !!val;
 
             if(m_assert_type & assertType::is_false)
@@ -1659,10 +1659,11 @@ namespace detail
         };
     } // namespace assertAction
 
-    template <int comparison, typename L, typename R>
-    int fast_binary_assert(assertType::Enum assert_type, const char* file, int line,
-                           const char* expr, const DOCTEST_REF_WRAP(L) lhs,
-                           const DOCTEST_REF_WRAP(R) rhs) {
+    template <int        comparison, typename L, typename R>
+    DOCTEST_NOINLINE int fast_binary_assert(assertType::Enum assert_type, const char* file,
+                                            int line, const char* expr,
+                                            const DOCTEST_REF_WRAP(L) lhs,
+                                            const DOCTEST_REF_WRAP(R) rhs) {
         ResultBuilder rb(assert_type, file, line, expr);
 
         rb.m_result.m_passed = RelationalComparator<comparison, L, R>()(lhs, rhs);
@@ -1692,8 +1693,8 @@ namespace detail
     }
 
     template <typename L>
-    int fast_unary_assert(assertType::Enum assert_type, const char* file, int line,
-                          const char* val_str, const DOCTEST_REF_WRAP(L) val) {
+    DOCTEST_NOINLINE int fast_unary_assert(assertType::Enum assert_type, const char* file, int line,
+                                           const char* val_str, const DOCTEST_REF_WRAP(L) val) {
         ResultBuilder rb(assert_type, file, line, val_str);
 
         rb.m_result.m_passed = !!val;
@@ -1854,7 +1855,7 @@ namespace detail
         }
 
         // steal the contents of the other - acting as a move constructor...
-        ContextBuilder(ContextBuilder& other)
+        DOCTEST_NOINLINE ContextBuilder(ContextBuilder& other)
                 : numCaptures(other.numCaptures)
                 , head(other.head)
                 , tail(other.tail) {
@@ -1867,13 +1868,13 @@ namespace detail
 
     public:
         // cppcheck-suppress uninitMemberVar
-        ContextBuilder() // NOLINT
+        DOCTEST_NOINLINE ContextBuilder() // NOLINT
                 : numCaptures(0)
                 , head(0)
                 , tail(0) {}
 
         template <typename T>
-        ContextBuilder& DOCTEST_NOINLINE operator<<(T& in) {
+        DOCTEST_NOINLINE ContextBuilder& operator<<(T& in) {
             Capture<T> temp(&in);
 
             // construct either on stack or on heap
@@ -1897,7 +1898,7 @@ namespace detail
             return *this;
         }
 
-        ~ContextBuilder() {
+        DOCTEST_NOINLINE ~ContextBuilder() {
             // free the linked list - the ones on the stack are left as-is
             // no destructors are called at all - there is no need
             while(head) {
@@ -1924,13 +1925,13 @@ namespace detail
         bool           built;
 
     public:
-        explicit ContextScope(ContextBuilder& temp)
+        DOCTEST_NOINLINE explicit ContextScope(ContextBuilder& temp)
                 : contextBuilder(temp)
                 , built(false) {
             addToContexts(this);
         }
 
-        ~ContextScope() {
+        DOCTEST_NOINLINE ~ContextScope() {
             if(!built)
                 useContextIfExceptionOccurred(this);
             popFromContexts();
@@ -2113,7 +2114,7 @@ public:
         }                                                                                          \
         DOCTEST_REGISTER_FUNCTION(func, decorators)                                                \
     }                                                                                              \
-    inline void DOCTEST_NOINLINE der::f()
+    inline DOCTEST_NOINLINE void der::f()
 
 #define DOCTEST_CREATE_AND_REGISTER_FUNCTION(f, decorators)                                        \
     static void f();                                                                               \
@@ -2257,7 +2258,7 @@ public:
     {                                                                                              \
         namespace doctest_detail_test_suite_ns                                                     \
         {                                                                                          \
-            inline doctest::detail::TestSuite& DOCTEST_NOINLINE getCurrentTestSuite() {            \
+            inline DOCTEST_NOINLINE doctest::detail::TestSuite& getCurrentTestSuite() {            \
                 static doctest::detail::TestSuite data;                                            \
                 static bool                       inited = false;                                  \
                 if(!inited) {                                                                      \
