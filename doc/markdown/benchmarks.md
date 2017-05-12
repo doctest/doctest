@@ -133,27 +133,43 @@ And here is [**Catch**](https://github.com/philsquared/Catch) which only has nor
 
 ## Runtime benchmarks
 
-| doctest             | baseline | + implement |
-|---------------------|----------|-------------|
-| MSVC Debug          | 7.0      | 8.73        |
-| MSVC Release        | 6.81     | 8.86        |
-| MinGW GCC Debug     | 11.43    | 14.46       |
-| MinGW GCC Release   | 11.35    | 15.11       |
-| Linux GCC Debug     | 4.47     | 5.89        |
-| Linux GCC Release   | 5.09     | 8.04        |
-| Linux Clang Debug   | 9.33     | 10.87       |
-| Linux Clang Release | 10.37    | 13.95       |
+```c++
+for(int i = 0; i < 10000000; ++i)
+    CHECK(i == i);
+```
 
-| Catch               | baseline | + implement |
+```c++
+for(int i = 0; i < 10000000; ++i) {
+    INFO(i);
+    CHECK(i == i);
+}
+```
+
+| doctest             | assert | + info |
 |---------------------|----------|-------------|
-| MSVC Debug          | 7.18     | 10.31       |
-| MSVC Release        | 6.72     | 11.75       |
-| MinGW GCC Debug     | 11.36    | 27.44       |
-| MinGW GCC Release   | 11.59    | 20.85       |
-| Linux GCC Debug     | 5.24     | 11.15       |
-| Linux GCC Release   | 6.19     | 14.44       |
-| Linux Clang Debug   | 9.64     | 12.88       |
-| Linux Clang Release | 9.32     | 17.52       |
+| MSVC Debug          |    5.49 |   14.82 |
+| MSVC Release        |    0.78 |    1.62 |
+| MinGW GCC Debug     |    2.36 |    4.99 |
+| MinGW GCC Release   |    0.37 |    0.85 |
+| Linux GCC Debug     |    2.86 |    5.51 |
+| Linux GCC Release   |    0.28 |    0.65 |
+| Linux Clang Debug   |    2.58 |    5.41 |
+| Linux Clang Release |    0.37 |    0.65 |
+
+| Catch               | assert  | + info |
+|---------------------|---------|---------|
+| MSVC Debug          |  362.64 |  620.42 |
+| MSVC Release        |    6.82 |   18.80 |
+| MinGW GCC Debug     |    9.16 |   21.80 |
+| MinGW GCC Release   |    7.22 |   13.69 |
+| Linux GCC Debug     |   11.70 |   26.23 |
+| Linux GCC Release   |    6.76 |   13.09 |
+| Linux Clang Debug   |   10.98 |   22.85 |
+| Linux Clang Release |    5.79 |   12.85 |
+
+
+
+
 
 ----------
 
