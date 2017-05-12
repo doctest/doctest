@@ -26,7 +26,7 @@ if os.name == "nt":
     the_os = 'windows'
 
 f = open('results.txt', 'w')
-for test in ['runtime', 'header', 'asserts']:
+for test in ['header', 'asserts', 'runtime']:
     print(  '\n************** ' + test + '\n')
     f.write('\n************** ' + test + '\n')
     for framework in ['doctest', 'catch']:

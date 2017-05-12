@@ -40,25 +40,25 @@ The script generates 201 source files and in 200 of them makes a function in the
 
 | doctest             | baseline | + implement | + header everywhere | + disabled |
 |---------------------|----------|-------------|---------------------|------------|
-| MSVC Debug          |     6.86 |    8.31 |   12.23 |    9.26 |
-| MSVC Release        |     6.61 |    8.33 |   12.25 |    8.88 |
-| MinGW GCC Debug     |    10.71 |   13.61 |   18.66 |   13.31 |
-| MinGW GCC Release   |    10.97 |   14.54 |   19.37 |   14.36 |
-| Linux GCC Debug     |     5.03 |    6.66 |   12.07 |    8.06 |
-| Linux GCC Release   |     5.14 |    8.64 |   13.54 |    8.69 |
-| Linux Clang Debug   |    10.03 |   10.69 |   16.64 |   12.52 |
-| Linux Clang Release |    10.03 |   13.45 |   19.64 |   12.91 |
+| MSVC Debug          |    7.30 |    8.82 |   12.79 |    9.90 | 
+| MSVC Release        |    7.11 |    8.90 |   12.96 |    9.43 | 
+| MinGW GCC Debug     |   11.46 |   14.40 |   19.50 |   14.59 | 
+| MinGW GCC Release   |   11.84 |   15.84 |   20.98 |   15.10 | 
+| Linux GCC Debug     |    4.42 |    6.00 |   10.83 |    6.98 | 
+| Linux GCC Release   |    4.56 |    7.37 |   12.11 |    7.91 | 
+| Linux Clang Debug   |    8.55 |    9.48 |   15.98 |   12.06 | 
+| Linux Clang Release |    9.55 |   12.40 |   18.98 |   12.37 | 
 
 | Catch               | baseline | + implement | + header everywhere |
 |---------------------|----------|-------------|---------------------|
-| MSVC Debug          |     6.80 |    9.79 |  121.41 |
-| MSVC Release        |     6.45 |   10.43 |  113.64 |
-| MinGW GCC Debug     |    11.07 |   26.16 |  125.04 |
-| MinGW GCC Release   |    10.98 |   19.81 |  112.85 |
-| Linux GCC Debug     |     4.76 |   10.28 |  114.68 |
-| Linux GCC Release   |     4.90 |   14.34 |  108.76 |
-| Linux Clang Debug   |     8.59 |   11.49 |   71.56 |
-| Linux Clang Release |     8.99 |   16.66 |   76.24 |
+| MSVC Debug          |    7.17 |   10.14 |  124.83 | 
+| MSVC Release        |    7.08 |   10.90 |  117.53 | 
+| MinGW GCC Debug     |   11.69 |   27.54 |  131.79 | 
+| MinGW GCC Release   |   11.61 |   21.20 |  119.72 | 
+| Linux GCC Debug     |    4.58 |    9.80 |  112.87 | 
+| Linux GCC Release   |    4.70 |   13.70 |  115.18 | 
+| Linux Clang Debug   |    9.50 |   12.55 |   77.50 | 
+| Linux Clang Release |    9.84 |   18.65 |   84.67 | 
 
 ### Conclusion
 
@@ -99,27 +99,27 @@ The script generates 11 ```.cpp``` files and in 10 of them makes 50 test cases w
 
 | doctest             | baseline | ```CHECK(a==b)``` | ```CHECK_EQ(a,b)``` | ```FAST_CHECK_EQ(a,b)``` | +faster | +disabled |
 |---------------------|----------|-------------------|---------------------|--------------------------|---------|-----------|
-| MSVC Debug          |     3.19 |   24.16 |   18.13 |    8.16 |    5.71 |    2.27 |
-| MSVC Release        |     3.49 |   40.70 |   66.52 |   39.78 |   34.78 |    2.25 |
-| MinGW GCC Debug     |     4.12 |   93.42 |   62.86 |   26.73 |   13.27 |    1.94 |
-| MinGW GCC Release   |     4.92 |  332.98 |  220.50 |   50.07 |   20.06 |    2.65 |
-| Linux GCC Debug     |     2.08 |   81.46 |   52.38 |   18.07 |   10.13 |    1.17 |
-| Linux GCC Release   |     3.24 |  272.87 |  169.95 |   33.10 |   19.72 |    2.01 |
-| Linux Clang Debug   |     1.78 |   79.25 |   50.83 |   17.82 |    7.65 |    1.23 |
-| Linux Clang Release |     3.75 |  143.71 |   82.81 |   22.59 |   14.01 |    1.50 |
+| MSVC Debug          |    3.35 |   26.23 |   20.04 |    8.72 |    5.98 |    2.42 | 
+| MSVC Release        |    3.73 |   47.23 |   25.68 |   11.58 |    7.11 |    2.32 | 
+| MinGW GCC Debug     |    4.31 |   93.31 |   63.66 |   26.32 |   13.14 |    1.94 | 
+| MinGW GCC Release   |    4.94 |  241.47 |  156.84 |   49.50 |   19.65 |    2.57 | 
+| Linux GCC Debug     |    2.30 |   90.96 |   61.43 |   21.26 |   13.13 |    1.36 | 
+| Linux GCC Release   |    3.79 |  267.26 |  162.74 |   38.65 |   22.08 |    2.23 | 
+| Linux Clang Debug   |    1.96 |   86.46 |   55.05 |   20.07 |    8.78 |    1.32 | 
+| Linux Clang Release |    4.07 |  168.70 |   98.13 |   23.12 |   14.34 |    1.82 | 
 
 And here is [**Catch**](https://github.com/philsquared/Catch) which only has normal ```CHECK(a==b)``` asserts:
 
 | Catch               | baseline | ```CHECK(a==b)``` | +faster |
 |---------------------|----------|-------------------|---------|
-| MSVC Debug          |    10.26 |   41.55 |   38.40 |
-| MSVC Release        |    11.15 |  240.24 |   86.17 |
-| MinGW GCC Debug     |    21.94 |  141.73 |  122.63 |
-| MinGW GCC Release   |    16.28 |  336.07 |  230.26 |
-| Linux GCC Debug     |    10.12 |  115.74 |   99.07 |
-| Linux GCC Release   |    13.40 |  294.40 |  216.19 |
-| Linux Clang Debug   |     6.41 |  103.18 |   84.68 |
-| Linux Clang Release |    11.12 |  193.37 |  154.67 |
+| MSVC Debug          |    9.94 |   40.14 |   36.66 | 
+| MSVC Release        |   10.66 |  231.60 |   81.90 | 
+| MinGW GCC Debug     |   21.20 |  129.26 |  110.95 | 
+| MinGW GCC Release   |   14.59 |  297.04 |  207.75 | 
+| Linux GCC Debug     |   12.38 |  133.64 |  110.75 | 
+| Linux GCC Release   |   15.68 |  353.03 |  291.64 | 
+| Linux Clang Debug   |    7.40 |  117.03 |   94.75 | 
+| Linux Clang Release |   12.21 |  221.64 |  182.57 | 
 
 ### Conclusion
 
@@ -145,27 +145,27 @@ for(int i = 0; i < 10000000; ++i) {
 }
 ```
 
-| doctest             | assert | + info |
-|---------------------|----------|-------------|
-| MSVC Debug          |    5.49 |   14.82 |
-| MSVC Release        |    0.78 |    1.62 |
-| MinGW GCC Debug     |    2.36 |    4.99 |
-| MinGW GCC Release   |    0.37 |    0.85 |
-| Linux GCC Debug     |    2.86 |    5.51 |
-| Linux GCC Release   |    0.28 |    0.65 |
-| Linux Clang Debug   |    2.58 |    5.41 |
-| Linux Clang Release |    0.37 |    0.65 |
+| doctest             | assert  | + info  |
+|---------------------|---------|---------|
+| MSVC Debug          |    5.29 |   14.32 | 
+| MSVC Release        |    0.77 |    1.62 | 
+| MinGW GCC Debug     |    2.25 |    4.71 | 
+| MinGW GCC Release   |    0.39 |    0.90 | 
+| Linux GCC Debug     |    2.84 |    5.13 | 
+| Linux GCC Release   |    0.30 |    0.69 | 
+| Linux Clang Debug   |    2.47 |    5.02 | 
+| Linux Clang Release |    0.41 |    0.75 | 
 
 | Catch               | assert  | + info |
 |---------------------|---------|---------|
-| MSVC Debug          |  362.64 |  620.42 |
-| MSVC Release        |    6.82 |   18.80 |
-| MinGW GCC Debug     |    9.16 |   21.80 |
-| MinGW GCC Release   |    7.22 |   13.69 |
-| Linux GCC Debug     |   11.70 |   26.23 |
-| Linux GCC Release   |    6.76 |   13.09 |
-| Linux Clang Debug   |   10.98 |   22.85 |
-| Linux Clang Release |    5.79 |   12.85 |
+| MSVC Debug          |  365.37 |  621.78 | 
+| MSVC Release        |    7.04 |   18.64 | 
+| MinGW GCC Debug     |    9.22 |   21.89 | 
+| MinGW GCC Release   |    7.29 |   13.95 | 
+| Linux GCC Debug     |   11.17 |   24.79 | 
+| Linux GCC Release   |    6.45 |   12.68 | 
+| Linux Clang Debug   |   10.40 |   22.64 | 
+| Linux Clang Release |    5.81 |   13.83 | 
 
 
 
