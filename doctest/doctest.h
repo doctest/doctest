@@ -3466,15 +3466,6 @@ namespace detail
 #endif // DOCTEST_CONFIG_DISABLE
 } // namespace detail
 
-#ifdef _MSC_VER
-#pragma warning(push)
-#pragma warning(disable : 6011) // Dereferencing NULL pointer
-#endif                          // _MSC_VER
-
-#ifdef _MSC_VER
-#pragma warning(pop)
-#endif // _MSC_VER
-
 void String::copy(const String& other) {
     if(other.isOnStack()) {
         detail::my_memcpy(buf, other.buf, len);
@@ -3486,6 +3477,7 @@ void String::copy(const String& other) {
         detail::my_memcpy(data.ptr, other.data.ptr, data.size + 1);
     }
 }
+
 String::String(const char* in) {
     unsigned in_len = detail::my_strlen(in);
     if(in_len <= last) {

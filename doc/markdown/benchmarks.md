@@ -18,7 +18,7 @@ Environment used (Intel i7 3770k, 16g RAM):
 - Windows 7 - on an SSD
 - Ubuntu 17.04 in a VirtualBox VM - on a HDD
 
-**doctest** version: 1.2.0 (released on 2017.05.12)
+**doctest** version: 1.2.0 (released on 2017.05.14)
 
 [**Catch**](https://github.com/philsquared/Catch) version: 1.9.3 (released on 2017.04.25)
 
@@ -64,18 +64,18 @@ The script generates 201 source files and in 200 of them makes a function in the
 
 #### doctest
 
-- instantiating the test runner in one source file costs ~1.5 seconds ```implement - baseline```
-- the inclusion of ```doctest.h``` in one source file costs below 9ms ```(header_everywhere - implement) / 200```
-- including the library everywhere but everything disabled costs less than 2 seconds ```disabled - baseline``` for 200 files
+- instantiating the test runner in one source file costs ~1.5-3 seconds ```implement - baseline```
+- the inclusion of ```doctest.h``` in one source file costs between 20ms - 30ms ```(header_everywhere - implement) / 200```
+- including the library everywhere but everything disabled costs less than 3 seconds ```disabled - baseline``` for 200 files
 
 #### [Catch](https://github.com/philsquared/Catch)
 
-- instantiating the test runner in one source file costs ~5 second ```implement - baseline```
-- the inclusion of ```catch.hpp```  in one source file costs around 430ms ```(header_everywhere - implement) / 200```
+- instantiating the test runner in one source file costs ~4-8 seconds ```implement - baseline```
+- the inclusion of ```catch.hpp```  in one source file costs between 300ms - 575ms ```(header_everywhere - implement) / 200```
 
 ----------
 
-So if ```doctest.h``` costs 8ms and ```catch.hpp``` costs 430ms on MSVC - then the **doctest** header is >> **54** << times lighter!
+So if ```doctest.h``` costs 20ms and ```catch.hpp``` costs 560ms on MSVC - then the **doctest** header is >> **28** << times lighter (for MSVC)!
 
 ----------
 
@@ -94,8 +94,12 @@ The script generates 11 ```.cpp``` files and in 10 of them makes 50 test cases w
 
 - ```CHECK_EQ(a,b)``` - will use ```CHECK_EQ(a,b)``` instead of the expression decomposing ones
 - ```FAST_CHECK_EQ(a,b)``` - will use ```FAST_CHECK_EQ(a,b)``` instead of the expression decomposing ones
-- **+faster** - will add [**```DOCTEST_CONFIG_SUPER_FAST_ASSERTS```**](configuration.md#doctest_config_super_fast_asserts) which speeds up ```FAST_CHECK_EQ(a,b)``` even more (or [**```CATCH_CONFIG_FAST_COMPILE```**](https://github.com/philsquared/Catch/blob/master/docs/configuration.md#catch_config_fast_compile) for Catch)
+- **+faster** - will add [**```DOCTEST_CONFIG_SUPER_FAST_ASSERTS```**](configuration.md#doctest_config_super_fast_asserts) which speeds up ```FAST_CHECK_EQ(a,b)``` even more
 - **+disabled** - all test case and assert macros will be disabled with [**```DOCTEST_CONFIG_DISABLE```**](configuration.md#doctest_config_disable)
+
+[**Catch**](https://github.com/philsquared/Catch) specific:
+
+- **+faster** - will add [**```CATCH_CONFIG_FAST_COMPILE```**](https://github.com/philsquared/Catch/blob/master/docs/configuration.md#catch_config_fast_compile) which speeds up the compilation of the normal asserts ```CHECK(a==b)```
 
 | doctest             | baseline | ```CHECK(a==b)``` | ```CHECK_EQ(a,b)``` | ```FAST_CHECK_EQ(a,b)``` | +faster | +disabled |
 |---------------------|----------|-------------------|---------------------|--------------------------|---------|-----------|
@@ -125,18 +129,26 @@ And here is [**Catch**](https://github.com/philsquared/Catch) which only has nor
 
 **doctest**:
 
-- is around 25% faster than [**Catch**](https://github.com/philsquared/Catch) when using expression decomposing ```CHECK(a==b)``` asserts
-- asserts of the form ```CHECK_EQ(a,b)``` with no expression decomposition - around 20% faster than ```CHECK(a==b)```
-- fast asserts like ```FAST_CHECK_EQ(a,b)``` with no ```try/catch``` blocks - around 30-70% faster than ```CHECK_EQ(a,b)```
-- the [**```DOCTEST_CONFIG_SUPER_FAST_ASSERTS```**](configuration.md#doctest_config_super_fast_asserts) identifier which makes the fast assertions even faster by another 35-80%
+- is around 30% faster than [**Catch**](https://github.com/philsquared/Catch) when using normal expression decomposing ```CHECK(a==b)``` asserts
+- asserts of the form ```CHECK_EQ(a,b)``` with no expression decomposition - around 25%-45% faster than ```CHECK(a==b)```
+- fast asserts like ```FAST_CHECK_EQ(a,b)``` with no ```try/catch``` blocks - around 60-80% faster than ```CHECK_EQ(a,b)```
+- the [**```DOCTEST_CONFIG_SUPER_FAST_ASSERTS```**](configuration.md#doctest_config_super_fast_asserts) identifier which makes the fast assertions even faster by another 50-80%
 - using the [**```DOCTEST_CONFIG_DISABLE```**](configuration.md#doctest_config_disable) identifier the assertions just disappear as if they were never written
 
+[**Catch**](https://github.com/philsquared/Catch):
+
+- using [**```CATCH_CONFIG_FAST_COMPILE```**](https://github.com/philsquared/Catch/blob/master/docs/configuration.md#catch_config_fast_compile) results in 10%-40% faster build times for asserts.
+
 ## Runtime benchmarks
+
+The runtime benchmarks consist of a single test case with a loop of 10 million iterations performing the task - a single normal assert (using expression decomposition) or the assert + the logging of the loop iterator ```i```:
 
 ```c++
 for(int i = 0; i < 10000000; ++i)
     CHECK(i == i);
 ```
+
+or
 
 ```c++
 for(int i = 0; i < 10000000; ++i) {
@@ -144,6 +156,8 @@ for(int i = 0; i < 10000000; ++i) {
     CHECK(i == i);
 }
 ```
+
+Note that the assert always passes - the goal should be to optimize for the common case - lots of passing test cases and a few that maybe fail.
 
 | doctest             | assert  | + info  |
 |---------------------|---------|---------|
@@ -156,7 +170,7 @@ for(int i = 0; i < 10000000; ++i) {
 | Linux Clang Debug   |    2.47 |    5.02 | 
 | Linux Clang Release |    0.41 |    0.75 | 
 
-| Catch               | assert  | + info |
+| Catch               | assert  | + info  |
 |---------------------|---------|---------|
 | MSVC Debug          |  365.37 |  621.78 | 
 | MSVC Release        |    7.04 |   18.64 | 
@@ -167,9 +181,11 @@ for(int i = 0; i < 10000000; ++i) {
 | Linux Clang Debug   |   10.40 |   22.64 | 
 | Linux Clang Release |    5.81 |   13.83 | 
 
+### Conclusion
 
+**doctest** is significantly faster - between 4 and 40 times.
 
-
+In these particular cases **doctest** makes 0 allocations when the assert doesn't fail - it uses lazy stringification (meaning it stringifies the expression or the logged loop counter only if it has to) and a small-buffer optimized string class to achieve these results.
 
 ----------
 
