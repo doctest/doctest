@@ -10,8 +10,6 @@ Planned features for future releases - order changes constantly...
 
 ### For 1.2:
 
-- benchmarking
-    - add runtime benchmarks
 - mocking - interop with doctest (+ maybe send PRs with doctest integration info)
     - google mock
     - https://github.com/eranpeer/FakeIt
