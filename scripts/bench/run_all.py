@@ -6,6 +6,7 @@ import json
 import subprocess
 
 average_num_times = 5
+max_accum_time    = 60  # don't take too long on a test - stop averaging if time exceeds some amount of seconds
 
 with open('tests.json') as data_file:    
     data = json.load(data_file)
@@ -25,12 +26,12 @@ if os.name == "nt":
     the_os = 'windows'
 
 f = open('results.txt', 'w')
-for test in ['header', 'asserts', 'runtime']:
+for test in ['runtime', 'header', 'asserts']:
     print(  '\n************** ' + test + '\n')
     f.write('\n************** ' + test + '\n')
     for framework in ['doctest', 'catch']:
-        print(  '== ' + framework)
-        f.write('== ' + framework)
+        print(  '== ' + framework + '\n')
+        f.write('== ' + framework + '\n')
         for config in data['compilers'][the_os]:
             for curr in data[test][1]:
                 if curr[0] == framework or curr[0] == "any":
@@ -38,12 +39,17 @@ for test in ['header', 'asserts', 'runtime']:
                     print(command)
                     
                     accum = float(0)
+                    num_times = 0
                     for i in range(0, average_num_times):
                         res = float(runBench(command))
                         print(res)
                         accum += res
+                        num_times += 1
+                        
+                        if accum > max_accum_time:
+                            break
                     
-                    average = "{:7.2f}".format(round(accum / average_num_times, 2))
+                    average = "{:7.2f}".format(round(accum / num_times, 2))
                     print("AVERAGE: " + average)
                     f.write(average + " | ")
             f.write("\n")

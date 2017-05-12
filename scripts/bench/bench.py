@@ -94,6 +94,8 @@ if args.catch:
 
 # setup the macros used
 macro = "    CHECK(a == b);\n"
+if args.runtime:
+    macro = "    CHECK(i == i);\n"
 if not args.catch and args.asserts == "binary":
     macro = "    CHECK_EQ(a, b);\n"
 if not args.catch and args.asserts == "fast":
@@ -167,9 +169,9 @@ f.close()
 
 compiler = ""
 if args.compiler == 'clang':
-    compiler = " -DCMAKE_CXX_COMPILER=clang++"
+    compiler = " -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_CXX_FLAGS=-w"
 if args.compiler == 'gcc':
-    compiler = " -DCMAKE_CXX_COMPILER=g++"
+    compiler = " -DCMAKE_CXX_COMPILER=g++ -DCMAKE_CXX_FLAGS=-w"
 
 # setup cmake command
 cmake_command = 'cmake . -G "Visual Studio 15 Win64"' # MSVC 2017
@@ -194,7 +196,8 @@ start = datetime.now()
 os.system('cmake --build .' + the_config)
 end = datetime.now()
 
-print("Time running compiler (+ linker) in seconds: " + str((end - start).total_seconds()))
+if not args.runtime:
+    print("Time running compiler (+ linker) in seconds: " + str((end - start).total_seconds()))
 
 # ==============================================================================
 # == RUN PROJECT ===============================================================

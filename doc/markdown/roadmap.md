@@ -11,7 +11,6 @@ Planned features for future releases - order changes constantly...
 ### For 1.2:
 
 - benchmarking
-    - redo the compile time ones - also look into CATCH_CONFIG_FAST_COMPILE
     - add runtime benchmarks
 - mocking - interop with doctest (+ maybe send PRs with doctest integration info)
     - google mock
@@ -160,6 +159,8 @@ Planned features for future releases - order changes constantly...
 - move from operator "<<" to "<=" for capturing the left operand when decomposing binary expressions with templates
 - think about silencing warnings about unused variables when DOCTEST_CONFIG_DISABLE is used - see commit 6b61e8aa3818c5ea100cedc1bb48a60ea10df6e8 or issue #61
 - think about optionally using ```<typeinfo>``` and libcxxabi for demangling so users don't have to use ```TYPE_TO_STRING()```
+- handle more complex expressions - ```CHECK(foo() == 1 || bar() == 2);```
+- think about using a string view of some sorts
 
 ### Things that are very unlikely to enter the roadmap:
 

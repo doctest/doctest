@@ -37,8 +37,8 @@
     "runtime": [
         " runtime",
         [
-            ["any",     " --header --files 1 --tests 1  --checks 1 --loop-iters 10000000"],
-            ["any",     " --header --files 1 --tests 1  --checks 1 --loop-iters 10000000 --info"]
+            ["any",     " --files 1 --tests 1  --checks 1 --loop-iters 10000000"],
+            ["any",     " --files 1 --tests 1  --checks 1 --loop-iters 10000000 --info"]
         ]
     ]
 }
