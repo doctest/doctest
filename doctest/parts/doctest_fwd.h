@@ -530,8 +530,8 @@ namespace doctest
 // - relational operators as free functions - taking const char* as one of the params
 class DOCTEST_INTERFACE String
 {
-    static const unsigned len  = 24;
-    static const unsigned last = len - 1;
+    static const unsigned len  = 24;      //!OCLINT avoid private static members
+    static const unsigned last = len - 1; //!OCLINT avoid private static members
 
     struct view // len should be more than sizeof(view) - because of the final byte for flags
     {
@@ -703,17 +703,17 @@ namespace detail
         {
         private:
             template <typename C_T, typename C_AT_1>
-            static bool test(typename enable_if<
+            static bool test(typename enable_if< //!OCLINT avoid private static members
                              sizeof(C_T) ==
                              sizeof(C_T(static_cast<C_AT_1>(
                                      *static_cast<typename remove_reference<C_AT_1>::type*>(
                                              0))))>::type*);
 
             template <typename, typename>
-            static int test(...);
+            static int test(...); //!OCLINT avoid private static members
 
         public:
-            static const bool value = (sizeof(test<T, AT_1>(0)) == sizeof(bool));
+            static const bool value = sizeof(test<T, AT_1>(0)) == sizeof(bool);
         };
 
         template <typename T>
@@ -721,16 +721,17 @@ namespace detail
         {
         private:
             template <typename C_T>
-            static C_T testFun(C_T);
+            static C_T testFun(C_T); //!OCLINT avoid private static members
 
             template <typename C_T>
-            static bool test(typename enable_if<sizeof(C_T) == sizeof(testFun(C_T()))>::type*);
+            static bool test(typename enable_if< //!OCLINT avoid private static members
+                             sizeof(C_T) == sizeof(testFun(C_T()))>::type*);
 
             template <typename>
-            static int test(...);
+            static int test(...); //!OCLINT avoid private static members
 
         public:
-            static const bool value = (sizeof(test<T>(0)) == sizeof(bool));
+            static const bool value = sizeof(test<T>(0)) == sizeof(bool);
         };
 
 // is_constructible<> taken from here: http://stackoverflow.com/a/40443701/3162383
@@ -746,9 +747,9 @@ namespace detail
         class is_constructible
         {
         public:
-            static const bool value = (is_pointer<typename remove_reference<T>::type>::value ?
-                                               false :
-                                               is_constructible_impl<T, AT_1>::value);
+            static const bool value = is_pointer<typename remove_reference<T>::type>::value ?
+                                              false :
+                                              is_constructible_impl<T, AT_1>::value;
         };
 #elif defined(_MSC_VER) && (_MSC_VER >= 1700)
         template <typename T, typename AT_1>
@@ -951,10 +952,9 @@ struct StringMaker<T*>
 {
     template <typename U>
     static String convert(U* p) {
-        if(!p)
-            return "NULL";
-        else
+        if(p)
             return detail::rawMemoryToString(p);
+        return "NULL";
     }
 };
 
@@ -962,10 +962,9 @@ template <typename R, typename C>
 struct StringMaker<R C::*>
 {
     static String convert(R C::*p) {
-        if(!p)
-            return "NULL";
-        else
+        if(p)
             return detail::rawMemoryToString(p);
+        return "NULL";
     }
 };
 
@@ -1406,8 +1405,7 @@ namespace detail
             res = !res;                                                                            \
         if(!res || doctest::detail::getTestsContextState()->success)                               \
             return Result(res, stringifyBinaryExpr(lhs, op_str, rhs));                             \
-        else                                                                                       \
-            return Result(res);                                                                    \
+        return Result(res);                                                                        \
     }
 
 #define DOCTEST_FORBIT_EXPRESSION(op)                                                              \
@@ -1434,21 +1432,22 @@ namespace detail
 
         DOCTEST_NOINLINE operator Result() {
             bool res = !!lhs;
-            if(m_assert_type & assertType::is_false)
+            if(m_assert_type & assertType::is_false) //!OCLINT bitwise operator in conditional
                 res = !res;
 
             if(!res || getTestsContextState()->success)
                 return Result(res, toString(lhs));
-            else
-                return Result(res);
+            return Result(res);
         }
 
-        DOCTEST_DO_BINARY_EXPRESSION_COMPARISON(==, " == ", DOCTEST_CMP_EQ)
-        DOCTEST_DO_BINARY_EXPRESSION_COMPARISON(!=, " != ", DOCTEST_CMP_NE)
-        DOCTEST_DO_BINARY_EXPRESSION_COMPARISON(>, " >  ", DOCTEST_CMP_GT)
-        DOCTEST_DO_BINARY_EXPRESSION_COMPARISON(<, " <  ", DOCTEST_CMP_LT)
-        DOCTEST_DO_BINARY_EXPRESSION_COMPARISON(>=, " >= ", DOCTEST_CMP_GE)
-        DOCTEST_DO_BINARY_EXPRESSION_COMPARISON(<=, " <= ", DOCTEST_CMP_LE)
+        // clang-format off
+        DOCTEST_DO_BINARY_EXPRESSION_COMPARISON(==, " == ", DOCTEST_CMP_EQ) //!OCLINT bitwise operator in conditional
+        DOCTEST_DO_BINARY_EXPRESSION_COMPARISON(!=, " != ", DOCTEST_CMP_NE) //!OCLINT bitwise operator in conditional
+        DOCTEST_DO_BINARY_EXPRESSION_COMPARISON(>, " >  ", DOCTEST_CMP_GT) //!OCLINT bitwise operator in conditional
+        DOCTEST_DO_BINARY_EXPRESSION_COMPARISON(<, " <  ", DOCTEST_CMP_LT) //!OCLINT bitwise operator in conditional
+        DOCTEST_DO_BINARY_EXPRESSION_COMPARISON(>=, " >= ", DOCTEST_CMP_GE) //!OCLINT bitwise operator in conditional
+        DOCTEST_DO_BINARY_EXPRESSION_COMPARISON(<=, " <= ", DOCTEST_CMP_LE) //!OCLINT bitwise operator in conditional
+        // clang-format on
 
         // forbidding some expressions based on this table: http://en.cppreference.com/w/cpp/language/operator_precedence
         DOCTEST_FORBIT_EXPRESSION(&)
@@ -1636,7 +1635,7 @@ namespace detail
         DOCTEST_NOINLINE void unary_assert(const DOCTEST_REF_WRAP(L) val) {
             m_result.m_passed = !!val;
 
-            if(m_assert_type & assertType::is_false)
+            if(m_assert_type & assertType::is_false) //!OCLINT bitwise operator in conditional
                 m_result.m_passed = !m_result.m_passed;
 
             if(!m_result.m_passed || getTestsContextState()->success)
@@ -1699,7 +1698,7 @@ namespace detail
 
         rb.m_result.m_passed = !!val;
 
-        if(assert_type & assertType::is_false)
+        if(assert_type & assertType::is_false) //!OCLINT bitwise operator in conditional
             rb.m_result.m_passed = !rb.m_result.m_passed;
 
         if(!rb.m_result.m_passed || getTestsContextState()->success)
@@ -1726,14 +1725,14 @@ namespace detail
         return res;
     }
 
-    struct DOCTEST_INTERFACE IExceptionTranslator
+    struct DOCTEST_INTERFACE IExceptionTranslator //!OCLINT destructor of virtual class
     {
         virtual ~IExceptionTranslator();
         virtual bool translate(String&) const = 0;
     };
 
     template <typename T>
-    class ExceptionTranslator : public IExceptionTranslator
+    class ExceptionTranslator : public IExceptionTranslator //!OCLINT destructor of virtual class
     {
     public:
         explicit ExceptionTranslator(String (*translateFunction)(T))
@@ -1744,12 +1743,12 @@ namespace detail
             try {
                 throw;
                 // cppcheck-suppress catchExceptionByValue
-            } catch(T ex) { // NOLINT
-                res = m_translateFunction(ex);
+            } catch(T ex) {                    // NOLINT
+                res = m_translateFunction(ex); //!OCLINT parameter reassignment
                 return true;
-            } catch(...) {}
-#endif                   // DOCTEST_CONFIG_NO_EXCEPTIONS
-            ((void)res); // to silence -Wunused-parameter
+            } catch(...) {} //!OCLINT -  empty catch statement
+#endif                      // DOCTEST_CONFIG_NO_EXCEPTIONS
+            ((void)res);    // to silence -Wunused-parameter
             return false;
         }
 
@@ -1797,7 +1796,7 @@ namespace detail
         StringStream<T>::convert(stream, value);
     }
 
-    struct IContextScope
+    struct IContextScope //!OCLINT destructor of virtual class
     { virtual void build(std::ostream*) = 0; };
 
     DOCTEST_INTERFACE void addToContexts(IContextScope* ptr);
@@ -1809,11 +1808,11 @@ namespace detail
     {
         friend class ContextScope;
 
-        struct ICapture
+        struct ICapture //!OCLINT destructor of virtual class
         { virtual void toStream(std::ostream*) const = 0; };
 
         template <typename T>
-        struct Capture : ICapture
+        struct Capture : ICapture //!OCLINT destructor of virtual class
         {
             const T* capture;
 
@@ -1919,7 +1918,7 @@ namespace detail
 #endif // DOCTEST_CONFIG_WITH_RVALUE_REFERENCES
     };
 
-    class ContextScope : public IContextScope
+    class ContextScope : public IContextScope //!OCLINT destructor of virtual class
     {
         ContextBuilder contextBuilder;
         bool           built;

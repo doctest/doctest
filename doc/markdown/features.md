@@ -27,6 +27,7 @@ It is modeled after [**Catch**](https://github.com/philsquared/Catch) which is c
 - tested with **GCC**: **4.4**, **4.5**, **4.6**, **4.7**, **4.8**, **4.9**, **5**, **6**
 - tested with **Clang**: **3.4**, **3.5**, **3.6**, **3.7**, **3.8**, **3.9**
 - tested with **MSVC**: **2008**, **2010**, **2012**, **2013**, **2015**, **2017**
+- statically analyzed - [**Cppcheck**](http://cppcheck.sourceforge.net/) / [**Clang-Tidy**](http://oclint.org/) / [**Coverity Scan**](https://scan.coverity.com/) / [**OCLint**](https://scan.coverity.com/) / [**Visual Studio Analyzer**](https://docs.microsoft.com/en-us/visualstudio/code-quality/analyzing-c-cpp-code-quality-by-using-code-analysis)
 - per-commit tested on **travis** and **appveyor** CI services
 	- warnings as errors even on the most aggressive warning levels - see [**here**](../../scripts/common.cmake#L71)
 	- all tests have their output compared to reference output of a previous known good run

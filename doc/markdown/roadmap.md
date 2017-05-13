@@ -14,8 +14,9 @@ Planned features for future releases - order changes constantly...
     - mainly what is in the landing page (add link to overload) - https://accu.org/var/uploads/journals/Overload137.pdf
     - make a gif showing how code is written, compiled and executed
     - graphs in the benchmarks page instead of tables? generate graph from data
-    - write about static code analysis - msvc analyzer, cppcheck, clang-tidy, coverity scan
+    
     - docs about sort-of data driven testing - with INFO and SUBCASE
+    
     - https://www.paypal.me/onqtam
     - https://github.com/jch/html-pipeline/blob/master/lib/html/pipeline/sanitization_filter.rb#L45-L48
     - add a new page for build systems and integration

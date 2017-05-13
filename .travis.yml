@@ -302,9 +302,6 @@ matrix:
       osx_image: xcode7.3
       os: osx
 
-before_install:
-  - git submodule update --init --recursive
-
 install:
   - if [[ "${CODE_COVERAGE}" == "true" ]]; then gem install coveralls-lcov ; fi
 
@@ -322,6 +319,14 @@ install:
       CMAKE_URL="http://www.cmake.org/files/v3.7/cmake-3.7.2-Linux-x86_64.tar.gz"
       mkdir cmake && travis_retry wget --no-check-certificate --quiet -O - ${CMAKE_URL} | tar --strip-components=1 -xz -C cmake
       export PATH=${DEPS_DIR}/cmake/bin:${PATH}
+    fi
+
+  # Install OCLint
+  - |
+    if [[ "${STATIC_CODE_ANALYSIS}" = "true" ]]; then
+      OCLINT_URL="https://github.com/oclint/oclint/releases/download/v0.12/oclint-0.12-x86_64-linux-3.13.0-112-generic.tar.gz"
+      mkdir oclint && travis_retry wget --no-check-certificate --quiet -O - ${OCLINT_URL} | tar --strip-components=1 -xz -C oclint
+      export PATH=${DEPS_DIR}/oclint/bin:${PATH}
     fi
 
   # Go back to ${TRAVIS_BUILD_DIR}
@@ -393,11 +398,16 @@ script:
   # static code analysis
   - |
     if [[ "${STATIC_CODE_ANALYSIS}" = "true" ]]; then
-      # cppcheck
-      cp doctest/doctest.h doctest.cpp
+      # setup a test file "doctest.cpp" that is the header + a test case at the end
+      echo "#define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN\n" >> doctest.cpp
+      cat doctest/doctest.h >> doctest.cpp
       echo -e "TEST_CASE(\"\") {\n\tint a = 6;\n\tSUBCASE(\"\") a = 5;\n\tCAPTURE(a);\n\tCHECK(a == 6);\n}\n" >> doctest.cpp
 
-      cppcheck doctest.cpp --enable=all --suppress=unmatchedSuppression --suppress=missingIncludeSystem --suppress=unusedFunction --suppress=functionConst --inline-suppr --platform=unix64 --inconclusive --std=posix --inconclusive -v --error-exitcode=1 --template "{file}({line}): {severity} ({id}): {message}" -DDOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
+      # cppcheck
+      cppcheck doctest.cpp --enable=all --suppress=unmatchedSuppression --suppress=missingIncludeSystem --suppress=unusedFunction --suppress=functionConst --inline-suppr --platform=unix64 --inconclusive --std=posix --inconclusive -v --error-exitcode=1 --template "{file}({line}): {severity} ({id}): {message}"
+
+      # oclint
+      oclint doctest.cpp -disable-rule=ShortVariableName -disable-rule=LongLine -disable-rule=LongMethod -disable-rule=HighNcssMethod -disable-rule=LongVariableName -disable-rule=HighCyclomaticComplexity -disable-rule=HighNPathComplexity -disable-rule=UnusedLocalVariable -disable-rule=DoubleNegative -disable-rule=MultipleUnaryOperator -disable-rule=DeepNestedBlock || exit 1
 
       # clang-tidy
       cd scripts/playground
