@@ -73,7 +73,7 @@ This will affect the public interface of doctest - all necessary forward declara
 
 To export the test runner from a binary simply use [**```DOCTEST_CONFIG_IMPLEMENTATION_IN_DLL```**](#doctest_config_implementation_in_dll) together with [**```DOCTEST_CONFIG_IMPLEMENT```**](#doctest_config_implement) (or [**```DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN```**](#doctest_config_implement_with_main) but then the other binaries will have to link to the executable) in whatever source file the test runner gets implemented into. Note that this identifier should not be defined in the other source files of the binary which exports the doctest test runner - or there will be linker conflicts - having the same symbols as both imported and exported within the same binary.
 
-Checkout the [**example**](../../examples/dll_and_executable/) - it shows how to have the test runner implemented in a dll (and there are even tests in a plugin which is dynamically loaded).
+Checkout the [**example**](../../examples/executable_dll_and_plugin/) - it shows how to have the test runner implemented in a dll (and there are even tests in a plugin which is dynamically loaded).
 
 This should be defined globally in binaries that import the symbols.
 
@@ -81,7 +81,7 @@ This should be defined only in the source file where the library is implemented 
 
 ### **```DOCTEST_CONFIG_NO_SHORT_MACRO_NAMES```**
 
-This will remove all macros from **doctest** that don't have the **```DOCTEST_```** prefix - like **```CHECK```**, **```TEST_CASE```** and **```SUBCASE```**. Then only the full macro names will be available - **```DOCTEST_CHECK```**, **```DOCTEST_TEST_CASE```** and **```DOCTEST_SUBCASE```**. The user is free to make his own short versions of these macros - [**example**](../../examples/alternative_macros/).
+This will remove all macros from **doctest** that don't have the **```DOCTEST_```** prefix - like **```CHECK```**, **```TEST_CASE```** and **```SUBCASE```**. Then only the full macro names will be available - **```DOCTEST_CHECK```**, **```DOCTEST_TEST_CASE```** and **```DOCTEST_SUBCASE```**. The user is free to make his own short versions of these macros - [**example**](../../examples/all_features/alternative_macros.cpp).
 
 This can be defined both globally and in specific source files only.
 

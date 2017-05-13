@@ -86,6 +86,10 @@ Some notes:
     }
     ```
 
+------
+
+- Check out the [**example**](../../examples/all_features/templated_test_cases.cpp) which shows how all of these are used.
+
 ---
 
 [Home](readme.md#reference)

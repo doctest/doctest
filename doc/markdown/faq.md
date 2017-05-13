@@ -3,6 +3,7 @@
 - [**How is doctest different from Catch?**](#how-is-doctest-different-from-catch)
 - [**How to get the best compile-time performance with the framework?**](#how-to-get-the-best-compile-time-performance-with-the-framework)
 - [**Is doctest thread-aware?**](#is-doctest-thread-aware)
+- [**Is mocking supported?**](#is-mocking-supported)
 - [**Why are my tests in a static library not getting registered?**](#why-are-my-tests-in-a-static-library-not-getting-registered)
 - [**Why is comparing C strings (```char*```) actually comparing pointers?**](#why-is-comparing-c-strings-char-actually-comparing-pointers)
 - [**How to write tests in header-only libraries?**](#how-to-write-tests-in-header-only-libraries)
@@ -58,7 +59,7 @@ There are only 2 drawbacks of this approach:
 
 These 2 things can be considered negligible if you are dealing mainly with arithmetic (expressions are unlikely to throw exceptions) and all the tests usually pass (you don't need to often navigate to a failing assert with a debugger attached)
 
-If you want better aliases for the asserts instead of the long ones you could use [**```DOCTEST_CONFIG_NO_SHORT_MACRO_NAMES```**](configuration.md#doctest_config_no_short_macro_names) and then define your aliases like this: ```#define CHECK_EQ DOCTEST_FAST_CHECK_EQ``` (example in [**here**](../../examples/alternative_macros)).
+If you want better aliases for the asserts instead of the long ones you could use [**```DOCTEST_CONFIG_NO_SHORT_MACRO_NAMES```**](configuration.md#doctest_config_no_short_macro_names) and then define your aliases like this: ```#define CHECK_EQ DOCTEST_FAST_CHECK_EQ``` (example in [**here**](../../examples/all_features/alternative_macros.cpp)).
 
 ### Is doctest thread-aware?
 
@@ -67,6 +68,22 @@ Currently no. Asserts cannot be used in multiple threads and test cases cannot b
 For now tests are ran serially and doing asserts in multiple user threads will lead to crashes.
 
 There is an option to run a [**range**](commandline.md) of tests from an executable - so tests can be ran in parallel with multiple process invocations - see [**the example python script**](../../examples/range_based_execution.py).
+
+### Is mocking supported?
+
+**doctest** doesn't support mocking but should be easy to integrate with third-party libraries such as:
+
+- [trompeloeil](https://github.com/rollbear/trompeloeil) - integration shown [here](https://github.com/rollbear/trompeloeil/blob/master/docs/CookBook.md#adapt_doctest)
+- [googlemock](https://github.com/google/googletest/tree/master/googlemock) - for integration check [this](https://github.com/google/googletest/blob/master/googlemock/docs/ForDummies.md#using-google-mock-with-any-testing-framework)
+- [FakeIt](https://github.com/eranpeer/FakeIt) - integration might be similar to that of [catch](https://github.com/eranpeer/FakeIt/tree/master/config/catch) but this has not been looked into
+
+by using the [**logging**](logging.md#messages-which-can-optionally-fail-test-cases) macros such as ```ADD_FAIL_AT(file, line, message)```
+
+<!--
+Not sure how to integrate with these:
+https://github.com/dascandy/hippomocks
+https://github.com/tpounds/mockitopp
+-->
 
 ### Why are my tests in a static library not getting registered?
 

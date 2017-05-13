@@ -98,8 +98,8 @@ Then test cases from specific test suites can be executed with the help of filte
 
 ------
 
-- Check out the [**subcases and BDD example**](../../examples/subcases_and_bdd/main.cpp)
-- Check out the [**assertion macros example**](../../examples/assertion_macros/main.cpp) to see how test suites are used
+- Check out the [**subcases and BDD example**](../../examples/all_features/subcases.cpp)
+- Check out the [**assertion macros example**](../../examples/all_features/assertion_macros.cpp) to see how test suites are used
 - Tests are registered from top to bottom of each processed cpp after the headers have been preprocessed and included but there is no ordering between cpp files.
 
 ---------------

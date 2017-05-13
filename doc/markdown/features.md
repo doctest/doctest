@@ -58,7 +58,7 @@ The library can be used like any other if you don't like the idea of mixing prod
 - supports [**logging macros**](logging.md) for capturing local variables and strings - as a message for when an assert fails - with lazy stringification and no allocations when possible!
 - crash handling support - uses signals for UNIX and SEH for Windows
 - output from all compilers on all platforms is the same - byte by byte
-- binaries (exe/dll) can use the test runner of another binary - so tests end up in a single registry - [**example**](../../examples/dll_and_executable/)
+- binaries (exe/dll) can use the test runner of another binary - so tests end up in a single registry - [**example**](../../examples/executable_dll_and_plugin/)
 - supports [**BDD style**](testcases.md) tests
 - one core [**assertion macro**](assertions.md) for comparisons - standard C++ operators are used for the comparison (less than, equal, greater than...) - yet the full expression is decomposed and left and right values of the expression are logged
 - assertion macros for [**exceptions**](assertions.md) - if something should or shouldn't throw

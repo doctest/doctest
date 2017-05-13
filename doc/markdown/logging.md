@@ -75,6 +75,10 @@ There are also a few more intended for use by third party libraries such as mock
 
 They can be useful when integrating asserts from a different framework with doctest.
 
+------
+
+- Check out the [**example**](../../examples/all_features/logging.cpp) which shows how all of these are used.
+
 ---
 
 [Home](readme.md#reference)

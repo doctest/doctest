@@ -10,15 +10,10 @@ Planned features for future releases - order changes constantly...
 
 ### For 1.2:
 
-- mocking - interop with doctest (+ maybe send PRs with doctest integration info)
-    - google mock
-    - https://github.com/eranpeer/FakeIt
-    - https://github.com/tpounds/mockitopp
-    - https://github.com/rollbear/trompeloeil
-    - https://github.com/dascandy/hippomocks
 - change docs a bit
-    - mainly what is in the landing page (add link to overload)
-    - update links to examples
+    - mainly what is in the landing page (add link to overload) - https://accu.org/var/uploads/journals/Overload137.pdf
+    - make a gif showing how code is written, compiled and executed
+    - graphs in the benchmarks page instead of tables?
     - write about static code analysis
     - docs about sort-of data driven testing - with INFO and SUBCASE
     - docs about decorators
@@ -36,7 +31,10 @@ Planned features for future releases - order changes constantly...
         - getting the header with a cmake script - perhaps using ExternalProject() or something like that
         - using cmake directly
         - using it as a package (the install target)
-        - getting it from vcpkg/hunter/etc.
+        - getting it from vcpkg/hunter/conan/etc.
+        https://www.micheleadduci.net/blog/2016/12/11/building-modular-cpp-applications-with-cmake/
+        https://github.com/Microsoft/vcpkg/blob/master/ports/doctest/portfile.cmake
+package managers?
 
 ### For 1.3:
 
@@ -111,6 +109,7 @@ Planned features for future releases - order changes constantly...
 
 ### Things that are being considered but not part of the roadmap yet:
 
+- FakeIt mocking integration - like catch
 - consider the following 2 properties for the MSVC static code analyzer: EnableCppCoreCheck, EnableExperimentalCppCoreCheck
 - rpm package? like this: https://github.com/vietjtnguyen/argagg/blob/master/packaging/rpm/argagg.spec
 - get the current test case/section path - https://github.com/philsquared/Catch/issues/522

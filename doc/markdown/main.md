@@ -20,7 +20,7 @@ All the [**command line**](commandline.md) options can be set like this (flags c
 int main(int argc, char** argv) {
     doctest::Context context;
 
-	// !!! THIS IS JUST AN EXAMPLE SHOWING HOW DEFAULTS/OVERRIDES ARE SET !!!
+    // !!! THIS IS JUST AN EXAMPLE SHOWING HOW DEFAULTS/OVERRIDES ARE SET !!!
 
     // defaults
     context.addFilter("test-case-exclude", "*math*"); // exclude test cases with "math" in their name
@@ -53,7 +53,7 @@ The framework can be used separately in binaries (executables / shared objects) 
 
 There is also an option to have the test runner (implementation) built in a binary and shared with others (so there is a single test registry) by exporting it's public symbols (the ones needed for writing tests by the user - all the forward declarations of the framework).
 
-For more info on that checkout the [**```DOCTEST_CONFIG_IMPLEMENTATION_IN_DLL```**](configuration.md#doctest_config_implementation_in_dll) config identifier and [**this example**](../../examples/dll_and_executable/).
+For more info on that checkout the [**```DOCTEST_CONFIG_IMPLEMENTATION_IN_DLL```**](configuration.md#doctest_config_implementation_in_dll) config identifier and [**this example**](../../examples/executable_dll_and_plugin/).
 
 ---------------
 

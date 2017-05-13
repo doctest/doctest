@@ -9,8 +9,8 @@ This is the standard way of providing string conversions in C++ - and the chance
 
 ```c++
 std::ostream& operator<< (std::ostream& os, const T& value) {
-	os << convertMyTypeToString(value);
-	return os;
+    os << convertMyTypeToString(value);
+    return os;
 }
 ```
 
@@ -22,8 +22,8 @@ Alternatively you may prefer to write it as a member function:
 
 ```c++
 std::ostream& T::operator<<(std::ostream& os) const {
-	os << convertMyTypeToString(*this);
-	return os;
+    os << convertMyTypeToString(*this);
+    return os;
 }
 ```
 
@@ -49,9 +49,9 @@ There are some cases where overloading ```toString``` does not work as expected.
 
 ```c++
 namespace doctest {
-	template<> struct StringMaker<T> {
-    	static String convert(const T& value) {
-        	return convertMyTypeToString(value);
+    template<> struct StringMaker<T> {
+        static String convert(const T& value) {
+            return convertMyTypeToString(value);
         }
     };
 }
@@ -80,7 +80,7 @@ The order of registering exception translators can be controlled - simply call t
 
 ------
 
-- Check out the [**example**](../../examples/stringification/main.cpp) which shows how to stringify ```std::vector<T>``` and other types/exceptions.
+- Check out the [**example**](../../examples/all_features/stringification.cpp) which shows how to stringify ```std::vector<T>``` and other types/exceptions.
 - Note that the type ```String``` is used when specializing ```StringMaker<T>``` or overloading ```toString()``` - it is the string type **doctest** works with. ```std::string``` is not an option because doctest would have to include the ```<string>``` header.
 - To support the ```operator<<(std::ostream&...``` stringification the library has to offer a forward declaration of ```std::ostream``` and that is what the library does - but it is forbidden by the standard. It currently works everywhere - on all tested compilers - but if the user wishes to be 100% standards compliant - then the [**```DOCTEST_CONFIG_USE_IOSFWD```**](configuration.md#doctest_config_use_iosfwd) identifier can be used to force the inclusion of ```<iosfwd>```. The reason the header is not included by default is that on MSVC (for example) it drags a whole bunch of stuff with it - and after the preprocessor is finished the translation unit has grown to 42k lines of C++ code - while Clang and the libc++ are so well implemented that including ```<iosfwd>``` there results in 400 lines of code. 
 

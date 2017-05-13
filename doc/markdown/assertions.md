@@ -136,7 +136,7 @@ When dealing with very large or very small numbers it can be useful to specify a
 
 --------
 
-- Check out the [**example**](../../examples/assertion_macros/main.cpp) which shows many of these macros
+- Check out the [**example**](../../examples/all_features/assertion_macros.cpp) which shows many of these macros
 - Do not wrap assertion macros in ```try```/```catch``` - the REQUIRE macros throw exceptions to end the test case execution!
 
 ---------------
