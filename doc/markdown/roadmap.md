@@ -13,17 +13,9 @@ Planned features for future releases - order changes constantly...
 - change docs a bit
     - mainly what is in the landing page (add link to overload) - https://accu.org/var/uploads/journals/Overload137.pdf
     - make a gif showing how code is written, compiled and executed
-    - graphs in the benchmarks page instead of tables?
-    - write about static code analysis
+    - graphs in the benchmarks page instead of tables? generate graph from data
+    - write about static code analysis - msvc analyzer, cppcheck, clang-tidy, coverity scan
     - docs about sort-of data driven testing - with INFO and SUBCASE
-    - docs about decorators
-        - test_suite
-        - description
-        - skip
-        - may_fail - doesn't fail the test if any given assertion fails (but still reports it). This can be useful to flag a work-in-progress, or a known issue that you don't want to immediately fix but still want to track in the your tests.
-        - should_fail - like [!mayfail] but fails the test if it passes. This can be useful if you want to be notified of accidental, or third-party, fixes.
-        - expected_failures
-        - timeout
     - https://www.paypal.me/onqtam
     - https://github.com/jch/html-pipeline/blob/master/lib/html/pipeline/sanitization_filter.rb#L45-L48
     - add a new page for build systems and integration
@@ -31,9 +23,12 @@ Planned features for future releases - order changes constantly...
         - getting the header with a cmake script - perhaps using ExternalProject() or something like that
         - using cmake directly
         - using it as a package (the install target)
-        - getting it from vcpkg/hunter/conan/etc.
+        - getting it from vcpkg/hunter/conan/cppan/etc.
         https://www.micheleadduci.net/blog/2016/12/11/building-modular-cpp-applications-with-cmake/
         https://github.com/Microsoft/vcpkg/blob/master/ports/doctest/portfile.cmake
+        https://github.com/ruslo/hunter/blob/master/cmake/configs/default.cmake#L131
+        https://github.com/ruslo/hunter/blob/master/cmake/projects/doctest/hunter.cmake
+        https://github.com/ruslo/hunter/tree/master/examples/doctest
 package managers?
 
 ### For 1.3:
@@ -109,7 +104,7 @@ package managers?
 
 ### Things that are being considered but not part of the roadmap yet:
 
-- FakeIt mocking integration - like catch
+- FakeIt mocking integration - like [catch](https://github.com/eranpeer/FakeIt/tree/master/config/catch)
 - consider the following 2 properties for the MSVC static code analyzer: EnableCppCoreCheck, EnableExperimentalCppCoreCheck
 - rpm package? like this: https://github.com/vietjtnguyen/argagg/blob/master/packaging/rpm/argagg.spec
 - get the current test case/section path - https://github.com/philsquared/Catch/issues/522
@@ -161,7 +156,6 @@ package managers?
 
 ### Things that are very unlikely to enter the roadmap:
 
-- think about counting failures added with FAIL() or ADD_FAIL_AT() as failed asserts
 - think about removing the binary asserts (leaving only the fast binary asserts) because normal asserts + no try/catch in asserts are almost the same
 - move the "react()" part (the one that throws for REQUIRE asserts - or for when "abort-after=<int>" is reached) to a function call in the while() part of the asserts
 - stop using underscores for the begining of identifiers - the anonymous variables - against the standard...

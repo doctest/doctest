@@ -96,6 +96,58 @@ TEST_CASE("") {} // not part of any test suite
 
 Then test cases from specific test suites can be executed with the help of filters - check out the [**command line**](commandline.md)
 
+## Decorators
+
+Test cases can be *decorated* with additional attributes like this:
+
+```c++
+TEST_CASE("name"
+          * doctest::description("shouldn't take more than 500ms")
+          * doctest::timeout(0.5)) {
+    // asserts
+}
+```
+
+Multiple decorators can be used at the same time. These are the currently supported decorators:
+
+- **```skip(bool = true)```** - marks the test case to be skipped from execution - unless the ```--no-skip``` option is used
+- **```may_fail(bool = true)```** - doesn't fail the test if any given assertion fails (but still reports it) - this can be useful to flag a work-in-progress, or a known issue that you don't want to immediately fix but still want to track in the your tests
+- **```should_fail("text")```** - like **```may_fail()```** but fails the test if it passes - his can be useful if you want to be notified of accidental, or third-party, fixes
+- **```expected_failures(int)```** - defines the number of assertions that are expected to fail within the test case - reported as failure when the number of failed assertions is different than the declared expected number of failures
+- **```timeout(double)```** - fails the test case if its execution exceeds this limit (in seconds) - but doesn't terminate it - that would require subprocess support
+- **```test_suite("name")```** - can be used on test cases to override (or just set) the test suite they are in
+- **```description("text")```** - a description of the test case
+
+The values that the decorators take are computed while registering the test cases (during global initialization) - before entering ```main()``` and not just before running them.
+
+Decorators can also be applied to test suite blocks and all test cases in that block inherit them:
+
+```c++
+TEST_SUITE("some TS" * doctest::description("all tests will have this")) {
+    TEST_CASE("has a description from the surrounding test suite") {
+        // asserts
+    }
+}
+TEST_SUITE("some TS") {
+    TEST_CASE("no description even though in the same test suite as the one above") {
+        // asserts
+    }
+}
+```
+
+Test cases can override the decorators that they inherit from their surrounding test suite:
+
+```c++
+TEST_SUITE("not longer than 500ms" * doctest::timeout(0.5)) {
+    TEST_CASE("500ms limit") {
+        // asserts
+    }
+    TEST_CASE("200ms limit" * doctest::timeout(0.2)) {
+        // asserts
+    }
+}
+```
+
 ------
 
 - Check out the [**subcases and BDD example**](../../examples/all_features/subcases.cpp)

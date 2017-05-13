@@ -65,8 +65,10 @@ The library can be used like any other if you don't like the idea of mixing prod
 - floating point comparison support - see the [**```Approx()```**](assertions.md#floating-point-comparisons) helper
 - powerful mechanism for [**stringification**](stringification.md) of user types - including [**exceptions**](stringification.md#translating-exceptions)!
 - tests can be grouped in [**test suites**](testcases.md#test-suites)
+- test case [**decorators**](testcases.md#decorators) such as ```description``` / ```skip``` / ```may_fail``` / ```should_fail``` / ```expected_failures``` / ```timeout```
 - can be used without exceptions and rtti - checkout [**```DOCTEST_CONFIG_NO_EXCEPTIONS```**](configuration.md#doctest_config_no_exceptions)
 - powerful [**command line**](commandline.md) with lots of options
+- can report the duration of test cases
 - tests can be [**filtered**](commandline.md) based on their name/file/test suite using wildcards
 - can [**filter**](commandline.md) subcases using wildcards and by specifying the nesting levels for which those filters should work
 - failures can (optionally) break into the debugger on Windows and Mac
