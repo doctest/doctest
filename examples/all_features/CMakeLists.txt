@@ -1,8 +1,14 @@
+cmake_minimum_required(VERSION 3.0)
+
+project(all_features)
+
+include(../../scripts/cmake/common.cmake)
+
+include_directories(../../doctest/)
+
 ################################################################################
 ## BUILD ALL EXAMPLE SOURCES INTO A SINGLE BINARY AND EXECUTE TESTS ON EACH FILE
 ################################################################################
-
-project(all_features)
 
 set(files
     main.cpp

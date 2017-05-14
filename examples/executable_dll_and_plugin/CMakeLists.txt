@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 3.0)
 
 project(executable_dll_and_plugin)
 
+include(../../scripts/cmake/common.cmake)
+
 include_directories(../../doctest/)
 
 if(APPLE)
@@ -12,15 +14,15 @@ if(APPLE)
     endif()
 endif()
 
-add_library(implementation SHARED implementation.cpp implementation_2.cpp)
+doctest_add_library(implementation SHARED implementation.cpp implementation_2.cpp)
 
-add_library(dll SHARED dll.cpp)
+doctest_add_library(dll SHARED dll.cpp)
 target_link_libraries(dll implementation)
 
-add_library(plugin SHARED plugin.cpp)
+doctest_add_library(plugin SHARED plugin.cpp)
 target_link_libraries(plugin implementation)
 
-add_executable(${PROJECT_NAME} main.cpp)
+doctest_add_executable(${PROJECT_NAME} main.cpp)
 target_link_libraries(${PROJECT_NAME} dll)
 target_link_libraries(${PROJECT_NAME} implementation)
 
