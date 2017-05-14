@@ -17,18 +17,6 @@ Planned features for future releases - order changes constantly...
     
     - https://www.paypal.me/onqtam
     - https://github.com/jch/html-pipeline/blob/master/lib/html/pipeline/sanitization_filter.rb#L45-L48
-    - add a new page for build systems and integration
-        - copying the header directly
-        - getting the header with a cmake script - perhaps using ExternalProject() or something like that
-        - using cmake directly
-        - using it as a package (the install target)
-        - getting it from vcpkg/hunter/conan/cppan/etc.
-        https://www.micheleadduci.net/blog/2016/12/11/building-modular-cpp-applications-with-cmake/
-        https://github.com/Microsoft/vcpkg/blob/master/ports/doctest/portfile.cmake
-        https://github.com/ruslo/hunter/blob/master/cmake/configs/default.cmake#L131
-        https://github.com/ruslo/hunter/blob/master/cmake/projects/doctest/hunter.cmake
-        https://github.com/ruslo/hunter/tree/master/examples/doctest
-package managers?
 
 ### For 1.3:
 

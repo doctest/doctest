@@ -8,43 +8,43 @@ There will be proper support for this in the future. For now there are 2 ways of
 
 - extracting the asserts in a helper function and calling it with a user-constructed array of data:
 
-```c++
-void doChecks(int data) {
-    // do asserts with data
-}
-
-TEST_CASE("test name") {
-    std::vector<int> data {1, 2, 3, 4, 5, 6};
-    
-    for(auto& i : data) {
-        CAPTURE(i); // log the current input data
-        doChecks(i);
+    ```c++
+    void doChecks(int data) {
+        // do asserts with data
     }
-}
-```
+
+    TEST_CASE("test name") {
+        std::vector<int> data {1, 2, 3, 4, 5, 6};
+        
+        for(auto& i : data) {
+            CAPTURE(i); // log the current input data
+            doChecks(i);
+        }
+    }
+    ```
 
     This has several drawbacks:
     - in case of an exception (or a ```REQUIRE``` assert failing) the entire test case ends and the checks are not done for the rest of the input data
-    - the user has to manually log the data with calls to ```CAPTURE()``` (```INFO()```)
+    - the user has to manually log the data with calls to ```CAPTURE()``` ( or ```INFO()```)
     - more boilerplate - doctest should supply primitives for generating data but currently doesnt - so the user has to write his own data generation
 
 - using subcases to initialize data differently:
 
-```c++
-TEST_CASE("test name") {
-    int data;
-    SUBCASE("") { data = 1; }
-    SUBCASE("") { data = 2; }
-    
-    CAPTURE(data);
-    
-    // do asserts with data
-}
-```
+    ```c++
+    TEST_CASE("test name") {
+        int data;
+        SUBCASE("") { data = 1; }
+        SUBCASE("") { data = 2; }
+        
+        CAPTURE(data);
+        
+        // do asserts with data
+    }
+    ```
 
     This has the following drawbacks:
     - doesn't scale well - it is very impractical to write such code for more than a few different inputs
-    - the user has to manually log the data with calls to ```CAPTURE()``` (```INFO()```)
+    - the user has to manually log the data with calls to ```CAPTURE()``` (or ```INFO()```)
 
 Stay tuned for proper value-parameterization in doctest!
 

@@ -99,6 +99,7 @@ Usage:
 - [Configuration](doc/markdown/configuration.md)
 - [String conversions](doc/markdown/stringification.md)
 - [FAQ](doc/markdown/faq.md)
+- [Build systems](doc/markdown/build-systems.md)
 - [Examples](examples)
 
 Sponsors

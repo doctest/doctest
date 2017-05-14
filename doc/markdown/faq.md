@@ -97,10 +97,10 @@ A way to solve this in CMake is to use object libraries instead of static librar
 add_library(with_tests OBJECT src_1.cpp src_2.cpp src_3.cpp ...)
 
 add_library(dll SHARED $<TARGET_OBJECTS:with_tests> dll_src_1.cpp ...)
-add_executable(exe $<TARGET_OBJECTS:with_tests> exe_src_1.cpp ......)
+add_executable(exe $<TARGET_OBJECTS:with_tests> exe_src_1.cpp ...)
 ```
 
-Thanks to [pthom](https://github.com/pthom) for discovering this.
+Thanks to [pthom](https://github.com/pthom) for suggesting this.
 
 As an alternative I have created a CMake function that forces every object file from a static library to be linked into a binary target - it is called [**```doctest_force_link_static_lib_in_target()```**](../../examples/exe_with_static_libs/doctest_force_link_static_lib_in_target.cmake). It is unintrusive - no source file gets changed - everything is done with compiler flags per source files. An example project using it can be found [**here**](../../examples/exe_with_static_libs) - the commented part of the CMakeLists.txt file.
 

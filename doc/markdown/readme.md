@@ -20,6 +20,7 @@ Usage:
 - [Configuration](configuration.md)
 - [String conversions](stringification.md)
 - [FAQ](faq.md)
+- [Build systems](build-systems.md)
 - [Examples](../../examples)
 
 This library is free, and will stay free but needs your support to sustain its development. There are lots of [**new features**](roadmap.md) and maintenance to do. If you work for a company using **doctest** or have the means to do so, please consider financial support.
