@@ -15,8 +15,6 @@ Planned features for future releases - order changes constantly...
     - make a gif showing how code is written, compiled and executed
     - graphs in the benchmarks page instead of tables? generate graph from data
     
-    - docs about sort-of data driven testing - with INFO and SUBCASE
-    
     - https://www.paypal.me/onqtam
     - https://github.com/jch/html-pipeline/blob/master/lib/html/pipeline/sanitization_filter.rb#L45-L48
     - add a new page for build systems and integration

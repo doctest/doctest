@@ -32,6 +32,7 @@ Some notes:
 - if the library is built with C++11 rvalue reference support (see [**```DOCTEST_CONFIG_WITH_RVALUE_REFERENCES```**](configuration.md#doctest_config_with_rvalue_references)) then deleted overloads are provided to prohibit rvalues from being captured in an **```INFO()```** call - since the lazy stringification actually caches pointers to the objects. For C++98 temporaries will again not work but there will be horrible compilation errors
 - the [**```DOCTEST_CONFIG_NUM_CAPTURES_ON_STACK```**](configuration.md#doctest_config_num_captures_on_stack) config identifier can be used to control how much stack space is used to avoid heap allocations for the streaming macros
 - stream manipulators (from ```<iomanip>```) can be used but need to be created as local variables and used as lvalues
+- refer to the [**stringification**](stringification.md) page for information on how to teach doctest to stringify your types
 
 The lazy stringification and the stack usage means that in the common case when no asserts fail the code runs super fast. This makes it suitable even in loops - perhaps to log the iteration. 
 
