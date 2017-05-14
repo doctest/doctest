@@ -87,18 +87,29 @@ https://github.com/tpounds/mockitopp
 
 ### Why are my tests in a static library not getting registered?
 
-This is a [**common problem**](https://groups.google.com/forum/#!msg/catch-forum/FV0Qo62DvgY/jxEO6c9_q3kJ) and it affects all modern compilers on all platforms.
+This is a [**common problem among libraries with self-registering code**](https://groups.google.com/forum/#!msg/catch-forum/FV0Qo62DvgY/jxEO6c9_q3kJ) and it affects all modern compilers on all platforms.
 
 The problem is that when a static library is being linked to a binary (executable or dll) - only object files from the static library that define a symbol being required from the binary will get pulled in (this is a linker/dependency optimization).
 
-I have created a CMake function that forces every object file from a static library to be linked into a binary target - it is called [**```doctest_force_link_static_lib_in_target()```**](../../examples/exe_with_static_libs/doctest_force_link_static_lib_in_target.cmake). It is unintrusive - no source file gets changed - everything is done with compiler flags per source files. An example project using it can be found [**here**](../../examples/exe_with_static_libs).
+A way to solve this in CMake is to use object libraries instead of static libraries - like this:
+
+```cmake
+add_library(with_tests OBJECT src_1.cpp src_2.cpp src_3.cpp ...)
+
+add_library(dll SHARED $<TARGET_OBJECTS:with_tests> dll_src_1.cpp ...)
+add_executable(exe $<TARGET_OBJECTS:with_tests> exe_src_1.cpp ......)
+```
+
+Thanks to [pthom](https://github.com/pthom) for discovering this.
+
+As an alternative I have created a CMake function that forces every object file from a static library to be linked into a binary target - it is called [**```doctest_force_link_static_lib_in_target()```**](../../examples/exe_with_static_libs/doctest_force_link_static_lib_in_target.cmake). It is unintrusive - no source file gets changed - everything is done with compiler flags per source files. An example project using it can be found [**here**](../../examples/exe_with_static_libs) - the commented part of the CMakeLists.txt file.
 
 It doesn't work in 2 scenarios:
 
 - either the target or the library uses a precompiled header - see [**this**](https://github.com/onqtam/doctest/issues/21#issuecomment-247001423) issue for details
 - either the target or the library is an imported target (pre-built) and not built within the current cmake tree
 
-For an alternative you can checkout the [**pthom/doctest_registerlibrary**](https://github.com/pthom/doctest_registerlibrary) repository.
+You can also checkout this repository for a different solution: [**pthom/doctest_registerlibrary**](https://github.com/pthom/doctest_registerlibrary).
 
 ### Why is comparing C strings (```char*```) actually comparing pointers?
 

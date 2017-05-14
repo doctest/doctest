@@ -31,7 +31,11 @@ endfunction()
 # it doesn't work in 2 scenarios:
 # - either the target or the library uses a precompiled header - see the end of this issue for details: https://github.com/onqtam/doctest/issues/21
 # - either the target or the library is an imported target (pre-built) and not built within the current cmake tree
-# for an alternative you can checkout this repository: https://github.com/pthom/doctest_registerlibrary
+# Alternatives:
+# - use CMake object libraries instead of static libraries - >> THIS IS ACTUALLY PREFERRED << to all this CMake trickery
+# - checkout these 2 repositories:
+#   - https://github.com/pthom/cmake_registertest
+#   - https://github.com/pthom/doctest_registerlibrary
 function(doctest_force_link_static_lib_in_target target lib)
     # check if the library has generated dummy headers
     get_target_property(DDH ${lib} DOCTEST_DUMMY_HEADER)

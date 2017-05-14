@@ -1,9 +1,8 @@
-get_filename_component(PROJECT_NAME ${CMAKE_CURRENT_SOURCE_DIR} NAME)
-project(${PROJECT_NAME})
-
 ################################################################################
 ## BUILD ALL EXAMPLE SOURCES INTO A SINGLE BINARY AND EXECUTE TESTS ON EACH FILE
 ################################################################################
+
+project(all_features)
 
 set(files
     main.cpp
