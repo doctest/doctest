@@ -1,5 +1,9 @@
 ## Build systems
 
+The latest released version of doctest can be obtained from here: https://raw.githubusercontent.com/onqtam/doctest/master/doctest/doctest.h
+
+You can substitute ```master``` with ```dev``` or a tag like ```1.2.0``` for a specific version in the URL above.
+
 ### CMake
 
 - **doctest** is easiest to use as a single file inside your own repository. Then the following minimal example will work:
