@@ -1,5 +1,38 @@
 # Change Log
 
+## [1.2.0](https://github.com/onqtam/doctest/tree/1.2.0) (2017-05-16)
+[Full Changelog](https://github.com/onqtam/doctest/compare/1.1.4...1.2.0)
+
+**Closed issues:**
+
+- Further improvements on compile time - disable inlining of functions used in asserts [\#70](https://github.com/onqtam/doctest/issues/70)
+- Improve runtime performance - lazy stringification, more inlining, no statics on the hot path, move semantics for classes such as doctest::String which are used by value, etc. [\#69](https://github.com/onqtam/doctest/issues/69)
+- Add option to show duration of test case execution and add a timeout\(seconds\) decorator - marking them as failed if they exceed it [\#68](https://github.com/onqtam/doctest/issues/68)
+- Add support for test case decorators - label, description, skip, may\_fail, should\_fail, expected\_failures, etc. [\#67](https://github.com/onqtam/doctest/issues/67)
+- Integrate static analysis into the CI builds [\#66](https://github.com/onqtam/doctest/issues/66)
+- Print the test suite name on test case failure [\#65](https://github.com/onqtam/doctest/issues/65)
+- Add signal handlers to handle crashes \(and use SEH under Windows\) - report which test case failed [\#63](https://github.com/onqtam/doctest/issues/63)
+- Add support to Approx for strong typedefs of double [\#62](https://github.com/onqtam/doctest/issues/62)
+- \[question\] Is there a way to always have 0 as the exit code regardless of test results? [\#59](https://github.com/onqtam/doctest/issues/59)
+- Add support for un-parenthesized expressions containing commas in asserts [\#58](https://github.com/onqtam/doctest/issues/58)
+- Add ability to filter subcases with filters [\#57](https://github.com/onqtam/doctest/issues/57)
+- Add option to query if code is being ran inside of a test - doctest::isRunningInTest\(\) [\#56](https://github.com/onqtam/doctest/issues/56)
+- Ability for a binary \(executable / shared object\) to use the test runner implementation of another binary - with exported symbols - so tests end up in a single registry [\#55](https://github.com/onqtam/doctest/issues/55)
+- How to force the use of colors in the terminal? [\#54](https://github.com/onqtam/doctest/issues/54)
+- How can I mix production code with the Unit Tests? [\#53](https://github.com/onqtam/doctest/issues/53)
+- add \<= and \>= operators to Approx \(and also maybe \< and \>\) [\#52](https://github.com/onqtam/doctest/issues/52)
+- Add ability to capture variables from test scope [\#48](https://github.com/onqtam/doctest/issues/48)
+- !!! BREAKING CHANGE !!! - Make TEST\_SUITE work with blocks and add TEST\_SUITE\_BEGIN [\#41](https://github.com/onqtam/doctest/issues/41)
+- Add option to print which test suites/cases are run [\#39](https://github.com/onqtam/doctest/issues/39)
+- Add support for templated test cases - parameterized by type [\#38](https://github.com/onqtam/doctest/issues/38)
+- Add custom failure messages with lazy stringification [\#23](https://github.com/onqtam/doctest/issues/23)
+- Add an exception translation mechanism + the ability for users to extend it with custom exception types [\#12](https://github.com/onqtam/doctest/issues/12)
+- Add API for reporting failures [\#9](https://github.com/onqtam/doctest/issues/9)
+
+**Merged pull requests:**
+
+- Update doctest to work with ARM DS5-compiler [\#64](https://github.com/onqtam/doctest/pull/64) ([tomasnilefrost](https://github.com/tomasnilefrost))
+
 ## [1.1.4](https://github.com/onqtam/doctest/tree/1.1.4) (2017-02-18)
 [Full Changelog](https://github.com/onqtam/doctest/compare/1.1.3...1.1.4)
 
