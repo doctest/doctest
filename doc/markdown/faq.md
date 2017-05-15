@@ -21,12 +21,12 @@ Pros of **doctest**:
 - **doctest** executes tests [**many times faster**](benchmarks.md#runtime-benchmarks) than [**Catch**](https://github.com/philsquared/Catch)
 - everything testing-related can be removed from the binary by defining the [**```DOCTEST_CONFIG_DISABLE```**](configuration.md#doctest_config_disable) identifier
 - doesn't drag any headers when included (except for in the translation unit where the library gets implemented)
-- 0 warnings even on the [**most aggressive**](../../scripts/common.cmake#L71) warning levels for MSVC/GCC/Clang
+- 0 warnings even on the [**most aggressive**](../../scripts/cmake/common.cmake#L71) warning levels for MSVC/GCC/Clang
 - per commit tested with 300+ builds on [**much more compilers**](features.md#extremely-portable) - and through valgrind/sanitizers
 - statically analyzed - [**Cppcheck**](http://cppcheck.sourceforge.net/) / [**Clang-Tidy**](http://oclint.org/) / [**Coverity Scan**](https://scan.coverity.com/) / [**OCLint**](https://scan.coverity.com/) / [**Visual Studio Analyzer**](https://docs.microsoft.com/en-us/visualstudio/code-quality/analyzing-c-cpp-code-quality-by-using-code-analysis)
 - test cases can be written in headers - the framework will still register the tests only once - no duplicates
 
-Aside from everything mentioned so far doctest has some [**features**](features.md#other-features) (like [templated test cases](parameterized-tests.md#templated-test-cases---parameterized-by-type)) which [**Catch**](https://github.com/philsquared/Catch) doesn't.
+Aside from everything mentioned so far doctest has some [**features**](features.md#other-features) (like [**templated test cases**](parameterized-tests.md#templated-test-cases---parameterized-by-type)) which [**Catch**](https://github.com/philsquared/Catch) doesn't.
 
 Missing stuff:
 
@@ -56,8 +56,8 @@ Using the [**fast**](assertions.md#fast-asserts) asserts in combination with [**
 
 There are only 2 drawbacks of this approach:
 
-- using fast asserts (40-80% [**faster**](benchmarks.md#cost-of-an-assertion-macro) than ```CHECK(a==b)```) means that there is no ```try/catch``` block in each assert so if an expression throws the whole test case ends.
-- defining the [**```DOCTEST_CONFIG_SUPER_FAST_ASSERTS```**](configuration.md#doctest_config_super_fast_asserts) config identifier will result in even [**faster**](benchmarks.md#cost-of-an-assertion-macro) fast asserts (30-80%) at the cost of only one thing: when an assert fails and a debugger is present - the framework will break inside a doctest function so the user will have to go 1 level up in the callstack to see where the actual assert is in the source code.
+- using fast asserts (60-90% [**faster**](benchmarks.md#cost-of-an-assertion-macro) than ```CHECK(a==b)```) means that there is no ```try/catch``` block in each assert so if an expression throws the whole test case ends.
+- defining the [**```DOCTEST_CONFIG_SUPER_FAST_ASSERTS```**](configuration.md#doctest_config_super_fast_asserts) config identifier will result in even [**faster**](benchmarks.md#cost-of-an-assertion-macro) fast asserts (50-80%) at the cost of only one thing: when an assert fails and a debugger is present - the framework will break inside a doctest function so the user will have to go 1 level up in the callstack to see where the actual assert is in the source code.
 
 These 2 things can be considered negligible if you are dealing mainly with arithmetic (expressions are unlikely to throw exceptions) and all the tests usually pass (you don't need to often navigate to a failing assert with a debugger attached)
 

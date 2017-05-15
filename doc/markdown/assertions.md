@@ -60,7 +60,7 @@ For more information about the ```INFO()``` macro and logging with the streaming
 
 These asserts don't use templates to decompose the comparison expressions for the left and right parts.
 
-These have the same guarantees as the expression decomposing ones - just less templates - [**20% faster**](benchmarks.md#cost-of-an-assertion-macro) for compile times.
+These have the same guarantees as the expression decomposing ones - just less templates - [**25%-45% faster**](benchmarks.md#cost-of-an-assertion-macro) for compile times.
 
 ```<LEVEL>``` is one of 3 possible: ```REQUIRE```/```CHECK```/```WARN```.
 
@@ -75,11 +75,11 @@ These have the same guarantees as the expression decomposing ones - just less te
 
 ## Fast asserts
 
-These are the faster versions of the binary and unary asserts - by [**30-70%**](benchmarks.md#cost-of-an-assertion-macro) of compile time.
+These are the faster versions of the binary and unary asserts - by [**60-80%**](benchmarks.md#cost-of-an-assertion-macro) of compile time.
 
 The difference is they don't evaluate the expression in a ```try/catch``` block - if the expression throws the whole test case ends.
 
-There is also the [**```DOCTEST_CONFIG_SUPER_FAST_ASSERTS```**](configuration.md#doctest_config_super_fast_asserts) config identifier that makes them even faster by another [**35-80%**](benchmarks.md#cost-of-an-assertion-macro)!
+There is also the [**```DOCTEST_CONFIG_SUPER_FAST_ASSERTS```**](configuration.md#doctest_config_super_fast_asserts) config identifier that makes them even faster by another [**50-80%**](benchmarks.md#cost-of-an-assertion-macro)!
 
 ```<LEVEL>``` is one of 3 possible: ```REQUIRE```/```CHECK```/```WARN```.
 

@@ -15,7 +15,7 @@ What makes **doctest** different is that it is ultra light on compile times (by 
 - all macros have prefixes - some by default have unprefixed versions as well but that is optional - see [**configuration**](configuration.md)
 - 0 warnings even with the most aggresive flags (on all tested compilers!!!)
 	- ```-Weverything -pedantic``` for **clang**
-	- ```-Wall -Wextra -pedantic``` and **>> over 35 <<** other warnings **not** covered by these flags for **GCC**!!! - see [**here**](../../scripts/common.cmake#L77)
+	- ```-Wall -Wextra -pedantic``` and **>> over 35 <<** other warnings **not** covered by these flags for **GCC**!!! - see [**here**](../../scripts/cmake/common.cmake#L77)
 	- ```/W4``` for **MSVC** (```/Wall``` is too much there - even their own headers produce **thousands** of warnings with that option)
 - doesn't error on unrecognized [**command line**](commandline.md) options and supports prefixes for interop with client command line parsing
 - can set options [**procedurally**](main.md) and not deal with passing ```argc```/```argv``` from the command line
