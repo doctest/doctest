@@ -5,7 +5,7 @@ import fileinput
 
 # update main readme 'try it online' badge permalink
 print("updating main readme with up-to-date wandbox link")
-proc = subprocess.Popen('python send_to_wandbox.py ../doctest/ ' + "../examples/hello_world/main.cpp", stdout = subprocess.PIPE)
+proc = subprocess.Popen('python send_to_wandbox.py ../doctest/ ' + "../scripts/hello_world.cpp", stdout = subprocess.PIPE)
 url = proc.stdout.read().strip()
 
 readme_contents = ""

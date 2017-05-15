@@ -7,81 +7,151 @@
 
 This library is free, and will stay free but needs your support to sustain its development. There are lots of [**new features**](roadmap.html) and maintenance to do. If you work for a company using **doctest** or have the means to do so, please consider financial support.
 
-
-[![Pledgie](https://pledgie.com/campaigns/31280.png)](https://pledgie.com/campaigns/31280)
 [![Patreon](https://cloud.githubusercontent.com/assets/8225057/5990484/70413560-a9ab-11e4-8942-1a63607c0b00.png)](http://www.patreon.com/onqtam)
-[![PayPal](https://www.paypalobjects.com/en_US/i/btn/btn_donate_LG.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=3K423Q6TK48BN)
+[![PayPal](https://www.paypalobjects.com/en_US/i/btn/btn_donate_LG.gif)](https://www.paypal.me/onqtam)
 
-This is a list of planned features for future releases (not in the given order).
+Planned features for future releases - order changes constantly...
 
-- option to output summary only
-- ability to customize the colors in the console output
-- add support for <=, >= to Approx - like [requested](https://github.com/philsquared/Catch/pull/715) with [catch](https://github.com/philsquared/Catch/issues/651)
-- the set holding all registered tests should use a specialized allocator to minimize program startup time
-- pool allocator for the ```String``` class - currently very unoptimized
-- a mechanism for translating exceptions - users should be able to teach the framework about their types (look at Catch)
-- support for ```std::exception``` and derivatives (mainly for calling the ```.what()``` method when caught unexpectedly)
-- crash handling: signals on UNIX platforms or structured exceptions on Windows (should also have DOCTEST_CONFIG_NO_SIGNAL_CATCHING)
-- support for tags
-    - may fail tag
-    - invisible tag
-    - look at Catch - https://github.com/philsquared/Catch/blob/master/docs/test-cases-and-sections.html#special-tags
-- output to file
+### For 1.3:
+
+- move from printf to using streams in the current console reporter and clean that mess
 - reporters
+    - output to file
     - a system for writing custom reporters
     - ability to use multiple reporters at once (but only 1 to stdout)
     - a compact reporter
+    - a progress reporter - or maybe just an option for the console reporter
     - an xml reporter
-    - jUnit/xUnit reporters
-- add the ability to query if code is currently being ran in a test -  ```doctest::isRunningInTest()```
-- convolution support for the assertion macros (with a predicate)
-- time stuff
-    - reporting running time of tests
-    - restricting duration of test cases
-    - killing a test that exceeds a time limit (will perhaps require threading or processes)
-- adding contextual info to asserts (logging) - with an ```INFO```/```CONTEXT``` /```TRACEPOINT``` macro (also look at [this](https://github.com/philsquared/Catch/issues/601))
-- add ```ERROR```/```FAIL``` macros (also ```ADD_FAILURE_AT(file, line);``` and extend the asserts to have ```_AT``` variants)
-- running tests a few times
-- marking a test to run X times (should also multiply with the global test run times)
-- test execution in separate processes - ```fork()``` for UNIX and [this](https://github.com/nemequ/munit/issues/2) for Windows
-- ability to provide a temp folder that is cleared between each test case
-- detect floating point exceptions
-- ```Bitwise()``` class that has overloaded operators for comparison - to be used to check objects bitwise against each other
-- look into MSTest integration
-    - http://accu.org/index.php/journals/1851
-    - https://msdn.microsoft.com/en-us/library/hh270865.aspx
-    - https://msdn.microsoft.com/en-us/library/hh598953.aspx
-    - also look into similar Xcode integration - https://github.com/philsquared/Catch/pull/454
-- matchers - should investigate what they are - look at google test and Catch
-- generators? - look at Catch - and investigate what they are (also in [boost](http://www.boost.org/doc/libs/1_61_0/libs/test/doc/html/boost_test/tests_organization/test_cases/test_case_generation.html))
-- mocking - investigate google mock assertion macros and interop with doctest (also [mockitopp](https://github.com/tpounds/mockitopp) and [trompeloeil](https://github.com/rollbear/trompeloeil)) - and write in FAQ
-- look at property based testing (for example [rapidcheck](https://github.com/emil-e/rapidcheck)) - and write in FAQ
-- [symbolizer](https://github.com/facebook/folly/tree/master/folly/experimental/symbolizer) - for a stack trace - when an assertion fails - and it's in a user function with some deep callstack away from the current test case - how to know the exact code path that lead to the failing assert
-
-And here is a list of things that are being considered but not part of the roadmap yet:
-
+    - xUnit reporter
+    - a listener interface - similar to a reporter - look at Catch
 - ability to have no output when everything succeeds
-- integrate static analysis on the CI: **msvc**, **clang**, **cppcheck**
-- extend Approx for types that have operator double - see [here](https://github.com/philsquared/Catch/issues/652) and [here](https://github.com/philsquared/Catch/pull/658)
-- option to list files in which there are test cases who match the current filters
-- support for doing assertions in multiple threads - synchronize their access to shared doctest state
+- option to output summary only
+- log levels - like in [boost test](http://www.boost.org/doc/libs/1_63_0/libs/test/doc/html/boost_test/utf_reference/rt_param_reference/log_level.html)
+- matchers - should investigate what they are - look at google test/mock and Catch (also predicates and boost test)
+- convolution support for the assertion macros (with a predicate)
+- Value-Parameterized test cases
+- generators? - look at Catch - and investigate what they are
+- look at property based testing
+    - [rapidcheck](https://github.com/emil-e/rapidcheck)
+    - [autocheck](https://github.com/thejohnfreeman/autocheck)
+    - [CppQuickCheck](https://github.com/grogers0/CppQuickCheck)
+- IDE integration
+    - https://blogs.msdn.microsoft.com/vcblog/2017/05/10/unit-testing-and-the-future-announcing-the-test-adapter-for-google-test/
+    - https://www.reddit.com/r/cpp/comments/65c0f1/run_cpp_unit_tests_from_xcode_and_visual_studio/
+    - https://github.com/k-brac/CUTI
+    - MSTest
+        - http://accu.org/index.php/journals/1851
+        - https://msdn.microsoft.com/en-us/library/hh270865.aspx
+        - https://msdn.microsoft.com/en-us/library/hh598953.aspx
+        - https://blogs.msdn.microsoft.com/vcblog/2017/04/19/cpp-testing-in-visual-studio/
+        - https://msdn.microsoft.com/en-us/library/hh419385.aspx
+    - XCode - https://github.com/philsquared/Catch/pull/454
+    - CLion
+        - https://www.jetbrains.com/clion/features/unit-testing.html
+        - https://blog.jetbrains.com/clion/2017/03/clion-2017-1-released/#catch
+
+### For 1.4:
+
+- running tests a [few times](https://github.com/google/googletest/blob/master/googletest/docs/AdvancedGuide.html#repeating-the-tests)
+- test execution in [separate processes](https://github.com/philsquared/Catch/issues/853) - ```fork()``` for UNIX and [this](https://github.com/nemequ/munit/issues/2) for Windows
+- killing a test that exceeds a time limit (will perhaps require threading or processes)
+- [symbolizer](https://github.com/facebook/folly/tree/master/folly/experimental/symbolizer) - for a stack trace - when an assertion fails - and it's in a user function with some deep callstack away from the current test case - how to know the exact code path that lead to the failing assert
+- ability to make the framework not capture unexpected exceptions - as requested [here](https://github.com/onqtam/doctest/issues/12#issuecomment-235334585)
+- add Approx ability to compare with absolute epsilon - [Catch PR](https://github.com/philsquared/Catch/pull/538)
+- ability to customize the colors in the console output (may also use styles - based on [this](https://github.com/agauniyal/rang))
+- implement breaking into the debugger under linux - see [here](https://github.com/philsquared/Catch/pull/585) and [here](https://github.com/scottt/debugbreak)
+- better testing of the library
+    - unit test the String class
+    - should unit test internals - currently even if a bug is caught by different output it's very difficult to track the reason
+    - should test stuff that should not compile
+    - should test crash handling
+    - should test more config options
+    - should test C++11 stuff - perhaps inspect the CMAKE_CXX_FLAGS for -std=c++11 on the CI and add more targets/tests
+    - test tricky stuff like expressions with commas in asserts
+
+### For 2.0:
+
+- remove C++98 support
+    - remove the config identifiers for C++11 features
+    - use variadic templates where appropriate
+    - update type lists to C++11
+    - update traits - use declval, etc.
+    - move initialization of fields from initializer lists to class bodies
+    - update static code analysis - less warning suppressing
+
+### For 3.0:
+
+- use modules - use ```std::string``` and whatever else comes from the standard - no more hand rolled traits and classes
+- minimize the use of the preprocessor
+
+### Things that are being considered but not part of the roadmap yet:
+
+- FakeIt mocking integration - like [catch](https://github.com/eranpeer/FakeIt/tree/master/config/catch)
+- consider the following 2 properties for the MSVC static code analyzer: EnableCppCoreCheck, EnableExperimentalCppCoreCheck
+- rpm package? like this: https://github.com/vietjtnguyen/argagg/blob/master/packaging/rpm/argagg.spec
+- get the current test case/section path - https://github.com/philsquared/Catch/issues/522
+- when no assertion is encountered in a test case it should fail
+- failure reporting should print out previous SECTIONs for data-driven testing - as requested [here](https://github.com/philsquared/Catch/issues/734)
+- ```Bitwise()``` class that has overloaded operators for comparison - to be used to check objects bitwise against each other
+- detect floating point exceptions
+- checkpoint/passpoint - like in [boost test](http://www.boost.org/doc/libs/1_63_0/libs/test/doc/html/boost_test/test_output/test_tools_support_for_logging/checkpoints.html) (also make all assert/subcase/logging macros to act as passpoints and print the last one on crashes or exceptions)
+- queries for the current test case - name (and probably decorators)
+- thread safety - asserts/subcases/captures should be safe to be used by multiple threads simultaneously
 - support for running tests in parallel in multiple threads
-- a progress reporter
-- ability to filter not just TEST_CASE names but also SUBCASE names (and maybe tags when they are introduced)
-- doctest in a GUI environment? with no console? APIs for attaching a console? querying if there is one? investigate...
-- ability to specify ASC/DESC for the order option
-- command line error handling/reporting
-- ability for the user to extend the command line - as requested [here](https://github.com/philsquared/Catch/issues/622)
+- death tests - as in [google test](https://github.com/google/googletest/blob/master/googletest/docs/AdvancedGuide.html#death-tests)
+- config options
+    - test case name uniqueness - reject the ones with identical names
+- command line options
+    - ability to specify ASC/DESC for the order option
+    - global timeout option (per test or per entire session?)
+    - command line error handling/reporting
+    - ability for the user to extend the command line - as requested [here](https://github.com/philsquared/Catch/issues/622)
+    - option to list files in which there are test cases who match the current filters
+    - option for filters to switch from "match any" to "match all" mode
+    - option to list test suites and test cases in a tree view
+    - add a "wait key" option - as requested [here](https://github.com/philsquared/Catch/issues/477#issuecomment-256417686)
+- decorators for test cases and test suites- like in boost test
+    - depends_on
+    - precondition
+    - fixture
+    - label (tag) - with the ability to have multiple labels (tags) for a test case and also the ability to list them
+    - run X times (should also multiply with (or just override) the global test run times)
+    - throw an exception when incompatible decorators are given in the same list of decorators - like may_fail and should_fail
+- setup / teardown support
+    - global setup / teardown - can be currently achieved by providing a custom main function
+    - per test suite (block? only? and not all blocks of the same test suite?)
+    - as decorators
+    - see how it's done in boost test - with the fixture decorator
+    - perhaps for fixtures in addition to the constructor / destructor - since throwing in the destructor might terminate the program
+    - or just ignore all of this this - it would require globals or classes and inheritance - and we already have subcases
+- doctest in a GUI environment? with no console? APIs for attaching a console? querying if there is one? [investigate...](https://github.com/philsquared/Catch/blob/master/docs/configuration.html#stdout)
+- runtime performance
+    - startup - the set holding all registered tests should use a specialized allocator to minimize program startup time
+    - failing - optimize createStream/freeStream to reuse a pool of ostringstream objects
+- ability to provide a temp folder that is cleared between each test case
+- make the _MESSAGE assert macros work with variadic arguments - and maybe write the ones for binary/unary/fast asserts as well
+- move from operator "<<" to "<=" for capturing the left operand when decomposing binary expressions with templates
+- think about silencing warnings about unused variables when DOCTEST_CONFIG_DISABLE is used - see commit 6b61e8aa3818c5ea100cedc1bb48a60ea10df6e8 or issue #61
+- think about optionally using ```<typeinfo>``` and libcxxabi for demangling so users don't have to use ```TYPE_TO_STRING()```
+- handle more complex expressions - ```CHECK(foo() == 1 || bar() == 2);```
+- think about using a string view of some sorts
+- benchmark against google test and boost test
 
-The following list is with things that are very unlikely to enter the roadmap:
+### Things that are very unlikely to enter the roadmap:
 
-- test with missed warning flags for GCC - look into https://github.com/Barro/compiler-warnings
-- utf8???
+- think about removing the binary asserts (leaving only the fast binary asserts) because normal asserts + no try/catch in asserts are almost the same
+- move the "react()" part (the one that throws for REQUIRE asserts - or for when "abort-after=<int>" is reached) to a function call in the while() part of the asserts
+- stop using underscores for the begining of identifiers - the anonymous variables - against the standard...
+- templated fixture test cases
+- test with missed warning flags for GCC
+    - https://github.com/Barro/compiler-warnings
+    - http://stackoverflow.com/a/34971392/3162383
+- utf8 / unicode ???
+    - https://github.com/philsquared/Catch/pull/903
 - handle ```wchar``` strings???
-- print a warning when no assertion is encountered in a test case
-- hierarchical test suites - using a stack for the pushed ones - should be easy
+- hierarchical test suites - using a stack for the pushed ones
+- ability to specify the width of the terminal in terms of characters (for example 60 - less than 80 - the default)
 - ability to re-run only newly compiled tests based on time stamps using ```__DATE__``` and ```__TIME__``` - stored in some file
-- add option to not report line numbers - getting annoyed of re-committing reference output files with changed line reports from a tiny change...
 - add underscores to all preprocessor identifiers not intended for use by the user
 - put everything from the ```detail``` namespace also in a nested anonymous namespace to make them with internal linkage
 - ability to put everything from doctest into an anonymous namespace - to allow the use of multiple different versions of **doctest** within the same binary (executable/dll) - like the [**stb**](https://github.com/nothings/stb) libraries can

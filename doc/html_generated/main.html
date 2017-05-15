@@ -16,19 +16,21 @@ This should be done in exactly one source file and is even a good idea to do thi
 
 However if you need more control - want to set options with code to the execution context or want to integrate the framework in your production code - then the default ```main()``` just won't do the job. In that case use [**```DOCTEST_CONFIG_IMPLEMENT```**](configuration.html#doctest_config_implement).
 
-All the [**command line**](commandline.html) options can be set like this (flags cannot because it wouldn't make sense). Filters can only be appended or cleared with ```Context::clearFilters()``` - the user cannot remove a specific filter with code. 
+All the [**command line**](commandline.html) options can be set like this (flags cannot because it wouldn't make sense). Filters can only be appended or cleared with the ```addFilter()``` or ```clearFilters()``` method of a ```doctest::Context``` object - the user cannot remove a specific filter with code.
 
 ```
 #define DOCTEST_CONFIG_IMPLEMENT
 #include "doctest.h"
 
 int main(int argc, char** argv) {
-    doctest::Context context; // initialize
+    doctest::Context context;
+
+    // !!! THIS IS JUST AN EXAMPLE SHOWING HOW DEFAULTS/OVERRIDES ARE SET !!!
 
     // defaults
     context.addFilter("test-case-exclude", "*math*"); // exclude test cases with "math" in their name
     context.setOption("abort-after", 5);              // stop test execution after 5 failed assertions
-    context.setOption("sort", "name");                // sort the test cases by their name
+    context.setOption("order-by", "name");            // sort the test cases by their name
 
     context.applyCommandLine(argc, argv);
 
@@ -52,9 +54,11 @@ Note the call to ```.shouldExit()``` on the context - that is very important - i
 
 ### Dealing with shared objects (DLLs)
 
-When integrating the framework in production code which gets built as a shared object (dll) everything still works. Many shared objects and an executable can have tests in them and can even use different versions of the **doctest** framework.
+The framework can be used separately in binaries (executables / shared objects) with each having it's own test runner - this way even different versions of doctest can be used - but there will be no simple way to execute the tests from all loaded binaries and have the results aggregated and summarized.
 
-Check out [**this**](../../examples/dll_and_executable/) example which showcases how to call the tests in a shared object from the executable (and it also showcases that if a file with a test case is included both in the shared object and the executable then the test is registered in both places). 
+There is also an option to have the test runner (implementation) built in a binary and shared with others (so there is a single test registry) by exporting it's public symbols (the ones needed for writing tests by the user - all the forward declarations of the framework).
+
+For more info on that checkout the [**```DOCTEST_CONFIG_IMPLEMENTATION_IN_DLL```**](configuration.html#doctest_config_implementation_in_dll) config identifier and [**this example**](../../examples/executable_dll_and_plugin/).
 
 ---------------
 
