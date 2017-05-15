@@ -8,16 +8,6 @@ This library is free, and will stay free but needs your support to sustain its d
 
 Planned features for future releases - order changes constantly...
 
-### For 1.2:
-
-- change docs a bit
-    - mainly what is in the landing page (add link to overload) - https://accu.org/var/uploads/journals/Overload137.pdf
-    - make a gif showing how code is written, compiled and executed
-    - graphs in the benchmarks page instead of tables? generate graph from data
-    
-    - https://www.paypal.me/onqtam
-    - https://github.com/jch/html-pipeline/blob/master/lib/html/pipeline/sanitization_filter.rb#L45-L48
-
 ### For 1.3:
 
 - reporters
@@ -140,6 +130,7 @@ Planned features for future releases - order changes constantly...
 - think about optionally using ```<typeinfo>``` and libcxxabi for demangling so users don't have to use ```TYPE_TO_STRING()```
 - handle more complex expressions - ```CHECK(foo() == 1 || bar() == 2);```
 - think about using a string view of some sorts
+- benchmark against google test and boost test
 
 ### Things that are very unlikely to enter the roadmap:
 
