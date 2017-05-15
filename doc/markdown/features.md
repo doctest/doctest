@@ -1,14 +1,14 @@
 ## Features and design goals
 
-**doctest** has been designed from the start to be as **light** and **unintrusive** as possible. These key features should be kept.
+There are many C++ testing frameworks - [Catch](https://github.com/philsquared/Catch), [Boost.Test](http://www.boost.org/doc/libs/1_64_0/libs/test/doc/html/index.html), [UnitTest++](https://github.com/unittest-cpp/unittest-cpp), [cpputest](https://github.com/cpputest/cpputest), [googletest](https://github.com/google/googletest) and many [other](https://en.wikipedia.org/wiki/List_of_unit_testing_frameworks#C.2B.2B).
 
-It is modeled after [**Catch**](https://github.com/philsquared/Catch) which is currently the most popular alternative for testing in C++ - check out [**the differences**](faq.md#how-is-doctest-different-from-catch).
+What makes **doctest** different is that it is ultra light on compile times (by [**orders of magnitude**](benchmarks.md#benchmarks)) and is unintrusive.
 
 ## Unintrusive (transparent):
 
 - everything testing-related can be removed from the binary executable by defining the [**```DOCTEST_CONFIG_DISABLE```**](configuration.md#doctest_config_disable) identifier
 - very small and easy to integrate - single header
-- **Extremely** low footprint on compile times - [**below 10ms**](benchmarks.md#cost-of-including-the-header) of compile time overhead for including the header in a file
+- **Extremely** low footprint on compile times - [**around 25ms**](benchmarks.md#cost-of-including-the-header) of compile time overhead for including the header in a file
 - The [**fastest possible**](benchmarks.md#cost-of-an-assertion-macro) assertion macros - 50k asserts can compile for under 30 seconds (even under 10 sec)
 - doesn't drag any headers when included (except for in the translation unit where the library gets implemented)
 - everything is in the ```doctest``` namespace (and the implementation details are in a nested ```detail``` namespace)
@@ -27,9 +27,9 @@ It is modeled after [**Catch**](https://github.com/philsquared/Catch) which is c
 - tested with **GCC**: **4.4**, **4.5**, **4.6**, **4.7**, **4.8**, **4.9**, **5**, **6**
 - tested with **Clang**: **3.4**, **3.5**, **3.6**, **3.7**, **3.8**, **3.9**
 - tested with **MSVC**: **2008**, **2010**, **2012**, **2013**, **2015**, **2017**
-- statically analyzed - [**Cppcheck**](http://cppcheck.sourceforge.net/) / [**Clang-Tidy**](http://oclint.org/) / [**Coverity Scan**](https://scan.coverity.com/) / [**OCLint**](https://scan.coverity.com/) / [**Visual Studio Analyzer**](https://docs.microsoft.com/en-us/visualstudio/code-quality/analyzing-c-cpp-code-quality-by-using-code-analysis)
 - per-commit tested on **travis** and **appveyor** CI services
 	- warnings as errors even on the most aggressive warning levels - see [**here**](../../scripts/common.cmake#L71)
+    - statically analyzed - [**Cppcheck**](http://cppcheck.sourceforge.net/) / [**Clang-Tidy**](http://oclint.org/) / [**Coverity Scan**](https://scan.coverity.com/) / [**OCLint**](https://scan.coverity.com/) / [**Visual Studio Analyzer**](https://docs.microsoft.com/en-us/visualstudio/code-quality/analyzing-c-cpp-code-quality-by-using-code-analysis)
 	- all tests have their output compared to reference output of a previous known good run
 	- all tests built and ran in **Debug**/**Release** and also in **32**/**64** bit modes
 	- all tests ran through **valgrind** under **Linux**/**OSX**
@@ -37,16 +37,16 @@ It is modeled after [**Catch**](https://github.com/philsquared/Catch) which is c
 	- tests are ran in more than **300** different configurations on UNIX (Linux + OSX) on **travis** CI
 	- tests are ran in a total of **24** different configurations on Windows on **appveyor** CI
 
----------------
+------
 
-This allows the library to be used in more ways than any other - tests can be written directly in the production code!
+This allows the framework to be used in more ways than any other - tests can be written directly in the production code!
 
 - This makes the barrier for writing tests **much lower** - you don't have to: **1.** make a separate source file **2.** include a bunch of stuff in it **3.** add it to the build system and **4.** add it to source control - You can just write the tests for a class or a piece of functionality at the bottom of its source file - or even header file!
 - Tests in the production code can be thought of as documentation or up-to-date comments - showing how an API is used
 - Testing internals that are not exposed through the public API and headers becomes easier!
 - [**Test-driven development**](https://en.wikipedia.org/wiki/Test-driven_development) in C++ has never been easier!
 
-The library can be used like any other if you don't like the idea of mixing production code and tests.
+The library can be used like any other if you don't like the idea of mixing production code and tests - see features below.
 
 ## Other features:
 
@@ -54,7 +54,7 @@ The library can be used like any other if you don't like the idea of mixing prod
 - **very** light, unintrusive and portable - see the sections above - and also the [**benchmarks**](benchmarks.md)
 - offers a way to remove **everything** testing-related from the binary with the [**```DOCTEST_CONFIG_DISABLE```**](configuration.md#doctest_config_disable) macro
 - tests are registered automatically - no need to add them to a collection manually
-- supports [**subcases**](testcases.md) for easy setup/teardown of tests (also supports the retro [**test fixtures**](testcases.md#) with classes)
+- [**Subcases**](tutorial.md#test-cases-and-subcases) - an intuitive way to share common setup and teardown code for test cases (alternative to [**test fixtures**](testcases.md#test-fixtures) which are also supported)
 - [**templated test cases**](parameterized-tests.md#templated-test-cases---parameterized-by-type) - parameterized by type
 - supports [**logging macros**](logging.md) for capturing local variables and strings - as a message for when an assert fails - with lazy stringification and no allocations when possible!
 - crash handling support - uses signals for UNIX and SEH for Windows

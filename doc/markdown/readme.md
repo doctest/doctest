@@ -3,10 +3,11 @@ Reference
 
 Project:
 
-- [Features and design goals](features.md) - the complete list of features
+- [Features and design goals](features.md) - the complete list of features and rationale behind the design
 - [Roadmap](roadmap.md) - upcoming features
-- [Benchmarks](benchmarks.md) - compile time supremacy
+- [Benchmarks](benchmarks.md) - compile-time and runtime supremacy
 - [Contributing](../../CONTRIBUTING.md) - how to make a proper pull request
+- [Changelog](../../CHANGELOG.md) - generated changelog based on closed issues/PRs
 
 Usage:
 

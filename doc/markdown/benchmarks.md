@@ -1,4 +1,4 @@
-# Compile time benchmarks
+# Benchmarks
 
 The benchmarks are done with [**this**](../../scripts/bench/bench.py) script using CMake. There are 3 benchmarking scenarios:
 
@@ -21,6 +21,8 @@ Environment used (Intel i7 3770k, 16g RAM):
 **doctest** version: 1.2.0 (released on 2017.05.15)
 
 [**Catch**](https://github.com/philsquared/Catch) version: 1.9.3 (released on 2017.04.25)
+
+# Compile time benchmarks
 
 ## Cost of including the header
 

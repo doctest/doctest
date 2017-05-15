@@ -16,12 +16,14 @@
 
 Pros of **doctest**:
 
-- including the **doctest** header is [**over 50 times lighter**](benchmarks.md#cost-of-including-the-header) on compile times than that of [**Catch**](https://github.com/philsquared/Catch)
+- including the **doctest** header is [**over 20 times lighter**](benchmarks.md#cost-of-including-the-header) on compile times than that of [**Catch**](https://github.com/philsquared/Catch)
 - the asserts in **doctest** can be [**many times lighter**](benchmarks.md#cost-of-an-assertion-macro) on compile times than those of [**Catch**](https://github.com/philsquared/Catch)
+- **doctest** executes tests [**many times faster**](benchmarks.md#runtime-benchmarks) than [**Catch**](https://github.com/philsquared/Catch)
 - everything testing-related can be removed from the binary by defining the [**```DOCTEST_CONFIG_DISABLE```**](configuration.md#doctest_config_disable) identifier
 - doesn't drag any headers when included (except for in the translation unit where the library gets implemented)
 - 0 warnings even on the [**most aggressive**](../../scripts/common.cmake#L71) warning levels for MSVC/GCC/Clang
 - per commit tested with 300+ builds on [**much more compilers**](features.md#extremely-portable) - and through valgrind/sanitizers
+- statically analyzed - [**Cppcheck**](http://cppcheck.sourceforge.net/) / [**Clang-Tidy**](http://oclint.org/) / [**Coverity Scan**](https://scan.coverity.com/) / [**OCLint**](https://scan.coverity.com/) / [**Visual Studio Analyzer**](https://docs.microsoft.com/en-us/visualstudio/code-quality/analyzing-c-cpp-code-quality-by-using-code-analysis)
 - test cases can be written in headers - the framework will still register the tests only once - no duplicates
 
 Aside from everything mentioned so far doctest has some [**features**](features.md#other-features) (like [templated test cases](parameterized-tests.md#templated-test-cases---parameterized-by-type)) which [**Catch**](https://github.com/philsquared/Catch) doesn't.
@@ -67,7 +69,7 @@ Currently no. Asserts cannot be used in multiple threads and test cases cannot b
 
 For now tests are ran serially and doing asserts in multiple user threads will lead to crashes.
 
-There is an option to run a [**range**](commandline.md) of tests from an executable - so tests can be ran in parallel with multiple process invocations - see [**the example python script**](../../examples/range_based_execution.py).
+There is an option to run a [**range**](commandline.md) of tests from an executable - so  ran in parallel with multiple process invocations - see [**the example python script**](../../examples/range_based_execution.py).
 
 ### Is mocking supported?
 

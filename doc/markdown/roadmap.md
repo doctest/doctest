@@ -9,6 +9,7 @@ Planned features for future releases - order changes constantly...
 
 ### For 1.3:
 
+- move from printf to using streams in the current console reporter and clean that mess
 - reporters
     - output to file
     - a system for writing custom reporters
