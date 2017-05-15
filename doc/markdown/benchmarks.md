@@ -60,8 +60,8 @@ The script generates 201 source files and in 200 of them makes a function in the
 | Linux Clang Debug   |    8.52 |   11.33 |   70.57 |
 | Linux Clang Release |    9.01 |   16.59 |   75.85 |
 
-<img src="../../scripts/data/benchmarks/implement.png" align="left">
-<img src="../../scripts/data/benchmarks/header.png" align="right">
+<img src="../../scripts/data/benchmarks/header.png" width="430" align="right">
+<img src="../../scripts/data/benchmarks/implement.png" width="430">
 
 ### Conclusion
 
@@ -128,7 +128,7 @@ And here is [**Catch**](https://github.com/philsquared/Catch) which only has nor
 | Linux Clang Debug   |    6.38 |  103.06 |   85.02 |
 | Linux Clang Release |   11.15 |  195.62 |  156.04 |
 
-<img src="../../scripts/data/benchmarks/asserts.png" align="left">
+<img src="../../scripts/data/benchmarks/asserts.png">
 
 ### Conclusion
 
@@ -186,8 +186,8 @@ Note that the assert always passes - the goal should be to optimize for the comm
 | Linux Clang Debug   |   10.40 |   22.64 | 
 | Linux Clang Release |    5.81 |   13.83 | 
 
-<img src="../../scripts/data/benchmarks/runtime_assert.png" align="left">
-<img src="../../scripts/data/benchmarks/runtime_info.png" align="right">
+<img src="../../scripts/data/benchmarks/runtime_info.png" width="430" align="right">
+<img src="../../scripts/data/benchmarks/runtime_assert.png" width="430">
 
 ### Conclusion
 
