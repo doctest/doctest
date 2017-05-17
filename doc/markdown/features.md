@@ -26,7 +26,7 @@
 - tested with **Clang**: **3.4**, **3.5**, **3.6**, **3.7**, **3.8**, **3.9**, **4**
 - tested with **MSVC**: **2008**, **2010**, **2012**, **2013**, **2015**, **2017**
 - per-commit tested on **travis** and **appveyor** CI services
-	- warnings as errors even on the most aggressive warning levels - see [**here**](../../scripts/common.cmake#L71)
+	- warnings as errors even on the most aggressive warning levels - see [**here**](../../scripts/cmake/common.cmake#L84)
     - statically analyzed - [**Cppcheck**](http://cppcheck.sourceforge.net/) / [**Clang-Tidy**](http://oclint.org/) / [**Coverity Scan**](https://scan.coverity.com/) / [**OCLint**](https://scan.coverity.com/) / [**Visual Studio Analyzer**](https://docs.microsoft.com/en-us/visualstudio/code-quality/analyzing-c-cpp-code-quality-by-using-code-analysis)
 	- all tests have their output compared to reference output of a previous known good run
 	- all tests built and ran in **Debug**/**Release** and also in **32**/**64** bit modes

@@ -120,58 +120,53 @@ Output
 <pre lang="c++">
 #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 #include "doctest.h"
-
+<br>
 #include &lt;iostream&gt;
 using namespace std;
-
+<br>
 TEST_CASE("lots of nested subcases") {
-    cout << endl << "root" << endl;
-    SUBCASE("") {
-        cout << "1" << endl;
-        SUBCASE("") { cout << "1.1" << endl; }
-    }
-    SUBCASE("") {   
-        cout << "2" << endl;
-        SUBCASE("") { cout << "2.1" << endl; }
-        SUBCASE("") {
-            cout << "2.2" << endl;
-            SUBCASE("") {
-                cout << "2.2.1" << endl;
-                SUBCASE("") { cout << "2.2.1.1" << endl; }
-                SUBCASE("") { cout << "2.2.1.2" << endl; }
-            }
-        }
-        SUBCASE("") { cout << "2.3" << endl; }
-        SUBCASE("") { cout << "2.4" << endl; }
-    }
+&nbsp;&nbsp;&nbsp;&nbsp;cout << endl << "root" << endl;
+&nbsp;&nbsp;&nbsp;&nbsp;SUBCASE("") {
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;cout << "1" << endl;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;SUBCASE("") { cout << "1.1" << endl; }
+&nbsp;&nbsp;&nbsp;&nbsp;}
+&nbsp;&nbsp;&nbsp;&nbsp;SUBCASE("") {   
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;cout << "2" << endl;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;SUBCASE("") { cout << "2.1" << endl; }
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;SUBCASE("") {
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;cout << "2.2" << endl;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;SUBCASE("") {
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;cout << "2.2.1" << endl;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;SUBCASE("") { cout << "2.2.1.1" << endl; }
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;SUBCASE("") { cout << "2.2.1.2" << endl; }
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;SUBCASE("") { cout << "2.3" << endl; }
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;SUBCASE("") { cout << "2.4" << endl; }
+&nbsp;&nbsp;&nbsp;&nbsp;}
 }
 </pre>
-</td><td>
+</td><td width="400">
 <pre lang="">
-root &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+root
 1
-1.1
-
+1.1<br>
 root
 2
-2.1
-
-root
-2
-2.2
-2.2.1
-2.2.1.1
-
+2.1<br>
 root
 2
 2.2
 2.2.1
-2.2.1.2
-
+2.2.1.1<br>
 root
 2
-2.3
-
+2.2
+2.2.1
+2.2.1.2<br>
+root
+2
+2.3<br>
 root
 2
 2.4
