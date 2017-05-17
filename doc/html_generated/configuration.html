@@ -111,7 +111,7 @@ This should be defined globally.
 
 ### **```DOCTEST_CONFIG_SUPER_FAST_ASSERTS```**
 
-This makes the fast assert macros (```FAST_CHECK_EQ(a,b)``` - with a ```FAST_``` prefix) compile [**even faster**](benchmarks.html#cost-of-an-assertion-macro)! (35-80%)
+This makes the fast assert macros (```FAST_CHECK_EQ(a,b)``` - with a ```FAST_``` prefix) compile [**even faster**](benchmarks.html#cost-of-an-assertion-macro)! (50-80%)
 
 Each fast assert is turned into a single function call - the only downside of this is: if an assert fails and a debugger is attached - when it breaks it will be in an internal function - the user will have to go 1 level up in the callstack to see the actual assert.
 

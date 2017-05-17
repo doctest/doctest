@@ -21,9 +21,8 @@ Pros of **doctest**:
 - **doctest** executes tests [**many times faster**](benchmarks.md#runtime-benchmarks) than [**Catch**](https://github.com/philsquared/Catch)
 - everything testing-related can be removed from the binary by defining the [**```DOCTEST_CONFIG_DISABLE```**](configuration.md#doctest_config_disable) identifier
 - doesn't drag any headers when included (except for in the translation unit where the library gets implemented)
-- 0 warnings even on the [**most aggressive**](../../scripts/cmake/common.cmake#L71) warning levels for MSVC/GCC/Clang
-- per commit tested with 300+ builds on [**much more compilers**](features.md#extremely-portable) - and through valgrind/sanitizers
-- statically analyzed - [**Cppcheck**](http://cppcheck.sourceforge.net/) / [**Clang-Tidy**](http://oclint.org/) / [**Coverity Scan**](https://scan.coverity.com/) / [**OCLint**](https://scan.coverity.com/) / [**Visual Studio Analyzer**](https://docs.microsoft.com/en-us/visualstudio/code-quality/analyzing-c-cpp-code-quality-by-using-code-analysis)
+- 0 warnings even on the [**most aggressive**](../../scripts/cmake/common.cmake#L84) warning levels for MSVC/GCC/Clang
+- per commit tested with 300+ builds on [**much more compilers**](features.md#extremely-portable) - and through valgrind/sanitizers/analyzers
 - test cases can be written in headers - the framework will still register the tests only once - no duplicates
 
 Aside from everything mentioned so far doctest has some [**features**](features.md#other-features) (like [**templated test cases**](parameterized-tests.md#templated-test-cases---parameterized-by-type)) which [**Catch**](https://github.com/philsquared/Catch) doesn't.
@@ -32,7 +31,7 @@ Missing stuff:
 
 - a reporter/listener system - to a file, to xml, ability for the user to write their own reporter, etc.
 - matchers and generators
-- other small stuff
+- other stuff
 
 But these things (and more!) are planned in the [**roadmap**](roadmap.md)!
 
