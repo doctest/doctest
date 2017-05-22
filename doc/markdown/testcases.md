@@ -64,7 +64,7 @@ class UniqueTestsFixture {
  TEST_CASE_FIXTURE(UniqueTestsFixture, "Create Employee/No Name") {
    REQUIRE_THROWS(conn.executeSQL("INSERT INTO employee (id, name) VALUES (?, ?)", getID(), ""));
  }
- TEST_CASE_METHOD(UniqueTestsFixture, "Create Employee/Normal") {
+ TEST_CASE_FIXTURE(UniqueTestsFixture, "Create Employee/Normal") {
    REQUIRE(conn.executeSQL("INSERT INTO employee (id, name) VALUES (?, ?)", getID(), "Joe Bloggs"));
  }
 ```
