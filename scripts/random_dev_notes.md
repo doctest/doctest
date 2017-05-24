@@ -11,22 +11,7 @@ reddit.com/r/cpp
 reddit.com/r/programming
 reddit.com/r/gamedev
 reddit.com/r/cplusplus
-
-https://www.facebook.com/groups/cppEnthusiasts/
-
-https://www.facebook.com/groups/226823534127108/
-https://plus.google.com/communities/116007775542700637383
 https://www.linkedin.com/groups/86782/profile
-http://webchat.freenode.net/?channels=c++
-
-and some pages...
-https://www.facebook.com/cplusplus/
-https://www.facebook.com/cpptovlee/
-https://www.facebook.com/CPPprogram/
-https://www.facebook.com/itsaji.vb.page
-https://www.facebook.com/CppInstitute
-
-
 twitter
 
 

@@ -15,4 +15,3 @@
         - https://github.com/ruslo/hunter/blob/master/cmake/configs/default.cmake
         - https://github.com/ruslo/hunter/blob/master/cmake/projects/doctest/hunter.cmake
     - conan
-    - cppan
