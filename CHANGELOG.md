@@ -1,6 +1,17 @@
 # Change Log
 
-## [1.2.0](https://github.com/onqtam/doctest/tree/1.2.0) (2017-05-16)
+## [1.2.1](https://github.com/onqtam/doctest/tree/1.2.1) (2017-05-24)
+[Full Changelog](https://github.com/onqtam/doctest/compare/1.2.0...1.2.1)
+
+**Closed issues:**
+
+- Compile error under MSVC 2015/2017 if \<thread\> included in same file as "doctest.h" [\#72](https://github.com/onqtam/doctest/issues/72)
+
+**Merged pull requests:**
+
+- docs: TEST\_CASE\_METHOD -\> TEST\_CASE\_FIXTURE [\#71](https://github.com/onqtam/doctest/pull/71) ([akrzemi1](https://github.com/akrzemi1))
+
+## [1.2.0](https://github.com/onqtam/doctest/tree/1.2.0) (2017-05-15)
 [Full Changelog](https://github.com/onqtam/doctest/compare/1.1.4...1.2.0)
 
 **Closed issues:**
