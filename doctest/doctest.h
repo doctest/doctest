@@ -1799,6 +1799,30 @@ namespace detail
         StringStream<T>::convert(stream, value);
     }
 
+#ifdef DOCTEST_CONFIG_TREAT_CHAR_STAR_AS_STRING
+    DOCTEST_INTERFACE void toStream(std::ostream* stream, char* in);
+    DOCTEST_INTERFACE void toStream(std::ostream* stream, const char* in);
+#endif // DOCTEST_CONFIG_TREAT_CHAR_STAR_AS_STRING
+    DOCTEST_INTERFACE void toStream(std::ostream* stream, bool in);
+    DOCTEST_INTERFACE void toStream(std::ostream* stream, float in);
+    DOCTEST_INTERFACE void toStream(std::ostream* stream, double in);
+    DOCTEST_INTERFACE void toStream(std::ostream* stream, double long in);
+
+    DOCTEST_INTERFACE void toStream(std::ostream* stream, char in);
+    DOCTEST_INTERFACE void toStream(std::ostream* stream, char signed in);
+    DOCTEST_INTERFACE void toStream(std::ostream* stream, char unsigned in);
+    DOCTEST_INTERFACE void toStream(std::ostream* stream, int short in);
+    DOCTEST_INTERFACE void toStream(std::ostream* stream, int short unsigned in);
+    DOCTEST_INTERFACE void toStream(std::ostream* stream, int in);
+    DOCTEST_INTERFACE void toStream(std::ostream* stream, int unsigned in);
+    DOCTEST_INTERFACE void toStream(std::ostream* stream, int long in);
+    DOCTEST_INTERFACE void toStream(std::ostream* stream, int long unsigned in);
+
+#ifdef DOCTEST_CONFIG_WITH_LONG_LONG
+    DOCTEST_INTERFACE void toStream(std::ostream* stream, int long long in);
+    DOCTEST_INTERFACE void toStream(std::ostream* stream, int long long unsigned in);
+#endif // DOCTEST_CONFIG_WITH_LONG_LONG
+
     struct IContextScope //!OCLINT destructor of virtual class
     { virtual void build(std::ostream*) = 0; };
 
@@ -4298,6 +4322,32 @@ namespace detail
     }
 
     void writeStringToStream(std::ostream* stream, const String& str) { *stream << str; }
+
+#ifdef DOCTEST_CONFIG_TREAT_CHAR_STAR_AS_STRING
+    void toStream(std::ostream* stream, char* in) { *stream << in; }
+    void toStream(std::ostream* stream, const char* in) { *stream << in; }
+#endif // DOCTEST_CONFIG_TREAT_CHAR_STAR_AS_STRING
+    void toStream(std::ostream* stream, bool in) {
+        *stream << std::boolalpha << in << std::noboolalpha;
+    }
+    void toStream(std::ostream* stream, float in) { *stream << in; }
+    void toStream(std::ostream* stream, double in) { *stream << in; }
+    void toStream(std::ostream* stream, double long in) { *stream << in; }
+
+    void toStream(std::ostream* stream, char in) { *stream << in; }
+    void toStream(std::ostream* stream, char signed in) { *stream << in; }
+    void toStream(std::ostream* stream, char unsigned in) { *stream << in; }
+    void toStream(std::ostream* stream, int short in) { *stream << in; }
+    void toStream(std::ostream* stream, int short unsigned in) { *stream << in; }
+    void toStream(std::ostream* stream, int in) { *stream << in; }
+    void toStream(std::ostream* stream, int unsigned in) { *stream << in; }
+    void toStream(std::ostream* stream, int long in) { *stream << in; }
+    void toStream(std::ostream* stream, int long unsigned in) { *stream << in; }
+
+#ifdef DOCTEST_CONFIG_WITH_LONG_LONG
+    void toStream(std::ostream* stream, int long long in) { *stream << in; }
+    void toStream(std::ostream* stream, int long long unsigned in) { *stream << in; }
+#endif // DOCTEST_CONFIG_WITH_LONG_LONG
 
     void addToContexts(IContextScope* ptr) { contextState->contexts.push_back(ptr); }
     void                              popFromContexts() { contextState->contexts.pop_back(); }

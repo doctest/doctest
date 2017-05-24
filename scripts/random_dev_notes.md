@@ -37,6 +37,7 @@ twitter
 
 == other
 - operator<< trouble
+    - see how Catch is implementing their IsStreamInsertable trait for C++11
     - https://github.com/philsquared/Catch/issues/757
     - https://github.com/philsquared/Catch/issues/872
     - https://github.com/philsquared/Catch/pull/877
