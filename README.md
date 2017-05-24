@@ -48,7 +48,7 @@ The framework is and will stay free but needs your support to sustain its develo
 
 A complete example with a self-registering test that compiles to an executable looks like this:
 
-![cover-example](scripts/data/cover_888px_wide.png)
+![cover-example](scripts/data/using_doctest_888px_wide.gif)
 
 There are many C++ testing frameworks - [Catch](https://github.com/philsquared/Catch), [Boost.Test](http://www.boost.org/doc/libs/1_64_0/libs/test/doc/html/index.html), [UnitTest++](https://github.com/unittest-cpp/unittest-cpp), [cpputest](https://github.com/cpputest/cpputest), [googletest](https://github.com/google/googletest) and many [other](https://en.wikipedia.org/wiki/List_of_unit_testing_frameworks#C.2B.2B).
 
