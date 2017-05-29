@@ -37,8 +37,7 @@ addons:
     project:
       name: onqtam/doctest
     notification_email: vik.kirilov@gmail.com
-    build_command_prepend: cd examples/hello_world && cmake .
-    build_command: make
+    build_command: g++ scripts/hello_world.cpp -I doctest
     branch_pattern: coverity_scan
   # these apt sources will be referenced later (by using *name)
   apt:
