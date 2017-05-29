@@ -61,6 +61,7 @@ Planned features for future releases - order changes constantly...
     - should test stuff that should not compile
     - should test crash handling
     - should test more config options
+    - don't cheat for maxing out code coverage (see [coverage_maxout.cpp](../../examples/coverage_maxout.cpp)
     - should test C++11 stuff - perhaps inspect the CMAKE_CXX_FLAGS for -std=c++11 on the CI and add more targets/tests
     - test tricky stuff like expressions with commas in asserts
 
