@@ -26,10 +26,6 @@ env:
 #    - CCACHE_MAXSIZE=200M
 #    - CCACHE_CPP2=1
     - CMAKE_OPTIONS_GLOBAL="-DCMAKE_EXPORT_COMPILE_COMMANDS=ON"
-  # Workaround for https://github.com/travis-ci/travis-ci/issues/4681
-  # "Defining the build matrix only with matrix.include leads to an additional, unwanted job"
-  matrix:
-    - TRAVIS_EMPTY_JOB_WORKAROUND=true
 
 addons:
   coverity_scan:
@@ -56,9 +52,6 @@ compiler: clang
 os: linux
 
 matrix:
-  exclude:
-    - env: TRAVIS_EMPTY_JOB_WORKAROUND=true
-
   include:
     # coverage
     - env: COMPILER=g++ CODE_COVERAGE=true
