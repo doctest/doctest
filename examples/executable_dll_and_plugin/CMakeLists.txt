@@ -39,6 +39,4 @@ set_target_properties(dll PROPERTIES FOLDER ${PROJECT_NAME})
 set_target_properties(plugin PROPERTIES FOLDER ${PROJECT_NAME})
 set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER ${PROJECT_NAME})
 
-if(COMMAND doctest_add_test) # if <doctest_repo>/scripts/cmake/common.cmake is included
-    doctest_add_test(NAME ${PROJECT_NAME} COMMAND $<TARGET_FILE:${PROJECT_NAME}> --no-version)
-endif()
+doctest_add_test(NAME ${PROJECT_NAME} COMMAND $<TARGET_FILE:${PROJECT_NAME}> --no-version)
