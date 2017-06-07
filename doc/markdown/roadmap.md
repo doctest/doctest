@@ -58,7 +58,7 @@ Planned features for future releases - order changes constantly...
 - better testing of the library
     - unit test the String class
     - should unit test internals - currently even if a bug is caught by different output it's very difficult to track the reason
-    - should test stuff that should not compile
+    - should test stuff that should not compile - see slide 38 here - https://github.com/boostcon/cppnow_presentations_2017/blob/master/05-19-2017_friday/effective_cmake__daniel_pfeifer__cppnow_05-19-2017.pdf
     - should test crash handling
     - should test more config options
     - don't cheat for maxing out code coverage (see [coverage_maxout.cpp](../../examples/coverage_maxout.cpp)
