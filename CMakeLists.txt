@@ -12,6 +12,9 @@ option(DOCTEST_WITH_TESTS "Build tests/examples" ON)
 add_library(${PROJECT_NAME} INTERFACE)
 target_include_directories(${PROJECT_NAME} INTERFACE $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/doctest/>)
 
+add_library(${PROJECT_NAME}_with_main STATIC EXCLUDE_FROM_ALL doctest/parts/doctest_main.cpp)
+target_link_libraries(doctest_with_main PUBLIC ${PROJECT_NAME})
+
 ################################################################################
 ## TESTS/EXAMPLES
 ################################################################################
