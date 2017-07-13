@@ -2453,7 +2453,7 @@ constexpr T to_lvalue = x;
                     DOCTEST_TOSTR(DOCTEST_HANDLE_BRACED_VA_ARGS(as)));                             \
             try {                                                                                  \
                 expr;                                                                              \
-            } catch(DOCTEST_HANDLE_BRACED_VA_ARGS(as)) {                                           \
+            } catch(const DOCTEST_HANDLE_BRACED_VA_ARGS(as)&) {                                    \
                 _DOCTEST_RB.m_threw    = true;                                                     \
                 _DOCTEST_RB.m_threw_as = true;                                                     \
             } catch(...) { _DOCTEST_RB.unexpectedExceptionOccurred(); }                            \
