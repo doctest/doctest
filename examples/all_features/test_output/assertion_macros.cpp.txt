@@ -44,7 +44,7 @@ assertion_macros.cpp(0) ERROR!
 didn't throw at all
 
 assertion_macros.cpp(0) ERROR!
-  CHECK_THROWS_AS( throw_if(false, std::runtime_error("whops!")), std::exception& )
+  CHECK_THROWS_AS( throw_if(false, std::runtime_error("whops!")), std::exception )
 didn't throw at all
 
 assertion_macros.cpp(0) ERROR!

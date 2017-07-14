@@ -26,6 +26,13 @@ Planned features for future releases - order changes constantly...
 - convolution support for the assertion macros (with a predicate)
 - Value-Parameterized test cases
 - generators? - look at Catch - and investigate what they are
+- proper conan package
+    - https://github.com/uilianries/conan-catch
+    - https://github.com/philsquared/Catch/pull/938
+    - https://stackoverflow.com/questions/40311363/conan-io-header-only-package
+    - https://github.com/conan-io/docs/issues/67
+    - https://github.com/agauniyal/rang
+    - https://github.com/conan-io/conan/issues/324
 - look at property based testing
     - [rapidcheck](https://github.com/emil-e/rapidcheck)
     - [autocheck](https://github.com/thejohnfreeman/autocheck)
@@ -58,7 +65,9 @@ Planned features for future releases - order changes constantly...
 - better testing of the library
     - unit test the String class
     - should unit test internals - currently even if a bug is caught by different output it's very difficult to track the reason
-    - should test stuff that should not compile - see slide 38 here - https://github.com/boostcon/cppnow_presentations_2017/blob/master/05-19-2017_friday/effective_cmake__daniel_pfeifer__cppnow_05-19-2017.pdf
+    - should test stuff that should not compile
+        - https://github.com/ldionne/dyno/blob/master/cmake/CompileFailTest.cmake
+        - see slide 38 here - https://github.com/boostcon/cppnow_presentations_2017/blob/master/05-19-2017_friday/effective_cmake__daniel_pfeifer__cppnow_05-19-2017.pdf
     - should test crash handling
     - should test more config options
     - don't cheat for maxing out code coverage (see [coverage_maxout.cpp](../../examples/coverage_maxout.cpp)
@@ -83,6 +92,7 @@ Planned features for future releases - order changes constantly...
 ### Things that are being considered but not part of the roadmap yet:
 
 - FakeIt mocking integration - like [catch](https://github.com/eranpeer/FakeIt/tree/master/config/catch)
+- look into https://github.com/cpp-testing/GUnit - https://www.youtube.com/watch?v=NVrZjT5lW5o
 - consider the following 2 properties for the MSVC static code analyzer: EnableCppCoreCheck, EnableExperimentalCppCoreCheck
 - rpm package? like this: https://github.com/vietjtnguyen/argagg/blob/master/packaging/rpm/argagg.spec
 - get the current test case/section path - https://github.com/philsquared/Catch/issues/522
@@ -101,6 +111,7 @@ Planned features for future releases - order changes constantly...
     - ability to specify ASC/DESC for the order option
     - global timeout option (per test or per entire session?)
     - command line error handling/reporting
+    - option to not print context info when the --success option is used
     - ability for the user to extend the command line - as requested [here](https://github.com/philsquared/Catch/issues/622)
     - option to list files in which there are test cases who match the current filters
     - option for filters to switch from "match any" to "match all" mode
