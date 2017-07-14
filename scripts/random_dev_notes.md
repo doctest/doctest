@@ -1,6 +1,8 @@
 
+// an alternative way to call code before entering main()
+const bool _ = run_message_loop(), true;
 
-
+https://github.com/philsquared/Catch/commit/b90d0b72679a0e69a059eb87c531a7e30c95cd6b
 
 
 == when making a new release:

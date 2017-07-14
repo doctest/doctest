@@ -41,8 +41,8 @@ TEST_CASE("exceptions-related macros") {
 
 TEST_CASE("exceptions-related macros for std::exception") {
     CHECK_THROWS(throw_if(false, 0));
-    CHECK_THROWS_AS(throw_if(false, std::runtime_error("whops!")), std::exception&);
-    CHECK_THROWS_AS(throw_if(true, std::runtime_error("whops!")), std::exception&);
+    CHECK_THROWS_AS(throw_if(false, std::runtime_error("whops!")), std::exception);
+    CHECK_THROWS_AS(throw_if(true, std::runtime_error("whops!")), std::exception);
     CHECK_THROWS_AS(throw_if(true, std::runtime_error("whops!")), int);
 
     REQUIRE_NOTHROW(throw_if(true, std::runtime_error("whops!")));
