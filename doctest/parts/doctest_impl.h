@@ -1151,6 +1151,10 @@ namespace detail
 
     void addToContexts(IContextScope* ptr) { contextState->contexts.push_back(ptr); }
     void                              popFromContexts() { contextState->contexts.pop_back(); }
+#if defined(_MSC_VER)
+#pragma warning(push)
+#pragma warning(disable : 4996) // std::uncaught_exception is deprecated in C++17
+#endif
     void useContextIfExceptionOccurred(IContextScope* ptr) {
         if(std::uncaught_exception()) {
             std::ostringstream stream;
@@ -1158,6 +1162,9 @@ namespace detail
             contextState->exceptionalContexts.push_back(stream.str());
         }
     }
+#if defined(_MSC_VER)
+#pragma warning(pop)
+#endif
 
     void printSummary();
 
