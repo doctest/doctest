@@ -70,7 +70,7 @@ target_compile_definitions(disabled PRIVATE DOCTEST_CONFIG_DISABLE)
 doctest_add_test(NAME disabled COMMAND $<TARGET_FILE:disabled>)
 
 # TODO: think about fixing these in a different way! - see issue #61 or commit 6b61e8aa3818c5ea100cedc1bb48a60ea10df6e8
-if(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
+if(MSVC)
     target_compile_options(disabled PRIVATE /wd4505) # unreferenced local function has been removed
     target_compile_options(disabled PRIVATE /wd4100) # unreferenced formal parameter
     target_compile_options(disabled PRIVATE /wd4189) # local variable is initialized but not referenced
