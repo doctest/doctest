@@ -1,9 +1,13 @@
 
-// an alternative way to call code before entering main()
-const bool _ = run_message_loop(), true;
-
 https://github.com/philsquared/Catch/commit/b90d0b72679a0e69a059eb87c531a7e30c95cd6b
 
+https://github.com/philsquared/Catch/issues/952
+
+look into https://github.com/onqtam/doctest/issues/85
+
+look into the static analysis reports of martin - https://github.com/onqtam/doctest/issues/83
+
+update stuff (with a PR) in https://github.com/martinmoene/catch-lest-other-comparison
 
 == when making a new release:
 
