@@ -37,6 +37,8 @@ But these things (and more!) are planned in the [**roadmap**](roadmap.md)!
 
 **doctest** can be thought of as a very polished, light, stable and clean subset (or reimplementation) of [**Catch**](https://github.com/philsquared/Catch) but this might change in the future as more features are added.
 
+Also checkout [this table](https://github.com/martinmoene/catch-lest-other-comparison) that compares **doctest** / [**Catch**](https://github.com/philsquared/Catch) / [**lest**](https://github.com/martinmoene/lest).
+
 A quick and easy way to migrate most of your Catch tests to doctest is to change the ```TEST_CASE``` (if using tags) and ```SECTION``` macros as follows:
 
 ```c++

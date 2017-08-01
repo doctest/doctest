@@ -72,6 +72,8 @@ The framework can be used like any other if you don't want/need to mix productio
 
 **doctest** is modeled after [**Catch**](https://github.com/philsquared/Catch) and some parts of the code have been taken directly - check out [**the differences**](doc/markdown/faq.md#how-is-doctest-different-from-catch).
 
+Also checkout [this table](https://github.com/martinmoene/catch-lest-other-comparison) that compares **doctest** / [**Catch**](https://github.com/philsquared/Catch) / [**lest**](https://github.com/martinmoene/lest).
+
 You can read more about it in [**the article**](https://accu.org/var/uploads/journals/Overload137.pdf) of the february edition of ACCU Overload 2017.
 
 [![Standard](https://img.shields.io/badge/c%2B%2B-98/11/14/17-blue.svg)](https://en.wikipedia.org/wiki/C%2B%2B#Standardization)
