@@ -1,7 +1,7 @@
-if(common_included)
+if(doctest_common_included)
     return()
 endif()
-set(common_included true)
+set(doctest_common_included true)
 
 include(CMakeParseArguments)
 

@@ -7,17 +7,21 @@ cmake_minimum_required(VERSION 3.0)
 file(READ ${CMAKE_CURRENT_SOURCE_DIR}/scripts/version.txt ver)
 project(doctest VERSION ${ver})
 
-option(DOCTEST_WITH_TESTS "Build tests/examples" ON)
+option(DOCTEST_WITH_TESTS               "Build tests/examples" ON)
+option(DOCTEST_WITH_MAIN_IN_STATIC_LIB  "Build a static lib (cmake target) with a main entry point" ON)
 
 add_library(${PROJECT_NAME} INTERFACE)
 target_include_directories(${PROJECT_NAME} INTERFACE $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/doctest/>)
 
-add_library(${PROJECT_NAME}_with_main STATIC EXCLUDE_FROM_ALL doctest/parts/doctest_main.cpp)
-target_link_libraries(doctest_with_main PUBLIC ${PROJECT_NAME})
+################################################################################
+## TESTS/EXAMPLES/HELPERS
+################################################################################
 
-################################################################################
-## TESTS/EXAMPLES
-################################################################################
+if(${DOCTEST_WITH_MAIN_IN_STATIC_LIB})
+    include(scripts/cmake/common.cmake)
+    doctest_add_library(${PROJECT_NAME}_with_main STATIC EXCLUDE_FROM_ALL doctest/parts/doctest_main.cpp)
+    target_link_libraries(${PROJECT_NAME}_with_main PUBLIC ${PROJECT_NAME})
+endif()
 
 if(${DOCTEST_WITH_TESTS})
     include(scripts/cmake/common.cmake)
