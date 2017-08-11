@@ -1638,7 +1638,7 @@ namespace detail
     };
 
     template <typename T>
-    class ExceptionTranslator : public IExceptionTranslator
+    class ExceptionTranslator : public IExceptionTranslator //!OCLINT destructor of virtual class
     {
     public:
         explicit ExceptionTranslator(String (*translateFunction)(T))
@@ -1748,7 +1748,7 @@ namespace detail
         };
 
         template <typename T>
-        struct Capture : ICapture
+        struct Capture : ICapture //!OCLINT destructor of virtual class
         {
             const T* capture;
 
@@ -1801,7 +1801,7 @@ namespace detail
                       unsigned(int(sizeof(Chunk)) * DOCTEST_CONFIG_NUM_CAPTURES_ON_STACK));
         }
 
-        ContextBuilder& operator=(const ContextBuilder&);
+        ContextBuilder& operator=(const ContextBuilder&); // NOLINT
 
     public:
         // cppcheck-suppress uninitMemberVar
