@@ -1,8 +1,6 @@
 
 https://github.com/philsquared/Catch/issues/980
 
-update stuff (with a PR) in https://github.com/martinmoene/catch-lest-other-comparison
-
 == when making a new release:
 
 news.ycombinator.com
