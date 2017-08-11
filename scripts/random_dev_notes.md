@@ -1,8 +1,6 @@
 
 https://github.com/philsquared/Catch/issues/980
 
-look into the static analysis reports of martin - https://github.com/onqtam/doctest/issues/83
-
 update stuff (with a PR) in https://github.com/martinmoene/catch-lest-other-comparison
 
 == when making a new release:

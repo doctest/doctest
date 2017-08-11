@@ -84,7 +84,7 @@
 #define DOCTEST_LOG_START()                                                                        \
     do {                                                                                           \
         if(!contextState->hasLoggedCurrentTestStart) {                                             \
-            doctest::detail::logTestStart(*contextState->currentTest);                             \
+            logTestStart(*contextState->currentTest);                                              \
             contextState->hasLoggedCurrentTestStart = true;                                        \
         }                                                                                          \
     } while(false)
@@ -129,7 +129,7 @@ namespace detail
     // case insensitive strcmp
     int stricmp(char const* a, char const* b) {
         for(;; a++, b++) {
-            int d = tolower(*a) - tolower(*b);
+            const int d = tolower(*a) - tolower(*b);
             if(d != 0 || !*a)
                 return d;
         }
@@ -316,9 +316,9 @@ String::String(const char* in) {
 }
 
 String& String::operator+=(const String& other) {
-    unsigned my_old_size = size();
-    unsigned other_size  = other.size();
-    unsigned total_size  = my_old_size + other_size;
+    const unsigned my_old_size = size();
+    const unsigned other_size  = other.size();
+    const unsigned total_size  = my_old_size + other_size;
     if(isOnStack()) {
         if(total_size < len) {
             // append to the current stack space
@@ -372,11 +372,13 @@ String::String(String&& other) {
 }
 
 String& String::operator=(String&& other) {
-    if(!isOnStack())
-        delete[] data.ptr;
-    detail::my_memcpy(buf, other.buf, len);
-    other.buf[0] = '\0';
-    other.setLast();
+    if(this != &other) {
+        if(!isOnStack())
+            delete[] data.ptr;
+        detail::my_memcpy(buf, other.buf, len);
+        other.buf[0] = '\0';
+        other.setLast();
+    }
     return *this;
 }
 #endif // DOCTEST_CONFIG_WITH_RVALUE_REFERENCES
@@ -519,7 +521,7 @@ int  Context::run() { return 0; }
 
 #define DOCTEST_PRINTF_COLORED(buffer, color)                                                      \
     do {                                                                                           \
-        doctest::detail::Color col(color);                                                         \
+        Color col(color);                                                                          \
         std::printf("%s", buffer);                                                                 \
     } while((void)0, 0)
 
@@ -634,7 +636,7 @@ namespace detail
     bool TestCase::operator<(const TestCase& other) const {
         if(m_line != other.m_line)
             return m_line < other.m_line;
-        int file_cmp = std::strcmp(m_file, other.m_file);
+        const int file_cmp = std::strcmp(m_file, other.m_file);
         if(file_cmp != 0)
             return file_cmp < 0;
         return m_template_id < other.m_template_id;
@@ -922,9 +924,9 @@ namespace detail
 #ifdef _MSC_VER
         // this is needed because MSVC gives different case for drive letters
         // for __FILE__ when evaluated in a header and a source file
-        int res = stricmp(lhs->m_file, rhs->m_file);
+        const int res = stricmp(lhs->m_file, rhs->m_file);
 #else  // _MSC_VER
-        int res = std::strcmp(lhs->m_file, rhs->m_file);
+        const int res = std::strcmp(lhs->m_file, rhs->m_file);
 #endif // _MSC_VER
         if(res != 0)
             return res;
@@ -936,7 +938,7 @@ namespace detail
         const TestCase* lhs = *static_cast<TestCase* const*>(a);
         const TestCase* rhs = *static_cast<TestCase* const*>(b);
 
-        int res = std::strcmp(lhs->m_test_suite, rhs->m_test_suite);
+        const int res = std::strcmp(lhs->m_test_suite, rhs->m_test_suite);
         if(res != 0)
             return res;
         return fileOrderComparator(a, b);
@@ -947,7 +949,7 @@ namespace detail
         const TestCase* lhs = *static_cast<TestCase* const*>(a);
         const TestCase* rhs = *static_cast<TestCase* const*>(b);
 
-        int res_name = std::strcmp(lhs->m_name, rhs->m_name);
+        const int res_name = std::strcmp(lhs->m_name, rhs->m_name);
         if(res_name != 0)
             return res_name;
         return suiteOrderComparator(a, b);
@@ -1084,8 +1086,6 @@ namespace detail
 #undef DOCTEST_SET_ATTR
 #endif // DOCTEST_CONFIG_COLORS_WINDOWS
     }
-
-    IExceptionTranslator::~IExceptionTranslator() {}
 
     std::vector<const IExceptionTranslator*>& getExceptionTranslators() {
         static std::vector<const IExceptionTranslator*> data;
@@ -1552,7 +1552,7 @@ namespace detail
                              getAssertString(assert_type), decomposition);
         }
 
-        bool isWarn = assert_type & assertType::is_warn;
+        const bool isWarn = assert_type & assertType::is_warn;
         DOCTEST_PRINTF_COLORED(loc, Color::LightGrey);
         DOCTEST_PRINTF_COLORED(msg,
                                passed ? Color::BrightGreen : isWarn ? Color::Yellow : Color::Red);
@@ -1586,7 +1586,7 @@ namespace detail
         if(!threw)
             DOCTEST_SNPRINTF(info2, DOCTEST_COUNTOF(info2), "didn't throw at all\n");
 
-        bool isWarn = assert_type & assertType::is_warn;
+        const bool isWarn = assert_type & assertType::is_warn;
         DOCTEST_PRINTF_COLORED(loc, Color::LightGrey);
         DOCTEST_PRINTF_COLORED(msg,
                                threw ? Color::BrightGreen : isWarn ? Color::Yellow : Color::Red);
@@ -1626,7 +1626,7 @@ namespace detail
             DOCTEST_SNPRINTF(info3, DOCTEST_COUNTOF(info3), "  %s\n", exception.c_str());
         }
 
-        bool isWarn = assert_type & assertType::is_warn;
+        const bool isWarn = assert_type & assertType::is_warn;
         DOCTEST_PRINTF_COLORED(loc, Color::LightGrey);
         DOCTEST_PRINTF_COLORED(msg,
                                threw_as ? Color::BrightGreen : isWarn ? Color::Yellow : Color::Red);
@@ -1663,7 +1663,7 @@ namespace detail
             DOCTEST_SNPRINTF(info3, DOCTEST_COUNTOF(info3), "  %s\n", exception.c_str());
         }
 
-        bool isWarn = assert_type & assertType::is_warn;
+        const bool isWarn = assert_type & assertType::is_warn;
         DOCTEST_PRINTF_COLORED(loc, Color::LightGrey);
         DOCTEST_PRINTF_COLORED(msg,
                                threw ? isWarn ? Color::Yellow : Color::Red : Color::BrightGreen);
@@ -1746,8 +1746,7 @@ namespace detail
             throwException();
     }
 
-    MessageBuilder::MessageBuilder(const char* file, int line,
-                                   doctest::detail::assertType::Enum severity)
+    MessageBuilder::MessageBuilder(const char* file, int line, assertType::Enum severity)
             : m_stream(createStream())
             , m_file(file)
             , m_line(line)
@@ -1756,10 +1755,10 @@ namespace detail
     bool MessageBuilder::log() {
         DOCTEST_LOG_START();
 
-        bool is_warn = m_severity & doctest::detail::assertType::is_warn;
+        const bool isWarn = m_severity & assertType::is_warn;
 
         // warn is just a message in this context so we dont treat it as an assert
-        if(!is_warn) {
+        if(!isWarn) {
             contextState->numAssertionsForCurrentTestcase++;
             addFailedAssert(m_severity);
         }
@@ -1769,10 +1768,10 @@ namespace detail
                          lineForOutput(m_line));
         char msg[DOCTEST_SNPRINTF_BUFFER_LENGTH];
         DOCTEST_SNPRINTF(msg, DOCTEST_COUNTOF(msg), " %s!\n",
-                         is_warn ? "MESSAGE" : getFailString(m_severity));
+                         isWarn ? "MESSAGE" : getFailString(m_severity));
 
         DOCTEST_PRINTF_COLORED(loc, Color::LightGrey);
-        DOCTEST_PRINTF_COLORED(msg, is_warn ? Color::Yellow : Color::Red);
+        DOCTEST_PRINTF_COLORED(msg, isWarn ? Color::Yellow : Color::Red);
 
         String info = getStreamResult(m_stream);
         if(info.size()) {
@@ -1787,7 +1786,7 @@ namespace detail
         printToDebugConsole(String(loc) + msg + "  " + info.c_str() + "\n" + context.c_str() +
                             "\n");
 
-        return isDebuggerActive() && !contextState->no_breaks && !is_warn; // break into debugger
+        return isDebuggerActive() && !contextState->no_breaks && !isWarn; // break into debugger
     }
 
     void MessageBuilder::react() {
@@ -1844,7 +1843,7 @@ namespace detail
                 }
                 if(noBadCharsFound && argv[i][0] == '-') {
                     temp += my_strlen(pattern);
-                    unsigned len = my_strlen(temp);
+                    const unsigned len = my_strlen(temp);
                     if(len) {
                         res = temp;
                         return true;
@@ -2018,7 +2017,7 @@ namespace detail
             std::printf("test suites with unskipped test cases passing the current filters: %u\n",
                         p->numTestSuitesPassingFilters);
         } else {
-            bool anythingFailed = p->numFailed > 0 || p->numFailedAssertions > 0;
+            const bool anythingFailed = p->numFailed > 0 || p->numFailedAssertions > 0;
 
             char buff[DOCTEST_SNPRINTF_BUFFER_LENGTH];
 
@@ -2043,8 +2042,8 @@ namespace detail
             DOCTEST_SNPRINTF(buff, DOCTEST_COUNTOF(buff), " | ");
             DOCTEST_PRINTF_COLORED(buff, Color::None);
             if(p->no_skipped_summary == false) {
-                int numSkipped = static_cast<unsigned>(getRegisteredTests().size()) -
-                                 p->numTestsPassingFilters;
+                const int numSkipped = static_cast<unsigned>(getRegisteredTests().size()) -
+                                       p->numTestsPassingFilters;
                 DOCTEST_SNPRINTF(buff, DOCTEST_COUNTOF(buff), "%6d skipped", numSkipped);
                 DOCTEST_PRINTF_COLORED(buff, numSkipped == 0 ? Color::None : Color::Yellow);
             }

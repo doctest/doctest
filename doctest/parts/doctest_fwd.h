@@ -574,10 +574,12 @@ public:
     // GCC 4.9/5/6 report Wstrict-overflow when optimizations are ON and it got inlined in the vector class somewhere...
     // see commit 574ef95f0cd379118be5011704664e4b5351f1e0 and build https://travis-ci.org/onqtam/doctest/builds/230671611
     DOCTEST_NOINLINE String& operator=(const String& other) {
-        if(!isOnStack())
-            delete[] data.ptr;
+        if(this != &other) {
+            if(!isOnStack())
+                delete[] data.ptr;
 
-        copy(other);
+            copy(other);
+        }
 
         return *this;
     }
@@ -955,7 +957,7 @@ public:
     // clang-format on
 
     Approx& epsilon(double newEpsilon) {
-        m_epsilon = (newEpsilon);
+        m_epsilon = newEpsilon;
         return *this;
     }
 
@@ -969,7 +971,7 @@ public:
 #endif //  DOCTEST_CONFIG_INCLUDE_TYPE_TRAITS
 
     Approx& scale(double newScale) {
-        m_scale = (newScale);
+        m_scale = newScale;
         return *this;
     }
 
@@ -1626,14 +1628,14 @@ namespace detail
         return res;
     }
 
-    struct DOCTEST_INTERFACE IExceptionTranslator //!OCLINT destructor of virtual class
+    struct DOCTEST_INTERFACE IExceptionTranslator
     {
-        virtual ~IExceptionTranslator();
+        virtual ~IExceptionTranslator() {}
         virtual bool translate(String&) const = 0;
     };
 
     template <typename T>
-    class ExceptionTranslator : public IExceptionTranslator //!OCLINT destructor of virtual class
+    class ExceptionTranslator : public IExceptionTranslator
     {
     public:
         explicit ExceptionTranslator(String (*translateFunction)(T))
@@ -1721,8 +1723,11 @@ namespace detail
     DOCTEST_INTERFACE void toStream(std::ostream* stream, int long long unsigned in);
 #endif // DOCTEST_CONFIG_WITH_LONG_LONG
 
-    struct IContextScope //!OCLINT destructor of virtual class
-    { virtual void build(std::ostream*) = 0; };
+    struct IContextScope
+    {
+        virtual ~IContextScope() {}
+        virtual void build(std::ostream*) = 0;
+    };
 
     DOCTEST_INTERFACE void addToContexts(IContextScope* ptr);
     DOCTEST_INTERFACE void popFromContexts();
@@ -1733,18 +1738,21 @@ namespace detail
     {
         friend class ContextScope;
 
-        struct ICapture //!OCLINT destructor of virtual class
-        { virtual void toStream(std::ostream*) const = 0; };
+        struct ICapture
+        {
+            virtual ~ICapture() {}
+            virtual void toStream(std::ostream*) const = 0;
+        };
 
         template <typename T>
-        struct Capture : ICapture //!OCLINT destructor of virtual class
+        struct Capture : ICapture
         {
             const T* capture;
 
             explicit Capture(const T* in)
                     : capture(in) {}
             virtual void toStream(std::ostream* stream) const { // override
-                doctest::detail::toStream(stream, *capture);
+                detail::toStream(stream, *capture);
             }
         };
 
@@ -1789,6 +1797,8 @@ namespace detail
             my_memcpy(stackChunks, other.stackChunks,
                       unsigned(int(sizeof(Chunk)) * DOCTEST_CONFIG_NUM_CAPTURES_ON_STACK));
         }
+
+        ContextBuilder& operator=(const ContextBuilder&);
 
     public:
         // cppcheck-suppress uninitMemberVar
@@ -1843,7 +1853,7 @@ namespace detail
 #endif // DOCTEST_CONFIG_WITH_RVALUE_REFERENCES
     };
 
-    class ContextScope : public IContextScope //!OCLINT destructor of virtual class
+    class ContextScope : public IContextScope
     {
         ContextBuilder contextBuilder;
         bool           built;
@@ -1869,18 +1879,18 @@ namespace detail
 
     class DOCTEST_INTERFACE MessageBuilder
     {
-        std::ostream*                     m_stream;
-        const char*                       m_file;
-        int                               m_line;
-        doctest::detail::assertType::Enum m_severity;
+        std::ostream*    m_stream;
+        const char*      m_file;
+        int              m_line;
+        assertType::Enum m_severity;
 
     public:
-        MessageBuilder(const char* file, int line, doctest::detail::assertType::Enum severity);
+        MessageBuilder(const char* file, int line, assertType::Enum severity);
         ~MessageBuilder();
 
         template <typename T>
         MessageBuilder& operator<<(const T& in) {
-            doctest::detail::toStream(m_stream, in);
+            toStream(m_stream, in);
             return *this;
         }
 
