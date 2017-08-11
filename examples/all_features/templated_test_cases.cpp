@@ -4,7 +4,7 @@
 
 // typedefs are required if variadic macro support is not available (otherwise the commas are a problem)
 typedef doctest::Types<char, short, int> int_types;
-typedef doctest::Types<float, double, float> float_types; // note that types won't be filtered for uniqueness
+typedef doctest::Types<double, double> float_types; // note that types won't be filtered for uniqueness
 
 // =================================================================================================
 // NORMAL TEMPLATED TEST CASES
