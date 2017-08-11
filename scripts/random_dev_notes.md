@@ -1,7 +1,5 @@
 
-https://github.com/philsquared/Catch/issues/952
-
-look into https://github.com/onqtam/doctest/issues/85
+https://github.com/philsquared/Catch/issues/980
 
 look into the static analysis reports of martin - https://github.com/onqtam/doctest/issues/83
 

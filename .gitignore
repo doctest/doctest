@@ -27,6 +27,7 @@
 # My garbage :)
 Win32/
 x64/
+doctest_with_main.dir/
 scripts/bench/project/*
 scripts/bench/catch*.hpp
 build/

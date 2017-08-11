@@ -44,7 +44,7 @@
 
 The framework is and will stay free but needs your support to sustain its development. There are lots of <a href="doc/markdown/roadmap.md"><b>new features</b></a> and maintenance to do. If you work for a company using **doctest** or have the means to do so, please consider financial support. Monthly donations via Patreon and one-offs via PayPal.
 
-[<img src="https://www.paypalobjects.com/en_US/i/btn/btn_donate_LG.gif" align="right">](https://www.paypal.me/onqtam)
+[<img src="https://www.paypalobjects.com/en_US/i/btn/btn_donate_LG.gif" align="right">](https://www.paypal.me/onqtam/10)
 
 A complete example with a self-registering test that compiles to an executable looks like this:
 
@@ -121,7 +121,7 @@ Contributing
 
 Support the development of the project with donations! There is a list of planned features which are all important and big - see the [**roadmap**](doc/markdown/roadmap.md). I took a break from working in the industry to make open source software so every cent is a big deal.
 
-[<img src="https://www.paypalobjects.com/en_US/i/btn/btn_donate_LG.gif" align="right">](https://www.paypal.me/onqtam)
+[<img src="https://www.paypalobjects.com/en_US/i/btn/btn_donate_LG.gif" align="right">](https://www.paypal.me/onqtam/10)
 
 If you work for a company using **doctest** or have the means to do so, please consider financial support.
 
