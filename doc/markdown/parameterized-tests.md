@@ -45,6 +45,52 @@ There will be proper support for this in the future. For now there are 2 ways of
     This has the following drawbacks:
     - doesn't scale well - it is very impractical to write such code for more than a few different inputs
     - the user has to manually log the data with calls to ```CAPTURE()``` (or ```INFO()```)
+    
+    --------------------------------
+    
+    There is however an easy way to encapsulate this into a macro (written with C++11 for simplicity):
+    
+    ```c++
+    #include <algorithm>
+    #include <vector>
+    #include <string>
+
+    #define DOCTEST_VALUE_PARAMETERIZED_DATA(data, data_array)                                      \
+        static std::vector<std::string> _doctest_subcases = [&data_array]() {                       \
+            std::vector<std::string> out;                                                           \
+            while(out.size() != data_array.size())                                                  \
+                out.push_back(std::string(#data_array "[") + std::to_string(out.size() + 1) + "]"); \
+            return out;                                                                             \
+        }();                                                                                        \
+        int _doctest_subcase_idx = 0;                                                               \
+        std::for_each(data_array.begin(), data_array.end(), [&](const auto& in) {                   \
+            DOCTEST_SUBCASE(_doctest_subcases[_doctest_subcase_idx++].c_str()) { data = in; }       \
+        })
+    ```
+    
+    and now this can be used as follows:
+    
+    ```c++
+    TEST_CASE("test name") {
+        int data;
+        std::list<int> data_array = {1, 2, 3, 4}; // must be iterable - std::vector<> would work as well
+
+        DOCTEST_VALUE_PARAMETERIZED_DATA(data, data_array);
+        
+        printf("%d\n", data);
+    }
+    ```
+    
+    and will print the 4 numbers by re-entering the test case 3 times (after the first entry) - just like subcases work:
+    
+    ```
+    1
+    2
+    3
+    4
+    ```
+    
+    The ```static std::vector<std::string>``` is necessary because the ```SUBCASE()``` macro requires ```const char*``` and doesn't copy the strings passed to it. This might be changed in the future for ease of use...
 
 Stay tuned for proper value-parameterization in doctest!
 
