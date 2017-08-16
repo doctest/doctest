@@ -90,6 +90,8 @@ There will be proper support for this in the future. For now there are 2 ways of
     4
     ```
     
+    The big limitation of this approach is that the macro cannot be used with other subcases at the same code block {} indentation level (will act weird) - it can only be used within a subcase.
+    
     The ```static std::vector<std::string>``` is necessary because the ```SUBCASE()``` macro accepts ```const char*``` and doesn't copy the strings but keeps the pointers internally - that's why we need to construct persistent versions of the strings. This might be changed in the future (to accept a string class) for ease of use...
 
 Stay tuned for proper value-parameterization in doctest!
