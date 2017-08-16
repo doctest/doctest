@@ -90,7 +90,7 @@ There will be proper support for this in the future. For now there are 2 ways of
     4
     ```
     
-    The ```static std::vector<std::string>``` is necessary because the ```SUBCASE()``` macro requires ```const char*``` and doesn't copy the strings passed to it. This might be changed in the future for ease of use...
+    The ```static std::vector<std::string>``` is necessary because the ```SUBCASE()``` macro accepts ```const char*``` and doesn't copy the strings but keeps the pointers internally - that's why we need to construct persistent versions of the strings. This might be changed in the future (to accept a string class) for ease of use...
 
 Stay tuned for proper value-parameterization in doctest!
 
