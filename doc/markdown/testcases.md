@@ -25,6 +25,10 @@ In addition to **doctest**'s take on the classic style of test cases, **doctest*
 
 This macro maps onto ```TEST_CASE``` and works in the same way, except that the test case name will be prefixed by "Scenario: "
 
+* **SCENARIO_TEMPLATE(** _scenario name_, _type_, _list of types_ **)**
+
+This macro maps onto ```TEST_CASE_TEMPLATE``` and works in the same way, except that the test case name will be prefixed by "Scenario: "
+
 * **GIVEN(** _something_ **)**
 * **WHEN(** _something_ **)**
 * **THEN(** _something_ **)**
