@@ -381,7 +381,7 @@ script:
       lcov -d . -c -o coverage.info                                              # parse coverage data
       lcov -r coverage.info "/usr*" "$(readlink -f examples)/*" -o coverage.info # remove data for system headers and .cpp files
       lcov -l coverage.info                                                      # just list a short summary of the results
-      coveralls-lcov --repo-token ${COVERALLS_REPO_TOKEN} coverage.info          # upload results
+      coveralls-lcov --repo-token=${COVERALLS_REPO_TOKEN} coverage.info          # upload results
 
       # do not continue with other build configurations after that
       exit
