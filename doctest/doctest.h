@@ -460,7 +460,9 @@ typedef basic_ostream<char, char_traits<char> > ostream;
 #include <cstddef>
 #else  // _LIBCPP_VERSION
 namespace std
-{ typedef decltype(nullptr) nullptr_t; }
+{
+typedef decltype(nullptr) nullptr_t;
+}
 #endif // _LIBCPP_VERSION
 #endif // DOCTEST_CONFIG_WITH_NULLPTR
 
@@ -702,7 +704,7 @@ namespace detail
     struct has_insertion_operator : has_insertion_operator_impl::has_insertion_operator<T>
     {};
 
-    DOCTEST_INTERFACE void my_memcpy(void* dest, const void* src, unsigned num);
+    DOCTEST_INTERFACE void     my_memcpy(void* dest, const void* src, unsigned num);
     DOCTEST_INTERFACE unsigned my_strlen(const char* in);
 
     DOCTEST_INTERFACE std::ostream* createStream();
@@ -739,7 +741,8 @@ namespace detail
     }
 
     class NullType
-    {};
+    {
+    };
 
     template <class T, class U>
     struct Typelist
@@ -1137,7 +1140,8 @@ namespace detail
     // clang-format on
 
     struct TestFailureException
-    {};
+    {
+    };
 
     DOCTEST_INTERFACE bool checkIfShouldThrow(assertType::Enum assert_type);
     DOCTEST_INTERFACE void fastAssertThrowIfFlagSet(int flags);
@@ -1285,7 +1289,7 @@ namespace detail
     template <typename L, typename R> DOCTEST_COMPARISON_RETURN_TYPE gt(const DOCTEST_REF_WRAP(L) lhs, const DOCTEST_REF_WRAP(R) rhs) { return lhs >  rhs; }
     template <typename L, typename R> DOCTEST_COMPARISON_RETURN_TYPE le(const DOCTEST_REF_WRAP(L) lhs, const DOCTEST_REF_WRAP(R) rhs) { return lhs <= rhs; }
     template <typename L, typename R> DOCTEST_COMPARISON_RETURN_TYPE ge(const DOCTEST_REF_WRAP(L) lhs, const DOCTEST_REF_WRAP(R) rhs) { return lhs >= rhs; }
-// clang-format on
+    // clang-format on
 
 #ifndef DOCTEST_CONFIG_TREAT_CHAR_STAR_AS_STRING
 #define DOCTEST_CMP_EQ(l, r) l == r
@@ -1529,7 +1533,7 @@ namespace detail
 
         void setResult(const Result& res) { m_result = res; }
 
-        template <int         comparison, typename L, typename R>
+        template <int comparison, typename L, typename R>
         DOCTEST_NOINLINE void binary_assert(const DOCTEST_REF_WRAP(L) lhs,
                                             const DOCTEST_REF_WRAP(R) rhs) {
             m_result.m_passed = RelationalComparator<comparison, L, R>()(lhs, rhs);
@@ -1564,7 +1568,7 @@ namespace detail
         };
     } // namespace assertAction
 
-    template <int        comparison, typename L, typename R>
+    template <int comparison, typename L, typename R>
     DOCTEST_NOINLINE int fast_binary_assert(assertType::Enum assert_type, const char* file,
                                             int line, const char* expr,
                                             const DOCTEST_REF_WRAP(L) lhs,
@@ -2044,7 +2048,9 @@ public:
     namespace                                                                                      \
     {                                                                                              \
         struct der : base                                                                          \
-        { void f(); };                                                                             \
+        {                                                                                          \
+            void f();                                                                              \
+        };                                                                                         \
         static void func() {                                                                       \
             der v;                                                                                 \
             v.f();                                                                                 \
@@ -2078,7 +2084,9 @@ public:
     namespace doctest                                                                              \
     {                                                                                              \
         namespace detail                                                                           \
-        { DOCTEST_TYPE_TO_STRING_IMPL(__VA_ARGS__) }                                               \
+        {                                                                                          \
+            DOCTEST_TYPE_TO_STRING_IMPL(__VA_ARGS__)                                               \
+        }                                                                                          \
     }                                                                                              \
     typedef int DOCTEST_ANONYMOUS(_DOCTEST_ANON_FOR_SEMICOLON_)
 #else // DOCTEST_CONFIG_WITH_VARIADIC_MACROS
@@ -2091,7 +2099,9 @@ public:
     namespace doctest                                                                              \
     {                                                                                              \
         namespace detail                                                                           \
-        { DOCTEST_TYPE_TO_STRING_IMPL(x) }                                                         \
+        {                                                                                          \
+            DOCTEST_TYPE_TO_STRING_IMPL(x)                                                         \
+        }                                                                                          \
     }                                                                                              \
     typedef int DOCTEST_ANONYMOUS(_DOCTEST_ANON_FOR_SEMICOLON_)
 #endif // DOCTEST_CONFIG_WITH_VARIADIC_MACROS
@@ -2103,7 +2113,7 @@ public:
     struct DOCTEST_CAT(anon, FUNCTOR)                                                              \
     {                                                                                              \
         template <int Index, typename Type>                                                        \
-        void          operator()() {                                                               \
+        void operator()() {                                                                        \
             doctest::detail::regTest(                                                              \
                     doctest::detail::TestCase(anon<Type>, __FILE__, __LINE__,                      \
                                               doctest_detail_test_suite_ns::getCurrentTestSuite(), \
@@ -2142,7 +2152,7 @@ public:
         (int line)                                                                                 \
                 : m_line(line) {}                                                                  \
         template <int Index, typename Type>                                                        \
-        void          operator()() {                                                               \
+        void operator()() {                                                                        \
             doctest::detail::regTest(                                                              \
                     doctest::detail::TestCase(anon<Type>, __FILE__, __LINE__,                      \
                                               doctest_detail_test_suite_ns::getCurrentTestSuite(), \
@@ -3259,7 +3269,7 @@ namespace detail
         const char* csrc  = static_cast<const char*>(src);
         char*       cdest = static_cast<char*>(dest);
         for(unsigned i = 0; i < num; ++i)
-            cdest[i]   = csrc[i];
+            cdest[i] = csrc[i];
     }
 
     // not using std::strlen() because of valgrind errors when optimizations are turned on
@@ -3323,7 +3333,7 @@ namespace detail
     }
 
     std::ostream* createStream() { return new std::ostringstream(); }
-    String getStreamResult(std::ostream* in) {
+    String        getStreamResult(std::ostream* in) {
         return static_cast<std::ostringstream*>(in)->str().c_str(); // NOLINT
     }
     void freeStream(std::ostream* in) { delete in; }
@@ -4148,7 +4158,7 @@ namespace detail
 #ifndef DOCTEST_CONFIG_COLORS_NONE
                             code
 #endif // DOCTEST_CONFIG_COLORS_NONE
-                    ) {
+    ) {
         const ContextState* p = contextState;
         if(p->no_colors)
             return;
@@ -4270,7 +4280,7 @@ namespace detail
 #endif // DOCTEST_CONFIG_WITH_LONG_LONG
 
     void addToContexts(IContextScope* ptr) { contextState->contexts.push_back(ptr); }
-    void                              popFromContexts() { contextState->contexts.pop_back(); }
+    void popFromContexts() { contextState->contexts.pop_back(); }
 #if defined(_MSC_VER)
 #pragma warning(push)
 #pragma warning(disable : 4996) // std::uncaught_exception is deprecated in C++17
@@ -4982,7 +4992,7 @@ namespace detail
         if(!parseOptionImpl(argc, argv, pattern, res))
             return parseOptionImpl(argc, argv, pattern + 3, res); // 3 for "dt-"
         return true;
-#else // DOCTEST_CONFIG_NO_UNPREFIXED_OPTIONS
+#else  // DOCTEST_CONFIG_NO_UNPREFIXED_OPTIONS
         return parseOptionImpl(argc, argv, pattern, res);
 #endif // DOCTEST_CONFIG_NO_UNPREFIXED_OPTIONS
     }
@@ -5150,10 +5160,9 @@ namespace detail
             DOCTEST_PRINTF_COLORED(buff, Color::None);
             DOCTEST_SNPRINTF(buff, DOCTEST_COUNTOF(buff), "%6d passed",
                              p->numTestsPassingFilters - p->numFailed);
-            DOCTEST_PRINTF_COLORED(buff,
-                                   (p->numTestsPassingFilters == 0 || anythingFailed) ?
-                                           Color::None :
-                                           Color::Green);
+            DOCTEST_PRINTF_COLORED(buff, (p->numTestsPassingFilters == 0 || anythingFailed) ?
+                                                 Color::None :
+                                                 Color::Green);
             DOCTEST_SNPRINTF(buff, DOCTEST_COUNTOF(buff), " | ");
             DOCTEST_PRINTF_COLORED(buff, Color::None);
             DOCTEST_SNPRINTF(buff, DOCTEST_COUNTOF(buff), "%6u failed", p->numFailed);
@@ -5177,8 +5186,8 @@ namespace detail
             DOCTEST_PRINTF_COLORED(buff, Color::None);
             DOCTEST_SNPRINTF(buff, DOCTEST_COUNTOF(buff), "%6d passed",
                              p->numAssertions - p->numFailedAssertions);
-            DOCTEST_PRINTF_COLORED(
-                    buff, (p->numAssertions == 0 || anythingFailed) ? Color::None : Color::Green);
+            DOCTEST_PRINTF_COLORED(buff, (p->numAssertions == 0 || anythingFailed) ? Color::None :
+                                                                                     Color::Green);
             DOCTEST_SNPRINTF(buff, DOCTEST_COUNTOF(buff), " | ");
             DOCTEST_PRINTF_COLORED(buff, Color::None);
             DOCTEST_SNPRINTF(buff, DOCTEST_COUNTOF(buff), "%6d failed", p->numFailedAssertions);
@@ -5282,7 +5291,7 @@ void Context::parseArgs(int argc, const char* const* argv, bool withDefaults) {
     DOCTEST_PARSE_AS_BOOL_OR_FLAG(dt-no-path-filenames, dt-npf, no_path_in_filenames, false);
     DOCTEST_PARSE_AS_BOOL_OR_FLAG(dt-no-line-numbers, dt-nln, no_line_numbers, false);
     DOCTEST_PARSE_AS_BOOL_OR_FLAG(dt-no-skipped-summary, dt-nss, no_skipped_summary, false);
-// clang-format on
+    // clang-format on
 
 #undef DOCTEST_PARSE_STR_OPTION
 #undef DOCTEST_PARSE_INT_OPTION

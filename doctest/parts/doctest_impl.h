@@ -139,7 +139,7 @@ namespace detail
         const char* csrc  = static_cast<const char*>(src);
         char*       cdest = static_cast<char*>(dest);
         for(unsigned i = 0; i < num; ++i)
-            cdest[i]   = csrc[i];
+            cdest[i] = csrc[i];
     }
 
     // not using std::strlen() because of valgrind errors when optimizations are turned on
@@ -203,7 +203,7 @@ namespace detail
     }
 
     std::ostream* createStream() { return new std::ostringstream(); }
-    String getStreamResult(std::ostream* in) {
+    String        getStreamResult(std::ostream* in) {
         return static_cast<std::ostringstream*>(in)->str().c_str(); // NOLINT
     }
     void freeStream(std::ostream* in) { delete in; }
@@ -1028,7 +1028,7 @@ namespace detail
 #ifndef DOCTEST_CONFIG_COLORS_NONE
                             code
 #endif // DOCTEST_CONFIG_COLORS_NONE
-                    ) {
+    ) {
         const ContextState* p = contextState;
         if(p->no_colors)
             return;
@@ -1150,7 +1150,7 @@ namespace detail
 #endif // DOCTEST_CONFIG_WITH_LONG_LONG
 
     void addToContexts(IContextScope* ptr) { contextState->contexts.push_back(ptr); }
-    void                              popFromContexts() { contextState->contexts.pop_back(); }
+    void popFromContexts() { contextState->contexts.pop_back(); }
 #if defined(_MSC_VER)
 #pragma warning(push)
 #pragma warning(disable : 4996) // std::uncaught_exception is deprecated in C++17
@@ -1862,7 +1862,7 @@ namespace detail
         if(!parseOptionImpl(argc, argv, pattern, res))
             return parseOptionImpl(argc, argv, pattern + 3, res); // 3 for "dt-"
         return true;
-#else // DOCTEST_CONFIG_NO_UNPREFIXED_OPTIONS
+#else  // DOCTEST_CONFIG_NO_UNPREFIXED_OPTIONS
         return parseOptionImpl(argc, argv, pattern, res);
 #endif // DOCTEST_CONFIG_NO_UNPREFIXED_OPTIONS
     }
@@ -2030,10 +2030,9 @@ namespace detail
             DOCTEST_PRINTF_COLORED(buff, Color::None);
             DOCTEST_SNPRINTF(buff, DOCTEST_COUNTOF(buff), "%6d passed",
                              p->numTestsPassingFilters - p->numFailed);
-            DOCTEST_PRINTF_COLORED(buff,
-                                   (p->numTestsPassingFilters == 0 || anythingFailed) ?
-                                           Color::None :
-                                           Color::Green);
+            DOCTEST_PRINTF_COLORED(buff, (p->numTestsPassingFilters == 0 || anythingFailed) ?
+                                                 Color::None :
+                                                 Color::Green);
             DOCTEST_SNPRINTF(buff, DOCTEST_COUNTOF(buff), " | ");
             DOCTEST_PRINTF_COLORED(buff, Color::None);
             DOCTEST_SNPRINTF(buff, DOCTEST_COUNTOF(buff), "%6u failed", p->numFailed);
@@ -2057,8 +2056,8 @@ namespace detail
             DOCTEST_PRINTF_COLORED(buff, Color::None);
             DOCTEST_SNPRINTF(buff, DOCTEST_COUNTOF(buff), "%6d passed",
                              p->numAssertions - p->numFailedAssertions);
-            DOCTEST_PRINTF_COLORED(
-                    buff, (p->numAssertions == 0 || anythingFailed) ? Color::None : Color::Green);
+            DOCTEST_PRINTF_COLORED(buff, (p->numAssertions == 0 || anythingFailed) ? Color::None :
+                                                                                     Color::Green);
             DOCTEST_SNPRINTF(buff, DOCTEST_COUNTOF(buff), " | ");
             DOCTEST_PRINTF_COLORED(buff, Color::None);
             DOCTEST_SNPRINTF(buff, DOCTEST_COUNTOF(buff), "%6d failed", p->numFailedAssertions);
@@ -2162,7 +2161,7 @@ void Context::parseArgs(int argc, const char* const* argv, bool withDefaults) {
     DOCTEST_PARSE_AS_BOOL_OR_FLAG(dt-no-path-filenames, dt-npf, no_path_in_filenames, false);
     DOCTEST_PARSE_AS_BOOL_OR_FLAG(dt-no-line-numbers, dt-nln, no_line_numbers, false);
     DOCTEST_PARSE_AS_BOOL_OR_FLAG(dt-no-skipped-summary, dt-nss, no_skipped_summary, false);
-// clang-format on
+    // clang-format on
 
 #undef DOCTEST_PARSE_STR_OPTION
 #undef DOCTEST_PARSE_INT_OPTION
