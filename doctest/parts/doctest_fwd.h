@@ -2935,6 +2935,11 @@ constexpr T to_lvalue = x;
 // BDD style macros
 // clang-format off
 #define DOCTEST_SCENARIO(name)  TEST_CASE("  Scenario: " name)
+#ifdef DOCTEST_CONFIG_WITH_VARIADIC_MACROS
+#define  DOCTEST_SCENARIO_TEMPLATE(name, T, ...)  TEST_CASE_TEMPLATE("  Scenario: " name, T, __VA_ARGS__)
+#else // DOCTEST_CONFIG_WITH_VARIADIC_MACROS
+#define DOCTEST_SCENARIO_TEMPLATE(name, T, types) TEST_CASE_TEMPLATE("  Scenario: " name, T, types)
+#endif // DOCTEST_CONFIG_WITH_VARIADIC_MACROS
 #define DOCTEST_GIVEN(name)     SUBCASE("   Given: " name)
 #define DOCTEST_WHEN(name)      SUBCASE("    When: " name)
 #define DOCTEST_AND_WHEN(name)  SUBCASE("And when: " name)
@@ -2999,6 +3004,7 @@ constexpr T to_lvalue = x;
 #define REQUIRE_NOTHROW_MESSAGE DOCTEST_REQUIRE_NOTHROW_MESSAGE
 
 #define SCENARIO DOCTEST_SCENARIO
+#define SCENARIO_TEMPLATE DOCTEST_SCENARIO_TEMPLATE
 #define GIVEN DOCTEST_GIVEN
 #define WHEN DOCTEST_WHEN
 #define AND_WHEN DOCTEST_AND_WHEN
