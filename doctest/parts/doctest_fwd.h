@@ -2936,10 +2936,12 @@ constexpr T to_lvalue = x;
 // clang-format off
 #define DOCTEST_SCENARIO(name)  TEST_CASE("  Scenario: " name)
 #ifdef DOCTEST_CONFIG_WITH_VARIADIC_MACROS
-#define  DOCTEST_SCENARIO_TEMPLATE(name, T, ...)  TEST_CASE_TEMPLATE("  Scenario: " name, T, __VA_ARGS__)
+#define DOCTEST_SCENARIO_TEMPLATE(name, T, ...)  TEST_CASE_TEMPLATE("  Scenario: " name, T, __VA_ARGS__)
 #else // DOCTEST_CONFIG_WITH_VARIADIC_MACROS
 #define DOCTEST_SCENARIO_TEMPLATE(name, T, types) TEST_CASE_TEMPLATE("  Scenario: " name, T, types)
 #endif // DOCTEST_CONFIG_WITH_VARIADIC_MACROS
+#define DOCTEST_SCENARIO_TEMPLATE_DEFINE(name, T, id) DOCTEST_TEST_CASE_TEMPLATE_DEFINE("  Scenario: " name, T, id)
+
 #define DOCTEST_GIVEN(name)     SUBCASE("   Given: " name)
 #define DOCTEST_WHEN(name)      SUBCASE("    When: " name)
 #define DOCTEST_AND_WHEN(name)  SUBCASE("And when: " name)
@@ -3005,6 +3007,7 @@ constexpr T to_lvalue = x;
 
 #define SCENARIO DOCTEST_SCENARIO
 #define SCENARIO_TEMPLATE DOCTEST_SCENARIO_TEMPLATE
+#define SCENARIO_TEMPLATE_DEFINE DOCTEST_SCENARIO_TEMPLATE_DEFINE
 #define GIVEN DOCTEST_GIVEN
 #define WHEN DOCTEST_WHEN
 #define AND_WHEN DOCTEST_AND_WHEN

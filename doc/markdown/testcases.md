@@ -29,6 +29,10 @@ This macro maps onto ```TEST_CASE``` and works in the same way, except that the 
 
 This macro maps onto ```TEST_CASE_TEMPLATE``` and works in the same way, except that the test case name will be prefixed by "Scenario: "
 
+* **SCENARIO_TEMPLATE_DEFINE(** _scenario name_, _type_, _id_ **)**
+
+This macro maps onto ```TEST_CASE_TEMPLATE_DEFINE``` and works in the same way, except that the test case name will be prefixed by "Scenario: "
+
 * **GIVEN(** _something_ **)**
 * **WHEN(** _something_ **)**
 * **THEN(** _something_ **)**
