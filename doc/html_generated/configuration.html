@@ -33,6 +33,7 @@ Defining something ```globally``` means for every source file of the binary (exe
 - [**```DOCTEST_CONFIG_NO_WINDOWS_SEH```**](#doctest_config_no_windows_seh)
 - [**```DOCTEST_CONFIG_POSIX_SIGNALS```**](#doctest_config_posix_signals)
 - [**```DOCTEST_CONFIG_NO_POSIX_SIGNALS```**](#doctest_config_no_posix_signals)
+- [**```DOCTEST_CONFIG_INCLUDE_TYPE_TRAITS```**](#doctest_config_include_type_traits)
 
 Detection of modern C++ features:
 
@@ -242,6 +243,12 @@ This should be defined only in the source file where the library is implemented 
 This can be used to disable **```DOCTEST_CONFIG_POSIX_SIGNALS```** when it is auto-selected by the library.
 
 This should be defined only in the source file where the library is implemented (it's relevant only there).
+
+### **```DOCTEST_CONFIG_INCLUDE_TYPE_TRAITS```**
+
+This can be used to include the ```<type_traits>``` C++11 header. That in turn will enable the ability for the ```Approx``` helper to be used with strong typedefs of ```double``` - check [this](https://github.com/onqtam/doctest/issues/62) or [this](https://github.com/onqtam/doctest/issues/85) issue for more details on that.
+
+This can be defined both globally and in specific source files only.
 
 ### **```DOCTEST_CONFIG_WITH_DELETED_FUNCTIONS```**
 

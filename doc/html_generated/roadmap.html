@@ -8,7 +8,7 @@
 This library is free, and will stay free but needs your support to sustain its development. There are lots of [**new features**](roadmap.html) and maintenance to do. If you work for a company using **doctest** or have the means to do so, please consider financial support.
 
 [![Patreon](https://cloud.githubusercontent.com/assets/8225057/5990484/70413560-a9ab-11e4-8942-1a63607c0b00.png)](http://www.patreon.com/onqtam)
-[![PayPal](https://www.paypalobjects.com/en_US/i/btn/btn_donate_LG.gif)](https://www.paypal.me/onqtam)
+[![PayPal](https://www.paypalobjects.com/en_US/i/btn/btn_donate_LG.gif)](https://www.paypal.me/onqtam/10)
 
 Planned features for future releases - order changes constantly...
 
@@ -31,6 +31,13 @@ Planned features for future releases - order changes constantly...
 - convolution support for the assertion macros (with a predicate)
 - Value-Parameterized test cases
 - generators? - look at Catch - and investigate what they are
+- proper conan package
+    - https://github.com/uilianries/conan-catch
+    - https://github.com/philsquared/Catch/pull/938
+    - https://stackoverflow.com/questions/40311363/conan-io-header-only-package
+    - https://github.com/conan-io/docs/issues/67
+    - https://github.com/agauniyal/rang
+    - https://github.com/conan-io/conan/issues/324
 - look at property based testing
     - [rapidcheck](https://github.com/emil-e/rapidcheck)
     - [autocheck](https://github.com/thejohnfreeman/autocheck)
@@ -39,6 +46,7 @@ Planned features for future releases - order changes constantly...
     - https://blogs.msdn.microsoft.com/vcblog/2017/05/10/unit-testing-and-the-future-announcing-the-test-adapter-for-google-test/
     - https://www.reddit.com/r/cpp/comments/65c0f1/run_cpp_unit_tests_from_xcode_and_visual_studio/
     - https://github.com/k-brac/CUTI
+    - https://github.com/csoltenborn/GoogleTestAdapter
     - MSTest
         - http://accu.org/index.php/journals/1851
         - https://msdn.microsoft.com/en-us/library/hh270865.aspx
@@ -64,8 +72,11 @@ Planned features for future releases - order changes constantly...
     - unit test the String class
     - should unit test internals - currently even if a bug is caught by different output it's very difficult to track the reason
     - should test stuff that should not compile
+        - https://github.com/ldionne/dyno/blob/master/cmake/CompileFailTest.cmake
+        - see slide 38 here - https://github.com/boostcon/cppnow_presentations_2017/blob/master/05-19-2017_friday/effective_cmake__daniel_pfeifer__cppnow_05-19-2017.pdf
     - should test crash handling
     - should test more config options
+    - don't cheat for maxing out code coverage (see [coverage_maxout.cpp](../../examples/coverage_maxout.cpp)
     - should test C++11 stuff - perhaps inspect the CMAKE_CXX_FLAGS for -std=c++11 on the CI and add more targets/tests
     - test tricky stuff like expressions with commas in asserts
 
@@ -87,6 +98,7 @@ Planned features for future releases - order changes constantly...
 ### Things that are being considered but not part of the roadmap yet:
 
 - FakeIt mocking integration - like [catch](https://github.com/eranpeer/FakeIt/tree/master/config/catch)
+- look into https://github.com/cpp-testing/GUnit - https://www.youtube.com/watch?v=NVrZjT5lW5o
 - consider the following 2 properties for the MSVC static code analyzer: EnableCppCoreCheck, EnableExperimentalCppCoreCheck
 - rpm package? like this: https://github.com/vietjtnguyen/argagg/blob/master/packaging/rpm/argagg.spec
 - get the current test case/section path - https://github.com/philsquared/Catch/issues/522
@@ -105,6 +117,7 @@ Planned features for future releases - order changes constantly...
     - ability to specify ASC/DESC for the order option
     - global timeout option (per test or per entire session?)
     - command line error handling/reporting
+    - option to not print context info when the --success option is used
     - ability for the user to extend the command line - as requested [here](https://github.com/philsquared/Catch/issues/622)
     - option to list files in which there are test cases who match the current filters
     - option for filters to switch from "match any" to "match all" mode
