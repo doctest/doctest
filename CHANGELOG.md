@@ -1,5 +1,25 @@
 # Change Log
 
+## [1.2.2](https://github.com/onqtam/doctest/tree/1.2.2) (2017-09-05)
+[Full Changelog](https://github.com/onqtam/doctest/compare/1.2.1...1.2.2)
+
+**Closed issues:**
+
+- \[question\] Differences between doctest and googletest \(gtest\) for uninitialised local variables in test cases [\#86](https://github.com/onqtam/doctest/issues/86)
+- !!! BREAKING CHANGE !!! - remove the custom implementation of std::is\_constructible and optionally use the \<type\_traits\> header because of infinite template recursion issues with GCC [\#85](https://github.com/onqtam/doctest/issues/85)
+- Static Analysis results of doctest [\#83](https://github.com/onqtam/doctest/issues/83)
+- !!! BREAKING CHANGE !!! - catch exceptions as const reference in \<LEVEL\>\_THROWS\_AS [\#81](https://github.com/onqtam/doctest/issues/81)
+- doctest implementation as static library [\#77](https://github.com/onqtam/doctest/issues/77)
+- \[question\] Private members [\#76](https://github.com/onqtam/doctest/issues/76)
+- Provide some easy way to compare structs containing float/doubles [\#73](https://github.com/onqtam/doctest/issues/73)
+
+**Merged pull requests:**
+
+- Add support for templated scenarios [\#87](https://github.com/onqtam/doctest/pull/87) ([Lectem](https://github.com/Lectem))
+- Prefer if\(MSVC\) in CMakeLists.txt. [\#84](https://github.com/onqtam/doctest/pull/84) ([martinmoene](https://github.com/martinmoene))
+- catch throw\_as exception as const reference [\#82](https://github.com/onqtam/doctest/pull/82) ([a4z](https://github.com/a4z))
+- Added doctest\_with\_main static lib [\#78](https://github.com/onqtam/doctest/pull/78) ([ymadzhunkov](https://github.com/ymadzhunkov))
+
 ## [1.2.1](https://github.com/onqtam/doctest/tree/1.2.1) (2017-05-24)
 [Full Changelog](https://github.com/onqtam/doctest/compare/1.2.0...1.2.1)
 
