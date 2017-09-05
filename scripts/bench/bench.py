@@ -51,7 +51,7 @@ pprint.pprint(vars(args), width = 1)
 # ==============================================================================
 
 # catch version
-catch_ver = "1.9.3"
+catch_ver = "2.0.0-develop.3"
 catch_header = "catch." + catch_ver + ".hpp"
 
 # get the catch header

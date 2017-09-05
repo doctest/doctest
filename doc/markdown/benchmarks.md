@@ -8,8 +8,8 @@ The benchmarks are done with [**this**](../../scripts/bench/bench.py) script usi
 
 Compilers used:
 
-- WINDOWS: Microsoft Visual Studio Community 2017 - Version 15.1.26403.7
-- WINDOWS: gcc 7.1.0 (x86_64-posix-seh-rev0, Built by MinGW-W64 project)
+- WINDOWS: Microsoft Visual Studio Community 2017 - Version 15.3.3+26730.12
+- WINDOWS: gcc 7.1.0 (x86_64-posix-seh-rev2, Built by MinGW-W64 project)
 - LINUX: gcc 6.3.0 20170406 (Ubuntu 6.3.0-12ubuntu2)
 - LINUX: clang 4.0.0-1 (tags/RELEASE_400/rc1) Target: x86_64-pc-linux-gnu
 
@@ -18,9 +18,9 @@ Environment used (Intel i7 3770k, 16g RAM):
 - Windows 7 - on an SSD
 - Ubuntu 17.04 in a VirtualBox VM - on a HDD
 
-**doctest** version: 1.2.0 (released on 2017.05.16)
+**doctest** version: 1.2.2 (released on 2017.09.05)
 
-[**Catch**](https://github.com/philsquared/Catch) version: 1.9.3 (released on 2017.04.25)
+[**Catch**](https://github.com/philsquared/Catch) version: 2.0.0-develop.3 (released on 2017.08.30)
 
 # Compile time benchmarks
 

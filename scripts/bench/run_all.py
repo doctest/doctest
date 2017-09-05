@@ -25,7 +25,7 @@ if os.name == "nt":
     call = 'python bench.py'
     the_os = 'windows'
 
-f = open('results.txt', 'w')
+f = open('results.txt', 'w', 0) # unbuffered
 for test in ['header', 'asserts', 'runtime']:
     print(  '\n************** ' + test + '\n')
     f.write('\n************** ' + test + '\n')

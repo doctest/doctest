@@ -30,6 +30,7 @@ x64/
 doctest_with_main.dir/
 scripts/bench/project/*
 scripts/bench/catch*.hpp
+scripts/bench/results.txt
 build/
 build-mingw/
 *.pyc
