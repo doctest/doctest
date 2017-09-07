@@ -124,8 +124,8 @@ And here is [**Catch**](https://github.com/philsquared/Catch) which only has nor
 |---------------------|----------|-------------------|---------|-----------|
 | MSVC Debug          |    9.58 |   37.69 |   25.21 |   10.40 |
 | MSVC Release        |   10.85 |  260.55 |  121.38 |   11.56 |
-| MinGW GCC Debug     |   36.24 |  159.15 |    3.40 |   33.57 |
-| MinGW GCC Release   |   16.15 |  740.71 |    3.37 |   16.41 |
+| MinGW GCC Debug     |   36.24 |  159.15 |  133.98 |   33.57 |
+| MinGW GCC Release   |   16.15 |  740.71 |  562.60 |   16.41 |
 | Linux GCC Debug     |   10.05 |  115.53 |   98.84 |    x.xx |
 | Linux GCC Release   |   13.29 |  294.26 |  218.37 |    x.xx |
 | Linux Clang Debug   |    6.38 |  103.06 |   85.02 |    x.xx |
