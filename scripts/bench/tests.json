@@ -19,7 +19,7 @@
             ["any",     " --files 200 --tests 0"],
             ["any",     " --files 200 --tests 0 --implement"],
             ["any",     " --files 200 --tests 0 --implement --header"],
-            ["doctest", " --files 200 --tests 0 --implement --header --disabled"]
+            ["any",     " --files 200 --tests 0 --implement --header --disabled"]
         ]
     ],
     "asserts": [
@@ -30,7 +30,7 @@
             ["doctest", " --header --files 10 --tests 50 --checks 100 --asserts binary"],
             ["doctest", " --header --files 10 --tests 50 --checks 100 --asserts fast"],
             ["doctest", " --header --files 10 --tests 50 --checks 100 --asserts fast   --fast"],
-            ["doctest", " --header --files 10 --tests 50 --checks 100 --asserts normal --disabled"],
+            ["any",     " --header --files 10 --tests 50 --checks 100 --asserts normal --disabled"],
             ["catch",   " --header --files 10 --tests 50 --checks 100 --asserts normal --fast"]
         ]
     ],

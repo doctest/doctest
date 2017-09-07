@@ -38,7 +38,7 @@ The script generates 201 source files and in 200 of them makes a function in the
 #include "doctest.h"
 ```
 - **+ header everywhere** - the framework header is also included in all the other source files
-- **+ disabled** - **doctest** specific - only this framework can remove everything related to it from the binary
+- **+ disabled** - remove everything testing-related from the binary
 
 | doctest             | baseline | + implement | + header everywhere | + disabled |
 |---------------------|----------|-------------|---------------------|------------|
@@ -51,16 +51,16 @@ The script generates 201 source files and in 200 of them makes a function in the
 | Linux Clang Debug   |    8.52 |    9.42 |   15.25 |   11.14 |
 | Linux Clang Release |    9.01 |   11.85 |   18.18 |   11.75 |
 
-| Catch               | baseline | + implement | + header everywhere |
-|---------------------|----------|-------------|---------------------|
-| MSVC Debug          |    6.78 |   10.00 |  107.85 |
-| MSVC Release        |    6.36 |   11.19 |  102.69 |
-| MinGW GCC Debug     |   10.36 |   41.83 |  124.41 |
-| MinGW GCC Release   |   10.49 |   21.93 |   97.81 |
-| Linux GCC Debug     |    4.98 |    9.37 |  105.66 |
-| Linux GCC Release   |    4.49 |   13.04 |  105.57 |
-| Linux Clang Debug   |    8.52 |   11.33 |   70.57 |
-| Linux Clang Release |    9.01 |   16.59 |   75.85 |
+| Catch               | baseline | + implement | + header everywhere | + disabled |
+|---------------------|----------|-------------|---------------------|------------|
+| MSVC Debug          |    6.78 |   10.00 |  107.85 |  115.05 |
+| MSVC Release        |    6.36 |   11.19 |  102.69 |  109.06 |
+| MinGW GCC Debug     |   10.36 |   41.83 |  124.41 |  126.70 |
+| MinGW GCC Release   |   10.49 |   21.93 |   97.81 |  105.47 |
+| Linux GCC Debug     |    4.98 |    9.37 |  105.66 |   xx.xx |
+| Linux GCC Release   |    4.49 |   13.04 |  105.57 |   xx.xx |
+| Linux Clang Debug   |    8.52 |   11.33 |   70.57 |   xx.xx |
+| Linux Clang Release |    9.01 |   16.59 |   75.85 |   xx.xx |
 
 <img src="../../scripts/data/benchmarks/header.png" width="430" align="right">
 <img src="../../scripts/data/benchmarks/implement.png" width="430">
@@ -105,6 +105,7 @@ The script generates 11 ```.cpp``` files and in 10 of them makes 50 test cases w
 [**Catch**](https://github.com/philsquared/Catch) specific:
 
 - **+faster** - will add [**```CATCH_CONFIG_FAST_COMPILE```**](https://github.com/philsquared/Catch/blob/master/docs/configuration.md#catch_config_fast_compile) which speeds up the compilation of the normal asserts ```CHECK(a==b)```
+- **+disabled** - all test case and assert macros will be disabled with **```CATCH_CONFIG_DISABLE```**
 
 | doctest             | baseline | ```CHECK(a==b)``` | ```CHECK_EQ(a,b)``` | ```FAST_CHECK_EQ(a,b)``` | +faster | +disabled |
 |---------------------|----------|-------------------|---------------------|--------------------------|---------|-----------|
@@ -119,16 +120,16 @@ The script generates 11 ```.cpp``` files and in 10 of them makes 50 test cases w
 
 And here is [**Catch**](https://github.com/philsquared/Catch) which only has normal ```CHECK(a==b)``` asserts:
 
-| Catch               | baseline | ```CHECK(a==b)``` | +faster |
-|---------------------|----------|-------------------|---------|
-| MSVC Debug          |    9.58 |   37.69 |   25.21 |
-| MSVC Release        |   10.85 |  260.55 |  121.38 |
-| MinGW GCC Debug     |   36.24 |  159.15 |    3.40 |
-| MinGW GCC Release   |   16.15 |  740.71 |    3.37 |
-| Linux GCC Debug     |   10.05 |  115.53 |   98.84 |
-| Linux GCC Release   |   13.29 |  294.26 |  218.37 |
-| Linux Clang Debug   |    6.38 |  103.06 |   85.02 |
-| Linux Clang Release |   11.15 |  195.62 |  156.04 |
+| Catch               | baseline | ```CHECK(a==b)``` | +faster | +disabled |
+|---------------------|----------|-------------------|---------|-----------|
+| MSVC Debug          |    9.58 |   37.69 |   25.21 |   10.40 |
+| MSVC Release        |   10.85 |  260.55 |  121.38 |   11.56 |
+| MinGW GCC Debug     |   36.24 |  159.15 |    3.40 |   33.57 |
+| MinGW GCC Release   |   16.15 |  740.71 |    3.37 |   16.41 |
+| Linux GCC Debug     |   10.05 |  115.53 |   98.84 |    x.xx |
+| Linux GCC Release   |   13.29 |  294.26 |  218.37 |    x.xx |
+| Linux Clang Debug   |    6.38 |  103.06 |   85.02 |    x.xx |
+| Linux Clang Release |   11.15 |  195.62 |  156.04 |    x.xx |
 
 <img src="../../scripts/data/benchmarks/asserts.png">
 

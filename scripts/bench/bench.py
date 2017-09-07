@@ -17,7 +17,7 @@ def addCommonFlags(parser):
     parser.add_argument("compiler",     choices=['msvc', 'gcc', 'clang'], default='msvc', help = "compiler to use")
     parser.add_argument("--debug",      action = "store_true",  help = "build in debug")
     parser.add_argument("--catch",      action = "store_true",  help = "use Catch instead of doctest")
-    parser.add_argument("--disabled",   action = "store_true",  help = "<doctest> define DOCTEST_CONFIG_DISABLE")
+    parser.add_argument("--disabled",   action = "store_true",  help = "DOCTEST_CONFIG_DISABLE / CATCH_CONFIG_DISABLE")
     parser.add_argument("--fast",       action = "store_true",  help = "define the doctest/Catch fast config identifier")
     parser.add_argument("--files",      type=int, default=1,    help = "number of source files (besides the implementation)")
     parser.add_argument("--tests",      type=int, default=1,    help = "number of test cases per source file")
@@ -81,7 +81,9 @@ os.chdir(the_folder);
 
 # setup defines used
 defines = ""
-if args.disabled:
+if args.catch and args.disabled:
+    defines += "#define CATCH_CONFIG_DISABLE\n"
+if not args.catch and args.disabled:
     defines += "#define DOCTEST_CONFIG_DISABLE\n"
 if args.catch and args.fast:
     defines += "#define CATCH_CONFIG_FAST_COMPILE\n"
