@@ -2715,15 +2715,15 @@ constexpr T to_lvalue = x;
 #define DOCTEST_IMPLEMENT_FIXTURE(der, base, func, name)                                           \
     namespace                                                                                      \
     {                                                                                              \
-        template <typename T>                                                                      \
+        template <typename DOCTEST_UNUSED_TEMPLATE_TYPE>                                           \
         struct der : base                                                                          \
         { void f(); };                                                                             \
     }                                                                                              \
-    template <typename T>                                                                          \
-    inline void der<T>::f()
+    template <typename DOCTEST_UNUSED_TEMPLATE_TYPE>                                               \
+    inline void der<DOCTEST_UNUSED_TEMPLATE_TYPE>::f()
 
 #define DOCTEST_CREATE_AND_REGISTER_FUNCTION(f, name)                                              \
-    template <typename T>                                                                          \
+    template <typename DOCTEST_UNUSED_TEMPLATE_TYPE>                                               \
     static inline void f()
 
 // for registering tests
@@ -2769,7 +2769,7 @@ constexpr T to_lvalue = x;
 #define DOCTEST_TEST_SUITE_END typedef int DOCTEST_ANONYMOUS(_DOCTEST_ANON_FOR_SEMICOLON_)
 
 #define DOCTEST_REGISTER_EXCEPTION_TRANSLATOR(signature)                                           \
-    template <typename T>                                                                          \
+    template <typename DOCTEST_UNUSED_TEMPLATE_TYPE>                                               \
     static inline doctest::String DOCTEST_ANONYMOUS(_DOCTEST_ANON_TRANSLATOR_)(signature)
 
 #define DOCTEST_INFO(x) ((void)0)
