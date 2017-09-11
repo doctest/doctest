@@ -1,5 +1,14 @@
 # Change Log
 
+## [1.2.3](https://github.com/onqtam/doctest/tree/1.2.3) (2017-09-11)
+[Full Changelog](https://github.com/onqtam/doctest/compare/1.2.2...1.2.3)
+
+**Closed issues:**
+
+- Defining a variable T inside a test with DOCTEST\_CONFIG\_DISABLE defined does not compile [\#90](https://github.com/onqtam/doctest/issues/90)
+- Using `DOCTEST\_CONFIG\_NO\_SHORT\_MACRO\_NAMES` does not compile using g++ 6.3.0 [\#89](https://github.com/onqtam/doctest/issues/89)
+- \[question\] Why are SUBCASEs executed only once when within a function called multiple times? [\#88](https://github.com/onqtam/doctest/issues/88)
+
 ## [1.2.2](https://github.com/onqtam/doctest/tree/1.2.2) (2017-09-05)
 [Full Changelog](https://github.com/onqtam/doctest/compare/1.2.1...1.2.2)
 
