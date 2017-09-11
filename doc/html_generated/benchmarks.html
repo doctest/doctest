@@ -74,18 +74,19 @@ The script generates 201 source files and in 200 of them makes a function in the
 
 #### doctest
 
-- instantiating the test runner in one source file costs ~1.5-3 seconds ```implement - baseline```
-- the inclusion of ```doctest.h``` in one source file costs between 20ms - 30ms ```(header_everywhere - implement) / 200```
-- including the library everywhere but everything disabled costs less than 3 seconds ```disabled - baseline``` for 200 files
+- instantiating the test runner in one source file costs ~1-3 seconds ```implement - baseline```
+- the inclusion of ```doctest.h``` in one source file costs between 17ms - 27ms ```(header_everywhere - implement) / 200```
+- including the library everywhere but everything disabled costs around 2 seconds ```disabled - baseline``` for 200 files
 
 #### [Catch](https://github.com/philsquared/Catch)
 
-- instantiating the test runner in one source file costs ~4-8 seconds ```implement - baseline```
-- the inclusion of ```catch.hpp```  in one source file costs between 300ms - 575ms ```(header_everywhere - implement) / 200```
+- instantiating the test runner in one source file costs ~4-31 seconds ```implement - baseline```
+- the inclusion of ```catch.hpp```  in one source file costs between 390ms - 490ms ```(header_everywhere - implement) / 200```
+- using the config option to disable the library (**```CATCH_CONFIG_DISABLE```**) has no effect on the header cost
 
 ----------
 
-So if ```doctest.h``` costs 20ms and ```catch.hpp``` costs 560ms on MSVC - then the **doctest** header is >> **28** << times lighter (for MSVC)!
+So if ```doctest.h``` costs 17ms and ```catch.hpp``` costs 490ms on MSVC - then the **doctest** header is >> **27** << times lighter (for MSVC)!
 
 ----------
 
@@ -142,7 +143,7 @@ And here is [**Catch**](https://github.com/philsquared/Catch) which only has nor
 
 **doctest**:
 
-- is around 30% faster than [**Catch**](https://github.com/philsquared/Catch) when using normal expression decomposing ```CHECK(a==b)``` asserts
+- is around 30% to 75% faster than [**Catch**](https://github.com/philsquared/Catch) when using normal expression decomposing ```CHECK(a==b)``` asserts
 - asserts of the form ```CHECK_EQ(a,b)``` with no expression decomposition - around 25%-45% faster than ```CHECK(a==b)```
 - fast asserts like ```FAST_CHECK_EQ(a,b)``` with no ```try/catch``` blocks - around 60-80% faster than ```CHECK_EQ(a,b)```
 - the [**```DOCTEST_CONFIG_SUPER_FAST_ASSERTS```**](configuration.html#doctest_config_super_fast_asserts) identifier which makes the fast assertions even faster by another 50-80%
@@ -150,7 +151,8 @@ And here is [**Catch**](https://github.com/philsquared/Catch) which only has nor
 
 [**Catch**](https://github.com/philsquared/Catch):
 
-- using [**```CATCH_CONFIG_FAST_COMPILE```**](https://github.com/philsquared/Catch/blob/master/docs/configuration.html#catch_config_fast_compile) results in 10%-40% faster build times for asserts.
+- using [**```CATCH_CONFIG_FAST_COMPILE```**](https://github.com/philsquared/Catch/blob/master/docs/configuration.html#catch_config_fast_compile) results in 15%-55% faster build times for asserts.
+- using the **```CATCH_CONFIG_DISABLE```** identifier provides the same great benefits for assertion macros as the doctest version ([**```DOCTEST_CONFIG_DISABLE```**](configuration.html#doctest_config_disable)) - unlike the case for the header cost
 
 ## Runtime benchmarks
 
@@ -186,11 +188,9 @@ Note that the assert always passes - the goal should be to optimize for the comm
 <img src="../../scripts/data/benchmarks/runtime_info.png" width="430" align="right">
 <img src="../../scripts/data/benchmarks/runtime_assert.png" width="430">
 
-Note that in these graphs the values for ```MSVC Release``` for **Catch** are 10 times smaller than the real ones (from the tables above) because google spreadsheet didn't allow me to create a bar chart with values that were so different.
-
 ### Conclusion
 
-**doctest** is significantly faster - between 4 and 40 times.
+**doctest** is significantly faster - between 2.5 and 26 times.
 
 In these particular cases **doctest** makes 0 allocations when the assert doesn't fail - it uses lazy stringification (meaning it stringifies the expression or the logged loop counter only if it has to) and a small-buffer optimized string class to achieve these results.
 
