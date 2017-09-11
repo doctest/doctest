@@ -57,7 +57,7 @@ The **key** differences between it and other testing frameworks are that it is l
 - Doesn't produce any warnings even on the [**most aggressive**](scripts/cmake/common.cmake#L84) warning levels for **MSVC**/**GCC**/**Clang**
 - Offers a way to remove **everything** testing-related from the binary with the [**```DOCTEST_CONFIG_DISABLE```**](doc/markdown/configuration.md#doctest_config_disable) identifier
 - Doesn't pollute the global namespace (everything is in namespace ```doctest```) and doesn't drag **any** headers with it
-- Very [**portable and well tested**](doc/markdown/features.md#extremely-portable) C++98 - per commit tested on CI with over 330 different builds (valgrind, sanitizers...)
+- Very [**portable**](doc/markdown/features.md#extremely-portable) C++98 - per commit tested on CI with over 330 different builds (static analysis, sanitizers...)
 
 This allows the framework to be used in more ways than any other - tests can be written directly in the production code!
 

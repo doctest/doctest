@@ -37,6 +37,7 @@ Planned features for future releases - order changes constantly...
     - [rapidcheck](https://github.com/emil-e/rapidcheck)
     - [autocheck](https://github.com/thejohnfreeman/autocheck)
     - [CppQuickCheck](https://github.com/grogers0/CppQuickCheck)
+- support for LibIdentify
 - IDE integration
     - https://blogs.msdn.microsoft.com/vcblog/2017/05/10/unit-testing-and-the-future-announcing-the-test-adapter-for-google-test/
     - https://www.reddit.com/r/cpp/comments/65c0f1/run_cpp_unit_tests_from_xcode_and_visual_studio/
