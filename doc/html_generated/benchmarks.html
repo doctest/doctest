@@ -13,8 +13,8 @@ The benchmarks are done with [**this**](../../scripts/bench/bench.py) script usi
 
 Compilers used:
 
-- WINDOWS: Microsoft Visual Studio Community 2017 - Version 15.1.26403.7
-- WINDOWS: gcc 7.1.0 (x86_64-posix-seh-rev0, Built by MinGW-W64 project)
+- WINDOWS: Microsoft Visual Studio Community 2017 - Version 15.3.3+26730.12
+- WINDOWS: gcc 7.1.0 (x86_64-posix-seh-rev2, Built by MinGW-W64 project)
 - LINUX: gcc 6.3.0 20170406 (Ubuntu 6.3.0-12ubuntu2)
 - LINUX: clang 4.0.0-1 (tags/RELEASE_400/rc1) Target: x86_64-pc-linux-gnu
 
@@ -23,9 +23,9 @@ Environment used (Intel i7 3770k, 16g RAM):
 - Windows 7 - on an SSD
 - Ubuntu 17.04 in a VirtualBox VM - on a HDD
 
-**doctest** version: 1.2.0 (released on 2017.05.16)
+**doctest** version: 1.2.2 (released on 2017.09.05)
 
-[**Catch**](https://github.com/philsquared/Catch) version: 1.9.3 (released on 2017.04.25)
+[**Catch**](https://github.com/philsquared/Catch) version: 2.0.0-develop.3 (released on 2017.08.30)
 
 # Compile time benchmarks
 
@@ -43,29 +43,29 @@ The script generates 201 source files and in 200 of them makes a function in the
 #include "doctest.h"
 ```
 - **+ header everywhere** - the framework header is also included in all the other source files
-- **+ disabled** - **doctest** specific - only this framework can remove everything related to it from the binary
+- **+ disabled** - remove everything testing-related from the binary
 
 | doctest             | baseline | + implement | + header everywhere | + disabled |
 |---------------------|----------|-------------|---------------------|------------|
-| MSVC Debug          |    7.17 |    8.50 |   12.50 |    9.42 |
-| MSVC Release        |    6.72 |    8.47 |   12.51 |    8.97 |
-| MinGW GCC Debug     |   10.65 |   13.56 |   18.59 |   13.34 |
-| MinGW GCC Release   |   10.81 |   14.53 |   19.21 |   14.11 |
-| Linux GCC Debug     |    4.98 |    6.55 |   11.22 |    6.94 |
-| Linux GCC Release   |    4.49 |    7.27 |   11.92 |    7.87 |
-| Linux Clang Debug   |    8.52 |    9.42 |   15.25 |   11.14 |
-| Linux Clang Release |    9.01 |   11.85 |   18.18 |   11.75 |
+| MSVC Debug          |    6.77 |    8.28 |   11.73 |    8.73 |
+| MSVC Release        |    6.35 |    8.57 |   12.18 |    8.28 |
+| MinGW GCC Debug     |   10.23 |   13.03 |   17.62 |   12.29 |
+| MinGW GCC Release   |   10.33 |   13.68 |   17.87 |   13.11 |
+| Linux GCC Debug     |    5.01 |    6.24 |   10.48 |    6.49 |
+| Linux GCC Release   |    4.58 |    7.30 |   11.70 |    7.41 |
+| Linux Clang Debug   |    8.80 |    9.70 |   14.92 |   10.89 |
+| Linux Clang Release |    9.29 |   12.05 |   17.51 |   11.56 |
 
-| Catch               | baseline | + implement | + header everywhere |
-|---------------------|----------|-------------|---------------------|
-| MSVC Debug          |    7.17 |   10.60 |  128.02 |
-| MSVC Release        |    6.72 |   10.90 |  119.25 |
-| MinGW GCC Debug     |   10.65 |   26.12 |  127.00 |
-| MinGW GCC Release   |   10.81 |   19.95 |  114.15 |
-| Linux GCC Debug     |    4.98 |    9.37 |  105.66 |
-| Linux GCC Release   |    4.49 |   13.04 |  105.57 |
-| Linux Clang Debug   |    8.52 |   11.33 |   70.57 |
-| Linux Clang Release |    9.01 |   16.59 |   75.85 |
+| Catch               | baseline | + implement | + header everywhere | + disabled |
+|---------------------|----------|-------------|---------------------|------------|
+| MSVC Debug          |    6.78 |   10.00 |  107.85 |  115.05 |
+| MSVC Release        |    6.36 |   11.19 |  102.69 |  109.06 |
+| MinGW GCC Debug     |   10.36 |   41.83 |  124.41 |  126.70 |
+| MinGW GCC Release   |   10.49 |   21.93 |   97.81 |  105.47 |
+| Linux GCC Debug     |    4.40 |   12.39 |   94.34 |   93.68 |
+| Linux GCC Release   |    4.55 |   15.75 |   94.28 |   93.80 |
+| Linux Clang Debug   |    9.30 |   15.00 |  105.84 |  103.05 |
+| Linux Clang Release |    9.68 |   22.75 |  114.36 |  111.32 |
 
 <img src="../../scripts/data/benchmarks/header.png" width="430" align="right">
 <img src="../../scripts/data/benchmarks/implement.png" width="430">
@@ -110,30 +110,31 @@ The script generates 11 ```.cpp``` files and in 10 of them makes 50 test cases w
 [**Catch**](https://github.com/philsquared/Catch) specific:
 
 - **+faster** - will add [**```CATCH_CONFIG_FAST_COMPILE```**](https://github.com/philsquared/Catch/blob/master/docs/configuration.html#catch_config_fast_compile) which speeds up the compilation of the normal asserts ```CHECK(a==b)```
+- **+disabled** - all test case and assert macros will be disabled with **```CATCH_CONFIG_DISABLE```**
 
 | doctest             | baseline | ```CHECK(a==b)``` | ```CHECK_EQ(a,b)``` | ```FAST_CHECK_EQ(a,b)``` | +faster | +disabled |
 |---------------------|----------|-------------------|---------------------|--------------------------|---------|-----------|
-| MSVC Debug          |    3.22 |   24.17 |   18.54 |    8.32 |    5.75 |    2.34 |
-| MSVC Release        |    3.63 |   41.10 |   23.20 |   10.89 |    6.87 |    2.31 |
-| MinGW GCC Debug     |    4.09 |   91.98 |   60.19 |   25.51 |   12.61 |    1.82 |
-| MinGW GCC Release   |    4.74 |  240.58 |  156.79 |   50.16 |   19.72 |    2.53 |
-| Linux GCC Debug     |    2.06 |   81.32 |   52.14 |   18.07 |   10.15 |    1.16 |
-| Linux GCC Release   |    3.28 |  207.21 |  126.89 |   33.17 |   19.92 |    2.03 |
-| Linux Clang Debug   |    1.75 |   79.41 |   51.20 |   17.78 |    7.65 |    1.20 |
-| Linux Clang Release |    3.73 |  140.79 |   82.61 |   21.19 |   12.64 |    1.46 |
+| MSVC Debug          |    3.08 |   23.72 |   18.15 |    8.38 |    5.67 |    2.23 |
+| MSVC Release        |    3.61 |   43.75 |   24.28 |   11.36 |    7.22 |    2.15 |
+| MinGW GCC Debug     |    3.90 |   85.47 |   58.62 |   24.40 |   12.12 |    1.71 |
+| MinGW GCC Release   |    4.51 |  224.49 |  148.84 |   47.25 |   18.73 |    2.40 |
+| Linux GCC Debug     |    2.01 |   78.38 |   50.61 |   17.62 |    9.87 |    1.11 |
+| Linux GCC Release   |    3.20 |  199.78 |  123.42 |   32.47 |   19.52 |    1.97 |
+| Linux Clang Debug   |    1.71 |   77.39 |   49.97 |   17.60 |    7.57 |    1.18 |
+| Linux Clang Release |    3.64 |  136.82 |   80.19 |   20.72 |   12.34 |    1.45 |
 
 And here is [**Catch**](https://github.com/philsquared/Catch) which only has normal ```CHECK(a==b)``` asserts:
 
-| Catch               | baseline | ```CHECK(a==b)``` | +faster |
-|---------------------|----------|-------------------|---------|
-| MSVC Debug          |    9.94 |   40.14 |   36.66 |
-| MSVC Release        |   10.66 |  231.60 |   81.90 |
-| MinGW GCC Debug     |   21.20 |  129.26 |  110.95 |
-| MinGW GCC Release   |   14.59 |  297.04 |  207.75 |
-| Linux GCC Debug     |   10.05 |  115.53 |   98.84 |
-| Linux GCC Release   |   13.29 |  294.26 |  218.37 |
-| Linux Clang Debug   |    6.38 |  103.06 |   85.02 |
-| Linux Clang Release |   11.15 |  195.62 |  156.04 |
+| Catch               | baseline | ```CHECK(a==b)``` | +faster | +disabled |
+|---------------------|----------|-------------------|---------|-----------|
+| MSVC Debug          |    9.58 |   37.69 |   25.21 |   10.40 |
+| MSVC Release        |   10.85 |  260.55 |  121.38 |   11.56 |
+| MinGW GCC Debug     |   36.24 |  159.15 |  133.98 |   33.57 |
+| MinGW GCC Release   |   16.15 |  740.71 |  562.60 |   16.41 |
+| Linux GCC Debug     |   12.71 |  142.92 |  108.07 |   12.05 |
+| Linux GCC Release   |   15.62 |  825.42 |  612.06 |   15.51 |
+| Linux Clang Debug   |   10.48 |  115.19 |   89.59 |   10.78 |
+| Linux Clang Release |   18.25 |  393.31 |  316.98 |   17.19 |
 
 <img src="../../scripts/data/benchmarks/asserts.png">
 
@@ -173,14 +174,14 @@ Note that the assert always passes - the goal should be to optimize for the comm
 
 | doctest             | assert  | + info  | &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; | Catch               | assert  | + info  |
 |---------------------|---------|---------|-|---------------------|---------|---------|
-| MSVC Debug          |    5.29 |   14.32 | | MSVC Debug          |  365.37 |  621.78 |
-| MSVC Release        |    0.77 |    1.62 | | MSVC Release        |    7.04 |   18.64 |
-| MinGW GCC Debug     |    2.25 |    4.71 | | MinGW GCC Debug     |    9.22 |   21.89 |
-| MinGW GCC Release   |    0.39 |    0.90 | | MinGW GCC Release   |    7.29 |   13.95 |
-| Linux GCC Debug     |    2.84 |    5.13 | | Linux GCC Debug     |   11.17 |   24.79 |
-| Linux GCC Release   |    0.30 |    0.69 | | Linux GCC Release   |    6.45 |   12.68 |
-| Linux Clang Debug   |    2.47 |    5.02 | | Linux Clang Debug   |   10.40 |   22.64 |
-| Linux Clang Release |    0.41 |    0.75 | | Linux Clang Release |    5.81 |   13.83 |
+| MSVC Debug          |    5.04 |   13.03 | | MSVC Debug          |  101.07 |  338.41 |
+| MSVC Release        |    0.73 |    1.67 | | MSVC Release        |    1.75 |   10.99 |
+| MinGW GCC Debug     |    2.11 |    4.50 | | MinGW GCC Debug     |    4.76 |   18.22 |
+| MinGW GCC Release   |    0.36 |    0.86 | | MinGW GCC Release   |    1.24 |    7.29 |
+| Linux GCC Debug     |    2.49 |    4.97 | | Linux GCC Debug     |    5.41 |   19.01 |
+| Linux GCC Release   |    0.29 |    0.66 | | Linux GCC Release   |    1.20 |    7.88 |
+| Linux Clang Debug   |    2.39 |    4.76 | | Linux Clang Debug   |    5.12 |   17.66 |
+| Linux Clang Release |    0.39 |    0.70 | | Linux Clang Release |    0.99 |    7.26 |
 
 <img src="../../scripts/data/benchmarks/runtime_info.png" width="430" align="right">
 <img src="../../scripts/data/benchmarks/runtime_assert.png" width="430">

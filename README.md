@@ -82,7 +82,7 @@ You can read more about it in [**the article**](https://accu.org/var/uploads/jou
 [![download](https://img.shields.io/badge/download%20%20-latest-blue.svg)](https://raw.githubusercontent.com/onqtam/doctest/master/doctest/doctest.h)
 [![CII Best Practices](https://bestpractices.coreinfrastructure.org/projects/503/badge)](https://bestpractices.coreinfrastructure.org/projects/503)
 [![Join the chat at https://gitter.im/onqtam/doctest](https://badges.gitter.im/onqtam/doctest.svg)](https://gitter.im/onqtam/doctest?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
-[![Try it online](https://img.shields.io/badge/try%20it-online-orange.svg)](https://wandbox.org/permlink/yrK9H7oUoUCDEddr)
+[![Try it online](https://img.shields.io/badge/try%20it-online-orange.svg)](https://wandbox.org/permlink/aVnBZ056zd8zZgNU)
 <!--
 [![Language](https://img.shields.io/badge/language-C++-blue.svg)](https://isocpp.org/)
 [![documentation](https://img.shields.io/badge/documentation%20%20-online-blue.svg)](https://github.com/onqtam/doctest/blob/master/doc/markdown/readme.md#reference)
@@ -93,7 +93,7 @@ Documentation
 
 Project:
 
-- [Features and design goals](doc/markdown/features.md) - the complete list of features and rationale behind the design
+- [Features and design goals](doc/markdown/features.md) - the complete list of features
 - [Roadmap](doc/markdown/roadmap.md) - upcoming features
 - [Benchmarks](doc/markdown/benchmarks.md) - compile-time and runtime supremacy
 - [Contributing](CONTRIBUTING.md) - how to make a proper pull request

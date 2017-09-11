@@ -3,7 +3,7 @@ Reference
 
 Project:
 
-- [Features and design goals](features.md) - the complete list of features and rationale behind the design
+- [Features and design goals](features.md) - the complete list of features
 - [Roadmap](roadmap.md) - upcoming features
 - [Benchmarks](benchmarks.md) - compile-time and runtime supremacy
 - [Contributing](../../CONTRIBUTING.md) - how to make a proper pull request
