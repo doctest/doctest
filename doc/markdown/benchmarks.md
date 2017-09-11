@@ -59,8 +59,8 @@ The script generates 201 source files and in 200 of them makes a function in the
 | MinGW GCC Release   |   10.49 |   21.93 |   97.81 |  105.47 |
 | Linux GCC Debug     |    4.40 |   12.39 |   94.34 |   93.68 |
 | Linux GCC Release   |    4.55 |   15.75 |   94.28 |   93.80 |
-| Linux Clang Debug   | | | | |
-| Linux Clang Release | | | | |
+| Linux Clang Debug   |    9.30 |   15.00 |  105.84 |  103.05 |
+| Linux Clang Release |    9.68 |   22.75 |  114.36 |  111.32 |
 
 <img src="../../scripts/data/benchmarks/header.png" width="430" align="right">
 <img src="../../scripts/data/benchmarks/implement.png" width="430">
@@ -126,10 +126,10 @@ And here is [**Catch**](https://github.com/philsquared/Catch) which only has nor
 | MSVC Release        |   10.85 |  260.55 |  121.38 |   11.56 |
 | MinGW GCC Debug     |   36.24 |  159.15 |  133.98 |   33.57 |
 | MinGW GCC Release   |   16.15 |  740.71 |  562.60 |   16.41 |
-| Linux GCC Debug     | | | | |
-| Linux GCC Release   | | | | |
-| Linux Clang Debug   | | | | |
-| Linux Clang Release | | | | |
+| Linux GCC Debug     |   12.71 |  142.92 |  108.07 |   12.05 |
+| Linux GCC Release   |   15.62 |  825.42 |  612.06 |   15.51 |
+| Linux Clang Debug   |   10.48 |  115.19 |   89.59 |   10.78 |
+| Linux Clang Release |   18.25 |  393.31 |  316.98 |   17.19 |
 
 <img src="../../scripts/data/benchmarks/asserts.png">
 
@@ -175,8 +175,8 @@ Note that the assert always passes - the goal should be to optimize for the comm
 | MinGW GCC Release   |    0.36 |    0.86 | | MinGW GCC Release   |    1.24 |    7.29 |
 | Linux GCC Debug     |    2.49 |    4.97 | | Linux GCC Debug     |    5.41 |   19.01 |
 | Linux GCC Release   |    0.29 |    0.66 | | Linux GCC Release   |    1.20 |    7.88 |
-| Linux Clang Debug   |    2.39 |    4.76 | | Linux Clang Debug   | | |
-| Linux Clang Release |    0.39 |    0.70 | | Linux Clang Release | | |
+| Linux Clang Debug   |    2.39 |    4.76 | | Linux Clang Debug   |    5.12 |   17.66 |
+| Linux Clang Release |    0.39 |    0.70 | | Linux Clang Release |    0.99 |    7.26 |
 
 <img src="../../scripts/data/benchmarks/runtime_info.png" width="430" align="right">
 <img src="../../scripts/data/benchmarks/runtime_assert.png" width="430">
