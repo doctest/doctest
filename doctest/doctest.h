@@ -2205,7 +2205,7 @@ public:
     {                                                                                              \
         namespace doctest_detail_test_suite_ns                                                     \
         {                                                                                          \
-            inline DOCTEST_NOINLINE doctest::detail::TestSuite& getCurrentTestSuite() {            \
+            static DOCTEST_NOINLINE doctest::detail::TestSuite& getCurrentTestSuite() {            \
                 static doctest::detail::TestSuite data;                                            \
                 static bool                       inited = false;                                  \
                 if(!inited) {                                                                      \
