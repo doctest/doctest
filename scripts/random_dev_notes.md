@@ -1,4 +1,11 @@
 
+static to inline for exception translator registration
+
+try to forward declare std::string and specialize the string maker for it or something like that
+
+look into this for making dealing with compiler versions easier
+https://github.com/kobalicek/cc_detect/blob/master/cc_detect.h
+
 https://github.com/philsquared/Catch/issues/980
 
 == when making a new release:

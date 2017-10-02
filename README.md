@@ -59,6 +59,8 @@ The **key** differences between it and other testing frameworks are that it is l
 - Doesn't pollute the global namespace (everything is in namespace ```doctest```) and doesn't drag **any** headers with it
 - Very [**portable**](doc/markdown/features.md#extremely-portable) C++98 - per commit tested on CI with over 330 different builds (static analysis, sanitizers...)
 
+![cost-of-including-the-framework-header](scripts/data/benchmarks/header.png)
+
 This allows the framework to be used in more ways than any other - tests can be written directly in the production code!
 
 Mantra: *Tests can be considered a form of documentation and should be able to reside near the production code which they test.*

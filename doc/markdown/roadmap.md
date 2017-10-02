@@ -72,7 +72,7 @@ Planned features for future releases - order changes constantly...
         - see slide 38 here - https://github.com/boostcon/cppnow_presentations_2017/blob/master/05-19-2017_friday/effective_cmake__daniel_pfeifer__cppnow_05-19-2017.pdf
     - should test crash handling
     - should test more config options
-    - don't cheat for maxing out code coverage (see [coverage_maxout.cpp](../../examples/coverage_maxout.cpp)
+    - don't cheat for maxing out code coverage (see [coverage_maxout.cpp](../../examples/all_features/coverage_maxout.cpp))
     - should test C++11 stuff - perhaps inspect the CMAKE_CXX_FLAGS for -std=c++11 on the CI and add more targets/tests
     - test tricky stuff like expressions with commas in asserts
 
