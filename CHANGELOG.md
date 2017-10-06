@@ -1,5 +1,12 @@
 # Change Log
 
+## [1.2.5](https://github.com/onqtam/doctest/tree/1.2.5) (2017-10-06)
+[Full Changelog](https://github.com/onqtam/doctest/compare/1.2.4...1.2.5)
+
+**Closed issues:**
+
+- Xcode 9 / clang - unknown warning group [\#92](https://github.com/onqtam/doctest/issues/92)
+
 ## [1.2.4](https://github.com/onqtam/doctest/tree/1.2.4) (2017-09-20)
 [Full Changelog](https://github.com/onqtam/doctest/compare/1.2.3...1.2.4)
 
