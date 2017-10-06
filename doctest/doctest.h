@@ -62,7 +62,9 @@
 #pragma clang diagnostic ignored "-Wdeprecated"
 #pragma clang diagnostic ignored "-Wmissing-prototypes"
 #pragma clang diagnostic ignored "-Wunused-local-typedef"
-#pragma clang diagnostic ignored "-Wzero-as-null-pointer-constant"
+#if !defined(__has_warning) || __has_warning("-Wzero-as-null-pointer-constant")
+#pragma GCC diagnostic ignored "-Wzero-as-null-pointer-constant"
+#endif
 #pragma clang diagnostic ignored "-Wc++11-long-long"
 #endif // __clang__
 
@@ -3146,7 +3148,9 @@ namespace detail
 #pragma clang diagnostic ignored "-Wdisabled-macro-expansion"
 #pragma clang diagnostic ignored "-Wmissing-braces"
 #pragma clang diagnostic ignored "-Wmissing-field-initializers"
-#pragma clang diagnostic ignored "-Wzero-as-null-pointer-constant"
+#if !defined(__has_warning) || __has_warning("-Wzero-as-null-pointer-constant")
+#pragma GCC diagnostic ignored "-Wzero-as-null-pointer-constant"
+#endif
 #pragma clang diagnostic ignored "-Wc++11-long-long"
 #endif // __clang__
 
