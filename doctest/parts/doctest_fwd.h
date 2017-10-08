@@ -1336,9 +1336,6 @@ namespace detail
                 : lhs(in)
                 , m_assert_type(assert_type) {}
 
-        Expression_lhs(const Expression_lhs& other)
-                : lhs(other.lhs) {}
-
         DOCTEST_NOINLINE operator Result() {
             bool res = !!lhs;
             if(m_assert_type & assertType::is_false) //!OCLINT bitwise operator in conditional
