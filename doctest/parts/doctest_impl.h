@@ -1442,7 +1442,7 @@ namespace detail
             forDebugConsole += d1;
             forDebugConsole += d2;
         }
-        if(tc.m_test_suite[0] != '\0') {
+        if(tc.m_test_suite && tc.m_test_suite[0] != '\0') {
             DOCTEST_PRINTF_COLORED(ts1, Color::Yellow);
             DOCTEST_PRINTF_COLORED(ts2, Color::None);
             forDebugConsole += ts1;
