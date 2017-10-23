@@ -9,6 +9,7 @@ project(doctest VERSION ${ver})
 
 option(DOCTEST_WITH_TESTS               "Build tests/examples" ON)
 option(DOCTEST_WITH_MAIN_IN_STATIC_LIB  "Build a static lib (cmake target) with a main entry point" ON)
+option(DOCTEST_NO_INSTALL  "Skip the installation process" OFF)
 
 add_library(${PROJECT_NAME} INTERFACE)
 target_include_directories(${PROJECT_NAME} INTERFACE $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/doctest/>)
@@ -56,24 +57,26 @@ write_basic_package_version_file(
 
 configure_file("scripts/cmake/Config.cmake.in" "${project_config}" @ONLY)
 
-install(
-    TARGETS ${PROJECT_NAME}
-    EXPORT "${targets_export_name}"
-    INCLUDES DESTINATION "${include_install_dir}"
-)
+if (${DOCTEST_NO_INSTALL})
+    install(
+        TARGETS ${PROJECT_NAME}
+        EXPORT "${targets_export_name}"
+        INCLUDES DESTINATION "${include_install_dir}"
+    )
 
-install(
-    FILES "doctest/doctest.h"
-    DESTINATION "${include_install_dir}"
-)
+    install(
+        FILES "doctest/doctest.h"
+        DESTINATION "${include_install_dir}"
+    )
 
-install(
-    FILES "${project_config}" "${version_config}"
-    DESTINATION "${config_install_dir}"
-)
+    install(
+        FILES "${project_config}" "${version_config}"
+        DESTINATION "${config_install_dir}"
+    )
 
-install(
-    EXPORT "${targets_export_name}"
-    NAMESPACE "${namespace}"
-    DESTINATION "${config_install_dir}"
-)
+    install(
+        EXPORT "${targets_export_name}"
+        NAMESPACE "${namespace}"
+        DESTINATION "${config_install_dir}"
+    )
+endif()
