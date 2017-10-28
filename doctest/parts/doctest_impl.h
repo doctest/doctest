@@ -1,68 +1,3 @@
-#if defined(__clang__)
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wunknown-pragmas"
-#pragma clang diagnostic ignored "-Wpadded"
-#pragma clang diagnostic ignored "-Wglobal-constructors"
-#pragma clang diagnostic ignored "-Wexit-time-destructors"
-#pragma clang diagnostic ignored "-Wmissing-prototypes"
-#pragma clang diagnostic ignored "-Wsign-conversion"
-#pragma clang diagnostic ignored "-Wshorten-64-to-32"
-#pragma clang diagnostic ignored "-Wmissing-variable-declarations"
-#pragma clang diagnostic ignored "-Wswitch"
-#pragma clang diagnostic ignored "-Wswitch-enum"
-#pragma clang diagnostic ignored "-Wcovered-switch-default"
-#pragma clang diagnostic ignored "-Wmissing-noreturn"
-#pragma clang diagnostic ignored "-Wunused-local-typedef"
-#pragma clang diagnostic ignored "-Wdisabled-macro-expansion"
-#pragma clang diagnostic ignored "-Wmissing-braces"
-#pragma clang diagnostic ignored "-Wmissing-field-initializers"
-#if !defined(__has_warning) || __has_warning("-Wzero-as-null-pointer-constant")
-#pragma GCC diagnostic ignored "-Wzero-as-null-pointer-constant"
-#endif
-#pragma clang diagnostic ignored "-Wc++11-long-long"
-#endif // __clang__
-
-#if defined(__GNUC__) && !defined(__clang__)
-#if __GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ > 6)
-#pragma GCC diagnostic push
-#endif // > gcc 4.6
-#pragma GCC diagnostic ignored "-Wunknown-pragmas"
-#pragma GCC diagnostic ignored "-Wconversion"
-#pragma GCC diagnostic ignored "-Weffc++"
-#pragma GCC diagnostic ignored "-Wsign-conversion"
-#pragma GCC diagnostic ignored "-Wstrict-overflow"
-#pragma GCC diagnostic ignored "-Wmissing-field-initializers"
-#pragma GCC diagnostic ignored "-Wmissing-braces"
-#pragma GCC diagnostic ignored "-Wmissing-declarations"
-#pragma GCC diagnostic ignored "-Winline"
-#pragma GCC diagnostic ignored "-Wswitch"
-#pragma GCC diagnostic ignored "-Wswitch-enum"
-#pragma GCC diagnostic ignored "-Wswitch-default"
-#pragma GCC diagnostic ignored "-Wunsafe-loop-optimizations"
-#pragma GCC diagnostic ignored "-Wlong-long"
-#pragma GCC diagnostic ignored "-Wold-style-cast"
-#if __GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ > 6)
-#pragma GCC diagnostic ignored "-Wzero-as-null-pointer-constant"
-#endif // > gcc 4.6
-#if __GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ > 7)
-#pragma GCC diagnostic ignored "-Wunused-local-typedefs"
-#endif // > gcc 4.7
-#if __GNUC__ > 5 || (__GNUC__ == 5 && __GNUC_MINOR__ > 3)
-#pragma GCC diagnostic ignored "-Wuseless-cast"
-#endif // > gcc 5.3
-#endif // __GNUC__
-
-#ifdef _MSC_VER
-#pragma warning(push)
-#pragma warning(disable : 4996) // The compiler encountered a deprecated declaration
-#pragma warning(disable : 4267) // 'var' : conversion from 'size_t' to 'type', possible loss of data
-#pragma warning(disable : 4706) // assignment within conditional expression
-#pragma warning(disable : 4512) // 'class' : assignment operator could not be generated
-#pragma warning(disable : 4127) // conditional expression is constant
-#pragma warning(disable : 4530) // C++ exception handler used, but unwind semantics are not enabled
-#pragma warning(disable : 4577) // 'noexcept' used with no exception handling mode specified
-#endif                          // _MSC_VER
-
 #if defined(DOCTEST_CONFIG_IMPLEMENT) || !defined(DOCTEST_SINGLE_HEADER)
 #ifndef DOCTEST_LIBRARY_IMPLEMENTATION
 #define DOCTEST_LIBRARY_IMPLEMENTATION
@@ -71,17 +6,76 @@
 #include "doctest_fwd.h"
 #endif // DOCTEST_SINGLE_HEADER
 
-#if defined(__clang__) && defined(DOCTEST_NO_CPP11_COMPAT)
-#pragma clang diagnostic ignored "-Wc++98-compat"
-#pragma clang diagnostic ignored "-Wc++98-compat-pedantic"
-#endif // __clang__ && DOCTEST_NO_CPP11_COMPAT
+DOCTEST_CLANG_SUPPRESS_WARNING_PUSH
+DOCTEST_CLANG_SUPPRESS_WARNING("-Wunknown-pragmas")
+DOCTEST_CLANG_SUPPRESS_WARNING("-Wpadded")
+DOCTEST_CLANG_SUPPRESS_WARNING("-Wglobal-constructors")
+DOCTEST_CLANG_SUPPRESS_WARNING("-Wexit-time-destructors")
+DOCTEST_CLANG_SUPPRESS_WARNING("-Wmissing-prototypes")
+DOCTEST_CLANG_SUPPRESS_WARNING("-Wsign-conversion")
+DOCTEST_CLANG_SUPPRESS_WARNING("-Wshorten-64-to-32")
+DOCTEST_CLANG_SUPPRESS_WARNING("-Wmissing-variable-declarations")
+DOCTEST_CLANG_SUPPRESS_WARNING("-Wswitch")
+DOCTEST_CLANG_SUPPRESS_WARNING("-Wswitch-enum")
+DOCTEST_CLANG_SUPPRESS_WARNING("-Wcovered-switch-default")
+DOCTEST_CLANG_SUPPRESS_WARNING("-Wmissing-noreturn")
+DOCTEST_CLANG_SUPPRESS_WARNING("-Wunused-local-typedef")
+DOCTEST_CLANG_SUPPRESS_WARNING("-Wdisabled-macro-expansion")
+DOCTEST_CLANG_SUPPRESS_WARNING("-Wmissing-braces")
+DOCTEST_CLANG_SUPPRESS_WARNING("-Wmissing-field-initializers")
+DOCTEST_CLANG_SUPPRESS_WARNING("-Wc++11-long-long")
+#if DOCTEST_CLANG && DOCTEST_CLANG_HAS_WARNING("-Wzero-as-null-pointer-constant")
+DOCTEST_CLANG_SUPPRESS_WARNING("-Wzero-as-null-pointer-constant")
+#endif // clang - 0 as null
+
+DOCTEST_GCC_SUPPRESS_WARNING_PUSH
+DOCTEST_GCC_SUPPRESS_WARNING("-Wunknown-pragmas")
+DOCTEST_GCC_SUPPRESS_WARNING("-Wconversion")
+DOCTEST_GCC_SUPPRESS_WARNING("-Weffc++")
+DOCTEST_GCC_SUPPRESS_WARNING("-Wsign-conversion")
+DOCTEST_GCC_SUPPRESS_WARNING("-Wstrict-overflow")
+DOCTEST_GCC_SUPPRESS_WARNING("-Wmissing-field-initializers")
+DOCTEST_GCC_SUPPRESS_WARNING("-Wmissing-braces")
+DOCTEST_GCC_SUPPRESS_WARNING("-Wmissing-declarations")
+DOCTEST_GCC_SUPPRESS_WARNING("-Winline")
+DOCTEST_GCC_SUPPRESS_WARNING("-Wswitch")
+DOCTEST_GCC_SUPPRESS_WARNING("-Wswitch-enum")
+DOCTEST_GCC_SUPPRESS_WARNING("-Wswitch-default")
+DOCTEST_GCC_SUPPRESS_WARNING("-Wunsafe-loop-optimizations")
+DOCTEST_GCC_SUPPRESS_WARNING("-Wlong-long")
+DOCTEST_GCC_SUPPRESS_WARNING("-Wold-style-cast")
+#if DOCTEST_GCC >= DOCTEST_COMPILER(4, 7, 0)
+DOCTEST_GCC_SUPPRESS_WARNING("-Wzero-as-null-pointer-constant")
+#endif // GCC 4.7+
+#if DOCTEST_GCC >= DOCTEST_COMPILER(4, 8, 0)
+DOCTEST_GCC_SUPPRESS_WARNING("-Wunused-local-typedefs")
+#endif // GCC 4.8+
+#if DOCTEST_GCC >= DOCTEST_COMPILER(5, 4, 0)
+DOCTEST_GCC_SUPPRESS_WARNING("-Wuseless-cast")
+#endif // GCC 5.4+
+
+DOCTEST_MSVC_SUPPRESS_WARNING_PUSH
+DOCTEST_MSVC_SUPPRESS_WARNING(4996) // The compiler encountered a deprecated declaration
+DOCTEST_MSVC_SUPPRESS_WARNING(
+        4267) // 'var' : conversion from 'size_t' to 'type', possible loss of data
+DOCTEST_MSVC_SUPPRESS_WARNING(4706) // assignment within conditional expression
+DOCTEST_MSVC_SUPPRESS_WARNING(4512) // 'class' : assignment operator could not be generated
+DOCTEST_MSVC_SUPPRESS_WARNING(4127) // conditional expression is constant
+DOCTEST_MSVC_SUPPRESS_WARNING(
+        4530) // C++ exception handler used, but unwind semantics are not enabled
+DOCTEST_MSVC_SUPPRESS_WARNING(4577) // 'noexcept' used with no exception handling mode specified
+
+#if defined(DOCTEST_NO_CPP11_COMPAT)
+DOCTEST_CLANG_SUPPRESS_WARNING("-Wc++98-compat")
+DOCTEST_CLANG_SUPPRESS_WARNING("-Wc++98-compat-pedantic")
+#endif // DOCTEST_NO_CPP11_COMPAT
 
 // snprintf() not in the C++98 standard
-#ifdef _MSC_VER
+#if DOCTEST_MSVC
 #define DOCTEST_SNPRINTF _snprintf
-#else
+#else // MSVC
 #define DOCTEST_SNPRINTF std::snprintf
-#endif
+#endif // MSVC
 
 #define DOCTEST_LOG_START()                                                                        \
     do {                                                                                           \
@@ -112,9 +106,9 @@
 #include <stdexcept>
 #include <csignal>
 #include <cfloat>
-#ifndef _MSC_VER
+#if !DOCTEST_MSVC
 #include <stdint.h>
-#endif // _MSC_VER
+#endif // !MSVC
 
 namespace doctest
 {
@@ -532,22 +526,22 @@ int  Context::run() { return 0; }
 #define DOCTEST_SNPRINTF_BUFFER_LENGTH 1024
 #endif // DOCTEST_SNPRINTF_BUFFER_LENGTH
 
-#if defined(_MSC_VER) || defined(__MINGW32__)
-#if defined(_MSC_VER) && _MSC_VER >= 1700
+#if DOCTEST_MSVC || defined(__MINGW32__)
+#if DOCTEST_MSVC >= DOCTEST_COMPILER(17, 0, 0)
 #define DOCTEST_WINDOWS_SAL_IN_OPT _In_opt_
-#else // _MSC_VER
+#else // MSVC
 #define DOCTEST_WINDOWS_SAL_IN_OPT
-#endif // _MSC_VER
+#endif // MSVC
 extern "C" __declspec(dllimport) void __stdcall OutputDebugStringA(
         DOCTEST_WINDOWS_SAL_IN_OPT const char*);
 extern "C" __declspec(dllimport) int __stdcall IsDebuggerPresent();
-#endif // _MSC_VER || __MINGW32__
+#endif // MSVC || __MINGW32__
 
 #ifdef DOCTEST_CONFIG_COLORS_ANSI
 #include <unistd.h>
 #endif // DOCTEST_CONFIG_COLORS_ANSI
 
-#ifdef _WIN32
+#ifdef DOCTEST_PLATFORM_WINDOWS
 
 // defines for a leaner windows.h
 #ifndef WIN32_MEAN_AND_LEAN
@@ -568,11 +562,11 @@ extern "C" __declspec(dllimport) int __stdcall IsDebuggerPresent();
 #endif
 #include <io.h>
 
-#else // _WIN32
+#else // DOCTEST_PLATFORM_WINDOWS
 
 #include <sys/time.h>
 
-#endif // _WIN32
+#endif // DOCTEST_PLATFORM_WINDOWS
 
 namespace doctest_detail_test_suite_ns
 {
@@ -803,7 +797,7 @@ namespace detail
         return false;
     }
 
-#ifdef _WIN32
+#ifdef DOCTEST_PLATFORM_WINDOWS
 
     typedef unsigned long long UInt64;
 
@@ -817,7 +811,7 @@ namespace detail
         QueryPerformanceCounter(reinterpret_cast<LARGE_INTEGER*>(&t));
         return ((t - hzo) * 1000000) / hz;
     }
-#else  // _WIN32
+#else  // DOCTEST_PLATFORM_WINDOWS
 
     typedef uint64_t UInt64;
 
@@ -826,7 +820,7 @@ namespace detail
         gettimeofday(&t, 0);
         return static_cast<UInt64>(t.tv_sec) * 1000000 + static_cast<UInt64>(t.tv_usec);
     }
-#endif // _WIN32
+#endif // DOCTEST_PLATFORM_WINDOWS
 
     class Timer
     {
@@ -923,13 +917,13 @@ namespace detail
     int fileOrderComparator(const void* a, const void* b) {
         const TestCase* lhs = *static_cast<TestCase* const*>(a);
         const TestCase* rhs = *static_cast<TestCase* const*>(b);
-#ifdef _MSC_VER
+#if DOCTEST_MSVC
         // this is needed because MSVC gives different case for drive letters
         // for __FILE__ when evaluated in a header and a source file
         const int res = stricmp(lhs->m_file, rhs->m_file);
-#else  // _MSC_VER
+#else  // MSVC
         const int res = std::strcmp(lhs->m_file, rhs->m_file);
-#endif // _MSC_VER
+#endif // MSVC
         if(res != 0)
             return res;
         return static_cast<int>(lhs->m_line - rhs->m_line);
@@ -1153,10 +1147,7 @@ namespace detail
 
     void addToContexts(IContextScope* ptr) { contextState->contexts.push_back(ptr); }
     void popFromContexts() { contextState->contexts.pop_back(); }
-#if defined(_MSC_VER)
-#pragma warning(push)
-#pragma warning(disable : 4996) // std::uncaught_exception is deprecated in C++17
-#endif
+    DOCTEST_MSVC_SUPPRESS_WARNING_WITH_PUSH(4996) // std::uncaught_exception is deprecated in C++17
     void useContextIfExceptionOccurred(IContextScope* ptr) {
         if(std::uncaught_exception()) {
             std::ostringstream stream;
@@ -1164,9 +1155,7 @@ namespace detail
             contextState->exceptionalContexts.push_back(stream.str());
         }
     }
-#if defined(_MSC_VER)
-#pragma warning(pop)
-#endif
+    DOCTEST_MSVC_SUPPRESS_WARNING_POP
 
     void printSummary();
 
@@ -1379,7 +1368,7 @@ namespace detail
         // We're being debugged if the P_TRACED flag is set.
         return ((info.kp_proc.p_flag & P_TRACED) != 0);
     }
-#elif defined(_MSC_VER) || defined(__MINGW32__)
+#elif DOCTEST_MSVC || defined(__MINGW32__)
     bool  isDebuggerActive() { return ::IsDebuggerPresent() != 0; }
 #else
     bool isDebuggerActive() { return false; }
@@ -1689,10 +1678,10 @@ namespace detail
             , m_threw(false)
             , m_threw_as(false)
             , m_failed(false) {
-#ifdef _MSC_VER
+#if DOCTEST_MSVC
         if(m_expr[0] == ' ') // this happens when variadic macros are disabled under MSVC
             ++m_expr;
-#endif // _MSC_VER
+#endif // MSVC
     }
 
     ResultBuilder::~ResultBuilder() {}
@@ -2485,19 +2474,9 @@ int Context::run() {
 int main(int argc, char** argv) { return doctest::Context(argc, argv).run(); }
 #endif // DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 
+DOCTEST_CLANG_SUPPRESS_WARNING_POP
+DOCTEST_MSVC_SUPPRESS_WARNING_POP
+DOCTEST_GCC_SUPPRESS_WARNING_POP
+
 #endif // DOCTEST_LIBRARY_IMPLEMENTATION
 #endif // DOCTEST_CONFIG_IMPLEMENT
-
-#if defined(__clang__)
-#pragma clang diagnostic pop
-#endif // __clang__
-
-#if defined(__GNUC__) && !defined(__clang__)
-#if __GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ > 6)
-#pragma GCC diagnostic pop
-#endif // > gcc 4.6
-#endif // __GNUC__
-
-#ifdef _MSC_VER
-#pragma warning(pop)
-#endif // _MSC_VER

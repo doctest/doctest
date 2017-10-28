@@ -19,7 +19,7 @@
 //
 // The library is heavily influenced by Catch - https://github.com/philsquared/Catch
 // which uses the Boost Software License - Version 1.0
-// see here - https://github.com/philsquared/Catch/blob/master/LICENSE_1_0.txt
+// see here - https://github.com/philsquared/Catch/blob/master/LICENSE.txt
 //
 // The concept of subcases (sections in Catch) and expression decomposition are from there.
 // Some parts of the code are taken directly:
@@ -32,7 +32,7 @@
 //
 // The expression decomposing templates are taken from lest - https://github.com/martinmoene/lest
 // which uses the Boost Software License - Version 1.0
-// see here - https://github.com/martinmoene/lest/blob/master/LICENSE_1_0.txt
+// see here - https://github.com/martinmoene/lest/blob/master/LICENSE.txt
 //
 // The type list and the foreach algorithm on it for C++98 are taken from Loki
 // - http://loki-lib.sourceforge.net/
@@ -44,64 +44,12 @@
 // =================================================================================================
 // =================================================================================================
 
-// Suppress this globally (without push/pop) - there is no way to silence it in the
-// expression decomposition macros _Pragma() in macros doesn't work for the c++ front-end of g++
-// https://gcc.gnu.org/bugzilla/show_bug.cgi?id=55578
-// https://gcc.gnu.org/bugzilla/show_bug.cgi?id=69543
-// Also the warning is completely worthless nowadays - http://stackoverflow.com/questions/14016993
-#if defined(__GNUC__) && !defined(__clang__)
-#pragma GCC diagnostic ignored "-Waggregate-return"
-#endif
-
-#if defined(__clang__)
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wunknown-pragmas"
-#pragma clang diagnostic ignored "-Wnon-virtual-dtor"
-#pragma clang diagnostic ignored "-Wweak-vtables"
-#pragma clang diagnostic ignored "-Wpadded"
-#pragma clang diagnostic ignored "-Wdeprecated"
-#pragma clang diagnostic ignored "-Wmissing-prototypes"
-#pragma clang diagnostic ignored "-Wunused-local-typedef"
-#if !defined(__has_warning) || __has_warning("-Wzero-as-null-pointer-constant")
-#pragma GCC diagnostic ignored "-Wzero-as-null-pointer-constant"
-#endif
-#pragma clang diagnostic ignored "-Wc++11-long-long"
-#endif // __clang__
-
-#if defined(__GNUC__) && !defined(__clang__)
-#if __GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ > 6)
-#pragma GCC diagnostic push
-#endif // > gcc 4.6
-#pragma GCC diagnostic ignored "-Wunknown-pragmas"
-#pragma GCC diagnostic ignored "-Weffc++"
-#pragma GCC diagnostic ignored "-Wstrict-overflow"
-#pragma GCC diagnostic ignored "-Wstrict-aliasing"
-#pragma GCC diagnostic ignored "-Wctor-dtor-privacy"
-#pragma GCC diagnostic ignored "-Wmissing-declarations"
-#pragma GCC diagnostic ignored "-Wnon-virtual-dtor"
-#pragma GCC diagnostic ignored "-Winline"
-#pragma GCC diagnostic ignored "-Wlong-long"
-#if __GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ > 6)
-#pragma GCC diagnostic ignored "-Wzero-as-null-pointer-constant"
-#endif // > gcc 4.6
-#if __GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ > 7)
-#pragma GCC diagnostic ignored "-Wunused-local-typedefs"
-#endif // > gcc 4.7
-#if __GNUC__ > 5 || (__GNUC__ == 5 && __GNUC_MINOR__ > 3)
-#pragma GCC diagnostic ignored "-Wuseless-cast"
-#endif // > gcc 5.3
-#endif // __GNUC__
-
-#ifdef _MSC_VER
-#pragma warning(push)
-#pragma warning(disable : 4996) // The compiler encountered a deprecated declaration
-#pragma warning(disable : 4706) // assignment within conditional expression
-#pragma warning(disable : 4512) // 'class' : assignment operator could not be generated
-#pragma warning(disable : 4127) // conditional expression is constant
-#endif                          // _MSC_VER
-
 #ifndef DOCTEST_LIBRARY_INCLUDED
 #define DOCTEST_LIBRARY_INCLUDED
+
+// =================================================================================================
+// == VERSION ======================================================================================
+// =================================================================================================
 
 #define DOCTEST_VERSION_MAJOR 1
 #define DOCTEST_VERSION_MINOR 2
@@ -110,6 +58,153 @@
 
 #define DOCTEST_VERSION                                                                            \
     (DOCTEST_VERSION_MAJOR * 10000 + DOCTEST_VERSION_MINOR * 100 + DOCTEST_VERSION_PATCH)
+
+// =================================================================================================
+// == COMPILER VERSION =============================================================================
+// =================================================================================================
+
+// ideas for the version stuff are taken from here: https://github.com/cxxstuff/cxx_detect
+
+#define DOCTEST_COMPILER(MAJOR, MINOR, PATCH) ((MAJOR)*10000000 + (MINOR)*100000 + (PATCH))
+
+#if defined(_MSC_VER) && defined(_MSC_FULL_VER)
+#if _MSC_VER == _MSC_FULL_VER / 10000
+#define DOCTEST_MSVC DOCTEST_COMPILER(_MSC_VER / 100, _MSC_VER % 100, _MSC_FULL_VER % 10000)
+#else
+#define DOCTEST_MSVC                                                                               \
+    DOCTEST_COMPILER(_MSC_VER / 100, (_MSC_FULL_VER / 100000) % 100, _MSC_FULL_VER % 100000)
+#endif
+#elif defined(__clang__) && defined(__clang_minor__)
+#define DOCTEST_CLANG DOCTEST_COMPILER(__clang_major__, __clang_minor__, __clang_patchlevel__)
+#elif defined(__GNUC__) && defined(__GNUC_MINOR__) && defined(__GNUC_PATCHLEVEL__)
+#define DOCTEST_GCC DOCTEST_COMPILER(__GNUC__, __GNUC_MINOR__, __GNUC_PATCHLEVEL__)
+#endif
+
+#ifndef DOCTEST_MSVC
+#define DOCTEST_MSVC 0
+#endif // DOCTEST_MSVC
+#ifndef DOCTEST_CLANG
+#define DOCTEST_CLANG 0
+#endif // DOCTEST_CLANG
+#ifndef DOCTEST_GCC
+#define DOCTEST_GCC 0
+#endif // DOCTEST_GCC
+
+// =================================================================================================
+// == COMPILER WARNINGS HELPERS ====================================================================
+// =================================================================================================
+
+#if DOCTEST_CLANG
+#ifdef __has_warning
+#define DOCTEST_CLANG_HAS_WARNING(x) __has_warning(x)
+#endif // __has_warning
+#ifdef __has_feature
+#define DOCTEST_CLANG_HAS_FEATURE(x) __has_feature(x)
+#endif // __has_feature
+#define DOCTEST_PRAGMA_TO_STR(x) _Pragma(#x)
+#define DOCTEST_CLANG_SUPPRESS_WARNING_PUSH _Pragma("clang diagnostic push")
+#define DOCTEST_MSVC_SUPPRESS_WARNING_PUSH
+#define DOCTEST_GCC_SUPPRESS_WARNING_PUSH
+#define DOCTEST_CLANG_SUPPRESS_WARNING(w) DOCTEST_PRAGMA_TO_STR(clang diagnostic ignored w)
+#define DOCTEST_MSVC_SUPPRESS_WARNING(w)
+#define DOCTEST_GCC_SUPPRESS_WARNING(w)
+#define DOCTEST_CLANG_SUPPRESS_WARNING_POP _Pragma("clang diagnostic pop")
+#define DOCTEST_MSVC_SUPPRESS_WARNING_POP
+#define DOCTEST_GCC_SUPPRESS_WARNING_POP
+#define DOCTEST_CLANG_SUPPRESS_WARNING_WITH_PUSH(w)                                                \
+    DOCTEST_CLANG_SUPPRESS_WARNING_PUSH DOCTEST_CLANG_SUPPRESS_WARNING(w)
+#define DOCTEST_MSVC_SUPPRESS_WARNING_WITH_PUSH(w)
+#define DOCTEST_GCC_SUPPRESS_WARNING_WITH_PUSH(w)
+#elif DOCTEST_GCC
+#define DOCTEST_PRAGMA_TO_STR(x) _Pragma(#x)
+#define DOCTEST_CLANG_SUPPRESS_WARNING_PUSH
+#define DOCTEST_MSVC_SUPPRESS_WARNING_PUSH
+#if DOCTEST_GCC >= DOCTEST_COMPILER(4, 7, 0)
+#define DOCTEST_GCC_SUPPRESS_WARNING_PUSH _Pragma("GCC diagnostic push")
+#else // GCC 4.7+
+#define DOCTEST_GCC_SUPPRESS_WARNING_PUSH
+#endif // GCC 4.7+
+#define DOCTEST_CLANG_SUPPRESS_WARNING(w)
+#define DOCTEST_MSVC_SUPPRESS_WARNING(w)
+#define DOCTEST_GCC_SUPPRESS_WARNING(w) DOCTEST_PRAGMA_TO_STR(GCC diagnostic ignored w)
+#define DOCTEST_CLANG_SUPPRESS_WARNING_POP
+#define DOCTEST_MSVC_SUPPRESS_WARNING_POP
+#if DOCTEST_GCC >= DOCTEST_COMPILER(4, 7, 0)
+#define DOCTEST_GCC_SUPPRESS_WARNING_POP _Pragma("GCC diagnostic pop")
+#else // GCC 4.7+
+#define DOCTEST_GCC_SUPPRESS_WARNING_POP
+#endif // GCC 4.7+
+#define DOCTEST_CLANG_SUPPRESS_WARNING_WITH_PUSH(w)
+#define DOCTEST_MSVC_SUPPRESS_WARNING_WITH_PUSH(w)
+#define DOCTEST_GCC_SUPPRESS_WARNING_WITH_PUSH(w)                                                  \
+    DOCTEST_GCC_SUPPRESS_WARNING_PUSH DOCTEST_GCC_SUPPRESS_WARNING(w)
+#elif DOCTEST_MSVC
+#define DOCTEST_PRAGMA_TO_STR(x)
+#define DOCTEST_CLANG_SUPPRESS_WARNING_PUSH
+#define DOCTEST_MSVC_SUPPRESS_WARNING_PUSH __pragma(warning(push))
+#define DOCTEST_GCC_SUPPRESS_WARNING_PUSH
+#define DOCTEST_CLANG_SUPPRESS_WARNING(w)
+#define DOCTEST_MSVC_SUPPRESS_WARNING(w) __pragma(warning(disable : w))
+#define DOCTEST_GCC_SUPPRESS_WARNING(w)
+#define DOCTEST_CLANG_SUPPRESS_WARNING_POP
+#define DOCTEST_MSVC_SUPPRESS_WARNING_POP __pragma(warning(pop))
+#define DOCTEST_GCC_SUPPRESS_WARNING_POP
+#define DOCTEST_CLANG_SUPPRESS_WARNING_WITH_PUSH(w)
+#define DOCTEST_MSVC_SUPPRESS_WARNING_WITH_PUSH(w)                                                 \
+    DOCTEST_MSVC_SUPPRESS_WARNING_PUSH DOCTEST_MSVC_SUPPRESS_WARNING(w)
+#define DOCTEST_GCC_SUPPRESS_WARNING_WITH_PUSH(w)
+#endif // different compilers - warning suppression macros
+
+#ifndef DOCTEST_CLANG_HAS_WARNING
+#define DOCTEST_CLANG_HAS_WARNING(x) 1
+#endif // DOCTEST_CLANG_HAS_WARNING
+
+#ifndef DOCTEST_CLANG_HAS_FEATURE
+#define DOCTEST_CLANG_HAS_FEATURE(x) 0
+#endif // DOCTEST_CLANG_HAS_FEATURE
+
+// =================================================================================================
+// == COMPILER WARNINGS ============================================================================
+// =================================================================================================
+
+DOCTEST_CLANG_SUPPRESS_WARNING_PUSH
+DOCTEST_CLANG_SUPPRESS_WARNING("-Wunknown-pragmas")
+DOCTEST_CLANG_SUPPRESS_WARNING("-Wnon-virtual-dtor")
+DOCTEST_CLANG_SUPPRESS_WARNING("-Wweak-vtables")
+DOCTEST_CLANG_SUPPRESS_WARNING("-Wpadded")
+DOCTEST_CLANG_SUPPRESS_WARNING("-Wdeprecated")
+DOCTEST_CLANG_SUPPRESS_WARNING("-Wmissing-prototypes")
+DOCTEST_CLANG_SUPPRESS_WARNING("-Wunused-local-typedef")
+DOCTEST_CLANG_SUPPRESS_WARNING("-Wc++11-long-long")
+#if DOCTEST_CLANG && DOCTEST_CLANG_HAS_WARNING("-Wzero-as-null-pointer-constant")
+DOCTEST_CLANG_SUPPRESS_WARNING("-Wzero-as-null-pointer-constant")
+#endif // clang - 0 as null
+
+DOCTEST_GCC_SUPPRESS_WARNING_PUSH
+DOCTEST_GCC_SUPPRESS_WARNING("-Wunknown-pragmas")
+DOCTEST_GCC_SUPPRESS_WARNING("-Weffc++")
+DOCTEST_GCC_SUPPRESS_WARNING("-Wstrict-overflow")
+DOCTEST_GCC_SUPPRESS_WARNING("-Wstrict-aliasing")
+DOCTEST_GCC_SUPPRESS_WARNING("-Wctor-dtor-privacy")
+DOCTEST_GCC_SUPPRESS_WARNING("-Wmissing-declarations")
+DOCTEST_GCC_SUPPRESS_WARNING("-Wnon-virtual-dtor")
+DOCTEST_GCC_SUPPRESS_WARNING("-Winline")
+DOCTEST_GCC_SUPPRESS_WARNING("-Wlong-long")
+#if DOCTEST_GCC >= DOCTEST_COMPILER(4, 7, 0)
+DOCTEST_GCC_SUPPRESS_WARNING("-Wzero-as-null-pointer-constant")
+#endif // GCC 4.7+
+#if DOCTEST_GCC >= DOCTEST_COMPILER(4, 8, 0)
+DOCTEST_GCC_SUPPRESS_WARNING("-Wunused-local-typedefs")
+#endif // GCC 4.8+
+#if DOCTEST_GCC >= DOCTEST_COMPILER(5, 4, 0)
+DOCTEST_GCC_SUPPRESS_WARNING("-Wuseless-cast")
+#endif // GCC 5.4+
+
+DOCTEST_MSVC_SUPPRESS_WARNING_PUSH
+DOCTEST_MSVC_SUPPRESS_WARNING(4996) // The compiler encountered a deprecated declaration
+DOCTEST_MSVC_SUPPRESS_WARNING(4706) // assignment within conditional expression
+DOCTEST_MSVC_SUPPRESS_WARNING(4512) // 'class' : assignment operator could not be generated
+DOCTEST_MSVC_SUPPRESS_WARNING(4127) // conditional expression is constant
 
 // =================================================================================================
 // == FEATURE DETECTION ============================================================================
@@ -136,10 +231,6 @@
 #endif // DOCTEST_CONFIG_WITH_VARIADIC_MACROS
 #endif // __cplusplus >= 201103L
 
-#ifndef __has_feature
-#define __has_feature(x) 0
-#endif // __has_feature
-
 // MSVC C++11 feature support table: https://msdn.microsoft.com/en-us/library/hh567368.aspx
 // GCC C++11 feature support table: https://gcc.gnu.org/projects/cxx-status.html
 // MSVC version table:
@@ -154,16 +245,15 @@
 // deleted functions
 
 #ifndef DOCTEST_CONFIG_WITH_DELETED_FUNCTIONS
-#if defined(_MSC_VER) && (_MSC_VER >= 1800)
+#if DOCTEST_MSVC >= DOCTEST_COMPILER(18, 0, 0)
 #define DOCTEST_CONFIG_WITH_DELETED_FUNCTIONS
-#endif // _MSC_VER
-#if defined(__clang__) && __has_feature(cxx_deleted_functions)
+#endif // MSVC
+#if DOCTEST_CLANG && DOCTEST_CLANG_HAS_FEATURE(cxx_deleted_functions)
 #define DOCTEST_CONFIG_WITH_DELETED_FUNCTIONS
-#endif // __clang__
-#if defined(__GNUC__) && ((__GNUC__ == 4 && __GNUC_MINOR__ >= 4) || __GNUC__ > 4) &&               \
-        defined(__GXX_EXPERIMENTAL_CXX0X__)
+#endif // clang
+#if DOCTEST_GCC >= DOCTEST_COMPILER(4, 5, 0) && defined(__GXX_EXPERIMENTAL_CXX0X__)
 #define DOCTEST_CONFIG_WITH_DELETED_FUNCTIONS
-#endif // __GNUC__
+#endif // GCC
 #endif // DOCTEST_CONFIG_WITH_DELETED_FUNCTIONS
 
 #if defined(DOCTEST_CONFIG_NO_DELETED_FUNCTIONS) && defined(DOCTEST_CONFIG_WITH_DELETED_FUNCTIONS)
@@ -173,16 +263,15 @@
 // rvalue references
 
 #ifndef DOCTEST_CONFIG_WITH_RVALUE_REFERENCES
-#if defined(_MSC_VER) && (_MSC_VER >= 1600)
+#if DOCTEST_MSVC >= DOCTEST_COMPILER(16, 0, 0)
 #define DOCTEST_CONFIG_WITH_RVALUE_REFERENCES
-#endif // _MSC_VER
-#if defined(__clang__) && __has_feature(cxx_rvalue_references)
+#endif // MSVC
+#if DOCTEST_CLANG && DOCTEST_CLANG_HAS_FEATURE(cxx_rvalue_references)
 #define DOCTEST_CONFIG_WITH_RVALUE_REFERENCES
-#endif // __clang__
-#if defined(__GNUC__) && ((__GNUC__ == 4 && __GNUC_MINOR__ >= 3) || __GNUC__ > 4) &&               \
-        defined(__GXX_EXPERIMENTAL_CXX0X__)
+#endif // clang
+#if DOCTEST_GCC >= DOCTEST_COMPILER(4, 3, 0) && defined(__GXX_EXPERIMENTAL_CXX0X__)
 #define DOCTEST_CONFIG_WITH_RVALUE_REFERENCES
-#endif // __GNUC__
+#endif // GCC
 #endif // DOCTEST_CONFIG_WITH_RVALUE_REFERENCES
 
 #if defined(DOCTEST_CONFIG_NO_RVALUE_REFERENCES) && defined(DOCTEST_CONFIG_WITH_RVALUE_REFERENCES)
@@ -192,16 +281,15 @@
 // nullptr
 
 #ifndef DOCTEST_CONFIG_WITH_NULLPTR
-#if defined(__clang__) && __has_feature(cxx_nullptr)
+#if DOCTEST_CLANG && DOCTEST_CLANG_HAS_FEATURE(cxx_nullptr)
 #define DOCTEST_CONFIG_WITH_NULLPTR
-#endif // __clang__
-#if defined(__GNUC__) && ((__GNUC__ == 4 && __GNUC_MINOR__ >= 6) || __GNUC__ > 4) &&               \
-        defined(__GXX_EXPERIMENTAL_CXX0X__)
+#endif // clang
+#if DOCTEST_GCC >= DOCTEST_COMPILER(4, 6, 0) && defined(__GXX_EXPERIMENTAL_CXX0X__)
 #define DOCTEST_CONFIG_WITH_NULLPTR
-#endif                                      // __GNUC__
-#if defined(_MSC_VER) && (_MSC_VER >= 1600) // MSVC 2010
+#endif // GCC
+#if DOCTEST_MSVC >= DOCTEST_COMPILER(16, 0, 0)
 #define DOCTEST_CONFIG_WITH_NULLPTR
-#endif // _MSC_VER
+#endif // MSVC
 #endif // DOCTEST_CONFIG_WITH_NULLPTR
 
 #if defined(DOCTEST_CONFIG_NO_NULLPTR) && defined(DOCTEST_CONFIG_WITH_NULLPTR)
@@ -211,13 +299,13 @@
 // variadic macros
 
 #ifndef DOCTEST_CONFIG_WITH_VARIADIC_MACROS
-#if defined(_MSC_VER) && _MSC_VER > 1400 && !defined(__EDGE__)
+#if DOCTEST_MSVC >= DOCTEST_COMPILER(14, 0, 0) && !defined(__EDGE__)
 #define DOCTEST_CONFIG_WITH_VARIADIC_MACROS
-#endif // _MSC_VER
-#if defined(__GNUC__) && ((__GNUC__ == 4 && __GNUC_MINOR__ >= 1) || __GNUC__ > 4) &&               \
+#endif // MSVC
+#if(DOCTEST_CLANG || DOCTEST_GCC >= DOCTEST_COMPILER(4, 1, 0)) &&                                  \
         defined(__GXX_EXPERIMENTAL_CXX0X__)
 #define DOCTEST_CONFIG_WITH_VARIADIC_MACROS
-#endif // __GNUC__ and clang
+#endif // GCC and clang
 #endif // DOCTEST_CONFIG_WITH_VARIADIC_MACROS
 
 #if defined(DOCTEST_CONFIG_NO_VARIADIC_MACROS) && defined(DOCTEST_CONFIG_WITH_VARIADIC_MACROS)
@@ -227,14 +315,13 @@
 // long long
 
 #ifndef DOCTEST_CONFIG_WITH_LONG_LONG
-#if defined(_MSC_VER) && (_MSC_VER >= 1400)
+#if DOCTEST_MSVC >= DOCTEST_COMPILER(14, 0, 0)
 #define DOCTEST_CONFIG_WITH_LONG_LONG
-#endif // _MSC_VER
-#if(defined(__clang__) ||                                                                          \
-    (defined(__GNUC__) && ((__GNUC__ == 4 && __GNUC_MINOR__ >= 5) || __GNUC__ > 4))) &&            \
+#endif // MSVC
+#if(DOCTEST_CLANG || DOCTEST_GCC >= DOCTEST_COMPILER(4, 5, 0)) &&                                  \
         defined(__GXX_EXPERIMENTAL_CXX0X__)
 #define DOCTEST_CONFIG_WITH_LONG_LONG
-#endif // __GNUC__ and clang
+#endif // GCC and clang
 #endif // DOCTEST_CONFIG_WITH_LONG_LONG
 
 #if defined(DOCTEST_CONFIG_NO_LONG_LONG) && defined(DOCTEST_CONFIG_WITH_LONG_LONG)
@@ -244,16 +331,15 @@
 // static_assert
 
 #ifndef DOCTEST_CONFIG_WITH_STATIC_ASSERT
-#if defined(__clang__) && __has_feature(cxx_static_assert)
+#if DOCTEST_CLANG && DOCTEST_CLANG_HAS_FEATURE(cxx_static_assert)
 #define DOCTEST_CONFIG_WITH_STATIC_ASSERT
-#endif // __clang__
-#if defined(__GNUC__) && ((__GNUC__ == 4 && __GNUC_MINOR__ >= 3) || __GNUC__ > 4) &&               \
-        defined(__GXX_EXPERIMENTAL_CXX0X__)
+#endif // clang
+#if DOCTEST_GCC >= DOCTEST_COMPILER(4, 3, 0) && defined(__GXX_EXPERIMENTAL_CXX0X__)
 #define DOCTEST_CONFIG_WITH_STATIC_ASSERT
-#endif                                      // __GNUC__
-#if defined(_MSC_VER) && (_MSC_VER >= 1600) // MSVC 2010
+#endif // GCC
+#if DOCTEST_MSVC >= DOCTEST_COMPILER(16, 0, 0)
 #define DOCTEST_CONFIG_WITH_STATIC_ASSERT
-#endif // _MSC_VER
+#endif // MSVC
 #endif // DOCTEST_CONFIG_WITH_STATIC_ASSERT
 
 #if defined(DOCTEST_CONFIG_NO_STATIC_ASSERT) && defined(DOCTEST_CONFIG_WITH_STATIC_ASSERT)
@@ -268,14 +354,14 @@
 #define DOCTEST_NO_CPP11_COMPAT
 #endif // c++11 stuff
 
-#if defined(__clang__) && defined(DOCTEST_NO_CPP11_COMPAT)
-#pragma clang diagnostic ignored "-Wc++98-compat"
-#pragma clang diagnostic ignored "-Wc++98-compat-pedantic"
-#endif // __clang__ && DOCTEST_NO_CPP11_COMPAT
+#if defined(DOCTEST_NO_CPP11_COMPAT)
+DOCTEST_CLANG_SUPPRESS_WARNING("-Wc++98-compat")
+DOCTEST_CLANG_SUPPRESS_WARNING("-Wc++98-compat-pedantic")
+#endif // DOCTEST_NO_CPP11_COMPAT
 
-#if defined(_MSC_VER) && !defined(DOCTEST_CONFIG_WINDOWS_SEH)
+#if DOCTEST_MSVC && !defined(DOCTEST_CONFIG_WINDOWS_SEH)
 #define DOCTEST_CONFIG_WINDOWS_SEH
-#endif // _MSC_VER
+#endif // MSVC
 #if defined(DOCTEST_CONFIG_NO_WINDOWS_SEH) && defined(DOCTEST_CONFIG_WINDOWS_SEH)
 #undef DOCTEST_CONFIG_WINDOWS_SEH
 #endif // DOCTEST_CONFIG_NO_WINDOWS_SEH
@@ -288,7 +374,7 @@
 #endif // DOCTEST_CONFIG_NO_POSIX_SIGNALS
 
 #ifndef DOCTEST_CONFIG_NO_EXCEPTIONS
-#if defined(__GNUC__) && !defined(__EXCEPTIONS)
+#if(DOCTEST_GCC || DOCTEST_CLANG) && !defined(__EXCEPTIONS)
 #define DOCTEST_CONFIG_NO_EXCEPTIONS
 #endif // clang and gcc
 // in MSVC _HAS_EXCEPTIONS is defined in a header instead of as a project define
@@ -310,13 +396,13 @@
 #endif // DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 
 #if defined _WIN32 || defined __CYGWIN__
-#ifdef __GNUC__
-#define DOCTEST_SYMBOL_EXPORT __attribute__((dllexport))
-#define DOCTEST_SYMBOL_IMPORT __attribute__((dllimport))
-#else // __GNUC__
+#if DOCTEST_MSVC
 #define DOCTEST_SYMBOL_EXPORT __declspec(dllexport)
 #define DOCTEST_SYMBOL_IMPORT __declspec(dllimport)
-#endif // __GNUC__
+#else // MSVC
+#define DOCTEST_SYMBOL_EXPORT __attribute__((dllexport))
+#define DOCTEST_SYMBOL_IMPORT __attribute__((dllimport))
+#endif // MSVC
 #else  // _WIN32
 #define DOCTEST_SYMBOL_EXPORT __attribute__((visibility("default")))
 #define DOCTEST_SYMBOL_IMPORT
@@ -332,11 +418,13 @@
 #define DOCTEST_INTERFACE
 #endif // DOCTEST_CONFIG_IMPLEMENTATION_IN_DLL
 
-#ifdef _MSC_VER
+#if DOCTEST_MSVC
 #define DOCTEST_NOINLINE __declspec(noinline)
-#else // _MSC_VER
+#define DOCTEST_UNUSED
+#else // MSVC
 #define DOCTEST_NOINLINE __attribute__((noinline))
-#endif // _MSC_VER
+#define DOCTEST_UNUSED __attribute__((unused))
+#endif // MSVC
 
 #ifndef DOCTEST_CONFIG_NUM_CAPTURES_ON_STACK
 #define DOCTEST_CONFIG_NUM_CAPTURES_ON_STACK 5
@@ -381,29 +469,20 @@
 #define DOCTEST_PLATFORM_MAC
 #elif defined(__IPHONE_OS_VERSION_MIN_REQUIRED)
 #define DOCTEST_PLATFORM_IPHONE
-#elif defined(_WIN32) || defined(_MSC_VER)
+#elif defined(_WIN32)
 #define DOCTEST_PLATFORM_WINDOWS
 #else
 #define DOCTEST_PLATFORM_LINUX
 #endif
 
-#if defined(__clang__)
 #define DOCTEST_GLOBAL_NO_WARNINGS(var)                                                            \
-    _Pragma("clang diagnostic push")                                                               \
-            _Pragma("clang diagnostic ignored \"-Wglobal-constructors\"") static int var
-#define DOCTEST_GLOBAL_NO_WARNINGS_END() _Pragma("clang diagnostic pop")
-#elif defined(__GNUC__)
-#define DOCTEST_GLOBAL_NO_WARNINGS(var) static int var __attribute__((unused))
-#define DOCTEST_GLOBAL_NO_WARNINGS_END()
-#else // MSVC / other
-#define DOCTEST_GLOBAL_NO_WARNINGS(var) static int var
-#define DOCTEST_GLOBAL_NO_WARNINGS_END()
-#endif // MSVC / other
+    DOCTEST_CLANG_SUPPRESS_WARNING_WITH_PUSH("-Wglobal-constructors") static int var DOCTEST_UNUSED
+#define DOCTEST_GLOBAL_NO_WARNINGS_END() DOCTEST_CLANG_SUPPRESS_WARNING_POP
 
 // should probably take a look at https://github.com/scottt/debugbreak
 #ifdef DOCTEST_PLATFORM_MAC
 #define DOCTEST_BREAK_INTO_DEBUGGER() __asm__("int $3\n" : :)
-#elif defined(_MSC_VER)
+#elif DOCTEST_MSVC
 #define DOCTEST_BREAK_INTO_DEBUGGER() __debugbreak()
 #elif defined(__MINGW32__)
 extern "C" __declspec(dllimport) void __stdcall DebugBreak();
@@ -412,10 +491,10 @@ extern "C" __declspec(dllimport) void __stdcall DebugBreak();
 #define DOCTEST_BREAK_INTO_DEBUGGER() ((void)0)
 #endif // linux
 
-#ifdef __clang__
+#if DOCTEST_CLANG
 // to detect if libc++ is being used with clang (the _LIBCPP_VERSION identifier)
 #include <ciso646>
-#endif // __clang__
+#endif // clang
 
 #ifdef _LIBCPP_VERSION
 // not forward declaring ostream for libc++ because I had some problems (inline namespaces vs c++98)
@@ -768,11 +847,11 @@ namespace detail
 
         explicit ForEachType(Callable& callable)
                 : ForEachType<Tail, Callable>(callable) {
-#if defined(_MSC_VER) && _MSC_VER <= 1900
+#if DOCTEST_MSVC && DOCTEST_MSVC < DOCTEST_COMPILER(19, 10, 0)
             callable.operator()<value, Head>();
-#else  // _MSC_VER
+#else  // MSVC
             callable.template operator()<value, Head>();
-#endif // _MSC_VER
+#endif // MSVC
         }
     };
 
@@ -787,11 +866,11 @@ namespace detail
         };
 
         explicit ForEachType(Callable& callable) {
-#if defined(_MSC_VER) && _MSC_VER <= 1900
+#if DOCTEST_MSVC && DOCTEST_MSVC < DOCTEST_COMPILER(19, 10, 0)
             callable.operator()<value, Head>();
-#else  // _MSC_VER
+#else  // MSVC
             callable.template operator()<value, Head>();
-#endif // _MSC_VER
+#endif // MSVC
         }
     };
 
@@ -1240,35 +1319,27 @@ namespace detail
 
 #ifndef DOCTEST_CONFIG_NO_COMPARISON_WARNING_SUPPRESSION
 
-#if defined(__clang__)
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wsign-conversion"
-#pragma clang diagnostic ignored "-Wsign-compare"
-//#pragma clang diagnostic ignored "-Wdouble-promotion"
-//#pragma clang diagnostic ignored "-Wconversion"
-//#pragma clang diagnostic ignored "-Wfloat-equal"
-#endif // __clang__
+    DOCTEST_CLANG_SUPPRESS_WARNING_PUSH
+    DOCTEST_CLANG_SUPPRESS_WARNING("-Wsign-conversion")
+    DOCTEST_CLANG_SUPPRESS_WARNING("-Wsign-compare")
+    //DOCTEST_CLANG_SUPPRESS_WARNING("-Wdouble-promotion")
+    //DOCTEST_CLANG_SUPPRESS_WARNING("-Wconversion")
+    //DOCTEST_CLANG_SUPPRESS_WARNING("-Wfloat-equal")
 
-#if defined(__GNUC__) && !defined(__clang__)
-#if __GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ > 6)
-#pragma GCC diagnostic push
-#endif // > gcc 4.6
-#pragma GCC diagnostic ignored "-Wsign-conversion"
-#pragma GCC diagnostic ignored "-Wsign-compare"
-#if __GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ > 5)
-//#pragma GCC diagnostic ignored "-Wdouble-promotion"
-#endif // > gcc 4.5
-//#pragma GCC diagnostic ignored "-Wconversion"
-//#pragma GCC diagnostic ignored "-Wfloat-equal"
-#endif // __GNUC__
+    DOCTEST_GCC_SUPPRESS_WARNING_PUSH
+    DOCTEST_GCC_SUPPRESS_WARNING("-Wsign-conversion")
+    DOCTEST_GCC_SUPPRESS_WARNING("-Wsign-compare")
+    //#if DOCTEST_GCC >= DOCTEST_COMPILER(4, 6, 0)
+    //DOCTEST_GCC_SUPPRESS_WARNING("-Wdouble-promotion")
+    //#endif // GCC
+    //DOCTEST_GCC_SUPPRESS_WARNING("-Wconversion")
+    //DOCTEST_GCC_SUPPRESS_WARNING("-Wfloat-equal")
 
-#ifdef _MSC_VER
-#pragma warning(push)
-// http://stackoverflow.com/questions/39479163 what's the difference between C4018 and C4389
-#pragma warning(disable : 4389) // 'operator' : signed/unsigned mismatch
-#pragma warning(disable : 4018) // 'expression' : signed/unsigned mismatch
-//#pragma warning(disable : 4805) // 'operation' : unsafe mix of type 'type' and type 'type' in operation
-#endif // _MSC_VER
+    DOCTEST_MSVC_SUPPRESS_WARNING_PUSH
+    // http://stackoverflow.com/questions/39479163 what's the difference between C4018 and C4389
+    DOCTEST_MSVC_SUPPRESS_WARNING(4389) // 'operator' : signed/unsigned mismatch
+    DOCTEST_MSVC_SUPPRESS_WARNING(4018) // 'expression' : signed/unsigned mismatch
+    //DOCTEST_MSVC_SUPPRESS_WARNING(4805) // 'operation' : unsafe mix of type 'type' and type 'type' in operation
 
 #endif // DOCTEST_CONFIG_NO_COMPARISON_WARNING_SUPPRESSION
 
@@ -1339,9 +1410,6 @@ namespace detail
                 : lhs(in)
                 , m_assert_type(assert_type) {}
 
-        Expression_lhs(const Expression_lhs& other)
-                : lhs(other.lhs) {}
-
         DOCTEST_NOINLINE operator Result() {
             bool res = !!lhs;
             if(m_assert_type & assertType::is_false) //!OCLINT bitwise operator in conditional
@@ -1386,19 +1454,9 @@ namespace detail
 
 #ifndef DOCTEST_CONFIG_NO_COMPARISON_WARNING_SUPPRESSION
 
-#if defined(__clang__)
-#pragma clang diagnostic pop
-#endif // __clang__
-
-#if defined(__GNUC__) && !defined(__clang__)
-#if __GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ > 6)
-#pragma GCC diagnostic pop
-#endif // > gcc 4.6
-#endif // __GNUC__
-
-#ifdef _MSC_VER
-#pragma warning(pop)
-#endif // _MSC_VER
+    DOCTEST_CLANG_SUPPRESS_WARNING_POP
+    DOCTEST_MSVC_SUPPRESS_WARNING_POP
+    DOCTEST_GCC_SUPPRESS_WARNING_POP
 
 #endif // DOCTEST_CONFIG_NO_COMPARISON_WARNING_SUPPRESSION
 
@@ -1976,14 +2034,9 @@ struct expected_failures
 #ifndef DOCTEST_CONFIG_DISABLE
 template <typename T>
 int registerExceptionTranslator(String (*translateFunction)(T)) {
-#if defined(__clang__)
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wexit-time-destructors"
-#endif // __clang__
+    DOCTEST_CLANG_SUPPRESS_WARNING_WITH_PUSH("-Wexit-time-destructors")
     static detail::ExceptionTranslator<T> exceptionTranslator(translateFunction);
-#if defined(__clang__)
-#pragma clang diagnostic pop
-#endif // __clang__
+    DOCTEST_CLANG_SUPPRESS_WARNING_POP
     detail::registerExceptionTranslatorImpl(&exceptionTranslator);
     return 0;
 }
@@ -2190,16 +2243,9 @@ public:
 #endif // DOCTEST_CONFIG_WITH_VARIADIC_MACROS
 
 // for subcases
-#if defined(__GNUC__)
 #define DOCTEST_SUBCASE(name)                                                                      \
-    if(const doctest::detail::Subcase & DOCTEST_ANONYMOUS(_DOCTEST_ANON_SUBCASE_)                  \
-                                                __attribute__((unused)) =                          \
+    if(const doctest::detail::Subcase & DOCTEST_ANONYMOUS(_DOCTEST_ANON_SUBCASE_) DOCTEST_UNUSED = \
                doctest::detail::Subcase(name, __FILE__, __LINE__))
-#else // __GNUC__
-#define DOCTEST_SUBCASE(name)                                                                      \
-    if(const doctest::detail::Subcase & DOCTEST_ANONYMOUS(_DOCTEST_ANON_SUBCASE_) =                \
-               doctest::detail::Subcase(name, __FILE__, __LINE__))
-#endif // __GNUC__
 
 // for grouping tests in test suites by using code blocks
 #define DOCTEST_TEST_SUITE_IMPL(decorators, ns_name)                                               \
@@ -2274,7 +2320,7 @@ public:
 #define DOCTEST_FAIL_CHECK(x) DOCTEST_ADD_FAIL_CHECK_AT(__FILE__, __LINE__, x)
 #define DOCTEST_FAIL(x) DOCTEST_ADD_FAIL_AT(__FILE__, __LINE__, x)
 
-#if __cplusplus >= 201402L || (defined(_MSC_VER) && _MSC_VER >= 1910)
+#if __cplusplus >= 201402L || (DOCTEST_MSVC >= DOCTEST_COMPILER(19, 10, 0))
 template <class T, T x>
 constexpr T to_lvalue = x;
 #define DOCTEST_TO_LVALUE(...) to_lvalue<decltype(__VA_ARGS__), __VA_ARGS__>
@@ -2301,24 +2347,16 @@ constexpr T to_lvalue = x;
     } catch(...) { _DOCTEST_RB.unexpectedExceptionOccurred(); }
 #endif // DOCTEST_CONFIG_NO_TRY_CATCH_IN_ASSERTS
 
-#define DOCTEST_ASSERT_IMPLEMENT_3(expr, assert_type)                                              \
+#define DOCTEST_ASSERT_IMPLEMENT_2(expr, assert_type)                                              \
+    DOCTEST_CLANG_SUPPRESS_WARNING_WITH_PUSH("-Woverloaded-shift-op-parentheses")                  \
     doctest::detail::ResultBuilder _DOCTEST_RB(                                                    \
             doctest::detail::assertType::assert_type, __FILE__, __LINE__,                          \
             DOCTEST_TOSTR(DOCTEST_HANDLE_BRACED_VA_ARGS(expr)));                                   \
     DOCTEST_WRAP_IN_TRY(_DOCTEST_RB.setResult(                                                     \
             doctest::detail::ExpressionDecomposer(doctest::detail::assertType::assert_type)        \
             << DOCTEST_HANDLE_BRACED_VA_ARGS(expr)))                                               \
-    DOCTEST_ASSERT_LOG_AND_REACT(_DOCTEST_RB)
-
-#if defined(__clang__)
-#define DOCTEST_ASSERT_IMPLEMENT_2(expr, assert_type)                                              \
-    _Pragma("clang diagnostic push")                                                               \
-            _Pragma("clang diagnostic ignored \"-Woverloaded-shift-op-parentheses\"")              \
-                    DOCTEST_ASSERT_IMPLEMENT_3(expr, assert_type);                                 \
-    _Pragma("clang diagnostic pop")
-#else // __clang__
-#define DOCTEST_ASSERT_IMPLEMENT_2(expr, assert_type) DOCTEST_ASSERT_IMPLEMENT_3(expr, assert_type);
-#endif // __clang__
+    DOCTEST_ASSERT_LOG_AND_REACT(_DOCTEST_RB)                                                      \
+    DOCTEST_CLANG_SUPPRESS_WARNING_POP
 
 #define DOCTEST_ASSERT_IMPLEMENT_1(expr, assert_type)                                              \
     do {                                                                                           \
@@ -3110,90 +3148,15 @@ namespace detail
 } // namespace detail
 } // namespace doctest
 
+DOCTEST_CLANG_SUPPRESS_WARNING_POP
+DOCTEST_MSVC_SUPPRESS_WARNING_POP
+DOCTEST_GCC_SUPPRESS_WARNING_POP
+
 #endif // DOCTEST_LIBRARY_INCLUDED
-
-#if defined(__clang__)
-#pragma clang diagnostic pop
-#endif // __clang__
-
-#if defined(__GNUC__) && !defined(__clang__)
-#if __GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ > 6)
-#pragma GCC diagnostic pop
-#endif // > gcc 4.6
-#endif // __GNUC__
-
-#ifdef _MSC_VER
-#pragma warning(pop)
-#endif // _MSC_VER
 
 #ifndef DOCTEST_SINGLE_HEADER
 #define DOCTEST_SINGLE_HEADER
 #endif // DOCTEST_SINGLE_HEADER
-
-#if defined(__clang__)
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wunknown-pragmas"
-#pragma clang diagnostic ignored "-Wpadded"
-#pragma clang diagnostic ignored "-Wglobal-constructors"
-#pragma clang diagnostic ignored "-Wexit-time-destructors"
-#pragma clang diagnostic ignored "-Wmissing-prototypes"
-#pragma clang diagnostic ignored "-Wsign-conversion"
-#pragma clang diagnostic ignored "-Wshorten-64-to-32"
-#pragma clang diagnostic ignored "-Wmissing-variable-declarations"
-#pragma clang diagnostic ignored "-Wswitch"
-#pragma clang diagnostic ignored "-Wswitch-enum"
-#pragma clang diagnostic ignored "-Wcovered-switch-default"
-#pragma clang diagnostic ignored "-Wmissing-noreturn"
-#pragma clang diagnostic ignored "-Wunused-local-typedef"
-#pragma clang diagnostic ignored "-Wdisabled-macro-expansion"
-#pragma clang diagnostic ignored "-Wmissing-braces"
-#pragma clang diagnostic ignored "-Wmissing-field-initializers"
-#if !defined(__has_warning) || __has_warning("-Wzero-as-null-pointer-constant")
-#pragma GCC diagnostic ignored "-Wzero-as-null-pointer-constant"
-#endif
-#pragma clang diagnostic ignored "-Wc++11-long-long"
-#endif // __clang__
-
-#if defined(__GNUC__) && !defined(__clang__)
-#if __GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ > 6)
-#pragma GCC diagnostic push
-#endif // > gcc 4.6
-#pragma GCC diagnostic ignored "-Wunknown-pragmas"
-#pragma GCC diagnostic ignored "-Wconversion"
-#pragma GCC diagnostic ignored "-Weffc++"
-#pragma GCC diagnostic ignored "-Wsign-conversion"
-#pragma GCC diagnostic ignored "-Wstrict-overflow"
-#pragma GCC diagnostic ignored "-Wmissing-field-initializers"
-#pragma GCC diagnostic ignored "-Wmissing-braces"
-#pragma GCC diagnostic ignored "-Wmissing-declarations"
-#pragma GCC diagnostic ignored "-Winline"
-#pragma GCC diagnostic ignored "-Wswitch"
-#pragma GCC diagnostic ignored "-Wswitch-enum"
-#pragma GCC diagnostic ignored "-Wswitch-default"
-#pragma GCC diagnostic ignored "-Wunsafe-loop-optimizations"
-#pragma GCC diagnostic ignored "-Wlong-long"
-#pragma GCC diagnostic ignored "-Wold-style-cast"
-#if __GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ > 6)
-#pragma GCC diagnostic ignored "-Wzero-as-null-pointer-constant"
-#endif // > gcc 4.6
-#if __GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ > 7)
-#pragma GCC diagnostic ignored "-Wunused-local-typedefs"
-#endif // > gcc 4.7
-#if __GNUC__ > 5 || (__GNUC__ == 5 && __GNUC_MINOR__ > 3)
-#pragma GCC diagnostic ignored "-Wuseless-cast"
-#endif // > gcc 5.3
-#endif // __GNUC__
-
-#ifdef _MSC_VER
-#pragma warning(push)
-#pragma warning(disable : 4996) // The compiler encountered a deprecated declaration
-#pragma warning(disable : 4267) // 'var' : conversion from 'size_t' to 'type', possible loss of data
-#pragma warning(disable : 4706) // assignment within conditional expression
-#pragma warning(disable : 4512) // 'class' : assignment operator could not be generated
-#pragma warning(disable : 4127) // conditional expression is constant
-#pragma warning(disable : 4530) // C++ exception handler used, but unwind semantics are not enabled
-#pragma warning(disable : 4577) // 'noexcept' used with no exception handling mode specified
-#endif                          // _MSC_VER
 
 #if defined(DOCTEST_CONFIG_IMPLEMENT) || !defined(DOCTEST_SINGLE_HEADER)
 #ifndef DOCTEST_LIBRARY_IMPLEMENTATION
@@ -3203,17 +3166,76 @@ namespace detail
 #include "doctest_fwd.h"
 #endif // DOCTEST_SINGLE_HEADER
 
-#if defined(__clang__) && defined(DOCTEST_NO_CPP11_COMPAT)
-#pragma clang diagnostic ignored "-Wc++98-compat"
-#pragma clang diagnostic ignored "-Wc++98-compat-pedantic"
-#endif // __clang__ && DOCTEST_NO_CPP11_COMPAT
+DOCTEST_CLANG_SUPPRESS_WARNING_PUSH
+DOCTEST_CLANG_SUPPRESS_WARNING("-Wunknown-pragmas")
+DOCTEST_CLANG_SUPPRESS_WARNING("-Wpadded")
+DOCTEST_CLANG_SUPPRESS_WARNING("-Wglobal-constructors")
+DOCTEST_CLANG_SUPPRESS_WARNING("-Wexit-time-destructors")
+DOCTEST_CLANG_SUPPRESS_WARNING("-Wmissing-prototypes")
+DOCTEST_CLANG_SUPPRESS_WARNING("-Wsign-conversion")
+DOCTEST_CLANG_SUPPRESS_WARNING("-Wshorten-64-to-32")
+DOCTEST_CLANG_SUPPRESS_WARNING("-Wmissing-variable-declarations")
+DOCTEST_CLANG_SUPPRESS_WARNING("-Wswitch")
+DOCTEST_CLANG_SUPPRESS_WARNING("-Wswitch-enum")
+DOCTEST_CLANG_SUPPRESS_WARNING("-Wcovered-switch-default")
+DOCTEST_CLANG_SUPPRESS_WARNING("-Wmissing-noreturn")
+DOCTEST_CLANG_SUPPRESS_WARNING("-Wunused-local-typedef")
+DOCTEST_CLANG_SUPPRESS_WARNING("-Wdisabled-macro-expansion")
+DOCTEST_CLANG_SUPPRESS_WARNING("-Wmissing-braces")
+DOCTEST_CLANG_SUPPRESS_WARNING("-Wmissing-field-initializers")
+DOCTEST_CLANG_SUPPRESS_WARNING("-Wc++11-long-long")
+#if DOCTEST_CLANG && DOCTEST_CLANG_HAS_WARNING("-Wzero-as-null-pointer-constant")
+DOCTEST_CLANG_SUPPRESS_WARNING("-Wzero-as-null-pointer-constant")
+#endif // clang - 0 as null
+
+DOCTEST_GCC_SUPPRESS_WARNING_PUSH
+DOCTEST_GCC_SUPPRESS_WARNING("-Wunknown-pragmas")
+DOCTEST_GCC_SUPPRESS_WARNING("-Wconversion")
+DOCTEST_GCC_SUPPRESS_WARNING("-Weffc++")
+DOCTEST_GCC_SUPPRESS_WARNING("-Wsign-conversion")
+DOCTEST_GCC_SUPPRESS_WARNING("-Wstrict-overflow")
+DOCTEST_GCC_SUPPRESS_WARNING("-Wmissing-field-initializers")
+DOCTEST_GCC_SUPPRESS_WARNING("-Wmissing-braces")
+DOCTEST_GCC_SUPPRESS_WARNING("-Wmissing-declarations")
+DOCTEST_GCC_SUPPRESS_WARNING("-Winline")
+DOCTEST_GCC_SUPPRESS_WARNING("-Wswitch")
+DOCTEST_GCC_SUPPRESS_WARNING("-Wswitch-enum")
+DOCTEST_GCC_SUPPRESS_WARNING("-Wswitch-default")
+DOCTEST_GCC_SUPPRESS_WARNING("-Wunsafe-loop-optimizations")
+DOCTEST_GCC_SUPPRESS_WARNING("-Wlong-long")
+DOCTEST_GCC_SUPPRESS_WARNING("-Wold-style-cast")
+#if DOCTEST_GCC >= DOCTEST_COMPILER(4, 7, 0)
+DOCTEST_GCC_SUPPRESS_WARNING("-Wzero-as-null-pointer-constant")
+#endif // GCC 4.7+
+#if DOCTEST_GCC >= DOCTEST_COMPILER(4, 8, 0)
+DOCTEST_GCC_SUPPRESS_WARNING("-Wunused-local-typedefs")
+#endif // GCC 4.8+
+#if DOCTEST_GCC >= DOCTEST_COMPILER(5, 4, 0)
+DOCTEST_GCC_SUPPRESS_WARNING("-Wuseless-cast")
+#endif // GCC 5.4+
+
+DOCTEST_MSVC_SUPPRESS_WARNING_PUSH
+DOCTEST_MSVC_SUPPRESS_WARNING(4996) // The compiler encountered a deprecated declaration
+DOCTEST_MSVC_SUPPRESS_WARNING(
+        4267) // 'var' : conversion from 'size_t' to 'type', possible loss of data
+DOCTEST_MSVC_SUPPRESS_WARNING(4706) // assignment within conditional expression
+DOCTEST_MSVC_SUPPRESS_WARNING(4512) // 'class' : assignment operator could not be generated
+DOCTEST_MSVC_SUPPRESS_WARNING(4127) // conditional expression is constant
+DOCTEST_MSVC_SUPPRESS_WARNING(
+        4530) // C++ exception handler used, but unwind semantics are not enabled
+DOCTEST_MSVC_SUPPRESS_WARNING(4577) // 'noexcept' used with no exception handling mode specified
+
+#if defined(DOCTEST_NO_CPP11_COMPAT)
+DOCTEST_CLANG_SUPPRESS_WARNING("-Wc++98-compat")
+DOCTEST_CLANG_SUPPRESS_WARNING("-Wc++98-compat-pedantic")
+#endif // DOCTEST_NO_CPP11_COMPAT
 
 // snprintf() not in the C++98 standard
-#ifdef _MSC_VER
+#if DOCTEST_MSVC
 #define DOCTEST_SNPRINTF _snprintf
-#else
+#else // MSVC
 #define DOCTEST_SNPRINTF std::snprintf
-#endif
+#endif // MSVC
 
 #define DOCTEST_LOG_START()                                                                        \
     do {                                                                                           \
@@ -3244,9 +3266,9 @@ namespace detail
 #include <stdexcept>
 #include <csignal>
 #include <cfloat>
-#ifndef _MSC_VER
+#if !DOCTEST_MSVC
 #include <stdint.h>
-#endif // _MSC_VER
+#endif // !MSVC
 
 namespace doctest
 {
@@ -3664,22 +3686,22 @@ int  Context::run() { return 0; }
 #define DOCTEST_SNPRINTF_BUFFER_LENGTH 1024
 #endif // DOCTEST_SNPRINTF_BUFFER_LENGTH
 
-#if defined(_MSC_VER) || defined(__MINGW32__)
-#if defined(_MSC_VER) && _MSC_VER >= 1700
+#if DOCTEST_MSVC || defined(__MINGW32__)
+#if DOCTEST_MSVC >= DOCTEST_COMPILER(17, 0, 0)
 #define DOCTEST_WINDOWS_SAL_IN_OPT _In_opt_
-#else // _MSC_VER
+#else // MSVC
 #define DOCTEST_WINDOWS_SAL_IN_OPT
-#endif // _MSC_VER
+#endif // MSVC
 extern "C" __declspec(dllimport) void __stdcall OutputDebugStringA(
         DOCTEST_WINDOWS_SAL_IN_OPT const char*);
 extern "C" __declspec(dllimport) int __stdcall IsDebuggerPresent();
-#endif // _MSC_VER || __MINGW32__
+#endif // MSVC || __MINGW32__
 
 #ifdef DOCTEST_CONFIG_COLORS_ANSI
 #include <unistd.h>
 #endif // DOCTEST_CONFIG_COLORS_ANSI
 
-#ifdef _WIN32
+#ifdef DOCTEST_PLATFORM_WINDOWS
 
 // defines for a leaner windows.h
 #ifndef WIN32_MEAN_AND_LEAN
@@ -3700,11 +3722,11 @@ extern "C" __declspec(dllimport) int __stdcall IsDebuggerPresent();
 #endif
 #include <io.h>
 
-#else // _WIN32
+#else // DOCTEST_PLATFORM_WINDOWS
 
 #include <sys/time.h>
 
-#endif // _WIN32
+#endif // DOCTEST_PLATFORM_WINDOWS
 
 namespace doctest_detail_test_suite_ns
 {
@@ -3935,7 +3957,7 @@ namespace detail
         return false;
     }
 
-#ifdef _WIN32
+#ifdef DOCTEST_PLATFORM_WINDOWS
 
     typedef unsigned long long UInt64;
 
@@ -3949,7 +3971,7 @@ namespace detail
         QueryPerformanceCounter(reinterpret_cast<LARGE_INTEGER*>(&t));
         return ((t - hzo) * 1000000) / hz;
     }
-#else  // _WIN32
+#else  // DOCTEST_PLATFORM_WINDOWS
 
     typedef uint64_t UInt64;
 
@@ -3958,7 +3980,7 @@ namespace detail
         gettimeofday(&t, 0);
         return static_cast<UInt64>(t.tv_sec) * 1000000 + static_cast<UInt64>(t.tv_usec);
     }
-#endif // _WIN32
+#endif // DOCTEST_PLATFORM_WINDOWS
 
     class Timer
     {
@@ -4055,13 +4077,13 @@ namespace detail
     int fileOrderComparator(const void* a, const void* b) {
         const TestCase* lhs = *static_cast<TestCase* const*>(a);
         const TestCase* rhs = *static_cast<TestCase* const*>(b);
-#ifdef _MSC_VER
+#if DOCTEST_MSVC
         // this is needed because MSVC gives different case for drive letters
         // for __FILE__ when evaluated in a header and a source file
         const int res = stricmp(lhs->m_file, rhs->m_file);
-#else  // _MSC_VER
+#else  // MSVC
         const int res = std::strcmp(lhs->m_file, rhs->m_file);
-#endif // _MSC_VER
+#endif // MSVC
         if(res != 0)
             return res;
         return static_cast<int>(lhs->m_line - rhs->m_line);
@@ -4285,10 +4307,7 @@ namespace detail
 
     void addToContexts(IContextScope* ptr) { contextState->contexts.push_back(ptr); }
     void popFromContexts() { contextState->contexts.pop_back(); }
-#if defined(_MSC_VER)
-#pragma warning(push)
-#pragma warning(disable : 4996) // std::uncaught_exception is deprecated in C++17
-#endif
+    DOCTEST_MSVC_SUPPRESS_WARNING_WITH_PUSH(4996) // std::uncaught_exception is deprecated in C++17
     void useContextIfExceptionOccurred(IContextScope* ptr) {
         if(std::uncaught_exception()) {
             std::ostringstream stream;
@@ -4296,9 +4315,7 @@ namespace detail
             contextState->exceptionalContexts.push_back(stream.str());
         }
     }
-#if defined(_MSC_VER)
-#pragma warning(pop)
-#endif
+    DOCTEST_MSVC_SUPPRESS_WARNING_POP
 
     void printSummary();
 
@@ -4511,7 +4528,7 @@ namespace detail
         // We're being debugged if the P_TRACED flag is set.
         return ((info.kp_proc.p_flag & P_TRACED) != 0);
     }
-#elif defined(_MSC_VER) || defined(__MINGW32__)
+#elif DOCTEST_MSVC || defined(__MINGW32__)
     bool  isDebuggerActive() { return ::IsDebuggerPresent() != 0; }
 #else
     bool isDebuggerActive() { return false; }
@@ -4574,7 +4591,7 @@ namespace detail
             forDebugConsole += d1;
             forDebugConsole += d2;
         }
-        if(tc.m_test_suite[0] != '\0') {
+        if(tc.m_test_suite && tc.m_test_suite[0] != '\0') {
             DOCTEST_PRINTF_COLORED(ts1, Color::Yellow);
             DOCTEST_PRINTF_COLORED(ts2, Color::None);
             forDebugConsole += ts1;
@@ -4821,10 +4838,10 @@ namespace detail
             , m_threw(false)
             , m_threw_as(false)
             , m_failed(false) {
-#ifdef _MSC_VER
+#if DOCTEST_MSVC
         if(m_expr[0] == ' ') // this happens when variadic macros are disabled under MSVC
             ++m_expr;
-#endif // _MSC_VER
+#endif // MSVC
     }
 
     ResultBuilder::~ResultBuilder() {}
@@ -5617,19 +5634,9 @@ int Context::run() {
 int main(int argc, char** argv) { return doctest::Context(argc, argv).run(); }
 #endif // DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 
+DOCTEST_CLANG_SUPPRESS_WARNING_POP
+DOCTEST_MSVC_SUPPRESS_WARNING_POP
+DOCTEST_GCC_SUPPRESS_WARNING_POP
+
 #endif // DOCTEST_LIBRARY_IMPLEMENTATION
 #endif // DOCTEST_CONFIG_IMPLEMENT
-
-#if defined(__clang__)
-#pragma clang diagnostic pop
-#endif // __clang__
-
-#if defined(__GNUC__) && !defined(__clang__)
-#if __GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ > 6)
-#pragma GCC diagnostic pop
-#endif // > gcc 4.6
-#endif // __GNUC__
-
-#ifdef _MSC_VER
-#pragma warning(pop)
-#endif // _MSC_VER
