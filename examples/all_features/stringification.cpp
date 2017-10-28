@@ -52,7 +52,7 @@ struct MyType
 };
 
 template <typename T>
-struct MyTypeInherited : MyType<T, float>
+struct MyTypeInherited : MyType<T, unsigned>
 {};
 
 template <typename T, typename K>
@@ -86,10 +86,10 @@ REGISTER_EXCEPTION_TRANSLATOR(MyTypeInherited<int>& ex) {
 TEST_CASE("all asserts should fail and show how the objects get stringified") {
     MyTypeInherited<int> bla1;
     bla1.one = 5;
-    bla1.two = 4.0f;
+    bla1.two = 4u;
     MyTypeInherited<int> bla2;
     bla2.one = 5;
-    bla2.two = 6.0f;
+    bla2.two = 6u;
 
     Bar::Foo f1;
     Bar::Foo f2;
