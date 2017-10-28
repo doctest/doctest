@@ -2,9 +2,11 @@
 
 #include "header.h"
 
+DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_BEGIN
 #include <iostream>
 #include <vector>
 using namespace std;
+DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_END
 
 TEST_CASE("lots of nested subcases") {
     cout << endl << "root" << endl;

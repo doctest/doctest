@@ -112,7 +112,12 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
     if(NOT CMAKE_CXX_COMPILER_VERSION VERSION_LESS 4.6)
         add_compiler_flags(-Wnoexcept)
     endif()
-    #add_compiler_flags(-Waggregate-return) # GCC 4.8 does not silence this even with "#pragma GCC diagnostic ignored"
+    
+    # no way to silence it in the expression decomposition macros: _Pragma() in macros doesn't work for the c++ front-end of g++
+    # https://gcc.gnu.org/bugzilla/show_bug.cgi?id=55578
+    # https://gcc.gnu.org/bugzilla/show_bug.cgi?id=69543
+    # Also the warning is completely worthless nowadays - http://stackoverflow.com/questions/14016993
+    #add_compiler_flags(-Waggregate-return)
     
     if(NOT CMAKE_CXX_COMPILER_VERSION VERSION_LESS 5.0)
         add_compiler_flags(-Wdouble-promotion)
@@ -145,7 +150,20 @@ if(MSVC)
     add_compiler_flags(/std:c++latest) # for post c++14 updates in MSVC
     add_compiler_flags(/permissive-) # force standard conformance - this is the better flag than /Za
     add_compiler_flags(/WX)
-    add_compiler_flags(/W4) # /Wall is too aggressive - even the standard C headers give thousands of errors...
+    add_compiler_flags(/Wall) # turns on warnings from levels 1 through 4 which are off by default - https://msdn.microsoft.com/en-us/library/23k5d385.aspx
+    
+    add_compiler_flags(
+        /wd4514 # unreferenced inline function has been removed
+        /wd4571 # SEH related
+        /wd4710 # function not inlined
+        /wd4711 # function 'x' selected for automatic inline expansion
+    #    /wd4820 # padding in structs
+    #    /wd4625 # copy constructor was implicitly defined as deleted
+    #    /wd4626 # assignment operator was implicitly defined as deleted
+    #    /wd5027 # move assignment operator was implicitly defined as deleted
+    #    /wd5026 # move constructor was implicitly defined as deleted
+    #    /wd4623 # default constructor was implicitly defined as deleted
+    )
 endif()
 
 # add a custom target that assembles the single header when any of the parts are touched

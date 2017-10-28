@@ -202,6 +202,37 @@ DOCTEST_MSVC_SUPPRESS_WARNING(4996) // The compiler encountered a deprecated dec
 DOCTEST_MSVC_SUPPRESS_WARNING(4706) // assignment within conditional expression
 DOCTEST_MSVC_SUPPRESS_WARNING(4512) // 'class' : assignment operator could not be generated
 DOCTEST_MSVC_SUPPRESS_WARNING(4127) // conditional expression is constant
+DOCTEST_MSVC_SUPPRESS_WARNING(4820) // padding
+DOCTEST_MSVC_SUPPRESS_WARNING(4625) // copy constructor was implicitly defined as deleted
+DOCTEST_MSVC_SUPPRESS_WARNING(4626) // assignment operator was implicitly defined as deleted
+DOCTEST_MSVC_SUPPRESS_WARNING(5027) // move assignment operator was implicitly defined as deleted
+DOCTEST_MSVC_SUPPRESS_WARNING(5026) // move constructor was implicitly defined as deleted
+DOCTEST_MSVC_SUPPRESS_WARNING(4623) // default constructor was implicitly defined as deleted
+
+// C4668 - 'x' is not defined as a preprocessor macro, replacing with '0' for '#if/#elif'
+// C4365 - conversion from 'int' to 'unsigned long', signed/unsigned mismatch
+// C4774 - format string expected in argument 'x' is not a string literal
+// C4820 - padding in structs
+
+// only 4 should be disabled globally:
+// - C4514 # unreferenced inline function has been removed
+// - C4571 # SEH related
+// - C4710 # function not inlined
+// - C4711 # function 'x' selected for automatic inline expansion
+
+#define DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_BEGIN                                 \
+    DOCTEST_MSVC_SUPPRESS_WARNING_PUSH                                                             \
+    DOCTEST_MSVC_SUPPRESS_WARNING(4668)                                                            \
+    DOCTEST_MSVC_SUPPRESS_WARNING(4365)                                                            \
+    DOCTEST_MSVC_SUPPRESS_WARNING(4774)                                                            \
+    DOCTEST_MSVC_SUPPRESS_WARNING(4820)                                                            \
+    DOCTEST_MSVC_SUPPRESS_WARNING(4625)                                                            \
+    DOCTEST_MSVC_SUPPRESS_WARNING(4626)                                                            \
+    DOCTEST_MSVC_SUPPRESS_WARNING(5027)                                                            \
+    DOCTEST_MSVC_SUPPRESS_WARNING(5026)                                                            \
+    DOCTEST_MSVC_SUPPRESS_WARNING(4623)
+
+#define DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_END DOCTEST_MSVC_SUPPRESS_WARNING_POP
 
 // =================================================================================================
 // == FEATURE DETECTION ============================================================================

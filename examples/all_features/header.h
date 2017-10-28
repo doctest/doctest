@@ -3,7 +3,6 @@
 #include "doctest.h"
 
 // helper for throwing exceptions
-
 template <typename T>
 int throw_if(bool in, const T& ex) {
     if(in)

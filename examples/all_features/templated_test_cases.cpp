@@ -1,6 +1,8 @@
 #include "doctest.h"
 
+DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_BEGIN
 #include <vector>
+DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_END
 
 // typedefs are required if variadic macro support is not available (otherwise the commas are a problem)
 typedef doctest::Types<char, short, int> int_types;

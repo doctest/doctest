@@ -2,11 +2,12 @@
 
 #include "header.h"
 
+DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_BEGIN
 #include <string>
 #include <vector>
 #include <list>
-
 #include <sstream>
+DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_END
 
 // the standard forbids writing in the std namespace but it works on all compilers
 namespace std

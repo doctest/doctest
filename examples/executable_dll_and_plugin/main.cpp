@@ -1,7 +1,9 @@
 #define DOCTEST_CONFIG_IMPLEMENTATION_IN_DLL
 #include "doctest.h"
 
+DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_BEGIN
 #include <cstdio>
+DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_END
 
 template<typename T>
 static int conditional_throw(bool in, const T& ex) {
@@ -21,7 +23,9 @@ TEST_CASE("executable") {
 
 #ifdef _WIN32
 #define WIN32_LEAN_AND_MEAN
+DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_BEGIN
 #include <windows.h>
+DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_END
 #ifdef _MSC_VER
 #define LoadDynamicLib(lib) LoadLibrary(lib ".dll")
 #else // _MSC_VER

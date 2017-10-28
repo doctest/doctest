@@ -61,9 +61,13 @@ DOCTEST_MSVC_SUPPRESS_WARNING(
 DOCTEST_MSVC_SUPPRESS_WARNING(4706) // assignment within conditional expression
 DOCTEST_MSVC_SUPPRESS_WARNING(4512) // 'class' : assignment operator could not be generated
 DOCTEST_MSVC_SUPPRESS_WARNING(4127) // conditional expression is constant
-DOCTEST_MSVC_SUPPRESS_WARNING(
-        4530) // C++ exception handler used, but unwind semantics are not enabled
+DOCTEST_MSVC_SUPPRESS_WARNING(4530) // C++ exception handler used, but unwind semantics not enabled
 DOCTEST_MSVC_SUPPRESS_WARNING(4577) // 'noexcept' used with no exception handling mode specified
+DOCTEST_MSVC_SUPPRESS_WARNING(
+        4774) // format string expected in argument 'x' is not a string literal
+DOCTEST_MSVC_SUPPRESS_WARNING(
+        4365) // conversion from 'int' to 'unsigned long', signed/unsigned mismatch
+DOCTEST_MSVC_SUPPRESS_WARNING(4820) // padding in structs
 
 #if defined(DOCTEST_NO_CPP11_COMPAT)
 DOCTEST_CLANG_SUPPRESS_WARNING("-Wc++98-compat")
@@ -84,6 +88,8 @@ DOCTEST_CLANG_SUPPRESS_WARNING("-Wc++98-compat-pedantic")
             contextState->hasLoggedCurrentTestStart = true;                                        \
         }                                                                                          \
     } while(false)
+
+DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_BEGIN
 
 // required includes - will go only in one translation unit!
 #include <ctime>
@@ -109,6 +115,8 @@ DOCTEST_CLANG_SUPPRESS_WARNING("-Wc++98-compat-pedantic")
 #if !DOCTEST_MSVC
 #include <stdint.h>
 #endif // !MSVC
+
+DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_END
 
 namespace doctest
 {
@@ -554,6 +562,8 @@ extern "C" __declspec(dllimport) int __stdcall IsDebuggerPresent();
 #define NOMINMAX
 #endif // NOMINMAX
 
+DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_BEGIN
+
 // not sure what AfxWin.h is for - here I do what Catch does
 #ifdef __AFXDLL
 #include <AfxWin.h>
@@ -561,6 +571,8 @@ extern "C" __declspec(dllimport) int __stdcall IsDebuggerPresent();
 #include <windows.h>
 #endif
 #include <io.h>
+
+DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_END
 
 #else // DOCTEST_PLATFORM_WINDOWS
 
@@ -639,6 +651,8 @@ namespace detail
     }
 
     const char* getAssertString(assertType::Enum val) {
+        DOCTEST_MSVC_SUPPRESS_WARNING_WITH_PUSH(
+                4062) // enumerator 'x' in switch of enum 'y' is not handled
         switch(val) { //!OCLINT missing default in switch statements
             // clang-format off
             case assertType::DT_WARN                    : return "WARN";
@@ -714,6 +728,7 @@ namespace detail
             case assertType::DT_FAST_REQUIRE_UNARY_FALSE: return "FAST_REQUIRE_UNARY_FALSE";
                 // clang-format on
         }
+        DOCTEST_MSVC_SUPPRESS_WARNING_POP
         return "";
     }
 
