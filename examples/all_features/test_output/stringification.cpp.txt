@@ -25,7 +25,7 @@ with expansion:
 
 TEST CASE FAILED!
 threw exception:
-  MyTypeInherited<int>(5, 4.0f)
+  MyTypeInherited<int>(5, 4)
 
 ===============================================================================
 stringification.cpp(0)
