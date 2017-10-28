@@ -198,6 +198,8 @@ DOCTEST_GCC_SUPPRESS_WARNING("-Wuseless-cast")
 #endif // GCC 5.4+
 
 DOCTEST_MSVC_SUPPRESS_WARNING_PUSH
+DOCTEST_MSVC_SUPPRESS_WARNING(4616) // invalid compiler warning
+DOCTEST_MSVC_SUPPRESS_WARNING(4619) // invalid compiler warning
 DOCTEST_MSVC_SUPPRESS_WARNING(4996) // The compiler encountered a deprecated declaration
 DOCTEST_MSVC_SUPPRESS_WARNING(4706) // assignment within conditional expression
 DOCTEST_MSVC_SUPPRESS_WARNING(4512) // 'class' : assignment operator could not be generated
@@ -208,7 +210,11 @@ DOCTEST_MSVC_SUPPRESS_WARNING(4626) // assignment operator was implicitly define
 DOCTEST_MSVC_SUPPRESS_WARNING(5027) // move assignment operator was implicitly defined as deleted
 DOCTEST_MSVC_SUPPRESS_WARNING(5026) // move constructor was implicitly defined as deleted
 DOCTEST_MSVC_SUPPRESS_WARNING(4623) // default constructor was implicitly defined as deleted
+DOCTEST_MSVC_SUPPRESS_WARNING(4640) // construction of local static object is not thread-safe
 
+// C4548 - expression before comma has no effect; expected expression with side - effect
+// C4986 - exception specification does not match previous declaration
+// C4350 - behavior change: 'member1' called instead of 'member2'
 // C4668 - 'x' is not defined as a preprocessor macro, replacing with '0' for '#if/#elif'
 // C4365 - conversion from 'int' to 'unsigned long', signed/unsigned mismatch
 // C4774 - format string expected in argument 'x' is not a string literal
@@ -222,6 +228,9 @@ DOCTEST_MSVC_SUPPRESS_WARNING(4623) // default constructor was implicitly define
 
 #define DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_BEGIN                                 \
     DOCTEST_MSVC_SUPPRESS_WARNING_PUSH                                                             \
+    DOCTEST_MSVC_SUPPRESS_WARNING(4548)                                                            \
+    DOCTEST_MSVC_SUPPRESS_WARNING(4986)                                                            \
+    DOCTEST_MSVC_SUPPRESS_WARNING(4350)                                                            \
     DOCTEST_MSVC_SUPPRESS_WARNING(4668)                                                            \
     DOCTEST_MSVC_SUPPRESS_WARNING(4365)                                                            \
     DOCTEST_MSVC_SUPPRESS_WARNING(4774)                                                            \
@@ -1365,6 +1374,7 @@ namespace detail
 
     DOCTEST_MSVC_SUPPRESS_WARNING_PUSH
     // http://stackoverflow.com/questions/39479163 what's the difference between C4018 and C4389
+    DOCTEST_MSVC_SUPPRESS_WARNING(4388) // signed/unsigned mismatch
     DOCTEST_MSVC_SUPPRESS_WARNING(4389) // 'operator' : signed/unsigned mismatch
     DOCTEST_MSVC_SUPPRESS_WARNING(4018) // 'expression' : signed/unsigned mismatch
     //DOCTEST_MSVC_SUPPRESS_WARNING(4805) // 'operation' : unsafe mix of type 'type' and type 'type' in operation

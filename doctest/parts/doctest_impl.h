@@ -55,19 +55,19 @@ DOCTEST_GCC_SUPPRESS_WARNING("-Wuseless-cast")
 #endif // GCC 5.4+
 
 DOCTEST_MSVC_SUPPRESS_WARNING_PUSH
+DOCTEST_MSVC_SUPPRESS_WARNING(4616) // invalid compiler warning
+DOCTEST_MSVC_SUPPRESS_WARNING(4619) // invalid compiler warning
 DOCTEST_MSVC_SUPPRESS_WARNING(4996) // The compiler encountered a deprecated declaration
-DOCTEST_MSVC_SUPPRESS_WARNING(
-        4267) // 'var' : conversion from 'size_t' to 'type', possible loss of data
+DOCTEST_MSVC_SUPPRESS_WARNING(4267) // 'var' : conversion from 'x' to 'y', possible loss of data
 DOCTEST_MSVC_SUPPRESS_WARNING(4706) // assignment within conditional expression
 DOCTEST_MSVC_SUPPRESS_WARNING(4512) // 'class' : assignment operator could not be generated
 DOCTEST_MSVC_SUPPRESS_WARNING(4127) // conditional expression is constant
 DOCTEST_MSVC_SUPPRESS_WARNING(4530) // C++ exception handler used, but unwind semantics not enabled
 DOCTEST_MSVC_SUPPRESS_WARNING(4577) // 'noexcept' used with no exception handling mode specified
-DOCTEST_MSVC_SUPPRESS_WARNING(
-        4774) // format string expected in argument 'x' is not a string literal
-DOCTEST_MSVC_SUPPRESS_WARNING(
-        4365) // conversion from 'int' to 'unsigned long', signed/unsigned mismatch
+DOCTEST_MSVC_SUPPRESS_WARNING(4774) // format string expected in argument is not a string literal
+DOCTEST_MSVC_SUPPRESS_WARNING(4365) // conversion from 'int' to 'unsigned', signed/unsigned mismatch
 DOCTEST_MSVC_SUPPRESS_WARNING(4820) // padding in structs
+DOCTEST_MSVC_SUPPRESS_WARNING(4640) // construction of local static object is not thread-safe
 
 #if defined(DOCTEST_NO_CPP11_COMPAT)
 DOCTEST_CLANG_SUPPRESS_WARNING("-Wc++98-compat")
