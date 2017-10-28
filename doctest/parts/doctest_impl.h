@@ -1104,7 +1104,9 @@ namespace detail
     }
 
     void registerExceptionTranslatorImpl(const IExceptionTranslator* translateFunction) {
-        getExceptionTranslators().push_back(translateFunction);
+        if(std::find(getExceptionTranslators().begin(), getExceptionTranslators().end(),
+                     translateFunction) == getExceptionTranslators().end())
+            getExceptionTranslators().push_back(translateFunction);
     }
 
     String translateActiveException() {

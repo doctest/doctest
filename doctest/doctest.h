@@ -2316,11 +2316,11 @@ public:
 
 // for registering exception translators
 #define DOCTEST_REGISTER_EXCEPTION_TRANSLATOR_IMPL(translatorName, signature)                      \
-    static doctest::String translatorName(signature);                                              \
+    inline doctest::String translatorName(signature);                                              \
     DOCTEST_GLOBAL_NO_WARNINGS(DOCTEST_ANONYMOUS(_DOCTEST_ANON_TRANSLATOR_)) =                     \
             doctest::registerExceptionTranslator(translatorName);                                  \
     DOCTEST_GLOBAL_NO_WARNINGS_END()                                                               \
-    static doctest::String translatorName(signature)
+    doctest::String translatorName(signature)
 
 #define DOCTEST_REGISTER_EXCEPTION_TRANSLATOR(signature)                                           \
     DOCTEST_REGISTER_EXCEPTION_TRANSLATOR_IMPL(DOCTEST_ANONYMOUS(_DOCTEST_ANON_TRANSLATOR_),       \
@@ -4295,7 +4295,9 @@ namespace detail
     }
 
     void registerExceptionTranslatorImpl(const IExceptionTranslator* translateFunction) {
-        getExceptionTranslators().push_back(translateFunction);
+        if(std::find(getExceptionTranslators().begin(), getExceptionTranslators().end(),
+                     translateFunction) == getExceptionTranslators().end())
+            getExceptionTranslators().push_back(translateFunction);
     }
 
     String translateActiveException() {
