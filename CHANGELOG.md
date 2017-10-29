@@ -1,5 +1,19 @@
 # Change Log
 
+## [1.2.6](https://github.com/onqtam/doctest/tree/1.2.6) (2017-10-29)
+[Full Changelog](https://github.com/onqtam/doctest/compare/1.2.5...1.2.6)
+
+**Closed issues:**
+
+- \[bug\] writing an exception translator in a header file results in it being registered multiple times which is suboptimal [\#98](https://github.com/onqtam/doctest/issues/98)
+- Warnings when using something more than /W4 for Visual Studio [\#95](https://github.com/onqtam/doctest/issues/95)
+
+**Merged pull requests:**
+
+- Added an option to not install Doctest in the CMake scripts [\#96](https://github.com/onqtam/doctest/pull/96) ([NeverMine17](https://github.com/NeverMine17))
+- Adding a defensive check against a null pointer for the current test suite [\#94](https://github.com/onqtam/doctest/pull/94) ([Lectem](https://github.com/Lectem))
+- Remove incomplete copy ctor [\#93](https://github.com/onqtam/doctest/pull/93) ([McMartin](https://github.com/McMartin))
+
 ## [1.2.5](https://github.com/onqtam/doctest/tree/1.2.5) (2017-10-06)
 [Full Changelog](https://github.com/onqtam/doctest/compare/1.2.4...1.2.5)
 
