@@ -1,9 +1,21 @@
 
+look at runtime performance stuff
+https://github.com/catchorg/Catch2/issues/1086
+
+SUCCEED();
+
+deprecated images
+https://blog.travis-ci.com/2017-11-21-xcode8-3-default-image-announce
+
 rethink static code analisys suppressions - users shouldn't have to use the same flags for code which uses doctest macros/types
 
 try to forward declare std::string and specialize the string maker for it or something like that
 
 https://github.com/philsquared/Catch/issues/980
+https://github.com/catchorg/Catch2/commit/00af677577973758b3b35e1c94ab4142c45c3f67
+https://github.com/catchorg/Catch2/commit/11f716f28d6621d1e54cf13374f8b5dd1a7489f5
+https://github.com/catchorg/Catch2/commit/22ac9d2184b3868cccfd635eb631d0eee1529121
+https://github.com/catchorg/Catch2/commit/0b1f1b10030942c38ca8c1b95140b0c65efc903e
 
 == when making a new release:
 
