@@ -39,11 +39,11 @@ TEST_CASE_TEMPLATE_DEFINE("template 2", T, header_test) {
 TEST_CASE_TEMPLATE_INSTANTIATE(header_test, doctest::Types<doctest::String>);
 
 // to silence GCC warnings when inheriting from some class which has no virtual destructor - happens only on gcc 4.7/4.8
-#if defined(__GNUC__) && __GNUC__ == 4 && __GNUC_MINOR__ > 6 && __GNUC_MINOR__ < 9
-#pragma GCC diagnostic ignored "-Weffc++"
+#if DOCTEST_GCC >= DOCTEST_COMPILER(4, 7, 0) && DOCTEST_GCC < DOCTEST_COMPILER(4, 9, 0)
+DOCTEST_GCC_SUPPRESS_WARNING("-Weffc++")
 #endif // gcc 4.7 / 4.8
-#if defined(__GNUC__) && __GNUC__ == 5
-#pragma GCC diagnostic ignored "-Wstrict-overflow"
+#if DOCTEST_GCC >= DOCTEST_COMPILER(5, 0, 0) && DOCTEST_GCC < DOCTEST_COMPILER(6, 0, 0)
+DOCTEST_GCC_SUPPRESS_WARNING("-Wstrict-overflow")
 #endif // gcc 5
 
 struct SomeFixture
