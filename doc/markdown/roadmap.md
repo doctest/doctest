@@ -62,7 +62,7 @@ Planned features for future releases - order changes constantly...
 - [symbolizer](https://github.com/facebook/folly/tree/master/folly/experimental/symbolizer) - for a stack trace - when an assertion fails - and it's in a user function with some deep callstack away from the current test case - how to know the exact code path that lead to the failing assert
 - ability to make the framework not capture unexpected exceptions - as requested [here](https://github.com/onqtam/doctest/issues/12#issuecomment-235334585)
 - add Approx ability to compare with absolute epsilon - [Catch PR](https://github.com/philsquared/Catch/pull/538)
-- ability to customize the colors in the console output (may also use styles - based on [this](https://github.com/agauniyal/rang))
+- ability to customize the colors in the console output (may also use styles - based on [this](https://github.com/agauniyal/rang) or [this](https://github.com/ikalnytskyi/termcolor))
 - implement breaking into the debugger under linux - see [here](https://github.com/philsquared/Catch/pull/585) and [here](https://github.com/scottt/debugbreak)
 - better testing of the library
     - unit test the String class

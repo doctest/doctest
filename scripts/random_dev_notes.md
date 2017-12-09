@@ -1,4 +1,6 @@
 
+remove "/Zc:twoPhase-" from command line for VS 2017 (its there because compiler version 15.5.1 has trouble with combaseapi.h ...)
+
 look at runtime performance stuff
 https://github.com/catchorg/Catch2/issues/1086
 
