@@ -554,9 +554,9 @@ extern "C" __declspec(dllimport) int __stdcall IsDebuggerPresent();
 #ifdef DOCTEST_PLATFORM_WINDOWS
 
 // defines for a leaner windows.h
-#ifndef WIN32_MEAN_AND_LEAN
-#define WIN32_MEAN_AND_LEAN
-#endif // WIN32_MEAN_AND_LEAN
+#ifndef WIN32_LEAN_AND_MEAN
+#define WIN32_LEAN_AND_MEAN
+#endif // WIN32_LEAN_AND_MEAN
 #ifndef VC_EXTRA_LEAN
 #define VC_EXTRA_LEAN
 #endif // VC_EXTRA_LEAN
