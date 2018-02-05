@@ -267,6 +267,9 @@ DOCTEST_MSVC_SUPPRESS_WARNING(4640) // construction of local static object is no
 #ifndef DOCTEST_CONFIG_WITH_VARIADIC_MACROS
 #define DOCTEST_CONFIG_WITH_VARIADIC_MACROS
 #endif // DOCTEST_CONFIG_WITH_VARIADIC_MACROS
+#ifndef DOCTEST_CONFIG_WITH_THREAD_SAFETY
+#define DOCTEST_CONFIG_WITH_THREAD_SAFETY
+#endif // DOCTEST_CONFIG_WITH_THREAD_SAFETY
 #endif // __cplusplus >= 201103L
 
 // MSVC C++11 feature support table: https://msdn.microsoft.com/en-us/library/hh567368.aspx

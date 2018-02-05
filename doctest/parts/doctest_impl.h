@@ -84,9 +84,8 @@ DOCTEST_CLANG_SUPPRESS_WARNING("-Wc++98-compat-pedantic")
 
 #define DOCTEST_LOG_START()                                                                        \
     do {                                                                                           \
-        if(!contextState->hasLoggedCurrentTestStart) {                                             \
+        if(!doctest_exchange(contextState->hasLoggedCurrentTestStart, true)) {                     \
             logTestStart(*contextState->currentTest);                                              \
-            contextState->hasLoggedCurrentTestStart = true;                                        \
         }                                                                                          \
     } while(false)
 
@@ -114,6 +113,10 @@ DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_BEGIN
 #include <stdexcept>
 #include <csignal>
 #include <cfloat>
+#ifdef DOCTEST_CONFIG_WITH_THREAD_SAFETY
+#include <atomic>
+#include <mutex>
+#endif // DOCTEST_CONFIG_WITH_THREAD_SAFETY
 #if !DOCTEST_MSVC
 #include <stdint.h>
 #endif // !MSVC
@@ -124,6 +127,22 @@ namespace doctest
 {
 namespace detail
 {
+#ifdef DOCTEST_CONFIG_WITH_THREAD_SAFETY
+    template <class T>
+    T doctest_exchange(std::atomic<T>& obj, T&& new_value)
+    {
+        return obj.exchange(new_value);
+    }
+#else
+    template <class T>
+    T doctest_exchange(T& obj, T const& new_value)
+    {
+        T old_value = obj;
+        obj = new_value;
+        return old_value;
+    }
+#endif
+
     // lowers ascii letters
     char tolower(const char c) { return (c >= 'A' && c <= 'Z') ? static_cast<char>(c + 32) : c; }
 
@@ -257,12 +276,21 @@ namespace detail
         unsigned        numTestSuitesPassingFilters;
         unsigned        numFailed;
         const TestCase* currentTest;
+#ifdef DOCTEST_CONFIG_WITH_THREAD_SAFETY
+        std::atomic<bool>            hasLoggedCurrentTestStart;
+        std::atomic<int>             numAssertionsForCurrentTestcase;
+        std::atomic<int>             numAssertions;
+        std::atomic<int>             numFailedAssertionsForCurrentTestcase;
+        std::atomic<int>             numFailedAssertions;
+        std::atomic<bool>            hasCurrentTestFailed;
+#else
         bool            hasLoggedCurrentTestStart;
         int             numAssertionsForCurrentTestcase;
         int             numAssertions;
         int             numFailedAssertionsForCurrentTestcase;
         int             numFailedAssertions;
         bool            hasCurrentTestFailed;
+#endif // DOCTEST_CONFIG_WITH_THREAD_SAFETY
 
         std::vector<IContextScope*> contexts;            // for logging with INFO() and friends
         std::vector<std::string>    exceptionalContexts; // logging from INFO() due to an exception
@@ -1417,6 +1445,10 @@ namespace detail
         }
     }
 
+#ifdef DOCTEST_CONFIG_WITH_THREAD_SAFETY
+    std::mutex logMutex;
+#endif // DOCTEST_CONFIG_WITH_THREAD_SAFETY
+
     void logTestStart(const TestCase& tc) {
         char loc[DOCTEST_SNPRINTF_BUFFER_LENGTH];
         DOCTEST_SNPRINTF(loc, DOCTEST_COUNTOF(loc), "%s(%d)\n", fileForOutput(tc.m_file),
@@ -1480,6 +1512,10 @@ namespace detail
     void logTestEnd() {}
 
     void logTestException(const String& what, bool crash) {
+#ifdef DOCTEST_CONFIG_WITH_THREAD_SAFETY
+        std::lock_guard<std::mutex> lock(logMutex);
+#endif // DOCTEST_CONFIG_WITH_THREAD_SAFETY
+
         char msg[DOCTEST_SNPRINTF_BUFFER_LENGTH];
 
         DOCTEST_SNPRINTF(msg, DOCTEST_COUNTOF(msg), "TEST CASE FAILED!\n");
@@ -1537,6 +1573,10 @@ namespace detail
 
     void logAssert(bool passed, const char* decomposition, bool threw, const String& exception,
                    const char* expr, assertType::Enum assert_type, const char* file, int line) {
+#ifdef DOCTEST_CONFIG_WITH_THREAD_SAFETY
+        std::lock_guard<std::mutex> lock(logMutex);
+#endif // DOCTEST_CONFIG_WITH_THREAD_SAFETY
+
         char loc[DOCTEST_SNPRINTF_BUFFER_LENGTH];
         DOCTEST_SNPRINTF(loc, DOCTEST_COUNTOF(loc), "%s(%d)", fileForOutput(file),
                          lineForOutput(line));
@@ -1578,6 +1618,10 @@ namespace detail
 
     void logAssertThrows(bool threw, const char* expr, assertType::Enum assert_type,
                          const char* file, int line) {
+#ifdef DOCTEST_CONFIG_WITH_THREAD_SAFETY
+        std::lock_guard<std::mutex> lock(logMutex);
+#endif // DOCTEST_CONFIG_WITH_THREAD_SAFETY
+
         char loc[DOCTEST_SNPRINTF_BUFFER_LENGTH];
         DOCTEST_SNPRINTF(loc, DOCTEST_COUNTOF(loc), "%s(%d)", fileForOutput(file),
                          lineForOutput(line));
@@ -1612,6 +1656,10 @@ namespace detail
     void logAssertThrowsAs(bool threw, bool threw_as, const char* as, const String& exception,
                            const char* expr, assertType::Enum assert_type, const char* file,
                            int line) {
+#ifdef DOCTEST_CONFIG_WITH_THREAD_SAFETY
+        std::lock_guard<std::mutex> lock(logMutex);
+#endif // DOCTEST_CONFIG_WITH_THREAD_SAFETY
+
         char loc[DOCTEST_SNPRINTF_BUFFER_LENGTH];
         DOCTEST_SNPRINTF(loc, DOCTEST_COUNTOF(loc), "%s(%d)", fileForOutput(file),
                          lineForOutput(line));
@@ -1652,6 +1700,10 @@ namespace detail
 
     void logAssertNothrow(bool threw, const String& exception, const char* expr,
                           assertType::Enum assert_type, const char* file, int line) {
+#ifdef DOCTEST_CONFIG_WITH_THREAD_SAFETY
+        std::lock_guard<std::mutex> lock(logMutex);
+#endif // DOCTEST_CONFIG_WITH_THREAD_SAFETY
+
         char loc[DOCTEST_SNPRINTF_BUFFER_LENGTH];
         DOCTEST_SNPRINTF(loc, DOCTEST_COUNTOF(loc), "%s(%d)", fileForOutput(file),
                          lineForOutput(line));
@@ -1764,6 +1816,10 @@ namespace detail
 
     bool MessageBuilder::log() {
         DOCTEST_LOG_START();
+
+#ifdef DOCTEST_CONFIG_WITH_THREAD_SAFETY
+        std::lock_guard<std::mutex> lock(logMutex);
+#endif // DOCTEST_CONFIG_WITH_THREAD_SAFETY
 
         const bool isWarn = m_severity & assertType::is_warn;
 
@@ -2060,7 +2116,7 @@ namespace detail
 
             DOCTEST_PRINTF_COLORED("[doctest] ", Color::Cyan);
 
-            DOCTEST_SNPRINTF(buff, DOCTEST_COUNTOF(buff), "assertions: %6d", p->numAssertions);
+            DOCTEST_SNPRINTF(buff, DOCTEST_COUNTOF(buff), "assertions: %6d", static_cast<int>(p->numAssertions));
             DOCTEST_PRINTF_COLORED(buff, Color::None);
             DOCTEST_SNPRINTF(buff, DOCTEST_COUNTOF(buff), " | ");
             DOCTEST_PRINTF_COLORED(buff, Color::None);
@@ -2070,7 +2126,7 @@ namespace detail
                                                                                      Color::Green);
             DOCTEST_SNPRINTF(buff, DOCTEST_COUNTOF(buff), " | ");
             DOCTEST_PRINTF_COLORED(buff, Color::None);
-            DOCTEST_SNPRINTF(buff, DOCTEST_COUNTOF(buff), "%6d failed", p->numFailedAssertions);
+            DOCTEST_SNPRINTF(buff, DOCTEST_COUNTOF(buff), "%6d failed", static_cast<int>(p->numFailedAssertions));
             DOCTEST_PRINTF_COLORED(buff, p->numFailedAssertions > 0 ? Color::Red : Color::None);
 
             DOCTEST_SNPRINTF(buff, DOCTEST_COUNTOF(buff), " |\n");
