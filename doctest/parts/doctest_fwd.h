@@ -50,8 +50,8 @@
 
 #define DOCTEST_VERSION_MAJOR 1
 #define DOCTEST_VERSION_MINOR 2
-#define DOCTEST_VERSION_PATCH 6
-#define DOCTEST_VERSION_STR "1.2.6"
+#define DOCTEST_VERSION_PATCH 7
+#define DOCTEST_VERSION_STR "1.2.7"
 
 #define DOCTEST_VERSION                                                                            \
     (DOCTEST_VERSION_MAJOR * 10000 + DOCTEST_VERSION_MINOR * 100 + DOCTEST_VERSION_PATCH)

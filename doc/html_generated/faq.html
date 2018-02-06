@@ -119,6 +119,8 @@ It doesn't work in 2 scenarios:
 
 You can also checkout this repository for a different solution: [**pthom/doctest_registerlibrary**](https://github.com/pthom/doctest_registerlibrary).
 
+A compiler-specific solution for MSVC is to use the [```/OPT:NOREF```](https://msdn.microsoft.com/en-us/library/bxwfs976.aspx) linker flag (thanks to [lectem](https://github.com/Lectem) for [reporting](https://github.com/onqtam/doctest/issues/106) it!)
+
 ### Why is comparing C strings (```char*```) actually comparing pointers?
 
 **doctest** by default treats ```char*``` as normal pointers. Using the [**```DOCTEST_CONFIG_TREAT_CHAR_STAR_AS_STRING```**](configuration.html#doctest_config_treat_char_star_as_string) changes that.

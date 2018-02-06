@@ -32,6 +32,8 @@ Planned features for future releases - order changes constantly...
 - Value-Parameterized test cases
 - generators? - look at Catch - and investigate what they are
 - proper conan package
+    - https://github.com/onqtam/doctest/issues/103
+    - https://github.com/bincrafters/conan-doctest
     - https://github.com/uilianries/conan-catch
     - https://github.com/philsquared/Catch/pull/938
     - https://stackoverflow.com/questions/40311363/conan-io-header-only-package
@@ -67,7 +69,7 @@ Planned features for future releases - order changes constantly...
 - [symbolizer](https://github.com/facebook/folly/tree/master/folly/experimental/symbolizer) - for a stack trace - when an assertion fails - and it's in a user function with some deep callstack away from the current test case - how to know the exact code path that lead to the failing assert
 - ability to make the framework not capture unexpected exceptions - as requested [here](https://github.com/onqtam/doctest/issues/12#issuecomment-235334585)
 - add Approx ability to compare with absolute epsilon - [Catch PR](https://github.com/philsquared/Catch/pull/538)
-- ability to customize the colors in the console output (may also use styles - based on [this](https://github.com/agauniyal/rang))
+- ability to customize the colors in the console output (may also use styles - based on [this](https://github.com/agauniyal/rang) or [this](https://github.com/ikalnytskyi/termcolor))
 - implement breaking into the debugger under linux - see [here](https://github.com/philsquared/Catch/pull/585) and [here](https://github.com/scottt/debugbreak)
 - better testing of the library
     - unit test the String class
@@ -110,6 +112,7 @@ Planned features for future releases - order changes constantly...
 - checkpoint/passpoint - like in [boost test](http://www.boost.org/doc/libs/1_63_0/libs/test/doc/html/boost_test/test_output/test_tools_support_for_logging/checkpoints.html) (also make all assert/subcase/logging macros to act as passpoints and print the last one on crashes or exceptions)
 - queries for the current test case - name (and probably decorators)
 - thread safety - asserts/subcases/captures should be safe to be used by multiple threads simultaneously
+    - https://github.com/blastrock/doctest/tree/threadsafe
 - support for running tests in parallel in multiple threads
 - death tests - as in [google test](https://github.com/google/googletest/blob/master/googletest/docs/AdvancedGuide.html#death-tests)
 - config options
