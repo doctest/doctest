@@ -1,5 +1,28 @@
 # Change Log
 
+## [1.2.7](https://github.com/onqtam/doctest/tree/1.2.7) (2018-02-06)
+[Full Changelog](https://github.com/onqtam/doctest/compare/1.2.6...1.2.7)
+
+**Closed issues:**
+
+- MSan has runtime error: unsigned integer overflow [\#116](https://github.com/onqtam/doctest/issues/116)
+- clang-tidy warning about cert-err58-cpp [\#115](https://github.com/onqtam/doctest/issues/115)
+- Linking errors [\#113](https://github.com/onqtam/doctest/issues/113)
+- inlining function defs [\#111](https://github.com/onqtam/doctest/issues/111)
+- Nullptr issue. [\#110](https://github.com/onqtam/doctest/issues/110)
+- MemorySanitizer: use-of-uninitialized-value [\#109](https://github.com/onqtam/doctest/issues/109)
+- Potential memory leak through scan-build [\#108](https://github.com/onqtam/doctest/issues/108)
+- Warnings raised to error with lastest MSVC version [\#107](https://github.com/onqtam/doctest/issues/107)
+- New solution for tests in static libraries ! \(MSVC\) [\#106](https://github.com/onqtam/doctest/issues/106)
+- Command line flags do not work after code formatter/beautifier [\#104](https://github.com/onqtam/doctest/issues/104)
+- Cppcheck 1.81 warnings [\#102](https://github.com/onqtam/doctest/issues/102)
+
+**Merged pull requests:**
+
+- Fix macros WIN32\_LEAN\_AND\_MEAN typo [\#112](https://github.com/onqtam/doctest/pull/112) ([vladimirgamalyan](https://github.com/vladimirgamalyan))
+- Correct DOCTEST\_NO\_INSTALL logic; do install unless it is set \(\#99\) [\#100](https://github.com/onqtam/doctest/pull/100) ([onqtam](https://github.com/onqtam))
+- Correct DOCTEST\_NO\_INSTALL logic; do install unless it is set [\#99](https://github.com/onqtam/doctest/pull/99) ([OdyX](https://github.com/OdyX))
+
 ## [1.2.6](https://github.com/onqtam/doctest/tree/1.2.6) (2017-10-29)
 [Full Changelog](https://github.com/onqtam/doctest/compare/1.2.5...1.2.6)
 
