@@ -239,7 +239,8 @@ DOCTEST_MSVC_SUPPRESS_WARNING(4640) // construction of local static object is no
     DOCTEST_MSVC_SUPPRESS_WARNING(4626)                                                            \
     DOCTEST_MSVC_SUPPRESS_WARNING(5027)                                                            \
     DOCTEST_MSVC_SUPPRESS_WARNING(5026)                                                            \
-    DOCTEST_MSVC_SUPPRESS_WARNING(4623)
+    DOCTEST_MSVC_SUPPRESS_WARNING(4623)                                                            \
+	DOCTEST_MSVC_SUPPRESS_WARNING(5039)
 
 #define DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_END DOCTEST_MSVC_SUPPRESS_WARNING_POP
 

@@ -242,7 +242,8 @@ DOCTEST_MSVC_SUPPRESS_WARNING(4640) // construction of local static object is no
     DOCTEST_MSVC_SUPPRESS_WARNING(4626)                                                            \
     DOCTEST_MSVC_SUPPRESS_WARNING(5027)                                                            \
     DOCTEST_MSVC_SUPPRESS_WARNING(5026)                                                            \
-    DOCTEST_MSVC_SUPPRESS_WARNING(4623)
+    DOCTEST_MSVC_SUPPRESS_WARNING(4623)                                                            \
+	DOCTEST_MSVC_SUPPRESS_WARNING(5039)
 
 #define DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_END DOCTEST_MSVC_SUPPRESS_WARNING_POP
 
@@ -3269,7 +3270,7 @@ DOCTEST_MSVC_SUPPRESS_WARNING(4774) // format string expected in argument is not
 DOCTEST_MSVC_SUPPRESS_WARNING(4365) // conversion from 'int' to 'unsigned', signed/unsigned mismatch
 DOCTEST_MSVC_SUPPRESS_WARNING(4820) // padding in structs
 DOCTEST_MSVC_SUPPRESS_WARNING(4640) // construction of local static object is not thread-safe
-DOCTEST_MSVC_SUPPRESS_WARNING(5039) // pointer to potentially throwing function passed to extern C functio
+DOCTEST_MSVC_SUPPRESS_WARNING(5039) // pointer to potentially throwing function passed to extern C function
 
 #if defined(DOCTEST_NO_CPP11_COMPAT)
 DOCTEST_CLANG_SUPPRESS_WARNING("-Wc++98-compat")
@@ -3755,9 +3756,9 @@ extern "C" __declspec(dllimport) int __stdcall IsDebuggerPresent();
 #ifdef DOCTEST_PLATFORM_WINDOWS
 
 // defines for a leaner windows.h
-#ifndef WIN32_MEAN_AND_LEAN
-#define WIN32_MEAN_AND_LEAN
-#endif // WIN32_MEAN_AND_LEAN
+#ifndef WIN32_LEAN_AND_MEAN
+#define WIN32_LEAN_AND_MEAN
+#endif // WIN32_LEAN_AND_MEAN
 #ifndef VC_EXTRA_LEAN
 #define VC_EXTRA_LEAN
 #endif // VC_EXTRA_LEAN
