@@ -240,7 +240,7 @@ DOCTEST_MSVC_SUPPRESS_WARNING(4640) // construction of local static object is no
     DOCTEST_MSVC_SUPPRESS_WARNING(5027)                                                            \
     DOCTEST_MSVC_SUPPRESS_WARNING(5026)                                                            \
     DOCTEST_MSVC_SUPPRESS_WARNING(4623)                                                            \
-	DOCTEST_MSVC_SUPPRESS_WARNING(5039)
+    DOCTEST_MSVC_SUPPRESS_WARNING(5039)
 
 #define DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_END DOCTEST_MSVC_SUPPRESS_WARNING_POP
 
@@ -489,9 +489,6 @@ DOCTEST_CLANG_SUPPRESS_WARNING("-Wc++98-compat-pedantic")
 #define DOCTEST_TOSTR_IMPL(x) #x
 #define DOCTEST_TOSTR(x) DOCTEST_TOSTR_IMPL(x)
 #endif // DOCTEST_CONFIG_WITH_VARIADIC_MACROS
-
-// for concatenating literals and making the result a string
-#define DOCTEST_STR_CONCAT_TOSTR(s1, s2) DOCTEST_TOSTR(s1) DOCTEST_TOSTR(s2)
 
 // counts the number of elements in a C string
 #define DOCTEST_COUNTOF(x) (sizeof(x) / sizeof(x[0]))

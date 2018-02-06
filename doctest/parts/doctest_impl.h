@@ -68,7 +68,7 @@ DOCTEST_MSVC_SUPPRESS_WARNING(4774) // format string expected in argument is not
 DOCTEST_MSVC_SUPPRESS_WARNING(4365) // conversion from 'int' to 'unsigned', signed/unsigned mismatch
 DOCTEST_MSVC_SUPPRESS_WARNING(4820) // padding in structs
 DOCTEST_MSVC_SUPPRESS_WARNING(4640) // construction of local static object is not thread-safe
-DOCTEST_MSVC_SUPPRESS_WARNING(5039) // pointer to potentially throwing function passed to extern C function
+DOCTEST_MSVC_SUPPRESS_WARNING(5039) // pointer to potentially throwing function passed to extern C
 
 #if defined(DOCTEST_NO_CPP11_COMPAT)
 DOCTEST_CLANG_SUPPRESS_WARNING("-Wc++98-compat")
@@ -2125,52 +2125,51 @@ void Context::parseArgs(int argc, const char* const* argv, bool withDefaults) {
     String strRes;
 
 #define DOCTEST_PARSE_AS_BOOL_OR_FLAG(name, sname, var, default)                                   \
-    if(parseIntOption(argc, argv, DOCTEST_STR_CONCAT_TOSTR(name, =), option_bool, intRes) ||       \
-       parseIntOption(argc, argv, DOCTEST_STR_CONCAT_TOSTR(sname, =), option_bool, intRes))        \
+    if(parseIntOption(argc, argv, name "=", option_bool, intRes) ||                                \
+       parseIntOption(argc, argv, sname "=", option_bool, intRes))                                 \
         p->var = !!intRes;                                                                         \
-    else if(parseFlag(argc, argv, #name) || parseFlag(argc, argv, #sname))                         \
+    else if(parseFlag(argc, argv, name) || parseFlag(argc, argv, sname))                           \
         p->var = true;                                                                             \
     else if(withDefaults)                                                                          \
     p->var = default
 
 #define DOCTEST_PARSE_INT_OPTION(name, sname, var, default)                                        \
-    if(parseIntOption(argc, argv, DOCTEST_STR_CONCAT_TOSTR(name, =), option_int, intRes) ||        \
-       parseIntOption(argc, argv, DOCTEST_STR_CONCAT_TOSTR(sname, =), option_int, intRes))         \
+    if(parseIntOption(argc, argv, name "=", option_int, intRes) ||                                 \
+       parseIntOption(argc, argv, sname "=", option_int, intRes))                                  \
         p->var = intRes;                                                                           \
     else if(withDefaults)                                                                          \
     p->var = default
 
 #define DOCTEST_PARSE_STR_OPTION(name, sname, var, default)                                        \
-    if(parseOption(argc, argv, DOCTEST_STR_CONCAT_TOSTR(name, =), strRes, default) ||              \
-       parseOption(argc, argv, DOCTEST_STR_CONCAT_TOSTR(sname, =), strRes, default) ||             \
-       withDefaults)                                                                               \
+    if(parseOption(argc, argv, name "=", strRes, default) ||                                       \
+       parseOption(argc, argv, sname "=", strRes, default) || withDefaults)                        \
     p->var = strRes
 
     // clang-format off
-    DOCTEST_PARSE_STR_OPTION(dt-order-by, dt-ob, order_by, "file");
-    DOCTEST_PARSE_INT_OPTION(dt-rand-seed, dt-rs, rand_seed, 0);
+    DOCTEST_PARSE_STR_OPTION("dt-order-by", "dt-ob", order_by, "file");
+    DOCTEST_PARSE_INT_OPTION("dt-rand-seed", "dt-rs", rand_seed, 0);
 
-    DOCTEST_PARSE_INT_OPTION(dt-first, dt-f, first, 1);
-    DOCTEST_PARSE_INT_OPTION(dt-last, dt-l, last, 0);
+    DOCTEST_PARSE_INT_OPTION("dt-first", "dt-f", first, 1);
+    DOCTEST_PARSE_INT_OPTION("dt-last", "dt-l", last, 0);
 
-    DOCTEST_PARSE_INT_OPTION(dt-abort-after, dt-aa, abort_after, 0);
-    DOCTEST_PARSE_INT_OPTION(dt-subcase-filter-levels, dt-scfl, subcase_filter_levels, 2000000000);
+    DOCTEST_PARSE_INT_OPTION("dt-abort-after", "dt-aa", abort_after, 0);
+    DOCTEST_PARSE_INT_OPTION("dt-subcase-filter-levels", "dt-scfl", subcase_filter_levels, 2000000000);
 
-    DOCTEST_PARSE_AS_BOOL_OR_FLAG(dt-success, dt-s, success, false);
-    DOCTEST_PARSE_AS_BOOL_OR_FLAG(dt-case-sensitive, dt-cs, case_sensitive, false);
-    DOCTEST_PARSE_AS_BOOL_OR_FLAG(dt-exit, dt-e, exit, false);
-    DOCTEST_PARSE_AS_BOOL_OR_FLAG(dt-duration, dt-d, duration, false);
-    DOCTEST_PARSE_AS_BOOL_OR_FLAG(dt-no-throw, dt-nt, no_throw, false);
-    DOCTEST_PARSE_AS_BOOL_OR_FLAG(dt-no-exitcode, dt-ne, no_exitcode, false);
-    DOCTEST_PARSE_AS_BOOL_OR_FLAG(dt-no-run, dt-nr, no_run, false);
-    DOCTEST_PARSE_AS_BOOL_OR_FLAG(dt-no-version, dt-nv, no_version, false);
-    DOCTEST_PARSE_AS_BOOL_OR_FLAG(dt-no-colors, dt-nc, no_colors, false);
-    DOCTEST_PARSE_AS_BOOL_OR_FLAG(dt-force-colors, dt-fc, force_colors, false);
-    DOCTEST_PARSE_AS_BOOL_OR_FLAG(dt-no-breaks, dt-nb, no_breaks, false);
-    DOCTEST_PARSE_AS_BOOL_OR_FLAG(dt-no-skip, dt-ns, no_skip, false);
-    DOCTEST_PARSE_AS_BOOL_OR_FLAG(dt-no-path-filenames, dt-npf, no_path_in_filenames, false);
-    DOCTEST_PARSE_AS_BOOL_OR_FLAG(dt-no-line-numbers, dt-nln, no_line_numbers, false);
-    DOCTEST_PARSE_AS_BOOL_OR_FLAG(dt-no-skipped-summary, dt-nss, no_skipped_summary, false);
+    DOCTEST_PARSE_AS_BOOL_OR_FLAG("dt-success", "dt-s", success, false);
+    DOCTEST_PARSE_AS_BOOL_OR_FLAG("dt-case-sensitive", "dt-cs", case_sensitive, false);
+    DOCTEST_PARSE_AS_BOOL_OR_FLAG("dt-exit", "dt-e", exit, false);
+    DOCTEST_PARSE_AS_BOOL_OR_FLAG("dt-duration", "dt-d", duration, false);
+    DOCTEST_PARSE_AS_BOOL_OR_FLAG("dt-no-throw", "dt-nt", no_throw, false);
+    DOCTEST_PARSE_AS_BOOL_OR_FLAG("dt-no-exitcode", "dt-ne", no_exitcode, false);
+    DOCTEST_PARSE_AS_BOOL_OR_FLAG("dt-no-run", "dt-nr", no_run, false);
+    DOCTEST_PARSE_AS_BOOL_OR_FLAG("dt-no-version", "dt-nv", no_version, false);
+    DOCTEST_PARSE_AS_BOOL_OR_FLAG("dt-no-colors", "dt-nc", no_colors, false);
+    DOCTEST_PARSE_AS_BOOL_OR_FLAG("dt-force-colors", "dt-fc", force_colors, false);
+    DOCTEST_PARSE_AS_BOOL_OR_FLAG("dt-no-breaks", "dt-nb", no_breaks, false);
+    DOCTEST_PARSE_AS_BOOL_OR_FLAG("dt-no-skip", "dt-ns", no_skip, false);
+    DOCTEST_PARSE_AS_BOOL_OR_FLAG("dt-no-path-filenames", "dt-npf", no_path_in_filenames, false);
+    DOCTEST_PARSE_AS_BOOL_OR_FLAG("dt-no-line-numbers", "dt-nln", no_line_numbers, false);
+    DOCTEST_PARSE_AS_BOOL_OR_FLAG("dt-no-skipped-summary", "dt-nss", no_skipped_summary, false);
     // clang-format on
 
 #undef DOCTEST_PARSE_STR_OPTION
