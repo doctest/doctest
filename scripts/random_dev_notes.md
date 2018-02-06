@@ -1,13 +1,12 @@
 
-remove "/Zc:twoPhase-" from command line for VS 2017 (its there because compiler version 15.5.1 has trouble with combaseapi.h ...)
+https://github.com/catchorg/Catch2/commit/de36b2ada6e4593a9a32c4c86cd47d4bc002b148
+
+add [[noreturn]] to MessageBuilder::react() - and actually make a separate function (react2) for the FAIL() case
 
 look at runtime performance stuff
 https://github.com/catchorg/Catch2/issues/1086
 
 SUCCEED();
-
-deprecated images
-https://blog.travis-ci.com/2017-11-21-xcode8-3-default-image-announce
 
 rethink static code analisys suppressions - users shouldn't have to use the same flags for code which uses doctest macros/types
 

@@ -27,6 +27,8 @@ Planned features for future releases - order changes constantly...
 - Value-Parameterized test cases
 - generators? - look at Catch - and investigate what they are
 - proper conan package
+    - https://github.com/onqtam/doctest/issues/103
+    - https://github.com/bincrafters/conan-doctest
     - https://github.com/uilianries/conan-catch
     - https://github.com/philsquared/Catch/pull/938
     - https://stackoverflow.com/questions/40311363/conan-io-header-only-package
@@ -105,6 +107,7 @@ Planned features for future releases - order changes constantly...
 - checkpoint/passpoint - like in [boost test](http://www.boost.org/doc/libs/1_63_0/libs/test/doc/html/boost_test/test_output/test_tools_support_for_logging/checkpoints.html) (also make all assert/subcase/logging macros to act as passpoints and print the last one on crashes or exceptions)
 - queries for the current test case - name (and probably decorators)
 - thread safety - asserts/subcases/captures should be safe to be used by multiple threads simultaneously
+    - https://github.com/blastrock/doctest/tree/threadsafe
 - support for running tests in parallel in multiple threads
 - death tests - as in [google test](https://github.com/google/googletest/blob/master/googletest/docs/AdvancedGuide.md#death-tests)
 - config options
