@@ -66,7 +66,9 @@ If you want better aliases for the asserts instead of the long ones you could us
 
 ### Is doctest thread-aware?
 
-Currently no. Asserts cannot be used in multiple threads and test cases cannot be ran in parallel. These are long-term features that are planned on the [**roadmap**](roadmap.md).
+Yes when your compiler supports C++11, with some caveats.
+
+When doing assertions from multiple tests, some atomic variables will be updated which should have a negligeible impact on timings.  However, when doctest needs to log something (e.g. when an assertion fails, or when the ```-s``` argument is given) a mutex will be locked which could influence your test timings.
 
 For now tests are ran serially and doing asserts in multiple user threads will lead to crashes.
 
