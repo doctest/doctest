@@ -23,7 +23,7 @@ TYPE_TO_STRING(std::vector<int>);
 
 TEST_CASE_TEMPLATE("vector stuff", T, doctest::Types<std::vector<int> >) {
     T vec(10);
-    CHECK(vec.size() == 20); // fill fail
+    CHECK(vec.size() == 20); // will fail
 }
 
 // =================================================================================================
