@@ -462,9 +462,11 @@ DOCTEST_CLANG_SUPPRESS_WARNING("-Wc++98-compat-pedantic")
 #if DOCTEST_MSVC
 #define DOCTEST_NOINLINE __declspec(noinline)
 #define DOCTEST_UNUSED
+#define DOCTEST_ALIGNMENT(x)
 #else // MSVC
 #define DOCTEST_NOINLINE __attribute__((noinline))
 #define DOCTEST_UNUSED __attribute__((unused))
+#define DOCTEST_ALIGNMENT(x) __attribute__((aligned(x)))
 #endif // MSVC
 
 #ifndef DOCTEST_CONFIG_NUM_CAPTURES_ON_STACK
@@ -1864,7 +1866,8 @@ namespace detail
 
         struct Chunk
         {
-            char buf[sizeof(Capture<char>)]; // place to construct a Capture<T>
+            char buf[sizeof(Capture<char>)] DOCTEST_ALIGNMENT(
+                    2 * sizeof(void*)); // place to construct a Capture<T>
         };
 
         struct Node
