@@ -119,10 +119,10 @@ def main():
     })
 
     if 'status' in response and not 'compiler_error' in response: # and response['status'] == '0':
-        print response['url']
+        print(response['url'])
         return 0
     else:
-        print response
+        print(response)
         return 1
 
 
