@@ -5,7 +5,7 @@ DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_BEGIN
 DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_END
 
 // typedefs are required if variadic macro support is not available (otherwise the commas are a problem)
-typedef doctest::Types<char, short, int> int_types;
+typedef doctest::Types<signed char, short, int> int_types;
 typedef doctest::Types<double, double> float_types; // note that types won't be filtered for uniqueness
 
 // =================================================================================================
