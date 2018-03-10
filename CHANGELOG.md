@@ -1,5 +1,13 @@
 # Change Log
 
+## [1.2.8](https://github.com/onqtam/doctest/tree/1.2.8) (2018-03-10)
+[Full Changelog](https://github.com/onqtam/doctest/compare/1.2.7...1.2.8)
+
+**Closed issues:**
+
+- ARM64 builds: templated\_test\_cases.cpp test fails [\#119](https://github.com/onqtam/doctest/issues/119)
+- ARM builds: FTBFS on armhf - error: cast from 'const char\*' to 'const  [\#118](https://github.com/onqtam/doctest/issues/118)
+
 ## [1.2.7](https://github.com/onqtam/doctest/tree/1.2.7) (2018-02-06)
 [Full Changelog](https://github.com/onqtam/doctest/compare/1.2.6...1.2.7)
 
