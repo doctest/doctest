@@ -4419,7 +4419,7 @@ namespace detail
     struct FatalConditionHandler
     {
         static LONG CALLBACK handleVectoredException(PEXCEPTION_POINTERS ExceptionInfo) {
-            for(size_t i = 0; i < sizeof(signalDefs) / sizeof(SignalDefs); ++i) {
+            for(size_t i = 0; i < DOCTEST_COUNTOF(signalDefs); ++i) {
                 if(ExceptionInfo->ExceptionRecord->ExceptionCode == signalDefs[i].id) {
                     reportFatal(signalDefs[i].name);
                 }
@@ -4480,13 +4480,13 @@ namespace detail
     struct FatalConditionHandler
     {
         static bool             isSet;
-        static struct sigaction oldSigActions[sizeof(signalDefs) / sizeof(SignalDefs)];
+        static struct sigaction oldSigActions[DOCTEST_COUNTOF(signalDefs)];
         static stack_t          oldSigStack;
         static char             altStackMem[SIGSTKSZ];
 
         static void handleSignal(int sig) {
             std::string name = "<unknown signal>";
-            for(std::size_t i = 0; i < sizeof(signalDefs) / sizeof(SignalDefs); ++i) {
+            for(std::size_t i = 0; i < DOCTEST_COUNTOF(signalDefs); ++i) {
                 SignalDefs& def = signalDefs[i];
                 if(sig == def.id) {
                     name = def.name;
@@ -4509,7 +4509,7 @@ namespace detail
 
             sa.sa_handler = handleSignal; // NOLINT
             sa.sa_flags   = SA_ONSTACK;
-            for(std::size_t i = 0; i < sizeof(signalDefs) / sizeof(SignalDefs); ++i) {
+            for(std::size_t i = 0; i < DOCTEST_COUNTOF(signalDefs); ++i) {
                 sigaction(signalDefs[i].id, &sa, &oldSigActions[i]);
             }
         }
@@ -4518,7 +4518,7 @@ namespace detail
         static void reset() {
             if(isSet) {
                 // Set signals back to previous values -- hopefully nobody overwrote them in the meantime
-                for(std::size_t i = 0; i < sizeof(signalDefs) / sizeof(SignalDefs); ++i) {
+                for(std::size_t i = 0; i < DOCTEST_COUNTOF(signalDefs); ++i) {
                     sigaction(signalDefs[i].id, &oldSigActions[i], 0);
                 }
                 // Return the old stack
@@ -4529,8 +4529,7 @@ namespace detail
     };
 
     bool             FatalConditionHandler::isSet = false;
-    struct sigaction FatalConditionHandler::oldSigActions[sizeof(signalDefs) / sizeof(SignalDefs)] =
-            {};
+    struct sigaction FatalConditionHandler::oldSigActions[DOCTEST_COUNTOF(signalDefs)] = {};
     stack_t FatalConditionHandler::oldSigStack           = {};
     char    FatalConditionHandler::altStackMem[SIGSTKSZ] = {};
 
@@ -4581,7 +4580,7 @@ namespace detail
         mib[3] = getpid();
         // Call sysctl.
         size = sizeof(info);
-        if(sysctl(mib, sizeof(mib) / sizeof(*mib), &info, &size, 0, 0) != 0) {
+        if(sysctl(mib, DOCTEST_COUNTOF(mib), &info, &size, 0, 0) != 0) {
             fprintf(stderr, "\n** Call to sysctl failed - unable to determine if debugger is "
                             "active **\n\n");
             return false;
