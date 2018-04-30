@@ -124,7 +124,7 @@ namespace doctest
 {
 namespace detail
 {
-    // lowers ascii letters
+    // rolled my own tolower() to not include more headers
     char tolower(const char c) { return (c >= 'A' && c <= 'Z') ? static_cast<char>(c + 32) : c; }
 
     template <typename T>
@@ -756,12 +756,11 @@ namespace detail
     }
 
     // matching of a string against a wildcard mask (case sensitivity configurable) taken from
-    // http://www.emoticode.net/c/simple-wildcard-string-compare-globbing-function.html
+    // https://www.codeproject.com/Articles/1088/Wildcard-string-compare-globbing
     int wildcmp(const char* str, const char* wild, bool caseSensitive) {
         const char* cp = 0;
         const char* mp = 0;
 
-        // rolled my own tolower() to not include more headers
         while((*str) && (*wild != '*')) {
             if((caseSensitive ? (*wild != *str) : (tolower(*wild) != tolower(*str))) &&
                (*wild != '?')) {
