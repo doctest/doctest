@@ -1167,6 +1167,7 @@ namespace detail
     void addToContexts(IContextScope* ptr) { contextState->contexts.push_back(ptr); }
     void popFromContexts() { contextState->contexts.pop_back(); }
     DOCTEST_MSVC_SUPPRESS_WARNING_WITH_PUSH(4996) // std::uncaught_exception is deprecated in C++17
+    DOCTEST_GCC_SUPPRESS_WARNING_WITH_PUSH("-Wdeprecated-declarations")
     void useContextIfExceptionOccurred(IContextScope* ptr) {
         if(std::uncaught_exception()) {
             std::ostringstream stream;
@@ -1174,6 +1175,7 @@ namespace detail
             contextState->exceptionalContexts.push_back(stream.str());
         }
     }
+    DOCTEST_GCC_SUPPRESS_WARNING_POP
     DOCTEST_MSVC_SUPPRESS_WARNING_POP
 
     void printSummary();
