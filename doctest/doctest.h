@@ -1472,7 +1472,7 @@ namespace detail
 
         // forbidding some expressions based on this table: http://en.cppreference.com/w/cpp/language/operator_precedence
         DOCTEST_FORBIT_EXPRESSION(&)
-        DOCTEST_FORBIT_EXPRESSION (^)
+        DOCTEST_FORBIT_EXPRESSION(^)
         DOCTEST_FORBIT_EXPRESSION(|)
         DOCTEST_FORBIT_EXPRESSION(&&)
         DOCTEST_FORBIT_EXPRESSION(||)
@@ -1882,6 +1882,7 @@ namespace detail
         Node* tail;
 
         void build(std::ostream* stream) const {
+            DOCTEST_GCC_SUPPRESS_WARNING_WITH_PUSH("-Wcast-align")
             int curr = 0;
             // iterate over small buffer
             while(curr < numCaptures && curr < DOCTEST_CONFIG_NUM_CAPTURES_ON_STACK)
@@ -1893,6 +1894,7 @@ namespace detail
                 curr_elem = curr_elem->next;
                 ++curr;
             }
+            DOCTEST_GCC_SUPPRESS_WARNING_POP
         }
 
         // steal the contents of the other - acting as a move constructor...
@@ -4368,6 +4370,7 @@ namespace detail
     void addToContexts(IContextScope* ptr) { contextState->contexts.push_back(ptr); }
     void popFromContexts() { contextState->contexts.pop_back(); }
     DOCTEST_MSVC_SUPPRESS_WARNING_WITH_PUSH(4996) // std::uncaught_exception is deprecated in C++17
+    DOCTEST_GCC_SUPPRESS_WARNING_WITH_PUSH("-Wdeprecated-declarations")
     void useContextIfExceptionOccurred(IContextScope* ptr) {
         if(std::uncaught_exception()) {
             std::ostringstream stream;
@@ -4375,6 +4378,7 @@ namespace detail
             contextState->exceptionalContexts.push_back(stream.str());
         }
     }
+    DOCTEST_GCC_SUPPRESS_WARNING_POP
     DOCTEST_MSVC_SUPPRESS_WARNING_POP
 
     void printSummary();
