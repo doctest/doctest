@@ -129,6 +129,14 @@ matrix:
           packages: ["g++-7",   "valgrind", "g++-7-multilib",   "libc6-dbg", "libc6-dbg:i386"]
           sources: *apt_sources
 
+    # GCC 8
+    - env: COMPILER=g++-8 HAS_ASAN_32=true HAS_UBSAN_32=true HAS_ASAN_64=true HAS_UBSAN_64=true ADDITIONAL_CXX_FLAGS=" -fuse-ld=gold"
+      compiler: gcc
+      addons: &gcc8
+        apt:
+          packages: ["g++-8",   "valgrind", "g++-8-multilib",   "libc6-dbg", "libc6-dbg:i386"]
+          sources: *apt_sources
+
     # Clang 3.5
     - env: COMPILER=clang++-3.5 HAS_ASAN_64=true HAS_UBSAN_64=true
       addons: &clang35
@@ -258,6 +266,10 @@ matrix:
 
     # GCC 7
     - env: COMPILER=g++-7 HAS_ASAN_32=true HAS_UBSAN_32=true HAS_ASAN_64=true HAS_UBSAN_64=true ADDITIONAL_CXX_FLAGS=" -fuse-ld=gold"
+      compiler: gcc
+
+    # GCC 8
+    - env: COMPILER=g++-8 HAS_ASAN_32=true HAS_UBSAN_32=true HAS_ASAN_64=true HAS_UBSAN_64=true ADDITIONAL_CXX_FLAGS=" -fuse-ld=gold"
       compiler: gcc
 
     # Clang 3.7
