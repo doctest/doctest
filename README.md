@@ -148,6 +148,7 @@ Want to see your name or the name of your company here? Consider donating!
 
 - Aras Pranckevicius
 - Dan Nissenbaum
+- Dean Bodenham
 
 ### :hamburger: Bronze sponsors :hamburger:
 
