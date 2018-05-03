@@ -1878,8 +1878,8 @@ namespace detail
         Node* head;
         Node* tail;
 
+        DOCTEST_GCC_SUPPRESS_WARNING_WITH_PUSH("-Wcast-align")
         void build(std::ostream* stream) const {
-            DOCTEST_GCC_SUPPRESS_WARNING_WITH_PUSH("-Wcast-align")
             int curr = 0;
             // iterate over small buffer
             while(curr < numCaptures && curr < DOCTEST_CONFIG_NUM_CAPTURES_ON_STACK)
@@ -1891,8 +1891,8 @@ namespace detail
                 curr_elem = curr_elem->next;
                 ++curr;
             }
-            DOCTEST_GCC_SUPPRESS_WARNING_POP
         }
+        DOCTEST_GCC_SUPPRESS_WARNING_POP
 
         // steal the contents of the other - acting as a move constructor...
         DOCTEST_NOINLINE ContextBuilder(ContextBuilder& other)
