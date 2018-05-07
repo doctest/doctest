@@ -10,6 +10,8 @@ Planned features for future releases - order changes constantly...
 ### For 1.3:
 
 - move from printf to using streams in the current console reporter and clean that mess
+- thread safety - asserts/subcases/captures should be safe to be used by multiple threads simultaneously
+    - https://github.com/blastrock/doctest/tree/threadsafe
 - reporters
     - output to file
     - a system for writing custom reporters
@@ -21,11 +23,8 @@ Planned features for future releases - order changes constantly...
     - a listener interface - similar to a reporter - look at Catch
 - ability to have no output when everything succeeds
 - option to output summary only
-- log levels - like in [boost test](http://www.boost.org/doc/libs/1_63_0/libs/test/doc/html/boost_test/utf_reference/rt_param_reference/log_level.html)
 - matchers - should investigate what they are - look at google test/mock and Catch (also predicates and boost test)
 - convolution support for the assertion macros (with a predicate)
-- Value-Parameterized test cases
-- generators? - look at Catch - and investigate what they are
 - proper conan package
     - https://github.com/onqtam/doctest/issues/103
     - https://github.com/bincrafters/conan-doctest
@@ -35,11 +34,15 @@ Planned features for future releases - order changes constantly...
     - https://github.com/conan-io/docs/issues/67
     - https://github.com/agauniyal/rang
     - https://github.com/conan-io/conan/issues/324
+
+### For 1.4:
+
+- Value-Parameterized test cases
+- generators? - look at Catch - and investigate what they are
 - look at property based testing
     - [rapidcheck](https://github.com/emil-e/rapidcheck)
     - [autocheck](https://github.com/thejohnfreeman/autocheck)
     - [CppQuickCheck](https://github.com/grogers0/CppQuickCheck)
-- support for LibIdentify
 - IDE integration
     - https://blogs.msdn.microsoft.com/vcblog/2017/05/10/unit-testing-and-the-future-announcing-the-test-adapter-for-google-test/
     - https://www.reddit.com/r/cpp/comments/65c0f1/run_cpp_unit_tests_from_xcode_and_visual_studio/
@@ -56,8 +59,9 @@ Planned features for future releases - order changes constantly...
         - https://www.jetbrains.com/clion/features/unit-testing.html
         - https://blog.jetbrains.com/clion/2017/03/clion-2017-1-released/#catch
 
-### For 1.4:
+### For 1.5:
 
+- log levels - like in [boost test](http://www.boost.org/doc/libs/1_63_0/libs/test/doc/html/boost_test/utf_reference/rt_param_reference/log_level.html)
 - running tests a [few times](https://github.com/google/googletest/blob/master/googletest/docs/AdvancedGuide.md#repeating-the-tests)
 - test execution in [separate processes](https://github.com/philsquared/Catch/issues/853) - ```fork()``` for UNIX and [this](https://github.com/nemequ/munit/issues/2) for Windows
 - killing a test that exceeds a time limit (will perhaps require threading or processes)
@@ -106,8 +110,7 @@ Planned features for future releases - order changes constantly...
 - detect floating point exceptions
 - checkpoint/passpoint - like in [boost test](http://www.boost.org/doc/libs/1_63_0/libs/test/doc/html/boost_test/test_output/test_tools_support_for_logging/checkpoints.html) (also make all assert/subcase/logging macros to act as passpoints and print the last one on crashes or exceptions)
 - queries for the current test case - name (and probably decorators)
-- thread safety - asserts/subcases/captures should be safe to be used by multiple threads simultaneously
-    - https://github.com/blastrock/doctest/tree/threadsafe
+- support for LibIdentify
 - support for running tests in parallel in multiple threads
 - death tests - as in [google test](https://github.com/google/googletest/blob/master/googletest/docs/AdvancedGuide.md#death-tests)
 - config options
