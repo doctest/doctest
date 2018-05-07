@@ -3273,6 +3273,7 @@ DOCTEST_MSVC_SUPPRESS_WARNING(4365) // conversion from 'int' to 'unsigned', sign
 DOCTEST_MSVC_SUPPRESS_WARNING(4820) // padding in structs
 DOCTEST_MSVC_SUPPRESS_WARNING(4640) // construction of local static object is not thread-safe
 DOCTEST_MSVC_SUPPRESS_WARNING(5039) // pointer to potentially throwing function passed to extern C
+DOCTEST_MSVC_SUPPRESS_WARNING(5045) // Spectre mitigation stuff
 
 #if defined(DOCTEST_NO_CPP11_COMPAT)
 DOCTEST_CLANG_SUPPRESS_WARNING("-Wc++98-compat")
