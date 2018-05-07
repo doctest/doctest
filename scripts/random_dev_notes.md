@@ -29,7 +29,8 @@ reddit.com/r/cplusplus
 https://www.linkedin.com/groups/86782/profile
 twitter
 
-
+also check if anything should be added here:
+https://github.com/martinmoene/catch-lest-other-comparison
 
 == how to deal with pull requests for the main branch instead of the dev branch
 - http://stackoverflow.com/questions/9135913/merge-pull-request-to-a-different-branch-than-default-in-github

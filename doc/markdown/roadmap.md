@@ -16,7 +16,7 @@ Planned features for future releases - order changes constantly...
     - ability to use multiple reporters at once (but only 1 to stdout)
     - a compact reporter
     - a progress reporter - or maybe just an option for the console reporter
-    - an xml reporter
+    - an xml reporter ([junit related stuff](https://github.com/ujiro99/doctest-junit-report))
     - xUnit reporter
     - a listener interface - similar to a reporter - look at Catch
 - ability to have no output when everything succeeds
@@ -95,7 +95,7 @@ Planned features for future releases - order changes constantly...
 
 ### Things that are being considered but not part of the roadmap yet:
 
-- FakeIt mocking integration - like [catch](https://github.com/eranpeer/FakeIt/tree/master/config/catch)
+- FakeIt mocking integration - like [catch](https://github.com/eranpeer/FakeIt/tree/master/config/catch) (also checkout [this](https://github.com/ujiro99/doctest-sample))
 - look into https://github.com/cpp-testing/GUnit - https://www.youtube.com/watch?v=NVrZjT5lW5o
 - consider the following 2 properties for the MSVC static code analyzer: EnableCppCoreCheck, EnableExperimentalCppCoreCheck
 - rpm package? like this: https://github.com/vietjtnguyen/argagg/blob/master/packaging/rpm/argagg.spec
