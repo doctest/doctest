@@ -1,6 +1,12 @@
 
 always start with the color which we want - that way we won't have to end with Color::None all the time
 
+cleanup color class code
+
+fix the issue with (num) vs :num: for line numbers (also test with a post-build command to run the tests - if the errors are in the IDE)
+
+reporters - remember to reuse the console reporter for the output debug windows of IDEs - check DOCTEST_PRINT_TO_CONSOLE_AND_OUTPUT
+
 add gcc8 warnings
 
 move to suppression files for buggy valgrind/sanitizer builds and remove some code of mine (like my_strlen)

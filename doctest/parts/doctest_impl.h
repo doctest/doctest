@@ -84,6 +84,7 @@ DOCTEST_CLANG_SUPPRESS_WARNING("-Wc++98-compat-pedantic")
         }                                                                                          \
     } while(false)
 
+// not used... but keeping it here to use parts of it for the debug output window when reporters are up
 #define DOCTEST_PRINT_TO_CONSOLE_AND_OUTPUT(func, arg)                                             \
     func(std::cout, DOCTEST_HANDLE_BRACED_VA_ARGS(arg));                                           \
     if(isDebuggerActive()) {                                                                       \
@@ -94,18 +95,6 @@ DOCTEST_CLANG_SUPPRESS_WARNING("-Wc++98-compat-pedantic")
         func(oss, DOCTEST_HANDLE_BRACED_VA_ARGS(arg));                                             \
         printToDebugConsole(oss.str().c_str());                                                    \
         p->no_colors = with_col;                                                                   \
-    }
-
-#define DOCTEST_PRINT_TO_CONSOLE_AND_OUTPUT_NO_ARG(func)                                           \
-    func(std::cout);                                                                               \
-    if(isDebuggerActive()) {                                                                       \
-        ContextState* p_in_macro = contextState;                                                   \
-        bool          with_col   = p_in_macro->no_colors;                                          \
-        p_in_macro->no_colors    = false;                                                          \
-        std::ostringstream oss;                                                                    \
-        func(oss);                                                                                 \
-        printToDebugConsole(oss.str().c_str());                                                    \
-        p_in_macro->no_colors = with_col;                                                          \
     }
 
 DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_BEGIN
@@ -1465,8 +1454,9 @@ namespace detail
         stream << "\n";
     }
 
-    void logTestException(const String& what, bool crash){
-            DOCTEST_PRINT_TO_CONSOLE_AND_OUTPUT(logTestException_impl, (what, crash))}
+    void logTestException(const String& what, bool crash) {
+        logTestException_impl(std::cout, what, crash);
+    }
 
     String logContext() {
         std::ostringstream           stream;
@@ -1483,7 +1473,7 @@ namespace detail
 
 #if defined(DOCTEST_CONFIG_POSIX_SIGNALS) || defined(DOCTEST_CONFIG_WINDOWS_SEH)
     void reportFatal(const std::string& message) {
-        DOCTEST_PRINT_TO_CONSOLE_AND_OUTPUT_NO_ARG(DOCTEST_LOG_START)
+        DOCTEST_LOG_START(std::cout);
 
         contextState->numAssertions += contextState->numAssertionsForCurrentTestcase;
         logTestException(message.c_str(), true);
@@ -1522,8 +1512,7 @@ namespace detail
 
     void logAssert(bool passed, const char* dec, bool threw, const String& exception,
                    const char* expr, assertType::Enum assert_type, const char* file, int line) {
-        DOCTEST_PRINT_TO_CONSOLE_AND_OUTPUT(
-                logAssert_impl, (passed, dec, threw, exception, expr, assert_type, file, line))
+        logAssert_impl(std::cout, passed, dec, threw, exception, expr, assert_type, file, line);
     }
 
     void logAssertThrows_impl(std::ostream& stream, bool threw, const char* expr,
@@ -1540,8 +1529,7 @@ namespace detail
 
     void logAssertThrows(bool threw, const char* expr, assertType::Enum assert_type,
                          const char* file, int line) {
-        DOCTEST_PRINT_TO_CONSOLE_AND_OUTPUT(logAssertThrows_impl,
-                                            (threw, expr, assert_type, file, line))
+        logAssertThrows_impl(std::cout, threw, expr, assert_type, file, line);
     }
 
     void logAssertThrowsAs_impl(std::ostream& stream, bool threw, bool threw_as, const char* as,
@@ -1564,8 +1552,7 @@ namespace detail
     void logAssertThrowsAs(bool threw, bool threw_as, const char* as, const String& ex,
                            const char* expr, assertType::Enum assert_type, const char* file,
                            int line) {
-        DOCTEST_PRINT_TO_CONSOLE_AND_OUTPUT(
-                logAssertThrowsAs_impl, (threw, threw_as, as, ex, expr, assert_type, file, line))
+        logAssertThrowsAs_impl(std::cout, threw, threw_as, as, ex, expr, assert_type, file, line);
     }
 
     void logAssertNothrow_impl(std::ostream& stream, bool threw, const String& ex, const char* expr,
@@ -1582,8 +1569,7 @@ namespace detail
 
     void logAssertNothrow(bool threw, const String& ex, const char* expr,
                           assertType::Enum assert_type, const char* file, int line) {
-        DOCTEST_PRINT_TO_CONSOLE_AND_OUTPUT(logAssertNothrow_impl,
-                                            (threw, ex, expr, assert_type, file, line));
+        logAssertNothrow_impl(std::cout, threw, ex, expr, assert_type, file, line);
     }
 
     ResultBuilder::ResultBuilder(assertType::Enum assert_type, const char* file, int line,
@@ -1627,7 +1613,7 @@ namespace detail
         }
 
         if(m_failed || contextState->success) {
-            DOCTEST_PRINT_TO_CONSOLE_AND_OUTPUT_NO_ARG(DOCTEST_LOG_START)
+            DOCTEST_LOG_START(std::cout);
 
             if(m_assert_type & assertType::is_throws) { //!OCLINT bitwise operator in conditional
                 logAssertThrows(m_threw, m_expr, m_assert_type, m_file, m_line);
@@ -1678,7 +1664,7 @@ namespace detail
     }
 
     bool MessageBuilder::log() {
-        DOCTEST_PRINT_TO_CONSOLE_AND_OUTPUT_NO_ARG(log);
+        log(std::cout);
         const bool isWarn = m_severity & assertType::is_warn;
 
         // warn is just a message in this context so we dont treat it as an assert
@@ -2231,7 +2217,7 @@ int Context::run() {
 
                 // if logging successful tests - force the start log
                 if(p->success)
-                    DOCTEST_PRINT_TO_CONSOLE_AND_OUTPUT_NO_ARG(DOCTEST_LOG_START)
+                    DOCTEST_LOG_START(std::cout);
 
                 // reset the assertion state
                 p->numAssertionsForCurrentTestcase = 0;
@@ -2256,7 +2242,7 @@ int Context::run() {
                         failed = true;
 #ifndef DOCTEST_CONFIG_NO_EXCEPTIONS
                 } catch(const TestFailureException&) { failed = true; } catch(...) {
-                    DOCTEST_PRINT_TO_CONSOLE_AND_OUTPUT_NO_ARG(DOCTEST_LOG_START)
+                    DOCTEST_LOG_START(std::cout);
                     logTestException(translateActiveException(), false);
                     failed = true;
                 }
@@ -2278,7 +2264,7 @@ int Context::run() {
             if(Approx(p->currentTest->m_timeout).epsilon(DBL_EPSILON) != 0 &&
                Approx(duration).epsilon(DBL_EPSILON) > p->currentTest->m_timeout) {
                 failed = true;
-                DOCTEST_PRINT_TO_CONSOLE_AND_OUTPUT_NO_ARG(DOCTEST_LOG_START)
+                DOCTEST_LOG_START(std::cout);
                 std::cout << Color::Red << "Test case exceeded time limit of "
                           << std::setprecision(6) << std::fixed << p->currentTest->m_timeout
                           << "!\n"
@@ -2290,7 +2276,7 @@ int Context::run() {
                           << " s: " << p->currentTest->m_name << "\n";
 
             if(data.m_should_fail) {
-                DOCTEST_PRINT_TO_CONSOLE_AND_OUTPUT_NO_ARG(DOCTEST_LOG_START)
+                DOCTEST_LOG_START(std::cout);
                 if(failed)
                     std::cout << Color::Yellow << "Failed as expected so marking it as not failed\n"
                               << Color::None;
@@ -2300,12 +2286,12 @@ int Context::run() {
                               << Color::None;
                 failed = !failed;
             } else if(failed && data.m_may_fail) {
-                DOCTEST_PRINT_TO_CONSOLE_AND_OUTPUT_NO_ARG(DOCTEST_LOG_START)
+                DOCTEST_LOG_START(std::cout);
                 failed = false;
                 std::cout << Color::Yellow << "Allowed to fail so marking it as not failed\n"
                           << Color::None;
             } else if(data.m_expected_failures > 0) {
-                DOCTEST_PRINT_TO_CONSOLE_AND_OUTPUT_NO_ARG(DOCTEST_LOG_START)
+                DOCTEST_LOG_START(std::cout);
                 if(p->numFailedAssertionsForCurrentTestcase == data.m_expected_failures) {
                     failed = false;
                     std::cout << Color::Yellow << "Failed exactly " << data.m_expected_failures
