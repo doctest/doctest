@@ -137,7 +137,10 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
         add_compiler_flags(-Walloc-zero)
         add_compiler_flags(-Walloca)
         add_compiler_flags(-Wduplicated-branches)
-        add_compiler_flags(-Wrestrict)
+    endif()
+    
+    if(NOT CMAKE_CXX_COMPILER_VERSION VERSION_LESS 8.0)
+        add_compiler_flags(-Wcast-align=strict)
     endif()
 endif()
 
