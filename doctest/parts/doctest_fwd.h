@@ -1461,8 +1461,8 @@ namespace detail
         // clang-format off
         DOCTEST_DO_BINARY_EXPRESSION_COMPARISON(==, " == ", DOCTEST_CMP_EQ) //!OCLINT bitwise operator in conditional
         DOCTEST_DO_BINARY_EXPRESSION_COMPARISON(!=, " != ", DOCTEST_CMP_NE) //!OCLINT bitwise operator in conditional
-        DOCTEST_DO_BINARY_EXPRESSION_COMPARISON(>, " >  ", DOCTEST_CMP_GT) //!OCLINT bitwise operator in conditional
-        DOCTEST_DO_BINARY_EXPRESSION_COMPARISON(<, " <  ", DOCTEST_CMP_LT) //!OCLINT bitwise operator in conditional
+        DOCTEST_DO_BINARY_EXPRESSION_COMPARISON(>,  " >  ", DOCTEST_CMP_GT) //!OCLINT bitwise operator in conditional
+        DOCTEST_DO_BINARY_EXPRESSION_COMPARISON(<,  " <  ", DOCTEST_CMP_LT) //!OCLINT bitwise operator in conditional
         DOCTEST_DO_BINARY_EXPRESSION_COMPARISON(>=, " >= ", DOCTEST_CMP_GE) //!OCLINT bitwise operator in conditional
         DOCTEST_DO_BINARY_EXPRESSION_COMPARISON(<=, " <= ", DOCTEST_CMP_LE) //!OCLINT bitwise operator in conditional
         // clang-format on
@@ -1559,33 +1559,6 @@ namespace detail
     // forward declarations of functions used by the macros
     DOCTEST_INTERFACE int regTest(const TestCase& tc);
     DOCTEST_INTERFACE int setTestSuite(const TestSuite& ts);
-
-    DOCTEST_INTERFACE void addFailedAssert(assertType::Enum assert_type);
-
-    DOCTEST_INTERFACE void logTestStart(const TestCase& tc);
-    DOCTEST_INTERFACE void logTestEnd();
-
-    DOCTEST_INTERFACE void logTestException(const String& what, bool crash = false);
-
-    DOCTEST_INTERFACE void logAssert(bool passed, const char* decomposition, bool threw,
-                                     const String& exception, const char* expr,
-                                     assertType::Enum assert_type, const char* file, int line);
-
-    DOCTEST_INTERFACE void logAssertThrows(bool threw, const char* expr,
-                                           assertType::Enum assert_type, const char* file,
-                                           int line);
-
-    DOCTEST_INTERFACE void logAssertThrowsAs(bool threw, bool threw_as, const char* as,
-                                             const String& exception, const char* expr,
-                                             assertType::Enum assert_type, const char* file,
-                                             int line);
-
-    DOCTEST_INTERFACE void logAssertNothrow(bool threw, const String& exception, const char* expr,
-                                            assertType::Enum assert_type, const char* file,
-                                            int line);
-
-    DOCTEST_INTERFACE bool isDebuggerActive();
-    DOCTEST_INTERFACE void writeToDebugConsole(const String&);
 
     namespace binaryAssertComparison
     {
@@ -2002,6 +1975,7 @@ namespace detail
             return *this;
         }
 
+        void log(std::ostream&);
         bool log();
         void react();
     };

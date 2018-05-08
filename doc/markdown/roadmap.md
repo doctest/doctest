@@ -104,7 +104,7 @@ Planned features for future releases - order changes constantly...
 - consider the following 2 properties for the MSVC static code analyzer: EnableCppCoreCheck, EnableExperimentalCppCoreCheck
 - rpm package? like this: https://github.com/vietjtnguyen/argagg/blob/master/packaging/rpm/argagg.spec
 - get the current test case/section path - https://github.com/philsquared/Catch/issues/522
-- when no assertion is encountered in a test case it should fail
+- when no assertion is encountered in a test case it should fail - and should also add a SUCCEED() call
 - failure reporting should print out previous SECTIONs for data-driven testing - as requested [here](https://github.com/philsquared/Catch/issues/734)
 - ```Bitwise()``` class that has overloaded operators for comparison - to be used to check objects bitwise against each other
 - detect floating point exceptions

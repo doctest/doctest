@@ -1,12 +1,16 @@
 
+always start with the color which we want - that way we won't have to end with Color::None all the time
+
+add gcc8 warnings
+
+move to suppression files for buggy valgrind/sanitizer builds and remove some code of mine (like my_strlen)
+
 https://github.com/catchorg/Catch2/commit/de36b2ada6e4593a9a32c4c86cd47d4bc002b148
 
 add [[noreturn]] to MessageBuilder::react() - and actually make a separate function (react2) for the FAIL() case
 
 look at runtime performance stuff
 https://github.com/catchorg/Catch2/issues/1086
-
-SUCCEED();
 
 rethink static code analisys suppressions - users shouldn't have to use the same flags for code which uses doctest macros/types
 
