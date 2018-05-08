@@ -1,9 +1,7 @@
 
 check console colors after refactor...
 
-fix the issue with (num) vs :num: for line numbers (also test with a post-build command to run the tests - if the errors are in the IDE)
-
-reporters - remember to reuse the console reporter for the output debug windows of IDEs - check DOCTEST_PRINT_TO_CONSOLE_AND_OUTPUT
+(num) vs :num: for line numbers (__GNUG__) (also test with a post-build command to run the tests - if the errors are in the IDE)
 
 add gcc8 warnings
 
