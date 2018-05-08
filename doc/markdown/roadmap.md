@@ -9,9 +9,6 @@ Planned features for future releases - order changes constantly...
 
 ### For 1.3:
 
-- move from printf to using streams in the current console reporter and clean that mess
-- thread safety - asserts/subcases/captures should be safe to be used by multiple threads simultaneously
-    - https://github.com/blastrock/doctest/tree/threadsafe
 - reporters
     - output to file
     - a system for writing custom reporters
@@ -23,17 +20,10 @@ Planned features for future releases - order changes constantly...
     - a listener interface - similar to a reporter - look at Catch
 - ability to have no output when everything succeeds
 - option to output summary only
+- thread safety - asserts/subcases/captures should be safe to be used by multiple threads simultaneously
+    - https://github.com/blastrock/doctest/tree/threadsafe
 - matchers - should investigate what they are - look at google test/mock and Catch (also predicates and boost test)
 - convolution support for the assertion macros (with a predicate)
-- proper conan package
-    - https://github.com/onqtam/doctest/issues/103
-    - https://github.com/bincrafters/conan-doctest
-    - https://github.com/uilianries/conan-catch
-    - https://github.com/philsquared/Catch/pull/938
-    - https://stackoverflow.com/questions/40311363/conan-io-header-only-package
-    - https://github.com/conan-io/docs/issues/67
-    - https://github.com/agauniyal/rang
-    - https://github.com/conan-io/conan/issues/324
 
 ### For 1.4:
 
@@ -43,6 +33,15 @@ Planned features for future releases - order changes constantly...
     - [rapidcheck](https://github.com/emil-e/rapidcheck)
     - [autocheck](https://github.com/thejohnfreeman/autocheck)
     - [CppQuickCheck](https://github.com/grogers0/CppQuickCheck)
+- proper conan package
+    - https://github.com/onqtam/doctest/issues/103
+    - https://github.com/bincrafters/conan-doctest
+    - https://github.com/uilianries/conan-catch
+    - https://github.com/philsquared/Catch/pull/938
+    - https://stackoverflow.com/questions/40311363/conan-io-header-only-package
+    - https://github.com/conan-io/docs/issues/67
+    - https://github.com/agauniyal/rang
+    - https://github.com/conan-io/conan/issues/324
 - IDE integration
     - https://blogs.msdn.microsoft.com/vcblog/2017/05/10/unit-testing-and-the-future-announcing-the-test-adapter-for-google-test/
     - https://www.reddit.com/r/cpp/comments/65c0f1/run_cpp_unit_tests_from_xcode_and_visual_studio/
@@ -124,7 +123,7 @@ Planned features for future releases - order changes constantly...
     - option to list files in which there are test cases who match the current filters
     - option for filters to switch from "match any" to "match all" mode
     - option to list test suites and test cases in a tree view
-    - add a "wait key" option - as requested [here](https://github.com/philsquared/Catch/issues/477#issuecomment-256417686)
+    - add a "wait key" option (before and after tests) - as requested [here](https://github.com/philsquared/Catch/issues/477#issuecomment-256417686)
 - decorators for test cases and test suites- like in boost test
     - depends_on
     - precondition

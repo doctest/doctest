@@ -756,7 +756,7 @@ inline bool operator<=(const String& lhs, const String& rhs) { return (lhs != rh
 inline bool operator>=(const String& lhs, const String& rhs) { return (lhs != rhs) ? lhs.compare(rhs) > 0 : true; }
 // clang-format on
 
-DOCTEST_INTERFACE std::ostream& operator<<(std::ostream& stream, const String& in);
+DOCTEST_INTERFACE std::ostream& operator<<(std::ostream& s, const String& in);
 
 namespace detail
 {
@@ -843,10 +843,10 @@ namespace detail
     {
         template <typename T>
         static String convert(const DOCTEST_REF_WRAP(T) in) {
-            std::ostream* stream = createStream();
-            *stream << in;
-            String result = getStreamResult(stream);
-            freeStream(stream);
+            std::ostream* s = createStream();
+            *s << in;
+            String result = getStreamResult(s);
+            freeStream(s);
             return result;
         }
     };
@@ -1263,7 +1263,6 @@ namespace detail
 
     DOCTEST_INTERFACE bool checkIfShouldThrow(assertType::Enum assert_type);
     DOCTEST_INTERFACE void fastAssertThrowIfFlagSet(int flags);
-    DOCTEST_INTERFACE void throwException();
 
     struct TestAccessibleContextState
     {
@@ -1742,20 +1741,20 @@ namespace detail
 
     // FIX FOR VISUAL STUDIO VERSIONS PRIOR TO 2015 - they failed to compile the call to operator<< with
     // std::ostream passed as a reference noting that there is a use of an undefined type (which there isn't)
-    DOCTEST_INTERFACE void writeStringToStream(std::ostream* stream, const String& str);
+    DOCTEST_INTERFACE void writeStringToStream(std::ostream* s, const String& str);
 
     template <bool C>
     struct StringStreamBase
     {
         template <typename T>
-        static void convert(std::ostream* stream, const T& in) {
-            writeStringToStream(stream, toString(in));
+        static void convert(std::ostream* s, const T& in) {
+            writeStringToStream(s, toString(in));
         }
 
         // always treat char* as a string in this context - no matter
         // if DOCTEST_CONFIG_TREAT_CHAR_STAR_AS_STRING is defined
-        static void convert(std::ostream* stream, const char* in) {
-            writeStringToStream(stream, String(in));
+        static void convert(std::ostream* s, const char* in) {
+            writeStringToStream(s, String(in));
         }
     };
 
@@ -1763,8 +1762,8 @@ namespace detail
     struct StringStreamBase<true>
     {
         template <typename T>
-        static void convert(std::ostream* stream, const T& in) {
-            *stream << in;
+        static void convert(std::ostream* s, const T& in) {
+            *s << in;
         }
     };
 
@@ -1773,32 +1772,32 @@ namespace detail
     {};
 
     template <typename T>
-    void toStream(std::ostream* stream, const T& value) {
-        StringStream<T>::convert(stream, value);
+    void toStream(std::ostream* s, const T& value) {
+        StringStream<T>::convert(s, value);
     }
 
 #ifdef DOCTEST_CONFIG_TREAT_CHAR_STAR_AS_STRING
-    DOCTEST_INTERFACE void toStream(std::ostream* stream, char* in);
-    DOCTEST_INTERFACE void toStream(std::ostream* stream, const char* in);
+    DOCTEST_INTERFACE void toStream(std::ostream* s, char* in);
+    DOCTEST_INTERFACE void toStream(std::ostream* s, const char* in);
 #endif // DOCTEST_CONFIG_TREAT_CHAR_STAR_AS_STRING
-    DOCTEST_INTERFACE void toStream(std::ostream* stream, bool in);
-    DOCTEST_INTERFACE void toStream(std::ostream* stream, float in);
-    DOCTEST_INTERFACE void toStream(std::ostream* stream, double in);
-    DOCTEST_INTERFACE void toStream(std::ostream* stream, double long in);
+    DOCTEST_INTERFACE void toStream(std::ostream* s, bool in);
+    DOCTEST_INTERFACE void toStream(std::ostream* s, float in);
+    DOCTEST_INTERFACE void toStream(std::ostream* s, double in);
+    DOCTEST_INTERFACE void toStream(std::ostream* s, double long in);
 
-    DOCTEST_INTERFACE void toStream(std::ostream* stream, char in);
-    DOCTEST_INTERFACE void toStream(std::ostream* stream, char signed in);
-    DOCTEST_INTERFACE void toStream(std::ostream* stream, char unsigned in);
-    DOCTEST_INTERFACE void toStream(std::ostream* stream, int short in);
-    DOCTEST_INTERFACE void toStream(std::ostream* stream, int short unsigned in);
-    DOCTEST_INTERFACE void toStream(std::ostream* stream, int in);
-    DOCTEST_INTERFACE void toStream(std::ostream* stream, int unsigned in);
-    DOCTEST_INTERFACE void toStream(std::ostream* stream, int long in);
-    DOCTEST_INTERFACE void toStream(std::ostream* stream, int long unsigned in);
+    DOCTEST_INTERFACE void toStream(std::ostream* s, char in);
+    DOCTEST_INTERFACE void toStream(std::ostream* s, char signed in);
+    DOCTEST_INTERFACE void toStream(std::ostream* s, char unsigned in);
+    DOCTEST_INTERFACE void toStream(std::ostream* s, int short in);
+    DOCTEST_INTERFACE void toStream(std::ostream* s, int short unsigned in);
+    DOCTEST_INTERFACE void toStream(std::ostream* s, int in);
+    DOCTEST_INTERFACE void toStream(std::ostream* s, int unsigned in);
+    DOCTEST_INTERFACE void toStream(std::ostream* s, int long in);
+    DOCTEST_INTERFACE void toStream(std::ostream* s, int long unsigned in);
 
 #ifdef DOCTEST_CONFIG_WITH_LONG_LONG
-    DOCTEST_INTERFACE void toStream(std::ostream* stream, int long long in);
-    DOCTEST_INTERFACE void toStream(std::ostream* stream, int long long unsigned in);
+    DOCTEST_INTERFACE void toStream(std::ostream* s, int long long in);
+    DOCTEST_INTERFACE void toStream(std::ostream* s, int long long unsigned in);
 #endif // DOCTEST_CONFIG_WITH_LONG_LONG
 
     struct IContextScope
@@ -1829,8 +1828,8 @@ namespace detail
 
             explicit Capture(const T* in)
                     : capture(in) {}
-            virtual void toStream(std::ostream* stream) const { // override
-                detail::toStream(stream, *capture);
+            virtual void toStream(std::ostream* s) const { // override
+                detail::toStream(s, *capture);
             }
         };
 
@@ -1852,15 +1851,15 @@ namespace detail
         Node* tail;
 
         DOCTEST_GCC_SUPPRESS_WARNING_WITH_PUSH("-Wcast-align")
-        void build(std::ostream* stream) const {
+        void build(std::ostream* s) const {
             int curr = 0;
             // iterate over small buffer
             while(curr < numCaptures && curr < DOCTEST_CONFIG_NUM_CAPTURES_ON_STACK)
-                reinterpret_cast<const ICapture*>(stackChunks[curr++].buf)->toStream(stream);
+                reinterpret_cast<const ICapture*>(stackChunks[curr++].buf)->toStream(s);
             // iterate over list
             Node* curr_elem = head;
             while(curr < numCaptures) {
-                reinterpret_cast<const ICapture*>(curr_elem->chunk.buf)->toStream(stream);
+                reinterpret_cast<const ICapture*>(curr_elem->chunk.buf)->toStream(s);
                 curr_elem = curr_elem->next;
                 ++curr;
             }
@@ -1952,9 +1951,9 @@ namespace detail
             popFromContexts();
         }
 
-        void build(std::ostream* stream) {
+        void build(std::ostream* s) {
             built = true;
-            contextBuilder.build(stream);
+            contextBuilder.build(s);
         }
     };
 

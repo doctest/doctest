@@ -1,15 +1,11 @@
 
-always start with the color which we want - that way we won't have to end with Color::None all the time
-
-cleanup color class code
+check console colors after refactor...
 
 fix the issue with (num) vs :num: for line numbers (also test with a post-build command to run the tests - if the errors are in the IDE)
 
 reporters - remember to reuse the console reporter for the output debug windows of IDEs - check DOCTEST_PRINT_TO_CONSOLE_AND_OUTPUT
 
 add gcc8 warnings
-
-move to suppression files for buggy valgrind/sanitizer builds and remove some code of mine (like my_strlen)
 
 https://github.com/catchorg/Catch2/commit/de36b2ada6e4593a9a32c4c86cd47d4bc002b148
 
@@ -38,6 +34,8 @@ reddit.com/r/gamedev
 reddit.com/r/cplusplus
 https://www.linkedin.com/groups/86782/profile
 twitter
+
+on big releases: update benchmarks, number of CI builds, differences with Catch, docs, etc.
 
 also check if anything should be added here:
 https://github.com/martinmoene/catch-lest-other-comparison
