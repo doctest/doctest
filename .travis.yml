@@ -59,10 +59,10 @@ matrix:
           packages: ["lcov"]
 
     # static code analysis
-    - env: COMPILER=clang++-5.0 STATIC_CODE_ANALYSIS=true
-      addons: &clang40
+    - env: COMPILER=clang++-4.0 STATIC_CODE_ANALYSIS=true
+      addons: &static_analysis
         apt:
-          packages: ["clang-5.0", "clang-tidy-5.0", "cppcheck"]
+          packages: ["clang-4.0", "clang-tidy-4.0", "cppcheck"]
           sources: *apt_sources
 
     # GCC 4.4
@@ -191,7 +191,7 @@ matrix:
           sources: *apt_sources
 
     # Clang 6.0
-    - env: COMPILER=clang++-6.0 HAS_ASAN_64=true HAS_UBSAN_64=true
+    - env: COMPILER=clang++-6.0 HAS_ASAN_64=true HAS_UBSAN_64=true # no ASAN_32/UBSAN_32 - errors: 
       sudo: required      # see this issue for more details: https://github.com/travis-ci/travis-ci/issues/9033
       addons: &clang60
         apt:
@@ -253,19 +253,19 @@ matrix:
     # OSX GCC 6
     - env: COMPILER=g++-6 HAS_ASAN_32=true HAS_UBSAN_32=true HAS_ASAN_64=true HAS_UBSAN_64=true
       compiler: gcc
-      osx_image: xcode7.3
+      osx_image: xcode9.3
       os: osx
 
     # OSX GCC 7
     - env: COMPILER=g++-7 HAS_ASAN_32=true HAS_UBSAN_32=true HAS_ASAN_64=true HAS_UBSAN_64=true
       compiler: gcc
-      osx_image: xcode7.3
+      osx_image: xcode9.3
       os: osx
 
     # OSX GCC 8
     - env: COMPILER=g++-8 HAS_ASAN_32=true HAS_UBSAN_32=true HAS_ASAN_64=true HAS_UBSAN_64=true
       compiler: gcc
-      osx_image: xcode7.3
+      osx_image: xcode9.3
       os: osx
 
     # OSX LLVM-GCC
@@ -284,19 +284,19 @@ matrix:
     # OSX GCC 6
     - env: COMPILER=g++-6 HAS_ASAN_32=true HAS_UBSAN_32=true HAS_ASAN_64=true HAS_UBSAN_64=true
       compiler: gcc
-      osx_image: xcode7.3
+      osx_image: xcode9.3
       os: osx
 
     # OSX GCC 7
     - env: COMPILER=g++-7 HAS_ASAN_32=true HAS_UBSAN_32=true HAS_ASAN_64=true HAS_UBSAN_64=true
       compiler: gcc
-      osx_image: xcode7.3
+      osx_image: xcode9.3
       os: osx
 
     # OSX GCC 8
     - env: COMPILER=g++-8 HAS_ASAN_32=true HAS_UBSAN_32=true HAS_ASAN_64=true HAS_UBSAN_64=true
       compiler: gcc
-      osx_image: xcode7.3
+      osx_image: xcode9.3
       os: osx
 
 install:
@@ -403,7 +403,7 @@ script:
       # clang-tidy
       cd scripts/playground
       cmake ${CMAKE_OPTIONS_GLOBAL} ${CMAKE_OPTIONS} -DCMAKE_CXX_COMPILER=${CXX} . || exit 1
-      clang-tidy-5.0 -p=. *.cpp -header-filter=.* -warnings-as-errors=* -checks='*,-misc-macro-parentheses,-misc-definitions-in-headers,-misc-unused-parameters,-llvm-header-guard,-llvm-include-order,-google-readability-braces-around-statements,-google-runtime-references,-google-readability-todo,-google-build-using-namespace,-google-explicit-constructor,-cert-err58-cpp,-cppcoreguidelines-pro-type-vararg,-cppcoreguidelines-pro-bounds-pointer-arithmetic,-cppcoreguidelines-pro-bounds-array-to-pointer-decay,-cppcoreguidelines-special-member-functions,-cppcoreguidelines-pro-type-reinterpret-cast,-cppcoreguidelines-pro-bounds-constant-array-index,-cppcoreguidelines-pro-type-member-init,-cppcoreguidelines-pro-type-union-access,-clang-analyzer-security.insecureAPI.strcpy,-modernize-use-nullptr,-modernize-use-equals-default,-modernize-loop-convert,-modernize-use-auto,-readability-braces-around-statements,-readability-named-parameter,-readability-else-after-return,-readability-redundant-declaration,-readability-implicit-bool-cast' || exit 1
+      clang-tidy-4.0 -p=. *.cpp -header-filter=.* -warnings-as-errors=* -checks='*,-misc-macro-parentheses,-misc-definitions-in-headers,-misc-unused-parameters,-llvm-header-guard,-llvm-include-order,-google-readability-braces-around-statements,-google-runtime-references,-google-readability-todo,-google-build-using-namespace,-google-explicit-constructor,-cert-err58-cpp,-cppcoreguidelines-pro-type-vararg,-cppcoreguidelines-pro-bounds-pointer-arithmetic,-cppcoreguidelines-pro-bounds-array-to-pointer-decay,-cppcoreguidelines-special-member-functions,-cppcoreguidelines-pro-type-reinterpret-cast,-cppcoreguidelines-pro-bounds-constant-array-index,-cppcoreguidelines-pro-type-member-init,-cppcoreguidelines-pro-type-union-access,-clang-analyzer-security.insecureAPI.strcpy,-modernize-use-nullptr,-modernize-use-equals-default,-modernize-loop-convert,-modernize-use-auto,-readability-braces-around-statements,-readability-named-parameter,-readability-else-after-return,-readability-redundant-declaration,-readability-implicit-bool-cast' || exit 1
 
       # do not continue with other build configurations after that
       exit
