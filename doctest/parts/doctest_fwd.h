@@ -188,15 +188,9 @@ DOCTEST_GCC_SUPPRESS_WARNING("-Wmissing-declarations")
 DOCTEST_GCC_SUPPRESS_WARNING("-Wnon-virtual-dtor")
 DOCTEST_GCC_SUPPRESS_WARNING("-Winline")
 DOCTEST_GCC_SUPPRESS_WARNING("-Wlong-long")
-#if DOCTEST_GCC >= DOCTEST_COMPILER(4, 7, 0)
 DOCTEST_GCC_SUPPRESS_WARNING("-Wzero-as-null-pointer-constant")
-#endif // GCC 4.7+
-#if DOCTEST_GCC >= DOCTEST_COMPILER(4, 8, 0)
 DOCTEST_GCC_SUPPRESS_WARNING("-Wunused-local-typedefs")
-#endif // GCC 4.8+
-#if DOCTEST_GCC >= DOCTEST_COMPILER(5, 4, 0)
 DOCTEST_GCC_SUPPRESS_WARNING("-Wuseless-cast")
-#endif // GCC 5.4+
 
 DOCTEST_MSVC_SUPPRESS_WARNING_PUSH
 DOCTEST_MSVC_SUPPRESS_WARNING(4616) // invalid compiler warning
@@ -1368,9 +1362,7 @@ namespace detail
     DOCTEST_GCC_SUPPRESS_WARNING_PUSH
     DOCTEST_GCC_SUPPRESS_WARNING("-Wsign-conversion")
     DOCTEST_GCC_SUPPRESS_WARNING("-Wsign-compare")
-    //#if DOCTEST_GCC >= DOCTEST_COMPILER(4, 6, 0)
     //DOCTEST_GCC_SUPPRESS_WARNING("-Wdouble-promotion")
-    //#endif // GCC
     //DOCTEST_GCC_SUPPRESS_WARNING("-Wconversion")
     //DOCTEST_GCC_SUPPRESS_WARNING("-Wfloat-equal")
 
