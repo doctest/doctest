@@ -353,12 +353,15 @@ install:
       fi
       if [[ "${COMPILER}" = "g++-6" ]]; then
         brew install gcc6
+        brew link --overwrite gcc@6
       fi
       if [[ "${COMPILER}" = "g++-7" ]]; then
         brew install gcc7
+        brew link --overwrite gcc@7
       fi
       if [[ "${COMPILER}" = "g++-8" ]]; then
         brew install gcc8
+        brew link --overwrite gcc@8
       fi
     fi
 
