@@ -59,10 +59,10 @@ matrix:
           packages: ["lcov"]
 
     # static code analysis
-    - env: COMPILER=clang++-4.0 STATIC_CODE_ANALYSIS=true
+    - env: COMPILER=clang++-5.0 STATIC_CODE_ANALYSIS=true
       addons: &clang40
         apt:
-          packages: ["clang-4.0", "clang-tidy-4.0", "cppcheck"]
+          packages: ["clang-5.0", "clang-tidy-5.0", "cppcheck"]
           sources: *apt_sources
 
     # GCC 4.4
@@ -191,7 +191,7 @@ matrix:
           sources: *apt_sources
 
     # Clang 6.0
-    - env: COMPILER=clang++-6.0 HAS_ASAN_32=true HAS_UBSAN_32=true HAS_ASAN_64=true HAS_UBSAN_64=true
+    - env: COMPILER=clang++-6.0 HAS_ASAN_64=true HAS_UBSAN_64=true
       sudo: required      # see this issue for more details: https://github.com/travis-ci/travis-ci/issues/9033
       addons: &clang60
         apt:
@@ -262,6 +262,12 @@ matrix:
       osx_image: xcode7.3
       os: osx
 
+    # OSX GCC 8
+    - env: COMPILER=g++-8 HAS_ASAN_32=true HAS_UBSAN_32=true HAS_ASAN_64=true HAS_UBSAN_64=true
+      compiler: gcc
+      osx_image: xcode7.3
+      os: osx
+
     # OSX LLVM-GCC
     - env: COMPILER=g++ HAS_ASAN_32=true HAS_ASAN_64=true
       compiler: gcc
@@ -269,33 +275,11 @@ matrix:
 
   allow_failures:
 
-    # GCC 7
-    - env: COMPILER=g++-7 HAS_ASAN_32=true HAS_UBSAN_32=true HAS_ASAN_64=true HAS_UBSAN_64=true ADDITIONAL_CXX_FLAGS=" -fuse-ld=gold"
-      compiler: gcc
-      sudo: required
-
-    # GCC 8
-    - env: COMPILER=g++-8 HAS_ASAN_32=true HAS_UBSAN_32=true HAS_ASAN_64=true HAS_UBSAN_64=true ADDITIONAL_CXX_FLAGS=" -fuse-ld=gold"
-      compiler: gcc
-      sudo: required
-
     # Clang 3.7
     - env: COMPILER=clang++-3.7
 
     # Clang 3.9
     - env: COMPILER=clang++-3.9 HAS_ASAN_64=true HAS_UBSAN_64=true
-
-    # Clang 4.0
-    - env: COMPILER=clang++-4.0 HAS_ASAN_32=true HAS_UBSAN_32=true HAS_ASAN_64=true HAS_UBSAN_64=true
-      sudo: required
-
-    # Clang 5.0
-    - env: COMPILER=clang++-5.0 HAS_ASAN_32=true HAS_UBSAN_32=true HAS_ASAN_64=true HAS_UBSAN_64=true
-      sudo: required
-
-    # Clang 6.0
-    - env: COMPILER=clang++-6.0 HAS_ASAN_32=true HAS_UBSAN_32=true HAS_ASAN_64=true HAS_UBSAN_64=true
-      sudo: required
 
     # OSX GCC 6
     - env: COMPILER=g++-6 HAS_ASAN_32=true HAS_UBSAN_32=true HAS_ASAN_64=true HAS_UBSAN_64=true
@@ -305,6 +289,12 @@ matrix:
 
     # OSX GCC 7
     - env: COMPILER=g++-7 HAS_ASAN_32=true HAS_UBSAN_32=true HAS_ASAN_64=true HAS_UBSAN_64=true
+      compiler: gcc
+      osx_image: xcode7.3
+      os: osx
+
+    # OSX GCC 8
+    - env: COMPILER=g++-8 HAS_ASAN_32=true HAS_UBSAN_32=true HAS_ASAN_64=true HAS_UBSAN_64=true
       compiler: gcc
       osx_image: xcode7.3
       os: osx
@@ -331,7 +321,7 @@ install:
   # Install OCLint
   - |
     if [[ "${STATIC_CODE_ANALYSIS}" = "true" ]]; then
-      OCLINT_URL="https://github.com/oclint/oclint/releases/download/v0.12/oclint-0.12-x86_64-linux-3.13.0-112-generic.tar.gz"
+      OCLINT_URL="https://github.com/oclint/oclint/releases/download/v0.13.1/oclint-0.13.1-x86_64-linux-4.4.0-112-generic.tar.gz"
       mkdir oclint && travis_retry wget --no-check-certificate --quiet -O - ${OCLINT_URL} | tar --strip-components=1 -xz -C oclint
       export PATH=${DEPS_DIR}/oclint/bin:${PATH}
     fi
@@ -355,15 +345,6 @@ install:
         brew install cmake
       fi
       # gcc
-      if [[ "${COMPILER}" = "g++-4.6" ]]; then
-        brew install gcc46
-      fi
-      if [[ "${COMPILER}" = "g++-4.7" ]]; then
-        brew install gcc47
-      fi
-      if [[ "${COMPILER}" = "g++-4.8" ]]; then
-        brew install gcc48
-      fi
       if [[ "${COMPILER}" = "g++-4.9" ]]; then
         brew install gcc49
       fi
@@ -375,6 +356,9 @@ install:
       fi
       if [[ "${COMPILER}" = "g++-7" ]]; then
         brew install gcc7
+      fi
+      if [[ "${COMPILER}" = "g++-8" ]]; then
+        brew install gcc8
       fi
     fi
 
@@ -419,7 +403,7 @@ script:
       # clang-tidy
       cd scripts/playground
       cmake ${CMAKE_OPTIONS_GLOBAL} ${CMAKE_OPTIONS} -DCMAKE_CXX_COMPILER=${CXX} . || exit 1
-      clang-tidy-4.0 -p=. *.cpp -header-filter=.* -warnings-as-errors=* -checks='*,-misc-macro-parentheses,-misc-definitions-in-headers,-misc-unused-parameters,-llvm-header-guard,-llvm-include-order,-google-readability-braces-around-statements,-google-runtime-references,-google-readability-todo,-google-build-using-namespace,-google-explicit-constructor,-cert-err58-cpp,-cppcoreguidelines-pro-type-vararg,-cppcoreguidelines-pro-bounds-pointer-arithmetic,-cppcoreguidelines-pro-bounds-array-to-pointer-decay,-cppcoreguidelines-special-member-functions,-cppcoreguidelines-pro-type-reinterpret-cast,-cppcoreguidelines-pro-bounds-constant-array-index,-cppcoreguidelines-pro-type-member-init,-cppcoreguidelines-pro-type-union-access,-clang-analyzer-security.insecureAPI.strcpy,-modernize-use-nullptr,-modernize-use-equals-default,-modernize-loop-convert,-modernize-use-auto,-readability-braces-around-statements,-readability-named-parameter,-readability-else-after-return,-readability-redundant-declaration,-readability-implicit-bool-cast' || exit 1
+      clang-tidy-5.0 -p=. *.cpp -header-filter=.* -warnings-as-errors=* -checks='*,-misc-macro-parentheses,-misc-definitions-in-headers,-misc-unused-parameters,-llvm-header-guard,-llvm-include-order,-google-readability-braces-around-statements,-google-runtime-references,-google-readability-todo,-google-build-using-namespace,-google-explicit-constructor,-cert-err58-cpp,-cppcoreguidelines-pro-type-vararg,-cppcoreguidelines-pro-bounds-pointer-arithmetic,-cppcoreguidelines-pro-bounds-array-to-pointer-decay,-cppcoreguidelines-special-member-functions,-cppcoreguidelines-pro-type-reinterpret-cast,-cppcoreguidelines-pro-bounds-constant-array-index,-cppcoreguidelines-pro-type-member-init,-cppcoreguidelines-pro-type-union-access,-clang-analyzer-security.insecureAPI.strcpy,-modernize-use-nullptr,-modernize-use-equals-default,-modernize-loop-convert,-modernize-use-auto,-readability-braces-around-statements,-readability-named-parameter,-readability-else-after-return,-readability-redundant-declaration,-readability-implicit-bool-cast' || exit 1
 
       # do not continue with other build configurations after that
       exit

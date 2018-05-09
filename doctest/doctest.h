@@ -76,7 +76,7 @@
 #endif
 #elif defined(__clang__) && defined(__clang_minor__)
 #define DOCTEST_CLANG DOCTEST_COMPILER(__clang_major__, __clang_minor__, __clang_patchlevel__)
-#elif defined(__GNUC__) && defined(__GNUC_MINOR__) && defined(__GNUC_PATCHLEVEL__)
+#elif defined(__GNUC__) && defined(__GNUC_MINOR__) && defined(__GNUC_PATCHLEVEL__) && !defined(__INTEL_COMPILER)
 #define DOCTEST_GCC DOCTEST_COMPILER(__GNUC__, __GNUC_MINOR__, __GNUC_PATCHLEVEL__)
 #endif
 
@@ -734,11 +734,13 @@ public:
         return data.ptr;
     }
 
+    DOCTEST_GCC_SUPPRESS_WARNING_WITH_PUSH("-Wmaybe-uninitialized")
     unsigned size() const {
         if(isOnStack())
             return last - (unsigned(buf[last]) & 31); // using "last" would work only if "len" is 32
         return data.size;
     }
+    DOCTEST_GCC_SUPPRESS_WARNING_POP
 
     unsigned capacity() const {
         if(isOnStack())
@@ -3469,21 +3471,21 @@ void String::copy(const String& other) {
         data.size     = other.data.size;
         data.capacity = data.size + 1;
         data.ptr      = new char[data.capacity];
-        memcpy(data.ptr, other.data.ptr, data.size + 1u);
+        memcpy(data.ptr, other.data.ptr, size_t(data.size + 1));
     }
 }
 
 String::String(const char* in) {
     unsigned in_len = strlen(in);
     if(in_len <= last) {
-        memcpy(buf, in, in_len + 1u);
+        memcpy(buf, in, size_t(in_len + 1));
         setLast(last - in_len);
     } else {
         setOnHeap();
         data.size     = in_len;
         data.capacity = data.size + 1;
         data.ptr      = new char[data.capacity];
-        memcpy(data.ptr, in, in_len + 1u);
+        memcpy(data.ptr, in, size_t(in_len + 1));
     }
 }
 

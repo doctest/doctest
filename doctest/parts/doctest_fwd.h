@@ -731,11 +731,13 @@ public:
         return data.ptr;
     }
 
+    DOCTEST_GCC_SUPPRESS_WARNING_WITH_PUSH("-Wmaybe-uninitialized")
     unsigned size() const {
         if(isOnStack())
             return last - (unsigned(buf[last]) & 31); // using "last" would work only if "len" is 32
         return data.size;
     }
+    DOCTEST_GCC_SUPPRESS_WARNING_POP
 
     unsigned capacity() const {
         if(isOnStack())

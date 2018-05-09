@@ -1,6 +1,4 @@
 
-suppress whatever possible and make most builds pass
-
 check console colors after refactor...
 
 (num) vs :num: for line numbers (__GNUG__) (also test with a post-build command to run the tests - if the errors are in the IDE)
