@@ -216,15 +216,16 @@ namespace detail
         int  abort_after;           // stop tests after this many failed assertions
         int  subcase_filter_levels; // apply the subcase filters for the first N levels
         bool case_sensitive;        // if filtering should be case sensitive
-        bool exit;         // if the program should be exited after the tests are ran/whatever
-        bool duration;     // print the time duration of each test case
-        bool no_exitcode;  // if the framework should return 0 as the exitcode
-        bool no_run;       // to not run the tests at all (can be done with an "*" exclude)
-        bool no_version;   // to not print the version of the framework
-        bool no_colors;    // if output to the console should be colorized
-        bool force_colors; // forces the use of colors even when a tty cannot be detected
-        bool no_breaks;    // to not break into the debugger
-        bool no_skip;      // don't skip test cases which are marked to be skipped
+        bool exit;          // if the program should be exited after the tests are ran/whatever
+        bool duration;      // print the time duration of each test case
+        bool no_exitcode;   // if the framework should return 0 as the exitcode
+        bool no_run;        // to not run the tests at all (can be done with an "*" exclude)
+        bool no_version;    // to not print the version of the framework
+        bool no_colors;     // if output to the console should be colorized
+        bool force_colors;  // forces the use of colors even when a tty cannot be detected
+        bool no_breaks;     // to not break into the debugger
+        bool no_skip;       // don't skip test cases which are marked to be skipped
+        bool gnu_file_line; // if line numbers should be surrounded with :x: and not (x):
         bool no_path_in_filenames; // if the path to files should be removed from the output
         bool no_line_numbers;      // if source code line numbers should be omitted from the output
         bool no_skipped_summary;   // don't print "skipped" in the summary !!! UNDOCUMENTED !!!
@@ -622,7 +623,7 @@ namespace detail
         return m_template_id < other.m_template_id;
     }
 
-    const char* getAssertString(assertType::Enum val) {
+    const char* assertString(assertType::Enum val) {
         DOCTEST_MSVC_SUPPRESS_WARNING_WITH_PUSH(
                 4062) // enumerator 'x' in switch of enum 'y' is not handled
         switch(val) { //!OCLINT missing default in switch statements
@@ -704,11 +705,11 @@ namespace detail
         return "";
     }
 
-    bool checkIfShouldThrow(assertType::Enum assert_type) {
-        if(assert_type & assertType::is_require) //!OCLINT bitwise operator in conditional
+    bool checkIfShouldThrow(assertType::Enum at) {
+        if(at & assertType::is_require) //!OCLINT bitwise operator in conditional
             return true;
 
-        if((assert_type & assertType::is_check) //!OCLINT bitwise operator in conditional
+        if((at & assertType::is_check) //!OCLINT bitwise operator in conditional
            && contextState->abort_after > 0 &&
            contextState->numFailedAssertions >= contextState->abort_after)
             return true;
@@ -1293,6 +1294,11 @@ namespace detail
 #endif // DOCTEST_PLATFORM_WINDOWS
 #endif // DOCTEST_CONFIG_POSIX_SIGNALS || DOCTEST_CONFIG_WINDOWS_SEH
 
+    void separator_to_stream(std::ostream& s) {
+        s << Color::Yellow
+          << "===============================================================================\n";
+    }
+
     // depending on the current options this will remove the path of filenames
     const char* fileForOutput(const char* file) {
         if(contextState->no_path_in_filenames) {
@@ -1307,15 +1313,32 @@ namespace detail
         return file;
     }
 
-    // depending on the current options this will substitute the line numbers with 0
-    int lineForOutput(int line) {
-        if(contextState->no_line_numbers)
-            return 0;
-        return line;
+    void file_line_to_stream(std::ostream& s, const char* file, int line, const char* tail = "") {
+        s << Color::LightGrey << fileForOutput(file) << (contextState->gnu_file_line ? ":" : "(")
+          << (contextState->no_line_numbers ? 0 : line) // 0 or the real num depending on the option
+          << (contextState->gnu_file_line ? ":" : "):") << tail;
     }
 
-    void file_and_line_to_stream(std::ostream& s, const char* file, int line) {
-        s << Color::LightGrey << fileForOutput(file) << "(" << lineForOutput(line) << ")";
+    const char* getSuccessOrFailString(bool success, assertType::Enum at, const char* success_str) {
+        if(success)
+            return success_str;
+        if(at & assertType::is_warn) //!OCLINT bitwise operator in conditional
+            return "WARNING: ";
+        if(at & assertType::is_check) //!OCLINT bitwise operator in conditional
+            return "ERROR: ";
+        if(at & assertType::is_require) //!OCLINT bitwise operator in conditional
+            return "FATAL ERROR: ";
+        return "";
+    }
+
+    Color::Code getSuccessOrFailColor(bool success, assertType::Enum at) {
+        return success ? Color::BrightGreen :
+                         (at & assertType::is_warn) ? Color::Yellow : Color::Red;
+    }
+
+    void successOrFailColoredStringToStream(std::ostream& s, bool success, assertType::Enum at,
+                                            const char* success_str = "SUCCESS: ") {
+        s << getSuccessOrFailColor(success, at) << getSuccessOrFailString(success, at, success_str);
     }
 
 #ifdef DOCTEST_PLATFORM_MAC
@@ -1362,35 +1385,41 @@ namespace detail
     void myOutputDebugString(const String&) {}
 #endif // Platform
 
-    void separator_to_stream(std::ostream& s) {
-        s << Color::Yellow
-          << "===============================================================================\n";
-    }
-
     void printToDebugConsole(const String& text) {
         if(isDebuggerActive())
-            myOutputDebugString(text.c_str());
+            myOutputDebugString(text);
     }
 
-    void addFailedAssert(assertType::Enum assert_type) {
-        if((assert_type & assertType::is_warn) == 0) { //!OCLINT bitwise operator in conditional
+    void addFailedAssert(assertType::Enum at) {
+        if((at & assertType::is_warn) == 0) { //!OCLINT bitwise operator in conditional
             contextState->numFailedAssertions++;
             contextState->numFailedAssertionsForCurrentTestcase++;
             contextState->hasCurrentTestFailed = true;
         }
     }
 
+    std::ostream& operator<<(std::ostream& s, const std::vector<IContextScope*>& contexts) {
+        if(!contexts.empty())
+            s << Color::None << "  logged: ";
+        for(size_t i = 0; i < contexts.size(); ++i) {
+            s << (i == 0 ? "" : "          ");
+            contexts[i]->build(&s);
+            s << "\n";
+        }
+        s << "\n";
+        return s;
+    }
+
     void logTestStart(std::ostream& s, const TestCase& tc) {
         separator_to_stream(s);
-        file_and_line_to_stream(s, tc.m_file, tc.m_line);
-        s << Color::None << "\n";
+        file_line_to_stream(s, tc.m_file, tc.m_line, "\n");
         if(tc.m_description)
             s << Color::Yellow << "DESCRIPTION: " << Color::None << tc.m_description << "\n";
         if(tc.m_test_suite && tc.m_test_suite[0] != '\0')
             s << Color::Yellow << "TEST SUITE: " << Color::None << tc.m_test_suite << "\n";
         if(strncmp(tc.m_name, "  Scenario:", 11) != 0)
-            s << "TEST CASE:  ";
-        s << tc.m_name << "\n";
+            s << Color::None << "TEST CASE:  ";
+        s << Color::None << tc.m_name << "\n";
 
         std::vector<Subcase>& subcasesStack = contextState->subcasesStack;
         for(unsigned i = 0; i < subcasesStack.size(); ++i)
@@ -1402,36 +1431,27 @@ namespace detail
 
     void logTestEnd() {}
 
-    void logTestException_impl(std::ostream& s, const String& what, bool crash) {
-        s << Color::Red << "TEST CASE FAILED!\n"
-          << Color::None << (crash ? "crashed:\n" : "threw exception:\n") << Color::Cyan << "  "
-          << what << "\n";
+    void logTestException_impl(std::ostream& s, const TestCase& tc, const String& str, bool crash) {
+        file_line_to_stream(s, tc.m_file, tc.m_line, " ");
+        successOrFailColoredStringToStream(s, false,
+                                           crash ? assertType::is_require : assertType::is_check);
+        s << Color::Red << (crash ? "test case CRASHED: " : "test case THREW exception: ")
+          << Color::Cyan << str << "\n";
+
         if(!contextState->exceptionalContexts.empty()) {
-            s << Color::None << "with context:\n";
+            s << Color::None << "  logged: ";
             for(size_t i = contextState->exceptionalContexts.size(); i > 0; --i)
-                s << "  " << contextState->exceptionalContexts[i - 1] << "\n";
+                s << (i == contextState->exceptionalContexts.size() ? "" : "          ")
+                  << contextState->exceptionalContexts[i - 1] << "\n";
         }
         s << "\n";
     }
 
-    void logTestException(const String& what, bool crash) {
-        logTestException_impl(std::cout, what, crash);
+    void logTestException(const TestCase& tc, const String& what, bool crash) {
+        logTestException_impl(std::cout, tc, what, crash);
         DOCTEST_PRINT_TO_OUTPUT_WINDOW_IN_IDE_BEGIN;
-        logTestException_impl(oss, what, crash);
+        logTestException_impl(oss, tc, what, crash);
         DOCTEST_PRINT_TO_OUTPUT_WINDOW_IN_IDE_END;
-    }
-
-    String logContext() {
-        std::ostringstream           oss;
-        std::vector<IContextScope*>& contexts = contextState->contexts;
-        if(!contexts.empty())
-            oss << "with context:\n";
-        for(size_t i = 0; i < contexts.size(); ++i) {
-            oss << "  ";
-            contexts[i]->build(&oss);
-            oss << "\n";
-        }
-        return oss.str().c_str();
     }
 
 #if defined(DOCTEST_CONFIG_POSIX_SIGNALS) || defined(DOCTEST_CONFIG_WINDOWS_SEH)
@@ -1439,7 +1459,7 @@ namespace detail
         DOCTEST_LOG_START(std::cout);
 
         contextState->numAssertions += contextState->numAssertionsForCurrentTestcase;
-        logTestException(message.c_str(), true);
+        logTestException(*contextState->currentTest, message.c_str(), true);
         logTestEnd();
         contextState->numFailed++;
 
@@ -1447,108 +1467,85 @@ namespace detail
     }
 #endif // DOCTEST_CONFIG_POSIX_SIGNALS || DOCTEST_CONFIG_WINDOWS_SEH
 
-    const char* getFailString(assertType::Enum assert_type) {
-        if(assert_type & assertType::is_warn) //!OCLINT bitwise operator in conditional
-            return "WARNING";
-        if(assert_type & assertType::is_check) //!OCLINT bitwise operator in conditional
-            return "ERROR";
-        if(assert_type & assertType::is_require) //!OCLINT bitwise operator in conditional
-            return "FATAL ERROR";
-        return "";
+    void logAssert_impl(std::ostream& s, bool passed, const String& dec, bool threw,
+                        const String& ex, const char* expr, assertType::Enum at, const char* file,
+                        int line) {
+        file_line_to_stream(s, file, line, " ");
+        successOrFailColoredStringToStream(s, passed, at);
+        s << Color::Cyan << assertString(at) << "( " << expr << " ) " << Color::None
+          << (threw ? "THREW exception: " : (passed ? "is correct!\n" : "is NOT correct!\n"));
+        if(threw)
+            s << ex << "\n";
+        else
+            s << "  values: " << assertString(at) << "( " << dec << " )\n";
+        s << contextState->contexts;
     }
 
-    void logAssert_impl(std::ostream& s, bool passed, const char* dec, bool threw,
-                        const String& exception, const char* expr, assertType::Enum assert_type,
-                        const char* file, int line) {
-        file_and_line_to_stream(s, file, line);
-        const bool isWarn = assert_type & assertType::is_warn;
-        s << (passed ? Color::BrightGreen : isWarn ? Color::Yellow : Color::Red) << " "
-          << (passed ? "PASSED" : getFailString(assert_type)) << "!\n";
-        s << Color::Cyan << "  " << getAssertString(assert_type) << "( " << expr << " )\n";
-        s << Color::None << (threw ? "threw exception:\n" : "with expansion:\n")
-          << (threw ? Color::None : Color::Cyan);
-        s << Color::Cyan << "  " << (threw ? exception.c_str() : getAssertString(assert_type));
-        if(!threw)
-            s << "( " << dec << " )";
-        s << Color::None << "\n" << logContext() << "\n";
-    }
-
-    void logAssert(bool passed, const char* dec, bool threw, const String& exception,
-                   const char* expr, assertType::Enum assert_type, const char* file, int line) {
-        logAssert_impl(std::cout, passed, dec, threw, exception, expr, assert_type, file, line);
+    void logAssert(bool passed, const String& dec, bool threw, const String& ex, const char* expr,
+                   assertType::Enum at, const char* file, int line) {
+        logAssert_impl(std::cout, passed, dec, threw, ex, expr, at, file, line);
         DOCTEST_PRINT_TO_OUTPUT_WINDOW_IN_IDE_BEGIN;
-        logAssert_impl(oss, passed, dec, threw, exception, expr, assert_type, file, line);
+        logAssert_impl(oss, passed, dec, threw, ex, expr, at, file, line);
         DOCTEST_PRINT_TO_OUTPUT_WINDOW_IN_IDE_END;
     }
 
-    void logAssertThrows_impl(std::ostream& s, bool threw, const char* expr,
-                              assertType::Enum assert_type, const char* file, int line) {
-        file_and_line_to_stream(s, file, line);
-        const bool isWarn = assert_type & assertType::is_warn;
-        s << (threw ? Color::BrightGreen : isWarn ? Color::Yellow : Color::Red) << " "
-          << (threw ? "PASSED" : getFailString(assert_type)) << "!\n";
-        s << Color::Cyan << "  " << getAssertString(assert_type) << "( " << expr << " )\n";
-        if(!threw)
-            s << Color::None << "didn't throw at all\n";
-        s << Color::None << logContext() << "\n";
+    void logAssertThrows_impl(std::ostream& s, bool threw, const char* expr, assertType::Enum at,
+                              const char* file, int line) {
+        file_line_to_stream(s, file, line, " ");
+        successOrFailColoredStringToStream(s, threw, at);
+        s << Color::Cyan << assertString(at) << "( " << expr << " ) " << Color::None
+          << (threw ? "threw as expected!" : "did NOT throw at all!") << "\n";
+        s << contextState->contexts;
     }
 
-    void logAssertThrows(bool threw, const char* expr, assertType::Enum assert_type,
-                         const char* file, int line) {
-        logAssertThrows_impl(std::cout, threw, expr, assert_type, file, line);
+    void logAssertThrows(bool threw, const char* expr, assertType::Enum at, const char* file,
+                         int line) {
+        logAssertThrows_impl(std::cout, threw, expr, at, file, line);
         DOCTEST_PRINT_TO_OUTPUT_WINDOW_IN_IDE_BEGIN;
-        logAssertThrows_impl(oss, threw, expr, assert_type, file, line);
+        logAssertThrows_impl(oss, threw, expr, at, file, line);
         DOCTEST_PRINT_TO_OUTPUT_WINDOW_IN_IDE_END;
     }
 
     void logAssertThrowsAs_impl(std::ostream& s, bool threw, bool threw_as, const char* as,
-                                const String& ex, const char* expr, assertType::Enum assert_type,
+                                const String& ex, const char* expr, assertType::Enum at,
                                 const char* file, int line) {
-        file_and_line_to_stream(s, file, line);
-        const bool isWarn = assert_type & assertType::is_warn;
-        s << (threw ? Color::BrightGreen : isWarn ? Color::Yellow : Color::Red) << " "
-          << (threw_as ? "PASSED" : getFailString(assert_type)) << "!\n";
-        s << Color::Cyan << "  " << getAssertString(assert_type) << "( " << expr << ", " << as
-          << " )\n";
-        if(!threw)
-            s << Color::None << "didn't throw at all\n";
-        else if(!threw_as)
-            s << Color::None << "threw a different exception:\n  " << Color::Cyan << ex << "\n";
-        s << Color::None << logContext() << "\n";
+        file_line_to_stream(s, file, line, " ");
+        successOrFailColoredStringToStream(s, threw_as, at);
+        s << Color::Cyan << assertString(at) << "( " << expr << ", " << as << " ) " << Color::None
+          << (threw ? (threw_as ? "threw as expected!" : "threw a DIFFERENT exception: ") :
+                      "did NOT throw at all!")
+          << Color::Cyan << ex << "\n";
+        s << contextState->contexts;
     }
 
     void logAssertThrowsAs(bool threw, bool threw_as, const char* as, const String& ex,
-                           const char* expr, assertType::Enum assert_type, const char* file,
-                           int line) {
-        logAssertThrowsAs_impl(std::cout, threw, threw_as, as, ex, expr, assert_type, file, line);
+                           const char* expr, assertType::Enum at, const char* file, int line) {
+        logAssertThrowsAs_impl(std::cout, threw, threw_as, as, ex, expr, at, file, line);
         DOCTEST_PRINT_TO_OUTPUT_WINDOW_IN_IDE_BEGIN;
-        logAssertThrowsAs_impl(oss, threw, threw_as, as, ex, expr, assert_type, file, line);
+        logAssertThrowsAs_impl(oss, threw, threw_as, as, ex, expr, at, file, line);
         DOCTEST_PRINT_TO_OUTPUT_WINDOW_IN_IDE_END;
     }
 
     void logAssertNothrow_impl(std::ostream& s, bool threw, const String& ex, const char* expr,
-                               assertType::Enum assert_type, const char* file, int line) {
-        file_and_line_to_stream(s, file, line);
-        const bool isWarn = assert_type & assertType::is_warn;
-        s << (threw ? Color::BrightGreen : isWarn ? Color::Yellow : Color::Red) << " "
-          << (!threw ? "PASSED" : getFailString(assert_type)) << "!\n";
-        s << Color::Cyan << "  " << getAssertString(assert_type) << "( " << expr << " )\n";
-        if(threw)
-            s << Color::None << "threw exception:\n  " << Color::Cyan << ex.c_str() << "\n";
-        s << Color::None << logContext() << "\n";
+                               assertType::Enum at, const char* file, int line) {
+        file_line_to_stream(s, file, line, " ");
+        successOrFailColoredStringToStream(s, !threw, at);
+        s << Color::Cyan << assertString(at) << "( " << expr << " ) " << Color::None
+          << (threw ? "THREW exception: " : "didn't throw!") << Color::Cyan << ex << "\n";
+        s << contextState->contexts;
     }
 
-    void logAssertNothrow(bool threw, const String& ex, const char* expr,
-                          assertType::Enum assert_type, const char* file, int line) {
-        logAssertNothrow_impl(std::cout, threw, ex, expr, assert_type, file, line);
+    void logAssertNothrow(bool threw, const String& ex, const char* expr, assertType::Enum at,
+                          const char* file, int line) {
+        logAssertNothrow_impl(std::cout, threw, ex, expr, at, file, line);
         DOCTEST_PRINT_TO_OUTPUT_WINDOW_IN_IDE_BEGIN;
-        logAssertNothrow_impl(oss, threw, ex, expr, assert_type, file, line);
+        logAssertNothrow_impl(oss, threw, ex, expr, at, file, line);
         DOCTEST_PRINT_TO_OUTPUT_WINDOW_IN_IDE_END;
     }
 
-    ResultBuilder::ResultBuilder(assertType::Enum assert_type, const char* file, int line,
-                                 const char* expr, const char* exception_type)
-            : m_assert_type(assert_type)
+    ResultBuilder::ResultBuilder(assertType::Enum at, const char* file, int line, const char* expr,
+                                 const char* exception_type)
+            : m_assert_type(at)
             , m_file(file)
             , m_line(line)
             , m_expr(expr)
@@ -1599,8 +1596,8 @@ namespace detail
                       assertType::is_nothrow) {
                 logAssertNothrow(m_threw, m_exception, m_expr, m_assert_type, m_file, m_line);
             } else {
-                logAssert(m_result.m_passed, m_result.m_decomposition.c_str(), m_threw, m_exception,
-                          m_expr, m_assert_type, m_file, m_line);
+                logAssert(m_result.m_passed, m_result.m_decomposition, m_threw, m_exception, m_expr,
+                          m_assert_type, m_file, m_line);
             }
         }
 
@@ -1622,17 +1619,11 @@ namespace detail
             , m_severity(severity) {}
 
     void MessageBuilder::log(std::ostream& s) {
-        const bool isWarn = m_severity & assertType::is_warn;
-
-        file_and_line_to_stream(s, m_file, m_line);
-        s << (isWarn ? Color::Yellow : Color::Red) << " "
-          << (isWarn ? "MESSAGE" : getFailString(m_severity)) << "!\n";
-
-        String info = getStreamResult(m_stream);
-        if(info.size())
-            s << Color::None << "  " << info << "\n";
-
-        s << Color::None << logContext() << "\n";
+        file_line_to_stream(s, m_file, m_line, " ");
+        s << getSuccessOrFailColor(false, m_severity)
+          << getSuccessOrFailString(m_severity & assertType::is_warn, m_severity, "MESSAGE: ");
+        s << Color::None << getStreamResult(m_stream) << "\n";
+        s << contextState->contexts;
     }
 
     bool MessageBuilder::log() {
@@ -1855,6 +1846,7 @@ namespace detail
         s << " -fc,  --force-colors=<bool>           use colors even when not in a tty\n";
         s << " -nb,  --no-breaks=<bool>              disables breakpoints in debuggers\n";
         s << " -ns,  --no-skip=<bool>                don't skip test cases marked as skip\n";
+        s << " -gfl, --gnu-file-line=<bool>          :n: vs (n): for line numbers in output\n";
         s << " -npf, --no-path-filenames=<bool>      only filenames and no paths in output\n";
         s << " -nln, --no-line-numbers=<bool>        0 instead of real line numbers in output\n";
         // ================================================================================== << 79
@@ -1991,6 +1983,7 @@ void Context::parseArgs(int argc, const char* const* argv, bool withDefaults) {
     DOCTEST_PARSE_AS_BOOL_OR_FLAG("dt-force-colors", "dt-fc", force_colors, false);
     DOCTEST_PARSE_AS_BOOL_OR_FLAG("dt-no-breaks", "dt-nb", no_breaks, false);
     DOCTEST_PARSE_AS_BOOL_OR_FLAG("dt-no-skip", "dt-ns", no_skip, false);
+    DOCTEST_PARSE_AS_BOOL_OR_FLAG("dt-gnu-file-line", "dt-gfl", gnu_file_line, bool(DOCTEST_GCC) || bool(DOCTEST_CLANG));
     DOCTEST_PARSE_AS_BOOL_OR_FLAG("dt-no-path-filenames", "dt-npf", no_path_in_filenames, false);
     DOCTEST_PARSE_AS_BOOL_OR_FLAG("dt-no-line-numbers", "dt-nln", no_line_numbers, false);
     DOCTEST_PARSE_AS_BOOL_OR_FLAG("dt-no-skipped-summary", "dt-nss", no_skipped_summary, false);
@@ -2215,7 +2208,7 @@ int Context::run() {
 #ifndef DOCTEST_CONFIG_NO_EXCEPTIONS
                 } catch(const TestFailureException&) { failed = true; } catch(...) {
                     DOCTEST_LOG_START(std::cout);
-                    logTestException(translateActiveException(), false);
+                    logTestException(*contextState->currentTest, translateActiveException(), false);
                     failed = true;
                 }
 #endif // DOCTEST_CONFIG_NO_EXCEPTIONS

@@ -73,7 +73,8 @@
 #endif
 #elif defined(__clang__) && defined(__clang_minor__)
 #define DOCTEST_CLANG DOCTEST_COMPILER(__clang_major__, __clang_minor__, __clang_patchlevel__)
-#elif defined(__GNUC__) && defined(__GNUC_MINOR__) && defined(__GNUC_PATCHLEVEL__) && !defined(__INTEL_COMPILER)
+#elif defined(__GNUC__) && defined(__GNUC_MINOR__) && defined(__GNUC_PATCHLEVEL__) &&              \
+        !defined(__INTEL_COMPILER)
 #define DOCTEST_GCC DOCTEST_COMPILER(__GNUC__, __GNUC_MINOR__, __GNUC_PATCHLEVEL__)
 #endif
 
@@ -819,8 +820,7 @@ namespace detail
     struct has_insertion_operator : has_insertion_operator_impl::has_insertion_operator<T>
     {};
 
-    DOCTEST_INTERFACE void     my_memcpy(void* dest, const void* src, unsigned num);
-    DOCTEST_INTERFACE unsigned my_strlen(const char* in);
+    DOCTEST_INTERFACE void my_memcpy(void* dest, const void* src, unsigned num);
 
     DOCTEST_INTERFACE std::ostream* createStream();
     DOCTEST_INTERFACE String getStreamResult(std::ostream*);
@@ -1240,7 +1240,7 @@ namespace detail
         };
     } // namespace assertType
 
-    DOCTEST_INTERFACE const char* getAssertString(assertType::Enum val);
+    DOCTEST_INTERFACE const char* assertString(assertType::Enum val);
 
     // clang-format off
     template<class T>               struct decay_array       { typedef T type; };
@@ -1748,9 +1748,7 @@ namespace detail
 
         // always treat char* as a string in this context - no matter
         // if DOCTEST_CONFIG_TREAT_CHAR_STAR_AS_STRING is defined
-        static void convert(std::ostream* s, const char* in) {
-            writeStringToStream(s, String(in));
-        }
+        static void convert(std::ostream* s, const char* in) { writeStringToStream(s, String(in)); }
     };
 
     template <>
@@ -1931,25 +1929,19 @@ namespace detail
     class ContextScope : public IContextScope
     {
         ContextBuilder contextBuilder;
-        bool           built;
 
     public:
         DOCTEST_NOINLINE explicit ContextScope(ContextBuilder& temp)
-                : contextBuilder(temp)
-                , built(false) {
+                : contextBuilder(temp) {
             addToContexts(this);
         }
 
         DOCTEST_NOINLINE ~ContextScope() {
-            if(!built)
-                useContextIfExceptionOccurred(this);
+            useContextIfExceptionOccurred(this);
             popFromContexts();
         }
 
-        void build(std::ostream* s) {
-            built = true;
-            contextBuilder.build(s);
-        }
+        void build(std::ostream* s) { contextBuilder.build(s); }
     };
 
     class DOCTEST_INTERFACE MessageBuilder

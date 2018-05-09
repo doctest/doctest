@@ -48,6 +48,7 @@ All the options can also be set with code (defaults/overrides) if the user [**su
 | ```-fc``` &nbsp; ```--force-colors=<bool>``` | Forces the use of colors even when a tty cannot be detected |
 | ```-nb``` &nbsp; ```--no-breaks=<bool>``` | Disables breakpoints in debuggers when an assertion fails |
 | ```-ns``` &nbsp; ```--no-skip=<bool>``` | Don't skip test cases marked as skip with a decorator |
+| ```-gfl``` ```--gnu-file-line=<bool>``` | ```:n:``` vs ```(n):``` for line numbers in output (gnu mode is usually for linux tools/IDEs and is with the ```:``` separator) |
 | ```-npf``` ```--no-path-filenames=<bool>``` | Paths are removed from the output when a filename is printed - useful if you want the same output from the testing framework on different environments |
 | ```-nln``` ```--no-line-numbers=<bool>``` | Line numbers are replaced with ```0``` in the output when a source location is printed - useful if you want the same output from the testing framework even when test positions change within a source file |
 | &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| |

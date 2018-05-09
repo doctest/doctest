@@ -82,7 +82,7 @@ TEST_CASE("doctest internals") {
     // trigger code path for String to ostream through operator<<
     oss << a;
     // trigger code path for assert string of a non-existent assert type
-    oss << detail::getAssertString(static_cast<detail::assertType::Enum>(3));
+    oss << detail::assertString(static_cast<detail::assertType::Enum>(3));
     a += oss.str().c_str();
     // trigger code path for rawMemoryToString
     bool isThereAnything = a.size() > 0u;

@@ -1,10 +1,4 @@
 
-check console colors after refactor...
-
-(num) vs :num: for line numbers (__GNUG__) (also test with a post-build command to run the tests - if the errors are in the IDE)
-
-
-
 https://github.com/catchorg/Catch2/commit/de36b2ada6e4593a9a32c4c86cd47d4bc002b148
 
 add [[noreturn]] to MessageBuilder::react() - and actually make a separate function (react2) for the FAIL() case

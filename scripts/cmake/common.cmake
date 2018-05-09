@@ -39,6 +39,8 @@ function(doctest_add_test)
     set(the_command "${the_command} --dt-no-line-numbers=1")
     # append the argument for ignoring the exit code of the test programs because some are intended to have failing tests
     set(the_command "${the_command} --dt-no-exitcode=1")
+    # append the argument for using the same line format in the output - so gcc/non-gcc builds have the same output
+    set(the_command "${the_command} --dt-gnu-file-line=0")
     
     string(STRIP ${the_command} the_command)
     
