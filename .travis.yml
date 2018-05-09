@@ -321,7 +321,7 @@ install:
   # Install OCLint
   - |
     if [[ "${STATIC_CODE_ANALYSIS}" = "true" ]]; then
-      OCLINT_URL="https://github.com/oclint/oclint/releases/download/v0.13.1/oclint-0.13.1-x86_64-linux-4.4.0-112-generic.tar.gz"
+      OCLINT_URL="https://github.com/oclint/oclint/releases/download/v0.12/oclint-0.12-x86_64-linux-3.13.0-112-generic.tar.gz"
       mkdir oclint && travis_retry wget --no-check-certificate --quiet -O - ${OCLINT_URL} | tar --strip-components=1 -xz -C oclint
       export PATH=${DEPS_DIR}/oclint/bin:${PATH}
     fi
