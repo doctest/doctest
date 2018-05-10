@@ -1261,7 +1261,7 @@ namespace detail
     {
     };
 
-    DOCTEST_INTERFACE bool checkIfShouldThrow(assertType::Enum assert_type);
+    DOCTEST_INTERFACE bool checkIfShouldThrow(assertType::Enum at);
     DOCTEST_INTERFACE void fastAssertThrowIfFlagSet(int flags);
 
     struct TestAccessibleContextState
@@ -1441,9 +1441,9 @@ namespace detail
         L                lhs;
         assertType::Enum m_assert_type;
 
-        explicit Expression_lhs(L in, assertType::Enum assert_type)
+        explicit Expression_lhs(L in, assertType::Enum at)
                 : lhs(in)
-                , m_assert_type(assert_type) {}
+                , m_assert_type(at) {}
 
         DOCTEST_NOINLINE operator Result() {
             bool res = !!lhs;
@@ -1499,8 +1499,8 @@ namespace detail
     {
         assertType::Enum m_assert_type;
 
-        ExpressionDecomposer(assertType::Enum assert_type)
-                : m_assert_type(assert_type) {}
+        ExpressionDecomposer(assertType::Enum at)
+                : m_assert_type(at) {}
 
         // The right operator for capturing expressions is "<=" instead of "<<" (based on the operator precedence table)
         // but then there will be warnings from GCC about "-Wparentheses" and since "_Pragma()" is problematic this will stay for now...
@@ -1594,7 +1594,7 @@ namespace detail
         bool   m_failed;
         String m_exception;
 
-        ResultBuilder(assertType::Enum assert_type, const char* file, int line, const char* expr,
+        ResultBuilder(assertType::Enum at, const char* file, int line, const char* expr,
                       const char* exception_type = "");
 
         ~ResultBuilder();
@@ -1637,11 +1637,10 @@ namespace detail
     } // namespace assertAction
 
     template <int comparison, typename L, typename R>
-    DOCTEST_NOINLINE int fast_binary_assert(assertType::Enum assert_type, const char* file,
-                                            int line, const char* expr,
-                                            const DOCTEST_REF_WRAP(L) lhs,
+    DOCTEST_NOINLINE int fast_binary_assert(assertType::Enum at, const char* file, int line,
+                                            const char* expr, const DOCTEST_REF_WRAP(L) lhs,
                                             const DOCTEST_REF_WRAP(R) rhs) {
-        ResultBuilder rb(assert_type, file, line, expr);
+        ResultBuilder rb(at, file, line, expr);
 
         rb.m_result.m_passed = RelationalComparator<comparison, L, R>()(lhs, rhs);
 
@@ -1653,7 +1652,7 @@ namespace detail
         if(rb.log())
             res |= assertAction::dbgbreak;
 
-        if(rb.m_failed && checkIfShouldThrow(assert_type))
+        if(rb.m_failed && checkIfShouldThrow(at))
             res |= assertAction::shouldthrow;
 
 #ifdef DOCTEST_CONFIG_SUPER_FAST_ASSERTS
@@ -1670,13 +1669,13 @@ namespace detail
     }
 
     template <typename L>
-    DOCTEST_NOINLINE int fast_unary_assert(assertType::Enum assert_type, const char* file, int line,
+    DOCTEST_NOINLINE int fast_unary_assert(assertType::Enum at, const char* file, int line,
                                            const char* val_str, const DOCTEST_REF_WRAP(L) val) {
-        ResultBuilder rb(assert_type, file, line, val_str);
+        ResultBuilder rb(at, file, line, val_str);
 
         rb.m_result.m_passed = !!val;
 
-        if(assert_type & assertType::is_false) //!OCLINT bitwise operator in conditional
+        if(at & assertType::is_false) //!OCLINT bitwise operator in conditional
             rb.m_result.m_passed = !rb.m_result.m_passed;
 
         if(!rb.m_result.m_passed || getTestsContextState()->success)
@@ -1687,7 +1686,7 @@ namespace detail
         if(rb.log())
             res |= assertAction::dbgbreak;
 
-        if(rb.m_failed && checkIfShouldThrow(assert_type))
+        if(rb.m_failed && checkIfShouldThrow(at))
             res |= assertAction::shouldthrow;
 
 #ifdef DOCTEST_CONFIG_SUPER_FAST_ASSERTS
@@ -3452,21 +3451,21 @@ void String::copy(const String& other) {
         data.size     = other.data.size;
         data.capacity = data.size + 1;
         data.ptr      = new char[data.capacity];
-        memcpy(data.ptr, other.data.ptr, size_t(data.size + 1));
+        memcpy(data.ptr, other.data.ptr, data.size + 1);
     }
 }
 
 String::String(const char* in) {
     unsigned in_len = strlen(in);
     if(in_len <= last) {
-        memcpy(buf, in, size_t(in_len + 1));
+        memcpy(buf, in, in_len + 1);
         setLast(last - in_len);
     } else {
         setOnHeap();
         data.size     = in_len;
         data.capacity = data.size + 1;
         data.ptr      = new char[data.capacity];
-        memcpy(data.ptr, in, size_t(in_len + 1));
+        memcpy(data.ptr, in, in_len + 1);
     }
 }
 

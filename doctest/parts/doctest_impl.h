@@ -288,21 +288,21 @@ void String::copy(const String& other) {
         data.size     = other.data.size;
         data.capacity = data.size + 1;
         data.ptr      = new char[data.capacity];
-        memcpy(data.ptr, other.data.ptr, size_t(data.size + 1));
+        memcpy(data.ptr, other.data.ptr, data.size + 1);
     }
 }
 
 String::String(const char* in) {
     unsigned in_len = strlen(in);
     if(in_len <= last) {
-        memcpy(buf, in, size_t(in_len + 1));
+        memcpy(buf, in, in_len + 1);
         setLast(last - in_len);
     } else {
         setOnHeap();
         data.size     = in_len;
         data.capacity = data.size + 1;
         data.ptr      = new char[data.capacity];
-        memcpy(data.ptr, in, size_t(in_len + 1));
+        memcpy(data.ptr, in, in_len + 1);
     }
 }
 
