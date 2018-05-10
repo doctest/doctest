@@ -49,6 +49,7 @@
  -fc,  --force-colors=<bool>           use colors even when not in a tty
  -nb,  --no-breaks=<bool>              disables breakpoints in debuggers
  -ns,  --no-skip=<bool>                don't skip test cases marked as skip
+ -gfl, --gnu-file-line=<bool>          :n: vs (n): for line numbers in output
  -npf, --no-path-filenames=<bool>      only filenames and no paths in output
  -nln, --no-line-numbers=<bool>        0 instead of real line numbers in output
 

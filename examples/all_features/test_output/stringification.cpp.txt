@@ -1,39 +1,27 @@
 [doctest] run with "--help" for options
 ===============================================================================
-stringification.cpp(0)
+stringification.cpp(0):
 TEST CASE:  all asserts should fail and show how the objects get stringified
 
-stringification.cpp(0) ERROR!
-  CHECK( f1 == f2 )
-with expansion:
-  CHECK( Foo{} == Foo{} )
+stringification.cpp(0): ERROR: CHECK( f1 == f2 ) is NOT correct!
+  values: CHECK( Foo{} == Foo{} )
 
-stringification.cpp(0) ERROR!
-  CHECK( dummy1 == dummy2 )
-with expansion:
-  CHECK( omg == tralala )
+stringification.cpp(0): ERROR: CHECK( dummy1 == dummy2 ) is NOT correct!
+  values: CHECK( omg == tralala )
 
-stringification.cpp(0) ERROR!
-  CHECK( vec1 == vec2 )
-with expansion:
-  CHECK( [1, 2, 3] == [1, 2, 4] )
+stringification.cpp(0): ERROR: CHECK( vec1 == vec2 ) is NOT correct!
+  values: CHECK( [1, 2, 3] == [1, 2, 4] )
 
-stringification.cpp(0) ERROR!
-  CHECK( lst_1 == lst_2 )
-with expansion:
-  CHECK( [1, 42, 3, ] == [1, 2, 666, ] )
+stringification.cpp(0): ERROR: CHECK( lst_1 == lst_2 ) is NOT correct!
+  values: CHECK( [1, 42, 3, ] == [1, 2, 666, ] )
 
-TEST CASE FAILED!
-threw exception:
-  MyTypeInherited<int>(5, 4)
+stringification.cpp(0): ERROR: test case THREW exception: MyTypeInherited<int>(5, 4)
 
 ===============================================================================
-stringification.cpp(0)
+stringification.cpp(0):
 TEST CASE:  a test case that registers an exception translator for int and then throws one
 
-TEST CASE FAILED!
-threw exception:
-  5
+stringification.cpp(0): ERROR: test case THREW exception: 5
 
 ===============================================================================
 [doctest] test cases:      2 |      0 passed |      2 failed | 

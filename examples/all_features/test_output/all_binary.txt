@@ -1,247 +1,151 @@
 [doctest] run with "--help" for options
 ===============================================================================
-assertion_macros.cpp(0)
+assertion_macros.cpp(0):
 TEST CASE:  all binary assertions
 
-assertion_macros.cpp(0) PASSED!
-  WARN_EQ( 1, 1 )
-with expansion:
-  WARN_EQ( 1, 1 )
+assertion_macros.cpp(0): SUCCESS: WARN_EQ( 1, 1 ) is correct!
+  values: WARN_EQ( 1, 1 )
 
-assertion_macros.cpp(0) PASSED!
-  CHECK_EQ( 1, 1 )
-with expansion:
-  CHECK_EQ( 1, 1 )
+assertion_macros.cpp(0): SUCCESS: CHECK_EQ( 1, 1 ) is correct!
+  values: CHECK_EQ( 1, 1 )
 
-assertion_macros.cpp(0) PASSED!
-  REQUIRE_EQ( 1, 1 )
-with expansion:
-  REQUIRE_EQ( 1, 1 )
+assertion_macros.cpp(0): SUCCESS: REQUIRE_EQ( 1, 1 ) is correct!
+  values: REQUIRE_EQ( 1, 1 )
 
-assertion_macros.cpp(0) PASSED!
-  WARN_NE( 1, 0 )
-with expansion:
-  WARN_NE( 1, 0 )
+assertion_macros.cpp(0): SUCCESS: WARN_NE( 1, 0 ) is correct!
+  values: WARN_NE( 1, 0 )
 
-assertion_macros.cpp(0) PASSED!
-  CHECK_NE( 1, 0 )
-with expansion:
-  CHECK_NE( 1, 0 )
+assertion_macros.cpp(0): SUCCESS: CHECK_NE( 1, 0 ) is correct!
+  values: CHECK_NE( 1, 0 )
 
-assertion_macros.cpp(0) PASSED!
-  REQUIRE_NE( 1, 0 )
-with expansion:
-  REQUIRE_NE( 1, 0 )
+assertion_macros.cpp(0): SUCCESS: REQUIRE_NE( 1, 0 ) is correct!
+  values: REQUIRE_NE( 1, 0 )
 
-assertion_macros.cpp(0) PASSED!
-  WARN_GT( 1, 0 )
-with expansion:
-  WARN_GT( 1, 0 )
+assertion_macros.cpp(0): SUCCESS: WARN_GT( 1, 0 ) is correct!
+  values: WARN_GT( 1, 0 )
 
-assertion_macros.cpp(0) PASSED!
-  CHECK_GT( 1, 0 )
-with expansion:
-  CHECK_GT( 1, 0 )
+assertion_macros.cpp(0): SUCCESS: CHECK_GT( 1, 0 ) is correct!
+  values: CHECK_GT( 1, 0 )
 
-assertion_macros.cpp(0) PASSED!
-  REQUIRE_GT( 1, 0 )
-with expansion:
-  REQUIRE_GT( 1, 0 )
+assertion_macros.cpp(0): SUCCESS: REQUIRE_GT( 1, 0 ) is correct!
+  values: REQUIRE_GT( 1, 0 )
 
-assertion_macros.cpp(0) PASSED!
-  WARN_LT( 0, 1 )
-with expansion:
-  WARN_LT( 0, 1 )
+assertion_macros.cpp(0): SUCCESS: WARN_LT( 0, 1 ) is correct!
+  values: WARN_LT( 0, 1 )
 
-assertion_macros.cpp(0) PASSED!
-  CHECK_LT( 0, 1 )
-with expansion:
-  CHECK_LT( 0, 1 )
+assertion_macros.cpp(0): SUCCESS: CHECK_LT( 0, 1 ) is correct!
+  values: CHECK_LT( 0, 1 )
 
-assertion_macros.cpp(0) PASSED!
-  REQUIRE_LT( 0, 1 )
-with expansion:
-  REQUIRE_LT( 0, 1 )
+assertion_macros.cpp(0): SUCCESS: REQUIRE_LT( 0, 1 ) is correct!
+  values: REQUIRE_LT( 0, 1 )
 
-assertion_macros.cpp(0) PASSED!
-  WARN_GE( 1, 1 )
-with expansion:
-  WARN_GE( 1, 1 )
+assertion_macros.cpp(0): SUCCESS: WARN_GE( 1, 1 ) is correct!
+  values: WARN_GE( 1, 1 )
 
-assertion_macros.cpp(0) PASSED!
-  CHECK_GE( 1, 1 )
-with expansion:
-  CHECK_GE( 1, 1 )
+assertion_macros.cpp(0): SUCCESS: CHECK_GE( 1, 1 ) is correct!
+  values: CHECK_GE( 1, 1 )
 
-assertion_macros.cpp(0) PASSED!
-  REQUIRE_GE( 1, 1 )
-with expansion:
-  REQUIRE_GE( 1, 1 )
+assertion_macros.cpp(0): SUCCESS: REQUIRE_GE( 1, 1 ) is correct!
+  values: REQUIRE_GE( 1, 1 )
 
-assertion_macros.cpp(0) PASSED!
-  WARN_LE( 1, 1 )
-with expansion:
-  WARN_LE( 1, 1 )
+assertion_macros.cpp(0): SUCCESS: WARN_LE( 1, 1 ) is correct!
+  values: WARN_LE( 1, 1 )
 
-assertion_macros.cpp(0) PASSED!
-  CHECK_LE( 1, 1 )
-with expansion:
-  CHECK_LE( 1, 1 )
+assertion_macros.cpp(0): SUCCESS: CHECK_LE( 1, 1 ) is correct!
+  values: CHECK_LE( 1, 1 )
 
-assertion_macros.cpp(0) PASSED!
-  REQUIRE_LE( 1, 1 )
-with expansion:
-  REQUIRE_LE( 1, 1 )
+assertion_macros.cpp(0): SUCCESS: REQUIRE_LE( 1, 1 ) is correct!
+  values: REQUIRE_LE( 1, 1 )
 
-assertion_macros.cpp(0) PASSED!
-  WARN_UNARY( 1 )
-with expansion:
-  WARN_UNARY( 1 )
+assertion_macros.cpp(0): SUCCESS: WARN_UNARY( 1 ) is correct!
+  values: WARN_UNARY( 1 )
 
-assertion_macros.cpp(0) PASSED!
-  CHECK_UNARY( 1 )
-with expansion:
-  CHECK_UNARY( 1 )
+assertion_macros.cpp(0): SUCCESS: CHECK_UNARY( 1 ) is correct!
+  values: CHECK_UNARY( 1 )
 
-assertion_macros.cpp(0) PASSED!
-  REQUIRE_UNARY( 1 )
-with expansion:
-  REQUIRE_UNARY( 1 )
+assertion_macros.cpp(0): SUCCESS: REQUIRE_UNARY( 1 ) is correct!
+  values: REQUIRE_UNARY( 1 )
 
-assertion_macros.cpp(0) PASSED!
-  WARN_UNARY_FALSE( 0 )
-with expansion:
-  WARN_UNARY_FALSE( 0 )
+assertion_macros.cpp(0): SUCCESS: WARN_UNARY_FALSE( 0 ) is correct!
+  values: WARN_UNARY_FALSE( 0 )
 
-assertion_macros.cpp(0) PASSED!
-  CHECK_UNARY_FALSE( 0 )
-with expansion:
-  CHECK_UNARY_FALSE( 0 )
+assertion_macros.cpp(0): SUCCESS: CHECK_UNARY_FALSE( 0 ) is correct!
+  values: CHECK_UNARY_FALSE( 0 )
 
-assertion_macros.cpp(0) PASSED!
-  REQUIRE_UNARY_FALSE( 0 )
-with expansion:
-  REQUIRE_UNARY_FALSE( 0 )
+assertion_macros.cpp(0): SUCCESS: REQUIRE_UNARY_FALSE( 0 ) is correct!
+  values: REQUIRE_UNARY_FALSE( 0 )
 
-assertion_macros.cpp(0) PASSED!
-  FAST_WARN_EQ( 1, 1 )
-with expansion:
-  FAST_WARN_EQ( 1, 1 )
+assertion_macros.cpp(0): SUCCESS: FAST_WARN_EQ( 1, 1 ) is correct!
+  values: FAST_WARN_EQ( 1, 1 )
 
-assertion_macros.cpp(0) PASSED!
-  FAST_CHECK_EQ( 1, 1 )
-with expansion:
-  FAST_CHECK_EQ( 1, 1 )
+assertion_macros.cpp(0): SUCCESS: FAST_CHECK_EQ( 1, 1 ) is correct!
+  values: FAST_CHECK_EQ( 1, 1 )
 
-assertion_macros.cpp(0) PASSED!
-  FAST_REQUIRE_EQ( 1, 1 )
-with expansion:
-  FAST_REQUIRE_EQ( 1, 1 )
+assertion_macros.cpp(0): SUCCESS: FAST_REQUIRE_EQ( 1, 1 ) is correct!
+  values: FAST_REQUIRE_EQ( 1, 1 )
 
-assertion_macros.cpp(0) PASSED!
-  FAST_WARN_NE( 1, 0 )
-with expansion:
-  FAST_WARN_NE( 1, 0 )
+assertion_macros.cpp(0): SUCCESS: FAST_WARN_NE( 1, 0 ) is correct!
+  values: FAST_WARN_NE( 1, 0 )
 
-assertion_macros.cpp(0) PASSED!
-  FAST_CHECK_NE( 1, 0 )
-with expansion:
-  FAST_CHECK_NE( 1, 0 )
+assertion_macros.cpp(0): SUCCESS: FAST_CHECK_NE( 1, 0 ) is correct!
+  values: FAST_CHECK_NE( 1, 0 )
 
-assertion_macros.cpp(0) PASSED!
-  FAST_REQUIRE_NE( 1, 0 )
-with expansion:
-  FAST_REQUIRE_NE( 1, 0 )
+assertion_macros.cpp(0): SUCCESS: FAST_REQUIRE_NE( 1, 0 ) is correct!
+  values: FAST_REQUIRE_NE( 1, 0 )
 
-assertion_macros.cpp(0) PASSED!
-  FAST_WARN_GT( 1, 0 )
-with expansion:
-  FAST_WARN_GT( 1, 0 )
+assertion_macros.cpp(0): SUCCESS: FAST_WARN_GT( 1, 0 ) is correct!
+  values: FAST_WARN_GT( 1, 0 )
 
-assertion_macros.cpp(0) PASSED!
-  FAST_CHECK_GT( 1, 0 )
-with expansion:
-  FAST_CHECK_GT( 1, 0 )
+assertion_macros.cpp(0): SUCCESS: FAST_CHECK_GT( 1, 0 ) is correct!
+  values: FAST_CHECK_GT( 1, 0 )
 
-assertion_macros.cpp(0) PASSED!
-  FAST_REQUIRE_GT( 1, 0 )
-with expansion:
-  FAST_REQUIRE_GT( 1, 0 )
+assertion_macros.cpp(0): SUCCESS: FAST_REQUIRE_GT( 1, 0 ) is correct!
+  values: FAST_REQUIRE_GT( 1, 0 )
 
-assertion_macros.cpp(0) PASSED!
-  FAST_WARN_LT( 0, 1 )
-with expansion:
-  FAST_WARN_LT( 0, 1 )
+assertion_macros.cpp(0): SUCCESS: FAST_WARN_LT( 0, 1 ) is correct!
+  values: FAST_WARN_LT( 0, 1 )
 
-assertion_macros.cpp(0) PASSED!
-  FAST_CHECK_LT( 0, 1 )
-with expansion:
-  FAST_CHECK_LT( 0, 1 )
+assertion_macros.cpp(0): SUCCESS: FAST_CHECK_LT( 0, 1 ) is correct!
+  values: FAST_CHECK_LT( 0, 1 )
 
-assertion_macros.cpp(0) PASSED!
-  FAST_REQUIRE_LT( 0, 1 )
-with expansion:
-  FAST_REQUIRE_LT( 0, 1 )
+assertion_macros.cpp(0): SUCCESS: FAST_REQUIRE_LT( 0, 1 ) is correct!
+  values: FAST_REQUIRE_LT( 0, 1 )
 
-assertion_macros.cpp(0) PASSED!
-  FAST_WARN_GE( 1, 1 )
-with expansion:
-  FAST_WARN_GE( 1, 1 )
+assertion_macros.cpp(0): SUCCESS: FAST_WARN_GE( 1, 1 ) is correct!
+  values: FAST_WARN_GE( 1, 1 )
 
-assertion_macros.cpp(0) PASSED!
-  FAST_CHECK_GE( 1, 1 )
-with expansion:
-  FAST_CHECK_GE( 1, 1 )
+assertion_macros.cpp(0): SUCCESS: FAST_CHECK_GE( 1, 1 ) is correct!
+  values: FAST_CHECK_GE( 1, 1 )
 
-assertion_macros.cpp(0) PASSED!
-  FAST_REQUIRE_GE( 1, 1 )
-with expansion:
-  FAST_REQUIRE_GE( 1, 1 )
+assertion_macros.cpp(0): SUCCESS: FAST_REQUIRE_GE( 1, 1 ) is correct!
+  values: FAST_REQUIRE_GE( 1, 1 )
 
-assertion_macros.cpp(0) PASSED!
-  FAST_WARN_LE( 1, 1 )
-with expansion:
-  FAST_WARN_LE( 1, 1 )
+assertion_macros.cpp(0): SUCCESS: FAST_WARN_LE( 1, 1 ) is correct!
+  values: FAST_WARN_LE( 1, 1 )
 
-assertion_macros.cpp(0) PASSED!
-  FAST_CHECK_LE( 1, 1 )
-with expansion:
-  FAST_CHECK_LE( 1, 1 )
+assertion_macros.cpp(0): SUCCESS: FAST_CHECK_LE( 1, 1 ) is correct!
+  values: FAST_CHECK_LE( 1, 1 )
 
-assertion_macros.cpp(0) PASSED!
-  FAST_REQUIRE_LE( 1, 1 )
-with expansion:
-  FAST_REQUIRE_LE( 1, 1 )
+assertion_macros.cpp(0): SUCCESS: FAST_REQUIRE_LE( 1, 1 ) is correct!
+  values: FAST_REQUIRE_LE( 1, 1 )
 
-assertion_macros.cpp(0) PASSED!
-  FAST_WARN_UNARY( 1 )
-with expansion:
-  FAST_WARN_UNARY( 1 )
+assertion_macros.cpp(0): SUCCESS: FAST_WARN_UNARY( 1 ) is correct!
+  values: FAST_WARN_UNARY( 1 )
 
-assertion_macros.cpp(0) PASSED!
-  FAST_CHECK_UNARY( 1 )
-with expansion:
-  FAST_CHECK_UNARY( 1 )
+assertion_macros.cpp(0): SUCCESS: FAST_CHECK_UNARY( 1 ) is correct!
+  values: FAST_CHECK_UNARY( 1 )
 
-assertion_macros.cpp(0) PASSED!
-  FAST_REQUIRE_UNARY( 1 )
-with expansion:
-  FAST_REQUIRE_UNARY( 1 )
+assertion_macros.cpp(0): SUCCESS: FAST_REQUIRE_UNARY( 1 ) is correct!
+  values: FAST_REQUIRE_UNARY( 1 )
 
-assertion_macros.cpp(0) PASSED!
-  FAST_WARN_UNARY_FALSE( 0 )
-with expansion:
-  FAST_WARN_UNARY_FALSE( 0 )
+assertion_macros.cpp(0): SUCCESS: FAST_WARN_UNARY_FALSE( 0 ) is correct!
+  values: FAST_WARN_UNARY_FALSE( 0 )
 
-assertion_macros.cpp(0) PASSED!
-  FAST_CHECK_UNARY_FALSE( 0 )
-with expansion:
-  FAST_CHECK_UNARY_FALSE( 0 )
+assertion_macros.cpp(0): SUCCESS: FAST_CHECK_UNARY_FALSE( 0 ) is correct!
+  values: FAST_CHECK_UNARY_FALSE( 0 )
 
-assertion_macros.cpp(0) PASSED!
-  FAST_REQUIRE_UNARY_FALSE( 0 )
-with expansion:
-  FAST_REQUIRE_UNARY_FALSE( 0 )
+assertion_macros.cpp(0): SUCCESS: FAST_REQUIRE_UNARY_FALSE( 0 ) is correct!
+  values: FAST_REQUIRE_UNARY_FALSE( 0 )
 
 ===============================================================================
 [doctest] test cases:      1 |      1 passed |      0 failed | 

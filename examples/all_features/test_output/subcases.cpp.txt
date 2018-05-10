@@ -11,82 +11,72 @@ root
 root
 2
 ===============================================================================
-subcases.cpp(0)
+subcases.cpp(0):
 TEST CASE:  lots of nested subcases
 
-subcases.cpp(0) FATAL ERROR!
+subcases.cpp(0): FATAL ERROR: 
 
 ===============================================================================
-subcases.cpp(0)
+subcases.cpp(0):
 TEST CASE:  subcases can be used in a separate function as well
   from function...
 
-subcases.cpp(0) MESSAGE!
-  print me twice
+subcases.cpp(0): MESSAGE: print me twice
 
 ===============================================================================
-subcases.cpp(0)
+subcases.cpp(0):
 TEST CASE:  subcases can be used in a separate function as well
   from function...
   sc1
 
-subcases.cpp(0) MESSAGE!
-  hello! from sc1
+subcases.cpp(0): MESSAGE: hello! from sc1
 
 ===============================================================================
-subcases.cpp(0)
+subcases.cpp(0):
 TEST CASE:  subcases can be used in a separate function as well
 
-subcases.cpp(0) MESSAGE!
-  lala
+subcases.cpp(0): MESSAGE: lala
 
 ===============================================================================
-subcases.cpp(0)
+subcases.cpp(0):
 TEST CASE:  subcases can be used in a separate function as well
   from function...
 
-subcases.cpp(0) MESSAGE!
-  print me twice
+subcases.cpp(0): MESSAGE: print me twice
 
 ===============================================================================
-subcases.cpp(0)
+subcases.cpp(0):
 TEST CASE:  subcases can be used in a separate function as well
   from function...
   sc2
 
-subcases.cpp(0) MESSAGE!
-  hello! from sc2
+subcases.cpp(0): MESSAGE: hello! from sc2
 
 ===============================================================================
-subcases.cpp(0)
+subcases.cpp(0):
 TEST CASE:  subcases can be used in a separate function as well
 
-subcases.cpp(0) MESSAGE!
-  lala
+subcases.cpp(0): MESSAGE: lala
 
 ===============================================================================
-subcases.cpp(0)
+subcases.cpp(0):
   Scenario: vectors can be sized and resized
      Given: A vector with some items
       When: the size is increased
       Then: the size and capacity change
 
-subcases.cpp(0) ERROR!
-  CHECK( v.size() == 20 )
-with expansion:
-  CHECK( 10 == 20 )
+subcases.cpp(0): ERROR: CHECK( v.size() == 20 ) is NOT correct!
+  values: CHECK( 10 == 20 )
 
 ===============================================================================
-subcases.cpp(0)
+subcases.cpp(0):
   Scenario: vectors can be sized and resized
      Given: A vector with some items
       When: less capacity is reserved
       Then: neither size nor capacity are changed
 
-subcases.cpp(0) ERROR!
-  CHECK( v.size() == 10 )
-with expansion:
-  CHECK( 5 == 10 )
+subcases.cpp(0): ERROR: CHECK( v.size() == 10 ) is NOT correct!
+  values: CHECK( 5 == 10 )
 
 ===============================================================================
 [doctest] test cases:      3 |      1 passed |      2 failed | 

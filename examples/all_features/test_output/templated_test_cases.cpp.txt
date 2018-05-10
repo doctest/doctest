@@ -1,48 +1,38 @@
 [doctest] run with "--help" for options
 ===============================================================================
-templated_test_cases.cpp(0)
+templated_test_cases.cpp(0):
 TEST CASE:  vector stuff<std::vector<int>>
 
-templated_test_cases.cpp(0) ERROR!
-  CHECK( vec.size() == 20 )
-with expansion:
-  CHECK( 10 == 20 )
+templated_test_cases.cpp(0): ERROR: CHECK( vec.size() == 20 ) is NOT correct!
+  values: CHECK( 10 == 20 )
 
 ===============================================================================
-templated_test_cases.cpp(0)
+templated_test_cases.cpp(0):
 TEST CASE:  multiple types<>
 
-templated_test_cases.cpp(0) ERROR!
-  CHECK( t2 != T2() )
-with expansion:
-  CHECK( 0 != 0 )
+templated_test_cases.cpp(0): ERROR: CHECK( t2 != T2() ) is NOT correct!
+  values: CHECK( 0 != 0 )
 
 ===============================================================================
-templated_test_cases.cpp(0)
+templated_test_cases.cpp(0):
 TEST CASE:  multiple types<>
 
-templated_test_cases.cpp(0) ERROR!
-  CHECK( t2 != T2() )
-with expansion:
-  CHECK( 0 != 0 )
+templated_test_cases.cpp(0): ERROR: CHECK( t2 != T2() ) is NOT correct!
+  values: CHECK( 0 != 0 )
 
 ===============================================================================
-templated_test_cases.cpp(0)
+templated_test_cases.cpp(0):
 TEST CASE:  multiple types<>
 
-templated_test_cases.cpp(0) ERROR!
-  CHECK( t2 != T2() )
-with expansion:
-  CHECK( 0 != 0 )
+templated_test_cases.cpp(0): ERROR: CHECK( t2 != T2() ) is NOT correct!
+  values: CHECK( 0 != 0 )
 
 ===============================================================================
-templated_test_cases.cpp(0)
+templated_test_cases.cpp(0):
 TEST CASE:  bad stringification of type pair<int_pair>
 
-templated_test_cases.cpp(0) ERROR!
-  CHECK( t2 != T2() )
-with expansion:
-  CHECK( 0 != 0 )
+templated_test_cases.cpp(0): ERROR: CHECK( t2 != T2() ) is NOT correct!
+  values: CHECK( 0 != 0 )
 
 ===============================================================================
 [doctest] test cases:     13 |      8 passed |      5 failed | 

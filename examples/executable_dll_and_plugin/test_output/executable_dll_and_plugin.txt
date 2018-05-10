@@ -4,12 +4,10 @@ I am a test from the implementation!
 I am a test from the implementation_2!
 I am a test from the executable!
 ===============================================================================
-main.cpp(0)
+main.cpp(0):
 TEST CASE:  executable
 
-TEST CASE FAILED!
-threw exception:
-  char: 97
+main.cpp(0): ERROR: test case THREW exception: char: 97
 
 I am a test from the plugin!
 ===============================================================================

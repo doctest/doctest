@@ -2,28 +2,25 @@
 
 root
 ===============================================================================
-subcases.cpp(0)
+subcases.cpp(0):
 TEST CASE:  subcases can be used in a separate function as well
   from function...
 
-subcases.cpp(0) MESSAGE!
-  print me twice
+subcases.cpp(0): MESSAGE: print me twice
 
 ===============================================================================
-subcases.cpp(0)
+subcases.cpp(0):
 TEST CASE:  subcases can be used in a separate function as well
   from function...
   sc1
 
-subcases.cpp(0) MESSAGE!
-  hello! from sc1
+subcases.cpp(0): MESSAGE: hello! from sc1
 
 ===============================================================================
-subcases.cpp(0)
+subcases.cpp(0):
 TEST CASE:  subcases can be used in a separate function as well
 
-subcases.cpp(0) MESSAGE!
-  lala
+subcases.cpp(0): MESSAGE: lala
 
 ===============================================================================
 [doctest] test cases:      3 |      3 passed |      0 failed | 

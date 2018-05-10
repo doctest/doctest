@@ -1,102 +1,97 @@
 [doctest] run with "--help" for options
 ===============================================================================
-test_cases_and_suites.cpp(0)
+test_cases_and_suites.cpp(0):
 TEST CASE:  should fail because of an exception
 
-TEST CASE FAILED!
-threw exception:
-  0
+test_cases_and_suites.cpp(0): ERROR: test case THREW exception: 0
 
 ===============================================================================
-test_cases_and_suites.cpp(0)
+test_cases_and_suites.cpp(0):
 TEST SUITE: scoped test suite
 TEST CASE:  part of scoped
 
-test_cases_and_suites.cpp(0) FATAL ERROR!
+test_cases_and_suites.cpp(0): FATAL ERROR: 
 
 ===============================================================================
-test_cases_and_suites.cpp(0)
+test_cases_and_suites.cpp(0):
 TEST SUITE: scoped test suite
 TEST CASE:  part of scoped 2
 
-test_cases_and_suites.cpp(0) FATAL ERROR!
+test_cases_and_suites.cpp(0): FATAL ERROR: 
 
 ===============================================================================
-test_cases_and_suites.cpp(0)
+test_cases_and_suites.cpp(0):
 TEST SUITE: some TS
 TEST CASE:  part of some TS
 
-test_cases_and_suites.cpp(0) FATAL ERROR!
+test_cases_and_suites.cpp(0): FATAL ERROR: 
 
 ===============================================================================
-test_cases_and_suites.cpp(0)
+test_cases_and_suites.cpp(0):
 TEST CASE:  fixtured test - not part of a test suite
 
-test_cases_and_suites.cpp(0) ERROR!
-  CHECK( data == 85 )
-with expansion:
-  CHECK( 21 == 85 )
+test_cases_and_suites.cpp(0): ERROR: CHECK( data == 85 ) is NOT correct!
+  values: CHECK( 21 == 85 )
 
 ===============================================================================
-test_cases_and_suites.cpp(0)
+test_cases_and_suites.cpp(0):
 TEST SUITE: ts1
 TEST CASE:  normal test in a test suite from a decorator
 
-test_cases_and_suites.cpp(0) MESSAGE!
-  failing because of the timeout decorator!
+test_cases_and_suites.cpp(0): MESSAGE: failing because of the timeout decorator!
 
 Test case exceeded time limit of 0.000001!
 ===============================================================================
-test_cases_and_suites.cpp(0)
+test_cases_and_suites.cpp(0):
 DESCRIPTION: this test has overrided its skip decorator
 TEST SUITE: skipped test cases
 TEST CASE:  unskipped
 
-test_cases_and_suites.cpp(0) FATAL ERROR!
+test_cases_and_suites.cpp(0): FATAL ERROR: 
 
 ===============================================================================
-test_cases_and_suites.cpp(0)
+test_cases_and_suites.cpp(0):
 DESCRIPTION: regarding failures
 TEST SUITE: test suite with a description
 TEST CASE:  fails - and its allowed
 
-test_cases_and_suites.cpp(0) FATAL ERROR!
+test_cases_and_suites.cpp(0): FATAL ERROR: 
 
 Allowed to fail so marking it as not failed
 ===============================================================================
-test_cases_and_suites.cpp(0)
+test_cases_and_suites.cpp(0):
 DESCRIPTION: regarding failures
 TEST SUITE: test suite with a description
 TEST CASE:  fails as it should
 
-test_cases_and_suites.cpp(0) FATAL ERROR!
+test_cases_and_suites.cpp(0): FATAL ERROR: 
 
 Failed as expected so marking it as not failed
 ===============================================================================
-test_cases_and_suites.cpp(0)
+test_cases_and_suites.cpp(0):
 DESCRIPTION: regarding failures
 TEST SUITE: test suite with a description
 TEST CASE:  doesn't fail but it should have
 
 Should have failed but didn't! Marking it as failed!
 ===============================================================================
-test_cases_and_suites.cpp(0)
+test_cases_and_suites.cpp(0):
 DESCRIPTION: regarding failures
 TEST SUITE: test suite with a description
 TEST CASE:  fails 1 time as it should
 
-test_cases_and_suites.cpp(0) FATAL ERROR!
+test_cases_and_suites.cpp(0): FATAL ERROR: 
 
 Failed exactly 1 times as expected so marking it as not failed!
 ===============================================================================
-test_cases_and_suites.cpp(0)
+test_cases_and_suites.cpp(0):
 DESCRIPTION: regarding failures
 TEST SUITE: test suite with a description
 TEST CASE:  fails more times as it should
 
-test_cases_and_suites.cpp(0) ERROR!
+test_cases_and_suites.cpp(0): ERROR: 
 
-test_cases_and_suites.cpp(0) ERROR!
+test_cases_and_suites.cpp(0): ERROR: 
 
 Didn't fail exactly 1 times so marking it as failed!
 ===============================================================================

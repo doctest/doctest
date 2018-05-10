@@ -1,55 +1,40 @@
 [doctest] run with "--help" for options
 ===============================================================================
-coverage_maxout.cpp(0)
+coverage_maxout.cpp(0):
 TEST CASE:  doctest internals
 
-coverage_maxout.cpp(0) ERROR!
-  CHECK( a.compare(const_str, true) != 0 )
-with expansion:
-  CHECK( 0 != 0 )
-with context:
-  should fail
+coverage_maxout.cpp(0): ERROR: CHECK( a.compare(const_str, true) != 0 ) is NOT correct!
+  values: CHECK( 0 != 0 )
+  logged: should fail
 
-coverage_maxout.cpp(0) ERROR!
-  CHECK( a.compare("omgomgomg", false) != 0 )
-with expansion:
-  CHECK( 0 != 0 )
-with context:
-  should fail
+coverage_maxout.cpp(0): ERROR: CHECK( a.compare("omgomgomg", false) != 0 ) is NOT correct!
+  values: CHECK( 0 != 0 )
+  logged: should fail
 
-coverage_maxout.cpp(0) ERROR!
-  CHECK( len_is_zero )
-with expansion:
-  CHECK( false )
-with context:
-  should fail
+coverage_maxout.cpp(0): ERROR: CHECK( len_is_zero ) is NOT correct!
+  values: CHECK( false )
+  logged: should fail
 
 ===============================================================================
-coverage_maxout.cpp(0)
+coverage_maxout.cpp(0):
 TEST SUITE: exception related
 TEST CASE:  will end from a std::string exception
 
-TEST CASE FAILED!
-threw exception:
-  std::string!
+coverage_maxout.cpp(0): ERROR: test case THREW exception: std::string!
 
 ===============================================================================
-coverage_maxout.cpp(0)
+coverage_maxout.cpp(0):
 TEST SUITE: exception related
 TEST CASE:  will end from a const char* exception
 
-TEST CASE FAILED!
-threw exception:
-  const char*!
+coverage_maxout.cpp(0): ERROR: test case THREW exception: const char*!
 
 ===============================================================================
-coverage_maxout.cpp(0)
+coverage_maxout.cpp(0):
 TEST SUITE: exception related
 TEST CASE:  will end from an unknown exception
 
-TEST CASE FAILED!
-threw exception:
-  unknown exception
+coverage_maxout.cpp(0): ERROR: test case THREW exception: unknown exception
 
 ===============================================================================
 [doctest] test cases:      4 |      0 passed |      4 failed | 
