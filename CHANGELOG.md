@@ -1,12 +1,31 @@
 # Change Log
 
+## [1.2.9](https://github.com/onqtam/doctest/tree/1.2.9) (2018-05-10)
+[Full Changelog](https://github.com/onqtam/doctest/compare/1.2.8...1.2.9)
+
+**Closed issues:**
+
+- GCC 8.0 std::uncaught\_exception\(\) is deprecated  [\#130](https://github.com/onqtam/doctest/issues/130)
+- Signal stack size too small on Linux [\#129](https://github.com/onqtam/doctest/issues/129)
+- Support Intel Compiler [\#128](https://github.com/onqtam/doctest/issues/128)
+- Please add support for MSVC 2005 [\#127](https://github.com/onqtam/doctest/issues/127)
+- Doctest is not able to compile on OSX [\#126](https://github.com/onqtam/doctest/issues/126)
+- scan-build report "Dereference of null pointer" for function wildcmp [\#124](https://github.com/onqtam/doctest/issues/124)
+- !!! BREAKING CHANGE \(console output only\)  !!! - Emulate the error/warning format emitted by native compiler gcc/clang/msvc when printing test failures in the log [\#123](https://github.com/onqtam/doctest/issues/123)
+- Add default printers for enums [\#121](https://github.com/onqtam/doctest/issues/121)
+- ARM builds: FTBFS on armhf - error: cast from 'const char\*' to 'const  [\#118](https://github.com/onqtam/doctest/issues/118)
+
+**Merged pull requests:**
+
+- Exclude Intel from GCC compiler check [\#132](https://github.com/onqtam/doctest/pull/132) ([smcallis](https://github.com/smcallis))
+- Fix deprecated-declarations warning with GCC-8.0 [\#131](https://github.com/onqtam/doctest/pull/131) ([AMS21](https://github.com/AMS21))
+
 ## [1.2.8](https://github.com/onqtam/doctest/tree/1.2.8) (2018-03-10)
 [Full Changelog](https://github.com/onqtam/doctest/compare/1.2.7...1.2.8)
 
 **Closed issues:**
 
 - ARM64 builds: templated\_test\_cases.cpp test fails [\#119](https://github.com/onqtam/doctest/issues/119)
-- ARM builds: FTBFS on armhf - error: cast from 'const char\*' to 'const  [\#118](https://github.com/onqtam/doctest/issues/118)
 
 ## [1.2.7](https://github.com/onqtam/doctest/tree/1.2.7) (2018-02-06)
 [Full Changelog](https://github.com/onqtam/doctest/compare/1.2.6...1.2.7)
