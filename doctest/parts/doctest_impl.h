@@ -788,6 +788,7 @@ namespace detail
 
     typedef unsigned long long UInt64;
 
+DOCTEST_GCC_SUPPRESS_WARNING_WITH_PUSH("-Wstrict-aliasing")
     UInt64 getCurrentTicks() {
         static UInt64 hz = 0, hzo = 0;
         if(!hz) {
@@ -798,6 +799,7 @@ namespace detail
         QueryPerformanceCounter(reinterpret_cast<LARGE_INTEGER*>(&t));
         return ((t - hzo) * 1000000) / hz;
     }
+DOCTEST_GCC_SUPPRESS_WARNING_POP 
 #else  // DOCTEST_PLATFORM_WINDOWS
 
     typedef uint64_t UInt64;
