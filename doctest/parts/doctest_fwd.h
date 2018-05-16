@@ -488,8 +488,12 @@ DOCTEST_CLANG_SUPPRESS_WARNING("-Wc++98-compat-pedantic")
 #define DOCTEST_TOSTR(x) DOCTEST_TOSTR_IMPL(x)
 #endif // DOCTEST_CONFIG_WITH_VARIADIC_MACROS
 
-// counts the number of elements in a C string
+// counts the number of elements in a C array
 #define DOCTEST_COUNTOF(x) (sizeof(x) / sizeof(x[0]))
+
+#define DOCTEST_COMMA ,
+
+#define DOCTEST_EMPTY
 
 #ifndef DOCTEST_CONFIG_ASSERTION_PARAMETERS_BY_VALUE
 #define DOCTEST_REF_WRAP(x) x&
@@ -1240,7 +1244,7 @@ namespace detail
         };
     } // namespace assertType
 
-    DOCTEST_INTERFACE const char* assertString(assertType::Enum val);
+    DOCTEST_INTERFACE const char* assertString(assertType::Enum at);
 
     // clang-format off
     template<class T>               struct decay_array       { typedef T type; };
@@ -1416,7 +1420,7 @@ namespace detail
     template <typename R>                                                                          \
     DOCTEST_NOINLINE Result operator op(const DOCTEST_REF_WRAP(R) rhs) {                           \
         bool res = op_macro(lhs, rhs);                                                             \
-        if(m_assert_type & assertType::is_false)                                                   \
+        if(m_at & assertType::is_false)                                                            \
             res = !res;                                                                            \
         if(!res || doctest::detail::getTestsContextState()->success)                               \
             return Result(res, stringifyBinaryExpr(lhs, op_str, rhs));                             \
@@ -1436,15 +1440,15 @@ namespace detail
     struct Expression_lhs
     {
         L                lhs;
-        assertType::Enum m_assert_type;
+        assertType::Enum m_at;
 
         explicit Expression_lhs(L in, assertType::Enum at)
                 : lhs(in)
-                , m_assert_type(at) {}
+                , m_at(at) {}
 
         DOCTEST_NOINLINE operator Result() {
             bool res = !!lhs;
-            if(m_assert_type & assertType::is_false) //!OCLINT bitwise operator in conditional
+            if(m_at & assertType::is_false) //!OCLINT bitwise operator in conditional
                 res = !res;
 
             if(!res || getTestsContextState()->success)
@@ -1494,10 +1498,10 @@ namespace detail
 
     struct ExpressionDecomposer
     {
-        assertType::Enum m_assert_type;
+        assertType::Enum m_at;
 
         ExpressionDecomposer(assertType::Enum at)
-                : m_assert_type(at) {}
+                : m_at(at) {}
 
         // The right operator for capturing expressions is "<=" instead of "<<" (based on the operator precedence table)
         // but then there will be warnings from GCC about "-Wparentheses" and since "_Pragma()" is problematic this will stay for now...
@@ -1505,7 +1509,7 @@ namespace detail
         // https://github.com/philsquared/Catch/issues/565
         template <typename L>
         Expression_lhs<const DOCTEST_REF_WRAP(L)> operator<<(const DOCTEST_REF_WRAP(L) operand) {
-            return Expression_lhs<const DOCTEST_REF_WRAP(L)>(operand, m_assert_type);
+            return Expression_lhs<const DOCTEST_REF_WRAP(L)>(operand, m_at);
         }
     };
 
@@ -1579,17 +1583,24 @@ namespace detail
 
     struct DOCTEST_INTERFACE ResultBuilder
     {
-        assertType::Enum m_assert_type;
+        // common - for all asserts
+        const TestCase&  m_test_case;
+        assertType::Enum m_at;
         const char*      m_file;
         int              m_line;
         const char*      m_expr;
-        const char*      m_exception_type;
+        bool             m_failed;
 
-        Result m_result;
+        // exception-related - for all asserts
         bool   m_threw;
-        bool   m_threw_as;
-        bool   m_failed;
         String m_exception;
+
+        // for normal asserts
+        Result m_result;
+
+        // for specific exception-related asserts
+        bool        m_threw_as;
+        const char* m_exception_type;
 
         ResultBuilder(assertType::Enum at, const char* file, int line, const char* expr,
                       const char* exception_type = "");
@@ -1610,7 +1621,7 @@ namespace detail
         DOCTEST_NOINLINE void unary_assert(const DOCTEST_REF_WRAP(L) val) {
             m_result.m_passed = !!val;
 
-            if(m_assert_type & assertType::is_false) //!OCLINT bitwise operator in conditional
+            if(m_at & assertType::is_false) //!OCLINT bitwise operator in conditional
                 m_result.m_passed = !m_result.m_passed;
 
             if(!m_result.m_passed || getTestsContextState()->success)
@@ -1966,68 +1977,23 @@ namespace detail
     };
 } // namespace detail
 
-struct test_suite
-{
-    const char* data;
-    test_suite(const char* in)
-            : data(in) {}
-    void fill(detail::TestCase& state) const { state.m_test_suite = data; }
-    void fill(detail::TestSuite& state) const { state.m_test_suite = data; }
-};
+#define DOCTEST_DEFINE_DECORATOR(name, type, def)                                                  \
+    struct name                                                                                    \
+    {                                                                                              \
+        type data;                                                                                 \
+        name(type in = def)                                                                        \
+                : data(in) {}                                                                      \
+        void fill(detail::TestCase& state) const { state.DOCTEST_CAT(m_, name) = data; }           \
+        void fill(detail::TestSuite& state) const { state.DOCTEST_CAT(m_, name) = data; }          \
+    }
 
-struct description
-{
-    const char* data;
-    description(const char* in)
-            : data(in) {}
-    void fill(detail::TestCase& state) const { state.m_description = data; }
-    void fill(detail::TestSuite& state) const { state.m_description = data; }
-};
-
-struct skip
-{
-    bool data;
-    skip(bool in = true)
-            : data(in) {}
-    void fill(detail::TestCase& state) const { state.m_skip = data; }
-    void fill(detail::TestSuite& state) const { state.m_skip = data; }
-};
-
-struct timeout
-{
-    double data;
-    timeout(double in)
-            : data(in) {}
-    void fill(detail::TestCase& state) const { state.m_timeout = data; }
-    void fill(detail::TestSuite& state) const { state.m_timeout = data; }
-};
-
-struct may_fail
-{
-    bool data;
-    may_fail(bool in = true)
-            : data(in) {}
-    void fill(detail::TestCase& state) const { state.m_may_fail = data; }
-    void fill(detail::TestSuite& state) const { state.m_may_fail = data; }
-};
-
-struct should_fail
-{
-    bool data;
-    should_fail(bool in = true)
-            : data(in) {}
-    void fill(detail::TestCase& state) const { state.m_should_fail = data; }
-    void fill(detail::TestSuite& state) const { state.m_should_fail = data; }
-};
-
-struct expected_failures
-{
-    int data;
-    expected_failures(int in)
-            : data(in) {}
-    void fill(detail::TestCase& state) const { state.m_expected_failures = data; }
-    void fill(detail::TestSuite& state) const { state.m_expected_failures = data; }
-};
+DOCTEST_DEFINE_DECORATOR(test_suite, const char*, "");
+DOCTEST_DEFINE_DECORATOR(description, const char*, "");
+DOCTEST_DEFINE_DECORATOR(skip, bool, true);
+DOCTEST_DEFINE_DECORATOR(timeout, double, 0);
+DOCTEST_DEFINE_DECORATOR(may_fail, bool, true);
+DOCTEST_DEFINE_DECORATOR(should_fail, bool, true);
+DOCTEST_DEFINE_DECORATOR(expected_failures, int, 0);
 
 #endif // DOCTEST_CONFIG_DISABLE
 

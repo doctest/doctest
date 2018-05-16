@@ -1,4 +1,6 @@
 
+move more inline functions from fwd to impl (like Approx stuff, also the inline string stuff...), also ifdef can_use_op<> & friends
+
 https://github.com/catchorg/Catch2/commit/de36b2ada6e4593a9a32c4c86cd47d4bc002b148
 
 add [[noreturn]] to MessageBuilder::react() - and actually make a separate function (react2) for the FAIL() case

@@ -71,29 +71,28 @@ DOCTEST_CLANG_SUPPRESS_WARNING("-Wc++98-compat")
 DOCTEST_CLANG_SUPPRESS_WARNING("-Wc++98-compat-pedantic")
 #endif // DOCTEST_NO_CPP11_COMPAT
 
-#define DOCTEST_LOG_START(s)                                                                       \
+#define DOCTEST_TO_CONSOLE_AND_OUTPUT_WINDOW(f, arg)                                               \
     do {                                                                                           \
-        if(!contextState->hasLoggedCurrentTestStart) {                                             \
-            logTestStart(s, *contextState->currentTest);                                           \
-            DOCTEST_PRINT_TO_OUTPUT_WINDOW_IN_IDE_BEGIN;                                           \
-            logTestStart(oss, *contextState->currentTest);                                         \
-            DOCTEST_PRINT_TO_OUTPUT_WINDOW_IN_IDE_END;                                             \
-            contextState->hasLoggedCurrentTestStart = true;                                        \
+        f(std::cout arg);                                                                          \
+        if(isDebuggerActive()) {                                                                   \
+            ContextState* p_cs     = contextState;                                                 \
+            bool          with_col = p_cs->no_colors;                                              \
+            p_cs->no_colors        = false;                                                        \
+            std::ostringstream oss;                                                                \
+            f(oss arg);                                                                            \
+            printToDebugConsole(oss.str().c_str());                                                \
+            p_cs->no_colors = with_col;                                                            \
         }                                                                                          \
     } while(false)
 
-#define DOCTEST_PRINT_TO_OUTPUT_WINDOW_IN_IDE_BEGIN                                                \
-    if(isDebuggerActive()) {                                                                       \
-        ContextState* p_cs     = contextState;                                                     \
-        bool          with_col = p_cs->no_colors;                                                  \
-        p_cs->no_colors        = false;                                                            \
-    std::ostringstream oss
-
-#define DOCTEST_PRINT_TO_OUTPUT_WINDOW_IN_IDE_END                                                  \
-    printToDebugConsole(oss.str().c_str());                                                        \
-    p_cs->no_colors = with_col;                                                                    \
-    }                                                                                              \
-    ((void)0)
+#define DOCTEST_LOG_START                                                                          \
+    do {                                                                                           \
+        if(!contextState->hasLoggedCurrentTestStart) {                                             \
+            DOCTEST_TO_CONSOLE_AND_OUTPUT_WINDOW(logTestStart,                                     \
+                                                 DOCTEST_COMMA * contextState->currentTest);       \
+            contextState->hasLoggedCurrentTestStart = true;                                        \
+        }                                                                                          \
+    } while(false)
 
 DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_BEGIN
 
@@ -623,10 +622,10 @@ namespace detail
         return m_template_id < other.m_template_id;
     }
 
-    const char* assertString(assertType::Enum val) {
+    const char* assertString(assertType::Enum at) {
         DOCTEST_MSVC_SUPPRESS_WARNING_WITH_PUSH(
                 4062) // enumerator 'x' in switch of enum 'y' is not handled
-        switch(val) { //!OCLINT missing default in switch statements
+        switch(at) {  //!OCLINT missing default in switch statements
             // clang-format off
             case assertType::DT_WARN                    : return "WARN";
             case assertType::DT_CHECK                   : return "CHECK";
@@ -788,7 +787,7 @@ namespace detail
 
     typedef unsigned long long UInt64;
 
-DOCTEST_GCC_SUPPRESS_WARNING_WITH_PUSH("-Wstrict-aliasing")
+    DOCTEST_GCC_SUPPRESS_WARNING_WITH_PUSH("-Wstrict-aliasing")
     UInt64 getCurrentTicks() {
         static UInt64 hz = 0, hzo = 0;
         if(!hz) {
@@ -799,7 +798,7 @@ DOCTEST_GCC_SUPPRESS_WARNING_WITH_PUSH("-Wstrict-aliasing")
         QueryPerformanceCounter(reinterpret_cast<LARGE_INTEGER*>(&t));
         return ((t - hzo) * 1000000) / hz;
     }
-DOCTEST_GCC_SUPPRESS_WARNING_POP 
+    DOCTEST_GCC_SUPPRESS_WARNING_POP
 #else  // DOCTEST_PLATFORM_WINDOWS
 
     typedef uint64_t UInt64;
@@ -1433,7 +1432,7 @@ DOCTEST_GCC_SUPPRESS_WARNING_POP
 
     void logTestEnd() {}
 
-    void logTestException_impl(std::ostream& s, const TestCase& tc, const String& str, bool crash) {
+    void logTestException(std::ostream& s, const TestCase& tc, const String& str, bool crash) {
         file_line_to_stream(s, tc.m_file, tc.m_line, " ");
         successOrFailColoredStringToStream(s, false,
                                            crash ? assertType::is_require : assertType::is_check);
@@ -1449,19 +1448,17 @@ DOCTEST_GCC_SUPPRESS_WARNING_POP
         s << "\n";
     }
 
-    void logTestException(const TestCase& tc, const String& what, bool crash) {
-        logTestException_impl(std::cout, tc, what, crash);
-        DOCTEST_PRINT_TO_OUTPUT_WINDOW_IN_IDE_BEGIN;
-        logTestException_impl(oss, tc, what, crash);
-        DOCTEST_PRINT_TO_OUTPUT_WINDOW_IN_IDE_END;
-    }
-
 #if defined(DOCTEST_CONFIG_POSIX_SIGNALS) || defined(DOCTEST_CONFIG_WINDOWS_SEH)
     void reportFatal(const std::string& message) {
-        DOCTEST_LOG_START(std::cout);
+        DOCTEST_LOG_START;
 
         contextState->numAssertions += contextState->numAssertionsForCurrentTestcase;
-        logTestException(*contextState->currentTest, message.c_str(), true);
+
+        DOCTEST_TO_CONSOLE_AND_OUTPUT_WINDOW(
+                logTestException,
+                DOCTEST_COMMA * contextState->currentTest DOCTEST_COMMA message.c_str()
+                                        DOCTEST_COMMA true);
+
         logTestEnd();
         contextState->numFailed++;
 
@@ -1469,92 +1466,60 @@ DOCTEST_GCC_SUPPRESS_WARNING_POP
     }
 #endif // DOCTEST_CONFIG_POSIX_SIGNALS || DOCTEST_CONFIG_WINDOWS_SEH
 
-    void logAssert_impl(std::ostream& s, bool passed, const String& dec, bool threw,
-                        const String& ex, const char* expr, assertType::Enum at, const char* file,
-                        int line) {
-        file_line_to_stream(s, file, line, " ");
-        successOrFailColoredStringToStream(s, passed, at);
-        s << Color::Cyan << assertString(at) << "( " << expr << " ) " << Color::None
-          << (threw ? "THREW exception: " : (passed ? "is correct!\n" : "is NOT correct!\n"));
-        if(threw)
-            s << ex << "\n";
+    void logAssert(std::ostream& s, const ResultBuilder& rb) {
+        file_line_to_stream(s, rb.m_file, rb.m_line, " ");
+        successOrFailColoredStringToStream(s, rb.m_result.m_passed, rb.m_at);
+        s << Color::Cyan << assertString(rb.m_at) << "( " << rb.m_expr << " ) " << Color::None
+          << (rb.m_threw ? "THREW exception: " :
+                           (rb.m_result.m_passed ? "is correct!\n" : "is NOT correct!\n"));
+        if(rb.m_threw)
+            s << rb.m_exception << "\n";
         else
-            s << "  values: " << assertString(at) << "( " << dec << " )\n";
+            s << "  values: " << assertString(rb.m_at) << "( " << rb.m_result.m_decomposition
+              << " )\n";
         s << contextState->contexts;
     }
 
-    void logAssert(bool passed, const String& dec, bool threw, const String& ex, const char* expr,
-                   assertType::Enum at, const char* file, int line) {
-        logAssert_impl(std::cout, passed, dec, threw, ex, expr, at, file, line);
-        DOCTEST_PRINT_TO_OUTPUT_WINDOW_IN_IDE_BEGIN;
-        logAssert_impl(oss, passed, dec, threw, ex, expr, at, file, line);
-        DOCTEST_PRINT_TO_OUTPUT_WINDOW_IN_IDE_END;
-    }
-
-    void logAssertThrows_impl(std::ostream& s, bool threw, const char* expr, assertType::Enum at,
-                              const char* file, int line) {
-        file_line_to_stream(s, file, line, " ");
-        successOrFailColoredStringToStream(s, threw, at);
-        s << Color::Cyan << assertString(at) << "( " << expr << " ) " << Color::None
-          << (threw ? "threw as expected!" : "did NOT throw at all!") << "\n";
+    void logAssertThrows(std::ostream& s, const ResultBuilder& rb) {
+        file_line_to_stream(s, rb.m_file, rb.m_line, " ");
+        successOrFailColoredStringToStream(s, rb.m_threw, rb.m_at);
+        s << Color::Cyan << assertString(rb.m_at) << "( " << rb.m_expr << " ) " << Color::None
+          << (rb.m_threw ? "threw as expected!" : "did NOT throw at all!") << "\n";
         s << contextState->contexts;
     }
 
-    void logAssertThrows(bool threw, const char* expr, assertType::Enum at, const char* file,
-                         int line) {
-        logAssertThrows_impl(std::cout, threw, expr, at, file, line);
-        DOCTEST_PRINT_TO_OUTPUT_WINDOW_IN_IDE_BEGIN;
-        logAssertThrows_impl(oss, threw, expr, at, file, line);
-        DOCTEST_PRINT_TO_OUTPUT_WINDOW_IN_IDE_END;
-    }
-
-    void logAssertThrowsAs_impl(std::ostream& s, bool threw, bool threw_as, const char* as,
-                                const String& ex, const char* expr, assertType::Enum at,
-                                const char* file, int line) {
-        file_line_to_stream(s, file, line, " ");
-        successOrFailColoredStringToStream(s, threw_as, at);
-        s << Color::Cyan << assertString(at) << "( " << expr << ", " << as << " ) " << Color::None
-          << (threw ? (threw_as ? "threw as expected!" : "threw a DIFFERENT exception: ") :
+    void logAssertThrowsAs(std::ostream& s, const ResultBuilder& rb) {
+        file_line_to_stream(s, rb.m_file, rb.m_line, " ");
+        successOrFailColoredStringToStream(s, rb.m_threw_as, rb.m_at);
+        s << Color::Cyan << assertString(rb.m_at) << "( " << rb.m_expr << ", "
+          << rb.m_exception_type << " ) " << Color::None
+          << (rb.m_threw ?
+                      (rb.m_threw_as ? "threw as expected!" : "threw a DIFFERENT exception: ") :
                       "did NOT throw at all!")
-          << Color::Cyan << ex << "\n";
+          << Color::Cyan << rb.m_exception << "\n";
         s << contextState->contexts;
     }
 
-    void logAssertThrowsAs(bool threw, bool threw_as, const char* as, const String& ex,
-                           const char* expr, assertType::Enum at, const char* file, int line) {
-        logAssertThrowsAs_impl(std::cout, threw, threw_as, as, ex, expr, at, file, line);
-        DOCTEST_PRINT_TO_OUTPUT_WINDOW_IN_IDE_BEGIN;
-        logAssertThrowsAs_impl(oss, threw, threw_as, as, ex, expr, at, file, line);
-        DOCTEST_PRINT_TO_OUTPUT_WINDOW_IN_IDE_END;
-    }
-
-    void logAssertNothrow_impl(std::ostream& s, bool threw, const String& ex, const char* expr,
-                               assertType::Enum at, const char* file, int line) {
-        file_line_to_stream(s, file, line, " ");
-        successOrFailColoredStringToStream(s, !threw, at);
-        s << Color::Cyan << assertString(at) << "( " << expr << " ) " << Color::None
-          << (threw ? "THREW exception: " : "didn't throw!") << Color::Cyan << ex << "\n";
+    void logAssertNothrow(std::ostream& s, const ResultBuilder& rb) {
+        file_line_to_stream(s, rb.m_file, rb.m_line, " ");
+        successOrFailColoredStringToStream(s, !rb.m_threw, rb.m_at);
+        s << Color::Cyan << assertString(rb.m_at) << "( " << rb.m_expr << " ) " << Color::None
+          << (rb.m_threw ? "THREW exception: " : "didn't throw!") << Color::Cyan << rb.m_exception
+          << "\n";
         s << contextState->contexts;
-    }
-
-    void logAssertNothrow(bool threw, const String& ex, const char* expr, assertType::Enum at,
-                          const char* file, int line) {
-        logAssertNothrow_impl(std::cout, threw, ex, expr, at, file, line);
-        DOCTEST_PRINT_TO_OUTPUT_WINDOW_IN_IDE_BEGIN;
-        logAssertNothrow_impl(oss, threw, ex, expr, at, file, line);
-        DOCTEST_PRINT_TO_OUTPUT_WINDOW_IN_IDE_END;
     }
 
     ResultBuilder::ResultBuilder(assertType::Enum at, const char* file, int line, const char* expr,
                                  const char* exception_type)
-            : m_assert_type(at)
+            : m_test_case(*contextState->currentTest)
+            , m_at(at)
             , m_file(file)
             , m_line(line)
             , m_expr(expr)
-            , m_exception_type(exception_type)
+            , m_failed(false)
             , m_threw(false)
             , m_threw_as(false)
-            , m_failed(false) {
+            , m_exception_type(exception_type) {
 #if DOCTEST_MSVC
         if(m_expr[0] == ' ') // this happens when variadic macros are disabled under MSVC
             ++m_expr;
@@ -1570,15 +1535,15 @@ DOCTEST_GCC_SUPPRESS_WARNING_POP
     }
 
     bool ResultBuilder::log() {
-        if((m_assert_type & assertType::is_warn) == 0) //!OCLINT bitwise operator in conditional
+        if((m_at & assertType::is_warn) == 0) //!OCLINT bitwise operator in conditional
             contextState->numAssertionsForCurrentTestcase++;
 
-        if(m_assert_type & assertType::is_throws) { //!OCLINT bitwise operator in conditional
+        if(m_at & assertType::is_throws) { //!OCLINT bitwise operator in conditional
             m_failed = !m_threw;
-        } else if(m_assert_type & //!OCLINT bitwise operator in conditional
+        } else if(m_at & //!OCLINT bitwise operator in conditional
                   assertType::is_throws_as) {
             m_failed = !m_threw_as;
-        } else if(m_assert_type & //!OCLINT bitwise operator in conditional
+        } else if(m_at & //!OCLINT bitwise operator in conditional
                   assertType::is_nothrow) {
             m_failed = m_threw;
         } else {
@@ -1586,31 +1551,28 @@ DOCTEST_GCC_SUPPRESS_WARNING_POP
         }
 
         if(m_failed || contextState->success) {
-            DOCTEST_LOG_START(std::cout);
+            DOCTEST_LOG_START;
 
-            if(m_assert_type & assertType::is_throws) { //!OCLINT bitwise operator in conditional
-                logAssertThrows(m_threw, m_expr, m_assert_type, m_file, m_line);
-            } else if(m_assert_type & //!OCLINT bitwise operator in conditional
-                      assertType::is_throws_as) {
-                logAssertThrowsAs(m_threw, m_threw_as, m_exception_type, m_exception, m_expr,
-                                  m_assert_type, m_file, m_line);
-            } else if(m_assert_type & //!OCLINT bitwise operator in conditional
+            if(m_at & assertType::is_throws) { //!OCLINT bitwise operator in conditional
+                DOCTEST_TO_CONSOLE_AND_OUTPUT_WINDOW(logAssertThrows, DOCTEST_COMMA * this);
+            } else if(m_at & assertType::is_throws_as) { //!OCLINT bitwise operator in conditional
+                DOCTEST_TO_CONSOLE_AND_OUTPUT_WINDOW(logAssertThrowsAs, DOCTEST_COMMA * this);
+            } else if(m_at & //!OCLINT bitwise operator in conditional
                       assertType::is_nothrow) {
-                logAssertNothrow(m_threw, m_exception, m_expr, m_assert_type, m_file, m_line);
+                DOCTEST_TO_CONSOLE_AND_OUTPUT_WINDOW(logAssertNothrow, DOCTEST_COMMA * this);
             } else {
-                logAssert(m_result.m_passed, m_result.m_decomposition, m_threw, m_exception, m_expr,
-                          m_assert_type, m_file, m_line);
+                DOCTEST_TO_CONSOLE_AND_OUTPUT_WINDOW(logAssert, DOCTEST_COMMA * this);
             }
         }
 
         if(m_failed)
-            addFailedAssert(m_assert_type);
+            addFailedAssert(m_at);
 
         return m_failed && isDebuggerActive() && !contextState->no_breaks; // break into debugger
     }
 
     void ResultBuilder::react() const {
-        if(m_failed && checkIfShouldThrow(m_assert_type))
+        if(m_failed && checkIfShouldThrow(m_at))
             throwException();
     }
 
@@ -1629,12 +1591,9 @@ DOCTEST_GCC_SUPPRESS_WARNING_POP
     }
 
     bool MessageBuilder::log() {
-        DOCTEST_LOG_START(std::cout);
+        DOCTEST_LOG_START;
+        DOCTEST_TO_CONSOLE_AND_OUTPUT_WINDOW(log, DOCTEST_EMPTY);
 
-        log(std::cout);
-        DOCTEST_PRINT_TO_OUTPUT_WINDOW_IN_IDE_BEGIN;
-        log(oss);
-        DOCTEST_PRINT_TO_OUTPUT_WINDOW_IN_IDE_END;
         const bool isWarn = m_severity & assertType::is_warn;
 
         // warn is just a message in this context so we dont treat it as an assert
@@ -2184,7 +2143,7 @@ int Context::run() {
 
                 // if logging successful tests - force the start log
                 if(p->success)
-                    DOCTEST_LOG_START(std::cout);
+                    DOCTEST_LOG_START;
 
                 // reset the assertion state
                 p->numAssertionsForCurrentTestcase = 0;
@@ -2209,8 +2168,12 @@ int Context::run() {
                         failed = true;
 #ifndef DOCTEST_CONFIG_NO_EXCEPTIONS
                 } catch(const TestFailureException&) { failed = true; } catch(...) {
-                    DOCTEST_LOG_START(std::cout);
-                    logTestException(*contextState->currentTest, translateActiveException(), false);
+                    DOCTEST_LOG_START;
+                    DOCTEST_TO_CONSOLE_AND_OUTPUT_WINDOW(
+                            logTestException,
+                            DOCTEST_COMMA * contextState->currentTest DOCTEST_COMMA
+                                                                      translateActiveException() DOCTEST_COMMA false);
+
                     failed = true;
                 }
 #endif // DOCTEST_CONFIG_NO_EXCEPTIONS
@@ -2230,7 +2193,7 @@ int Context::run() {
             if(Approx(p->currentTest->m_timeout).epsilon(DBL_EPSILON) != 0 &&
                Approx(duration).epsilon(DBL_EPSILON) > p->currentTest->m_timeout) {
                 failed = true;
-                DOCTEST_LOG_START(std::cout);
+                DOCTEST_LOG_START;
                 std::cout << Color::Red << "Test case exceeded time limit of "
                           << std::setprecision(6) << std::fixed << p->currentTest->m_timeout
                           << "!\n";
@@ -2241,7 +2204,7 @@ int Context::run() {
                           << " s: " << p->currentTest->m_name << "\n";
 
             if(data.m_should_fail) {
-                DOCTEST_LOG_START(std::cout);
+                DOCTEST_LOG_START;
                 if(failed)
                     std::cout << Color::Yellow
                               << "Failed as expected so marking it as not failed\n";
@@ -2250,11 +2213,11 @@ int Context::run() {
                               << "Should have failed but didn't! Marking it as failed!\n";
                 failed = !failed;
             } else if(failed && data.m_may_fail) {
-                DOCTEST_LOG_START(std::cout);
+                DOCTEST_LOG_START;
                 failed = false;
                 std::cout << Color::Yellow << "Allowed to fail so marking it as not failed\n";
             } else if(data.m_expected_failures > 0) {
-                DOCTEST_LOG_START(std::cout);
+                DOCTEST_LOG_START;
                 if(p->numFailedAssertionsForCurrentTestcase == data.m_expected_failures) {
                     failed = false;
                     std::cout << Color::Yellow << "Failed exactly " << data.m_expected_failures
