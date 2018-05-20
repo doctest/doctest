@@ -4597,44 +4597,32 @@ namespace detail
 
     void logAssert(std::ostream& s, const ResultBuilder& rb) {
         file_line_to_stream(s, rb.m_file, rb.m_line, " ");
-        successOrFailColoredStringToStream(s, rb.m_result.m_passed, rb.m_at);
-        s << Color::Cyan << assertString(rb.m_at) << "( " << rb.m_expr << " ) " << Color::None
-          << (rb.m_threw ? "THREW exception: " :
-                           (rb.m_result.m_passed ? "is correct!\n" : "is NOT correct!\n"));
-        if(rb.m_threw)
-            s << rb.m_exception << "\n";
-        else
-            s << "  values: " << assertString(rb.m_at) << "( " << rb.m_result.m_decomposition
-              << " )\n";
-        s << contextState->contexts;
-    }
+        successOrFailColoredStringToStream(s, !rb.m_failed, rb.m_at);
+        if((rb.m_at & assertType::is_throws_as) == 0) //!OCLINT bitwise operator in conditional
+            s << Color::Cyan << assertString(rb.m_at) << "( " << rb.m_expr << " ) " << Color::None;
 
-    void logAssertThrows(std::ostream& s, const ResultBuilder& rb) {
-        file_line_to_stream(s, rb.m_file, rb.m_line, " ");
-        successOrFailColoredStringToStream(s, rb.m_threw, rb.m_at);
-        s << Color::Cyan << assertString(rb.m_at) << "( " << rb.m_expr << " ) " << Color::None
-          << (rb.m_threw ? "threw as expected!" : "did NOT throw at all!") << "\n";
-        s << contextState->contexts;
-    }
+        if(rb.m_at & assertType::is_throws) { //!OCLINT bitwise operator in conditional
+            s << (rb.m_threw ? "threw as expected!" : "did NOT throw at all!") << "\n";
+        } else if(rb.m_at & assertType::is_throws_as) { //!OCLINT bitwise operator in conditional
+            s << Color::Cyan << assertString(rb.m_at) << "( " << rb.m_expr << ", "
+              << rb.m_exception_type << " ) " << Color::None
+              << (rb.m_threw ?
+                          (rb.m_threw_as ? "threw as expected!" : "threw a DIFFERENT exception: ") :
+                          "did NOT throw at all!")
+              << Color::Cyan << rb.m_exception << "\n";
+        } else if(rb.m_at & assertType::is_nothrow) { //!OCLINT bitwise operator in conditional
+            s << (rb.m_threw ? "THREW exception: " : "didn't throw!") << Color::Cyan
+              << rb.m_exception << "\n";
+        } else {
+            s << (rb.m_threw ? "THREW exception: " :
+                               (rb.m_result.m_passed ? "is correct!\n" : "is NOT correct!\n"));
+            if(rb.m_threw)
+                s << rb.m_exception << "\n";
+            else
+                s << "  values: " << assertString(rb.m_at) << "( " << rb.m_result.m_decomposition
+                  << " )\n";
+        }
 
-    void logAssertThrowsAs(std::ostream& s, const ResultBuilder& rb) {
-        file_line_to_stream(s, rb.m_file, rb.m_line, " ");
-        successOrFailColoredStringToStream(s, rb.m_threw_as, rb.m_at);
-        s << Color::Cyan << assertString(rb.m_at) << "( " << rb.m_expr << ", "
-          << rb.m_exception_type << " ) " << Color::None
-          << (rb.m_threw ?
-                      (rb.m_threw_as ? "threw as expected!" : "threw a DIFFERENT exception: ") :
-                      "did NOT throw at all!")
-          << Color::Cyan << rb.m_exception << "\n";
-        s << contextState->contexts;
-    }
-
-    void logAssertNothrow(std::ostream& s, const ResultBuilder& rb) {
-        file_line_to_stream(s, rb.m_file, rb.m_line, " ");
-        successOrFailColoredStringToStream(s, !rb.m_threw, rb.m_at);
-        s << Color::Cyan << assertString(rb.m_at) << "( " << rb.m_expr << " ) " << Color::None
-          << (rb.m_threw ? "THREW exception: " : "didn't throw!") << Color::Cyan << rb.m_exception
-          << "\n";
         s << contextState->contexts;
     }
 
@@ -4681,17 +4669,7 @@ namespace detail
 
         if(m_failed || contextState->success) {
             DOCTEST_LOG_START;
-
-            if(m_at & assertType::is_throws) { //!OCLINT bitwise operator in conditional
-                DOCTEST_TO_CONSOLE_AND_OUTPUT_WINDOW(logAssertThrows, DOCTEST_COMMA * this);
-            } else if(m_at & assertType::is_throws_as) { //!OCLINT bitwise operator in conditional
-                DOCTEST_TO_CONSOLE_AND_OUTPUT_WINDOW(logAssertThrowsAs, DOCTEST_COMMA * this);
-            } else if(m_at & //!OCLINT bitwise operator in conditional
-                      assertType::is_nothrow) {
-                DOCTEST_TO_CONSOLE_AND_OUTPUT_WINDOW(logAssertNothrow, DOCTEST_COMMA * this);
-            } else {
-                DOCTEST_TO_CONSOLE_AND_OUTPUT_WINDOW(logAssert, DOCTEST_COMMA * this);
-            }
+            DOCTEST_TO_CONSOLE_AND_OUTPUT_WINDOW(logAssert, DOCTEST_COMMA * this);
         }
 
         if(m_failed)
