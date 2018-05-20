@@ -2060,6 +2060,21 @@ public:
 #define DOCTEST_STRIP_PARENS(x) x
 #define DOCTEST_HANDLE_BRACED_VA_ARGS(expr) DOCTEST_STRIP_PARENS(DOCTEST_EXPAND_VA_ARGS expr)
 
+// common code in asserts - for convenience
+#define DOCTEST_ASSERT_LOG_AND_REACT(b)                                                            \
+    if(b.log())                                                                                    \
+        DOCTEST_BREAK_INTO_DEBUGGER();                                                             \
+    b.react()
+
+#ifdef DOCTEST_CONFIG_NO_TRY_CATCH_IN_ASSERTS
+#define DOCTEST_WRAP_IN_TRY(x) x;
+#else // DOCTEST_CONFIG_NO_TRY_CATCH_IN_ASSERTS
+#define DOCTEST_WRAP_IN_TRY(x)                                                                     \
+    try {                                                                                          \
+        x;                                                                                         \
+    } catch(...) { _DOCTEST_RB.unexpectedExceptionOccurred(); }
+#endif // DOCTEST_CONFIG_NO_TRY_CATCH_IN_ASSERTS
+
 // registers the test by initializing a dummy var with a function
 #define DOCTEST_REGISTER_FUNCTION(f, decorators)                                                   \
     DOCTEST_GLOBAL_NO_WARNINGS(DOCTEST_ANONYMOUS(_DOCTEST_ANON_VAR_)) = doctest::detail::regTest(  \
@@ -2274,9 +2289,7 @@ public:
     do {                                                                                           \
         doctest::detail::MessageBuilder mb(file, line, doctest::detail::assertType::type);         \
         mb << x;                                                                                   \
-        if(mb.log())                                                                               \
-            DOCTEST_BREAK_INTO_DEBUGGER();                                                         \
-        mb.react();                                                                                \
+        DOCTEST_ASSERT_LOG_AND_REACT(mb);                                                          \
     } while((void)0, 0)
 
 // clang-format off
@@ -2300,21 +2313,6 @@ constexpr T to_lvalue = x;
 #define DOCTEST_TO_LVALUE(x) TO_LVALUE_CAN_BE_USED_ONLY_IN_CPP14_MODE_OR_WITH_VS_2017_OR_NEWER
 #endif // DOCTEST_CONFIG_WITH_VARIADIC_MACROS
 #endif // TO_LVALUE hack for logging macros like INFO()
-
-// common code in asserts - for convenience
-#define DOCTEST_ASSERT_LOG_AND_REACT(rb)                                                           \
-    if(rb.log())                                                                                   \
-        DOCTEST_BREAK_INTO_DEBUGGER();                                                             \
-    rb.react()
-
-#ifdef DOCTEST_CONFIG_NO_TRY_CATCH_IN_ASSERTS
-#define DOCTEST_WRAP_IN_TRY(x) x;
-#else // DOCTEST_CONFIG_NO_TRY_CATCH_IN_ASSERTS
-#define DOCTEST_WRAP_IN_TRY(x)                                                                     \
-    try {                                                                                          \
-        x;                                                                                         \
-    } catch(...) { _DOCTEST_RB.unexpectedExceptionOccurred(); }
-#endif // DOCTEST_CONFIG_NO_TRY_CATCH_IN_ASSERTS
 
 #define DOCTEST_ASSERT_IMPLEMENT_2(expr, assert_type)                                              \
     DOCTEST_CLANG_SUPPRESS_WARNING_WITH_PUSH("-Woverloaded-shift-op-parentheses")                  \
