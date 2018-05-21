@@ -21,6 +21,7 @@ PointerAlignment: Left
 IndentCaseLabels: true
 ContinuationIndentWidth: 8
 NamespaceIndentation: Inner
+FixNamespaceComments: true
 AccessModifierOffset: -4
 
 SpaceAfterControlStatementKeyword: false

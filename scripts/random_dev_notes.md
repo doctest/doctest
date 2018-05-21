@@ -1,4 +1,75 @@
 
+the current reporter interface
+    - can be used for listening for events
+    - multiple reporters can be used
+    - custom reporters can be written
+    - register and choose reporters
+    - list all reporters
+todo:
+    - output to file (or just not stdout)
+    - xml output
+    - xUnit reporter
+    - compact reporter
+    - progress reporter
+    - options
+        - absolutely no output on success
+        - summary only
+
+https://www.boost.org/doc/libs/1_67_0/libs/test/doc/html/index.html
+
+
+
+
+
+
+examples
+
+c++11 only tests
+
+thread sanitizer tests
+
+documentation... :(
+
+profit :D
+
+
+
+ask in the reddit thread what from the roadmap they would like to see next
+
+
+
+
+OMG!!! THIS!!!
+https://github.com/onqtam/doctest/issues/114
+isRunningInTest()
+
+
+
+
+
+a failing REQUIRE inside of a CHECK
+https://github.com/catchorg/Catch2/issues/1292
+
+int foo(int i) {
+    REQUIRE(i > 10);
+    return 42;
+}
+TEST_CASE("a") {
+    CHECK(foo(2) == 2);
+}
+
+
+
+look at CHECKED_IF & friends
+https://github.com/catchorg/Catch2/issues/1278
+
+
+
+
+user command line options...?
+
+
+
 move more inline functions from fwd to impl (like Approx stuff, also the inline string stuff...), also ifdef can_use_op<> & friends
 
 https://github.com/catchorg/Catch2/commit/de36b2ada6e4593a9a32c4c86cd47d4bc002b148

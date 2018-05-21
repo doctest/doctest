@@ -210,6 +210,11 @@ DOCTEST_MSVC_SUPPRESS_WARNING(5027) // move assignment operator was implicitly d
 DOCTEST_MSVC_SUPPRESS_WARNING(5026) // move constructor was implicitly defined as deleted
 DOCTEST_MSVC_SUPPRESS_WARNING(4623) // default constructor was implicitly defined as deleted
 DOCTEST_MSVC_SUPPRESS_WARNING(4640) // construction of local static object is not thread-safe
+// static analysis
+DOCTEST_MSVC_SUPPRESS_WARNING(26439) // This kind of function may not throw. Declare it 'noexcept'
+DOCTEST_MSVC_SUPPRESS_WARNING(26495) // Always initialize a member variable
+DOCTEST_MSVC_SUPPRESS_WARNING(26451) // Arithmetic overflow ...
+DOCTEST_MSVC_SUPPRESS_WARNING(26444) // Avoid unnamed objects with custom construction and dtr...
 
 // C4548 - expression before comma has no effect; expected expression with side - effect
 // C4986 - exception specification does not match previous declaration
@@ -266,8 +271,12 @@ DOCTEST_MSVC_SUPPRESS_WARNING(4640) // construction of local static object is no
 #ifndef DOCTEST_CONFIG_WITH_VARIADIC_MACROS
 #define DOCTEST_CONFIG_WITH_VARIADIC_MACROS
 #endif // DOCTEST_CONFIG_WITH_VARIADIC_MACROS
+#ifndef DOCTEST_CONFIG_WITH_OVERRIDE
+#define DOCTEST_CONFIG_WITH_OVERRIDE
+#endif // DOCTEST_CONFIG_WITH_OVERRIDE
 #endif // __cplusplus >= 201103L
 
+// general compiler feature support table: https://en.cppreference.com/w/cpp/compiler_support
 // MSVC C++11 feature support table: https://msdn.microsoft.com/en-us/library/hh567368.aspx
 // GCC C++11 feature support table: https://gcc.gnu.org/projects/cxx-status.html
 // MSVC version table:
@@ -469,6 +478,12 @@ DOCTEST_CLANG_SUPPRESS_WARNING("-Wc++98-compat-pedantic")
 #define DOCTEST_CONFIG_NUM_CAPTURES_ON_STACK 5
 #endif // DOCTEST_CONFIG_NUM_CAPTURES_ON_STACK
 
+#ifdef DOCTEST_CONFIG_WITH_OVERRIDE
+#define DOCTEST_OVERRIDE override
+#else // DOCTEST_CONFIG_WITH_OVERRIDE
+#define DOCTEST_OVERRIDE
+#endif // DOCTEST_CONFIG_WITH_OVERRIDE
+
 // =================================================================================================
 // == FEATURE DETECTION END ========================================================================
 // =================================================================================================
@@ -519,6 +534,12 @@ DOCTEST_CLANG_SUPPRESS_WARNING("-Wc++98-compat-pedantic")
     DOCTEST_CLANG_SUPPRESS_WARNING_WITH_PUSH("-Wglobal-constructors") static int var DOCTEST_UNUSED
 #define DOCTEST_GLOBAL_NO_WARNINGS_END() DOCTEST_CLANG_SUPPRESS_WARNING_POP
 
+#ifdef DOCTEST_CONFIG_DISABLE
+#define DOCTEST_BRANCH_ON_DISABLED(if_disabled, if_not_disabled) if_disabled
+#else // DOCTEST_CONFIG_DISABLE
+#define DOCTEST_BRANCH_ON_DISABLED(if_disabled, if_not_disabled) if_not_disabled
+#endif // DOCTEST_CONFIG_DISABLE
+
 // should probably take a look at https://github.com/scottt/debugbreak
 #ifdef DOCTEST_PLATFORM_MAC
 #define DOCTEST_BREAK_INTO_DEBUGGER() __asm__("int $3\n" : :)
@@ -536,12 +557,11 @@ extern "C" __declspec(dllimport) void __stdcall DebugBreak();
 #include <ciso646>
 #endif // clang
 
-#ifdef _LIBCPP_VERSION
+#if defined(_LIBCPP_VERSION) || defined(DOCTEST_CONFIG_USE_IOSFWD)
 // not forward declaring ostream for libc++ because I had some problems (inline namespaces vs c++98)
 // so the <iosfwd> header is used - also it is very light and doesn't drag a ton of stuff
 #include <iosfwd>
-#else // _LIBCPP_VERSION
-#ifndef DOCTEST_CONFIG_USE_IOSFWD
+#else  // _LIBCPP_VERSION
 namespace std
 {
 template <class charT>
@@ -552,10 +572,7 @@ template <class charT, class traits>
 class basic_ostream;
 typedef basic_ostream<char, char_traits<char> > ostream;
 } // namespace std
-#else // DOCTEST_CONFIG_USE_IOSFWD
-#include <iosfwd>
-#endif // DOCTEST_CONFIG_USE_IOSFWD
-#endif // _LIBCPP_VERSION
+#endif // _LIBCPP_VERSION || DOCTEST_CONFIG_USE_IOSFWD
 
 // static assert macro - because of the c++98 support requires that the message is an
 // identifier (no spaces and not a C string) - example without quotes: I_am_a_message
@@ -587,8 +604,6 @@ typedef decltype(nullptr) nullptr_t;
 #endif // _LIBCPP_VERSION
 #endif // DOCTEST_CONFIG_WITH_NULLPTR
 
-#ifndef DOCTEST_CONFIG_DISABLE
-
 #ifdef DOCTEST_CONFIG_INCLUDE_TYPE_TRAITS
 #include <type_traits>
 #endif // DOCTEST_CONFIG_INCLUDE_TYPE_TRAITS
@@ -597,48 +612,10 @@ namespace doctest
 {
 namespace detail
 {
-    struct TestSuite
-    {
-        const char* m_test_suite;
-        const char* m_description;
-        bool        m_skip;
-        bool        m_may_fail;
-        bool        m_should_fail;
-        int         m_expected_failures;
-        double      m_timeout;
-
-        TestSuite& operator*(const char* in) {
-            m_test_suite = in;
-            // clear state
-            m_description       = 0;
-            m_skip              = false;
-            m_may_fail          = false;
-            m_should_fail       = false;
-            m_expected_failures = 0;
-            m_timeout           = 0;
-            return *this;
-        }
-
-        template <typename T>
-        TestSuite& operator*(const T& in) {
-            in.fill(*this);
-            return *this;
-        }
-    };
+    // the function type this library works with
+    typedef void (*funcType)();
 } // namespace detail
-} // namespace doctest
 
-// in a separate namespace outside of doctest because the DOCTEST_TEST_SUITE macro
-// introduces an anonymous namespace in which getCurrentTestSuite gets overridden
-namespace doctest_detail_test_suite_ns
-{
-DOCTEST_INTERFACE doctest::detail::TestSuite& getCurrentTestSuite();
-} // namespace doctest_detail_test_suite_ns
-
-#endif // DOCTEST_CONFIG_DISABLE
-
-namespace doctest
-{
 // A 24 byte string class (can be as small as 17 for x64 and 13 for x86) that can hold strings with length
 // of up to 23 chars on the stack before going on the heap - the last byte of the buffer is used for:
 // - "is small" bit - the highest bit - if "0" then it is small - otherwise its "1" (128)
@@ -762,6 +739,251 @@ inline bool operator>=(const String& lhs, const String& rhs) { return (lhs != rh
 // clang-format on
 
 DOCTEST_INTERFACE std::ostream& operator<<(std::ostream& s, const String& in);
+
+namespace Color
+{
+    enum Enum
+    {
+        None = 0,
+        White,
+        Red,
+        Green,
+        Blue,
+        Cyan,
+        Yellow,
+        Grey,
+
+        Bright = 0x10,
+
+        BrightRed   = Bright | Red,
+        BrightGreen = Bright | Green,
+        LightGrey   = Bright | Grey,
+        BrightWhite = Bright | White
+    };
+
+    DOCTEST_INTERFACE std::ostream& operator<<(std::ostream& s, Color::Enum code);
+} // namespace Color
+
+namespace assertType
+{
+    enum Enum
+    {
+        // macro traits
+
+        is_warn    = 1,
+        is_check   = 2,
+        is_require = 4,
+
+        is_throws    = 8,
+        is_throws_as = 16,
+        is_nothrow   = 32,
+
+        is_fast  = 64, // not checked anywhere - used just to distinguish the types
+        is_false = 128,
+        is_unary = 256,
+
+        is_eq = 512,
+        is_ne = 1024,
+
+        is_lt = 2048,
+        is_gt = 4096,
+
+        is_ge = 8192,
+        is_le = 16384,
+
+        // macro types
+
+        DT_WARN    = is_warn,
+        DT_CHECK   = is_check,
+        DT_REQUIRE = is_require,
+
+        DT_WARN_FALSE    = is_false | is_warn,
+        DT_CHECK_FALSE   = is_false | is_check,
+        DT_REQUIRE_FALSE = is_false | is_require,
+
+        DT_WARN_THROWS    = is_throws | is_warn,
+        DT_CHECK_THROWS   = is_throws | is_check,
+        DT_REQUIRE_THROWS = is_throws | is_require,
+
+        DT_WARN_THROWS_AS    = is_throws_as | is_warn,
+        DT_CHECK_THROWS_AS   = is_throws_as | is_check,
+        DT_REQUIRE_THROWS_AS = is_throws_as | is_require,
+
+        DT_WARN_NOTHROW    = is_nothrow | is_warn,
+        DT_CHECK_NOTHROW   = is_nothrow | is_check,
+        DT_REQUIRE_NOTHROW = is_nothrow | is_require,
+
+        DT_WARN_EQ    = is_eq | is_warn,
+        DT_CHECK_EQ   = is_eq | is_check,
+        DT_REQUIRE_EQ = is_eq | is_require,
+
+        DT_WARN_NE    = is_ne | is_warn,
+        DT_CHECK_NE   = is_ne | is_check,
+        DT_REQUIRE_NE = is_ne | is_require,
+
+        DT_WARN_GT    = is_gt | is_warn,
+        DT_CHECK_GT   = is_gt | is_check,
+        DT_REQUIRE_GT = is_gt | is_require,
+
+        DT_WARN_LT    = is_lt | is_warn,
+        DT_CHECK_LT   = is_lt | is_check,
+        DT_REQUIRE_LT = is_lt | is_require,
+
+        DT_WARN_GE    = is_ge | is_warn,
+        DT_CHECK_GE   = is_ge | is_check,
+        DT_REQUIRE_GE = is_ge | is_require,
+
+        DT_WARN_LE    = is_le | is_warn,
+        DT_CHECK_LE   = is_le | is_check,
+        DT_REQUIRE_LE = is_le | is_require,
+
+        DT_WARN_UNARY    = is_unary | is_warn,
+        DT_CHECK_UNARY   = is_unary | is_check,
+        DT_REQUIRE_UNARY = is_unary | is_require,
+
+        DT_WARN_UNARY_FALSE    = is_false | is_unary | is_warn,
+        DT_CHECK_UNARY_FALSE   = is_false | is_unary | is_check,
+        DT_REQUIRE_UNARY_FALSE = is_false | is_unary | is_require,
+
+        DT_FAST_WARN_EQ    = is_fast | is_eq | is_warn,
+        DT_FAST_CHECK_EQ   = is_fast | is_eq | is_check,
+        DT_FAST_REQUIRE_EQ = is_fast | is_eq | is_require,
+
+        DT_FAST_WARN_NE    = is_fast | is_ne | is_warn,
+        DT_FAST_CHECK_NE   = is_fast | is_ne | is_check,
+        DT_FAST_REQUIRE_NE = is_fast | is_ne | is_require,
+
+        DT_FAST_WARN_GT    = is_fast | is_gt | is_warn,
+        DT_FAST_CHECK_GT   = is_fast | is_gt | is_check,
+        DT_FAST_REQUIRE_GT = is_fast | is_gt | is_require,
+
+        DT_FAST_WARN_LT    = is_fast | is_lt | is_warn,
+        DT_FAST_CHECK_LT   = is_fast | is_lt | is_check,
+        DT_FAST_REQUIRE_LT = is_fast | is_lt | is_require,
+
+        DT_FAST_WARN_GE    = is_fast | is_ge | is_warn,
+        DT_FAST_CHECK_GE   = is_fast | is_ge | is_check,
+        DT_FAST_REQUIRE_GE = is_fast | is_ge | is_require,
+
+        DT_FAST_WARN_LE    = is_fast | is_le | is_warn,
+        DT_FAST_CHECK_LE   = is_fast | is_le | is_check,
+        DT_FAST_REQUIRE_LE = is_fast | is_le | is_require,
+
+        DT_FAST_WARN_UNARY    = is_fast | is_unary | is_warn,
+        DT_FAST_CHECK_UNARY   = is_fast | is_unary | is_check,
+        DT_FAST_REQUIRE_UNARY = is_fast | is_unary | is_require,
+
+        DT_FAST_WARN_UNARY_FALSE    = is_fast | is_false | is_unary | is_warn,
+        DT_FAST_CHECK_UNARY_FALSE   = is_fast | is_false | is_unary | is_check,
+        DT_FAST_REQUIRE_UNARY_FALSE = is_fast | is_false | is_unary | is_require
+    };
+} // namespace assertType
+
+DOCTEST_INTERFACE const char* assertString(assertType::Enum at);
+
+struct TestCaseData
+{
+    const char* m_file;       // the file in which the test was registered
+    unsigned    m_line;       // the line where the test was registered
+    const char* m_name;       // name of the test case
+    const char* m_test_suite; // the test suite in which the test was added
+    const char* m_description;
+    bool        m_skip;
+    bool        m_may_fail;
+    bool        m_should_fail;
+    int         m_expected_failures;
+    double      m_timeout;
+};
+
+struct AssertData
+{
+    // common - for all asserts
+    const TestCaseData* m_test_case;
+    assertType::Enum    m_at;
+    const char*         m_file;
+    int                 m_line;
+    const char*         m_expr;
+    bool                m_failed;
+
+    // exception-related - for all asserts
+    bool   m_threw;
+    String m_exception;
+
+    // for normal asserts
+    String m_decomposition;
+
+    // for specific exception-related asserts
+    bool        m_threw_as;
+    const char* m_exception_type;
+};
+
+struct MessageData
+{
+    String           m_string;
+    const char*      m_file;
+    int              m_line;
+    assertType::Enum m_severity;
+
+    // for gcc 4.8
+    DOCTEST_NOINLINE ~MessageData() {}
+};
+
+struct DOCTEST_INTERFACE SubcaseSignature
+{
+    const char* m_name;
+    const char* m_file;
+    int         m_line;
+
+    SubcaseSignature(const char* name, const char* file, int line)
+            : m_name(name)
+            , m_file(file)
+            , m_line(line) {}
+
+    bool operator<(const SubcaseSignature& other) const;
+};
+
+struct IContextScope
+{
+    virtual ~IContextScope() {}
+    virtual void stringify(std::ostream*) const = 0;
+};
+
+struct ContextOptions //!OCLINT too many fields
+{
+    // == parameters from the command line
+    String   order_by;  // how tests should be ordered
+    unsigned rand_seed; // the seed for rand ordering
+
+    unsigned first; // the first (matching) test to be executed
+    unsigned last;  // the last (matching) test to be executed
+
+    int abort_after;           // stop tests after this many failed assertions
+    int subcase_filter_levels; // apply the subcase filters for the first N levels
+
+    bool success;              // include successful assertions in output
+    bool case_sensitive;       // if filtering should be case sensitive
+    bool exit;                 // if the program should be exited after the tests are ran/whatever
+    bool duration;             // print the time duration of each test case
+    bool no_throw;             // to skip exceptions-related assertion macros
+    bool no_exitcode;          // if the framework should return 0 as the exitcode
+    bool no_run;               // to not run the tests at all (can be done with an "*" exclude)
+    bool no_version;           // to not print the version of the framework
+    bool no_colors;            // if output to the console should be colorized
+    bool force_colors;         // forces the use of colors even when a tty cannot be detected
+    bool no_breaks;            // to not break into the debugger
+    bool no_skip;              // don't skip test cases which are marked to be skipped
+    bool gnu_file_line;        // if line numbers should be surrounded with :x: and not (x):
+    bool no_path_in_filenames; // if the path to files should be removed from the output
+    bool no_line_numbers;      // if source code line numbers should be omitted from the output
+    bool no_skipped_summary;   // don't print "skipped" in the summary !!! UNDOCUMENTED !!!
+
+    bool help;             // to print the help
+    bool version;          // to print the version
+    bool count;            // if only the count of matching tests is to be retreived
+    bool list_test_cases;  // to list all tests matching the filters
+    bool list_test_suites; // to list all suites matching the filters
+    bool list_reporters;   // lists all registered reporters
+};
 
 namespace detail
 {
@@ -1129,126 +1351,6 @@ inline String toString<Approx>(const DOCTEST_REF_WRAP(Approx) value) {
 
 namespace detail
 {
-    // the function type this library works with
-    typedef void (*funcType)();
-
-    namespace assertType
-    {
-        enum Enum
-        {
-            // macro traits
-
-            is_warn    = 1,
-            is_check   = 2,
-            is_require = 4,
-
-            is_throws    = 8,
-            is_throws_as = 16,
-            is_nothrow   = 32,
-
-            is_fast  = 64, // not checked anywhere - used just to distinguish the types
-            is_false = 128,
-            is_unary = 256,
-
-            is_eq = 512,
-            is_ne = 1024,
-
-            is_lt = 2048,
-            is_gt = 4096,
-
-            is_ge = 8192,
-            is_le = 16384,
-
-            // macro types
-
-            DT_WARN    = is_warn,
-            DT_CHECK   = is_check,
-            DT_REQUIRE = is_require,
-
-            DT_WARN_FALSE    = is_false | is_warn,
-            DT_CHECK_FALSE   = is_false | is_check,
-            DT_REQUIRE_FALSE = is_false | is_require,
-
-            DT_WARN_THROWS    = is_throws | is_warn,
-            DT_CHECK_THROWS   = is_throws | is_check,
-            DT_REQUIRE_THROWS = is_throws | is_require,
-
-            DT_WARN_THROWS_AS    = is_throws_as | is_warn,
-            DT_CHECK_THROWS_AS   = is_throws_as | is_check,
-            DT_REQUIRE_THROWS_AS = is_throws_as | is_require,
-
-            DT_WARN_NOTHROW    = is_nothrow | is_warn,
-            DT_CHECK_NOTHROW   = is_nothrow | is_check,
-            DT_REQUIRE_NOTHROW = is_nothrow | is_require,
-
-            DT_WARN_EQ    = is_eq | is_warn,
-            DT_CHECK_EQ   = is_eq | is_check,
-            DT_REQUIRE_EQ = is_eq | is_require,
-
-            DT_WARN_NE    = is_ne | is_warn,
-            DT_CHECK_NE   = is_ne | is_check,
-            DT_REQUIRE_NE = is_ne | is_require,
-
-            DT_WARN_GT    = is_gt | is_warn,
-            DT_CHECK_GT   = is_gt | is_check,
-            DT_REQUIRE_GT = is_gt | is_require,
-
-            DT_WARN_LT    = is_lt | is_warn,
-            DT_CHECK_LT   = is_lt | is_check,
-            DT_REQUIRE_LT = is_lt | is_require,
-
-            DT_WARN_GE    = is_ge | is_warn,
-            DT_CHECK_GE   = is_ge | is_check,
-            DT_REQUIRE_GE = is_ge | is_require,
-
-            DT_WARN_LE    = is_le | is_warn,
-            DT_CHECK_LE   = is_le | is_check,
-            DT_REQUIRE_LE = is_le | is_require,
-
-            DT_WARN_UNARY    = is_unary | is_warn,
-            DT_CHECK_UNARY   = is_unary | is_check,
-            DT_REQUIRE_UNARY = is_unary | is_require,
-
-            DT_WARN_UNARY_FALSE    = is_false | is_unary | is_warn,
-            DT_CHECK_UNARY_FALSE   = is_false | is_unary | is_check,
-            DT_REQUIRE_UNARY_FALSE = is_false | is_unary | is_require,
-
-            DT_FAST_WARN_EQ    = is_fast | is_eq | is_warn,
-            DT_FAST_CHECK_EQ   = is_fast | is_eq | is_check,
-            DT_FAST_REQUIRE_EQ = is_fast | is_eq | is_require,
-
-            DT_FAST_WARN_NE    = is_fast | is_ne | is_warn,
-            DT_FAST_CHECK_NE   = is_fast | is_ne | is_check,
-            DT_FAST_REQUIRE_NE = is_fast | is_ne | is_require,
-
-            DT_FAST_WARN_GT    = is_fast | is_gt | is_warn,
-            DT_FAST_CHECK_GT   = is_fast | is_gt | is_check,
-            DT_FAST_REQUIRE_GT = is_fast | is_gt | is_require,
-
-            DT_FAST_WARN_LT    = is_fast | is_lt | is_warn,
-            DT_FAST_CHECK_LT   = is_fast | is_lt | is_check,
-            DT_FAST_REQUIRE_LT = is_fast | is_lt | is_require,
-
-            DT_FAST_WARN_GE    = is_fast | is_ge | is_warn,
-            DT_FAST_CHECK_GE   = is_fast | is_ge | is_check,
-            DT_FAST_REQUIRE_GE = is_fast | is_ge | is_require,
-
-            DT_FAST_WARN_LE    = is_fast | is_le | is_warn,
-            DT_FAST_CHECK_LE   = is_fast | is_le | is_check,
-            DT_FAST_REQUIRE_LE = is_fast | is_le | is_require,
-
-            DT_FAST_WARN_UNARY    = is_fast | is_unary | is_warn,
-            DT_FAST_CHECK_UNARY   = is_fast | is_unary | is_check,
-            DT_FAST_REQUIRE_UNARY = is_fast | is_unary | is_require,
-
-            DT_FAST_WARN_UNARY_FALSE    = is_fast | is_false | is_unary | is_warn,
-            DT_FAST_CHECK_UNARY_FALSE   = is_fast | is_false | is_unary | is_check,
-            DT_FAST_REQUIRE_UNARY_FALSE = is_fast | is_false | is_unary | is_require
-        };
-    } // namespace assertType
-
-    DOCTEST_INTERFACE const char* assertString(assertType::Enum at);
-
     // clang-format off
     template<class T>               struct decay_array       { typedef T type; };
     template<class T, unsigned N>   struct decay_array<T[N]> { typedef T* type; };
@@ -1268,29 +1370,7 @@ namespace detail
     DOCTEST_INTERFACE bool checkIfShouldThrow(assertType::Enum at);
     DOCTEST_INTERFACE void fastAssertThrowIfFlagSet(int flags);
 
-    struct TestAccessibleContextState
-    {
-        bool no_throw; // to skip exceptions-related assertion macros
-        bool success;  // include successful assertions in output
-    };
-
-    struct ContextState;
-
-    DOCTEST_INTERFACE TestAccessibleContextState* getTestsContextState();
-
-    struct DOCTEST_INTERFACE SubcaseSignature
-    {
-        const char* m_name;
-        const char* m_file;
-        int         m_line;
-
-        SubcaseSignature(const char* name, const char* file, int line)
-                : m_name(name)
-                , m_file(file)
-                , m_line(line) {}
-
-        bool operator<(const SubcaseSignature& other) const;
-    };
+    DOCTEST_INTERFACE const ContextOptions* getContextOptions();
 
     // cppcheck-suppress copyCtorAndEqOperator
     struct DOCTEST_INTERFACE Subcase
@@ -1425,7 +1505,7 @@ namespace detail
         bool res = op_macro(lhs, rhs);                                                             \
         if(m_at & assertType::is_false)                                                            \
             res = !res;                                                                            \
-        if(!res || doctest::detail::getTestsContextState()->success)                               \
+        if(!res || doctest::detail::getContextOptions()->success)                                  \
             return Result(res, stringifyBinaryExpr(lhs, op_str, rhs));                             \
         return Result(res);                                                                        \
     }
@@ -1454,7 +1534,7 @@ namespace detail
             if(m_at & assertType::is_false) //!OCLINT bitwise operator in conditional
                 res = !res;
 
-            if(!res || getTestsContextState()->success)
+            if(!res || getContextOptions()->success)
                 return Result(res, toString(lhs));
             return Result(res);
         }
@@ -1516,14 +1596,9 @@ namespace detail
         }
     };
 
-    struct DOCTEST_INTERFACE TestCase
+    struct TestSuite
     {
-        // not used for determining uniqueness
-        funcType m_test;    // a function pointer to the test case
-        String m_full_name; // contains the name (only for templated test cases!) + the template type
-        const char* m_name;       // name of the test case
-        const char* m_type;       // for templated test cases - gets appended to the real name
-        const char* m_test_suite; // the test suite in which the test was added
+        const char* m_test_suite;
         const char* m_description;
         bool        m_skip;
         bool        m_may_fail;
@@ -1531,10 +1606,32 @@ namespace detail
         int         m_expected_failures;
         double      m_timeout;
 
-        // fields by which uniqueness of test cases shall be determined
-        const char* m_file; // the file in which the test was registered
-        unsigned    m_line; // the line where the test was registered
+        TestSuite& operator*(const char* in) {
+            m_test_suite = in;
+            // clear state
+            m_description       = 0;
+            m_skip              = false;
+            m_may_fail          = false;
+            m_should_fail       = false;
+            m_expected_failures = 0;
+            m_timeout           = 0;
+            return *this;
+        }
+
+        template <typename T>
+        TestSuite& operator*(const T& in) {
+            in.fill(*this);
+            return *this;
+        }
+    };
+
+    struct DOCTEST_INTERFACE TestCase : public TestCaseData
+    {
+        detail::funcType m_test; // a function pointer to the test case
+
+        const char* m_type; // for templated test cases - gets appended to the real name
         int m_template_id; // an ID used to distinguish between the different versions of a templated test case
+        String m_full_name; // contains the name (only for templated test cases!) + the template type
 
         TestCase(funcType test, const char* file, unsigned line, const TestSuite& test_suite,
                  const char* type = "", int template_id = -1);
@@ -1552,7 +1649,9 @@ namespace detail
 
         TestCase(const TestCase& other) { *this = other; }
 
+        DOCTEST_MSVC_SUPPRESS_WARNING_WITH_PUSH(26434) // hides a non-virtual function
         TestCase& operator=(const TestCase& other);
+        DOCTEST_MSVC_SUPPRESS_WARNING_POP
 
         bool operator<(const TestCase& other) const;
     };
@@ -1584,51 +1683,35 @@ namespace detail
     template <class L, class R> struct RelationalComparator<5, L, R> { bool operator()(const DOCTEST_REF_WRAP(L) lhs, const DOCTEST_REF_WRAP(R) rhs) const { return le(lhs, rhs); } };
     // clang-format on
 
-    struct DOCTEST_INTERFACE ResultBuilder
+    struct DOCTEST_INTERFACE ResultBuilder : public AssertData
     {
-        // common - for all asserts
-        const TestCase&  m_test_case;
-        assertType::Enum m_at;
-        const char*      m_file;
-        int              m_line;
-        const char*      m_expr;
-        bool             m_failed;
-
-        // exception-related - for all asserts
-        bool   m_threw;
-        String m_exception;
-
-        // for normal asserts
-        Result m_result;
-
-        // for specific exception-related asserts
-        bool        m_threw_as;
-        const char* m_exception_type;
-
         ResultBuilder(assertType::Enum at, const char* file, int line, const char* expr,
                       const char* exception_type = "");
 
         ~ResultBuilder();
 
-        void setResult(const Result& res) { m_result = res; }
+        void setResult(const Result& res) {
+            m_decomposition = res.m_decomposition;
+            m_failed        = !res.m_passed;
+        }
 
         template <int comparison, typename L, typename R>
         DOCTEST_NOINLINE void binary_assert(const DOCTEST_REF_WRAP(L) lhs,
                                             const DOCTEST_REF_WRAP(R) rhs) {
-            m_result.m_passed = RelationalComparator<comparison, L, R>()(lhs, rhs);
-            if(!m_result.m_passed || getTestsContextState()->success)
-                m_result.m_decomposition = stringifyBinaryExpr(lhs, ", ", rhs);
+            m_failed = !RelationalComparator<comparison, L, R>()(lhs, rhs);
+            if(m_failed || getContextOptions()->success)
+                m_decomposition = stringifyBinaryExpr(lhs, ", ", rhs);
         }
 
         template <typename L>
         DOCTEST_NOINLINE void unary_assert(const DOCTEST_REF_WRAP(L) val) {
-            m_result.m_passed = !!val;
+            m_failed = !val;
 
             if(m_at & assertType::is_false) //!OCLINT bitwise operator in conditional
-                m_result.m_passed = !m_result.m_passed;
+                m_failed = !m_failed;
 
-            if(!m_result.m_passed || getTestsContextState()->success)
-                m_result.m_decomposition = toString(val);
+            if(m_failed || getContextOptions()->success)
+                m_decomposition = toString(val);
         }
 
         void unexpectedExceptionOccurred();
@@ -1653,10 +1736,10 @@ namespace detail
                                             const DOCTEST_REF_WRAP(R) rhs) {
         ResultBuilder rb(at, file, line, expr);
 
-        rb.m_result.m_passed = RelationalComparator<comparison, L, R>()(lhs, rhs);
+        rb.m_failed = !RelationalComparator<comparison, L, R>()(lhs, rhs);
 
-        if(!rb.m_result.m_passed || getTestsContextState()->success)
-            rb.m_result.m_decomposition = stringifyBinaryExpr(lhs, ", ", rhs);
+        if(rb.m_failed || getContextOptions()->success)
+            rb.m_decomposition = stringifyBinaryExpr(lhs, ", ", rhs);
 
         int res = 0;
 
@@ -1684,13 +1767,13 @@ namespace detail
                                            const char* val_str, const DOCTEST_REF_WRAP(L) val) {
         ResultBuilder rb(at, file, line, val_str);
 
-        rb.m_result.m_passed = !!val;
+        rb.m_failed = !val;
 
         if(at & assertType::is_false) //!OCLINT bitwise operator in conditional
-            rb.m_result.m_passed = !rb.m_result.m_passed;
+            rb.m_failed = !rb.m_failed;
 
-        if(!rb.m_result.m_passed || getTestsContextState()->success)
-            rb.m_result.m_decomposition = toString(val);
+        if(rb.m_failed || getContextOptions()->success)
+            rb.m_decomposition = toString(val);
 
         int res = 0;
 
@@ -1806,15 +1889,9 @@ namespace detail
     DOCTEST_INTERFACE void toStream(std::ostream* s, int long long unsigned in);
 #endif // DOCTEST_CONFIG_WITH_LONG_LONG
 
-    struct IContextScope
-    {
-        virtual ~IContextScope() {}
-        virtual void build(std::ostream*) = 0;
-    };
-
     DOCTEST_INTERFACE void addToContexts(IContextScope* ptr);
     DOCTEST_INTERFACE void popFromContexts();
-    DOCTEST_INTERFACE void useContextIfExceptionOccurred(IContextScope* ptr);
+    DOCTEST_INTERFACE void stringifyContextIfExceptionOccurred(IContextScope* ptr);
 
     // cppcheck-suppress copyCtorAndEqOperator
     class ContextBuilder
@@ -1834,9 +1911,7 @@ namespace detail
 
             explicit Capture(const T* in)
                     : capture(in) {}
-            virtual void toStream(std::ostream* s) const { // override
-                detail::toStream(s, *capture);
-            }
+            void toStream(std::ostream* s) const DOCTEST_OVERRIDE { detail::toStream(s, *capture); }
         };
 
         struct Chunk
@@ -1857,7 +1932,7 @@ namespace detail
         Node* tail;
 
         DOCTEST_GCC_SUPPRESS_WARNING_WITH_PUSH("-Wcast-align")
-        void build(std::ostream* s) const {
+        void stringify(std::ostream* s) const {
             int curr = 0;
             // iterate over small buffer
             while(curr < numCaptures && curr < DOCTEST_CONFIG_NUM_CAPTURES_ON_STACK)
@@ -1950,21 +2025,17 @@ namespace detail
         }
 
         DOCTEST_NOINLINE ~ContextScope() {
-            useContextIfExceptionOccurred(this);
+            stringifyContextIfExceptionOccurred(this);
             popFromContexts();
         }
 
-        void build(std::ostream* s) { contextBuilder.build(s); }
+        void stringify(std::ostream* s) const { contextBuilder.stringify(s); }
     };
 
-    class DOCTEST_INTERFACE MessageBuilder
+    struct DOCTEST_INTERFACE MessageBuilder : public MessageData
     {
-        std::ostream*    m_stream;
-        const char*      m_file;
-        int              m_line;
-        assertType::Enum m_severity;
+        std::ostream* m_stream;
 
-    public:
         MessageBuilder(const char* file, int line, assertType::Enum severity);
         ~MessageBuilder();
 
@@ -1974,7 +2045,6 @@ namespace detail
             return *this;
         }
 
-        void log(std::ostream&);
         bool log();
         void react();
     };
@@ -1998,9 +2068,6 @@ DOCTEST_DEFINE_DECORATOR(may_fail, bool, true);
 DOCTEST_DEFINE_DECORATOR(should_fail, bool, true);
 DOCTEST_DEFINE_DECORATOR(expected_failures, int, 0);
 
-#endif // DOCTEST_CONFIG_DISABLE
-
-#ifndef DOCTEST_CONFIG_DISABLE
 template <typename T>
 int registerExceptionTranslator(String (*translateFunction)(T)) {
     DOCTEST_CLANG_SUPPRESS_WARNING_WITH_PUSH("-Wexit-time-destructors")
@@ -2010,6 +2077,17 @@ int registerExceptionTranslator(String (*translateFunction)(T)) {
     return 0;
 }
 
+} // namespace doctest
+
+// in a separate namespace outside of doctest because the DOCTEST_TEST_SUITE macro
+// introduces an anonymous namespace in which getCurrentTestSuite gets overridden
+namespace doctest_detail_test_suite_ns
+{
+DOCTEST_INTERFACE doctest::detail::TestSuite& getCurrentTestSuite();
+} // namespace doctest_detail_test_suite_ns
+
+namespace doctest
+{
 #else  // DOCTEST_CONFIG_DISABLE
 template <typename T>
 int registerExceptionTranslator(String (*)(T)) {
@@ -2019,15 +2097,17 @@ int registerExceptionTranslator(String (*)(T)) {
 
 DOCTEST_INTERFACE bool isRunningInTest();
 
+namespace detail
+{
+    struct ContextState;
+} // namespace detail
+
 // cppcheck-suppress noCopyConstructor
 class DOCTEST_INTERFACE Context
 {
-#if !defined(DOCTEST_CONFIG_DISABLE)
     detail::ContextState* p;
 
     void parseArgs(int argc, const char* const* argv, bool withDefaults = false);
-
-#endif // DOCTEST_CONFIG_DISABLE
 
 public:
     explicit Context(int argc = 0, const char* const* argv = 0);
@@ -2045,6 +2125,85 @@ public:
 
     int run();
 };
+
+namespace TestCaseFailureReason
+{
+    enum Enum
+    {
+        None                     = 0,
+        AssertFailure            = 1,   // an assertion has failed in the test case
+        Exception                = 2,   // test case threw an exception
+        Crash                    = 4,   // a crash...
+        TooManyFailedAsserts     = 8,   // the abort-after option
+        Timeout                  = 16,  // see the timeout decorator
+        ShouldHaveFailedButDidnt = 32,  // see the should_fail decorator
+        ShouldHaveFailedAndDid   = 64,  // see the should_fail decorator
+        DidntFailExactlyNumTimes = 128, // see the expected_failures decorator
+        FailedExactlyNumTimes    = 256, // see the expected_failures decorator
+        CouldHaveFailedAndDid    = 512  // see the may_fail decorator
+    };
+} // namespace TestCaseFailureReason
+
+struct CurrentTestCaseStats
+{
+    int    numAssertsForCurrentTestCase;
+    int    numAssertsFailedForCurrentTestCase;
+    double seconds_so_far;
+    int    failure_flags; // use TestCaseFailureReason::Enum
+    String error_string;
+    bool   should_reenter; // means we are not done with the test case because of subcases
+};
+
+struct TestRunStats
+{
+    unsigned numTestCases;
+    unsigned numTestCasesPassingFilters;
+    unsigned numTestSuitesPassingFilters;
+    unsigned numTestCasesFailed;
+    int      numAsserts;
+    int      numAssertsFailed;
+};
+
+struct DOCTEST_INTERFACE IReporter
+{
+    // called when the whole test run starts (safe to cache a pointer to the input)
+    virtual void test_run_start(const ContextOptions&) = 0;
+    // called when the whole test run ends (caching a pointer to the input doesn't make sense here)
+    virtual void test_run_end(const TestRunStats&) = 0;
+
+    // called when a test case is started (safe to cache a pointer to the input)
+    virtual void test_case_start(const TestCaseData&) = 0;
+    // called when a test case has ended - could be re-entered if more subcases have to be
+    // traversed - check CurrentTestCaseStats::should_reenter (caching a pointer to the input doesn't make sense here)
+    virtual void test_case_end(const CurrentTestCaseStats&) = 0;
+
+    // called whenever a subcase is entered (don't cache pointers to the input)
+    virtual void subcase_start(const SubcaseSignature&) = 0;
+    // called whenever a subcase is exited (don't cache pointers to the input)
+    virtual void subcase_end(const SubcaseSignature&) = 0;
+
+    // called for each assert (don't cache pointers to the input)
+    virtual void log_assert(const AssertData&) = 0;
+    // called for each message (don't cache pointers to the input)
+    virtual void log_message(const MessageData&) = 0;
+
+    // called when a test case is skipped either because it doesn't pass the filters, has a skip decorator
+    // or isn't in the execution range (between first and last) (safe to cache a pointer to the input)
+    virtual void test_case_skipped(const TestCaseData&) = 0;
+
+    // doctest will not be managing the lifetimes of reporters given to it but this would still be nice to have
+    virtual ~IReporter() {}
+
+    // can obtain all currently active contexts and stringify them if one wishes to do so
+    static int                         get_num_active_contexts();
+    static const IContextScope* const* get_active_contexts();
+
+    // can iterate through contexts which have been stringified automatically in their destructors when an exception has been thrown
+    static int           get_num_stringified_contexts();
+    static const String* get_stringified_contexts();
+};
+
+int registerReporter(const char* name, int priority, IReporter* r);
 
 } // namespace doctest
 
@@ -2279,6 +2438,12 @@ public:
     DOCTEST_REGISTER_EXCEPTION_TRANSLATOR_IMPL(DOCTEST_ANONYMOUS(_DOCTEST_ANON_TRANSLATOR_),       \
                                                signature)
 
+// for registering
+#define DOCTEST_REGISTER_REPORTER(name, priority, reporter)                                        \
+    DOCTEST_GLOBAL_NO_WARNINGS(DOCTEST_ANONYMOUS(_DOCTEST_ANON_REPORTER_)) =                       \
+            doctest::registerReporter(name, priority, reporter);                                   \
+    DOCTEST_GLOBAL_NO_WARNINGS_END() typedef int DOCTEST_ANONYMOUS(_DOCTEST_ANON_FOR_SEMICOLON_)
+
 // for logging
 #define DOCTEST_INFO(x)                                                                            \
     doctest::detail::ContextScope DOCTEST_ANONYMOUS(_DOCTEST_CAPTURE_)(                            \
@@ -2287,7 +2452,7 @@ public:
 
 #define DOCTEST_ADD_AT_IMPL(type, file, line, mb, x)                                               \
     do {                                                                                           \
-        doctest::detail::MessageBuilder mb(file, line, doctest::detail::assertType::type);         \
+        doctest::detail::MessageBuilder mb(file, line, doctest::assertType::type);                 \
         mb << x;                                                                                   \
         DOCTEST_ASSERT_LOG_AND_REACT(mb);                                                          \
     } while((void)0, 0)
@@ -2317,10 +2482,10 @@ constexpr T to_lvalue = x;
 #define DOCTEST_ASSERT_IMPLEMENT_2(expr, assert_type)                                              \
     DOCTEST_CLANG_SUPPRESS_WARNING_WITH_PUSH("-Woverloaded-shift-op-parentheses")                  \
     doctest::detail::ResultBuilder _DOCTEST_RB(                                                    \
-            doctest::detail::assertType::assert_type, __FILE__, __LINE__,                          \
+            doctest::assertType::assert_type, __FILE__, __LINE__,                                  \
             DOCTEST_TOSTR(DOCTEST_HANDLE_BRACED_VA_ARGS(expr)));                                   \
     DOCTEST_WRAP_IN_TRY(_DOCTEST_RB.setResult(                                                     \
-            doctest::detail::ExpressionDecomposer(doctest::detail::assertType::assert_type)        \
+            doctest::detail::ExpressionDecomposer(doctest::assertType::assert_type)                \
             << DOCTEST_HANDLE_BRACED_VA_ARGS(expr)))                                               \
     DOCTEST_ASSERT_LOG_AND_REACT(_DOCTEST_RB)                                                      \
     DOCTEST_CLANG_SUPPRESS_WARNING_POP
@@ -2366,9 +2531,9 @@ constexpr T to_lvalue = x;
 
 #define DOCTEST_ASSERT_THROWS(expr, assert_type)                                                   \
     do {                                                                                           \
-        if(!doctest::detail::getTestsContextState()->no_throw) {                                   \
-            doctest::detail::ResultBuilder _DOCTEST_RB(doctest::detail::assertType::assert_type,   \
-                                                       __FILE__, __LINE__, #expr);                 \
+        if(!doctest::detail::getContextOptions()->no_throw) {                                      \
+            doctest::detail::ResultBuilder _DOCTEST_RB(doctest::assertType::assert_type, __FILE__, \
+                                                       __LINE__, #expr);                           \
             try {                                                                                  \
                 expr;                                                                              \
             } catch(...) { _DOCTEST_RB.m_threw = true; }                                           \
@@ -2378,9 +2543,9 @@ constexpr T to_lvalue = x;
 
 #define DOCTEST_ASSERT_THROWS_AS(expr, as, assert_type)                                            \
     do {                                                                                           \
-        if(!doctest::detail::getTestsContextState()->no_throw) {                                   \
+        if(!doctest::detail::getContextOptions()->no_throw) {                                      \
             doctest::detail::ResultBuilder _DOCTEST_RB(                                            \
-                    doctest::detail::assertType::assert_type, __FILE__, __LINE__, #expr,           \
+                    doctest::assertType::assert_type, __FILE__, __LINE__, #expr,                   \
                     DOCTEST_TOSTR(DOCTEST_HANDLE_BRACED_VA_ARGS(as)));                             \
             try {                                                                                  \
                 expr;                                                                              \
@@ -2394,9 +2559,9 @@ constexpr T to_lvalue = x;
 
 #define DOCTEST_ASSERT_NOTHROW(expr, assert_type)                                                  \
     do {                                                                                           \
-        if(!doctest::detail::getTestsContextState()->no_throw) {                                   \
-            doctest::detail::ResultBuilder _DOCTEST_RB(doctest::detail::assertType::assert_type,   \
-                                                       __FILE__, __LINE__, #expr);                 \
+        if(!doctest::detail::getContextOptions()->no_throw) {                                      \
+            doctest::detail::ResultBuilder _DOCTEST_RB(doctest::assertType::assert_type, __FILE__, \
+                                                       __LINE__, #expr);                           \
             try {                                                                                  \
                 expr;                                                                              \
             } catch(...) { _DOCTEST_RB.unexpectedExceptionOccurred(); }                            \
@@ -2440,7 +2605,7 @@ constexpr T to_lvalue = x;
 #define DOCTEST_BINARY_ASSERT(assert_type, expr, comp)                                             \
     do {                                                                                           \
         doctest::detail::ResultBuilder _DOCTEST_RB(                                                \
-                doctest::detail::assertType::assert_type, __FILE__, __LINE__,                      \
+                doctest::assertType::assert_type, __FILE__, __LINE__,                              \
                 DOCTEST_TOSTR(DOCTEST_HANDLE_BRACED_VA_ARGS(expr)));                               \
         DOCTEST_WRAP_IN_TRY(                                                                       \
                 _DOCTEST_RB.binary_assert<doctest::detail::binaryAssertComparison::comp>(          \
@@ -2450,8 +2615,8 @@ constexpr T to_lvalue = x;
 #else // DOCTEST_CONFIG_WITH_VARIADIC_MACROS
 #define DOCTEST_BINARY_ASSERT(assert_type, lhs, rhs, comp)                                         \
     do {                                                                                           \
-        doctest::detail::ResultBuilder _DOCTEST_RB(doctest::detail::assertType::assert_type,       \
-                                                   __FILE__, __LINE__, #lhs ", " #rhs);            \
+        doctest::detail::ResultBuilder _DOCTEST_RB(doctest::assertType::assert_type, __FILE__,     \
+                                                   __LINE__, #lhs ", " #rhs);                      \
         DOCTEST_WRAP_IN_TRY(                                                                       \
                 _DOCTEST_RB.binary_assert<doctest::detail::binaryAssertComparison::comp>(lhs,      \
                                                                                          rhs))     \
@@ -2462,7 +2627,7 @@ constexpr T to_lvalue = x;
 #define DOCTEST_UNARY_ASSERT(assert_type, expr)                                                    \
     do {                                                                                           \
         doctest::detail::ResultBuilder _DOCTEST_RB(                                                \
-                doctest::detail::assertType::assert_type, __FILE__, __LINE__,                      \
+                doctest::assertType::assert_type, __FILE__, __LINE__,                              \
                 DOCTEST_TOSTR(DOCTEST_HANDLE_BRACED_VA_ARGS(expr)));                               \
         DOCTEST_WRAP_IN_TRY(_DOCTEST_RB.unary_assert(DOCTEST_HANDLE_BRACED_VA_ARGS(expr)))         \
         DOCTEST_ASSERT_LOG_AND_REACT(_DOCTEST_RB);                                                 \
@@ -2529,7 +2694,7 @@ constexpr T to_lvalue = x;
     do {                                                                                           \
         int _DOCTEST_FAST_RES = doctest::detail::fast_binary_assert<                               \
                 doctest::detail::binaryAssertComparison::comparison>(                              \
-                doctest::detail::assertType::assert_type, __FILE__, __LINE__,                      \
+                doctest::assertType::assert_type, __FILE__, __LINE__,                              \
                 DOCTEST_TOSTR(DOCTEST_HANDLE_BRACED_VA_ARGS(expr)),                                \
                 DOCTEST_HANDLE_BRACED_VA_ARGS(expr));                                              \
         if(_DOCTEST_FAST_RES & doctest::detail::assertAction::dbgbreak)                            \
@@ -2541,8 +2706,7 @@ constexpr T to_lvalue = x;
     do {                                                                                           \
         int _DOCTEST_FAST_RES = doctest::detail::fast_binary_assert<                               \
                 doctest::detail::binaryAssertComparison::comparison>(                              \
-                doctest::detail::assertType::assert_type, __FILE__, __LINE__, #lhs ", " #rhs, lhs, \
-                rhs);                                                                              \
+                doctest::assertType::assert_type, __FILE__, __LINE__, #lhs ", " #rhs, lhs, rhs);   \
         if(_DOCTEST_FAST_RES & doctest::detail::assertAction::dbgbreak)                            \
             DOCTEST_BREAK_INTO_DEBUGGER();                                                         \
         doctest::detail::fastAssertThrowIfFlagSet(_DOCTEST_FAST_RES);                              \
@@ -2552,7 +2716,7 @@ constexpr T to_lvalue = x;
 #define DOCTEST_FAST_UNARY_ASSERT(assert_type, expr)                                               \
     do {                                                                                           \
         int _DOCTEST_FAST_RES = doctest::detail::fast_unary_assert(                                \
-                doctest::detail::assertType::assert_type, __FILE__, __LINE__,                      \
+                doctest::assertType::assert_type, __FILE__, __LINE__,                              \
                 DOCTEST_TOSTR(DOCTEST_HANDLE_BRACED_VA_ARGS(expr)),                                \
                 DOCTEST_HANDLE_BRACED_VA_ARGS(expr));                                              \
         if(_DOCTEST_FAST_RES & doctest::detail::assertAction::dbgbreak)                            \
@@ -2565,19 +2729,17 @@ constexpr T to_lvalue = x;
 #ifdef DOCTEST_CONFIG_WITH_VARIADIC_MACROS
 #define DOCTEST_FAST_BINARY_ASSERT(assert_type, expr, comparison)                                  \
     doctest::detail::fast_binary_assert<doctest::detail::binaryAssertComparison::comparison>(      \
-            doctest::detail::assertType::assert_type, __FILE__, __LINE__,                          \
+            doctest::assertType::assert_type, __FILE__, __LINE__,                                  \
             DOCTEST_TOSTR(DOCTEST_HANDLE_BRACED_VA_ARGS(expr)),                                    \
             DOCTEST_HANDLE_BRACED_VA_ARGS(expr))
 #else // DOCTEST_CONFIG_WITH_VARIADIC_MACROS
 #define DOCTEST_FAST_BINARY_ASSERT(assert_type, lhs, rhs, comparison)                              \
     doctest::detail::fast_binary_assert<doctest::detail::binaryAssertComparison::comparison>(      \
-            doctest::detail::assertType::assert_type, __FILE__, __LINE__, #lhs ", " #rhs, lhs,     \
-            rhs)
+            doctest::assertType::assert_type, __FILE__, __LINE__, #lhs ", " #rhs, lhs, rhs)
 #endif // DOCTEST_CONFIG_WITH_VARIADIC_MACROS
 
 #define DOCTEST_FAST_UNARY_ASSERT(assert_type, expr)                                               \
-    doctest::detail::fast_unary_assert(doctest::detail::assertType::assert_type, __FILE__,         \
-                                       __LINE__,                                                   \
+    doctest::detail::fast_unary_assert(doctest::assertType::assert_type, __FILE__, __LINE__,       \
                                        DOCTEST_TOSTR(DOCTEST_HANDLE_BRACED_VA_ARGS(expr)),         \
                                        DOCTEST_HANDLE_BRACED_VA_ARGS(expr))
 
@@ -2782,6 +2944,8 @@ constexpr T to_lvalue = x;
     template <typename DOCTEST_UNUSED_TEMPLATE_TYPE>                                               \
     static inline doctest::String DOCTEST_ANONYMOUS(_DOCTEST_ANON_TRANSLATOR_)(signature)
 
+#define DOCTEST_REGISTER_REPORTER(name, priority, reporter)
+
 #define DOCTEST_INFO(x) ((void)0)
 #define DOCTEST_CAPTURE(x) ((void)0)
 #define DOCTEST_ADD_MESSAGE_AT(file, line, x) ((void)0)
@@ -2983,6 +3147,7 @@ constexpr T to_lvalue = x;
 #define TEST_SUITE_BEGIN DOCTEST_TEST_SUITE_BEGIN
 #define TEST_SUITE_END DOCTEST_TEST_SUITE_END
 #define REGISTER_EXCEPTION_TRANSLATOR DOCTEST_REGISTER_EXCEPTION_TRANSLATOR
+#define REGISTER_REPORTER DOCTEST_REGISTER_REPORTER
 #define INFO DOCTEST_INFO
 #define CAPTURE DOCTEST_CAPTURE
 #define ADD_MESSAGE_AT DOCTEST_ADD_MESSAGE_AT
@@ -3086,6 +3251,8 @@ constexpr T to_lvalue = x;
 
 #endif // DOCTEST_CONFIG_NO_SHORT_MACRO_NAMES
 
+#if !defined(DOCTEST_CONFIG_DISABLE)
+
 // this is here to clear the 'current test suite' for the current translation unit - at the top
 DOCTEST_TEST_SUITE_END();
 
@@ -3115,6 +3282,8 @@ namespace detail
 } // namespace detail
 } // namespace doctest
 
+#endif // DOCTEST_CONFIG_DISABLE
+
 DOCTEST_CLANG_SUPPRESS_WARNING_POP
 DOCTEST_MSVC_SUPPRESS_WARNING_POP
 DOCTEST_GCC_SUPPRESS_WARNING_POP
@@ -3136,6 +3305,7 @@ DOCTEST_GCC_SUPPRESS_WARNING_POP
 DOCTEST_CLANG_SUPPRESS_WARNING_PUSH
 DOCTEST_CLANG_SUPPRESS_WARNING("-Wunknown-pragmas")
 DOCTEST_CLANG_SUPPRESS_WARNING("-Wpadded")
+DOCTEST_CLANG_SUPPRESS_WARNING("-Wweak-vtables")
 DOCTEST_CLANG_SUPPRESS_WARNING("-Wglobal-constructors")
 DOCTEST_CLANG_SUPPRESS_WARNING("-Wexit-time-destructors")
 DOCTEST_CLANG_SUPPRESS_WARNING("-Wmissing-prototypes")
@@ -3192,40 +3362,28 @@ DOCTEST_MSVC_SUPPRESS_WARNING(4820) // padding in structs
 DOCTEST_MSVC_SUPPRESS_WARNING(4640) // construction of local static object is not thread-safe
 DOCTEST_MSVC_SUPPRESS_WARNING(5039) // pointer to potentially throwing function passed to extern C
 DOCTEST_MSVC_SUPPRESS_WARNING(5045) // Spectre mitigation stuff
+DOCTEST_MSVC_SUPPRESS_WARNING(4626) // assignment operator was implicitly defined as deleted
+DOCTEST_MSVC_SUPPRESS_WARNING(5027) // move assignment operator was implicitly defined as deleted
+DOCTEST_MSVC_SUPPRESS_WARNING(5026) // move constructor was implicitly defined as deleted
+DOCTEST_MSVC_SUPPRESS_WARNING(4625) // copy constructor was implicitly defined as deleted
+DOCTEST_MSVC_SUPPRESS_WARNING(4800) // forcing value to bool 'true' or 'false' (performance warning)
+// static analysis
+DOCTEST_MSVC_SUPPRESS_WARNING(26439) // This kind of function may not throw. Declare it 'noexcept'
+DOCTEST_MSVC_SUPPRESS_WARNING(26495) // Always initialize a member variable
+DOCTEST_MSVC_SUPPRESS_WARNING(26451) // Arithmetic overflow ...
+DOCTEST_MSVC_SUPPRESS_WARNING(26444) // Avoid unnamed objects with custom construction and dtr...
 
 #if defined(DOCTEST_NO_CPP11_COMPAT)
 DOCTEST_CLANG_SUPPRESS_WARNING("-Wc++98-compat")
 DOCTEST_CLANG_SUPPRESS_WARNING("-Wc++98-compat-pedantic")
 #endif // DOCTEST_NO_CPP11_COMPAT
 
-#define DOCTEST_TO_CONSOLE_AND_OUTPUT_WINDOW(f, arg)                                               \
-    do {                                                                                           \
-        f(std::cout arg);                                                                          \
-        if(isDebuggerActive()) {                                                                   \
-            ContextState* p_cs     = contextState;                                                 \
-            bool          with_col = p_cs->no_colors;                                              \
-            p_cs->no_colors        = false;                                                        \
-            std::ostringstream oss;                                                                \
-            f(oss arg);                                                                            \
-            printToDebugConsole(oss.str().c_str());                                                \
-            p_cs->no_colors = with_col;                                                            \
-        }                                                                                          \
-    } while(false)
-
-#define DOCTEST_LOG_START                                                                          \
-    do {                                                                                           \
-        if(!contextState->hasLoggedCurrentTestStart) {                                             \
-            DOCTEST_TO_CONSOLE_AND_OUTPUT_WINDOW(logTestStart,                                     \
-                                                 DOCTEST_COMMA * contextState->currentTest);       \
-            contextState->hasLoggedCurrentTestStart = true;                                        \
-        }                                                                                          \
-    } while(false)
-
 DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_BEGIN
 
 // required includes - will go only in one translation unit!
 #include <ctime>
 #include <cmath>
+#include <climits>
 // borland (Embarcadero) compiler requires math.h and not cmath - https://github.com/onqtam/doctest/pull/37
 #ifdef __BORLANDC__
 #include <math.h>
@@ -3242,6 +3400,7 @@ DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_BEGIN
 #include <iomanip>
 #include <vector>
 #include <set>
+#include <map>
 #include <exception>
 #include <stdexcept>
 #include <csignal>
@@ -3326,83 +3485,39 @@ namespace detail
 
 #ifndef DOCTEST_CONFIG_DISABLE
 
-    // this holds both parameters for the command line and runtime data for tests
-    struct ContextState : TestAccessibleContextState //!OCLINT too many fields
+    // this holds both parameters from the command line and runtime data for tests
+    struct ContextState : ContextOptions, TestRunStats, CurrentTestCaseStats
     {
-        // == parameters from the command line
-
         std::vector<std::vector<String> > filters;
 
-        String   order_by;  // how tests should be ordered
-        unsigned rand_seed; // the seed for rand ordering
+        std::vector<IReporter*> reporters_currently_used;
 
-        unsigned first; // the first (matching) test to be executed
-        unsigned last;  // the last (matching) test to be executed
-
-        int  abort_after;           // stop tests after this many failed assertions
-        int  subcase_filter_levels; // apply the subcase filters for the first N levels
-        bool case_sensitive;        // if filtering should be case sensitive
-        bool exit;          // if the program should be exited after the tests are ran/whatever
-        bool duration;      // print the time duration of each test case
-        bool no_exitcode;   // if the framework should return 0 as the exitcode
-        bool no_run;        // to not run the tests at all (can be done with an "*" exclude)
-        bool no_version;    // to not print the version of the framework
-        bool no_colors;     // if output to the console should be colorized
-        bool force_colors;  // forces the use of colors even when a tty cannot be detected
-        bool no_breaks;     // to not break into the debugger
-        bool no_skip;       // don't skip test cases which are marked to be skipped
-        bool gnu_file_line; // if line numbers should be surrounded with :x: and not (x):
-        bool no_path_in_filenames; // if the path to files should be removed from the output
-        bool no_line_numbers;      // if source code line numbers should be omitted from the output
-        bool no_skipped_summary;   // don't print "skipped" in the summary !!! UNDOCUMENTED !!!
-
-        bool help;             // to print the help
-        bool version;          // to print the version
-        bool count;            // if only the count of matching tests is to be retreived
-        bool list_test_cases;  // to list all tests matching the filters
-        bool list_test_suites; // to list all suites matching the filters
-
-        // == data for the tests being ran
-
-        unsigned        numTestsPassingFilters;
-        unsigned        numTestSuitesPassingFilters;
-        unsigned        numFailed;
         const TestCase* currentTest;
-        bool            hasLoggedCurrentTestStart;
-        int             numAssertionsForCurrentTestcase;
-        int             numAssertions;
-        int             numFailedAssertionsForCurrentTestcase;
-        int             numFailedAssertions;
-        bool            hasCurrentTestFailed;
 
         std::vector<IContextScope*> contexts;            // for logging with INFO() and friends
-        std::vector<std::string>    exceptionalContexts; // logging from INFO() due to an exception
+        std::vector<String>         stringifiedContexts; // logging from INFO() due to an exception
 
         // stuff for subcases
         std::set<SubcaseSignature> subcasesPassed;
         std::set<int>              subcasesEnteredLevels;
-        std::vector<Subcase>       subcasesStack;
         int                        subcasesCurrentLevel;
-        bool                       subcasesHasSkipped;
 
         void resetRunData() {
-            numTestsPassingFilters                = 0;
-            numTestSuitesPassingFilters           = 0;
-            numFailed                             = 0;
-            numAssertions                         = 0;
-            numFailedAssertions                   = 0;
-            numFailedAssertionsForCurrentTestcase = 0;
+            numTestCases                = 0;
+            numTestCasesPassingFilters  = 0;
+            numTestSuitesPassingFilters = 0;
+            numTestCasesFailed          = 0;
+            numAsserts                  = 0;
+            numAssertsFailed            = 0;
         }
 
         // cppcheck-suppress uninitMemberVar
         ContextState()
-                : filters(8) // 8 different filters total
-        {
-            resetRunData();
-        }
+                : filters(9) // 9 different filters total
+        {}
     };
 
-    ContextState* contextState = 0;
+    ContextState* g_contextState = 0;
 #endif // DOCTEST_CONFIG_DISABLE
 } // namespace detail
 
@@ -3512,6 +3627,109 @@ int String::compare(const String& other, bool no_case) const {
 
 std::ostream& operator<<(std::ostream& s, const String& in) { return s << in.c_str(); }
 
+namespace detail
+{
+    void color_to_stream(std::ostream&, Color::Enum) DOCTEST_BRANCH_ON_DISABLED({}, ;)
+} // namespace detail
+
+namespace Color
+{
+    std::ostream& operator<<(std::ostream& s, Color::Enum code) {
+        detail::color_to_stream(s, code);
+        return s;
+    }
+} // namespace Color
+
+const char* assertString(assertType::Enum at) {
+    DOCTEST_MSVC_SUPPRESS_WARNING_WITH_PUSH(
+            4062) // enumerator 'x' in switch of enum 'y' is not handled
+    switch(at) {  //!OCLINT missing default in switch statements
+                  // clang-format off
+            case assertType::DT_WARN                    : return "WARN";
+            case assertType::DT_CHECK                   : return "CHECK";
+            case assertType::DT_REQUIRE                 : return "REQUIRE";
+
+            case assertType::DT_WARN_FALSE              : return "WARN_FALSE";
+            case assertType::DT_CHECK_FALSE             : return "CHECK_FALSE";
+            case assertType::DT_REQUIRE_FALSE           : return "REQUIRE_FALSE";
+
+            case assertType::DT_WARN_THROWS             : return "WARN_THROWS";
+            case assertType::DT_CHECK_THROWS            : return "CHECK_THROWS";
+            case assertType::DT_REQUIRE_THROWS          : return "REQUIRE_THROWS";
+
+            case assertType::DT_WARN_THROWS_AS          : return "WARN_THROWS_AS";
+            case assertType::DT_CHECK_THROWS_AS         : return "CHECK_THROWS_AS";
+            case assertType::DT_REQUIRE_THROWS_AS       : return "REQUIRE_THROWS_AS";
+
+            case assertType::DT_WARN_NOTHROW            : return "WARN_NOTHROW";
+            case assertType::DT_CHECK_NOTHROW           : return "CHECK_NOTHROW";
+            case assertType::DT_REQUIRE_NOTHROW         : return "REQUIRE_NOTHROW";
+
+            case assertType::DT_WARN_EQ                 : return "WARN_EQ";
+            case assertType::DT_CHECK_EQ                : return "CHECK_EQ";
+            case assertType::DT_REQUIRE_EQ              : return "REQUIRE_EQ";
+            case assertType::DT_WARN_NE                 : return "WARN_NE";
+            case assertType::DT_CHECK_NE                : return "CHECK_NE";
+            case assertType::DT_REQUIRE_NE              : return "REQUIRE_NE";
+            case assertType::DT_WARN_GT                 : return "WARN_GT";
+            case assertType::DT_CHECK_GT                : return "CHECK_GT";
+            case assertType::DT_REQUIRE_GT              : return "REQUIRE_GT";
+            case assertType::DT_WARN_LT                 : return "WARN_LT";
+            case assertType::DT_CHECK_LT                : return "CHECK_LT";
+            case assertType::DT_REQUIRE_LT              : return "REQUIRE_LT";
+            case assertType::DT_WARN_GE                 : return "WARN_GE";
+            case assertType::DT_CHECK_GE                : return "CHECK_GE";
+            case assertType::DT_REQUIRE_GE              : return "REQUIRE_GE";
+            case assertType::DT_WARN_LE                 : return "WARN_LE";
+            case assertType::DT_CHECK_LE                : return "CHECK_LE";
+            case assertType::DT_REQUIRE_LE              : return "REQUIRE_LE";
+
+            case assertType::DT_WARN_UNARY              : return "WARN_UNARY";
+            case assertType::DT_CHECK_UNARY             : return "CHECK_UNARY";
+            case assertType::DT_REQUIRE_UNARY           : return "REQUIRE_UNARY";
+            case assertType::DT_WARN_UNARY_FALSE        : return "WARN_UNARY_FALSE";
+            case assertType::DT_CHECK_UNARY_FALSE       : return "CHECK_UNARY_FALSE";
+            case assertType::DT_REQUIRE_UNARY_FALSE     : return "REQUIRE_UNARY_FALSE";
+
+            case assertType::DT_FAST_WARN_EQ            : return "FAST_WARN_EQ";
+            case assertType::DT_FAST_CHECK_EQ           : return "FAST_CHECK_EQ";
+            case assertType::DT_FAST_REQUIRE_EQ         : return "FAST_REQUIRE_EQ";
+            case assertType::DT_FAST_WARN_NE            : return "FAST_WARN_NE";
+            case assertType::DT_FAST_CHECK_NE           : return "FAST_CHECK_NE";
+            case assertType::DT_FAST_REQUIRE_NE         : return "FAST_REQUIRE_NE";
+            case assertType::DT_FAST_WARN_GT            : return "FAST_WARN_GT";
+            case assertType::DT_FAST_CHECK_GT           : return "FAST_CHECK_GT";
+            case assertType::DT_FAST_REQUIRE_GT         : return "FAST_REQUIRE_GT";
+            case assertType::DT_FAST_WARN_LT            : return "FAST_WARN_LT";
+            case assertType::DT_FAST_CHECK_LT           : return "FAST_CHECK_LT";
+            case assertType::DT_FAST_REQUIRE_LT         : return "FAST_REQUIRE_LT";
+            case assertType::DT_FAST_WARN_GE            : return "FAST_WARN_GE";
+            case assertType::DT_FAST_CHECK_GE           : return "FAST_CHECK_GE";
+            case assertType::DT_FAST_REQUIRE_GE         : return "FAST_REQUIRE_GE";
+            case assertType::DT_FAST_WARN_LE            : return "FAST_WARN_LE";
+            case assertType::DT_FAST_CHECK_LE           : return "FAST_CHECK_LE";
+            case assertType::DT_FAST_REQUIRE_LE         : return "FAST_REQUIRE_LE";
+
+            case assertType::DT_FAST_WARN_UNARY         : return "FAST_WARN_UNARY";
+            case assertType::DT_FAST_CHECK_UNARY        : return "FAST_CHECK_UNARY";
+            case assertType::DT_FAST_REQUIRE_UNARY      : return "FAST_REQUIRE_UNARY";
+            case assertType::DT_FAST_WARN_UNARY_FALSE   : return "FAST_WARN_UNARY_FALSE";
+            case assertType::DT_FAST_CHECK_UNARY_FALSE  : return "FAST_CHECK_UNARY_FALSE";
+            case assertType::DT_FAST_REQUIRE_UNARY_FALSE: return "FAST_REQUIRE_UNARY_FALSE";
+                  // clang-format on
+    }
+    DOCTEST_MSVC_SUPPRESS_WARNING_POP
+    return "";
+}
+
+bool SubcaseSignature::operator<(const SubcaseSignature& other) const {
+    if(m_line != other.m_line)
+        return m_line < other.m_line;
+    if(std::strcmp(m_file, other.m_file) != 0)
+        return std::strcmp(m_file, other.m_file) < 0;
+    return std::strcmp(m_name, other.m_name) < 0;
+}
+
 Approx::Approx(double value)
         : m_epsilon(static_cast<double>(std::numeric_limits<float>::epsilon()) * 100)
         , m_scale(1.0)
@@ -3620,6 +3838,14 @@ void Context::setOption(const char*, int) {}
 void Context::setOption(const char*, const char*) {}
 bool Context::shouldExit() { return false; }
 int  Context::run() { return 0; }
+
+int                         IReporter::get_num_active_contexts() { return 0; }
+const IContextScope* const* IReporter::get_active_contexts() { return 0; }
+int                         IReporter::get_num_stringified_contexts() { return 0; }
+const String*               IReporter::get_stringified_contexts() { return 0; }
+
+int registerReporter(const char*, int, IReporter*) { return 0; }
+
 } // namespace doctest
 #else // DOCTEST_CONFIG_DISABLE
 
@@ -3692,21 +3918,33 @@ namespace doctest
 {
 namespace detail
 {
+    typedef std::map<std::pair<int, String>, IReporter*> reporterMap;
+    reporterMap&                                         getReporters() {
+        static reporterMap data;
+        return data;
+    }
+
+#define DOCTEST_ITERATE_THROUGH_REPORTERS(function, args)                                          \
+    for(size_t iii = 0; iii < g_contextState->reporters_currently_used.size(); ++iii)              \
+    g_contextState->reporters_currently_used[iii]->function(args)
+
     TestCase::TestCase(funcType test, const char* file, unsigned line, const TestSuite& test_suite,
-                       const char* type, int template_id)
-            : m_test(test)
-            , m_name(0)
-            , m_type(type)
-            , m_test_suite(test_suite.m_test_suite)
-            , m_description(test_suite.m_description)
-            , m_skip(test_suite.m_skip)
-            , m_may_fail(test_suite.m_may_fail)
-            , m_should_fail(test_suite.m_should_fail)
-            , m_expected_failures(test_suite.m_expected_failures)
-            , m_timeout(test_suite.m_timeout)
-            , m_file(file)
-            , m_line(line)
-            , m_template_id(template_id) {}
+                       const char* type, int template_id) {
+        m_file              = file;
+        m_line              = line;
+        m_name              = 0;
+        m_test_suite        = test_suite.m_test_suite;
+        m_description       = test_suite.m_description;
+        m_skip              = test_suite.m_skip;
+        m_may_fail          = test_suite.m_may_fail;
+        m_should_fail       = test_suite.m_should_fail;
+        m_expected_failures = test_suite.m_expected_failures;
+        m_timeout           = test_suite.m_timeout;
+
+        m_test        = test;
+        m_type        = type;
+        m_template_id = template_id;
+    }
 
     TestCase& TestCase::operator*(const char* in) {
         m_name = in;
@@ -3720,10 +3958,9 @@ namespace detail
     }
 
     TestCase& TestCase::operator=(const TestCase& other) {
-        m_test              = other.m_test;
-        m_full_name         = other.m_full_name;
+        m_file              = other.m_file;
+        m_line              = other.m_line;
         m_name              = other.m_name;
-        m_type              = other.m_type;
         m_test_suite        = other.m_test_suite;
         m_description       = other.m_description;
         m_skip              = other.m_skip;
@@ -3731,9 +3968,11 @@ namespace detail
         m_should_fail       = other.m_should_fail;
         m_expected_failures = other.m_expected_failures;
         m_timeout           = other.m_timeout;
-        m_file              = other.m_file;
-        m_line              = other.m_line;
-        m_template_id       = other.m_template_id;
+
+        m_test        = other.m_test;
+        m_type        = other.m_type;
+        m_template_id = other.m_template_id;
+        m_full_name   = other.m_full_name;
 
         if(m_template_id != -1)
             m_name = m_full_name.c_str();
@@ -3749,95 +3988,13 @@ namespace detail
         return m_template_id < other.m_template_id;
     }
 
-    const char* assertString(assertType::Enum at) {
-        DOCTEST_MSVC_SUPPRESS_WARNING_WITH_PUSH(
-                4062) // enumerator 'x' in switch of enum 'y' is not handled
-        switch(at) {  //!OCLINT missing default in switch statements
-            // clang-format off
-            case assertType::DT_WARN                    : return "WARN";
-            case assertType::DT_CHECK                   : return "CHECK";
-            case assertType::DT_REQUIRE                 : return "REQUIRE";
-
-            case assertType::DT_WARN_FALSE              : return "WARN_FALSE";
-            case assertType::DT_CHECK_FALSE             : return "CHECK_FALSE";
-            case assertType::DT_REQUIRE_FALSE           : return "REQUIRE_FALSE";
-
-            case assertType::DT_WARN_THROWS             : return "WARN_THROWS";
-            case assertType::DT_CHECK_THROWS            : return "CHECK_THROWS";
-            case assertType::DT_REQUIRE_THROWS          : return "REQUIRE_THROWS";
-
-            case assertType::DT_WARN_THROWS_AS          : return "WARN_THROWS_AS";
-            case assertType::DT_CHECK_THROWS_AS         : return "CHECK_THROWS_AS";
-            case assertType::DT_REQUIRE_THROWS_AS       : return "REQUIRE_THROWS_AS";
-
-            case assertType::DT_WARN_NOTHROW            : return "WARN_NOTHROW";
-            case assertType::DT_CHECK_NOTHROW           : return "CHECK_NOTHROW";
-            case assertType::DT_REQUIRE_NOTHROW         : return "REQUIRE_NOTHROW";
-
-            case assertType::DT_WARN_EQ                 : return "WARN_EQ";
-            case assertType::DT_CHECK_EQ                : return "CHECK_EQ";
-            case assertType::DT_REQUIRE_EQ              : return "REQUIRE_EQ";
-            case assertType::DT_WARN_NE                 : return "WARN_NE";
-            case assertType::DT_CHECK_NE                : return "CHECK_NE";
-            case assertType::DT_REQUIRE_NE              : return "REQUIRE_NE";
-            case assertType::DT_WARN_GT                 : return "WARN_GT";
-            case assertType::DT_CHECK_GT                : return "CHECK_GT";
-            case assertType::DT_REQUIRE_GT              : return "REQUIRE_GT";
-            case assertType::DT_WARN_LT                 : return "WARN_LT";
-            case assertType::DT_CHECK_LT                : return "CHECK_LT";
-            case assertType::DT_REQUIRE_LT              : return "REQUIRE_LT";
-            case assertType::DT_WARN_GE                 : return "WARN_GE";
-            case assertType::DT_CHECK_GE                : return "CHECK_GE";
-            case assertType::DT_REQUIRE_GE              : return "REQUIRE_GE";
-            case assertType::DT_WARN_LE                 : return "WARN_LE";
-            case assertType::DT_CHECK_LE                : return "CHECK_LE";
-            case assertType::DT_REQUIRE_LE              : return "REQUIRE_LE";
-
-            case assertType::DT_WARN_UNARY              : return "WARN_UNARY";
-            case assertType::DT_CHECK_UNARY             : return "CHECK_UNARY";
-            case assertType::DT_REQUIRE_UNARY           : return "REQUIRE_UNARY";
-            case assertType::DT_WARN_UNARY_FALSE        : return "WARN_UNARY_FALSE";
-            case assertType::DT_CHECK_UNARY_FALSE       : return "CHECK_UNARY_FALSE";
-            case assertType::DT_REQUIRE_UNARY_FALSE     : return "REQUIRE_UNARY_FALSE";
-
-            case assertType::DT_FAST_WARN_EQ            : return "FAST_WARN_EQ";
-            case assertType::DT_FAST_CHECK_EQ           : return "FAST_CHECK_EQ";
-            case assertType::DT_FAST_REQUIRE_EQ         : return "FAST_REQUIRE_EQ";
-            case assertType::DT_FAST_WARN_NE            : return "FAST_WARN_NE";
-            case assertType::DT_FAST_CHECK_NE           : return "FAST_CHECK_NE";
-            case assertType::DT_FAST_REQUIRE_NE         : return "FAST_REQUIRE_NE";
-            case assertType::DT_FAST_WARN_GT            : return "FAST_WARN_GT";
-            case assertType::DT_FAST_CHECK_GT           : return "FAST_CHECK_GT";
-            case assertType::DT_FAST_REQUIRE_GT         : return "FAST_REQUIRE_GT";
-            case assertType::DT_FAST_WARN_LT            : return "FAST_WARN_LT";
-            case assertType::DT_FAST_CHECK_LT           : return "FAST_CHECK_LT";
-            case assertType::DT_FAST_REQUIRE_LT         : return "FAST_REQUIRE_LT";
-            case assertType::DT_FAST_WARN_GE            : return "FAST_WARN_GE";
-            case assertType::DT_FAST_CHECK_GE           : return "FAST_CHECK_GE";
-            case assertType::DT_FAST_REQUIRE_GE         : return "FAST_REQUIRE_GE";
-            case assertType::DT_FAST_WARN_LE            : return "FAST_WARN_LE";
-            case assertType::DT_FAST_CHECK_LE           : return "FAST_CHECK_LE";
-            case assertType::DT_FAST_REQUIRE_LE         : return "FAST_REQUIRE_LE";
-
-            case assertType::DT_FAST_WARN_UNARY         : return "FAST_WARN_UNARY";
-            case assertType::DT_FAST_CHECK_UNARY        : return "FAST_CHECK_UNARY";
-            case assertType::DT_FAST_REQUIRE_UNARY      : return "FAST_REQUIRE_UNARY";
-            case assertType::DT_FAST_WARN_UNARY_FALSE   : return "FAST_WARN_UNARY_FALSE";
-            case assertType::DT_FAST_CHECK_UNARY_FALSE  : return "FAST_CHECK_UNARY_FALSE";
-            case assertType::DT_FAST_REQUIRE_UNARY_FALSE: return "FAST_REQUIRE_UNARY_FALSE";
-                // clang-format on
-        }
-        DOCTEST_MSVC_SUPPRESS_WARNING_POP
-        return "";
-    }
-
     bool checkIfShouldThrow(assertType::Enum at) {
         if(at & assertType::is_require) //!OCLINT bitwise operator in conditional
             return true;
 
         if((at & assertType::is_check) //!OCLINT bitwise operator in conditional
-           && contextState->abort_after > 0 &&
-           contextState->numFailedAssertions >= contextState->abort_after)
+           && g_contextState->abort_after > 0 &&
+           g_contextState->numAssertsFailed >= g_contextState->abort_after)
             return true;
 
         return false;
@@ -3900,7 +4057,7 @@ namespace detail
     //}
 
     // checks if the name matches any of the filters (and can be configured what to do when empty)
-    bool matchesAny(const char* name, const std::vector<String>& filters, int matchEmpty,
+    bool matchesAny(const char* name, const std::vector<String>& filters, bool matchEmpty,
                     bool caseSensitive) {
         if(filters.empty() && matchEmpty)
             return true;
@@ -3955,23 +4112,14 @@ namespace detail
         UInt64 m_ticks;
     };
 
-    TestAccessibleContextState* getTestsContextState() { return contextState; }
+    Timer g_timer;
 
-    // TODO: remove this from here
-    void logTestEnd();
-
-    bool SubcaseSignature::operator<(const SubcaseSignature& other) const {
-        if(m_line != other.m_line)
-            return m_line < other.m_line;
-        if(std::strcmp(m_file, other.m_file) != 0)
-            return std::strcmp(m_file, other.m_file) < 0;
-        return std::strcmp(m_name, other.m_name) < 0;
-    }
+    const ContextOptions* getContextOptions() { return g_contextState; }
 
     Subcase::Subcase(const char* name, const char* file, int line)
             : m_signature(name, file, line)
             , m_entered(false) {
-        ContextState* s = contextState;
+        ContextState* s = g_contextState;
 
         // if we have already completed it
         if(s->subcasesPassed.count(m_signature) != 0)
@@ -3979,25 +4127,22 @@ namespace detail
 
         // check subcase filters
         if(s->subcasesCurrentLevel < s->subcase_filter_levels) {
-            if(!matchesAny(m_signature.m_name, s->filters[6], 1, s->case_sensitive))
+            if(!matchesAny(m_signature.m_name, s->filters[6], true, s->case_sensitive))
                 return;
-            if(matchesAny(m_signature.m_name, s->filters[7], 0, s->case_sensitive))
+            if(matchesAny(m_signature.m_name, s->filters[7], false, s->case_sensitive))
                 return;
         }
 
         // if a Subcase on the same level has already been entered
         if(s->subcasesEnteredLevels.count(s->subcasesCurrentLevel) != 0) {
-            s->subcasesHasSkipped = true;
+            s->should_reenter = true;
             return;
         }
 
-        s->subcasesStack.push_back(*this);
-        if(s->hasLoggedCurrentTestStart)
-            logTestEnd();
-        s->hasLoggedCurrentTestStart = false;
-
         s->subcasesEnteredLevels.insert(s->subcasesCurrentLevel++);
         m_entered = true;
+
+        DOCTEST_ITERATE_THROUGH_REPORTERS(subcase_start, m_signature);
     }
 
     Subcase::Subcase(const Subcase& other)
@@ -4007,18 +4152,14 @@ namespace detail
 
     Subcase::~Subcase() {
         if(m_entered) {
-            ContextState* s = contextState;
+            ContextState* s = g_contextState;
 
             s->subcasesCurrentLevel--;
             // only mark the subcase as passed if no subcases have been skipped
-            if(s->subcasesHasSkipped == false)
+            if(s->should_reenter == false)
                 s->subcasesPassed.insert(m_signature);
 
-            if(!s->subcasesStack.empty())
-                s->subcasesStack.pop_back();
-            if(s->hasLoggedCurrentTestStart)
-                logTestEnd();
-            s->hasLoggedCurrentTestStart = false;
+            DOCTEST_ITERATE_THROUGH_REPORTERS(subcase_end, m_signature);
         }
     }
 
@@ -4087,65 +4228,41 @@ namespace detail
         return 0;
     }
 
-    namespace Color
-    {
-        enum Code
-        {
-            None = 0,
-            White,
-            Red,
-            Green,
-            Blue,
-            Cyan,
-            Yellow,
-            Grey,
-
-            Bright = 0x10,
-
-            BrightRed   = Bright | Red,
-            BrightGreen = Bright | Green,
-            LightGrey   = Bright | Grey,
-            BrightWhite = Bright | White
-        };
-
 #ifdef DOCTEST_CONFIG_COLORS_WINDOWS
-        HANDLE g_stdoutHandle;
-        WORD   g_originalForegroundAttributes;
-        WORD   g_originalBackgroundAttributes;
-        bool   g_attrsInitted = false;
-#endif // DOCTEST_CONFIG_COLORS_WINDOWS
+    HANDLE g_stdoutHandle;
+    WORD   g_origFgAttrs;
+    WORD   g_origBgAttrs;
+    bool   g_attrsInitted = false;
 
-        void init() {
-#ifdef DOCTEST_CONFIG_COLORS_WINDOWS
-            if(!g_attrsInitted) {
-                g_stdoutHandle = GetStdHandle(STD_OUTPUT_HANDLE);
-                g_attrsInitted = true;
-                CONSOLE_SCREEN_BUFFER_INFO csbiInfo;
-                GetConsoleScreenBufferInfo(g_stdoutHandle, &csbiInfo);
-                g_originalForegroundAttributes =
-                        csbiInfo.wAttributes & ~(BACKGROUND_GREEN | BACKGROUND_RED |
-                                                 BACKGROUND_BLUE | BACKGROUND_INTENSITY);
-                g_originalBackgroundAttributes =
-                        csbiInfo.wAttributes & ~(FOREGROUND_GREEN | FOREGROUND_RED |
-                                                 FOREGROUND_BLUE | FOREGROUND_INTENSITY);
-            }
-#endif // DOCTEST_CONFIG_COLORS_WINDOWS
+    int colors_init() {
+        if(!g_attrsInitted) {
+            g_stdoutHandle = GetStdHandle(STD_OUTPUT_HANDLE);
+            g_attrsInitted = true;
+            CONSOLE_SCREEN_BUFFER_INFO csbiInfo;
+            GetConsoleScreenBufferInfo(g_stdoutHandle, &csbiInfo);
+            g_origFgAttrs = csbiInfo.wAttributes & ~(BACKGROUND_GREEN | BACKGROUND_RED |
+                                                     BACKGROUND_BLUE | BACKGROUND_INTENSITY);
+            g_origBgAttrs = csbiInfo.wAttributes & ~(FOREGROUND_GREEN | FOREGROUND_RED |
+                                                     FOREGROUND_BLUE | FOREGROUND_INTENSITY);
         }
+        return 0;
+    }
 
-        std::ostream& operator<<(std::ostream&            s, Color::Code
-#ifndef DOCTEST_CONFIG_COLORS_NONE
-                                                          code
-#endif // DOCTEST_CONFIG_COLORS_NONE
-        ) {
-            const ContextState* p = contextState;
-            if(p->no_colors)
-                return s;
+    int dumy_init_console_colors = colors_init();
+#endif // DOCTEST_CONFIG_COLORS_WINDOWS
+
+    void color_to_stream(std::ostream& s, Color::Enum code) {
+        ((void)s);    // for DOCTEST_CONFIG_COLORS_NONE or DOCTEST_CONFIG_COLORS_WINDOWS
+        ((void)code); // for DOCTEST_CONFIG_COLORS_NONE
+        const ContextState* p = g_contextState;
+        if(p->no_colors)
+            return;
 #ifdef DOCTEST_CONFIG_COLORS_ANSI
-            if(isatty(STDOUT_FILENO) == false && p->force_colors == false)
-                return s;
+        if(isatty(STDOUT_FILENO) == false && p->force_colors == false)
+            return;
 
-            const char* col = "";
-            // clang-format off
+        const char* col = "";
+        // clang-format off
             switch(code) { //!OCLINT missing break in switch statement / unnecessary default statement in covered switch statement
                 case Color::Red:         col = "[0;31m"; break;
                 case Color::Green:       col = "[0;32m"; break;
@@ -4162,40 +4279,36 @@ namespace detail
                 case Color::White:
                 default:                 col = "[0m";
             }
-            // clang-format on
-            s << "\033" << col;
+        // clang-format on
+        s << "\033" << col;
 #endif // DOCTEST_CONFIG_COLORS_ANSI
 
 #ifdef DOCTEST_CONFIG_COLORS_WINDOWS
-            if(isatty(fileno(stdout)) == false && p->force_colors == false)
-                return s;
+        if(isatty(fileno(stdout)) == false && p->force_colors == false)
+            return;
 
-#define DOCTEST_SET_ATTR(x)                                                                        \
-    SetConsoleTextAttribute(g_stdoutHandle, x | g_originalBackgroundAttributes)
+#define DOCTEST_SET_ATTR(x) SetConsoleTextAttribute(g_stdoutHandle, x | g_origBgAttrs)
 
-            // clang-format off
-            switch (code) {
-                case Color::White:       DOCTEST_SET_ATTR(FOREGROUND_GREEN | FOREGROUND_RED | FOREGROUND_BLUE); break;
-                case Color::Red:         DOCTEST_SET_ATTR(FOREGROUND_RED);                                      break;
-                case Color::Green:       DOCTEST_SET_ATTR(FOREGROUND_GREEN);                                    break;
-                case Color::Blue:        DOCTEST_SET_ATTR(FOREGROUND_BLUE);                                     break;
-                case Color::Cyan:        DOCTEST_SET_ATTR(FOREGROUND_BLUE | FOREGROUND_GREEN);                  break;
-                case Color::Yellow:      DOCTEST_SET_ATTR(FOREGROUND_RED | FOREGROUND_GREEN);                   break;
-                case Color::Grey:        DOCTEST_SET_ATTR(0);                                                   break;
-                case Color::LightGrey:   DOCTEST_SET_ATTR(FOREGROUND_INTENSITY);                                break;
-                case Color::BrightRed:   DOCTEST_SET_ATTR(FOREGROUND_INTENSITY | FOREGROUND_RED);               break;
-                case Color::BrightGreen: DOCTEST_SET_ATTR(FOREGROUND_INTENSITY | FOREGROUND_GREEN);             break;
-                case Color::BrightWhite: DOCTEST_SET_ATTR(FOREGROUND_INTENSITY | FOREGROUND_GREEN | FOREGROUND_RED | FOREGROUND_BLUE); break;
-                case Color::None:
-                case Color::Bright: // invalid
-                default:                 DOCTEST_SET_ATTR(g_originalForegroundAttributes);
-            }
-                // clang-format on
-#undef DOCTEST_SET_ATTR
-#endif // DOCTEST_CONFIG_COLORS_WINDOWS
-            return s;
+        // clang-format off
+        switch (code) {
+            case Color::White:       DOCTEST_SET_ATTR(FOREGROUND_GREEN | FOREGROUND_RED | FOREGROUND_BLUE); break;
+            case Color::Red:         DOCTEST_SET_ATTR(FOREGROUND_RED);                                      break;
+            case Color::Green:       DOCTEST_SET_ATTR(FOREGROUND_GREEN);                                    break;
+            case Color::Blue:        DOCTEST_SET_ATTR(FOREGROUND_BLUE);                                     break;
+            case Color::Cyan:        DOCTEST_SET_ATTR(FOREGROUND_BLUE | FOREGROUND_GREEN);                  break;
+            case Color::Yellow:      DOCTEST_SET_ATTR(FOREGROUND_RED | FOREGROUND_GREEN);                   break;
+            case Color::Grey:        DOCTEST_SET_ATTR(0);                                                   break;
+            case Color::LightGrey:   DOCTEST_SET_ATTR(FOREGROUND_INTENSITY);                                break;
+            case Color::BrightRed:   DOCTEST_SET_ATTR(FOREGROUND_INTENSITY | FOREGROUND_RED);               break;
+            case Color::BrightGreen: DOCTEST_SET_ATTR(FOREGROUND_INTENSITY | FOREGROUND_GREEN);             break;
+            case Color::BrightWhite: DOCTEST_SET_ATTR(FOREGROUND_INTENSITY | FOREGROUND_GREEN | FOREGROUND_RED | FOREGROUND_BLUE); break;
+            case Color::None:
+            case Color::Bright: // invalid
+            default:                 DOCTEST_SET_ATTR(g_origFgAttrs);
         }
-    } // namespace Color
+            // clang-format on
+#endif // DOCTEST_CONFIG_COLORS_WINDOWS
+    }
 
     std::vector<const IExceptionTranslator*>& getExceptionTranslators() {
         static std::vector<const IExceptionTranslator*> data;
@@ -4259,21 +4372,19 @@ namespace detail
     void toStream(std::ostream* s, int long long unsigned in) { *s << in; }
 #endif // DOCTEST_CONFIG_WITH_LONG_LONG
 
-    void addToContexts(IContextScope* ptr) { contextState->contexts.push_back(ptr); }
-    void popFromContexts() { contextState->contexts.pop_back(); }
+    void addToContexts(IContextScope* ptr) { g_contextState->contexts.push_back(ptr); }
+    void popFromContexts() { g_contextState->contexts.pop_back(); }
     DOCTEST_MSVC_SUPPRESS_WARNING_WITH_PUSH(4996) // std::uncaught_exception is deprecated in C++17
     DOCTEST_GCC_SUPPRESS_WARNING_WITH_PUSH("-Wdeprecated-declarations")
-    void useContextIfExceptionOccurred(IContextScope* ptr) {
+    void stringifyContextIfExceptionOccurred(IContextScope* ptr) {
         if(std::uncaught_exception()) {
             std::ostringstream s;
-            ptr->build(&s);
-            contextState->exceptionalContexts.push_back(s.str());
+            ptr->stringify(&s);
+            g_contextState->stringifiedContexts.push_back(s.str().c_str());
         }
     }
     DOCTEST_GCC_SUPPRESS_WARNING_POP
     DOCTEST_MSVC_SUPPRESS_WARNING_POP
-
-    void printSummary(std::ostream& s);
 
 #if !defined(DOCTEST_CONFIG_POSIX_SIGNALS) && !defined(DOCTEST_CONFIG_WINDOWS_SEH)
     void reportFatal(const std::string&) {}
@@ -4422,53 +4533,6 @@ namespace detail
 #endif // DOCTEST_PLATFORM_WINDOWS
 #endif // DOCTEST_CONFIG_POSIX_SIGNALS || DOCTEST_CONFIG_WINDOWS_SEH
 
-    void separator_to_stream(std::ostream& s) {
-        s << Color::Yellow
-          << "===============================================================================\n";
-    }
-
-    // depending on the current options this will remove the path of filenames
-    const char* fileForOutput(const char* file) {
-        if(contextState->no_path_in_filenames) {
-            const char* back    = std::strrchr(file, '\\');
-            const char* forward = std::strrchr(file, '/');
-            if(back || forward) {
-                if(back > forward)
-                    forward = back;
-                return forward + 1;
-            }
-        }
-        return file;
-    }
-
-    void file_line_to_stream(std::ostream& s, const char* file, int line, const char* tail = "") {
-        s << Color::LightGrey << fileForOutput(file) << (contextState->gnu_file_line ? ":" : "(")
-          << (contextState->no_line_numbers ? 0 : line) // 0 or the real num depending on the option
-          << (contextState->gnu_file_line ? ":" : "):") << tail;
-    }
-
-    const char* getSuccessOrFailString(bool success, assertType::Enum at, const char* success_str) {
-        if(success)
-            return success_str;
-        if(at & assertType::is_warn) //!OCLINT bitwise operator in conditional
-            return "WARNING: ";
-        if(at & assertType::is_check) //!OCLINT bitwise operator in conditional
-            return "ERROR: ";
-        if(at & assertType::is_require) //!OCLINT bitwise operator in conditional
-            return "FATAL ERROR: ";
-        return "";
-    }
-
-    Color::Code getSuccessOrFailColor(bool success, assertType::Enum at) {
-        return success ? Color::BrightGreen :
-                         (at & assertType::is_warn) ? Color::Yellow : Color::Red;
-    }
-
-    void successOrFailColoredStringToStream(std::ostream& s, bool success, assertType::Enum at,
-                                            const char* success_str = "SUCCESS: ") {
-        s << getSuccessOrFailColor(success, at) << getSuccessOrFailString(success, at, success_str);
-    }
-
 #ifdef DOCTEST_PLATFORM_MAC
 #include <sys/types.h>
 #include <unistd.h>
@@ -4507,134 +4571,54 @@ namespace detail
 #endif // Platform
 
 #ifdef DOCTEST_PLATFORM_WINDOWS
-    void myOutputDebugString(const String& text) { ::OutputDebugStringA(text.c_str()); }
+    void myOutputDebugString(const char* text) { ::OutputDebugStringA(text); }
 #else
     // TODO: integration with XCode and other IDEs
-    void myOutputDebugString(const String&) {}
+    void myOutputDebugString(const char*) {}
 #endif // Platform
 
-    void printToDebugConsole(const String& text) {
-        if(isDebuggerActive())
-            myOutputDebugString(text);
+    void addAssert(assertType::Enum at) {
+        if((at & assertType::is_warn) == 0) { //!OCLINT bitwise operator in conditional
+            g_contextState->numAsserts++;
+            g_contextState->numAssertsForCurrentTestCase++;
+        }
     }
 
     void addFailedAssert(assertType::Enum at) {
         if((at & assertType::is_warn) == 0) { //!OCLINT bitwise operator in conditional
-            contextState->numFailedAssertions++;
-            contextState->numFailedAssertionsForCurrentTestcase++;
-            contextState->hasCurrentTestFailed = true;
+            g_contextState->numAssertsFailed++;
+            g_contextState->numAssertsFailedForCurrentTestCase++;
         }
-    }
-
-    std::ostream& operator<<(std::ostream& s, const std::vector<IContextScope*>& contexts) {
-        if(!contexts.empty())
-            s << Color::None << "  logged: ";
-        for(size_t i = 0; i < contexts.size(); ++i) {
-            s << (i == 0 ? "" : "          ");
-            contexts[i]->build(&s);
-            s << "\n";
-        }
-        s << "\n";
-        return s;
-    }
-
-    void logTestStart(std::ostream& s, const TestCase& tc) {
-        separator_to_stream(s);
-        file_line_to_stream(s, tc.m_file, tc.m_line, "\n");
-        if(tc.m_description)
-            s << Color::Yellow << "DESCRIPTION: " << Color::None << tc.m_description << "\n";
-        if(tc.m_test_suite && tc.m_test_suite[0] != '\0')
-            s << Color::Yellow << "TEST SUITE: " << Color::None << tc.m_test_suite << "\n";
-        if(strncmp(tc.m_name, "  Scenario:", 11) != 0)
-            s << Color::None << "TEST CASE:  ";
-        s << Color::None << tc.m_name << "\n";
-
-        std::vector<Subcase>& subcasesStack = contextState->subcasesStack;
-        for(unsigned i = 0; i < subcasesStack.size(); ++i)
-            if(subcasesStack[i].m_signature.m_name[0] != '\0')
-                s << "  " << subcasesStack[i].m_signature.m_name << "\n";
-
-        s << "\n";
-    }
-
-    void logTestEnd() {}
-
-    void logTestException(std::ostream& s, const TestCase& tc, const String& str, bool crash) {
-        file_line_to_stream(s, tc.m_file, tc.m_line, " ");
-        successOrFailColoredStringToStream(s, false,
-                                           crash ? assertType::is_require : assertType::is_check);
-        s << Color::Red << (crash ? "test case CRASHED: " : "test case THREW exception: ")
-          << Color::Cyan << str << "\n";
-
-        if(!contextState->exceptionalContexts.empty()) {
-            s << Color::None << "  logged: ";
-            for(size_t i = contextState->exceptionalContexts.size(); i > 0; --i)
-                s << (i == contextState->exceptionalContexts.size() ? "" : "          ")
-                  << contextState->exceptionalContexts[i - 1] << "\n";
-        }
-        s << "\n";
     }
 
 #if defined(DOCTEST_CONFIG_POSIX_SIGNALS) || defined(DOCTEST_CONFIG_WINDOWS_SEH)
     void reportFatal(const std::string& message) {
-        DOCTEST_LOG_START;
+        g_contextState->seconds_so_far += g_timer.getElapsedSeconds();
+        g_contextState->failure_flags |= TestCaseFailureReason::Crash;
+        g_contextState->error_string   = message.c_str();
+        g_contextState->should_reenter = false;
 
-        contextState->numAssertions += contextState->numAssertionsForCurrentTestcase;
+        // TODO: end all currently opened subcases...?
 
-        DOCTEST_TO_CONSOLE_AND_OUTPUT_WINDOW(
-                logTestException,
-                DOCTEST_COMMA * contextState->currentTest DOCTEST_COMMA message.c_str()
-                                        DOCTEST_COMMA true);
+        DOCTEST_ITERATE_THROUGH_REPORTERS(test_case_end, *g_contextState);
 
-        logTestEnd();
-        contextState->numFailed++;
+        g_contextState->numTestCasesFailed++;
 
-        printSummary(std::cout);
+        DOCTEST_ITERATE_THROUGH_REPORTERS(test_run_end, *g_contextState);
     }
 #endif // DOCTEST_CONFIG_POSIX_SIGNALS || DOCTEST_CONFIG_WINDOWS_SEH
 
-    void logAssert(std::ostream& s, const ResultBuilder& rb) {
-        file_line_to_stream(s, rb.m_file, rb.m_line, " ");
-        successOrFailColoredStringToStream(s, !rb.m_failed, rb.m_at);
-        if((rb.m_at & assertType::is_throws_as) == 0) //!OCLINT bitwise operator in conditional
-            s << Color::Cyan << assertString(rb.m_at) << "( " << rb.m_expr << " ) " << Color::None;
-
-        if(rb.m_at & assertType::is_throws) { //!OCLINT bitwise operator in conditional
-            s << (rb.m_threw ? "threw as expected!" : "did NOT throw at all!") << "\n";
-        } else if(rb.m_at & assertType::is_throws_as) { //!OCLINT bitwise operator in conditional
-            s << Color::Cyan << assertString(rb.m_at) << "( " << rb.m_expr << ", "
-              << rb.m_exception_type << " ) " << Color::None
-              << (rb.m_threw ?
-                          (rb.m_threw_as ? "threw as expected!" : "threw a DIFFERENT exception: ") :
-                          "did NOT throw at all!")
-              << Color::Cyan << rb.m_exception << "\n";
-        } else if(rb.m_at & assertType::is_nothrow) { //!OCLINT bitwise operator in conditional
-            s << (rb.m_threw ? "THREW exception: " : "didn't throw!") << Color::Cyan
-              << rb.m_exception << "\n";
-        } else {
-            s << (rb.m_threw ? "THREW exception: " :
-                               (rb.m_result.m_passed ? "is correct!\n" : "is NOT correct!\n"));
-            if(rb.m_threw)
-                s << rb.m_exception << "\n";
-            else
-                s << "  values: " << assertString(rb.m_at) << "( " << rb.m_result.m_decomposition
-                  << " )\n";
-        }
-
-        s << contextState->contexts;
-    }
-
     ResultBuilder::ResultBuilder(assertType::Enum at, const char* file, int line, const char* expr,
-                                 const char* exception_type)
-            : m_test_case(*contextState->currentTest)
-            , m_at(at)
-            , m_file(file)
-            , m_line(line)
-            , m_expr(expr)
-            , m_failed(false)
-            , m_threw(false)
-            , m_threw_as(false)
-            , m_exception_type(exception_type) {
+                                 const char* exception_type) {
+        m_test_case      = g_contextState->currentTest;
+        m_at             = at;
+        m_file           = file;
+        m_line           = line;
+        m_expr           = expr;
+        m_failed         = true;
+        m_threw          = false;
+        m_threw_as       = false;
+        m_exception_type = exception_type;
 #if DOCTEST_MSVC
         if(m_expr[0] == ' ') // this happens when variadic macros are disabled under MSVC
             ++m_expr;
@@ -4650,30 +4634,22 @@ namespace detail
     }
 
     bool ResultBuilder::log() {
-        if((m_at & assertType::is_warn) == 0) //!OCLINT bitwise operator in conditional
-            contextState->numAssertionsForCurrentTestcase++;
+        addAssert(m_at);
 
         if(m_at & assertType::is_throws) { //!OCLINT bitwise operator in conditional
             m_failed = !m_threw;
-        } else if(m_at & //!OCLINT bitwise operator in conditional
-                  assertType::is_throws_as) {
+        } else if(m_at & assertType::is_throws_as) { //!OCLINT bitwise operator in conditional
             m_failed = !m_threw_as;
-        } else if(m_at & //!OCLINT bitwise operator in conditional
-                  assertType::is_nothrow) {
+        } else if(m_at & assertType::is_nothrow) { //!OCLINT bitwise operator in conditional
             m_failed = m_threw;
-        } else {
-            m_failed = m_result;
         }
 
-        if(m_failed || contextState->success) {
-            DOCTEST_LOG_START;
-            DOCTEST_TO_CONSOLE_AND_OUTPUT_WINDOW(logAssert, DOCTEST_COMMA * this);
-        }
+        DOCTEST_ITERATE_THROUGH_REPORTERS(log_assert, *this);
 
         if(m_failed)
             addFailedAssert(m_at);
 
-        return m_failed && isDebuggerActive() && !contextState->no_breaks; // break into debugger
+        return m_failed && isDebuggerActive() && !g_contextState->no_breaks; // break into debugger
     }
 
     void ResultBuilder::react() const {
@@ -4681,33 +4657,26 @@ namespace detail
             throwException();
     }
 
-    MessageBuilder::MessageBuilder(const char* file, int line, assertType::Enum severity)
-            : m_stream(createStream())
-            , m_file(file)
-            , m_line(line)
-            , m_severity(severity) {}
-
-    void MessageBuilder::log(std::ostream& s) {
-        file_line_to_stream(s, m_file, m_line, " ");
-        s << getSuccessOrFailColor(false, m_severity)
-          << getSuccessOrFailString(m_severity & assertType::is_warn, m_severity, "MESSAGE: ");
-        s << Color::None << getStreamResult(m_stream) << "\n";
-        s << contextState->contexts;
+    MessageBuilder::MessageBuilder(const char* file, int line, assertType::Enum severity) {
+        m_stream   = createStream();
+        m_file     = file;
+        m_line     = line;
+        m_severity = severity;
     }
 
     bool MessageBuilder::log() {
-        DOCTEST_LOG_START;
-        DOCTEST_TO_CONSOLE_AND_OUTPUT_WINDOW(log, DOCTEST_EMPTY);
+        m_string = getStreamResult(m_stream);
+        DOCTEST_ITERATE_THROUGH_REPORTERS(log_message, *this);
 
         const bool isWarn = m_severity & assertType::is_warn;
 
         // warn is just a message in this context so we dont treat it as an assert
         if(!isWarn) {
-            contextState->numAssertionsForCurrentTestcase++;
+            addAssert(m_severity);
             addFailedAssert(m_severity);
         }
 
-        return isDebuggerActive() && !contextState->no_breaks && !isWarn; // break into debugger
+        return isDebuggerActive() && !g_contextState->no_breaks && !isWarn; // break into debugger
     }
 
     void MessageBuilder::react() {
@@ -4716,6 +4685,428 @@ namespace detail
     }
 
     MessageBuilder::~MessageBuilder() { freeStream(m_stream); }
+
+    struct ConsoleReporter : public IReporter
+    {
+        std::ostream&                 s;
+        bool                          hasLoggedCurrentTestStart;
+        std::vector<SubcaseSignature> subcasesStack;
+
+        // caching pointers to objects of these types - safe to do
+        const ContextOptions* opt;
+        const TestCaseData*   tc;
+
+        ConsoleReporter(std::ostream& in)
+                : s(in) {}
+
+        // =========================================================================================
+        // WHAT FOLLOWS ARE HELPERS USED BY THE OVERRIDES OF THE VIRTUAL METHODS OF THE INTERFACE
+        // =========================================================================================
+
+        void separator_to_stream() {
+            s << Color::Yellow
+              << "==============================================================================="
+                 "\n";
+        }
+
+        // depending on the current options this will remove the path of filenames
+        const char* file_for_output(const char* file) {
+            if(opt->no_path_in_filenames) {
+                const char* back    = std::strrchr(file, '\\');
+                const char* forward = std::strrchr(file, '/');
+                if(back || forward) {
+                    if(back > forward)
+                        forward = back;
+                    return forward + 1;
+                }
+            }
+            return file;
+        }
+
+        void file_line_to_stream(const char* file, int line, const char* tail = "") {
+            s << Color::LightGrey << file_for_output(file) << (opt->gnu_file_line ? ":" : "(")
+              << (opt->no_line_numbers ? 0 : line) // 0 or the real num depending on the option
+              << (opt->gnu_file_line ? ":" : "):") << tail;
+        }
+
+        const char* getSuccessOrFailString(bool success, assertType::Enum at,
+                                           const char* success_str) {
+            if(success)
+                return success_str;
+            if(at & assertType::is_warn) //!OCLINT bitwise operator in conditional
+                return "WARNING: ";
+            if(at & assertType::is_check) //!OCLINT bitwise operator in conditional
+                return "ERROR: ";
+            if(at & assertType::is_require) //!OCLINT bitwise operator in conditional
+                return "FATAL ERROR: ";
+            return "";
+        }
+
+        Color::Enum getSuccessOrFailColor(bool success, assertType::Enum at) {
+            return success ? Color::BrightGreen :
+                             (at & assertType::is_warn) ? Color::Yellow : Color::Red;
+        }
+
+        void successOrFailColoredStringToStream(bool success, assertType::Enum at,
+                                                const char* success_str = "SUCCESS: ") {
+            s << getSuccessOrFailColor(success, at)
+              << getSuccessOrFailString(success, at, success_str);
+        }
+
+        void log_contexts() {
+            int num_contexts = get_num_active_contexts();
+            if(num_contexts) {
+                const IContextScope* const* contexts = get_active_contexts();
+
+                s << Color::None << "  logged: ";
+                for(int i = 0; i < num_contexts; ++i) {
+                    s << (i == 0 ? "" : "          ");
+                    contexts[i]->stringify(&s);
+                    s << "\n";
+                }
+            }
+
+            s << "\n";
+        }
+
+        void logTestStart() {
+            if(hasLoggedCurrentTestStart)
+                return;
+
+            separator_to_stream();
+            file_line_to_stream(tc->m_file, tc->m_line, "\n");
+            if(tc->m_description)
+                s << Color::Yellow << "DESCRIPTION: " << Color::None << tc->m_description << "\n";
+            if(tc->m_test_suite && tc->m_test_suite[0] != '\0')
+                s << Color::Yellow << "TEST SUITE: " << Color::None << tc->m_test_suite << "\n";
+            if(strncmp(tc->m_name, "  Scenario:", 11) != 0)
+                s << Color::None << "TEST CASE:  ";
+            s << Color::None << tc->m_name << "\n";
+
+            for(unsigned i = 0; i < subcasesStack.size(); ++i)
+                if(subcasesStack[i].m_name[0] != '\0')
+                    s << "  " << subcasesStack[i].m_name << "\n";
+
+            s << "\n";
+
+            hasLoggedCurrentTestStart = true;
+        }
+
+        // =========================================================================================
+        // WHAT FOLLOWS ARE OVERRIDES OF THE VIRTUAL METHODS OF THE REPORTER INTERFACE
+        // =========================================================================================
+
+        void test_run_start(const ContextOptions& o) DOCTEST_OVERRIDE { opt = &o; }
+
+        void test_run_end(const TestRunStats& p) DOCTEST_OVERRIDE {
+            separator_to_stream();
+
+            const bool anythingFailed = p.numTestCasesFailed > 0 || p.numAssertsFailed > 0;
+            s << Color::Cyan << "[doctest] " << Color::None << "test cases: " << std::setw(6)
+              << p.numTestCasesPassingFilters << " | "
+              << ((p.numTestCasesPassingFilters == 0 || anythingFailed) ? Color::None :
+                                                                          Color::Green)
+              << std::setw(6) << p.numTestCasesPassingFilters - p.numTestCasesFailed << " passed"
+              << Color::None << " | " << (p.numTestCasesFailed > 0 ? Color::Red : Color::None)
+              << std::setw(6) << p.numTestCasesFailed << " failed" << Color::None << " | ";
+            if(opt->no_skipped_summary == false) {
+                const int numSkipped = p.numTestCases - p.numTestCasesPassingFilters;
+                s << (numSkipped == 0 ? Color::None : Color::Yellow) << std::setw(6) << numSkipped
+                  << " skipped" << Color::None;
+            }
+            s << "\n";
+            s << Color::Cyan << "[doctest] " << Color::None << "assertions: " << std::setw(6)
+              << p.numAsserts << " | "
+              << ((p.numAsserts == 0 || anythingFailed) ? Color::None : Color::Green)
+              << std::setw(6) << (p.numAsserts - p.numAssertsFailed) << " passed" << Color::None
+              << " | " << (p.numAssertsFailed > 0 ? Color::Red : Color::None) << std::setw(6)
+              << p.numAssertsFailed << " failed" << Color::None << " |\n";
+            s << Color::Cyan << "[doctest] " << Color::None
+              << "Status: " << (p.numTestCasesFailed > 0 ? Color::Red : Color::Green)
+              << ((p.numTestCasesFailed > 0) ? "FAILURE!\n" : "SUCCESS!\n") << Color::None;
+        }
+
+        void test_case_start(const TestCaseData& in) DOCTEST_OVERRIDE {
+            hasLoggedCurrentTestStart = false;
+            tc                        = &in;
+        }
+
+        void test_case_end(const CurrentTestCaseStats& st) DOCTEST_OVERRIDE {
+            // log the preamble of the test case only if there is something
+            // else to print - something other than that an assert has failed
+            if(opt->duration ||
+               (st.failure_flags && st.failure_flags != TestCaseFailureReason::AssertFailure))
+                logTestStart();
+
+            // report test case exceptions and crashes
+            bool crashed = st.failure_flags & TestCaseFailureReason::Crash;
+            if(crashed || (st.failure_flags & TestCaseFailureReason::Exception)) {
+                file_line_to_stream(tc->m_file, tc->m_line, " ");
+                successOrFailColoredStringToStream(false, crashed ? assertType::is_require :
+                                                                    assertType::is_check);
+                s << Color::Red << (crashed ? "test case CRASHED: " : "test case THREW exception: ")
+                  << Color::Cyan << st.error_string << "\n";
+
+                int num_stringified_contexts = get_num_stringified_contexts();
+                if(num_stringified_contexts) {
+                    const String* stringified_contexts = get_stringified_contexts();
+                    s << Color::None << "  logged: ";
+                    for(int i = num_stringified_contexts - 1; i >= 0; --i) {
+                        s << (i == num_stringified_contexts - 1 ? "" : "          ")
+                          << stringified_contexts[i] << "\n";
+                    }
+                }
+                s << "\n";
+            }
+
+            // means the test case will be re-entered because there are untraversed (but discovered) subcases
+            if(st.should_reenter)
+                return;
+
+            if(opt->duration)
+                s << Color::None << std::setprecision(6) << std::fixed << st.seconds_so_far
+                  << " s: " << tc->m_name << "\n";
+
+            if(st.failure_flags & TestCaseFailureReason::Timeout)
+                s << Color::Red << "Test case exceeded time limit of " << std::setprecision(6)
+                  << std::fixed << tc->m_timeout << "!\n";
+
+            if(st.failure_flags & TestCaseFailureReason::ShouldHaveFailedButDidnt) {
+                s << Color::Red << "Should have failed but didn't! Marking it as failed!\n";
+            } else if(st.failure_flags & TestCaseFailureReason::ShouldHaveFailedAndDid) {
+                s << Color::Yellow << "Failed as expected so marking it as not failed\n";
+            } else if(st.failure_flags & TestCaseFailureReason::CouldHaveFailedAndDid) {
+                s << Color::Yellow << "Allowed to fail so marking it as not failed\n";
+            } else if(st.failure_flags & TestCaseFailureReason::DidntFailExactlyNumTimes) {
+                s << Color::Red << "Didn't fail exactly " << tc->m_expected_failures
+                  << " times so marking it as failed!\n";
+            } else if(st.failure_flags & TestCaseFailureReason::FailedExactlyNumTimes) {
+                s << Color::Yellow << "Failed exactly " << tc->m_expected_failures
+                  << " times as expected so marking it as not failed!\n";
+            }
+            if(st.failure_flags & TestCaseFailureReason::TooManyFailedAsserts) {
+                s << Color::Red << "Aborting - too many failed asserts!\n";
+            }
+            s << Color::None;
+        }
+
+        void subcase_start(const SubcaseSignature& subc) DOCTEST_OVERRIDE {
+            subcasesStack.push_back(subc);
+            hasLoggedCurrentTestStart = false;
+        }
+
+        void subcase_end(const SubcaseSignature& /*subc*/) DOCTEST_OVERRIDE {
+            subcasesStack.pop_back();
+            hasLoggedCurrentTestStart = false;
+        }
+
+        void log_assert(const AssertData& rb) DOCTEST_OVERRIDE {
+            if(!rb.m_failed && !opt->success)
+                return;
+
+            logTestStart();
+
+            file_line_to_stream(rb.m_file, rb.m_line, " ");
+            successOrFailColoredStringToStream(!rb.m_failed, rb.m_at);
+            if((rb.m_at & assertType::is_throws_as) == 0) //!OCLINT bitwise operator in conditional
+                s << Color::Cyan << assertString(rb.m_at) << "( " << rb.m_expr << " ) "
+                  << Color::None;
+
+            if(rb.m_at & assertType::is_throws) { //!OCLINT bitwise operator in conditional
+                s << (rb.m_threw ? "threw as expected!" : "did NOT throw at all!") << "\n";
+            } else if(rb.m_at &
+                      assertType::is_throws_as) { //!OCLINT bitwise operator in conditional
+                s << Color::Cyan << assertString(rb.m_at) << "( " << rb.m_expr << ", "
+                  << rb.m_exception_type << " ) " << Color::None
+                  << (rb.m_threw ? (rb.m_threw_as ? "threw as expected!" :
+                                                    "threw a DIFFERENT exception: ") :
+                                   "did NOT throw at all!")
+                  << Color::Cyan << rb.m_exception << "\n";
+            } else if(rb.m_at & assertType::is_nothrow) { //!OCLINT bitwise operator in conditional
+                s << (rb.m_threw ? "THREW exception: " : "didn't throw!") << Color::Cyan
+                  << rb.m_exception << "\n";
+            } else {
+                s << (rb.m_threw ? "THREW exception: " :
+                                   (!rb.m_failed ? "is correct!\n" : "is NOT correct!\n"));
+                if(rb.m_threw)
+                    s << rb.m_exception << "\n";
+                else
+                    s << "  values: " << assertString(rb.m_at) << "( " << rb.m_decomposition
+                      << " )\n";
+            }
+
+            log_contexts();
+        }
+
+        void log_message(const MessageData& mb) DOCTEST_OVERRIDE {
+            logTestStart();
+
+            file_line_to_stream(mb.m_file, mb.m_line, " ");
+            s << getSuccessOrFailColor(false, mb.m_severity)
+              << getSuccessOrFailString(mb.m_severity & assertType::is_warn, mb.m_severity,
+                                        "MESSAGE: ");
+            s << Color::None << mb.m_string << "\n";
+            log_contexts();
+        }
+
+        void test_case_skipped(const TestCaseData&) DOCTEST_OVERRIDE {}
+    };
+
+    // extension of the console reporter - with a bunch of helpers for the stdout stream redirection
+    struct ConsoleReporterWithHelpers : public ConsoleReporter
+    {
+        ConsoleReporterWithHelpers(std::ostream& in)
+                : ConsoleReporter(in) {}
+
+        void printVersion() {
+            if(g_contextState->no_version == false)
+                s << Color::Cyan << "[doctest] " << Color::None << "doctest version is \""
+                  << DOCTEST_VERSION_STR << "\"\n";
+        }
+
+        void printIntro() {
+            printVersion();
+            s << Color::Cyan << "[doctest] " << Color::None << "run with \"--help\" for options\n";
+        }
+
+        void printHelp() {
+            printVersion();
+            // clang-format off
+            s << Color::Cyan << "[doctest]\n" << Color::None;
+            s << Color::Cyan << "[doctest] " << Color::None;
+            s << "boolean values: \"1/on/yes/true\" or \"0/off/no/false\"\n";
+            s << Color::Cyan << "[doctest] " << Color::None;
+            s << "filter  values: \"str1,str2,str3\" (comma separated strings)\n";
+            s << Color::Cyan << "[doctest]\n" << Color::None;
+            s << Color::Cyan << "[doctest] " << Color::None;
+            s << "filters use wildcards for matching strings\n";
+            s << Color::Cyan << "[doctest] " << Color::None;
+            s << "something passes a filter if any of the strings in a filter matches\n";
+            s << Color::Cyan << "[doctest]\n" << Color::None;
+            s << Color::Cyan << "[doctest] " << Color::None;
+            s << "ALL FLAGS, OPTIONS AND FILTERS ALSO AVAILABLE WITH A \"dt-\" PREFIX!!!\n";
+            s << Color::Cyan << "[doctest]\n" << Color::None;
+            s << Color::Cyan << "[doctest] " << Color::None;
+            s << "Query flags - the program quits after them. Available:\n\n";
+            s << " -?,   --help, -h                      prints this message\n";
+            s << " -v,   --version                       prints the version\n";
+            s << " -c,   --count                         prints the number of matching tests\n";
+            s << " -ltc, --list-test-cases               lists all matching tests by name\n";
+            s << " -lts, --list-test-suites              lists all matching test suites\n";
+            s << " -lr,  --list-reporters                lists all registered reporters\n\n";
+            // ================================================================================== << 79
+            s << Color::Cyan << "[doctest] " << Color::None;
+            s << "The available <int>/<string> options/filters are:\n\n";
+            s << " -tc,  --test-case=<filters>           filters     tests by their name\n";
+            s << " -tce, --test-case-exclude=<filters>   filters OUT tests by their name\n";
+            s << " -sf,  --source-file=<filters>         filters     tests by their file\n";
+            s << " -sfe, --source-file-exclude=<filters> filters OUT tests by their file\n";
+            s << " -ts,  --test-suite=<filters>          filters     tests by their test suite\n";
+            s << " -tse, --test-suite-exclude=<filters>  filters OUT tests by their test suite\n";
+            s << " -sc,  --subcase=<filters>             filters     subcases by their name\n";
+            s << " -sce, --subcase-exclude=<filters>     filters OUT subcases by their name\n";
+            s << " -r,   --reporters=<filters>           reporters to use (console is default)\n";
+            s << " -ob,  --order-by=<string>             how the tests should be ordered\n";
+            s << "                                       <string> - by [file/suite/name/rand]\n";
+            s << " -rs,  --rand-seed=<int>               seed for random ordering\n";
+            s << " -f,   --first=<int>                   the first test passing the filters to\n";
+            s << "                                       execute - for range-based execution\n";
+            s << " -l,   --last=<int>                    the last test passing the filters to\n";
+            s << "                                       execute - for range-based execution\n";
+            s << " -aa,  --abort-after=<int>             stop after <int> failed assertions\n";
+            s << " -scfl,--subcase-filter-levels=<int>   apply filters for the first <int> levels\n";
+            s << Color::Cyan << "\n[doctest] " << Color::None;
+            s << "Bool options - can be used like flags and true is assumed. Available:\n\n";
+            s << " -s,   --success=<bool>                include successful assertions in output\n";
+            s << " -cs,  --case-sensitive=<bool>         filters being treated as case sensitive\n";
+            s << " -e,   --exit=<bool>                   exits after the tests finish\n";
+            s << " -d,   --duration=<bool>               prints the time duration of each test\n";
+            s << " -nt,  --no-throw=<bool>               skips exceptions-related assert checks\n";
+            s << " -ne,  --no-exitcode=<bool>            returns (or exits) always with success\n";
+            s << " -nr,  --no-run=<bool>                 skips all runtime doctest operations\n";
+            s << " -nv,  --no-version=<bool>             omit the framework version in the output\n";
+            s << " -nc,  --no-colors=<bool>              disables colors in output\n";
+            s << " -fc,  --force-colors=<bool>           use colors even when not in a tty\n";
+            s << " -nb,  --no-breaks=<bool>              disables breakpoints in debuggers\n";
+            s << " -ns,  --no-skip=<bool>                don't skip test cases marked as skip\n";
+            s << " -gfl, --gnu-file-line=<bool>          :n: vs (n): for line numbers in output\n";
+            s << " -npf, --no-path-filenames=<bool>      only filenames and no paths in output\n";
+            s << " -nln, --no-line-numbers=<bool>        0 instead of real line numbers in output\n";
+            // ================================================================================== << 79
+            // clang-format on
+
+            s << Color::Cyan << "\n[doctest] " << Color::None;
+            s << "for more information visit the project documentation\n\n";
+        }
+
+        void printRegisteredReporters() {
+            printVersion();
+            s << Color::Cyan << "[doctest] " << Color::None << "listing all registered reporters\n";
+            for(reporterMap::iterator it = getReporters().begin(); it != getReporters().end(); ++it)
+                s << "priority: " << std::setw(5) << it->first.first
+                  << " name: " << it->first.second << "\n";
+        }
+
+        void output_query_results() {
+            separator_to_stream();
+            if(g_contextState->count || g_contextState->list_test_cases) {
+                s << Color::Cyan << "[doctest] " << Color::None
+                  << "unskipped test cases passing the current filters: "
+                  << g_contextState->numTestCasesPassingFilters << "\n";
+            } else if(g_contextState->list_test_suites) {
+                s << Color::Cyan << "[doctest] " << Color::None
+                  << "unskipped test cases passing the current filters: "
+                  << g_contextState->numTestCasesPassingFilters << "\n";
+                s << Color::Cyan << "[doctest] " << Color::None
+                  << "test suites with unskipped test cases passing the current filters: "
+                  << g_contextState->numTestSuitesPassingFilters << "\n";
+            }
+        }
+
+        void output_query_preamble_test_cases() {
+            s << Color::Cyan << "[doctest] " << Color::None << "listing all test case names\n";
+            separator_to_stream();
+        }
+
+        void output_query_preamble_test_suites() {
+            s << Color::Cyan << "[doctest] " << Color::None << "listing all test suites\n";
+            separator_to_stream();
+        }
+
+        void output_c_string_with_newline(const char* str) { s << Color::None << str << "\n"; }
+    };
+
+    struct DebugOutputWindowReporter : public ConsoleReporter
+    {
+        std::ostringstream oss;
+
+        DebugOutputWindowReporter()
+                : ConsoleReporter(oss) {}
+
+#define DOCTEST_DEBUG_OUTPUT_WINDOW_REPORTER_OVERRIDE(func, type)                                  \
+    void func(type in) DOCTEST_OVERRIDE {                                                          \
+        if(isDebuggerActive()) {                                                                   \
+            bool with_col             = g_contextState->no_colors;                                 \
+            g_contextState->no_colors = false;                                                     \
+            ConsoleReporter::func(in);                                                             \
+            myOutputDebugString(oss.str().c_str());                                                \
+            oss.str("");                                                                           \
+            g_contextState->no_colors = with_col;                                                  \
+        }                                                                                          \
+    }
+
+        DOCTEST_DEBUG_OUTPUT_WINDOW_REPORTER_OVERRIDE(test_run_start, const ContextOptions&)
+        DOCTEST_DEBUG_OUTPUT_WINDOW_REPORTER_OVERRIDE(test_run_end, const TestRunStats&)
+        DOCTEST_DEBUG_OUTPUT_WINDOW_REPORTER_OVERRIDE(test_case_start, const TestCaseData&)
+        DOCTEST_DEBUG_OUTPUT_WINDOW_REPORTER_OVERRIDE(test_case_end, const CurrentTestCaseStats&)
+        DOCTEST_DEBUG_OUTPUT_WINDOW_REPORTER_OVERRIDE(subcase_start, const SubcaseSignature&)
+        DOCTEST_DEBUG_OUTPUT_WINDOW_REPORTER_OVERRIDE(subcase_end, const SubcaseSignature&)
+        DOCTEST_DEBUG_OUTPUT_WINDOW_REPORTER_OVERRIDE(log_assert, const AssertData&)
+        DOCTEST_DEBUG_OUTPUT_WINDOW_REPORTER_OVERRIDE(log_message, const MessageData&)
+        DOCTEST_DEBUG_OUTPUT_WINDOW_REPORTER_OVERRIDE(test_case_skipped, const TestCaseData&)
+    };
+
+    DebugOutputWindowReporter g_debug_output_rep;
 
     // the implementation of parseFlag()
     bool parseFlagImpl(int argc, const char* const* argv, const char* pattern) {
@@ -4740,12 +5131,10 @@ namespace detail
     // locates a flag on the command line
     bool parseFlag(int argc, const char* const* argv, const char* pattern) {
 #ifndef DOCTEST_CONFIG_NO_UNPREFIXED_OPTIONS
-        if(!parseFlagImpl(argc, argv, pattern))
-            return parseFlagImpl(argc, argv, pattern + 3); // 3 for "dt-"
-        return true;
-#else  // DOCTEST_CONFIG_NO_UNPREFIXED_OPTIONS
-        return parseFlagImpl(argc, argv, pattern);
+        if(parseFlagImpl(argc, argv, pattern + 3)) // 3 to skip "dt-"
+            return true;
 #endif // DOCTEST_CONFIG_NO_UNPREFIXED_OPTIONS
+        return parseFlagImpl(argc, argv, pattern);
     }
 
     // the implementation of parseOption()
@@ -4780,12 +5169,10 @@ namespace detail
                      const String& defaultVal = String()) {
         res = defaultVal;
 #ifndef DOCTEST_CONFIG_NO_UNPREFIXED_OPTIONS
-        if(!parseOptionImpl(argc, argv, pattern, res))
-            return parseOptionImpl(argc, argv, pattern + 3, res); // 3 for "dt-"
-        return true;
-#else  // DOCTEST_CONFIG_NO_UNPREFIXED_OPTIONS
-        return parseOptionImpl(argc, argv, pattern, res);
+        if(parseOptionImpl(argc, argv, pattern + 3, res)) // 3 to skip "dt-"
+            return true;
 #endif // DOCTEST_CONFIG_NO_UNPREFIXED_OPTIONS
+        return parseOptionImpl(argc, argv, pattern, res);
     }
 
     // parses a comma separated list of words after a pattern in one of the arguments in argv
@@ -4847,129 +5234,9 @@ namespace detail
         }
         return false;
     }
-
-    void printVersion(std::ostream& s) {
-        if(contextState->no_version == false)
-            s << Color::Cyan << "[doctest] " << Color::None << "doctest version is \""
-              << DOCTEST_VERSION_STR << "\"\n";
-    }
-
-    void printHelp(std::ostream& s) {
-        printVersion(s);
-        // clang-format off
-        s << Color::Cyan << "[doctest]\n" << Color::None;
-        s << Color::Cyan << "[doctest] " << Color::None;
-        s << "boolean values: \"1/on/yes/true\" or \"0/off/no/false\"\n";
-        s << Color::Cyan << "[doctest] " << Color::None;
-        s << "filter  values: \"str1,str2,str3\" (comma separated strings)\n";
-        s << Color::Cyan << "[doctest]\n" << Color::None;
-        s << Color::Cyan << "[doctest] " << Color::None;
-        s << "filters use wildcards for matching strings\n";
-        s << Color::Cyan << "[doctest] " << Color::None;
-        s << "something passes a filter if any of the strings in a filter matches\n";
-        s << Color::Cyan << "[doctest]\n" << Color::None;
-        s << Color::Cyan << "[doctest] " << Color::None;
-        s << "ALL FLAGS, OPTIONS AND FILTERS ALSO AVAILABLE WITH A \"dt-\" PREFIX!!!\n";
-        s << Color::Cyan << "[doctest]\n" << Color::None;
-        s << Color::Cyan << "[doctest] " << Color::None;
-        s << "Query flags - the program quits after them. Available:\n\n";
-        s << " -?,   --help, -h                      prints this message\n";
-        s << " -v,   --version                       prints the version\n";
-        s << " -c,   --count                         prints the number of matching tests\n";
-        s << " -ltc, --list-test-cases               lists all matching tests by name\n";
-        s << " -lts, --list-test-suites              lists all matching test suites\n\n";
-        // ================================================================================== << 79
-        s << Color::Cyan << "[doctest] " << Color::None;
-        s << "The available <int>/<string> options/filters are:\n\n";
-        s << " -tc,  --test-case=<filters>           filters     tests by their name\n";
-        s << " -tce, --test-case-exclude=<filters>   filters OUT tests by their name\n";
-        s << " -sf,  --source-file=<filters>         filters     tests by their file\n";
-        s << " -sfe, --source-file-exclude=<filters> filters OUT tests by their file\n";
-        s << " -ts,  --test-suite=<filters>          filters     tests by their test suite\n";
-        s << " -tse, --test-suite-exclude=<filters>  filters OUT tests by their test suite\n";
-        s << " -sc,  --subcase=<filters>             filters     subcases by their name\n";
-        s << " -sce, --subcase-exclude=<filters>     filters OUT subcases by their name\n";
-        s << " -ob,  --order-by=<string>             how the tests should be ordered\n";
-        s << "                                       <string> - by [file/suite/name/rand]\n";
-        s << " -rs,  --rand-seed=<int>               seed for random ordering\n";
-        s << " -f,   --first=<int>                   the first test passing the filters to\n";
-        s << "                                       execute - for range-based execution\n";
-        s << " -l,   --last=<int>                    the last test passing the filters to\n";
-        s << "                                       execute - for range-based execution\n";
-        s << " -aa,  --abort-after=<int>             stop after <int> failed assertions\n";
-        s << " -scfl,--subcase-filter-levels=<int>   apply filters for the first <int> levels\n";
-        s << Color::Cyan << "\n[doctest] " << Color::None;
-        s << "Bool options - can be used like flags and true is assumed. Available:\n\n";
-        s << " -s,   --success=<bool>                include successful assertions in output\n";
-        s << " -cs,  --case-sensitive=<bool>         filters being treated as case sensitive\n";
-        s << " -e,   --exit=<bool>                   exits after the tests finish\n";
-        s << " -d,   --duration=<bool>               prints the time duration of each test\n";
-        s << " -nt,  --no-throw=<bool>               skips exceptions-related assert checks\n";
-        s << " -ne,  --no-exitcode=<bool>            returns (or exits) always with success\n";
-        s << " -nr,  --no-run=<bool>                 skips all runtime doctest operations\n";
-        s << " -nv,  --no-version=<bool>             omit the framework version in the output\n";
-        s << " -nc,  --no-colors=<bool>              disables colors in output\n";
-        s << " -fc,  --force-colors=<bool>           use colors even when not in a tty\n";
-        s << " -nb,  --no-breaks=<bool>              disables breakpoints in debuggers\n";
-        s << " -ns,  --no-skip=<bool>                don't skip test cases marked as skip\n";
-        s << " -gfl, --gnu-file-line=<bool>          :n: vs (n): for line numbers in output\n";
-        s << " -npf, --no-path-filenames=<bool>      only filenames and no paths in output\n";
-        s << " -nln, --no-line-numbers=<bool>        0 instead of real line numbers in output\n";
-        // ================================================================================== << 79
-        // clang-format on
-
-        s << Color::Cyan << "\n[doctest] " << Color::None;
-        s << "for more information visit the project documentation\n\n";
-    }
-
-    void printSummary(std::ostream& s) {
-        const ContextState* p = contextState;
-
-        separator_to_stream(s);
-
-        if(p->count || p->list_test_cases) {
-            s << Color::Cyan << "[doctest] " << Color::None
-              << "unskipped test cases passing the current filters: " << p->numTestsPassingFilters
-              << "\n";
-        } else if(p->list_test_suites) {
-            s << Color::Cyan << "[doctest] " << Color::None
-              << "unskipped test cases passing the current filters: " << p->numTestsPassingFilters
-              << "\n";
-            s << Color::Cyan << "[doctest] " << Color::None
-              << "test suites with unskipped test cases passing the current filters: "
-              << p->numTestSuitesPassingFilters << "\n";
-        } else {
-            const bool anythingFailed = p->numFailed > 0 || p->numFailedAssertions > 0;
-            s << Color::Cyan << "[doctest] " << Color::None << "test cases: " << std::setw(6)
-              << p->numTestsPassingFilters << " | "
-              << ((p->numTestsPassingFilters == 0 || anythingFailed) ? Color::None : Color::Green)
-              << std::setw(6) << p->numTestsPassingFilters - p->numFailed << " passed"
-              << Color::None << " | " << (p->numFailed > 0 ? Color::Red : Color::None)
-              << std::setw(6) << p->numFailed << " failed" << Color::None << " | ";
-            if(p->no_skipped_summary == false) {
-                const int numSkipped = static_cast<unsigned>(getRegisteredTests().size()) -
-                                       p->numTestsPassingFilters;
-                s << (numSkipped == 0 ? Color::None : Color::Yellow) << std::setw(6) << numSkipped
-                  << " skipped" << Color::None;
-            }
-            s << "\n";
-            s << Color::Cyan << "[doctest] " << Color::None << "assertions: " << std::setw(6)
-              << p->numAssertions << " | "
-              << ((p->numAssertions == 0 || anythingFailed) ? Color::None : Color::Green)
-              << std::setw(6) << (p->numAssertions - p->numFailedAssertions) << " passed"
-              << Color::None << " | " << (p->numFailedAssertions > 0 ? Color::Red : Color::None)
-              << std::setw(6) << p->numFailedAssertions << " failed" << Color::None << " |\n";
-            s << Color::Cyan << "[doctest] " << Color::None
-              << "Status: " << (p->numFailed > 0 ? Color::Red : Color::Green)
-              << ((p->numFailed > 0) ? "FAILURE!\n" : "SUCCESS!\n");
-        }
-
-        // remove any coloring
-        s << Color::None;
-    }
 } // namespace detail
 
-bool isRunningInTest() { return detail::contextState != 0; }
+bool isRunningInTest() { return detail::g_contextState != 0; }
 
 Context::Context(int argc, const char* const* argv)
         : p(new detail::ContextState) {
@@ -5001,6 +5268,8 @@ void Context::parseArgs(int argc, const char* const* argv, bool withDefaults) {
     parseCommaSepArgs(argc, argv, "dt-sc=",                 p->filters[6]);
     parseCommaSepArgs(argc, argv, "dt-subcase-exclude=",    p->filters[7]);
     parseCommaSepArgs(argc, argv, "dt-sce=",                p->filters[7]);
+    parseCommaSepArgs(argc, argv, "dt-reporters=",          p->filters[8]);
+    parseCommaSepArgs(argc, argv, "dt-r=",                  p->filters[8]);
     // clang-format on
 
     int    intRes = 0;
@@ -5031,8 +5300,8 @@ void Context::parseArgs(int argc, const char* const* argv, bool withDefaults) {
     DOCTEST_PARSE_STR_OPTION("dt-order-by", "dt-ob", order_by, "file");
     DOCTEST_PARSE_INT_OPTION("dt-rand-seed", "dt-rs", rand_seed, 0);
 
-    DOCTEST_PARSE_INT_OPTION("dt-first", "dt-f", first, 1);
-    DOCTEST_PARSE_INT_OPTION("dt-last", "dt-l", last, 0);
+    DOCTEST_PARSE_INT_OPTION("dt-first", "dt-f", first, 0);
+    DOCTEST_PARSE_INT_OPTION("dt-last", "dt-l", last, UINT_MAX);
 
     DOCTEST_PARSE_INT_OPTION("dt-abort-after", "dt-aa", abort_after, 0);
     DOCTEST_PARSE_INT_OPTION("dt-subcase-filter-levels", "dt-scfl", subcase_filter_levels, 2000000000);
@@ -5055,16 +5324,13 @@ void Context::parseArgs(int argc, const char* const* argv, bool withDefaults) {
     DOCTEST_PARSE_AS_BOOL_OR_FLAG("dt-no-skipped-summary", "dt-nss", no_skipped_summary, false);
     // clang-format on
 
-#undef DOCTEST_PARSE_STR_OPTION
-#undef DOCTEST_PARSE_INT_OPTION
-#undef DOCTEST_PARSE_AS_BOOL_OR_FLAG
-
     if(withDefaults) {
         p->help             = false;
         p->version          = false;
         p->count            = false;
         p->list_test_cases  = false;
         p->list_test_suites = false;
+        p->list_reporters   = false;
     }
     if(parseFlag(argc, argv, "dt-help") || parseFlag(argc, argv, "dt-h") ||
        parseFlag(argc, argv, "dt-?")) {
@@ -5086,6 +5352,10 @@ void Context::parseArgs(int argc, const char* const* argv, bool withDefaults) {
     if(parseFlag(argc, argv, "dt-list-test-suites") || parseFlag(argc, argv, "dt-lts")) {
         p->list_test_suites = true;
         p->exit             = true;
+    }
+    if(parseFlag(argc, argv, "dt-list-reporters") || parseFlag(argc, argv, "dt-lr")) {
+        p->list_reporters = true;
+        p->exit           = true;
     }
 }
 
@@ -5117,33 +5387,46 @@ bool Context::shouldExit() { return p->exit; }
 int Context::run() {
     using namespace detail;
 
-    Color::init();
-
-    contextState = p;
+    g_contextState = p;
     p->resetRunData();
 
-    // handle version, help and no_run
-    if(p->no_run || p->version || p->help) {
-        if(p->version)
-            printVersion(std::cout);
-        if(p->help)
-            printHelp(std::cout);
+    ConsoleReporterWithHelpers g_con_rep(std::cout);
+    registerReporter("console", 0, &g_con_rep);
 
-        contextState = 0;
+    p->reporters_currently_used.clear();
+    if(p->filters[8].size() == 0)
+        p->reporters_currently_used.push_back(getReporters()[reporterMap::key_type(0, "console")]);
+    for(reporterMap::iterator it = getReporters().begin(); it != getReporters().end(); ++it) {
+        if(matchesAny(it->first.second.c_str(), p->filters[8], false, p->case_sensitive))
+            p->reporters_currently_used.push_back(it->second);
+    }
+
+#ifdef DOCTEST_PLATFORM_WINDOWS
+    if(isDebuggerActive())
+        p->reporters_currently_used.push_back(&g_debug_output_rep);
+#endif // DOCTEST_PLATFORM_WINDOWS
+
+    // handle version, help and no_run
+    if(p->no_run || p->version || p->help || p->list_reporters) {
+        if(p->version)
+            g_con_rep.printVersion();
+        if(p->help)
+            g_con_rep.printHelp();
+        if(p->list_reporters)
+            g_con_rep.printRegisteredReporters();
+
+        g_contextState = 0;
 
         return EXIT_SUCCESS;
     }
 
-    printVersion(std::cout);
-    std::cout << Color::Cyan << "[doctest] " << Color::None << "run with \"--help\" for options\n";
+    g_con_rep.printIntro();
 
-    unsigned i = 0; // counter used for loops - here for VC6
-
-    std::set<TestCase>& registeredTests = getRegisteredTests();
+    std::set<TestCase>& all_tests = getRegisteredTests();
+    p->numTestCases               = all_tests.size();
 
     std::vector<const TestCase*> testArray;
-    for(std::set<TestCase>::iterator it = registeredTests.begin(); it != registeredTests.end();
-        ++it)
+    for(std::set<TestCase>::iterator it = all_tests.begin(); it != all_tests.end(); ++it)
         testArray.push_back(&(*it));
 
     // sort the collected records
@@ -5159,7 +5442,7 @@ int Context::run() {
 
             // random_shuffle implementation
             const TestCase** first = &testArray[0];
-            for(i = testArray.size() - 1; i > 0; --i) {
+            for(size_t i = testArray.size() - 1; i > 0; --i) {
                 int idxToSwap = std::rand() % (i + 1); // NOLINT
 
                 const TestCase* temp = first[i];
@@ -5170,38 +5453,52 @@ int Context::run() {
         }
     }
 
-    if(p->list_test_cases) {
-        std::cout << Color::Cyan << "[doctest] " << Color::None << "listing all test case names\n";
-        separator_to_stream(std::cout);
-    }
+    if(p->list_test_cases)
+        g_con_rep.output_query_preamble_test_cases();
 
-    std::set<String> testSuitesPassingFilters;
-    if(p->list_test_suites) {
-        std::cout << Color::Cyan << "[doctest] " << Color::None << "listing all test suites\n";
-        separator_to_stream(std::cout);
-    }
+    std::set<String> testSuitesPassingFilt;
+    if(p->list_test_suites)
+        g_con_rep.output_query_preamble_test_suites();
+
+    bool query_mode = p->count || p->list_test_cases || p->list_test_suites;
+
+    if(!query_mode)
+        DOCTEST_ITERATE_THROUGH_REPORTERS(test_run_start, *g_contextState);
 
     // invoke the registered functions if they match the filter criteria (or just count them)
-    for(i = 0; i < testArray.size(); i++) {
-        const TestCase& data = *testArray[i];
+    for(size_t i = 0; i < testArray.size(); i++) {
+        const TestCase& tc = *testArray[i];
 
-        if(data.m_skip && !p->no_skip)
-            continue;
+        bool skip_me = false;
+        if(tc.m_skip && !p->no_skip)
+            skip_me = true;
 
-        if(!matchesAny(data.m_file, p->filters[0], 1, p->case_sensitive))
-            continue;
-        if(matchesAny(data.m_file, p->filters[1], 0, p->case_sensitive))
-            continue;
-        if(!matchesAny(data.m_test_suite, p->filters[2], 1, p->case_sensitive))
-            continue;
-        if(matchesAny(data.m_test_suite, p->filters[3], 0, p->case_sensitive))
-            continue;
-        if(!matchesAny(data.m_name, p->filters[4], 1, p->case_sensitive))
-            continue;
-        if(matchesAny(data.m_name, p->filters[5], 0, p->case_sensitive))
-            continue;
+        if(!matchesAny(tc.m_file, p->filters[0], true, p->case_sensitive))
+            skip_me = true;
+        if(matchesAny(tc.m_file, p->filters[1], false, p->case_sensitive))
+            skip_me = true;
+        if(!matchesAny(tc.m_test_suite, p->filters[2], true, p->case_sensitive))
+            skip_me = true;
+        if(matchesAny(tc.m_test_suite, p->filters[3], false, p->case_sensitive))
+            skip_me = true;
+        if(!matchesAny(tc.m_name, p->filters[4], true, p->case_sensitive))
+            skip_me = true;
+        if(matchesAny(tc.m_name, p->filters[5], false, p->case_sensitive))
+            skip_me = true;
 
-        p->numTestsPassingFilters++;
+        if(!skip_me)
+            p->numTestCasesPassingFilters++;
+
+        // skip the test if it is not in the execution range
+        if((p->last < p->numTestCasesPassingFilters && p->first <= p->last) ||
+           (p->first > p->numTestCasesPassingFilters))
+            skip_me = true;
+
+        if(skip_me) {
+            if(!query_mode)
+                DOCTEST_ITERATE_THROUGH_REPORTERS(test_case_skipped, tc);
+            continue;
+        }
 
         // do not execute the test if we are to only count the number of filter passing tests
         if(p->count)
@@ -5209,152 +5506,143 @@ int Context::run() {
 
         // print the name of the test and don't execute it
         if(p->list_test_cases) {
-            std::cout << Color::None << data.m_name << "\n";
+            g_con_rep.output_c_string_with_newline(tc.m_name);
             continue;
         }
 
         // print the name of the test suite if not done already and don't execute it
         if(p->list_test_suites) {
-            if((testSuitesPassingFilters.count(data.m_test_suite) == 0) &&
-               data.m_test_suite[0] != '\0') {
-                std::cout << Color::None << data.m_test_suite << "\n";
-                testSuitesPassingFilters.insert(data.m_test_suite);
+            if((testSuitesPassingFilt.count(tc.m_test_suite) == 0) && tc.m_test_suite[0] != '\0') {
+                g_con_rep.output_c_string_with_newline(tc.m_test_suite);
+                testSuitesPassingFilt.insert(tc.m_test_suite);
                 p->numTestSuitesPassingFilters++;
             }
             continue;
         }
 
-        // skip the test if it is not in the execution range
-        if((p->last < p->numTestsPassingFilters && p->first <= p->last) ||
-           (p->first > p->numTestsPassingFilters))
-            continue;
-
         // execute the test if it passes all the filtering
         {
-            p->currentTest = &data;
+            p->currentTest = &tc;
 
-            bool failed                              = false;
-            p->hasLoggedCurrentTestStart             = false;
-            p->numFailedAssertionsForCurrentTestcase = 0;
+            p->failure_flags                      = TestCaseFailureReason::None;
+            p->numAssertsFailedForCurrentTestCase = 0;
+            p->numAssertsForCurrentTestCase       = 0;
+            p->seconds_so_far                     = 0;
+            p->error_string                       = "";
+
             p->subcasesPassed.clear();
-            double duration = 0;
-            Timer  timer;
-            timer.start();
             do {
-                // if the start has been logged from a previous iteration of this loop
-                if(p->hasLoggedCurrentTestStart)
-                    logTestEnd();
-                p->hasLoggedCurrentTestStart = false;
-
-                // if logging successful tests - force the start log
-                if(p->success)
-                    DOCTEST_LOG_START;
-
-                // reset the assertion state
-                p->numAssertionsForCurrentTestcase = 0;
-                p->hasCurrentTestFailed            = false;
-
                 // reset some of the fields for subcases (except for the set of fully passed ones)
-                p->subcasesHasSkipped   = false;
+                p->should_reenter       = false;
                 p->subcasesCurrentLevel = 0;
                 p->subcasesEnteredLevels.clear();
 
                 // reset stuff for logging with INFO()
-                p->exceptionalContexts.clear();
+                p->stringifiedContexts.clear();
 
-// execute the test
+                DOCTEST_ITERATE_THROUGH_REPORTERS(test_case_start, tc);
+
+                g_timer.start();
+
 #ifndef DOCTEST_CONFIG_NO_EXCEPTIONS
                 try {
 #endif // DOCTEST_CONFIG_NO_EXCEPTIONS
                     FatalConditionHandler fatalConditionHandler; // Handle signals
-                    data.m_test();
+                    // execute the test
+                    tc.m_test();
                     fatalConditionHandler.reset();
-                    if(contextState->hasCurrentTestFailed)
-                        failed = true;
 #ifndef DOCTEST_CONFIG_NO_EXCEPTIONS
-                } catch(const TestFailureException&) { failed = true; } catch(...) {
-                    DOCTEST_LOG_START;
-                    DOCTEST_TO_CONSOLE_AND_OUTPUT_WINDOW(
-                            logTestException,
-                            DOCTEST_COMMA * contextState->currentTest DOCTEST_COMMA
-                                                                      translateActiveException() DOCTEST_COMMA false);
-
-                    failed = true;
+                } catch(const TestFailureException&) {
+                    p->failure_flags |= TestCaseFailureReason::AssertFailure;
+                } catch(...) {
+                    p->error_string = translateActiveException();
+                    p->failure_flags |= TestCaseFailureReason::Exception;
                 }
 #endif // DOCTEST_CONFIG_NO_EXCEPTIONS
 
-                p->numAssertions += p->numAssertionsForCurrentTestcase;
+                p->seconds_so_far += g_timer.getElapsedSeconds();
 
-                // exit this loop if enough assertions have failed
-                if(p->abort_after > 0 && p->numFailedAssertions >= p->abort_after) {
-                    p->subcasesHasSkipped = false;
-                    std::cout << Color::Red << "Aborting - too many failed asserts!\n";
+                // exit this loop if enough assertions have failed - even if there are more subcases
+                if(p->abort_after > 0 && p->numAssertsFailed >= p->abort_after) {
+                    p->should_reenter = false;
+                    p->failure_flags |= TestCaseFailureReason::TooManyFailedAsserts;
                 }
 
-            } while(p->subcasesHasSkipped == true);
+                // call it from here only if we will continue looping for other subcases and
+                // call it again outside of the loop for one final time - with updated flags
+                if(p->should_reenter == true)
+                    DOCTEST_ITERATE_THROUGH_REPORTERS(test_case_end, *g_contextState);
+            } while(p->should_reenter == true);
 
-            duration = timer.getElapsedSeconds();
+            if(g_contextState->numAssertsFailedForCurrentTestCase)
+                p->failure_flags |= TestCaseFailureReason::AssertFailure;
 
             if(Approx(p->currentTest->m_timeout).epsilon(DBL_EPSILON) != 0 &&
-               Approx(duration).epsilon(DBL_EPSILON) > p->currentTest->m_timeout) {
-                failed = true;
-                DOCTEST_LOG_START;
-                std::cout << Color::Red << "Test case exceeded time limit of "
-                          << std::setprecision(6) << std::fixed << p->currentTest->m_timeout
-                          << "!\n";
-            }
+               Approx(p->seconds_so_far).epsilon(DBL_EPSILON) > p->currentTest->m_timeout)
+                p->failure_flags |= TestCaseFailureReason::Timeout;
 
-            if(p->duration)
-                std::cout << Color::None << std::setprecision(6) << std::fixed << duration
-                          << " s: " << p->currentTest->m_name << "\n";
-
-            if(data.m_should_fail) {
-                DOCTEST_LOG_START;
-                if(failed)
-                    std::cout << Color::Yellow
-                              << "Failed as expected so marking it as not failed\n";
-                else
-                    std::cout << Color::Red
-                              << "Should have failed but didn't! Marking it as failed!\n";
-                failed = !failed;
-            } else if(failed && data.m_may_fail) {
-                DOCTEST_LOG_START;
-                failed = false;
-                std::cout << Color::Yellow << "Allowed to fail so marking it as not failed\n";
-            } else if(data.m_expected_failures > 0) {
-                DOCTEST_LOG_START;
-                if(p->numFailedAssertionsForCurrentTestcase == data.m_expected_failures) {
-                    failed = false;
-                    std::cout << Color::Yellow << "Failed exactly " << data.m_expected_failures
-                              << " times as expected so marking it as not failed!\n";
+            if(tc.m_should_fail) {
+                if(p->failure_flags) {
+                    p->failure_flags |= TestCaseFailureReason::ShouldHaveFailedAndDid;
                 } else {
-                    failed = true;
-                    std::cout << Color::Red << "Didn't fail exactly " << data.m_expected_failures
-                              << " times so marking it as failed!\n";
+                    p->failure_flags |= TestCaseFailureReason::ShouldHaveFailedButDidnt;
+                }
+            } else if(p->failure_flags && tc.m_may_fail) {
+                p->failure_flags |= TestCaseFailureReason::CouldHaveFailedAndDid;
+            } else if(tc.m_expected_failures > 0) {
+                if(p->numAssertsFailedForCurrentTestCase == tc.m_expected_failures) {
+                    p->failure_flags |= TestCaseFailureReason::FailedExactlyNumTimes;
+                } else {
+                    p->failure_flags |= TestCaseFailureReason::DidntFailExactlyNumTimes;
                 }
             }
-            std::cout << Color::None;
 
-            if(p->hasLoggedCurrentTestStart)
-                logTestEnd();
+            bool ok_to_fail = (TestCaseFailureReason::ShouldHaveFailedAndDid & p->failure_flags) ||
+                              (TestCaseFailureReason::CouldHaveFailedAndDid & p->failure_flags) ||
+                              (TestCaseFailureReason::FailedExactlyNumTimes & p->failure_flags);
 
-            if(failed) // if any subcase has failed - the whole test case has failed
-                p->numFailed++;
+            // if any subcase has failed - the whole test case has failed
+            if(p->failure_flags && !ok_to_fail)
+                p->numTestCasesFailed++;
+
+            DOCTEST_ITERATE_THROUGH_REPORTERS(test_case_end, *g_contextState);
 
             // stop executing tests if enough assertions have failed
-            if(p->abort_after > 0 && p->numFailedAssertions >= p->abort_after)
+            if(p->abort_after > 0 && p->numAssertsFailed >= p->abort_after)
                 break;
         }
     }
 
-    printSummary(std::cout);
+    if(!query_mode)
+        DOCTEST_ITERATE_THROUGH_REPORTERS(test_run_end, *g_contextState);
+    else
+        g_con_rep.output_query_results();
 
-    contextState = 0;
+    g_contextState = 0;
 
-    if(p->numFailed && !p->no_exitcode)
+    if(p->numTestCasesFailed && !p->no_exitcode)
         return EXIT_FAILURE;
     return EXIT_SUCCESS;
 }
+
+int IReporter::get_num_active_contexts() { return detail::g_contextState->contexts.size(); }
+const IContextScope* const* IReporter::get_active_contexts() {
+    return get_num_active_contexts() ? &detail::g_contextState->contexts[0] : 0;
+}
+
+int IReporter::get_num_stringified_contexts() {
+    return detail::g_contextState->stringifiedContexts.size();
+}
+const String* IReporter::get_stringified_contexts() {
+    return get_num_stringified_contexts() ? &detail::g_contextState->stringifiedContexts[0] : 0;
+}
+
+int registerReporter(const char* name, int priority, IReporter* r) {
+    detail::getReporters().insert(
+            detail::reporterMap::value_type(detail::reporterMap::key_type(priority, name), r));
+    return 0;
+}
+
 } // namespace doctest
 
 #endif // DOCTEST_CONFIG_DISABLE

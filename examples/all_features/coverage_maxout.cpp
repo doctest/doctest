@@ -18,10 +18,10 @@ namespace doctest
 {
 namespace detail
 {
-    const char* fileForOutput(const char* file);
+    //const char* fileForOutput(const char* file);
     void reportFatal(const std::string&);
     int wildcmp(const char* str, const char* wild, bool caseSensitive);
-    void myOutputDebugString(const String&);
+    void myOutputDebugString(const char*);
 } // namespace detail
 } // namespace doctest
 
@@ -32,7 +32,7 @@ TEST_CASE("doctest internals") {
     detail::myOutputDebugString("");
 
     // trigger code path for comparing the file in "operator<" of SubcaseSignature
-    CHECK(detail::SubcaseSignature("", "a.cpp", 0) < detail::SubcaseSignature("", "b.cpp", 0));
+    CHECK(SubcaseSignature("", "a.cpp", 0) < SubcaseSignature("", "b.cpp", 0));
     // same for String
     CHECK(String("a.cpp") < String("b.cpp"));
 
@@ -60,9 +60,9 @@ TEST_CASE("doctest internals") {
          + toString(static_cast<unsigned short>(1));
 
     // others
-    a += detail::fileForOutput("c:\\a");
-    a += detail::fileForOutput("c:/a");
-    a += detail::fileForOutput("a");
+    //a += detail::fileForOutput("c:\\a");
+    //a += detail::fileForOutput("c:/a");
+    //a += detail::fileForOutput("a");
 
     std::ostringstream oss;
 
@@ -82,7 +82,7 @@ TEST_CASE("doctest internals") {
     // trigger code path for String to ostream through operator<<
     oss << a;
     // trigger code path for assert string of a non-existent assert type
-    oss << detail::assertString(static_cast<detail::assertType::Enum>(3));
+    oss << assertString(static_cast<assertType::Enum>(3));
     a += oss.str().c_str();
     // trigger code path for rawMemoryToString
     bool isThereAnything = a.size() > 0u;

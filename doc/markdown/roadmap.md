@@ -90,6 +90,7 @@ Planned features for future releases - order changes constantly...
     - update traits - use declval, etc.
     - move initialization of fields from initializer lists to class bodies
     - update static code analysis - less warning suppressing
+- drop some config options - simplify!!!
 
 ### For 3.0:
 

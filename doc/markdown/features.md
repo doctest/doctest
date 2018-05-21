@@ -45,6 +45,7 @@
 - [**templated test cases**](parameterized-tests.md#templated-test-cases---parameterized-by-type) - parameterized by type
 - supports [**logging macros**](logging.md) for capturing local variables and strings - as a message for when an assert fails - with lazy stringification and no allocations when possible!
 - crash handling support - uses signals for UNIX and SEH for Windows
+- an extensible [**reporter system**](reporters.md) (can be also used for implementing event listeners)
 - output from all compilers on all platforms is the same - byte by byte
 - binaries (exe/dll) can use the test runner of another binary - so tests end up in a single registry - [**example**](../../examples/executable_dll_and_plugin/)
 - supports [**BDD style**](testcases.md) tests

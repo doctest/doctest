@@ -20,6 +20,7 @@ All the options can also be set with code (defaults/overrides) if the user [**su
 | ```-c``` &nbsp;&nbsp;&nbsp; ```--count``` | Prints the number of test cases matching the current filters (see below) |
 | ```-ltc``` ```--list-test-cases``` | Lists all test cases by name which match the current filters (see below) |
 | ```-lts``` ```--list-test-suites``` | Lists all test suites by name which have at least one test case matching the current filters (see below) |
+| ```-lr``` ```--list-reporters``` | Lists all registered [**reporters**](reporters.md) |
 | **Int/String Options** | <hr> |
 | ```-tc``` &nbsp; ```--test-case=<filters>``` | Filters test cases based on their name. By default all test cases match but if a value is given to this filter like ```--test-case=*math*,*sound*``` then only test cases who match atleast one of the patterns in the comma-separated list with wildcards will get executed/counted/listed |
 | ```-tce``` ```--test-case-exclude=<filters>``` | Same as the ```-test-case=<filters>``` option but if any of the patterns in the comma-separated list of values matches - then the test case is skipped |
@@ -29,6 +30,7 @@ All the options can also be set with code (defaults/overrides) if the user [**su
 | ```-tse``` ```--test-suite-exclude=<filters>``` | Same as ```--test-case-exclude=<filters>``` but filters based on the test suite in which test cases are in |
 | ```-sc``` &nbsp; ```--subcase=<filters>``` | Same as ```--test-case=<filters>``` but filters subcases based on their names |
 | ```-sce``` ```--subcase-exclude=<filters>``` | Same as ```--test-case-exclude=<filters>``` but filters based on subcase names |
+| ```-r``` ```--reporters=<filters>``` | List of [**reporters**](reporters.md) to use (default is ```console```) |
 | ```-ob``` &nbsp; ```--order-by=<string>``` | Test cases will be sorted before being executed either by **the file in which they are** / **the test suite they are in** / **their name** / **random**. The possible values of ```<string>``` are ```file```/```suite```/```name```/```rand```. The default is ```file``` |
 | ```-rs``` &nbsp; ```--rand-seed=<int>``` | The seed for random ordering |
 | ```-f``` &nbsp;&nbsp;&nbsp; ```--first=<int>``` | The **first** test case to execute which passes the current filters - for range-based execution - see [**the example python script**](../../examples/range_based_execution.py) |

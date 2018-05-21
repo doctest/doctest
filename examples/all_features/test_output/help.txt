@@ -14,6 +14,7 @@
  -c,   --count                         prints the number of matching tests
  -ltc, --list-test-cases               lists all matching tests by name
  -lts, --list-test-suites              lists all matching test suites
+ -lr,  --list-reporters                lists all registered reporters
 
 [doctest] The available <int>/<string> options/filters are:
 
@@ -25,6 +26,7 @@
  -tse, --test-suite-exclude=<filters>  filters OUT tests by their test suite
  -sc,  --subcase=<filters>             filters     subcases by their name
  -sce, --subcase-exclude=<filters>     filters OUT subcases by their name
+ -r,   --reporters=<filters>           reporters to use (console is default)
  -ob,  --order-by=<string>             how the tests should be ordered
                                        <string> - by [file/suite/name/rand]
  -rs,  --rand-seed=<int>               seed for random ordering
