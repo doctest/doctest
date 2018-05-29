@@ -266,6 +266,28 @@ DOCTEST_MSVC_SUPPRESS_WARNING(26444) // Avoid unnamed objects with custom constr
 // MSVC++ 9.0  _MSC_VER == 1500 (Visual Studio 2008)
 // MSVC++ 8.0  _MSC_VER == 1400 (Visual Studio 2005)
 
+// the last C++11 feature detection left - for DOCTEST_OVERRIDE
+
+#ifndef DOCTEST_CONFIG_WITH_OVERRIDE
+#if DOCTEST_CLANG && DOCTEST_CLANG_HAS_FEATURE(cxx_override_control)
+#define DOCTEST_CONFIG_WITH_OVERRIDE
+#endif // clang
+#if DOCTEST_GCC >= DOCTEST_COMPILER(4, 7, 0) && defined(__GXX_EXPERIMENTAL_CXX0X__)
+#define DOCTEST_CONFIG_WITH_OVERRIDE
+#endif // GCC
+#if DOCTEST_MSVC >= DOCTEST_COMPILER(17, 0, 0)
+#define DOCTEST_CONFIG_WITH_OVERRIDE
+#endif // MSVC
+#endif // DOCTEST_CONFIG_WITH_OVERRIDE
+
+#ifdef DOCTEST_CONFIG_WITH_OVERRIDE
+#define DOCTEST_OVERRIDE override
+#else // DOCTEST_CONFIG_WITH_OVERRIDE
+#define DOCTEST_OVERRIDE
+#endif // DOCTEST_CONFIG_WITH_OVERRIDE
+
+// other stuff
+
 #if DOCTEST_MSVC && !defined(DOCTEST_CONFIG_WINDOWS_SEH)
 #define DOCTEST_CONFIG_WINDOWS_SEH
 #endif // MSVC
@@ -1711,7 +1733,7 @@ namespace detail
 
             explicit Capture(const T* in)
                     : capture(in) {}
-            void toStream(std::ostream* s) const override { detail::toStream(s, *capture); }
+            void toStream(std::ostream* s) const DOCTEST_OVERRIDE { detail::toStream(s, *capture); }
         };
 
         struct Chunk
@@ -4347,9 +4369,9 @@ namespace detail
         // WHAT FOLLOWS ARE OVERRIDES OF THE VIRTUAL METHODS OF THE REPORTER INTERFACE
         // =========================================================================================
 
-        void test_run_start(const ContextOptions& o) override { opt = &o; }
+        void test_run_start(const ContextOptions& o) DOCTEST_OVERRIDE { opt = &o; }
 
-        void test_run_end(const TestRunStats& p) override {
+        void test_run_end(const TestRunStats& p) DOCTEST_OVERRIDE {
             separator_to_stream();
 
             const bool anythingFailed = p.numTestCasesFailed > 0 || p.numAssertsFailed > 0;
@@ -4377,12 +4399,12 @@ namespace detail
               << ((p.numTestCasesFailed > 0) ? "FAILURE!\n" : "SUCCESS!\n") << Color::None;
         }
 
-        void test_case_start(const TestCaseData& in) override {
+        void test_case_start(const TestCaseData& in) DOCTEST_OVERRIDE {
             hasLoggedCurrentTestStart = false;
             tc                        = &in;
         }
 
-        void test_case_end(const CurrentTestCaseStats& st) override {
+        void test_case_end(const CurrentTestCaseStats& st) DOCTEST_OVERRIDE {
             // log the preamble of the test case only if there is something
             // else to print - something other than that an assert has failed
             if(opt->duration ||
@@ -4441,17 +4463,17 @@ namespace detail
             s << Color::None;
         }
 
-        void subcase_start(const SubcaseSignature& subc) override {
+        void subcase_start(const SubcaseSignature& subc) DOCTEST_OVERRIDE {
             subcasesStack.push_back(subc);
             hasLoggedCurrentTestStart = false;
         }
 
-        void subcase_end(const SubcaseSignature& /*subc*/) override {
+        void subcase_end(const SubcaseSignature& /*subc*/) DOCTEST_OVERRIDE {
             subcasesStack.pop_back();
             hasLoggedCurrentTestStart = false;
         }
 
-        void log_assert(const AssertData& rb) override {
+        void log_assert(const AssertData& rb) DOCTEST_OVERRIDE {
             if(!rb.m_failed && !opt->success)
                 return;
 
@@ -4489,7 +4511,7 @@ namespace detail
             log_contexts();
         }
 
-        void log_message(const MessageData& mb) override {
+        void log_message(const MessageData& mb) DOCTEST_OVERRIDE {
             logTestStart();
 
             file_line_to_stream(mb.m_file, mb.m_line, " ");
@@ -4500,7 +4522,7 @@ namespace detail
             log_contexts();
         }
 
-        void test_case_skipped(const TestCaseData&) override {}
+        void test_case_skipped(const TestCaseData&) DOCTEST_OVERRIDE {}
     };
 
     // extension of the console reporter - with a bunch of helpers for the stdout stream redirection
@@ -4635,7 +4657,7 @@ namespace detail
                 : ConsoleReporter(oss) {}
 
 #define DOCTEST_DEBUG_OUTPUT_WINDOW_REPORTER_OVERRIDE(func, type)                                  \
-    void func(type in) override {                                                                  \
+    void func(type in) DOCTEST_OVERRIDE {                                                          \
         if(isDebuggerActive()) {                                                                   \
             bool with_col             = g_contextState->no_colors;                                 \
             g_contextState->no_colors = false;                                                     \

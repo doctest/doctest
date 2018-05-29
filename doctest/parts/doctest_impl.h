@@ -1490,9 +1490,9 @@ namespace detail
         // WHAT FOLLOWS ARE OVERRIDES OF THE VIRTUAL METHODS OF THE REPORTER INTERFACE
         // =========================================================================================
 
-        void test_run_start(const ContextOptions& o) override { opt = &o; }
+        void test_run_start(const ContextOptions& o) DOCTEST_OVERRIDE { opt = &o; }
 
-        void test_run_end(const TestRunStats& p) override {
+        void test_run_end(const TestRunStats& p) DOCTEST_OVERRIDE {
             separator_to_stream();
 
             const bool anythingFailed = p.numTestCasesFailed > 0 || p.numAssertsFailed > 0;
@@ -1520,12 +1520,12 @@ namespace detail
               << ((p.numTestCasesFailed > 0) ? "FAILURE!\n" : "SUCCESS!\n") << Color::None;
         }
 
-        void test_case_start(const TestCaseData& in) override {
+        void test_case_start(const TestCaseData& in) DOCTEST_OVERRIDE {
             hasLoggedCurrentTestStart = false;
             tc                        = &in;
         }
 
-        void test_case_end(const CurrentTestCaseStats& st) override {
+        void test_case_end(const CurrentTestCaseStats& st) DOCTEST_OVERRIDE {
             // log the preamble of the test case only if there is something
             // else to print - something other than that an assert has failed
             if(opt->duration ||
@@ -1584,17 +1584,17 @@ namespace detail
             s << Color::None;
         }
 
-        void subcase_start(const SubcaseSignature& subc) override {
+        void subcase_start(const SubcaseSignature& subc) DOCTEST_OVERRIDE {
             subcasesStack.push_back(subc);
             hasLoggedCurrentTestStart = false;
         }
 
-        void subcase_end(const SubcaseSignature& /*subc*/) override {
+        void subcase_end(const SubcaseSignature& /*subc*/) DOCTEST_OVERRIDE {
             subcasesStack.pop_back();
             hasLoggedCurrentTestStart = false;
         }
 
-        void log_assert(const AssertData& rb) override {
+        void log_assert(const AssertData& rb) DOCTEST_OVERRIDE {
             if(!rb.m_failed && !opt->success)
                 return;
 
@@ -1632,7 +1632,7 @@ namespace detail
             log_contexts();
         }
 
-        void log_message(const MessageData& mb) override {
+        void log_message(const MessageData& mb) DOCTEST_OVERRIDE {
             logTestStart();
 
             file_line_to_stream(mb.m_file, mb.m_line, " ");
@@ -1643,7 +1643,7 @@ namespace detail
             log_contexts();
         }
 
-        void test_case_skipped(const TestCaseData&) override {}
+        void test_case_skipped(const TestCaseData&) DOCTEST_OVERRIDE {}
     };
 
     // extension of the console reporter - with a bunch of helpers for the stdout stream redirection
@@ -1778,7 +1778,7 @@ namespace detail
                 : ConsoleReporter(oss) {}
 
 #define DOCTEST_DEBUG_OUTPUT_WINDOW_REPORTER_OVERRIDE(func, type)                                  \
-    void func(type in) override {                                                                  \
+    void func(type in) DOCTEST_OVERRIDE {                                                          \
         if(isDebuggerActive()) {                                                                   \
             bool with_col             = g_contextState->no_colors;                                 \
             g_contextState->no_colors = false;                                                     \
