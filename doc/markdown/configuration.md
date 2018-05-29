@@ -36,13 +36,11 @@ Detection of modern C++ features:
 - [**```DOCTEST_CONFIG_WITH_RVALUE_REFERENCES```**](#doctest_config_with_rvalue_references)
 - [**```DOCTEST_CONFIG_WITH_VARIADIC_MACROS```**](#doctest_config_with_variadic_macros)
 - [**```DOCTEST_CONFIG_WITH_NULLPTR```**](#doctest_config_with_nullptr)
-- [**```DOCTEST_CONFIG_WITH_LONG_LONG```**](#doctest_config_with_long_long)
 - [**```DOCTEST_CONFIG_WITH_STATIC_ASSERT```**](#doctest_config_with_static_assert)
 - [**```DOCTEST_CONFIG_NO_DELETED_FUNCTIONS```**](#doctest_config_no_deleted_functions)
 - [**```DOCTEST_CONFIG_NO_RVALUE_REFERENCES```**](#doctest_config_no_rvalue_references)
 - [**```DOCTEST_CONFIG_NO_VARIADIC_MACROS```**](#doctest_config_no_variadic_macros)
 - [**```DOCTEST_CONFIG_NO_NULLPTR```**](#doctest_config_no_nullptr)
-- [**```DOCTEST_CONFIG_NO_LONG_LONG```**](#doctest_config_no_long_long)
 - [**```DOCTEST_CONFIG_NO_STATIC_ASSERT```**](#doctest_config_no_static_assert)
 
 For most people the only configuration needed is telling **doctest** which source file should host all the implementation code:
@@ -269,12 +267,6 @@ doctest tries to detect if c++11 ```nullptr``` is available but if it doesn't de
 
 This should be defined globally.
 
-### **```DOCTEST_CONFIG_WITH_LONG_LONG```**
-
-doctest tries to detect if c++11 ```long long``` is available but if it doesn't detect it - the user might define this.
-
-This should be defined globally.
-
 ### **```DOCTEST_CONFIG_WITH_STATIC_ASSERT```**
 
 doctest tries to detect if c++11 ```static_assert()``` is available but if it doesn't detect it - the user might define this.
@@ -302,12 +294,6 @@ This can be defined both globally and in specific source files only.
 ### **```DOCTEST_CONFIG_NO_NULLPTR```**
 
 If doctest detects c++11 ```nullptr``` support as available but the user knows better - this can be defined to disable it.
-
-This should be defined globally.
-
-### **```DOCTEST_CONFIG_NO_LONG_LONG```**
-
-If doctest detects c++11 ```long long``` support as available but the user knows better - this can be defined to disable it.
 
 This should be defined globally.
 

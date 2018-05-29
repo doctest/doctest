@@ -177,6 +177,8 @@ DOCTEST_CLANG_SUPPRESS_WARNING("-Wc++11-long-long")
 #if DOCTEST_CLANG && DOCTEST_CLANG_HAS_WARNING("-Wzero-as-null-pointer-constant")
 DOCTEST_CLANG_SUPPRESS_WARNING("-Wzero-as-null-pointer-constant")
 #endif // clang - 0 as null
+DOCTEST_CLANG_SUPPRESS_WARNING("-Wc++98-compat")
+DOCTEST_CLANG_SUPPRESS_WARNING("-Wc++98-compat-pedantic")
 
 DOCTEST_GCC_SUPPRESS_WARNING_PUSH
 DOCTEST_GCC_SUPPRESS_WARNING("-Wunknown-pragmas")
@@ -259,9 +261,6 @@ DOCTEST_MSVC_SUPPRESS_WARNING(26444) // Avoid unnamed objects with custom constr
 #ifndef DOCTEST_CONFIG_WITH_NULLPTR
 #define DOCTEST_CONFIG_WITH_NULLPTR
 #endif // DOCTEST_CONFIG_WITH_NULLPTR
-#ifndef DOCTEST_CONFIG_WITH_LONG_LONG
-#define DOCTEST_CONFIG_WITH_LONG_LONG
-#endif // DOCTEST_CONFIG_WITH_LONG_LONG
 #ifndef DOCTEST_CONFIG_WITH_STATIC_ASSERT
 #define DOCTEST_CONFIG_WITH_STATIC_ASSERT
 #endif // DOCTEST_CONFIG_WITH_STATIC_ASSERT
@@ -355,22 +354,6 @@ DOCTEST_MSVC_SUPPRESS_WARNING(26444) // Avoid unnamed objects with custom constr
 #undef DOCTEST_CONFIG_WITH_VARIADIC_MACROS
 #endif // DOCTEST_CONFIG_NO_VARIADIC_MACROS
 
-// long long
-
-#ifndef DOCTEST_CONFIG_WITH_LONG_LONG
-#if DOCTEST_MSVC >= DOCTEST_COMPILER(14, 0, 0)
-#define DOCTEST_CONFIG_WITH_LONG_LONG
-#endif // MSVC
-#if(DOCTEST_CLANG || DOCTEST_GCC >= DOCTEST_COMPILER(4, 5, 0)) &&                                  \
-        defined(__GXX_EXPERIMENTAL_CXX0X__)
-#define DOCTEST_CONFIG_WITH_LONG_LONG
-#endif // GCC and clang
-#endif // DOCTEST_CONFIG_WITH_LONG_LONG
-
-#if defined(DOCTEST_CONFIG_NO_LONG_LONG) && defined(DOCTEST_CONFIG_WITH_LONG_LONG)
-#undef DOCTEST_CONFIG_WITH_LONG_LONG
-#endif // DOCTEST_CONFIG_NO_LONG_LONG
-
 // static_assert
 
 #ifndef DOCTEST_CONFIG_WITH_STATIC_ASSERT
@@ -390,17 +373,6 @@ DOCTEST_MSVC_SUPPRESS_WARNING(26444) // Avoid unnamed objects with custom constr
 #endif // DOCTEST_CONFIG_NO_STATIC_ASSERT
 
 // other stuff...
-
-#if defined(DOCTEST_CONFIG_WITH_RVALUE_REFERENCES) || defined(DOCTEST_CONFIG_WITH_LONG_LONG) ||    \
-        defined(DOCTEST_CONFIG_WITH_DELETED_FUNCTIONS) || defined(DOCTEST_CONFIG_WITH_NULLPTR) ||  \
-        defined(DOCTEST_CONFIG_WITH_VARIADIC_MACROS) || defined(DOCTEST_CONFIG_WITH_STATIC_ASSERT)
-#define DOCTEST_NO_CPP11_COMPAT
-#endif // c++11 stuff
-
-#if defined(DOCTEST_NO_CPP11_COMPAT)
-DOCTEST_CLANG_SUPPRESS_WARNING("-Wc++98-compat")
-DOCTEST_CLANG_SUPPRESS_WARNING("-Wc++98-compat-pedantic")
-#endif // DOCTEST_NO_CPP11_COMPAT
 
 #if DOCTEST_MSVC && !defined(DOCTEST_CONFIG_WINDOWS_SEH)
 #define DOCTEST_CONFIG_WINDOWS_SEH
@@ -1235,11 +1207,8 @@ DOCTEST_INTERFACE String toString(int in);
 DOCTEST_INTERFACE String toString(int unsigned in);
 DOCTEST_INTERFACE String toString(int long in);
 DOCTEST_INTERFACE String toString(int long unsigned in);
-
-#ifdef DOCTEST_CONFIG_WITH_LONG_LONG
 DOCTEST_INTERFACE String toString(int long long in);
 DOCTEST_INTERFACE String toString(int long long unsigned in);
-#endif // DOCTEST_CONFIG_WITH_LONG_LONG
 
 #ifdef DOCTEST_CONFIG_WITH_NULLPTR
 DOCTEST_INTERFACE String toString(std::nullptr_t in);
@@ -1880,11 +1849,8 @@ namespace detail
     DOCTEST_INTERFACE void toStream(std::ostream* s, int unsigned in);
     DOCTEST_INTERFACE void toStream(std::ostream* s, int long in);
     DOCTEST_INTERFACE void toStream(std::ostream* s, int long unsigned in);
-
-#ifdef DOCTEST_CONFIG_WITH_LONG_LONG
     DOCTEST_INTERFACE void toStream(std::ostream* s, int long long in);
     DOCTEST_INTERFACE void toStream(std::ostream* s, int long long unsigned in);
-#endif // DOCTEST_CONFIG_WITH_LONG_LONG
 
     DOCTEST_INTERFACE void addToContexts(IContextScope* ptr);
     DOCTEST_INTERFACE void popFromContexts();
@@ -3272,10 +3238,8 @@ namespace detail
     DOCTEST_TYPE_TO_STRING_IMPL(unsigned int)
     DOCTEST_TYPE_TO_STRING_IMPL(long int)
     DOCTEST_TYPE_TO_STRING_IMPL(unsigned long int)
-#ifdef DOCTEST_CONFIG_WITH_LONG_LONG
     DOCTEST_TYPE_TO_STRING_IMPL(long long int)
     DOCTEST_TYPE_TO_STRING_IMPL(unsigned long long int)
-#endif // DOCTEST_CONFIG_WITH_LONG_LONG
 } // namespace detail
 } // namespace doctest
 

@@ -28,6 +28,8 @@ DOCTEST_CLANG_SUPPRESS_WARNING("-Wc++11-long-long")
 #if DOCTEST_CLANG && DOCTEST_CLANG_HAS_WARNING("-Wzero-as-null-pointer-constant")
 DOCTEST_CLANG_SUPPRESS_WARNING("-Wzero-as-null-pointer-constant")
 #endif // clang - 0 as null
+DOCTEST_CLANG_SUPPRESS_WARNING("-Wc++98-compat")
+DOCTEST_CLANG_SUPPRESS_WARNING("-Wc++98-compat-pedantic")
 
 DOCTEST_GCC_SUPPRESS_WARNING_PUSH
 DOCTEST_GCC_SUPPRESS_WARNING("-Wunknown-pragmas")
@@ -76,11 +78,6 @@ DOCTEST_MSVC_SUPPRESS_WARNING(26439) // This kind of function may not throw. Dec
 DOCTEST_MSVC_SUPPRESS_WARNING(26495) // Always initialize a member variable
 DOCTEST_MSVC_SUPPRESS_WARNING(26451) // Arithmetic overflow ...
 DOCTEST_MSVC_SUPPRESS_WARNING(26444) // Avoid unnamed objects with custom construction and dtr...
-
-#if defined(DOCTEST_NO_CPP11_COMPAT)
-DOCTEST_CLANG_SUPPRESS_WARNING("-Wc++98-compat")
-DOCTEST_CLANG_SUPPRESS_WARNING("-Wc++98-compat-pedantic")
-#endif // DOCTEST_NO_CPP11_COMPAT
 
 DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_BEGIN
 
@@ -510,7 +507,6 @@ String toString(int long unsigned in) {
     return buf;
 }
 
-#ifdef DOCTEST_CONFIG_WITH_LONG_LONG
 String toString(int long long in) {
     char buf[64];
     std::sprintf(buf, "%lld", in);
@@ -521,7 +517,6 @@ String toString(int long long unsigned in) {
     std::sprintf(buf, "%llu", in);
     return buf;
 }
-#endif // DOCTEST_CONFIG_WITH_LONG_LONG
 
 #ifdef DOCTEST_CONFIG_WITH_NULLPTR
 String toString(std::nullptr_t) { return "nullptr"; }
@@ -1072,11 +1067,8 @@ namespace detail
     void toStream(std::ostream* s, int unsigned in) { *s << in; }
     void toStream(std::ostream* s, int long in) { *s << in; }
     void toStream(std::ostream* s, int long unsigned in) { *s << in; }
-
-#ifdef DOCTEST_CONFIG_WITH_LONG_LONG
     void toStream(std::ostream* s, int long long in) { *s << in; }
     void toStream(std::ostream* s, int long long unsigned in) { *s << in; }
-#endif // DOCTEST_CONFIG_WITH_LONG_LONG
 
     void addToContexts(IContextScope* ptr) { g_contextState->contexts.push_back(ptr); }
     void popFromContexts() { g_contextState->contexts.pop_back(); }
