@@ -65,20 +65,12 @@ matrix:
           packages: ["clang-4.0", "clang-tidy-4.0", "cppcheck"]
           sources: *apt_sources
 
-    # GCC 4.4
-    - env: COMPILER=g++-4.4
-      compiler: gcc
-      addons: &gcc44
-        apt:
-          packages: ["g++-4.4", "valgrind", "g++-4.4-multilib", "libc6-dbg", "libc6-dbg:i386"]
-          sources: *apt_sources
-
     # GCC 4.6
     - env: COMPILER=g++-4.6
       compiler: gcc
       addons: &gcc46
         apt:
-          packages: [           "valgrind", "g++-4.6-multilib", "libc6-dbg", "libc6-dbg:i386"]
+          packages: [           "valgrind", "g++-4.6-multilib", "libc6-dbg", "libc6-dbg:i386", "linux-libc-dev", "linux-libc-dev:i386"]
           sources: *apt_sources
 
     # GCC 4.7
@@ -86,7 +78,7 @@ matrix:
       compiler: gcc
       addons: &gcc47
         apt:
-          packages: ["g++-4.7", "valgrind", "g++-4.7-multilib", "libc6-dbg", "libc6-dbg:i386"]
+          packages: ["g++-4.7", "valgrind", "g++-4.7-multilib", "libc6-dbg", "libc6-dbg:i386", "linux-libc-dev", "linux-libc-dev:i386"]
           sources: *apt_sources
 
     # GCC 4.8
@@ -94,7 +86,7 @@ matrix:
       compiler: gcc
       addons: &gcc48
         apt:
-          packages: ["g++-4.8", "valgrind", "g++-4.8-multilib", "libc6-dbg", "libc6-dbg:i386"]
+          packages: ["g++-4.8", "valgrind", "g++-4.8-multilib", "libc6-dbg", "libc6-dbg:i386", "linux-libc-dev", "linux-libc-dev:i386"]
           sources: *apt_sources
 
     # GCC 4.9
@@ -102,7 +94,7 @@ matrix:
       compiler: gcc
       addons: &gcc49
         apt:
-          packages: ["g++-4.9", "valgrind", "g++-4.9-multilib", "libc6-dbg", "libc6-dbg:i386"]
+          packages: ["g++-4.9", "valgrind", "g++-4.9-multilib", "libc6-dbg", "libc6-dbg:i386", "linux-libc-dev", "linux-libc-dev:i386"]
           sources: *apt_sources
 
     # GCC 5
@@ -110,7 +102,7 @@ matrix:
       compiler: gcc
       addons: &gcc5
         apt:
-          packages: ["g++-5",   "valgrind", "g++-5-multilib",   "libc6-dbg", "libc6-dbg:i386"]
+          packages: ["g++-5",   "valgrind", "g++-5-multilib",   "libc6-dbg", "libc6-dbg:i386", "linux-libc-dev", "linux-libc-dev:i386"]
           sources: *apt_sources
 
     # GCC 6
@@ -118,7 +110,7 @@ matrix:
       compiler: gcc
       addons: &gcc6
         apt:
-          packages: ["g++-6",   "valgrind", "g++-6-multilib",   "libc6-dbg", "libc6-dbg:i386"]
+          packages: ["g++-6",   "valgrind", "g++-6-multilib",   "libc6-dbg", "libc6-dbg:i386", "linux-libc-dev", "linux-libc-dev:i386"]
           sources: *apt_sources
 
     # GCC 7
@@ -127,7 +119,7 @@ matrix:
       sudo: required      # see this issue for more details: https://github.com/travis-ci/travis-ci/issues/9033
       addons: &gcc7
         apt:
-          packages: ["g++-7",   "valgrind", "g++-7-multilib",   "libc6-dbg", "libc6-dbg:i386"]
+          packages: ["g++-7",   "valgrind", "g++-7-multilib",   "libc6-dbg", "libc6-dbg:i386", "linux-libc-dev", "linux-libc-dev:i386"]
           sources: *apt_sources
 
     # GCC 8
@@ -136,7 +128,7 @@ matrix:
       sudo: required      # see this issue for more details: https://github.com/travis-ci/travis-ci/issues/9033
       addons: &gcc8
         apt:
-          packages: ["g++-8",   "valgrind", "g++-8-multilib",   "libc6-dbg", "libc6-dbg:i386"]
+          packages: ["g++-8",   "valgrind", "g++-8-multilib",   "libc6-dbg", "libc6-dbg:i386", "linux-libc-dev", "linux-libc-dev:i386"]
           sources: *apt_sources
 
     # Clang 3.5
