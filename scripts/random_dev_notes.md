@@ -1,4 +1,6 @@
 
+reporters issue: 138
+
 the current reporter interface
     - can be used for listening for events
     - multiple reporters can be used
@@ -23,8 +25,6 @@ https://www.boost.org/doc/libs/1_67_0/libs/test/doc/html/index.html
 
 
 examples
-
-c++11 only tests
 
 thread sanitizer tests
 

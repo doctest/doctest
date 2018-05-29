@@ -7,7 +7,7 @@ This library is free, and will stay free but needs your support to sustain its d
 
 Planned features for future releases - order changes constantly...
 
-### For 1.3:
+### For 2.0:
 
 - reporters
     - output to file
@@ -19,13 +19,21 @@ Planned features for future releases - order changes constantly...
     - xUnit reporter
     - a listener interface - similar to a reporter - look at Catch
 - ability to have no output when everything succeeds
+- remove C++98 support
+    - remove the config identifiers for C++11 features
+    - use variadic templates where appropriate
+    - update type lists to C++11
+    - update traits - use declval, etc.
+    - move initialization of fields from initializer lists to class bodies
+    - update static code analysis - less warning suppressing
+- drop some config options - simplify!!!
 - option to output summary only
 - thread safety - asserts/subcases/captures should be safe to be used by multiple threads simultaneously
     - https://github.com/blastrock/doctest/tree/threadsafe
 - matchers - should investigate what they are - look at google test/mock and Catch (also predicates and boost test)
 - convolution support for the assertion macros (with a predicate)
 
-### For 1.4:
+### For 2.1:
 
 - Value-Parameterized test cases
 - generators? - look at Catch - and investigate what they are
@@ -58,7 +66,7 @@ Planned features for future releases - order changes constantly...
         - https://www.jetbrains.com/clion/features/unit-testing.html
         - https://blog.jetbrains.com/clion/2017/03/clion-2017-1-released/#catch
 
-### For 1.5:
+### For 2.2:
 
 - log levels - like in [boost test](http://www.boost.org/doc/libs/1_63_0/libs/test/doc/html/boost_test/utf_reference/rt_param_reference/log_level.html)
 - running tests a [few times](https://github.com/google/googletest/blob/master/googletest/docs/AdvancedGuide.md#repeating-the-tests)
@@ -80,17 +88,6 @@ Planned features for future releases - order changes constantly...
     - don't cheat for maxing out code coverage (see [coverage_maxout.cpp](../../examples/all_features/coverage_maxout.cpp))
     - should test C++11 stuff - perhaps inspect the CMAKE_CXX_FLAGS for -std=c++11 on the CI and add more targets/tests
     - test tricky stuff like expressions with commas in asserts
-
-### For 2.0:
-
-- remove C++98 support
-    - remove the config identifiers for C++11 features
-    - use variadic templates where appropriate
-    - update type lists to C++11
-    - update traits - use declval, etc.
-    - move initialization of fields from initializer lists to class bodies
-    - update static code analysis - less warning suppressing
-- drop some config options - simplify!!!
 
 ### For 3.0:
 

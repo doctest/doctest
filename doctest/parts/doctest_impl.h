@@ -2097,14 +2097,18 @@ int Context::run() {
     ConsoleReporterWithHelpers g_con_rep(std::cout);
     registerReporter("console", 0, &g_con_rep);
 
+    // setup default reporter if none is given through the command line
     p->reporters_currently_used.clear();
-    if(p->filters[8].size() == 0)
+    if(p->filters[8].empty())
         p->reporters_currently_used.push_back(getReporters()[reporterMap::key_type(0, "console")]);
+
+    // check to see if any of the registered reporters has been selected
     for(reporterMap::iterator it = getReporters().begin(); it != getReporters().end(); ++it) {
         if(matchesAny(it->first.second.c_str(), p->filters[8], false, p->case_sensitive))
             p->reporters_currently_used.push_back(it->second);
     }
 
+    // always use the debug output window reporter
 #ifdef DOCTEST_PLATFORM_WINDOWS
     if(isDebuggerActive())
         p->reporters_currently_used.push_back(&g_debug_output_rep);
