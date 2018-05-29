@@ -112,7 +112,7 @@ def main():
             'file': os.path.relpath(header, directory),
             'code': strip_comments(open(header).read())
         } for header in headers(directory)],
-        'options': 'c++98,cpp-no-pedantic',
+        'options': 'c++11,cpp-no-pedantic',
         'compiler': 'gcc-head',
         'save': True,
         'compiler-option-raw': '-Wall\n-Wextra'

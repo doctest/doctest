@@ -1,4 +1,4 @@
-<h3>The fastest feature-rich C++98/C++11 single-header testing framework for unit tests and TDD</h3>
+<h3>The fastest feature-rich C++11 single-header testing framework for unit tests and TDD</h3>
 
 <b>
 <table>
@@ -57,7 +57,7 @@ The **key** differences between it and other testing frameworks are that it is l
 - Doesn't produce any warnings even on the [**most aggressive**](scripts/cmake/common.cmake#L84) warning levels for **MSVC**/**GCC**/**Clang**
 - Offers a way to remove **everything** testing-related from the binary with the [**```DOCTEST_CONFIG_DISABLE```**](doc/markdown/configuration.md#doctest_config_disable) identifier
 - Doesn't pollute the global namespace (everything is in namespace ```doctest```) and doesn't drag **any** headers with it
-- Very [**portable**](doc/markdown/features.md#extremely-portable) C++98 - per commit tested on CI with over 330 different builds (static analysis, sanitizers...)
+- Very [**portable**](doc/markdown/features.md#extremely-portable) C++11 (use tag [**1.2.9**](https://github.com/onqtam/doctest/tree/1.2.9) for C++98) with over 300 different CI builds (static analysis, sanitizers...)
 
 ![cost-of-including-the-framework-header](scripts/data/benchmarks/header.png)
 
@@ -130,27 +130,3 @@ Support the development of the project with donations! There is a list of planne
 If you work for a company using **doctest** or have the means to do so, please consider financial support.
 
 Contributions in the form of issues and pull requests are welcome as well - check out the [**Contributing**](CONTRIBUTING.md) page.
-
-
-Sponsors
---------
-
-Want to see your name or the name of your company here? Consider donating!
-
-### :zap: Rockstar sponsors :zap:
-
-### :gem: Gold sponsors :gem:
-
-- Pascal Thomet
-- Mario Kostadinov
-
-### :cake: Silver sponsors :cake:
-
-- Aras Pranckevicius
-- Dan Nissenbaum
-- Dean Bodenham
-
-### :hamburger: Bronze sponsors :hamburger:
-
-- Sebastien Feldis
-- Zahari Karadzhov

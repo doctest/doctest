@@ -192,7 +192,7 @@ namespace detail
     // this holds both parameters from the command line and runtime data for tests
     struct ContextState : ContextOptions, TestRunStats, CurrentTestCaseStats
     {
-        std::vector<std::vector<String> > filters;
+        std::vector<std::vector<String>> filters;
 
         std::vector<IReporter*> reporters_currently_used;
 
@@ -661,6 +661,7 @@ namespace detail
         return *this;
     }
 
+    DOCTEST_MSVC_SUPPRESS_WARNING_WITH_PUSH(26434) // hides a non-virtual function
     TestCase& TestCase::operator=(const TestCase& other) {
         m_file              = other.m_file;
         m_line              = other.m_line;
@@ -682,6 +683,7 @@ namespace detail
             m_name = m_full_name.c_str();
         return *this;
     }
+    DOCTEST_MSVC_SUPPRESS_WARNING_POP
 
     bool TestCase::operator<(const TestCase& other) const {
         if(m_line != other.m_line)

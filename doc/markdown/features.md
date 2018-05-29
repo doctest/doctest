@@ -21,7 +21,7 @@
 
 ## Extremely portable:
 
-- Standards compliant **C++98** code - should work with any **C++98** compiler
+- Standards compliant **C++11** code - should work with any **C++11** capable compiler (use tag [**1.2.9**](https://github.com/onqtam/doctest/tree/1.2.9) for C++98)
 - tested with **GCC**: **4.4**, **4.5**, **4.6**, **4.7**, **4.8**, **4.9**, **5**, **6**, **7**, **8**
 - tested with **Clang**: **3.5**, **3.6**, **3.7**, **3.8**, **3.9**, **4**, **5**, **6**
 - tested with **MSVC**: **2008**, **2010**, **2012**, **2013**, **2015**, **2017**

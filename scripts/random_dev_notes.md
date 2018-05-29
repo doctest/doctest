@@ -1,5 +1,8 @@
 
 reporters issue: 138
+c++11 issue: 137
+
+
 
 the current reporter interface
     - can be used for listening for events
@@ -29,6 +32,7 @@ examples
 thread sanitizer tests
 
 documentation... :(
+    also faq
 
 profit :D
 

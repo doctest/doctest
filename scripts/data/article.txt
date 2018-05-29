@@ -1,10 +1,10 @@
 == doctest - the lightest C++ unit testing framework
 
-doctest is a fully open source light and feature-rich C++98 / C++11 single-header testing framework for unit tests and TDD.
+doctest is a fully open source light and feature-rich C++11 single-header testing framework for unit tests and TDD.
 
 Web Site: https://github.com/onqtam/doctest
-Version tested: 1.1.3
-System requirements: C++98 or newer
+Version tested: 2.0.0
+System requirements: C++11 or newer
 License & Pricing: MIT, free
 Support: through the GitHub project page
 
@@ -79,7 +79,7 @@ The key differences between it and the others are:
     * -Weverything for Clang
     * /W4 for MSVC
     * -Wall -Wextra -pedantic and over 50 other flags not included in these!
-- Very portable and well tested C++98 - per commit tested on CI with over 220 different builds with different compilers and configurations (gcc 4.4-6.1 / clang 3.4-3.9 / MSVC 2008-2015, debug / release, x86/x64, linux / windows / osx, valgrind, sanitizers...)
+- Very portable and well tested C++11 - per commit tested on CI with over 220 different builds with different compilers and configurations (gcc 4.4-6.1 / clang 3.4-3.9 / MSVC 2008-2015, debug / release, x86/x64, linux / windows / osx, valgrind, sanitizers...)
 - Just one header and no external dependencies apart from the C / C++ standard library (which are used only in the test runner)
 
 So if doctest is included in 1000 source files (globally in a big project) the overall build slowdown will be only ~10 seconds. If Catch is used - this would mean 350+ seconds just for including the header everywhere.
