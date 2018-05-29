@@ -41,6 +41,11 @@ profit :D
 ask in the reddit thread what from the roadmap they would like to see next
 
 
+think about removing these:
+    DOCTEST_CONFIG_INCLUDE_TYPE_TRAITS
+    DOCTEST_CONFIG_TREAT_CHAR_STAR_AS_STRING
+    DOCTEST_CONFIG_ASSERTION_PARAMETERS_BY_VALUE
+
 
 
 OMG!!! THIS!!!
@@ -51,37 +56,10 @@ isRunningInTest()
 
 
 
-a failing REQUIRE inside of a CHECK
-https://github.com/catchorg/Catch2/issues/1292
-
-int foo(int i) {
-    REQUIRE(i > 10);
-    return 42;
-}
-TEST_CASE("a") {
-    CHECK(foo(2) == 2);
-}
-
-
-
-look at CHECKED_IF & friends
-https://github.com/catchorg/Catch2/issues/1278
-
-
-
 
 user command line options...?
 
-
-
-move more inline functions from fwd to impl (like Approx stuff, also the inline string stuff...), also ifdef can_use_op<> & friends
-
 https://github.com/catchorg/Catch2/commit/de36b2ada6e4593a9a32c4c86cd47d4bc002b148
-
-add [[noreturn]] to MessageBuilder::react() - and actually make a separate function (react2) for the FAIL() case
-
-look at runtime performance stuff
-https://github.com/catchorg/Catch2/issues/1086
 
 rethink static code analisys suppressions - users shouldn't have to use the same flags for code which uses doctest macros/types
 

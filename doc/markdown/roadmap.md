@@ -35,6 +35,9 @@ Planned features for future releases - order changes constantly...
 
 ### For 2.1:
 
+- improve compile times further
+    - based on ideas from https://slides.com/onqtam/faster_builds/
+    - move more inline functions from fwd to impl (like Approx stuff, also the inline string stuff...), also ifdef can_use_op<> & friends
 - Value-Parameterized test cases
 - generators? - look at Catch - and investigate what they are
 - look at property based testing
@@ -96,6 +99,7 @@ Planned features for future releases - order changes constantly...
 
 ### Things that are being considered but not part of the roadmap yet:
 
+- fix this: https://github.com/catchorg/Catch2/issues/1292
 - FakeIt mocking integration - like [catch](https://github.com/eranpeer/FakeIt/tree/master/config/catch) (also checkout [this](https://github.com/ujiro99/doctest-sample))
 - look into https://github.com/cpp-testing/GUnit - https://www.youtube.com/watch?v=NVrZjT5lW5o
 - consider the following 2 properties for the MSVC static code analyzer: EnableCppCoreCheck, EnableExperimentalCppCoreCheck
@@ -108,6 +112,7 @@ Planned features for future releases - order changes constantly...
 - checkpoint/passpoint - like in [boost test](http://www.boost.org/doc/libs/1_63_0/libs/test/doc/html/boost_test/test_output/test_tools_support_for_logging/checkpoints.html) (also make all assert/subcase/logging macros to act as passpoints and print the last one on crashes or exceptions)
 - queries for the current test case - name (and probably decorators)
 - support for LibIdentify
+- add CHECKED_IF & friends: https://github.com/catchorg/Catch2/issues/1278
 - support for running tests in parallel in multiple threads
 - death tests - as in [google test](https://github.com/google/googletest/blob/master/googletest/docs/AdvancedGuide.md#death-tests)
 - config options
@@ -138,6 +143,7 @@ Planned features for future releases - order changes constantly...
     - or just ignore all of this this - it would require globals or classes and inheritance - and we already have subcases
 - doctest in a GUI environment? with no console? APIs for attaching a console? querying if there is one? [investigate...](https://github.com/philsquared/Catch/blob/master/docs/configuration.md#stdout)
 - runtime performance
+    - look at this: https://github.com/catchorg/Catch2/issues/1086
     - startup - the set holding all registered tests should use a specialized allocator to minimize program startup time
     - failing - optimize createStream/freeStream to reuse a pool of ostringstream objects
 - ability to provide a temp folder that is cleared between each test case
@@ -146,6 +152,7 @@ Planned features for future releases - order changes constantly...
 - think about silencing warnings about unused variables when DOCTEST_CONFIG_DISABLE is used - see commit 6b61e8aa3818c5ea100cedc1bb48a60ea10df6e8 or issue #61
 - think about optionally using ```<typeinfo>``` and libcxxabi for demangling so users don't have to use ```TYPE_TO_STRING()```
 - handle more complex expressions - ```CHECK(foo() == 1 || bar() == 2);```
+- add [[noreturn]] to MessageBuilder::react() - and actually make a separate function (react2) for the FAIL() case
 - think about using a string view of some sorts
 - benchmark against google test and boost test
 
