@@ -2,7 +2,7 @@
 
 DisableFormat: false
 Language: Cpp
-Standard: Cpp11
+Standard: Cpp03
 IndentWidth: 4
 TabWidth: 4
 UseTab: Never

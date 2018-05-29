@@ -189,7 +189,7 @@ namespace detail
     // this holds both parameters from the command line and runtime data for tests
     struct ContextState : ContextOptions, TestRunStats, CurrentTestCaseStats
     {
-        std::vector<std::vector<String>> filters;
+        std::vector<std::vector<String> > filters;
 
         std::vector<IReporter*> reporters_currently_used;
 

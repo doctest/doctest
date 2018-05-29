@@ -439,7 +439,7 @@ template <>
 struct char_traits<char>;
 template <class charT, class traits>
 class basic_ostream;
-typedef basic_ostream<char, char_traits<char>> ostream;
+typedef basic_ostream<char, char_traits<char> > ostream;
 } // namespace std
 #endif // _LIBCPP_VERSION || DOCTEST_CONFIG_USE_IOSFWD
 
