@@ -30,19 +30,6 @@ Defining something ```globally``` means for every source file of the binary (exe
 - [**```DOCTEST_CONFIG_NO_POSIX_SIGNALS```**](#doctest_config_no_posix_signals)
 - [**```DOCTEST_CONFIG_INCLUDE_TYPE_TRAITS```**](#doctest_config_include_type_traits)
 
-Detection of modern C++ features:
-
-- [**```DOCTEST_CONFIG_WITH_DELETED_FUNCTIONS```**](#doctest_config_with_deleted_functions)
-- [**```DOCTEST_CONFIG_WITH_RVALUE_REFERENCES```**](#doctest_config_with_rvalue_references)
-- [**```DOCTEST_CONFIG_WITH_VARIADIC_MACROS```**](#doctest_config_with_variadic_macros)
-- [**```DOCTEST_CONFIG_WITH_NULLPTR```**](#doctest_config_with_nullptr)
-- [**```DOCTEST_CONFIG_WITH_STATIC_ASSERT```**](#doctest_config_with_static_assert)
-- [**```DOCTEST_CONFIG_NO_DELETED_FUNCTIONS```**](#doctest_config_no_deleted_functions)
-- [**```DOCTEST_CONFIG_NO_RVALUE_REFERENCES```**](#doctest_config_no_rvalue_references)
-- [**```DOCTEST_CONFIG_NO_VARIADIC_MACROS```**](#doctest_config_no_variadic_macros)
-- [**```DOCTEST_CONFIG_NO_NULLPTR```**](#doctest_config_no_nullptr)
-- [**```DOCTEST_CONFIG_NO_STATIC_ASSERT```**](#doctest_config_no_static_assert)
-
 For most people the only configuration needed is telling **doctest** which source file should host all the implementation code:
 
 ### **```DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN```**
@@ -242,66 +229,6 @@ This should be defined only in the source file where the library is implemented 
 This can be used to include the ```<type_traits>``` C++11 header. That in turn will enable the ability for the ```Approx``` helper to be used with strong typedefs of ```double``` - check [this](https://github.com/onqtam/doctest/issues/62) or [this](https://github.com/onqtam/doctest/issues/85) issue for more details on that.
 
 This can be defined both globally and in specific source files only.
-
-### **```DOCTEST_CONFIG_WITH_DELETED_FUNCTIONS```**
-
-doctest tries to detect if c++11 deleted functions are available but if it doesn't detect it - the user might define this.
-
-This should be defined globally.
-
-### **```DOCTEST_CONFIG_WITH_RVALUE_REFERENCES```**
-
-doctest tries to detect if c++11 rvalue references are available but if it doesn't detect it - the user might define this.
-
-This should be defined globally.
-
-### **```DOCTEST_CONFIG_WITH_VARIADIC_MACROS```**
-
-doctest tries to detect if c++11 variadic macros are available but if it doesn't detect it - the user might define this.
-
-This can be defined both globally and in specific source files only.
-
-### **```DOCTEST_CONFIG_WITH_NULLPTR```**
-
-doctest tries to detect if c++11 ```nullptr``` is available but if it doesn't detect it - the user might define this.
-
-This should be defined globally.
-
-### **```DOCTEST_CONFIG_WITH_STATIC_ASSERT```**
-
-doctest tries to detect if c++11 ```static_assert()``` is available but if it doesn't detect it - the user might define this.
-
-This should be defined globally.
-
-### **```DOCTEST_CONFIG_NO_DELETED_FUNCTIONS```**
-
-If doctest detects c++11 deleted functions support as available but the user knows better - this can be defined to disable it.
-
-This should be defined globally.
-
-### **```DOCTEST_CONFIG_NO_RVALUE_REFERENCES```**
-
-If doctest detects c++11 rvalue references support as available but the user knows better - this can be defined to disable it.
-
-This should be defined globally.
-
-### **```DOCTEST_CONFIG_NO_VARIADIC_MACROS```**
-
-If doctest detects c++11 variadic macros support as available but the user knows better - this can be defined to disable it.
-
-This can be defined both globally and in specific source files only.
-
-### **```DOCTEST_CONFIG_NO_NULLPTR```**
-
-If doctest detects c++11 ```nullptr``` support as available but the user knows better - this can be defined to disable it.
-
-This should be defined globally.
-
-### **```DOCTEST_CONFIG_NO_STATIC_ASSERT```**
-
-If doctest detects c++11 ```static_assert()``` support as available but the user knows better - this can be defined to disable it.
-
-This should be defined globally.
 
 ---------------
 

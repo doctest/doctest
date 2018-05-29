@@ -252,24 +252,9 @@ DOCTEST_MSVC_SUPPRESS_WARNING(26444) // Avoid unnamed objects with custom constr
 // =================================================================================================
 
 #if __cplusplus >= 201103L
-#ifndef DOCTEST_CONFIG_WITH_DELETED_FUNCTIONS
-#define DOCTEST_CONFIG_WITH_DELETED_FUNCTIONS
-#endif // DOCTEST_CONFIG_WITH_DELETED_FUNCTIONS
-#ifndef DOCTEST_CONFIG_WITH_RVALUE_REFERENCES
-#define DOCTEST_CONFIG_WITH_RVALUE_REFERENCES
-#endif // DOCTEST_CONFIG_WITH_RVALUE_REFERENCES
-#ifndef DOCTEST_CONFIG_WITH_NULLPTR
-#define DOCTEST_CONFIG_WITH_NULLPTR
-#endif // DOCTEST_CONFIG_WITH_NULLPTR
-#ifndef DOCTEST_CONFIG_WITH_STATIC_ASSERT
-#define DOCTEST_CONFIG_WITH_STATIC_ASSERT
-#endif // DOCTEST_CONFIG_WITH_STATIC_ASSERT
 #ifndef DOCTEST_CONFIG_WITH_VARIADIC_MACROS
 #define DOCTEST_CONFIG_WITH_VARIADIC_MACROS
 #endif // DOCTEST_CONFIG_WITH_VARIADIC_MACROS
-#ifndef DOCTEST_CONFIG_WITH_OVERRIDE
-#define DOCTEST_CONFIG_WITH_OVERRIDE
-#endif // DOCTEST_CONFIG_WITH_OVERRIDE
 #endif // __cplusplus >= 201103L
 
 // general compiler feature support table: https://en.cppreference.com/w/cpp/compiler_support
@@ -284,62 +269,6 @@ DOCTEST_MSVC_SUPPRESS_WARNING(26444) // Avoid unnamed objects with custom constr
 // MSVC++ 9.0  _MSC_VER == 1500 (Visual Studio 2008)
 // MSVC++ 8.0  _MSC_VER == 1400 (Visual Studio 2005)
 
-// deleted functions
-
-#ifndef DOCTEST_CONFIG_WITH_DELETED_FUNCTIONS
-#if DOCTEST_MSVC >= DOCTEST_COMPILER(18, 0, 0)
-#define DOCTEST_CONFIG_WITH_DELETED_FUNCTIONS
-#endif // MSVC
-#if DOCTEST_CLANG && DOCTEST_CLANG_HAS_FEATURE(cxx_deleted_functions)
-#define DOCTEST_CONFIG_WITH_DELETED_FUNCTIONS
-#endif // clang
-#if DOCTEST_GCC >= DOCTEST_COMPILER(4, 5, 0) && defined(__GXX_EXPERIMENTAL_CXX0X__)
-#define DOCTEST_CONFIG_WITH_DELETED_FUNCTIONS
-#endif // GCC
-#endif // DOCTEST_CONFIG_WITH_DELETED_FUNCTIONS
-
-#if defined(DOCTEST_CONFIG_NO_DELETED_FUNCTIONS) && defined(DOCTEST_CONFIG_WITH_DELETED_FUNCTIONS)
-#undef DOCTEST_CONFIG_WITH_DELETED_FUNCTIONS
-#endif // DOCTEST_CONFIG_NO_DELETED_FUNCTIONS
-
-// rvalue references
-
-#ifndef DOCTEST_CONFIG_WITH_RVALUE_REFERENCES
-#if DOCTEST_MSVC >= DOCTEST_COMPILER(16, 0, 0)
-#define DOCTEST_CONFIG_WITH_RVALUE_REFERENCES
-#endif // MSVC
-#if DOCTEST_CLANG && DOCTEST_CLANG_HAS_FEATURE(cxx_rvalue_references)
-#define DOCTEST_CONFIG_WITH_RVALUE_REFERENCES
-#endif // clang
-#if DOCTEST_GCC >= DOCTEST_COMPILER(4, 3, 0) && defined(__GXX_EXPERIMENTAL_CXX0X__)
-#define DOCTEST_CONFIG_WITH_RVALUE_REFERENCES
-#endif // GCC
-#endif // DOCTEST_CONFIG_WITH_RVALUE_REFERENCES
-
-#if defined(DOCTEST_CONFIG_NO_RVALUE_REFERENCES) && defined(DOCTEST_CONFIG_WITH_RVALUE_REFERENCES)
-#undef DOCTEST_CONFIG_WITH_RVALUE_REFERENCES
-#endif // DOCTEST_CONFIG_NO_RVALUE_REFERENCES
-
-// nullptr
-
-#ifndef DOCTEST_CONFIG_WITH_NULLPTR
-#if DOCTEST_CLANG && DOCTEST_CLANG_HAS_FEATURE(cxx_nullptr)
-#define DOCTEST_CONFIG_WITH_NULLPTR
-#endif // clang
-#if DOCTEST_GCC >= DOCTEST_COMPILER(4, 6, 0) && defined(__GXX_EXPERIMENTAL_CXX0X__)
-#define DOCTEST_CONFIG_WITH_NULLPTR
-#endif // GCC
-#if DOCTEST_MSVC >= DOCTEST_COMPILER(16, 0, 0)
-#define DOCTEST_CONFIG_WITH_NULLPTR
-#endif // MSVC
-#endif // DOCTEST_CONFIG_WITH_NULLPTR
-
-#if defined(DOCTEST_CONFIG_NO_NULLPTR) && defined(DOCTEST_CONFIG_WITH_NULLPTR)
-#undef DOCTEST_CONFIG_WITH_NULLPTR
-#endif // DOCTEST_CONFIG_NO_NULLPTR
-
-// variadic macros
-
 #ifndef DOCTEST_CONFIG_WITH_VARIADIC_MACROS
 #if DOCTEST_MSVC >= DOCTEST_COMPILER(14, 0, 0) && !defined(__EDGE__)
 #define DOCTEST_CONFIG_WITH_VARIADIC_MACROS
@@ -353,26 +282,6 @@ DOCTEST_MSVC_SUPPRESS_WARNING(26444) // Avoid unnamed objects with custom constr
 #if defined(DOCTEST_CONFIG_NO_VARIADIC_MACROS) && defined(DOCTEST_CONFIG_WITH_VARIADIC_MACROS)
 #undef DOCTEST_CONFIG_WITH_VARIADIC_MACROS
 #endif // DOCTEST_CONFIG_NO_VARIADIC_MACROS
-
-// static_assert
-
-#ifndef DOCTEST_CONFIG_WITH_STATIC_ASSERT
-#if DOCTEST_CLANG && DOCTEST_CLANG_HAS_FEATURE(cxx_static_assert)
-#define DOCTEST_CONFIG_WITH_STATIC_ASSERT
-#endif // clang
-#if DOCTEST_GCC >= DOCTEST_COMPILER(4, 3, 0) && defined(__GXX_EXPERIMENTAL_CXX0X__)
-#define DOCTEST_CONFIG_WITH_STATIC_ASSERT
-#endif // GCC
-#if DOCTEST_MSVC >= DOCTEST_COMPILER(16, 0, 0)
-#define DOCTEST_CONFIG_WITH_STATIC_ASSERT
-#endif // MSVC
-#endif // DOCTEST_CONFIG_WITH_STATIC_ASSERT
-
-#if defined(DOCTEST_CONFIG_NO_STATIC_ASSERT) && defined(DOCTEST_CONFIG_WITH_STATIC_ASSERT)
-#undef DOCTEST_CONFIG_WITH_STATIC_ASSERT
-#endif // DOCTEST_CONFIG_NO_STATIC_ASSERT
-
-// other stuff...
 
 #if DOCTEST_MSVC && !defined(DOCTEST_CONFIG_WINDOWS_SEH)
 #define DOCTEST_CONFIG_WINDOWS_SEH
@@ -446,12 +355,6 @@ DOCTEST_MSVC_SUPPRESS_WARNING(26444) // Avoid unnamed objects with custom constr
 #ifndef DOCTEST_CONFIG_NUM_CAPTURES_ON_STACK
 #define DOCTEST_CONFIG_NUM_CAPTURES_ON_STACK 5
 #endif // DOCTEST_CONFIG_NUM_CAPTURES_ON_STACK
-
-#ifdef DOCTEST_CONFIG_WITH_OVERRIDE
-#define DOCTEST_OVERRIDE override
-#else // DOCTEST_CONFIG_WITH_OVERRIDE
-#define DOCTEST_OVERRIDE
-#endif // DOCTEST_CONFIG_WITH_OVERRIDE
 
 // =================================================================================================
 // == FEATURE DETECTION END ========================================================================
@@ -543,26 +446,6 @@ typedef basic_ostream<char, char_traits<char>> ostream;
 } // namespace std
 #endif // _LIBCPP_VERSION || DOCTEST_CONFIG_USE_IOSFWD
 
-// static assert macro - because of the c++98 support requires that the message is an
-// identifier (no spaces and not a C string) - example without quotes: I_am_a_message
-// taken from here: http://stackoverflow.com/a/1980156/3162383
-#ifdef DOCTEST_CONFIG_WITH_STATIC_ASSERT
-#define DOCTEST_STATIC_ASSERT(expression, message) static_assert(expression, #message)
-#else // DOCTEST_CONFIG_WITH_STATIC_ASSERT
-#define DOCTEST_STATIC_ASSERT(expression, message)                                                 \
-    struct DOCTEST_CAT(__static_assertion_at_line_, __LINE__)                                      \
-    {                                                                                              \
-        doctest::detail::static_assert_impl::StaticAssertion<static_cast<bool>((expression))>      \
-                DOCTEST_CAT(DOCTEST_CAT(DOCTEST_CAT(STATIC_ASSERTION_FAILED_AT_LINE_, __LINE__),   \
-                                        _),                                                        \
-                            message);                                                              \
-    };                                                                                             \
-    typedef doctest::detail::static_assert_impl::StaticAssertionTest<static_cast<int>(             \
-            sizeof(DOCTEST_CAT(__static_assertion_at_line_, __LINE__)))>                           \
-            DOCTEST_CAT(__static_assertion_test_at_line_, __LINE__)
-#endif // DOCTEST_CONFIG_WITH_STATIC_ASSERT
-
-#ifdef DOCTEST_CONFIG_WITH_NULLPTR
 #ifdef _LIBCPP_VERSION
 #include <cstddef>
 #else  // _LIBCPP_VERSION
@@ -571,7 +454,6 @@ namespace std
 typedef decltype(nullptr) nullptr_t;
 }
 #endif // _LIBCPP_VERSION
-#endif // DOCTEST_CONFIG_WITH_NULLPTR
 
 #ifdef DOCTEST_CONFIG_INCLUDE_TYPE_TRAITS
 #include <type_traits>
@@ -659,10 +541,8 @@ public:
 
     String operator+(const String& other) const { return String(*this) += other; }
 
-#ifdef DOCTEST_CONFIG_WITH_RVALUE_REFERENCES
     String(String&& other);
     String& operator=(String&& other);
-#endif // DOCTEST_CONFIG_WITH_RVALUE_REFERENCES
 
     bool isOnStack() const { return (buf[last] & 128) == 0; }
 
@@ -956,22 +836,6 @@ struct ContextOptions //!OCLINT too many fields
 
 namespace detail
 {
-#ifndef DOCTEST_CONFIG_WITH_STATIC_ASSERT
-    namespace static_assert_impl
-    {
-        template <bool>
-        struct StaticAssertion;
-
-        template <>
-        struct StaticAssertion<true>
-        {};
-
-        template <int i>
-        struct StaticAssertionTest
-        {};
-    }  // namespace static_assert_impl
-#endif // DOCTEST_CONFIG_WITH_STATIC_ASSERT
-
     template <bool CONDITION, typename TYPE = void>
     struct enable_if
     {};
@@ -1209,10 +1073,7 @@ DOCTEST_INTERFACE String toString(int long in);
 DOCTEST_INTERFACE String toString(int long unsigned in);
 DOCTEST_INTERFACE String toString(int long long in);
 DOCTEST_INTERFACE String toString(int long long unsigned in);
-
-#ifdef DOCTEST_CONFIG_WITH_NULLPTR
 DOCTEST_INTERFACE String toString(std::nullptr_t in);
-#endif // DOCTEST_CONFIG_WITH_NULLPTR
 
 class DOCTEST_INTERFACE Approx
 {
@@ -1357,6 +1218,25 @@ namespace detail
         return toString(lhs) + op + toString(rhs);
     }
 
+#define DOCTEST_DO_BINARY_EXPRESSION_COMPARISON(op, op_str, op_macro)                              \
+    template <typename R>                                                                          \
+    DOCTEST_NOINLINE Result operator op(const DOCTEST_REF_WRAP(R) rhs) {                           \
+        bool res = op_macro(lhs, rhs);                                                             \
+        if(m_at & assertType::is_false)                                                            \
+            res = !res;                                                                            \
+        if(!res || doctest::detail::getContextOptions()->success)                                  \
+            return Result(res, stringifyBinaryExpr(lhs, op_str, rhs));                             \
+        return Result(res);                                                                        \
+    }
+
+#define DOCTEST_FORBIT_EXPRESSION(rt, op)                                                          \
+    template <typename R>                                                                          \
+    rt& operator op(const R&) {                                                                    \
+        static_assert(deferred_false<R>::value,                                                    \
+                      "Expression Too Complex Please Rewrite As Binary Comparison!");              \
+        return *this;                                                                              \
+    }
+
     struct DOCTEST_INTERFACE Result
     {
         bool   m_passed;
@@ -1376,31 +1256,29 @@ namespace detail
 
         operator bool() { return !m_passed; }
 
-        // clang-format off
         // forbidding some expressions based on this table: http://en.cppreference.com/w/cpp/language/operator_precedence
-        template <typename R> Result& operator&  (const R&) { DOCTEST_STATIC_ASSERT(deferred_false<R>::value, Expression_Too_Complex_Please_Rewrite_As_Binary_Comparison); return *this; }
-        template <typename R> Result& operator^  (const R&) { DOCTEST_STATIC_ASSERT(deferred_false<R>::value, Expression_Too_Complex_Please_Rewrite_As_Binary_Comparison); return *this; }
-        template <typename R> Result& operator|  (const R&) { DOCTEST_STATIC_ASSERT(deferred_false<R>::value, Expression_Too_Complex_Please_Rewrite_As_Binary_Comparison); return *this; }
-        template <typename R> Result& operator&& (const R&) { DOCTEST_STATIC_ASSERT(deferred_false<R>::value, Expression_Too_Complex_Please_Rewrite_As_Binary_Comparison); return *this; }
-        template <typename R> Result& operator|| (const R&) { DOCTEST_STATIC_ASSERT(deferred_false<R>::value, Expression_Too_Complex_Please_Rewrite_As_Binary_Comparison); return *this; }
-        template <typename R> Result& operator== (const R&) { DOCTEST_STATIC_ASSERT(deferred_false<R>::value, Expression_Too_Complex_Please_Rewrite_As_Binary_Comparison); return *this; }
-        template <typename R> Result& operator!= (const R&) { DOCTEST_STATIC_ASSERT(deferred_false<R>::value, Expression_Too_Complex_Please_Rewrite_As_Binary_Comparison); return *this; }
-        template <typename R> Result& operator<  (const R&) { DOCTEST_STATIC_ASSERT(deferred_false<R>::value, Expression_Too_Complex_Please_Rewrite_As_Binary_Comparison); return *this; }
-        template <typename R> Result& operator>  (const R&) { DOCTEST_STATIC_ASSERT(deferred_false<R>::value, Expression_Too_Complex_Please_Rewrite_As_Binary_Comparison); return *this; }
-        template <typename R> Result& operator<= (const R&) { DOCTEST_STATIC_ASSERT(deferred_false<R>::value, Expression_Too_Complex_Please_Rewrite_As_Binary_Comparison); return *this; }
-        template <typename R> Result& operator>= (const R&) { DOCTEST_STATIC_ASSERT(deferred_false<R>::value, Expression_Too_Complex_Please_Rewrite_As_Binary_Comparison); return *this; }
-        template <typename R> Result& operator=  (const R&) { DOCTEST_STATIC_ASSERT(deferred_false<R>::value, Expression_Too_Complex_Please_Rewrite_As_Binary_Comparison); return *this; }
-        template <typename R> Result& operator+= (const R&) { DOCTEST_STATIC_ASSERT(deferred_false<R>::value, Expression_Too_Complex_Please_Rewrite_As_Binary_Comparison); return *this; }
-        template <typename R> Result& operator-= (const R&) { DOCTEST_STATIC_ASSERT(deferred_false<R>::value, Expression_Too_Complex_Please_Rewrite_As_Binary_Comparison); return *this; }
-        template <typename R> Result& operator*= (const R&) { DOCTEST_STATIC_ASSERT(deferred_false<R>::value, Expression_Too_Complex_Please_Rewrite_As_Binary_Comparison); return *this; }
-        template <typename R> Result& operator/= (const R&) { DOCTEST_STATIC_ASSERT(deferred_false<R>::value, Expression_Too_Complex_Please_Rewrite_As_Binary_Comparison); return *this; }
-        template <typename R> Result& operator%= (const R&) { DOCTEST_STATIC_ASSERT(deferred_false<R>::value, Expression_Too_Complex_Please_Rewrite_As_Binary_Comparison); return *this; }
-        template <typename R> Result& operator<<=(const R&) { DOCTEST_STATIC_ASSERT(deferred_false<R>::value, Expression_Too_Complex_Please_Rewrite_As_Binary_Comparison); return *this; }
-        template <typename R> Result& operator>>=(const R&) { DOCTEST_STATIC_ASSERT(deferred_false<R>::value, Expression_Too_Complex_Please_Rewrite_As_Binary_Comparison); return *this; }
-        template <typename R> Result& operator&= (const R&) { DOCTEST_STATIC_ASSERT(deferred_false<R>::value, Expression_Too_Complex_Please_Rewrite_As_Binary_Comparison); return *this; }
-        template <typename R> Result& operator^= (const R&) { DOCTEST_STATIC_ASSERT(deferred_false<R>::value, Expression_Too_Complex_Please_Rewrite_As_Binary_Comparison); return *this; }
-        template <typename R> Result& operator|= (const R&) { DOCTEST_STATIC_ASSERT(deferred_false<R>::value, Expression_Too_Complex_Please_Rewrite_As_Binary_Comparison); return *this; }
-        // clang-format on
+        DOCTEST_FORBIT_EXPRESSION(Result, &)
+        DOCTEST_FORBIT_EXPRESSION(Result, ^)
+        DOCTEST_FORBIT_EXPRESSION(Result, |)
+        DOCTEST_FORBIT_EXPRESSION(Result, &&)
+        DOCTEST_FORBIT_EXPRESSION(Result, ||)
+        DOCTEST_FORBIT_EXPRESSION(Result, ==)
+        DOCTEST_FORBIT_EXPRESSION(Result, !=)
+        DOCTEST_FORBIT_EXPRESSION(Result, <)
+        DOCTEST_FORBIT_EXPRESSION(Result, >)
+        DOCTEST_FORBIT_EXPRESSION(Result, <=)
+        DOCTEST_FORBIT_EXPRESSION(Result, >=)
+        DOCTEST_FORBIT_EXPRESSION(Result, =)
+        DOCTEST_FORBIT_EXPRESSION(Result, +=)
+        DOCTEST_FORBIT_EXPRESSION(Result, -=)
+        DOCTEST_FORBIT_EXPRESSION(Result, *=)
+        DOCTEST_FORBIT_EXPRESSION(Result, /=)
+        DOCTEST_FORBIT_EXPRESSION(Result, %=)
+        DOCTEST_FORBIT_EXPRESSION(Result, <<=)
+        DOCTEST_FORBIT_EXPRESSION(Result, >>=)
+        DOCTEST_FORBIT_EXPRESSION(Result, &=)
+        DOCTEST_FORBIT_EXPRESSION(Result, ^=)
+        DOCTEST_FORBIT_EXPRESSION(Result, |=)
     };
 
 #ifndef DOCTEST_CONFIG_NO_COMPARISON_WARNING_SUPPRESSION
@@ -1465,25 +1343,6 @@ namespace detail
 #define DOCTEST_CMP_LE(l, r) le(l, r)
 #endif // DOCTEST_CONFIG_TREAT_CHAR_STAR_AS_STRING
 
-#define DOCTEST_DO_BINARY_EXPRESSION_COMPARISON(op, op_str, op_macro)                              \
-    template <typename R>                                                                          \
-    DOCTEST_NOINLINE Result operator op(const DOCTEST_REF_WRAP(R) rhs) {                           \
-        bool res = op_macro(lhs, rhs);                                                             \
-        if(m_at & assertType::is_false)                                                            \
-            res = !res;                                                                            \
-        if(!res || doctest::detail::getContextOptions()->success)                                  \
-            return Result(res, stringifyBinaryExpr(lhs, op_str, rhs));                             \
-        return Result(res);                                                                        \
-    }
-
-#define DOCTEST_FORBIT_EXPRESSION(op)                                                              \
-    template <typename R>                                                                          \
-    Expression_lhs& operator op(const R&) {                                                        \
-        DOCTEST_STATIC_ASSERT(deferred_false<R>::value,                                            \
-                              Expression_Too_Complex_Please_Rewrite_As_Binary_Comparison);         \
-        return *this;                                                                              \
-    }
-
     template <typename L>
     // cppcheck-suppress copyCtorAndEqOperator
     struct Expression_lhs
@@ -1515,26 +1374,26 @@ namespace detail
         // clang-format on
 
         // forbidding some expressions based on this table: http://en.cppreference.com/w/cpp/language/operator_precedence
-        DOCTEST_FORBIT_EXPRESSION(&)
-        DOCTEST_FORBIT_EXPRESSION(^)
-        DOCTEST_FORBIT_EXPRESSION(|)
-        DOCTEST_FORBIT_EXPRESSION(&&)
-        DOCTEST_FORBIT_EXPRESSION(||)
-        DOCTEST_FORBIT_EXPRESSION(=)
-        DOCTEST_FORBIT_EXPRESSION(+=)
-        DOCTEST_FORBIT_EXPRESSION(-=)
-        DOCTEST_FORBIT_EXPRESSION(*=)
-        DOCTEST_FORBIT_EXPRESSION(/=)
-        DOCTEST_FORBIT_EXPRESSION(%=)
-        DOCTEST_FORBIT_EXPRESSION(<<=)
-        DOCTEST_FORBIT_EXPRESSION(>>=)
-        DOCTEST_FORBIT_EXPRESSION(&=)
-        DOCTEST_FORBIT_EXPRESSION(^=)
-        DOCTEST_FORBIT_EXPRESSION(|=)
+        DOCTEST_FORBIT_EXPRESSION(Expression_lhs, &)
+        DOCTEST_FORBIT_EXPRESSION(Expression_lhs, ^)
+        DOCTEST_FORBIT_EXPRESSION(Expression_lhs, |)
+        DOCTEST_FORBIT_EXPRESSION(Expression_lhs, &&)
+        DOCTEST_FORBIT_EXPRESSION(Expression_lhs, ||)
+        DOCTEST_FORBIT_EXPRESSION(Expression_lhs, =)
+        DOCTEST_FORBIT_EXPRESSION(Expression_lhs, +=)
+        DOCTEST_FORBIT_EXPRESSION(Expression_lhs, -=)
+        DOCTEST_FORBIT_EXPRESSION(Expression_lhs, *=)
+        DOCTEST_FORBIT_EXPRESSION(Expression_lhs, /=)
+        DOCTEST_FORBIT_EXPRESSION(Expression_lhs, %=)
+        DOCTEST_FORBIT_EXPRESSION(Expression_lhs, <<=)
+        DOCTEST_FORBIT_EXPRESSION(Expression_lhs, >>=)
+        DOCTEST_FORBIT_EXPRESSION(Expression_lhs, &=)
+        DOCTEST_FORBIT_EXPRESSION(Expression_lhs, ^=)
+        DOCTEST_FORBIT_EXPRESSION(Expression_lhs, |=)
         // these 2 are unfortunate because they should be allowed - they have higher precedence over the comparisons, but the
         // ExpressionDecomposer class uses the left shift operator to capture the left operand of the binary expression...
-        DOCTEST_FORBIT_EXPRESSION(<<)
-        DOCTEST_FORBIT_EXPRESSION(>>)
+        DOCTEST_FORBIT_EXPRESSION(Expression_lhs, <<)
+        DOCTEST_FORBIT_EXPRESSION(Expression_lhs, >>)
     };
 
 #ifndef DOCTEST_CONFIG_NO_COMPARISON_WARNING_SUPPRESSION
@@ -1874,7 +1733,7 @@ namespace detail
 
             explicit Capture(const T* in)
                     : capture(in) {}
-            void toStream(std::ostream* s) const DOCTEST_OVERRIDE { detail::toStream(s, *capture); }
+            void toStream(std::ostream* s) const override { detail::toStream(s, *capture); }
         };
 
         struct Chunk
@@ -1966,15 +1825,13 @@ namespace detail
             }
         }
 
-#ifdef DOCTEST_CONFIG_WITH_RVALUE_REFERENCES
         template <typename T>
         ContextBuilder& operator<<(const T&&) {
-            DOCTEST_STATIC_ASSERT(
-                    deferred_false<T>::value,
-                    Cannot_pass_temporaries_or_rvalues_to_the_streaming_operator_because_it_caches_pointers_to_the_passed_objects_for_lazy_evaluation);
+            static_assert(deferred_false<T>::value,
+                          "Cannot pass temporaries or rvalues to the streaming operator because it "
+                          "caches pointers to the passed objects for lazy evaluation!");
             return *this;
         }
-#endif // DOCTEST_CONFIG_WITH_RVALUE_REFERENCES
     };
 
     class ContextScope : public IContextScope

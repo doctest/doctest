@@ -24,7 +24,6 @@ matrix:
 environment:
   matrix:
   - gen: "MinGW Makefiles"
-  - gen: "Visual Studio 9 2008"
   - gen: "Visual Studio 10 2010"
   - gen: "Visual Studio 11 2012"
   - gen: "Visual Studio 12 2013"
@@ -62,19 +61,18 @@ build_script:
   - IF "%gen%" == "MinGW Makefiles" cd ..
   - IF "%gen%" == "MinGW Makefiles" appveyor exit
   # ============= VISUAL STUDIO
-  # x64 - not enabled for 2008 because cmake cannot find the compiler for Win64
-  - IF NOT "%gen%" == "Visual Studio 9 2008" mkdir debug_64
-  - IF NOT "%gen%" == "Visual Studio 9 2008" cd debug_64
-  - IF NOT "%gen%" == "Visual Studio 9 2008" cmake .. -G "%gen% Win64"
-  - IF NOT "%gen%" == "Visual Studio 9 2008" msbuild doctest.sln /p:Configuration=Debug;Platform=x64 /maxcpucount
-  - IF NOT "%gen%" == "Visual Studio 9 2008" ctest -C Debug --output-on-failure
-  - IF NOT "%gen%" == "Visual Studio 9 2008" cd ..
-  - IF NOT "%gen%" == "Visual Studio 9 2008" mkdir release_64
-  - IF NOT "%gen%" == "Visual Studio 9 2008" cd release_64
-  - IF NOT "%gen%" == "Visual Studio 9 2008" cmake .. -G "%gen% Win64"
-  - IF NOT "%gen%" == "Visual Studio 9 2008" msbuild doctest.sln /p:Configuration=Release;Platform=x64 /maxcpucount
-  - IF NOT "%gen%" == "Visual Studio 9 2008" ctest -C Release --output-on-failure
-  - IF NOT "%gen%" == "Visual Studio 9 2008" cd ..
+  - mkdir debug_64
+  - cd debug_64
+  - cmake .. -G "%gen% Win64"
+  - msbuild doctest.sln /p:Configuration=Debug;Platform=x64 /maxcpucount
+  - ctest -C Debug --output-on-failure
+  - cd ..
+  - mkdir release_64
+  - cd release_64
+  - cmake .. -G "%gen% Win64"
+  - msbuild doctest.sln /p:Configuration=Release;Platform=x64 /maxcpucount
+  - ctest -C Release --output-on-failure
+  - cd ..
   # x86
   - mkdir debug_86
   - cd debug_86
