@@ -24,12 +24,15 @@ https://www.boost.org/doc/libs/1_67_0/libs/test/doc/html/index.html
 
 
 
+DOCTEST_STRIP_PARENS
 
 
 
 examples
 
 thread sanitizer tests
+
+coverage
 
 documentation... :(
     also faq
@@ -41,12 +44,6 @@ profit :D
 ask in the reddit thread what from the roadmap they would like to see next
 
 
-think about removing these:
-    DOCTEST_CONFIG_INCLUDE_TYPE_TRAITS
-    DOCTEST_CONFIG_TREAT_CHAR_STAR_AS_STRING
-    DOCTEST_CONFIG_ASSERTION_PARAMETERS_BY_VALUE
-
-
 
 OMG!!! THIS!!!
 https://github.com/onqtam/doctest/issues/114
@@ -54,6 +51,10 @@ isRunningInTest()
 
 
 
+header with extensions
+    - demangling
+    - stringification of types from std
+    - esoteric reporters
 
 
 

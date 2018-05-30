@@ -9,6 +9,11 @@ Planned features for future releases - order changes constantly...
 
 ### For 2.0:
 
+- improve compile times further
+    - based on ideas from https://slides.com/onqtam/faster_builds/
+        - anonymous namespaces for internal linkage of implementation part
+        - move absolutely everything possible away from fwd and into impl
+    - move more inline functions from fwd to impl (like Approx stuff, also the inline string stuff...), also ifdef can_use_op<> & friends
 - reporters
     - output to file
     - a system for writing custom reporters
@@ -35,9 +40,6 @@ Planned features for future releases - order changes constantly...
 
 ### For 2.1:
 
-- improve compile times further
-    - based on ideas from https://slides.com/onqtam/faster_builds/
-    - move more inline functions from fwd to impl (like Approx stuff, also the inline string stuff...), also ifdef can_use_op<> & friends
 - Value-Parameterized test cases
 - generators? - look at Catch - and investigate what they are
 - look at property based testing

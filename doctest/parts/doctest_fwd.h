@@ -375,13 +375,6 @@ DOCTEST_MSVC_SUPPRESS_WARNING(26444) // Avoid unnamed objects with custom constr
 #define DOCTEST_TOSTR_IMPL(...) #__VA_ARGS__
 #define DOCTEST_TOSTR(...) DOCTEST_TOSTR_IMPL(__VA_ARGS__)
 
-// counts the number of elements in a C array
-#define DOCTEST_COUNTOF(x) (sizeof(x) / sizeof(x[0]))
-
-#define DOCTEST_COMMA ,
-
-#define DOCTEST_EMPTY
-
 #ifndef DOCTEST_CONFIG_ASSERTION_PARAMETERS_BY_VALUE
 #define DOCTEST_REF_WRAP(x) x&
 #else // DOCTEST_CONFIG_ASSERTION_PARAMETERS_BY_VALUE
@@ -402,12 +395,6 @@ DOCTEST_MSVC_SUPPRESS_WARNING(26444) // Avoid unnamed objects with custom constr
 #define DOCTEST_GLOBAL_NO_WARNINGS(var)                                                            \
     DOCTEST_CLANG_SUPPRESS_WARNING_WITH_PUSH("-Wglobal-constructors") static int var DOCTEST_UNUSED
 #define DOCTEST_GLOBAL_NO_WARNINGS_END() DOCTEST_CLANG_SUPPRESS_WARNING_POP
-
-#ifdef DOCTEST_CONFIG_DISABLE
-#define DOCTEST_BRANCH_ON_DISABLED(if_disabled, if_not_disabled) if_disabled
-#else // DOCTEST_CONFIG_DISABLE
-#define DOCTEST_BRANCH_ON_DISABLED(if_disabled, if_not_disabled) if_not_disabled
-#endif // DOCTEST_CONFIG_DISABLE
 
 // should probably take a look at https://github.com/scottt/debugbreak
 #ifdef DOCTEST_PLATFORM_MAC
@@ -833,6 +820,7 @@ struct ContextOptions //!OCLINT too many fields
 
 namespace detail
 {
+#if defined(DOCTEST_CONFIG_TREAT_CHAR_STAR_AS_STRING) || defined(DOCTEST_CONFIG_INCLUDE_TYPE_TRAITS)
     template <bool CONDITION, typename TYPE = void>
     struct enable_if
     {};
@@ -840,6 +828,7 @@ namespace detail
     template <typename TYPE>
     struct enable_if<true, TYPE>
     { typedef TYPE type; };
+#endif // DOCTEST_CONFIG_TREAT_CHAR_STAR_AS_STRING) || DOCTEST_CONFIG_INCLUDE_TYPE_TRAITS
 
     template <typename T>
     struct deferred_false
@@ -1021,7 +1010,7 @@ struct Types<>
 { typedef detail::NullType Result; };
 
 template <typename T>
-struct StringMaker : detail::StringMakerBase<detail::has_insertion_operator<T>::value>
+struct StringMaker : public detail::StringMakerBase<detail::has_insertion_operator<T>::value>
 {};
 
 template <typename T>
@@ -1176,6 +1165,7 @@ inline String toString<Approx>(const DOCTEST_REF_WRAP(Approx) value) {
 namespace detail
 {
     // clang-format off
+#ifdef DOCTEST_CONFIG_TREAT_CHAR_STAR_AS_STRING
     template<class T>               struct decay_array       { typedef T type; };
     template<class T, unsigned N>   struct decay_array<T[N]> { typedef T* type; };
     template<class T>               struct decay_array<T[]>  { typedef T* type; };
@@ -1184,7 +1174,8 @@ namespace detail
     template<>          struct not_char_pointer<char*>       { enum { value = 0 }; };
     template<>          struct not_char_pointer<const char*> { enum { value = 0 }; };
 
-    template<class T> struct can_use_op : not_char_pointer<typename decay_array<T>::type> {};
+    template<class T> struct can_use_op : public not_char_pointer<typename decay_array<T>::type> {};
+#endif // DOCTEST_CONFIG_TREAT_CHAR_STAR_AS_STRING
     // clang-format on
 
     struct TestFailureException
@@ -1303,7 +1294,7 @@ namespace detail
 
 #endif // DOCTEST_CONFIG_NO_COMPARISON_WARNING_SUPPRESSION
 
-// clang-format off
+    // clang-format off
 #ifndef DOCTEST_CONFIG_TREAT_CHAR_STAR_AS_STRING
 #define DOCTEST_COMPARISON_RETURN_TYPE bool
 #else // DOCTEST_CONFIG_TREAT_CHAR_STAR_AS_STRING
@@ -1315,14 +1306,21 @@ namespace detail
     inline bool le(const char* lhs, const char* rhs) { return String(lhs) <= String(rhs); }
     inline bool ge(const char* lhs, const char* rhs) { return String(lhs) >= String(rhs); }
 #endif // DOCTEST_CONFIG_TREAT_CHAR_STAR_AS_STRING
-
-    template <typename L, typename R> DOCTEST_COMPARISON_RETURN_TYPE eq(const DOCTEST_REF_WRAP(L) lhs, const DOCTEST_REF_WRAP(R) rhs) { return lhs == rhs; }
-    template <typename L, typename R> DOCTEST_COMPARISON_RETURN_TYPE ne(const DOCTEST_REF_WRAP(L) lhs, const DOCTEST_REF_WRAP(R) rhs) { return lhs != rhs; }
-    template <typename L, typename R> DOCTEST_COMPARISON_RETURN_TYPE lt(const DOCTEST_REF_WRAP(L) lhs, const DOCTEST_REF_WRAP(R) rhs) { return lhs <  rhs; }
-    template <typename L, typename R> DOCTEST_COMPARISON_RETURN_TYPE gt(const DOCTEST_REF_WRAP(L) lhs, const DOCTEST_REF_WRAP(R) rhs) { return lhs >  rhs; }
-    template <typename L, typename R> DOCTEST_COMPARISON_RETURN_TYPE le(const DOCTEST_REF_WRAP(L) lhs, const DOCTEST_REF_WRAP(R) rhs) { return lhs <= rhs; }
-    template <typename L, typename R> DOCTEST_COMPARISON_RETURN_TYPE ge(const DOCTEST_REF_WRAP(L) lhs, const DOCTEST_REF_WRAP(R) rhs) { return lhs >= rhs; }
     // clang-format on
+
+#define DOCTEST_RELATIONAL_OP(name, op)                                                            \
+    template <typename L, typename R>                                                              \
+    DOCTEST_COMPARISON_RETURN_TYPE name(const DOCTEST_REF_WRAP(L) lhs,                             \
+                                        const DOCTEST_REF_WRAP(R) rhs) {                           \
+        return lhs op rhs;                                                                         \
+    }
+
+    DOCTEST_RELATIONAL_OP(eq, ==)
+    DOCTEST_RELATIONAL_OP(ne, !=)
+    DOCTEST_RELATIONAL_OP(lt, <)
+    DOCTEST_RELATIONAL_OP(gt, >)
+    DOCTEST_RELATIONAL_OP(le, <=)
+    DOCTEST_RELATIONAL_OP(ge, >=)
 
 #ifndef DOCTEST_CONFIG_TREAT_CHAR_STAR_AS_STRING
 #define DOCTEST_CMP_EQ(l, r) l == r
@@ -1497,13 +1495,17 @@ namespace detail
 
     // clang-format off
     template <int, class L, class R> struct RelationalComparator     { bool operator()(const DOCTEST_REF_WRAP(L),     const DOCTEST_REF_WRAP(R)    ) const { return false;        } };
-    template <class L, class R> struct RelationalComparator<0, L, R> { bool operator()(const DOCTEST_REF_WRAP(L) lhs, const DOCTEST_REF_WRAP(R) rhs) const { return eq(lhs, rhs); } };
-    template <class L, class R> struct RelationalComparator<1, L, R> { bool operator()(const DOCTEST_REF_WRAP(L) lhs, const DOCTEST_REF_WRAP(R) rhs) const { return ne(lhs, rhs); } };
-    template <class L, class R> struct RelationalComparator<2, L, R> { bool operator()(const DOCTEST_REF_WRAP(L) lhs, const DOCTEST_REF_WRAP(R) rhs) const { return gt(lhs, rhs); } };
-    template <class L, class R> struct RelationalComparator<3, L, R> { bool operator()(const DOCTEST_REF_WRAP(L) lhs, const DOCTEST_REF_WRAP(R) rhs) const { return lt(lhs, rhs); } };
-    template <class L, class R> struct RelationalComparator<4, L, R> { bool operator()(const DOCTEST_REF_WRAP(L) lhs, const DOCTEST_REF_WRAP(R) rhs) const { return ge(lhs, rhs); } };
-    template <class L, class R> struct RelationalComparator<5, L, R> { bool operator()(const DOCTEST_REF_WRAP(L) lhs, const DOCTEST_REF_WRAP(R) rhs) const { return le(lhs, rhs); } };
+    
+#define DOCTEST_BINARY_RELATIONAL_OP(n, op) \
+    template <class L, class R> struct RelationalComparator<n, L, R> { bool operator()(const DOCTEST_REF_WRAP(L) lhs, const DOCTEST_REF_WRAP(R) rhs) const { return op(lhs, rhs); } };
     // clang-format on
+
+    DOCTEST_BINARY_RELATIONAL_OP(0, eq)
+    DOCTEST_BINARY_RELATIONAL_OP(1, ne)
+    DOCTEST_BINARY_RELATIONAL_OP(2, gt)
+    DOCTEST_BINARY_RELATIONAL_OP(3, lt)
+    DOCTEST_BINARY_RELATIONAL_OP(4, ge)
+    DOCTEST_BINARY_RELATIONAL_OP(5, le)
 
     struct DOCTEST_INTERFACE ResultBuilder : public AssertData
     {
@@ -1645,7 +1647,7 @@ namespace detail
             return false;
         }
 
-    protected:
+    private:
         String (*m_translateFunction)(T);
     };
 
@@ -1679,7 +1681,7 @@ namespace detail
     };
 
     template <typename T>
-    struct StringStream : StringStreamBase<has_insertion_operator<T>::value>
+    struct StringStream : public StringStreamBase<has_insertion_operator<T>::value>
     {};
 
     template <typename T>
@@ -1724,7 +1726,7 @@ namespace detail
         };
 
         template <typename T>
-        struct Capture : ICapture //!OCLINT destructor of virtual class
+        struct Capture : public ICapture //!OCLINT destructor of virtual class
         {
             const T* capture;
 
@@ -2058,7 +2060,7 @@ int registerReporter(const char* name, int priority, IReporter* r);
 #define DOCTEST_IMPLEMENT_FIXTURE(der, base, func, decorators)                                     \
     namespace                                                                                      \
     {                                                                                              \
-        struct der : base                                                                          \
+        struct der : public base                                                                   \
         {                                                                                          \
             void f();                                                                              \
         };                                                                                         \
@@ -2552,7 +2554,7 @@ constexpr T to_lvalue = x;
     namespace                                                                                      \
     {                                                                                              \
         template <typename DOCTEST_UNUSED_TEMPLATE_TYPE>                                           \
-        struct der : base                                                                          \
+        struct der : public base                                                                   \
         { void f(); };                                                                             \
     }                                                                                              \
     template <typename DOCTEST_UNUSED_TEMPLATE_TYPE>                                               \
