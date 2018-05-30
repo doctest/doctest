@@ -65,14 +65,6 @@ matrix:
           packages: ["clang-4.0", "clang-tidy-4.0", "cppcheck"]
           sources: *apt_sources
 
-    # GCC 4.6
-    - env: COMPILER=g++-4.6
-      compiler: gcc
-      addons: &gcc46
-        apt:
-          packages: [           "valgrind", "g++-4.6-multilib", "libc6-dbg", "libc6-dbg:i386", "linux-libc-dev", "linux-libc-dev:i386"]
-          sources: *apt_sources
-
     # GCC 4.7
     - env: COMPILER=g++-4.7
       compiler: gcc

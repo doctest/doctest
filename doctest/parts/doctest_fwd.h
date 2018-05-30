@@ -209,23 +209,25 @@ DOCTEST_MSVC_SUPPRESS_WARNING(26495) // Always initialize a member variable
 DOCTEST_MSVC_SUPPRESS_WARNING(26451) // Arithmetic overflow ...
 DOCTEST_MSVC_SUPPRESS_WARNING(26444) // Avoid unnamed objects with custom construction and dtr...
 
-// C4548 - expression before comma has no effect; expected expression with side - effect
-// C4986 - exception specification does not match previous declaration
-// C4350 - behavior change: 'member1' called instead of 'member2'
-// C4668 - 'x' is not defined as a preprocessor macro, replacing with '0' for '#if/#elif'
-// C4365 - conversion from 'int' to 'unsigned long', signed/unsigned mismatch
-// C4774 - format string expected in argument 'x' is not a string literal
-// C4820 - padding in structs
+// 4548 - expression before comma has no effect; expected expression with side - effect
+// 4265 - class has virtual functions, but destructor is not virtual
+// 4986 - exception specification does not match previous declaration
+// 4350 - behavior change: 'member1' called instead of 'member2'
+// 4668 - 'x' is not defined as a preprocessor macro, replacing with '0' for '#if/#elif'
+// 4365 - conversion from 'int' to 'unsigned long', signed/unsigned mismatch
+// 4774 - format string expected in argument 'x' is not a string literal
+// 4820 - padding in structs
 
 // only 4 should be disabled globally:
-// - C4514 # unreferenced inline function has been removed
-// - C4571 # SEH related
-// - C4710 # function not inlined
-// - C4711 # function 'x' selected for automatic inline expansion
+// - 4514 # unreferenced inline function has been removed
+// - 4571 # SEH related
+// - 4710 # function not inlined
+// - 4711 # function 'x' selected for automatic inline expansion
 
 #define DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_BEGIN                                 \
     DOCTEST_MSVC_SUPPRESS_WARNING_PUSH                                                             \
     DOCTEST_MSVC_SUPPRESS_WARNING(4548)                                                            \
+    DOCTEST_MSVC_SUPPRESS_WARNING(4265)                                                            \
     DOCTEST_MSVC_SUPPRESS_WARNING(4986)                                                            \
     DOCTEST_MSVC_SUPPRESS_WARNING(4350)                                                            \
     DOCTEST_MSVC_SUPPRESS_WARNING(4668)                                                            \
@@ -1180,7 +1182,7 @@ namespace detail
     //DOCTEST_GCC_SUPPRESS_WARNING("-Wfloat-equal")
 
     DOCTEST_MSVC_SUPPRESS_WARNING_PUSH
-    // http://stackoverflow.com/questions/39479163 what's the difference between C4018 and C4389
+    // http://stackoverflow.com/questions/39479163 what's the difference between 4018 and 4389
     DOCTEST_MSVC_SUPPRESS_WARNING(4388) // signed/unsigned mismatch
     DOCTEST_MSVC_SUPPRESS_WARNING(4389) // 'operator' : signed/unsigned mismatch
     DOCTEST_MSVC_SUPPRESS_WARNING(4018) // 'expression' : signed/unsigned mismatch
@@ -2004,6 +2006,9 @@ int registerReporter(const char* name, int priority, IReporter* r);
 #define DOCTEST_TEST_CASE_TEMPLATE_DEFINE_IMPL(dec, T, id, anon)                                   \
     template <typename T>                                                                          \
     inline void anon();                                                                            \
+    DOCTEST_CLANG_SUPPRESS_WARNING_PUSH                                                            \
+    DOCTEST_CLANG_SUPPRESS_WARNING("-Wc++98-compat")                                               \
+    DOCTEST_CLANG_SUPPRESS_WARNING("-Wc++98-compat-pedantic")                                      \
     template <typename Type, typename... Rest>                                                     \
     struct DOCTEST_CAT(id, ITERATOR)                                                               \
     {                                                                                              \
@@ -2012,6 +2017,7 @@ int registerReporter(const char* name, int priority, IReporter* r);
             DOCTEST_CAT(id, ITERATOR)<Rest...>(line, index + 1);                                   \
         }                                                                                          \
     };                                                                                             \
+    DOCTEST_CLANG_SUPPRESS_WARNING_POP                                                             \
     template <typename Type>                                                                       \
     struct DOCTEST_CAT(id, ITERATOR)<Type>                                                         \
     {                                                                                              \
@@ -2029,12 +2035,16 @@ int registerReporter(const char* name, int priority, IReporter* r);
     DOCTEST_TEST_CASE_TEMPLATE_DEFINE_IMPL_PROXY(dec, T, id, DOCTEST_ANONYMOUS(_DOCTEST_ANON_TMP_))
 
 #define DOCTEST_TEST_CASE_TEMPLATE_INSTANTIATE_IMPL(id, anon, ...)                                 \
+    DOCTEST_CLANG_SUPPRESS_WARNING_PUSH                                                            \
+    DOCTEST_CLANG_SUPPRESS_WARNING("-Wc++98-compat")                                               \
+    DOCTEST_CLANG_SUPPRESS_WARNING("-Wc++98-compat-pedantic")                                      \
     DOCTEST_GLOBAL_NO_WARNINGS(DOCTEST_CAT(anon, DUMMY)) = []() {                                  \
         DOCTEST_CAT(id, ITERATOR)<__VA_ARGS__> DOCTEST_UNUSED DOCTEST_CAT(anon, inner_dummy)(      \
                 __LINE__, 0);                                                                      \
         return 0;                                                                                  \
     }();                                                                                           \
-    DOCTEST_GLOBAL_NO_WARNINGS_END()
+    DOCTEST_GLOBAL_NO_WARNINGS_END()                                                               \
+    DOCTEST_CLANG_SUPPRESS_WARNING_POP
 
 #define DOCTEST_TEST_CASE_TEMPLATE_INSTANTIATE(id, ...)                                            \
     DOCTEST_TEST_CASE_TEMPLATE_INSTANTIATE_IMPL(id, DOCTEST_ANONYMOUS(_DOCTEST_ANON_TMP_),         \

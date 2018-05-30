@@ -24,8 +24,6 @@ matrix:
 environment:
   matrix:
   - gen: "MinGW Makefiles"
-  - gen: "Visual Studio 10 2010"
-  - gen: "Visual Studio 11 2012"
   - gen: "Visual Studio 12 2013"
   - gen: "Visual Studio 14 2015"
   - gen: "Visual Studio 15 2017"

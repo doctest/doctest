@@ -79,7 +79,7 @@ The key differences between it and the others are:
     * -Weverything for Clang
     * /W4 for MSVC
     * -Wall -Wextra -pedantic and over 35 other flags not included in these!
-- Very portable and well tested C++11 - per commit tested on CI with over 300 different builds with different compilers and configurations (gcc 4.6-8.0 / clang 3.5-6.0 / MSVC 2010-2017, debug / release, x86/x64, linux / windows / osx, valgrind, sanitizers...)
+- Very portable and well tested C++11 - per commit tested on CI with over 300 different builds with different compilers and configurations (gcc 4.7-8.0 / clang 3.5-6.0 / MSVC 2013-2017, debug / release, x86/x64, linux / windows / osx, valgrind, sanitizers...)
 - Just one header and no external dependencies apart from the C / C++ standard library (which are used only in the test runner)
 
 So if doctest is included in 1000 source files (globally in a big project) the overall build slowdown will be only ~10 seconds. If Catch is used - this would mean 350+ seconds just for including the header everywhere.

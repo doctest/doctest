@@ -22,9 +22,9 @@
 ## Extremely portable:
 
 - Standards compliant **C++11** code - should work with any **C++11** capable compiler (use tag [**1.2.9**](https://github.com/onqtam/doctest/tree/1.2.9) for C++98)
-- tested with **GCC**: **4.6**, **4.7**, **4.8**, **4.9**, **5**, **6**, **7**, **8**
+- tested with **GCC**: **4.7**, **4.8**, **4.9**, **5**, **6**, **7**, **8**
 - tested with **Clang**: **3.5**, **3.6**, **3.7**, **3.8**, **3.9**, **4**, **5**, **6**
-- tested with **MSVC**: **2010**, **2012**, **2013**, **2015**, **2017**
+- tested with **MSVC**: **2013**, **2015**, **2017**
 - per-commit tested on **travis** and **appveyor** CI services
 	- warnings as errors even on the most aggressive warning levels - see [**here**](../../scripts/cmake/common.cmake#L84)
     - statically analyzed on the CI - [**Cppcheck**](http://cppcheck.sourceforge.net/) / [**Clang-Tidy**](http://oclint.org/) / [**Coverity Scan**](https://scan.coverity.com/) / [**OCLint**](https://scan.coverity.com/) / [**Visual Studio Analyzer**](https://docs.microsoft.com/en-us/visualstudio/code-quality/analyzing-c-cpp-code-quality-by-using-code-analysis)

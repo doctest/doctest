@@ -2364,32 +2364,35 @@ DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_BEGIN
 #include <mutex>
 DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_END
 
-struct A {
+struct A
+{
     int a = 5;
     A();
     A(const A&) = delete;
-    A& operator=(const A&);
+    A& operator =(const A&);
 };
 
-A::A() = default;
+A::A()        = default;
 A& A::operator=(const A&) = default;
 
-enum class hello_cpp11_enums {
+enum class hello_cpp11_enums
+{
     val1,
     val2
 };
 
 static void f() {
-    std::mutex logMutex;
+    std::mutex                  logMutex;
     std::lock_guard<std::mutex> lock(logMutex);
 
     A a;
 
-    std::vector<int> v = {4,5,6};
+    std::vector<int> v = {4, 5, 6};
     for(auto& curr : v)
         std::cout << curr;
 
-    f();
+    if(v.size() == 5)
+        f();
 
     std::atomic<int> ai;
     ai.exchange(6);
