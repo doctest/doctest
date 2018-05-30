@@ -259,28 +259,6 @@ DOCTEST_MSVC_SUPPRESS_WARNING(26444) // Avoid unnamed objects with custom constr
 // MSVC++ 9.0  _MSC_VER == 1500 (Visual Studio 2008)
 // MSVC++ 8.0  _MSC_VER == 1400 (Visual Studio 2005)
 
-// the last C++11 feature detection left - for DOCTEST_OVERRIDE
-
-#ifndef DOCTEST_CONFIG_WITH_OVERRIDE
-#if DOCTEST_CLANG && DOCTEST_CLANG_HAS_FEATURE(cxx_override_control)
-#define DOCTEST_CONFIG_WITH_OVERRIDE
-#endif // clang
-#if DOCTEST_GCC >= DOCTEST_COMPILER(4, 7, 0) && defined(__GXX_EXPERIMENTAL_CXX0X__)
-#define DOCTEST_CONFIG_WITH_OVERRIDE
-#endif // GCC
-#if DOCTEST_MSVC >= DOCTEST_COMPILER(17, 0, 0)
-#define DOCTEST_CONFIG_WITH_OVERRIDE
-#endif // MSVC
-#endif // DOCTEST_CONFIG_WITH_OVERRIDE
-
-#ifdef DOCTEST_CONFIG_WITH_OVERRIDE
-#define DOCTEST_OVERRIDE override
-#else // DOCTEST_CONFIG_WITH_OVERRIDE
-#define DOCTEST_OVERRIDE
-#endif // DOCTEST_CONFIG_WITH_OVERRIDE
-
-// other stuff
-
 #if DOCTEST_MSVC && !defined(DOCTEST_CONFIG_WINDOWS_SEH)
 #define DOCTEST_CONFIG_WINDOWS_SEH
 #endif // MSVC
@@ -1628,7 +1606,7 @@ namespace detail
 
             explicit Capture(const T* in)
                     : capture(in) {}
-            void toStream(std::ostream* s) const DOCTEST_OVERRIDE { detail::toStream(s, *capture); }
+            void toStream(std::ostream* s) const override { detail::toStream(s, *capture); }
         };
 
         struct Chunk
