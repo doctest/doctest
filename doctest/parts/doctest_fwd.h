@@ -2031,9 +2031,6 @@ int registerReporter(const char* name, int priority, IReporter* r);
 
 #define DOCTEST_EXPAND_VA_ARGS(...) __VA_ARGS__
 
-#define DOCTEST_STRIP_PARENS(x) x
-#define DOCTEST_HANDLE_BRACED_VA_ARGS(expr) DOCTEST_STRIP_PARENS(DOCTEST_EXPAND_VA_ARGS expr)
-
 // common code in asserts - for convenience
 #define DOCTEST_ASSERT_LOG_AND_REACT(b)                                                            \
     if(b.log())                                                                                    \
@@ -2103,7 +2100,7 @@ int registerReporter(const char* name, int priority, IReporter* r);
     typedef int DOCTEST_ANONYMOUS(_DOCTEST_ANON_FOR_SEMICOLON_)
 
 // for typed tests
-#define DOCTEST_TEST_CASE_TEMPLATE_IMPL(decorators, T, types, anon)                                \
+#define DOCTEST_TEST_CASE_TEMPLATE_IMPL(decorators, T, anon, ...)                                  \
     template <typename T>                                                                          \
     inline void anon();                                                                            \
     struct DOCTEST_CAT(anon, FUNCTOR)                                                              \
@@ -2119,9 +2116,8 @@ int registerReporter(const char* name, int priority, IReporter* r);
     };                                                                                             \
     inline int DOCTEST_CAT(anon, REG_FUNC)() {                                                     \
         DOCTEST_CAT(anon, FUNCTOR) registrar;                                                      \
-        doctest::detail::ForEachType<DOCTEST_HANDLE_BRACED_VA_ARGS(types)::Result,                 \
-                                     DOCTEST_CAT(anon, FUNCTOR)>                                   \
-                doIt(registrar);                                                                   \
+        doctest::detail::ForEachType<__VA_ARGS__::Result, DOCTEST_CAT(anon, FUNCTOR)> doIt(        \
+                registrar);                                                                        \
         return 0;                                                                                  \
     }                                                                                              \
     DOCTEST_GLOBAL_NO_WARNINGS(DOCTEST_CAT(anon, DUMMY)) = DOCTEST_CAT(anon, REG_FUNC)();          \
@@ -2129,9 +2125,8 @@ int registerReporter(const char* name, int priority, IReporter* r);
     template <typename T>                                                                          \
     inline void anon()
 
-#define DOCTEST_TEST_CASE_TEMPLATE(decorators, T, ...)                                             \
-    DOCTEST_TEST_CASE_TEMPLATE_IMPL(decorators, T, (__VA_ARGS__),                                  \
-                                    DOCTEST_ANONYMOUS(_DOCTEST_ANON_TMP_))
+#define DOCTEST_TEST_CASE_TEMPLATE(dec, T, ...)                                                    \
+    DOCTEST_TEST_CASE_TEMPLATE_IMPL(dec, T, DOCTEST_ANONYMOUS(_DOCTEST_ANON_TMP_), __VA_ARGS__)
 
 #define DOCTEST_TEST_CASE_TEMPLATE_DEFINE_IMPL(decorators, T, id, anon)                            \
     template <typename T>                                                                          \
@@ -2158,20 +2153,19 @@ int registerReporter(const char* name, int priority, IReporter* r);
 #define DOCTEST_TEST_CASE_TEMPLATE_DEFINE(decorators, T, id)                                       \
     DOCTEST_TEST_CASE_TEMPLATE_DEFINE_IMPL(decorators, T, id, DOCTEST_ANONYMOUS(_DOCTEST_ANON_TMP_))
 
-#define DOCTEST_TEST_CASE_TEMPLATE_INSTANTIATE_IMPL(id, types, anon)                               \
+#define DOCTEST_TEST_CASE_TEMPLATE_INSTANTIATE_IMPL(id, anon, ...)                                 \
     static int DOCTEST_CAT(anon, REG_FUNC)() {                                                     \
         DOCTEST_CAT(id, _FUNCTOR) registrar(__LINE__);                                             \
-        doctest::detail::ForEachType<DOCTEST_HANDLE_BRACED_VA_ARGS(types)::Result,                 \
-                                     DOCTEST_CAT(id, _FUNCTOR)>                                    \
-                doIt(registrar);                                                                   \
+        doctest::detail::ForEachType<__VA_ARGS__::Result, DOCTEST_CAT(id, _FUNCTOR)> doIt(         \
+                registrar);                                                                        \
         return 0;                                                                                  \
     }                                                                                              \
     DOCTEST_GLOBAL_NO_WARNINGS(DOCTEST_CAT(anon, DUMMY)) = DOCTEST_CAT(anon, REG_FUNC)();          \
     DOCTEST_GLOBAL_NO_WARNINGS_END() typedef int DOCTEST_ANONYMOUS(_DOCTEST_ANON_FOR_SEMICOLON_)
 
 #define DOCTEST_TEST_CASE_TEMPLATE_INSTANTIATE(id, ...)                                            \
-    DOCTEST_TEST_CASE_TEMPLATE_INSTANTIATE_IMPL(id, (__VA_ARGS__),                                 \
-                                                DOCTEST_ANONYMOUS(_DOCTEST_ANON_TMP_))
+    DOCTEST_TEST_CASE_TEMPLATE_INSTANTIATE_IMPL(id, DOCTEST_ANONYMOUS(_DOCTEST_ANON_TMP_),         \
+                                                __VA_ARGS__)
 
 // for subcases
 #define DOCTEST_SUBCASE(name)                                                                      \
@@ -2263,36 +2257,35 @@ constexpr T to_lvalue = x;
 #define DOCTEST_TO_LVALUE(...) TO_LVALUE_CAN_BE_USED_ONLY_IN_CPP14_MODE_OR_WITH_VS_2017_OR_NEWER
 #endif // TO_LVALUE hack for logging macros like INFO()
 
-#define DOCTEST_ASSERT_IMPLEMENT_2(expr, assert_type)                                              \
+#define DOCTEST_ASSERT_IMPLEMENT_2(assert_type, ...)                                               \
     DOCTEST_CLANG_SUPPRESS_WARNING_WITH_PUSH("-Woverloaded-shift-op-parentheses")                  \
-    doctest::detail::ResultBuilder _DOCTEST_RB(                                                    \
-            doctest::assertType::assert_type, __FILE__, __LINE__,                                  \
-            DOCTEST_TOSTR(DOCTEST_HANDLE_BRACED_VA_ARGS(expr)));                                   \
+    doctest::detail::ResultBuilder _DOCTEST_RB(doctest::assertType::assert_type, __FILE__,         \
+                                               __LINE__, DOCTEST_TOSTR(__VA_ARGS__));              \
     DOCTEST_WRAP_IN_TRY(_DOCTEST_RB.setResult(                                                     \
             doctest::detail::ExpressionDecomposer(doctest::assertType::assert_type)                \
-            << DOCTEST_HANDLE_BRACED_VA_ARGS(expr)))                                               \
+            << __VA_ARGS__))                                                                       \
     DOCTEST_ASSERT_LOG_AND_REACT(_DOCTEST_RB)                                                      \
     DOCTEST_CLANG_SUPPRESS_WARNING_POP
 
-#define DOCTEST_ASSERT_IMPLEMENT_1(expr, assert_type)                                              \
+#define DOCTEST_ASSERT_IMPLEMENT_1(assert_type, ...)                                               \
     do {                                                                                           \
-        DOCTEST_ASSERT_IMPLEMENT_2(expr, assert_type);                                             \
+        DOCTEST_ASSERT_IMPLEMENT_2(assert_type, __VA_ARGS__);                                      \
     } while((void)0, 0)
 
-#define DOCTEST_WARN(...) DOCTEST_ASSERT_IMPLEMENT_1((__VA_ARGS__), DT_WARN)
-#define DOCTEST_CHECK(...) DOCTEST_ASSERT_IMPLEMENT_1((__VA_ARGS__), DT_CHECK)
-#define DOCTEST_REQUIRE(...) DOCTEST_ASSERT_IMPLEMENT_1((__VA_ARGS__), DT_REQUIRE)
-#define DOCTEST_WARN_FALSE(...) DOCTEST_ASSERT_IMPLEMENT_1((__VA_ARGS__), DT_WARN_FALSE)
-#define DOCTEST_CHECK_FALSE(...) DOCTEST_ASSERT_IMPLEMENT_1((__VA_ARGS__), DT_CHECK_FALSE)
-#define DOCTEST_REQUIRE_FALSE(...) DOCTEST_ASSERT_IMPLEMENT_1((__VA_ARGS__), DT_REQUIRE_FALSE)
+#define DOCTEST_WARN(...) DOCTEST_ASSERT_IMPLEMENT_1(DT_WARN, __VA_ARGS__)
+#define DOCTEST_CHECK(...) DOCTEST_ASSERT_IMPLEMENT_1(DT_CHECK, __VA_ARGS__)
+#define DOCTEST_REQUIRE(...) DOCTEST_ASSERT_IMPLEMENT_1(DT_REQUIRE, __VA_ARGS__)
+#define DOCTEST_WARN_FALSE(...) DOCTEST_ASSERT_IMPLEMENT_1(DT_WARN_FALSE, __VA_ARGS__)
+#define DOCTEST_CHECK_FALSE(...) DOCTEST_ASSERT_IMPLEMENT_1(DT_CHECK_FALSE, __VA_ARGS__)
+#define DOCTEST_REQUIRE_FALSE(...) DOCTEST_ASSERT_IMPLEMENT_1(DT_REQUIRE_FALSE, __VA_ARGS__)
 
 // clang-format off
-#define DOCTEST_WARN_MESSAGE(cond, msg) do { DOCTEST_INFO(msg); DOCTEST_ASSERT_IMPLEMENT_2((cond), DT_WARN); } while((void)0, 0)
-#define DOCTEST_CHECK_MESSAGE(cond, msg) do { DOCTEST_INFO(msg); DOCTEST_ASSERT_IMPLEMENT_2((cond), DT_CHECK); } while((void)0, 0)
-#define DOCTEST_REQUIRE_MESSAGE(cond, msg) do { DOCTEST_INFO(msg); DOCTEST_ASSERT_IMPLEMENT_2((cond), DT_REQUIRE); } while((void)0, 0)
-#define DOCTEST_WARN_FALSE_MESSAGE(cond, msg) do { DOCTEST_INFO(msg); DOCTEST_ASSERT_IMPLEMENT_2((cond), DT_WARN_FALSE); } while((void)0, 0)
-#define DOCTEST_CHECK_FALSE_MESSAGE(cond, msg) do { DOCTEST_INFO(msg); DOCTEST_ASSERT_IMPLEMENT_2((cond), DT_CHECK_FALSE); } while((void)0, 0)
-#define DOCTEST_REQUIRE_FALSE_MESSAGE(cond, msg) do { DOCTEST_INFO(msg); DOCTEST_ASSERT_IMPLEMENT_2((cond), DT_REQUIRE_FALSE); } while((void)0, 0)
+#define DOCTEST_WARN_MESSAGE(cond, msg) do { DOCTEST_INFO(msg); DOCTEST_ASSERT_IMPLEMENT_2(DT_WARN, cond); } while((void)0, 0)
+#define DOCTEST_CHECK_MESSAGE(cond, msg) do { DOCTEST_INFO(msg); DOCTEST_ASSERT_IMPLEMENT_2(DT_CHECK, cond); } while((void)0, 0)
+#define DOCTEST_REQUIRE_MESSAGE(cond, msg) do { DOCTEST_INFO(msg); DOCTEST_ASSERT_IMPLEMENT_2(DT_REQUIRE, cond); } while((void)0, 0)
+#define DOCTEST_WARN_FALSE_MESSAGE(cond, msg) do { DOCTEST_INFO(msg); DOCTEST_ASSERT_IMPLEMENT_2(DT_WARN_FALSE, cond); } while((void)0, 0)
+#define DOCTEST_CHECK_FALSE_MESSAGE(cond, msg) do { DOCTEST_INFO(msg); DOCTEST_ASSERT_IMPLEMENT_2(DT_CHECK_FALSE, cond); } while((void)0, 0)
+#define DOCTEST_REQUIRE_FALSE_MESSAGE(cond, msg) do { DOCTEST_INFO(msg); DOCTEST_ASSERT_IMPLEMENT_2(DT_REQUIRE_FALSE, cond); } while((void)0, 0)
 // clang-format on
 
 #define DOCTEST_ASSERT_THROWS(expr, assert_type)                                                   \
@@ -2307,15 +2300,15 @@ constexpr T to_lvalue = x;
         }                                                                                          \
     } while((void)0, 0)
 
-#define DOCTEST_ASSERT_THROWS_AS(expr, as, assert_type)                                            \
+#define DOCTEST_ASSERT_THROWS_AS(expr, assert_type, ...)                                           \
     do {                                                                                           \
         if(!doctest::detail::getContextOptions()->no_throw) {                                      \
-            doctest::detail::ResultBuilder _DOCTEST_RB(                                            \
-                    doctest::assertType::assert_type, __FILE__, __LINE__, #expr,                   \
-                    DOCTEST_TOSTR(DOCTEST_HANDLE_BRACED_VA_ARGS(as)));                             \
+            doctest::detail::ResultBuilder _DOCTEST_RB(doctest::assertType::assert_type, __FILE__, \
+                                                       __LINE__, #expr,                            \
+                                                       DOCTEST_TOSTR(__VA_ARGS__));                \
             try {                                                                                  \
                 expr;                                                                              \
-            } catch(const DOCTEST_HANDLE_BRACED_VA_ARGS(as)&) {                                    \
+            } catch(const __VA_ARGS__&) {                                                          \
                 _DOCTEST_RB.m_threw    = true;                                                     \
                 _DOCTEST_RB.m_threw_as = true;                                                     \
             } catch(...) { _DOCTEST_RB.unexpectedExceptionOccurred(); }                            \
@@ -2340,9 +2333,9 @@ constexpr T to_lvalue = x;
 #define DOCTEST_CHECK_THROWS(expr) DOCTEST_ASSERT_THROWS(expr, DT_CHECK_THROWS)
 #define DOCTEST_REQUIRE_THROWS(expr) DOCTEST_ASSERT_THROWS(expr, DT_REQUIRE_THROWS)
 
-#define DOCTEST_WARN_THROWS_AS(expr, ...) DOCTEST_ASSERT_THROWS_AS(expr, (__VA_ARGS__), DT_WARN_THROWS_AS)
-#define DOCTEST_CHECK_THROWS_AS(expr, ...) DOCTEST_ASSERT_THROWS_AS(expr, (__VA_ARGS__), DT_CHECK_THROWS_AS)
-#define DOCTEST_REQUIRE_THROWS_AS(expr, ...) DOCTEST_ASSERT_THROWS_AS(expr, (__VA_ARGS__), DT_REQUIRE_THROWS_AS)
+#define DOCTEST_WARN_THROWS_AS(expr, ...) DOCTEST_ASSERT_THROWS_AS(expr, DT_WARN_THROWS_AS, __VA_ARGS__)
+#define DOCTEST_CHECK_THROWS_AS(expr, ...) DOCTEST_ASSERT_THROWS_AS(expr, DT_CHECK_THROWS_AS, __VA_ARGS__)
+#define DOCTEST_REQUIRE_THROWS_AS(expr, ...) DOCTEST_ASSERT_THROWS_AS(expr, DT_REQUIRE_THROWS_AS, __VA_ARGS__)
 
 #define DOCTEST_WARN_NOTHROW(expr) DOCTEST_ASSERT_NOTHROW(expr, DT_WARN_NOTHROW)
 #define DOCTEST_CHECK_NOTHROW(expr) DOCTEST_ASSERT_NOTHROW(expr, DT_CHECK_NOTHROW)
@@ -2359,72 +2352,68 @@ constexpr T to_lvalue = x;
 #define DOCTEST_REQUIRE_NOTHROW_MESSAGE(expr, msg) do { DOCTEST_INFO(msg); DOCTEST_REQUIRE_NOTHROW(expr); } while((void)0, 0)
 // clang-format on
 
-#define DOCTEST_BINARY_ASSERT(assert_type, expr, comp)                                             \
+#define DOCTEST_BINARY_ASSERT(assert_type, comp, ...)                                              \
     do {                                                                                           \
-        doctest::detail::ResultBuilder _DOCTEST_RB(                                                \
-                doctest::assertType::assert_type, __FILE__, __LINE__,                              \
-                DOCTEST_TOSTR(DOCTEST_HANDLE_BRACED_VA_ARGS(expr)));                               \
+        doctest::detail::ResultBuilder _DOCTEST_RB(doctest::assertType::assert_type, __FILE__,     \
+                                                   __LINE__, DOCTEST_TOSTR(__VA_ARGS__));          \
         DOCTEST_WRAP_IN_TRY(                                                                       \
                 _DOCTEST_RB.binary_assert<doctest::detail::binaryAssertComparison::comp>(          \
-                        DOCTEST_HANDLE_BRACED_VA_ARGS(expr)))                                      \
+                        __VA_ARGS__))                                                              \
         DOCTEST_ASSERT_LOG_AND_REACT(_DOCTEST_RB);                                                 \
     } while((void)0, 0)
 
-#define DOCTEST_UNARY_ASSERT(assert_type, expr)                                                    \
+#define DOCTEST_UNARY_ASSERT(assert_type, ...)                                                     \
     do {                                                                                           \
-        doctest::detail::ResultBuilder _DOCTEST_RB(                                                \
-                doctest::assertType::assert_type, __FILE__, __LINE__,                              \
-                DOCTEST_TOSTR(DOCTEST_HANDLE_BRACED_VA_ARGS(expr)));                               \
-        DOCTEST_WRAP_IN_TRY(_DOCTEST_RB.unary_assert(DOCTEST_HANDLE_BRACED_VA_ARGS(expr)))         \
+        doctest::detail::ResultBuilder _DOCTEST_RB(doctest::assertType::assert_type, __FILE__,     \
+                                                   __LINE__, DOCTEST_TOSTR(__VA_ARGS__));          \
+        DOCTEST_WRAP_IN_TRY(_DOCTEST_RB.unary_assert(__VA_ARGS__))                                 \
         DOCTEST_ASSERT_LOG_AND_REACT(_DOCTEST_RB);                                                 \
     } while((void)0, 0)
 
-#define DOCTEST_WARN_EQ(...) DOCTEST_BINARY_ASSERT(DT_WARN_EQ, (__VA_ARGS__), eq)
-#define DOCTEST_CHECK_EQ(...) DOCTEST_BINARY_ASSERT(DT_CHECK_EQ, (__VA_ARGS__), eq)
-#define DOCTEST_REQUIRE_EQ(...) DOCTEST_BINARY_ASSERT(DT_REQUIRE_EQ, (__VA_ARGS__), eq)
-#define DOCTEST_WARN_NE(...) DOCTEST_BINARY_ASSERT(DT_WARN_NE, (__VA_ARGS__), ne)
-#define DOCTEST_CHECK_NE(...) DOCTEST_BINARY_ASSERT(DT_CHECK_NE, (__VA_ARGS__), ne)
-#define DOCTEST_REQUIRE_NE(...) DOCTEST_BINARY_ASSERT(DT_REQUIRE_NE, (__VA_ARGS__), ne)
-#define DOCTEST_WARN_GT(...) DOCTEST_BINARY_ASSERT(DT_WARN_GT, (__VA_ARGS__), gt)
-#define DOCTEST_CHECK_GT(...) DOCTEST_BINARY_ASSERT(DT_CHECK_GT, (__VA_ARGS__), gt)
-#define DOCTEST_REQUIRE_GT(...) DOCTEST_BINARY_ASSERT(DT_REQUIRE_GT, (__VA_ARGS__), gt)
-#define DOCTEST_WARN_LT(...) DOCTEST_BINARY_ASSERT(DT_WARN_LT, (__VA_ARGS__), lt)
-#define DOCTEST_CHECK_LT(...) DOCTEST_BINARY_ASSERT(DT_CHECK_LT, (__VA_ARGS__), lt)
-#define DOCTEST_REQUIRE_LT(...) DOCTEST_BINARY_ASSERT(DT_REQUIRE_LT, (__VA_ARGS__), lt)
-#define DOCTEST_WARN_GE(...) DOCTEST_BINARY_ASSERT(DT_WARN_GE, (__VA_ARGS__), ge)
-#define DOCTEST_CHECK_GE(...) DOCTEST_BINARY_ASSERT(DT_CHECK_GE, (__VA_ARGS__), ge)
-#define DOCTEST_REQUIRE_GE(...) DOCTEST_BINARY_ASSERT(DT_REQUIRE_GE, (__VA_ARGS__), ge)
-#define DOCTEST_WARN_LE(...) DOCTEST_BINARY_ASSERT(DT_WARN_LE, (__VA_ARGS__), le)
-#define DOCTEST_CHECK_LE(...) DOCTEST_BINARY_ASSERT(DT_CHECK_LE, (__VA_ARGS__), le)
-#define DOCTEST_REQUIRE_LE(...) DOCTEST_BINARY_ASSERT(DT_REQUIRE_LE, (__VA_ARGS__), le)
+#define DOCTEST_WARN_EQ(...) DOCTEST_BINARY_ASSERT(DT_WARN_EQ, eq, __VA_ARGS__)
+#define DOCTEST_CHECK_EQ(...) DOCTEST_BINARY_ASSERT(DT_CHECK_EQ, eq, __VA_ARGS__)
+#define DOCTEST_REQUIRE_EQ(...) DOCTEST_BINARY_ASSERT(DT_REQUIRE_EQ, eq, __VA_ARGS__)
+#define DOCTEST_WARN_NE(...) DOCTEST_BINARY_ASSERT(DT_WARN_NE, ne, __VA_ARGS__)
+#define DOCTEST_CHECK_NE(...) DOCTEST_BINARY_ASSERT(DT_CHECK_NE, ne, __VA_ARGS__)
+#define DOCTEST_REQUIRE_NE(...) DOCTEST_BINARY_ASSERT(DT_REQUIRE_NE, ne, __VA_ARGS__)
+#define DOCTEST_WARN_GT(...) DOCTEST_BINARY_ASSERT(DT_WARN_GT, gt, __VA_ARGS__)
+#define DOCTEST_CHECK_GT(...) DOCTEST_BINARY_ASSERT(DT_CHECK_GT, gt, __VA_ARGS__)
+#define DOCTEST_REQUIRE_GT(...) DOCTEST_BINARY_ASSERT(DT_REQUIRE_GT, gt, __VA_ARGS__)
+#define DOCTEST_WARN_LT(...) DOCTEST_BINARY_ASSERT(DT_WARN_LT, lt, __VA_ARGS__)
+#define DOCTEST_CHECK_LT(...) DOCTEST_BINARY_ASSERT(DT_CHECK_LT, lt, __VA_ARGS__)
+#define DOCTEST_REQUIRE_LT(...) DOCTEST_BINARY_ASSERT(DT_REQUIRE_LT, lt, __VA_ARGS__)
+#define DOCTEST_WARN_GE(...) DOCTEST_BINARY_ASSERT(DT_WARN_GE, ge, __VA_ARGS__)
+#define DOCTEST_CHECK_GE(...) DOCTEST_BINARY_ASSERT(DT_CHECK_GE, ge, __VA_ARGS__)
+#define DOCTEST_REQUIRE_GE(...) DOCTEST_BINARY_ASSERT(DT_REQUIRE_GE, ge, __VA_ARGS__)
+#define DOCTEST_WARN_LE(...) DOCTEST_BINARY_ASSERT(DT_WARN_LE, le, __VA_ARGS__)
+#define DOCTEST_CHECK_LE(...) DOCTEST_BINARY_ASSERT(DT_CHECK_LE, le, __VA_ARGS__)
+#define DOCTEST_REQUIRE_LE(...) DOCTEST_BINARY_ASSERT(DT_REQUIRE_LE, le, __VA_ARGS__)
 
-#define DOCTEST_WARN_UNARY(...) DOCTEST_UNARY_ASSERT(DT_WARN_UNARY, (__VA_ARGS__))
-#define DOCTEST_CHECK_UNARY(...) DOCTEST_UNARY_ASSERT(DT_CHECK_UNARY, (__VA_ARGS__))
-#define DOCTEST_REQUIRE_UNARY(...) DOCTEST_UNARY_ASSERT(DT_REQUIRE_UNARY, (__VA_ARGS__))
-#define DOCTEST_WARN_UNARY_FALSE(...) DOCTEST_UNARY_ASSERT(DT_WARN_UNARY_FALSE, (__VA_ARGS__))
-#define DOCTEST_CHECK_UNARY_FALSE(...) DOCTEST_UNARY_ASSERT(DT_CHECK_UNARY_FALSE, (__VA_ARGS__))
-#define DOCTEST_REQUIRE_UNARY_FALSE(...) DOCTEST_UNARY_ASSERT(DT_REQUIRE_UNARY_FALSE, (__VA_ARGS__))
+#define DOCTEST_WARN_UNARY(...) DOCTEST_UNARY_ASSERT(DT_WARN_UNARY, __VA_ARGS__)
+#define DOCTEST_CHECK_UNARY(...) DOCTEST_UNARY_ASSERT(DT_CHECK_UNARY, __VA_ARGS__)
+#define DOCTEST_REQUIRE_UNARY(...) DOCTEST_UNARY_ASSERT(DT_REQUIRE_UNARY, __VA_ARGS__)
+#define DOCTEST_WARN_UNARY_FALSE(...) DOCTEST_UNARY_ASSERT(DT_WARN_UNARY_FALSE, __VA_ARGS__)
+#define DOCTEST_CHECK_UNARY_FALSE(...) DOCTEST_UNARY_ASSERT(DT_CHECK_UNARY_FALSE, __VA_ARGS__)
+#define DOCTEST_REQUIRE_UNARY_FALSE(...) DOCTEST_UNARY_ASSERT(DT_REQUIRE_UNARY_FALSE, __VA_ARGS__)
 
 #ifndef DOCTEST_CONFIG_SUPER_FAST_ASSERTS
 
-#define DOCTEST_FAST_BINARY_ASSERT(assert_type, expr, comparison)                                  \
+#define DOCTEST_FAST_BINARY_ASSERT(assert_type, comparison, ...)                                   \
     do {                                                                                           \
         int _DOCTEST_FAST_RES = doctest::detail::fast_binary_assert<                               \
                 doctest::detail::binaryAssertComparison::comparison>(                              \
-                doctest::assertType::assert_type, __FILE__, __LINE__,                              \
-                DOCTEST_TOSTR(DOCTEST_HANDLE_BRACED_VA_ARGS(expr)),                                \
-                DOCTEST_HANDLE_BRACED_VA_ARGS(expr));                                              \
+                doctest::assertType::assert_type, __FILE__, __LINE__, DOCTEST_TOSTR(__VA_ARGS__),  \
+                __VA_ARGS__);                                                                      \
         if(_DOCTEST_FAST_RES & doctest::detail::assertAction::dbgbreak)                            \
             DOCTEST_BREAK_INTO_DEBUGGER();                                                         \
         doctest::detail::fastAssertThrowIfFlagSet(_DOCTEST_FAST_RES);                              \
     } while((void)0, 0)
 
-#define DOCTEST_FAST_UNARY_ASSERT(assert_type, expr)                                               \
+#define DOCTEST_FAST_UNARY_ASSERT(assert_type, ...)                                                \
     do {                                                                                           \
         int _DOCTEST_FAST_RES = doctest::detail::fast_unary_assert(                                \
-                doctest::assertType::assert_type, __FILE__, __LINE__,                              \
-                DOCTEST_TOSTR(DOCTEST_HANDLE_BRACED_VA_ARGS(expr)),                                \
-                DOCTEST_HANDLE_BRACED_VA_ARGS(expr));                                              \
+                doctest::assertType::assert_type, __FILE__, __LINE__, DOCTEST_TOSTR(__VA_ARGS__),  \
+                __VA_ARGS__);                                                                      \
         if(_DOCTEST_FAST_RES & doctest::detail::assertAction::dbgbreak)                            \
             DOCTEST_BREAK_INTO_DEBUGGER();                                                         \
         doctest::detail::fastAssertThrowIfFlagSet(_DOCTEST_FAST_RES);                              \
@@ -2432,45 +2421,43 @@ constexpr T to_lvalue = x;
 
 #else // DOCTEST_CONFIG_SUPER_FAST_ASSERTS
 
-#define DOCTEST_FAST_BINARY_ASSERT(assert_type, expr, comparison)                                  \
+#define DOCTEST_FAST_BINARY_ASSERT(assert_type, comparison, ...)                                   \
     doctest::detail::fast_binary_assert<doctest::detail::binaryAssertComparison::comparison>(      \
-            doctest::assertType::assert_type, __FILE__, __LINE__,                                  \
-            DOCTEST_TOSTR(DOCTEST_HANDLE_BRACED_VA_ARGS(expr)),                                    \
-            DOCTEST_HANDLE_BRACED_VA_ARGS(expr))
+            doctest::assertType::assert_type, __FILE__, __LINE__, DOCTEST_TOSTR(__VA_ARGS__),      \
+            __VA_ARGS__)
 
-#define DOCTEST_FAST_UNARY_ASSERT(assert_type, expr)                                               \
+#define DOCTEST_FAST_UNARY_ASSERT(assert_type, ...)                                                \
     doctest::detail::fast_unary_assert(doctest::assertType::assert_type, __FILE__, __LINE__,       \
-                                       DOCTEST_TOSTR(DOCTEST_HANDLE_BRACED_VA_ARGS(expr)),         \
-                                       DOCTEST_HANDLE_BRACED_VA_ARGS(expr))
+                                       DOCTEST_TOSTR(__VA_ARGS__), __VA_ARGS__)
 
 #endif // DOCTEST_CONFIG_SUPER_FAST_ASSERTS
 
 // clang-format off
-#define DOCTEST_FAST_WARN_EQ(...) DOCTEST_FAST_BINARY_ASSERT(DT_FAST_WARN_EQ, (__VA_ARGS__), eq)
-#define DOCTEST_FAST_CHECK_EQ(...) DOCTEST_FAST_BINARY_ASSERT(DT_FAST_CHECK_EQ, (__VA_ARGS__), eq)
-#define DOCTEST_FAST_REQUIRE_EQ(...) DOCTEST_FAST_BINARY_ASSERT(DT_FAST_REQUIRE_EQ, (__VA_ARGS__), eq)
-#define DOCTEST_FAST_WARN_NE(...) DOCTEST_FAST_BINARY_ASSERT(DT_FAST_WARN_NE, (__VA_ARGS__), ne)
-#define DOCTEST_FAST_CHECK_NE(...) DOCTEST_FAST_BINARY_ASSERT(DT_FAST_CHECK_NE, (__VA_ARGS__), ne)
-#define DOCTEST_FAST_REQUIRE_NE(...) DOCTEST_FAST_BINARY_ASSERT(DT_FAST_REQUIRE_NE, (__VA_ARGS__), ne)
-#define DOCTEST_FAST_WARN_GT(...) DOCTEST_FAST_BINARY_ASSERT(DT_FAST_WARN_GT, (__VA_ARGS__), gt)
-#define DOCTEST_FAST_CHECK_GT(...) DOCTEST_FAST_BINARY_ASSERT(DT_FAST_CHECK_GT, (__VA_ARGS__), gt)
-#define DOCTEST_FAST_REQUIRE_GT(...) DOCTEST_FAST_BINARY_ASSERT(DT_FAST_REQUIRE_GT, (__VA_ARGS__), gt)
-#define DOCTEST_FAST_WARN_LT(...) DOCTEST_FAST_BINARY_ASSERT(DT_FAST_WARN_LT, (__VA_ARGS__), lt)
-#define DOCTEST_FAST_CHECK_LT(...) DOCTEST_FAST_BINARY_ASSERT(DT_FAST_CHECK_LT, (__VA_ARGS__), lt)
-#define DOCTEST_FAST_REQUIRE_LT(...) DOCTEST_FAST_BINARY_ASSERT(DT_FAST_REQUIRE_LT, (__VA_ARGS__), lt)
-#define DOCTEST_FAST_WARN_GE(...) DOCTEST_FAST_BINARY_ASSERT(DT_FAST_WARN_GE, (__VA_ARGS__), ge)
-#define DOCTEST_FAST_CHECK_GE(...) DOCTEST_FAST_BINARY_ASSERT(DT_FAST_CHECK_GE, (__VA_ARGS__), ge)
-#define DOCTEST_FAST_REQUIRE_GE(...) DOCTEST_FAST_BINARY_ASSERT(DT_FAST_REQUIRE_GE, (__VA_ARGS__), ge)
-#define DOCTEST_FAST_WARN_LE(...) DOCTEST_FAST_BINARY_ASSERT(DT_FAST_WARN_LE, (__VA_ARGS__), le)
-#define DOCTEST_FAST_CHECK_LE(...) DOCTEST_FAST_BINARY_ASSERT(DT_FAST_CHECK_LE, (__VA_ARGS__), le)
-#define DOCTEST_FAST_REQUIRE_LE(...) DOCTEST_FAST_BINARY_ASSERT(DT_FAST_REQUIRE_LE, (__VA_ARGS__), le)
+#define DOCTEST_FAST_WARN_EQ(...) DOCTEST_FAST_BINARY_ASSERT(DT_FAST_WARN_EQ, eq, __VA_ARGS__)
+#define DOCTEST_FAST_CHECK_EQ(...) DOCTEST_FAST_BINARY_ASSERT(DT_FAST_CHECK_EQ, eq, __VA_ARGS__)
+#define DOCTEST_FAST_REQUIRE_EQ(...) DOCTEST_FAST_BINARY_ASSERT(DT_FAST_REQUIRE_EQ, eq, __VA_ARGS__)
+#define DOCTEST_FAST_WARN_NE(...) DOCTEST_FAST_BINARY_ASSERT(DT_FAST_WARN_NE, ne, __VA_ARGS__)
+#define DOCTEST_FAST_CHECK_NE(...) DOCTEST_FAST_BINARY_ASSERT(DT_FAST_CHECK_NE, ne, __VA_ARGS__)
+#define DOCTEST_FAST_REQUIRE_NE(...) DOCTEST_FAST_BINARY_ASSERT(DT_FAST_REQUIRE_NE, ne, __VA_ARGS__)
+#define DOCTEST_FAST_WARN_GT(...) DOCTEST_FAST_BINARY_ASSERT(DT_FAST_WARN_GT, gt, __VA_ARGS__)
+#define DOCTEST_FAST_CHECK_GT(...) DOCTEST_FAST_BINARY_ASSERT(DT_FAST_CHECK_GT, gt, __VA_ARGS__)
+#define DOCTEST_FAST_REQUIRE_GT(...) DOCTEST_FAST_BINARY_ASSERT(DT_FAST_REQUIRE_GT, gt, __VA_ARGS__)
+#define DOCTEST_FAST_WARN_LT(...) DOCTEST_FAST_BINARY_ASSERT(DT_FAST_WARN_LT, lt, __VA_ARGS__)
+#define DOCTEST_FAST_CHECK_LT(...) DOCTEST_FAST_BINARY_ASSERT(DT_FAST_CHECK_LT, lt, __VA_ARGS__)
+#define DOCTEST_FAST_REQUIRE_LT(...) DOCTEST_FAST_BINARY_ASSERT(DT_FAST_REQUIRE_LT, lt, __VA_ARGS__)
+#define DOCTEST_FAST_WARN_GE(...) DOCTEST_FAST_BINARY_ASSERT(DT_FAST_WARN_GE, ge, __VA_ARGS__)
+#define DOCTEST_FAST_CHECK_GE(...) DOCTEST_FAST_BINARY_ASSERT(DT_FAST_CHECK_GE, ge, __VA_ARGS__)
+#define DOCTEST_FAST_REQUIRE_GE(...) DOCTEST_FAST_BINARY_ASSERT(DT_FAST_REQUIRE_GE, ge, __VA_ARGS__)
+#define DOCTEST_FAST_WARN_LE(...) DOCTEST_FAST_BINARY_ASSERT(DT_FAST_WARN_LE, le, __VA_ARGS__)
+#define DOCTEST_FAST_CHECK_LE(...) DOCTEST_FAST_BINARY_ASSERT(DT_FAST_CHECK_LE, le, __VA_ARGS__)
+#define DOCTEST_FAST_REQUIRE_LE(...) DOCTEST_FAST_BINARY_ASSERT(DT_FAST_REQUIRE_LE, le, __VA_ARGS__)
 
-#define DOCTEST_FAST_WARN_UNARY(...) DOCTEST_FAST_UNARY_ASSERT(DT_FAST_WARN_UNARY, (__VA_ARGS__))
-#define DOCTEST_FAST_CHECK_UNARY(...) DOCTEST_FAST_UNARY_ASSERT(DT_FAST_CHECK_UNARY, (__VA_ARGS__))
-#define DOCTEST_FAST_REQUIRE_UNARY(...) DOCTEST_FAST_UNARY_ASSERT(DT_FAST_REQUIRE_UNARY, (__VA_ARGS__))
-#define DOCTEST_FAST_WARN_UNARY_FALSE(...) DOCTEST_FAST_UNARY_ASSERT(DT_FAST_WARN_UNARY_FALSE, (__VA_ARGS__))
-#define DOCTEST_FAST_CHECK_UNARY_FALSE(...) DOCTEST_FAST_UNARY_ASSERT(DT_FAST_CHECK_UNARY_FALSE, (__VA_ARGS__))
-#define DOCTEST_FAST_REQUIRE_UNARY_FALSE(...) DOCTEST_FAST_UNARY_ASSERT(DT_FAST_REQUIRE_UNARY_FALSE, (__VA_ARGS__))
+#define DOCTEST_FAST_WARN_UNARY(...) DOCTEST_FAST_UNARY_ASSERT(DT_FAST_WARN_UNARY, __VA_ARGS__)
+#define DOCTEST_FAST_CHECK_UNARY(...) DOCTEST_FAST_UNARY_ASSERT(DT_FAST_CHECK_UNARY, __VA_ARGS__)
+#define DOCTEST_FAST_REQUIRE_UNARY(...) DOCTEST_FAST_UNARY_ASSERT(DT_FAST_REQUIRE_UNARY, __VA_ARGS__)
+#define DOCTEST_FAST_WARN_UNARY_FALSE(...) DOCTEST_FAST_UNARY_ASSERT(DT_FAST_WARN_UNARY_FALSE, __VA_ARGS__)
+#define DOCTEST_FAST_CHECK_UNARY_FALSE(...) DOCTEST_FAST_UNARY_ASSERT(DT_FAST_CHECK_UNARY_FALSE, __VA_ARGS__)
+#define DOCTEST_FAST_REQUIRE_UNARY_FALSE(...) DOCTEST_FAST_UNARY_ASSERT(DT_FAST_REQUIRE_UNARY_FALSE, __VA_ARGS__)
 // clang-format on
 
 #ifdef DOCTEST_CONFIG_NO_EXCEPTIONS
