@@ -14,6 +14,7 @@ Planned features for future releases - order changes constantly...
         - anonymous namespaces for internal linkage of implementation part
         - move absolutely everything possible away from fwd and into impl
     - move more inline functions from fwd to impl (like Approx stuff, also the inline string stuff...), also ifdef can_use_op<> & friends
+    - DOCTEST_TYPE_TO_STRING_IMPL(int) ... move it out of fwd!
 - reporters
     - output to file
     - a system for writing custom reporters

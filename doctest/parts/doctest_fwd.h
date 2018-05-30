@@ -31,12 +31,6 @@
 // which uses the Boost Software License - Version 1.0
 // see here - https://github.com/martinmoene/lest/blob/master/LICENSE.txt
 //
-// The type list and the foreach algorithm on it for C++98 are taken from Loki
-// - http://loki-lib.sourceforge.net/
-// - https://en.wikipedia.org/wiki/Loki_%28C%2B%2B%29
-// - https://github.com/snaewe/loki-lib
-// which uses the MIT Software License
-//
 // =================================================================================================
 // =================================================================================================
 // =================================================================================================
@@ -903,111 +897,11 @@ namespace detail
         return rawMemoryToString(&object, sizeof(object));
     }
 
-    class NullType
-    {
-    };
-
-    template <class T, class U>
-    struct Typelist
-    {
-        typedef T Head;
-        typedef U Tail;
-    };
-
-    // type of recursive function
-    template <class TList, class Callable>
-    struct ForEachType;
-
-    // Recursion rule
-    template <class Head, class Tail, class Callable>
-    struct ForEachType<Typelist<Head, Tail>, Callable> : public ForEachType<Tail, Callable>
-    {
-        enum
-        {
-            value = 1 + ForEachType<Tail, Callable>::value
-        };
-
-        explicit ForEachType(Callable& callable)
-                : ForEachType<Tail, Callable>(callable) {
-#if DOCTEST_MSVC && DOCTEST_MSVC < DOCTEST_COMPILER(19, 10, 0)
-            callable.operator()<value, Head>();
-#else  // MSVC
-            callable.template operator()<value, Head>();
-#endif // MSVC
-        }
-    };
-
-    // Recursion end
-    template <class Head, class Callable>
-    struct ForEachType<Typelist<Head, NullType>, Callable>
-    {
-    public:
-        enum
-        {
-            value = 0
-        };
-
-        explicit ForEachType(Callable& callable) {
-#if DOCTEST_MSVC && DOCTEST_MSVC < DOCTEST_COMPILER(19, 10, 0)
-            callable.operator()<value, Head>();
-#else  // MSVC
-            callable.template operator()<value, Head>();
-#endif // MSVC
-        }
-    };
-
     template <typename T>
     const char* type_to_string() {
         return "<>";
     }
 } // namespace detail
-
-template <typename T1 = detail::NullType, typename T2 = detail::NullType,
-          typename T3 = detail::NullType, typename T4 = detail::NullType,
-          typename T5 = detail::NullType, typename T6 = detail::NullType,
-          typename T7 = detail::NullType, typename T8 = detail::NullType,
-          typename T9 = detail::NullType, typename T10 = detail::NullType,
-          typename T11 = detail::NullType, typename T12 = detail::NullType,
-          typename T13 = detail::NullType, typename T14 = detail::NullType,
-          typename T15 = detail::NullType, typename T16 = detail::NullType,
-          typename T17 = detail::NullType, typename T18 = detail::NullType,
-          typename T19 = detail::NullType, typename T20 = detail::NullType,
-          typename T21 = detail::NullType, typename T22 = detail::NullType,
-          typename T23 = detail::NullType, typename T24 = detail::NullType,
-          typename T25 = detail::NullType, typename T26 = detail::NullType,
-          typename T27 = detail::NullType, typename T28 = detail::NullType,
-          typename T29 = detail::NullType, typename T30 = detail::NullType,
-          typename T31 = detail::NullType, typename T32 = detail::NullType,
-          typename T33 = detail::NullType, typename T34 = detail::NullType,
-          typename T35 = detail::NullType, typename T36 = detail::NullType,
-          typename T37 = detail::NullType, typename T38 = detail::NullType,
-          typename T39 = detail::NullType, typename T40 = detail::NullType,
-          typename T41 = detail::NullType, typename T42 = detail::NullType,
-          typename T43 = detail::NullType, typename T44 = detail::NullType,
-          typename T45 = detail::NullType, typename T46 = detail::NullType,
-          typename T47 = detail::NullType, typename T48 = detail::NullType,
-          typename T49 = detail::NullType, typename T50 = detail::NullType,
-          typename T51 = detail::NullType, typename T52 = detail::NullType,
-          typename T53 = detail::NullType, typename T54 = detail::NullType,
-          typename T55 = detail::NullType, typename T56 = detail::NullType,
-          typename T57 = detail::NullType, typename T58 = detail::NullType,
-          typename T59 = detail::NullType, typename T60 = detail::NullType>
-struct Types
-{
-private:
-    typedef typename Types<T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17,
-                           T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31,
-                           T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45,
-                           T46, T47, T48, T49, T50, T51, T52, T53, T54, T55, T56, T57, T58, T59,
-                           T60>::Result TailResult;
-
-public:
-    typedef detail::Typelist<T1, TailResult> Result;
-};
-
-template <>
-struct Types<>
-{ typedef detail::NullType Result; };
 
 template <typename T>
 struct StringMaker : public detail::StringMakerBase<detail::has_insertion_operator<T>::value>
@@ -2100,72 +1994,61 @@ int registerReporter(const char* name, int priority, IReporter* r);
     typedef int DOCTEST_ANONYMOUS(_DOCTEST_ANON_FOR_SEMICOLON_)
 
 // for typed tests
-#define DOCTEST_TEST_CASE_TEMPLATE_IMPL(decorators, T, anon, ...)                                  \
+#define DOCTEST_REGISTER_TYPED_TEST_CASE_IMPL(func, type, decorators, idx)                         \
+    doctest::detail::regTest(                                                                      \
+            doctest::detail::TestCase(func, __FILE__, __LINE__,                                    \
+                                      doctest_detail_test_suite_ns::getCurrentTestSuite(),         \
+                                      doctest::detail::type_to_string<type>(), idx) *              \
+            decorators)
+
+#define DOCTEST_TEST_CASE_TEMPLATE_DEFINE_IMPL(dec, T, id, anon)                                   \
     template <typename T>                                                                          \
     inline void anon();                                                                            \
-    struct DOCTEST_CAT(anon, FUNCTOR)                                                              \
+    template <typename Type, typename... Rest>                                                     \
+    struct DOCTEST_CAT(id, ITERATOR)                                                               \
     {                                                                                              \
-        template <int Index, typename Type>                                                        \
-        void operator()() {                                                                        \
-            doctest::detail::regTest(                                                              \
-                    doctest::detail::TestCase(anon<Type>, __FILE__, __LINE__,                      \
-                                              doctest_detail_test_suite_ns::getCurrentTestSuite(), \
-                                              doctest::detail::type_to_string<Type>(), Index) *    \
-                    decorators);                                                                   \
+        DOCTEST_CAT(id, ITERATOR)(int line, int index) {                                           \
+            DOCTEST_REGISTER_TYPED_TEST_CASE_IMPL(anon<Type>, Type, dec, line * 1000 + index);     \
+            DOCTEST_CAT(id, ITERATOR)<Rest...>(line, index + 1);                                   \
         }                                                                                          \
     };                                                                                             \
-    inline int DOCTEST_CAT(anon, REG_FUNC)() {                                                     \
-        DOCTEST_CAT(anon, FUNCTOR) registrar;                                                      \
-        doctest::detail::ForEachType<__VA_ARGS__::Result, DOCTEST_CAT(anon, FUNCTOR)> doIt(        \
-                registrar);                                                                        \
+    template <typename Type>                                                                       \
+    struct DOCTEST_CAT(id, ITERATOR)<Type>                                                         \
+    {                                                                                              \
+        DOCTEST_CAT(id, ITERATOR)(int line, int index) {                                           \
+            DOCTEST_REGISTER_TYPED_TEST_CASE_IMPL(anon<Type>, Type, dec, line * 1000 + index);     \
+        }                                                                                          \
+    }
+
+#define DOCTEST_TEST_CASE_TEMPLATE_DEFINE_IMPL_PROXY(dec, T, id, anon)                             \
+    DOCTEST_TEST_CASE_TEMPLATE_DEFINE_IMPL(dec, T, id, anon);                                      \
+    template <typename T>                                                                          \
+    inline void anon()
+
+#define DOCTEST_TEST_CASE_TEMPLATE_DEFINE(dec, T, id)                                              \
+    DOCTEST_TEST_CASE_TEMPLATE_DEFINE_IMPL_PROXY(dec, T, id, DOCTEST_ANONYMOUS(_DOCTEST_ANON_TMP_))
+
+#define DOCTEST_TEST_CASE_TEMPLATE_INSTANTIATE_IMPL(id, anon, ...)                                 \
+    DOCTEST_GLOBAL_NO_WARNINGS(DOCTEST_CAT(anon, DUMMY)) = []() {                                  \
+        DOCTEST_CAT(id, ITERATOR)<__VA_ARGS__> DOCTEST_UNUSED DOCTEST_CAT(anon, inner_dummy)(      \
+                __LINE__, 0);                                                                      \
         return 0;                                                                                  \
-    }                                                                                              \
-    DOCTEST_GLOBAL_NO_WARNINGS(DOCTEST_CAT(anon, DUMMY)) = DOCTEST_CAT(anon, REG_FUNC)();          \
-    DOCTEST_GLOBAL_NO_WARNINGS_END()                                                               \
+    }();                                                                                           \
+    DOCTEST_GLOBAL_NO_WARNINGS_END()
+
+#define DOCTEST_TEST_CASE_TEMPLATE_INSTANTIATE(id, ...)                                            \
+    DOCTEST_TEST_CASE_TEMPLATE_INSTANTIATE_IMPL(id, DOCTEST_ANONYMOUS(_DOCTEST_ANON_TMP_),         \
+                                                __VA_ARGS__)                                       \
+    typedef int DOCTEST_ANONYMOUS(_DOCTEST_ANON_FOR_SEMICOLON_)
+
+#define DOCTEST_TEST_CASE_TEMPLATE_IMPL(dec, T, anon, ...)                                         \
+    DOCTEST_TEST_CASE_TEMPLATE_DEFINE_IMPL_PROXY(dec, T, anon, anon);                              \
+    DOCTEST_TEST_CASE_TEMPLATE_INSTANTIATE_IMPL(anon, anon, __VA_ARGS__)                           \
     template <typename T>                                                                          \
     inline void anon()
 
 #define DOCTEST_TEST_CASE_TEMPLATE(dec, T, ...)                                                    \
     DOCTEST_TEST_CASE_TEMPLATE_IMPL(dec, T, DOCTEST_ANONYMOUS(_DOCTEST_ANON_TMP_), __VA_ARGS__)
-
-#define DOCTEST_TEST_CASE_TEMPLATE_DEFINE_IMPL(decorators, T, id, anon)                            \
-    template <typename T>                                                                          \
-    inline void anon();                                                                            \
-    struct DOCTEST_CAT(id, _FUNCTOR)                                                               \
-    {                                                                                              \
-        int m_line;                                                                                \
-        DOCTEST_CAT(id, _FUNCTOR)                                                                  \
-        (int line)                                                                                 \
-                : m_line(line) {}                                                                  \
-        template <int Index, typename Type>                                                        \
-        void operator()() {                                                                        \
-            doctest::detail::regTest(                                                              \
-                    doctest::detail::TestCase(anon<Type>, __FILE__, __LINE__,                      \
-                                              doctest_detail_test_suite_ns::getCurrentTestSuite(), \
-                                              doctest::detail::type_to_string<Type>(),             \
-                                              m_line * 1000 + Index) *                             \
-                    decorators);                                                                   \
-        }                                                                                          \
-    };                                                                                             \
-    template <typename T>                                                                          \
-    inline void anon()
-
-#define DOCTEST_TEST_CASE_TEMPLATE_DEFINE(decorators, T, id)                                       \
-    DOCTEST_TEST_CASE_TEMPLATE_DEFINE_IMPL(decorators, T, id, DOCTEST_ANONYMOUS(_DOCTEST_ANON_TMP_))
-
-#define DOCTEST_TEST_CASE_TEMPLATE_INSTANTIATE_IMPL(id, anon, ...)                                 \
-    static int DOCTEST_CAT(anon, REG_FUNC)() {                                                     \
-        DOCTEST_CAT(id, _FUNCTOR) registrar(__LINE__);                                             \
-        doctest::detail::ForEachType<__VA_ARGS__::Result, DOCTEST_CAT(id, _FUNCTOR)> doIt(         \
-                registrar);                                                                        \
-        return 0;                                                                                  \
-    }                                                                                              \
-    DOCTEST_GLOBAL_NO_WARNINGS(DOCTEST_CAT(anon, DUMMY)) = DOCTEST_CAT(anon, REG_FUNC)();          \
-    DOCTEST_GLOBAL_NO_WARNINGS_END() typedef int DOCTEST_ANONYMOUS(_DOCTEST_ANON_FOR_SEMICOLON_)
-
-#define DOCTEST_TEST_CASE_TEMPLATE_INSTANTIATE(id, ...)                                            \
-    DOCTEST_TEST_CASE_TEMPLATE_INSTANTIATE_IMPL(id, DOCTEST_ANONYMOUS(_DOCTEST_ANON_TMP_),         \
-                                                __VA_ARGS__)
 
 // for subcases
 #define DOCTEST_SUBCASE(name)                                                                      \
@@ -2565,7 +2448,7 @@ constexpr T to_lvalue = x;
 #define DOCTEST_TYPE_TO_STRING_IMPL(...)
 
 // for typed tests
-#define DOCTEST_TEST_CASE_TEMPLATE(name, type, types)                                              \
+#define DOCTEST_TEST_CASE_TEMPLATE(name, type, ...)                                                \
     template <typename type>                                                                       \
     inline void DOCTEST_ANONYMOUS(_DOCTEST_ANON_TMP_)()
 
@@ -2573,7 +2456,7 @@ constexpr T to_lvalue = x;
     template <typename type>                                                                       \
     inline void DOCTEST_ANONYMOUS(_DOCTEST_ANON_TMP_)()
 
-#define DOCTEST_TEST_CASE_TEMPLATE_INSTANTIATE(id, types)                                          \
+#define DOCTEST_TEST_CASE_TEMPLATE_INSTANTIATE(id, ...)                                            \
     typedef int DOCTEST_ANONYMOUS(_DOCTEST_ANON_FOR_SEMICOLON_)
 
 // for subcases
@@ -2693,8 +2576,8 @@ constexpr T to_lvalue = x;
 
 // BDD style macros
 // clang-format off
-#define DOCTEST_SCENARIO(name)  TEST_CASE("  Scenario: " name)
-#define DOCTEST_SCENARIO_TEMPLATE(name, T, ...)  TEST_CASE_TEMPLATE("  Scenario: " name, T, __VA_ARGS__)
+#define DOCTEST_SCENARIO(name) DOCTEST_TEST_CASE("  Scenario: " name)
+#define DOCTEST_SCENARIO_TEMPLATE(name, T, ...)  DOCTEST_TEST_CASE_TEMPLATE("  Scenario: " name, T, __VA_ARGS__)
 #define DOCTEST_SCENARIO_TEMPLATE_DEFINE(name, T, id) DOCTEST_TEST_CASE_TEMPLATE_DEFINE("  Scenario: " name, T, id)
 
 #define DOCTEST_GIVEN(name)     SUBCASE("   Given: " name)

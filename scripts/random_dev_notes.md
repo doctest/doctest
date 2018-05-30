@@ -24,7 +24,15 @@ https://www.boost.org/doc/libs/1_67_0/libs/test/doc/html/index.html
 
 
 
-DOCTEST_STRIP_PARENS
+- remove C++98 support
+    - remove the config identifiers for C++11 features
+    - use variadic templates where appropriate
+    - update type lists to C++11
+    - move initialization of fields from initializer lists to class bodies
+    - for loops
+    - lambdas
+    - auto
+    - enum class
 
 
 
