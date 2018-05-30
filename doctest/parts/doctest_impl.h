@@ -564,7 +564,7 @@ int registerReporter(const char*, int, IReporter*) { return 0; }
 #endif // DOCTEST_CONFIG_COLORS_NONE
 
 #if DOCTEST_MSVC || defined(__MINGW32__)
-#if DOCTEST_MSVC >= DOCTEST_COMPILER(17, 0, 0)
+#if DOCTEST_MSVC
 #define DOCTEST_WINDOWS_SAL_IN_OPT _In_opt_
 #else // MSVC
 #define DOCTEST_WINDOWS_SAL_IN_OPT
@@ -2381,7 +2381,7 @@ enum class hello_cpp11_enums
     val2
 };
 
-static void f() {
+void f() {
     std::mutex                  logMutex;
     std::lock_guard<std::mutex> lock(logMutex);
 

@@ -45,12 +45,7 @@ struct TypePair
     typedef second B;
 };
 
-#define pairs \
-    TypePair<int, char>, \
-    TypePair<char, int>, \
-    TypePair<bool, int>
-
-TEST_CASE_TEMPLATE("multiple types", T, pairs) {
+TEST_CASE_TEMPLATE("multiple types", T, TypePair<int, char>, TypePair<char, int>, TypePair<bool, int>) {
     typedef typename T::A T1;
     typedef typename T::B T2;
     T1 t1 = T1();

@@ -114,21 +114,13 @@
 #define DOCTEST_PRAGMA_TO_STR(x) _Pragma(#x)
 #define DOCTEST_CLANG_SUPPRESS_WARNING_PUSH
 #define DOCTEST_MSVC_SUPPRESS_WARNING_PUSH
-#if DOCTEST_GCC >= DOCTEST_COMPILER(4, 7, 0)
 #define DOCTEST_GCC_SUPPRESS_WARNING_PUSH _Pragma("GCC diagnostic push")
-#else // GCC 4.7+
-#define DOCTEST_GCC_SUPPRESS_WARNING_PUSH
-#endif // GCC 4.7+
 #define DOCTEST_CLANG_SUPPRESS_WARNING(w)
 #define DOCTEST_MSVC_SUPPRESS_WARNING(w)
 #define DOCTEST_GCC_SUPPRESS_WARNING(w) DOCTEST_PRAGMA_TO_STR(GCC diagnostic ignored w)
 #define DOCTEST_CLANG_SUPPRESS_WARNING_POP
 #define DOCTEST_MSVC_SUPPRESS_WARNING_POP
-#if DOCTEST_GCC >= DOCTEST_COMPILER(4, 7, 0)
 #define DOCTEST_GCC_SUPPRESS_WARNING_POP _Pragma("GCC diagnostic pop")
-#else // GCC 4.7+
-#define DOCTEST_GCC_SUPPRESS_WARNING_POP
-#endif // GCC 4.7+
 #define DOCTEST_CLANG_SUPPRESS_WARNING_WITH_PUSH(w)
 #define DOCTEST_MSVC_SUPPRESS_WARNING_WITH_PUSH(w)
 #define DOCTEST_GCC_SUPPRESS_WARNING_WITH_PUSH(w)                                                  \
@@ -3303,7 +3295,7 @@ int registerReporter(const char*, int, IReporter*) { return 0; }
 #endif // DOCTEST_CONFIG_COLORS_NONE
 
 #if DOCTEST_MSVC || defined(__MINGW32__)
-#if DOCTEST_MSVC >= DOCTEST_COMPILER(17, 0, 0)
+#if DOCTEST_MSVC
 #define DOCTEST_WINDOWS_SAL_IN_OPT _In_opt_
 #else // MSVC
 #define DOCTEST_WINDOWS_SAL_IN_OPT
@@ -5120,7 +5112,7 @@ enum class hello_cpp11_enums
     val2
 };
 
-static void f() {
+void f() {
     std::mutex                  logMutex;
     std::lock_guard<std::mutex> lock(logMutex);
 
