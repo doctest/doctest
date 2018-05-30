@@ -2358,6 +2358,43 @@ int registerReporter(const char* name, int priority, IReporter* r) {
 int main(int argc, char** argv) { return doctest::Context(argc, argv).run(); }
 #endif // DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 
+DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_BEGIN
+//#include <thread>
+#include <atomic>
+#include <mutex>
+DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_END
+
+struct A {
+    int a = 5;
+    A();
+    A(const A&) = delete;
+    A& operator=(const A&);
+};
+
+A::A() = default;
+A& A::operator=(const A&) = default;
+
+enum class hello_cpp11_enums {
+    val1,
+    val2
+};
+
+static void f() {
+    std::mutex logMutex;
+    std::lock_guard<std::mutex> lock(logMutex);
+
+    A a;
+
+    std::vector<int> v = {4,5,6};
+    for(auto& curr : v)
+        std::cout << curr;
+
+    f();
+
+    std::atomic<int> ai;
+    ai.exchange(6);
+}
+
 DOCTEST_CLANG_SUPPRESS_WARNING_POP
 DOCTEST_MSVC_SUPPRESS_WARNING_POP
 DOCTEST_GCC_SUPPRESS_WARNING_POP
