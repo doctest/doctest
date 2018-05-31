@@ -824,9 +824,9 @@ namespace {
         unsigned int getElapsedMicroseconds() const {
             return static_cast<unsigned int>(getCurrentTicks() - m_ticks);
         }
-        unsigned int getElapsedMilliseconds() const {
-            return static_cast<unsigned int>(getElapsedMicroseconds() / 1000);
-        }
+        //unsigned int getElapsedMilliseconds() const {
+        //    return static_cast<unsigned int>(getElapsedMicroseconds() / 1000);
+        //}
         double getElapsedSeconds() const { return getElapsedMicroseconds() / 1000000.0; }
 
     private:
