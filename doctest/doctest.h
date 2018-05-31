@@ -361,6 +361,14 @@ DOCTEST_MSVC_SUPPRESS_WARNING(26444) // Avoid unnamed objects with custom constr
 #define DOCTEST_PLATFORM_LINUX
 #endif
 
+// clang-format off
+#define DOCTEST_DELETE_COPIES(type)     type(const type&) = delete; type& operator=(const type&) = delete
+#define DOCTEST_DECLARE_COPIES(type)    type(const type&); type& operator=(const type&)
+#define DOCTEST_DEFINE_COPIES(type)     type::type(const type&) = default; type& type::operator=(const type&) = default
+#define DOCTEST_DECLARE_DEFAULTS(type)  type(); ~type()
+#define DOCTEST_DEFINE_DEFAULTS(type)   type::type()  = default; type::~type() = default
+// clang-format on
+
 #define DOCTEST_GLOBAL_NO_WARNINGS(var)                                                            \
     DOCTEST_CLANG_SUPPRESS_WARNING_WITH_PUSH("-Wglobal-constructors") static int var DOCTEST_UNUSED
 #define DOCTEST_GLOBAL_NO_WARNINGS_END() DOCTEST_CLANG_SUPPRESS_WARNING_POP
@@ -458,44 +466,31 @@ class DOCTEST_INTERFACE String
         view data;
     };
 
+    bool isOnStack() const { return (buf[last] & 128) == 0; }
+    void setOnHeap();
+    void setLast(unsigned in = last);
+
     void copy(const String& other);
 
-    void setOnHeap() { *reinterpret_cast<unsigned char*>(&buf[last]) = 128; }
-    void setLast(unsigned in = last) { buf[last] = char(in); }
-
 public:
-    String() {
-        buf[0] = '\0';
-        setLast();
-    }
+    String();
+    ~String();
 
     String(const char* in);
 
-    String(const String& other) { copy(other); }
-
-    ~String() {
-        if(!isOnStack())
-            delete[] data.ptr;
-    }
-
+    String(const String& other);
     String& operator=(const String& other);
 
     String& operator+=(const String& other);
-
-    String operator+(const String& other) const { return String(*this) += other; }
+    String  operator+(const String& other) const;
 
     String(String&& other);
     String& operator=(String&& other);
 
-    bool isOnStack() const { return (buf[last] & 128) == 0; }
+    char  operator[](unsigned i) const;
+    char& operator[](unsigned i);
 
-    char operator[](unsigned i) const { return const_cast<String*>(this)->operator[](i); } // NOLINT
-    char& operator[](unsigned i) {
-        if(isOnStack())
-            return reinterpret_cast<char*>(buf)[i];
-        return data.ptr[i];
-    }
-
+    // the only functions I'm willing to leave in the interface - available for inlining
     const char* c_str() const { return const_cast<String*>(this)->c_str(); } // NOLINT
     char*       c_str() {
         if(isOnStack())
@@ -672,6 +667,9 @@ struct DOCTEST_INTERFACE TestCaseData
     bool        m_should_fail;
     int         m_expected_failures;
     double      m_timeout;
+
+    DOCTEST_DECLARE_DEFAULTS(TestCaseData);
+    DOCTEST_DECLARE_COPIES(TestCaseData);
 };
 
 struct DOCTEST_INTERFACE AssertData
@@ -694,6 +692,9 @@ struct DOCTEST_INTERFACE AssertData
     // for specific exception-related asserts
     bool        m_threw_as;
     const char* m_exception_type;
+
+    DOCTEST_DECLARE_DEFAULTS(AssertData);
+    DOCTEST_DELETE_COPIES(AssertData);
 };
 
 struct DOCTEST_INTERFACE MessageData
@@ -703,7 +704,8 @@ struct DOCTEST_INTERFACE MessageData
     int              m_line;
     assertType::Enum m_severity;
 
-    ~MessageData();
+    DOCTEST_DECLARE_DEFAULTS(MessageData);
+    DOCTEST_DELETE_COPIES(MessageData);
 };
 
 struct DOCTEST_INTERFACE SubcaseSignature
@@ -715,10 +717,16 @@ struct DOCTEST_INTERFACE SubcaseSignature
     SubcaseSignature(const char* name, const char* file, int line);
 
     bool operator<(const SubcaseSignature& other) const;
+
+    DOCTEST_DECLARE_DEFAULTS(SubcaseSignature);
+    DOCTEST_DECLARE_COPIES(SubcaseSignature);
 };
 
 struct DOCTEST_INTERFACE IContextScope
 {
+    DOCTEST_DELETE_COPIES(IContextScope);
+
+    IContextScope();
     virtual ~IContextScope();
     virtual void stringify(std::ostream*) const = 0;
 };
@@ -758,6 +766,9 @@ struct ContextOptions //!OCLINT too many fields
     bool list_test_cases;  // to list all tests matching the filters
     bool list_test_suites; // to list all suites matching the filters
     bool list_reporters;   // lists all registered reporters
+
+    DOCTEST_DECLARE_DEFAULTS(ContextOptions);
+    DOCTEST_DELETE_COPIES(ContextOptions);
 };
 
 namespace detail
@@ -908,6 +919,8 @@ class DOCTEST_INTERFACE Approx
 public:
     explicit Approx(double value);
 
+    DOCTEST_DECLARE_COPIES(Approx);
+
     Approx operator()(double value) const;
 
 #ifdef DOCTEST_CONFIG_INCLUDE_TYPE_TRAITS
@@ -957,6 +970,8 @@ public:
     DOCTEST_INTERFACE friend bool operator> (double lhs, Approx const& rhs);
     DOCTEST_INTERFACE friend bool operator> (Approx const& lhs, double rhs);
 
+    DOCTEST_INTERFACE friend String toString(Approx const& in);
+
 #ifdef DOCTEST_CONFIG_INCLUDE_TYPE_TRAITS
 #define DOCTEST_APPROX_PREFIX \
     template <typename T> friend typename detail::enable_if<std::is_constructible<double, T>::value, bool>::type
@@ -984,10 +999,7 @@ private:
     double m_value;
 };
 
-template <>
-inline String toString<Approx>(const DOCTEST_REF_WRAP(Approx) value) {
-    return value.toString();
-}
+DOCTEST_INTERFACE String toString(const Approx& in);
 
 #if !defined(DOCTEST_CONFIG_DISABLE)
 
@@ -1009,8 +1021,8 @@ namespace detail
 
     struct DOCTEST_INTERFACE TestFailureException
     {
-        //TestFailureException();
-        //~TestFailureException();
+        DOCTEST_DECLARE_DEFAULTS(TestFailureException);
+        DOCTEST_DECLARE_COPIES(TestFailureException);
     };
 
     DOCTEST_INTERFACE bool checkIfShouldThrow(assertType::Enum at);
@@ -1018,15 +1030,15 @@ namespace detail
 
     DOCTEST_INTERFACE const ContextOptions* getContextOptions();
 
-    // cppcheck-suppress copyCtorAndEqOperator
     struct DOCTEST_INTERFACE Subcase
     {
         SubcaseSignature m_signature;
         bool             m_entered;
 
         Subcase(const char* name, const char* file, int line);
-        Subcase(const Subcase&);
         ~Subcase();
+
+        DOCTEST_DELETE_COPIES(Subcase);
 
         operator bool() const;
     };
@@ -1062,10 +1074,9 @@ namespace detail
         String m_decomposition;
 
         Result(bool passed = false, const String& decomposition = String());
-        Result(const Result&);
-        ~Result();
 
-        Result& operator=(const Result&);
+        DOCTEST_DECLARE_DEFAULTS(Result);
+        DOCTEST_DECLARE_COPIES(Result);
 
         operator bool() { return !m_passed; }
 
@@ -1230,6 +1241,9 @@ namespace detail
 
         ExpressionDecomposer(assertType::Enum at);
 
+        DOCTEST_DECLARE_DEFAULTS(ExpressionDecomposer);
+        DOCTEST_DELETE_COPIES(ExpressionDecomposer);
+
         // The right operator for capturing expressions is "<=" instead of "<<" (based on the operator precedence table)
         // but then there will be warnings from GCC about "-Wparentheses" and since "_Pragma()" is problematic this will stay for now...
         // https://github.com/philsquared/Catch/issues/870
@@ -1249,6 +1263,9 @@ namespace detail
         bool        m_should_fail;
         int         m_expected_failures;
         double      m_timeout;
+
+        DOCTEST_DECLARE_DEFAULTS(TestSuite);
+        DOCTEST_DECLARE_COPIES(TestSuite);
 
         TestSuite& operator*(const char* in);
 
@@ -1270,7 +1287,7 @@ namespace detail
         TestCase(funcType test, const char* file, unsigned line, const TestSuite& test_suite,
                  const char* type = "", int template_id = -1);
 
-        ~TestCase();
+        DOCTEST_DECLARE_DEFAULTS(TestCase);
 
         TestCase(const TestCase& other);
 
@@ -1325,7 +1342,8 @@ namespace detail
         ResultBuilder(assertType::Enum at, const char* file, int line, const char* expr,
                       const char* exception_type = "");
 
-        ~ResultBuilder();
+        DOCTEST_DECLARE_DEFAULTS(ResultBuilder);
+        DOCTEST_DELETE_COPIES(ResultBuilder);
 
         void setResult(const Result& res);
 
@@ -1432,6 +1450,9 @@ namespace detail
 
     struct DOCTEST_INTERFACE IExceptionTranslator
     {
+        DOCTEST_DELETE_COPIES(IExceptionTranslator);
+
+        IExceptionTranslator();
         virtual ~IExceptionTranslator();
         virtual bool translate(String&) const = 0;
     };
@@ -1526,6 +1547,8 @@ namespace detail
 
         struct DOCTEST_INTERFACE ICapture
         {
+            DOCTEST_DELETE_COPIES(ICapture);
+            ICapture();
             virtual ~ICapture();
             virtual void toStream(std::ostream*) const = 0;
         };
@@ -1544,12 +1567,18 @@ namespace detail
         {
             char buf[sizeof(Capture<char>)] DOCTEST_ALIGNMENT(
                     2 * sizeof(void*)); // place to construct a Capture<T>
+
+            DOCTEST_DECLARE_DEFAULTS(Chunk);
+            DOCTEST_DELETE_COPIES(Chunk);
         };
 
         struct Node
         {
             Chunk chunk;
             Node* next;
+
+            DOCTEST_DECLARE_DEFAULTS(Node);
+            DOCTEST_DELETE_COPIES(Node);
         };
 
         Chunk stackChunks[DOCTEST_CONFIG_NUM_CAPTURES_ON_STACK];
@@ -1609,6 +1638,8 @@ namespace detail
     public:
         explicit ContextScope(ContextBuilder& temp);
 
+        DOCTEST_DELETE_COPIES(ContextScope);
+
         ~ContextScope();
 
         void stringify(std::ostream* s) const;
@@ -1619,7 +1650,10 @@ namespace detail
         std::ostream* m_stream;
 
         MessageBuilder(const char* file, int line, assertType::Enum severity);
+        MessageBuilder() = delete;
         ~MessageBuilder();
+
+        DOCTEST_DELETE_COPIES(MessageBuilder);
 
         template <typename T>
         MessageBuilder& operator<<(const T& in) {
@@ -1694,6 +1728,8 @@ class DOCTEST_INTERFACE Context
 public:
     explicit Context(int argc = 0, const char* const* argv = 0);
 
+    DOCTEST_DELETE_COPIES(Context);
+
     ~Context();
 
     void applyCommandLine(int argc, const char* const* argv);
@@ -1734,6 +1770,9 @@ struct DOCTEST_INTERFACE CurrentTestCaseStats
     int    failure_flags; // use TestCaseFailureReason::Enum
     String error_string;
     bool   should_reenter; // means we are not done with the test case because of subcases
+
+    DOCTEST_DECLARE_DEFAULTS(CurrentTestCaseStats);
+    DOCTEST_DELETE_COPIES(CurrentTestCaseStats);
 };
 
 struct DOCTEST_INTERFACE TestRunStats
@@ -1744,6 +1783,9 @@ struct DOCTEST_INTERFACE TestRunStats
     unsigned numTestCasesFailed;
     int      numAsserts;
     int      numAssertsFailed;
+
+    DOCTEST_DECLARE_DEFAULTS(TestRunStats);
+    DOCTEST_DELETE_COPIES(TestRunStats);
 };
 
 struct DOCTEST_INTERFACE IReporter
@@ -2859,6 +2901,9 @@ namespace detail
 #endif // DOCTEST_CONFIG_DISABLE
 } // namespace detail
 
+void String::setOnHeap() { *reinterpret_cast<unsigned char*>(&buf[last]) = 128; }
+void String::setLast(unsigned in) { buf[last] = char(in); }
+
 void String::copy(const String& other) {
     if(other.isOnStack()) {
         memcpy(buf, other.buf, len);
@@ -2869,6 +2914,16 @@ void String::copy(const String& other) {
         data.ptr      = new char[data.capacity];
         memcpy(data.ptr, other.data.ptr, data.size + 1);
     }
+}
+
+String::String() {
+    buf[0] = '\0';
+    setLast();
+}
+
+String::~String() {
+    if(!isOnStack())
+        delete[] data.ptr;
 }
 
 String::String(const char* in) {
@@ -2884,6 +2939,8 @@ String::String(const char* in) {
         memcpy(data.ptr, in, in_len + 1);
     }
 }
+
+String::String(const String& other) { copy(other); }
 
 String& String::operator=(const String& other) {
     if(this != &other) {
@@ -2945,6 +3002,8 @@ String& String::operator+=(const String& other) {
     return *this;
 }
 
+String String::operator+(const String& other) const { return String(*this) += other; }
+
 String::String(String&& other) {
     memcpy(buf, other.buf, len);
     other.buf[0] = '\0';
@@ -2960,6 +3019,16 @@ String& String::operator=(String&& other) {
         other.setLast();
     }
     return *this;
+}
+
+char String::operator[](unsigned i) const {
+    return const_cast<String*>(this)->operator[](i); // NOLINT
+}
+
+char& String::operator[](unsigned i) {
+    if(isOnStack())
+        return reinterpret_cast<char*>(buf)[i];
+    return data.ptr[i];
 }
 
 DOCTEST_GCC_SUPPRESS_WARNING_WITH_PUSH("-Wmaybe-uninitialized")
@@ -3091,12 +3160,20 @@ const char* assertString(assertType::Enum at) {
 }
 // clang-format on
 
-MessageData::~MessageData() = default;
+DOCTEST_DEFINE_DEFAULTS(TestCaseData);
+DOCTEST_DEFINE_COPIES(TestCaseData);
+
+DOCTEST_DEFINE_DEFAULTS(AssertData);
+
+DOCTEST_DEFINE_DEFAULTS(MessageData);
 
 SubcaseSignature::SubcaseSignature(const char* name, const char* file, int line)
         : m_name(name)
         , m_file(file)
         , m_line(line) {}
+
+DOCTEST_DEFINE_DEFAULTS(SubcaseSignature);
+DOCTEST_DEFINE_COPIES(SubcaseSignature);
 
 bool SubcaseSignature::operator<(const SubcaseSignature& other) const {
     if(m_line != other.m_line)
@@ -3106,47 +3183,10 @@ bool SubcaseSignature::operator<(const SubcaseSignature& other) const {
     return std::strcmp(m_name, other.m_name) < 0;
 }
 
+IContextScope::IContextScope()  = default;
 IContextScope::~IContextScope() = default;
 
-Approx::Approx(double value)
-        : m_epsilon(static_cast<double>(std::numeric_limits<float>::epsilon()) * 100)
-        , m_scale(1.0)
-        , m_value(value) {}
-
-Approx Approx::operator()(double value) const {
-    Approx approx(value);
-    approx.epsilon(m_epsilon);
-    approx.scale(m_scale);
-    return approx;
-}
-
-Approx& Approx::epsilon(double newEpsilon) {
-    m_epsilon = newEpsilon;
-    return *this;
-}
-Approx& Approx::scale(double newScale) {
-    m_scale = newScale;
-    return *this;
-}
-
-String Approx::toString() const { return String("Approx( ") + doctest::toString(m_value) + " )"; }
-
-bool operator==(double lhs, Approx const& rhs) {
-    // Thanks to Richard Harris for his help refining this formula
-    return std::fabs(lhs - rhs.m_value) <
-           rhs.m_epsilon * (rhs.m_scale + std::max(std::fabs(lhs), std::fabs(rhs.m_value)));
-}
-bool operator==(Approx const& lhs, double rhs) { return operator==(rhs, lhs); }
-bool operator!=(double lhs, Approx const& rhs) { return !operator==(lhs, rhs); }
-bool operator!=(Approx const& lhs, double rhs) { return !operator==(rhs, lhs); }
-bool operator<=(double lhs, Approx const& rhs) { return lhs < rhs.m_value || lhs == rhs; }
-bool operator<=(Approx const& lhs, double rhs) { return lhs.m_value < rhs || lhs == rhs; }
-bool operator>=(double lhs, Approx const& rhs) { return lhs > rhs.m_value || lhs == rhs; }
-bool operator>=(Approx const& lhs, double rhs) { return lhs.m_value > rhs || lhs == rhs; }
-bool operator<(double lhs, Approx const& rhs) { return lhs < rhs.m_value && lhs != rhs; }
-bool operator<(Approx const& lhs, double rhs) { return lhs.m_value < rhs && lhs != rhs; }
-bool operator>(double lhs, Approx const& rhs) { return lhs > rhs.m_value && lhs != rhs; }
-bool operator>(Approx const& lhs, double rhs) { return lhs.m_value > rhs && lhs != rhs; }
+DOCTEST_DEFINE_DEFAULTS(ContextOptions);
 
 #ifdef DOCTEST_CONFIG_TREAT_CHAR_STAR_AS_STRING
 String toString(char* in) { return toString(static_cast<const char*>(in)); }
@@ -3224,6 +3264,50 @@ String toString(int long long unsigned in) {
 
 String toString(std::nullptr_t) { return "NULL"; }
 
+Approx::Approx(double value)
+        : m_epsilon(static_cast<double>(std::numeric_limits<float>::epsilon()) * 100)
+        , m_scale(1.0)
+        , m_value(value) {}
+
+DOCTEST_DEFINE_COPIES(Approx);
+
+Approx Approx::operator()(double value) const {
+    Approx approx(value);
+    approx.epsilon(m_epsilon);
+    approx.scale(m_scale);
+    return approx;
+}
+
+Approx& Approx::epsilon(double newEpsilon) {
+    m_epsilon = newEpsilon;
+    return *this;
+}
+Approx& Approx::scale(double newScale) {
+    m_scale = newScale;
+    return *this;
+}
+
+bool operator==(double lhs, Approx const& rhs) {
+    // Thanks to Richard Harris for his help refining this formula
+    return std::fabs(lhs - rhs.m_value) <
+           rhs.m_epsilon * (rhs.m_scale + std::max(std::fabs(lhs), std::fabs(rhs.m_value)));
+}
+bool operator==(Approx const& lhs, double rhs) { return operator==(rhs, lhs); }
+bool operator!=(double lhs, Approx const& rhs) { return !operator==(lhs, rhs); }
+bool operator!=(Approx const& lhs, double rhs) { return !operator==(rhs, lhs); }
+bool operator<=(double lhs, Approx const& rhs) { return lhs < rhs.m_value || lhs == rhs; }
+bool operator<=(Approx const& lhs, double rhs) { return lhs.m_value < rhs || lhs == rhs; }
+bool operator>=(double lhs, Approx const& rhs) { return lhs > rhs.m_value || lhs == rhs; }
+bool operator>=(Approx const& lhs, double rhs) { return lhs.m_value > rhs || lhs == rhs; }
+bool operator<(double lhs, Approx const& rhs) { return lhs < rhs.m_value && lhs != rhs; }
+bool operator<(Approx const& lhs, double rhs) { return lhs.m_value < rhs && lhs != rhs; }
+bool operator>(double lhs, Approx const& rhs) { return lhs > rhs.m_value && lhs != rhs; }
+bool operator>(Approx const& lhs, double rhs) { return lhs.m_value > rhs && lhs != rhs; }
+
+String toString(const Approx& in) {
+    return String("Approx( ") + doctest::toString(in.m_value) + " )";
+}
+
 } // namespace doctest
 
 #ifdef DOCTEST_CONFIG_DISABLE
@@ -3239,6 +3323,10 @@ void Context::setOption(const char*, int) {}
 void Context::setOption(const char*, const char*) {}
 bool Context::shouldExit() { return false; }
 int  Context::run() { return 0; }
+
+DOCTEST_DEFINE_DEFAULTS(CurrentTestCaseStats);
+
+DOCTEST_DEFINE_DEFAULTS(TestRunStats);
 
 IReporter::~IReporter() = default;
 
@@ -3331,8 +3419,8 @@ namespace detail
     for(auto& curr_rep : g_contextState->reporters_currently_used)                                 \
     curr_rep->function(args)
 
-    //TestFailureException::TestFailureException()  = default;
-    //TestFailureException::~TestFailureException() = default;
+    DOCTEST_DEFINE_DEFAULTS(TestFailureException);
+    DOCTEST_DEFINE_COPIES(TestFailureException);
 
     bool checkIfShouldThrow(assertType::Enum at) {
         if(at & assertType::is_require) //!OCLINT bitwise operator in conditional
@@ -3489,8 +3577,6 @@ namespace detail
         DOCTEST_ITERATE_THROUGH_REPORTERS(subcase_start, m_signature);
     }
 
-    Subcase::Subcase(const Subcase&) = default;
-
     Subcase::~Subcase() {
         if(m_entered) {
             ContextState* s = g_contextState;
@@ -3510,14 +3596,16 @@ namespace detail
             : m_passed(passed)
             , m_decomposition(decomposition) {}
 
-    Result::Result(const Result&) = default;
-
-    Result::~Result() = default;
-
-    Result& Result::operator=(const Result&) = default;
+    DOCTEST_DEFINE_DEFAULTS(Result);
+    DOCTEST_DEFINE_COPIES(Result);
 
     ExpressionDecomposer::ExpressionDecomposer(assertType::Enum at)
             : m_at(at) {}
+
+    DOCTEST_DEFINE_DEFAULTS(ExpressionDecomposer);
+
+    DOCTEST_DEFINE_DEFAULTS(TestSuite);
+    DOCTEST_DEFINE_COPIES(TestSuite);
 
     TestSuite& TestSuite::operator*(const char* in) {
         m_test_suite = in;
@@ -3549,12 +3637,15 @@ namespace detail
         m_template_id = template_id;
     }
 
-    TestCase::~TestCase() = default;
+    DOCTEST_DEFINE_DEFAULTS(TestCase);
 
-    TestCase::TestCase(const TestCase& other) { *this = other; }
+    TestCase::TestCase(const TestCase& other)
+            : TestCaseData() {
+        *this = other;
+    }
 
     DOCTEST_MSVC_SUPPRESS_WARNING_WITH_PUSH(26434) // hides a non-virtual function
-    DOCTEST_MSVC_SUPPRESS_WARNING(26437) // Do not slice
+    DOCTEST_MSVC_SUPPRESS_WARNING(26437)           // Do not slice
     TestCase& TestCase::operator=(const TestCase& other) {
         static_cast<TestCaseData&>(*this) = static_cast<const TestCaseData&>(other);
 
@@ -3786,7 +3877,14 @@ namespace detail
     void toStream(std::ostream* s, int long long in) { *s << in; }
     void toStream(std::ostream* s, int long long unsigned in) { *s << in; }
 
+    ContextBuilder::ICapture::ICapture()  = default;
     ContextBuilder::ICapture::~ICapture() = default;
+
+    ContextBuilder::Chunk::Chunk()  = default;
+    ContextBuilder::Chunk::~Chunk() = default;
+
+    ContextBuilder::Node::Node()  = default;
+    ContextBuilder::Node::~Node() = default;
 
     // steal the contents of the other - acting as a move constructor...
     ContextBuilder::ContextBuilder(ContextBuilder& other)
@@ -4091,7 +4189,7 @@ namespace detail
 #endif // MSVC
     }
 
-    ResultBuilder::~ResultBuilder() = default;
+    DOCTEST_DEFINE_DEFAULTS(ResultBuilder);
 
     void ResultBuilder::setResult(const Result& res) {
         m_decomposition = res.m_decomposition;
@@ -4134,6 +4232,7 @@ namespace detail
         m_severity = severity;
     }
 
+    IExceptionTranslator::IExceptionTranslator()  = default;
     IExceptionTranslator::~IExceptionTranslator() = default;
 
     bool MessageBuilder::log() {
@@ -5098,6 +5197,10 @@ int Context::run() {
         return EXIT_FAILURE;
     return EXIT_SUCCESS;
 }
+
+DOCTEST_DEFINE_DEFAULTS(CurrentTestCaseStats);
+
+DOCTEST_DEFINE_DEFAULTS(TestRunStats);
 
 IReporter::~IReporter() = default;
 

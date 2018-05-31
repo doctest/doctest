@@ -1,4 +1,25 @@
 
+// doctest_0_pre_cpp11
+ 9.38 |   12.89 | ===> 0.0176 sec
+15.02 |   19.78 | ===> 0.0238 sec
+
+// doctest_1_pre_fwd_to_impl
+ 9.70 |   13.03 | ===> 0.0166 sec
+15.40 |   20.15 | ===> 0.0238 sec
+
+// doctest_2_after_fwd_to_impl
+ 9.91 |   12.60 | ===> 0.0135 sec
+15.48 |   19.08 | ===> 0.0180 sec
+
+// doctest_3_after_struct_madness
+ 9.35 |   11.70 | ===> 0.0118
+14.81 |   18.55 | ===> 0.0187
+
+
+https://i.stack.imgur.com/b2VBV.png
+
+
+
 reporters issue: 138
 c++11 issue: 137
 
