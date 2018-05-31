@@ -19,17 +19,17 @@ namespace doctest
 namespace detail
 {
     //const char* fileForOutput(const char* file);
-    void reportFatal(const std::string&);
-    int wildcmp(const char* str, const char* wild, bool caseSensitive);
-    void myOutputDebugString(const char*);
+    //void reportFatal(const std::string&);
+    //int wildcmp(const char* str, const char* wild, bool caseSensitive);
+    //void myOutputDebugString(const char*);
 } // namespace detail
 } // namespace doctest
 
 TEST_CASE("doctest internals") {
     using namespace doctest;
-    detail::reportFatal("");
-    detail::wildcmp("str", "str*", false);
-    detail::myOutputDebugString("");
+    //detail::reportFatal("");
+    //detail::wildcmp("str", "str*", false);
+    //detail::myOutputDebugString("");
 
     // trigger code path for comparing the file in "operator<" of SubcaseSignature
     CHECK(SubcaseSignature("", "a.cpp", 0) < SubcaseSignature("", "b.cpp", 0));

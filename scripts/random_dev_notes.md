@@ -68,8 +68,7 @@ documentation... :(
 profit :D
 
 
-further improvement of compile and link times - moved the body of absolutely every non-templated function out of the interface part of the header and into the implementation part
-    TODO: think about POD structures from fwd
+further improvement of compile and link times - moved the body of absolutely every non-templated function out of the interface part of the header and into the implementation part (including implicitly generated special member functions!) (also using anonymous namespaces for most of the test runner)
 
 ask in the reddit thread what from the roadmap they would like to see next
 

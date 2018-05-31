@@ -127,8 +127,11 @@ DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_END
 
 namespace doctest
 {
-namespace detail
+void my_memcpy(void* dest, const void* src, unsigned num) { memcpy(dest, src, num); }
+
+namespace
 {
+    using namespace detail;
     // case insensitive strcmp
     int stricmp(const char* a, const char* b) {
         for(;; a++, b++) {
@@ -137,8 +140,6 @@ namespace detail
                 return d;
         }
     }
-
-    void my_memcpy(void* dest, const void* src, unsigned num) { memcpy(dest, src, num); }
 
     template <typename T>
     String fpToString(T value, int precision) {
@@ -173,6 +174,11 @@ namespace detail
             return (u.asChar[sizeof(int) - 1] == 1) ? Big : Little; // NOLINT
         }
     };
+} // namespace
+
+namespace detail
+{
+    void my_memcpy(void* dest, const void* src, unsigned num) { memcpy(dest, src, num); }
 
     String rawMemoryToString(const void* object, unsigned size) {
         // Reverse order for little endian architectures
@@ -197,7 +203,6 @@ namespace detail
     void freeStream(std::ostream* s) { delete s; }
 
 #ifndef DOCTEST_CONFIG_DISABLE
-
     // this holds both parameters from the command line and runtime data for tests
     struct ContextState : ContextOptions, TestRunStats, CurrentTestCaseStats
     {
@@ -380,7 +385,7 @@ unsigned String::capacity() const {
 
 int String::compare(const char* other, bool no_case) const {
     if(no_case)
-        return detail::stricmp(c_str(), other);
+        return stricmp(c_str(), other);
     return std::strcmp(c_str(), other);
 }
 
@@ -399,15 +404,15 @@ bool operator>=(const String& lhs, const String& rhs) { return (lhs != rhs) ? lh
 
 std::ostream& operator<<(std::ostream& s, const String& in) { return s << in.c_str(); }
 
-namespace detail
+namespace
 {
     void color_to_stream(std::ostream&, Color::Enum) DOCTEST_BRANCH_ON_DISABLED({}, ;)
-} // namespace detail
+} // namespace
 
 namespace Color
 {
     std::ostream& operator<<(std::ostream& s, Color::Enum code) {
-        detail::color_to_stream(s, code);
+        color_to_stream(s, code);
         return s;
     }
 } // namespace Color
@@ -526,9 +531,9 @@ String toString(char* in) { return toString(static_cast<const char*>(in)); }
 String toString(const char* in) { return String("\"") + (in ? in : "{null string}") + "\""; }
 #endif // DOCTEST_CONFIG_TREAT_CHAR_STAR_AS_STRING
 String toString(bool in) { return in ? "true" : "false"; }
-String toString(float in) { return detail::fpToString(in, 5) + "f"; }
-String toString(double in) { return detail::fpToString(in, 10); }
-String toString(double long in) { return detail::fpToString(in, 15); }
+String toString(float in) { return fpToString(in, 5) + "f"; }
+String toString(double in) { return fpToString(in, 10); }
+String toString(double long in) { return fpToString(in, 15); }
 
 String toString(char in) {
     char buf[64];
@@ -740,21 +745,29 @@ doctest::detail::TestSuite& getCurrentTestSuite() {
 
 namespace doctest
 {
-namespace detail
+namespace
 {
+    using namespace detail;
     typedef std::map<std::pair<int, String>, IReporter*> reporterMap;
     reporterMap&                                         getReporters() {
         static reporterMap data;
         return data;
     }
 
+    void throwException() {
+#ifndef DOCTEST_CONFIG_NO_EXCEPTIONS
+        throw TestFailureException();
+#endif // DOCTEST_CONFIG_NO_EXCEPTIONS
+    }
+} // namespace
+namespace detail
+{
 #define DOCTEST_ITERATE_THROUGH_REPORTERS(function, args)                                          \
     for(auto& curr_rep : g_contextState->reporters_currently_used)                                 \
     curr_rep->function(args)
 
     DOCTEST_DEFINE_DEFAULTS(TestFailureException);
     DOCTEST_DEFINE_COPIES(TestFailureException);
-
     bool checkIfShouldThrow(assertType::Enum at) {
         if(at & assertType::is_require) //!OCLINT bitwise operator in conditional
             return true;
@@ -766,16 +779,16 @@ namespace detail
 
         return false;
     }
-    void throwException() {
-#ifndef DOCTEST_CONFIG_NO_EXCEPTIONS
-        throw TestFailureException();
-#endif // DOCTEST_CONFIG_NO_EXCEPTIONS
-    }
+
     void fastAssertThrowIfFlagSet(int flags) {
         if(flags & assertAction::shouldthrow) //!OCLINT bitwise operator in conditional
             throwException();
     }
+} // namespace detail
 
+namespace
+{
+    using namespace detail;
     // matching of a string against a wildcard mask (case sensitivity configurable) taken from
     // https://www.codeproject.com/Articles/1088/Wildcard-string-compare-globbing
     int wildcmp(const char* str, const char* wild, bool caseSensitive) {
@@ -878,7 +891,9 @@ namespace detail
     };
 
     Timer g_timer;
-
+} // namespace
+namespace detail
+{
     const ContextOptions* getContextOptions() { return g_contextState; }
 
     Subcase::Subcase(const char* name, const char* file, int line)
@@ -1014,7 +1029,10 @@ namespace detail
             return file_cmp < 0;
         return m_template_id < other.m_template_id;
     }
-
+} // namespace detail
+namespace
+{
+    using namespace detail;
     // for sorting tests by file/line
     int fileOrderComparator(const void* a, const void* b) {
         auto lhs = *static_cast<TestCase* const*>(a);
@@ -1053,22 +1071,10 @@ namespace detail
         return suiteOrderComparator(a, b);
     }
 
-    // sets the current test suite
-    int setTestSuite(const TestSuite& ts) {
-        doctest_detail_test_suite_ns::getCurrentTestSuite() = ts;
-        return 0;
-    }
-
     // all the registered tests
     std::set<TestCase>& getRegisteredTests() {
         static std::set<TestCase> data;
         return data;
-    }
-
-    // used by the macros for registering tests
-    int regTest(const TestCase& tc) {
-        getRegisteredTests().insert(tc);
-        return 0;
     }
 
 #ifdef DOCTEST_CONFIG_COLORS_WINDOWS
@@ -1158,12 +1164,6 @@ namespace detail
         return data;
     }
 
-    void registerExceptionTranslatorImpl(const IExceptionTranslator* translateFunction) {
-        if(std::find(getExceptionTranslators().begin(), getExceptionTranslators().end(),
-                     translateFunction) == getExceptionTranslators().end())
-            getExceptionTranslators().push_back(translateFunction);
-    }
-
     String translateActiveException() {
 #ifndef DOCTEST_CONFIG_NO_EXCEPTIONS
         String res;
@@ -1187,6 +1187,27 @@ namespace detail
 #else  // DOCTEST_CONFIG_NO_EXCEPTIONS
         return "";
 #endif // DOCTEST_CONFIG_NO_EXCEPTIONS
+    }
+} // namespace
+
+namespace detail
+{
+    // used by the macros for registering tests
+    int regTest(const TestCase& tc) {
+        getRegisteredTests().insert(tc);
+        return 0;
+    }
+
+    // sets the current test suite
+    int setTestSuite(const TestSuite& ts) {
+        doctest_detail_test_suite_ns::getCurrentTestSuite() = ts;
+        return 0;
+    }
+
+    void registerExceptionTranslatorImpl(const IExceptionTranslator* translateFunction) {
+        if(std::find(getExceptionTranslators().begin(), getExceptionTranslators().end(),
+                     translateFunction) == getExceptionTranslators().end())
+            getExceptionTranslators().push_back(translateFunction);
     }
 
     void writeStringToStream(std::ostream* s, const String& str) { *s << str; }
@@ -1284,9 +1305,11 @@ namespace detail
     DOCTEST_MSVC_SUPPRESS_WARNING_POP
 
     void ContextScope::stringify(std::ostream* s) const { contextBuilder.stringify(s); }
-
+} // namespace detail
+namespace
+{
+    using namespace detail;
 #if !defined(DOCTEST_CONFIG_POSIX_SIGNALS) && !defined(DOCTEST_CONFIG_WINDOWS_SEH)
-    void reportFatal(const std::string&) {}
     struct FatalConditionHandler
     {
         void reset() {}
@@ -1432,10 +1455,19 @@ namespace detail
 #endif // DOCTEST_PLATFORM_WINDOWS
 #endif // DOCTEST_CONFIG_POSIX_SIGNALS || DOCTEST_CONFIG_WINDOWS_SEH
 
+} // namespace
+
+// TODO: wtf? these are in namespace doctest::detail - and don't error ?!?! perhaps it's all C externs..
 #ifdef DOCTEST_PLATFORM_MAC
 #include <sys/types.h>
 #include <unistd.h>
 #include <sys/sysctl.h>
+#endif // DOCTEST_PLATFORM_MAC
+
+namespace
+{
+    using namespace detail;
+#ifdef DOCTEST_PLATFORM_MAC
     // The following function is taken directly from the following technical note:
     // http://developer.apple.com/library/mac/#qa/qa2004/qa1361.html
     // Returns true if the current process is being debugged (either
@@ -1506,7 +1538,9 @@ namespace detail
         DOCTEST_ITERATE_THROUGH_REPORTERS(test_run_end, *g_contextState);
     }
 #endif // DOCTEST_CONFIG_POSIX_SIGNALS || DOCTEST_CONFIG_WINDOWS_SEH
-
+} // namespace
+namespace detail
+{
     ResultBuilder::ResultBuilder(assertType::Enum at, const char* file, int line, const char* expr,
                                  const char* exception_type) {
         m_test_case      = g_contextState->currentTest;
@@ -1591,7 +1625,10 @@ namespace detail
     }
 
     MessageBuilder::~MessageBuilder() { freeStream(m_stream); }
-
+} // namespace detail
+namespace
+{
+    using namespace detail;
     struct ConsoleReporter : public IReporter
     {
         std::ostream&                 s;
@@ -1611,7 +1648,8 @@ namespace detail
 
         void separator_to_stream() {
             s << Color::Yellow
-              << "==============================================================================="
+              << "============================================================================="
+                 "=="
                  "\n";
         }
 
@@ -2140,7 +2178,7 @@ namespace detail
         }
         return false;
     }
-} // namespace detail
+} // namespace
 
 bool isRunningInTest() { return detail::g_contextState != 0; }
 
@@ -2552,8 +2590,7 @@ const String* IReporter::get_stringified_contexts() {
 }
 
 int registerReporter(const char* name, int priority, IReporter* r) {
-    detail::getReporters().insert(
-            detail::reporterMap::value_type(detail::reporterMap::key_type(priority, name), r));
+    getReporters().insert(reporterMap::value_type(reporterMap::key_type(priority, name), r));
     return 0;
 }
 

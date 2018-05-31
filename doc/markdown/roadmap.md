@@ -9,10 +9,6 @@ Planned features for future releases - order changes constantly...
 
 ### For 2.0:
 
-- improve compile times further
-    - based on ideas from https://slides.com/onqtam/faster_builds/
-        - anonymous namespaces for internal linkage of implementation part
-        - move absolutely everything possible away from fwd and into impl
 - reporters
     - output to file
     - a system for writing custom reporters
