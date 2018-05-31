@@ -1070,12 +1070,12 @@ namespace detail
         bool   m_passed;
         String m_decomposition;
 
-        Result(bool passed = false, const String& decomposition = String());
+        Result(bool passed, const String& decomposition = String());
 
         DOCTEST_DECLARE_DEFAULTS(Result);
         DOCTEST_DECLARE_COPIES(Result);
 
-        operator bool() { return !m_passed; }
+        operator bool() const;
 
         // forbidding some expressions based on this table: http://en.cppreference.com/w/cpp/language/operator_precedence
         DOCTEST_FORBIT_EXPRESSION(Result, &)

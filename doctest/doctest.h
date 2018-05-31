@@ -1073,12 +1073,12 @@ namespace detail
         bool   m_passed;
         String m_decomposition;
 
-        Result(bool passed = false, const String& decomposition = String());
+        Result(bool passed, const String& decomposition = String());
 
         DOCTEST_DECLARE_DEFAULTS(Result);
         DOCTEST_DECLARE_COPIES(Result);
 
-        operator bool() { return !m_passed; }
+        operator bool() const;
 
         // forbidding some expressions based on this table: http://en.cppreference.com/w/cpp/language/operator_precedence
         DOCTEST_FORBIT_EXPRESSION(Result, &)
@@ -3598,6 +3598,8 @@ namespace detail
 
     DOCTEST_DEFINE_DEFAULTS(Result);
     DOCTEST_DEFINE_COPIES(Result);
+
+    Result::operator bool() const { return !m_passed; }
 
     ExpressionDecomposer::ExpressionDecomposer(assertType::Enum at)
             : m_at(at) {}

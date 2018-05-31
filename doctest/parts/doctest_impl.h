@@ -932,6 +932,8 @@ namespace detail
     DOCTEST_DEFINE_DEFAULTS(Result);
     DOCTEST_DEFINE_COPIES(Result);
 
+    Result::operator bool() const { return !m_passed; }
+
     ExpressionDecomposer::ExpressionDecomposer(assertType::Enum at)
             : m_at(at) {}
 
