@@ -3177,70 +3177,24 @@ String toString(float in) { return fpToString(in, 5) + "f"; }
 String toString(double in) { return fpToString(in, 10); }
 String toString(double long in) { return fpToString(in, 15); }
 
-String toString(char in) {
-    char buf[64];
-    std::sprintf(buf, "%d", in);
-    return buf;
-}
+#define DOCTEST_TO_STRING_OVERLOAD(type, fmt)                                                      \
+    String toString(type in) {                                                                     \
+        char buf[64];                                                                              \
+        std::sprintf(buf, fmt, in);                                                                \
+        return buf;                                                                                \
+    }
 
-String toString(char signed in) {
-    char buf[64];
-    std::sprintf(buf, "%d", in);
-    return buf;
-}
-
-String toString(char unsigned in) {
-    char buf[64];
-    std::sprintf(buf, "%ud", in);
-    return buf;
-}
-
-String toString(int short in) {
-    char buf[64];
-    std::sprintf(buf, "%d", in);
-    return buf;
-}
-
-String toString(int short unsigned in) {
-    char buf[64];
-    std::sprintf(buf, "%u", in);
-    return buf;
-}
-
-String toString(int in) {
-    char buf[64];
-    std::sprintf(buf, "%d", in);
-    return buf;
-}
-
-String toString(int unsigned in) {
-    char buf[64];
-    std::sprintf(buf, "%u", in);
-    return buf;
-}
-
-String toString(int long in) {
-    char buf[64];
-    std::sprintf(buf, "%ld", in);
-    return buf;
-}
-
-String toString(int long unsigned in) {
-    char buf[64];
-    std::sprintf(buf, "%lu", in);
-    return buf;
-}
-
-String toString(int long long in) {
-    char buf[64];
-    std::sprintf(buf, "%lld", in);
-    return buf;
-}
-String toString(int long long unsigned in) {
-    char buf[64];
-    std::sprintf(buf, "%llu", in);
-    return buf;
-}
+DOCTEST_TO_STRING_OVERLOAD(char, "%d")
+DOCTEST_TO_STRING_OVERLOAD(char signed, "%d")
+DOCTEST_TO_STRING_OVERLOAD(char unsigned, "%ud")
+DOCTEST_TO_STRING_OVERLOAD(int short, "%d")
+DOCTEST_TO_STRING_OVERLOAD(int short unsigned, "%u")
+DOCTEST_TO_STRING_OVERLOAD(int, "%d")
+DOCTEST_TO_STRING_OVERLOAD(unsigned, "%u")
+DOCTEST_TO_STRING_OVERLOAD(int long, "%ld")
+DOCTEST_TO_STRING_OVERLOAD(int long unsigned, "%lu")
+DOCTEST_TO_STRING_OVERLOAD(int long long, "%lld")
+DOCTEST_TO_STRING_OVERLOAD(int long long unsigned, "%llu")
 
 String toString(std::nullptr_t) { return "NULL"; }
 
