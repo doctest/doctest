@@ -392,8 +392,7 @@ extern "C" __declspec(dllimport) void __stdcall DebugBreak();
 // so the <iosfwd> header is used - also it is very light and doesn't drag a ton of stuff
 #include <iosfwd>
 #else  // _LIBCPP_VERSION
-namespace std
-{
+namespace std {
 template <class charT>
 struct char_traits;
 template <>
@@ -407,8 +406,7 @@ typedef basic_ostream<char, char_traits<char> > ostream;
 #ifdef _LIBCPP_VERSION
 #include <cstddef>
 #else  // _LIBCPP_VERSION
-namespace std
-{
+namespace std {
 typedef decltype(nullptr) nullptr_t;
 }
 #endif // _LIBCPP_VERSION
@@ -417,10 +415,8 @@ typedef decltype(nullptr) nullptr_t;
 #include <type_traits>
 #endif // DOCTEST_CONFIG_INCLUDE_TYPE_TRAITS
 
-namespace doctest
-{
-namespace detail
-{
+namespace doctest {
+namespace detail {
     // the function type this library works with
     typedef void (*funcType)();
 } // namespace detail
@@ -511,8 +507,7 @@ DOCTEST_INTERFACE bool operator>=(const String& lhs, const String& rhs);
 
 DOCTEST_INTERFACE std::ostream& operator<<(std::ostream& s, const String& in);
 
-namespace Color
-{
+namespace Color {
     enum Enum
     {
         None = 0,
@@ -535,8 +530,7 @@ namespace Color
     DOCTEST_INTERFACE std::ostream& operator<<(std::ostream& s, Color::Enum code);
 } // namespace Color
 
-namespace assertType
-{
+namespace assertType {
     enum Enum
     {
         // macro traits
@@ -768,8 +762,7 @@ struct ContextOptions //!OCLINT too many fields
     DOCTEST_DELETE_COPIES(ContextOptions);
 };
 
-namespace detail
-{
+namespace detail {
 #if defined(DOCTEST_CONFIG_TREAT_CHAR_STAR_AS_STRING) || defined(DOCTEST_CONFIG_INCLUDE_TYPE_TRAITS)
     template <bool CONDITION, typename TYPE = void>
     struct enable_if
@@ -788,8 +781,7 @@ namespace detail
     // to silence the warning "-Wzero-as-null-pointer-constant" only for gcc 5 for the Approx template ctor - pragmas don't work for it...
     inline void* getNull() { return 0; }
 
-    namespace has_insertion_operator_impl
-    {
+    namespace has_insertion_operator_impl {
         typedef char no;
         typedef char yes[2];
 
@@ -1000,8 +992,7 @@ DOCTEST_INTERFACE String toString(const Approx& in);
 
 #if !defined(DOCTEST_CONFIG_DISABLE)
 
-namespace detail
-{
+namespace detail {
     // clang-format off
 #ifdef DOCTEST_CONFIG_TREAT_CHAR_STAR_AS_STRING
     template<class T>               struct decay_array       { typedef T type; };
@@ -1307,8 +1298,7 @@ namespace detail
     DOCTEST_INTERFACE int regTest(const TestCase& tc);
     DOCTEST_INTERFACE int setTestSuite(const TestSuite& ts);
 
-    namespace binaryAssertComparison
-    {
+    namespace binaryAssertComparison {
         enum Enum
         {
             eq = 0,
@@ -1369,8 +1359,7 @@ namespace detail
         void react() const;
     };
 
-    namespace assertAction
-    {
+    namespace assertAction {
         enum Enum
         {
             nothing     = 0,
@@ -1694,13 +1683,11 @@ int registerExceptionTranslator(String (*translateFunction)(T)) {
 
 // in a separate namespace outside of doctest because the DOCTEST_TEST_SUITE macro
 // introduces an anonymous namespace in which getCurrentTestSuite gets overridden
-namespace doctest_detail_test_suite_ns
-{
+namespace doctest_detail_test_suite_ns {
 DOCTEST_INTERFACE doctest::detail::TestSuite& getCurrentTestSuite();
 } // namespace doctest_detail_test_suite_ns
 
-namespace doctest
-{
+namespace doctest {
 #else  // DOCTEST_CONFIG_DISABLE
 template <typename T>
 int registerExceptionTranslator(String (*)(T)) {
@@ -1710,8 +1697,7 @@ int registerExceptionTranslator(String (*)(T)) {
 
 DOCTEST_INTERFACE bool isRunningInTest();
 
-namespace detail
-{
+namespace detail {
     struct ContextState;
 } // namespace detail
 
@@ -1741,8 +1727,7 @@ public:
     int run();
 };
 
-namespace TestCaseFailureReason
-{
+namespace TestCaseFailureReason {
     enum Enum
     {
         None                     = 0,
@@ -1857,8 +1842,7 @@ int registerReporter(const char* name, int priority, IReporter* r);
     DOCTEST_GLOBAL_NO_WARNINGS_END()
 
 #define DOCTEST_IMPLEMENT_FIXTURE(der, base, func, decorators)                                     \
-    namespace                                                                                      \
-    {                                                                                              \
+    namespace {                                                                                    \
         struct der : public base                                                                   \
         {                                                                                          \
             void f();                                                                              \
@@ -1892,10 +1876,7 @@ int registerReporter(const char* name, int priority, IReporter* r);
         return "<" #__VA_ARGS__ ">";                                                               \
     }
 #define DOCTEST_TYPE_TO_STRING(...)                                                                \
-    namespace doctest                                                                              \
-    {                                                                                              \
-        namespace detail                                                                           \
-        {                                                                                          \
+    namespace doctest { namespace detail {                                                         \
             DOCTEST_TYPE_TO_STRING_IMPL(__VA_ARGS__)                                               \
         }                                                                                          \
     }                                                                                              \
@@ -1973,10 +1954,7 @@ int registerReporter(const char* name, int priority, IReporter* r);
 
 // for grouping tests in test suites by using code blocks
 #define DOCTEST_TEST_SUITE_IMPL(decorators, ns_name)                                               \
-    namespace ns_name                                                                              \
-    {                                                                                              \
-        namespace doctest_detail_test_suite_ns                                                     \
-        {                                                                                          \
+    namespace ns_name { namespace doctest_detail_test_suite_ns {                                   \
             static DOCTEST_NOINLINE doctest::detail::TestSuite& getCurrentTestSuite() {            \
                 static doctest::detail::TestSuite data;                                            \
                 static bool                       inited = false;                                  \
@@ -2337,8 +2315,7 @@ constexpr T to_lvalue = x;
 #else // DOCTEST_CONFIG_DISABLE
 
 #define DOCTEST_IMPLEMENT_FIXTURE(der, base, func, name)                                           \
-    namespace                                                                                      \
-    {                                                                                              \
+    namespace {                                                                                    \
         template <typename DOCTEST_UNUSED_TEMPLATE_TYPE>                                           \
         struct der : public base                                                                   \
         { void f(); };                                                                             \
@@ -2627,10 +2604,7 @@ constexpr T to_lvalue = x;
 DOCTEST_TEST_SUITE_END();
 
 // add stringification for primitive/fundamental types
-namespace doctest
-{
-namespace detail
-{
+namespace doctest { namespace detail {
     DOCTEST_TYPE_TO_STRING_IMPL(bool)
     DOCTEST_TYPE_TO_STRING_IMPL(float)
     DOCTEST_TYPE_TO_STRING_IMPL(double)
@@ -2647,8 +2621,7 @@ namespace detail
     DOCTEST_TYPE_TO_STRING_IMPL(unsigned long int)
     DOCTEST_TYPE_TO_STRING_IMPL(long long int)
     DOCTEST_TYPE_TO_STRING_IMPL(unsigned long long int)
-} // namespace detail
-} // namespace doctest
+}} // namespace doctest::detail
 
 #endif // DOCTEST_CONFIG_DISABLE
 

@@ -21,6 +21,7 @@ PointerAlignment: Left
 IndentCaseLabels: true
 ContinuationIndentWidth: 8
 NamespaceIndentation: Inner
+CompactNamespaces: true
 FixNamespaceComments: true
 AccessModifierOffset: -4
 
@@ -62,7 +63,7 @@ BreakBeforeBraces: Custom
 BraceWrapping:
     AfterClass: true
     AfterEnum: true
-    AfterNamespace: true
+    AfterNamespace: false
     AfterStruct: true
     AfterUnion: true
     

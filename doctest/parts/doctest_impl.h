@@ -125,12 +125,10 @@ DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_END
 #define DOCTEST_BRANCH_ON_DISABLED(if_disabled, if_not_disabled) if_not_disabled
 #endif // DOCTEST_CONFIG_DISABLE
 
-namespace doctest
-{
+namespace doctest {
 void my_memcpy(void* dest, const void* src, unsigned num) { memcpy(dest, src, num); }
 
-namespace
-{
+namespace {
     using namespace detail;
     // case insensitive strcmp
     int stricmp(const char* a, const char* b) {
@@ -176,8 +174,7 @@ namespace
     };
 } // namespace
 
-namespace detail
-{
+namespace detail {
     void my_memcpy(void* dest, const void* src, unsigned num) { memcpy(dest, src, num); }
 
     String rawMemoryToString(const void* object, unsigned size) {
@@ -404,13 +401,11 @@ bool operator>=(const String& lhs, const String& rhs) { return (lhs != rhs) ? lh
 
 std::ostream& operator<<(std::ostream& s, const String& in) { return s << in.c_str(); }
 
-namespace
-{
+namespace {
     void color_to_stream(std::ostream&, Color::Enum) DOCTEST_BRANCH_ON_DISABLED({}, ;)
 } // namespace
 
-namespace Color
-{
+namespace Color {
     std::ostream& operator<<(std::ostream& s, Color::Enum code) {
         color_to_stream(s, code);
         return s;
@@ -649,8 +644,7 @@ String toString(const Approx& in) {
 } // namespace doctest
 
 #ifdef DOCTEST_CONFIG_DISABLE
-namespace doctest
-{
+namespace doctest {
 bool isRunningInTest() { return false; }
 Context::Context(int, const char* const*) {}
 Context::~Context() = default;
@@ -734,8 +728,7 @@ DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_END
 
 #endif // DOCTEST_PLATFORM_WINDOWS
 
-namespace doctest_detail_test_suite_ns
-{
+namespace doctest_detail_test_suite_ns {
 // holds the current test suite
 doctest::detail::TestSuite& getCurrentTestSuite() {
     static doctest::detail::TestSuite data;
@@ -743,10 +736,8 @@ doctest::detail::TestSuite& getCurrentTestSuite() {
 }
 } // namespace doctest_detail_test_suite_ns
 
-namespace doctest
-{
-namespace
-{
+namespace doctest {
+namespace {
     using namespace detail;
     typedef std::map<std::pair<int, String>, IReporter*> reporterMap;
     reporterMap&                                         getReporters() {
@@ -760,8 +751,7 @@ namespace
 #endif // DOCTEST_CONFIG_NO_EXCEPTIONS
     }
 } // namespace
-namespace detail
-{
+namespace detail {
 #define DOCTEST_ITERATE_THROUGH_REPORTERS(function, args)                                          \
     for(auto& curr_rep : g_contextState->reporters_currently_used)                                 \
     curr_rep->function(args)
@@ -786,8 +776,7 @@ namespace detail
     }
 } // namespace detail
 
-namespace
-{
+namespace {
     using namespace detail;
     // matching of a string against a wildcard mask (case sensitivity configurable) taken from
     // https://www.codeproject.com/Articles/1088/Wildcard-string-compare-globbing
@@ -892,8 +881,7 @@ namespace
 
     Timer g_timer;
 } // namespace
-namespace detail
-{
+namespace detail {
     const ContextOptions* getContextOptions() { return g_contextState; }
 
     Subcase::Subcase(const char* name, const char* file, int line)
@@ -1030,8 +1018,7 @@ namespace detail
         return m_template_id < other.m_template_id;
     }
 } // namespace detail
-namespace
-{
+namespace {
     using namespace detail;
     // for sorting tests by file/line
     int fileOrderComparator(const void* a, const void* b) {
@@ -1190,8 +1177,7 @@ namespace
     }
 } // namespace
 
-namespace detail
-{
+namespace detail {
     // used by the macros for registering tests
     int regTest(const TestCase& tc) {
         getRegisteredTests().insert(tc);
@@ -1306,8 +1292,7 @@ namespace detail
 
     void ContextScope::stringify(std::ostream* s) const { contextBuilder.stringify(s); }
 } // namespace detail
-namespace
-{
+namespace {
     using namespace detail;
 #if !defined(DOCTEST_CONFIG_POSIX_SIGNALS) && !defined(DOCTEST_CONFIG_WINDOWS_SEH)
     struct FatalConditionHandler
@@ -1464,8 +1449,7 @@ namespace
 #include <sys/sysctl.h>
 #endif // DOCTEST_PLATFORM_MAC
 
-namespace
-{
+namespace {
     using namespace detail;
 #ifdef DOCTEST_PLATFORM_MAC
     // The following function is taken directly from the following technical note:
@@ -1539,8 +1523,7 @@ namespace
     }
 #endif // DOCTEST_CONFIG_POSIX_SIGNALS || DOCTEST_CONFIG_WINDOWS_SEH
 } // namespace
-namespace detail
-{
+namespace detail {
     ResultBuilder::ResultBuilder(assertType::Enum at, const char* file, int line, const char* expr,
                                  const char* exception_type) {
         m_test_case      = g_contextState->currentTest;
@@ -1626,8 +1609,7 @@ namespace detail
 
     MessageBuilder::~MessageBuilder() { freeStream(m_stream); }
 } // namespace detail
-namespace
-{
+namespace {
     using namespace detail;
     struct ConsoleReporter : public IReporter
     {
