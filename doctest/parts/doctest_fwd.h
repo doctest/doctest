@@ -854,9 +854,9 @@ namespace detail
     {
         template <typename T>
         static String convert(const DOCTEST_REF_WRAP(T) in) {
-            std::ostream* s = createStream();
+            auto s = createStream();
             *s << in;
-            String result = getStreamResult(s);
+            auto result = getStreamResult(s);
             freeStream(s);
             return result;
         }
@@ -1625,7 +1625,7 @@ namespace detail
             while(curr < numCaptures && curr < DOCTEST_CONFIG_NUM_CAPTURES_ON_STACK)
                 reinterpret_cast<const ICapture*>(stackChunks[curr++].buf)->toStream(s);
             // iterate over list
-            Node* curr_elem = head;
+            auto curr_elem = head;
             while(curr < numCaptures) {
                 reinterpret_cast<const ICapture*>(curr_elem->chunk.buf)->toStream(s);
                 curr_elem = curr_elem->next;
@@ -1665,7 +1665,7 @@ namespace detail
             if(numCaptures < DOCTEST_CONFIG_NUM_CAPTURES_ON_STACK) {
                 my_memcpy(stackChunks[numCaptures].buf, &temp, sizeof(Chunk));
             } else {
-                Node* curr = new Node;
+                auto curr  = new Node;
                 curr->next = 0;
                 if(tail) {
                     tail->next = curr;
@@ -1684,7 +1684,7 @@ namespace detail
             // free the linked list - the ones on the stack are left as-is
             // no destructors are called at all - there is no need
             while(head) {
-                Node* next = head->next;
+                auto next = head->next;
                 delete head;
                 head = next;
             }

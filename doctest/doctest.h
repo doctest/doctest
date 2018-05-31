@@ -857,9 +857,9 @@ namespace detail
     {
         template <typename T>
         static String convert(const DOCTEST_REF_WRAP(T) in) {
-            std::ostream* s = createStream();
+            auto s = createStream();
             *s << in;
-            String result = getStreamResult(s);
+            auto result = getStreamResult(s);
             freeStream(s);
             return result;
         }
@@ -1628,7 +1628,7 @@ namespace detail
             while(curr < numCaptures && curr < DOCTEST_CONFIG_NUM_CAPTURES_ON_STACK)
                 reinterpret_cast<const ICapture*>(stackChunks[curr++].buf)->toStream(s);
             // iterate over list
-            Node* curr_elem = head;
+            auto curr_elem = head;
             while(curr < numCaptures) {
                 reinterpret_cast<const ICapture*>(curr_elem->chunk.buf)->toStream(s);
                 curr_elem = curr_elem->next;
@@ -1668,7 +1668,7 @@ namespace detail
             if(numCaptures < DOCTEST_CONFIG_NUM_CAPTURES_ON_STACK) {
                 my_memcpy(stackChunks[numCaptures].buf, &temp, sizeof(Chunk));
             } else {
-                Node* curr = new Node;
+                auto curr  = new Node;
                 curr->next = 0;
                 if(tail) {
                     tail->next = curr;
@@ -1687,7 +1687,7 @@ namespace detail
             // free the linked list - the ones on the stack are left as-is
             // no destructors are called at all - there is no need
             while(head) {
-                Node* next = head->next;
+                auto next = head->next;
                 delete head;
                 head = next;
             }
@@ -2831,6 +2831,8 @@ DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_BEGIN
 #include <algorithm>
 #include <iomanip>
 #include <vector>
+#include <atomic>
+#include <mutex>
 #include <set>
 #include <map>
 #include <exception>
@@ -2858,7 +2860,7 @@ namespace doctest
 namespace detail
 {
     // case insensitive strcmp
-    int stricmp(char const* a, char const* b) {
+    int stricmp(const char* a, const char* b) {
         for(;; a++, b++) {
             const int d = tolower(*a) - tolower(*b);
             if(d != 0 || !*a)
@@ -2910,7 +2912,7 @@ namespace detail
             end = inc = -1;
         }
 
-        unsigned char const* bytes = static_cast<unsigned char const*>(object);
+        unsigned const char* bytes = static_cast<unsigned const char*>(object);
         std::ostringstream   oss;
         oss << "0x" << std::setfill('0') << std::hex;
         for(; i != end; i += inc)
@@ -3360,8 +3362,8 @@ namespace detail
     }
 
 #define DOCTEST_ITERATE_THROUGH_REPORTERS(function, args)                                          \
-    for(size_t iii = 0; iii < g_contextState->reporters_currently_used.size(); ++iii)              \
-    g_contextState->reporters_currently_used[iii]->function(args)
+    for(auto& curr_rep : g_contextState->reporters_currently_used)                                 \
+    curr_rep->function(args)
 
     TestCase::TestCase(funcType test, const char* file, unsigned line, const TestSuite& test_suite,
                        const char* type, int template_id) {
@@ -3498,8 +3500,8 @@ namespace detail
                     bool caseSensitive) {
         if(filters.empty() && matchEmpty)
             return true;
-        for(unsigned i = 0; i < filters.size(); ++i)
-            if(wildcmp(name, filters[i].c_str(), caseSensitive))
+        for(auto& curr : filters)
+            if(wildcmp(name, curr.c_str(), caseSensitive))
                 return true;
         return false;
     }
@@ -3611,8 +3613,8 @@ namespace detail
 
     // for sorting tests by file/line
     int fileOrderComparator(const void* a, const void* b) {
-        const TestCase* lhs = *static_cast<TestCase* const*>(a);
-        const TestCase* rhs = *static_cast<TestCase* const*>(b);
+        auto lhs = *static_cast<TestCase* const*>(a);
+        auto rhs = *static_cast<TestCase* const*>(b);
 #if DOCTEST_MSVC
         // this is needed because MSVC gives different case for drive letters
         // for __FILE__ when evaluated in a header and a source file
@@ -3627,8 +3629,8 @@ namespace detail
 
     // for sorting tests by suite/file/line
     int suiteOrderComparator(const void* a, const void* b) {
-        const TestCase* lhs = *static_cast<TestCase* const*>(a);
-        const TestCase* rhs = *static_cast<TestCase* const*>(b);
+        auto lhs = *static_cast<TestCase* const*>(a);
+        auto rhs = *static_cast<TestCase* const*>(b);
 
         const int res = std::strcmp(lhs->m_test_suite, rhs->m_test_suite);
         if(res != 0)
@@ -3638,8 +3640,8 @@ namespace detail
 
     // for sorting tests by name/suite/file/line
     int nameOrderComparator(const void* a, const void* b) {
-        const TestCase* lhs = *static_cast<TestCase* const*>(a);
-        const TestCase* rhs = *static_cast<TestCase* const*>(b);
+        auto lhs = *static_cast<TestCase* const*>(a);
+        auto rhs = *static_cast<TestCase* const*>(b);
 
         const int res_name = std::strcmp(lhs->m_name, rhs->m_name);
         if(res_name != 0)
@@ -3691,14 +3693,14 @@ namespace detail
     void color_to_stream(std::ostream& s, Color::Enum code) {
         ((void)s);    // for DOCTEST_CONFIG_COLORS_NONE or DOCTEST_CONFIG_COLORS_WINDOWS
         ((void)code); // for DOCTEST_CONFIG_COLORS_NONE
-        const ContextState* p = g_contextState;
+        auto p = g_contextState;
         if(p->no_colors)
             return;
 #ifdef DOCTEST_CONFIG_COLORS_ANSI
         if(isatty(STDOUT_FILENO) == false && p->force_colors == false)
             return;
 
-        const char* col = "";
+        auto col = "";
         // clang-format off
             switch(code) { //!OCLINT missing break in switch statement / unnecessary default statement in covered switch statement
                 case Color::Red:         col = "[0;31m"; break;
@@ -3760,10 +3762,10 @@ namespace detail
 
     String translateActiveException() {
 #ifndef DOCTEST_CONFIG_NO_EXCEPTIONS
-        String                                    res;
-        std::vector<const IExceptionTranslator*>& translators = getExceptionTranslators();
-        for(size_t i = 0; i < translators.size(); ++i)
-            if(translators[i]->translate(res))
+        String res;
+        auto&  translators = getExceptionTranslators();
+        for(auto& curr : translators)
+            if(curr->translate(res))
                 return res;
         // clang-format off
         try {
@@ -4146,8 +4148,8 @@ namespace detail
         // depending on the current options this will remove the path of filenames
         const char* file_for_output(const char* file) {
             if(opt->no_path_in_filenames) {
-                const char* back    = std::strrchr(file, '\\');
-                const char* forward = std::strrchr(file, '/');
+                auto back    = std::strrchr(file, '\\');
+                auto forward = std::strrchr(file, '/');
                 if(back || forward) {
                     if(back > forward)
                         forward = back;
@@ -4190,7 +4192,7 @@ namespace detail
         void log_contexts() {
             int num_contexts = get_num_active_contexts();
             if(num_contexts) {
-                const IContextScope* const* contexts = get_active_contexts();
+                auto contexts = get_active_contexts();
 
                 s << Color::None << "  logged: ";
                 for(int i = 0; i < num_contexts; ++i) {
@@ -4217,9 +4219,9 @@ namespace detail
                 s << Color::None << "TEST CASE:  ";
             s << Color::None << tc->m_name << "\n";
 
-            for(unsigned i = 0; i < subcasesStack.size(); ++i)
-                if(subcasesStack[i].m_name[0] != '\0')
-                    s << "  " << subcasesStack[i].m_name << "\n";
+            for(auto& curr : subcasesStack)
+                if(curr.m_name[0] != '\0')
+                    s << "  " << curr.m_name << "\n";
 
             s << "\n";
 
@@ -4283,7 +4285,7 @@ namespace detail
 
                 int num_stringified_contexts = get_num_stringified_contexts();
                 if(num_stringified_contexts) {
-                    const String* stringified_contexts = get_stringified_contexts();
+                    auto stringified_contexts = get_stringified_contexts();
                     s << Color::None << "  logged: ";
                     for(int i = num_stringified_contexts - 1; i >= 0; --i) {
                         s << (i == num_stringified_contexts - 1 ? "" : "          ")
@@ -4476,9 +4478,9 @@ namespace detail
         void printRegisteredReporters() {
             printVersion();
             s << Color::Cyan << "[doctest] " << Color::None << "listing all registered reporters\n";
-            for(reporterMap::iterator it = getReporters().begin(); it != getReporters().end(); ++it)
-                s << "priority: " << std::setw(5) << it->first.first
-                  << " name: " << it->first.second << "\n";
+            for(auto& curr : getReporters())
+                s << "priority: " << std::setw(5) << curr.first.first
+                  << " name: " << curr.first.second << "\n";
         }
 
         void output_query_results() {
@@ -4545,7 +4547,7 @@ namespace detail
     // the implementation of parseFlag()
     bool parseFlagImpl(int argc, const char* const* argv, const char* pattern) {
         for(int i = argc - 1; i >= 0; --i) {
-            const char* temp = std::strstr(argv[i], pattern);
+            auto temp = std::strstr(argv[i], pattern);
             if(temp && strlen(temp) == strlen(pattern)) {
                 // eliminate strings in which the chars before the option are not '-'
                 bool noBadCharsFound = true; //!OCLINT prefer early exits and continue
@@ -4574,11 +4576,11 @@ namespace detail
     // the implementation of parseOption()
     bool parseOptionImpl(int argc, const char* const* argv, const char* pattern, String& res) {
         for(int i = argc - 1; i >= 0; --i) {
-            const char* temp = std::strstr(argv[i], pattern);
+            auto temp = std::strstr(argv[i], pattern);
             if(temp) { //!OCLINT prefer early exits and continue
                 // eliminate matches in which the chars before the option are not '-'
-                bool        noBadCharsFound = true;
-                const char* curr            = argv[i];
+                bool noBadCharsFound = true;
+                auto curr            = argv[i];
                 while(curr != temp) {
                     if(*curr++ != '-') {
                         noBadCharsFound = false;
@@ -4616,7 +4618,7 @@ namespace detail
         if(parseOption(argc, argv, pattern, filtersString)) {
             // tokenize with "," as a separator
             // cppcheck-suppress strtokCalled
-            char* pch = std::strtok(filtersString.c_str(), ","); // modifies the string
+            auto pch = std::strtok(filtersString.c_str(), ","); // modifies the string
             while(pch != 0) {
                 if(strlen(pch))
                     res.push_back(pch);
@@ -4798,8 +4800,8 @@ void Context::addFilter(const char* filter, const char* value) { setOption(filte
 
 // allows the user to clear all filters from the command line
 void Context::clearFilters() {
-    for(unsigned i = 0; i < p->filters.size(); ++i)
-        p->filters[i].clear();
+    for(auto& curr : p->filters)
+        curr.clear();
 }
 
 // allows the user to override procedurally the int/bool options from the command line
@@ -4809,8 +4811,8 @@ void Context::setOption(const char* option, int value) {
 
 // allows the user to override procedurally the string options from the command line
 void Context::setOption(const char* option, const char* value) {
-    String      argv   = String("-") + option + "=" + value;
-    const char* lvalue = argv.c_str();
+    auto argv   = String("-") + option + "=" + value;
+    auto lvalue = argv.c_str();
     parseArgs(1, &lvalue);
 }
 
@@ -4833,9 +4835,9 @@ int Context::run() {
         p->reporters_currently_used.push_back(getReporters()[reporterMap::key_type(0, "console")]);
 
     // check to see if any of the registered reporters has been selected
-    for(reporterMap::iterator it = getReporters().begin(); it != getReporters().end(); ++it) {
-        if(matchesAny(it->first.second.c_str(), p->filters[8], false, p->case_sensitive))
-            p->reporters_currently_used.push_back(it->second);
+    for(auto& curr : getReporters()) {
+        if(matchesAny(curr.first.second.c_str(), p->filters[8], false, p->case_sensitive))
+            p->reporters_currently_used.push_back(curr.second);
     }
 
     // always use the debug output window reporter
@@ -4860,12 +4862,10 @@ int Context::run() {
 
     g_con_rep.printIntro();
 
-    std::set<TestCase>& all_tests = getRegisteredTests();
-    p->numTestCases               = all_tests.size();
-
     std::vector<const TestCase*> testArray;
-    for(std::set<TestCase>::iterator it = all_tests.begin(); it != all_tests.end(); ++it)
-        testArray.push_back(&(*it));
+    for(auto& curr : getRegisteredTests())
+        testArray.push_back(&curr);
+    p->numTestCases = testArray.size();
 
     // sort the collected records
     if(!testArray.empty()) {
@@ -4879,11 +4879,11 @@ int Context::run() {
             std::srand(p->rand_seed);
 
             // random_shuffle implementation
-            const TestCase** first = &testArray[0];
+            const auto first = &testArray[0];
             for(size_t i = testArray.size() - 1; i > 0; --i) {
                 int idxToSwap = std::rand() % (i + 1); // NOLINT
 
-                const TestCase* temp = first[i];
+                const auto temp = first[i];
 
                 first[i]         = first[idxToSwap];
                 first[idxToSwap] = temp;
@@ -4904,8 +4904,8 @@ int Context::run() {
         DOCTEST_ITERATE_THROUGH_REPORTERS(test_run_start, *g_contextState);
 
     // invoke the registered functions if they match the filter criteria (or just count them)
-    for(size_t i = 0; i < testArray.size(); i++) {
-        const TestCase& tc = *testArray[i];
+    for(auto& curr : testArray) {
+        const auto tc = *curr;
 
         bool skip_me = false;
         if(tc.m_skip && !p->no_skip)
@@ -5088,46 +5088,6 @@ int registerReporter(const char* name, int priority, IReporter* r) {
 #ifdef DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 int main(int argc, char** argv) { return doctest::Context(argc, argv).run(); }
 #endif // DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
-
-DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_BEGIN
-//#include <thread>
-#include <atomic>
-#include <mutex>
-DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_END
-
-struct A
-{
-    int a = 5;
-    A();
-    A(const A&) = delete;
-    A& operator =(const A&);
-};
-
-A::A()        = default;
-A& A::operator=(const A&) = default;
-
-enum class hello_cpp11_enums
-{
-    val1,
-    val2
-};
-
-void f() {
-    std::mutex                  logMutex;
-    std::lock_guard<std::mutex> lock(logMutex);
-
-    A a;
-
-    std::vector<int> v = {4, 5, 6};
-    for(auto& curr : v)
-        std::cout << curr;
-
-    if(v.size() == 5)
-        f();
-
-    std::atomic<int> ai;
-    ai.exchange(6);
-}
 
 DOCTEST_CLANG_SUPPRESS_WARNING_POP
 DOCTEST_MSVC_SUPPRESS_WARNING_POP
