@@ -259,6 +259,9 @@ matrix:
 
   allow_failures:
 
+    # static code analysis
+    - env: COMPILER=clang++-4.0 STATIC_CODE_ANALYSIS=true
+
     # Clang 3.7
     - env: COMPILER=clang++-3.7
 

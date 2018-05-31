@@ -3554,6 +3554,7 @@ namespace detail
     TestCase::TestCase(const TestCase& other) { *this = other; }
 
     DOCTEST_MSVC_SUPPRESS_WARNING_WITH_PUSH(26434) // hides a non-virtual function
+    DOCTEST_MSVC_SUPPRESS_WARNING(26437) // Do not slice
     TestCase& TestCase::operator=(const TestCase& other) {
         static_cast<TestCaseData&>(*this) = static_cast<const TestCaseData&>(other);
 
