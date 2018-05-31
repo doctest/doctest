@@ -38,6 +38,7 @@ DOCTEST_GCC_SUPPRESS_WARNING("-Wconversion")
 DOCTEST_GCC_SUPPRESS_WARNING("-Weffc++")
 DOCTEST_GCC_SUPPRESS_WARNING("-Wsign-conversion")
 DOCTEST_GCC_SUPPRESS_WARNING("-Wstrict-overflow")
+DOCTEST_GCC_SUPPRESS_WARNING("-Wstrict-aliasing")
 DOCTEST_GCC_SUPPRESS_WARNING("-Wmissing-field-initializers")
 DOCTEST_GCC_SUPPRESS_WARNING("-Wmissing-braces")
 DOCTEST_GCC_SUPPRESS_WARNING("-Wmissing-declarations")
@@ -791,7 +792,6 @@ namespace detail
 
     typedef unsigned long long UInt64;
 
-    DOCTEST_GCC_SUPPRESS_WARNING_WITH_PUSH("-Wstrict-aliasing")
     UInt64 getCurrentTicks() {
         static UInt64 hz = 0, hzo = 0;
         if(!hz) {
@@ -802,7 +802,6 @@ namespace detail
         QueryPerformanceCounter(reinterpret_cast<LARGE_INTEGER*>(&t));
         return ((t - hzo) * 1000000) / hz;
     }
-    DOCTEST_GCC_SUPPRESS_WARNING_POP
 #else  // DOCTEST_PLATFORM_WINDOWS
 
     typedef uint64_t UInt64;
@@ -865,7 +864,7 @@ namespace detail
         DOCTEST_ITERATE_THROUGH_REPORTERS(subcase_start, m_signature);
     }
 
-    Subcase::Subcase(const Subcase& other) = default;
+    Subcase::Subcase(const Subcase&) = default;
 
     Subcase::~Subcase() {
         if(m_entered) {
@@ -886,11 +885,11 @@ namespace detail
             : m_passed(passed)
             , m_decomposition(decomposition) {}
 
-    Result::Result(const Result& other) = default;
+    Result::Result(const Result&) = default;
 
     Result::~Result() = default;
 
-    Result& Result::operator=(const Result& other) = default;
+    Result& Result::operator=(const Result&) = default;
 
     ExpressionDecomposer::ExpressionDecomposer(assertType::Enum at)
             : m_at(at) {}

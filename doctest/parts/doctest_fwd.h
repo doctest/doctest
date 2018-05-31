@@ -1022,7 +1022,7 @@ namespace detail
         bool             m_entered;
 
         Subcase(const char* name, const char* file, int line);
-        Subcase(const Subcase& other);
+        Subcase(const Subcase&);
         ~Subcase();
 
         operator bool() const;
@@ -1059,10 +1059,10 @@ namespace detail
         String m_decomposition;
 
         Result(bool passed = false, const String& decomposition = String());
-        Result(const Result& other);
+        Result(const Result&);
         ~Result();
 
-        Result& operator=(const Result& other);
+        Result& operator=(const Result&);
 
         operator bool() { return !m_passed; }
 
