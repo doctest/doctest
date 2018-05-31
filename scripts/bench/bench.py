@@ -55,8 +55,8 @@ catch_ver = "2.0.0-develop.3"
 catch_header = "catch." + catch_ver + ".hpp"
 
 # get the catch header
-if not os.path.exists("catch." + catch_ver + ".hpp"):
-    urllib.urlretrieve ("https://raw.githubusercontent.com/philsquared/Catch/v" + catch_ver + "/single_include/catch.hpp", catch_header)
+# if not os.path.exists("catch." + catch_ver + ".hpp"):
+    # urllib.urlretrieve ("https://raw.githubusercontent.com/philsquared/Catch/v" + catch_ver + "/single_include/catch.hpp", catch_header)
 
 # folder with generated code
 the_folder = 'project'

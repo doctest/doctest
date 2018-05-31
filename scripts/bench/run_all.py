@@ -15,6 +15,7 @@ def runBench(prog):
     result = subprocess.Popen(prog.split(), stdout = subprocess.PIPE).communicate()[0]
     result = result.splitlines()
     for line in result:
+        line = line.decode("utf-8")
         if line.startswith("Time running "):
             return str(line.rsplit(' ', 1)[-1])
     return ""
@@ -25,13 +26,15 @@ if os.name == "nt":
     call = 'python bench.py'
     the_os = 'windows'
 
-f = open('results.txt', 'w', 0) # unbuffered
+f = open('results.txt', 'w')
 for test in ['header', 'asserts', 'runtime']:
     print(  '\n************** ' + test + '\n')
     f.write('\n************** ' + test + '\n')
+    f.flush()
     for framework in ['doctest', 'catch']:
         print(  '== ' + framework + '\n')
         f.write('== ' + framework + '\n')
+        f.flush()
         for config in data['compilers'][the_os]:
             for curr in data[test][1]:
                 if curr[0] == framework or curr[0] == "any":
@@ -52,7 +55,9 @@ for test in ['header', 'asserts', 'runtime']:
                     average = "{:7.2f}".format(round(accum / num_times, 2))
                     print("AVERAGE: " + average)
                     f.write(average + " | ")
+                    f.flush()
             f.write("\n")
+            f.flush()
 
 f.close()
 
