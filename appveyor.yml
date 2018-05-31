@@ -30,8 +30,8 @@ environment:
     APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
 
 install:
-  - IF "%gen%" == "MinGW Makefiles" appveyor-retry appveyor DownloadFile http://downloads.sourceforge.net/mingw-w64/x86_64-7.1.0-release-posix-seh-rt_v5-rev0.7z
-  - IF "%gen%" == "MinGW Makefiles" 7z x x86_64-7.1.0-release-posix-seh-rt_v5-rev0.7z -oc:\mingw > nul
+  - IF "%gen%" == "MinGW Makefiles" appveyor-retry appveyor DownloadFile http://downloads.sourceforge.net/mingw-w64/x86_64-8.1.0-release-posix-seh-rt_v6-rev0.7z
+  - IF "%gen%" == "MinGW Makefiles" 7z x x86_64-8.1.0-release-posix-seh-rt_v6-rev0.7z -oc:\mingw > nul
 
 build_script:
   # workaround for CMake not wanting sh.exe on PATH for MinGW

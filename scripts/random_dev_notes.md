@@ -3,9 +3,6 @@ reporters issue: 138
 c++11 issue: 137
 
 
-gcc 8 on appveyor
-
-
 the current reporter interface
     - can be used for listening for events
     - multiple reporters can be used
