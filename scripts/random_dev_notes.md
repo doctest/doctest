@@ -3,6 +3,8 @@ reporters issue: 138
 c++11 issue: 137
 
 
+gcc 8 on appveyor
+
 
 the current reporter interface
     - can be used for listening for events
@@ -48,6 +50,8 @@ documentation... :(
 profit :D
 
 
+further improvement of compile and link times - moved the body of absolutely every non-templated function out of the interface part of the header and into the implementation part
+    TODO: think about POD structures from fwd
 
 ask in the reddit thread what from the roadmap they would like to see next
 

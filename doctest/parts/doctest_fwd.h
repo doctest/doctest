@@ -475,18 +475,8 @@ public:
             delete[] data.ptr;
     }
 
-    // GCC 4.9/5/6 report Wstrict-overflow when optimizations are ON and it got inlined in the vector class somewhere...
-    // see commit 574ef95f0cd379118be5011704664e4b5351f1e0 and build https://travis-ci.org/onqtam/doctest/builds/230671611
-    DOCTEST_NOINLINE String& operator=(const String& other) {
-        if(this != &other) {
-            if(!isOnStack())
-                delete[] data.ptr;
+    String& operator=(const String& other);
 
-            copy(other);
-        }
-
-        return *this;
-    }
     String& operator+=(const String& other);
 
     String operator+(const String& other) const { return String(*this) += other; }
@@ -510,32 +500,19 @@ public:
         return data.ptr;
     }
 
-    DOCTEST_GCC_SUPPRESS_WARNING_WITH_PUSH("-Wmaybe-uninitialized")
-    unsigned size() const {
-        if(isOnStack())
-            return last - (unsigned(buf[last]) & 31); // using "last" would work only if "len" is 32
-        return data.size;
-    }
-    DOCTEST_GCC_SUPPRESS_WARNING_POP
-
-    unsigned capacity() const {
-        if(isOnStack())
-            return len;
-        return data.capacity;
-    }
+    unsigned size() const;
+    unsigned capacity() const;
 
     int compare(const char* other, bool no_case = false) const;
     int compare(const String& other, bool no_case = false) const;
 };
 
-// clang-format off
-inline bool operator==(const String& lhs, const String& rhs) { return lhs.compare(rhs) == 0; }
-inline bool operator!=(const String& lhs, const String& rhs) { return lhs.compare(rhs) != 0; }
-inline bool operator< (const String& lhs, const String& rhs) { return lhs.compare(rhs) < 0; }
-inline bool operator> (const String& lhs, const String& rhs) { return lhs.compare(rhs) > 0; }
-inline bool operator<=(const String& lhs, const String& rhs) { return (lhs != rhs) ? lhs.compare(rhs) < 0 : true; }
-inline bool operator>=(const String& lhs, const String& rhs) { return (lhs != rhs) ? lhs.compare(rhs) > 0 : true; }
-// clang-format on
+DOCTEST_INTERFACE bool operator==(const String& lhs, const String& rhs);
+DOCTEST_INTERFACE bool operator!=(const String& lhs, const String& rhs);
+DOCTEST_INTERFACE bool operator<(const String& lhs, const String& rhs);
+DOCTEST_INTERFACE bool operator>(const String& lhs, const String& rhs);
+DOCTEST_INTERFACE bool operator<=(const String& lhs, const String& rhs);
+DOCTEST_INTERFACE bool operator>=(const String& lhs, const String& rhs);
 
 DOCTEST_INTERFACE std::ostream& operator<<(std::ostream& s, const String& in);
 
@@ -680,7 +657,7 @@ namespace assertType
 
 DOCTEST_INTERFACE const char* assertString(assertType::Enum at);
 
-struct TestCaseData
+struct DOCTEST_INTERFACE TestCaseData
 {
     const char* m_file;       // the file in which the test was registered
     unsigned    m_line;       // the line where the test was registered
@@ -694,7 +671,7 @@ struct TestCaseData
     double      m_timeout;
 };
 
-struct AssertData
+struct DOCTEST_INTERFACE AssertData
 {
     // common - for all asserts
     const TestCaseData* m_test_case;
@@ -716,15 +693,14 @@ struct AssertData
     const char* m_exception_type;
 };
 
-struct MessageData
+struct DOCTEST_INTERFACE MessageData
 {
     String           m_string;
     const char*      m_file;
     int              m_line;
     assertType::Enum m_severity;
 
-    // for gcc 4.8
-    DOCTEST_NOINLINE ~MessageData() {}
+    ~MessageData();
 };
 
 struct DOCTEST_INTERFACE SubcaseSignature
@@ -733,17 +709,14 @@ struct DOCTEST_INTERFACE SubcaseSignature
     const char* m_file;
     int         m_line;
 
-    SubcaseSignature(const char* name, const char* file, int line)
-            : m_name(name)
-            , m_file(file)
-            , m_line(line) {}
+    SubcaseSignature(const char* name, const char* file, int line);
 
     bool operator<(const SubcaseSignature& other) const;
 };
 
-struct IContextScope
+struct DOCTEST_INTERFACE IContextScope
 {
-    virtual ~IContextScope() {}
+    virtual ~IContextScope();
     virtual void stringify(std::ostream*) const = 0;
 };
 
@@ -932,12 +905,7 @@ class DOCTEST_INTERFACE Approx
 public:
     explicit Approx(double value);
 
-    Approx operator()(double value) const {
-        Approx approx(value);
-        approx.epsilon(m_epsilon);
-        approx.scale(m_scale);
-        return approx;
-    }
+    Approx operator()(double value) const;
 
 #ifdef DOCTEST_CONFIG_INCLUDE_TYPE_TRAITS
     template <typename T>
@@ -948,21 +916,43 @@ public:
     }
 #endif // DOCTEST_CONFIG_INCLUDE_TYPE_TRAITS
 
+    Approx& epsilon(double newEpsilon);
+
+#ifdef DOCTEST_CONFIG_INCLUDE_TYPE_TRAITS
+    template <typename T>
+    typename detail::enable_if<std::is_constructible<double, T>::value, Approx&>::type epsilon(
+            const T& newEpsilon) {
+        m_epsilon = static_cast<double>(newEpsilon);
+        return *this;
+    }
+#endif //  DOCTEST_CONFIG_INCLUDE_TYPE_TRAITS
+
+    Approx& scale(double newScale);
+
+#ifdef DOCTEST_CONFIG_INCLUDE_TYPE_TRAITS
+    template <typename T>
+    typename detail::enable_if<std::is_constructible<double, T>::value, Approx&>::type scale(
+            const T& newScale) {
+        m_scale = static_cast<double>(newScale);
+        return *this;
+    }
+#endif // DOCTEST_CONFIG_INCLUDE_TYPE_TRAITS
+
+    String toString() const;
+
     // clang-format off
-    // overloads for double - the first one is necessary as it is in the implementation part of doctest
-    // as for the others - keeping them for potentially faster compile times
     DOCTEST_INTERFACE friend bool operator==(double lhs, Approx const& rhs);
-    friend bool operator==(Approx const& lhs, double rhs) { return operator==(rhs, lhs); }
-    friend bool operator!=(double lhs, Approx const& rhs) { return !operator==(lhs, rhs); }
-    friend bool operator!=(Approx const& lhs, double rhs) { return !operator==(rhs, lhs); }
-    friend bool operator<=(double lhs, Approx const& rhs) { return lhs < rhs.m_value || lhs == rhs; }
-    friend bool operator<=(Approx const& lhs, double rhs) { return lhs.m_value < rhs || lhs == rhs; }
-    friend bool operator>=(double lhs, Approx const& rhs) { return lhs > rhs.m_value || lhs == rhs; }
-    friend bool operator>=(Approx const& lhs, double rhs) { return lhs.m_value > rhs || lhs == rhs; }
-    friend bool operator< (double lhs, Approx const& rhs) { return lhs < rhs.m_value && lhs != rhs; }
-    friend bool operator< (Approx const& lhs, double rhs) { return lhs.m_value < rhs && lhs != rhs; }
-    friend bool operator> (double lhs, Approx const& rhs) { return lhs > rhs.m_value && lhs != rhs; }
-    friend bool operator> (Approx const& lhs, double rhs) { return lhs.m_value > rhs && lhs != rhs; }
+    DOCTEST_INTERFACE friend bool operator==(Approx const& lhs, double rhs);
+    DOCTEST_INTERFACE friend bool operator!=(double lhs, Approx const& rhs);
+    DOCTEST_INTERFACE friend bool operator!=(Approx const& lhs, double rhs);
+    DOCTEST_INTERFACE friend bool operator<=(double lhs, Approx const& rhs);
+    DOCTEST_INTERFACE friend bool operator<=(Approx const& lhs, double rhs);
+    DOCTEST_INTERFACE friend bool operator>=(double lhs, Approx const& rhs);
+    DOCTEST_INTERFACE friend bool operator>=(Approx const& lhs, double rhs);
+    DOCTEST_INTERFACE friend bool operator< (double lhs, Approx const& rhs);
+    DOCTEST_INTERFACE friend bool operator< (Approx const& lhs, double rhs);
+    DOCTEST_INTERFACE friend bool operator> (double lhs, Approx const& rhs);
+    DOCTEST_INTERFACE friend bool operator> (Approx const& lhs, double rhs);
 
 #ifdef DOCTEST_CONFIG_INCLUDE_TYPE_TRAITS
 #define DOCTEST_APPROX_PREFIX \
@@ -984,36 +974,6 @@ public:
 #endif // DOCTEST_CONFIG_INCLUDE_TYPE_TRAITS
 
     // clang-format on
-
-    Approx& epsilon(double newEpsilon) {
-        m_epsilon = newEpsilon;
-        return *this;
-    }
-
-#ifdef DOCTEST_CONFIG_INCLUDE_TYPE_TRAITS
-    template <typename T>
-    typename detail::enable_if<std::is_constructible<double, T>::value, Approx&>::type epsilon(
-            const T& newEpsilon) {
-        m_epsilon = static_cast<double>(newEpsilon);
-        return *this;
-    }
-#endif //  DOCTEST_CONFIG_INCLUDE_TYPE_TRAITS
-
-    Approx& scale(double newScale) {
-        m_scale = newScale;
-        return *this;
-    }
-
-#ifdef DOCTEST_CONFIG_INCLUDE_TYPE_TRAITS
-    template <typename T>
-    typename detail::enable_if<std::is_constructible<double, T>::value, Approx&>::type scale(
-            const T& newScale) {
-        m_scale = static_cast<double>(newScale);
-        return *this;
-    }
-#endif // DOCTEST_CONFIG_INCLUDE_TYPE_TRAITS
-
-    String toString() const;
 
 private:
     double m_epsilon;
@@ -1044,8 +1004,10 @@ namespace detail
 #endif // DOCTEST_CONFIG_TREAT_CHAR_STAR_AS_STRING
     // clang-format on
 
-    struct TestFailureException
+    struct DOCTEST_INTERFACE TestFailureException
     {
+        //TestFailureException();
+        //~TestFailureException();
     };
 
     DOCTEST_INTERFACE bool checkIfShouldThrow(assertType::Enum at);
@@ -1063,7 +1025,7 @@ namespace detail
         Subcase(const Subcase& other);
         ~Subcase();
 
-        operator bool() const { return m_entered; }
+        operator bool() const;
     };
 
     template <typename L, typename R>
@@ -1096,15 +1058,9 @@ namespace detail
         bool   m_passed;
         String m_decomposition;
 
+        Result(bool passed = false, const String& decomposition = String());
+        Result(const Result& other);
         ~Result();
-
-        DOCTEST_NOINLINE Result(bool passed = false, const String& decomposition = String())
-                : m_passed(passed)
-                , m_decomposition(decomposition) {}
-
-        DOCTEST_NOINLINE Result(const Result& other)
-                : m_passed(other.m_passed)
-                , m_decomposition(other.m_decomposition) {}
 
         Result& operator=(const Result& other);
 
@@ -1265,12 +1221,11 @@ namespace detail
 
 #endif // DOCTEST_CONFIG_NO_COMPARISON_WARNING_SUPPRESSION
 
-    struct ExpressionDecomposer
+    struct DOCTEST_INTERFACE ExpressionDecomposer
     {
         assertType::Enum m_at;
 
-        ExpressionDecomposer(assertType::Enum at)
-                : m_at(at) {}
+        ExpressionDecomposer(assertType::Enum at);
 
         // The right operator for capturing expressions is "<=" instead of "<<" (based on the operator precedence table)
         // but then there will be warnings from GCC about "-Wparentheses" and since "_Pragma()" is problematic this will stay for now...
@@ -1282,7 +1237,7 @@ namespace detail
         }
     };
 
-    struct TestSuite
+    struct DOCTEST_INTERFACE TestSuite
     {
         const char* m_test_suite;
         const char* m_description;
@@ -1292,17 +1247,7 @@ namespace detail
         int         m_expected_failures;
         double      m_timeout;
 
-        TestSuite& operator*(const char* in) {
-            m_test_suite = in;
-            // clear state
-            m_description       = 0;
-            m_skip              = false;
-            m_may_fail          = false;
-            m_should_fail       = false;
-            m_expected_failures = 0;
-            m_timeout           = 0;
-            return *this;
-        }
+        TestSuite& operator*(const char* in);
 
         template <typename T>
         TestSuite& operator*(const T& in) {
@@ -1322,8 +1267,13 @@ namespace detail
         TestCase(funcType test, const char* file, unsigned line, const TestSuite& test_suite,
                  const char* type = "", int template_id = -1);
 
-        // for gcc 4.7
-        DOCTEST_NOINLINE ~TestCase() {}
+        ~TestCase();
+
+        TestCase(const TestCase& other);
+
+        DOCTEST_MSVC_SUPPRESS_WARNING_WITH_PUSH(26434) // hides a non-virtual function
+        TestCase& operator=(const TestCase& other);
+        DOCTEST_MSVC_SUPPRESS_WARNING_POP
 
         TestCase& operator*(const char* in);
 
@@ -1332,12 +1282,6 @@ namespace detail
             in.fill(*this);
             return *this;
         }
-
-        TestCase(const TestCase& other) { *this = other; }
-
-        DOCTEST_MSVC_SUPPRESS_WARNING_WITH_PUSH(26434) // hides a non-virtual function
-        TestCase& operator=(const TestCase& other);
-        DOCTEST_MSVC_SUPPRESS_WARNING_POP
 
         bool operator<(const TestCase& other) const;
     };
@@ -1380,10 +1324,7 @@ namespace detail
 
         ~ResultBuilder();
 
-        void setResult(const Result& res) {
-            m_decomposition = res.m_decomposition;
-            m_failed        = !res.m_passed;
-        }
+        void setResult(const Result& res);
 
         template <int comparison, typename L, typename R>
         DOCTEST_NOINLINE void binary_assert(const DOCTEST_REF_WRAP(L) lhs,
@@ -1488,7 +1429,7 @@ namespace detail
 
     struct DOCTEST_INTERFACE IExceptionTranslator
     {
-        virtual ~IExceptionTranslator() {}
+        virtual ~IExceptionTranslator();
         virtual bool translate(String&) const = 0;
     };
 
@@ -1576,18 +1517,13 @@ namespace detail
     DOCTEST_INTERFACE void toStream(std::ostream* s, int long long in);
     DOCTEST_INTERFACE void toStream(std::ostream* s, int long long unsigned in);
 
-    DOCTEST_INTERFACE void addToContexts(IContextScope* ptr);
-    DOCTEST_INTERFACE void popFromContexts();
-    DOCTEST_INTERFACE void stringifyContextIfExceptionOccurred(IContextScope* ptr);
-
-    // cppcheck-suppress copyCtorAndEqOperator
-    class ContextBuilder
+    class DOCTEST_INTERFACE ContextBuilder
     {
         friend class ContextScope;
 
-        struct ICapture
+        struct DOCTEST_INTERFACE ICapture
         {
-            virtual ~ICapture() {}
+            virtual ~ICapture();
             virtual void toStream(std::ostream*) const = 0;
         };
 
@@ -1618,42 +1554,14 @@ namespace detail
         Node* head;
         Node* tail;
 
-        DOCTEST_GCC_SUPPRESS_WARNING_WITH_PUSH("-Wcast-align")
-        void stringify(std::ostream* s) const {
-            int curr = 0;
-            // iterate over small buffer
-            while(curr < numCaptures && curr < DOCTEST_CONFIG_NUM_CAPTURES_ON_STACK)
-                reinterpret_cast<const ICapture*>(stackChunks[curr++].buf)->toStream(s);
-            // iterate over list
-            auto curr_elem = head;
-            while(curr < numCaptures) {
-                reinterpret_cast<const ICapture*>(curr_elem->chunk.buf)->toStream(s);
-                curr_elem = curr_elem->next;
-                ++curr;
-            }
-        }
-        DOCTEST_GCC_SUPPRESS_WARNING_POP
+        ContextBuilder(ContextBuilder& other);
 
-        // steal the contents of the other - acting as a move constructor...
-        DOCTEST_NOINLINE ContextBuilder(ContextBuilder& other)
-                : numCaptures(other.numCaptures)
-                , head(other.head)
-                , tail(other.tail) {
-            other.numCaptures = 0;
-            other.head        = 0;
-            other.tail        = 0;
-            my_memcpy(stackChunks, other.stackChunks,
-                      unsigned(int(sizeof(Chunk)) * DOCTEST_CONFIG_NUM_CAPTURES_ON_STACK));
-        }
+        ContextBuilder& operator=(const ContextBuilder&) = delete;
 
-        ContextBuilder& operator=(const ContextBuilder&); // NOLINT
+        void stringify(std::ostream* s) const;
 
     public:
-        // cppcheck-suppress uninitMemberVar
-        DOCTEST_NOINLINE ContextBuilder() // NOLINT
-                : numCaptures(0)
-                , head(0)
-                , tail(0) {}
+        ContextBuilder();
 
         template <typename T>
         DOCTEST_NOINLINE ContextBuilder& operator<<(T& in) {
@@ -1680,15 +1588,7 @@ namespace detail
             return *this;
         }
 
-        DOCTEST_NOINLINE ~ContextBuilder() {
-            // free the linked list - the ones on the stack are left as-is
-            // no destructors are called at all - there is no need
-            while(head) {
-                auto next = head->next;
-                delete head;
-                head = next;
-            }
-        }
+        ~ContextBuilder();
 
         template <typename T>
         ContextBuilder& operator<<(const T&&) {
@@ -1699,22 +1599,16 @@ namespace detail
         }
     };
 
-    class ContextScope : public IContextScope
+    class DOCTEST_INTERFACE ContextScope : public IContextScope
     {
         ContextBuilder contextBuilder;
 
     public:
-        DOCTEST_NOINLINE explicit ContextScope(ContextBuilder& temp)
-                : contextBuilder(temp) {
-            addToContexts(this);
-        }
+        explicit ContextScope(ContextBuilder& temp);
 
-        DOCTEST_NOINLINE ~ContextScope() {
-            stringifyContextIfExceptionOccurred(this);
-            popFromContexts();
-        }
+        ~ContextScope();
 
-        void stringify(std::ostream* s) const { contextBuilder.stringify(s); }
+        void stringify(std::ostream* s) const;
     };
 
     struct DOCTEST_INTERFACE MessageBuilder : public MessageData
@@ -1829,7 +1723,7 @@ namespace TestCaseFailureReason
     };
 } // namespace TestCaseFailureReason
 
-struct CurrentTestCaseStats
+struct DOCTEST_INTERFACE CurrentTestCaseStats
 {
     int    numAssertsForCurrentTestCase;
     int    numAssertsFailedForCurrentTestCase;
@@ -1839,7 +1733,7 @@ struct CurrentTestCaseStats
     bool   should_reenter; // means we are not done with the test case because of subcases
 };
 
-struct TestRunStats
+struct DOCTEST_INTERFACE TestRunStats
 {
     unsigned numTestCases;
     unsigned numTestCasesPassingFilters;
@@ -1877,7 +1771,7 @@ struct DOCTEST_INTERFACE IReporter
     virtual void test_case_skipped(const TestCaseData&) = 0;
 
     // doctest will not be managing the lifetimes of reporters given to it but this would still be nice to have
-    virtual ~IReporter() {}
+    virtual ~IReporter();
 
     // can obtain all currently active contexts and stringify them if one wishes to do so
     static int                         get_num_active_contexts();
