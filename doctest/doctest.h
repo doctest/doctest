@@ -1552,7 +1552,7 @@ namespace detail {
             void toStream(std::ostream* s) const override { detail::toStream(s, *capture); }
         };
 
-        struct Chunk
+        struct DOCTEST_INTERFACE Chunk
         {
             char buf[sizeof(Capture<char>)] DOCTEST_ALIGNMENT(
                     2 * sizeof(void*)); // place to construct a Capture<T>
@@ -1561,7 +1561,7 @@ namespace detail {
             DOCTEST_DELETE_COPIES(Chunk);
         };
 
-        struct Node
+        struct DOCTEST_INTERFACE Node
         {
             Chunk chunk;
             Node* next;
@@ -1952,15 +1952,22 @@ int registerReporter(const char* name, int priority, IReporter* r);
 
 // for subcases
 #define DOCTEST_SUBCASE(name)                                                                      \
-    if(const doctest::detail::Subcase & DOCTEST_ANONYMOUS(_DOCTEST_ANON_SUBCASE_) DOCTEST_UNUSED = \
-               doctest::detail::Subcase(name, __FILE__, __LINE__))
+    if(DOCTEST_CLANG_SUPPRESS_WARNING_WITH_PUSH("-Wc++98-compat-bind-to-temporary-copy")           \
+                       const doctest::detail::Subcase &                                            \
+               DOCTEST_ANONYMOUS(_DOCTEST_ANON_SUBCASE_) DOCTEST_UNUSED =                          \
+               doctest::detail::Subcase(name, __FILE__, __LINE__)                                  \
+                       DOCTEST_CLANG_SUPPRESS_WARNING_POP)
 
 // for grouping tests in test suites by using code blocks
 #define DOCTEST_TEST_SUITE_IMPL(decorators, ns_name)                                               \
     namespace ns_name { namespace doctest_detail_test_suite_ns {                                   \
             static DOCTEST_NOINLINE doctest::detail::TestSuite& getCurrentTestSuite() {            \
+                DOCTEST_MSVC_SUPPRESS_WARNING_WITH_PUSH(4640)                                      \
+                DOCTEST_CLANG_SUPPRESS_WARNING_WITH_PUSH("-Wexit-time-destructors")                \
                 static doctest::detail::TestSuite data;                                            \
                 static bool                       inited = false;                                  \
+                DOCTEST_MSVC_SUPPRESS_WARNING_POP                                                  \
+                DOCTEST_CLANG_SUPPRESS_WARNING_POP                                                 \
                 if(!inited) {                                                                      \
                     data* decorators;                                                              \
                     inited = true;                                                                 \
