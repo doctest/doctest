@@ -1024,7 +1024,7 @@ namespace detail {
     struct DOCTEST_INTERFACE Subcase
     {
         SubcaseSignature m_signature;
-        bool             m_entered;
+        bool             m_entered = false;
 
         Subcase(const char* name, const char* file, int line);
         ~Subcase();
@@ -1571,9 +1571,9 @@ namespace detail {
         };
 
         Chunk stackChunks[DOCTEST_CONFIG_NUM_CAPTURES_ON_STACK];
-        int   numCaptures;
-        Node* head;
-        Node* tail;
+        int   numCaptures = 0;
+        Node* head        = 0;
+        Node* tail        = 0;
 
         ContextBuilder(ContextBuilder& other);
 
@@ -1583,6 +1583,7 @@ namespace detail {
 
     public:
         ContextBuilder();
+        ~ContextBuilder();
 
         template <typename T>
         DOCTEST_NOINLINE ContextBuilder& operator<<(T& in) {
@@ -1608,8 +1609,6 @@ namespace detail {
             ++numCaptures;
             return *this;
         }
-
-        ~ContextBuilder();
 
         template <typename T>
         ContextBuilder& operator<<(const T&&) {
@@ -2850,7 +2849,7 @@ namespace detail {
     // this holds both parameters from the command line and runtime data for tests
     struct ContextState : ContextOptions, TestRunStats, CurrentTestCaseStats
     {
-        std::vector<std::vector<String> > filters;
+        std::vector<std::vector<String> > filters = decltype(filters)(9); // 9 different filters
 
         std::vector<IReporter*> reporters_currently_used;
 
@@ -2872,11 +2871,6 @@ namespace detail {
             numAsserts                  = 0;
             numAssertsFailed            = 0;
         }
-
-        // cppcheck-suppress uninitMemberVar
-        ContextState()
-                : filters(9) // 9 different filters total
-        {}
     };
 
     ContextState* g_contextState = 0;
@@ -3462,11 +3456,8 @@ namespace {
     }
 #endif // DOCTEST_PLATFORM_WINDOWS
 
-    class Timer
+    struct Timer
     {
-    public:
-        Timer()
-                : m_ticks(0) {}
         void         start() { m_ticks = getCurrentTicks(); }
         unsigned int getElapsedMicroseconds() const {
             return static_cast<unsigned int>(getCurrentTicks() - m_ticks);
@@ -3477,7 +3468,7 @@ namespace {
         double getElapsedSeconds() const { return getElapsedMicroseconds() / 1000000.0; }
 
     private:
-        UInt64 m_ticks;
+        UInt64 m_ticks = 0;
     };
 
     Timer g_timer;
@@ -3486,8 +3477,7 @@ namespace detail {
     const ContextOptions* getContextOptions() { return g_contextState; }
 
     Subcase::Subcase(const char* name, const char* file, int line)
-            : m_signature(name, file, line)
-            , m_entered(false) {
+            : m_signature(name, file, line) {
         ContextState* s = g_contextState;
 
         // if we have already completed it
@@ -3857,11 +3847,7 @@ namespace detail {
     }
     DOCTEST_GCC_SUPPRESS_WARNING_POP
 
-    // cppcheck-suppress uninitMemberVar
-    ContextBuilder::ContextBuilder() // NOLINT
-            : numCaptures(0)
-            , head(0)
-            , tail(0) {}
+    ContextBuilder::ContextBuilder() = default;
 
     ContextBuilder::~ContextBuilder() {
         // free the linked list - the ones on the stack are left as-is

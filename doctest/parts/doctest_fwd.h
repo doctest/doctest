@@ -1021,7 +1021,7 @@ namespace detail {
     struct DOCTEST_INTERFACE Subcase
     {
         SubcaseSignature m_signature;
-        bool             m_entered;
+        bool             m_entered = false;
 
         Subcase(const char* name, const char* file, int line);
         ~Subcase();
@@ -1568,9 +1568,9 @@ namespace detail {
         };
 
         Chunk stackChunks[DOCTEST_CONFIG_NUM_CAPTURES_ON_STACK];
-        int   numCaptures;
-        Node* head;
-        Node* tail;
+        int   numCaptures = 0;
+        Node* head        = 0;
+        Node* tail        = 0;
 
         ContextBuilder(ContextBuilder& other);
 
@@ -1580,6 +1580,7 @@ namespace detail {
 
     public:
         ContextBuilder();
+        ~ContextBuilder();
 
         template <typename T>
         DOCTEST_NOINLINE ContextBuilder& operator<<(T& in) {
@@ -1605,8 +1606,6 @@ namespace detail {
             ++numCaptures;
             return *this;
         }
-
-        ~ContextBuilder();
 
         template <typename T>
         ContextBuilder& operator<<(const T&&) {
