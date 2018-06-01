@@ -362,10 +362,12 @@ script:
       make -k -j2 || exit 1
       ctest --output-on-failure || exit 1
 
-      lcov -d . -c -o coverage.info                                              # parse coverage data
-      lcov -r coverage.info "/usr*" "$(readlink -f examples)/*" -o coverage.info # remove data for system headers and .cpp files
-      lcov -l coverage.info                                                      # just list a short summary of the results
-      coveralls-lcov --repo-token=${COVERALLS_REPO_TOKEN} coverage.info          # upload results
+      lcov -d . -c -o coverage.info                                      # parse coverage data
+      lcov -r coverage.info "/usr*"                     -o coverage.info # remove data for system headers
+      lcov -r coverage.info "$(readlink -f examples)/*" -o coverage.info # remove data for .cpp files
+      lcov -r coverage.info "$(readlink -f scripts)/*"  -o coverage.info # remove data for .cpp files
+      lcov -l coverage.info                                              # just list a short summary of the results
+      coveralls-lcov --repo-token=${COVERALLS_REPO_TOKEN} coverage.info  # upload results
 
       # do not continue with other build configurations after that
       exit
