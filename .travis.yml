@@ -124,22 +124,6 @@ matrix:
           packages: ["g++-8",   "valgrind", "g++-8-multilib",   "libc6-dbg", "libc6-dbg:i386", "linux-libc-dev", "linux-libc-dev:i386"]
           sources: *apt_sources
 
-    # Clang 3.3
-    - env: COMPILER=clang++-3.3
-      dist: precise
-      addons: &clang33
-        apt:
-          packages: ["clang-3.3", "valgrind", "g++-multilib", "libc6-dbg", "libc6-dbg:i386", "g++-5"]
-          sources: *apt_sources
-
-    # Clang 3.4
-    - env: COMPILER=clang++-3.4
-      dist: precise
-      addons: &clang34
-        apt:
-          packages: ["clang-3.4", "valgrind", "g++-multilib", "libc6-dbg", "libc6-dbg:i386", "g++-5"]
-          sources: *apt_sources
-
     # Clang 3.5
     - env: COMPILER=clang++-3.5 HAS_ASAN_64=true HAS_UBSAN_64=true
       addons: &clang35
