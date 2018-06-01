@@ -1,7 +1,7 @@
 [doctest] run with "--help" for options
 [doctest] listing all test case names
 ===============================================================================
-doctest internals
+exercising tricky code paths of doctest
 will end from a std::string exception
 will end from a const char* exception
 will end from an unknown exception

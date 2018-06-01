@@ -567,22 +567,22 @@ Approx& Approx::scale(double newScale) {
     return *this;
 }
 
-bool operator==(double lhs, Approx const& rhs) {
+bool operator==(double lhs, const Approx& rhs) {
     // Thanks to Richard Harris for his help refining this formula
     return std::fabs(lhs - rhs.m_value) <
            rhs.m_epsilon * (rhs.m_scale + std::max(std::fabs(lhs), std::fabs(rhs.m_value)));
 }
-bool operator==(Approx const& lhs, double rhs) { return operator==(rhs, lhs); }
-bool operator!=(double lhs, Approx const& rhs) { return !operator==(lhs, rhs); }
-bool operator!=(Approx const& lhs, double rhs) { return !operator==(rhs, lhs); }
-bool operator<=(double lhs, Approx const& rhs) { return lhs < rhs.m_value || lhs == rhs; }
-bool operator<=(Approx const& lhs, double rhs) { return lhs.m_value < rhs || lhs == rhs; }
-bool operator>=(double lhs, Approx const& rhs) { return lhs > rhs.m_value || lhs == rhs; }
-bool operator>=(Approx const& lhs, double rhs) { return lhs.m_value > rhs || lhs == rhs; }
-bool operator<(double lhs, Approx const& rhs) { return lhs < rhs.m_value && lhs != rhs; }
-bool operator<(Approx const& lhs, double rhs) { return lhs.m_value < rhs && lhs != rhs; }
-bool operator>(double lhs, Approx const& rhs) { return lhs > rhs.m_value && lhs != rhs; }
-bool operator>(Approx const& lhs, double rhs) { return lhs.m_value > rhs && lhs != rhs; }
+bool operator==(const Approx& lhs, double rhs) { return operator==(rhs, lhs); }
+bool operator!=(double lhs, const Approx& rhs) { return !operator==(lhs, rhs); }
+bool operator!=(const Approx& lhs, double rhs) { return !operator==(rhs, lhs); }
+bool operator<=(double lhs, const Approx& rhs) { return lhs < rhs.m_value || lhs == rhs; }
+bool operator<=(const Approx& lhs, double rhs) { return lhs.m_value < rhs || lhs == rhs; }
+bool operator>=(double lhs, const Approx& rhs) { return lhs > rhs.m_value || lhs == rhs; }
+bool operator>=(const Approx& lhs, double rhs) { return lhs.m_value > rhs || lhs == rhs; }
+bool operator<(double lhs, const Approx& rhs) { return lhs < rhs.m_value && lhs != rhs; }
+bool operator<(const Approx& lhs, double rhs) { return lhs.m_value < rhs && lhs != rhs; }
+bool operator>(double lhs, const Approx& rhs) { return lhs > rhs.m_value && lhs != rhs; }
+bool operator>(const Approx& lhs, double rhs) { return lhs.m_value > rhs && lhs != rhs; }
 
 String toString(const Approx& in) {
     return String("Approx( ") + doctest::toString(in.m_value) + " )";
@@ -878,8 +878,6 @@ namespace detail {
     DOCTEST_DEFINE_DEFAULTS(Result);
     DOCTEST_DEFINE_COPIES(Result);
 
-    Result::operator bool() const { return !m_passed; }
-
     ExpressionDecomposer::ExpressionDecomposer(assertType::Enum at)
             : m_at(at) {}
 
@@ -1033,11 +1031,9 @@ namespace {
     void color_to_stream(std::ostream& s, Color::Enum code) {
         ((void)s);    // for DOCTEST_CONFIG_COLORS_NONE or DOCTEST_CONFIG_COLORS_WINDOWS
         ((void)code); // for DOCTEST_CONFIG_COLORS_NONE
-        auto p = g_contextState;
-        if(p->no_colors)
-            return;
 #ifdef DOCTEST_CONFIG_COLORS_ANSI
-        if(isatty(STDOUT_FILENO) == false && p->force_colors == false)
+        if(g_contextState->no_colors ||
+           (isatty(STDOUT_FILENO) == false && g_contextState->force_colors == false))
             return;
 
         auto col = "";
@@ -1063,7 +1059,8 @@ namespace {
 #endif // DOCTEST_CONFIG_COLORS_ANSI
 
 #ifdef DOCTEST_CONFIG_COLORS_WINDOWS
-        if(isatty(fileno(stdout)) == false && p->force_colors == false)
+        if(g_contextState->no_colors ||
+           (isatty(fileno(stdout)) == false && g_contextState->force_colors == false))
             return;
 
 #define DOCTEST_SET_ATTR(x) SetConsoleTextAttribute(g_stdoutHandle, x | g_origBgAttrs)
@@ -1425,10 +1422,10 @@ namespace {
 #endif // Platform
 
 #ifdef DOCTEST_PLATFORM_WINDOWS
-    void myOutputDebugString(const char* text) { ::OutputDebugStringA(text); }
+#define DOCTEST_OUTPUT_DEBUG_STRING(text) ::OutputDebugStringA(text)
 #else
     // TODO: integration with XCode and other IDEs
-    void myOutputDebugString(const char*) {}
+#define DOCTEST_OUTPUT_DEBUG_STRING(text)
 #endif // Platform
 
     void addAssert(assertType::Enum at) {
@@ -1941,6 +1938,7 @@ namespace {
         void output_c_string_with_newline(const char* str) { s << Color::None << str << "\n"; }
     };
 
+#ifdef DOCTEST_PLATFORM_WINDOWS
     struct DebugOutputWindowReporter : public ConsoleReporter
     {
         std::ostringstream oss;
@@ -1954,7 +1952,7 @@ namespace {
             bool with_col             = g_contextState->no_colors;                                 \
             g_contextState->no_colors = false;                                                     \
             ConsoleReporter::func(in);                                                             \
-            myOutputDebugString(oss.str().c_str());                                                \
+            DOCTEST_OUTPUT_DEBUG_STRING(oss.str().c_str());                                        \
             oss.str("");                                                                           \
             g_contextState->no_colors = with_col;                                                  \
         }                                                                                          \
@@ -1972,6 +1970,7 @@ namespace {
     };
 
     DebugOutputWindowReporter g_debug_output_rep;
+#endif // DOCTEST_PLATFORM_WINDOWS
 
     // the implementation of parseFlag()
     bool parseFlagImpl(int argc, const char* const* argv, const char* pattern) {
@@ -2091,6 +2090,7 @@ namespace {
             }
         } else {
             // integer
+            // TODO: change this to use std::stoi or something else! currently it uses undefined behavior - assumes '0' on unsuccessful parse...
             int theInt = std::atoi(parsedValue.c_str()); // NOLINT
             if(theInt != 0) {
                 res = theInt; //!OCLINT parameter reassignment

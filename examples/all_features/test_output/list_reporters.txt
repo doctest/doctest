@@ -1,0 +1,2 @@
+[doctest] listing all registered reporters
+priority:     0 name: console

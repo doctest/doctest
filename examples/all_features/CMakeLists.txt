@@ -14,7 +14,6 @@ set(files
     main.cpp
     doctest_proxy.h
     header.h
-    coverage_maxout.cpp
     alternative_macros.cpp
     assertion_macros.cpp
     stringification.cpp
@@ -24,19 +23,25 @@ set(files
     test_cases_and_suites.cpp
 )
 
-doctest_add_executable(${PROJECT_NAME} ${files})
+# add the executable
+doctest_add_executable(${PROJECT_NAME} ${files} ../../scripts/coverage_maxout.cpp)
+
 # easy way to fix test coverage - disable colors and crash handling
 target_compile_definitions(${PROJECT_NAME} PRIVATE
     DOCTEST_CONFIG_COLORS_NONE
     DOCTEST_CONFIG_NO_POSIX_SIGNALS
     DOCTEST_CONFIG_NO_WINDOWS_SEH)
 
-set(common_args COMMAND $<TARGET_FILE:${PROJECT_NAME}> --no-skipped-summary --no-version)
+# omit the version and the num test cases skipped from the summary - this way the output will change less often
+set(common_args COMMAND $<TARGET_FILE:${PROJECT_NAME}> --no-skipped-summary --no-version --reporters=console)
 
 # add per-file tests
 foreach(f ${files})
     doctest_add_test(NAME ${f} ${common_args} -sf=*${f})
 endforeach()
+
+# add this separately since the file has a non-straightforward path
+doctest_add_test(NAME coverage_maxout.cpp ${common_args} -sf=*coverage_maxout.cpp)
 
 # queries
 doctest_add_test(NAME version           COMMAND $<TARGET_FILE:${PROJECT_NAME}> -v)
@@ -44,6 +49,7 @@ doctest_add_test(NAME help              ${common_args} -h)
 doctest_add_test(NAME count             ${common_args} -c   -sf=*coverage*)
 doctest_add_test(NAME list_test_cases   ${common_args} -ltc -sf=*coverage*)
 doctest_add_test(NAME list_test_suites  ${common_args} -lts -sf=*coverage*)
+doctest_add_test(NAME list_reporters    ${common_args} -lr  -sf=*coverage*)
 
 # options
 doctest_add_test(NAME all_binary  ${common_args} -tc=all?binary* -s) # print all binary asserts - for getAssertString()

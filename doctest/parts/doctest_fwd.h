@@ -943,23 +943,21 @@ public:
     }
 #endif // DOCTEST_CONFIG_INCLUDE_TYPE_TRAITS
 
-    String toString() const;
-
     // clang-format off
-    DOCTEST_INTERFACE friend bool operator==(double lhs, Approx const& rhs);
-    DOCTEST_INTERFACE friend bool operator==(Approx const& lhs, double rhs);
-    DOCTEST_INTERFACE friend bool operator!=(double lhs, Approx const& rhs);
-    DOCTEST_INTERFACE friend bool operator!=(Approx const& lhs, double rhs);
-    DOCTEST_INTERFACE friend bool operator<=(double lhs, Approx const& rhs);
-    DOCTEST_INTERFACE friend bool operator<=(Approx const& lhs, double rhs);
-    DOCTEST_INTERFACE friend bool operator>=(double lhs, Approx const& rhs);
-    DOCTEST_INTERFACE friend bool operator>=(Approx const& lhs, double rhs);
-    DOCTEST_INTERFACE friend bool operator< (double lhs, Approx const& rhs);
-    DOCTEST_INTERFACE friend bool operator< (Approx const& lhs, double rhs);
-    DOCTEST_INTERFACE friend bool operator> (double lhs, Approx const& rhs);
-    DOCTEST_INTERFACE friend bool operator> (Approx const& lhs, double rhs);
+    DOCTEST_INTERFACE friend bool operator==(double lhs, const Approx & rhs);
+    DOCTEST_INTERFACE friend bool operator==(const Approx & lhs, double rhs);
+    DOCTEST_INTERFACE friend bool operator!=(double lhs, const Approx & rhs);
+    DOCTEST_INTERFACE friend bool operator!=(const Approx & lhs, double rhs);
+    DOCTEST_INTERFACE friend bool operator<=(double lhs, const Approx & rhs);
+    DOCTEST_INTERFACE friend bool operator<=(const Approx & lhs, double rhs);
+    DOCTEST_INTERFACE friend bool operator>=(double lhs, const Approx & rhs);
+    DOCTEST_INTERFACE friend bool operator>=(const Approx & lhs, double rhs);
+    DOCTEST_INTERFACE friend bool operator< (double lhs, const Approx & rhs);
+    DOCTEST_INTERFACE friend bool operator< (const Approx & lhs, double rhs);
+    DOCTEST_INTERFACE friend bool operator> (double lhs, const Approx & rhs);
+    DOCTEST_INTERFACE friend bool operator> (const Approx & lhs, double rhs);
 
-    DOCTEST_INTERFACE friend String toString(Approx const& in);
+    DOCTEST_INTERFACE friend String toString(const Approx& in);
 
 #ifdef DOCTEST_CONFIG_INCLUDE_TYPE_TRAITS
 #define DOCTEST_APPROX_PREFIX \
@@ -1065,8 +1063,6 @@ namespace detail {
 
         DOCTEST_DECLARE_DEFAULTS(Result);
         DOCTEST_DECLARE_COPIES(Result);
-
-        operator bool() const;
 
         // forbidding some expressions based on this table: http://en.cppreference.com/w/cpp/language/operator_precedence
         DOCTEST_FORBIT_EXPRESSION(Result, &)
