@@ -126,8 +126,6 @@ DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_END
 #endif // DOCTEST_CONFIG_DISABLE
 
 namespace doctest {
-void my_memcpy(void* dest, const void* src, unsigned num) { memcpy(dest, src, num); }
-
 namespace {
     using namespace detail;
     // case insensitive strcmp
