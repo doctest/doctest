@@ -5079,8 +5079,11 @@ int Context::run() {
 
                 // call it from here only if we will continue looping for other subcases and
                 // call it again outside of the loop for one final time - with updated flags
-                if(p->should_reenter == true)
+                if(p->should_reenter == true) {
                     DOCTEST_ITERATE_THROUGH_REPORTERS(test_case_end, *g_contextState);
+                    p->failure_flags &= ~TestCaseFailureReason::Exception;
+                    p->failure_flags &= ~TestCaseFailureReason::AssertFailure;
+                }
             } while(p->should_reenter == true);
 
             if(g_contextState->numAssertsFailedForCurrentTestCase)
