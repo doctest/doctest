@@ -1,5 +1,47 @@
+D:\doctest\scripts\playground\test.cpp(11): ERROR: FAST_CHECK_EQ( true, false ) is NOT correct!
+  values: FAST_CHECK_EQ( true, false )
+D:\doctest\scripts\playground\test.cpp(12): ERROR: FAST_CHECK_UNARY( false ) is NOT correct!
+  values: FAST_CHECK_UNARY( false )
+D:\doctest\scripts\playground\test.cpp(13): ERROR: FAST_CHECK_UNARY_FALSE( true ) is NOT correct!
+  values: FAST_CHECK_UNARY_FALSE( true )
+D:\doctest\scripts\playground\test.cpp(15): ERROR: CHECK_EQ( true, false ) is NOT correct!
+  values: CHECK_EQ( true, false )
+D:\doctest\scripts\playground\test.cpp(16): ERROR: CHECK_UNARY( false ) is NOT correct!
+  values: CHECK_UNARY( false )
+D:\doctest\scripts\playground\test.cpp(17): ERROR: CHECK_UNARY_FALSE( true ) is NOT correct!
+  values: CHECK_UNARY_FALSE( true )
+D:\doctest\scripts\playground\test.cpp(19): ERROR: CHECK( false ) is NOT correct!
+  values: CHECK( false )
+D:\doctest\scripts\playground\test.cpp(20): ERROR: CHECK_THROWS( ((void)false) ) did NOT throw at all!
 [doctest] run with "--help" for options
 ===============================================================================
-[doctest] test cases:      0 |      0 passed |      0 failed |      0 skipped
-[doctest] assertions:      0 |      0 passed |      0 failed |
-[doctest] Status: SUCCESS!
+test.cpp(0):
+TEST CASE:  some test case lololo!
+
+test.cpp(0): ERROR: FAST_CHECK_EQ( true, false ) is NOT correct!
+  values: FAST_CHECK_EQ( true, false )
+
+test.cpp(0): ERROR: FAST_CHECK_UNARY( false ) is NOT correct!
+  values: FAST_CHECK_UNARY( false )
+
+test.cpp(0): ERROR: FAST_CHECK_UNARY_FALSE( true ) is NOT correct!
+  values: FAST_CHECK_UNARY_FALSE( true )
+
+test.cpp(0): ERROR: CHECK_EQ( true, false ) is NOT correct!
+  values: CHECK_EQ( true, false )
+
+test.cpp(0): ERROR: CHECK_UNARY( false ) is NOT correct!
+  values: CHECK_UNARY( false )
+
+test.cpp(0): ERROR: CHECK_UNARY_FALSE( true ) is NOT correct!
+  values: CHECK_UNARY_FALSE( true )
+
+test.cpp(0): ERROR: CHECK( false ) is NOT correct!
+  values: CHECK( false )
+
+test.cpp(0): ERROR: CHECK_THROWS( ((void)false) ) did NOT throw at all!
+
+===============================================================================
+[doctest] test cases:      1 |      0 passed |      1 failed |      0 skipped
+[doctest] assertions:      8 |      0 passed |      8 failed |
+[doctest] Status: FAILURE!

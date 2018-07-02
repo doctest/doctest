@@ -1,6 +1,6 @@
 
 // doctest_0_pre_cpp11
- 9.38 |   12.89 | ===> 0.0176 sec
+ 8.88 |   12.31 | ===> 0.0172 sec
 15.02 |   19.78 | ===> 0.0238 sec
 
 // doctest_1_pre_fwd_to_impl
@@ -14,6 +14,10 @@
 // doctest_3_after_struct_madness
  9.35 |   11.70 | ===> 0.0118
 14.81 |   18.55 | ===> 0.0187
+
+// doctest_4_after_anon_ns
+ 9.85 |   11.91 | ===> 0.0103
+14.96 |   18.75 | ===> 0.0189
 
 
 https://i.stack.imgur.com/b2VBV.png
@@ -76,7 +80,7 @@ ask in the reddit thread what from the roadmap they would like to see next
 
 OMG!!! THIS!!!
 https://github.com/onqtam/doctest/issues/114
-isRunningInTest()
+isRunningInTest() changed to is_running_in_test - a bool... for performance reasons - relates #56
 
 
 
@@ -87,11 +91,19 @@ header with extensions
 
 
 
+make sure all relevant parts of the reporters can be accessed from the doctest namespace without the need for detail
+
+fix discoverability of subcases
+
+add LIKELY & friends for the conditions of asserts - look at BOOST_LIKELY, ppk_assert, foonathan/debug_assert, etc
+
+try this for silencing unused variables & stuff when disabled: (void)(true ? (void)0 : ((void)(expression)))
+
 user command line options...?
 
 https://github.com/catchorg/Catch2/commit/de36b2ada6e4593a9a32c4c86cd47d4bc002b148
 
-rethink static code analisys suppressions - users shouldn't have to use the same flags for code which uses doctest macros/types
+rethink static code analysis suppressions - users shouldn't have to use the same flags for code which uses doctest macros/types
 
 try to forward declare std::string and specialize the string maker for it or something like that
 

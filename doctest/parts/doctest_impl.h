@@ -126,6 +126,9 @@ DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_END
 #endif // DOCTEST_CONFIG_DISABLE
 
 namespace doctest {
+
+bool is_running_in_test = false;
+
 namespace {
     using namespace detail;
     // case insensitive strcmp
@@ -205,7 +208,9 @@ namespace detail {
 
         std::vector<IReporter*> reporters_currently_used;
 
-        const TestCase* currentTest;
+        const TestCase* currentTest = 0;
+
+        assert_handler ah = 0;
 
         std::vector<IContextScope*> contexts;            // for logging with INFO() and friends
         std::vector<String>         stringifiedContexts; // logging from INFO() due to an exception
@@ -592,7 +597,6 @@ String toString(const Approx& in) {
 
 #ifdef DOCTEST_CONFIG_DISABLE
 namespace doctest {
-bool isRunningInTest() { return false; }
 Context::Context(int, const char* const*) {}
 Context::~Context() = default;
 void Context::applyCommandLine(int, const char* const*) {}
@@ -601,6 +605,8 @@ void Context::clearFilters() {}
 void Context::setOption(const char*, int) {}
 void Context::setOption(const char*, const char*) {}
 bool Context::shouldExit() { return false; }
+void Context::setAsDefaultForAssertsOutOfTestCases() {}
+void Context::setAssertHandler(detail::assert_handler) {}
 int  Context::run() { return 0; }
 
 DOCTEST_DEFINE_DEFAULTS(CurrentTestCaseStats);
@@ -1490,8 +1496,6 @@ namespace detail {
     }
 
     bool ResultBuilder::log() {
-        addAssert(m_at);
-
         if(m_at & assertType::is_throws) { //!OCLINT bitwise operator in conditional
             m_failed = !m_threw;
         } else if(m_at & assertType::is_throws_as) { //!OCLINT bitwise operator in conditional
@@ -1500,10 +1504,15 @@ namespace detail {
             m_failed = m_threw;
         }
 
-        DOCTEST_ITERATE_THROUGH_REPORTERS(log_assert, *this);
+        if(is_running_in_test) {
+            addAssert(m_at);
+            DOCTEST_ITERATE_THROUGH_REPORTERS(log_assert, *this);
 
-        if(m_failed)
-            addFailedAssert(m_at);
+            if(m_failed)
+                addFailedAssert(m_at);
+        } else if(m_failed) {
+            failed_out_of_a_testing_context(*this);
+        }
 
         return m_failed && isDebuggerActive() && !g_contextState->no_breaks; // break into debugger
     }
@@ -1511,6 +1520,13 @@ namespace detail {
     void ResultBuilder::react() const {
         if(m_failed && checkIfShouldThrow(m_at))
             throwException();
+    }
+
+    void failed_out_of_a_testing_context(const AssertData& ad) {
+        if(g_contextState->ah)
+            g_contextState->ah(ad);
+        else
+            std::abort();
     }
 
     MessageBuilder::MessageBuilder(const char* file, int line, assertType::Enum severity) {
@@ -2101,14 +2117,16 @@ namespace {
     }
 } // namespace
 
-bool isRunningInTest() { return detail::g_contextState != 0; }
-
 Context::Context(int argc, const char* const* argv)
         : p(new detail::ContextState) {
     parseArgs(argc, argv, true);
 }
 
-Context::~Context() { delete p; }
+Context::~Context() {
+    if(g_contextState == p)
+        g_contextState = 0;
+    delete p;
+}
 
 void Context::applyCommandLine(int argc, const char* const* argv) { parseArgs(argc, argv); }
 
@@ -2248,11 +2266,17 @@ void Context::setOption(const char* option, const char* value) {
 // users should query this in their main() and exit the program if true
 bool Context::shouldExit() { return p->exit; }
 
+void Context::setAsDefaultForAssertsOutOfTestCases() { g_contextState = p; }
+
+void Context::setAssertHandler(detail::assert_handler ah) { p->ah = ah; }
+
 // the main function that does all the filtering and test running
 int Context::run() {
     using namespace detail;
 
-    g_contextState = p;
+    auto old_cs        = g_contextState;
+    g_contextState     = p;
+    is_running_in_test = true;
     p->resetRunData();
 
     ConsoleReporterWithHelpers g_con_rep(std::cout);
@@ -2284,7 +2308,8 @@ int Context::run() {
         if(p->list_reporters)
             g_con_rep.printRegisteredReporters();
 
-        g_contextState = 0;
+        g_contextState     = old_cs;
+        is_running_in_test = false;
 
         return EXIT_SUCCESS;
     }
@@ -2477,6 +2502,8 @@ int Context::run() {
 
             DOCTEST_ITERATE_THROUGH_REPORTERS(test_case_end, *g_contextState);
 
+            p->currentTest = 0;
+
             // stop executing tests if enough assertions have failed
             if(p->abort_after > 0 && p->numAssertsFailed >= p->abort_after)
                 break;
@@ -2488,7 +2515,8 @@ int Context::run() {
     else
         g_con_rep.output_query_results();
 
-    g_contextState = 0;
+    g_contextState     = old_cs;
+    is_running_in_test = false;
 
     if(p->numTestCasesFailed && !p->no_exitcode)
         return EXIT_FAILURE;

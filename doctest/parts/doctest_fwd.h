@@ -337,10 +337,6 @@ DOCTEST_MSVC_SUPPRESS_WARNING(26444) // Avoid unnamed objects with custom constr
 #define DOCTEST_ANONYMOUS(x) DOCTEST_CAT(x, __LINE__)
 #endif // __COUNTER__
 
-// macro for making a string out of an identifier
-#define DOCTEST_TOSTR_IMPL(...) #__VA_ARGS__
-#define DOCTEST_TOSTR(...) DOCTEST_TOSTR_IMPL(__VA_ARGS__)
-
 #ifndef DOCTEST_CONFIG_ASSERTION_PARAMETERS_BY_VALUE
 #define DOCTEST_REF_WRAP(x) x&
 #else // DOCTEST_CONFIG_ASSERTION_PARAMETERS_BY_VALUE
@@ -420,6 +416,8 @@ namespace detail {
     // the function type this library works with
     typedef void (*funcType)();
 } // namespace detail
+
+DOCTEST_INTERFACE extern bool is_running_in_test;
 
 // A 24 byte string class (can be as small as 17 for x64 and 13 for x86) that can hold strings with length
 // of up to 23 chars on the stack before going on the heap - the last byte of the buffer is used for:
@@ -1364,70 +1362,80 @@ namespace detail {
         };
     } // namespace assertAction
 
-    template <int comparison, typename L, typename R>
-    DOCTEST_NOINLINE int fast_binary_assert(assertType::Enum at, const char* file, int line,
-                                            const char* expr, const DOCTEST_REF_WRAP(L) lhs,
-                                            const DOCTEST_REF_WRAP(R) rhs) {
-        ResultBuilder rb(at, file, line, expr);
-
-        rb.m_failed = !RelationalComparator<comparison, L, R>()(lhs, rhs);
-
-        if(rb.m_failed || getContextOptions()->success)
-            rb.m_decomposition = stringifyBinaryExpr(lhs, ", ", rhs);
-
-        int res = 0;
-
-        if(rb.log())
-            res |= assertAction::dbgbreak;
-
-        if(rb.m_failed && checkIfShouldThrow(at))
-            res |= assertAction::shouldthrow;
-
 #ifdef DOCTEST_CONFIG_SUPER_FAST_ASSERTS
-        // #########################################################################################
-        // IF THE DEBUGGER BREAKS HERE - GO 1 LEVEL UP IN THE CALLSTACK TO SEE THE FAILING ASSERTION
-        // THIS IS THE EFFECT OF HAVING 'DOCTEST_CONFIG_SUPER_FAST_ASSERTS' DEFINED
-        // #########################################################################################
-        if(res & assertAction::dbgbreak)
-            DOCTEST_BREAK_INTO_DEBUGGER();
-        fastAssertThrowIfFlagSet(res);
+#define DOCTEST_FAST_ASSERT_REACT                                                                  \
+    do {                                                                                           \
+        if(res & assertAction::dbgbreak)                                                           \
+            DOCTEST_BREAK_INTO_DEBUGGER();                                                         \
+        fastAssertThrowIfFlagSet(res);                                                             \
+    } while(false)
+#define DOCTEST_FAST_ASSERT_RETURN(x) return
+#define DOCTEST_FAST_ASSERT_RETURN_TYPE void
+#else // DOCTEST_CONFIG_SUPER_FAST_ASSERTS
+#define DOCTEST_FAST_ASSERT_REACT return res
+#define DOCTEST_FAST_ASSERT_RETURN(x) return x
+#define DOCTEST_FAST_ASSERT_RETURN_TYPE int
 #endif // DOCTEST_CONFIG_SUPER_FAST_ASSERTS
 
-        return res;
+    DOCTEST_INTERFACE void failed_out_of_a_testing_context(const AssertData& ad);
+
+#define DOCTEST_FAST_ASSERT_OUT_OF_TESTS(decomp)                                                   \
+    do {                                                                                           \
+        if(!is_running_in_test) {                                                                  \
+            if(failed) {                                                                           \
+                ResultBuilder rb(at, file, line, expr);                                            \
+                rb.m_failed        = failed;                                                       \
+                rb.m_decomposition = decomp;                                                       \
+                failed_out_of_a_testing_context(rb);                                               \
+                int res = checkIfShouldThrow(at) ? assertAction::shouldthrow : 0;                  \
+                res |= !getContextOptions()->no_breaks ? assertAction::dbgbreak : 0;               \
+                DOCTEST_FAST_ASSERT_REACT;                                                         \
+            }                                                                                      \
+            DOCTEST_FAST_ASSERT_RETURN(0);                                                         \
+        }                                                                                          \
+    } while(false)
+
+#define DOCTEST_FAST_ASSERT_IN_TESTS(decomp)                                                       \
+    ResultBuilder rb(at, file, line, expr);                                                        \
+    rb.m_failed = failed;                                                                          \
+    if(rb.m_failed || getContextOptions()->success)                                                \
+        rb.m_decomposition = decomp;                                                               \
+    int res = rb.log() ? assertAction::dbgbreak : 0;                                               \
+    if(rb.m_failed && checkIfShouldThrow(at))                                                      \
+        res |= assertAction::shouldthrow;                                                          \
+    DOCTEST_FAST_ASSERT_REACT
+
+    template <int comparison, typename L, typename R>
+    DOCTEST_NOINLINE DOCTEST_FAST_ASSERT_RETURN_TYPE
+                     fast_binary_assert(assertType::Enum at, const char* file, int line, const char* expr,
+                                        const DOCTEST_REF_WRAP(L) lhs, const DOCTEST_REF_WRAP(R) rhs) {
+        bool failed = !RelationalComparator<comparison, L, R>()(lhs, rhs);
+
+        // ###################################################################################
+        // IF THE DEBUGGER BREAKS HERE - GO 1 LEVEL UP IN THE CALLSTACK FOR THE FAILING ASSERT
+        // THIS IS THE EFFECT OF HAVING 'DOCTEST_CONFIG_SUPER_FAST_ASSERTS' DEFINED
+        // ###################################################################################
+        DOCTEST_FAST_ASSERT_OUT_OF_TESTS(stringifyBinaryExpr(lhs, ", ", rhs));
+        DOCTEST_FAST_ASSERT_IN_TESTS(stringifyBinaryExpr(lhs, ", ", rhs));
     }
 
     template <typename L>
-    DOCTEST_NOINLINE int fast_unary_assert(assertType::Enum at, const char* file, int line,
-                                           const char* val_str, const DOCTEST_REF_WRAP(L) val) {
-        ResultBuilder rb(at, file, line, val_str);
-
-        rb.m_failed = !val;
+    DOCTEST_NOINLINE DOCTEST_FAST_ASSERT_RETURN_TYPE fast_unary_assert(assertType::Enum at,
+                                                                       const char* file, int line,
+                                                                       const char* expr,
+                                                                       const DOCTEST_REF_WRAP(L)
+                                                                               val) {
+        bool failed = !val;
 
         if(at & assertType::is_false) //!OCLINT bitwise operator in conditional
-            rb.m_failed = !rb.m_failed;
+            failed = !failed;
 
-        if(rb.m_failed || getContextOptions()->success)
-            rb.m_decomposition = toString(val);
-
-        int res = 0;
-
-        if(rb.log())
-            res |= assertAction::dbgbreak;
-
-        if(rb.m_failed && checkIfShouldThrow(at))
-            res |= assertAction::shouldthrow;
-
-#ifdef DOCTEST_CONFIG_SUPER_FAST_ASSERTS
-        // #########################################################################################
-        // IF THE DEBUGGER BREAKS HERE - GO 1 LEVEL UP IN THE CALLSTACK TO SEE THE FAILING ASSERTION
+        // ###################################################################################
+        // IF THE DEBUGGER BREAKS HERE - GO 1 LEVEL UP IN THE CALLSTACK FOR THE FAILING ASSERT
         // THIS IS THE EFFECT OF HAVING 'DOCTEST_CONFIG_SUPER_FAST_ASSERTS' DEFINED
-        // #########################################################################################
-        if(res & assertAction::dbgbreak)
-            DOCTEST_BREAK_INTO_DEBUGGER();
-        fastAssertThrowIfFlagSet(res);
-#endif // DOCTEST_CONFIG_SUPER_FAST_ASSERTS
-
-        return res;
+        // ###################################################################################
+        DOCTEST_FAST_ASSERT_OUT_OF_TESTS(toString(val));
+        DOCTEST_FAST_ASSERT_IN_TESTS(toString(val));
     }
 
     struct DOCTEST_INTERFACE IExceptionTranslator
@@ -1690,13 +1698,11 @@ int registerExceptionTranslator(String (*)(T)) {
 }
 #endif // DOCTEST_CONFIG_DISABLE
 
-DOCTEST_INTERFACE bool isRunningInTest();
-
 namespace detail {
+    typedef void (*assert_handler)(const AssertData&);
     struct ContextState;
 } // namespace detail
 
-// cppcheck-suppress noCopyConstructor
 class DOCTEST_INTERFACE Context
 {
     detail::ContextState* p;
@@ -1718,6 +1724,10 @@ public:
     void setOption(const char* option, const char* value);
 
     bool shouldExit();
+
+    void setAsDefaultForAssertsOutOfTestCases();
+
+    void setAssertHandler(detail::assert_handler ah);
 
     int run();
 };
@@ -2034,12 +2044,12 @@ constexpr T to_lvalue = x;
 #define DOCTEST_TO_LVALUE(...) to_lvalue<decltype(__VA_ARGS__), __VA_ARGS__>
 #else
 #define DOCTEST_TO_LVALUE(...) TO_LVALUE_CAN_BE_USED_ONLY_IN_CPP14_MODE_OR_WITH_VS_2017_OR_NEWER
-#endif // TO_LVALUE hack for logging macros like INFO()
+#endif // TO_LVALUE hack for macros like INFO() that require lvalues
 
 #define DOCTEST_ASSERT_IMPLEMENT_2(assert_type, ...)                                               \
     DOCTEST_CLANG_SUPPRESS_WARNING_WITH_PUSH("-Woverloaded-shift-op-parentheses")                  \
     doctest::detail::ResultBuilder _DOCTEST_RB(doctest::assertType::assert_type, __FILE__,         \
-                                               __LINE__, DOCTEST_TOSTR(__VA_ARGS__));              \
+                                               __LINE__, #__VA_ARGS__);                            \
     DOCTEST_WRAP_IN_TRY(_DOCTEST_RB.setResult(                                                     \
             doctest::detail::ExpressionDecomposer(doctest::assertType::assert_type)                \
             << __VA_ARGS__))                                                                       \
@@ -2083,8 +2093,7 @@ constexpr T to_lvalue = x;
     do {                                                                                           \
         if(!doctest::detail::getContextOptions()->no_throw) {                                      \
             doctest::detail::ResultBuilder _DOCTEST_RB(doctest::assertType::assert_type, __FILE__, \
-                                                       __LINE__, #expr,                            \
-                                                       DOCTEST_TOSTR(__VA_ARGS__));                \
+                                                       __LINE__, #expr, #__VA_ARGS__);             \
             try {                                                                                  \
                 expr;                                                                              \
             } catch(const __VA_ARGS__&) {                                                          \
@@ -2134,7 +2143,7 @@ constexpr T to_lvalue = x;
 #define DOCTEST_BINARY_ASSERT(assert_type, comp, ...)                                              \
     do {                                                                                           \
         doctest::detail::ResultBuilder _DOCTEST_RB(doctest::assertType::assert_type, __FILE__,     \
-                                                   __LINE__, DOCTEST_TOSTR(__VA_ARGS__));          \
+                                                   __LINE__, #__VA_ARGS__);                        \
         DOCTEST_WRAP_IN_TRY(                                                                       \
                 _DOCTEST_RB.binary_assert<doctest::detail::binaryAssertComparison::comp>(          \
                         __VA_ARGS__))                                                              \
@@ -2144,7 +2153,7 @@ constexpr T to_lvalue = x;
 #define DOCTEST_UNARY_ASSERT(assert_type, ...)                                                     \
     do {                                                                                           \
         doctest::detail::ResultBuilder _DOCTEST_RB(doctest::assertType::assert_type, __FILE__,     \
-                                                   __LINE__, DOCTEST_TOSTR(__VA_ARGS__));          \
+                                                   __LINE__, #__VA_ARGS__);                        \
         DOCTEST_WRAP_IN_TRY(_DOCTEST_RB.unary_assert(__VA_ARGS__))                                 \
         DOCTEST_ASSERT_LOG_AND_REACT(_DOCTEST_RB);                                                 \
     } while((void)0, 0)
@@ -2181,8 +2190,7 @@ constexpr T to_lvalue = x;
     do {                                                                                           \
         int _DOCTEST_FAST_RES = doctest::detail::fast_binary_assert<                               \
                 doctest::detail::binaryAssertComparison::comparison>(                              \
-                doctest::assertType::assert_type, __FILE__, __LINE__, DOCTEST_TOSTR(__VA_ARGS__),  \
-                __VA_ARGS__);                                                                      \
+                doctest::assertType::assert_type, __FILE__, __LINE__, #__VA_ARGS__, __VA_ARGS__);  \
         if(_DOCTEST_FAST_RES & doctest::detail::assertAction::dbgbreak)                            \
             DOCTEST_BREAK_INTO_DEBUGGER();                                                         \
         doctest::detail::fastAssertThrowIfFlagSet(_DOCTEST_FAST_RES);                              \
@@ -2191,8 +2199,7 @@ constexpr T to_lvalue = x;
 #define DOCTEST_FAST_UNARY_ASSERT(assert_type, ...)                                                \
     do {                                                                                           \
         int _DOCTEST_FAST_RES = doctest::detail::fast_unary_assert(                                \
-                doctest::assertType::assert_type, __FILE__, __LINE__, DOCTEST_TOSTR(__VA_ARGS__),  \
-                __VA_ARGS__);                                                                      \
+                doctest::assertType::assert_type, __FILE__, __LINE__, #__VA_ARGS__, __VA_ARGS__);  \
         if(_DOCTEST_FAST_RES & doctest::detail::assertAction::dbgbreak)                            \
             DOCTEST_BREAK_INTO_DEBUGGER();                                                         \
         doctest::detail::fastAssertThrowIfFlagSet(_DOCTEST_FAST_RES);                              \
@@ -2202,12 +2209,11 @@ constexpr T to_lvalue = x;
 
 #define DOCTEST_FAST_BINARY_ASSERT(assert_type, comparison, ...)                                   \
     doctest::detail::fast_binary_assert<doctest::detail::binaryAssertComparison::comparison>(      \
-            doctest::assertType::assert_type, __FILE__, __LINE__, DOCTEST_TOSTR(__VA_ARGS__),      \
-            __VA_ARGS__)
+            doctest::assertType::assert_type, __FILE__, __LINE__, #__VA_ARGS__, __VA_ARGS__)
 
 #define DOCTEST_FAST_UNARY_ASSERT(assert_type, ...)                                                \
     doctest::detail::fast_unary_assert(doctest::assertType::assert_type, __FILE__, __LINE__,       \
-                                       DOCTEST_TOSTR(__VA_ARGS__), __VA_ARGS__)
+                                       #__VA_ARGS__, __VA_ARGS__)
 
 #endif // DOCTEST_CONFIG_SUPER_FAST_ASSERTS
 

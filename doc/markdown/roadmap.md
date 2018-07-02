@@ -9,6 +9,7 @@ Planned features for future releases - order changes constantly...
 
 ### For 2.0:
 
+- add ability to use asserts outside of a test run context
 - reporters
     - output to file
     - a system for writing custom reporters
@@ -30,11 +31,11 @@ Planned features for future releases - order changes constantly...
 - option to output summary only
 - thread safety - asserts/subcases/captures should be safe to be used by multiple threads simultaneously
     - https://github.com/blastrock/doctest/tree/threadsafe
-- matchers - should investigate what they are - look at google test/mock and Catch (also predicates and boost test)
-- convolution support for the assertion macros (with a predicate)
 
 ### For 2.1:
 
+- matchers - should investigate what they are - look at google test/mock and Catch (also predicates and boost test)
+- convolution support for the assertion macros (with a predicate)
 - Value-Parameterized test cases
 - generators? - look at Catch - and investigate what they are
 - look at property based testing
