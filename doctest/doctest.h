@@ -3157,6 +3157,8 @@ const char* failureString(assertType::Enum at) {
     return "";
 }
 
+DOCTEST_CLANG_SUPPRESS_WARNING_WITH_PUSH("-Wnull-dereference")
+DOCTEST_GCC_SUPPRESS_WARNING_WITH_PUSH("-Wnull-dereference")
 // depending on the current options this will remove the path of filenames
 const char* removePathFromFilename(const char* file) {
     if(getContextOptions()->no_path_in_filenames) {
@@ -3170,6 +3172,8 @@ const char* removePathFromFilename(const char* file) {
     }
     return file;
 }
+DOCTEST_CLANG_SUPPRESS_WARNING_POP
+DOCTEST_GCC_SUPPRESS_WARNING_POP
 
 DOCTEST_DEFINE_DEFAULTS(TestCaseData);
 DOCTEST_DEFINE_COPIES(TestCaseData);

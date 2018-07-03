@@ -118,7 +118,7 @@ Note that these asserts also have a ```_MESSAGE``` form - like ```CHECK_THROWS_M
 
 ## Using asserts out of a testing context
 
-Asserts can be used outside of a testing context (in code not called from a ```TEST_CASE()```) instead of [```assert()```](https://en.cppreference.com/w/cpp/error/assert) from [```<cassert>```](https://en.cppreference.com/w/cpp/header/cassert).
+Asserts can be used outside of a testing context (in code not called from a ```TEST_CASE()```) instead of [```assert()```](https://en.cppreference.com/w/cpp/error/assert).
 
 A ```doctest::Context``` object still has to be created somewhere and set as the default one using the ```setAsDefaultForAssertsOutOfTestCases()``` method - and then asserts will work. A handler can be registered by calling the ```setAssertHandler()``` method on the context object. If no handler is set then ```std::abort()``` is called on failure.
 
