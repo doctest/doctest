@@ -116,6 +116,18 @@ Expects that no exception is thrown during evaluation of the expression.
 
 Note that these asserts also have a ```_MESSAGE``` form - like ```CHECK_THROWS_MESSAGE(expression, message)``` - these work identically to the ```_MESSAGE``` form of the normal macros (```CHECK_MESSAGE(a < b, "this shouldn't fail")```) described earlier.
 
+## Using asserts out of a testing context
+
+Asserts can be used outside of a testing context (in code not being called from a ```TEST_CASE()```) - just like ```assert()``` from the ```<cassert>``` header.
+
+A ```doctest::Context``` object still has to be created somewhere and set as the default one using the ```setAsDefaultForAssertsOutOfTestCases()``` method - and then asserts will work. A handler can be registered by calling the ```setAssertHandler()``` method on the context object. If no handler is set then ```std::abort()``` is called on failure.
+
+The results would be best when using the [**fast asserts**](assertions.md#fast-asserts) coupled with the [**```DOCTEST_CONFIG_SUPER_FAST_ASSERTS```**](configuration.md#doctest_config_super_fast_asserts) config identifier and by defining your own macro aliases - like shown [**here**](../../examples/all_features/doctest_proxy.h).
+
+Checkout the [**example**](../../examples/all_features/asserts_used_outside_of_tests.cpp) showcasing how that is done. For more information see the [**issue for the feature request**](https://github.com/onqtam/doctest/issues/114).
+
+Currently [**logging macros**](logging.md) cannot be used for extra context for asserts outside of a test run. That means that the ```_MESSAGE``` variants of asserts are also not usable - since they are just a packed ```INFO()``` with an assert right after it.
+
 ## Floating point comparisons
 
 When comparing floating point numbers - especially if at least one of them has been computed - great care must be taken to allow for rounding errors and inexact representations.

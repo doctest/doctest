@@ -4,6 +4,7 @@
 #include "header.h"
 
 int program();
+void some_program_code(int argc, char** argv);
 
 int main(int argc, char** argv) {
     doctest::Context context;
@@ -28,6 +29,7 @@ int main(int argc, char** argv) {
     context.clearFilters(); // removes all filters added up to this point
 
     int client_stuff_return_code = program();
+    some_program_code(argc, argv);
     // your program - if the testing framework is integrated in your production code
 
     return res + client_stuff_return_code; // the result from doctest is propagated here as well

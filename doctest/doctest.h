@@ -415,10 +415,6 @@ typedef decltype(nullptr) nullptr_t;
 #endif // DOCTEST_CONFIG_INCLUDE_TYPE_TRAITS
 
 namespace doctest {
-namespace detail {
-    // the function type this library works with
-    typedef void (*funcType)();
-} // namespace detail
 
 DOCTEST_INTERFACE extern bool is_running_in_test;
 
@@ -540,32 +536,33 @@ namespace assertType {
         is_check   = 2,
         is_require = 4,
 
-        is_throws    = 8,
-        is_throws_as = 16,
-        is_nothrow   = 32,
+        is_normal    = 8,
+        is_throws    = 16,
+        is_throws_as = 32,
+        is_nothrow   = 64,
 
-        is_fast  = 64, // not checked anywhere - used just to distinguish the types
-        is_false = 128,
-        is_unary = 256,
+        is_fast  = 128, // not checked anywhere - used just to distinguish the types
+        is_false = 256,
+        is_unary = 512,
 
-        is_eq = 512,
-        is_ne = 1024,
+        is_eq = 1024,
+        is_ne = 2048,
 
-        is_lt = 2048,
-        is_gt = 4096,
+        is_lt = 4096,
+        is_gt = 8192,
 
-        is_ge = 8192,
-        is_le = 16384,
+        is_ge = 16384,
+        is_le = 32768,
 
         // macro types
 
-        DT_WARN    = is_warn,
-        DT_CHECK   = is_check,
-        DT_REQUIRE = is_require,
+        DT_WARN    = is_normal | is_warn,
+        DT_CHECK   = is_normal | is_check,
+        DT_REQUIRE = is_normal | is_require,
 
-        DT_WARN_FALSE    = is_false | is_warn,
-        DT_CHECK_FALSE   = is_false | is_check,
-        DT_REQUIRE_FALSE = is_false | is_require,
+        DT_WARN_FALSE    = is_normal | is_false | is_warn,
+        DT_CHECK_FALSE   = is_normal | is_false | is_check,
+        DT_REQUIRE_FALSE = is_normal | is_false | is_require,
 
         DT_WARN_THROWS    = is_throws | is_warn,
         DT_CHECK_THROWS   = is_throws | is_check,
@@ -579,69 +576,68 @@ namespace assertType {
         DT_CHECK_NOTHROW   = is_nothrow | is_check,
         DT_REQUIRE_NOTHROW = is_nothrow | is_require,
 
-        DT_WARN_EQ    = is_eq | is_warn,
-        DT_CHECK_EQ   = is_eq | is_check,
-        DT_REQUIRE_EQ = is_eq | is_require,
+        DT_WARN_EQ    = is_normal | is_eq | is_warn,
+        DT_CHECK_EQ   = is_normal | is_eq | is_check,
+        DT_REQUIRE_EQ = is_normal | is_eq | is_require,
 
-        DT_WARN_NE    = is_ne | is_warn,
-        DT_CHECK_NE   = is_ne | is_check,
-        DT_REQUIRE_NE = is_ne | is_require,
+        DT_WARN_NE    = is_normal | is_ne | is_warn,
+        DT_CHECK_NE   = is_normal | is_ne | is_check,
+        DT_REQUIRE_NE = is_normal | is_ne | is_require,
 
-        DT_WARN_GT    = is_gt | is_warn,
-        DT_CHECK_GT   = is_gt | is_check,
-        DT_REQUIRE_GT = is_gt | is_require,
+        DT_WARN_GT    = is_normal | is_gt | is_warn,
+        DT_CHECK_GT   = is_normal | is_gt | is_check,
+        DT_REQUIRE_GT = is_normal | is_gt | is_require,
 
-        DT_WARN_LT    = is_lt | is_warn,
-        DT_CHECK_LT   = is_lt | is_check,
-        DT_REQUIRE_LT = is_lt | is_require,
+        DT_WARN_LT    = is_normal | is_lt | is_warn,
+        DT_CHECK_LT   = is_normal | is_lt | is_check,
+        DT_REQUIRE_LT = is_normal | is_lt | is_require,
 
-        DT_WARN_GE    = is_ge | is_warn,
-        DT_CHECK_GE   = is_ge | is_check,
-        DT_REQUIRE_GE = is_ge | is_require,
+        DT_WARN_GE    = is_normal | is_ge | is_warn,
+        DT_CHECK_GE   = is_normal | is_ge | is_check,
+        DT_REQUIRE_GE = is_normal | is_ge | is_require,
 
-        DT_WARN_LE    = is_le | is_warn,
-        DT_CHECK_LE   = is_le | is_check,
-        DT_REQUIRE_LE = is_le | is_require,
+        DT_WARN_LE    = is_normal | is_le | is_warn,
+        DT_CHECK_LE   = is_normal | is_le | is_check,
+        DT_REQUIRE_LE = is_normal | is_le | is_require,
 
-        DT_WARN_UNARY    = is_unary | is_warn,
-        DT_CHECK_UNARY   = is_unary | is_check,
-        DT_REQUIRE_UNARY = is_unary | is_require,
+        DT_WARN_UNARY    = is_normal | is_unary | is_warn,
+        DT_CHECK_UNARY   = is_normal | is_unary | is_check,
+        DT_REQUIRE_UNARY = is_normal | is_unary | is_require,
 
-        DT_WARN_UNARY_FALSE    = is_false | is_unary | is_warn,
-        DT_CHECK_UNARY_FALSE   = is_false | is_unary | is_check,
-        DT_REQUIRE_UNARY_FALSE = is_false | is_unary | is_require,
+        DT_WARN_UNARY_FALSE    = is_normal | is_false | is_unary | is_warn,
+        DT_CHECK_UNARY_FALSE   = is_normal | is_false | is_unary | is_check,
+        DT_REQUIRE_UNARY_FALSE = is_normal | is_false | is_unary | is_require,
 
-        DT_FAST_WARN_EQ    = is_fast | is_eq | is_warn,
-        DT_FAST_CHECK_EQ   = is_fast | is_eq | is_check,
-        DT_FAST_REQUIRE_EQ = is_fast | is_eq | is_require,
+        DT_FAST_WARN_EQ    = is_normal | is_fast | is_eq | is_warn,
+        DT_FAST_CHECK_EQ   = is_normal | is_fast | is_eq | is_check,
+        DT_FAST_REQUIRE_EQ = is_normal | is_fast | is_eq | is_require,
+        DT_FAST_WARN_NE    = is_normal | is_fast | is_ne | is_warn,
+        DT_FAST_CHECK_NE   = is_normal | is_fast | is_ne | is_check,
+        DT_FAST_REQUIRE_NE = is_normal | is_fast | is_ne | is_require,
 
-        DT_FAST_WARN_NE    = is_fast | is_ne | is_warn,
-        DT_FAST_CHECK_NE   = is_fast | is_ne | is_check,
-        DT_FAST_REQUIRE_NE = is_fast | is_ne | is_require,
+        DT_FAST_WARN_GT    = is_normal | is_fast | is_gt | is_warn,
+        DT_FAST_CHECK_GT   = is_normal | is_fast | is_gt | is_check,
+        DT_FAST_REQUIRE_GT = is_normal | is_fast | is_gt | is_require,
 
-        DT_FAST_WARN_GT    = is_fast | is_gt | is_warn,
-        DT_FAST_CHECK_GT   = is_fast | is_gt | is_check,
-        DT_FAST_REQUIRE_GT = is_fast | is_gt | is_require,
+        DT_FAST_WARN_LT    = is_normal | is_fast | is_lt | is_warn,
+        DT_FAST_CHECK_LT   = is_normal | is_fast | is_lt | is_check,
+        DT_FAST_REQUIRE_LT = is_normal | is_fast | is_lt | is_require,
 
-        DT_FAST_WARN_LT    = is_fast | is_lt | is_warn,
-        DT_FAST_CHECK_LT   = is_fast | is_lt | is_check,
-        DT_FAST_REQUIRE_LT = is_fast | is_lt | is_require,
+        DT_FAST_WARN_GE    = is_normal | is_fast | is_ge | is_warn,
+        DT_FAST_CHECK_GE   = is_normal | is_fast | is_ge | is_check,
+        DT_FAST_REQUIRE_GE = is_normal | is_fast | is_ge | is_require,
 
-        DT_FAST_WARN_GE    = is_fast | is_ge | is_warn,
-        DT_FAST_CHECK_GE   = is_fast | is_ge | is_check,
-        DT_FAST_REQUIRE_GE = is_fast | is_ge | is_require,
+        DT_FAST_WARN_LE    = is_normal | is_fast | is_le | is_warn,
+        DT_FAST_CHECK_LE   = is_normal | is_fast | is_le | is_check,
+        DT_FAST_REQUIRE_LE = is_normal | is_fast | is_le | is_require,
 
-        DT_FAST_WARN_LE    = is_fast | is_le | is_warn,
-        DT_FAST_CHECK_LE   = is_fast | is_le | is_check,
-        DT_FAST_REQUIRE_LE = is_fast | is_le | is_require,
+        DT_FAST_WARN_UNARY    = is_normal | is_fast | is_unary | is_warn,
+        DT_FAST_CHECK_UNARY   = is_normal | is_fast | is_unary | is_check,
+        DT_FAST_REQUIRE_UNARY = is_normal | is_fast | is_unary | is_require,
 
-        DT_FAST_WARN_UNARY    = is_fast | is_unary | is_warn,
-        DT_FAST_CHECK_UNARY   = is_fast | is_unary | is_check,
-        DT_FAST_REQUIRE_UNARY = is_fast | is_unary | is_require,
-
-        DT_FAST_WARN_UNARY_FALSE    = is_fast | is_false | is_unary | is_warn,
-        DT_FAST_CHECK_UNARY_FALSE   = is_fast | is_false | is_unary | is_check,
-        DT_FAST_REQUIRE_UNARY_FALSE = is_fast | is_false | is_unary | is_require
+        DT_FAST_WARN_UNARY_FALSE    = is_normal | is_fast | is_false | is_unary | is_warn,
+        DT_FAST_CHECK_UNARY_FALSE   = is_normal | is_fast | is_false | is_unary | is_check,
+        DT_FAST_REQUIRE_UNARY_FALSE = is_normal | is_fast | is_false | is_unary | is_require
     };
 } // namespace assertType
 
@@ -679,7 +675,7 @@ struct DOCTEST_INTERFACE AssertData
     String m_exception;
 
     // for normal asserts
-    String m_decomposition;
+    String m_decomp;
 
     // for specific exception-related asserts
     bool        m_threw_as;
@@ -989,6 +985,8 @@ private:
 
 DOCTEST_INTERFACE String toString(const Approx& in);
 
+DOCTEST_INTERFACE const ContextOptions* getContextOptions();
+
 #if !defined(DOCTEST_CONFIG_DISABLE)
 
 namespace detail {
@@ -1015,8 +1013,6 @@ namespace detail {
     DOCTEST_INTERFACE bool checkIfShouldThrow(assertType::Enum at);
     DOCTEST_INTERFACE void fastAssertThrowIfFlagSet(int flags);
 
-    DOCTEST_INTERFACE const ContextOptions* getContextOptions();
-
     struct DOCTEST_INTERFACE Subcase
     {
         SubcaseSignature m_signature;
@@ -1042,7 +1038,7 @@ namespace detail {
         bool res = op_macro(lhs, rhs);                                                             \
         if(m_at & assertType::is_false)                                                            \
             res = !res;                                                                            \
-        if(!res || doctest::detail::getContextOptions()->success)                                  \
+        if(!res || doctest::getContextOptions()->success)                                          \
             return Result(res, stringifyBinaryExpr(lhs, op_str, rhs));                             \
         return Result(res);                                                                        \
     }
@@ -1058,7 +1054,7 @@ namespace detail {
     struct DOCTEST_INTERFACE Result
     {
         bool   m_passed;
-        String m_decomposition;
+        String m_decomp;
 
         Result(bool passed, const String& decomposition = String());
 
@@ -1261,9 +1257,11 @@ namespace detail {
         }
     };
 
+    typedef void (*funcType)();
+
     struct DOCTEST_INTERFACE TestCase : public TestCaseData
     {
-        detail::funcType m_test; // a function pointer to the test case
+        funcType m_test; // a function pointer to the test case
 
         const char* m_type; // for templated test cases - gets appended to the real name
         int m_template_id; // an ID used to distinguish between the different versions of a templated test case
@@ -1292,8 +1290,9 @@ namespace detail {
     };
 
     // forward declarations of functions used by the macros
-    DOCTEST_INTERFACE int regTest(const TestCase& tc);
-    DOCTEST_INTERFACE int setTestSuite(const TestSuite& ts);
+    DOCTEST_INTERFACE int  regTest(const TestCase& tc);
+    DOCTEST_INTERFACE int  setTestSuite(const TestSuite& ts);
+    DOCTEST_INTERFACE bool isDebuggerActive();
 
     namespace binaryAssertComparison {
         enum Enum
@@ -1336,7 +1335,7 @@ namespace detail {
                                             const DOCTEST_REF_WRAP(R) rhs) {
             m_failed = !RelationalComparator<comparison, L, R>()(lhs, rhs);
             if(m_failed || getContextOptions()->success)
-                m_decomposition = stringifyBinaryExpr(lhs, ", ", rhs);
+                m_decomp = stringifyBinaryExpr(lhs, ", ", rhs);
         }
 
         template <typename L>
@@ -1347,7 +1346,7 @@ namespace detail {
                 m_failed = !m_failed;
 
             if(m_failed || getContextOptions()->success)
-                m_decomposition = toString(val);
+                m_decomp = toString(val);
         }
 
         void unexpectedExceptionOccurred();
@@ -1387,11 +1386,13 @@ namespace detail {
         if(!is_running_in_test) {                                                                  \
             if(failed) {                                                                           \
                 ResultBuilder rb(at, file, line, expr);                                            \
-                rb.m_failed        = failed;                                                       \
-                rb.m_decomposition = decomp;                                                       \
+                rb.m_failed = failed;                                                              \
+                rb.m_decomp = decomp;                                                              \
                 failed_out_of_a_testing_context(rb);                                               \
                 int res = checkIfShouldThrow(at) ? assertAction::shouldthrow : 0;                  \
-                res |= !getContextOptions()->no_breaks ? assertAction::dbgbreak : 0;               \
+                res |= (isDebuggerActive() && !getContextOptions()->no_breaks) ?                   \
+                               assertAction::dbgbreak :                                            \
+                               0;                                                                  \
                 DOCTEST_FAST_ASSERT_REACT;                                                         \
             }                                                                                      \
             DOCTEST_FAST_ASSERT_RETURN(0);                                                         \
@@ -1402,7 +1403,7 @@ namespace detail {
     ResultBuilder rb(at, file, line, expr);                                                        \
     rb.m_failed = failed;                                                                          \
     if(rb.m_failed || getContextOptions()->success)                                                \
-        rb.m_decomposition = decomp;                                                               \
+        rb.m_decomp = decomp;                                                                      \
     int res = rb.log() ? assertAction::dbgbreak : 0;                                               \
     if(rb.m_failed && checkIfShouldThrow(at))                                                      \
         res |= assertAction::shouldthrow;                                                          \
@@ -1475,8 +1476,7 @@ namespace detail {
         String (*m_translateFunction)(T);
     };
 
-    DOCTEST_INTERFACE void registerExceptionTranslatorImpl(
-            const IExceptionTranslator* translateFunction);
+    DOCTEST_INTERFACE void registerExceptionTranslatorImpl(const IExceptionTranslator* et);
 
     // FIX FOR VISUAL STUDIO VERSIONS PRIOR TO 2015 - they failed to compile the call to operator<< with
     // std::ostream passed as a reference noting that there is a use of an undefined type (which there isn't)
@@ -2082,7 +2082,7 @@ constexpr T to_lvalue = x;
 
 #define DOCTEST_ASSERT_THROWS(expr, assert_type)                                                   \
     do {                                                                                           \
-        if(!doctest::detail::getContextOptions()->no_throw) {                                      \
+        if(!doctest::getContextOptions()->no_throw) {                                              \
             doctest::detail::ResultBuilder _DOCTEST_RB(doctest::assertType::assert_type, __FILE__, \
                                                        __LINE__, #expr);                           \
             try {                                                                                  \
@@ -2094,7 +2094,7 @@ constexpr T to_lvalue = x;
 
 #define DOCTEST_ASSERT_THROWS_AS(expr, assert_type, ...)                                           \
     do {                                                                                           \
-        if(!doctest::detail::getContextOptions()->no_throw) {                                      \
+        if(!doctest::getContextOptions()->no_throw) {                                              \
             doctest::detail::ResultBuilder _DOCTEST_RB(doctest::assertType::assert_type, __FILE__, \
                                                        __LINE__, #expr, #__VA_ARGS__);             \
             try {                                                                                  \
@@ -2109,7 +2109,7 @@ constexpr T to_lvalue = x;
 
 #define DOCTEST_ASSERT_NOTHROW(expr, assert_type)                                                  \
     do {                                                                                           \
-        if(!doctest::detail::getContextOptions()->no_throw) {                                      \
+        if(!doctest::getContextOptions()->no_throw) {                                              \
             doctest::detail::ResultBuilder _DOCTEST_RB(doctest::assertType::assert_type, __FILE__, \
                                                        __LINE__, #expr);                           \
             try {                                                                                  \
@@ -2762,6 +2762,12 @@ DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_BEGIN
 #include <stdint.h>
 #endif // !MSVC
 
+#ifdef DOCTEST_PLATFORM_MAC
+#include <sys/types.h>
+#include <unistd.h>
+#include <sys/sysctl.h>
+#endif // DOCTEST_PLATFORM_MAC
+
 DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_END
 
 // counts the number of elements in a C array
@@ -3240,6 +3246,7 @@ bool operator>(const Approx& lhs, double rhs) { return lhs.m_value > rhs && lhs 
 String toString(const Approx& in) {
     return String("Approx( ") + doctest::toString(in.m_value) + " )";
 }
+const ContextOptions* getContextOptions() { return DOCTEST_BRANCH_ON_DISABLED(0, g_contextState); }
 
 } // namespace doctest
 
@@ -3364,8 +3371,8 @@ namespace detail {
             return true;
 
         if((at & assertType::is_check) //!OCLINT bitwise operator in conditional
-           && g_contextState->abort_after > 0 &&
-           g_contextState->numAssertsFailed >= g_contextState->abort_after)
+           && getContextOptions()->abort_after > 0 &&
+           g_contextState->numAssertsFailed >= getContextOptions()->abort_after)
             return true;
 
         return false;
@@ -3480,7 +3487,6 @@ namespace {
     Timer g_timer;
 } // namespace
 namespace detail {
-    const ContextOptions* getContextOptions() { return g_contextState; }
 
     Subcase::Subcase(const char* name, const char* file, int line)
             : m_signature(name, file, line) {
@@ -3527,7 +3533,7 @@ namespace detail {
 
     Result::Result(bool passed, const String& decomposition)
             : m_passed(passed)
-            , m_decomposition(decomposition) {}
+            , m_decomp(decomposition) {}
 
     DOCTEST_DEFINE_DEFAULTS(Result);
     DOCTEST_DEFINE_COPIES(Result);
@@ -3686,8 +3692,8 @@ namespace {
         ((void)s);    // for DOCTEST_CONFIG_COLORS_NONE or DOCTEST_CONFIG_COLORS_WINDOWS
         ((void)code); // for DOCTEST_CONFIG_COLORS_NONE
 #ifdef DOCTEST_CONFIG_COLORS_ANSI
-        if(g_contextState->no_colors ||
-           (isatty(STDOUT_FILENO) == false && g_contextState->force_colors == false))
+        if(getContextOptions()->no_colors ||
+           (isatty(STDOUT_FILENO) == false && getContextOptions()->force_colors == false))
             return;
 
         auto col = "";
@@ -3713,8 +3719,8 @@ namespace {
 #endif // DOCTEST_CONFIG_COLORS_ANSI
 
 #ifdef DOCTEST_CONFIG_COLORS_WINDOWS
-        if(g_contextState->no_colors ||
-           (isatty(fileno(stdout)) == false && g_contextState->force_colors == false))
+        if(getContextOptions()->no_colors ||
+           (isatty(fileno(stdout)) == false && getContextOptions()->force_colors == false))
             return;
 
 #define DOCTEST_SET_ATTR(x) SetConsoleTextAttribute(g_stdoutHandle, x | g_origBgAttrs)
@@ -3784,10 +3790,44 @@ namespace detail {
         return 0;
     }
 
-    void registerExceptionTranslatorImpl(const IExceptionTranslator* translateFunction) {
-        if(std::find(getExceptionTranslators().begin(), getExceptionTranslators().end(),
-                     translateFunction) == getExceptionTranslators().end())
-            getExceptionTranslators().push_back(translateFunction);
+#ifdef DOCTEST_PLATFORM_MAC
+    // The following function is taken directly from the following technical note:
+    // http://developer.apple.com/library/mac/#qa/qa2004/qa1361.html
+    // Returns true if the current process is being debugged (either
+    // running under the debugger or has a debugger attached post facto).
+    bool isDebuggerActive() {
+        int        mib[4];
+        kinfo_proc info;
+        size_t     size;
+        // Initialize the flags so that, if sysctl fails for some bizarre
+        // reason, we get a predictable result.
+        info.kp_proc.p_flag = 0;
+        // Initialize mib, which tells sysctl the info we want, in this case
+        // we're looking for information about a specific process ID.
+        mib[0] = CTL_KERN;
+        mib[1] = KERN_PROC;
+        mib[2] = KERN_PROC_PID;
+        mib[3] = getpid();
+        // Call sysctl.
+        size = sizeof(info);
+        if(sysctl(mib, DOCTEST_COUNTOF(mib), &info, &size, 0, 0) != 0) {
+            fprintf(stderr, "\n** Call to sysctl failed - unable to determine if debugger is "
+                            "active **\n\n");
+            return false;
+        }
+        // We're being debugged if the P_TRACED flag is set.
+        return ((info.kp_proc.p_flag & P_TRACED) != 0);
+    }
+#elif DOCTEST_MSVC || defined(__MINGW32__)
+    bool isDebuggerActive() { return ::IsDebuggerPresent() != 0; }
+#else
+    bool isDebuggerActive() { return false; }
+#endif // Platform
+
+    void registerExceptionTranslatorImpl(const IExceptionTranslator* et) {
+        if(std::find(getExceptionTranslators().begin(), getExceptionTranslators().end(), et) ==
+           getExceptionTranslators().end())
+            getExceptionTranslators().push_back(et);
     }
 
     void writeStringToStream(std::ostream* s, const String& str) { *s << str; }
@@ -4032,48 +4072,8 @@ namespace {
 
 } // namespace
 
-// TODO: wtf? these are in namespace doctest::detail - and don't error ?!?! perhaps it's all C externs..
-#ifdef DOCTEST_PLATFORM_MAC
-#include <sys/types.h>
-#include <unistd.h>
-#include <sys/sysctl.h>
-#endif // DOCTEST_PLATFORM_MAC
-
 namespace {
     using namespace detail;
-#ifdef DOCTEST_PLATFORM_MAC
-    // The following function is taken directly from the following technical note:
-    // http://developer.apple.com/library/mac/#qa/qa2004/qa1361.html
-    // Returns true if the current process is being debugged (either
-    // running under the debugger or has a debugger attached post facto).
-    bool isDebuggerActive() {
-        int        mib[4];
-        kinfo_proc info;
-        size_t     size;
-        // Initialize the flags so that, if sysctl fails for some bizarre
-        // reason, we get a predictable result.
-        info.kp_proc.p_flag = 0;
-        // Initialize mib, which tells sysctl the info we want, in this case
-        // we're looking for information about a specific process ID.
-        mib[0] = CTL_KERN;
-        mib[1] = KERN_PROC;
-        mib[2] = KERN_PROC_PID;
-        mib[3] = getpid();
-        // Call sysctl.
-        size = sizeof(info);
-        if(sysctl(mib, DOCTEST_COUNTOF(mib), &info, &size, 0, 0) != 0) {
-            fprintf(stderr, "\n** Call to sysctl failed - unable to determine if debugger is "
-                            "active **\n\n");
-            return false;
-        }
-        // We're being debugged if the P_TRACED flag is set.
-        return ((info.kp_proc.p_flag & P_TRACED) != 0);
-    }
-#elif DOCTEST_MSVC || defined(__MINGW32__)
-    bool  isDebuggerActive() { return ::IsDebuggerPresent() != 0; }
-#else
-    bool isDebuggerActive() { return false; }
-#endif // Platform
 
 #ifdef DOCTEST_PLATFORM_WINDOWS
 #define DOCTEST_OUTPUT_DEBUG_STRING(text) ::OutputDebugStringA(text)
@@ -4114,6 +4114,7 @@ namespace {
 #endif // DOCTEST_CONFIG_POSIX_SIGNALS || DOCTEST_CONFIG_WINDOWS_SEH
 } // namespace
 namespace detail {
+
     ResultBuilder::ResultBuilder(assertType::Enum at, const char* file, int line, const char* expr,
                                  const char* exception_type) {
         m_test_case      = g_contextState->currentTest;
@@ -4134,8 +4135,8 @@ namespace detail {
     DOCTEST_DEFINE_DEFAULTS(ResultBuilder);
 
     void ResultBuilder::setResult(const Result& res) {
-        m_decomposition = res.m_decomposition;
-        m_failed        = !res.m_passed;
+        m_decomp = res.m_decomp;
+        m_failed = !res.m_passed;
     }
 
     void ResultBuilder::unexpectedExceptionOccurred() {
@@ -4162,7 +4163,8 @@ namespace detail {
             failed_out_of_a_testing_context(*this);
         }
 
-        return m_failed && isDebuggerActive() && !g_contextState->no_breaks; // break into debugger
+        return m_failed && isDebuggerActive() &&
+               !getContextOptions()->no_breaks; // break into debugger
     }
 
     void ResultBuilder::react() const {
@@ -4199,7 +4201,7 @@ namespace detail {
             addFailedAssert(m_severity);
         }
 
-        return isDebuggerActive() && !g_contextState->no_breaks && !isWarn; // break into debugger
+        return isDebuggerActive() && !getContextOptions()->no_breaks && !isWarn; // break
     }
 
     void MessageBuilder::react() {
@@ -4457,8 +4459,7 @@ namespace {
                 if(rb.m_threw)
                     s << rb.m_exception << "\n";
                 else
-                    s << "  values: " << assertString(rb.m_at) << "( " << rb.m_decomposition
-                      << " )\n";
+                    s << "  values: " << assertString(rb.m_at) << "( " << rb.m_decomp << " )\n";
             }
 
             log_contexts();
@@ -4485,7 +4486,7 @@ namespace {
                 : ConsoleReporter(in) {}
 
         void printVersion() {
-            if(g_contextState->no_version == false)
+            if(getContextOptions()->no_version == false)
                 s << Color::Cyan << "[doctest] " << Color::None << "doctest version is \""
                   << DOCTEST_VERSION_STR << "\"\n";
         }
@@ -4575,11 +4576,11 @@ namespace {
 
         void output_query_results() {
             separator_to_stream();
-            if(g_contextState->count || g_contextState->list_test_cases) {
+            if(getContextOptions()->count || getContextOptions()->list_test_cases) {
                 s << Color::Cyan << "[doctest] " << Color::None
                   << "unskipped test cases passing the current filters: "
                   << g_contextState->numTestCasesPassingFilters << "\n";
-            } else if(g_contextState->list_test_suites) {
+            } else if(getContextOptions()->list_test_suites) {
                 s << Color::Cyan << "[doctest] " << Color::None
                   << "unskipped test cases passing the current filters: "
                   << g_contextState->numTestCasesPassingFilters << "\n";
@@ -4613,7 +4614,7 @@ namespace {
 #define DOCTEST_DEBUG_OUTPUT_WINDOW_REPORTER_OVERRIDE(func, type)                                  \
     void func(type in) override {                                                                  \
         if(isDebuggerActive()) {                                                                   \
-            bool with_col             = g_contextState->no_colors;                                 \
+            bool with_col             = getContextOptions()->no_colors;                            \
             g_contextState->no_colors = false;                                                     \
             ConsoleReporter::func(in);                                                             \
             DOCTEST_OUTPUT_DEBUG_STRING(oss.str().c_str());                                        \

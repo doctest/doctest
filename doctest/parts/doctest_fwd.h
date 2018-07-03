@@ -412,10 +412,6 @@ typedef decltype(nullptr) nullptr_t;
 #endif // DOCTEST_CONFIG_INCLUDE_TYPE_TRAITS
 
 namespace doctest {
-namespace detail {
-    // the function type this library works with
-    typedef void (*funcType)();
-} // namespace detail
 
 DOCTEST_INTERFACE extern bool is_running_in_test;
 
@@ -537,32 +533,33 @@ namespace assertType {
         is_check   = 2,
         is_require = 4,
 
-        is_throws    = 8,
-        is_throws_as = 16,
-        is_nothrow   = 32,
+        is_normal    = 8,
+        is_throws    = 16,
+        is_throws_as = 32,
+        is_nothrow   = 64,
 
-        is_fast  = 64, // not checked anywhere - used just to distinguish the types
-        is_false = 128,
-        is_unary = 256,
+        is_fast  = 128, // not checked anywhere - used just to distinguish the types
+        is_false = 256,
+        is_unary = 512,
 
-        is_eq = 512,
-        is_ne = 1024,
+        is_eq = 1024,
+        is_ne = 2048,
 
-        is_lt = 2048,
-        is_gt = 4096,
+        is_lt = 4096,
+        is_gt = 8192,
 
-        is_ge = 8192,
-        is_le = 16384,
+        is_ge = 16384,
+        is_le = 32768,
 
         // macro types
 
-        DT_WARN    = is_warn,
-        DT_CHECK   = is_check,
-        DT_REQUIRE = is_require,
+        DT_WARN    = is_normal | is_warn,
+        DT_CHECK   = is_normal | is_check,
+        DT_REQUIRE = is_normal | is_require,
 
-        DT_WARN_FALSE    = is_false | is_warn,
-        DT_CHECK_FALSE   = is_false | is_check,
-        DT_REQUIRE_FALSE = is_false | is_require,
+        DT_WARN_FALSE    = is_normal | is_false | is_warn,
+        DT_CHECK_FALSE   = is_normal | is_false | is_check,
+        DT_REQUIRE_FALSE = is_normal | is_false | is_require,
 
         DT_WARN_THROWS    = is_throws | is_warn,
         DT_CHECK_THROWS   = is_throws | is_check,
@@ -576,69 +573,68 @@ namespace assertType {
         DT_CHECK_NOTHROW   = is_nothrow | is_check,
         DT_REQUIRE_NOTHROW = is_nothrow | is_require,
 
-        DT_WARN_EQ    = is_eq | is_warn,
-        DT_CHECK_EQ   = is_eq | is_check,
-        DT_REQUIRE_EQ = is_eq | is_require,
+        DT_WARN_EQ    = is_normal | is_eq | is_warn,
+        DT_CHECK_EQ   = is_normal | is_eq | is_check,
+        DT_REQUIRE_EQ = is_normal | is_eq | is_require,
 
-        DT_WARN_NE    = is_ne | is_warn,
-        DT_CHECK_NE   = is_ne | is_check,
-        DT_REQUIRE_NE = is_ne | is_require,
+        DT_WARN_NE    = is_normal | is_ne | is_warn,
+        DT_CHECK_NE   = is_normal | is_ne | is_check,
+        DT_REQUIRE_NE = is_normal | is_ne | is_require,
 
-        DT_WARN_GT    = is_gt | is_warn,
-        DT_CHECK_GT   = is_gt | is_check,
-        DT_REQUIRE_GT = is_gt | is_require,
+        DT_WARN_GT    = is_normal | is_gt | is_warn,
+        DT_CHECK_GT   = is_normal | is_gt | is_check,
+        DT_REQUIRE_GT = is_normal | is_gt | is_require,
 
-        DT_WARN_LT    = is_lt | is_warn,
-        DT_CHECK_LT   = is_lt | is_check,
-        DT_REQUIRE_LT = is_lt | is_require,
+        DT_WARN_LT    = is_normal | is_lt | is_warn,
+        DT_CHECK_LT   = is_normal | is_lt | is_check,
+        DT_REQUIRE_LT = is_normal | is_lt | is_require,
 
-        DT_WARN_GE    = is_ge | is_warn,
-        DT_CHECK_GE   = is_ge | is_check,
-        DT_REQUIRE_GE = is_ge | is_require,
+        DT_WARN_GE    = is_normal | is_ge | is_warn,
+        DT_CHECK_GE   = is_normal | is_ge | is_check,
+        DT_REQUIRE_GE = is_normal | is_ge | is_require,
 
-        DT_WARN_LE    = is_le | is_warn,
-        DT_CHECK_LE   = is_le | is_check,
-        DT_REQUIRE_LE = is_le | is_require,
+        DT_WARN_LE    = is_normal | is_le | is_warn,
+        DT_CHECK_LE   = is_normal | is_le | is_check,
+        DT_REQUIRE_LE = is_normal | is_le | is_require,
 
-        DT_WARN_UNARY    = is_unary | is_warn,
-        DT_CHECK_UNARY   = is_unary | is_check,
-        DT_REQUIRE_UNARY = is_unary | is_require,
+        DT_WARN_UNARY    = is_normal | is_unary | is_warn,
+        DT_CHECK_UNARY   = is_normal | is_unary | is_check,
+        DT_REQUIRE_UNARY = is_normal | is_unary | is_require,
 
-        DT_WARN_UNARY_FALSE    = is_false | is_unary | is_warn,
-        DT_CHECK_UNARY_FALSE   = is_false | is_unary | is_check,
-        DT_REQUIRE_UNARY_FALSE = is_false | is_unary | is_require,
+        DT_WARN_UNARY_FALSE    = is_normal | is_false | is_unary | is_warn,
+        DT_CHECK_UNARY_FALSE   = is_normal | is_false | is_unary | is_check,
+        DT_REQUIRE_UNARY_FALSE = is_normal | is_false | is_unary | is_require,
 
-        DT_FAST_WARN_EQ    = is_fast | is_eq | is_warn,
-        DT_FAST_CHECK_EQ   = is_fast | is_eq | is_check,
-        DT_FAST_REQUIRE_EQ = is_fast | is_eq | is_require,
+        DT_FAST_WARN_EQ    = is_normal | is_fast | is_eq | is_warn,
+        DT_FAST_CHECK_EQ   = is_normal | is_fast | is_eq | is_check,
+        DT_FAST_REQUIRE_EQ = is_normal | is_fast | is_eq | is_require,
+        DT_FAST_WARN_NE    = is_normal | is_fast | is_ne | is_warn,
+        DT_FAST_CHECK_NE   = is_normal | is_fast | is_ne | is_check,
+        DT_FAST_REQUIRE_NE = is_normal | is_fast | is_ne | is_require,
 
-        DT_FAST_WARN_NE    = is_fast | is_ne | is_warn,
-        DT_FAST_CHECK_NE   = is_fast | is_ne | is_check,
-        DT_FAST_REQUIRE_NE = is_fast | is_ne | is_require,
+        DT_FAST_WARN_GT    = is_normal | is_fast | is_gt | is_warn,
+        DT_FAST_CHECK_GT   = is_normal | is_fast | is_gt | is_check,
+        DT_FAST_REQUIRE_GT = is_normal | is_fast | is_gt | is_require,
 
-        DT_FAST_WARN_GT    = is_fast | is_gt | is_warn,
-        DT_FAST_CHECK_GT   = is_fast | is_gt | is_check,
-        DT_FAST_REQUIRE_GT = is_fast | is_gt | is_require,
+        DT_FAST_WARN_LT    = is_normal | is_fast | is_lt | is_warn,
+        DT_FAST_CHECK_LT   = is_normal | is_fast | is_lt | is_check,
+        DT_FAST_REQUIRE_LT = is_normal | is_fast | is_lt | is_require,
 
-        DT_FAST_WARN_LT    = is_fast | is_lt | is_warn,
-        DT_FAST_CHECK_LT   = is_fast | is_lt | is_check,
-        DT_FAST_REQUIRE_LT = is_fast | is_lt | is_require,
+        DT_FAST_WARN_GE    = is_normal | is_fast | is_ge | is_warn,
+        DT_FAST_CHECK_GE   = is_normal | is_fast | is_ge | is_check,
+        DT_FAST_REQUIRE_GE = is_normal | is_fast | is_ge | is_require,
 
-        DT_FAST_WARN_GE    = is_fast | is_ge | is_warn,
-        DT_FAST_CHECK_GE   = is_fast | is_ge | is_check,
-        DT_FAST_REQUIRE_GE = is_fast | is_ge | is_require,
+        DT_FAST_WARN_LE    = is_normal | is_fast | is_le | is_warn,
+        DT_FAST_CHECK_LE   = is_normal | is_fast | is_le | is_check,
+        DT_FAST_REQUIRE_LE = is_normal | is_fast | is_le | is_require,
 
-        DT_FAST_WARN_LE    = is_fast | is_le | is_warn,
-        DT_FAST_CHECK_LE   = is_fast | is_le | is_check,
-        DT_FAST_REQUIRE_LE = is_fast | is_le | is_require,
+        DT_FAST_WARN_UNARY    = is_normal | is_fast | is_unary | is_warn,
+        DT_FAST_CHECK_UNARY   = is_normal | is_fast | is_unary | is_check,
+        DT_FAST_REQUIRE_UNARY = is_normal | is_fast | is_unary | is_require,
 
-        DT_FAST_WARN_UNARY    = is_fast | is_unary | is_warn,
-        DT_FAST_CHECK_UNARY   = is_fast | is_unary | is_check,
-        DT_FAST_REQUIRE_UNARY = is_fast | is_unary | is_require,
-
-        DT_FAST_WARN_UNARY_FALSE    = is_fast | is_false | is_unary | is_warn,
-        DT_FAST_CHECK_UNARY_FALSE   = is_fast | is_false | is_unary | is_check,
-        DT_FAST_REQUIRE_UNARY_FALSE = is_fast | is_false | is_unary | is_require
+        DT_FAST_WARN_UNARY_FALSE    = is_normal | is_fast | is_false | is_unary | is_warn,
+        DT_FAST_CHECK_UNARY_FALSE   = is_normal | is_fast | is_false | is_unary | is_check,
+        DT_FAST_REQUIRE_UNARY_FALSE = is_normal | is_fast | is_false | is_unary | is_require
     };
 } // namespace assertType
 
@@ -676,7 +672,7 @@ struct DOCTEST_INTERFACE AssertData
     String m_exception;
 
     // for normal asserts
-    String m_decomposition;
+    String m_decomp;
 
     // for specific exception-related asserts
     bool        m_threw_as;
@@ -986,6 +982,8 @@ private:
 
 DOCTEST_INTERFACE String toString(const Approx& in);
 
+DOCTEST_INTERFACE const ContextOptions* getContextOptions();
+
 #if !defined(DOCTEST_CONFIG_DISABLE)
 
 namespace detail {
@@ -1012,8 +1010,6 @@ namespace detail {
     DOCTEST_INTERFACE bool checkIfShouldThrow(assertType::Enum at);
     DOCTEST_INTERFACE void fastAssertThrowIfFlagSet(int flags);
 
-    DOCTEST_INTERFACE const ContextOptions* getContextOptions();
-
     struct DOCTEST_INTERFACE Subcase
     {
         SubcaseSignature m_signature;
@@ -1039,7 +1035,7 @@ namespace detail {
         bool res = op_macro(lhs, rhs);                                                             \
         if(m_at & assertType::is_false)                                                            \
             res = !res;                                                                            \
-        if(!res || doctest::detail::getContextOptions()->success)                                  \
+        if(!res || doctest::getContextOptions()->success)                                          \
             return Result(res, stringifyBinaryExpr(lhs, op_str, rhs));                             \
         return Result(res);                                                                        \
     }
@@ -1055,7 +1051,7 @@ namespace detail {
     struct DOCTEST_INTERFACE Result
     {
         bool   m_passed;
-        String m_decomposition;
+        String m_decomp;
 
         Result(bool passed, const String& decomposition = String());
 
@@ -1258,9 +1254,11 @@ namespace detail {
         }
     };
 
+    typedef void (*funcType)();
+
     struct DOCTEST_INTERFACE TestCase : public TestCaseData
     {
-        detail::funcType m_test; // a function pointer to the test case
+        funcType m_test; // a function pointer to the test case
 
         const char* m_type; // for templated test cases - gets appended to the real name
         int m_template_id; // an ID used to distinguish between the different versions of a templated test case
@@ -1289,8 +1287,9 @@ namespace detail {
     };
 
     // forward declarations of functions used by the macros
-    DOCTEST_INTERFACE int regTest(const TestCase& tc);
-    DOCTEST_INTERFACE int setTestSuite(const TestSuite& ts);
+    DOCTEST_INTERFACE int  regTest(const TestCase& tc);
+    DOCTEST_INTERFACE int  setTestSuite(const TestSuite& ts);
+    DOCTEST_INTERFACE bool isDebuggerActive();
 
     namespace binaryAssertComparison {
         enum Enum
@@ -1333,7 +1332,7 @@ namespace detail {
                                             const DOCTEST_REF_WRAP(R) rhs) {
             m_failed = !RelationalComparator<comparison, L, R>()(lhs, rhs);
             if(m_failed || getContextOptions()->success)
-                m_decomposition = stringifyBinaryExpr(lhs, ", ", rhs);
+                m_decomp = stringifyBinaryExpr(lhs, ", ", rhs);
         }
 
         template <typename L>
@@ -1344,7 +1343,7 @@ namespace detail {
                 m_failed = !m_failed;
 
             if(m_failed || getContextOptions()->success)
-                m_decomposition = toString(val);
+                m_decomp = toString(val);
         }
 
         void unexpectedExceptionOccurred();
@@ -1384,11 +1383,13 @@ namespace detail {
         if(!is_running_in_test) {                                                                  \
             if(failed) {                                                                           \
                 ResultBuilder rb(at, file, line, expr);                                            \
-                rb.m_failed        = failed;                                                       \
-                rb.m_decomposition = decomp;                                                       \
+                rb.m_failed = failed;                                                              \
+                rb.m_decomp = decomp;                                                              \
                 failed_out_of_a_testing_context(rb);                                               \
                 int res = checkIfShouldThrow(at) ? assertAction::shouldthrow : 0;                  \
-                res |= !getContextOptions()->no_breaks ? assertAction::dbgbreak : 0;               \
+                res |= (isDebuggerActive() && !getContextOptions()->no_breaks) ?                   \
+                               assertAction::dbgbreak :                                            \
+                               0;                                                                  \
                 DOCTEST_FAST_ASSERT_REACT;                                                         \
             }                                                                                      \
             DOCTEST_FAST_ASSERT_RETURN(0);                                                         \
@@ -1399,7 +1400,7 @@ namespace detail {
     ResultBuilder rb(at, file, line, expr);                                                        \
     rb.m_failed = failed;                                                                          \
     if(rb.m_failed || getContextOptions()->success)                                                \
-        rb.m_decomposition = decomp;                                                               \
+        rb.m_decomp = decomp;                                                                      \
     int res = rb.log() ? assertAction::dbgbreak : 0;                                               \
     if(rb.m_failed && checkIfShouldThrow(at))                                                      \
         res |= assertAction::shouldthrow;                                                          \
@@ -1472,8 +1473,7 @@ namespace detail {
         String (*m_translateFunction)(T);
     };
 
-    DOCTEST_INTERFACE void registerExceptionTranslatorImpl(
-            const IExceptionTranslator* translateFunction);
+    DOCTEST_INTERFACE void registerExceptionTranslatorImpl(const IExceptionTranslator* et);
 
     // FIX FOR VISUAL STUDIO VERSIONS PRIOR TO 2015 - they failed to compile the call to operator<< with
     // std::ostream passed as a reference noting that there is a use of an undefined type (which there isn't)
@@ -2079,7 +2079,7 @@ constexpr T to_lvalue = x;
 
 #define DOCTEST_ASSERT_THROWS(expr, assert_type)                                                   \
     do {                                                                                           \
-        if(!doctest::detail::getContextOptions()->no_throw) {                                      \
+        if(!doctest::getContextOptions()->no_throw) {                                              \
             doctest::detail::ResultBuilder _DOCTEST_RB(doctest::assertType::assert_type, __FILE__, \
                                                        __LINE__, #expr);                           \
             try {                                                                                  \
@@ -2091,7 +2091,7 @@ constexpr T to_lvalue = x;
 
 #define DOCTEST_ASSERT_THROWS_AS(expr, assert_type, ...)                                           \
     do {                                                                                           \
-        if(!doctest::detail::getContextOptions()->no_throw) {                                      \
+        if(!doctest::getContextOptions()->no_throw) {                                              \
             doctest::detail::ResultBuilder _DOCTEST_RB(doctest::assertType::assert_type, __FILE__, \
                                                        __LINE__, #expr, #__VA_ARGS__);             \
             try {                                                                                  \
@@ -2106,7 +2106,7 @@ constexpr T to_lvalue = x;
 
 #define DOCTEST_ASSERT_NOTHROW(expr, assert_type)                                                  \
     do {                                                                                           \
-        if(!doctest::detail::getContextOptions()->no_throw) {                                      \
+        if(!doctest::getContextOptions()->no_throw) {                                              \
             doctest::detail::ResultBuilder _DOCTEST_RB(doctest::assertType::assert_type, __FILE__, \
                                                        __LINE__, #expr);                           \
             try {                                                                                  \

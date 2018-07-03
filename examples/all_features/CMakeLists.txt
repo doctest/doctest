@@ -21,6 +21,7 @@ set(files
     logging.cpp
     templated_test_cases.cpp
     test_cases_and_suites.cpp
+    asserts_used_outside_of_tests.cpp
 )
 
 # add the executable

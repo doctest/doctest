@@ -114,6 +114,12 @@ DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_BEGIN
 #include <stdint.h>
 #endif // !MSVC
 
+#ifdef DOCTEST_PLATFORM_MAC
+#include <sys/types.h>
+#include <unistd.h>
+#include <sys/sysctl.h>
+#endif // DOCTEST_PLATFORM_MAC
+
 DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_END
 
 // counts the number of elements in a C array
@@ -592,6 +598,7 @@ bool operator>(const Approx& lhs, double rhs) { return lhs.m_value > rhs && lhs 
 String toString(const Approx& in) {
     return String("Approx( ") + doctest::toString(in.m_value) + " )";
 }
+const ContextOptions* getContextOptions() { return DOCTEST_BRANCH_ON_DISABLED(0, g_contextState); }
 
 } // namespace doctest
 
@@ -716,8 +723,8 @@ namespace detail {
             return true;
 
         if((at & assertType::is_check) //!OCLINT bitwise operator in conditional
-           && g_contextState->abort_after > 0 &&
-           g_contextState->numAssertsFailed >= g_contextState->abort_after)
+           && getContextOptions()->abort_after > 0 &&
+           g_contextState->numAssertsFailed >= getContextOptions()->abort_after)
             return true;
 
         return false;
@@ -832,7 +839,6 @@ namespace {
     Timer g_timer;
 } // namespace
 namespace detail {
-    const ContextOptions* getContextOptions() { return g_contextState; }
 
     Subcase::Subcase(const char* name, const char* file, int line)
             : m_signature(name, file, line) {
@@ -879,7 +885,7 @@ namespace detail {
 
     Result::Result(bool passed, const String& decomposition)
             : m_passed(passed)
-            , m_decomposition(decomposition) {}
+            , m_decomp(decomposition) {}
 
     DOCTEST_DEFINE_DEFAULTS(Result);
     DOCTEST_DEFINE_COPIES(Result);
@@ -1038,8 +1044,8 @@ namespace {
         ((void)s);    // for DOCTEST_CONFIG_COLORS_NONE or DOCTEST_CONFIG_COLORS_WINDOWS
         ((void)code); // for DOCTEST_CONFIG_COLORS_NONE
 #ifdef DOCTEST_CONFIG_COLORS_ANSI
-        if(g_contextState->no_colors ||
-           (isatty(STDOUT_FILENO) == false && g_contextState->force_colors == false))
+        if(getContextOptions()->no_colors ||
+           (isatty(STDOUT_FILENO) == false && getContextOptions()->force_colors == false))
             return;
 
         auto col = "";
@@ -1065,8 +1071,8 @@ namespace {
 #endif // DOCTEST_CONFIG_COLORS_ANSI
 
 #ifdef DOCTEST_CONFIG_COLORS_WINDOWS
-        if(g_contextState->no_colors ||
-           (isatty(fileno(stdout)) == false && g_contextState->force_colors == false))
+        if(getContextOptions()->no_colors ||
+           (isatty(fileno(stdout)) == false && getContextOptions()->force_colors == false))
             return;
 
 #define DOCTEST_SET_ATTR(x) SetConsoleTextAttribute(g_stdoutHandle, x | g_origBgAttrs)
@@ -1136,10 +1142,44 @@ namespace detail {
         return 0;
     }
 
-    void registerExceptionTranslatorImpl(const IExceptionTranslator* translateFunction) {
-        if(std::find(getExceptionTranslators().begin(), getExceptionTranslators().end(),
-                     translateFunction) == getExceptionTranslators().end())
-            getExceptionTranslators().push_back(translateFunction);
+#ifdef DOCTEST_PLATFORM_MAC
+    // The following function is taken directly from the following technical note:
+    // http://developer.apple.com/library/mac/#qa/qa2004/qa1361.html
+    // Returns true if the current process is being debugged (either
+    // running under the debugger or has a debugger attached post facto).
+    bool isDebuggerActive() {
+        int        mib[4];
+        kinfo_proc info;
+        size_t     size;
+        // Initialize the flags so that, if sysctl fails for some bizarre
+        // reason, we get a predictable result.
+        info.kp_proc.p_flag = 0;
+        // Initialize mib, which tells sysctl the info we want, in this case
+        // we're looking for information about a specific process ID.
+        mib[0] = CTL_KERN;
+        mib[1] = KERN_PROC;
+        mib[2] = KERN_PROC_PID;
+        mib[3] = getpid();
+        // Call sysctl.
+        size = sizeof(info);
+        if(sysctl(mib, DOCTEST_COUNTOF(mib), &info, &size, 0, 0) != 0) {
+            fprintf(stderr, "\n** Call to sysctl failed - unable to determine if debugger is "
+                            "active **\n\n");
+            return false;
+        }
+        // We're being debugged if the P_TRACED flag is set.
+        return ((info.kp_proc.p_flag & P_TRACED) != 0);
+    }
+#elif DOCTEST_MSVC || defined(__MINGW32__)
+    bool isDebuggerActive() { return ::IsDebuggerPresent() != 0; }
+#else
+    bool isDebuggerActive() { return false; }
+#endif // Platform
+
+    void registerExceptionTranslatorImpl(const IExceptionTranslator* et) {
+        if(std::find(getExceptionTranslators().begin(), getExceptionTranslators().end(), et) ==
+           getExceptionTranslators().end())
+            getExceptionTranslators().push_back(et);
     }
 
     void writeStringToStream(std::ostream* s, const String& str) { *s << str; }
@@ -1384,48 +1424,8 @@ namespace {
 
 } // namespace
 
-// TODO: wtf? these are in namespace doctest::detail - and don't error ?!?! perhaps it's all C externs..
-#ifdef DOCTEST_PLATFORM_MAC
-#include <sys/types.h>
-#include <unistd.h>
-#include <sys/sysctl.h>
-#endif // DOCTEST_PLATFORM_MAC
-
 namespace {
     using namespace detail;
-#ifdef DOCTEST_PLATFORM_MAC
-    // The following function is taken directly from the following technical note:
-    // http://developer.apple.com/library/mac/#qa/qa2004/qa1361.html
-    // Returns true if the current process is being debugged (either
-    // running under the debugger or has a debugger attached post facto).
-    bool isDebuggerActive() {
-        int        mib[4];
-        kinfo_proc info;
-        size_t     size;
-        // Initialize the flags so that, if sysctl fails for some bizarre
-        // reason, we get a predictable result.
-        info.kp_proc.p_flag = 0;
-        // Initialize mib, which tells sysctl the info we want, in this case
-        // we're looking for information about a specific process ID.
-        mib[0] = CTL_KERN;
-        mib[1] = KERN_PROC;
-        mib[2] = KERN_PROC_PID;
-        mib[3] = getpid();
-        // Call sysctl.
-        size = sizeof(info);
-        if(sysctl(mib, DOCTEST_COUNTOF(mib), &info, &size, 0, 0) != 0) {
-            fprintf(stderr, "\n** Call to sysctl failed - unable to determine if debugger is "
-                            "active **\n\n");
-            return false;
-        }
-        // We're being debugged if the P_TRACED flag is set.
-        return ((info.kp_proc.p_flag & P_TRACED) != 0);
-    }
-#elif DOCTEST_MSVC || defined(__MINGW32__)
-    bool  isDebuggerActive() { return ::IsDebuggerPresent() != 0; }
-#else
-    bool isDebuggerActive() { return false; }
-#endif // Platform
 
 #ifdef DOCTEST_PLATFORM_WINDOWS
 #define DOCTEST_OUTPUT_DEBUG_STRING(text) ::OutputDebugStringA(text)
@@ -1466,6 +1466,7 @@ namespace {
 #endif // DOCTEST_CONFIG_POSIX_SIGNALS || DOCTEST_CONFIG_WINDOWS_SEH
 } // namespace
 namespace detail {
+
     ResultBuilder::ResultBuilder(assertType::Enum at, const char* file, int line, const char* expr,
                                  const char* exception_type) {
         m_test_case      = g_contextState->currentTest;
@@ -1486,8 +1487,8 @@ namespace detail {
     DOCTEST_DEFINE_DEFAULTS(ResultBuilder);
 
     void ResultBuilder::setResult(const Result& res) {
-        m_decomposition = res.m_decomposition;
-        m_failed        = !res.m_passed;
+        m_decomp = res.m_decomp;
+        m_failed = !res.m_passed;
     }
 
     void ResultBuilder::unexpectedExceptionOccurred() {
@@ -1514,7 +1515,8 @@ namespace detail {
             failed_out_of_a_testing_context(*this);
         }
 
-        return m_failed && isDebuggerActive() && !g_contextState->no_breaks; // break into debugger
+        return m_failed && isDebuggerActive() &&
+               !getContextOptions()->no_breaks; // break into debugger
     }
 
     void ResultBuilder::react() const {
@@ -1551,7 +1553,7 @@ namespace detail {
             addFailedAssert(m_severity);
         }
 
-        return isDebuggerActive() && !g_contextState->no_breaks && !isWarn; // break into debugger
+        return isDebuggerActive() && !getContextOptions()->no_breaks && !isWarn; // break
     }
 
     void MessageBuilder::react() {
@@ -1809,8 +1811,7 @@ namespace {
                 if(rb.m_threw)
                     s << rb.m_exception << "\n";
                 else
-                    s << "  values: " << assertString(rb.m_at) << "( " << rb.m_decomposition
-                      << " )\n";
+                    s << "  values: " << assertString(rb.m_at) << "( " << rb.m_decomp << " )\n";
             }
 
             log_contexts();
@@ -1837,7 +1838,7 @@ namespace {
                 : ConsoleReporter(in) {}
 
         void printVersion() {
-            if(g_contextState->no_version == false)
+            if(getContextOptions()->no_version == false)
                 s << Color::Cyan << "[doctest] " << Color::None << "doctest version is \""
                   << DOCTEST_VERSION_STR << "\"\n";
         }
@@ -1927,11 +1928,11 @@ namespace {
 
         void output_query_results() {
             separator_to_stream();
-            if(g_contextState->count || g_contextState->list_test_cases) {
+            if(getContextOptions()->count || getContextOptions()->list_test_cases) {
                 s << Color::Cyan << "[doctest] " << Color::None
                   << "unskipped test cases passing the current filters: "
                   << g_contextState->numTestCasesPassingFilters << "\n";
-            } else if(g_contextState->list_test_suites) {
+            } else if(getContextOptions()->list_test_suites) {
                 s << Color::Cyan << "[doctest] " << Color::None
                   << "unskipped test cases passing the current filters: "
                   << g_contextState->numTestCasesPassingFilters << "\n";
@@ -1965,7 +1966,7 @@ namespace {
 #define DOCTEST_DEBUG_OUTPUT_WINDOW_REPORTER_OVERRIDE(func, type)                                  \
     void func(type in) override {                                                                  \
         if(isDebuggerActive()) {                                                                   \
-            bool with_col             = g_contextState->no_colors;                                 \
+            bool with_col             = getContextOptions()->no_colors;                            \
             g_contextState->no_colors = false;                                                     \
             ConsoleReporter::func(in);                                                             \
             DOCTEST_OUTPUT_DEBUG_STRING(oss.str().c_str());                                        \

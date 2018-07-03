@@ -50,7 +50,8 @@
 - binaries (exe/dll) can use the test runner of another binary - so tests end up in a single registry - [**example**](../../examples/executable_dll_and_plugin/)
 - supports [**BDD style**](testcases.md) tests
 - one core [**assertion macro**](assertions.md) for comparisons - standard C++ operators are used for the comparison (less than, equal, greater than...) - yet the full expression is decomposed and left and right values of the expression are logged
-- assertion macros for [**exceptions**](assertions.md) - if something should or shouldn't throw
+- asserts can be used [**outside of a testing context**](assertions.md#using-asserts-out-of-a-testing-context) - [**example**](../../examples/all_features/asserts_used_outside_of_tests.cpp)
+- assertion macros for [**exceptions**](assertions.md#exceptions) - if something should or shouldn't throw
 - floating point comparison support - see the [**```Approx()```**](assertions.md#floating-point-comparisons) helper
 - powerful mechanism for [**stringification**](stringification.md) of user types - including [**exceptions**](stringification.md#translating-exceptions)!
 - tests can be grouped in [**test suites**](testcases.md#test-suites)
@@ -68,7 +69,7 @@
 - colored output in the console
 - controlling the order of test execution
 - different ```doctest::Context```s can be created and ran many times within a single execution of the program
-- ability to query if code is currently being ran in a test -  ```doctest::isRunningInTest()```
+- ability to query if code is currently being ran in a test -  ```doctest::is_running_in_test```
 
 There is a list of planned features which are all important and big - see the [**roadmap**](roadmap.md).
 

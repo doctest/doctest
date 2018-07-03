@@ -67,9 +67,7 @@ thread sanitizer tests
 coverage
 
 documentation... :(
-    also faq
-
-profit :D
+    also update faq - differences with catch, thread safety
 
 
 further improvement of compile and link times - moved the body of absolutely every non-templated function out of the interface part of the header and into the implementation part (including implicitly generated special member functions!) (also using anonymous namespaces for most of the test runner)
@@ -78,32 +76,11 @@ ask in the reddit thread what from the roadmap they would like to see next
 
 
 
-OMG!!! THIS!!!
-https://github.com/onqtam/doctest/issues/114
-isRunningInTest() changed to is_running_in_test - a bool... for performance reasons - relates #56
-
-
-
-header with extensions
-    - demangling
-    - stringification of types from std
-    - esoteric reporters
-
-
-
 make sure all relevant parts of the reporters can be accessed from the doctest namespace without the need for detail
 
 fix discoverability of subcases
 
-add LIKELY & friends for the conditions of asserts - look at BOOST_LIKELY, ppk_assert, foonathan/debug_assert, etc
-
-try this for silencing unused variables & stuff when disabled: (void)(true ? (void)0 : ((void)(expression)))
-
-user command line options...?
-
 https://github.com/catchorg/Catch2/commit/de36b2ada6e4593a9a32c4c86cd47d4bc002b148
-
-rethink static code analysis suppressions - users shouldn't have to use the same flags for code which uses doctest macros/types
 
 try to forward declare std::string and specialize the string maker for it or something like that
 

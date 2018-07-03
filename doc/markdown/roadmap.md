@@ -34,6 +34,10 @@ Planned features for future releases - order changes constantly...
 
 ### For 2.1:
 
+- header with extensions
+    - demangling with the use of the cxxabi header
+    - stringification of types from std
+    - esoteric reporters
 - matchers - should investigate what they are - look at google test/mock and Catch (also predicates and boost test)
 - convolution support for the assertion macros (with a predicate)
 - Value-Parameterized test cases
@@ -97,6 +101,8 @@ Planned features for future releases - order changes constantly...
 
 ### Things that are being considered but not part of the roadmap yet:
 
+- add LIKELY & friends for the conditions of asserts - look at BOOST_LIKELY, ppk_assert, foonathan/debug_assert, etc
+- ability for users to register their own command line options and access them later on
 - fix this: https://github.com/catchorg/Catch2/issues/1292
 - FakeIt mocking integration - like [catch](https://github.com/eranpeer/FakeIt/tree/master/config/catch) (also checkout [this](https://github.com/ujiro99/doctest-sample))
 - look into https://github.com/cpp-testing/GUnit - https://www.youtube.com/watch?v=NVrZjT5lW5o
@@ -148,6 +154,7 @@ Planned features for future releases - order changes constantly...
 - make the _MESSAGE assert macros work with variadic arguments - and maybe write the ones for binary/unary/fast asserts as well
 - move from operator "<<" to "<=" for capturing the left operand when decomposing binary expressions with templates
 - think about silencing warnings about unused variables when DOCTEST_CONFIG_DISABLE is used - see commit 6b61e8aa3818c5ea100cedc1bb48a60ea10df6e8 or issue #61
+    - also this: ```(void)(true ? (void)0 : ((void)(expression)))```
 - think about optionally using ```<typeinfo>``` and libcxxabi for demangling so users don't have to use ```TYPE_TO_STRING()```
 - handle more complex expressions - ```CHECK(foo() == 1 || bar() == 2);```
 - add [[noreturn]] to MessageBuilder::react() - and actually make a separate function (react2) for the FAIL() case
@@ -156,6 +163,7 @@ Planned features for future releases - order changes constantly...
 
 ### Things that are very unlikely to enter the roadmap:
 
+- rethink static code analysis suppressions - users shouldn't have to use the same flags for code which uses doctest macros/types
 - think about removing the binary asserts (leaving only the fast binary asserts) because normal asserts + no try/catch in asserts are almost the same
 - move the "react()" part (the one that throws for REQUIRE asserts - or for when "abort-after=<int>" is reached) to a function call in the while() part of the asserts
 - stop using underscores for the begining of identifiers - the anonymous variables - against the standard...
