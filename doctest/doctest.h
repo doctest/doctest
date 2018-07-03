@@ -3464,7 +3464,7 @@ namespace {
 
     UInt64 getCurrentTicks() {
         timeval t;
-        gettimeofday(&t, 0);
+        gettimeofday(&t, nullptr);
         return static_cast<UInt64>(t.tv_sec) * 1000000 + static_cast<UInt64>(t.tv_usec);
     }
 #endif // DOCTEST_PLATFORM_WINDOWS
@@ -4039,7 +4039,7 @@ namespace {
             sigStack.ss_size  = sizeof(altStackMem);
             sigStack.ss_flags = 0;
             sigaltstack(&sigStack, &oldSigStack);
-            struct sigaction sa = {0};
+            struct sigaction sa = {nullptr};
 
             sa.sa_handler = handleSignal; // NOLINT
             sa.sa_flags   = SA_ONSTACK;
@@ -4053,10 +4053,10 @@ namespace {
             if(isSet) {
                 // Set signals back to previous values -- hopefully nobody overwrote them in the meantime
                 for(std::size_t i = 0; i < DOCTEST_COUNTOF(signalDefs); ++i) {
-                    sigaction(signalDefs[i].id, &oldSigActions[i], 0);
+                    sigaction(signalDefs[i].id, &oldSigActions[i], nullptr);
                 }
                 // Return the old stack
-                sigaltstack(&oldSigStack, 0);
+                sigaltstack(&oldSigStack, nullptr);
                 isSet = false;
             }
         }
