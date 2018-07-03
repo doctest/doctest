@@ -162,12 +162,6 @@ DOCTEST_CLANG_SUPPRESS_WARNING("-Wpadded")
 DOCTEST_CLANG_SUPPRESS_WARNING("-Wdeprecated")
 DOCTEST_CLANG_SUPPRESS_WARNING("-Wmissing-prototypes")
 DOCTEST_CLANG_SUPPRESS_WARNING("-Wunused-local-typedef")
-DOCTEST_CLANG_SUPPRESS_WARNING("-Wc++11-long-long")
-#if DOCTEST_CLANG && DOCTEST_CLANG_HAS_WARNING("-Wzero-as-null-pointer-constant")
-DOCTEST_CLANG_SUPPRESS_WARNING("-Wzero-as-null-pointer-constant")
-#endif // clang - 0 as null
-DOCTEST_CLANG_SUPPRESS_WARNING("-Wc++98-compat")
-DOCTEST_CLANG_SUPPRESS_WARNING("-Wc++98-compat-pedantic")
 
 DOCTEST_GCC_SUPPRESS_WARNING_PUSH
 DOCTEST_GCC_SUPPRESS_WARNING("-Wunknown-pragmas")
@@ -179,8 +173,6 @@ DOCTEST_GCC_SUPPRESS_WARNING("-Wctor-dtor-privacy")
 DOCTEST_GCC_SUPPRESS_WARNING("-Wmissing-declarations")
 DOCTEST_GCC_SUPPRESS_WARNING("-Wnon-virtual-dtor")
 DOCTEST_GCC_SUPPRESS_WARNING("-Winline")
-DOCTEST_GCC_SUPPRESS_WARNING("-Wlong-long")
-DOCTEST_GCC_SUPPRESS_WARNING("-Wzero-as-null-pointer-constant")
 DOCTEST_GCC_SUPPRESS_WARNING("-Wunused-local-typedefs")
 DOCTEST_GCC_SUPPRESS_WARNING("-Wuseless-cast")
 
@@ -777,9 +769,6 @@ namespace detail {
     // cppcheck-suppress unusedStructMember
     { static const bool value = false; };
 
-    // to silence the warning "-Wzero-as-null-pointer-constant" only for gcc 5 for the Approx template ctor - pragmas don't work for it...
-    inline void* getNull() { return 0; }
-
     namespace has_insertion_operator_impl {
         typedef char no;
         typedef char yes[2];
@@ -915,7 +904,7 @@ public:
     template <typename T>
     explicit Approx(const T& value,
                     typename detail::enable_if<std::is_constructible<double, T>::value>::type* =
-                            static_cast<T*>(detail::getNull())) {
+                            static_cast<T*>(nullptr)) {
         *this = Approx(static_cast<double>(value));
     }
 #endif // DOCTEST_CONFIG_INCLUDE_TYPE_TRAITS
@@ -1578,8 +1567,8 @@ namespace detail {
 
         Chunk stackChunks[DOCTEST_CONFIG_NUM_CAPTURES_ON_STACK];
         int   numCaptures = 0;
-        Node* head        = 0;
-        Node* tail        = 0;
+        Node* head        = nullptr;
+        Node* tail        = nullptr;
 
         ContextBuilder(ContextBuilder& other);
 
@@ -1602,7 +1591,7 @@ namespace detail {
                 my_memcpy(stackChunks[numCaptures].buf, &temp, sizeof(Chunk));
             } else {
                 auto curr  = new Node;
-                curr->next = 0;
+                curr->next = nullptr;
                 if(tail) {
                     tail->next = curr;
                     tail       = curr;
@@ -1715,7 +1704,7 @@ class DOCTEST_INTERFACE Context
     void parseArgs(int argc, const char* const* argv, bool withDefaults = false);
 
 public:
-    explicit Context(int argc = 0, const char* const* argv = 0);
+    explicit Context(int argc = 0, const char* const* argv = nullptr);
 
     DOCTEST_DELETE_COPIES(Context);
 
@@ -1903,9 +1892,6 @@ int registerReporter(const char* name, int priority, IReporter* r);
 #define DOCTEST_TEST_CASE_TEMPLATE_DEFINE_IMPL(dec, T, id, anon)                                   \
     template <typename T>                                                                          \
     inline void anon();                                                                            \
-    DOCTEST_CLANG_SUPPRESS_WARNING_PUSH                                                            \
-    DOCTEST_CLANG_SUPPRESS_WARNING("-Wc++98-compat")                                               \
-    DOCTEST_CLANG_SUPPRESS_WARNING("-Wc++98-compat-pedantic")                                      \
     template <typename Type, typename... Rest>                                                     \
     struct DOCTEST_CAT(id, ITERATOR)                                                               \
     {                                                                                              \
@@ -1914,7 +1900,6 @@ int registerReporter(const char* name, int priority, IReporter* r);
             DOCTEST_CAT(id, ITERATOR)<Rest...>(line, index + 1);                                   \
         }                                                                                          \
     };                                                                                             \
-    DOCTEST_CLANG_SUPPRESS_WARNING_POP                                                             \
     template <typename Type>                                                                       \
     struct DOCTEST_CAT(id, ITERATOR)<Type>                                                         \
     {                                                                                              \
@@ -1932,16 +1917,12 @@ int registerReporter(const char* name, int priority, IReporter* r);
     DOCTEST_TEST_CASE_TEMPLATE_DEFINE_IMPL_PROXY(dec, T, id, DOCTEST_ANONYMOUS(_DOCTEST_ANON_TMP_))
 
 #define DOCTEST_TEST_CASE_TEMPLATE_INSTANTIATE_IMPL(id, anon, ...)                                 \
-    DOCTEST_CLANG_SUPPRESS_WARNING_PUSH                                                            \
-    DOCTEST_CLANG_SUPPRESS_WARNING("-Wc++98-compat")                                               \
-    DOCTEST_CLANG_SUPPRESS_WARNING("-Wc++98-compat-pedantic")                                      \
     DOCTEST_GLOBAL_NO_WARNINGS(DOCTEST_CAT(anon, DUMMY)) = []() {                                  \
         DOCTEST_CAT(id, ITERATOR)<__VA_ARGS__> DOCTEST_UNUSED DOCTEST_CAT(anon, inner_dummy)(      \
                 __LINE__, 0);                                                                      \
         return 0;                                                                                  \
     }();                                                                                           \
-    DOCTEST_GLOBAL_NO_WARNINGS_END()                                                               \
-    DOCTEST_CLANG_SUPPRESS_WARNING_POP
+    DOCTEST_GLOBAL_NO_WARNINGS_END()
 
 #define DOCTEST_TEST_CASE_TEMPLATE_INSTANTIATE(id, ...)                                            \
     DOCTEST_TEST_CASE_TEMPLATE_INSTANTIATE_IMPL(id, DOCTEST_ANONYMOUS(_DOCTEST_ANON_TMP_),         \
@@ -1959,11 +1940,8 @@ int registerReporter(const char* name, int priority, IReporter* r);
 
 // for subcases
 #define DOCTEST_SUBCASE(name)                                                                      \
-    if(DOCTEST_CLANG_SUPPRESS_WARNING_WITH_PUSH("-Wc++98-compat-bind-to-temporary-copy")           \
-                       const doctest::detail::Subcase &                                            \
-               DOCTEST_ANONYMOUS(_DOCTEST_ANON_SUBCASE_) DOCTEST_UNUSED =                          \
-               doctest::detail::Subcase(name, __FILE__, __LINE__)                                  \
-                       DOCTEST_CLANG_SUPPRESS_WARNING_POP)
+    if(const doctest::detail::Subcase & DOCTEST_ANONYMOUS(_DOCTEST_ANON_SUBCASE_) DOCTEST_UNUSED = \
+               doctest::detail::Subcase(name, __FILE__, __LINE__))
 
 // for grouping tests in test suites by using code blocks
 #define DOCTEST_TEST_SUITE_IMPL(decorators, ns_name)                                               \
@@ -2674,12 +2652,6 @@ DOCTEST_CLANG_SUPPRESS_WARNING("-Wunused-local-typedef")
 DOCTEST_CLANG_SUPPRESS_WARNING("-Wdisabled-macro-expansion")
 DOCTEST_CLANG_SUPPRESS_WARNING("-Wmissing-braces")
 DOCTEST_CLANG_SUPPRESS_WARNING("-Wmissing-field-initializers")
-DOCTEST_CLANG_SUPPRESS_WARNING("-Wc++11-long-long")
-#if DOCTEST_CLANG && DOCTEST_CLANG_HAS_WARNING("-Wzero-as-null-pointer-constant")
-DOCTEST_CLANG_SUPPRESS_WARNING("-Wzero-as-null-pointer-constant")
-#endif // clang - 0 as null
-DOCTEST_CLANG_SUPPRESS_WARNING("-Wc++98-compat")
-DOCTEST_CLANG_SUPPRESS_WARNING("-Wc++98-compat-pedantic")
 
 DOCTEST_GCC_SUPPRESS_WARNING_PUSH
 DOCTEST_GCC_SUPPRESS_WARNING("-Wunknown-pragmas")
@@ -2697,9 +2669,7 @@ DOCTEST_GCC_SUPPRESS_WARNING("-Wswitch")
 DOCTEST_GCC_SUPPRESS_WARNING("-Wswitch-enum")
 DOCTEST_GCC_SUPPRESS_WARNING("-Wswitch-default")
 DOCTEST_GCC_SUPPRESS_WARNING("-Wunsafe-loop-optimizations")
-DOCTEST_GCC_SUPPRESS_WARNING("-Wlong-long")
 DOCTEST_GCC_SUPPRESS_WARNING("-Wold-style-cast")
-DOCTEST_GCC_SUPPRESS_WARNING("-Wzero-as-null-pointer-constant")
 DOCTEST_GCC_SUPPRESS_WARNING("-Wunused-local-typedefs")
 DOCTEST_GCC_SUPPRESS_WARNING("-Wuseless-cast")
 
@@ -2728,7 +2698,7 @@ DOCTEST_MSVC_SUPPRESS_WARNING(4800) // forcing value to bool 'true' or 'false' (
 DOCTEST_MSVC_SUPPRESS_WARNING(26439) // This kind of function may not throw. Declare it 'noexcept'
 DOCTEST_MSVC_SUPPRESS_WARNING(26495) // Always initialize a member variable
 DOCTEST_MSVC_SUPPRESS_WARNING(26451) // Arithmetic overflow ...
-DOCTEST_MSVC_SUPPRESS_WARNING(26444) // Avoid unnamed objects with custom construction and dtr...
+DOCTEST_MSVC_SUPPRESS_WARNING(26444) // Avoid unnamed objects with custom construction and dtor...
 
 DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_BEGIN
 
@@ -2864,9 +2834,9 @@ namespace detail {
 
         std::vector<IReporter*> reporters_currently_used;
 
-        const TestCase* currentTest = 0;
+        const TestCase* currentTest = nullptr;
 
-        assert_handler ah = 0;
+        assert_handler ah = nullptr;
 
         std::vector<IContextScope*> contexts;            // for logging with INFO() and friends
         std::vector<String>         stringifiedContexts; // logging from INFO() due to an exception
@@ -2886,7 +2856,7 @@ namespace detail {
         }
     };
 
-    ContextState* g_contextState = 0;
+    ContextState* g_cs = nullptr;
 #endif // DOCTEST_CONFIG_DISABLE
 } // namespace detail
 
@@ -3276,9 +3246,7 @@ bool operator>(const Approx& lhs, double rhs) { return lhs.m_value > rhs && lhs 
 String toString(const Approx& in) {
     return String("Approx( ") + doctest::toString(in.m_value) + " )";
 }
-const ContextOptions* getContextOptions() {
-    return DOCTEST_BRANCH_ON_DISABLED(nullptr, g_contextState);
-}
+const ContextOptions* getContextOptions() { return DOCTEST_BRANCH_ON_DISABLED(nullptr, g_cs); }
 
 } // namespace doctest
 
@@ -3303,9 +3271,9 @@ DOCTEST_DEFINE_DEFAULTS(TestRunStats);
 IReporter::~IReporter() = default;
 
 int                         IReporter::get_num_active_contexts() { return 0; }
-const IContextScope* const* IReporter::get_active_contexts() { return 0; }
+const IContextScope* const* IReporter::get_active_contexts() { return nullptr; }
 int                         IReporter::get_num_stringified_contexts() { return 0; }
-const String*               IReporter::get_stringified_contexts() { return 0; }
+const String*               IReporter::get_stringified_contexts() { return nullptr; }
 
 int registerReporter(const char*, int, IReporter*) { return 0; }
 
@@ -3393,7 +3361,7 @@ namespace {
 } // namespace
 namespace detail {
 #define DOCTEST_ITERATE_THROUGH_REPORTERS(function, args)                                          \
-    for(auto& curr_rep : g_contextState->reporters_currently_used)                                 \
+    for(auto& curr_rep : g_cs->reporters_currently_used)                                           \
     curr_rep->function(args)
 
     DOCTEST_DEFINE_DEFAULTS(TestFailureException);
@@ -3404,7 +3372,7 @@ namespace detail {
 
         if((at & assertType::is_check) //!OCLINT bitwise operator in conditional
            && getContextOptions()->abort_after > 0 &&
-           g_contextState->numAssertsFailed >= getContextOptions()->abort_after)
+           g_cs->numAssertsFailed >= getContextOptions()->abort_after)
             return true;
 
         return false;
@@ -3421,8 +3389,8 @@ namespace {
     // matching of a string against a wildcard mask (case sensitivity configurable) taken from
     // https://www.codeproject.com/Articles/1088/Wildcard-string-compare-globbing
     int wildcmp(const char* str, const char* wild, bool caseSensitive) {
-        const char* cp = 0;
-        const char* mp = 0;
+        const char* cp = nullptr;
+        const char* mp = nullptr;
 
         while((*str) && (*wild != '*')) {
             if((caseSensitive ? (*wild != *str) : (tolower(*wild) != tolower(*str))) &&
@@ -3522,7 +3490,7 @@ namespace detail {
 
     Subcase::Subcase(const char* name, const char* file, int line)
             : m_signature(name, file, line) {
-        ContextState* s = g_contextState;
+        ContextState* s = g_cs;
 
         // if we have already completed it
         if(s->subcasesPassed.count(m_signature) != 0)
@@ -3550,7 +3518,7 @@ namespace detail {
 
     Subcase::~Subcase() {
         if(m_entered) {
-            ContextState* s = g_contextState;
+            ContextState* s = g_cs;
 
             s->subcasesCurrentLevel--;
             // only mark the subcase as passed if no subcases have been skipped
@@ -3581,7 +3549,7 @@ namespace detail {
     TestSuite& TestSuite::operator*(const char* in) {
         m_test_suite = in;
         // clear state
-        m_description       = 0;
+        m_description       = nullptr;
         m_skip              = false;
         m_may_fail          = false;
         m_should_fail       = false;
@@ -3594,7 +3562,7 @@ namespace detail {
                        const char* type, int template_id) {
         m_file              = file;
         m_line              = line;
-        m_name              = 0;
+        m_name              = nullptr;
         m_test_suite        = test_suite.m_test_suite;
         m_description       = test_suite.m_description;
         m_skip              = test_suite.m_skip;
@@ -3900,8 +3868,8 @@ namespace detail {
             , head(other.head)
             , tail(other.tail) {
         other.numCaptures = 0;
-        other.head        = 0;
-        other.tail        = 0;
+        other.head        = nullptr;
+        other.tail        = nullptr;
         memcpy(stackChunks, other.stackChunks,
                unsigned(int(sizeof(Chunk)) * DOCTEST_CONFIG_NUM_CAPTURES_ON_STACK));
     }
@@ -3936,7 +3904,7 @@ namespace detail {
 
     ContextScope::ContextScope(ContextBuilder& temp)
             : contextBuilder(temp) {
-        g_contextState->contexts.push_back(this);
+        g_cs->contexts.push_back(this);
     }
 
     DOCTEST_MSVC_SUPPRESS_WARNING_WITH_PUSH(4996) // std::uncaught_exception is deprecated in C++17
@@ -3945,9 +3913,9 @@ namespace detail {
         if(std::uncaught_exception()) {
             std::ostringstream s;
             this->stringify(&s);
-            g_contextState->stringifiedContexts.push_back(s.str().c_str());
+            g_cs->stringifiedContexts.push_back(s.str().c_str());
         }
-        g_contextState->contexts.pop_back();
+        g_cs->contexts.pop_back();
     }
     DOCTEST_GCC_SUPPRESS_WARNING_POP
     DOCTEST_MSVC_SUPPRESS_WARNING_POP
@@ -4116,32 +4084,32 @@ namespace {
 
     void addAssert(assertType::Enum at) {
         if((at & assertType::is_warn) == 0) { //!OCLINT bitwise operator in conditional
-            g_contextState->numAsserts++;
-            g_contextState->numAssertsForCurrentTestCase++;
+            g_cs->numAsserts++;
+            g_cs->numAssertsForCurrentTestCase++;
         }
     }
 
     void addFailedAssert(assertType::Enum at) {
         if((at & assertType::is_warn) == 0) { //!OCLINT bitwise operator in conditional
-            g_contextState->numAssertsFailed++;
-            g_contextState->numAssertsFailedForCurrentTestCase++;
+            g_cs->numAssertsFailed++;
+            g_cs->numAssertsFailedForCurrentTestCase++;
         }
     }
 
 #if defined(DOCTEST_CONFIG_POSIX_SIGNALS) || defined(DOCTEST_CONFIG_WINDOWS_SEH)
     void reportFatal(const std::string& message) {
-        g_contextState->seconds_so_far += g_timer.getElapsedSeconds();
-        g_contextState->failure_flags |= TestCaseFailureReason::Crash;
-        g_contextState->error_string   = message.c_str();
-        g_contextState->should_reenter = false;
+        g_cs->seconds_so_far += g_timer.getElapsedSeconds();
+        g_cs->failure_flags |= TestCaseFailureReason::Crash;
+        g_cs->error_string   = message.c_str();
+        g_cs->should_reenter = false;
 
         // TODO: end all currently opened subcases...?
 
-        DOCTEST_ITERATE_THROUGH_REPORTERS(test_case_end, *g_contextState);
+        DOCTEST_ITERATE_THROUGH_REPORTERS(test_case_end, *g_cs);
 
-        g_contextState->numTestCasesFailed++;
+        g_cs->numTestCasesFailed++;
 
-        DOCTEST_ITERATE_THROUGH_REPORTERS(test_run_end, *g_contextState);
+        DOCTEST_ITERATE_THROUGH_REPORTERS(test_run_end, *g_cs);
     }
 #endif // DOCTEST_CONFIG_POSIX_SIGNALS || DOCTEST_CONFIG_WINDOWS_SEH
 } // namespace
@@ -4149,7 +4117,7 @@ namespace detail {
 
     ResultBuilder::ResultBuilder(assertType::Enum at, const char* file, int line, const char* expr,
                                  const char* exception_type) {
-        m_test_case      = g_contextState->currentTest;
+        m_test_case      = g_cs->currentTest;
         m_at             = at;
         m_file           = file;
         m_line           = line;
@@ -4205,8 +4173,8 @@ namespace detail {
     }
 
     void failed_out_of_a_testing_context(const AssertData& ad) {
-        if(g_contextState->ah)
-            g_contextState->ah(ad);
+        if(g_cs->ah)
+            g_cs->ah(ad);
         else
             std::abort();
     }
@@ -4592,14 +4560,14 @@ namespace {
             if(getContextOptions()->count || getContextOptions()->list_test_cases) {
                 s << Color::Cyan << "[doctest] " << Color::None
                   << "unskipped test cases passing the current filters: "
-                  << g_contextState->numTestCasesPassingFilters << "\n";
+                  << g_cs->numTestCasesPassingFilters << "\n";
             } else if(getContextOptions()->list_test_suites) {
                 s << Color::Cyan << "[doctest] " << Color::None
                   << "unskipped test cases passing the current filters: "
-                  << g_contextState->numTestCasesPassingFilters << "\n";
+                  << g_cs->numTestCasesPassingFilters << "\n";
                 s << Color::Cyan << "[doctest] " << Color::None
                   << "test suites with unskipped test cases passing the current filters: "
-                  << g_contextState->numTestSuitesPassingFilters << "\n";
+                  << g_cs->numTestSuitesPassingFilters << "\n";
             }
         }
 
@@ -4627,12 +4595,12 @@ namespace {
 #define DOCTEST_DEBUG_OUTPUT_WINDOW_REPORTER_OVERRIDE(func, type)                                  \
     void func(type in) override {                                                                  \
         if(isDebuggerActive()) {                                                                   \
-            bool with_col             = getContextOptions()->no_colors;                            \
-            g_contextState->no_colors = false;                                                     \
+            bool with_col   = getContextOptions()->no_colors;                                      \
+            g_cs->no_colors = false;                                                               \
             ConsoleReporter::func(in);                                                             \
             DOCTEST_OUTPUT_DEBUG_STRING(oss.str().c_str());                                        \
             oss.str("");                                                                           \
-            g_contextState->no_colors = with_col;                                                  \
+            g_cs->no_colors = with_col;                                                            \
         }                                                                                          \
     }
 
@@ -4725,12 +4693,12 @@ namespace {
             // tokenize with "," as a separator
             // cppcheck-suppress strtokCalled
             auto pch = std::strtok(filtersString.c_str(), ","); // modifies the string
-            while(pch != 0) {
+            while(pch != nullptr) {
                 if(strlen(pch))
                     res.push_back(pch);
                 // uses the strtok() internal state to go to the next token
                 // cppcheck-suppress strtokCalled
-                pch = std::strtok(0, ",");
+                pch = std::strtok(nullptr, ",");
             }
             return true;
         }
@@ -4785,8 +4753,8 @@ Context::Context(int argc, const char* const* argv)
 }
 
 Context::~Context() {
-    if(g_contextState == p)
-        g_contextState = 0;
+    if(g_cs == p)
+        g_cs = nullptr;
     delete p;
 }
 
@@ -4928,7 +4896,7 @@ void Context::setOption(const char* option, const char* value) {
 // users should query this in their main() and exit the program if true
 bool Context::shouldExit() { return p->exit; }
 
-void Context::setAsDefaultForAssertsOutOfTestCases() { g_contextState = p; }
+void Context::setAsDefaultForAssertsOutOfTestCases() { g_cs = p; }
 
 void Context::setAssertHandler(detail::assert_handler ah) { p->ah = ah; }
 
@@ -4936,8 +4904,8 @@ void Context::setAssertHandler(detail::assert_handler ah) { p->ah = ah; }
 int Context::run() {
     using namespace detail;
 
-    auto old_cs        = g_contextState;
-    g_contextState     = p;
+    auto old_cs        = g_cs;
+    g_cs               = p;
     is_running_in_test = true;
     p->resetRunData();
 
@@ -4970,7 +4938,7 @@ int Context::run() {
         if(p->list_reporters)
             g_con_rep.printRegisteredReporters();
 
-        g_contextState     = old_cs;
+        g_cs               = old_cs;
         is_running_in_test = false;
 
         return EXIT_SUCCESS;
@@ -5017,7 +4985,7 @@ int Context::run() {
     bool query_mode = p->count || p->list_test_cases || p->list_test_suites;
 
     if(!query_mode)
-        DOCTEST_ITERATE_THROUGH_REPORTERS(test_run_start, *g_contextState);
+        DOCTEST_ITERATE_THROUGH_REPORTERS(test_run_start, *g_cs);
 
     // invoke the registered functions if they match the filter criteria (or just count them)
     for(auto& curr : testArray) {
@@ -5125,13 +5093,13 @@ int Context::run() {
                 // call it from here only if we will continue looping for other subcases and
                 // call it again outside of the loop for one final time - with updated flags
                 if(p->should_reenter == true) {
-                    DOCTEST_ITERATE_THROUGH_REPORTERS(test_case_end, *g_contextState);
+                    DOCTEST_ITERATE_THROUGH_REPORTERS(test_case_end, *g_cs);
                     p->failure_flags &= ~TestCaseFailureReason::Exception;
                     p->failure_flags &= ~TestCaseFailureReason::AssertFailure;
                 }
             } while(p->should_reenter == true);
 
-            if(g_contextState->numAssertsFailedForCurrentTestCase)
+            if(g_cs->numAssertsFailedForCurrentTestCase)
                 p->failure_flags |= TestCaseFailureReason::AssertFailure;
 
             if(Approx(p->currentTest->m_timeout).epsilon(DBL_EPSILON) != 0 &&
@@ -5162,9 +5130,9 @@ int Context::run() {
             if(p->failure_flags && !ok_to_fail)
                 p->numTestCasesFailed++;
 
-            DOCTEST_ITERATE_THROUGH_REPORTERS(test_case_end, *g_contextState);
+            DOCTEST_ITERATE_THROUGH_REPORTERS(test_case_end, *g_cs);
 
-            p->currentTest = 0;
+            p->currentTest = nullptr;
 
             // stop executing tests if enough assertions have failed
             if(p->abort_after > 0 && p->numAssertsFailed >= p->abort_after)
@@ -5173,11 +5141,11 @@ int Context::run() {
     }
 
     if(!query_mode)
-        DOCTEST_ITERATE_THROUGH_REPORTERS(test_run_end, *g_contextState);
+        DOCTEST_ITERATE_THROUGH_REPORTERS(test_run_end, *g_cs);
     else
         g_con_rep.output_query_results();
 
-    g_contextState     = old_cs;
+    g_cs               = old_cs;
     is_running_in_test = false;
 
     if(p->numTestCasesFailed && !p->no_exitcode)
@@ -5191,16 +5159,14 @@ DOCTEST_DEFINE_DEFAULTS(TestRunStats);
 
 IReporter::~IReporter() = default;
 
-int IReporter::get_num_active_contexts() { return detail::g_contextState->contexts.size(); }
+int IReporter::get_num_active_contexts() { return detail::g_cs->contexts.size(); }
 const IContextScope* const* IReporter::get_active_contexts() {
-    return get_num_active_contexts() ? &detail::g_contextState->contexts[0] : 0;
+    return get_num_active_contexts() ? &detail::g_cs->contexts[0] : nullptr;
 }
 
-int IReporter::get_num_stringified_contexts() {
-    return detail::g_contextState->stringifiedContexts.size();
-}
+int IReporter::get_num_stringified_contexts() { return detail::g_cs->stringifiedContexts.size(); }
 const String* IReporter::get_stringified_contexts() {
-    return get_num_stringified_contexts() ? &detail::g_contextState->stringifiedContexts[0] : 0;
+    return get_num_stringified_contexts() ? &detail::g_cs->stringifiedContexts[0] : nullptr;
 }
 
 int registerReporter(const char* name, int priority, IReporter* r) {

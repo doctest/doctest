@@ -19,10 +19,6 @@ DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_END
 
 #ifndef DOCTEST_CONFIG_DISABLE
 
-DOCTEST_CLANG_SUPPRESS_WARNING_PUSH
-DOCTEST_CLANG_SUPPRESS_WARNING("-Wc++98-compat")
-DOCTEST_CLANG_SUPPRESS_WARNING("-Wc++98-compat-pedantic") 
-
 // =================================================================================================
 // !!! THESE ARE NOT PROPER EXAMPLES OF LIBRARY USAGE !!! THESE ARE MEANT FOR CODE COVERAGE ONLY !!!
 // =================================================================================================
@@ -141,7 +137,5 @@ TEST_SUITE("will be overridden by a decorator" * doctest::test_suite("exception 
         throw_if(true, doctest::String("unknown :("));
     }
 }
-
-DOCTEST_CLANG_SUPPRESS_WARNING_POP
 
 #endif // DOCTEST_CONFIG_DISABLE

@@ -159,12 +159,6 @@ DOCTEST_CLANG_SUPPRESS_WARNING("-Wpadded")
 DOCTEST_CLANG_SUPPRESS_WARNING("-Wdeprecated")
 DOCTEST_CLANG_SUPPRESS_WARNING("-Wmissing-prototypes")
 DOCTEST_CLANG_SUPPRESS_WARNING("-Wunused-local-typedef")
-DOCTEST_CLANG_SUPPRESS_WARNING("-Wc++11-long-long")
-#if DOCTEST_CLANG && DOCTEST_CLANG_HAS_WARNING("-Wzero-as-null-pointer-constant")
-DOCTEST_CLANG_SUPPRESS_WARNING("-Wzero-as-null-pointer-constant")
-#endif // clang - 0 as null
-DOCTEST_CLANG_SUPPRESS_WARNING("-Wc++98-compat")
-DOCTEST_CLANG_SUPPRESS_WARNING("-Wc++98-compat-pedantic")
 
 DOCTEST_GCC_SUPPRESS_WARNING_PUSH
 DOCTEST_GCC_SUPPRESS_WARNING("-Wunknown-pragmas")
@@ -176,8 +170,6 @@ DOCTEST_GCC_SUPPRESS_WARNING("-Wctor-dtor-privacy")
 DOCTEST_GCC_SUPPRESS_WARNING("-Wmissing-declarations")
 DOCTEST_GCC_SUPPRESS_WARNING("-Wnon-virtual-dtor")
 DOCTEST_GCC_SUPPRESS_WARNING("-Winline")
-DOCTEST_GCC_SUPPRESS_WARNING("-Wlong-long")
-DOCTEST_GCC_SUPPRESS_WARNING("-Wzero-as-null-pointer-constant")
 DOCTEST_GCC_SUPPRESS_WARNING("-Wunused-local-typedefs")
 DOCTEST_GCC_SUPPRESS_WARNING("-Wuseless-cast")
 
@@ -774,9 +766,6 @@ namespace detail {
     // cppcheck-suppress unusedStructMember
     { static const bool value = false; };
 
-    // to silence the warning "-Wzero-as-null-pointer-constant" only for gcc 5 for the Approx template ctor - pragmas don't work for it...
-    inline void* getNull() { return 0; }
-
     namespace has_insertion_operator_impl {
         typedef char no;
         typedef char yes[2];
@@ -912,7 +901,7 @@ public:
     template <typename T>
     explicit Approx(const T& value,
                     typename detail::enable_if<std::is_constructible<double, T>::value>::type* =
-                            static_cast<T*>(detail::getNull())) {
+                            static_cast<T*>(nullptr)) {
         *this = Approx(static_cast<double>(value));
     }
 #endif // DOCTEST_CONFIG_INCLUDE_TYPE_TRAITS
@@ -1575,8 +1564,8 @@ namespace detail {
 
         Chunk stackChunks[DOCTEST_CONFIG_NUM_CAPTURES_ON_STACK];
         int   numCaptures = 0;
-        Node* head        = 0;
-        Node* tail        = 0;
+        Node* head        = nullptr;
+        Node* tail        = nullptr;
 
         ContextBuilder(ContextBuilder& other);
 
@@ -1599,7 +1588,7 @@ namespace detail {
                 my_memcpy(stackChunks[numCaptures].buf, &temp, sizeof(Chunk));
             } else {
                 auto curr  = new Node;
-                curr->next = 0;
+                curr->next = nullptr;
                 if(tail) {
                     tail->next = curr;
                     tail       = curr;
@@ -1712,7 +1701,7 @@ class DOCTEST_INTERFACE Context
     void parseArgs(int argc, const char* const* argv, bool withDefaults = false);
 
 public:
-    explicit Context(int argc = 0, const char* const* argv = 0);
+    explicit Context(int argc = 0, const char* const* argv = nullptr);
 
     DOCTEST_DELETE_COPIES(Context);
 
@@ -1900,9 +1889,6 @@ int registerReporter(const char* name, int priority, IReporter* r);
 #define DOCTEST_TEST_CASE_TEMPLATE_DEFINE_IMPL(dec, T, id, anon)                                   \
     template <typename T>                                                                          \
     inline void anon();                                                                            \
-    DOCTEST_CLANG_SUPPRESS_WARNING_PUSH                                                            \
-    DOCTEST_CLANG_SUPPRESS_WARNING("-Wc++98-compat")                                               \
-    DOCTEST_CLANG_SUPPRESS_WARNING("-Wc++98-compat-pedantic")                                      \
     template <typename Type, typename... Rest>                                                     \
     struct DOCTEST_CAT(id, ITERATOR)                                                               \
     {                                                                                              \
@@ -1911,7 +1897,6 @@ int registerReporter(const char* name, int priority, IReporter* r);
             DOCTEST_CAT(id, ITERATOR)<Rest...>(line, index + 1);                                   \
         }                                                                                          \
     };                                                                                             \
-    DOCTEST_CLANG_SUPPRESS_WARNING_POP                                                             \
     template <typename Type>                                                                       \
     struct DOCTEST_CAT(id, ITERATOR)<Type>                                                         \
     {                                                                                              \
@@ -1929,16 +1914,12 @@ int registerReporter(const char* name, int priority, IReporter* r);
     DOCTEST_TEST_CASE_TEMPLATE_DEFINE_IMPL_PROXY(dec, T, id, DOCTEST_ANONYMOUS(_DOCTEST_ANON_TMP_))
 
 #define DOCTEST_TEST_CASE_TEMPLATE_INSTANTIATE_IMPL(id, anon, ...)                                 \
-    DOCTEST_CLANG_SUPPRESS_WARNING_PUSH                                                            \
-    DOCTEST_CLANG_SUPPRESS_WARNING("-Wc++98-compat")                                               \
-    DOCTEST_CLANG_SUPPRESS_WARNING("-Wc++98-compat-pedantic")                                      \
     DOCTEST_GLOBAL_NO_WARNINGS(DOCTEST_CAT(anon, DUMMY)) = []() {                                  \
         DOCTEST_CAT(id, ITERATOR)<__VA_ARGS__> DOCTEST_UNUSED DOCTEST_CAT(anon, inner_dummy)(      \
                 __LINE__, 0);                                                                      \
         return 0;                                                                                  \
     }();                                                                                           \
-    DOCTEST_GLOBAL_NO_WARNINGS_END()                                                               \
-    DOCTEST_CLANG_SUPPRESS_WARNING_POP
+    DOCTEST_GLOBAL_NO_WARNINGS_END()
 
 #define DOCTEST_TEST_CASE_TEMPLATE_INSTANTIATE(id, ...)                                            \
     DOCTEST_TEST_CASE_TEMPLATE_INSTANTIATE_IMPL(id, DOCTEST_ANONYMOUS(_DOCTEST_ANON_TMP_),         \
@@ -1956,11 +1937,8 @@ int registerReporter(const char* name, int priority, IReporter* r);
 
 // for subcases
 #define DOCTEST_SUBCASE(name)                                                                      \
-    if(DOCTEST_CLANG_SUPPRESS_WARNING_WITH_PUSH("-Wc++98-compat-bind-to-temporary-copy")           \
-                       const doctest::detail::Subcase &                                            \
-               DOCTEST_ANONYMOUS(_DOCTEST_ANON_SUBCASE_) DOCTEST_UNUSED =                          \
-               doctest::detail::Subcase(name, __FILE__, __LINE__)                                  \
-                       DOCTEST_CLANG_SUPPRESS_WARNING_POP)
+    if(const doctest::detail::Subcase & DOCTEST_ANONYMOUS(_DOCTEST_ANON_SUBCASE_) DOCTEST_UNUSED = \
+               doctest::detail::Subcase(name, __FILE__, __LINE__))
 
 // for grouping tests in test suites by using code blocks
 #define DOCTEST_TEST_SUITE_IMPL(decorators, ns_name)                                               \
