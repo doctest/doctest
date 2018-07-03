@@ -639,6 +639,8 @@ namespace assertType {
 } // namespace assertType
 
 DOCTEST_INTERFACE const char* assertString(assertType::Enum at);
+DOCTEST_INTERFACE const char* failureString(assertType::Enum at);
+DOCTEST_INTERFACE const char* removePathFromFilename(const char* file);
 
 struct DOCTEST_INTERFACE TestCaseData
 {

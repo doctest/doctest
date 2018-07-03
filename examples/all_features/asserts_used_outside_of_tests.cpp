@@ -46,18 +46,9 @@ void some_program_code(int argc, char** argv) {
         // - throw an exception
         // - call std::abort() or std::terminate()
 
-        auto getFailString = [](assertType::Enum at) {
-            if(at & assertType::is_warn)
-                return "WARNING: ";
-            if(at & assertType::is_check)
-                return "ERROR: ";
-            if(at & assertType::is_require)
-                return "FATAL ERROR: ";
-            return "";
-        };
-
-        std::cout << Color::LightGrey << ad.m_file << "(" << ad.m_line << "): ";
-        std::cout << Color::Red << getFailString(ad.m_at);
+        std::cout << Color::LightGrey << removePathFromFilename(ad.m_file) << "(" << ad.m_line
+                  << "): ";
+        std::cout << Color::Red << failureString(ad.m_at);
 
         // handling only normal (comparison and unary) asserts - nothing exceptions-related
         if(ad.m_at & assertType::is_normal) {

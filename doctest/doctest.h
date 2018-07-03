@@ -642,6 +642,8 @@ namespace assertType {
 } // namespace assertType
 
 DOCTEST_INTERFACE const char* assertString(assertType::Enum at);
+DOCTEST_INTERFACE const char* failureString(assertType::Enum at);
+DOCTEST_INTERFACE const char* removePathFromFilename(const char* file);
 
 struct DOCTEST_INTERFACE TestCaseData
 {
@@ -3145,6 +3147,30 @@ const char* assertString(assertType::Enum at) {
 }
 // clang-format on
 
+const char* failureString(assertType::Enum at) {
+    if(at & assertType::is_warn) //!OCLINT bitwise operator in conditional
+        return "WARNING: ";
+    if(at & assertType::is_check) //!OCLINT bitwise operator in conditional
+        return "ERROR: ";
+    if(at & assertType::is_require) //!OCLINT bitwise operator in conditional
+        return "FATAL ERROR: ";
+    return "";
+}
+
+// depending on the current options this will remove the path of filenames
+const char* removePathFromFilename(const char* file) {
+    if(getContextOptions()->no_path_in_filenames) {
+        auto back    = std::strrchr(file, '\\');
+        auto forward = std::strrchr(file, '/');
+        if(back || forward) {
+            if(back > forward)
+                forward = back;
+            return forward + 1;
+        }
+    }
+    return file;
+}
+
 DOCTEST_DEFINE_DEFAULTS(TestCaseData);
 DOCTEST_DEFINE_COPIES(TestCaseData);
 
@@ -4237,22 +4263,9 @@ namespace {
                  "\n";
         }
 
-        // depending on the current options this will remove the path of filenames
-        const char* file_for_output(const char* file) {
-            if(opt->no_path_in_filenames) {
-                auto back    = std::strrchr(file, '\\');
-                auto forward = std::strrchr(file, '/');
-                if(back || forward) {
-                    if(back > forward)
-                        forward = back;
-                    return forward + 1;
-                }
-            }
-            return file;
-        }
-
         void file_line_to_stream(const char* file, int line, const char* tail = "") {
-            s << Color::LightGrey << file_for_output(file) << (opt->gnu_file_line ? ":" : "(")
+            s << Color::LightGrey << removePathFromFilename(file)
+              << (opt->gnu_file_line ? ":" : "(")
               << (opt->no_line_numbers ? 0 : line) // 0 or the real num depending on the option
               << (opt->gnu_file_line ? ":" : "):") << tail;
         }
@@ -4261,13 +4274,7 @@ namespace {
                                            const char* success_str) {
             if(success)
                 return success_str;
-            if(at & assertType::is_warn) //!OCLINT bitwise operator in conditional
-                return "WARNING: ";
-            if(at & assertType::is_check) //!OCLINT bitwise operator in conditional
-                return "ERROR: ";
-            if(at & assertType::is_require) //!OCLINT bitwise operator in conditional
-                return "FATAL ERROR: ";
-            return "";
+            return failureString(at);
         }
 
         Color::Enum getSuccessOrFailColor(bool success, assertType::Enum at) {
