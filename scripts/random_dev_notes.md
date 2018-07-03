@@ -56,7 +56,6 @@ https://www.boost.org/doc/libs/1_67_0/libs/test/doc/html/index.html
     - for loops
     - lambdas
     - auto
-    - enum class
 
 
 

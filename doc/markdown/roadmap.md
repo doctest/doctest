@@ -9,7 +9,6 @@ Planned features for future releases - order changes constantly...
 
 ### For 2.0:
 
-- add ability to use asserts outside of a test run context
 - reporters
     - output to file
     - a system for writing custom reporters
@@ -19,16 +18,8 @@ Planned features for future releases - order changes constantly...
     - an xml reporter ([junit related stuff](https://github.com/ujiro99/doctest-junit-report))
     - xUnit reporter
     - a listener interface - similar to a reporter - look at Catch
-- ability to have no output when everything succeeds
-- remove C++98 support
-    - remove the config identifiers for C++11 features
-    - use variadic templates where appropriate
-    - update type lists to C++11
-    - update traits - use declval, etc.
-    - move initialization of fields from initializer lists to class bodies
-    - update static code analysis - less warning suppressing
-- drop some config options - simplify!!!
-- option to output summary only
+    - ability to have no output when everything succeeds
+    - option to output summary only
 - thread safety - asserts/subcases/captures should be safe to be used by multiple threads simultaneously
     - https://github.com/blastrock/doctest/tree/threadsafe
 

@@ -3276,7 +3276,9 @@ bool operator>(const Approx& lhs, double rhs) { return lhs.m_value > rhs && lhs 
 String toString(const Approx& in) {
     return String("Approx( ") + doctest::toString(in.m_value) + " )";
 }
-const ContextOptions* getContextOptions() { return DOCTEST_BRANCH_ON_DISABLED(0, g_contextState); }
+const ContextOptions* getContextOptions() {
+    return DOCTEST_BRANCH_ON_DISABLED(nullptr, g_contextState);
+}
 
 } // namespace doctest
 
