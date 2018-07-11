@@ -7,27 +7,11 @@ This library is free, and will stay free but needs your support to sustain its d
 
 Planned features for future releases - order changes constantly...
 
-### For 2.0:
-
-- reporters
-    - output to file
-    - a system for writing custom reporters
-    - ability to use multiple reporters at once (but only 1 to stdout)
-    - a compact reporter
-    - a progress reporter - or maybe just an option for the console reporter
-    - an xml reporter ([junit related stuff](https://github.com/ujiro99/doctest-junit-report))
-    - xUnit reporter
-    - a listener interface - similar to a reporter - look at Catch
-    - ability to have no output when everything succeeds
-    - option to output summary only
-- thread safety - asserts/subcases/captures should be safe to be used by multiple threads simultaneously
-    - https://github.com/blastrock/doctest/tree/threadsafe
-
 ### For 2.1:
 
 - header with extensions
     - demangling with the use of the cxxabi header
-    - stringification of types from std
+    - stringification of types from std, also enums with the help of traits as discussed in #121
     - esoteric reporters
 - matchers - should investigate what they are - look at google test/mock and Catch (also predicates and boost test)
 - convolution support for the assertion macros (with a predicate)
