@@ -1805,14 +1805,12 @@ struct DOCTEST_INTERFACE IReporter
     static const String* get_stringified_contexts();
 };
 
-int registerReporter(const char* name, int priority, IReporter* r);
+int registerReporter(const char* name, int priority, IReporter& r);
 
 } // namespace doctest
 
 // if registering is not disabled
 #if !defined(DOCTEST_CONFIG_DISABLE)
-
-#define DOCTEST_EXPAND_VA_ARGS(...) __VA_ARGS__
 
 // common code in asserts - for convenience
 #define DOCTEST_ASSERT_LOG_AND_REACT(b)                                                            \

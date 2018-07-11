@@ -202,6 +202,9 @@ namespace detail {
     // this holds both parameters from the command line and runtime data for tests
     struct ContextState : ContextOptions, TestRunStats, CurrentTestCaseStats
     {
+        std::atomic<int> numAssertsForCurrentTestCase_atomic;
+        std::atomic<int> numAssertsFailedForCurrentTestCase_atomic;
+
         std::vector<std::vector<String> > filters = decltype(filters)(9); // 9 different filters
 
         std::vector<IReporter*> reporters_currently_used;
@@ -732,9 +735,9 @@ namespace {
     }
 } // namespace
 namespace detail {
-#define DOCTEST_ITERATE_THROUGH_REPORTERS(function, args)                                          \
+#define DOCTEST_ITERATE_THROUGH_REPORTERS(function, ...)                                           \
     for(auto& curr_rep : g_cs->reporters_currently_used)                                           \
-    curr_rep->function(args)
+    curr_rep->function(__VA_ARGS__)
 
     DOCTEST_DEFINE_DEFAULTS(TestFailureException);
     DOCTEST_DEFINE_COPIES(TestFailureException);
@@ -744,7 +747,8 @@ namespace detail {
 
         if((at & assertType::is_check) //!OCLINT bitwise operator in conditional
            && getContextOptions()->abort_after > 0 &&
-           g_cs->numAssertsFailed >= getContextOptions()->abort_after)
+           (g_cs->numAssertsFailed + g_cs->numAssertsFailedForCurrentTestCase_atomic) >=
+                   getContextOptions()->abort_after)
             return true;
 
         return false;
@@ -1455,17 +1459,13 @@ namespace {
 #endif // Platform
 
     void addAssert(assertType::Enum at) {
-        if((at & assertType::is_warn) == 0) { //!OCLINT bitwise operator in conditional
-            g_cs->numAsserts++;
-            g_cs->numAssertsForCurrentTestCase++;
-        }
+        if((at & assertType::is_warn) == 0) //!OCLINT bitwise operator in conditional
+            g_cs->numAssertsForCurrentTestCase_atomic++;
     }
 
     void addFailedAssert(assertType::Enum at) {
-        if((at & assertType::is_warn) == 0) { //!OCLINT bitwise operator in conditional
-            g_cs->numAssertsFailed++;
-            g_cs->numAssertsFailedForCurrentTestCase++;
-        }
+        if((at & assertType::is_warn) == 0) //!OCLINT bitwise operator in conditional
+            g_cs->numAssertsFailedForCurrentTestCase_atomic++;
     }
 
 #if defined(DOCTEST_CONFIG_POSIX_SIGNALS) || defined(DOCTEST_CONFIG_WINDOWS_SEH)
@@ -1584,6 +1584,8 @@ namespace detail {
     MessageBuilder::~MessageBuilder() { freeStream(m_stream); }
 } // namespace detail
 namespace {
+    std::mutex g_mutex;
+
     using namespace detail;
     struct ConsoleReporter : public IReporter
     {
@@ -1785,6 +1787,8 @@ namespace {
             if(!rb.m_failed && !opt->success)
                 return;
 
+            std::lock_guard<std::mutex> lock(g_mutex);
+
             logTestStart();
 
             file_line_to_stream(rb.m_file, rb.m_line, " ");
@@ -1819,6 +1823,8 @@ namespace {
         }
 
         void log_message(const MessageData& mb) override {
+            std::lock_guard<std::mutex> lock(g_mutex);
+
             logTestStart();
 
             file_line_to_stream(mb.m_file, mb.m_line, " ");
@@ -2282,7 +2288,7 @@ int Context::run() {
     p->resetRunData();
 
     ConsoleReporterWithHelpers g_con_rep(std::cout);
-    registerReporter("console", 0, &g_con_rep);
+    registerReporter("console", 0, g_con_rep);
 
     // setup default reporter if none is given through the command line
     p->reporters_currently_used.clear();
@@ -2418,11 +2424,9 @@ int Context::run() {
         {
             p->currentTest = &tc;
 
-            p->failure_flags                      = TestCaseFailureReason::None;
-            p->numAssertsFailedForCurrentTestCase = 0;
-            p->numAssertsForCurrentTestCase       = 0;
-            p->seconds_so_far                     = 0;
-            p->error_string                       = "";
+            p->failure_flags  = TestCaseFailureReason::None;
+            p->seconds_so_far = 0;
+            p->error_string   = "";
 
             p->subcasesPassed.clear();
             do {
@@ -2433,6 +2437,10 @@ int Context::run() {
 
                 // reset stuff for logging with INFO()
                 p->stringifiedContexts.clear();
+
+                // reset atomic counters
+                p->numAssertsFailedForCurrentTestCase_atomic = 0;
+                p->numAssertsForCurrentTestCase_atomic       = 0;
 
                 DOCTEST_ITERATE_THROUGH_REPORTERS(test_case_start, tc);
 
@@ -2456,6 +2464,13 @@ int Context::run() {
 
                 p->seconds_so_far += g_timer.getElapsedSeconds();
 
+                // update the non-atomic counters
+                p->numAsserts += p->numAssertsForCurrentTestCase_atomic;
+                p->numAssertsForCurrentTestCase = p->numAssertsForCurrentTestCase_atomic;
+                p->numAssertsFailed += p->numAssertsFailedForCurrentTestCase_atomic;
+                p->numAssertsFailedForCurrentTestCase =
+                        p->numAssertsFailedForCurrentTestCase_atomic;
+
                 // exit this loop if enough assertions have failed - even if there are more subcases
                 if(p->abort_after > 0 && p->numAssertsFailed >= p->abort_after) {
                     p->should_reenter = false;
@@ -2466,12 +2481,13 @@ int Context::run() {
                 // call it again outside of the loop for one final time - with updated flags
                 if(p->should_reenter == true) {
                     DOCTEST_ITERATE_THROUGH_REPORTERS(test_case_end, *g_cs);
+                    // remove these flags - it is expected that the reporters have handled these issues
                     p->failure_flags &= ~TestCaseFailureReason::Exception;
                     p->failure_flags &= ~TestCaseFailureReason::AssertFailure;
                 }
             } while(p->should_reenter == true);
 
-            if(g_cs->numAssertsFailedForCurrentTestCase)
+            if(p->numAssertsFailedForCurrentTestCase)
                 p->failure_flags |= TestCaseFailureReason::AssertFailure;
 
             if(Approx(p->currentTest->m_timeout).epsilon(DBL_EPSILON) != 0 &&
@@ -2541,8 +2557,8 @@ const String* IReporter::get_stringified_contexts() {
     return get_num_stringified_contexts() ? &detail::g_cs->stringifiedContexts[0] : nullptr;
 }
 
-int registerReporter(const char* name, int priority, IReporter* r) {
-    getReporters().insert(reporterMap::value_type(reporterMap::key_type(priority, name), r));
+int registerReporter(const char* name, int priority, IReporter& r) {
+    getReporters().insert(reporterMap::value_type(reporterMap::key_type(priority, name), &r));
     return 0;
 }
 
