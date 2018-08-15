@@ -203,24 +203,14 @@ matrix:
       osx_image: xcode8.3
       os: osx
 
-    # Xcode 9 Clang
-    - env: COMPILER=clang++ HAS_ASAN_32=true HAS_UBSAN_32=true HAS_ASAN_64=true HAS_UBSAN_64=true
-      osx_image: xcode9
-      os: osx
-
-    # Xcode 9.1 Clang
-    - env: COMPILER=clang++ HAS_ASAN_32=true HAS_UBSAN_32=true HAS_ASAN_64=true HAS_UBSAN_64=true
-      osx_image: xcode9.1
-      os: osx
-
     # Xcode 9.2 Clang
     - env: COMPILER=clang++ HAS_ASAN_32=true HAS_UBSAN_32=true HAS_ASAN_64=true HAS_UBSAN_64=true
       osx_image: xcode9.2
       os: osx
 
-    # Xcode 9.3 Clang
+    # Xcode 9.4 Clang
     - env: COMPILER=clang++ HAS_ASAN_32=true HAS_UBSAN_32=true HAS_ASAN_64=true HAS_UBSAN_64=true
-      osx_image: xcode9.3
+      osx_image: xcode9.4
       os: osx
 
     # OSX GCC 4.9
