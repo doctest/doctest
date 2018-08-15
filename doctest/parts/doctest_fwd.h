@@ -375,6 +375,9 @@ extern "C" __declspec(dllimport) void __stdcall DebugBreak();
 #include <ciso646>
 #endif // clang
 
+// Forward declaring 'X' in namespace std is not permitted by the C++ Standard.
+DOCTEST_MSVC_SUPPRESS_WARNING_WITH_PUSH(4643)
+
 #if defined(_LIBCPP_VERSION) || defined(DOCTEST_CONFIG_USE_IOSFWD)
 // not forward declaring ostream for libc++ because I had some problems (inline namespaces vs c++98)
 // so the <iosfwd> header is used - also it is very light and doesn't drag a ton of stuff
@@ -398,6 +401,8 @@ namespace std {
 typedef decltype(nullptr) nullptr_t;
 }
 #endif // _LIBCPP_VERSION
+
+DOCTEST_MSVC_SUPPRESS_WARNING_POP
 
 #ifdef DOCTEST_CONFIG_INCLUDE_TYPE_TRAITS
 #include <type_traits>
