@@ -48,6 +48,13 @@ DOCTEST_REGISTER_REPORTER("xml", 1, r);
 
 
 
+TEST_CASE("better message needed") {
+    CHECK(false);
+    SUBCASE("subcase 1") {
+        CHECK(false);
+    }
+    CHECK(false);
+}
 
 
 
@@ -92,7 +99,7 @@ move to C++11 - done:
     - for loops
     - lambdas
     - auto
-
+    - easy thread safety
 
 reporters - done:
     - can be used for listening for events
@@ -115,7 +122,7 @@ reporters - todo:
     - documentation
 
 thread safety - todo:
-    logging with INFO
+    logging with INFO - perhaps with thread_local or __declspec(thread)
     look into unique_lock
     look into these:
         http://preshing.com/20111124/always-use-a-lightweight-mutex/
