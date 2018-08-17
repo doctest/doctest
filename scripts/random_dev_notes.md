@@ -122,8 +122,6 @@ reporters - todo:
     - documentation
 
 thread safety - todo:
-    logging with INFO - perhaps with thread_local or __declspec(thread)
-    look into unique_lock
     look into these:
         http://preshing.com/20111124/always-use-a-lightweight-mutex/
         http://preshing.com/20120226/roll-your-own-lightweight-mutex/
