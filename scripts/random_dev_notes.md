@@ -126,7 +126,6 @@ thread safety - todo:
         http://preshing.com/20111124/always-use-a-lightweight-mutex/
         http://preshing.com/20120226/roll-your-own-lightweight-mutex/
     example
-    DebugOutputWindowReporter - think about it - touching the no_colors option and its stream in the context of asserts...
     thread sanitizer tests
     documentation
         mention that subcases should still be used in a single threaded way

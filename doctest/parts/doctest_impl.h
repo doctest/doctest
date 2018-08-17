@@ -238,7 +238,9 @@ namespace detail {
         }
     };
 
-    ContextState* g_cs = nullptr;
+    ContextState*     g_cs = nullptr;
+    thread_local bool g_no_colors; // used to avoid locks for the debug output window reporter
+
 #endif // DOCTEST_CONFIG_DISABLE
 } // namespace detail
 
@@ -1075,7 +1077,7 @@ namespace {
         ((void)s);    // for DOCTEST_CONFIG_COLORS_NONE or DOCTEST_CONFIG_COLORS_WINDOWS
         ((void)code); // for DOCTEST_CONFIG_COLORS_NONE
 #ifdef DOCTEST_CONFIG_COLORS_ANSI
-        if(getContextOptions()->no_colors ||
+        if(g_no_colors ||
            (isatty(STDOUT_FILENO) == false && getContextOptions()->force_colors == false))
             return;
 
@@ -1102,7 +1104,7 @@ namespace {
 #endif // DOCTEST_CONFIG_COLORS_ANSI
 
 #ifdef DOCTEST_CONFIG_COLORS_WINDOWS
-        if(getContextOptions()->no_colors ||
+        if(g_no_colors ||
            (isatty(fileno(stdout)) == false && getContextOptions()->force_colors == false))
             return;
 
@@ -1974,7 +1976,7 @@ namespace {
 #ifdef DOCTEST_PLATFORM_WINDOWS
     struct DebugOutputWindowReporter : public ConsoleReporter
     {
-        std::ostringstream oss;
+        thread_local static std::ostringstream oss;
 
         DebugOutputWindowReporter()
                 : ConsoleReporter(oss) {}
@@ -1982,12 +1984,12 @@ namespace {
 #define DOCTEST_DEBUG_OUTPUT_WINDOW_REPORTER_OVERRIDE(func, type)                                  \
     void func(type in) override {                                                                  \
         if(isDebuggerActive()) {                                                                   \
-            bool with_col   = getContextOptions()->no_colors;                                      \
-            g_cs->no_colors = false;                                                               \
+            bool with_col = g_no_colors;                                                           \
+            g_no_colors   = false;                                                                 \
             ConsoleReporter::func(in);                                                             \
             DOCTEST_OUTPUT_DEBUG_STRING(oss.str().c_str());                                        \
             oss.str("");                                                                           \
-            g_cs->no_colors = with_col;                                                            \
+            g_no_colors = with_col;                                                                \
         }                                                                                          \
     }
 
@@ -2001,6 +2003,8 @@ namespace {
         DOCTEST_DEBUG_OUTPUT_WINDOW_REPORTER_OVERRIDE(log_message, const MessageData&)
         DOCTEST_DEBUG_OUTPUT_WINDOW_REPORTER_OVERRIDE(test_case_skipped, const TestCaseData&)
     };
+
+    thread_local std::ostringstream DebugOutputWindowReporter::oss;
 
     DebugOutputWindowReporter g_debug_output_rep;
 #endif // DOCTEST_PLATFORM_WINDOWS
@@ -2294,6 +2298,7 @@ int Context::run() {
     auto old_cs        = g_cs;
     g_cs               = p;
     is_running_in_test = true;
+    g_no_colors        = p->no_colors;
     p->resetRunData();
 
     ConsoleReporterWithHelpers g_con_rep(std::cout);
