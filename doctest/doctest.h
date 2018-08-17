@@ -2744,14 +2744,6 @@ DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_END
 // counts the number of elements in a C array
 #define DOCTEST_COUNTOF(x) (sizeof(x) / sizeof(x[0]))
 
-#if DOCTEST_MSVC && DOCTEST_MSVC < DOCTEST_COMPILER(19, 0, 0)
-#define DOCTEST_THREAD_LOCAL __declspec(thread)
-#elif DOCTEST_GCC && DOCTEST_GCC < DOCTEST_COMPILER(4, 8, 0)
-#define DOCTEST_THREAD_LOCAL __thread
-#else // DOCTEST_THREAD_LOCAL
-#define DOCTEST_THREAD_LOCAL thread_local
-#endif // DOCTEST_THREAD_LOCAL
-
 #ifdef DOCTEST_CONFIG_DISABLE
 #define DOCTEST_BRANCH_ON_DISABLED(if_disabled, if_not_disabled) if_disabled
 #else // DOCTEST_CONFIG_DISABLE
@@ -2827,7 +2819,7 @@ namespace detail {
         return oss.str().c_str();
     }
 
-    DOCTEST_THREAD_LOCAL std::ostringstream g_oss;
+    thread_local std::ostringstream g_oss;
 
     std::ostream* getTlsOss() {
         g_oss.clear(); // there shouldn't be anything worth clearing in the flags
@@ -3871,7 +3863,7 @@ namespace detail {
     void toStream(std::ostream* s, int long long in) { *s << in; }
     void toStream(std::ostream* s, int long long unsigned in) { *s << in; }
 
-    DOCTEST_THREAD_LOCAL std::vector<IContextScope*> g_infoContexts; // for logging with INFO()
+    thread_local std::vector<IContextScope*> g_infoContexts; // for logging with INFO()
 
     ContextBuilder::ICapture::ICapture()  = default;
     ContextBuilder::ICapture::~ICapture() = default;
