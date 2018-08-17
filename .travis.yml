@@ -215,19 +215,19 @@ matrix:
     # OSX GCC 6
     - env: COMPILER=g++-6 HAS_ASAN_32=true HAS_UBSAN_32=true HAS_ASAN_64=true HAS_UBSAN_64=true
       compiler: gcc
-      osx_image: xcode9.3
+      osx_image: xcode10
       os: osx
 
     # OSX GCC 7
     - env: COMPILER=g++-7 HAS_ASAN_32=true HAS_UBSAN_32=true HAS_ASAN_64=true HAS_UBSAN_64=true
       compiler: gcc
-      osx_image: xcode9.3
+      osx_image: xcode10
       os: osx
 
     # OSX GCC 8
     - env: COMPILER=g++-8 HAS_ASAN_32=true HAS_UBSAN_32=true HAS_ASAN_64=true HAS_UBSAN_64=true
       compiler: gcc
-      osx_image: xcode9.3
+      osx_image: xcode10
       os: osx
 
     # OSX LLVM-GCC
@@ -244,19 +244,19 @@ matrix:
     # OSX GCC 6
     - env: COMPILER=g++-6 HAS_ASAN_32=true HAS_UBSAN_32=true HAS_ASAN_64=true HAS_UBSAN_64=true
       compiler: gcc
-      osx_image: xcode9.3
+      osx_image: xcode10
       os: osx
 
     # OSX GCC 7
     - env: COMPILER=g++-7 HAS_ASAN_32=true HAS_UBSAN_32=true HAS_ASAN_64=true HAS_UBSAN_64=true
       compiler: gcc
-      osx_image: xcode9.3
+      osx_image: xcode10
       os: osx
 
     # OSX GCC 8
     - env: COMPILER=g++-8 HAS_ASAN_32=true HAS_UBSAN_32=true HAS_ASAN_64=true HAS_UBSAN_64=true
       compiler: gcc
-      osx_image: xcode9.3
+      osx_image: xcode10
       os: osx
 
 install:
