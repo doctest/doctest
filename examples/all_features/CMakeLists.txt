@@ -10,7 +10,7 @@ include_directories(../../doctest/)
 ## BUILD ALL EXAMPLE SOURCES INTO A SINGLE BINARY AND EXECUTE TESTS ON EACH FILE
 ################################################################################
 
-set(files
+set(files_with_output
     main.cpp
     doctest_proxy.h
     header.h
@@ -24,8 +24,14 @@ set(files
     asserts_used_outside_of_tests.cpp
 )
 
+set(files_all
+    ${files_with_output}
+    concurrency.cpp
+    ../../scripts/coverage_maxout.cpp
+)
+
 # add the executable
-doctest_add_executable(${PROJECT_NAME} ${files} ../../scripts/coverage_maxout.cpp)
+doctest_add_executable(${PROJECT_NAME} ${files_all})
 
 # easy way to fix test coverage - disable colors and crash handling
 target_compile_definitions(${PROJECT_NAME} PRIVATE
@@ -37,9 +43,12 @@ target_compile_definitions(${PROJECT_NAME} PRIVATE
 set(common_args COMMAND $<TARGET_FILE:${PROJECT_NAME}> --no-skipped-summary --no-version --reporters=console)
 
 # add per-file tests
-foreach(f ${files})
+foreach(f ${files_with_output})
     doctest_add_test(NAME ${f} ${common_args} -sf=*${f})
 endforeach()
+
+# add this separately since it shouldn't have output compared to reference output - due to concurrency
+doctest_add_test(NO_OUTPUT NAME concurrency.cpp ${common_args} -sf=*concurrency.cpp)
 
 # add this separately since the file has a non-straightforward path
 doctest_add_test(NAME coverage_maxout.cpp ${common_args} -sf=*coverage_maxout.cpp)
@@ -71,7 +80,7 @@ if(DEFINED ENV{CODE_COVERAGE})
     return() # do not continue with the disabled example
 endif()
 
-doctest_add_executable(disabled ${files})
+doctest_add_executable(disabled ${files_all})
 target_compile_definitions(disabled PRIVATE DOCTEST_CONFIG_DISABLE)
 
 doctest_add_test(NAME disabled COMMAND $<TARGET_FILE:disabled>)
