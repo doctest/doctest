@@ -30,8 +30,8 @@
     - statically analyzed on the CI - [**Cppcheck**](http://cppcheck.sourceforge.net/) / [**Clang-Tidy**](http://oclint.org/) / [**Coverity Scan**](https://scan.coverity.com/) / [**OCLint**](https://scan.coverity.com/) / [**Visual Studio Analyzer**](https://docs.microsoft.com/en-us/visualstudio/code-quality/analyzing-c-cpp-code-quality-by-using-code-analysis)
 	- all tests have their output compared to reference output of a previous known good run
 	- all tests built and ran in **Debug**/**Release** and also in **32**/**64** bit modes
-	- all tests ran through **valgrind** under **Linux**
-	- all tests ran through **address** and **UB** sanitizers under **Linux**/**OSX**
+	- all tests ran through **valgrind** under **Linux** (sadly [not under OSX](https://github.com/onqtam/doctest/issues/11))
+	- all tests ran through **address**, **UB** and **thread** sanitizers under **Linux**/**OSX**
 	- tests are ran in more than **330** different configurations on UNIX (Linux + OSX) on **travis** CI
 	- tests are ran in a total of **22** different configurations on Windows on **appveyor** CI
 
