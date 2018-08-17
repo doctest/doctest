@@ -12,6 +12,8 @@ set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
 enable_testing()
 
+find_package(Threads)
+
 set(DOCTEST_TEST_MODE "COMPARE" CACHE STRING "Test mode - normal/run through valgrind/collect output/compare with output")
 set_property(CACHE DOCTEST_TEST_MODE PROPERTY STRINGS "NORMAL;VALGRIND;COLLECT;COMPARE")
 
@@ -61,6 +63,7 @@ endfunction()
 function(doctest_add_executable name)
     add_executable(${name} ${ARGN})
     add_dependencies(${name} assemble_single_header)
+    target_link_libraries(${name} ${CMAKE_THREAD_LIBS_INIT})
 endfunction()
 
 function(doctest_add_library name)
