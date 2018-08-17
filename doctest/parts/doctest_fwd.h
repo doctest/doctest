@@ -802,9 +802,8 @@ namespace detail {
 
     DOCTEST_INTERFACE void my_memcpy(void* dest, const void* src, unsigned num);
 
-    DOCTEST_INTERFACE std::ostream* createStream();
-    DOCTEST_INTERFACE String getStreamResult(std::ostream*);
-    DOCTEST_INTERFACE void   freeStream(std::ostream*);
+    DOCTEST_INTERFACE std::ostream* getTlsOss(); // returns a thread-local ostringstream
+    DOCTEST_INTERFACE String getTlsOssResult();
 
     template <bool C>
     struct StringMakerBase
@@ -820,11 +819,8 @@ namespace detail {
     {
         template <typename T>
         static String convert(const DOCTEST_REF_WRAP(T) in) {
-            auto s = createStream();
-            *s << in;
-            auto result = getStreamResult(s);
-            freeStream(s);
-            return result;
+            *getTlsOss() << in;
+            return getTlsOssResult();
         }
     };
 

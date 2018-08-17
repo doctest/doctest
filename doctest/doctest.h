@@ -805,9 +805,8 @@ namespace detail {
 
     DOCTEST_INTERFACE void my_memcpy(void* dest, const void* src, unsigned num);
 
-    DOCTEST_INTERFACE std::ostream* createStream();
-    DOCTEST_INTERFACE String getStreamResult(std::ostream*);
-    DOCTEST_INTERFACE void   freeStream(std::ostream*);
+    DOCTEST_INTERFACE std::ostream* getTlsOss(); // returns a thread-local ostringstream
+    DOCTEST_INTERFACE String getTlsOssResult();
 
     template <bool C>
     struct StringMakerBase
@@ -823,11 +822,8 @@ namespace detail {
     {
         template <typename T>
         static String convert(const DOCTEST_REF_WRAP(T) in) {
-            auto s = createStream();
-            *s << in;
-            auto result = getStreamResult(s);
-            freeStream(s);
-            return result;
+            *getTlsOss() << in;
+            return getTlsOssResult();
         }
     };
 
@@ -2823,11 +2819,19 @@ namespace detail {
         return oss.str().c_str();
     }
 
-    std::ostream* createStream() { return new std::ostringstream(); }
-    String        getStreamResult(std::ostream* s) {
-        return static_cast<std::ostringstream*>(s)->str().c_str(); // NOLINT
+    thread_local std::ostringstream g_oss;
+
+    std::ostream* getTlsOss() {
+        //g_oss.clear(); // there shouldn't be anything worth clearing in the flags
+        //g_oss.str(""); // the slow way of resetting a string stream
+        g_oss.seekp(0); // optimal reset - as seen here: https://stackoverflow.com/a/624291/3162383
+        return &g_oss;
     }
-    void freeStream(std::ostream* s) { delete s; }
+
+    String getTlsOssResult() {
+        g_oss << std::ends; // needed - as shown here: https://stackoverflow.com/a/624291/3162383
+        return g_oss.str().c_str();
+    }
 
 #ifndef DOCTEST_CONFIG_DISABLE
     // this holds both parameters from the command line and runtime data for tests
@@ -2844,8 +2848,7 @@ namespace detail {
 
         assert_handler ah = nullptr;
 
-        std::vector<IContextScope*> contexts;            // for logging with INFO() and friends
-        std::vector<String>         stringifiedContexts; // logging from INFO() due to an exception
+        std::vector<String> stringifiedContexts; // logging from INFO() due to an exception
 
         // stuff for subcases
         std::set<SubcaseSignature> subcasesPassed;
@@ -3860,6 +3863,8 @@ namespace detail {
     void toStream(std::ostream* s, int long long in) { *s << in; }
     void toStream(std::ostream* s, int long long unsigned in) { *s << in; }
 
+    thread_local std::vector<IContextScope*> g_infoContexts; // for logging with INFO() and friends
+
     ContextBuilder::ICapture::ICapture()  = default;
     ContextBuilder::ICapture::~ICapture() = default;
 
@@ -3911,7 +3916,7 @@ namespace detail {
 
     ContextScope::ContextScope(ContextBuilder& temp)
             : contextBuilder(temp) {
-        g_cs->contexts.push_back(this);
+        g_infoContexts.push_back(this);
     }
 
     DOCTEST_MSVC_SUPPRESS_WARNING_WITH_PUSH(4996) // std::uncaught_exception is deprecated in C++17
@@ -3922,7 +3927,7 @@ namespace detail {
             this->stringify(&s);
             g_cs->stringifiedContexts.push_back(s.str().c_str());
         }
-        g_cs->contexts.pop_back();
+        g_infoContexts.pop_back();
     }
     DOCTEST_GCC_SUPPRESS_WARNING_POP
     DOCTEST_MSVC_SUPPRESS_WARNING_POP
@@ -4183,7 +4188,7 @@ namespace detail {
     }
 
     MessageBuilder::MessageBuilder(const char* file, int line, assertType::Enum severity) {
-        m_stream   = createStream();
+        m_stream   = getTlsOss();
         m_file     = file;
         m_line     = line;
         m_severity = severity;
@@ -4193,7 +4198,7 @@ namespace detail {
     IExceptionTranslator::~IExceptionTranslator() = default;
 
     bool MessageBuilder::log() {
-        m_string = getStreamResult(m_stream);
+        m_string = getTlsOssResult();
         DOCTEST_ITERATE_THROUGH_REPORTERS(log_message, *this);
 
         const bool isWarn = m_severity & assertType::is_warn;
@@ -4212,7 +4217,7 @@ namespace detail {
             throwException();
     }
 
-    MessageBuilder::~MessageBuilder() { freeStream(m_stream); }
+    MessageBuilder::~MessageBuilder() = default;
 } // namespace detail
 namespace {
     std::mutex g_mutex;
@@ -5178,9 +5183,9 @@ DOCTEST_DEFINE_DEFAULTS(TestRunStats);
 
 IReporter::~IReporter() = default;
 
-int IReporter::get_num_active_contexts() { return detail::g_cs->contexts.size(); }
+int IReporter::get_num_active_contexts() { return detail::g_infoContexts.size(); }
 const IContextScope* const* IReporter::get_active_contexts() {
-    return get_num_active_contexts() ? &detail::g_cs->contexts[0] : nullptr;
+    return get_num_active_contexts() ? &detail::g_infoContexts[0] : nullptr;
 }
 
 int IReporter::get_num_stringified_contexts() { return detail::g_cs->stringifiedContexts.size(); }
