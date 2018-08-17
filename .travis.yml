@@ -67,7 +67,7 @@ matrix:
           sources: *apt_sources
 
     # GCC 4.8
-    - env: COMPILER=g++-4.8 HAS_ASAN_32=true HAS_ASAN_64=true
+    - env: COMPILER=g++-4.8 HAS_ASAN_32=true HAS_ASAN_64=true HAS_TSAN_64=true
       compiler: gcc
       addons: &gcc48
         apt:
@@ -75,7 +75,7 @@ matrix:
           sources: *apt_sources
 
     # GCC 4.9
-    - env: COMPILER=g++-4.9 HAS_UBSAN_32=true HAS_ASAN_64=true HAS_UBSAN_64=true # no ASAN_32 - errors when using ASAN_OPTIONS - probably g++ 4.9 bug
+    - env: COMPILER=g++-4.9 HAS_UBSAN_32=true HAS_ASAN_64=true HAS_UBSAN_64=true HAS_TSAN_32=true HAS_TSAN_64=true # no ASAN_32 - errors when using ASAN_OPTIONS - probably g++ 4.9 bug
       compiler: gcc
       addons: &gcc49
         apt:
@@ -83,7 +83,7 @@ matrix:
           sources: *apt_sources
 
     # GCC 5
-    - env: COMPILER=g++-5 HAS_ASAN_32=true HAS_UBSAN_32=true HAS_ASAN_64=true HAS_UBSAN_64=true ADDITIONAL_CXX_FLAGS=" -fuse-ld=gold"
+    - env: COMPILER=g++-5 HAS_ASAN_32=true HAS_UBSAN_32=true HAS_ASAN_64=true HAS_UBSAN_64=true HAS_TSAN_32=true HAS_TSAN_64=true ADDITIONAL_CXX_FLAGS=" -fuse-ld=gold"
       compiler: gcc
       addons: &gcc5
         apt:
@@ -91,7 +91,7 @@ matrix:
           sources: *apt_sources
 
     # GCC 6
-    - env: COMPILER=g++-6 HAS_ASAN_32=true HAS_UBSAN_32=true HAS_ASAN_64=true HAS_UBSAN_64=true ADDITIONAL_CXX_FLAGS=" -fuse-ld=gold"
+    - env: COMPILER=g++-6 HAS_ASAN_32=true HAS_UBSAN_32=true HAS_ASAN_64=true HAS_UBSAN_64=true HAS_TSAN_32=true HAS_TSAN_64=true ADDITIONAL_CXX_FLAGS=" -fuse-ld=gold"
       compiler: gcc
       addons: &gcc6
         apt:
@@ -99,7 +99,7 @@ matrix:
           sources: *apt_sources
 
     # GCC 7
-    - env: COMPILER=g++-7 HAS_ASAN_32=true HAS_UBSAN_32=true HAS_ASAN_64=true HAS_UBSAN_64=true ADDITIONAL_CXX_FLAGS=" -fuse-ld=gold"
+    - env: COMPILER=g++-7 HAS_ASAN_32=true HAS_UBSAN_32=true HAS_ASAN_64=true HAS_UBSAN_64=true HAS_TSAN_32=true HAS_TSAN_64=true ADDITIONAL_CXX_FLAGS=" -fuse-ld=gold"
       compiler: gcc
       sudo: required      # see this issue for more details: https://github.com/travis-ci/travis-ci/issues/9033
       addons: &gcc7
@@ -108,7 +108,7 @@ matrix:
           sources: *apt_sources
 
     # GCC 8
-    - env: COMPILER=g++-8 HAS_ASAN_32=true HAS_UBSAN_32=true HAS_ASAN_64=true HAS_UBSAN_64=true ADDITIONAL_CXX_FLAGS=" -fuse-ld=gold"
+    - env: COMPILER=g++-8 HAS_ASAN_32=true HAS_UBSAN_32=true HAS_ASAN_64=true HAS_UBSAN_64=true HAS_TSAN_32=true HAS_TSAN_64=true ADDITIONAL_CXX_FLAGS=" -fuse-ld=gold"
       compiler: gcc
       sudo: required      # see this issue for more details: https://github.com/travis-ci/travis-ci/issues/9033
       addons: &gcc8
@@ -117,14 +117,14 @@ matrix:
           sources: *apt_sources
 
     # Clang 3.5
-    - env: COMPILER=clang++-3.5 HAS_ASAN_64=true HAS_UBSAN_64=true
+    - env: COMPILER=clang++-3.5 HAS_ASAN_64=true HAS_UBSAN_64=true HAS_TSAN_64=true
       addons: &clang35
         apt:
           packages: ["clang-3.5", "valgrind", "g++-multilib", "libc6-dbg", "libc6-dbg:i386", "g++-6"]
           sources: *apt_sources
 
     # Clang 3.6
-    - env: COMPILER=clang++-3.6 HAS_ASAN_64=true HAS_UBSAN_64=true
+    - env: COMPILER=clang++-3.6 HAS_ASAN_64=true HAS_UBSAN_64=true HAS_TSAN_64=true
       addons: &clang36
         apt:
           packages: ["clang-3.6", "valgrind", "g++-multilib", "libc6-dbg", "libc6-dbg:i386", "g++-6"]
@@ -138,7 +138,7 @@ matrix:
           sources: *apt_sources
 
     # Clang 3.8
-    - env: COMPILER=clang++-3.8 HAS_ASAN_64=true HAS_UBSAN_64=true
+    - env: COMPILER=clang++-3.8 HAS_ASAN_64=true HAS_UBSAN_64=true HAS_TSAN_64=true
       addons: &clang38
         apt:
           packages: ["clang-3.8", "valgrind", "g++-multilib", "libc6-dbg", "libc6-dbg:i386", "g++-6"]
@@ -152,7 +152,7 @@ matrix:
           sources: *apt_sources
 
     # Clang 4.0
-    - env: COMPILER=clang++-4.0 HAS_ASAN_32=true HAS_UBSAN_32=true HAS_ASAN_64=true HAS_UBSAN_64=true
+    - env: COMPILER=clang++-4.0 HAS_ASAN_32=true HAS_UBSAN_32=true HAS_ASAN_64=true HAS_UBSAN_64=true HAS_TSAN_32=true HAS_TSAN_64=true
       sudo: required      # see this issue for more details: https://github.com/travis-ci/travis-ci/issues/9033
       addons: &clang40
         apt:
@@ -160,7 +160,7 @@ matrix:
           sources: *apt_sources
 
     # Clang 5.0
-    - env: COMPILER=clang++-5.0 HAS_ASAN_32=true HAS_UBSAN_32=true HAS_ASAN_64=true HAS_UBSAN_64=true
+    - env: COMPILER=clang++-5.0 HAS_ASAN_32=true HAS_UBSAN_32=true HAS_ASAN_64=true HAS_UBSAN_64=true HAS_TSAN_32=true HAS_TSAN_64=true
       sudo: required      # see this issue for more details: https://github.com/travis-ci/travis-ci/issues/9033
       addons: &clang50
         apt:
@@ -168,7 +168,7 @@ matrix:
           sources: *apt_sources
 
     # Clang 6.0
-    - env: COMPILER=clang++-6.0 HAS_ASAN_64=true HAS_UBSAN_64=true # no ASAN_32/UBSAN_32 - errors: 
+    - env: COMPILER=clang++-6.0 HAS_ASAN_64=true HAS_UBSAN_64=true HAS_TSAN_32=true HAS_TSAN_64=true # no ASAN_32/UBSAN_32 - errors: 
       sudo: required      # see this issue for more details: https://github.com/travis-ci/travis-ci/issues/9033
       addons: &clang60
         apt:
@@ -176,62 +176,62 @@ matrix:
           sources: *apt_sources
 
     # Xcode 8 Clang
-    - env: COMPILER=clang++ HAS_ASAN_32=true # no HAS_ASAN_64 - errors since using thread_local even in single-threaded cases
+    - env: COMPILER=clang++ HAS_ASAN_32=true HAS_TSAN_32=true HAS_TSAN_64=true # no HAS_ASAN_64 - errors since using thread_local even in single-threaded cases - see errors: https://travis-ci.org/onqtam/doctest/builds/417181981
       osx_image: xcode8
       os: osx
 
     # Xcode 8.3 Clang
-    - env: COMPILER=clang++ HAS_ASAN_32=true HAS_UBSAN_32=true HAS_UBSAN_64=true # no HAS_ASAN_64 - errors since using thread_local even in single-threaded cases
+    - env: COMPILER=clang++ HAS_ASAN_32=true HAS_UBSAN_32=true HAS_UBSAN_64=true HAS_TSAN_32=true HAS_TSAN_64=true # no HAS_ASAN_64 - errors since using thread_local even in single-threaded cases - see errors: https://travis-ci.org/onqtam/doctest/builds/417181981
       osx_image: xcode8.3
       os: osx
 
     # Xcode 9.2 Clang
-    - env: COMPILER=clang++ HAS_ASAN_32=true HAS_UBSAN_32=true HAS_UBSAN_64=true # no HAS_ASAN_64 - errors since using thread_local even in single-threaded cases
+    - env: COMPILER=clang++ HAS_ASAN_32=true HAS_UBSAN_32=true HAS_UBSAN_64=true HAS_TSAN_32=true HAS_TSAN_64=true # no HAS_ASAN_64 - errors since using thread_local even in single-threaded cases - see errors: https://travis-ci.org/onqtam/doctest/builds/417181981
       osx_image: xcode9.2
       os: osx
 
     # Xcode 9.4 Clang
-    - env: COMPILER=clang++ HAS_ASAN_32=true HAS_UBSAN_32=true HAS_UBSAN_64=true # no HAS_ASAN_64 - errors since using thread_local even in single-threaded cases
+    - env: COMPILER=clang++ HAS_ASAN_32=true HAS_UBSAN_32=true HAS_UBSAN_64=true HAS_TSAN_32=true HAS_TSAN_64=true # no HAS_ASAN_64 - errors since using thread_local even in single-threaded cases - see errors: https://travis-ci.org/onqtam/doctest/builds/417181981
       osx_image: xcode9.4
       os: osx
 
     # Xcode 10.0 Clang
-    - env: COMPILER=clang++ HAS_ASAN_32=true HAS_UBSAN_32=true HAS_ASAN_64=true HAS_UBSAN_64=true
+    - env: COMPILER=clang++ HAS_ASAN_32=true HAS_UBSAN_32=true HAS_ASAN_64=true HAS_UBSAN_64=true HAS_TSAN_32=true HAS_TSAN_64=true
       osx_image: xcode10
       os: osx
 
     # OSX GCC 4.9
-    - env: COMPILER=g++-4.9 HAS_UBSAN_32=true HAS_ASAN_64=true HAS_UBSAN_64=true # no ASAN_32 - errors when using ASAN_OPTIONS - probably g++ 4.9 bug
+    - env: COMPILER=g++-4.9 HAS_UBSAN_32=true HAS_ASAN_64=true HAS_UBSAN_64=true HAS_TSAN_32=true HAS_TSAN_64=true # no ASAN_32 - errors when using ASAN_OPTIONS - probably g++ 4.9 bug
       compiler: gcc
       osx_image: xcode8
       os: osx
 
     # OSX GCC 5
-    - env: COMPILER=g++-5 HAS_ASAN_32=true HAS_UBSAN_32=true HAS_ASAN_64=true HAS_UBSAN_64=true
+    - env: COMPILER=g++-5 HAS_ASAN_32=true HAS_UBSAN_32=true HAS_ASAN_64=true HAS_UBSAN_64=true HAS_TSAN_32=true HAS_TSAN_64=true
       compiler: gcc
       osx_image: xcode8
       os: osx
 
     # OSX GCC 6
-    - env: COMPILER=g++-6 HAS_ASAN_32=true HAS_UBSAN_32=true HAS_ASAN_64=true HAS_UBSAN_64=true
+    - env: COMPILER=g++-6 HAS_ASAN_32=true HAS_UBSAN_32=true HAS_ASAN_64=true HAS_UBSAN_64=true HAS_TSAN_32=true HAS_TSAN_64=true
       compiler: gcc
       osx_image: xcode10
       os: osx
 
     # OSX GCC 7
-    - env: COMPILER=g++-7 HAS_ASAN_32=true HAS_UBSAN_32=true HAS_ASAN_64=true HAS_UBSAN_64=true
+    - env: COMPILER=g++-7 HAS_ASAN_32=true HAS_UBSAN_32=true HAS_ASAN_64=true HAS_UBSAN_64=true HAS_TSAN_32=true HAS_TSAN_64=true
       compiler: gcc
       osx_image: xcode10
       os: osx
 
     # OSX GCC 8
-    - env: COMPILER=g++-8 HAS_ASAN_32=true HAS_UBSAN_32=true HAS_ASAN_64=true HAS_UBSAN_64=true
+    - env: COMPILER=g++-8 HAS_ASAN_32=true HAS_UBSAN_32=true HAS_ASAN_64=true HAS_UBSAN_64=true HAS_TSAN_32=true HAS_TSAN_64=true
       compiler: gcc
       osx_image: xcode10
       os: osx
 
     # OSX LLVM-GCC
-    - env: COMPILER=g++ HAS_ASAN_32=true HAS_ASAN_64=true
+    - env: COMPILER=g++ HAS_ASAN_32=true HAS_ASAN_64=true HAS_TSAN_32=true HAS_TSAN_64=true
       compiler: gcc
       osx_image: xcode10
       os: osx
@@ -242,19 +242,19 @@ matrix:
     - env: COMPILER=clang++-4.0 STATIC_CODE_ANALYSIS=true
 
     # OSX GCC 6
-    - env: COMPILER=g++-6 HAS_ASAN_32=true HAS_UBSAN_32=true HAS_ASAN_64=true HAS_UBSAN_64=true
+    - env: COMPILER=g++-6 HAS_ASAN_32=true HAS_UBSAN_32=true HAS_ASAN_64=true HAS_UBSAN_64=true HAS_TSAN_32=true HAS_TSAN_64=true
       compiler: gcc
       osx_image: xcode10
       os: osx
 
     # OSX GCC 7
-    - env: COMPILER=g++-7 HAS_ASAN_32=true HAS_UBSAN_32=true HAS_ASAN_64=true HAS_UBSAN_64=true
+    - env: COMPILER=g++-7 HAS_ASAN_32=true HAS_UBSAN_32=true HAS_ASAN_64=true HAS_UBSAN_64=true HAS_TSAN_32=true HAS_TSAN_64=true
       compiler: gcc
       osx_image: xcode10
       os: osx
 
     # OSX GCC 8
-    - env: COMPILER=g++-8 HAS_ASAN_32=true HAS_UBSAN_32=true HAS_ASAN_64=true HAS_UBSAN_64=true
+    - env: COMPILER=g++-8 HAS_ASAN_32=true HAS_UBSAN_32=true HAS_ASAN_64=true HAS_UBSAN_64=true HAS_TSAN_32=true HAS_TSAN_64=true
       compiler: gcc
       osx_image: xcode10
       os: osx
@@ -410,6 +410,10 @@ script:
   - if [[ "${HAS_UBSAN_32}" = "true" ]]; then cmake -DCMAKE_BUILD_TYPE=Debug   -DCMAKE_CXX_FLAGS="${ADDITIONAL_CXX_FLAGS} -std=c++0x -g -fno-omit-frame-pointer -m32 -fsanitize=undefined" . && make clean && make -k -j2 && UBSAN_OPTIONS=verbosity=2                                                                                     ctest --output-on-failure ; fi
   - if [[ "${HAS_UBSAN_64}" = "true" ]]; then cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="${ADDITIONAL_CXX_FLAGS} -std=c++0x -g -fno-omit-frame-pointer -m64 -fsanitize=undefined" . && make clean && make -k -j2 && UBSAN_OPTIONS=verbosity=2                                                                                     ctest --output-on-failure ; fi
   - if [[ "${HAS_UBSAN_32}" = "true" ]]; then cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="${ADDITIONAL_CXX_FLAGS} -std=c++0x -g -fno-omit-frame-pointer -m32 -fsanitize=undefined" . && make clean && make -k -j2 && UBSAN_OPTIONS=verbosity=2                                                                                     ctest --output-on-failure ; fi
+  - if [[ "${HAS_TSAN_64}" = "true" ]]; then cmake -DCMAKE_BUILD_TYPE=Debug   -DCMAKE_CXX_FLAGS="${ADDITIONAL_CXX_FLAGS} -std=c++0x -g -fno-omit-frame-pointer -m64 -fsanitize=thread"    . && make clean && make -k -j2 && UBSAN_OPTIONS=verbosity=2                                                                                     ctest --output-on-failure ; fi
+  - if [[ "${HAS_TSAN_32}" = "true" ]]; then cmake -DCMAKE_BUILD_TYPE=Debug   -DCMAKE_CXX_FLAGS="${ADDITIONAL_CXX_FLAGS} -std=c++0x -g -fno-omit-frame-pointer -m32 -fsanitize=thread"    . && make clean && make -k -j2 && UBSAN_OPTIONS=verbosity=2                                                                                     ctest --output-on-failure ; fi
+  - if [[ "${HAS_TSAN_64}" = "true" ]]; then cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="${ADDITIONAL_CXX_FLAGS} -std=c++0x -g -fno-omit-frame-pointer -m64 -fsanitize=thread"    . && make clean && make -k -j2 && UBSAN_OPTIONS=verbosity=2                                                                                     ctest --output-on-failure ; fi
+  - if [[ "${HAS_TSAN_32}" = "true" ]]; then cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="${ADDITIONAL_CXX_FLAGS} -std=c++0x -g -fno-omit-frame-pointer -m32 -fsanitize=thread"    . && make clean && make -k -j2 && UBSAN_OPTIONS=verbosity=2                                                                                     ctest --output-on-failure ; fi
 
   # test without rtti - just Debug/x64
   - cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_FLAGS="${ADDITIONAL_CXX_FLAGS} -std=c++0x -m64 -fno-rtti" .
