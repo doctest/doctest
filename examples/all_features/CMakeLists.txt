@@ -48,7 +48,10 @@ foreach(f ${files_with_output})
 endforeach()
 
 # add this separately since it shouldn't have output compared to reference output - due to concurrency
-doctest_add_test(NO_OUTPUT NAME concurrency.cpp ${common_args} -sf=*concurrency.cpp)
+# not adding it for MinGW since it crashes when using mingw-w64-x86_64-8.1.0-release-posix-seh-rt_v6-rev0
+if(NOT MINGW)
+    doctest_add_test(NO_OUTPUT NAME concurrency.cpp ${common_args} -sf=*concurrency.cpp)
+endif()
 
 # add this separately since the file has a non-straightforward path
 doctest_add_test(NAME coverage_maxout.cpp ${common_args} -sf=*coverage_maxout.cpp)
