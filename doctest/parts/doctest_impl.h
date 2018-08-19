@@ -2085,6 +2085,7 @@ namespace {
         if(parseOption(argc, argv, pattern, filtersString)) {
             // tokenize with "," as a separator
             // cppcheck-suppress strtokCalled
+            DOCTEST_CLANG_SUPPRESS_WARNING_WITH_PUSH("-Wdeprecated-declarations")
             auto pch = std::strtok(filtersString.c_str(), ","); // modifies the string
             while(pch != nullptr) {
                 if(strlen(pch))
@@ -2093,6 +2094,7 @@ namespace {
                 // cppcheck-suppress strtokCalled
                 pch = std::strtok(nullptr, ",");
             }
+            DOCTEST_CLANG_SUPPRESS_WARNING_POP
             return true;
         }
         return false;

@@ -21,15 +21,7 @@ Planned features for future releases - order changes constantly...
     - [rapidcheck](https://github.com/emil-e/rapidcheck)
     - [autocheck](https://github.com/thejohnfreeman/autocheck)
     - [CppQuickCheck](https://github.com/grogers0/CppQuickCheck)
-- proper conan package
-    - https://github.com/onqtam/doctest/issues/103
-    - https://github.com/bincrafters/conan-doctest
-    - https://github.com/uilianries/conan-catch
-    - https://github.com/philsquared/Catch/pull/938
-    - https://stackoverflow.com/questions/40311363/conan-io-header-only-package
-    - https://github.com/conan-io/docs/issues/67
-    - https://github.com/agauniyal/rang
-    - https://github.com/conan-io/conan/issues/324
+- proper conan package - https://github.com/onqtam/doctest/issues/103
 - IDE integration
     - https://blogs.msdn.microsoft.com/vcblog/2017/05/10/unit-testing-and-the-future-announcing-the-test-adapter-for-google-test/
     - https://www.reddit.com/r/cpp/comments/65c0f1/run_cpp_unit_tests_from_xcode_and_visual_studio/

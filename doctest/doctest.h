@@ -61,19 +61,21 @@
 
 #define DOCTEST_COMPILER(MAJOR, MINOR, PATCH) ((MAJOR)*10000000 + (MINOR)*100000 + (PATCH))
 
+// GCC/Clang and GCC/MSVC are mutually exclusive, but Clang/MSVC are not because of clang-cl...
 #if defined(_MSC_VER) && defined(_MSC_FULL_VER)
 #if _MSC_VER == _MSC_FULL_VER / 10000
 #define DOCTEST_MSVC DOCTEST_COMPILER(_MSC_VER / 100, _MSC_VER % 100, _MSC_FULL_VER % 10000)
-#else
+#else // MSVC
 #define DOCTEST_MSVC                                                                               \
     DOCTEST_COMPILER(_MSC_VER / 100, (_MSC_FULL_VER / 100000) % 100, _MSC_FULL_VER % 100000)
-#endif
-#elif defined(__clang__) && defined(__clang_minor__)
+#endif // MSVC
+#endif // MSVC
+#if defined(__clang__) && defined(__clang_minor__)
 #define DOCTEST_CLANG DOCTEST_COMPILER(__clang_major__, __clang_minor__, __clang_patchlevel__)
 #elif defined(__GNUC__) && defined(__GNUC_MINOR__) && defined(__GNUC_PATCHLEVEL__) &&              \
         !defined(__INTEL_COMPILER)
 #define DOCTEST_GCC DOCTEST_COMPILER(__GNUC__, __GNUC_MINOR__, __GNUC_PATCHLEVEL__)
-#endif
+#endif // GCC
 
 #ifndef DOCTEST_MSVC
 #define DOCTEST_MSVC 0
@@ -345,9 +347,9 @@ DOCTEST_MSVC_SUPPRESS_WARNING(26444) // Avoid unnamed objects with custom constr
 #define DOCTEST_PLATFORM_IPHONE
 #elif defined(_WIN32)
 #define DOCTEST_PLATFORM_WINDOWS
-#else
+#else // DOCTEST_PLATFORM
 #define DOCTEST_PLATFORM_LINUX
-#endif
+#endif // DOCTEST_PLATFORM
 
 // clang-format off
 #define DOCTEST_DELETE_COPIES(type)     type(const type&) = delete; type& operator=(const type&) = delete
@@ -2020,13 +2022,14 @@ int registerReporter(const char* name, int priority, IReporter& r);
 #define DOCTEST_FAIL_CHECK(x) DOCTEST_ADD_FAIL_CHECK_AT(__FILE__, __LINE__, x)
 #define DOCTEST_FAIL(x) DOCTEST_ADD_FAIL_AT(__FILE__, __LINE__, x)
 
+// hack for macros like INFO() that require lvalues
 #if __cplusplus >= 201402L || (DOCTEST_MSVC >= DOCTEST_COMPILER(19, 10, 0))
 template <class T, T x>
 constexpr T to_lvalue = x;
 #define DOCTEST_TO_LVALUE(...) to_lvalue<decltype(__VA_ARGS__), __VA_ARGS__>
-#else
+#else // TO_LVALUE
 #define DOCTEST_TO_LVALUE(...) TO_LVALUE_CAN_BE_USED_ONLY_IN_CPP14_MODE_OR_WITH_VS_2017_OR_NEWER
-#endif // TO_LVALUE hack for macros like INFO() that require lvalues
+#endif // TO_LVALUE
 
 #define DOCTEST_ASSERT_IMPLEMENT_2(assert_type, ...)                                               \
     DOCTEST_CLANG_SUPPRESS_WARNING_WITH_PUSH("-Woverloaded-shift-op-parentheses")                  \
@@ -4712,6 +4715,7 @@ namespace {
         if(parseOption(argc, argv, pattern, filtersString)) {
             // tokenize with "," as a separator
             // cppcheck-suppress strtokCalled
+            DOCTEST_CLANG_SUPPRESS_WARNING_WITH_PUSH("-Wdeprecated-declarations")
             auto pch = std::strtok(filtersString.c_str(), ","); // modifies the string
             while(pch != nullptr) {
                 if(strlen(pch))
@@ -4720,6 +4724,7 @@ namespace {
                 // cppcheck-suppress strtokCalled
                 pch = std::strtok(nullptr, ",");
             }
+            DOCTEST_CLANG_SUPPRESS_WARNING_POP
             return true;
         }
         return false;
