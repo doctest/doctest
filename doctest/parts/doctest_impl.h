@@ -102,9 +102,7 @@ DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_BEGIN
 #include <csignal>
 #include <cfloat>
 #include <cctype>
-#if !DOCTEST_MSVC
-#include <stdint.h>
-#endif // !MSVC
+#include <cstdint>
 
 #ifdef DOCTEST_PLATFORM_MAC
 #include <sys/types.h>

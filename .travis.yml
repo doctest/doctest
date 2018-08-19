@@ -117,14 +117,14 @@ matrix:
           sources: *apt_sources
 
     # Clang 3.5
-    - env: COMPILER=clang++-3.5 HAS_ASAN=true HAS_UBSAN=true HAS_TSAN=true SANITIZER_CXX_FLAGS="-fuse-ld=gold -ltsan"
+    - env: COMPILER=clang++-3.5 HAS_ASAN=true HAS_UBSAN=true HAS_TSAN=true
       addons: &clang35
         apt:
           packages: ["clang-3.5", "valgrind", "libc6-dbg", "g++-6"]
           sources: *apt_sources
 
     # Clang 3.6
-    - env: COMPILER=clang++-3.6 HAS_ASAN=true HAS_UBSAN=true HAS_TSAN=true SANITIZER_CXX_FLAGS="-fuse-ld=gold -ltsan"
+    - env: COMPILER=clang++-3.6 HAS_ASAN=true HAS_UBSAN=true HAS_TSAN=true
       addons: &clang36
         apt:
           packages: ["clang-3.6", "valgrind", "libc6-dbg", "g++-6"]
@@ -138,21 +138,21 @@ matrix:
           sources: *apt_sources
 
     # Clang 3.8
-    - env: COMPILER=clang++-3.8 HAS_ASAN=true HAS_UBSAN=true HAS_TSAN=true SANITIZER_CXX_FLAGS="-fuse-ld=gold -ltsan"
+    - env: COMPILER=clang++-3.8 HAS_ASAN=true HAS_UBSAN=true HAS_TSAN=true
       addons: &clang38
         apt:
           packages: ["clang-3.8", "valgrind", "libc6-dbg", "g++-6"]
           sources: *apt_sources
 
     # Clang 3.9
-    - env: COMPILER=clang++-3.9 # no HAS_ASAN=true HAS_UBSAN=true - see errors: https://travis-ci.org/onqtam/doctest/jobs/386263910
+    - env: COMPILER=clang++-3.9 # no HAS_ASAN/HAS_UBSAN - see errors: https://travis-ci.org/onqtam/doctest/jobs/386263910
       addons: &clang39
         apt:
           packages: ["clang-3.9", "valgrind", "libc6-dbg", "g++-6"]
           sources: *apt_sources
 
     # Clang 4.0
-    - env: COMPILER=clang++-4.0 HAS_ASAN=true HAS_UBSAN=true HAS_TSAN=true SANITIZER_CXX_FLAGS="-fuse-ld=gold -ltsan"
+    - env: COMPILER=clang++-4.0 HAS_ASAN=true HAS_UBSAN=true HAS_TSAN=true
       sudo: required      # see this issue for more details: https://github.com/travis-ci/travis-ci/issues/9033
       addons: &clang40
         apt:
@@ -160,7 +160,7 @@ matrix:
           sources: *apt_sources
 
     # Clang 5.0
-    - env: COMPILER=clang++-5.0 HAS_ASAN=true HAS_UBSAN=true HAS_TSAN=true SANITIZER_CXX_FLAGS="-fuse-ld=gold -ltsan"
+    - env: COMPILER=clang++-5.0 HAS_ASAN=true HAS_UBSAN=true HAS_TSAN=true
       sudo: required      # see this issue for more details: https://github.com/travis-ci/travis-ci/issues/9033
       addons: &clang50
         apt:
@@ -168,7 +168,7 @@ matrix:
           sources: *apt_sources
 
     # Clang 6.0
-    - env: COMPILER=clang++-6.0 HAS_ASAN=true HAS_UBSAN=true HAS_TSAN=true SANITIZER_CXX_FLAGS="-fuse-ld=gold -ltsan"
+    - env: COMPILER=clang++-6.0 HAS_ASAN=true HAS_UBSAN=true HAS_TSAN=true
       sudo: required # see this issue for more details: https://github.com/travis-ci/travis-ci/issues/9033
       addons: &clang60
         apt:
