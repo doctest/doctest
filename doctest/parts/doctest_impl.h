@@ -1073,6 +1073,7 @@ namespace {
     int dumy_init_console_colors = colors_init();
 #endif // DOCTEST_CONFIG_COLORS_WINDOWS
 
+    DOCTEST_CLANG_SUPPRESS_WARNING_WITH_PUSH("-Wdeprecated-declarations")
     void color_to_stream(std::ostream& s, Color::Enum code) {
         ((void)s);    // for DOCTEST_CONFIG_COLORS_NONE or DOCTEST_CONFIG_COLORS_WINDOWS
         ((void)code); // for DOCTEST_CONFIG_COLORS_NONE
@@ -1130,6 +1131,7 @@ namespace {
             // clang-format on
 #endif // DOCTEST_CONFIG_COLORS_WINDOWS
     }
+    DOCTEST_CLANG_SUPPRESS_WARNING_POP
 
     std::vector<const IExceptionTranslator*>& getExceptionTranslators() {
         static std::vector<const IExceptionTranslator*> data;
