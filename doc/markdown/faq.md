@@ -66,11 +66,9 @@ If you want better aliases for the asserts instead of the long ones you could us
 
 ### Is doctest thread-aware?
 
-Currently no. Asserts cannot be used in multiple threads and test cases cannot be ran in parallel. These are long-term features that are planned on the [**roadmap**](roadmap.md).
+Most macros/functionality is safe to use in a multithreaded context: [**assertion**](assertions.md) and [**logging**](logging.md) macros can be safely used from multiple threads spawned from a single test case. This however does not mean that multiple test cases can be ran in parallel - test cases are still ran serially. [**Subcases**](tutorial.md#test-cases-and-subcases) should also be used only from the test runner thread - not following these instructions will lead to crashes (example in [**here**](../../examples/all_features/concurrency.cpp)).
 
-For now tests are ran serially and doing asserts in multiple user threads will lead to crashes.
-
-There is an option to run a [**range**](commandline.md) of tests from an executable - so  ran in parallel with multiple process invocations - see [**the example python script**](../../examples/range_based_execution.py).
+There is also an option to run a [**range**](commandline.md) of tests from an executable - so tests can be ran in parallel by invoking the process multiple times with different ranges - see [**the example python script**](../../examples/range_based_execution.py).
 
 ### Is mocking supported?
 

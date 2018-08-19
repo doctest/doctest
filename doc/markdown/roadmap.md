@@ -116,7 +116,9 @@ Planned features for future releases - order changes constantly...
 - runtime performance
     - look at this: https://github.com/catchorg/Catch2/issues/1086
     - startup - the set holding all registered tests should use a specialized allocator to minimize program startup time
-    - failing - optimize createStream/freeStream to reuse a pool of ostringstream objects
+    - optimize the mutex lock:
+        - http://preshing.com/20111124/always-use-a-lightweight-mutex/
+        - http://preshing.com/20120226/roll-your-own-lightweight-mutex/
 - ability to provide a temp folder that is cleared between each test case
 - make the _MESSAGE assert macros work with variadic arguments - and maybe write the ones for binary/unary/fast asserts as well
 - move from operator "<<" to "<=" for capturing the left operand when decomposing binary expressions with templates

@@ -126,9 +126,6 @@ thread safety - todo:
         http://preshing.com/20111124/always-use-a-lightweight-mutex/
         http://preshing.com/20120226/roll-your-own-lightweight-mutex/
     example
-    thread sanitizer tests
-    documentation
-        mention that subcases should still be used in a single threaded way
 
 before release:
     coverage

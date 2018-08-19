@@ -25,15 +25,15 @@
 - tested with **GCC**: **4.8**, **4.9**, **5**, **6**, **7**, **8**
 - tested with **Clang**: **3.5**, **3.6**, **3.7**, **3.8**, **3.9**, **4**, **5**, **6** (XCode 8+)
 - tested with **MSVC**: **2015**, **2017** (also in 32 bit mode)
-- per-commit tested on **travis** and **appveyor** CI services
+- per-commit tested on [**travis**](https://travis-ci.org/onqtam/doctest) and [**appveyor**](https://ci.appveyor.com/project/onqtam/doctest) CI services
 	- warnings as errors even on the most aggressive warning levels - see [**here**](../../scripts/cmake/common.cmake#L84)
     - statically analyzed on the CI - [**Cppcheck**](http://cppcheck.sourceforge.net/) / [**Clang-Tidy**](http://oclint.org/) / [**Coverity Scan**](https://scan.coverity.com/) / [**OCLint**](https://scan.coverity.com/) / [**Visual Studio Analyzer**](https://docs.microsoft.com/en-us/visualstudio/code-quality/analyzing-c-cpp-code-quality-by-using-code-analysis)
 	- all tests have their output compared to reference output of a previous known good run
 	- all tests built and ran in **Debug**/**Release** modes
 	- all tests ran through **valgrind** under **Linux** (sadly [not under OSX](https://github.com/onqtam/doctest/issues/11))
 	- all tests ran through **address**, **UB** and **thread** sanitizers under **Linux**/**OSX**
-	- tests are ran in more than **330** different configurations on UNIX (Linux + OSX) on **travis** CI
-	- tests are ran in a total of **22** different configurations on Windows on **appveyor** CI
+	- tests are ran in more than **168** different configurations on UNIX (Linux + OSX) on **travis** CI
+	- tests are ran in a total of **10** different configurations on Windows on **appveyor** CI
 
 ## Other features:
 
@@ -45,6 +45,7 @@
 - [**templated test cases**](parameterized-tests.md#templated-test-cases---parameterized-by-type) - parameterized by type
 - supports [**logging macros**](logging.md) for capturing local variables and strings - as a message for when an assert fails - with lazy stringification and no allocations when possible!
 - crash handling support - uses signals for UNIX and SEH for Windows
+- [**thread-safe**](faq.md#is-doctest-thread-aware) - asserts (and logging) can be used from multiple threads spawned from a single test case - [**example**](../../examples/all_features/concurrency.cpp)
 - an extensible [**reporter system**](reporters.md) (can be also used for implementing event listeners)
 - output from all compilers on all platforms is the same - byte by byte
 - binaries (exe/dll) can use the test runner of another binary - so tests end up in a single registry - [**example**](../../examples/executable_dll_and_plugin/)
