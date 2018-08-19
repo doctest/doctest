@@ -403,9 +403,9 @@ script:
   - if [[ "${HAS_UBSAN}" = "true" ]]; then cmake -DCMAKE_BUILD_TYPE=Debug   -DCMAKE_CXX_FLAGS="${CXX_FLAGS} ${SANITIZER_CXX_FLAGS} -g -fno-omit-frame-pointer -fsanitize=undefined"                . && make clean && make -k -j2 && ctest --output-on-failure ; fi
   - if [[ "${HAS_UBSAN}" = "true" ]]; then cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="${CXX_FLAGS} ${SANITIZER_CXX_FLAGS} -g -fno-omit-frame-pointer -fsanitize=undefined"                . && make clean && make -k -j2 && ctest --output-on-failure ; fi
 
-  #- export TSAN_OPTIONS=verbosity=2:force_seq_cst_atomics=1
-  #- if [[ "${HAS_TSAN}" = "true" ]];  then cmake -DCMAKE_BUILD_TYPE=Debug   -DCMAKE_CXX_FLAGS="${CXX_FLAGS} ${SANITIZER_CXX_FLAGS} -g -fno-omit-frame-pointer -fsanitize=thread -pie -fPIE -ltsan" . && make clean && make -k -j2 && ctest --output-on-failure ; fi
-  #- if [[ "${HAS_TSAN}" = "true" ]];  then cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="${CXX_FLAGS} ${SANITIZER_CXX_FLAGS} -g -fno-omit-frame-pointer -fsanitize=thread -pie -fPIE -ltsan" . && make clean && make -k -j2 && ctest --output-on-failure ; fi
+  - export TSAN_OPTIONS=verbosity=2:force_seq_cst_atomics=1
+  - if [[ "${HAS_TSAN}" = "true" ]];  then cmake -DCMAKE_BUILD_TYPE=Debug   -DCMAKE_CXX_FLAGS="${CXX_FLAGS} ${SANITIZER_CXX_FLAGS} -g -fno-omit-frame-pointer -fsanitize=thread -pie -fPIE -ltsan" . && make clean && make -k -j2 && ctest --output-on-failure ; fi
+  - if [[ "${HAS_TSAN}" = "true" ]];  then cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="${CXX_FLAGS} ${SANITIZER_CXX_FLAGS} -g -fno-omit-frame-pointer -fsanitize=thread -pie -fPIE -ltsan" . && make clean && make -k -j2 && ctest --output-on-failure ; fi
 
   # test without rtti - just Debug
   - cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_FLAGS="${CXX_FLAGS} -fno-rtti" .
