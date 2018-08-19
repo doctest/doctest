@@ -200,36 +200,6 @@ matrix:
       osx_image: xcode10
       os: osx
 
-    # OSX GCC 4.9
-    - env: COMPILER=g++-4.9 HAS_ASAN=true HAS_UBSAN=true HAS_TSAN=true
-      compiler: gcc
-      osx_image: xcode8
-      os: osx
-
-    # OSX GCC 5
-    - env: COMPILER=g++-5 HAS_ASAN=true HAS_UBSAN=true HAS_TSAN=true
-      compiler: gcc
-      osx_image: xcode8
-      os: osx
-
-    # OSX GCC 6
-    - env: COMPILER=g++-6 HAS_ASAN=true HAS_UBSAN=true HAS_TSAN=true
-      compiler: gcc
-      osx_image: xcode10
-      os: osx
-
-    # OSX GCC 7
-    - env: COMPILER=g++-7 HAS_ASAN=true HAS_UBSAN=true HAS_TSAN=true
-      compiler: gcc
-      osx_image: xcode10
-      os: osx
-
-    # OSX GCC 8
-    - env: COMPILER=g++-8 HAS_ASAN=true HAS_UBSAN=true HAS_TSAN=true
-      compiler: gcc
-      osx_image: xcode10
-      os: osx
-
     # OSX LLVM-GCC
     - env: COMPILER=g++ HAS_ASAN=true HAS_TSAN=true
       compiler: gcc
@@ -240,24 +210,6 @@ matrix:
 
     # static code analysis
     - env: COMPILER=clang++-4.0 STATIC_CODE_ANALYSIS=true
-
-    # OSX GCC 6
-    - env: COMPILER=g++-6 HAS_ASAN=true HAS_UBSAN=true HAS_TSAN=true
-      compiler: gcc
-      osx_image: xcode10
-      os: osx
-
-    # OSX GCC 7
-    - env: COMPILER=g++-7 HAS_ASAN=true HAS_UBSAN=true HAS_TSAN=true
-      compiler: gcc
-      osx_image: xcode10
-      os: osx
-
-    # OSX GCC 8
-    - env: COMPILER=g++-8 HAS_ASAN=true HAS_UBSAN=true HAS_TSAN=true
-      compiler: gcc
-      osx_image: xcode10
-      os: osx
 
 install:
   - if [[ "${CODE_COVERAGE}" == "true" ]]; then gem install coveralls-lcov ; fi
