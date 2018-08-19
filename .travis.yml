@@ -392,16 +392,18 @@ script:
   - cmake -DDOCTEST_TEST_MODE=COMPARE . && ctest --output-on-failure
 
   # sanitizers - again Debug/Release configs through address/undefined/thread sanitizers
-  - cmake -DDOCTEST_TEST_MODE=NORMAL .
   # on separate commands because when something fails I want to see which one exactly
-  # TODO: when this http://stackoverflow.com/questions/39081183 gets resolved - add these to ASAN as well: check_initialization_order=true:strict_init_order=true
-  - export ASAN_OPTIONS=verbosity=2:strict_string_checks=true:detect_odr_violation=2:detect_stack_use_after_return=true
-  - export UBSAN_OPTIONS=verbosity=2
-  - export TSAN_OPTIONS=verbosity=2:force_seq_cst_atomics=1
+  - cmake -DDOCTEST_TEST_MODE=NORMAL .
+
+  - export ASAN_OPTIONS=verbosity=2:strict_string_checks=true:detect_odr_violation=2:detect_stack_use_after_return=true:check_initialization_order=true:strict_init_order=true
   - if [[ "${HAS_ASAN}" = "true" ]];  then cmake -DCMAKE_BUILD_TYPE=Debug   -DCMAKE_CXX_FLAGS="${CXX_FLAGS} -g -fno-omit-frame-pointer -fsanitize=address"                  . && make clean && make -k -j2 && ctest --output-on-failure ; fi
   - if [[ "${HAS_ASAN}" = "true" ]];  then cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="${CXX_FLAGS} -g -fno-omit-frame-pointer -fsanitize=address"                  . && make clean && make -k -j2 && ctest --output-on-failure ; fi
+
+  - export UBSAN_OPTIONS=verbosity=2
   - if [[ "${HAS_UBSAN}" = "true" ]]; then cmake -DCMAKE_BUILD_TYPE=Debug   -DCMAKE_CXX_FLAGS="${CXX_FLAGS} -g -fno-omit-frame-pointer -fsanitize=undefined"                . && make clean && make -k -j2 && ctest --output-on-failure ; fi
   - if [[ "${HAS_UBSAN}" = "true" ]]; then cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="${CXX_FLAGS} -g -fno-omit-frame-pointer -fsanitize=undefined"                . && make clean && make -k -j2 && ctest --output-on-failure ; fi
+
+  #- export TSAN_OPTIONS=verbosity=2:force_seq_cst_atomics=1
   #- if [[ "${HAS_TSAN}" = "true" ]];  then cmake -DCMAKE_BUILD_TYPE=Debug   -DCMAKE_CXX_FLAGS="${CXX_FLAGS} -g -fno-omit-frame-pointer -fsanitize=thread -pie -fPIE -ltsan" . && make clean && make -k -j2 && ctest --output-on-failure ; fi
   #- if [[ "${HAS_TSAN}" = "true" ]];  then cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="${CXX_FLAGS} -g -fno-omit-frame-pointer -fsanitize=thread -pie -fPIE -ltsan" . && make clean && make -k -j2 && ctest --output-on-failure ; fi
 
