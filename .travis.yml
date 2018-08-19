@@ -407,12 +407,12 @@ script:
   #- if [[ "${HAS_TSAN}" = "true" ]];  then cmake -DCMAKE_BUILD_TYPE=Debug   -DCMAKE_CXX_FLAGS="${CXX_FLAGS} -g -fno-omit-frame-pointer -fsanitize=thread -pie -fPIE -ltsan" . && make clean && make -k -j2 && ctest --output-on-failure ; fi
   #- if [[ "${HAS_TSAN}" = "true" ]];  then cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="${CXX_FLAGS} -g -fno-omit-frame-pointer -fsanitize=thread -pie -fPIE -ltsan" . && make clean && make -k -j2 && ctest --output-on-failure ; fi
 
-  # test without rtti - just Debug/x64
+  # test without rtti - just Debug
   - cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_FLAGS="${CXX_FLAGS} -fno-rtti" .
   - make clean && make -k -j2
   - cmake -DDOCTEST_TEST_MODE=COMPARE . && ctest --output-on-failure
 
-  # test only compilation without exceptions - just Debug/x64
+  # test only compilation without exceptions - just Debug
   - cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_FLAGS="${CXX_FLAGS} -fno-exceptions -DDOCTEST_CONFIG_NO_EXCEPTIONS_BUT_WITH_ALL_ASSERTS" .
   - make clean && make -k -j2
 
