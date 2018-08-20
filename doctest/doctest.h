@@ -245,11 +245,12 @@ DOCTEST_MSVC_SUPPRESS_WARNING(26444) // Avoid unnamed objects with custom constr
 #endif // DOCTEST_CONFIG_NO_POSIX_SIGNALS
 
 #ifndef DOCTEST_CONFIG_NO_EXCEPTIONS
-#if(DOCTEST_GCC || DOCTEST_CLANG) && !defined(__EXCEPTIONS)
+#if(DOCTEST_GCC || (DOCTEST_CLANG && !DOCTEST_MSVC)) && !defined(__EXCEPTIONS)
 #define DOCTEST_CONFIG_NO_EXCEPTIONS
 #endif // clang and gcc
-// in MSVC _HAS_EXCEPTIONS is defined in a header instead of as a project define
-// so we can't do the automatic detection for MSVC without including some header
+#if DOCTEST_MSVC && (defined(_HAS_EXCEPTIONS) && _HAS_EXCEPTIONS == 0)
+#define DOCTEST_CONFIG_NO_EXCEPTIONS
+#endif // MSVC
 #endif // DOCTEST_CONFIG_NO_EXCEPTIONS
 
 #ifdef DOCTEST_CONFIG_NO_EXCEPTIONS_BUT_WITH_ALL_ASSERTS
@@ -266,7 +267,7 @@ DOCTEST_MSVC_SUPPRESS_WARNING(26444) // Avoid unnamed objects with custom constr
 #define DOCTEST_CONFIG_IMPLEMENT
 #endif // DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 
-#if defined _WIN32 || defined __CYGWIN__
+#if defined(_WIN32) || defined(__CYGWIN__)
 #if DOCTEST_MSVC
 #define DOCTEST_SYMBOL_EXPORT __declspec(dllexport)
 #define DOCTEST_SYMBOL_IMPORT __declspec(dllimport)
