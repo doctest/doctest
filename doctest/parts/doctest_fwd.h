@@ -89,65 +89,45 @@
 // =================================================================================================
 
 #if DOCTEST_CLANG
-#ifdef __has_warning
-#define DOCTEST_CLANG_HAS_WARNING(x) __has_warning(x)
-#endif // __has_warning
-#ifdef __has_feature
-#define DOCTEST_CLANG_HAS_FEATURE(x) __has_feature(x)
-#endif // __has_feature
 #define DOCTEST_PRAGMA_TO_STR(x) _Pragma(#x)
 #define DOCTEST_CLANG_SUPPRESS_WARNING_PUSH _Pragma("clang diagnostic push")
-#define DOCTEST_MSVC_SUPPRESS_WARNING_PUSH
-#define DOCTEST_GCC_SUPPRESS_WARNING_PUSH
 #define DOCTEST_CLANG_SUPPRESS_WARNING(w) DOCTEST_PRAGMA_TO_STR(clang diagnostic ignored w)
-#define DOCTEST_MSVC_SUPPRESS_WARNING(w)
-#define DOCTEST_GCC_SUPPRESS_WARNING(w)
 #define DOCTEST_CLANG_SUPPRESS_WARNING_POP _Pragma("clang diagnostic pop")
-#define DOCTEST_MSVC_SUPPRESS_WARNING_POP
-#define DOCTEST_GCC_SUPPRESS_WARNING_POP
 #define DOCTEST_CLANG_SUPPRESS_WARNING_WITH_PUSH(w)                                                \
     DOCTEST_CLANG_SUPPRESS_WARNING_PUSH DOCTEST_CLANG_SUPPRESS_WARNING(w)
-#define DOCTEST_MSVC_SUPPRESS_WARNING_WITH_PUSH(w)
-#define DOCTEST_GCC_SUPPRESS_WARNING_WITH_PUSH(w)
-#elif DOCTEST_GCC
-#define DOCTEST_PRAGMA_TO_STR(x) _Pragma(#x)
+#else // DOCTEST_CLANG
 #define DOCTEST_CLANG_SUPPRESS_WARNING_PUSH
-#define DOCTEST_MSVC_SUPPRESS_WARNING_PUSH
-#define DOCTEST_GCC_SUPPRESS_WARNING_PUSH _Pragma("GCC diagnostic push")
 #define DOCTEST_CLANG_SUPPRESS_WARNING(w)
-#define DOCTEST_MSVC_SUPPRESS_WARNING(w)
-#define DOCTEST_GCC_SUPPRESS_WARNING(w) DOCTEST_PRAGMA_TO_STR(GCC diagnostic ignored w)
 #define DOCTEST_CLANG_SUPPRESS_WARNING_POP
-#define DOCTEST_MSVC_SUPPRESS_WARNING_POP
-#define DOCTEST_GCC_SUPPRESS_WARNING_POP _Pragma("GCC diagnostic pop")
 #define DOCTEST_CLANG_SUPPRESS_WARNING_WITH_PUSH(w)
-#define DOCTEST_MSVC_SUPPRESS_WARNING_WITH_PUSH(w)
+#endif // DOCTEST_CLANG
+
+#if DOCTEST_GCC
+#define DOCTEST_PRAGMA_TO_STR(x) _Pragma(#x)
+#define DOCTEST_GCC_SUPPRESS_WARNING_PUSH _Pragma("GCC diagnostic push")
+#define DOCTEST_GCC_SUPPRESS_WARNING(w) DOCTEST_PRAGMA_TO_STR(GCC diagnostic ignored w)
+#define DOCTEST_GCC_SUPPRESS_WARNING_POP _Pragma("GCC diagnostic pop")
 #define DOCTEST_GCC_SUPPRESS_WARNING_WITH_PUSH(w)                                                  \
     DOCTEST_GCC_SUPPRESS_WARNING_PUSH DOCTEST_GCC_SUPPRESS_WARNING(w)
-#elif DOCTEST_MSVC
-#define DOCTEST_PRAGMA_TO_STR(x)
-#define DOCTEST_CLANG_SUPPRESS_WARNING_PUSH
-#define DOCTEST_MSVC_SUPPRESS_WARNING_PUSH __pragma(warning(push))
+#else // DOCTEST_GCC
 #define DOCTEST_GCC_SUPPRESS_WARNING_PUSH
-#define DOCTEST_CLANG_SUPPRESS_WARNING(w)
-#define DOCTEST_MSVC_SUPPRESS_WARNING(w) __pragma(warning(disable : w))
 #define DOCTEST_GCC_SUPPRESS_WARNING(w)
-#define DOCTEST_CLANG_SUPPRESS_WARNING_POP
-#define DOCTEST_MSVC_SUPPRESS_WARNING_POP __pragma(warning(pop))
 #define DOCTEST_GCC_SUPPRESS_WARNING_POP
-#define DOCTEST_CLANG_SUPPRESS_WARNING_WITH_PUSH(w)
+#define DOCTEST_GCC_SUPPRESS_WARNING_WITH_PUSH(w)
+#endif // DOCTEST_GCC
+
+#if DOCTEST_MSVC
+#define DOCTEST_MSVC_SUPPRESS_WARNING_PUSH __pragma(warning(push))
+#define DOCTEST_MSVC_SUPPRESS_WARNING(w) __pragma(warning(disable : w))
+#define DOCTEST_MSVC_SUPPRESS_WARNING_POP __pragma(warning(pop))
 #define DOCTEST_MSVC_SUPPRESS_WARNING_WITH_PUSH(w)                                                 \
     DOCTEST_MSVC_SUPPRESS_WARNING_PUSH DOCTEST_MSVC_SUPPRESS_WARNING(w)
-#define DOCTEST_GCC_SUPPRESS_WARNING_WITH_PUSH(w)
-#endif // different compilers - warning suppression macros
-
-#ifndef DOCTEST_CLANG_HAS_WARNING
-#define DOCTEST_CLANG_HAS_WARNING(x) 1
-#endif // DOCTEST_CLANG_HAS_WARNING
-
-#ifndef DOCTEST_CLANG_HAS_FEATURE
-#define DOCTEST_CLANG_HAS_FEATURE(x) 0
-#endif // DOCTEST_CLANG_HAS_FEATURE
+#else // DOCTEST_MSVC
+#define DOCTEST_MSVC_SUPPRESS_WARNING_PUSH
+#define DOCTEST_MSVC_SUPPRESS_WARNING(w)
+#define DOCTEST_MSVC_SUPPRESS_WARNING_POP
+#define DOCTEST_MSVC_SUPPRESS_WARNING_WITH_PUSH(w)
+#endif // DOCTEST_MSVC
 
 // =================================================================================================
 // == COMPILER WARNINGS ============================================================================
@@ -161,6 +141,8 @@ DOCTEST_CLANG_SUPPRESS_WARNING("-Wpadded")
 DOCTEST_CLANG_SUPPRESS_WARNING("-Wdeprecated")
 DOCTEST_CLANG_SUPPRESS_WARNING("-Wmissing-prototypes")
 DOCTEST_CLANG_SUPPRESS_WARNING("-Wunused-local-typedef")
+DOCTEST_CLANG_SUPPRESS_WARNING("-Wc++98-compat")
+DOCTEST_CLANG_SUPPRESS_WARNING("-Wc++98-compat-pedantic")
 
 DOCTEST_GCC_SUPPRESS_WARNING_PUSH
 DOCTEST_GCC_SUPPRESS_WARNING("-Wunknown-pragmas")

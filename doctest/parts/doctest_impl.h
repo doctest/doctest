@@ -24,6 +24,8 @@ DOCTEST_CLANG_SUPPRESS_WARNING("-Wunused-local-typedef")
 DOCTEST_CLANG_SUPPRESS_WARNING("-Wdisabled-macro-expansion")
 DOCTEST_CLANG_SUPPRESS_WARNING("-Wmissing-braces")
 DOCTEST_CLANG_SUPPRESS_WARNING("-Wmissing-field-initializers")
+DOCTEST_CLANG_SUPPRESS_WARNING("-Wc++98-compat")
+DOCTEST_CLANG_SUPPRESS_WARNING("-Wc++98-compat-pedantic")
 
 DOCTEST_GCC_SUPPRESS_WARNING_PUSH
 DOCTEST_GCC_SUPPRESS_WARNING("-Wunknown-pragmas")
@@ -706,7 +708,7 @@ DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_BEGIN
 #ifdef __AFXDLL
 #include <AfxWin.h>
 #else
-#include <windows.h>
+#include <Windows.h>
 #endif
 #include <io.h>
 
@@ -1296,6 +1298,7 @@ namespace detail {
 
     DOCTEST_MSVC_SUPPRESS_WARNING_WITH_PUSH(4996) // std::uncaught_exception is deprecated in C++17
     DOCTEST_GCC_SUPPRESS_WARNING_WITH_PUSH("-Wdeprecated-declarations")
+    DOCTEST_CLANG_SUPPRESS_WARNING_WITH_PUSH("-Wdeprecated-declarations")
     ContextScope::~ContextScope() {
         if(std::uncaught_exception()) {
             std::ostringstream s;
@@ -1304,6 +1307,7 @@ namespace detail {
         }
         g_infoContexts.pop_back();
     }
+    DOCTEST_CLANG_SUPPRESS_WARNING_POP
     DOCTEST_GCC_SUPPRESS_WARNING_POP
     DOCTEST_MSVC_SUPPRESS_WARNING_POP
 
@@ -1355,7 +1359,7 @@ namespace {
             // 32k seems enough for doctest to handle stack overflow,
             // but the value was found experimentally, so there is no strong guarantee
             guaranteeSize          = 32 * 1024;
-            exceptionHandlerHandle = 0;
+            exceptionHandlerHandle = nullptr;
             // Register as first handler in current chain
             exceptionHandlerHandle = AddVectoredExceptionHandler(1, handleVectoredException);
             // Pass in guarantee size to be filled
@@ -1367,7 +1371,7 @@ namespace {
                 // Unregister handler and restore the old guarantee
                 RemoveVectoredExceptionHandler(exceptionHandlerHandle);
                 SetThreadStackGuarantee(&guaranteeSize);
-                exceptionHandlerHandle = 0;
+                exceptionHandlerHandle = nullptr;
                 isSet                  = false;
             }
         }
@@ -1382,7 +1386,7 @@ namespace {
 
     bool  FatalConditionHandler::isSet                  = false;
     ULONG FatalConditionHandler::guaranteeSize          = 0;
-    PVOID FatalConditionHandler::exceptionHandlerHandle = 0;
+    PVOID FatalConditionHandler::exceptionHandlerHandle = nullptr;
 
 #else // DOCTEST_PLATFORM_WINDOWS
 
@@ -2224,7 +2228,7 @@ void Context::parseArgs(int argc, const char* const* argv, bool withDefaults) {
     DOCTEST_PARSE_AS_BOOL_OR_FLAG("dt-force-colors", "dt-fc", force_colors, false);
     DOCTEST_PARSE_AS_BOOL_OR_FLAG("dt-no-breaks", "dt-nb", no_breaks, false);
     DOCTEST_PARSE_AS_BOOL_OR_FLAG("dt-no-skip", "dt-ns", no_skip, false);
-    DOCTEST_PARSE_AS_BOOL_OR_FLAG("dt-gnu-file-line", "dt-gfl", gnu_file_line, bool(DOCTEST_GCC) || bool(DOCTEST_CLANG));
+    DOCTEST_PARSE_AS_BOOL_OR_FLAG("dt-gnu-file-line", "dt-gfl", gnu_file_line, !bool(DOCTEST_MSVC));
     DOCTEST_PARSE_AS_BOOL_OR_FLAG("dt-no-path-filenames", "dt-npf", no_path_in_filenames, false);
     DOCTEST_PARSE_AS_BOOL_OR_FLAG("dt-no-line-numbers", "dt-nln", no_line_numbers, false);
     DOCTEST_PARSE_AS_BOOL_OR_FLAG("dt-no-skipped-summary", "dt-nss", no_skipped_summary, false);

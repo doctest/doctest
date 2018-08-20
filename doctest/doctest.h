@@ -92,65 +92,45 @@
 // =================================================================================================
 
 #if DOCTEST_CLANG
-#ifdef __has_warning
-#define DOCTEST_CLANG_HAS_WARNING(x) __has_warning(x)
-#endif // __has_warning
-#ifdef __has_feature
-#define DOCTEST_CLANG_HAS_FEATURE(x) __has_feature(x)
-#endif // __has_feature
 #define DOCTEST_PRAGMA_TO_STR(x) _Pragma(#x)
 #define DOCTEST_CLANG_SUPPRESS_WARNING_PUSH _Pragma("clang diagnostic push")
-#define DOCTEST_MSVC_SUPPRESS_WARNING_PUSH
-#define DOCTEST_GCC_SUPPRESS_WARNING_PUSH
 #define DOCTEST_CLANG_SUPPRESS_WARNING(w) DOCTEST_PRAGMA_TO_STR(clang diagnostic ignored w)
-#define DOCTEST_MSVC_SUPPRESS_WARNING(w)
-#define DOCTEST_GCC_SUPPRESS_WARNING(w)
 #define DOCTEST_CLANG_SUPPRESS_WARNING_POP _Pragma("clang diagnostic pop")
-#define DOCTEST_MSVC_SUPPRESS_WARNING_POP
-#define DOCTEST_GCC_SUPPRESS_WARNING_POP
 #define DOCTEST_CLANG_SUPPRESS_WARNING_WITH_PUSH(w)                                                \
     DOCTEST_CLANG_SUPPRESS_WARNING_PUSH DOCTEST_CLANG_SUPPRESS_WARNING(w)
-#define DOCTEST_MSVC_SUPPRESS_WARNING_WITH_PUSH(w)
-#define DOCTEST_GCC_SUPPRESS_WARNING_WITH_PUSH(w)
-#elif DOCTEST_GCC
-#define DOCTEST_PRAGMA_TO_STR(x) _Pragma(#x)
+#else // DOCTEST_CLANG
 #define DOCTEST_CLANG_SUPPRESS_WARNING_PUSH
-#define DOCTEST_MSVC_SUPPRESS_WARNING_PUSH
-#define DOCTEST_GCC_SUPPRESS_WARNING_PUSH _Pragma("GCC diagnostic push")
 #define DOCTEST_CLANG_SUPPRESS_WARNING(w)
-#define DOCTEST_MSVC_SUPPRESS_WARNING(w)
-#define DOCTEST_GCC_SUPPRESS_WARNING(w) DOCTEST_PRAGMA_TO_STR(GCC diagnostic ignored w)
 #define DOCTEST_CLANG_SUPPRESS_WARNING_POP
-#define DOCTEST_MSVC_SUPPRESS_WARNING_POP
-#define DOCTEST_GCC_SUPPRESS_WARNING_POP _Pragma("GCC diagnostic pop")
 #define DOCTEST_CLANG_SUPPRESS_WARNING_WITH_PUSH(w)
-#define DOCTEST_MSVC_SUPPRESS_WARNING_WITH_PUSH(w)
+#endif // DOCTEST_CLANG
+
+#if DOCTEST_GCC
+#define DOCTEST_PRAGMA_TO_STR(x) _Pragma(#x)
+#define DOCTEST_GCC_SUPPRESS_WARNING_PUSH _Pragma("GCC diagnostic push")
+#define DOCTEST_GCC_SUPPRESS_WARNING(w) DOCTEST_PRAGMA_TO_STR(GCC diagnostic ignored w)
+#define DOCTEST_GCC_SUPPRESS_WARNING_POP _Pragma("GCC diagnostic pop")
 #define DOCTEST_GCC_SUPPRESS_WARNING_WITH_PUSH(w)                                                  \
     DOCTEST_GCC_SUPPRESS_WARNING_PUSH DOCTEST_GCC_SUPPRESS_WARNING(w)
-#elif DOCTEST_MSVC
-#define DOCTEST_PRAGMA_TO_STR(x)
-#define DOCTEST_CLANG_SUPPRESS_WARNING_PUSH
-#define DOCTEST_MSVC_SUPPRESS_WARNING_PUSH __pragma(warning(push))
+#else // DOCTEST_GCC
 #define DOCTEST_GCC_SUPPRESS_WARNING_PUSH
-#define DOCTEST_CLANG_SUPPRESS_WARNING(w)
-#define DOCTEST_MSVC_SUPPRESS_WARNING(w) __pragma(warning(disable : w))
 #define DOCTEST_GCC_SUPPRESS_WARNING(w)
-#define DOCTEST_CLANG_SUPPRESS_WARNING_POP
-#define DOCTEST_MSVC_SUPPRESS_WARNING_POP __pragma(warning(pop))
 #define DOCTEST_GCC_SUPPRESS_WARNING_POP
-#define DOCTEST_CLANG_SUPPRESS_WARNING_WITH_PUSH(w)
+#define DOCTEST_GCC_SUPPRESS_WARNING_WITH_PUSH(w)
+#endif // DOCTEST_GCC
+
+#if DOCTEST_MSVC
+#define DOCTEST_MSVC_SUPPRESS_WARNING_PUSH __pragma(warning(push))
+#define DOCTEST_MSVC_SUPPRESS_WARNING(w) __pragma(warning(disable : w))
+#define DOCTEST_MSVC_SUPPRESS_WARNING_POP __pragma(warning(pop))
 #define DOCTEST_MSVC_SUPPRESS_WARNING_WITH_PUSH(w)                                                 \
     DOCTEST_MSVC_SUPPRESS_WARNING_PUSH DOCTEST_MSVC_SUPPRESS_WARNING(w)
-#define DOCTEST_GCC_SUPPRESS_WARNING_WITH_PUSH(w)
-#endif // different compilers - warning suppression macros
-
-#ifndef DOCTEST_CLANG_HAS_WARNING
-#define DOCTEST_CLANG_HAS_WARNING(x) 1
-#endif // DOCTEST_CLANG_HAS_WARNING
-
-#ifndef DOCTEST_CLANG_HAS_FEATURE
-#define DOCTEST_CLANG_HAS_FEATURE(x) 0
-#endif // DOCTEST_CLANG_HAS_FEATURE
+#else // DOCTEST_MSVC
+#define DOCTEST_MSVC_SUPPRESS_WARNING_PUSH
+#define DOCTEST_MSVC_SUPPRESS_WARNING(w)
+#define DOCTEST_MSVC_SUPPRESS_WARNING_POP
+#define DOCTEST_MSVC_SUPPRESS_WARNING_WITH_PUSH(w)
+#endif // DOCTEST_MSVC
 
 // =================================================================================================
 // == COMPILER WARNINGS ============================================================================
@@ -164,6 +144,8 @@ DOCTEST_CLANG_SUPPRESS_WARNING("-Wpadded")
 DOCTEST_CLANG_SUPPRESS_WARNING("-Wdeprecated")
 DOCTEST_CLANG_SUPPRESS_WARNING("-Wmissing-prototypes")
 DOCTEST_CLANG_SUPPRESS_WARNING("-Wunused-local-typedef")
+DOCTEST_CLANG_SUPPRESS_WARNING("-Wc++98-compat")
+DOCTEST_CLANG_SUPPRESS_WARNING("-Wc++98-compat-pedantic")
 
 DOCTEST_GCC_SUPPRESS_WARNING_PUSH
 DOCTEST_GCC_SUPPRESS_WARNING("-Wunknown-pragmas")
@@ -2654,6 +2636,8 @@ DOCTEST_CLANG_SUPPRESS_WARNING("-Wunused-local-typedef")
 DOCTEST_CLANG_SUPPRESS_WARNING("-Wdisabled-macro-expansion")
 DOCTEST_CLANG_SUPPRESS_WARNING("-Wmissing-braces")
 DOCTEST_CLANG_SUPPRESS_WARNING("-Wmissing-field-initializers")
+DOCTEST_CLANG_SUPPRESS_WARNING("-Wc++98-compat")
+DOCTEST_CLANG_SUPPRESS_WARNING("-Wc++98-compat-pedantic")
 
 DOCTEST_GCC_SUPPRESS_WARNING_PUSH
 DOCTEST_GCC_SUPPRESS_WARNING("-Wunknown-pragmas")
@@ -3336,7 +3320,7 @@ DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_BEGIN
 #ifdef __AFXDLL
 #include <AfxWin.h>
 #else
-#include <windows.h>
+#include <Windows.h>
 #endif
 #include <io.h>
 
@@ -3926,6 +3910,7 @@ namespace detail {
 
     DOCTEST_MSVC_SUPPRESS_WARNING_WITH_PUSH(4996) // std::uncaught_exception is deprecated in C++17
     DOCTEST_GCC_SUPPRESS_WARNING_WITH_PUSH("-Wdeprecated-declarations")
+    DOCTEST_CLANG_SUPPRESS_WARNING_WITH_PUSH("-Wdeprecated-declarations")
     ContextScope::~ContextScope() {
         if(std::uncaught_exception()) {
             std::ostringstream s;
@@ -3934,6 +3919,7 @@ namespace detail {
         }
         g_infoContexts.pop_back();
     }
+    DOCTEST_CLANG_SUPPRESS_WARNING_POP
     DOCTEST_GCC_SUPPRESS_WARNING_POP
     DOCTEST_MSVC_SUPPRESS_WARNING_POP
 
@@ -3985,7 +3971,7 @@ namespace {
             // 32k seems enough for doctest to handle stack overflow,
             // but the value was found experimentally, so there is no strong guarantee
             guaranteeSize          = 32 * 1024;
-            exceptionHandlerHandle = 0;
+            exceptionHandlerHandle = nullptr;
             // Register as first handler in current chain
             exceptionHandlerHandle = AddVectoredExceptionHandler(1, handleVectoredException);
             // Pass in guarantee size to be filled
@@ -3997,7 +3983,7 @@ namespace {
                 // Unregister handler and restore the old guarantee
                 RemoveVectoredExceptionHandler(exceptionHandlerHandle);
                 SetThreadStackGuarantee(&guaranteeSize);
-                exceptionHandlerHandle = 0;
+                exceptionHandlerHandle = nullptr;
                 isSet                  = false;
             }
         }
@@ -4012,7 +3998,7 @@ namespace {
 
     bool  FatalConditionHandler::isSet                  = false;
     ULONG FatalConditionHandler::guaranteeSize          = 0;
-    PVOID FatalConditionHandler::exceptionHandlerHandle = 0;
+    PVOID FatalConditionHandler::exceptionHandlerHandle = nullptr;
 
 #else // DOCTEST_PLATFORM_WINDOWS
 
@@ -4854,7 +4840,7 @@ void Context::parseArgs(int argc, const char* const* argv, bool withDefaults) {
     DOCTEST_PARSE_AS_BOOL_OR_FLAG("dt-force-colors", "dt-fc", force_colors, false);
     DOCTEST_PARSE_AS_BOOL_OR_FLAG("dt-no-breaks", "dt-nb", no_breaks, false);
     DOCTEST_PARSE_AS_BOOL_OR_FLAG("dt-no-skip", "dt-ns", no_skip, false);
-    DOCTEST_PARSE_AS_BOOL_OR_FLAG("dt-gnu-file-line", "dt-gfl", gnu_file_line, bool(DOCTEST_GCC) || bool(DOCTEST_CLANG));
+    DOCTEST_PARSE_AS_BOOL_OR_FLAG("dt-gnu-file-line", "dt-gfl", gnu_file_line, !bool(DOCTEST_MSVC));
     DOCTEST_PARSE_AS_BOOL_OR_FLAG("dt-no-path-filenames", "dt-npf", no_path_in_filenames, false);
     DOCTEST_PARSE_AS_BOOL_OR_FLAG("dt-no-line-numbers", "dt-nln", no_line_numbers, false);
     DOCTEST_PARSE_AS_BOOL_OR_FLAG("dt-no-skipped-summary", "dt-nss", no_skipped_summary, false);
