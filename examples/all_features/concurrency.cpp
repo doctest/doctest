@@ -9,8 +9,8 @@ DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_BEGIN
 #include <stdexcept>
 DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_END
 
-std::exception_ptr g_exception_ptr = nullptr;
-std::mutex         g_mutex;
+static std::exception_ptr g_exception_ptr = nullptr;
+static std::mutex         g_mutex;
 
 TEST_CASE("threads...") {
     auto call_from_thread = [](int value) {
