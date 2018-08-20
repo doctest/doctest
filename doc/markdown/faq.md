@@ -16,22 +16,22 @@
 
 Pros of **doctest**:
 
+- **doctest** is [**thread-safe**](faq.md#is-doctest-thread-aware)
 - including the **doctest** header is [**over 20 times lighter**](benchmarks.md#cost-of-including-the-header) on compile times than that of [**Catch**](https://github.com/philsquared/Catch)
 - the asserts in **doctest** can be [**many times lighter**](benchmarks.md#cost-of-an-assertion-macro) on compile times than those of [**Catch**](https://github.com/philsquared/Catch)
 - **doctest** executes tests [**many times faster**](benchmarks.md#runtime-benchmarks) than [**Catch**](https://github.com/philsquared/Catch)
 - everything testing-related can be removed from the binary by defining the [**```DOCTEST_CONFIG_DISABLE```**](configuration.md#doctest_config_disable) identifier
 - doesn't drag any headers when included (except for in the translation unit where the library gets implemented)
 - 0 warnings even on the [**most aggressive**](../../scripts/cmake/common.cmake#L84) warning levels for MSVC/GCC/Clang
-- per commit tested with 300+ builds on [**much more compilers**](features.md#extremely-portable) - and through valgrind/sanitizers/analyzers
+- per commit tested with 180+ builds on [**much more compilers**](features.md#extremely-portable) - and through valgrind/sanitizers/analyzers
 - test cases can be written in headers - the framework will still register the tests only once - no duplicates
 
 Aside from everything mentioned so far doctest has some [**features**](features.md#other-features) (like [**templated test cases**](parameterized-tests.md#templated-test-cases---parameterized-by-type)) which [**Catch**](https://github.com/philsquared/Catch) doesn't.
 
 Missing stuff:
 
-- a reporter/listener system - to a file, to xml, ability for the user to write their own reporter, etc.
 - matchers and generators
-- other stuff
+- other small stuff
 
 But these things (and more!) are planned in the [**roadmap**](roadmap.md)!
 
@@ -66,7 +66,7 @@ If you want better aliases for the asserts instead of the long ones you could us
 
 ### Is doctest thread-aware?
 
-Most macros/functionality is safe to use in a multithreaded context: [**assertion**](assertions.md) and [**logging**](logging.md) macros can be safely used from multiple threads spawned from a single test case. This however does not mean that multiple test cases can be ran in parallel - test cases are still ran serially. [**Subcases**](tutorial.md#test-cases-and-subcases) should also be used only from the test runner thread - not following these instructions will lead to crashes (example in [**here**](../../examples/all_features/concurrency.cpp)).
+Most macros/functionality is safe to use in a multithreaded context: [**assertion**](assertions.md) and [**logging**](logging.md) macros can be safely used from multiple threads spawned from a single test case. This however does not mean that multiple test cases can be ran in parallel - test cases are still ran serially. [**Subcases**](tutorial.md#test-cases-and-subcases) should also be used only from the test runner thread - not following these instructions will lead to crashes (example in [**here**](../../examples/all_features/concurrency.cpp)). Also note that logged context in one thread will not be used/printed when asserts from another thread fail - logged context is thread-local.
 
 There is also an option to run a [**range**](commandline.md) of tests from an executable - so tests can be ran in parallel by invoking the process multiple times with different ranges - see [**the example python script**](../../examples/range_based_execution.py).
 

@@ -111,7 +111,7 @@ reporters - todo:
     - output to file (or just not stdout)
     - xml output
     - xUnit reporter
-    - compact reporter
+    - compact reporter - https://github.com/onqtam/doctest/issues/75
     - progress reporter
     - [junit related stuff](https://github.com/ujiro99/doctest-junit-report))
     - options
@@ -121,16 +121,9 @@ reporters - todo:
     - examples
     - documentation
 
-thread safety - todo:
-    look into these:
-        http://preshing.com/20111124/always-use-a-lightweight-mutex/
-        http://preshing.com/20120226/roll-your-own-lightweight-mutex/
-    example
-
 before release:
     coverage
-    documentation
-        update faq - differences with catch, thread safety, reporters/listeners
+    redo benchmarks
 
 on release:
     ask in the reddit thread what from the roadmap they would like to see next
