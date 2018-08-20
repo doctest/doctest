@@ -1,5 +1,7 @@
 #include "doctest.h"
 
+#ifndef DOCTEST_CONFIG_NO_EXCEPTIONS
+
 DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_BEGIN
 #include <thread>
 #include <mutex>
@@ -63,3 +65,5 @@ TEST_CASE("threads...") {
             std::rethrow_exception(g_exception_ptr);
     }
 }
+
+#endif // DOCTEST_CONFIG_NO_EXCEPTIONS
