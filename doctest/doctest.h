@@ -5195,6 +5195,11 @@ int registerReporter(const char* name, int priority, IReporter& r) {
     return 0;
 }
 
+// see these issues on the reasoning for this:
+// - https://github.com/onqtam/doctest/issues/143#issuecomment-414418903
+// - https://github.com/onqtam/doctest/issues/126
+void DOCTEST_FIX_FOR_MACOS_LIBCPP_IOSFWD_STRING_LINK_ERRORS() { std::cout << std::string(); }
+
 } // namespace doctest
 
 #endif // DOCTEST_CONFIG_DISABLE
