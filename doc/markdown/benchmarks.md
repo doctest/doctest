@@ -70,18 +70,18 @@ The script generates 201 source files and in 200 of them makes a function in the
 #### doctest
 
 - instantiating the test runner in one source file costs ~1-3 seconds ```implement - baseline```
-- the inclusion of ```doctest.h``` in one source file costs between 17ms - 27ms ```(header_everywhere - implement) / 200```
+- the inclusion of ```doctest.h``` in one source file costs between 11ms - 23ms ```(header_everywhere - implement) / 200```
 - including the library everywhere but everything disabled costs around 2 seconds ```disabled - baseline``` for 200 files
 
 #### [Catch](https://github.com/philsquared/Catch)
 
-- instantiating the test runner in one source file costs ~4-31 seconds ```implement - baseline```
-- the inclusion of ```catch.hpp```  in one source file costs between 390ms - 490ms ```(header_everywhere - implement) / 200```
+- instantiating the test runner in one source file costs ~3-50 seconds ```implement - baseline```
+- the inclusion of ```catch.hpp```  in one source file costs between 380ms - 470ms ```(header_everywhere - implement) / 200```
 - using the config option to disable the library (**```CATCH_CONFIG_DISABLE```**) has no effect on the header cost
 
 ----------
 
-So if ```doctest.h``` costs 17ms and ```catch.hpp``` costs 490ms on MSVC - then the **doctest** header is >> **27** << times lighter (for MSVC)!
+So if ```doctest.h``` costs 11ms and ```catch.hpp``` costs 400ms on MSVC - then the **doctest** header is >> **36** << times lighter (for MSVC)!
 
 ----------
 
@@ -138,16 +138,16 @@ And here is [**Catch**](https://github.com/philsquared/Catch) which only has nor
 
 **doctest**:
 
-- is around 30% to 75% faster than [**Catch**](https://github.com/philsquared/Catch) when using normal expression decomposing ```CHECK(a==b)``` asserts
-- asserts of the form ```CHECK_EQ(a,b)``` with no expression decomposition - around 25%-45% faster than ```CHECK(a==b)```
-- fast asserts like ```FAST_CHECK_EQ(a,b)``` with no ```try/catch``` blocks - around 60-80% faster than ```CHECK_EQ(a,b)```
-- the [**```DOCTEST_CONFIG_SUPER_FAST_ASSERTS```**](configuration.md#doctest_config_super_fast_asserts) identifier which makes the fast assertions even faster by another 50-80%
-- using the [**```DOCTEST_CONFIG_DISABLE```**](configuration.md#doctest_config_disable) identifier the assertions just disappear as if they were never written
+- is between 0 and 8 times faster than [**Catch**](https://github.com/philsquared/Catch) when using normal expression decomposing ```CHECK(a==b)``` asserts
+- asserts of the form ```CHECK_EQ(a,b)``` with no expression decomposition - around 31%-63% faster than ```CHECK(a==b)```
+- fast asserts like ```FAST_CHECK_EQ(a,b)``` with no ```try/catch``` blocks - around 64-86% faster than ```CHECK_EQ(a,b)```
+- the [**```DOCTEST_CONFIG_SUPER_FAST_ASSERTS```**](configuration.md#doctest_config_super_fast_asserts) identifier which makes the fast assertions even faster by another 55-78%
+- using the [**```DOCTEST_CONFIG_DISABLE```**](configuration.md#doctest_config_disable) identifier the assertions just disappear as if they were never written - even lower than the baseline (because most of the implementation is also gone)
 
 [**Catch**](https://github.com/philsquared/Catch):
 
-- using [**```CATCH_CONFIG_FAST_COMPILE```**](https://github.com/philsquared/Catch/blob/master/docs/configuration.md#catch_config_fast_compile) results in 15%-55% faster build times for asserts.
-- using the **```CATCH_CONFIG_DISABLE```** identifier provides the same great benefits for assertion macros as the doctest version ([**```DOCTEST_CONFIG_DISABLE```**](configuration.md#doctest_config_disable)) - unlike the case for the header cost
+- using [**```CATCH_CONFIG_FAST_COMPILE```**](https://github.com/philsquared/Catch/blob/master/docs/configuration.md#catch_config_fast_compile) results in 10%-30% faster build times for asserts (and in one case 73%).
+- using the **```CATCH_CONFIG_DISABLE```** identifier provides the same great benefits for assertion macros as the doctest version ([**```DOCTEST_CONFIG_DISABLE```**](configuration.md#doctest_config_disable)) - unlike in the case for the header cost
 
 ## Runtime benchmarks
 
@@ -185,9 +185,7 @@ Note that the assert always passes - the goal should be to optimize for the comm
 
 ### Conclusion
 
-**doctest** is significantly faster - between 2.5 and 26 times.
-
-In these particular cases **doctest** makes 0 allocations when the assert doesn't fail - it uses lazy stringification (meaning it stringifies the expression or the logged loop counter only if it has to) and a small-buffer optimized string class to achieve these results.
+**doctest** is around ~20% faster than catch for asserts but a few times faster when also logging variables and context (and in the case of one particular compiler over 18 times faster).
 
 ----------
 
