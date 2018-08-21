@@ -256,25 +256,6 @@ install:
       else
         brew install cmake
       fi
-      # gcc
-      if [[ "${COMPILER}" = "g++-4.9" ]]; then
-        brew install gcc49
-      fi
-      if [[ "${COMPILER}" = "g++-5" ]]; then
-        brew install gcc5
-      fi
-      if [[ "${COMPILER}" = "g++-6" ]]; then
-        brew install gcc6
-        brew link --overwrite gcc@6
-      fi
-      if [[ "${COMPILER}" = "g++-7" ]]; then
-        brew install gcc7
-        brew link --overwrite gcc@7
-      fi
-      if [[ "${COMPILER}" = "g++-8" ]]; then
-        brew install gcc8
-        brew link --overwrite gcc@8
-      fi
     fi
 
   - export CXX="${COMPILER}"
