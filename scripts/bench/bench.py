@@ -1,7 +1,8 @@
-#!/usr/bin/python2.7
+#!/usr/bin/python3
 
 import os
 import sys
+if sys.version_info[0] < 3: raise Exception("Python 3 or a more recent version is required.")
 import pprint
 import argparse
 import urllib
@@ -51,12 +52,12 @@ pprint.pprint(vars(args), width = 1)
 # ==============================================================================
 
 # catch version
-catch_ver = "2.0.0-develop.3"
+catch_ver = "2.3.0"
 catch_header = "catch." + catch_ver + ".hpp"
 
 # get the catch header
-# if not os.path.exists("catch." + catch_ver + ".hpp"):
-    # urllib.urlretrieve ("https://raw.githubusercontent.com/philsquared/Catch/v" + catch_ver + "/single_include/catch.hpp", catch_header)
+if not os.path.exists("catch." + catch_ver + ".hpp"):
+    urllib.urlretrieve("https://github.com/catchorg/Catch2/releases/download/v" + catch_ver + "/catch.hpp", catch_header)
 
 # folder with generated code
 the_folder = 'project'

@@ -1,11 +1,12 @@
-#!/usr/bin/python2.7
+#!/usr/bin/python3
 
 import os
 import sys
+if sys.version_info[0] < 3: raise Exception("Python 3 or a more recent version is required.")
 import json
 import subprocess
 
-average_num_times = 5
+average_num_times = 3
 max_accum_time    = 60  # don't take too long on a test - stop averaging if time exceeds some amount of seconds
 
 with open('tests.json') as data_file:    

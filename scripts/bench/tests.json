@@ -30,8 +30,8 @@
             ["doctest", " --header --files 10 --tests 50 --checks 100 --asserts binary"],
             ["doctest", " --header --files 10 --tests 50 --checks 100 --asserts fast"],
             ["doctest", " --header --files 10 --tests 50 --checks 100 --asserts fast   --fast"],
-            ["any",     " --header --files 10 --tests 50 --checks 100 --asserts normal --disabled"],
-            ["catch",   " --header --files 10 --tests 50 --checks 100 --asserts normal --fast"]
+            ["catch",   " --header --files 10 --tests 50 --checks 100 --asserts normal --fast"],
+            ["any",     " --header --files 10 --tests 50 --checks 100 --asserts normal --disabled"]
         ]
     ],
     "runtime": [
