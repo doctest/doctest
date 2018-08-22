@@ -1,3 +1,5 @@
+<p align="center"><img src="https://s15.postimg.cc/k3h4w0zyz/README_1.jpg"></p>
+
 <h3>The fastest feature-rich C++98/C++11 single-header testing framework for unit tests and TDD</h3>
 
 <b>
@@ -154,3 +156,5 @@ Want to see your name or the name of your company here? Consider donating!
 
 - Sebastien Feldis
 - Zahari Karadzhov
+
+<p align="center"><img src="https://s15.postimg.cc/efau57nxn/README_2.jpg"></p>
