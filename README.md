@@ -55,7 +55,8 @@ The **key** differences between it and other testing frameworks are that it is l
 - Ultra light on compile times both in terms of [**including the header**](doc/markdown/benchmarks.md#cost-of-including-the-header) and writing [**thousands of asserts**](doc/markdown/benchmarks.md#cost-of-an-assertion-macro)
 - Doesn't produce any warnings even on the [**most aggressive**](scripts/cmake/common.cmake#L84) warning levels for **MSVC**/**GCC**/**Clang**
 - Offers a way to remove **everything** testing-related from the binary with the [**```DOCTEST_CONFIG_DISABLE```**](doc/markdown/configuration.md#doctest_config_disable) identifier
-- [**thread-safe**](faq.md#is-doctest-thread-aware) - asserts (and logging) can be used from multiple threads spawned from a single test case ([**example**](../../examples/all_features/concurrency.cpp))
+- [**thread-safe**](faq.md#is-doctest-thread-aware) - asserts (and logging) can be used from multiple threads spawned from a single test case - [**example**](../../examples/all_features/concurrency.cpp)
+- asserts can be used [**outside of a testing context**](doc/markdown/assertions.md#using-asserts-out-of-a-testing-context) - as a general purpose assert library - [**example**](examples/all_features/asserts_used_outside_of_tests.cpp)
 - Doesn't pollute the global namespace (everything is in namespace ```doctest```) and doesn't drag **any** headers with it
 - Very [**portable**](doc/markdown/features.md#extremely-portable) C++11 (use tag [**1.2.9**](https://github.com/onqtam/doctest/tree/1.2.9) for C++98) with over 180 different CI builds (static analysis, sanitizers...)
 
@@ -130,7 +131,6 @@ Support the development of the project with donations! There is a list of planne
 If you work for a company using **doctest** or have the means to do so, please consider financial support.
 
 Contributions in the form of issues and pull requests are welcome as well - check out the [**Contributing**](CONTRIBUTING.md) page.
-
 
 Logo
 ------------

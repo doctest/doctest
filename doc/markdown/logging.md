@@ -1,6 +1,6 @@
 ## Logging macros
 
-Additional messages can be logged during a test case.
+Additional messages can be logged during a test case (safely even in [**concurrent threads**](faq.md#is-doctest-thread-aware)).
 
 ## INFO()
 

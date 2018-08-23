@@ -29,4 +29,6 @@ This library is free, and will stay free but needs your support to sustain its d
 [![Patreon](https://cloud.githubusercontent.com/assets/8225057/5990484/70413560-a9ab-11e4-8942-1a63607c0b00.png)](http://www.patreon.com/onqtam)
 [![PayPal](https://www.paypalobjects.com/en_US/i/btn/btn_donate_LG.gif)](https://www.paypal.me/onqtam/10)
 
+------------
+
 <p align="center"><img src="../../scripts/data/logo/icon_2.svg"></p>
