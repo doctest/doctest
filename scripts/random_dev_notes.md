@@ -1,66 +1,6 @@
 
 
 
-DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_BEGIN
-#include <iostream>
-#include <vector>
-using namespace std;
-DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_END
-DOCTEST_MSVC_SUPPRESS_WARNING(4820)
-DOCTEST_MSVC_SUPPRESS_WARNING(4626)
-DOCTEST_MSVC_SUPPRESS_WARNING(5027)
-
-using namespace doctest;
-
-struct XmlReporter : public IReporter
-{
-    std::ostream&                 s;
-    std::vector<SubcaseSignature> subcasesStack;
-
-    // caching pointers to objects of these types - safe to do
-    const ContextOptions* opt;
-    const TestCaseData*   tc;
-
-    XmlReporter(std::ostream& in)
-            : s(in) {}
-
-    void test_run_start(const ContextOptions& o) override { opt = &o; }
-
-    void test_run_end(const TestRunStats& /*p*/) override {}
-
-    void test_case_start(const TestCaseData& in) override { tc = &in; }
-
-    void test_case_end(const CurrentTestCaseStats& /*st*/) override {}
-
-    void subcase_start(const SubcaseSignature& /*subc*/) override {}
-
-    void subcase_end(const SubcaseSignature& /*subc*/) override {}
-
-    void log_assert(const AssertData& /*rb*/) override {}
-
-    void log_message(const MessageData& /*mb*/) override {}
-
-    void test_case_skipped(const TestCaseData& /*tc*/) override {}
-};
-
-XmlReporter r(std::cout);
-DOCTEST_REGISTER_REPORTER("xml", 1, r);
-
-
-
-
-
-TEST_CASE("better message needed") {
-    CHECK(false);
-    SUBCASE("subcase 1") {
-        CHECK(false);
-    }
-    CHECK(false);
-}
-
-
-
-
 
 
 fix discoverability of subcases
