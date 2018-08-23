@@ -114,9 +114,7 @@ There are 2 ways to do it:
 - directly pass the list of types to the templated test case
 
     ```
-    typedef doctest::Types<char, short, int, long long int> the_types;
-
-    TEST_CASE_TEMPLATE("signed integers stuff", T, the_types) {
+    TEST_CASE_TEMPLATE("signed integers stuff", T, char, short, int, long long int) {
         T var = T();
         --var;
         CHECK(var == -1);
@@ -132,11 +130,9 @@ There are 2 ways to do it:
         CHECK(var == -1);
     }
 
-    typedef doctest::Types<char, short, int, long long int> the_types;
-    TEST_CASE_TEMPLATE_INSTANTIATE(test_id, the_types);
+    TEST_CASE_TEMPLATE_INSTANTIATE(test_id, char, short, int, long long int);
 
-    typedef doctest::Types<float, double> the_types_2;
-    TEST_CASE_TEMPLATE_INSTANTIATE(test_id, the_types_2);
+    TEST_CASE_TEMPLATE_INSTANTIATE(test_id, float, double);
     ```
     If you are designing an interface or concept, you can define a suite of type-parameterized tests to verify properties that any valid implementation of the interface/concept should have. Then, the author of each implementation can just instantiate the test suite with his type to verify that it conforms to the requirements, without having to write similar tests repeatedly.
 
@@ -161,8 +157,6 @@ Some notes:
 
 - types are NOT filtered for uniqueness - the same templated test case can be instantiated multiple times for the same type - preventing that is left up to the user
 - you don't need to provide stringification for every type as that plays a role only in the test case name - the default is ```<>``` - the tests will still work and be distinct
-- the ```doctest::Types<>``` template accepts up to 60 type arguments
-- if variadic macros are enabled (see [**```DOCTEST_CONFIG_WITH_VARIADIC_MACROS```**](configuration.html#doctest_config_with_variadic_macros)) the typedefs can be skipped and the type lists can be constructed directly in the macros - otherwise the compiler will think that each comma in the type list introduces a new macro argument. With variadic macro support the ```TYPE_TO_STRING``` macro will also be able to work with types such as ```std::pair<int, float>```.
 - if you need parameterization on more than 1 type you can package multiple types in a single one like this:
 
     ```
@@ -173,10 +167,9 @@ Some notes:
         typedef second B;
     };
 
-    typedef Types<
-        TypePair<int, char>,
+    #define pairs \
+        TypePair<int, char>, \
         TypePair<char, int>
-    > pairs;
 
     TEST_CASE_TEMPLATE("multiple types", T, pairs) {
         typedef typename T::A T1;
@@ -192,6 +185,8 @@ Some notes:
 ---
 
 [Home](readme.html#reference)
+
+<p align="center"><img src="../../scripts/data/logo/icon_2.svg"></p>
 
 
 </xmp>

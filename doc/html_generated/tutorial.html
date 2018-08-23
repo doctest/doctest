@@ -180,6 +180,8 @@ root
 
 Subcases can be nested to an arbitrary depth (limited only by your stack size). Each leaf subcase (a subcase that contains no nested subcases) will be executed exactly once on a separate path of execution from any other leaf subcase (so no leaf subcase can interfere with another). A fatal failure in a parent subcase will prevent nested subcases from running - but then that's the idea.
 
+Keep in mind that even though **doctest** is [**thread-safe**](faq.html#is-doctest-thread-aware) - using subcases has to be done only in the main test runner thread.
+
 ## Scaling up
 
 To keep the tutorial simple we put all our code in a single file. This is fine to get started - and makes jumping into **doctest** even quicker and easier. This is not really the best approach when you start writing more real-world tests.
@@ -204,6 +206,8 @@ Of course there is more to learn - see the ever-growing [**reference**](readme.h
 ---------------
 
 [Home](readme.html#reference)
+
+<p align="center"><img src="../../scripts/data/logo/icon_2.svg"></p>
 
 
 </xmp>

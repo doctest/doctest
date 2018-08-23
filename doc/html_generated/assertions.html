@@ -19,6 +19,8 @@ The ```CHECK``` level is mostly useful if you have a series of essentially ortho
 
 All asserts evaluate the expressions only once and if they fail - the values are [**stringified**](stringification.html) properly. 
 
+Since **doctest** is [**thread-safe**](faq.html#is-doctest-thread-aware) all asserts and [**logging**](logging.html) macros can be used in threads spawned from test cases.
+
 Note that the ```REQUIRE``` level of asserts uses exceptions to end the current test case. It might be dangerous to use this level of asserts inside destructors of user-defined classes - if a destructor is called during stack unwinding due to an exception and a ```REQUIRE``` assert fails then the program will terminate. Also since C++11 all destructors are by default ```noexcept(true)``` unless specified otherwise so such an assert will lead to ```std::terminate()``` being called.
 
 ## Expression decomposing asserts
@@ -121,6 +123,18 @@ Expects that no exception is thrown during evaluation of the expression.
 
 Note that these asserts also have a ```_MESSAGE``` form - like ```CHECK_THROWS_MESSAGE(expression, message)``` - these work identically to the ```_MESSAGE``` form of the normal macros (```CHECK_MESSAGE(a < b, "this shouldn't fail")```) described earlier.
 
+## Using asserts out of a testing context
+
+Asserts can be used outside of a testing context (in code not called from a ```TEST_CASE()```) instead of [```assert()```](https://en.cppreference.com/w/cpp/error/assert).
+
+A ```doctest::Context``` object still has to be created somewhere and set as the default one using the ```setAsDefaultForAssertsOutOfTestCases()``` method - and then asserts will work. A handler can be registered by calling the ```setAssertHandler()``` method on the context object. If no handler is set then ```std::abort()``` is called on failure.
+
+The results would be best when using the [**fast asserts**](assertions.html#fast-asserts) coupled with the [**```DOCTEST_CONFIG_SUPER_FAST_ASSERTS```**](configuration.html#doctest_config_super_fast_asserts) config identifier and by defining your own macro aliases - like shown [**here**](../../examples/all_features/doctest_proxy.h).
+
+Checkout the [**example**](../../examples/all_features/asserts_used_outside_of_tests.cpp) showcasing how that is done. For more information see the [**issue for the feature request**](https://github.com/onqtam/doctest/issues/114).
+
+Currently [**logging macros**](logging.html) cannot be used for extra context for asserts outside of a test run. That means that the ```_MESSAGE``` variants of asserts are also not usable - since they are just a packed ```INFO()``` with an assert right after it.
+
 ## Floating point comparisons
 
 When comparing floating point numbers - especially if at least one of them has been computed - great care must be taken to allow for rounding errors and inexact representations.
@@ -147,6 +161,8 @@ When dealing with very large or very small numbers it can be useful to specify a
 ---------------
 
 [Home](readme.html#reference)
+
+<p align="center"><img src="../../scripts/data/logo/icon_2.svg"></p>
 
 
 </xmp>
