@@ -18,7 +18,7 @@ Environment used (Intel i7 3770k, 16g RAM):
 - Windows 7 - on an SSD
 - Ubuntu 17.04 in a VirtualBox VM - on a HDD
 
-**doctest** version: 2.0.0 (released on 2018.08.xx)
+**doctest** version: 2.0.0 (released on 2018.08.23)
 
 [**Catch**](https://github.com/philsquared/Catch) version: 2.3.0 (released on 2018.07.22)
 

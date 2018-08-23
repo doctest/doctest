@@ -9,11 +9,34 @@ Planned features for future releases - order changes constantly...
 
 ### For 2.1:
 
+- finish the reporter system
+    - what is done:
+        - can be used for listening for events
+        - multiple reporters can be used
+        - custom reporters can be written
+        - register and choose reporters
+        - list all reporters
+    - what is left:
+        - output to file (or just not stdout)
+        - xml output
+        - xUnit reporter
+        - compact reporter - https://github.com/onqtam/doctest/issues/75
+        - progress reporter
+        - [junit related stuff](https://github.com/ujiro99/doctest-junit-report))
+        - options
+            - absolutely no output on success
+            - summary only
+        - make sure all relevant parts of the reporters can be accessed from the doctest namespace without the need for detail
+        - examples
+        - documentation
+- matchers - should investigate what they are - look at google test/mock and Catch (also predicates and boost test)
+
+### For 2.2:
+
 - header with extensions
     - demangling with the use of the cxxabi header
     - stringification of types from std, also enums with the help of traits as discussed in #121
     - esoteric reporters
-- matchers - should investigate what they are - look at google test/mock and Catch (also predicates and boost test)
 - convolution support for the assertion macros (with a predicate)
 - Value-Parameterized test cases
 - generators? - look at Catch - and investigate what they are
@@ -38,7 +61,7 @@ Planned features for future releases - order changes constantly...
         - https://www.jetbrains.com/clion/features/unit-testing.html
         - https://blog.jetbrains.com/clion/2017/03/clion-2017-1-released/#catch
 
-### For 2.2:
+### For 2.3:
 
 - log levels - like in [boost test](http://www.boost.org/doc/libs/1_63_0/libs/test/doc/html/boost_test/utf_reference/rt_param_reference/log_level.html)
 - running tests a [few times](https://github.com/google/googletest/blob/master/googletest/docs/AdvancedGuide.md#repeating-the-tests)

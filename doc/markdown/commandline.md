@@ -61,7 +61,7 @@ All the unprefixed versions listed here can be disabled with the [**```DOCTEST_C
 
 This is done for easy interoperability with client command line option handling when the testing framework is integrated within a client codebase - all **doctest** related flags/options can be prefixed so there are no clashes and so that the user can exclude everything starting with ```--dt-``` from their option parsing.
 
-If there isn't an option to exclude everything starting with ```--dt-``` then the ```dt_removed``` helper class might help to filter them out:
+If there isn't an option to exclude those starting with ```--dt-``` then the ```dt_removed``` helper class might help to filter them out:
 
 ```c++
 #define DOCTEST_CONFIG_NO_UNPREFIXED_OPTIONS

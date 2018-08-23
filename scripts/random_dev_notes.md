@@ -1,4 +1,6 @@
 
+
+
 DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_BEGIN
 #include <iostream>
 #include <vector>
@@ -56,81 +58,6 @@ TEST_CASE("better message needed") {
     CHECK(false);
 }
 
-
-
-
-
-
-
-// doctest_0_pre_cpp11
- 8.88 |   12.31 | ===> 0.0172 sec
-15.02 |   19.78 | ===> 0.0238 sec
-
-// doctest_1_pre_fwd_to_impl
- 9.70 |   13.03 | ===> 0.0166 sec
-15.40 |   20.15 | ===> 0.0238 sec
-
-// doctest_2_after_fwd_to_impl
- 9.91 |   12.60 | ===> 0.0135 sec
-15.48 |   19.08 | ===> 0.0180 sec
-
-// doctest_3_after_struct_madness
- 9.35 |   11.70 | ===> 0.0118
-14.81 |   18.55 | ===> 0.0187
-
-// doctest_4_after_anon_ns
- 9.85 |   11.91 | ===> 0.0103
-14.96 |   18.75 | ===> 0.0189
-
-
-https://i.stack.imgur.com/b2VBV.png
-
-
-
-reporters issue: 138
-c++11 issue: 137
-threading: issue: 4 pr: 117
-
-move to C++11 - done:
-    - remove the config identifiers for C++11 features
-    - use variadic templates where appropriate
-    - update type lists to C++11
-    - move initialization of fields from initializer lists to class bodies
-    - for loops
-    - lambdas
-    - auto
-    - easy thread safety
-
-reporters - done:
-    - can be used for listening for events
-    - multiple reporters can be used
-    - custom reporters can be written
-    - register and choose reporters
-    - list all reporters
-reporters - todo:
-    - output to file (or just not stdout)
-    - xml output
-    - xUnit reporter
-    - compact reporter - https://github.com/onqtam/doctest/issues/75
-    - progress reporter
-    - [junit related stuff](https://github.com/ujiro99/doctest-junit-report))
-    - options
-        - absolutely no output on success
-        - summary only
-    - make sure all relevant parts of the reporters can be accessed from the doctest namespace without the need for detail
-    - examples
-    - documentation
-
-before release:
-    coverage
-    redo benchmarks
-
-on release:
-    ask in the reddit thread what from the roadmap they would like to see next
-    contact https://github.com/wichtounet and tell him that xml output is present
-
-release texts:
-- further improvement of compile and link times - moved the body of absolutely every non-templated function out of the interface part of the header and into the implementation part (including implicitly generated special member functions!) (also using anonymous namespaces for most of the test runner)
 
 
 
