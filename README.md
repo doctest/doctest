@@ -115,6 +115,7 @@ Usage:
 - [```main()``` entry point](doc/markdown/main.md)
 - [Configuration](doc/markdown/configuration.md)
 - [String conversions](doc/markdown/stringification.md)
+- [Reporters](doc/markdown/reporters.md)
 - [FAQ](doc/markdown/faq.md)
 - [Build systems](doc/markdown/build-systems.md)
 - [Examples](examples)

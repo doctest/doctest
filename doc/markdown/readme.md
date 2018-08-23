@@ -20,6 +20,7 @@ Usage:
 - [```main()``` entry point](main.md)
 - [Configuration](configuration.md)
 - [String conversions](stringification.md)
+- [Reporters](reporters.md)
 - [FAQ](faq.md)
 - [Build systems](build-systems.md)
 - [Examples](../../examples)
