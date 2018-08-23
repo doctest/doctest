@@ -164,3 +164,5 @@ TEST_SUITE("not longer than 500ms" * doctest::timeout(0.5)) {
 ---------------
 
 [Home](readme.md#reference)
+
+<p align="center"><img src="../../scripts/data/logo/icon_2.svg"></p>

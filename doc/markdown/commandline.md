@@ -122,3 +122,5 @@ Program: 2 arguments received:
 ---------------
 
 [Home](readme.md#reference)
+
+<p align="center"><img src="../../scripts/data/logo/icon_2.svg"></p>

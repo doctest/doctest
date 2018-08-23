@@ -76,3 +76,5 @@ target_link_libraries(my_tests doctest)
 ---
 
 [Home](readme.md#reference)
+
+<p align="center"><img src="../../scripts/data/logo/icon_2.svg"></p>

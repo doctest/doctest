@@ -233,3 +233,5 @@ This can be defined both globally and in specific source files only.
 ---------------
 
 [Home](readme.md#reference)
+
+<p align="center"><img src="../../scripts/data/logo/icon_2.svg"></p>

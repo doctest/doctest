@@ -77,3 +77,5 @@ There is a list of planned features which are all important and big - see the [*
 ---------------
 
 [Home](readme.md#reference)
+
+<p align="center"><img src="../../scripts/data/logo/icon_2.svg"></p>

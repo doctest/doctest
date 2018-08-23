@@ -1,4 +1,4 @@
-<p align="center"><img src="https://s15.postimg.cc/k3h4w0zyz/README_1.jpg"></p>
+<p align="center"><img src="scripts/data/logo/logo_1.svg"></p>
 <b>
 <table>
     <tr>
@@ -131,4 +131,10 @@ If you work for a company using **doctest** or have the means to do so, please c
 
 Contributions in the form of issues and pull requests are welcome as well - check out the [**Contributing**](CONTRIBUTING.md) page.
 
-<p align="center"><img src="https://s15.postimg.cc/efau57nxn/README_2.jpg"></p>
+
+Logo
+------------
+
+The [logo](scripts/data/logo) is licensed under a Creative Commons Attribution 4.0 International License. Copyright &copy; 2018 [area55git](https://github.com/area55git) &nbsp; [![License: CC BY 4.0](https://licensebuttons.net/l/by/4.0/80x15.png)](https://creativecommons.org/licenses/by/4.0/)
+
+<p align="center"><img src="scripts/data/logo/icon_2.svg"></p>

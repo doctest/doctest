@@ -89,3 +89,5 @@ The order of registering exception translators can be controlled - simply call t
 ---
 
 [Home](readme.md#reference)
+
+<p align="center"><img src="../../scripts/data/logo/icon_2.svg"></p>

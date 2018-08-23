@@ -58,3 +58,5 @@ For more info on that checkout the [**```DOCTEST_CONFIG_IMPLEMENTATION_IN_DLL```
 ---------------
 
 [Home](readme.md#reference)
+
+<p align="center"><img src="../../scripts/data/logo/icon_2.svg"></p>

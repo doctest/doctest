@@ -26,3 +26,5 @@ Testing with compilers different from GCC/Clang/MSVC (and more platforms) is som
 ---------------
 
 [Home](readme.md#reference)
+
+<p align="center"><img src="scripts/data/logo/icon_2.svg"></p>

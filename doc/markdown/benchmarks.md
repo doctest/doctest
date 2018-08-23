@@ -198,3 +198,5 @@ While reading the post - keep in mind that if a part of a process takes 50% of t
 ---------------
 
 [Home](readme.md#reference)
+
+<p align="center"><img src="../../scripts/data/logo/icon_2.svg"></p>

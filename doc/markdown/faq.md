@@ -146,3 +146,5 @@ Aren't they evil and not *modern*? - Check out the answer Phil Nash gives to thi
 ---------------
 
 [Home](readme.md#reference)
+
+<p align="center"><img src="../../scripts/data/logo/icon_2.svg"></p>

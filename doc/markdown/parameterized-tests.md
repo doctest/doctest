@@ -180,3 +180,5 @@ Some notes:
 ---
 
 [Home](readme.md#reference)
+
+<p align="center"><img src="../../scripts/data/logo/icon_2.svg"></p>

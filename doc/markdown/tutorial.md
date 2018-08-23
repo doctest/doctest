@@ -201,3 +201,5 @@ Of course there is more to learn - see the ever-growing [**reference**](readme.m
 ---------------
 
 [Home](readme.md#reference)
+
+<p align="center"><img src="../../scripts/data/logo/icon_2.svg"></p>

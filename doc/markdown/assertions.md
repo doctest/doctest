@@ -156,3 +156,5 @@ When dealing with very large or very small numbers it can be useful to specify a
 ---------------
 
 [Home](readme.md#reference)
+
+<p align="center"><img src="../../scripts/data/logo/icon_2.svg"></p>
