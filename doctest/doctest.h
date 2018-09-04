@@ -4023,7 +4023,7 @@ namespace {
         static char             altStackMem[4 * SIGSTKSZ];
 
         static void handleSignal(int sig) {
-            std::string name = "<unknown signal>";
+            const char* name = "<unknown signal>";
             for(std::size_t i = 0; i < DOCTEST_COUNTOF(signalDefs); ++i) {
                 SignalDefs& def = signalDefs[i];
                 if(sig == def.id) {
