@@ -3188,7 +3188,7 @@ String toString(double long in) { return fpToString(in, 15); }
 
 DOCTEST_TO_STRING_OVERLOAD(char, "%d")
 DOCTEST_TO_STRING_OVERLOAD(char signed, "%d")
-DOCTEST_TO_STRING_OVERLOAD(char unsigned, "%ud")
+DOCTEST_TO_STRING_OVERLOAD(char unsigned, "%u")
 DOCTEST_TO_STRING_OVERLOAD(int short, "%d")
 DOCTEST_TO_STRING_OVERLOAD(int short unsigned, "%u")
 DOCTEST_TO_STRING_OVERLOAD(int, "%d")
