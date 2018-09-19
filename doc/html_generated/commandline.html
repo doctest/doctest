@@ -60,7 +60,9 @@ All the options can also be set with code (defaults/overrides) if the user [**su
 | ```-nln``` ```--no-line-numbers=<bool>``` | Line numbers are replaced with ```0``` in the output when a source location is printed - useful if you want the same output from the testing framework even when test positions change within a source file |
 | &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| |
 
-All the flags/options also come with a prefixed version (with ```--dt-``` at the front) - for example ```--version``` can be used also with ```--dt-version``` or ```--dt-v```.
+All the flags/options also come with a prefixed version (with ```--dt-``` at the front by default) - for example ```--version``` can be used also with ```--dt-version``` or ```--dt-v```.
+
+The default prefix is ```--dt-```, but this can be changed by setting the [**```DOCTEST_CONFIG_OPTIONS_PREFIX```**](configuration.html#doctest_config_options_prefix) define.
 
 All the unprefixed versions listed here can be disabled with the [**```DOCTEST_CONFIG_NO_UNPREFIXED_OPTIONS```**](configuration.html#doctest_config_no_unprefixed_options) define.
 
