@@ -95,8 +95,8 @@ TEST_CASE("exercising tricky code paths of doctest") {
     // trigger code path for assert string of a non-existent assert type
     oss << assertString(static_cast<assertType::Enum>(3));
     str += oss.str().c_str();
-    CHECK(str == "omgomgomgaaaNULLtrue00.5f0.50.199991d111111true0.50.50.1cc"
-                 "111111omgomgomgaaaNULLtrue00.5f0.50.199991d111111");
+    CHECK(str == "omgomgomgaaaNULLtrue00.5f0.50.199991111111true0.50.50.1cc"
+                 "111111omgomgomgaaaNULLtrue00.5f0.50.199991111111");
     // trigger code path for rawMemoryToString
     bool   isThereAnything = str.size() > 0u;
     bool   len_is_zero     = detail::rawMemoryToString(isThereAnything).size() == 0u;
