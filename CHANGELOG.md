@@ -1,5 +1,20 @@
 # Change Log
 
+## [2.0.1](https://github.com/onqtam/doctest/tree/2.0.1) (2018-10-24)
+[Full Changelog](https://github.com/onqtam/doctest/compare/2.0.0...2.0.1)
+
+**Closed issues:**
+
+- macro name collision with google log [\#157](https://github.com/onqtam/doctest/issues/157)
+- Add \#define to not run tests by default [\#152](https://github.com/onqtam/doctest/issues/152)
+- REQUIRE\_THROWS\_MESSAGE not checking message correctly [\#150](https://github.com/onqtam/doctest/issues/150)
+- Test case passes even though subcase failed [\#149](https://github.com/onqtam/doctest/issues/149)
+
+**Merged pull requests:**
+
+- Correctly document when a main\(\) entry point will be created [\#155](https://github.com/onqtam/doctest/pull/155) ([tbleher](https://github.com/tbleher))
+- Correct format string for unsigned char [\#154](https://github.com/onqtam/doctest/pull/154) ([tbleher](https://github.com/tbleher))
+
 ## [2.0.0](https://github.com/onqtam/doctest/tree/2.0.0) (2018-08-23)
 [Full Changelog](https://github.com/onqtam/doctest/compare/1.2.9...2.0.0)
 
@@ -7,7 +22,6 @@
 
 - MSVC 2017 15.8.1, New Warnings as Errors [\#144](https://github.com/onqtam/doctest/issues/144)
 - Windows clang-cl Wdeprecated-declarations warnings [\#143](https://github.com/onqtam/doctest/issues/143)
-- wide character wchar\_t support? [\#142](https://github.com/onqtam/doctest/issues/142)
 - Logo Proposal for Doctest [\#141](https://github.com/onqtam/doctest/issues/141)
 - PCH Support [\#140](https://github.com/onqtam/doctest/issues/140)
 - improve compile times even further [\#139](https://github.com/onqtam/doctest/issues/139)
