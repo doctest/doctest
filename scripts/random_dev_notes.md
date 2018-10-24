@@ -1,9 +1,13 @@
 
+rope-ish startup of doctest - and filter duplicates on run()
+
+https://blog.travis-ci.com/2018-10-11-windows-early-release
+
+add in the faq about the compile errors with stream<<"array" - nikola goranov, also moving to catch undef/define stuffs - use vararg macro, also make the "moving from catch to doctest" easier to find, also this: https://stackoverflow.com/questions/35530850/how-to-require-a-semicolon-after-a-macro/52122660#52122660
 
 
 
-
-fix discoverability of subcases
+fix discoverability of subcases - wtf??? don't remember what I meant with this...
 
 https://github.com/catchorg/Catch2/commit/de36b2ada6e4593a9a32c4c86cd47d4bc002b148
 
@@ -42,6 +46,7 @@ https://github.com/martinmoene/catch-lest-other-comparison
     - https://github.com/philsquared/Catch/issues/872
     - https://github.com/philsquared/Catch/pull/877
     - https://github.com/philsquared/Catch/issues/880
+    - https://github.com/catchorg/Catch2/pull/1405
 - toString trouble - https://github.com/philsquared/Catch/issues/741
 - https://github.com/philsquared/Catch/commit/33ed1773f40b406dbf3b7201bf52694bd86b1503
 

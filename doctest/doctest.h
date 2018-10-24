@@ -5061,6 +5061,10 @@ int Context::run() {
             p->seconds_so_far = 0;
             p->error_string   = "";
 
+            // reset non-atomic counters
+            p->numAssertsFailedForCurrentTestCase = 0;
+            p->numAssertsForCurrentTestCase       = 0;
+
             p->subcasesPassed.clear();
             do {
                 // reset some of the fields for subcases (except for the set of fully passed ones)
@@ -5099,9 +5103,9 @@ int Context::run() {
 
                 // update the non-atomic counters
                 p->numAsserts += p->numAssertsForCurrentTestCase_atomic;
-                p->numAssertsForCurrentTestCase = p->numAssertsForCurrentTestCase_atomic;
+                p->numAssertsForCurrentTestCase += p->numAssertsForCurrentTestCase_atomic;
                 p->numAssertsFailed += p->numAssertsFailedForCurrentTestCase_atomic;
-                p->numAssertsFailedForCurrentTestCase =
+                p->numAssertsFailedForCurrentTestCase +=
                         p->numAssertsFailedForCurrentTestCase_atomic;
 
                 // exit this loop if enough assertions have failed - even if there are more subcases
