@@ -91,3 +91,12 @@ SCENARIO("vectors can be sized and resized") {
         }
     }
 }
+
+TEST_CASE("test case should fail even though the last subcase passes") {
+    SUBCASE("one") {
+        CHECK(false);
+    }
+    SUBCASE("two") {
+        CHECK(true);
+    }
+}

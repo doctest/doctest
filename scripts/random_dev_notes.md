@@ -1,69 +1,13 @@
 
+rope-ish startup of doctest - and filter duplicates on run()
 
+https://blog.travis-ci.com/2018-10-11-windows-early-release
 
-DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_BEGIN
-#include <iostream>
-#include <vector>
-using namespace std;
-DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_END
-DOCTEST_MSVC_SUPPRESS_WARNING(4820)
-DOCTEST_MSVC_SUPPRESS_WARNING(4626)
-DOCTEST_MSVC_SUPPRESS_WARNING(5027)
-
-using namespace doctest;
-
-struct XmlReporter : public IReporter
-{
-    std::ostream&                 s;
-    std::vector<SubcaseSignature> subcasesStack;
-
-    // caching pointers to objects of these types - safe to do
-    const ContextOptions* opt;
-    const TestCaseData*   tc;
-
-    XmlReporter(std::ostream& in)
-            : s(in) {}
-
-    void test_run_start(const ContextOptions& o) override { opt = &o; }
-
-    void test_run_end(const TestRunStats& /*p*/) override {}
-
-    void test_case_start(const TestCaseData& in) override { tc = &in; }
-
-    void test_case_end(const CurrentTestCaseStats& /*st*/) override {}
-
-    void subcase_start(const SubcaseSignature& /*subc*/) override {}
-
-    void subcase_end(const SubcaseSignature& /*subc*/) override {}
-
-    void log_assert(const AssertData& /*rb*/) override {}
-
-    void log_message(const MessageData& /*mb*/) override {}
-
-    void test_case_skipped(const TestCaseData& /*tc*/) override {}
-};
-
-XmlReporter r(std::cout);
-DOCTEST_REGISTER_REPORTER("xml", 1, r);
+add in the faq about the compile errors with stream<<"array" - nikola goranov, also moving to catch undef/define stuffs - use vararg macro, also make the "moving from catch to doctest" easier to find, also this: https://stackoverflow.com/questions/35530850/how-to-require-a-semicolon-after-a-macro/52122660#52122660
 
 
 
-
-
-TEST_CASE("better message needed") {
-    CHECK(false);
-    SUBCASE("subcase 1") {
-        CHECK(false);
-    }
-    CHECK(false);
-}
-
-
-
-
-
-
-fix discoverability of subcases
+fix discoverability of subcases - wtf??? don't remember what I meant with this...
 
 https://github.com/catchorg/Catch2/commit/de36b2ada6e4593a9a32c4c86cd47d4bc002b148
 
@@ -102,6 +46,7 @@ https://github.com/martinmoene/catch-lest-other-comparison
     - https://github.com/philsquared/Catch/issues/872
     - https://github.com/philsquared/Catch/pull/877
     - https://github.com/philsquared/Catch/issues/880
+    - https://github.com/catchorg/Catch2/pull/1405
 - toString trouble - https://github.com/philsquared/Catch/issues/741
 - https://github.com/philsquared/Catch/commit/33ed1773f40b406dbf3b7201bf52694bd86b1503
 

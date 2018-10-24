@@ -79,7 +79,15 @@ subcases.cpp(0): ERROR: CHECK( v.size() == 10 ) is NOT correct!
   values: CHECK( 5 == 10 )
 
 ===============================================================================
-[doctest] test cases:      3 |      1 passed |      2 failed | 
-[doctest] assertions:     17 |     14 passed |      3 failed |
+subcases.cpp(0):
+TEST CASE:  test case should fail even though the last subcase passes
+  one
+
+subcases.cpp(0): ERROR: CHECK( false ) is NOT correct!
+  values: CHECK( false )
+
+===============================================================================
+[doctest] test cases:      4 |      1 passed |      3 failed | 
+[doctest] assertions:     19 |     15 passed |      4 failed |
 [doctest] Status: FAILURE!
 Program code.

@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<title>reporters</title>
+<xmp theme="united" style="display:none;">
+
+## Reporters
+
+A very sloppy documentation of the partial reporters support.
+
+Example how to define your own reporter:
+
+```
+using namespace doctest;
+
+struct XmlReporter : public IReporter
+{
+    std::ostream&                 s;
+    std::vector<SubcaseSignature> subcasesStack;
+
+    // caching pointers to objects of these types - safe to do
+    const ContextOptions* opt;
+    const TestCaseData*   tc;
+
+    XmlReporter(std::ostream& in)
+            : s(in) {}
+
+    void test_run_start(const ContextOptions& o) override { opt = &o; }
+
+    void test_run_end(const TestRunStats& /*p*/) override {}
+
+    void test_case_start(const TestCaseData& in) override { tc = &in; }
+
+    void test_case_end(const CurrentTestCaseStats& /*st*/) override {}
+
+    void subcase_start(const SubcaseSignature& subc) override { subcasesStack.push_back(subc); }
+
+    void subcase_end(const SubcaseSignature& /*subc*/) override { subcasesStack.pop_back(); }
+
+    void log_assert(const AssertData& /*rb*/) override {}
+
+    void log_message(const MessageData& /*mb*/) override {}
+
+    void test_case_skipped(const TestCaseData& /*in*/) override {}
+};
+
+XmlReporter r(std::cout);
+DOCTEST_REGISTER_REPORTER("xml", 1, r);
+```
+
+Multiple reporters can be used at the same time - just specify them through the ```--reporters=...``` [**command line option**](commandline.html). The number ```1``` in this case is the priority - reporters will be called in the order defined by their priority when a few of them are selected to be used at the same time.
+
+You can list all registered reporters with ```--list-reporters```. There is only 1 implemented reporter in the framework - a console reporter - an xml one is coming in the next version. the reporter interface can also be used for "listening" to events.
+
+Reporters will be fully implemented and more thoroughly documented (with examples) for version 2.1 - [**roadmap**](roadmap.html).
+
+TODO: think about:
+
+- people having to handle locking on their own in the reporters - just like currently in the console reporter...
+    - or log_assert() can be called for reporters (so also for listeners) only when failed or when printing on success!
+    - or it could be a 'policy' for the reporter
+
+---------------
+
+[Home](readme.html#reference)
+
+<p align="center"><img src="../../scripts/data/logo/icon_2.svg"></p>
+
+
+</xmp>
+<script src="strapdown.js/strapdown.js"></script>
+</html>

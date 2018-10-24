@@ -47,8 +47,8 @@
 
 #define DOCTEST_VERSION_MAJOR 2
 #define DOCTEST_VERSION_MINOR 0
-#define DOCTEST_VERSION_PATCH 0
-#define DOCTEST_VERSION_STR "2.0.0"
+#define DOCTEST_VERSION_PATCH 1
+#define DOCTEST_VERSION_STR "2.0.1"
 
 #define DOCTEST_VERSION                                                                            \
     (DOCTEST_VERSION_MAJOR * 10000 + DOCTEST_VERSION_MINOR * 100 + DOCTEST_VERSION_PATCH)
@@ -3188,7 +3188,7 @@ String toString(double long in) { return fpToString(in, 15); }
 
 DOCTEST_TO_STRING_OVERLOAD(char, "%d")
 DOCTEST_TO_STRING_OVERLOAD(char signed, "%d")
-DOCTEST_TO_STRING_OVERLOAD(char unsigned, "%ud")
+DOCTEST_TO_STRING_OVERLOAD(char unsigned, "%u")
 DOCTEST_TO_STRING_OVERLOAD(int short, "%d")
 DOCTEST_TO_STRING_OVERLOAD(int short unsigned, "%u")
 DOCTEST_TO_STRING_OVERLOAD(int, "%d")
@@ -4023,7 +4023,7 @@ namespace {
         static char             altStackMem[4 * SIGSTKSZ];
 
         static void handleSignal(int sig) {
-            std::string name = "<unknown signal>";
+            const char* name = "<unknown signal>";
             for(std::size_t i = 0; i < DOCTEST_COUNTOF(signalDefs); ++i) {
                 SignalDefs& def = signalDefs[i];
                 if(sig == def.id) {
@@ -5061,6 +5061,10 @@ int Context::run() {
             p->seconds_so_far = 0;
             p->error_string   = "";
 
+            // reset non-atomic counters
+            p->numAssertsFailedForCurrentTestCase = 0;
+            p->numAssertsForCurrentTestCase       = 0;
+
             p->subcasesPassed.clear();
             do {
                 // reset some of the fields for subcases (except for the set of fully passed ones)
@@ -5099,9 +5103,9 @@ int Context::run() {
 
                 // update the non-atomic counters
                 p->numAsserts += p->numAssertsForCurrentTestCase_atomic;
-                p->numAssertsForCurrentTestCase = p->numAssertsForCurrentTestCase_atomic;
+                p->numAssertsForCurrentTestCase += p->numAssertsForCurrentTestCase_atomic;
                 p->numAssertsFailed += p->numAssertsFailedForCurrentTestCase_atomic;
-                p->numAssertsFailedForCurrentTestCase =
+                p->numAssertsFailedForCurrentTestCase +=
                         p->numAssertsFailedForCurrentTestCase_atomic;
 
                 // exit this loop if enough assertions have failed - even if there are more subcases
