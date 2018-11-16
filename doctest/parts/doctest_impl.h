@@ -1430,7 +1430,7 @@ namespace {
             sigStack.ss_size  = sizeof(altStackMem);
             sigStack.ss_flags = 0;
             sigaltstack(&sigStack, &oldSigStack);
-            struct sigaction sa = {nullptr};
+            struct sigaction sa = {0};
 
             sa.sa_handler = handleSignal; // NOLINT
             sa.sa_flags   = SA_ONSTACK;
