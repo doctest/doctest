@@ -4044,7 +4044,13 @@ namespace {
             sigStack.ss_size  = sizeof(altStackMem);
             sigStack.ss_flags = 0;
             sigaltstack(&sigStack, &oldSigStack);
-            struct sigaction sa = {nullptr};
+
+            // we cannot assign a nullptr when building with the Android NDK
+            DOCTEST_CLANG_SUPPRESS_WARNING_WITH_PUSH("-Wzero-as-null-pointer-constant")
+            DOCTEST_GCC_SUPPRESS_WARNING_WITH_PUSH("-Wzero-as-null-pointer-constant")
+            struct sigaction sa = {0};
+            DOCTEST_GCC_SUPPRESS_WARNING_POP
+            DOCTEST_CLANG_SUPPRESS_WARNING_POP
 
             sa.sa_handler = handleSignal; // NOLINT
             sa.sa_flags   = SA_ONSTACK;
