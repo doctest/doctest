@@ -1,7 +1,6 @@
 # this file is HEAVILY influenced by https://github.com/boostorg/hana/blob/master/.travis.yml
 
 dist: trusty
-sudo: false
 language: c++
 
 notifications:

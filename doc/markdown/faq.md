@@ -17,6 +17,7 @@
 Pros of **doctest**:
 
 - **doctest** is [**thread-safe**](faq.md#is-doctest-thread-aware)
+- asserts can be used [**outside of a testing context**](assertions.md#using-asserts-out-of-a-testing-context)
 - including the **doctest** header is [**over 20 times lighter**](benchmarks.md#cost-of-including-the-header) on compile times than that of [**Catch**](https://github.com/philsquared/Catch)
 - the asserts in **doctest** can be [**many times lighter**](benchmarks.md#cost-of-an-assertion-macro) on compile times than those of [**Catch**](https://github.com/philsquared/Catch)
 - **doctest** executes tests [**many times faster**](benchmarks.md#runtime-benchmarks) than [**Catch**](https://github.com/philsquared/Catch)
@@ -25,8 +26,9 @@ Pros of **doctest**:
 - 0 warnings even on the [**most aggressive**](../../scripts/cmake/common.cmake#L84) warning levels for MSVC/GCC/Clang
 - per commit tested with 180+ builds on [**much more compilers**](features.md#extremely-portable) - and through valgrind/sanitizers/analyzers
 - test cases can be written in headers - the framework will still register the tests only once - no duplicates
+- binaries (exe/dll) can use the test runner of another binary - so tests end up in a single registry - [**example**](../../examples/executable_dll_and_plugin/)
 
-Aside from everything mentioned so far doctest has some [**features**](features.md#other-features) (like [**templated test cases**](parameterized-tests.md#templated-test-cases---parameterized-by-type)) which [**Catch**](https://github.com/philsquared/Catch) doesn't.
+Aside from everything mentioned so far doctest has some [**features**](features.md#other-features) (like [**test suites**](testcases.md#test-suites) and [**decorators**](testcases.md#decorators)) which [**Catch**](https://github.com/philsquared/Catch) doesn't.
 
 Missing stuff:
 

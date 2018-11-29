@@ -59,6 +59,7 @@ The **key** differences between it and other testing frameworks are that it is l
 - asserts can be used [**outside of a testing context**](doc/markdown/assertions.md#using-asserts-out-of-a-testing-context) - as a general purpose assert library - [**example**](examples/all_features/asserts_used_outside_of_tests.cpp)
 - Doesn't pollute the global namespace (everything is in namespace ```doctest```) and doesn't drag **any** headers with it
 - Very [**portable**](doc/markdown/features.md#extremely-portable) C++11 (use tag [**1.2.9**](https://github.com/onqtam/doctest/tree/1.2.9) for C++98) with over 180 different CI builds (static analysis, sanitizers...)
+- binaries (exe/dll) can use the test runner of another binary - so tests end up in a single registry - [**example**](../../examples/executable_dll_and_plugin/)
 
 ![cost-of-including-the-framework-header](scripts/data/benchmarks/header.png)
 
@@ -77,7 +78,7 @@ The framework can be used like any other if you don't want/need to mix productio
 
 [This table](https://github.com/martinmoene/catch-lest-other-comparison) compares **doctest** / [**Catch**](https://github.com/philsquared/Catch) / [**lest**](https://github.com/martinmoene/lest) which are all very similar.
 
-[![Standard](https://img.shields.io/badge/c%2B%2B-98/11/14/17-blue.svg)](https://en.wikipedia.org/wiki/C%2B%2B#Standardization)
+[![Standard](https://img.shields.io/badge/c%2B%2B-11/14/17-blue.svg)](https://en.wikipedia.org/wiki/C%2B%2B#Standardization)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 [![Version](https://badge.fury.io/gh/onqtam%2Fdoctest.svg)](https://github.com/onqtam/doctest/releases)
 [![download](https://img.shields.io/badge/download%20%20-latest-blue.svg)](https://raw.githubusercontent.com/onqtam/doctest/master/doctest/doctest.h)
