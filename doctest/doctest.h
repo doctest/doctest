@@ -450,6 +450,7 @@ public:
     ~String();
 
     String(const char* in);
+    String(const char* in, unsigned size);
 
     String(const String& other);
     String& operator=(const String& other);
@@ -2883,17 +2884,19 @@ String::~String() {
         delete[] data.ptr;
 }
 
-String::String(const char* in) {
-    unsigned in_len = strlen(in);
-    if(in_len <= last) {
-        memcpy(buf, in, in_len + 1);
-        setLast(last - in_len);
+String::String(const char* in)
+        : String(in, strlen(in)) {}
+
+String::String(const char* in, unsigned size) {
+    if(size <= last) {
+        memcpy(buf, in, size + 1);
+        setLast(last - size);
     } else {
         setOnHeap();
-        data.size     = in_len;
+        data.size     = size;
         data.capacity = data.size + 1;
         data.ptr      = new char[data.capacity];
-        memcpy(data.ptr, in, in_len + 1);
+        memcpy(data.ptr, in, size + 1);
     }
 }
 
