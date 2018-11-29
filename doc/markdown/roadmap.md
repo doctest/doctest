@@ -155,6 +155,8 @@ Planned features for future releases - order changes constantly...
 
 ### Things that are very unlikely to enter the roadmap:
 
+- think about removing (const) reference from the type passed to CHECK_THROWS_AS since we are adding a reference later anyway
+    - this should compile: ```CHECK_THROWS_AS(fact(0), const std::exception&);```
 - rethink static code analysis suppressions - users shouldn't have to use the same flags for code which uses doctest macros/types
 - think about removing the binary asserts (leaving only the fast binary asserts) because normal asserts + no try/catch in asserts are almost the same
 - move the "react()" part (the one that throws for REQUIRE asserts - or for when "abort-after=<int>" is reached) to a function call in the while() part of the asserts
