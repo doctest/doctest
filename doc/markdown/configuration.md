@@ -16,6 +16,7 @@ Defining something ```globally``` means for every source file of the binary (exe
 - [**```DOCTEST_CONFIG_SUPER_FAST_ASSERTS```**](#doctest_config_super_fast_asserts)
 - [**```DOCTEST_CONFIG_USE_IOSFWD```**](#doctest_config_use_iosfwd)
 - [**```DOCTEST_CONFIG_NO_COMPARISON_WARNING_SUPPRESSION```**](#doctest_config_no_comparison_warning_suppression)
+- [**```DOCTEST_CONFIG_OPTIONS_PREFIX```**](#doctest_config_options_prefix)
 - [**```DOCTEST_CONFIG_NO_UNPREFIXED_OPTIONS```**](#doctest_config_no_unprefixed_options)
 - [**```DOCTEST_CONFIG_NO_TRY_CATCH_IN_ASSERTS```**](#doctest_config_no_try_catch_in_asserts)
 - [**```DOCTEST_CONFIG_NO_EXCEPTIONS```**](#doctest_config_no_exceptions)
@@ -118,6 +119,12 @@ By default the library suppresses warnings about comparing signed and unsigned t
 You can checkout [**this**](https://github.com/onqtam/doctest/issues/16#issuecomment-246803303) issue to better understand why I suppress these warnings by default.
 
 This can be defined both globally and in specific source files only.
+
+### **```DOCTEST_CONFIG_OPTIONS_PREFIX```**
+
+Defining this as a string will change the prefix of the [**command line**](commandline.md) options to use the given prefix instead of the default ```dt-``` prefix. This can be useful for integrating the testing framework into a client codebase, where a command option prefix like ```selftest-``` might be more clear to users.
+
+This should be defined only in the source file where the library is implemented (it's relevant only there).
 
 ### **```DOCTEST_CONFIG_NO_UNPREFIXED_OPTIONS```**
 
