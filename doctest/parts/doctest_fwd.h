@@ -447,7 +447,7 @@ public:
     ~String();
 
     String(const char* in);
-    String(const char* in, unsigned size);
+    String(const char* in, unsigned in_size);
 
     String(const String& other);
     String& operator=(const String& other);
