@@ -61,7 +61,7 @@ namespace doctest {
 
 ## Translating exceptions
 
-By default all exceptions deriving from ```std::exception``` will be translated to strings by calling the ```what()``` method. For exception types that do not derive from ```std::exception``` - or if ```what()``` does not return a suitable string - use ```REGISTER_EXCEPTION_TRANSLATOR```. This defines a function that takes your exception type and returns a ```doctest::String```. It can appear anywhere in the code - it doesn't have to be in the same translation unit. For example:
+By default all exceptions deriving from ```std::exception``` will be translated to strings by calling the ```what()``` method (also C strings). For exception types that do not derive from ```std::exception``` - or if ```what()``` does not return a suitable string - use ```REGISTER_EXCEPTION_TRANSLATOR```. This defines a function that takes your exception type and returns a ```doctest::String```. It can appear anywhere in the code - it doesn't have to be in the same translation unit. For example:
 
 ```c++
 REGISTER_EXCEPTION_TRANSLATOR(MyType& ex) {

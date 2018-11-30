@@ -102,17 +102,25 @@ There is also the [**```DOCTEST_CONFIG_SUPER_FAST_ASSERTS```**](configuration.md
 
 Expects that an exception (of any type) is thrown during evaluation of the expression.
 
-* ```<LEVEL>_THROWS_AS(expression, exception_type)```
+- ```<LEVEL>_THROWS_AS(expression, exception_type)```
 
 Expects that an exception of the _specified type_ is thrown during evaluation of the expression.
 
 Note that ```const``` and ```&``` are added to the exception type - so users are expected to specify just the type of the exception - the standard practice for exceptions in C++ is ```Throw by value, catch by (const) reference```.
 
 ```c++
-CHECK_THROWS_AS(func(), std::exception); // note the reference and the const
+CHECK_THROWS_AS(func(), std::exception);
 ```
 
-* ```<LEVEL>_NOTHROW(expression)```
+- ```<LEVEL>_THROWS_WITH(expression, c_string)```
+
+Expects that an exception is thrown during evaluation of the expression and is successfully translated to the _specified c string_ (see [**translating exceptions**](stringification.md#translating-exceptions)).
+
+```c++
+CHECK_THROWS_WITH(func(), "invalid operation!");
+```
+
+- ```<LEVEL>_NOTHROW(expression)```
 
 Expects that no exception is thrown during evaluation of the expression.
 

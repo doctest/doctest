@@ -18,16 +18,19 @@
 #define my_warn_false               DOCTEST_WARN_FALSE
 #define my_warn_throws              DOCTEST_WARN_THROWS
 #define my_warn_throws_as           DOCTEST_WARN_THROWS_AS
+#define my_warn_throws_with         DOCTEST_WARN_THROWS_WITH
 #define my_warn_nothrow             DOCTEST_WARN_NOTHROW
 #define my_check                    DOCTEST_CHECK
 #define my_check_false              DOCTEST_CHECK_FALSE
 #define my_check_throws             DOCTEST_CHECK_THROWS
 #define my_check_throws_as          DOCTEST_CHECK_THROWS_AS
+#define my_check_throws_with        DOCTEST_CHECK_THROWS_WITH
 #define my_check_nothrow            DOCTEST_CHECK_NOTHROW
 #define my_require                  DOCTEST_REQUIRE
 #define my_require_false            DOCTEST_REQUIRE_FALSE
 #define my_require_throws           DOCTEST_REQUIRE_THROWS
 #define my_require_throws_as        DOCTEST_REQUIRE_THROWS_AS
+#define my_require_throws_with      DOCTEST_REQUIRE_THROWS_WITH
 #define my_require_nothrow          DOCTEST_REQUIRE_NOTHROW
 
 #define my_scenario                 DOCTEST_SCENARIO

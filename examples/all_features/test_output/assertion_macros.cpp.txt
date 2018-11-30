@@ -3,7 +3,7 @@
 assertion_macros.cpp(0):
 TEST CASE:  normal macros
 
-assertion_macros.cpp(0): ERROR: CHECK( throw_if(true, std::runtime_error("whops!")) == 42 ) THREW exception: whops!
+assertion_macros.cpp(0): ERROR: CHECK( throw_if(true, std::runtime_error("whops!")) == 42 ) THREW exception: "whops!"
 
 assertion_macros.cpp(0): ERROR: CHECK( doctest::Approx(0.502) == 0.501 ) is NOT correct!
   values: CHECK( Approx( 0.502 ) == 0.501 )
@@ -14,11 +14,13 @@ TEST CASE:  exceptions-related macros
 
 assertion_macros.cpp(0): ERROR: CHECK_THROWS( throw_if(false, 0) ) did NOT throw at all!
 
-assertion_macros.cpp(0): ERROR: CHECK_THROWS_AS( throw_if(true, 0), char ) threw a DIFFERENT exception: 0
+assertion_macros.cpp(0): ERROR: CHECK_THROWS_AS( throw_if(true, 0), char ) threw a DIFFERENT exception: "0"
 
 assertion_macros.cpp(0): ERROR: CHECK_THROWS_AS( throw_if(false, 0), int ) did NOT throw at all!
 
-assertion_macros.cpp(0): ERROR: CHECK_NOTHROW( throw_if(true, 0) ) THREW exception: 0
+assertion_macros.cpp(0): ERROR: CHECK_THROWS_WITH( throw_if(true, "whops!"), "whops! no match!" ) threw a DIFFERENT exception: "whops!"
+
+assertion_macros.cpp(0): ERROR: CHECK_NOTHROW( throw_if(true, 0) ) THREW exception: "0"
 
 ===============================================================================
 assertion_macros.cpp(0):
@@ -28,9 +30,11 @@ assertion_macros.cpp(0): ERROR: CHECK_THROWS( throw_if(false, 0) ) did NOT throw
 
 assertion_macros.cpp(0): ERROR: CHECK_THROWS_AS( throw_if(false, std::runtime_error("whops!")), std::exception ) did NOT throw at all!
 
-assertion_macros.cpp(0): ERROR: CHECK_THROWS_AS( throw_if(true, std::runtime_error("whops!")), int ) threw a DIFFERENT exception: whops!
+assertion_macros.cpp(0): ERROR: CHECK_THROWS_AS( throw_if(true, std::runtime_error("whops!")), int ) threw a DIFFERENT exception: "whops!"
 
-assertion_macros.cpp(0): FATAL ERROR: REQUIRE_NOTHROW( throw_if(true, std::runtime_error("whops!")) ) THREW exception: whops!
+assertion_macros.cpp(0): ERROR: CHECK_THROWS_WITH( throw_if(false, ""), "whops!" ) did NOT throw at all!
+
+assertion_macros.cpp(0): FATAL ERROR: REQUIRE_NOTHROW( throw_if(true, std::runtime_error("whops!")) ) THREW exception: "whops!"
 
 ===============================================================================
 assertion_macros.cpp(0):
@@ -46,9 +50,9 @@ assertion_macros.cpp(0): WARNING: WARN_THROWS( throw_if(false, 0) ) did NOT thro
 
 assertion_macros.cpp(0): WARNING: WARN_THROWS_AS( throw_if(false, 0), bool ) did NOT throw at all!
 
-assertion_macros.cpp(0): WARNING: WARN_THROWS_AS( throw_if(true, 0), bool ) threw a DIFFERENT exception: 0
+assertion_macros.cpp(0): WARNING: WARN_THROWS_AS( throw_if(true, 0), bool ) threw a DIFFERENT exception: "0"
 
-assertion_macros.cpp(0): WARNING: WARN_NOTHROW( throw_if(true, 0) ) THREW exception: 0
+assertion_macros.cpp(0): WARNING: WARN_NOTHROW( throw_if(true, 0) ) THREW exception: "0"
 
 assertion_macros.cpp(0): WARNING: WARN_EQ( 1, 0 ) is NOT correct!
   values: WARN_EQ( 1, 0 )
@@ -82,9 +86,11 @@ assertion_macros.cpp(0): ERROR: CHECK_THROWS( throw_if(false, 0) ) did NOT throw
 
 assertion_macros.cpp(0): ERROR: CHECK_THROWS_AS( throw_if(false, 0), bool ) did NOT throw at all!
 
-assertion_macros.cpp(0): ERROR: CHECK_THROWS_AS( throw_if(true, 0), bool ) threw a DIFFERENT exception: 0
+assertion_macros.cpp(0): ERROR: CHECK_THROWS_AS( throw_if(true, 0), bool ) threw a DIFFERENT exception: "0"
 
-assertion_macros.cpp(0): ERROR: CHECK_NOTHROW( throw_if(true, 0) ) THREW exception: 0
+assertion_macros.cpp(0): ERROR: CHECK_THROWS_WITH( throw_if(true, 0), "unrecognized" ) threw a DIFFERENT exception: "0"
+
+assertion_macros.cpp(0): ERROR: CHECK_NOTHROW( throw_if(true, 0) ) THREW exception: "0"
 
 assertion_macros.cpp(0): ERROR: CHECK_EQ( 1, 0 ) is NOT correct!
   values: CHECK_EQ( 1, 0 )
@@ -136,13 +142,13 @@ assertion_macros.cpp(0): FATAL ERROR: REQUIRE_THROWS_AS( throw_if(false, 0), boo
 assertion_macros.cpp(0):
 TEST CASE:  REQUIRE level of asserts fail and abort the test case - 5
 
-assertion_macros.cpp(0): FATAL ERROR: REQUIRE_THROWS_AS( throw_if(true, 0), bool ) threw a DIFFERENT exception: 0
+assertion_macros.cpp(0): FATAL ERROR: REQUIRE_THROWS_AS( throw_if(true, 0), bool ) threw a DIFFERENT exception: "0"
 
 ===============================================================================
 assertion_macros.cpp(0):
 TEST CASE:  REQUIRE level of asserts fail and abort the test case - 6
 
-assertion_macros.cpp(0): FATAL ERROR: REQUIRE_NOTHROW( throw_if(true, 0) ) THREW exception: 0
+assertion_macros.cpp(0): FATAL ERROR: REQUIRE_NOTHROW( throw_if(true, 0) ) THREW exception: "0"
 
 ===============================================================================
 assertion_macros.cpp(0):
@@ -188,6 +194,6 @@ assertion_macros.cpp(0): FATAL ERROR: FAST_REQUIRE_UNARY_FALSE( 1 ) is NOT corre
 
 ===============================================================================
 [doctest] test cases:     20 |      4 passed |     16 failed | 
-[doctest] assertions:     88 |     54 passed |     34 failed |
+[doctest] assertions:     92 |     55 passed |     37 failed |
 [doctest] Status: FAILURE!
 Program code.

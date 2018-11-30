@@ -514,26 +514,27 @@ namespace assertType {
         // macro traits
 
         is_warn    = 1,
-        is_check   = 2,
-        is_require = 4,
+        is_check   = 2 * is_warn,
+        is_require = 2 * is_check,
 
-        is_normal    = 8,
-        is_throws    = 16,
-        is_throws_as = 32,
-        is_nothrow   = 64,
+        is_normal      = 2 * is_require,
+        is_throws      = 2 * is_normal,
+        is_throws_as   = 2 * is_throws,
+        is_throws_with = 2 * is_throws_as,
+        is_nothrow     = 2 * is_throws_with,
 
-        is_fast  = 128, // not checked anywhere - used just to distinguish the types
-        is_false = 256,
-        is_unary = 512,
+        is_fast  = 2 * is_nothrow, // not checked anywhere - used just to distinguish the types
+        is_false = 2 * is_fast,
+        is_unary = 2 * is_false,
 
-        is_eq = 1024,
-        is_ne = 2048,
+        is_eq = 2 * is_unary,
+        is_ne = 2 * is_eq,
 
-        is_lt = 4096,
-        is_gt = 8192,
+        is_lt = 2 * is_ne,
+        is_gt = 2 * is_lt,
 
-        is_ge = 16384,
-        is_le = 32768,
+        is_ge = 2 * is_gt,
+        is_le = 2 * is_ge,
 
         // macro types
 
@@ -552,6 +553,10 @@ namespace assertType {
         DT_WARN_THROWS_AS    = is_throws_as | is_warn,
         DT_CHECK_THROWS_AS   = is_throws_as | is_check,
         DT_REQUIRE_THROWS_AS = is_throws_as | is_require,
+
+        DT_WARN_THROWS_WITH    = is_throws_with | is_warn,
+        DT_CHECK_THROWS_WITH   = is_throws_with | is_check,
+        DT_REQUIRE_THROWS_WITH = is_throws_with | is_require,
 
         DT_WARN_NOTHROW    = is_nothrow | is_warn,
         DT_CHECK_NOTHROW   = is_nothrow | is_check,
@@ -1325,7 +1330,7 @@ namespace detail {
                 m_decomp = toString(val);
         }
 
-        void unexpectedExceptionOccurred();
+        void translateException();
 
         bool log();
         void react() const;
@@ -1812,7 +1817,7 @@ int registerReporter(const char* name, int priority, IReporter& r);
 #define DOCTEST_WRAP_IN_TRY(x)                                                                     \
     try {                                                                                          \
         x;                                                                                         \
-    } catch(...) { _DOCTEST_RB.unexpectedExceptionOccurred(); }
+    } catch(...) { _DOCTEST_RB.translateException(); }
 #endif // DOCTEST_CONFIG_NO_TRY_CATCH_IN_ASSERTS
 
 // registers the test by initializing a dummy var with a function
@@ -2066,7 +2071,19 @@ constexpr T to_lvalue = x;
             } catch(const __VA_ARGS__&) {                                                          \
                 _DOCTEST_RB.m_threw    = true;                                                     \
                 _DOCTEST_RB.m_threw_as = true;                                                     \
-            } catch(...) { _DOCTEST_RB.unexpectedExceptionOccurred(); }                            \
+            } catch(...) { _DOCTEST_RB.translateException(); }                                     \
+            DOCTEST_ASSERT_LOG_AND_REACT(_DOCTEST_RB);                                             \
+        }                                                                                          \
+    } while((void)0, 0)
+
+#define DOCTEST_ASSERT_THROWS_WITH(expr, assert_type, ...)                                         \
+    do {                                                                                           \
+        if(!doctest::getContextOptions()->no_throw) {                                              \
+            doctest::detail::ResultBuilder _DOCTEST_RB(doctest::assertType::assert_type, __FILE__, \
+                                                       __LINE__, #expr, __VA_ARGS__);              \
+            try {                                                                                  \
+                expr;                                                                              \
+            } catch(...) { _DOCTEST_RB.translateException(); }                                     \
             DOCTEST_ASSERT_LOG_AND_REACT(_DOCTEST_RB);                                             \
         }                                                                                          \
     } while((void)0, 0)
@@ -2078,7 +2095,7 @@ constexpr T to_lvalue = x;
                                                        __LINE__, #expr);                           \
             try {                                                                                  \
                 expr;                                                                              \
-            } catch(...) { _DOCTEST_RB.unexpectedExceptionOccurred(); }                            \
+            } catch(...) { _DOCTEST_RB.translateException(); }                                     \
             DOCTEST_ASSERT_LOG_AND_REACT(_DOCTEST_RB);                                             \
         }                                                                                          \
     } while((void)0, 0)
@@ -2092,6 +2109,10 @@ constexpr T to_lvalue = x;
 #define DOCTEST_CHECK_THROWS_AS(expr, ...) DOCTEST_ASSERT_THROWS_AS(expr, DT_CHECK_THROWS_AS, __VA_ARGS__)
 #define DOCTEST_REQUIRE_THROWS_AS(expr, ...) DOCTEST_ASSERT_THROWS_AS(expr, DT_REQUIRE_THROWS_AS, __VA_ARGS__)
 
+#define DOCTEST_WARN_THROWS_WITH(expr, ...) DOCTEST_ASSERT_THROWS_WITH(expr, DT_WARN_THROWS_WITH, __VA_ARGS__)
+#define DOCTEST_CHECK_THROWS_WITH(expr, ...) DOCTEST_ASSERT_THROWS_WITH(expr, DT_CHECK_THROWS_WITH, __VA_ARGS__)
+#define DOCTEST_REQUIRE_THROWS_WITH(expr, ...) DOCTEST_ASSERT_THROWS_WITH(expr, DT_REQUIRE_THROWS_WITH, __VA_ARGS__)
+
 #define DOCTEST_WARN_NOTHROW(expr) DOCTEST_ASSERT_NOTHROW(expr, DT_WARN_NOTHROW)
 #define DOCTEST_CHECK_NOTHROW(expr) DOCTEST_ASSERT_NOTHROW(expr, DT_CHECK_NOTHROW)
 #define DOCTEST_REQUIRE_NOTHROW(expr) DOCTEST_ASSERT_NOTHROW(expr, DT_REQUIRE_NOTHROW)
@@ -2102,6 +2123,9 @@ constexpr T to_lvalue = x;
 #define DOCTEST_WARN_THROWS_AS_MESSAGE(expr, ex, msg) do { DOCTEST_INFO(msg); DOCTEST_WARN_THROWS_AS(expr, ex); } while((void)0, 0)
 #define DOCTEST_CHECK_THROWS_AS_MESSAGE(expr, ex, msg) do { DOCTEST_INFO(msg); DOCTEST_CHECK_THROWS_AS(expr, ex); } while((void)0, 0)
 #define DOCTEST_REQUIRE_THROWS_AS_MESSAGE(expr, ex, msg) do { DOCTEST_INFO(msg); DOCTEST_REQUIRE_THROWS_AS(expr, ex); } while((void)0, 0)
+#define DOCTEST_WARN_THROWS_WITH_MESSAGE(expr, ex, msg) do { DOCTEST_INFO(msg); DOCTEST_WARN_THROWS_WITH(expr, ex); } while((void)0, 0)
+#define DOCTEST_CHECK_THROWS_WITH_MESSAGE(expr, ex, msg) do { DOCTEST_INFO(msg); DOCTEST_CHECK_THROWS_WITH(expr, ex); } while((void)0, 0)
+#define DOCTEST_REQUIRE_THROWS_WITH_MESSAGE(expr, ex, msg) do { DOCTEST_INFO(msg); DOCTEST_REQUIRE_THROWS_WITH(expr, ex); } while((void)0, 0)
 #define DOCTEST_WARN_NOTHROW_MESSAGE(expr, msg) do { DOCTEST_INFO(msg); DOCTEST_WARN_NOTHROW(expr); } while((void)0, 0)
 #define DOCTEST_CHECK_NOTHROW_MESSAGE(expr, msg) do { DOCTEST_INFO(msg); DOCTEST_CHECK_NOTHROW(expr); } while((void)0, 0)
 #define DOCTEST_REQUIRE_NOTHROW_MESSAGE(expr, msg) do { DOCTEST_INFO(msg); DOCTEST_REQUIRE_NOTHROW(expr); } while((void)0, 0)
@@ -2220,6 +2244,9 @@ constexpr T to_lvalue = x;
 #undef DOCTEST_WARN_THROWS_AS
 #undef DOCTEST_CHECK_THROWS_AS
 #undef DOCTEST_REQUIRE_THROWS_AS
+#undef DOCTEST_WARN_THROWS_WITH
+#undef DOCTEST_CHECK_THROWS_WITH
+#undef DOCTEST_REQUIRE_THROWS_WITH
 #undef DOCTEST_WARN_NOTHROW
 #undef DOCTEST_CHECK_NOTHROW
 #undef DOCTEST_REQUIRE_NOTHROW
@@ -2230,6 +2257,9 @@ constexpr T to_lvalue = x;
 #undef DOCTEST_WARN_THROWS_AS_MESSAGE
 #undef DOCTEST_CHECK_THROWS_AS_MESSAGE
 #undef DOCTEST_REQUIRE_THROWS_AS_MESSAGE
+#undef DOCTEST_WARN_THROWS_WITH_MESSAGE
+#undef DOCTEST_CHECK_THROWS_WITH_MESSAGE
+#undef DOCTEST_REQUIRE_THROWS_WITH_MESSAGE
 #undef DOCTEST_WARN_NOTHROW_MESSAGE
 #undef DOCTEST_CHECK_NOTHROW_MESSAGE
 #undef DOCTEST_REQUIRE_NOTHROW_MESSAGE
@@ -2242,6 +2272,9 @@ constexpr T to_lvalue = x;
 #define DOCTEST_WARN_THROWS_AS(expr, ...) ((void)0)
 #define DOCTEST_CHECK_THROWS_AS(expr, ...) ((void)0)
 #define DOCTEST_REQUIRE_THROWS_AS(expr, ...) ((void)0)
+#define DOCTEST_WARN_THROWS_WITH(expr, ...) ((void)0)
+#define DOCTEST_CHECK_THROWS_WITH(expr, ...) ((void)0)
+#define DOCTEST_REQUIRE_THROWS_WITH(expr, ...) ((void)0)
 #define DOCTEST_WARN_NOTHROW(expr) ((void)0)
 #define DOCTEST_CHECK_NOTHROW(expr) ((void)0)
 #define DOCTEST_REQUIRE_NOTHROW(expr) ((void)0)
@@ -2252,6 +2285,9 @@ constexpr T to_lvalue = x;
 #define DOCTEST_WARN_THROWS_AS_MESSAGE(expr, ex, msg) ((void)0)
 #define DOCTEST_CHECK_THROWS_AS_MESSAGE(expr, ex, msg) ((void)0)
 #define DOCTEST_REQUIRE_THROWS_AS_MESSAGE(expr, ex, msg) ((void)0)
+#define DOCTEST_WARN_THROWS_WITH_MESSAGE(expr, ex, msg) ((void)0)
+#define DOCTEST_CHECK_THROWS_WITH_MESSAGE(expr, ex, msg) ((void)0)
+#define DOCTEST_REQUIRE_THROWS_WITH_MESSAGE(expr, ex, msg) ((void)0)
 #define DOCTEST_WARN_NOTHROW_MESSAGE(expr, msg) ((void)0)
 #define DOCTEST_CHECK_NOTHROW_MESSAGE(expr, msg) ((void)0)
 #define DOCTEST_REQUIRE_NOTHROW_MESSAGE(expr, msg) ((void)0)
@@ -2374,6 +2410,9 @@ constexpr T to_lvalue = x;
 #define DOCTEST_WARN_THROWS_AS(expr, ...) ((void)0)
 #define DOCTEST_CHECK_THROWS_AS(expr, ...) ((void)0)
 #define DOCTEST_REQUIRE_THROWS_AS(expr, ...) ((void)0)
+#define DOCTEST_WARN_THROWS_WITH(expr, ...) ((void)0)
+#define DOCTEST_CHECK_THROWS_WITH(expr, ...) ((void)0)
+#define DOCTEST_REQUIRE_THROWS_WITH(expr, ...) ((void)0)
 #define DOCTEST_WARN_NOTHROW(expr) ((void)0)
 #define DOCTEST_CHECK_NOTHROW(expr) ((void)0)
 #define DOCTEST_REQUIRE_NOTHROW(expr) ((void)0)
@@ -2384,6 +2423,9 @@ constexpr T to_lvalue = x;
 #define DOCTEST_WARN_THROWS_AS_MESSAGE(expr, ex, msg) ((void)0)
 #define DOCTEST_CHECK_THROWS_AS_MESSAGE(expr, ex, msg) ((void)0)
 #define DOCTEST_REQUIRE_THROWS_AS_MESSAGE(expr, ex, msg) ((void)0)
+#define DOCTEST_WARN_THROWS_WITH_MESSAGE(expr, ex, msg) ((void)0)
+#define DOCTEST_CHECK_THROWS_WITH_MESSAGE(expr, ex, msg) ((void)0)
+#define DOCTEST_REQUIRE_THROWS_WITH_MESSAGE(expr, ex, msg) ((void)0)
 #define DOCTEST_WARN_NOTHROW_MESSAGE(expr, msg) ((void)0)
 #define DOCTEST_CHECK_NOTHROW_MESSAGE(expr, msg) ((void)0)
 #define DOCTEST_REQUIRE_NOTHROW_MESSAGE(expr, msg) ((void)0)
@@ -2484,32 +2526,38 @@ constexpr T to_lvalue = x;
 #define WARN_FALSE DOCTEST_WARN_FALSE
 #define WARN_THROWS DOCTEST_WARN_THROWS
 #define WARN_THROWS_AS DOCTEST_WARN_THROWS_AS
+#define WARN_THROWS_WITH DOCTEST_WARN_THROWS_WITH
 #define WARN_NOTHROW DOCTEST_WARN_NOTHROW
 #define CHECK DOCTEST_CHECK
 #define CHECK_FALSE DOCTEST_CHECK_FALSE
 #define CHECK_THROWS DOCTEST_CHECK_THROWS
 #define CHECK_THROWS_AS DOCTEST_CHECK_THROWS_AS
+#define CHECK_THROWS_WITH DOCTEST_CHECK_THROWS_WITH
 #define CHECK_NOTHROW DOCTEST_CHECK_NOTHROW
 #define REQUIRE DOCTEST_REQUIRE
 #define REQUIRE_FALSE DOCTEST_REQUIRE_FALSE
 #define REQUIRE_THROWS DOCTEST_REQUIRE_THROWS
 #define REQUIRE_THROWS_AS DOCTEST_REQUIRE_THROWS_AS
+#define REQUIRE_THROWS_WITH DOCTEST_REQUIRE_THROWS_WITH
 #define REQUIRE_NOTHROW DOCTEST_REQUIRE_NOTHROW
 
 #define WARN_MESSAGE DOCTEST_WARN_MESSAGE
 #define WARN_FALSE_MESSAGE DOCTEST_WARN_FALSE_MESSAGE
 #define WARN_THROWS_MESSAGE DOCTEST_WARN_THROWS_MESSAGE
 #define WARN_THROWS_AS_MESSAGE DOCTEST_WARN_THROWS_AS_MESSAGE
+#define WARN_THROWS_WITH_MESSAGE DOCTEST_WARN_THROWS_WITH_MESSAGE
 #define WARN_NOTHROW_MESSAGE DOCTEST_WARN_NOTHROW_MESSAGE
 #define CHECK_MESSAGE DOCTEST_CHECK_MESSAGE
 #define CHECK_FALSE_MESSAGE DOCTEST_CHECK_FALSE_MESSAGE
 #define CHECK_THROWS_MESSAGE DOCTEST_CHECK_THROWS_MESSAGE
 #define CHECK_THROWS_AS_MESSAGE DOCTEST_CHECK_THROWS_AS_MESSAGE
+#define CHECK_THROWS_WITH_MESSAGE DOCTEST_CHECK_THROWS_WITH_MESSAGE
 #define CHECK_NOTHROW_MESSAGE DOCTEST_CHECK_NOTHROW_MESSAGE
 #define REQUIRE_MESSAGE DOCTEST_REQUIRE_MESSAGE
 #define REQUIRE_FALSE_MESSAGE DOCTEST_REQUIRE_FALSE_MESSAGE
 #define REQUIRE_THROWS_MESSAGE DOCTEST_REQUIRE_THROWS_MESSAGE
 #define REQUIRE_THROWS_AS_MESSAGE DOCTEST_REQUIRE_THROWS_AS_MESSAGE
+#define REQUIRE_THROWS_WITH_MESSAGE DOCTEST_REQUIRE_THROWS_WITH_MESSAGE
 #define REQUIRE_NOTHROW_MESSAGE DOCTEST_REQUIRE_NOTHROW_MESSAGE
 
 #define SCENARIO DOCTEST_SCENARIO

@@ -442,6 +442,10 @@ const char* assertString(assertType::Enum at) {
         case assertType::DT_CHECK_THROWS_AS         : return "CHECK_THROWS_AS";
         case assertType::DT_REQUIRE_THROWS_AS       : return "REQUIRE_THROWS_AS";
 
+        case assertType::DT_WARN_THROWS_WITH        : return "WARN_THROWS_WITH";
+        case assertType::DT_CHECK_THROWS_WITH       : return "CHECK_THROWS_WITH";
+        case assertType::DT_REQUIRE_THROWS_WITH     : return "REQUIRE_THROWS_WITH";
+
         case assertType::DT_WARN_NOTHROW            : return "WARN_NOTHROW";
         case assertType::DT_CHECK_NOTHROW           : return "CHECK_NOTHROW";
         case assertType::DT_REQUIRE_NOTHROW         : return "REQUIRE_NOTHROW";
@@ -1433,8 +1437,8 @@ namespace {
             sigStack.ss_flags = 0;
             sigaltstack(&sigStack, &oldSigStack);
             struct sigaction sa = {};
-            sa.sa_handler = handleSignal; // NOLINT
-            sa.sa_flags   = SA_ONSTACK;
+            sa.sa_handler       = handleSignal; // NOLINT
+            sa.sa_flags         = SA_ONSTACK;
             for(std::size_t i = 0; i < DOCTEST_COUNTOF(signalDefs); ++i) {
                 sigaction(signalDefs[i].id, &sa, &oldSigActions[i]);
             }
@@ -1527,7 +1531,7 @@ namespace detail {
         m_failed = !res.m_passed;
     }
 
-    void ResultBuilder::unexpectedExceptionOccurred() {
+    void ResultBuilder::translateException() {
         m_threw     = true;
         m_exception = translateActiveException();
     }
@@ -1537,9 +1541,14 @@ namespace detail {
             m_failed = !m_threw;
         } else if(m_at & assertType::is_throws_as) { //!OCLINT bitwise operator in conditional
             m_failed = !m_threw_as;
+        } else if(m_at & assertType::is_throws_with) { //!OCLINT bitwise operator in conditional
+            m_failed = m_exception != m_exception_type;
         } else if(m_at & assertType::is_nothrow) { //!OCLINT bitwise operator in conditional
             m_failed = m_threw;
         }
+
+        if(m_exception.size())
+            m_exception = String("\"") + m_exception + "\"";
 
         if(is_running_in_test) {
             addAssert(m_at);
@@ -1809,7 +1818,8 @@ namespace {
 
             file_line_to_stream(rb.m_file, rb.m_line, " ");
             successOrFailColoredStringToStream(!rb.m_failed, rb.m_at);
-            if((rb.m_at & assertType::is_throws_as) == 0) //!OCLINT bitwise operator in conditional
+            if((rb.m_at & (assertType::is_throws_as | assertType::is_throws_with)) ==
+               0) //!OCLINT bitwise operator in conditional
                 s << Color::Cyan << assertString(rb.m_at) << "( " << rb.m_expr << " ) "
                   << Color::None;
 
@@ -1821,6 +1831,14 @@ namespace {
                   << rb.m_exception_type << " ) " << Color::None
                   << (rb.m_threw ? (rb.m_threw_as ? "threw as expected!" :
                                                     "threw a DIFFERENT exception: ") :
+                                   "did NOT throw at all!")
+                  << Color::Cyan << rb.m_exception << "\n";
+            } else if(rb.m_at &
+                      assertType::is_throws_with) { //!OCLINT bitwise operator in conditional
+                s << Color::Cyan << assertString(rb.m_at) << "( " << rb.m_expr << ", \""
+                  << rb.m_exception_type << "\" ) " << Color::None
+                  << (rb.m_threw ? (!rb.m_failed ? "threw as expected!" :
+                                                   "threw a DIFFERENT exception: ") :
                                    "did NOT throw at all!")
                   << Color::Cyan << rb.m_exception << "\n";
             } else if(rb.m_at & assertType::is_nothrow) { //!OCLINT bitwise operator in conditional
