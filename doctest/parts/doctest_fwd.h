@@ -758,6 +758,15 @@ namespace detail {
     { typedef TYPE type; };
 #endif // DOCTEST_CONFIG_TREAT_CHAR_STAR_AS_STRING) || DOCTEST_CONFIG_INCLUDE_TYPE_TRAITS
 
+    // clang-format off
+    template<class T> struct remove_reference      { typedef T type; };
+    template<class T> struct remove_reference<T&>  { typedef T type; };
+    template<class T> struct remove_reference<T&&> { typedef T type; };
+
+    template<class T> struct remove_const          { typedef T type; };
+    template<class T> struct remove_const<const T> { typedef T type; };
+    // clang-format on
+
     template <typename T>
     struct deferred_false
     // cppcheck-suppress unusedStructMember
@@ -2068,7 +2077,8 @@ constexpr T to_lvalue = x;
                                                        __LINE__, #expr, #__VA_ARGS__);             \
             try {                                                                                  \
                 expr;                                                                              \
-            } catch(const __VA_ARGS__&) {                                                          \
+            } catch(const doctest::detail::remove_const<                                           \
+                    doctest::detail::remove_reference<__VA_ARGS__>::type>::type&) {                \
                 _DOCTEST_RB.m_threw    = true;                                                     \
                 _DOCTEST_RB.m_threw_as = true;                                                     \
             } catch(...) { _DOCTEST_RB.translateException(); }                                     \
