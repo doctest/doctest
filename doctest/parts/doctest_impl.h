@@ -1025,7 +1025,7 @@ namespace {
 #endif // MSVC
         if(res != 0)
             return res;
-        return static_cast<int>(lhs->m_line - rhs->m_line);
+        return static_cast<int>(lhs->m_line) - static_cast<int>(rhs->m_line);
     }
 
     // for sorting tests by suite/file/line
