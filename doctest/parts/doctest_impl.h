@@ -1882,17 +1882,16 @@ namespace {
         void test_case_skipped(const TestCaseData&) override {}
     };
 
-    struct Whitespace {
+    struct Whitespace
+    {
         int nrSpaces;
         explicit Whitespace(int nr)
-            : nrSpaces(nr)
-        {}
+                : nrSpaces(nr) {}
     };
 
     std::ostream& operator<<(std::ostream& out, const Whitespace& ws) {
-        if( ws.nrSpaces == 0 )
-            return out;
-        out << std::setw(ws.nrSpaces) << ' ';
+        if(ws.nrSpaces != 0)
+            out << std::setw(ws.nrSpaces) << ' ';
         return out;
     }
 
@@ -1910,7 +1909,8 @@ namespace {
 
         void printIntro() {
             printVersion();
-            s << Color::Cyan << "[doctest] " << Color::None << "run with \"--" DOCTEST_OPTIONS_PREFIX_DISPLAY "help\" for options\n";
+            s << Color::Cyan << "[doctest] " << Color::None
+              << "run with \"--" DOCTEST_OPTIONS_PREFIX_DISPLAY "help\" for options\n";
         }
 
         void printHelp() {
@@ -2118,7 +2118,8 @@ namespace {
     // locates a flag on the command line
     bool parseFlag(int argc, const char* const* argv, const char* pattern) {
 #ifndef DOCTEST_CONFIG_NO_UNPREFIXED_OPTIONS
-        if(parseFlagImpl(argc, argv, pattern + strlen(DOCTEST_CONFIG_OPTIONS_PREFIX))) // 3 to skip prefix (normally "dt-")
+        // offset (normally 3 for "dt-") to skip prefix
+        if(parseFlagImpl(argc, argv, pattern + strlen(DOCTEST_CONFIG_OPTIONS_PREFIX)))
             return true;
 #endif // DOCTEST_CONFIG_NO_UNPREFIXED_OPTIONS
         return parseFlagImpl(argc, argv, pattern);
@@ -2156,7 +2157,8 @@ namespace {
                      const String& defaultVal = String()) {
         res = defaultVal;
 #ifndef DOCTEST_CONFIG_NO_UNPREFIXED_OPTIONS
-        if(parseOptionImpl(argc, argv, pattern + strlen(DOCTEST_CONFIG_OPTIONS_PREFIX), res)) // 3 to skip prefix (normally "dt-")
+        // offset (normally 3 for "dt-") to skip prefix
+        if(parseOptionImpl(argc, argv, pattern + strlen(DOCTEST_CONFIG_OPTIONS_PREFIX), res))
             return true;
 #endif // DOCTEST_CONFIG_NO_UNPREFIXED_OPTIONS
         return parseOptionImpl(argc, argv, pattern, res);
@@ -2268,52 +2270,54 @@ void Context::parseArgs(int argc, const char* const* argv, bool withDefaults) {
     String strRes;
 
 #define DOCTEST_PARSE_AS_BOOL_OR_FLAG(name, sname, var, default)                                   \
-    if(parseIntOption(argc, argv, name "=", option_bool, intRes) ||                                \
-       parseIntOption(argc, argv, sname "=", option_bool, intRes))                                 \
+    if(parseIntOption(argc, argv, DOCTEST_CONFIG_OPTIONS_PREFIX name "=", option_bool, intRes) ||  \
+       parseIntOption(argc, argv, DOCTEST_CONFIG_OPTIONS_PREFIX sname "=", option_bool, intRes))   \
         p->var = !!intRes;                                                                         \
-    else if(parseFlag(argc, argv, name) || parseFlag(argc, argv, sname))                           \
+    else if(parseFlag(argc, argv, DOCTEST_CONFIG_OPTIONS_PREFIX name) ||                           \
+            parseFlag(argc, argv, DOCTEST_CONFIG_OPTIONS_PREFIX sname))                            \
         p->var = true;                                                                             \
     else if(withDefaults)                                                                          \
     p->var = default
 
 #define DOCTEST_PARSE_INT_OPTION(name, sname, var, default)                                        \
-    if(parseIntOption(argc, argv, name "=", option_int, intRes) ||                                 \
-       parseIntOption(argc, argv, sname "=", option_int, intRes))                                  \
+    if(parseIntOption(argc, argv, DOCTEST_CONFIG_OPTIONS_PREFIX name "=", option_int, intRes) ||   \
+       parseIntOption(argc, argv, DOCTEST_CONFIG_OPTIONS_PREFIX sname "=", option_int, intRes))    \
         p->var = intRes;                                                                           \
     else if(withDefaults)                                                                          \
     p->var = default
 
 #define DOCTEST_PARSE_STR_OPTION(name, sname, var, default)                                        \
-    if(parseOption(argc, argv, name "=", strRes, default) ||                                       \
-       parseOption(argc, argv, sname "=", strRes, default) || withDefaults)                        \
+    if(parseOption(argc, argv, DOCTEST_CONFIG_OPTIONS_PREFIX name "=", strRes, default) ||         \
+       parseOption(argc, argv, DOCTEST_CONFIG_OPTIONS_PREFIX sname "=", strRes, default) ||        \
+       withDefaults)                                                                               \
     p->var = strRes
 
     // clang-format off
-    DOCTEST_PARSE_STR_OPTION(DOCTEST_CONFIG_OPTIONS_PREFIX "order-by", DOCTEST_CONFIG_OPTIONS_PREFIX "ob", order_by, "file");
-    DOCTEST_PARSE_INT_OPTION(DOCTEST_CONFIG_OPTIONS_PREFIX "rand-seed", DOCTEST_CONFIG_OPTIONS_PREFIX "rs", rand_seed, 0);
+    DOCTEST_PARSE_STR_OPTION("order-by", "ob", order_by, "file");
+    DOCTEST_PARSE_INT_OPTION("rand-seed", "rs", rand_seed, 0);
 
-    DOCTEST_PARSE_INT_OPTION(DOCTEST_CONFIG_OPTIONS_PREFIX "first", DOCTEST_CONFIG_OPTIONS_PREFIX "f", first, 0);
-    DOCTEST_PARSE_INT_OPTION(DOCTEST_CONFIG_OPTIONS_PREFIX "last", DOCTEST_CONFIG_OPTIONS_PREFIX "l", last, UINT_MAX);
+    DOCTEST_PARSE_INT_OPTION("first", "f", first, 0);
+    DOCTEST_PARSE_INT_OPTION("last", "l", last, UINT_MAX);
 
-    DOCTEST_PARSE_INT_OPTION(DOCTEST_CONFIG_OPTIONS_PREFIX "abort-after", DOCTEST_CONFIG_OPTIONS_PREFIX "aa", abort_after, 0);
-    DOCTEST_PARSE_INT_OPTION(DOCTEST_CONFIG_OPTIONS_PREFIX "subcase-filter-levels", DOCTEST_CONFIG_OPTIONS_PREFIX "scfl", subcase_filter_levels, 2000000000);
+    DOCTEST_PARSE_INT_OPTION("abort-after", "aa", abort_after, 0);
+    DOCTEST_PARSE_INT_OPTION("subcase-filter-levels", "scfl", subcase_filter_levels, 2000000000);
 
-    DOCTEST_PARSE_AS_BOOL_OR_FLAG(DOCTEST_CONFIG_OPTIONS_PREFIX "success", DOCTEST_CONFIG_OPTIONS_PREFIX "s", success, false);
-    DOCTEST_PARSE_AS_BOOL_OR_FLAG(DOCTEST_CONFIG_OPTIONS_PREFIX "case-sensitive", DOCTEST_CONFIG_OPTIONS_PREFIX "cs", case_sensitive, false);
-    DOCTEST_PARSE_AS_BOOL_OR_FLAG(DOCTEST_CONFIG_OPTIONS_PREFIX "exit", DOCTEST_CONFIG_OPTIONS_PREFIX "e", exit, false);
-    DOCTEST_PARSE_AS_BOOL_OR_FLAG(DOCTEST_CONFIG_OPTIONS_PREFIX "duration", DOCTEST_CONFIG_OPTIONS_PREFIX "d", duration, false);
-    DOCTEST_PARSE_AS_BOOL_OR_FLAG(DOCTEST_CONFIG_OPTIONS_PREFIX "no-throw", DOCTEST_CONFIG_OPTIONS_PREFIX "nt", no_throw, false);
-    DOCTEST_PARSE_AS_BOOL_OR_FLAG(DOCTEST_CONFIG_OPTIONS_PREFIX "no-exitcode", DOCTEST_CONFIG_OPTIONS_PREFIX "ne", no_exitcode, false);
-    DOCTEST_PARSE_AS_BOOL_OR_FLAG(DOCTEST_CONFIG_OPTIONS_PREFIX "no-run", DOCTEST_CONFIG_OPTIONS_PREFIX "nr", no_run, false);
-    DOCTEST_PARSE_AS_BOOL_OR_FLAG(DOCTEST_CONFIG_OPTIONS_PREFIX "no-version", DOCTEST_CONFIG_OPTIONS_PREFIX "nv", no_version, false);
-    DOCTEST_PARSE_AS_BOOL_OR_FLAG(DOCTEST_CONFIG_OPTIONS_PREFIX "no-colors", DOCTEST_CONFIG_OPTIONS_PREFIX "nc", no_colors, false);
-    DOCTEST_PARSE_AS_BOOL_OR_FLAG(DOCTEST_CONFIG_OPTIONS_PREFIX "force-colors", DOCTEST_CONFIG_OPTIONS_PREFIX "fc", force_colors, false);
-    DOCTEST_PARSE_AS_BOOL_OR_FLAG(DOCTEST_CONFIG_OPTIONS_PREFIX "no-breaks", DOCTEST_CONFIG_OPTIONS_PREFIX "nb", no_breaks, false);
-    DOCTEST_PARSE_AS_BOOL_OR_FLAG(DOCTEST_CONFIG_OPTIONS_PREFIX "no-skip", DOCTEST_CONFIG_OPTIONS_PREFIX "ns", no_skip, false);
-    DOCTEST_PARSE_AS_BOOL_OR_FLAG(DOCTEST_CONFIG_OPTIONS_PREFIX "gnu-file-line", DOCTEST_CONFIG_OPTIONS_PREFIX "gfl", gnu_file_line, !bool(DOCTEST_MSVC));
-    DOCTEST_PARSE_AS_BOOL_OR_FLAG(DOCTEST_CONFIG_OPTIONS_PREFIX "no-path-filenames", DOCTEST_CONFIG_OPTIONS_PREFIX "npf", no_path_in_filenames, false);
-    DOCTEST_PARSE_AS_BOOL_OR_FLAG(DOCTEST_CONFIG_OPTIONS_PREFIX "no-line-numbers", DOCTEST_CONFIG_OPTIONS_PREFIX "nln", no_line_numbers, false);
-    DOCTEST_PARSE_AS_BOOL_OR_FLAG(DOCTEST_CONFIG_OPTIONS_PREFIX "no-skipped-summary", DOCTEST_CONFIG_OPTIONS_PREFIX "nss", no_skipped_summary, false);
+    DOCTEST_PARSE_AS_BOOL_OR_FLAG("success", "s", success, false);
+    DOCTEST_PARSE_AS_BOOL_OR_FLAG("case-sensitive", "cs", case_sensitive, false);
+    DOCTEST_PARSE_AS_BOOL_OR_FLAG("exit", "e", exit, false);
+    DOCTEST_PARSE_AS_BOOL_OR_FLAG("duration", "d", duration, false);
+    DOCTEST_PARSE_AS_BOOL_OR_FLAG("no-throw", "nt", no_throw, false);
+    DOCTEST_PARSE_AS_BOOL_OR_FLAG("no-exitcode", "ne", no_exitcode, false);
+    DOCTEST_PARSE_AS_BOOL_OR_FLAG("no-run", "nr", no_run, false);
+    DOCTEST_PARSE_AS_BOOL_OR_FLAG("no-version", "nv", no_version, false);
+    DOCTEST_PARSE_AS_BOOL_OR_FLAG("no-colors", "nc", no_colors, false);
+    DOCTEST_PARSE_AS_BOOL_OR_FLAG("force-colors", "fc", force_colors, false);
+    DOCTEST_PARSE_AS_BOOL_OR_FLAG("no-breaks", "nb", no_breaks, false);
+    DOCTEST_PARSE_AS_BOOL_OR_FLAG("no-skip", "ns", no_skip, false);
+    DOCTEST_PARSE_AS_BOOL_OR_FLAG("gnu-file-line", "gfl", gnu_file_line, !bool(DOCTEST_MSVC));
+    DOCTEST_PARSE_AS_BOOL_OR_FLAG("no-path-filenames", "npf", no_path_in_filenames, false);
+    DOCTEST_PARSE_AS_BOOL_OR_FLAG("no-line-numbers", "nln", no_line_numbers, false);
+    DOCTEST_PARSE_AS_BOOL_OR_FLAG("no-skipped-summary", "nss", no_skipped_summary, false);
     // clang-format on
 
     if(withDefaults) {
@@ -2324,28 +2328,34 @@ void Context::parseArgs(int argc, const char* const* argv, bool withDefaults) {
         p->list_test_suites = false;
         p->list_reporters   = false;
     }
-    if(parseFlag(argc, argv, DOCTEST_CONFIG_OPTIONS_PREFIX "help") || parseFlag(argc, argv, DOCTEST_CONFIG_OPTIONS_PREFIX "h") ||
+    if(parseFlag(argc, argv, DOCTEST_CONFIG_OPTIONS_PREFIX "help") ||
+       parseFlag(argc, argv, DOCTEST_CONFIG_OPTIONS_PREFIX "h") ||
        parseFlag(argc, argv, DOCTEST_CONFIG_OPTIONS_PREFIX "?")) {
         p->help = true;
         p->exit = true;
     }
-    if(parseFlag(argc, argv, DOCTEST_CONFIG_OPTIONS_PREFIX "version") || parseFlag(argc, argv, DOCTEST_CONFIG_OPTIONS_PREFIX "v")) {
+    if(parseFlag(argc, argv, DOCTEST_CONFIG_OPTIONS_PREFIX "version") ||
+       parseFlag(argc, argv, DOCTEST_CONFIG_OPTIONS_PREFIX "v")) {
         p->version = true;
         p->exit    = true;
     }
-    if(parseFlag(argc, argv, DOCTEST_CONFIG_OPTIONS_PREFIX "count") || parseFlag(argc, argv, DOCTEST_CONFIG_OPTIONS_PREFIX "c")) {
+    if(parseFlag(argc, argv, DOCTEST_CONFIG_OPTIONS_PREFIX "count") ||
+       parseFlag(argc, argv, DOCTEST_CONFIG_OPTIONS_PREFIX "c")) {
         p->count = true;
         p->exit  = true;
     }
-    if(parseFlag(argc, argv, DOCTEST_CONFIG_OPTIONS_PREFIX "list-test-cases") || parseFlag(argc, argv, DOCTEST_CONFIG_OPTIONS_PREFIX "ltc")) {
+    if(parseFlag(argc, argv, DOCTEST_CONFIG_OPTIONS_PREFIX "list-test-cases") ||
+       parseFlag(argc, argv, DOCTEST_CONFIG_OPTIONS_PREFIX "ltc")) {
         p->list_test_cases = true;
         p->exit            = true;
     }
-    if(parseFlag(argc, argv, DOCTEST_CONFIG_OPTIONS_PREFIX "list-test-suites") || parseFlag(argc, argv, DOCTEST_CONFIG_OPTIONS_PREFIX "lts")) {
+    if(parseFlag(argc, argv, DOCTEST_CONFIG_OPTIONS_PREFIX "list-test-suites") ||
+       parseFlag(argc, argv, DOCTEST_CONFIG_OPTIONS_PREFIX "lts")) {
         p->list_test_suites = true;
         p->exit             = true;
     }
-    if(parseFlag(argc, argv, DOCTEST_CONFIG_OPTIONS_PREFIX "list-reporters") || parseFlag(argc, argv, DOCTEST_CONFIG_OPTIONS_PREFIX "lr")) {
+    if(parseFlag(argc, argv, DOCTEST_CONFIG_OPTIONS_PREFIX "list-reporters") ||
+       parseFlag(argc, argv, DOCTEST_CONFIG_OPTIONS_PREFIX "lr")) {
         p->list_reporters = true;
         p->exit           = true;
     }
