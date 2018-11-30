@@ -1,5 +1,26 @@
 # Change Log
 
+## [2.1.0](https://github.com/onqtam/doctest/tree/2.1.0) (2018-11-30)
+[Full Changelog](https://github.com/onqtam/doctest/compare/2.0.1...2.1.0)
+
+**Closed issues:**
+
+- doctest::String ctor with non-zero terminated string [\#165](https://github.com/onqtam/doctest/issues/165)
+- thread\_local is not supported on iOS 9.0 [\#164](https://github.com/onqtam/doctest/issues/164)
+- Compiler error on Android NDK r18 [\#163](https://github.com/onqtam/doctest/issues/163)
+- \[question\] One setup for multiple tests [\#160](https://github.com/onqtam/doctest/issues/160)
+- clang unwanted warning in user code [\#156](https://github.com/onqtam/doctest/issues/156)
+- Unsigned integer overflow in fileOrderComparator [\#151](https://github.com/onqtam/doctest/issues/151)
+- ThreadSanitizer: signal-unsafe call inside of a signal [\#147](https://github.com/onqtam/doctest/issues/147)
+- Feature request: check for exception string \(like Catch's CHECK\_THROWS\_WITH\) [\#97](https://github.com/onqtam/doctest/issues/97)
+
+**Merged pull requests:**
+
+- Fixed build error under Android NDK [\#162](https://github.com/onqtam/doctest/pull/162) ([tals](https://github.com/tals))
+- Added clang-7 to travis build [\#161](https://github.com/onqtam/doctest/pull/161) ([AMS21](https://github.com/AMS21))
+- Remove clang-tidy warnings for static fields created by doctest [\#159](https://github.com/onqtam/doctest/pull/159) ([rantasub](https://github.com/rantasub))
+- Make it possible to change the command line options prefix [\#158](https://github.com/onqtam/doctest/pull/158) ([tbleher](https://github.com/tbleher))
+
 ## [2.0.1](https://github.com/onqtam/doctest/tree/2.0.1) (2018-10-24)
 [Full Changelog](https://github.com/onqtam/doctest/compare/2.0.0...2.0.1)
 
