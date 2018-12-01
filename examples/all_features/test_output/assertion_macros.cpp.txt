@@ -63,15 +63,6 @@ assertion_macros.cpp(0): WARNING: WARN_UNARY( 0 ) is NOT correct!
 assertion_macros.cpp(0): WARNING: WARN_UNARY_FALSE( 1 ) is NOT correct!
   values: WARN_UNARY_FALSE( 1 )
 
-assertion_macros.cpp(0): WARNING: FAST_WARN_EQ( 1, 0 ) is NOT correct!
-  values: FAST_WARN_EQ( 1, 0 )
-
-assertion_macros.cpp(0): WARNING: FAST_WARN_UNARY( 0 ) is NOT correct!
-  values: FAST_WARN_UNARY( 0 )
-
-assertion_macros.cpp(0): WARNING: FAST_WARN_UNARY_FALSE( 1 ) is NOT correct!
-  values: FAST_WARN_UNARY_FALSE( 1 )
-
 ===============================================================================
 assertion_macros.cpp(0):
 TEST CASE:  CHECK level of asserts fail the test case but don't abort it
@@ -100,15 +91,6 @@ assertion_macros.cpp(0): ERROR: CHECK_UNARY( 0 ) is NOT correct!
 
 assertion_macros.cpp(0): ERROR: CHECK_UNARY_FALSE( 1 ) is NOT correct!
   values: CHECK_UNARY_FALSE( 1 )
-
-assertion_macros.cpp(0): ERROR: FAST_CHECK_EQ( 1, 0 ) is NOT correct!
-  values: FAST_CHECK_EQ( 1, 0 )
-
-assertion_macros.cpp(0): ERROR: FAST_CHECK_UNARY( 0 ) is NOT correct!
-  values: FAST_CHECK_UNARY( 0 )
-
-assertion_macros.cpp(0): ERROR: FAST_CHECK_UNARY_FALSE( 1 ) is NOT correct!
-  values: FAST_CHECK_UNARY_FALSE( 1 )
 
 assertion_macros.cpp(0): MESSAGE: reached!
 
@@ -172,28 +154,7 @@ assertion_macros.cpp(0): FATAL ERROR: REQUIRE_UNARY_FALSE( 1 ) is NOT correct!
   values: REQUIRE_UNARY_FALSE( 1 )
 
 ===============================================================================
-assertion_macros.cpp(0):
-TEST CASE:  REQUIRE level of asserts fail and abort the test case - 10
-
-assertion_macros.cpp(0): FATAL ERROR: FAST_REQUIRE_EQ( 1, 0 ) is NOT correct!
-  values: FAST_REQUIRE_EQ( 1, 0 )
-
-===============================================================================
-assertion_macros.cpp(0):
-TEST CASE:  REQUIRE level of asserts fail and abort the test case - 11
-
-assertion_macros.cpp(0): FATAL ERROR: FAST_REQUIRE_UNARY( 0 ) is NOT correct!
-  values: FAST_REQUIRE_UNARY( 0 )
-
-===============================================================================
-assertion_macros.cpp(0):
-TEST CASE:  REQUIRE level of asserts fail and abort the test case - 12
-
-assertion_macros.cpp(0): FATAL ERROR: FAST_REQUIRE_UNARY_FALSE( 1 ) is NOT correct!
-  values: FAST_REQUIRE_UNARY_FALSE( 1 )
-
-===============================================================================
-[doctest] test cases:     20 |      4 passed |     16 failed | 
-[doctest] assertions:     92 |     55 passed |     37 failed |
+[doctest] test cases:     17 |      4 passed |     13 failed | 
+[doctest] assertions:     66 |     35 passed |     31 failed |
 [doctest] Status: FAILURE!
 Program code.

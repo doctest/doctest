@@ -47,25 +47,26 @@ A quick and easy way to migrate most of your Catch tests to doctest is to change
 ```c++
 #include "path/to/doctest.h"
 
-#undef TEST_CASE
-#define TEST_CASE(name, tags) DOCTEST_TEST_CASE(tags " " name) // will concatenate the tags and test name string literals to one
 #define SECTION(name) DOCTEST_SUBCASE(name)
-using doctest::Approx; // catch exposes this by default outside of its namespace
 
+// only if tags are used: will concatenate them to the test name string literal
+#undef TEST_CASE
+#define TEST_CASE(name, tags) DOCTEST_TEST_CASE(tags " " name)
+
+// catch exposes this by default outside of its namespace
+using doctest::Approx;
 ```
 
 ### How to get the best compile-time performance with the framework?
 
-Using the [**fast**](assertions.md#fast-asserts) asserts in combination with [**```DOCTEST_CONFIG_SUPER_FAST_ASSERTS```**](configuration.md#doctest_config_super_fast_asserts) yelds the [**fastest**](benchmarks.md#cost-of-an-assertion-macro) compile times.
+The [**```DOCTEST_CONFIG_SUPER_FAST_ASSERTS```**](configuration.md#doctest_config_super_fast_asserts) config option yelds the [**fastest possible**](benchmarks.md#cost-of-an-assertion-macro) compile times (up to XX-XX%). Also the expression-decomposing template machinery can be skipped by using the [**binary**](assertions.md#binary-and-unary-asserts) asserts.
 
-There are only 2 drawbacks of this approach:
+There are only 2 tiny drawbacks of using this config option:
 
-- using fast asserts (60-90% [**faster**](benchmarks.md#cost-of-an-assertion-macro) than ```CHECK(a==b)```) means that there is no ```try/catch``` block in each assert so if an expression throws the whole test case ends.
-- defining the [**```DOCTEST_CONFIG_SUPER_FAST_ASSERTS```**](configuration.md#doctest_config_super_fast_asserts) config identifier will result in even [**faster**](benchmarks.md#cost-of-an-assertion-macro) fast asserts (50-80%) at the cost of only one thing: when an assert fails and a debugger is present - the framework will break inside a doctest function so the user will have to go 1 level up in the callstack to see where the actual assert is in the source code.
+- there is no ```try/catch``` block in each assert so if an expression is thrown the whole test case ends (but is still caught and reported).
+- when an assert fails and a debugger is present - the framework will break inside a doctest function so the user will have to go 1 level up in the callstack to see where the actual assert is in the source code.
 
-These 2 things can be considered negligible if you are dealing mainly with arithmetic (expressions are unlikely to throw exceptions) and all the tests usually pass (you don't need to often navigate to a failing assert with a debugger attached)
-
-If you want better aliases for the asserts instead of the long ones you could use [**```DOCTEST_CONFIG_NO_SHORT_MACRO_NAMES```**](configuration.md#doctest_config_no_short_macro_names) and then define your aliases like this: ```#define CHECK_EQ DOCTEST_FAST_CHECK_EQ``` (example in [**here**](../../examples/all_features/alternative_macros.cpp) and [**here**](../../examples/all_features/doctest_proxy.h)).
+These 2 things can be considered negligible and totally worth it if you are dealing mainly with expressions unlikely to throw exceptions and all the tests usually pass (you don't need to navigate often to a failing assert with a debugger attached).
 
 ### Is doctest thread-aware?
 

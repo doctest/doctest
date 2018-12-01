@@ -485,32 +485,6 @@ const char* assertString(assertType::Enum at) {
         case assertType::DT_WARN_UNARY_FALSE        : return "WARN_UNARY_FALSE";
         case assertType::DT_CHECK_UNARY_FALSE       : return "CHECK_UNARY_FALSE";
         case assertType::DT_REQUIRE_UNARY_FALSE     : return "REQUIRE_UNARY_FALSE";
-
-        case assertType::DT_FAST_WARN_EQ            : return "FAST_WARN_EQ";
-        case assertType::DT_FAST_CHECK_EQ           : return "FAST_CHECK_EQ";
-        case assertType::DT_FAST_REQUIRE_EQ         : return "FAST_REQUIRE_EQ";
-        case assertType::DT_FAST_WARN_NE            : return "FAST_WARN_NE";
-        case assertType::DT_FAST_CHECK_NE           : return "FAST_CHECK_NE";
-        case assertType::DT_FAST_REQUIRE_NE         : return "FAST_REQUIRE_NE";
-        case assertType::DT_FAST_WARN_GT            : return "FAST_WARN_GT";
-        case assertType::DT_FAST_CHECK_GT           : return "FAST_CHECK_GT";
-        case assertType::DT_FAST_REQUIRE_GT         : return "FAST_REQUIRE_GT";
-        case assertType::DT_FAST_WARN_LT            : return "FAST_WARN_LT";
-        case assertType::DT_FAST_CHECK_LT           : return "FAST_CHECK_LT";
-        case assertType::DT_FAST_REQUIRE_LT         : return "FAST_REQUIRE_LT";
-        case assertType::DT_FAST_WARN_GE            : return "FAST_WARN_GE";
-        case assertType::DT_FAST_CHECK_GE           : return "FAST_CHECK_GE";
-        case assertType::DT_FAST_REQUIRE_GE         : return "FAST_REQUIRE_GE";
-        case assertType::DT_FAST_WARN_LE            : return "FAST_WARN_LE";
-        case assertType::DT_FAST_CHECK_LE           : return "FAST_CHECK_LE";
-        case assertType::DT_FAST_REQUIRE_LE         : return "FAST_REQUIRE_LE";
-
-        case assertType::DT_FAST_WARN_UNARY         : return "FAST_WARN_UNARY";
-        case assertType::DT_FAST_CHECK_UNARY        : return "FAST_CHECK_UNARY";
-        case assertType::DT_FAST_REQUIRE_UNARY      : return "FAST_REQUIRE_UNARY";
-        case assertType::DT_FAST_WARN_UNARY_FALSE   : return "FAST_WARN_UNARY_FALSE";
-        case assertType::DT_FAST_CHECK_UNARY_FALSE  : return "FAST_CHECK_UNARY_FALSE";
-        case assertType::DT_FAST_REQUIRE_UNARY_FALSE: return "FAST_REQUIRE_UNARY_FALSE";
     }
     DOCTEST_MSVC_SUPPRESS_WARNING_POP
     return "";
@@ -752,12 +726,6 @@ namespace {
         static reporterMap data;
         return data;
     }
-
-    void throwException() {
-#ifndef DOCTEST_CONFIG_NO_EXCEPTIONS
-        throw TestFailureException();
-#endif // DOCTEST_CONFIG_NO_EXCEPTIONS
-    }
 } // namespace
 namespace detail {
 #define DOCTEST_ITERATE_THROUGH_REPORTERS(function, ...)                                           \
@@ -779,9 +747,10 @@ namespace detail {
         return false;
     }
 
-    void fastAssertThrowIfFlagSet(int flags) {
-        if(flags & assertAction::shouldthrow) //!OCLINT bitwise operator in conditional
-            throwException();
+    void throwException() {
+#ifndef DOCTEST_CONFIG_NO_EXCEPTIONS
+        throw TestFailureException();
+#endif // DOCTEST_CONFIG_NO_EXCEPTIONS
     }
 } // namespace detail
 
@@ -1584,6 +1553,18 @@ namespace detail {
             g_cs->ah(ad);
         else
             std::abort();
+    }
+
+    void decomp_assert(assertType::Enum at, const char* file, int line, const char* expr,
+                       Result result) {
+        bool failed = !result.m_passed;
+
+        // ###################################################################################
+        // IF THE DEBUGGER BREAKS HERE - GO 1 LEVEL UP IN THE CALLSTACK FOR THE FAILING ASSERT
+        // THIS IS THE EFFECT OF HAVING 'DOCTEST_CONFIG_SUPER_FAST_ASSERTS' DEFINED
+        // ###################################################################################
+        DOCTEST_ASSERT_OUT_OF_TESTS(result.m_decomp);
+        DOCTEST_ASSERT_IN_TESTS(result.m_decomp);
     }
 
     MessageBuilder::MessageBuilder(const char* file, int line, assertType::Enum severity) {

@@ -34,7 +34,7 @@ CHECK(thisReturnsTrue());
 REQUIRE(i < 42);
 ```
 
-Negating asserts - ```<LEVEL>_FALSE(expression)``` - evaluates the expression and records the _logical NOT_ of the result.
+- Negating asserts - ```<LEVEL>_FALSE(expression)``` - evaluates the expression and records the _logical NOT_ of the result.
 
 These forms exist as a workaround for the fact that ```!``` prefixed expressions cannot be decomposed properly.
 
@@ -44,7 +44,8 @@ Example:
 REQUIRE_FALSE(thisReturnsFalse());
 ```
 
-Note that these asserts also have a ```_MESSAGE``` form - like ```CHECK_MESSAGE(expression, message)``` which is basically a code block ```{}``` with a scoped [**```INFO()```**](logging.md#info) logging macro together with the ```CHECK``` macro - that way the message will be relevant only to that assert. All the other binary/unary/fast asserts don't have this variation.
+- Using the [**```DOCTEST_CONFIG_SUPER_FAST_ASSERTS```**](configuration.md#doctest_config_super_fast_asserts) config option can make compilation of asserts lightning fast - by up to [**XX-XX%**](benchmarks.md#cost-of-an-assertion-macro)!
+- These asserts also have a ```_MESSAGE``` form - like ```CHECK_MESSAGE(expression, message)``` which is basically a code block ```{}``` with a scoped [**```INFO()```**](logging.md#info) logging macro together with the ```CHECK``` macro - that way the message will be relevant only to that assert. The binary/unary asserts don't have this variation yet.
 
 Examples:
 
@@ -62,7 +63,7 @@ For more information about the ```INFO()``` macro and logging with the streaming
 
 These asserts don't use templates to decompose the comparison expressions for the left and right parts.
 
-These have the same guarantees as the expression decomposing ones - just less templates - [**25%-45% faster**](benchmarks.md#cost-of-an-assertion-macro) for compile times.
+These have the same guarantees as the expression decomposing ones but [**XX%-XX% faster**](benchmarks.md#cost-of-an-assertion-macro) for compilation.
 
 ```<LEVEL>``` is one of 3 possible: ```REQUIRE```/```CHECK```/```WARN```.
 
@@ -75,24 +76,7 @@ These have the same guarantees as the expression decomposing ones - just less te
 - ```<LEVEL>_UNARY(expr)``` - same as ```<LEVEL>(expr)```
 - ```<LEVEL>_UNARY_FALSE(expr)``` - same as ```<LEVEL>_FALSE(expr)```
 
-## Fast asserts
-
-These are the faster versions of the binary and unary asserts - by [**60-80%**](benchmarks.md#cost-of-an-assertion-macro) of compile time.
-
-The difference is they don't evaluate the expression in a ```try/catch``` block - if the expression throws the whole test case ends.
-
-There is also the [**```DOCTEST_CONFIG_SUPER_FAST_ASSERTS```**](configuration.md#doctest_config_super_fast_asserts) config identifier that makes them even faster by another [**50-80%**](benchmarks.md#cost-of-an-assertion-macro)!
-
-```<LEVEL>``` is one of 3 possible: ```REQUIRE```/```CHECK```/```WARN```.
-
-- ```FAST_<LEVEL>_EQ(left, right)``` - almost the same as ```<LEVEL>(left == right)```
-- ```FAST_<LEVEL>_NE(left, right)``` - almost the same as ```<LEVEL>(left != right)```
-- ```FAST_<LEVEL>_GT(left, right)``` - almost the same as ```<LEVEL>(left >  right)```
-- ```FAST_<LEVEL>_LT(left, right)``` - almost the same as ```<LEVEL>(left <  right)```
-- ```FAST_<LEVEL>_GE(left, right)``` - almost the same as ```<LEVEL>(left >= right)```
-- ```FAST_<LEVEL>_LE(left, right)``` - almost the same as ```<LEVEL>(left <= right)```
-- ```FAST_<LEVEL>_UNARY(expr)``` - almost the same as ```<LEVEL>(expr)```
-- ```FAST_<LEVEL>_UNARY_FALSE(expr)``` - almost the same as ```<LEVEL>_FALSE(expr)```
+- Using the [**```DOCTEST_CONFIG_SUPER_FAST_ASSERTS```**](configuration.md#doctest_config_super_fast_asserts) config option can make compilation of asserts lightning fast - by up to [**XX-XX%**](benchmarks.md#cost-of-an-assertion-macro)!
 
 ## Exceptions
 
@@ -133,7 +117,7 @@ Asserts can be used outside of a testing context (in code not called from a ```T
 
 A ```doctest::Context``` object still has to be created somewhere and set as the default one using the ```setAsDefaultForAssertsOutOfTestCases()``` method - and then asserts will work. A handler can be registered by calling the ```setAssertHandler()``` method on the context object. If no handler is set then ```std::abort()``` is called on failure.
 
-The results would be best when using the [**fast asserts**](assertions.md#fast-asserts) coupled with the [**```DOCTEST_CONFIG_SUPER_FAST_ASSERTS```**](configuration.md#doctest_config_super_fast_asserts) config identifier and by defining your own macro aliases - like shown [**here**](../../examples/all_features/doctest_proxy.h).
+The results would be best when using the [**```DOCTEST_CONFIG_SUPER_FAST_ASSERTS```**](configuration.md#doctest_config_super_fast_asserts) config identifier.
 
 Checkout the [**example**](../../examples/all_features/asserts_used_outside_of_tests.cpp) showcasing how that is done. For more information see the [**issue for the feature request**](https://github.com/onqtam/doctest/issues/114).
 

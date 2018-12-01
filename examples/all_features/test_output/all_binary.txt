@@ -75,80 +75,8 @@ assertion_macros.cpp(0): SUCCESS: CHECK_UNARY_FALSE( 0 ) is correct!
 assertion_macros.cpp(0): SUCCESS: REQUIRE_UNARY_FALSE( 0 ) is correct!
   values: REQUIRE_UNARY_FALSE( 0 )
 
-assertion_macros.cpp(0): SUCCESS: FAST_WARN_EQ( 1, 1 ) is correct!
-  values: FAST_WARN_EQ( 1, 1 )
-
-assertion_macros.cpp(0): SUCCESS: FAST_CHECK_EQ( 1, 1 ) is correct!
-  values: FAST_CHECK_EQ( 1, 1 )
-
-assertion_macros.cpp(0): SUCCESS: FAST_REQUIRE_EQ( 1, 1 ) is correct!
-  values: FAST_REQUIRE_EQ( 1, 1 )
-
-assertion_macros.cpp(0): SUCCESS: FAST_WARN_NE( 1, 0 ) is correct!
-  values: FAST_WARN_NE( 1, 0 )
-
-assertion_macros.cpp(0): SUCCESS: FAST_CHECK_NE( 1, 0 ) is correct!
-  values: FAST_CHECK_NE( 1, 0 )
-
-assertion_macros.cpp(0): SUCCESS: FAST_REQUIRE_NE( 1, 0 ) is correct!
-  values: FAST_REQUIRE_NE( 1, 0 )
-
-assertion_macros.cpp(0): SUCCESS: FAST_WARN_GT( 1, 0 ) is correct!
-  values: FAST_WARN_GT( 1, 0 )
-
-assertion_macros.cpp(0): SUCCESS: FAST_CHECK_GT( 1, 0 ) is correct!
-  values: FAST_CHECK_GT( 1, 0 )
-
-assertion_macros.cpp(0): SUCCESS: FAST_REQUIRE_GT( 1, 0 ) is correct!
-  values: FAST_REQUIRE_GT( 1, 0 )
-
-assertion_macros.cpp(0): SUCCESS: FAST_WARN_LT( 0, 1 ) is correct!
-  values: FAST_WARN_LT( 0, 1 )
-
-assertion_macros.cpp(0): SUCCESS: FAST_CHECK_LT( 0, 1 ) is correct!
-  values: FAST_CHECK_LT( 0, 1 )
-
-assertion_macros.cpp(0): SUCCESS: FAST_REQUIRE_LT( 0, 1 ) is correct!
-  values: FAST_REQUIRE_LT( 0, 1 )
-
-assertion_macros.cpp(0): SUCCESS: FAST_WARN_GE( 1, 1 ) is correct!
-  values: FAST_WARN_GE( 1, 1 )
-
-assertion_macros.cpp(0): SUCCESS: FAST_CHECK_GE( 1, 1 ) is correct!
-  values: FAST_CHECK_GE( 1, 1 )
-
-assertion_macros.cpp(0): SUCCESS: FAST_REQUIRE_GE( 1, 1 ) is correct!
-  values: FAST_REQUIRE_GE( 1, 1 )
-
-assertion_macros.cpp(0): SUCCESS: FAST_WARN_LE( 1, 1 ) is correct!
-  values: FAST_WARN_LE( 1, 1 )
-
-assertion_macros.cpp(0): SUCCESS: FAST_CHECK_LE( 1, 1 ) is correct!
-  values: FAST_CHECK_LE( 1, 1 )
-
-assertion_macros.cpp(0): SUCCESS: FAST_REQUIRE_LE( 1, 1 ) is correct!
-  values: FAST_REQUIRE_LE( 1, 1 )
-
-assertion_macros.cpp(0): SUCCESS: FAST_WARN_UNARY( 1 ) is correct!
-  values: FAST_WARN_UNARY( 1 )
-
-assertion_macros.cpp(0): SUCCESS: FAST_CHECK_UNARY( 1 ) is correct!
-  values: FAST_CHECK_UNARY( 1 )
-
-assertion_macros.cpp(0): SUCCESS: FAST_REQUIRE_UNARY( 1 ) is correct!
-  values: FAST_REQUIRE_UNARY( 1 )
-
-assertion_macros.cpp(0): SUCCESS: FAST_WARN_UNARY_FALSE( 0 ) is correct!
-  values: FAST_WARN_UNARY_FALSE( 0 )
-
-assertion_macros.cpp(0): SUCCESS: FAST_CHECK_UNARY_FALSE( 0 ) is correct!
-  values: FAST_CHECK_UNARY_FALSE( 0 )
-
-assertion_macros.cpp(0): SUCCESS: FAST_REQUIRE_UNARY_FALSE( 0 ) is correct!
-  values: FAST_REQUIRE_UNARY_FALSE( 0 )
-
 ===============================================================================
 [doctest] test cases:      1 |      1 passed |      0 failed | 
-[doctest] assertions:     32 |     32 passed |      0 failed |
+[doctest] assertions:     16 |     16 passed |      0 failed |
 [doctest] Status: SUCCESS!
 Program code.

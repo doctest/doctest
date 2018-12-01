@@ -1,5 +1,5 @@
 #ifndef DOCTEST_CONFIG_DISABLE
-#define DOCTEST_CONFIG_SUPER_FAST_ASSERTS // defined so the fast asserts are crazy fast - both for compilation and execution
+#define DOCTEST_CONFIG_SUPER_FAST_ASSERTS // defined so the asserts are crazy fast - both for compilation and execution
 #endif
 
 #include "doctest.h"
@@ -16,10 +16,6 @@ DOCTEST_CLANG_SUPPRESS_WARNING("-Wmissing-prototypes")
 
 // some function which uses asserts not just for unit testing but also for ensuring contracts in production code
 static void some_func() {
-    FAST_CHECK_EQ(true, false);
-    FAST_CHECK_UNARY(false);
-    FAST_CHECK_UNARY_FALSE(true);
-
     CHECK_EQ(true, false);
     CHECK_UNARY(false);
     CHECK_UNARY_FALSE(true);

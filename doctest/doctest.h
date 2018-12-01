@@ -526,9 +526,8 @@ namespace assertType {
         is_throws_with = 2 * is_throws_as,
         is_nothrow     = 2 * is_throws_with,
 
-        is_fast  = 2 * is_nothrow, // not checked anywhere - used just to distinguish the types
-        is_false = 2 * is_fast,
-        is_unary = 2 * is_false,
+        is_false = 2 * is_nothrow,
+        is_unary = 2 * is_false, // not checked anywhere - used just to distinguish the types
 
         is_eq = 2 * is_unary,
         is_ne = 2 * is_eq,
@@ -596,37 +595,6 @@ namespace assertType {
         DT_WARN_UNARY_FALSE    = is_normal | is_false | is_unary | is_warn,
         DT_CHECK_UNARY_FALSE   = is_normal | is_false | is_unary | is_check,
         DT_REQUIRE_UNARY_FALSE = is_normal | is_false | is_unary | is_require,
-
-        DT_FAST_WARN_EQ    = is_normal | is_fast | is_eq | is_warn,
-        DT_FAST_CHECK_EQ   = is_normal | is_fast | is_eq | is_check,
-        DT_FAST_REQUIRE_EQ = is_normal | is_fast | is_eq | is_require,
-        DT_FAST_WARN_NE    = is_normal | is_fast | is_ne | is_warn,
-        DT_FAST_CHECK_NE   = is_normal | is_fast | is_ne | is_check,
-        DT_FAST_REQUIRE_NE = is_normal | is_fast | is_ne | is_require,
-
-        DT_FAST_WARN_GT    = is_normal | is_fast | is_gt | is_warn,
-        DT_FAST_CHECK_GT   = is_normal | is_fast | is_gt | is_check,
-        DT_FAST_REQUIRE_GT = is_normal | is_fast | is_gt | is_require,
-
-        DT_FAST_WARN_LT    = is_normal | is_fast | is_lt | is_warn,
-        DT_FAST_CHECK_LT   = is_normal | is_fast | is_lt | is_check,
-        DT_FAST_REQUIRE_LT = is_normal | is_fast | is_lt | is_require,
-
-        DT_FAST_WARN_GE    = is_normal | is_fast | is_ge | is_warn,
-        DT_FAST_CHECK_GE   = is_normal | is_fast | is_ge | is_check,
-        DT_FAST_REQUIRE_GE = is_normal | is_fast | is_ge | is_require,
-
-        DT_FAST_WARN_LE    = is_normal | is_fast | is_le | is_warn,
-        DT_FAST_CHECK_LE   = is_normal | is_fast | is_le | is_check,
-        DT_FAST_REQUIRE_LE = is_normal | is_fast | is_le | is_require,
-
-        DT_FAST_WARN_UNARY    = is_normal | is_fast | is_unary | is_warn,
-        DT_FAST_CHECK_UNARY   = is_normal | is_fast | is_unary | is_check,
-        DT_FAST_REQUIRE_UNARY = is_normal | is_fast | is_unary | is_require,
-
-        DT_FAST_WARN_UNARY_FALSE    = is_normal | is_fast | is_false | is_unary | is_warn,
-        DT_FAST_CHECK_UNARY_FALSE   = is_normal | is_fast | is_false | is_unary | is_check,
-        DT_FAST_REQUIRE_UNARY_FALSE = is_normal | is_fast | is_false | is_unary | is_require
     };
 } // namespace assertType
 
@@ -1004,7 +972,7 @@ namespace detail {
     };
 
     DOCTEST_INTERFACE bool checkIfShouldThrow(assertType::Enum at);
-    DOCTEST_INTERFACE void fastAssertThrowIfFlagSet(int flags);
+    DOCTEST_INTERFACE void throwException();
 
     struct DOCTEST_INTERFACE Subcase
     {
@@ -1357,24 +1325,12 @@ namespace detail {
         };
     } // namespace assertAction
 
-#ifdef DOCTEST_CONFIG_SUPER_FAST_ASSERTS
-#define DOCTEST_FAST_ASSERT_REACT                                                                  \
-    do {                                                                                           \
-        if(res & assertAction::dbgbreak)                                                           \
-            DOCTEST_BREAK_INTO_DEBUGGER();                                                         \
-        fastAssertThrowIfFlagSet(res);                                                             \
-    } while(false)
-#define DOCTEST_FAST_ASSERT_RETURN(x) return
-#define DOCTEST_FAST_ASSERT_RETURN_TYPE void
-#else // DOCTEST_CONFIG_SUPER_FAST_ASSERTS
-#define DOCTEST_FAST_ASSERT_REACT return res
-#define DOCTEST_FAST_ASSERT_RETURN(x) return x
-#define DOCTEST_FAST_ASSERT_RETURN_TYPE int
-#endif // DOCTEST_CONFIG_SUPER_FAST_ASSERTS
-
     DOCTEST_INTERFACE void failed_out_of_a_testing_context(const AssertData& ad);
 
-#define DOCTEST_FAST_ASSERT_OUT_OF_TESTS(decomp)                                                   \
+    DOCTEST_INTERFACE void decomp_assert(assertType::Enum at, const char* file, int line,
+                                         const char* expr, Result result);
+
+#define DOCTEST_ASSERT_OUT_OF_TESTS(decomp)                                                        \
     do {                                                                                           \
         if(!is_running_in_test) {                                                                  \
             if(failed) {                                                                           \
@@ -1382,46 +1338,42 @@ namespace detail {
                 rb.m_failed = failed;                                                              \
                 rb.m_decomp = decomp;                                                              \
                 failed_out_of_a_testing_context(rb);                                               \
-                int res = checkIfShouldThrow(at) ? assertAction::shouldthrow : 0;                  \
-                res |= (isDebuggerActive() && !getContextOptions()->no_breaks) ?                   \
-                               assertAction::dbgbreak :                                            \
-                               0;                                                                  \
-                DOCTEST_FAST_ASSERT_REACT;                                                         \
+                if(isDebuggerActive() && !getContextOptions()->no_breaks)                          \
+                    DOCTEST_BREAK_INTO_DEBUGGER();                                                 \
+                if(checkIfShouldThrow(at))                                                         \
+                    throwException();                                                              \
             }                                                                                      \
-            DOCTEST_FAST_ASSERT_RETURN(0);                                                         \
+            return;                                                                                \
         }                                                                                          \
     } while(false)
 
-#define DOCTEST_FAST_ASSERT_IN_TESTS(decomp)                                                       \
+#define DOCTEST_ASSERT_IN_TESTS(decomp)                                                            \
     ResultBuilder rb(at, file, line, expr);                                                        \
     rb.m_failed = failed;                                                                          \
     if(rb.m_failed || getContextOptions()->success)                                                \
         rb.m_decomp = decomp;                                                                      \
-    int res = rb.log() ? assertAction::dbgbreak : 0;                                               \
+    if(rb.log())                                                                                   \
+        DOCTEST_BREAK_INTO_DEBUGGER();                                                             \
     if(rb.m_failed && checkIfShouldThrow(at))                                                      \
-        res |= assertAction::shouldthrow;                                                          \
-    DOCTEST_FAST_ASSERT_REACT
+    throwException()
 
     template <int comparison, typename L, typename R>
-    DOCTEST_NOINLINE DOCTEST_FAST_ASSERT_RETURN_TYPE
-                     fast_binary_assert(assertType::Enum at, const char* file, int line, const char* expr,
-                                        const DOCTEST_REF_WRAP(L) lhs, const DOCTEST_REF_WRAP(R) rhs) {
+    DOCTEST_NOINLINE void binary_assert(assertType::Enum at, const char* file, int line,
+                                        const char* expr, const DOCTEST_REF_WRAP(L) lhs,
+                                        const DOCTEST_REF_WRAP(R) rhs) {
         bool failed = !RelationalComparator<comparison, L, R>()(lhs, rhs);
 
         // ###################################################################################
         // IF THE DEBUGGER BREAKS HERE - GO 1 LEVEL UP IN THE CALLSTACK FOR THE FAILING ASSERT
         // THIS IS THE EFFECT OF HAVING 'DOCTEST_CONFIG_SUPER_FAST_ASSERTS' DEFINED
         // ###################################################################################
-        DOCTEST_FAST_ASSERT_OUT_OF_TESTS(stringifyBinaryExpr(lhs, ", ", rhs));
-        DOCTEST_FAST_ASSERT_IN_TESTS(stringifyBinaryExpr(lhs, ", ", rhs));
+        DOCTEST_ASSERT_OUT_OF_TESTS(stringifyBinaryExpr(lhs, ", ", rhs));
+        DOCTEST_ASSERT_IN_TESTS(stringifyBinaryExpr(lhs, ", ", rhs));
     }
 
     template <typename L>
-    DOCTEST_NOINLINE DOCTEST_FAST_ASSERT_RETURN_TYPE fast_unary_assert(assertType::Enum at,
-                                                                       const char* file, int line,
-                                                                       const char* expr,
-                                                                       const DOCTEST_REF_WRAP(L)
-                                                                               val) {
+    DOCTEST_NOINLINE void unary_assert(assertType::Enum at, const char* file, int line,
+                                       const char* expr, const DOCTEST_REF_WRAP(L) val) {
         bool failed = !val;
 
         if(at & assertType::is_false) //!OCLINT bitwise operator in conditional
@@ -1431,8 +1383,8 @@ namespace detail {
         // IF THE DEBUGGER BREAKS HERE - GO 1 LEVEL UP IN THE CALLSTACK FOR THE FAILING ASSERT
         // THIS IS THE EFFECT OF HAVING 'DOCTEST_CONFIG_SUPER_FAST_ASSERTS' DEFINED
         // ###################################################################################
-        DOCTEST_FAST_ASSERT_OUT_OF_TESTS(toString(val));
-        DOCTEST_FAST_ASSERT_IN_TESTS(toString(val));
+        DOCTEST_ASSERT_OUT_OF_TESTS(toString(val));
+        DOCTEST_ASSERT_IN_TESTS(toString(val));
     }
 
     struct DOCTEST_INTERFACE IExceptionTranslator
@@ -2030,6 +1982,8 @@ constexpr T to_lvalue = x;
 #define DOCTEST_TO_LVALUE(...) TO_LVALUE_CAN_BE_USED_ONLY_IN_CPP14_MODE_OR_WITH_VS_2017_OR_NEWER
 #endif // TO_LVALUE
 
+#ifndef DOCTEST_CONFIG_SUPER_FAST_ASSERTS
+
 #define DOCTEST_ASSERT_IMPLEMENT_2(assert_type, ...)                                               \
     DOCTEST_CLANG_SUPPRESS_WARNING_WITH_PUSH("-Woverloaded-shift-op-parentheses")                  \
     doctest::detail::ResultBuilder _DOCTEST_RB(doctest::assertType::assert_type, __FILE__,         \
@@ -2044,6 +1998,17 @@ constexpr T to_lvalue = x;
     do {                                                                                           \
         DOCTEST_ASSERT_IMPLEMENT_2(assert_type, __VA_ARGS__);                                      \
     } while((void)0, 0)
+
+#else // DOCTEST_CONFIG_SUPER_FAST_ASSERTS
+
+#define DOCTEST_ASSERT_IMPLEMENT_1(assert_type, ...)                                               \
+    DOCTEST_CLANG_SUPPRESS_WARNING_WITH_PUSH("-Woverloaded-shift-op-parentheses")                  \
+    doctest::detail::decomp_assert(                                                                \
+            doctest::assertType::assert_type, __FILE__, __LINE__, #__VA_ARGS__,                    \
+            doctest::detail::ExpressionDecomposer(doctest::assertType::assert_type)                \
+                    << __VA_ARGS__) DOCTEST_CLANG_SUPPRESS_WARNING_POP
+
+#endif // DOCTEST_CONFIG_SUPER_FAST_ASSERTS
 
 #define DOCTEST_WARN(...) DOCTEST_ASSERT_IMPLEMENT_1(DT_WARN, __VA_ARGS__)
 #define DOCTEST_CHECK(...) DOCTEST_ASSERT_IMPLEMENT_1(DT_CHECK, __VA_ARGS__)
@@ -2144,6 +2109,8 @@ constexpr T to_lvalue = x;
 #define DOCTEST_REQUIRE_NOTHROW_MESSAGE(expr, msg) do { DOCTEST_INFO(msg); DOCTEST_REQUIRE_NOTHROW(expr); } while((void)0, 0)
 // clang-format on
 
+#ifndef DOCTEST_CONFIG_SUPER_FAST_ASSERTS
+
 #define DOCTEST_BINARY_ASSERT(assert_type, comp, ...)                                              \
     do {                                                                                           \
         doctest::detail::ResultBuilder _DOCTEST_RB(doctest::assertType::assert_type, __FILE__,     \
@@ -2161,6 +2128,18 @@ constexpr T to_lvalue = x;
         DOCTEST_WRAP_IN_TRY(_DOCTEST_RB.unary_assert(__VA_ARGS__))                                 \
         DOCTEST_ASSERT_LOG_AND_REACT(_DOCTEST_RB);                                                 \
     } while((void)0, 0)
+
+#else // DOCTEST_CONFIG_SUPER_FAST_ASSERTS
+
+#define DOCTEST_BINARY_ASSERT(assert_type, comparison, ...)                                        \
+    doctest::detail::binary_assert<doctest::detail::binaryAssertComparison::comparison>(           \
+            doctest::assertType::assert_type, __FILE__, __LINE__, #__VA_ARGS__, __VA_ARGS__)
+
+#define DOCTEST_UNARY_ASSERT(assert_type, ...)                                                     \
+    doctest::detail::unary_assert(doctest::assertType::assert_type, __FILE__, __LINE__,            \
+                                  #__VA_ARGS__, __VA_ARGS__)
+
+#endif // DOCTEST_CONFIG_SUPER_FAST_ASSERTS
 
 #define DOCTEST_WARN_EQ(...) DOCTEST_BINARY_ASSERT(DT_WARN_EQ, eq, __VA_ARGS__)
 #define DOCTEST_CHECK_EQ(...) DOCTEST_BINARY_ASSERT(DT_CHECK_EQ, eq, __VA_ARGS__)
@@ -2187,67 +2166,6 @@ constexpr T to_lvalue = x;
 #define DOCTEST_WARN_UNARY_FALSE(...) DOCTEST_UNARY_ASSERT(DT_WARN_UNARY_FALSE, __VA_ARGS__)
 #define DOCTEST_CHECK_UNARY_FALSE(...) DOCTEST_UNARY_ASSERT(DT_CHECK_UNARY_FALSE, __VA_ARGS__)
 #define DOCTEST_REQUIRE_UNARY_FALSE(...) DOCTEST_UNARY_ASSERT(DT_REQUIRE_UNARY_FALSE, __VA_ARGS__)
-
-#ifndef DOCTEST_CONFIG_SUPER_FAST_ASSERTS
-
-#define DOCTEST_FAST_BINARY_ASSERT(assert_type, comparison, ...)                                   \
-    do {                                                                                           \
-        int _DOCTEST_FAST_RES = doctest::detail::fast_binary_assert<                               \
-                doctest::detail::binaryAssertComparison::comparison>(                              \
-                doctest::assertType::assert_type, __FILE__, __LINE__, #__VA_ARGS__, __VA_ARGS__);  \
-        if(_DOCTEST_FAST_RES & doctest::detail::assertAction::dbgbreak)                            \
-            DOCTEST_BREAK_INTO_DEBUGGER();                                                         \
-        doctest::detail::fastAssertThrowIfFlagSet(_DOCTEST_FAST_RES);                              \
-    } while((void)0, 0)
-
-#define DOCTEST_FAST_UNARY_ASSERT(assert_type, ...)                                                \
-    do {                                                                                           \
-        int _DOCTEST_FAST_RES = doctest::detail::fast_unary_assert(                                \
-                doctest::assertType::assert_type, __FILE__, __LINE__, #__VA_ARGS__, __VA_ARGS__);  \
-        if(_DOCTEST_FAST_RES & doctest::detail::assertAction::dbgbreak)                            \
-            DOCTEST_BREAK_INTO_DEBUGGER();                                                         \
-        doctest::detail::fastAssertThrowIfFlagSet(_DOCTEST_FAST_RES);                              \
-    } while((void)0, 0)
-
-#else // DOCTEST_CONFIG_SUPER_FAST_ASSERTS
-
-#define DOCTEST_FAST_BINARY_ASSERT(assert_type, comparison, ...)                                   \
-    doctest::detail::fast_binary_assert<doctest::detail::binaryAssertComparison::comparison>(      \
-            doctest::assertType::assert_type, __FILE__, __LINE__, #__VA_ARGS__, __VA_ARGS__)
-
-#define DOCTEST_FAST_UNARY_ASSERT(assert_type, ...)                                                \
-    doctest::detail::fast_unary_assert(doctest::assertType::assert_type, __FILE__, __LINE__,       \
-                                       #__VA_ARGS__, __VA_ARGS__)
-
-#endif // DOCTEST_CONFIG_SUPER_FAST_ASSERTS
-
-// clang-format off
-#define DOCTEST_FAST_WARN_EQ(...) DOCTEST_FAST_BINARY_ASSERT(DT_FAST_WARN_EQ, eq, __VA_ARGS__)
-#define DOCTEST_FAST_CHECK_EQ(...) DOCTEST_FAST_BINARY_ASSERT(DT_FAST_CHECK_EQ, eq, __VA_ARGS__)
-#define DOCTEST_FAST_REQUIRE_EQ(...) DOCTEST_FAST_BINARY_ASSERT(DT_FAST_REQUIRE_EQ, eq, __VA_ARGS__)
-#define DOCTEST_FAST_WARN_NE(...) DOCTEST_FAST_BINARY_ASSERT(DT_FAST_WARN_NE, ne, __VA_ARGS__)
-#define DOCTEST_FAST_CHECK_NE(...) DOCTEST_FAST_BINARY_ASSERT(DT_FAST_CHECK_NE, ne, __VA_ARGS__)
-#define DOCTEST_FAST_REQUIRE_NE(...) DOCTEST_FAST_BINARY_ASSERT(DT_FAST_REQUIRE_NE, ne, __VA_ARGS__)
-#define DOCTEST_FAST_WARN_GT(...) DOCTEST_FAST_BINARY_ASSERT(DT_FAST_WARN_GT, gt, __VA_ARGS__)
-#define DOCTEST_FAST_CHECK_GT(...) DOCTEST_FAST_BINARY_ASSERT(DT_FAST_CHECK_GT, gt, __VA_ARGS__)
-#define DOCTEST_FAST_REQUIRE_GT(...) DOCTEST_FAST_BINARY_ASSERT(DT_FAST_REQUIRE_GT, gt, __VA_ARGS__)
-#define DOCTEST_FAST_WARN_LT(...) DOCTEST_FAST_BINARY_ASSERT(DT_FAST_WARN_LT, lt, __VA_ARGS__)
-#define DOCTEST_FAST_CHECK_LT(...) DOCTEST_FAST_BINARY_ASSERT(DT_FAST_CHECK_LT, lt, __VA_ARGS__)
-#define DOCTEST_FAST_REQUIRE_LT(...) DOCTEST_FAST_BINARY_ASSERT(DT_FAST_REQUIRE_LT, lt, __VA_ARGS__)
-#define DOCTEST_FAST_WARN_GE(...) DOCTEST_FAST_BINARY_ASSERT(DT_FAST_WARN_GE, ge, __VA_ARGS__)
-#define DOCTEST_FAST_CHECK_GE(...) DOCTEST_FAST_BINARY_ASSERT(DT_FAST_CHECK_GE, ge, __VA_ARGS__)
-#define DOCTEST_FAST_REQUIRE_GE(...) DOCTEST_FAST_BINARY_ASSERT(DT_FAST_REQUIRE_GE, ge, __VA_ARGS__)
-#define DOCTEST_FAST_WARN_LE(...) DOCTEST_FAST_BINARY_ASSERT(DT_FAST_WARN_LE, le, __VA_ARGS__)
-#define DOCTEST_FAST_CHECK_LE(...) DOCTEST_FAST_BINARY_ASSERT(DT_FAST_CHECK_LE, le, __VA_ARGS__)
-#define DOCTEST_FAST_REQUIRE_LE(...) DOCTEST_FAST_BINARY_ASSERT(DT_FAST_REQUIRE_LE, le, __VA_ARGS__)
-
-#define DOCTEST_FAST_WARN_UNARY(...) DOCTEST_FAST_UNARY_ASSERT(DT_FAST_WARN_UNARY, __VA_ARGS__)
-#define DOCTEST_FAST_CHECK_UNARY(...) DOCTEST_FAST_UNARY_ASSERT(DT_FAST_CHECK_UNARY, __VA_ARGS__)
-#define DOCTEST_FAST_REQUIRE_UNARY(...) DOCTEST_FAST_UNARY_ASSERT(DT_FAST_REQUIRE_UNARY, __VA_ARGS__)
-#define DOCTEST_FAST_WARN_UNARY_FALSE(...) DOCTEST_FAST_UNARY_ASSERT(DT_FAST_WARN_UNARY_FALSE, __VA_ARGS__)
-#define DOCTEST_FAST_CHECK_UNARY_FALSE(...) DOCTEST_FAST_UNARY_ASSERT(DT_FAST_CHECK_UNARY_FALSE, __VA_ARGS__)
-#define DOCTEST_FAST_REQUIRE_UNARY_FALSE(...) DOCTEST_FAST_UNARY_ASSERT(DT_FAST_REQUIRE_UNARY_FALSE, __VA_ARGS__)
-// clang-format on
 
 #ifdef DOCTEST_CONFIG_NO_EXCEPTIONS
 
@@ -2319,14 +2237,6 @@ constexpr T to_lvalue = x;
 #undef DOCTEST_REQUIRE_LE
 #undef DOCTEST_REQUIRE_UNARY
 #undef DOCTEST_REQUIRE_UNARY_FALSE
-#undef DOCTEST_FAST_REQUIRE_EQ
-#undef DOCTEST_FAST_REQUIRE_NE
-#undef DOCTEST_FAST_REQUIRE_GT
-#undef DOCTEST_FAST_REQUIRE_LT
-#undef DOCTEST_FAST_REQUIRE_GE
-#undef DOCTEST_FAST_REQUIRE_LE
-#undef DOCTEST_FAST_REQUIRE_UNARY
-#undef DOCTEST_FAST_REQUIRE_UNARY_FALSE
 
 #endif // DOCTEST_CONFIG_NO_EXCEPTIONS_BUT_WITH_ALL_ASSERTS
 
@@ -2469,33 +2379,36 @@ constexpr T to_lvalue = x;
 #define DOCTEST_CHECK_UNARY_FALSE(...) ((void)0)
 #define DOCTEST_REQUIRE_UNARY_FALSE(...) ((void)0)
 
-#define DOCTEST_FAST_WARN_EQ(...) ((void)0)
-#define DOCTEST_FAST_CHECK_EQ(...) ((void)0)
-#define DOCTEST_FAST_REQUIRE_EQ(...) ((void)0)
-#define DOCTEST_FAST_WARN_NE(...) ((void)0)
-#define DOCTEST_FAST_CHECK_NE(...) ((void)0)
-#define DOCTEST_FAST_REQUIRE_NE(...) ((void)0)
-#define DOCTEST_FAST_WARN_GT(...) ((void)0)
-#define DOCTEST_FAST_CHECK_GT(...) ((void)0)
-#define DOCTEST_FAST_REQUIRE_GT(...) ((void)0)
-#define DOCTEST_FAST_WARN_LT(...) ((void)0)
-#define DOCTEST_FAST_CHECK_LT(...) ((void)0)
-#define DOCTEST_FAST_REQUIRE_LT(...) ((void)0)
-#define DOCTEST_FAST_WARN_GE(...) ((void)0)
-#define DOCTEST_FAST_CHECK_GE(...) ((void)0)
-#define DOCTEST_FAST_REQUIRE_GE(...) ((void)0)
-#define DOCTEST_FAST_WARN_LE(...) ((void)0)
-#define DOCTEST_FAST_CHECK_LE(...) ((void)0)
-#define DOCTEST_FAST_REQUIRE_LE(...) ((void)0)
-
-#define DOCTEST_FAST_WARN_UNARY(...) ((void)0)
-#define DOCTEST_FAST_CHECK_UNARY(...) ((void)0)
-#define DOCTEST_FAST_REQUIRE_UNARY(...) ((void)0)
-#define DOCTEST_FAST_WARN_UNARY_FALSE(...) ((void)0)
-#define DOCTEST_FAST_CHECK_UNARY_FALSE(...) ((void)0)
-#define DOCTEST_FAST_REQUIRE_UNARY_FALSE(...) ((void)0)
-
 #endif // DOCTEST_CONFIG_DISABLE
+
+// clang-format off
+// KEPT FOR BACKWARDS COMPATIBILITY - FORWARDING TO THE RIGHT MACROS
+#define DOCTEST_FAST_WARN_EQ             DOCTEST_WARN_EQ
+#define DOCTEST_FAST_CHECK_EQ            DOCTEST_CHECK_EQ
+#define DOCTEST_FAST_REQUIRE_EQ          DOCTEST_REQUIRE_EQ
+#define DOCTEST_FAST_WARN_NE             DOCTEST_WARN_NE
+#define DOCTEST_FAST_CHECK_NE            DOCTEST_CHECK_NE
+#define DOCTEST_FAST_REQUIRE_NE          DOCTEST_REQUIRE_NE
+#define DOCTEST_FAST_WARN_GT             DOCTEST_WARN_GT
+#define DOCTEST_FAST_CHECK_GT            DOCTEST_CHECK_GT
+#define DOCTEST_FAST_REQUIRE_GT          DOCTEST_REQUIRE_GT
+#define DOCTEST_FAST_WARN_LT             DOCTEST_WARN_LT
+#define DOCTEST_FAST_CHECK_LT            DOCTEST_CHECK_LT
+#define DOCTEST_FAST_REQUIRE_LT          DOCTEST_REQUIRE_LT
+#define DOCTEST_FAST_WARN_GE             DOCTEST_WARN_GE
+#define DOCTEST_FAST_CHECK_GE            DOCTEST_CHECK_GE
+#define DOCTEST_FAST_REQUIRE_GE          DOCTEST_REQUIRE_GE
+#define DOCTEST_FAST_WARN_LE             DOCTEST_WARN_LE
+#define DOCTEST_FAST_CHECK_LE            DOCTEST_CHECK_LE
+#define DOCTEST_FAST_REQUIRE_LE          DOCTEST_REQUIRE_LE
+
+#define DOCTEST_FAST_WARN_UNARY          DOCTEST_WARN_UNARY
+#define DOCTEST_FAST_CHECK_UNARY         DOCTEST_CHECK_UNARY
+#define DOCTEST_FAST_REQUIRE_UNARY       DOCTEST_REQUIRE_UNARY
+#define DOCTEST_FAST_WARN_UNARY_FALSE    DOCTEST_WARN_UNARY_FALSE
+#define DOCTEST_FAST_CHECK_UNARY_FALSE   DOCTEST_CHECK_UNARY_FALSE
+#define DOCTEST_FAST_REQUIRE_UNARY_FALSE DOCTEST_REQUIRE_UNARY_FALSE
+// clang-format on
 
 // BDD style macros
 // clang-format off
@@ -2607,6 +2520,7 @@ constexpr T to_lvalue = x;
 #define CHECK_UNARY_FALSE DOCTEST_CHECK_UNARY_FALSE
 #define REQUIRE_UNARY_FALSE DOCTEST_REQUIRE_UNARY_FALSE
 
+// KEPT FOR BACKWARDS COMPATIBILITY
 #define FAST_WARN_EQ DOCTEST_FAST_WARN_EQ
 #define FAST_CHECK_EQ DOCTEST_FAST_CHECK_EQ
 #define FAST_REQUIRE_EQ DOCTEST_FAST_REQUIRE_EQ
@@ -3158,32 +3072,6 @@ const char* assertString(assertType::Enum at) {
         case assertType::DT_WARN_UNARY_FALSE        : return "WARN_UNARY_FALSE";
         case assertType::DT_CHECK_UNARY_FALSE       : return "CHECK_UNARY_FALSE";
         case assertType::DT_REQUIRE_UNARY_FALSE     : return "REQUIRE_UNARY_FALSE";
-
-        case assertType::DT_FAST_WARN_EQ            : return "FAST_WARN_EQ";
-        case assertType::DT_FAST_CHECK_EQ           : return "FAST_CHECK_EQ";
-        case assertType::DT_FAST_REQUIRE_EQ         : return "FAST_REQUIRE_EQ";
-        case assertType::DT_FAST_WARN_NE            : return "FAST_WARN_NE";
-        case assertType::DT_FAST_CHECK_NE           : return "FAST_CHECK_NE";
-        case assertType::DT_FAST_REQUIRE_NE         : return "FAST_REQUIRE_NE";
-        case assertType::DT_FAST_WARN_GT            : return "FAST_WARN_GT";
-        case assertType::DT_FAST_CHECK_GT           : return "FAST_CHECK_GT";
-        case assertType::DT_FAST_REQUIRE_GT         : return "FAST_REQUIRE_GT";
-        case assertType::DT_FAST_WARN_LT            : return "FAST_WARN_LT";
-        case assertType::DT_FAST_CHECK_LT           : return "FAST_CHECK_LT";
-        case assertType::DT_FAST_REQUIRE_LT         : return "FAST_REQUIRE_LT";
-        case assertType::DT_FAST_WARN_GE            : return "FAST_WARN_GE";
-        case assertType::DT_FAST_CHECK_GE           : return "FAST_CHECK_GE";
-        case assertType::DT_FAST_REQUIRE_GE         : return "FAST_REQUIRE_GE";
-        case assertType::DT_FAST_WARN_LE            : return "FAST_WARN_LE";
-        case assertType::DT_FAST_CHECK_LE           : return "FAST_CHECK_LE";
-        case assertType::DT_FAST_REQUIRE_LE         : return "FAST_REQUIRE_LE";
-
-        case assertType::DT_FAST_WARN_UNARY         : return "FAST_WARN_UNARY";
-        case assertType::DT_FAST_CHECK_UNARY        : return "FAST_CHECK_UNARY";
-        case assertType::DT_FAST_REQUIRE_UNARY      : return "FAST_REQUIRE_UNARY";
-        case assertType::DT_FAST_WARN_UNARY_FALSE   : return "FAST_WARN_UNARY_FALSE";
-        case assertType::DT_FAST_CHECK_UNARY_FALSE  : return "FAST_CHECK_UNARY_FALSE";
-        case assertType::DT_FAST_REQUIRE_UNARY_FALSE: return "FAST_REQUIRE_UNARY_FALSE";
     }
     DOCTEST_MSVC_SUPPRESS_WARNING_POP
     return "";
@@ -3425,12 +3313,6 @@ namespace {
         static reporterMap data;
         return data;
     }
-
-    void throwException() {
-#ifndef DOCTEST_CONFIG_NO_EXCEPTIONS
-        throw TestFailureException();
-#endif // DOCTEST_CONFIG_NO_EXCEPTIONS
-    }
 } // namespace
 namespace detail {
 #define DOCTEST_ITERATE_THROUGH_REPORTERS(function, ...)                                           \
@@ -3452,9 +3334,10 @@ namespace detail {
         return false;
     }
 
-    void fastAssertThrowIfFlagSet(int flags) {
-        if(flags & assertAction::shouldthrow) //!OCLINT bitwise operator in conditional
-            throwException();
+    void throwException() {
+#ifndef DOCTEST_CONFIG_NO_EXCEPTIONS
+        throw TestFailureException();
+#endif // DOCTEST_CONFIG_NO_EXCEPTIONS
     }
 } // namespace detail
 
@@ -4257,6 +4140,18 @@ namespace detail {
             g_cs->ah(ad);
         else
             std::abort();
+    }
+
+    void decomp_assert(assertType::Enum at, const char* file, int line, const char* expr,
+                       Result result) {
+        bool failed = !result.m_passed;
+
+        // ###################################################################################
+        // IF THE DEBUGGER BREAKS HERE - GO 1 LEVEL UP IN THE CALLSTACK FOR THE FAILING ASSERT
+        // THIS IS THE EFFECT OF HAVING 'DOCTEST_CONFIG_SUPER_FAST_ASSERTS' DEFINED
+        // ###################################################################################
+        DOCTEST_ASSERT_OUT_OF_TESTS(result.m_decomp);
+        DOCTEST_ASSERT_IN_TESTS(result.m_decomp);
     }
 
     MessageBuilder::MessageBuilder(const char* file, int line, assertType::Enum severity) {

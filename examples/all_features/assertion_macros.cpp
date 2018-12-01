@@ -18,8 +18,6 @@ TEST_CASE("normal macros") {
 
     CHECK_EQ(a, b);
 
-    FAST_CHECK_EQ(a, b);
-
     CHECK(doctest::Approx(0.1000001) == 0.1000002);
     CHECK(doctest::Approx(0.502) == 0.501);
 }
@@ -65,14 +63,10 @@ TEST_CASE("WARN level of asserts don't fail the test case") {
     WARN_THROWS_AS(throw_if(false, 0), bool);
     WARN_THROWS_AS(throw_if(true, 0), bool);
     WARN_NOTHROW(throw_if(true, 0));
-    
+
     WARN_EQ(1, 0);
     WARN_UNARY(0);
     WARN_UNARY_FALSE(1);
-    
-    FAST_WARN_EQ(1, 0);
-    FAST_WARN_UNARY(0);
-    FAST_WARN_UNARY_FALSE(1);
 }
 
 TEST_CASE("CHECK level of asserts fail the test case but don't abort it") {
@@ -83,14 +77,10 @@ TEST_CASE("CHECK level of asserts fail the test case but don't abort it") {
     CHECK_THROWS_AS(throw_if(true, 0), bool);
     CHECK_THROWS_WITH(throw_if(true, 0), "unrecognized");
     CHECK_NOTHROW(throw_if(true, 0));
-    
+
     CHECK_EQ(1, 0);
     CHECK_UNARY(0);
     CHECK_UNARY_FALSE(1);
-    
-    FAST_CHECK_EQ(1, 0);
-    FAST_CHECK_UNARY(0);
-    FAST_CHECK_UNARY_FALSE(1);
 
     MESSAGE("reached!");
 }
@@ -131,18 +121,6 @@ TEST_CASE("REQUIRE level of asserts fail and abort the test case - 9") {
     REQUIRE_UNARY_FALSE(1);
     MESSAGE("should not be reached!");
 }
-TEST_CASE("REQUIRE level of asserts fail and abort the test case - 10") {
-    FAST_REQUIRE_EQ(1, 0);
-    MESSAGE("should not be reached!");
-}
-TEST_CASE("REQUIRE level of asserts fail and abort the test case - 11") {
-    FAST_REQUIRE_UNARY(0);
-    MESSAGE("should not be reached!");
-}
-TEST_CASE("REQUIRE level of asserts fail and abort the test case - 12") {
-    FAST_REQUIRE_UNARY_FALSE(1);
-    MESSAGE("should not be reached!");
-}
 
 TEST_CASE("all binary assertions") {
     WARN_EQ(1, 1);
@@ -169,30 +147,6 @@ TEST_CASE("all binary assertions") {
     WARN_UNARY_FALSE(0);
     CHECK_UNARY_FALSE(0);
     REQUIRE_UNARY_FALSE(0);
-    FAST_WARN_EQ(1, 1);
-    FAST_CHECK_EQ(1, 1);
-    FAST_REQUIRE_EQ(1, 1);
-    FAST_WARN_NE(1, 0);
-    FAST_CHECK_NE(1, 0);
-    FAST_REQUIRE_NE(1, 0);
-    FAST_WARN_GT(1, 0);
-    FAST_CHECK_GT(1, 0);
-    FAST_REQUIRE_GT(1, 0);
-    FAST_WARN_LT(0, 1);
-    FAST_CHECK_LT(0, 1);
-    FAST_REQUIRE_LT(0, 1);
-    FAST_WARN_GE(1, 1);
-    FAST_CHECK_GE(1, 1);
-    FAST_REQUIRE_GE(1, 1);
-    FAST_WARN_LE(1, 1);
-    FAST_CHECK_LE(1, 1);
-    FAST_REQUIRE_LE(1, 1);
-    FAST_WARN_UNARY(1);
-    FAST_CHECK_UNARY(1);
-    FAST_REQUIRE_UNARY(1);
-    FAST_WARN_UNARY_FALSE(0);
-    FAST_CHECK_UNARY_FALSE(0);
-    FAST_REQUIRE_UNARY_FALSE(0);
 }
 
 static void someAssertsInFunction() {
@@ -208,9 +162,6 @@ static void someAssertsInFunction() {
     CHECK_EQ(a, b);
     CHECK_UNARY(a == b);
     CHECK_UNARY_FALSE(a != b);
-    FAST_CHECK_EQ(a, b);
-    FAST_CHECK_UNARY(a == b);
-    FAST_CHECK_UNARY_FALSE(a != b);
 }
 
 TEST_CASE("some asserts used in a function called by a test case") {

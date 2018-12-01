@@ -7,7 +7,7 @@ This library is free, and will stay free but needs your support to sustain its d
 
 Planned features for future releases - order changes constantly...
 
-### For 2.1:
+### For 2.3:
 
 - finish the reporter system
     - what is done:
@@ -31,7 +31,7 @@ Planned features for future releases - order changes constantly...
         - documentation
 - matchers - should investigate what they are - look at google test/mock and Catch (also predicates and boost test)
 
-### For 2.2:
+### For 2.4:
 
 - header with extensions
     - demangling with the use of the cxxabi header
@@ -61,7 +61,7 @@ Planned features for future releases - order changes constantly...
         - https://www.jetbrains.com/clion/features/unit-testing.html
         - https://blog.jetbrains.com/clion/2017/03/clion-2017-1-released/#catch
 
-### For 2.3:
+### For 2.5:
 
 - log levels - like in [boost test](http://www.boost.org/doc/libs/1_63_0/libs/test/doc/html/boost_test/utf_reference/rt_param_reference/log_level.html)
 - running tests a [few times](https://github.com/google/googletest/blob/master/googletest/docs/AdvancedGuide.md#repeating-the-tests)
@@ -88,6 +88,7 @@ Planned features for future releases - order changes constantly...
 
 - use modules - use ```std::string``` and whatever else comes from the standard - no more hand rolled traits and classes
 - minimize the use of the preprocessor
+- remove backwards-compatible macros for the fast asserts
 
 ### Things that are being considered but not part of the roadmap yet:
 
@@ -143,7 +144,7 @@ Planned features for future releases - order changes constantly...
         - http://preshing.com/20111124/always-use-a-lightweight-mutex/
         - http://preshing.com/20120226/roll-your-own-lightweight-mutex/
 - ability to provide a temp folder that is cleared between each test case
-- make the _MESSAGE assert macros work with variadic arguments - and maybe write the ones for binary/unary/fast asserts as well
+- make the _MESSAGE assert macros work with variadic arguments - and maybe write the ones for binary/unary asserts as well
 - move from operator "<<" to "<=" for capturing the left operand when decomposing binary expressions with templates
 - think about silencing warnings about unused variables when DOCTEST_CONFIG_DISABLE is used - see commit 6b61e8aa3818c5ea100cedc1bb48a60ea10df6e8 or issue #61
     - also this: ```(void)(true ? (void)0 : ((void)(expression)))```
@@ -156,7 +157,6 @@ Planned features for future releases - order changes constantly...
 ### Things that are very unlikely to enter the roadmap:
 
 - rethink static code analysis suppressions - users shouldn't have to use the same flags for code which uses doctest macros/types
-- think about removing the binary asserts (leaving only the fast binary asserts) because normal asserts + no try/catch in asserts are almost the same
 - move the "react()" part (the one that throws for REQUIRE asserts - or for when "abort-after=<int>" is reached) to a function call in the while() part of the asserts
 - stop using underscores for the begining of identifiers - the anonymous variables - against the standard...
 - templated fixture test cases

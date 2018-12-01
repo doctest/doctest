@@ -4,19 +4,13 @@
 [doctest] assertions:      0 |      0 passed |      0 failed |
 [doctest] Status: SUCCESS!
 Program code.
-asserts_used_outside_of_tests.cpp(19): ERROR: FAST_CHECK_EQ( true, false ) is NOT correct!
-  values: FAST_CHECK_EQ( true, false )
-asserts_used_outside_of_tests.cpp(20): ERROR: FAST_CHECK_UNARY( false ) is NOT correct!
-  values: FAST_CHECK_UNARY( false )
-asserts_used_outside_of_tests.cpp(21): ERROR: FAST_CHECK_UNARY_FALSE( true ) is NOT correct!
-  values: FAST_CHECK_UNARY_FALSE( true )
-asserts_used_outside_of_tests.cpp(23): ERROR: CHECK_EQ( true, false ) is NOT correct!
+asserts_used_outside_of_tests.cpp(19): ERROR: CHECK_EQ( true, false ) is NOT correct!
   values: CHECK_EQ( true, false )
-asserts_used_outside_of_tests.cpp(24): ERROR: CHECK_UNARY( false ) is NOT correct!
+asserts_used_outside_of_tests.cpp(20): ERROR: CHECK_UNARY( false ) is NOT correct!
   values: CHECK_UNARY( false )
-asserts_used_outside_of_tests.cpp(25): ERROR: CHECK_UNARY_FALSE( true ) is NOT correct!
+asserts_used_outside_of_tests.cpp(21): ERROR: CHECK_UNARY_FALSE( true ) is NOT correct!
   values: CHECK_UNARY_FALSE( true )
-asserts_used_outside_of_tests.cpp(27): ERROR: CHECK( false ) is NOT correct!
+asserts_used_outside_of_tests.cpp(23): ERROR: CHECK( false ) is NOT correct!
   values: CHECK( false )
 hello! 
-asserts_used_outside_of_tests.cpp(28): ERROR: an assert dealing with exceptions has failed!
+asserts_used_outside_of_tests.cpp(24): ERROR: an assert dealing with exceptions has failed!

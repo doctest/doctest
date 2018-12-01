@@ -93,9 +93,11 @@ This should be defined globally.
 
 ### **```DOCTEST_CONFIG_SUPER_FAST_ASSERTS```**
 
-This makes the fast assert macros (```FAST_CHECK_EQ(a,b)``` - with a ```FAST_``` prefix) compile [**even faster**](benchmarks.md#cost-of-an-assertion-macro)! (50-80%)
+This config option makes the assert macros (except for those dealing with exceptions) compile [**much faster**](benchmarks.md#cost-of-an-assertion-macro)! (XX-XX%)
 
-Each fast assert is turned into a single function call - the only downside of this is: if an assert fails and a debugger is attached - when it breaks it will be in an internal function - the user will have to go 1 level up in the callstack to see the actual assert.
+Each assert is turned into a single function call - the only downside of this is: if an assert fails and a debugger is attached - when it breaks it will be in an internal function - the user will have to go 1 level up in the callstack to see the actual assert.
+
+It also implies [**```DOCTEST_CONFIG_NO_TRY_CATCH_IN_ASSERTS```**](#doctest_config_no_try_catch_in_asserts) (so exceptions thrown during the evaluation of an assert are not caught by the assert itself but by the testing framework - meaning that the test case is immediately aborted).
 
 This can be defined both globally and in specific source files only.
 
