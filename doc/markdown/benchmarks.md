@@ -18,7 +18,7 @@ Environment used (Intel i7 3770k, 16g RAM):
 - Windows 7 - on an SSD
 - Ubuntu 17.04 in a VirtualBox VM - on a HDD
 
-**doctest** version: 2.0.0 (released on 2018.08.23)
+**doctest** version: 2.2.0 (released on 2018.12.02)
 
 [**Catch**](https://github.com/philsquared/Catch) version: 2.3.0 (released on 2018.07.22)
 
@@ -98,9 +98,9 @@ The script generates 11 ```.cpp``` files and in 10 of them makes 50 test cases w
 
 **doctest** specific:
 
+- **+faster 1** - will add [**```DOCTEST_CONFIG_SUPER_FAST_ASSERTS```**](configuration.md#doctest_config_super_fast_asserts) to speed up the compilation of the normal asserts ```CHECK(a==b)```
 - ```CHECK_EQ(a,b)``` - will use ```CHECK_EQ(a,b)``` instead of the expression decomposing ones
-- ```FAST_CHECK_EQ(a,b)``` - will use ```FAST_CHECK_EQ(a,b)``` instead of the expression decomposing ones
-- **+faster** - will add [**```DOCTEST_CONFIG_SUPER_FAST_ASSERTS```**](configuration.md#doctest_config_super_fast_asserts) which speeds up ```FAST_CHECK_EQ(a,b)``` even more
+- **+faster 2** - will add [**```DOCTEST_CONFIG_SUPER_FAST_ASSERTS```**](configuration.md#doctest_config_super_fast_asserts) to speed up the compilation of the binary asserts ```CHECK_EQ(a,b)```
 - **+disabled** - all test case and assert macros will be disabled with [**```DOCTEST_CONFIG_DISABLE```**](configuration.md#doctest_config_disable)
 
 [**Catch**](https://github.com/philsquared/Catch) specific:
@@ -108,16 +108,16 @@ The script generates 11 ```.cpp``` files and in 10 of them makes 50 test cases w
 - **+faster** - will add [**```CATCH_CONFIG_FAST_COMPILE```**](https://github.com/philsquared/Catch/blob/master/docs/configuration.md#catch_config_fast_compile) which speeds up the compilation of the normal asserts ```CHECK(a==b)```
 - **+disabled** - all test case and assert macros will be disabled with **```CATCH_CONFIG_DISABLE```**
 
-| doctest             | baseline | ```CHECK(a==b)``` | ```CHECK_EQ(a,b)``` | ```FAST_CHECK_EQ(a,b)``` | +faster | +disabled |
-|---------------------|----------|-------------------|---------------------|--------------------------|---------|-----------|
-| MSVC Debug          |    2.60 |   26.47 |   16.66 |    7.27 |    4.85 |    1.95 |
-| MSVC Release        |    3.02 |   58.13 |   25.66 |   10.37 |    6.29 |    1.74 |
-| MinGW GCC Debug     |    3.65 |   93.97 |   58.46 |   23.82 |   11.41 |    1.60 |
-| MinGW GCC Release   |    3.92 |  276.09 |  150.53 |   48.41 |   17.48 |    1.96 |
-| Linux GCC Debug     |    2.34 |   92.38 |   53.10 |   17.95 |    9.76 |    1.21 |
-| Linux GCC Release   |    3.05 |  249.08 |  122.91 |   31.90 |   19.44 |    1.76 |
-| Linux Clang Debug   |    2.33 |   82.15 |   49.46 |   18.46 |    8.26 |    1.47 |
-| Linux Clang Release |    3.10 |  151.88 |   76.89 |   20.47 |   11.53 |    1.73 |
+| doctest             | baseline | ```CHECK(a==b)``` | +faster 1 | ```CHECK_EQ(a,b)``` | +faster 2 | +disabled |
+|---------------------|----------|-------------------|-----------|---------------------|-----------|-----------|
+| MSVC Debug          |    2.60 |   26.47 |   XX.XX |   16.66 |    4.85 |    1.95 |
+| MSVC Release        |    3.02 |   58.13 |   XX.XX |   25.66 |    6.29 |    1.74 |
+| MinGW GCC Debug     |    3.65 |   93.97 |   XX.XX |   58.46 |   11.41 |    1.60 |
+| MinGW GCC Release   |    3.92 |  276.09 |   XX.XX |  150.53 |   17.48 |    1.96 |
+| Linux GCC Debug     |    2.34 |   92.38 |   XX.XX |   53.10 |    9.76 |    1.21 |
+| Linux GCC Release   |    3.05 |  249.08 |   XX.XX |  122.91 |   19.44 |    1.76 |
+| Linux Clang Debug   |    2.33 |   82.15 |   XX.XX |   49.46 |    8.26 |    1.47 |
+| Linux Clang Release |    3.10 |  151.88 |   XX.XX |   76.89 |   11.53 |    1.73 |
 
 And here is [**Catch**](https://github.com/philsquared/Catch) which only has normal ```CHECK(a==b)``` asserts:
 
@@ -140,8 +140,8 @@ And here is [**Catch**](https://github.com/philsquared/Catch) which only has nor
 
 - is between 0 and 8 times faster than [**Catch**](https://github.com/philsquared/Catch) when using normal expression decomposing ```CHECK(a==b)``` asserts
 - asserts of the form ```CHECK_EQ(a,b)``` with no expression decomposition - around 31%-63% faster than ```CHECK(a==b)```
-- fast asserts like ```FAST_CHECK_EQ(a,b)``` with no ```try/catch``` blocks - around 64-86% faster than ```CHECK_EQ(a,b)```
 - the [**```DOCTEST_CONFIG_SUPER_FAST_ASSERTS```**](configuration.md#doctest_config_super_fast_asserts) identifier which makes the fast assertions even faster by another 55-78%
+- TODO: mention the super fast mode with normal asserts vs the fast compile option of catch
 - using the [**```DOCTEST_CONFIG_DISABLE```**](configuration.md#doctest_config_disable) identifier the assertions just disappear as if they were never written - even lower than the baseline (because most of the implementation is also gone)
 
 [**Catch**](https://github.com/philsquared/Catch):

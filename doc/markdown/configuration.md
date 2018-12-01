@@ -139,9 +139,11 @@ This should be defined only in the source file where the library is implemented 
 This will remove all ```try``` / ```catch``` sections from:
 
 - the [normal asserts](assertions.md#expression-decomposing-asserts)
-- the [binary and unary asserts](assertions.md#binary-and-unary-asserts) - making them functionally the same as the [**fast asserts**](assertions.md#fast-asserts) (but not for compile time speed)
+- the [binary and unary asserts](assertions.md#binary-and-unary-asserts)
 
 so exceptions thrown while evaluating the expression in an assert will terminate the current test case.
+
+This can be used for some mild compile time savings but for greater impact look into [**```DOCTEST_CONFIG_SUPER_FAST_ASSERTS```**](configuration.md#doctest_config_super_fast_asserts).
 
 This can be defined both globally and in specific source files only.
 

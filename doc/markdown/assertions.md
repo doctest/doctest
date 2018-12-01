@@ -44,7 +44,7 @@ Example:
 REQUIRE_FALSE(thisReturnsFalse());
 ```
 
-- Using the [**```DOCTEST_CONFIG_SUPER_FAST_ASSERTS```**](configuration.md#doctest_config_super_fast_asserts) config option can make compilation of asserts lightning fast - by up to [**XX-XX%**](benchmarks.md#cost-of-an-assertion-macro)!
+- Using the [**```DOCTEST_CONFIG_SUPER_FAST_ASSERTS```**](configuration.md#doctest_config_super_fast_asserts) config option can make compilation of asserts up to [**XX-XX%**](benchmarks.md#cost-of-an-assertion-macro) faster!
 - These asserts also have a ```_MESSAGE``` form - like ```CHECK_MESSAGE(expression, message)``` which is basically a code block ```{}``` with a scoped [**```INFO()```**](logging.md#info) logging macro together with the ```CHECK``` macro - that way the message will be relevant only to that assert. The binary/unary asserts don't have this variation yet.
 
 Examples:
@@ -76,7 +76,7 @@ These have the same guarantees as the expression decomposing ones but [**XX%-XX%
 - ```<LEVEL>_UNARY(expr)``` - same as ```<LEVEL>(expr)```
 - ```<LEVEL>_UNARY_FALSE(expr)``` - same as ```<LEVEL>_FALSE(expr)```
 
-- Using the [**```DOCTEST_CONFIG_SUPER_FAST_ASSERTS```**](configuration.md#doctest_config_super_fast_asserts) config option can make compilation of asserts lightning fast - by up to [**XX-XX%**](benchmarks.md#cost-of-an-assertion-macro)!
+Using the [**```DOCTEST_CONFIG_SUPER_FAST_ASSERTS```**](configuration.md#doctest_config_super_fast_asserts) config option can make compilation of asserts up to [**XX-XX%**](benchmarks.md#cost-of-an-assertion-macro) faster!
 
 ## Exceptions
 
