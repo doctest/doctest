@@ -27,10 +27,9 @@
         [
             ["any",     " --header --files 10 --tests 0  --checks 0"],
             ["any",     " --header --files 10 --tests 50 --checks 100 --asserts normal"],
+            ["any",     " --header --files 10 --tests 50 --checks 100 --asserts normal --fast"],
             ["doctest", " --header --files 10 --tests 50 --checks 100 --asserts binary"],
-            ["doctest", " --header --files 10 --tests 50 --checks 100 --asserts fast"],
-            ["doctest", " --header --files 10 --tests 50 --checks 100 --asserts fast   --fast"],
-            ["catch",   " --header --files 10 --tests 50 --checks 100 --asserts normal --fast"],
+            ["doctest", " --header --files 10 --tests 50 --checks 100 --asserts binary --fast"],
             ["any",     " --header --files 10 --tests 50 --checks 100 --asserts normal --disabled"]
         ]
     ],

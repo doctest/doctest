@@ -23,7 +23,7 @@ def addCommonFlags(parser):
     parser.add_argument("--files",      type=int, default=1,    help = "number of source files (besides the implementation)")
     parser.add_argument("--tests",      type=int, default=1,    help = "number of test cases per source file")
     parser.add_argument("--checks",     type=int, default=1,    help = "number of asserts per test case")
-    parser.add_argument("--asserts",    choices=['normal', 'binary', 'fast'], default="normal",
+    parser.add_argument("--asserts",    choices=['normal', 'binary'], default="normal",
                                                                 help = "<doctest> type of assert used - Catch: only normal")
 
 parser = argparse.ArgumentParser()
@@ -101,8 +101,6 @@ if args.runtime:
     macro = "    CHECK(i == i);\n"
 if not args.catch and args.asserts == "binary":
     macro = "    CHECK_EQ(a, b);\n"
-if not args.catch and args.asserts == "fast":
-    macro = "    FAST_CHECK_EQ(a, b);\n"
 
 # setup the header used
 include = '#include "doctest.h"\n'
