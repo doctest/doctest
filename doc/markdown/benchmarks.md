@@ -114,10 +114,10 @@ The script generates 11 ```.cpp``` files and in 10 of them makes 50 test cases w
 | MSVC Release        |    3.02 |   58.13 |   XX.XX |   25.66 |    6.29 |    1.74 |
 | MinGW GCC Debug     |    3.65 |   93.97 |   XX.XX |   58.46 |   11.41 |    1.60 |
 | MinGW GCC Release   |    3.92 |  276.09 |   XX.XX |  150.53 |   17.48 |    1.96 |
-| Linux GCC Debug     |    2.34 |   92.38 |   XX.XX |   53.10 |    9.76 |    1.21 |
-| Linux GCC Release   |    3.05 |  249.08 |   XX.XX |  122.91 |   19.44 |    1.76 |
-| Linux Clang Debug   |    2.33 |   82.15 |   XX.XX |   49.46 |    8.26 |    1.47 |
-| Linux Clang Release |    3.10 |  151.88 |   XX.XX |   76.89 |   11.53 |    1.73 |
+| Linux GCC Debug     |    2.39 |   91.36 |   41.92 |   52.26 |   10.16 |    1.32 |
+| Linux GCC Release   |    3.29 |  257.40 |   97.46 |  128.84 |   19.38 |    1.79 |
+| Linux Clang Debug   |    2.40 |   85.52 |   43.53 |   51.24 |    8.32 |    1.62 |
+| Linux Clang Release |    3.40 |  160.65 |   79.34 |   81.52 |   11.90 |    1.82 |
 
 And here is [**Catch**](https://github.com/philsquared/Catch) which only has normal ```CHECK(a==b)``` asserts:
 
