@@ -1,5 +1,13 @@
 # Change Log
 
+## [2.2.0](https://github.com/onqtam/doctest/tree/2.2.0) (2018-12-05)
+[Full Changelog](https://github.com/onqtam/doctest/compare/2.1.0...2.2.0)
+
+**Closed issues:**
+
+- remove the FAST\_ versions of the binary asserts \(not a breaking change!\) [\#167](https://github.com/onqtam/doctest/issues/167)
+- \[compile times\] make the DOCTEST\_CONFIG\_SUPER\_FAST\_ASSERTS identifier affect normal asserts too [\#166](https://github.com/onqtam/doctest/issues/166)
+
 ## [2.1.0](https://github.com/onqtam/doctest/tree/2.1.0) (2018-11-30)
 [Full Changelog](https://github.com/onqtam/doctest/compare/2.0.1...2.1.0)
 
