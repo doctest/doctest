@@ -32,7 +32,7 @@
 	- all tests built and ran in **Debug**/**Release** modes
 	- all tests ran through **valgrind** under **Linux** (sadly [not under OSX](https://github.com/onqtam/doctest/issues/11))
 	- all tests ran through **address**, **UB** and **thread** sanitizers under **Linux**/**OSX**
-	- tests are ran in more than **168** different configurations on UNIX (Linux + OSX) on **travis** CI
+	- tests are ran in more than **140** different configurations on UNIX (Linux + OSX) on **travis** CI
 	- tests are ran in a total of **10** different configurations on Windows on **appveyor** CI
 
 ## Other features:

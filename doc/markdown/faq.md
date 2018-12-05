@@ -59,7 +59,7 @@ using doctest::Approx;
 
 ### How to get the best compile-time performance with the framework?
 
-The [**```DOCTEST_CONFIG_SUPER_FAST_ASSERTS```**](configuration.md#doctest_config_super_fast_asserts) config option yelds the [**fastest possible**](benchmarks.md#cost-of-an-assertion-macro) compile times (up to XX-XX%). Also the expression-decomposing template machinery can be skipped by using the [**binary**](assertions.md#binary-and-unary-asserts) asserts.
+The [**```DOCTEST_CONFIG_SUPER_FAST_ASSERTS```**](configuration.md#doctest_config_super_fast_asserts) config option yelds the [**fastest possible**](benchmarks.md#cost-of-an-assertion-macro) compile times (up to 31-91%). Also the expression-decomposing template machinery can be skipped by using the [**binary**](assertions.md#binary-and-unary-asserts) asserts.
 
 There are only 2 tiny drawbacks of using this config option:
 

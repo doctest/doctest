@@ -139,15 +139,15 @@ And here is [**Catch**](https://github.com/philsquared/Catch) which only has nor
 **doctest**:
 
 - is between 0 and 8 times faster than [**Catch**](https://github.com/philsquared/Catch) when using normal expression decomposing ```CHECK(a==b)``` asserts
-- asserts of the form ```CHECK_EQ(a,b)``` with no expression decomposition - around 31%-63% faster than ```CHECK(a==b)```
-- the [**```DOCTEST_CONFIG_SUPER_FAST_ASSERTS```**](configuration.md#doctest_config_super_fast_asserts) identifier which makes the fast assertions even faster by another 55-78%
-- TODO: mention the super fast mode with normal asserts vs the fast compile option of catch
-- using the [**```DOCTEST_CONFIG_DISABLE```**](configuration.md#doctest_config_disable) identifier the assertions just disappear as if they were never written - even lower than the baseline (because most of the implementation is also gone)
+- asserts of the form ```CHECK_EQ(a,b)``` with no expression decomposition - around 31-63% faster than ```CHECK(a==b)```
+- the [**```DOCTEST_CONFIG_SUPER_FAST_ASSERTS```**](configuration.md#doctest_config_super_fast_asserts) identifier makes the normal asserts faster by 57-68%
+- the [**```DOCTEST_CONFIG_SUPER_FAST_ASSERTS```**](configuration.md#doctest_config_super_fast_asserts) identifier makes the binary asserts even faster by another 84-91%
+- using the [**```DOCTEST_CONFIG_DISABLE```**](configuration.md#doctest_config_disable) identifier the asserts just disappear as if they were never written - even lower than the baseline (because most of the implementation is also gone)
 
 [**Catch**](https://github.com/philsquared/Catch):
 
-- using [**```CATCH_CONFIG_FAST_COMPILE```**](https://github.com/philsquared/Catch/blob/master/docs/configuration.md#catch_config_fast_compile) results in 10%-30% faster build times for asserts (and in one case 73%).
-- using the **```CATCH_CONFIG_DISABLE```** identifier provides the same great benefits for assertion macros as the doctest version ([**```DOCTEST_CONFIG_DISABLE```**](configuration.md#doctest_config_disable)) - unlike in the case for the header cost
+- using [**```CATCH_CONFIG_FAST_COMPILE```**](https://github.com/philsquared/Catch/blob/master/docs/configuration.md#catch_config_fast_compile) results in 10-30% faster build times for asserts (and in one case 73%).
+- using the **```CATCH_CONFIG_DISABLE```** identifier provides the same great benefits for assert macros as the doctest version ([**```DOCTEST_CONFIG_DISABLE```**](configuration.md#doctest_config_disable)) - but not for the header cost
 
 ## Runtime benchmarks
 

@@ -44,7 +44,7 @@ Example:
 REQUIRE_FALSE(thisReturnsFalse());
 ```
 
-- Using the [**```DOCTEST_CONFIG_SUPER_FAST_ASSERTS```**](configuration.md#doctest_config_super_fast_asserts) config option can make compilation of asserts up to [**XX-XX%**](benchmarks.md#cost-of-an-assertion-macro) faster!
+- Using the [**```DOCTEST_CONFIG_SUPER_FAST_ASSERTS```**](configuration.md#doctest_config_super_fast_asserts) config option can make compilation of asserts up to [**31-63%**](benchmarks.md#cost-of-an-assertion-macro) faster!
 - These asserts also have a ```_MESSAGE``` form - like ```CHECK_MESSAGE(expression, message)``` which is basically a code block ```{}``` with a scoped [**```INFO()```**](logging.md#info) logging macro together with the ```CHECK``` macro - that way the message will be relevant only to that assert. The binary/unary asserts don't have this variation yet.
 
 Examples:
@@ -63,7 +63,7 @@ For more information about the ```INFO()``` macro and logging with the streaming
 
 These asserts don't use templates to decompose the comparison expressions for the left and right parts.
 
-These have the same guarantees as the expression decomposing ones but [**XX%-XX% faster**](benchmarks.md#cost-of-an-assertion-macro) for compilation.
+These have the same guarantees as the expression decomposing ones but [**57-68% faster**](benchmarks.md#cost-of-an-assertion-macro) for compilation.
 
 ```<LEVEL>``` is one of 3 possible: ```REQUIRE```/```CHECK```/```WARN```.
 
@@ -76,7 +76,7 @@ These have the same guarantees as the expression decomposing ones but [**XX%-XX%
 - ```<LEVEL>_UNARY(expr)``` - same as ```<LEVEL>(expr)```
 - ```<LEVEL>_UNARY_FALSE(expr)``` - same as ```<LEVEL>_FALSE(expr)```
 
-Using the [**```DOCTEST_CONFIG_SUPER_FAST_ASSERTS```**](configuration.md#doctest_config_super_fast_asserts) config option can make compilation of asserts up to [**XX-XX%**](benchmarks.md#cost-of-an-assertion-macro) faster!
+Using the [**```DOCTEST_CONFIG_SUPER_FAST_ASSERTS```**](configuration.md#doctest_config_super_fast_asserts) config option can make the binary asserts to compile up to [**84-91%**](benchmarks.md#cost-of-an-assertion-macro) faster!
 
 ## Exceptions
 
