@@ -110,10 +110,10 @@ The script generates 11 ```.cpp``` files and in 10 of them makes 50 test cases w
 
 | doctest             | baseline | ```CHECK(a==b)``` | +faster 1 | ```CHECK_EQ(a,b)``` | +faster 2 | +disabled |
 |---------------------|----------|-------------------|-----------|---------------------|-----------|-----------|
-| MSVC Debug          |    2.60 |   26.47 |   XX.XX |   16.66 |    4.85 |    1.95 |
-| MSVC Release        |    3.02 |   58.13 |   XX.XX |   25.66 |    6.29 |    1.74 |
-| MinGW GCC Debug     |    3.65 |   93.97 |   XX.XX |   58.46 |   11.41 |    1.60 |
-| MinGW GCC Release   |    3.92 |  276.09 |   XX.XX |  150.53 |   17.48 |    1.96 |
+| MSVC Debug          |    2.69 |   27.37 |   10.37 |   17.17 |    4.82 |    1.91 |
+| MSVC Release        |    3.15 |   58.73 |   20.73 |   26.07 |    6.43 |    1.83 |
+| MinGW GCC Debug     |    3.78 |   97.29 |   43.05 |   59.86 |   11.88 |    1.67 |
+| MinGW GCC Release   |    4.09 |  286.70 |   95.42 |  156.73 |   18.16 |    2.03 |
 | Linux GCC Debug     |    2.39 |   91.36 |   41.92 |   52.26 |   10.16 |    1.32 |
 | Linux GCC Release   |    3.29 |  257.40 |   97.46 |  128.84 |   19.38 |    1.79 |
 | Linux Clang Debug   |    2.40 |   85.52 |   43.53 |   51.24 |    8.32 |    1.62 |
