@@ -93,7 +93,7 @@ This should be defined globally.
 
 ### **```DOCTEST_CONFIG_SUPER_FAST_ASSERTS```**
 
-This config option makes the assert macros (except for those dealing with exceptions) compile [**much faster**](benchmarks.md#cost-of-an-assertion-macro)! (XX-XX%)
+This config option makes the assert macros (except for those dealing with exceptions) compile [**much faster**](benchmarks.md#cost-of-an-assertion-macro)! (31-91% - depending on the type - [**normal**](assertions.md#expression-decomposing-asserts) or [**binary**](assertions.md#binary-and-unary-asserts))
 
 Each assert is turned into a single function call - the only downside of this is: if an assert fails and a debugger is attached - when it breaks it will be in an internal function - the user will have to go 1 level up in the callstack to see the actual assert.
 
