@@ -127,6 +127,10 @@ DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_END
 #define DOCTEST_CONFIG_OPTIONS_PREFIX "dt-"
 #endif
 
+#ifndef DOCTEST_THREAD_LOCAL
+#define DOCTEST_THREAD_LOCAL thread_local
+#endif
+
 #ifdef DOCTEST_CONFIG_NO_UNPREFIXED_OPTIONS
 #define DOCTEST_OPTIONS_PREFIX_DISPLAY DOCTEST_CONFIG_OPTIONS_PREFIX
 #else
@@ -202,7 +206,7 @@ namespace detail {
         return oss.str().c_str();
     }
 
-    thread_local std::ostringstream g_oss;
+    DOCTEST_THREAD_LOCAL std::ostringstream g_oss;
 
     std::ostream* getTlsOss() {
         g_oss.clear(); // there shouldn't be anything worth clearing in the flags
@@ -248,8 +252,8 @@ namespace detail {
         }
     };
 
-    ContextState*     g_cs = nullptr;
-    thread_local bool g_no_colors; // used to avoid locks for the debug output window reporter
+    ContextState*             g_cs = nullptr;
+    DOCTEST_THREAD_LOCAL bool g_no_colors; // used to avoid locks for the debug output
 
 #endif // DOCTEST_CONFIG_DISABLE
 } // namespace detail
@@ -1225,7 +1229,7 @@ namespace detail {
     void toStream(std::ostream* s, int long long in) { *s << in; }
     void toStream(std::ostream* s, int long long unsigned in) { *s << in; }
 
-    thread_local std::vector<IContextScope*> g_infoContexts; // for logging with INFO()
+    DOCTEST_THREAD_LOCAL std::vector<IContextScope*> g_infoContexts; // for logging with INFO()
 
     ContextBuilder::ICapture::ICapture()  = default;
     ContextBuilder::ICapture::~ICapture() = default;
@@ -2043,7 +2047,7 @@ namespace {
 #ifdef DOCTEST_PLATFORM_WINDOWS
     struct DebugOutputWindowReporter : public ConsoleReporter
     {
-        thread_local static std::ostringstream oss;
+        DOCTEST_THREAD_LOCAL static std::ostringstream oss;
 
         DebugOutputWindowReporter()
                 : ConsoleReporter(oss) {}
@@ -2071,7 +2075,7 @@ namespace {
         DOCTEST_DEBUG_OUTPUT_WINDOW_REPORTER_OVERRIDE(test_case_skipped, const TestCaseData&)
     };
 
-    thread_local std::ostringstream DebugOutputWindowReporter::oss;
+    DOCTEST_THREAD_LOCAL std::ostringstream DebugOutputWindowReporter::oss;
 
     DebugOutputWindowReporter g_debug_output_rep;
 #endif // DOCTEST_PLATFORM_WINDOWS
