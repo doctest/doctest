@@ -54,6 +54,10 @@ if(NOT MINGW AND NOT DEFINED DOCTEST_THREAD_LOCAL)
     doctest_add_test(NO_OUTPUT NAME concurrency.cpp ${common_args} -sf=*concurrency.cpp)
 endif()
 
+if(DEFINED DOCTEST_THREAD_LOCAL)
+    target_compile_definitions(${PROJECT_NAME} PRIVATE -DDOCTEST_THREAD_LOCAL=${DOCTEST_THREAD_LOCAL})
+endif()
+
 # add this separately since the file has a non-straightforward path
 doctest_add_test(NAME coverage_maxout.cpp ${common_args} -sf=*coverage_maxout.cpp)
 
