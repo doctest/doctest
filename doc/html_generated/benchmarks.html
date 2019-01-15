@@ -103,18 +103,18 @@ The script generates 11 ```.cpp``` files and in 10 of them makes 50 test cases w
 
 **doctest** specific:
 
-- **+faster 1** - will add [**```DOCTEST_CONFIG_SUPER_FAST_ASSERTS```**](configuration.html#doctest_config_super_fast_asserts) to speed up the compilation of the normal asserts ```CHECK(a==b)```
+- **+fast 1** - will add [**```DOCTEST_CONFIG_SUPER_FAST_ASSERTS```**](configuration.html#doctest_config_super_fast_asserts) to speed up the compilation of the normal asserts ```CHECK(a==b)```
 - ```CHECK_EQ(a,b)``` - will use ```CHECK_EQ(a,b)``` instead of the expression decomposing ones
-- **+faster 2** - will add [**```DOCTEST_CONFIG_SUPER_FAST_ASSERTS```**](configuration.html#doctest_config_super_fast_asserts) to speed up the compilation of the binary asserts ```CHECK_EQ(a,b)```
+- **+fast 2** - will add [**```DOCTEST_CONFIG_SUPER_FAST_ASSERTS```**](configuration.html#doctest_config_super_fast_asserts) to speed up the compilation of the binary asserts ```CHECK_EQ(a,b)```
 - **+disabled** - all test case and assert macros will be disabled with [**```DOCTEST_CONFIG_DISABLE```**](configuration.html#doctest_config_disable)
 
 [**Catch**](https://github.com/philsquared/Catch) specific:
 
-- **+faster** - will add [**```CATCH_CONFIG_FAST_COMPILE```**](https://github.com/philsquared/Catch/blob/master/docs/configuration.html#catch_config_fast_compile) which speeds up the compilation of the normal asserts ```CHECK(a==b)```
+- **+fast** - will add [**```CATCH_CONFIG_FAST_COMPILE```**](https://github.com/philsquared/Catch/blob/master/docs/configuration.html#catch_config_fast_compile) which speeds up the compilation of the normal asserts ```CHECK(a==b)```
 - **+disabled** - all test case and assert macros will be disabled with **```CATCH_CONFIG_DISABLE```**
 
-| doctest             | baseline | ```CHECK(a==b)``` | +faster 1 | ```CHECK_EQ(a,b)``` | +faster 2 | +disabled |
-|---------------------|----------|-------------------|-----------|---------------------|-----------|-----------|
+| doctest             | baseline | ```CHECK(a==b)``` | +fast 1 | ```CHECK_EQ(a,b)``` | +fast 2 | +disabled |
+|---------------------|----------|-------------------|---------|---------------------|---------|-----------|
 | MSVC Debug          |    2.69 |   27.37 |   10.37 |   17.17 |    4.82 |    1.91 |
 | MSVC Release        |    3.15 |   58.73 |   20.73 |   26.07 |    6.43 |    1.83 |
 | MinGW GCC Debug     |    3.78 |   97.29 |   43.05 |   59.86 |   11.88 |    1.67 |
@@ -126,8 +126,8 @@ The script generates 11 ```.cpp``` files and in 10 of them makes 50 test cases w
 
 And here is [**Catch**](https://github.com/philsquared/Catch) which only has normal ```CHECK(a==b)``` asserts:
 
-| Catch               | baseline | ```CHECK(a==b)``` | +faster | +disabled |
-|---------------------|----------|-------------------|---------|-----------|
+| Catch               | baseline | ```CHECK(a==b)``` | +fast | +disabled |
+|---------------------|----------|-------------------|-------|-----------|
 | MSVC Debug          |    8.20 |   31.22 |   25.54 |    8.22 |
 | MSVC Release        |   10.13 |  448.68 |  168.67 |   10.20 |
 | MinGW GCC Debug     |   53.54 |  152.38 |  131.85 |   49.07 |
