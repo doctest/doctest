@@ -184,12 +184,12 @@ matrix:
           sources: *apt_sources
 
     # Xcode 6.4 Clang
-    - env: COMPILER=clang++ CMAKE_OPTIONS="-DDOCTEST_THREAD_LOCAL=static"
+    - env: COMPILER=clang++ CMAKE_OPTIONS="-DDOCTEST_THREAD_LOCAL="
       osx_image: xcode6.4
       os: osx
 
     # Xcode 7.3 Clang
-    - env: COMPILER=clang++ HAS_ASAN=true CMAKE_OPTIONS="-DDOCTEST_THREAD_LOCAL=static"
+    - env: COMPILER=clang++ HAS_ASAN=true CMAKE_OPTIONS="-DDOCTEST_THREAD_LOCAL="
       osx_image: xcode7.3
       os: osx
 

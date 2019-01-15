@@ -11,6 +11,11 @@ option(DOCTEST_WITH_TESTS               "Build tests/examples" ON)
 option(DOCTEST_WITH_MAIN_IN_STATIC_LIB  "Build a static lib (cmake target) with a main entry point" ON)
 option(DOCTEST_NO_INSTALL  "Skip the installation process" OFF)
 
+# hack to support building on XCode 6 and 7 - propagate the definition to everything
+if(DEFINED DOCTEST_THREAD_LOCAL)
+    add_definitions(-DDOCTEST_THREAD_LOCAL=${DOCTEST_THREAD_LOCAL})
+endif()
+
 add_library(${PROJECT_NAME} INTERFACE)
 target_include_directories(${PROJECT_NAME} INTERFACE $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/doctest/>)
 
