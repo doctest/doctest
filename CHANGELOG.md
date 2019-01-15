@@ -5,6 +5,7 @@
 
 **Closed issues:**
 
+- the `--no-throw` option shouldn't affect `\<LEVEL\>\_NOTHROW` asserts [\#173](https://github.com/onqtam/doctest/issues/173)
 - Make doctest work with XCode 6 and 7 \(no support for C++11 thread\_local\) [\#172](https://github.com/onqtam/doctest/issues/172)
 - Print vector content. [\#170](https://github.com/onqtam/doctest/issues/170)
 - Conan package [\#103](https://github.com/onqtam/doctest/issues/103)
