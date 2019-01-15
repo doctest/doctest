@@ -1,5 +1,15 @@
 # Change Log
 
+## [2.2.1](https://github.com/onqtam/doctest/tree/2.2.1) (2019-01-15)
+[Full Changelog](https://github.com/onqtam/doctest/compare/2.2.0...2.2.1)
+
+**Closed issues:**
+
+- Make doctest work with XCode 6 and 7 \(no support for C++11 thread\_local\) [\#172](https://github.com/onqtam/doctest/issues/172)
+- Print vector content. [\#170](https://github.com/onqtam/doctest/issues/170)
+- Conan package [\#103](https://github.com/onqtam/doctest/issues/103)
+- \[feature request\] Thread-safety for asserts and logging facilities [\#4](https://github.com/onqtam/doctest/issues/4)
+
 ## [2.2.0](https://github.com/onqtam/doctest/tree/2.2.0) (2018-12-05)
 [Full Changelog](https://github.com/onqtam/doctest/compare/2.1.0...2.2.0)
 
