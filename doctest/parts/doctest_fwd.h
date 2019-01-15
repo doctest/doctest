@@ -2065,14 +2065,12 @@ constexpr T to_lvalue = x;
 
 #define DOCTEST_ASSERT_NOTHROW(expr, assert_type)                                                  \
     do {                                                                                           \
-        if(!doctest::getContextOptions()->no_throw) {                                              \
-            doctest::detail::ResultBuilder _DOCTEST_RB(doctest::assertType::assert_type, __FILE__, \
-                                                       __LINE__, #expr);                           \
-            try {                                                                                  \
-                expr;                                                                              \
-            } catch(...) { _DOCTEST_RB.translateException(); }                                     \
-            DOCTEST_ASSERT_LOG_AND_REACT(_DOCTEST_RB);                                             \
-        }                                                                                          \
+        doctest::detail::ResultBuilder _DOCTEST_RB(doctest::assertType::assert_type, __FILE__,     \
+                                                   __LINE__, #expr);                               \
+        try {                                                                                      \
+            expr;                                                                                  \
+        } catch(...) { _DOCTEST_RB.translateException(); }                                         \
+        DOCTEST_ASSERT_LOG_AND_REACT(_DOCTEST_RB);                                                 \
     } while((void)0, 0)
 
 // clang-format off
