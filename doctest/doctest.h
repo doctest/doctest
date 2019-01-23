@@ -4967,8 +4967,8 @@ int Context::run() {
     g_no_colors        = p->no_colors;
     p->resetRunData();
 
-    ConsoleReporterWithHelpers g_con_rep(std::cout);
-    registerReporter("console", 0, g_con_rep);
+    ConsoleReporterWithHelpers con_rep(std::cout);
+    registerReporter("console", 0, con_rep);
 
     // setup default reporter if none is given through the command line
     p->reporters_currently_used.clear();
@@ -4991,11 +4991,11 @@ int Context::run() {
     // handle version, help and no_run
     if(p->no_run || p->version || p->help || p->list_reporters) {
         if(p->version)
-            g_con_rep.printVersion();
+            con_rep.printVersion();
         if(p->help)
-            g_con_rep.printHelp();
+            con_rep.printHelp();
         if(p->list_reporters)
-            g_con_rep.printRegisteredReporters();
+            con_rep.printRegisteredReporters();
 
         g_cs               = old_cs;
         is_running_in_test = false;
@@ -5003,7 +5003,7 @@ int Context::run() {
         return EXIT_SUCCESS;
     }
 
-    g_con_rep.printIntro();
+    con_rep.printIntro();
 
     std::vector<const TestCase*> testArray;
     for(auto& curr : getRegisteredTests())
@@ -5035,11 +5035,11 @@ int Context::run() {
     }
 
     if(p->list_test_cases)
-        g_con_rep.output_query_preamble_test_cases();
+        con_rep.output_query_preamble_test_cases();
 
     std::set<String> testSuitesPassingFilt;
     if(p->list_test_suites)
-        g_con_rep.output_query_preamble_test_suites();
+        con_rep.output_query_preamble_test_suites();
 
     bool query_mode = p->count || p->list_test_cases || p->list_test_suites;
 
@@ -5087,14 +5087,14 @@ int Context::run() {
 
         // print the name of the test and don't execute it
         if(p->list_test_cases) {
-            g_con_rep.output_c_string_with_newline(tc.m_name);
+            con_rep.output_c_string_with_newline(tc.m_name);
             continue;
         }
 
         // print the name of the test suite if not done already and don't execute it
         if(p->list_test_suites) {
             if((testSuitesPassingFilt.count(tc.m_test_suite) == 0) && tc.m_test_suite[0] != '\0') {
-                g_con_rep.output_c_string_with_newline(tc.m_test_suite);
+                con_rep.output_c_string_with_newline(tc.m_test_suite);
                 testSuitesPassingFilt.insert(tc.m_test_suite);
                 p->numTestSuitesPassingFilters++;
             }
@@ -5216,7 +5216,7 @@ int Context::run() {
     if(!query_mode)
         DOCTEST_ITERATE_THROUGH_REPORTERS(test_run_end, *g_cs);
     else
-        g_con_rep.output_query_results();
+        con_rep.output_query_results();
 
     g_cs               = old_cs;
     is_running_in_test = false;
