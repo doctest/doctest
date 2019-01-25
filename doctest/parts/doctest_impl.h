@@ -101,7 +101,7 @@ DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_BEGIN
 #include <map>
 #include <exception>
 #include <stdexcept>
-#if defined(DOCTEST_CONFIG_POSIX_SIGNALS)
+#ifdef DOCTEST_CONFIG_POSIX_SIGNALS
 #include <csignal>
 #endif // DOCTEST_CONFIG_POSIX_SIGNALS
 #include <cfloat>
