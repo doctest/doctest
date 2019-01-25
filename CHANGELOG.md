@@ -1,5 +1,17 @@
 # Change Log
 
+## [2.2.2](https://github.com/onqtam/doctest/tree/2.2.2) (2019-01-25)
+[Full Changelog](https://github.com/onqtam/doctest/compare/2.2.1...2.2.2)
+
+**Closed issues:**
+
+- Add way to override getCurrentTicks\(\) implementation [\#178](https://github.com/onqtam/doctest/issues/178)
+- Wrap \<csignal\> include with ifdef [\#177](https://github.com/onqtam/doctest/issues/177)
+- How to stop doctest hijack unhandled exceptions? [\#176](https://github.com/onqtam/doctest/issues/176)
+- Change the include path of the `doctest` CMake interface target so users need to specify the folder as well [\#175](https://github.com/onqtam/doctest/issues/175)
+- Reduce scope of DebugOutputWindowReporter instance [\#174](https://github.com/onqtam/doctest/issues/174)
+- Can logging \(INFO\) be used in helper class outside of TEST\_CASE? [\#169](https://github.com/onqtam/doctest/issues/169)
+
 ## [2.2.1](https://github.com/onqtam/doctest/tree/2.2.1) (2019-01-15)
 [Full Changelog](https://github.com/onqtam/doctest/compare/2.2.0...2.2.1)
 
