@@ -820,10 +820,11 @@ namespace {
         return false;
     }
 
-#ifdef DOCTEST_PLATFORM_WINDOWS
+    typedef uint64_t UInt64;
 
-    typedef unsigned long long UInt64;
-
+#ifdef DOCTEST_CONFIG_GETCURRENTTICKS
+    UInt64           getCurrentTicks() { return DOCTEST_CONFIG_GETCURRENTTICKS(); }
+#elif defined(DOCTEST_PLATFORM_WINDOWS)
     UInt64 getCurrentTicks() {
         static UInt64 hz = 0, hzo = 0;
         if(!hz) {
@@ -835,9 +836,6 @@ namespace {
         return ((t - hzo) * 1000000) / hz;
     }
 #else  // DOCTEST_PLATFORM_WINDOWS
-
-    typedef uint64_t UInt64;
-
     UInt64 getCurrentTicks() {
         timeval t;
         gettimeofday(&t, nullptr);
