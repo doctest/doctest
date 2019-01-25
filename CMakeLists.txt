@@ -17,7 +17,7 @@ if(DEFINED DOCTEST_THREAD_LOCAL)
 endif()
 
 add_library(${PROJECT_NAME} INTERFACE)
-target_include_directories(${PROJECT_NAME} INTERFACE $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/doctest/>)
+target_include_directories(${PROJECT_NAME} INTERFACE $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/>)
 
 ################################################################################
 ## TESTS/EXAMPLES/HELPERS
