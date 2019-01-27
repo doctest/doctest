@@ -47,7 +47,7 @@ endif()
 
 set(generated_dir "${CMAKE_CURRENT_BINARY_DIR}/generated")
 
-set(include_install_dir "include/doctest/")
+set(include_install_dir "include")
 set(config_install_dir "lib/cmake/${PROJECT_NAME}")
 
 set(version_config "${generated_dir}/${PROJECT_NAME}ConfigVersion.cmake")
@@ -71,7 +71,7 @@ if (NOT ${DOCTEST_NO_INSTALL})
 
     install(
         FILES "doctest/doctest.h"
-        DESTINATION "${include_install_dir}"
+        DESTINATION "${include_install_dir}/doctest"
     )
 
     install(
