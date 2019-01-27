@@ -1,6 +1,6 @@
 # Change Log
 
-## [2.2.2](https://github.com/onqtam/doctest/tree/2.2.2) (2019-01-25)
+## [2.2.2](https://github.com/onqtam/doctest/tree/2.2.2) (2019-01-27)
 [Full Changelog](https://github.com/onqtam/doctest/compare/2.2.1...2.2.2)
 
 **Closed issues:**
@@ -11,6 +11,10 @@
 - Change the include path of the `doctest` CMake interface target so users need to specify the folder as well [\#175](https://github.com/onqtam/doctest/issues/175)
 - Reduce scope of DebugOutputWindowReporter instance [\#174](https://github.com/onqtam/doctest/issues/174)
 - Can logging \(INFO\) be used in helper class outside of TEST\_CASE? [\#169](https://github.com/onqtam/doctest/issues/169)
+
+**Merged pull requests:**
+
+- Fix CMake include path \#175 [\#179](https://github.com/onqtam/doctest/pull/179) ([ncihnegn](https://github.com/ncihnegn))
 
 ## [2.2.1](https://github.com/onqtam/doctest/tree/2.2.1) (2019-01-15)
 [Full Changelog](https://github.com/onqtam/doctest/compare/2.2.0...2.2.1)
