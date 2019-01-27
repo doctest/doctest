@@ -4,7 +4,7 @@ project(exe_with_static_libs)
 
 include(../../scripts/cmake/common.cmake)
 
-include_directories(../../doctest/)
+include_directories(../../)
 
 #== create object libraries instead of static libraries
 doctest_add_library(lib_1 OBJECT lib_1_src1.cpp lib_1_src2.cpp)

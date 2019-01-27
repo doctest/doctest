@@ -4,7 +4,7 @@ project(executable_dll_and_plugin)
 
 include(../../scripts/cmake/common.cmake)
 
-include_directories(../../doctest/)
+include_directories(../../)
 
 if(APPLE)
     set(CMAKE_MACOSX_RPATH ON)

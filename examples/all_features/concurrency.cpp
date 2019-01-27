@@ -1,4 +1,4 @@
-#include "doctest.h"
+#include <doctest/doctest.h>
 
 #ifndef DOCTEST_CONFIG_NO_EXCEPTIONS
 
