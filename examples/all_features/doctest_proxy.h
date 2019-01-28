@@ -3,7 +3,7 @@
 #endif // DOCTEST_CONFIG_NO_SHORT_MACRO_NAMES
 
 // no guard for including the doctest header itself because it should support multiple inclusion
-#include "doctest.h"
+#include <doctest/doctest.h>
 
 #ifndef MY_PROXY_MACROS
 #define MY_PROXY_MACROS

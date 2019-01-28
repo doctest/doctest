@@ -1,6 +1,6 @@
 #pragma once
 
-#include "doctest.h"
+#include <doctest/doctest.h>
 
 // helper for throwing exceptions
 template <typename T>

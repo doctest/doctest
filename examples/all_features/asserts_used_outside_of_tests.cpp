@@ -2,7 +2,7 @@
 #define DOCTEST_CONFIG_SUPER_FAST_ASSERTS // defined so the asserts are crazy fast - both for compilation and execution
 #endif
 
-#include "doctest.h"
+#include <doctest/doctest.h>
 
 #include "header.h"
 
