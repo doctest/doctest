@@ -1,6 +1,6 @@
 # Change Log
 
-## [2.2.2](https://github.com/onqtam/doctest/tree/2.2.2) (2019-01-27)
+## [2.2.2](https://github.com/onqtam/doctest/tree/2.2.2) (2019-01-28)
 [Full Changelog](https://github.com/onqtam/doctest/compare/2.2.1...2.2.2)
 
 **Closed issues:**
@@ -14,6 +14,7 @@
 
 **Merged pull requests:**
 
+- Change the include path in examples as \#175 [\#180](https://github.com/onqtam/doctest/pull/180) ([ncihnegn](https://github.com/ncihnegn))
 - Fix CMake include path \#175 [\#179](https://github.com/onqtam/doctest/pull/179) ([ncihnegn](https://github.com/ncihnegn))
 
 ## [2.2.1](https://github.com/onqtam/doctest/tree/2.2.1) (2019-01-15)
