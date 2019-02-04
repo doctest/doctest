@@ -3581,9 +3581,7 @@ namespace detail {
 namespace {
     using namespace detail;
     // for sorting tests by file/line
-    int fileOrderComparator(const void* a, const void* b) {
-        auto lhs = *static_cast<TestCase* const*>(a);
-        auto rhs = *static_cast<TestCase* const*>(b);
+    bool fileOrderComparator(const TestCase* lhs, const TestCase* rhs) {
 #if DOCTEST_MSVC
         // this is needed because MSVC gives different case for drive letters
         // for __FILE__ when evaluated in a header and a source file
@@ -3592,30 +3590,24 @@ namespace {
         const int res = std::strcmp(lhs->m_file, rhs->m_file);
 #endif // MSVC
         if(res != 0)
-            return res;
-        return static_cast<int>(lhs->m_line) - static_cast<int>(rhs->m_line);
+            return res < 0;
+        return lhs->m_line < rhs->m_line;
     }
 
     // for sorting tests by suite/file/line
-    int suiteOrderComparator(const void* a, const void* b) {
-        auto lhs = *static_cast<TestCase* const*>(a);
-        auto rhs = *static_cast<TestCase* const*>(b);
-
+    bool suiteOrderComparator(const TestCase* lhs, const TestCase* rhs) {
         const int res = std::strcmp(lhs->m_test_suite, rhs->m_test_suite);
         if(res != 0)
-            return res;
-        return fileOrderComparator(a, b);
+            return res < 0;
+        return fileOrderComparator(lhs, rhs);
     }
 
     // for sorting tests by name/suite/file/line
-    int nameOrderComparator(const void* a, const void* b) {
-        auto lhs = *static_cast<TestCase* const*>(a);
-        auto rhs = *static_cast<TestCase* const*>(b);
-
-        const int res_name = std::strcmp(lhs->m_name, rhs->m_name);
-        if(res_name != 0)
-            return res_name;
-        return suiteOrderComparator(a, b);
+    bool nameOrderComparator(const TestCase* lhs, const TestCase* rhs) {
+        const int res = std::strcmp(lhs->m_name, rhs->m_name);
+        if(res != 0)
+            return res < 0;
+        return suiteOrderComparator(lhs, rhs);
     }
 
     // all the registered tests
@@ -5013,11 +5005,11 @@ int Context::run() {
     // sort the collected records
     if(!testArray.empty()) {
         if(p->order_by.compare("file", true) == 0) {
-            std::qsort(&testArray[0], testArray.size(), sizeof(TestCase*), fileOrderComparator);
+            std::sort(testArray.begin(), testArray.end(), fileOrderComparator);
         } else if(p->order_by.compare("suite", true) == 0) {
-            std::qsort(&testArray[0], testArray.size(), sizeof(TestCase*), suiteOrderComparator);
+            std::sort(testArray.begin(), testArray.end(), suiteOrderComparator);
         } else if(p->order_by.compare("name", true) == 0) {
-            std::qsort(&testArray[0], testArray.size(), sizeof(TestCase*), nameOrderComparator);
+            std::sort(testArray.begin(), testArray.end(), nameOrderComparator);
         } else if(p->order_by.compare("rand", true) == 0) {
             std::srand(p->rand_seed);
 
@@ -5257,7 +5249,9 @@ void DOCTEST_FIX_FOR_MACOS_LIBCPP_IOSFWD_STRING_LINK_ERRORS() { std::cout << std
 #endif // DOCTEST_CONFIG_DISABLE
 
 #ifdef DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
+DOCTEST_MSVC_SUPPRESS_WARNING_WITH_PUSH(4007) // 'function' : must be 'attribute' - see issue #182
 int main(int argc, char** argv) { return doctest::Context(argc, argv).run(); }
+DOCTEST_MSVC_SUPPRESS_WARNING_POP
 #endif // DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 
 DOCTEST_CLANG_SUPPRESS_WARNING_POP
