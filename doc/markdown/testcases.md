@@ -1,6 +1,6 @@
 ## Test cases
 
-While **doctest** fully supports the traditional, xUnit, style of class-based fixtures containing test case methods this is not the preferred style. Instead **doctest** provides a powerful mechanism for nesting subcases within a test case. For a more detailed discussion see the [**tutorial**](tutorial.md#test-cases-and-subcases).
+While **doctest** fully supports the traditional, xUnit, style of class-based fixtures containing test case methods this is not the preferred style. Instead **doctest** provides a powerful mechanism for nesting subcases within a test case. For a more detailed discussion and examples see the [**tutorial**](tutorial.md#test-cases-and-subcases).
 
 Test cases and subcases are very easy to use in practice:
 
@@ -9,11 +9,11 @@ Test cases and subcases are very easy to use in practice:
 
 _test name_ and _subcase name_ are free form, quoted, strings. Test names don't have to be unique within the **doctest** executable. They should also be string literals.
 
+It is possible to write test cases inside of class bodies in C++17 with the help of ```TEST_CASE_CLASS()``` - used just like ```TEST_CASE()``` - making testing private parts of classes easier.
+
 Keep in mind that even though **doctest** is [**thread-safe**](faq.md#is-doctest-thread-aware) - using subcases has to be done only in the main test runner thread.
 
-For examples see the [Tutorial](tutorial.md)
-
-Test cases can also be parameterized - see the [documentation](parameterized-tests.md)
+Test cases can also be parameterized - see the [**documentation**](parameterized-tests.md)
 
 Test cases and subcases can be filtered through the use of the [**command line**](commandline.md)
 

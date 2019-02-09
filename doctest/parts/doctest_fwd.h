@@ -287,6 +287,8 @@ DOCTEST_MSVC_SUPPRESS_WARNING(26444) // Avoid unnamed objects with custom constr
 #define DOCTEST_INTERFACE
 #endif // DOCTEST_CONFIG_IMPLEMENTATION_IN_DLL
 
+#define DOCTEST_EMPTY
+
 #if DOCTEST_MSVC
 #define DOCTEST_NOINLINE __declspec(noinline)
 #define DOCTEST_UNUSED
@@ -1782,11 +1784,13 @@ int registerReporter(const char* name, int priority, IReporter& r);
 #endif // DOCTEST_CONFIG_NO_TRY_CATCH_IN_ASSERTS
 
 // registers the test by initializing a dummy var with a function
-#define DOCTEST_REGISTER_FUNCTION(f, decorators)                                                   \
-    DOCTEST_GLOBAL_NO_WARNINGS(DOCTEST_ANONYMOUS(_DOCTEST_ANON_VAR_)) = doctest::detail::regTest(  \
-            doctest::detail::TestCase(f, __FILE__, __LINE__,                                       \
-                                      doctest_detail_test_suite_ns::getCurrentTestSuite()) *       \
-            decorators);                                                                           \
+#define DOCTEST_REGISTER_FUNCTION(global_prefix, f, decorators)                                    \
+    global_prefix DOCTEST_GLOBAL_NO_WARNINGS(DOCTEST_ANONYMOUS(_DOCTEST_ANON_VAR_)) =              \
+            doctest::detail::regTest(                                                              \
+                    doctest::detail::TestCase(                                                     \
+                            f, __FILE__, __LINE__,                                                 \
+                            doctest_detail_test_suite_ns::getCurrentTestSuite()) *                 \
+                    decorators);                                                                   \
     DOCTEST_GLOBAL_NO_WARNINGS_END()
 
 #define DOCTEST_IMPLEMENT_FIXTURE(der, base, func, decorators)                                     \
@@ -1799,18 +1803,29 @@ int registerReporter(const char* name, int priority, IReporter& r);
             der v;                                                                                 \
             v.f();                                                                                 \
         }                                                                                          \
-        DOCTEST_REGISTER_FUNCTION(func, decorators)                                                \
+        DOCTEST_REGISTER_FUNCTION(DOCTEST_EMPTY, func, decorators)                                 \
     }                                                                                              \
     inline DOCTEST_NOINLINE void der::f()
 
 #define DOCTEST_CREATE_AND_REGISTER_FUNCTION(f, decorators)                                        \
     static void f();                                                                               \
-    DOCTEST_REGISTER_FUNCTION(f, decorators)                                                       \
+    DOCTEST_REGISTER_FUNCTION(DOCTEST_EMPTY, f, decorators)                                        \
+    static void f()
+
+#define DOCTEST_CREATE_AND_REGISTER_FUNCTION_IN_CLASS(f, proxy, decorators)                        \
+    static doctest::detail::funcType proxy() { return f; }                                         \
+    DOCTEST_REGISTER_FUNCTION(inline const, proxy(), decorators)                                   \
     static void f()
 
 // for registering tests
 #define DOCTEST_TEST_CASE(decorators)                                                              \
     DOCTEST_CREATE_AND_REGISTER_FUNCTION(DOCTEST_ANONYMOUS(_DOCTEST_ANON_FUNC_), decorators)
+
+// for registering tests in classes - requires C++17 for inline variables!
+#define DOCTEST_TEST_CASE_CLASS(decorators)                                                        \
+    DOCTEST_CREATE_AND_REGISTER_FUNCTION_IN_CLASS(DOCTEST_ANONYMOUS(_DOCTEST_ANON_FUNC_),          \
+                                                  DOCTEST_ANONYMOUS(_DOCTEST_ANON_PROXY_),         \
+                                                  decorators)
 
 // for registering tests with a fixture
 #define DOCTEST_TEST_CASE_FIXTURE(c, decorators)                                                   \
@@ -2260,6 +2275,10 @@ constexpr T to_lvalue = x;
 #define DOCTEST_TEST_CASE(name)                                                                    \
     DOCTEST_CREATE_AND_REGISTER_FUNCTION(DOCTEST_ANONYMOUS(_DOCTEST_ANON_FUNC_), name)
 
+// for registering tests in classes
+#define DOCTEST_TEST_CASE_CLASS(name)                                                              \
+    DOCTEST_CREATE_AND_REGISTER_FUNCTION(DOCTEST_ANONYMOUS(_DOCTEST_ANON_FUNC_), name))
+
 // for registering tests with a fixture
 #define DOCTEST_TEST_CASE_FIXTURE(x, name)                                                         \
     DOCTEST_IMPLEMENT_FIXTURE(DOCTEST_ANONYMOUS(_DOCTEST_ANON_CLASS_), x,                          \
@@ -2408,6 +2427,7 @@ constexpr T to_lvalue = x;
 // BDD style macros
 // clang-format off
 #define DOCTEST_SCENARIO(name) DOCTEST_TEST_CASE("  Scenario: " name)
+#define DOCTEST_SCENARIO_CLASS(name) DOCTEST_TEST_CASE_CLASS("  Scenario: " name)
 #define DOCTEST_SCENARIO_TEMPLATE(name, T, ...)  DOCTEST_TEST_CASE_TEMPLATE("  Scenario: " name, T, __VA_ARGS__)
 #define DOCTEST_SCENARIO_TEMPLATE_DEFINE(name, T, id) DOCTEST_TEST_CASE_TEMPLATE_DEFINE("  Scenario: " name, T, id)
 
@@ -2422,6 +2442,7 @@ constexpr T to_lvalue = x;
 #if !defined(DOCTEST_CONFIG_NO_SHORT_MACRO_NAMES)
 
 #define TEST_CASE DOCTEST_TEST_CASE
+#define TEST_CASE_CLASS DOCTEST_TEST_CASE_CLASS
 #define TEST_CASE_FIXTURE DOCTEST_TEST_CASE_FIXTURE
 #define TYPE_TO_STRING DOCTEST_TYPE_TO_STRING
 #define TEST_CASE_TEMPLATE DOCTEST_TEST_CASE_TEMPLATE
@@ -2482,6 +2503,7 @@ constexpr T to_lvalue = x;
 #define REQUIRE_NOTHROW_MESSAGE DOCTEST_REQUIRE_NOTHROW_MESSAGE
 
 #define SCENARIO DOCTEST_SCENARIO
+#define SCENARIO_CLASS DOCTEST_SCENARIO_CLASS
 #define SCENARIO_TEMPLATE DOCTEST_SCENARIO_TEMPLATE
 #define SCENARIO_TEMPLATE_DEFINE DOCTEST_SCENARIO_TEMPLATE_DEFINE
 #define GIVEN DOCTEST_GIVEN
