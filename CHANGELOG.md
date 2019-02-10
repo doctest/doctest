@@ -1,5 +1,14 @@
 # Change Log
 
+## [2.2.3](https://github.com/onqtam/doctest/tree/2.2.3) (2019-02-10)
+[Full Changelog](https://github.com/onqtam/doctest/compare/2.2.2...2.2.3)
+
+**Closed issues:**
+
+- Calling convention needed on a few functions [\#182](https://github.com/onqtam/doctest/issues/182)
+- Terminal color is not reset when a test fails with some signal [\#122](https://github.com/onqtam/doctest/issues/122)
+- testing private members - ability to write test cases in class bodies [\#76](https://github.com/onqtam/doctest/issues/76)
+
 ## [2.2.2](https://github.com/onqtam/doctest/tree/2.2.2) (2019-01-28)
 [Full Changelog](https://github.com/onqtam/doctest/compare/2.2.1...2.2.2)
 
@@ -186,7 +195,6 @@
 - Static Analysis results of doctest [\#83](https://github.com/onqtam/doctest/issues/83)
 - !!! BREAKING CHANGE !!! - catch exceptions as const reference in \<LEVEL\>\_THROWS\_AS [\#81](https://github.com/onqtam/doctest/issues/81)
 - doctest implementation as static library [\#77](https://github.com/onqtam/doctest/issues/77)
-- \[question\] Private members [\#76](https://github.com/onqtam/doctest/issues/76)
 - Provide some easy way to compare structs containing float/doubles [\#73](https://github.com/onqtam/doctest/issues/73)
 
 **Merged pull requests:**
