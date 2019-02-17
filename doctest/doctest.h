@@ -381,7 +381,7 @@ template <>
 struct char_traits<char>;
 template <class charT, class traits>
 class basic_ostream;
-typedef basic_ostream<char, char_traits<char> > ostream;
+typedef basic_ostream<char, char_traits<char>> ostream;
 } // namespace std
 #endif // _LIBCPP_VERSION || DOCTEST_CONFIG_USE_IOSFWD
 
@@ -2836,7 +2836,7 @@ namespace detail {
         std::atomic<int> numAssertsForCurrentTestCase_atomic;
         std::atomic<int> numAssertsFailedForCurrentTestCase_atomic;
 
-        std::vector<std::vector<String> > filters = decltype(filters)(9); // 9 different filters
+        std::vector<std::vector<String>> filters = decltype(filters)(9); // 9 different filters
 
         std::vector<IReporter*> reporters_currently_used;
 
