@@ -195,7 +195,7 @@ add_custom_command(
     OUTPUT ${doctest_include_folder}doctest.h
     DEPENDS
         ${doctest_parts_folder}doctest_fwd.h
-        ${doctest_parts_folder}doctest_impl.h
+        ${doctest_parts_folder}doctest.cpp
     COMMAND ${CMAKE_COMMAND} -P ${CURRENT_LIST_DIR_CACHED}/asemble_single_header.cmake
     COMMENT "assembling the single header")
 
