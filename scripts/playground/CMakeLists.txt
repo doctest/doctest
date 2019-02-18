@@ -6,7 +6,7 @@ include(../cmake/common.cmake)
 
 include_directories(../../doctest/)
 
-doctest_add_executable(${PROJECT_NAME} main.cpp test.cpp)
+add_executable(${PROJECT_NAME} main.cpp test.cpp)
 
 doctest_add_test(NAME ${PROJECT_NAME} NO_OUTPUT COMMAND $<TARGET_FILE:${PROJECT_NAME}> -nv)
 

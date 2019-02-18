@@ -7,14 +7,15 @@ include(../../scripts/cmake/common.cmake)
 include_directories(../../)
 
 #== create object libraries instead of static libraries
-doctest_add_library(lib_1 OBJECT lib_1_src1.cpp lib_1_src2.cpp)
-doctest_add_library(lib_2 OBJECT lib_2_src.cpp)
-doctest_add_executable(${PROJECT_NAME} main.cpp $<TARGET_OBJECTS:lib_1> $<TARGET_OBJECTS:lib_2>)
+add_library(lib_1 OBJECT lib_1_src1.cpp lib_1_src2.cpp)
+add_library(lib_2 OBJECT lib_2_src.cpp)
+add_executable(${PROJECT_NAME} main.cpp $<TARGET_OBJECTS:lib_1> $<TARGET_OBJECTS:lib_2>)
+target_link_libraries(${PROJECT_NAME} doctest)
 
 #== alternatively we could create static libraries and use "doctest_force_link_static_lib_in_target"
-#doctest_add_library(lib_1 STATIC lib_1_src1.cpp lib_1_src2.cpp)
-#doctest_add_library(lib_2 STATIC lib_2_src.cpp)
-#doctest_add_executable(${PROJECT_NAME} main.cpp)
+#add_library(lib_1 STATIC lib_1_src1.cpp lib_1_src2.cpp)
+#add_library(lib_2 STATIC lib_2_src.cpp)
+#add_executable(${PROJECT_NAME} main.cpp)
 #target_link_libraries(${PROJECT_NAME} lib_1)
 #target_link_libraries(${PROJECT_NAME} lib_2)
 #include(doctest_force_link_static_lib_in_target.cmake)

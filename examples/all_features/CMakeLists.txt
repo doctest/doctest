@@ -31,7 +31,8 @@ set(files_all
 )
 
 # add the executable
-doctest_add_executable(${PROJECT_NAME} ${files_all})
+add_executable(${PROJECT_NAME} ${files_all})
+target_link_libraries(${PROJECT_NAME} doctest ${CMAKE_THREAD_LIBS_INIT})
 
 # easy way to fix test coverage - disable colors and crash handling
 target_compile_definitions(${PROJECT_NAME} PRIVATE
@@ -84,8 +85,9 @@ if(DEFINED ENV{CODE_COVERAGE})
     return() # do not continue with the disabled example
 endif()
 
-doctest_add_executable(disabled ${files_all})
+add_executable(disabled ${files_all})
 target_compile_definitions(disabled PRIVATE DOCTEST_CONFIG_DISABLE)
+target_link_libraries(disabled doctest ${CMAKE_THREAD_LIBS_INIT})
 
 doctest_add_test(NAME disabled COMMAND $<TARGET_FILE:disabled>)
 
