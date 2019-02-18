@@ -1,4 +1,4 @@
-#include "parts/doctest_impl.h"
+#include "parts/doctest.cpp"
 
 int main(int argc, char** argv) {
     doctest::Context context;

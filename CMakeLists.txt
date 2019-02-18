@@ -25,7 +25,8 @@ target_include_directories(${PROJECT_NAME} INTERFACE $<BUILD_INTERFACE:${CMAKE_C
 
 if(${DOCTEST_WITH_MAIN_IN_STATIC_LIB})
     include(scripts/cmake/common.cmake)
-    doctest_add_library(${PROJECT_NAME}_with_main STATIC EXCLUDE_FROM_ALL doctest/parts/doctest_main.cpp)
+    doctest_add_library(${PROJECT_NAME}_with_main STATIC EXCLUDE_FROM_ALL doctest/parts/doctest.cpp)
+    target_compile_definitions(${PROJECT_NAME}_with_main PRIVATE DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN)
     target_link_libraries(${PROJECT_NAME}_with_main PUBLIC ${PROJECT_NAME})
 endif()
 
