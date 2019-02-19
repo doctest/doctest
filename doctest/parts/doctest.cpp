@@ -229,7 +229,7 @@ namespace detail {
         std::atomic<int> numAssertsForCurrentTestCase_atomic;
         std::atomic<int> numAssertsFailedForCurrentTestCase_atomic;
 
-        std::vector<std::vector<String> > filters = decltype(filters)(9); // 9 different filters
+        std::vector<std::vector<String>> filters = decltype(filters)(9); // 9 different filters
 
         std::vector<IReporter*> reporters_currently_used;
 
