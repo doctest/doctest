@@ -80,6 +80,8 @@ An alternative way to register an exception translator is to do the following in
 
 The order of registering exception translators can be controlled - simply call the explicit function in the required order or list the exception translators with the macro in a top-to-bottom fashion in a single translation unit - everything that auto-registers in doctest works in a top-to-bottom way for a single translation unit (source file).
 
+You could also [override the translation mechanism](https://github.com/catchorg/Catch2/issues/539#issuecomment-454549904) for exceptions deriving from ```std::exception```.
+
 ------
 
 - Check out the [**example**](../../examples/all_features/stringification.cpp) which shows how to stringify ```std::vector<T>``` and other types/exceptions.

@@ -219,13 +219,15 @@ DOCTEST_MSVC_SUPPRESS_WARNING(26444) // Avoid unnamed objects with custom constr
 // MSVC C++11 feature support table: https://msdn.microsoft.com/en-us/library/hh567368.aspx
 // GCC C++11 feature support table: https://gcc.gnu.org/projects/cxx-status.html
 // MSVC version table:
-// MSVC++ 15.0 _MSC_VER == 1910 (Visual Studio 2017)
-// MSVC++ 14.0 _MSC_VER == 1900 (Visual Studio 2015)
-// MSVC++ 12.0 _MSC_VER == 1800 (Visual Studio 2013)
-// MSVC++ 11.0 _MSC_VER == 1700 (Visual Studio 2012)
-// MSVC++ 10.0 _MSC_VER == 1600 (Visual Studio 2010)
-// MSVC++ 9.0  _MSC_VER == 1500 (Visual Studio 2008)
-// MSVC++ 8.0  _MSC_VER == 1400 (Visual Studio 2005)
+// https://en.wikipedia.org/wiki/Microsoft_Visual_C%2B%2B#Internal_version_numbering
+// MSVC++ 14.2 (16) _MSC_VER == 1920 (Visual Studio 2019) << NOT YET RELEASED - April 2 2019
+// MSVC++ 14.1 (15) _MSC_VER == 1910 (Visual Studio 2017)
+// MSVC++ 14.0      _MSC_VER == 1900 (Visual Studio 2015)
+// MSVC++ 12.0      _MSC_VER == 1800 (Visual Studio 2013)
+// MSVC++ 11.0      _MSC_VER == 1700 (Visual Studio 2012)
+// MSVC++ 10.0      _MSC_VER == 1600 (Visual Studio 2010)
+// MSVC++ 9.0       _MSC_VER == 1500 (Visual Studio 2008)
+// MSVC++ 8.0       _MSC_VER == 1400 (Visual Studio 2005)
 
 #if DOCTEST_MSVC && !defined(DOCTEST_CONFIG_WINDOWS_SEH)
 #define DOCTEST_CONFIG_WINDOWS_SEH
