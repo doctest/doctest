@@ -30,7 +30,7 @@ add_custom_command(
     DEPENDS
         ${doctest_parts_folder}/doctest_fwd.h
         ${doctest_parts_folder}/doctest.cpp
-    COMMAND ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_SOURCE_DIR}/scripts/cmake/asemble_single_header.cmake
+    COMMAND ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_SOURCE_DIR}/scripts/cmake/assemble_single_header.cmake
     COMMENT "assembling the single header")
 
 add_custom_target(assemble_single_header ALL DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/single_include/doctest/doctest.h)
