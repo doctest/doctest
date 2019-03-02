@@ -1824,10 +1824,15 @@ int registerReporter(const char* name, int priority, IReporter& r);
     DOCTEST_CREATE_AND_REGISTER_FUNCTION(DOCTEST_ANONYMOUS(_DOCTEST_ANON_FUNC_), decorators)
 
 // for registering tests in classes - requires C++17 for inline variables!
+#if __cplusplus >= 201703L || (DOCTEST_MSVC >= DOCTEST_COMPILER(19, 12, 0) && _MSVC_LANG >= 201703L)
 #define DOCTEST_TEST_CASE_CLASS(decorators)                                                        \
     DOCTEST_CREATE_AND_REGISTER_FUNCTION_IN_CLASS(DOCTEST_ANONYMOUS(_DOCTEST_ANON_FUNC_),          \
                                                   DOCTEST_ANONYMOUS(_DOCTEST_ANON_PROXY_),         \
                                                   decorators)
+#else // DOCTEST_TEST_CASE_CLASS
+#define DOCTEST_TEST_CASE_CLASS(...)                                                               \
+    TEST_CASES_CAN_BE_REGISTERED_IN_CLASSES_ONLY_IN_CPP17_MODE_OR_WITH_VS_2017_OR_NEWER
+#endif // DOCTEST_TEST_CASE_CLASS
 
 // for registering tests with a fixture
 #define DOCTEST_TEST_CASE_FIXTURE(c, decorators)                                                   \
