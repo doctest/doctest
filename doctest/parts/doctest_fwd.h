@@ -244,12 +244,9 @@ DOCTEST_MSVC_SUPPRESS_WARNING(26444) // Avoid unnamed objects with custom constr
 #endif // DOCTEST_CONFIG_NO_POSIX_SIGNALS
 
 #ifndef DOCTEST_CONFIG_NO_EXCEPTIONS
-#if(DOCTEST_GCC || (DOCTEST_CLANG && !DOCTEST_MSVC)) && !defined(__EXCEPTIONS)
+#if !defined(__cpp_exceptions) && !defined(__EXCEPTIONS) && !defined(_CPPUNWIND)
 #define DOCTEST_CONFIG_NO_EXCEPTIONS
-#endif // clang and gcc
-#if DOCTEST_MSVC && (defined(_HAS_EXCEPTIONS) && _HAS_EXCEPTIONS == 0)
-#define DOCTEST_CONFIG_NO_EXCEPTIONS
-#endif // MSVC
+#endif // no exceptions
 #endif // DOCTEST_CONFIG_NO_EXCEPTIONS
 
 #ifdef DOCTEST_CONFIG_NO_EXCEPTIONS_BUT_WITH_ALL_ASSERTS

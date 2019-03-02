@@ -149,7 +149,7 @@ This can be defined both globally and in specific source files only.
 
 ### **```DOCTEST_CONFIG_NO_EXCEPTIONS```**
 
-This will remove everything that uses exceptions from the framework - it is also auto detectable for some compilers (GCC, Clang) if exceptions are disabled with ```-fno-exceptions```. For MSVC ```_HAS_EXCEPTIONS``` cannot be used for auto detecting because it is defined in system headers instead of as a project define - and doctest will not include a header just for that. 
+This will remove everything that uses exceptions from the framework - it is also auto detectable if exceptions are disabled for compilers (like with ```-fno-exceptions``` for GCC/Clang).
 
 What gets changed:
 
