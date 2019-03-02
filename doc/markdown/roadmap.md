@@ -39,7 +39,7 @@ Planned features for future releases - order changes constantly...
     - esoteric reporters
 - convolution support for the assertion macros (with a predicate)
 - Value-Parameterized test cases
-- generators? - look at Catch - and investigate what they are
+- generators? - look at Catch - and investigate what they are (also SUBCASEs can be while() loops instead of if() statements! that might be useful...)
 - look at property based testing
     - [rapidcheck](https://github.com/emil-e/rapidcheck)
     - [autocheck](https://github.com/thejohnfreeman/autocheck)

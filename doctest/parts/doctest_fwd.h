@@ -1002,6 +1002,9 @@ namespace detail {
         return Result(res);                                                                        \
     }
 
+    // more checks could be added - like in Catch:
+    // https://github.com/catchorg/Catch2/pull/1480/files
+    // https://github.com/catchorg/Catch2/pull/1481/files
 #define DOCTEST_FORBIT_EXPRESSION(rt, op)                                                          \
     template <typename R>                                                                          \
     rt& operator op(const R&) {                                                                    \
