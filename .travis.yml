@@ -218,6 +218,11 @@ matrix:
       osx_image: xcode10
       os: osx
 
+    # Xcode 10.2 Clang
+    - env: COMPILER=clang++ HAS_ASAN=true HAS_UBSAN=true HAS_TSAN=true
+      osx_image: xcode10.2
+      os: osx
+
     # OSX LLVM-GCC
     - env: COMPILER=g++ HAS_ASAN=true HAS_TSAN=true
       compiler: gcc
