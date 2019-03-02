@@ -60,6 +60,8 @@ TEST_CASE("WARN level of asserts don't fail the test case") {
     WARN(0);
     WARN_FALSE(1);
     WARN_THROWS(throw_if(false, 0));
+    WARN_THROWS_WITH(throw_if(true, ""), "whops!");
+    WARN_THROWS_WITH(throw_if(false, ""), "whops!");
     WARN_THROWS_AS(throw_if(false, 0), bool);
     WARN_THROWS_AS(throw_if(true, 0), bool);
     WARN_NOTHROW(throw_if(true, 0));
@@ -103,6 +105,14 @@ TEST_CASE("REQUIRE level of asserts fail and abort the test case - 4") {
 }
 TEST_CASE("REQUIRE level of asserts fail and abort the test case - 5") {
     REQUIRE_THROWS_AS(throw_if(true, 0), bool);
+    MESSAGE("should not be reached!");
+}
+TEST_CASE("REQUIRE level of asserts fail and abort the test case - 4") {
+	REQUIRE_THROWS_WITH(throw_if(false, ""), "whops!");
+    MESSAGE("should not be reached!");
+}
+TEST_CASE("REQUIRE level of asserts fail and abort the test case - 5") {
+	REQUIRE_THROWS_WITH(throw_if(true, ""), "whops!");
     MESSAGE("should not be reached!");
 }
 TEST_CASE("REQUIRE level of asserts fail and abort the test case - 6") {

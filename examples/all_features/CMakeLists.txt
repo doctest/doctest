@@ -44,7 +44,7 @@ endforeach()
 # not adding it for MinGW since it crashes when using mingw-w64-x86_64-8.1.0-release-posix-seh-rt_v6-rev0
 # (also disabled for old XCode builds on travis where there is no thread_local support and this is defined in the build matrix)
 if(NOT MINGW AND NOT DEFINED DOCTEST_THREAD_LOCAL)
-    doctest_add_test(NO_OUTPUT NAME concurrency.cpp ${common_args} -sf=*concurrency.cpp)
+    doctest_add_test(NO_OUTPUT NAME concurrency.cpp ${common_args} -sf=*concurrency.cpp -d) # duration: there is no output anyway
 endif()
 
 # add this separately since the file has a non-straightforward path

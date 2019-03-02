@@ -95,6 +95,7 @@ TEST_CASE("exercising tricky code paths of doctest") {
     // trigger code path for assert string of a non-existent assert type
     oss << assertString(static_cast<assertType::Enum>(3));
     str += oss.str().c_str();
+    str += failureString(assertType::is_normal);
     CHECK(str == "omgomgomgaaaNULLtrue00.5f0.50.199991111111true0.50.50.1cc"
                  "111111omgomgomgaaaNULLtrue00.5f0.50.199991111111");
     // trigger code path for rawMemoryToString
@@ -121,6 +122,12 @@ TEST_CASE("exercising tricky code paths of doctest") {
     CHECK(6 < a);
     CHECK(6 >= a);
     CHECK(6 <= a);
+
+    // trigger another single line of code... lol
+    auto oldVal = const_cast<ContextOptions*>(getContextOptions())->no_path_in_filenames;
+    const_cast<ContextOptions*>(getContextOptions())->no_path_in_filenames = false;
+    CHECK(String(removePathFromFilename("")) == "");
+    const_cast<ContextOptions*>(getContextOptions())->no_path_in_filenames = oldVal;
 
     // a hack to trigger a bug in doctest: currently a 0 cannot be successfully parsed for an int option!
     Context().setOption("last", 0);
