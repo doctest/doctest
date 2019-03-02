@@ -60,17 +60,6 @@ function(doctest_add_test)
     add_test(NAME ${ARG_NAME} COMMAND ${CMAKE_COMMAND} -DCOMMAND=${the_command} ${ADDITIONAL_FLAGS} -P ${CURRENT_LIST_DIR_CACHED}/exec_test.cmake)
 endfunction()
 
-function(doctest_add_executable name)
-    add_executable(${name} ${ARGN})
-    add_dependencies(${name} assemble_single_header)
-    target_link_libraries(${name} ${CMAKE_THREAD_LIBS_INIT})
-endfunction()
-
-function(doctest_add_library name)
-    add_library(${name} ${ARGN})
-    add_dependencies(${name} assemble_single_header)
-endfunction()
-
 macro(add_compiler_flags)
     foreach(flag ${ARGV})
         set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${flag}")
@@ -181,22 +170,3 @@ if(MSVC)
         #/wd4623 # default constructor was implicitly defined as deleted
     )
 endif()
-
-# add a custom target that assembles the single header when any of the parts are touched
-
-set(doctest_include_folder "${CURRENT_LIST_DIR_CACHED}/../../doctest/")
-set(doctest_parts_folder "${CURRENT_LIST_DIR_CACHED}/../../doctest/parts/")
-if(WIN32)
-    STRING(REGEX REPLACE "/" "\\\\" doctest_include_folder ${doctest_include_folder})
-    STRING(REGEX REPLACE "/" "\\\\" doctest_parts_folder ${doctest_parts_folder})
-endif()
-
-add_custom_command(
-    OUTPUT ${doctest_include_folder}doctest.h
-    DEPENDS
-        ${doctest_parts_folder}doctest_fwd.h
-        ${doctest_parts_folder}doctest.cpp
-    COMMAND ${CMAKE_COMMAND} -P ${CURRENT_LIST_DIR_CACHED}/asemble_single_header.cmake
-    COMMENT "assembling the single header")
-
-add_custom_target(assemble_single_header ALL DEPENDS ${doctest_include_folder}doctest.h)
