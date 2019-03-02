@@ -1407,7 +1407,7 @@ namespace detail {
         bool translate(String& res) const {
 #ifndef DOCTEST_CONFIG_NO_EXCEPTIONS
             try {
-                throw;
+                throw; // lgtm [cpp/rethrow-no-exception]
                 // cppcheck-suppress catchExceptionByValue
             } catch(T ex) {                    // NOLINT
                 res = m_translateFunction(ex); //!OCLINT parameter reassignment

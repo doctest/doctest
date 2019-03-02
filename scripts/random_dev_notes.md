@@ -30,6 +30,8 @@ reddit.com/r/cplusplus
 https://www.linkedin.com/groups/86782/profile
 twitter
 
+https://www.viva64.com/en/b/0604/
+
 on big releases: update benchmarks, number of CI builds, differences with Catch, docs, etc.
 
 also check if anything should be added here:

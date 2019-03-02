@@ -45,9 +45,11 @@ REGISTER_EXCEPTION_TRANSLATOR(double& e) {
     return doctest::String("double: ") + doctest::toString(e);
 }
 
+DOCTEST_SYMBOL_IMPORT void from_dll();
+
 int main(int argc, char** argv) {
     // force the use of a symbol from the dll so tests from it get registered
-    DOCTEST_SYMBOL_IMPORT void from_dll(); from_dll();
+    from_dll();
 
     LoadDynamicLib("plugin"); // load the plugin so tests from it get registered
 

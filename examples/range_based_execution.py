@@ -2,7 +2,6 @@
 
 import sys
 import math
-import string
 import multiprocessing
 import subprocess
 
