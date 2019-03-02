@@ -13,7 +13,7 @@ https://github.com/catchorg/Catch2/commit/de36b2ada6e4593a9a32c4c86cd47d4bc002b1
 
 try to forward declare std::string and specialize the string maker for it or something like that
 
-https://github.com/philsquared/Catch/issues/980
+https://github.com/catchorg/Catch2/issues/980
 https://github.com/catchorg/Catch2/commit/00af677577973758b3b35e1c94ab4142c45c3f67
 https://github.com/catchorg/Catch2/commit/11f716f28d6621d1e54cf13374f8b5dd1a7489f5
 https://github.com/catchorg/Catch2/commit/22ac9d2184b3868cccfd635eb631d0eee1529121
@@ -44,13 +44,13 @@ https://github.com/martinmoene/catch-lest-other-comparison
 == other
 - operator<< trouble
     - see how Catch is implementing their IsStreamInsertable trait for C++11
-    - https://github.com/philsquared/Catch/issues/757
-    - https://github.com/philsquared/Catch/issues/872
-    - https://github.com/philsquared/Catch/pull/877
-    - https://github.com/philsquared/Catch/issues/880
+    - https://github.com/catchorg/Catch2/issues/757
+    - https://github.com/catchorg/Catch2/issues/872
+    - https://github.com/catchorg/Catch2/pull/877
+    - https://github.com/catchorg/Catch2/issues/880
     - https://github.com/catchorg/Catch2/pull/1405
-- toString trouble - https://github.com/philsquared/Catch/issues/741
-- https://github.com/philsquared/Catch/commit/33ed1773f40b406dbf3b7201bf52694bd86b1503
+- toString trouble - https://github.com/catchorg/Catch2/issues/741
+- https://github.com/catchorg/Catch2/commit/33ed1773f40b406dbf3b7201bf52694bd86b1503
 
 - I suspect -Wsign-compare is not being silenced by the pragmas...
   see this build - https://travis-ci.org/onqtam/game/jobs/196987454

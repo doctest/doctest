@@ -18,9 +18,9 @@ Pros of **doctest**:
 
 - **doctest** is [**thread-safe**](faq.md#is-doctest-thread-aware)
 - asserts can be used [**outside of a testing context**](assertions.md#using-asserts-out-of-a-testing-context)
-- including the **doctest** header is [**over 20 times lighter**](benchmarks.md#cost-of-including-the-header) on compile times than that of [**Catch**](https://github.com/philsquared/Catch)
-- the asserts in **doctest** can be [**many times lighter**](benchmarks.md#cost-of-an-assertion-macro) on compile times than those of [**Catch**](https://github.com/philsquared/Catch)
-- **doctest** executes tests [**many times faster**](benchmarks.md#runtime-benchmarks) than [**Catch**](https://github.com/philsquared/Catch)
+- including the **doctest** header is [**over 20 times lighter**](benchmarks.md#cost-of-including-the-header) on compile times than that of [**Catch**](https://github.com/catchorg/Catch2)
+- the asserts in **doctest** can be [**many times lighter**](benchmarks.md#cost-of-an-assertion-macro) on compile times than those of [**Catch**](https://github.com/catchorg/Catch2)
+- **doctest** executes tests [**many times faster**](benchmarks.md#runtime-benchmarks) than [**Catch**](https://github.com/catchorg/Catch2)
 - everything testing-related can be removed from the binary by defining the [**```DOCTEST_CONFIG_DISABLE```**](configuration.md#doctest_config_disable) identifier
 - doesn't drag any headers when included (except for in the translation unit where the library gets implemented)
 - 0 warnings even on the [**most aggressive**](../../scripts/cmake/common.cmake#L84) warning levels for MSVC/GCC/Clang
@@ -28,7 +28,7 @@ Pros of **doctest**:
 - test cases can be written in headers - the framework will still register the tests only once - no duplicates
 - binaries (exe/dll) can use the test runner of another binary - so tests end up in a single registry - [**example**](../../examples/executable_dll_and_plugin/)
 
-Aside from everything mentioned so far doctest has some [**features**](features.md#other-features) (like [**test suites**](testcases.md#test-suites) and [**decorators**](testcases.md#decorators)) which [**Catch**](https://github.com/philsquared/Catch) doesn't.
+Aside from everything mentioned so far doctest has some [**features**](features.md#other-features) (like [**test suites**](testcases.md#test-suites) and [**decorators**](testcases.md#decorators)) which [**Catch**](https://github.com/catchorg/Catch2) doesn't.
 
 Missing stuff:
 
@@ -38,9 +38,9 @@ Missing stuff:
 
 But these things (and more!) are planned in the [**roadmap**](roadmap.md)!
 
-**doctest** can be thought of as a very polished, light, stable and clean subset (or reimplementation) of [**Catch**](https://github.com/philsquared/Catch) but this might change in the future as more features are added.
+**doctest** can be thought of as a very polished, light, stable and clean subset (or reimplementation) of [**Catch**](https://github.com/catchorg/Catch2) but this might change in the future as more features are added.
 
-Also checkout [this table](https://github.com/martinmoene/catch-lest-other-comparison) that compares **doctest** / [**Catch**](https://github.com/philsquared/Catch) / [**lest**](https://github.com/martinmoene/lest).
+Also checkout [this table](https://github.com/martinmoene/catch-lest-other-comparison) that compares **doctest** / [**Catch**](https://github.com/catchorg/Catch2) / [**lest**](https://github.com/martinmoene/lest).
 
 A quick and easy way to migrate most of your Catch tests to doctest is to change the ```TEST_CASE``` (if using tags) and ```SECTION``` macros as follows:
 
@@ -145,7 +145,7 @@ Currently no. Single header libraries like [**stb**](https://github.com/nothings
 
 ### Why is doctest using macros?
 
-Aren't they evil and not *modern*? - Check out the answer Phil Nash gives to this question [**here**](http://accu.org/index.php/journals/2064) (the creator of [**Catch**](https://github.com/philsquared/Catch)).
+Aren't they evil and not *modern*? - Check out the answer Phil Nash gives to this question [**here**](http://accu.org/index.php/journals/2064) (the creator of [**Catch**](https://github.com/catchorg/Catch2)).
 
 ---------------
 

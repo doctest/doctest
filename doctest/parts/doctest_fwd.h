@@ -14,9 +14,9 @@
 // =================================================================================================
 // =================================================================================================
 //
-// The library is heavily influenced by Catch - https://github.com/philsquared/Catch
+// The library is heavily influenced by Catch - https://github.com/catchorg/Catch2
 // which uses the Boost Software License - Version 1.0
-// see here - https://github.com/philsquared/Catch/blob/master/LICENSE.txt
+// see here - https://github.com/catchorg/Catch2/blob/master/LICENSE.txt
 //
 // The concept of subcases (sections in Catch) and expression decomposition are from there.
 // Some parts of the code are taken directly:
@@ -1186,8 +1186,8 @@ namespace detail {
 
         // The right operator for capturing expressions is "<=" instead of "<<" (based on the operator precedence table)
         // but then there will be warnings from GCC about "-Wparentheses" and since "_Pragma()" is problematic this will stay for now...
-        // https://github.com/philsquared/Catch/issues/870
-        // https://github.com/philsquared/Catch/issues/565
+        // https://github.com/catchorg/Catch2/issues/870
+        // https://github.com/catchorg/Catch2/issues/565
         template <typename L>
         Expression_lhs<const DOCTEST_REF_WRAP(L)> operator<<(const DOCTEST_REF_WRAP(L) operand) {
             return Expression_lhs<const DOCTEST_REF_WRAP(L)>(operand, m_at);

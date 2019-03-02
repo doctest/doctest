@@ -56,7 +56,7 @@ Planned features for future releases - order changes constantly...
         - https://msdn.microsoft.com/en-us/library/hh598953.aspx
         - https://blogs.msdn.microsoft.com/vcblog/2017/04/19/cpp-testing-in-visual-studio/
         - https://msdn.microsoft.com/en-us/library/hh419385.aspx
-    - XCode - https://github.com/philsquared/Catch/pull/454
+    - XCode - https://github.com/catchorg/Catch2/pull/454
     - CLion
         - https://www.jetbrains.com/clion/features/unit-testing.html
         - https://blog.jetbrains.com/clion/2017/03/clion-2017-1-released/#catch
@@ -65,13 +65,13 @@ Planned features for future releases - order changes constantly...
 
 - log levels - like in [boost test](http://www.boost.org/doc/libs/1_63_0/libs/test/doc/html/boost_test/utf_reference/rt_param_reference/log_level.html)
 - running tests a [few times](https://github.com/google/googletest/blob/master/googletest/docs/AdvancedGuide.md#repeating-the-tests)
-- test execution in [separate processes](https://github.com/philsquared/Catch/issues/853) - ```fork()``` for UNIX and [this](https://github.com/nemequ/munit/issues/2) for Windows
+- test execution in [separate processes](https://github.com/catchorg/Catch2/issues/853) - ```fork()``` for UNIX and [this](https://github.com/nemequ/munit/issues/2) for Windows
 - killing a test that exceeds a time limit (will perhaps require threading or processes)
 - [symbolizer](https://github.com/facebook/folly/tree/master/folly/experimental/symbolizer) - for a stack trace - when an assertion fails - and it's in a user function with some deep callstack away from the current test case - how to know the exact code path that lead to the failing assert
 - ability to make the framework not capture unexpected exceptions - as requested [here](https://github.com/onqtam/doctest/issues/12#issuecomment-235334585)
-- add Approx ability to compare with absolute epsilon - [Catch PR](https://github.com/philsquared/Catch/pull/538)
+- add Approx ability to compare with absolute epsilon - [Catch PR](https://github.com/catchorg/Catch2/pull/538)
 - ability to customize the colors in the console output (may also use styles - based on [this](https://github.com/agauniyal/rang) or [this](https://github.com/ikalnytskyi/termcolor))
-- implement breaking into the debugger under linux - see [here](https://github.com/philsquared/Catch/pull/585) and [here](https://github.com/scottt/debugbreak)
+- implement breaking into the debugger under linux - see [here](https://github.com/catchorg/Catch2/pull/585) and [here](https://github.com/scottt/debugbreak)
 - better testing of the library
     - unit test the String class
     - should unit test internals - currently even if a bug is caught by different output it's very difficult to track the reason
@@ -99,9 +99,9 @@ Planned features for future releases - order changes constantly...
 - look into https://github.com/cpp-testing/GUnit - https://www.youtube.com/watch?v=NVrZjT5lW5o
 - consider the following 2 properties for the MSVC static code analyzer: EnableCppCoreCheck, EnableExperimentalCppCoreCheck
 - rpm package? like this: https://github.com/vietjtnguyen/argagg/blob/master/packaging/rpm/argagg.spec
-- get the current test case/section path - https://github.com/philsquared/Catch/issues/522
+- get the current test case/section path - https://github.com/catchorg/Catch2/issues/522
 - when no assertion is encountered in a test case it should fail - and should also add a SUCCEED() call
-- failure reporting should print out previous SECTIONs for data-driven testing - as requested [here](https://github.com/philsquared/Catch/issues/734)
+- failure reporting should print out previous SECTIONs for data-driven testing - as requested [here](https://github.com/catchorg/Catch2/issues/734)
 - ```Bitwise()``` class that has overloaded operators for comparison - to be used to check objects bitwise against each other
 - detect floating point exceptions
 - checkpoint/passpoint - like in [boost test](http://www.boost.org/doc/libs/1_63_0/libs/test/doc/html/boost_test/test_output/test_tools_support_for_logging/checkpoints.html) (also make all assert/subcase/logging macros to act as passpoints and print the last one on crashes or exceptions)
@@ -117,11 +117,11 @@ Planned features for future releases - order changes constantly...
     - global timeout option (per test or per entire session?)
     - command line error handling/reporting
     - option to not print context info when the --success option is used
-    - ability for the user to extend the command line - as requested [here](https://github.com/philsquared/Catch/issues/622)
+    - ability for the user to extend the command line - as requested [here](https://github.com/catchorg/Catch2/issues/622)
     - option to list files in which there are test cases who match the current filters
     - option for filters to switch from "match any" to "match all" mode
     - option to list test suites and test cases in a tree view
-    - add a "wait key" option (before and after tests) - as requested [here](https://github.com/philsquared/Catch/issues/477#issuecomment-256417686)
+    - add a "wait key" option (before and after tests) - as requested [here](https://github.com/catchorg/Catch2/issues/477#issuecomment-256417686)
 - decorators for test cases and test suites- like in boost test
     - depends_on
     - precondition
@@ -136,7 +136,7 @@ Planned features for future releases - order changes constantly...
     - see how it's done in boost test - with the fixture decorator
     - perhaps for fixtures in addition to the constructor / destructor - since throwing in the destructor might terminate the program
     - or just ignore all of this this - it would require globals or classes and inheritance - and we already have subcases
-- doctest in a GUI environment? with no console? APIs for attaching a console? querying if there is one? [investigate...](https://github.com/philsquared/Catch/blob/master/docs/configuration.md#stdout)
+- doctest in a GUI environment? with no console? APIs for attaching a console? querying if there is one? [investigate...](https://github.com/catchorg/Catch2/blob/master/docs/configuration.md#stdout)
 - runtime performance
     - look at this: https://github.com/catchorg/Catch2/issues/1086
     - startup - the set holding all registered tests should use a specialized allocator to minimize program startup time
@@ -164,7 +164,7 @@ Planned features for future releases - order changes constantly...
     - https://github.com/Barro/compiler-warnings
     - http://stackoverflow.com/a/34971392/3162383
 - utf8 / unicode ???
-    - https://github.com/philsquared/Catch/pull/903
+    - https://github.com/catchorg/Catch2/pull/903
 - handle ```wchar``` strings???
 - hierarchical test suites - using a stack for the pushed ones
 - ability to specify the width of the terminal in terms of characters (for example 60 - less than 80 - the default)
