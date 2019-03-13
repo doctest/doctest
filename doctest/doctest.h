@@ -4231,6 +4231,525 @@ namespace {
     std::mutex g_mutex;
 
     using namespace detail;
+
+    template <typename Ex>
+    [[noreturn]] void throw_exception(Ex const& e) {
+#ifndef DOCTEST_CONFIG_NO_EXCEPTIONS
+        throw e;
+#else  // DOCTEST_CONFIG_NO_EXCEPTIONS
+        std::cerr << "doctest will terminate because it needed to throw an exception.\n"
+                  << "The message was: " << e.what() << '\n';
+        std::terminate();
+#endif // DOCTEST_CONFIG_NO_EXCEPTIONS
+    }
+
+#ifdef _MSC_VER // TODO: CLEAN THIS SHIT UP!
+#define DOCTEST_PREPARE_EXCEPTION(type, msg) type((std::stringstream() << msg).str())
+#else
+#define DOCTEST_PREPARE_EXCEPTION(type, msg)                                                       \
+    type(static_cast<std::stringstream&>(std::stringstream() << msg).str())
+#endif
+
+#define DOCTEST_INTERNAL_ERROR(msg)                                                                \
+    throw_exception(DOCTEST_PREPARE_EXCEPTION(                                                     \
+            std::logic_error, __FILE__ << ":" << __LINE__ << ": Internal doctest error: " << msg))
+
+    DOCTEST_GCC_SUPPRESS_WARNING_WITH_PUSH("-Wunused-function")
+
+    // clang-format off
+
+// =================================================================================================
+// The following code has been taken verbatim from Catch2/include/internal/catch_xmlwriter.h/cpp
+// This is done so cherry-picking bug fixes is trivial - even the style/formatting is untouched.
+// =================================================================================================
+
+    class XmlEncode {
+    public:
+        enum ForWhat { ForTextNodes, ForAttributes };
+
+        XmlEncode( std::string const& str, ForWhat forWhat = ForTextNodes );
+
+        void encodeTo( std::ostream& os ) const;
+
+        friend std::ostream& operator << ( std::ostream& os, XmlEncode const& xmlEncode );
+
+    private:
+        std::string m_str;
+        ForWhat m_forWhat;
+    };
+
+    class XmlWriter {
+    public:
+
+        class ScopedElement {
+        public:
+            ScopedElement( XmlWriter* writer );
+
+            ScopedElement( ScopedElement&& other ) noexcept;
+            ScopedElement& operator=( ScopedElement&& other ) noexcept;
+
+            ~ScopedElement();
+
+            ScopedElement& writeText( std::string const& text, bool indent = true );
+
+            template<typename T>
+            ScopedElement& writeAttribute( std::string const& name, T const& attribute ) {
+                m_writer->writeAttribute( name, attribute );
+                return *this;
+            }
+
+        private:
+            mutable XmlWriter* m_writer = nullptr;
+        };
+
+        XmlWriter( std::ostream& os = std::cout );
+        ~XmlWriter();
+
+        XmlWriter( XmlWriter const& ) = delete;
+        XmlWriter& operator=( XmlWriter const& ) = delete;
+
+        XmlWriter& startElement( std::string const& name );
+
+        ScopedElement scopedElement( std::string const& name );
+
+        XmlWriter& endElement();
+
+        XmlWriter& writeAttribute( std::string const& name, std::string const& attribute );
+
+        XmlWriter& writeAttribute( std::string const& name, bool attribute );
+
+        template<typename T>
+        XmlWriter& writeAttribute( std::string const& name, T const& attribute ) {
+        std::stringstream rss;
+            rss << attribute;
+            return writeAttribute( name, rss.str() );
+        }
+
+        XmlWriter& writeText( std::string const& text, bool indent = true );
+
+        XmlWriter& writeComment( std::string const& text );
+
+        void writeStylesheetRef( std::string const& url );
+
+        XmlWriter& writeBlankLine();
+
+        void ensureTagClosed();
+
+    private:
+
+        void writeDeclaration();
+
+        void newlineIfNecessary();
+
+        bool m_tagIsOpen = false;
+        bool m_needsNewline = false;
+        std::vector<std::string> m_tags;
+        std::string m_indent;
+        std::ostream& m_os;
+    };
+
+// =================================================================================================
+// The following code has been taken verbatim from Catch2/include/internal/catch_xmlwriter.h/cpp
+// This is done so cherry-picking bug fixes is trivial - even the style/formatting is untouched.
+// =================================================================================================
+
+using uchar = unsigned char;
+
+namespace {
+
+    size_t trailingBytes(unsigned char c) {
+        if ((c & 0xE0) == 0xC0) {
+            return 2;
+        }
+        if ((c & 0xF0) == 0xE0) {
+            return 3;
+        }
+        if ((c & 0xF8) == 0xF0) {
+            return 4;
+        }
+        DOCTEST_INTERNAL_ERROR("Invalid multibyte utf-8 start byte encountered");
+    }
+
+    uint32_t headerValue(unsigned char c) {
+        if ((c & 0xE0) == 0xC0) {
+            return c & 0x1F;
+        }
+        if ((c & 0xF0) == 0xE0) {
+            return c & 0x0F;
+        }
+        if ((c & 0xF8) == 0xF0) {
+            return c & 0x07;
+        }
+        DOCTEST_INTERNAL_ERROR("Invalid multibyte utf-8 start byte encountered");
+    }
+
+    void hexEscapeChar(std::ostream& os, unsigned char c) {
+        std::ios_base::fmtflags f(os.flags());
+        os << "\\x"
+            << std::uppercase << std::hex << std::setfill('0') << std::setw(2)
+            << static_cast<int>(c);
+        os.flags(f);
+    }
+
+} // anonymous namespace
+
+    XmlEncode::XmlEncode( std::string const& str, ForWhat forWhat )
+    :   m_str( str ),
+        m_forWhat( forWhat )
+    {}
+
+    void XmlEncode::encodeTo( std::ostream& os ) const {
+        // Apostrophe escaping not necessary if we always use " to write attributes
+        // (see: http://www.w3.org/TR/xml/#syntax)
+
+        for( std::size_t idx = 0; idx < m_str.size(); ++ idx ) {
+            uchar c = m_str[idx];
+            switch (c) {
+            case '<':   os << "&lt;"; break;
+            case '&':   os << "&amp;"; break;
+
+            case '>':
+                // See: http://www.w3.org/TR/xml/#syntax
+                if (idx > 2 && m_str[idx - 1] == ']' && m_str[idx - 2] == ']')
+                    os << "&gt;";
+                else
+                    os << c;
+                break;
+
+            case '\"':
+                if (m_forWhat == ForAttributes)
+                    os << "&quot;";
+                else
+                    os << c;
+                break;
+
+            default:
+                // Check for control characters and invalid utf-8
+
+                // Escape control characters in standard ascii
+                // see http://stackoverflow.com/questions/404107/why-are-control-characters-illegal-in-xml-1-0
+                if (c < 0x09 || (c > 0x0D && c < 0x20) || c == 0x7F) {
+                    hexEscapeChar(os, c);
+                    break;
+                }
+
+                // Plain ASCII: Write it to stream
+                if (c < 0x7F) {
+                    os << c;
+                    break;
+                }
+
+                // UTF-8 territory
+                // Check if the encoding is valid and if it is not, hex escape bytes.
+                // Important: We do not check the exact decoded values for validity, only the encoding format
+                // First check that this bytes is a valid lead byte:
+                // This means that it is not encoded as 1111 1XXX
+                // Or as 10XX XXXX
+                if (c <  0xC0 ||
+                    c >= 0xF8) {
+                    hexEscapeChar(os, c);
+                    break;
+                }
+
+                auto encBytes = trailingBytes(c);
+                // Are there enough bytes left to avoid accessing out-of-bounds memory?
+                if (idx + encBytes - 1 >= m_str.size()) {
+                    hexEscapeChar(os, c);
+                    break;
+                }
+                // The header is valid, check data
+                // The next encBytes bytes must together be a valid utf-8
+                // This means: bitpattern 10XX XXXX and the extracted value is sane (ish)
+                bool valid = true;
+                uint32_t value = headerValue(c);
+                for (std::size_t n = 1; n < encBytes; ++n) {
+                    uchar nc = m_str[idx + n];
+                    valid &= ((nc & 0xC0) == 0x80);
+                    value = (value << 6) | (nc & 0x3F);
+                }
+
+                if (
+                    // Wrong bit pattern of following bytes
+                    (!valid) ||
+                    // Overlong encodings
+                    (value < 0x80) ||
+                    (0x80 <= value && value < 0x800   && encBytes > 2) ||
+                    (0x800 < value && value < 0x10000 && encBytes > 3) ||
+                    // Encoded value out of range
+                    (value >= 0x110000)
+                    ) {
+                    hexEscapeChar(os, c);
+                    break;
+                }
+
+                // If we got here, this is in fact a valid(ish) utf-8 sequence
+                for (std::size_t n = 0; n < encBytes; ++n) {
+                    os << m_str[idx + n];
+                }
+                idx += encBytes - 1;
+                break;
+            }
+        }
+    }
+
+    std::ostream& operator << ( std::ostream& os, XmlEncode const& xmlEncode ) {
+        xmlEncode.encodeTo( os );
+        return os;
+    }
+
+    XmlWriter::ScopedElement::ScopedElement( XmlWriter* writer )
+    :   m_writer( writer )
+    {}
+
+    XmlWriter::ScopedElement::ScopedElement( ScopedElement&& other ) noexcept
+    :   m_writer( other.m_writer ){
+        other.m_writer = nullptr;
+    }
+    XmlWriter::ScopedElement& XmlWriter::ScopedElement::operator=( ScopedElement&& other ) noexcept {
+        if ( m_writer ) {
+            m_writer->endElement();
+        }
+        m_writer = other.m_writer;
+        other.m_writer = nullptr;
+        return *this;
+    }
+
+
+    XmlWriter::ScopedElement::~ScopedElement() {
+        if( m_writer )
+            m_writer->endElement();
+    }
+
+    XmlWriter::ScopedElement& XmlWriter::ScopedElement::writeText( std::string const& text, bool indent ) {
+        m_writer->writeText( text, indent );
+        return *this;
+    }
+
+    XmlWriter::XmlWriter( std::ostream& os ) : m_os( os )
+    {
+        writeDeclaration();
+    }
+
+    XmlWriter::~XmlWriter() {
+        while( !m_tags.empty() )
+            endElement();
+    }
+
+    XmlWriter& XmlWriter::startElement( std::string const& name ) {
+        ensureTagClosed();
+        newlineIfNecessary();
+        m_os << m_indent << '<' << name;
+        m_tags.push_back( name );
+        m_indent += "  ";
+        m_tagIsOpen = true;
+        return *this;
+    }
+
+    XmlWriter::ScopedElement XmlWriter::scopedElement( std::string const& name ) {
+        ScopedElement scoped( this );
+        startElement( name );
+        return scoped;
+    }
+
+    XmlWriter& XmlWriter::endElement() {
+        newlineIfNecessary();
+        m_indent = m_indent.substr( 0, m_indent.size()-2 );
+        if( m_tagIsOpen ) {
+            m_os << "/>";
+            m_tagIsOpen = false;
+        }
+        else {
+            m_os << m_indent << "</" << m_tags.back() << ">";
+        }
+        m_os << std::endl;
+        m_tags.pop_back();
+        return *this;
+    }
+
+    XmlWriter& XmlWriter::writeAttribute( std::string const& name, std::string const& attribute ) {
+        if( !name.empty() && !attribute.empty() )
+            m_os << ' ' << name << "=\"" << XmlEncode( attribute, XmlEncode::ForAttributes ) << '"';
+        return *this;
+    }
+
+    XmlWriter& XmlWriter::writeAttribute( std::string const& name, bool attribute ) {
+        m_os << ' ' << name << "=\"" << ( attribute ? "true" : "false" ) << '"';
+        return *this;
+    }
+
+    XmlWriter& XmlWriter::writeText( std::string const& text, bool indent ) {
+        if( !text.empty() ){
+            bool tagWasOpen = m_tagIsOpen;
+            ensureTagClosed();
+            if( tagWasOpen && indent )
+                m_os << m_indent;
+            m_os << XmlEncode( text );
+            m_needsNewline = true;
+        }
+        return *this;
+    }
+
+    XmlWriter& XmlWriter::writeComment( std::string const& text ) {
+        ensureTagClosed();
+        m_os << m_indent << "<!--" << text << "-->";
+        m_needsNewline = true;
+        return *this;
+    }
+
+    void XmlWriter::writeStylesheetRef( std::string const& url ) {
+        m_os << "<?xml-stylesheet type=\"text/xsl\" href=\"" << url << "\"?>\n";
+    }
+
+    XmlWriter& XmlWriter::writeBlankLine() {
+        ensureTagClosed();
+        m_os << '\n';
+        return *this;
+    }
+
+    void XmlWriter::ensureTagClosed() {
+        if( m_tagIsOpen ) {
+            m_os << ">" << std::endl;
+            m_tagIsOpen = false;
+        }
+    }
+
+    void XmlWriter::writeDeclaration() {
+        m_os << "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
+    }
+
+    void XmlWriter::newlineIfNecessary() {
+        if( m_needsNewline ) {
+            m_os << std::endl;
+            m_needsNewline = false;
+        }
+    }
+
+// =================================================================================================
+// End of copy-pasted code from Catch
+// =================================================================================================
+
+    // clang-format on
+
+    DOCTEST_GCC_SUPPRESS_WARNING_POP
+
+    struct XmlReporter : public IReporter
+    {
+        XmlWriter xml;
+
+        // caching pointers to objects of these types - safe to do
+        const ContextOptions* opt;
+        const TestCaseData*   tc = nullptr;
+
+        XmlReporter(std::ostream& in)
+                : xml(in) {}
+
+        // =========================================================================================
+        // WHAT FOLLOWS ARE OVERRIDES OF THE VIRTUAL METHODS OF THE REPORTER INTERFACE
+        // =========================================================================================
+
+        void log_contexts() {
+            int num_contexts = get_num_active_contexts();
+            if(num_contexts) {
+                auto              contexts = get_active_contexts();
+                std::stringstream ss;
+                for(int i = 0; i < num_contexts; ++i) {
+                    contexts[i]->stringify(&ss);
+                    xml.scopedElement("Info").writeText(ss.str());
+                }
+            }
+        }
+
+        void test_run_start(const ContextOptions& o) override {
+            opt = &o;
+            xml.startElement("doctest");
+        }
+
+        void test_run_end(const TestRunStats& p) override {
+            if(tc) // the TestSuite tag - only if there has been at least 1 test case
+                xml.endElement();
+
+            xml.scopedElement("OverallResults")
+                    .writeAttribute("successes", p.numAsserts - p.numAssertsFailed)
+                    .writeAttribute("failures", p.numAssertsFailed);
+
+            xml.endElement();
+        }
+
+        void test_case_start(const TestCaseData& in) override {
+            bool open_ts_tag = false;
+            if(tc != nullptr) { // we have already opened a test suite
+                if(strcmp(tc->m_test_suite, in.m_test_suite) != 0) {
+                    xml.endElement();
+                    open_ts_tag = true;
+                }
+            } else {
+                open_ts_tag = true; // first test case ==> first test suite
+            }
+
+            if(open_ts_tag) {
+                xml.startElement("TestSuite");
+                xml.writeAttribute("name", in.m_test_suite);
+            }
+
+            tc = &in;
+            xml.startElement("TestCase");
+            xml.writeAttribute("name", in.m_name);
+            xml.writeAttribute("filename", in.m_file);
+            xml.writeAttribute("line", in.m_line);
+        }
+
+        void test_case_end(const CurrentTestCaseStats& st) override {
+            xml.scopedElement("OverallResults")
+                    .writeAttribute("successes",
+                                    st.numAssertsCurrentTest - st.numAssertsFailedCurrentTest)
+                    .writeAttribute("failures", st.numAssertsFailedCurrentTest);
+
+            xml.endElement();
+        }
+
+        void test_case_exception(const TestCaseException& e) override {
+            if(e.is_crash) {
+                xml.scopedElement("Crash").writeAttribute("message", e.error_string);
+            } else {
+                xml.scopedElement("Exception").writeAttribute("message", e.error_string);
+            }
+        }
+
+        void subcase_start(const SubcaseSignature& in) override {
+            xml.startElement("SubCase")
+                    .writeAttribute("name", in.m_name)
+                    .writeAttribute("filename", in.m_file)
+                    .writeAttribute("line", in.m_line);
+        }
+
+        void subcase_end(const SubcaseSignature&) override { xml.endElement(); }
+
+        void log_assert(const AssertData& rb) override {
+            if(!rb.m_failed && !opt->success)
+                return;
+
+            xml.startElement("Expression")
+                    .writeAttribute("success", !rb.m_failed)
+                    .writeAttribute("type", assertString(rb.m_at))
+                    .writeAttribute("filename", rb.m_file)
+                    .writeAttribute("line", rb.m_line);
+
+            xml.scopedElement("Original").writeText(rb.m_expr);
+            xml.scopedElement("Expanded").writeText(rb.m_decomp.c_str());
+
+            log_contexts();
+
+            xml.endElement();
+        }
+
+        void log_message(const MessageData& /*mb*/) override {}
+
+        void test_case_skipped(const TestCaseData&) override {}
+    };
+
+    XmlReporter g_xr(std::cout);
+    REGISTER_REPORTER("xml", 2, g_xr);
+
     struct ConsoleReporter : public IReporter
     {
         std::ostream&                 s;
@@ -4402,7 +4921,7 @@ namespace {
                       << stringified_contexts[i] << "\n";
                 }
             }
-            s << "\n";
+            s << "\n" << Color::None;
         }
 
         void subcase_start(const SubcaseSignature& subc) override {

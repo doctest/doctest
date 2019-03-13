@@ -27,6 +27,8 @@ struct XmlReporter : public IReporter
 
     void test_case_end(const CurrentTestCaseStats& /*st*/) override {}
 
+    void test_case_exception(const TestCaseException& /*e*/) override {}
+
     void subcase_start(const SubcaseSignature& subc) override { subcasesStack.push_back(subc); }
 
     void subcase_end(const SubcaseSignature& /*subc*/) override { subcasesStack.pop_back(); }
