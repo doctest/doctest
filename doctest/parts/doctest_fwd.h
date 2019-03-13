@@ -1706,11 +1706,14 @@ struct DOCTEST_INTERFACE CurrentTestCaseStats
     double seconds;
     int    failure_flags; // use TestCaseFailureReason::Enum
 
-    String error_string;
-    bool   should_reenter; // means we are not done with the test case because of subcases
-
     DOCTEST_DECLARE_DEFAULTS(CurrentTestCaseStats);
     DOCTEST_DELETE_COPIES(CurrentTestCaseStats);
+};
+
+struct DOCTEST_INTERFACE TestCaseException
+{
+    String error_string;
+    bool   is_crash;
 };
 
 struct DOCTEST_INTERFACE TestRunStats
@@ -1735,9 +1738,11 @@ struct DOCTEST_INTERFACE IReporter
 
     // called when a test case is started (safe to cache a pointer to the input)
     virtual void test_case_start(const TestCaseData&) = 0;
-    // called when a test case has ended - could be re-entered if more subcases have to be
-    // traversed - check CurrentTestCaseStats::should_reenter (caching a pointer to the input doesn't make sense here)
+    // called when a test case has ended
     virtual void test_case_end(const CurrentTestCaseStats&) = 0;
+
+    // called when an exception is thrown from the test case (or it crashes)
+    virtual void test_case_exception(const TestCaseException&) = 0;
 
     // called whenever a subcase is entered (don't cache pointers to the input)
     virtual void subcase_start(const SubcaseSignature&) = 0;

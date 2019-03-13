@@ -1709,11 +1709,14 @@ struct DOCTEST_INTERFACE CurrentTestCaseStats
     double seconds;
     int    failure_flags; // use TestCaseFailureReason::Enum
 
-    String error_string;
-    bool   should_reenter; // means we are not done with the test case because of subcases
-
     DOCTEST_DECLARE_DEFAULTS(CurrentTestCaseStats);
     DOCTEST_DELETE_COPIES(CurrentTestCaseStats);
+};
+
+struct DOCTEST_INTERFACE TestCaseException
+{
+    String error_string;
+    bool   is_crash;
 };
 
 struct DOCTEST_INTERFACE TestRunStats
@@ -1738,9 +1741,11 @@ struct DOCTEST_INTERFACE IReporter
 
     // called when a test case is started (safe to cache a pointer to the input)
     virtual void test_case_start(const TestCaseData&) = 0;
-    // called when a test case has ended - could be re-entered if more subcases have to be
-    // traversed - check CurrentTestCaseStats::should_reenter (caching a pointer to the input doesn't make sense here)
+    // called when a test case has ended
     virtual void test_case_end(const CurrentTestCaseStats&) = 0;
+
+    // called when an exception is thrown from the test case (or it crashes)
+    virtual void test_case_exception(const TestCaseException&) = 0;
 
     // called whenever a subcase is entered (don't cache pointers to the input)
     virtual void subcase_start(const SubcaseSignature&) = 0;
@@ -2859,6 +2864,7 @@ namespace detail {
         std::set<SubcaseSignature> subcasesPassed;
         std::set<int>              subcasesEnteredLevels;
         int                        subcasesCurrentLevel;
+        bool                       should_reenter;
 
         void resetRunData() {
             numTestCases                = 0;
@@ -4093,10 +4099,10 @@ namespace {
     void reportFatal(const std::string& message) {
         g_cs->seconds += g_timer.getElapsedSeconds();
         g_cs->failure_flags |= TestCaseFailureReason::Crash;
-        g_cs->error_string   = message.c_str();
         g_cs->should_reenter = false;
 
         // TODO: end all currently opened subcases...?
+        DOCTEST_ITERATE_THROUGH_REPORTERS(test_case_exception, {message.c_str(), true});
 
         DOCTEST_ITERATE_THROUGH_REPORTERS(test_case_end, *g_cs);
 
@@ -4351,31 +4357,6 @@ namespace {
                (st.failure_flags && st.failure_flags != TestCaseFailureReason::AssertFailure))
                 logTestStart();
 
-            // report test case exceptions and crashes
-            bool crashed = st.failure_flags & TestCaseFailureReason::Crash;
-            if(crashed || (st.failure_flags & TestCaseFailureReason::Exception)) {
-                file_line_to_stream(s, tc->m_file, tc->m_line, " ");
-                successOrFailColoredStringToStream(false, crashed ? assertType::is_require :
-                                                                    assertType::is_check);
-                s << Color::Red << (crashed ? "test case CRASHED: " : "test case THREW exception: ")
-                  << Color::Cyan << st.error_string << "\n";
-
-                int num_stringified_contexts = get_num_stringified_contexts();
-                if(num_stringified_contexts) {
-                    auto stringified_contexts = get_stringified_contexts();
-                    s << Color::None << "  logged: ";
-                    for(int i = num_stringified_contexts - 1; i >= 0; --i) {
-                        s << (i == num_stringified_contexts - 1 ? "" : "          ")
-                          << stringified_contexts[i] << "\n";
-                    }
-                }
-                s << "\n";
-            }
-
-            // means the test case will be re-entered because there are untraversed (but discovered) subcases
-            if(st.should_reenter)
-                return;
-
             if(opt->duration)
                 s << Color::None << std::setprecision(6) << std::fixed << st.seconds
                   << " s: " << tc->m_name << "\n";
@@ -4401,6 +4382,27 @@ namespace {
                 s << Color::Red << "Aborting - too many failed asserts!\n";
             }
             s << Color::None;
+        }
+
+        void test_case_exception(const TestCaseException& e) override {
+            logTestStart();
+
+            file_line_to_stream(s, tc->m_file, tc->m_line, " ");
+            successOrFailColoredStringToStream(false, e.is_crash ? assertType::is_require :
+                                                                   assertType::is_check);
+            s << Color::Red << (e.is_crash ? "test case CRASHED: " : "test case THREW exception: ")
+              << Color::Cyan << e.error_string << "\n";
+
+            int num_stringified_contexts = get_num_stringified_contexts();
+            if(num_stringified_contexts) {
+                auto stringified_contexts = get_stringified_contexts();
+                s << Color::None << "  logged: ";
+                for(int i = num_stringified_contexts - 1; i >= 0; --i) {
+                    s << (i == num_stringified_contexts - 1 ? "" : "          ")
+                      << stringified_contexts[i] << "\n";
+                }
+            }
+            s << "\n";
         }
 
         void subcase_start(const SubcaseSignature& subc) override {
@@ -4678,6 +4680,7 @@ namespace {
         DOCTEST_DEBUG_OUTPUT_WINDOW_REPORTER_OVERRIDE(test_run_end, const TestRunStats&)
         DOCTEST_DEBUG_OUTPUT_WINDOW_REPORTER_OVERRIDE(test_case_start, const TestCaseData&)
         DOCTEST_DEBUG_OUTPUT_WINDOW_REPORTER_OVERRIDE(test_case_end, const CurrentTestCaseStats&)
+        DOCTEST_DEBUG_OUTPUT_WINDOW_REPORTER_OVERRIDE(test_case_exception, const TestCaseException&)
         DOCTEST_DEBUG_OUTPUT_WINDOW_REPORTER_OVERRIDE(subcase_start, const SubcaseSignature&)
         DOCTEST_DEBUG_OUTPUT_WINDOW_REPORTER_OVERRIDE(subcase_end, const SubcaseSignature&)
         DOCTEST_DEBUG_OUTPUT_WINDOW_REPORTER_OVERRIDE(log_assert, const AssertData&)
@@ -5132,7 +5135,6 @@ int Context::run() {
 
             p->failure_flags = TestCaseFailureReason::None;
             p->seconds       = 0;
-            p->error_string  = "";
 
             // reset atomic counters
             p->numAssertsFailedCurrentTest_atomic = 0;
@@ -5164,7 +5166,8 @@ int Context::run() {
                 } catch(const TestFailureException&) {
                     p->failure_flags |= TestCaseFailureReason::AssertFailure;
                 } catch(...) {
-                    p->error_string = translateActiveException();
+                    DOCTEST_ITERATE_THROUGH_REPORTERS(test_case_exception,
+                                                      {translateActiveException(), false});
                     p->failure_flags |= TestCaseFailureReason::Exception;
                 }
 #endif // DOCTEST_CONFIG_NO_EXCEPTIONS
