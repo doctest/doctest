@@ -46,16 +46,12 @@ add_custom_target(assemble_single_header ALL DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}
 ## TESTS/EXAMPLES/HELPERS
 ################################################################################
 
-if(${DOCTEST_WITH_MAIN_IN_STATIC_LIB} AND NOT CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
+if(${DOCTEST_WITH_MAIN_IN_STATIC_LIB})
     include(scripts/cmake/common.cmake)
     add_library(${PROJECT_NAME}_with_main STATIC EXCLUDE_FROM_ALL doctest/parts/doctest.cpp)
     target_compile_definitions(${PROJECT_NAME}_with_main PRIVATE
         DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN)
-    # hack to support building on XCode 6 and 7 - propagate the definition to everything
-    if(DEFINED DOCTEST_THREAD_LOCAL)
-        target_compile_definitions(${PROJECT_NAME}_with_main PRIVATE
-            DOCTEST_THREAD_LOCAL=${DOCTEST_THREAD_LOCAL})
-    endif()
+    target_link_libraries(${PROJECT_NAME}_with_main PUBLIC ${PROJECT_NAME})
 endif()
 
 if(CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
