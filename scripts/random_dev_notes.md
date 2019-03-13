@@ -1,4 +1,17 @@
 
+make a test where we exit due to an exception but re-enter the test case because of other subcases
+
+rework the reentering of test cases and the reporting
+
+give credit to Catch for the XML reporter
+
+log the "randomness" for example in the xml output
+name of binary in the doctest tag?
+
+
+
+https://github.com/catchorg/Catch2/blob/master/docs/tostring.md#catchis_range-specialisation
+
 rope-ish startup of doctest - and filter duplicates on run()
 
 https://blog.travis-ci.com/2018-10-11-windows-early-release
@@ -12,6 +25,8 @@ fix discoverability of subcases - wtf??? don't remember what I meant with this..
 https://github.com/catchorg/Catch2/commit/de36b2ada6e4593a9a32c4c86cd47d4bc002b148
 
 try to forward declare std::string and specialize the string maker for it or something like that
+
+UDL literal for approx: Approx operator "" _a(long double val)
 
 https://github.com/catchorg/Catch2/issues/980
 https://github.com/catchorg/Catch2/commit/00af677577973758b3b35e1c94ab4142c45c3f67

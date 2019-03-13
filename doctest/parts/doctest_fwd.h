@@ -26,6 +26,7 @@
 // - breaking into a debugger
 // - signal / SEH handling
 // - timer
+// - XmlWriter class - thanks to Phil Nash for allowing the direct reuse (AKA copy/paste)
 //
 // The expression decomposing templates are taken from lest - https://github.com/martinmoene/lest
 // which uses the Boost Software License - Version 1.0
@@ -1700,10 +1701,11 @@ namespace TestCaseFailureReason {
 
 struct DOCTEST_INTERFACE CurrentTestCaseStats
 {
-    int    numAssertsForCurrentTestCase;
-    int    numAssertsFailedForCurrentTestCase;
-    double seconds_so_far;
+    int    numAssertsCurrentTest;
+    int    numAssertsFailedCurrentTest;
+    double seconds;
     int    failure_flags; // use TestCaseFailureReason::Enum
+
     String error_string;
     bool   should_reenter; // means we are not done with the test case because of subcases
 

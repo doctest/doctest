@@ -29,10 +29,10 @@ Planned features for future releases - order changes constantly...
         - make sure all relevant parts of the reporters can be accessed from the doctest namespace without the need for detail
         - examples
         - documentation
-- matchers - should investigate what they are - look at google test/mock and Catch (also predicates and boost test)
 
 ### For 2.4:
 
+- matchers - should investigate what they are - look at google test/mock and Catch (also predicates and boost test)
 - header with extensions
     - demangling with the use of the cxxabi header
     - stringification of types from std, also enums with the help of traits as discussed in #121

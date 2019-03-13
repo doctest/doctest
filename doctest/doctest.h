@@ -29,6 +29,7 @@
 // - breaking into a debugger
 // - signal / SEH handling
 // - timer
+// - XmlWriter class - thanks to Phil Nash for allowing the direct reuse (AKA copy/paste)
 //
 // The expression decomposing templates are taken from lest - https://github.com/martinmoene/lest
 // which uses the Boost Software License - Version 1.0
@@ -1703,10 +1704,11 @@ namespace TestCaseFailureReason {
 
 struct DOCTEST_INTERFACE CurrentTestCaseStats
 {
-    int    numAssertsForCurrentTestCase;
-    int    numAssertsFailedForCurrentTestCase;
-    double seconds_so_far;
+    int    numAssertsCurrentTest;
+    int    numAssertsFailedCurrentTest;
+    double seconds;
     int    failure_flags; // use TestCaseFailureReason::Enum
+
     String error_string;
     bool   should_reenter; // means we are not done with the test case because of subcases
 
@@ -2840,8 +2842,8 @@ namespace detail {
     // this holds both parameters from the command line and runtime data for tests
     struct ContextState : ContextOptions, TestRunStats, CurrentTestCaseStats
     {
-        std::atomic<int> numAssertsForCurrentTestCase_atomic;
-        std::atomic<int> numAssertsFailedForCurrentTestCase_atomic;
+        std::atomic<int> numAssertsCurrentTest_atomic;
+        std::atomic<int> numAssertsFailedCurrentTest_atomic;
 
         std::vector<std::vector<String>> filters = decltype(filters)(9); // 9 different filters
 
@@ -3360,7 +3362,7 @@ namespace detail {
 
         if((at & assertType::is_check) //!OCLINT bitwise operator in conditional
            && getContextOptions()->abort_after > 0 &&
-           (g_cs->numAssertsFailed + g_cs->numAssertsFailedForCurrentTestCase_atomic) >=
+           (g_cs->numAssertsFailed + g_cs->numAssertsFailedCurrentTest_atomic) >=
                    getContextOptions()->abort_after)
             return true;
 
@@ -3910,6 +3912,16 @@ namespace detail {
 } // namespace detail
 namespace {
     using namespace detail;
+
+    std::ostream& file_line_to_stream(std::ostream& s, const char* file, int line,
+                                      const char* tail = "") {
+        const auto opt = getContextOptions();
+        s << Color::LightGrey << removePathFromFilename(file) << (opt->gnu_file_line ? ":" : "(")
+          << (opt->no_line_numbers ? 0 : line) // 0 or the real num depending on the option
+          << (opt->gnu_file_line ? ":" : "):") << tail;
+        return s;
+    }
+
 #if !defined(DOCTEST_CONFIG_POSIX_SIGNALS) && !defined(DOCTEST_CONFIG_WINDOWS_SEH)
     struct FatalConditionHandler
     {
@@ -4069,17 +4081,17 @@ namespace {
 
     void addAssert(assertType::Enum at) {
         if((at & assertType::is_warn) == 0) //!OCLINT bitwise operator in conditional
-            g_cs->numAssertsForCurrentTestCase_atomic++;
+            g_cs->numAssertsCurrentTest_atomic++;
     }
 
     void addFailedAssert(assertType::Enum at) {
         if((at & assertType::is_warn) == 0) //!OCLINT bitwise operator in conditional
-            g_cs->numAssertsFailedForCurrentTestCase_atomic++;
+            g_cs->numAssertsFailedCurrentTest_atomic++;
     }
 
 #if defined(DOCTEST_CONFIG_POSIX_SIGNALS) || defined(DOCTEST_CONFIG_WINDOWS_SEH)
     void reportFatal(const std::string& message) {
-        g_cs->seconds_so_far += g_timer.getElapsedSeconds();
+        g_cs->seconds += g_timer.getElapsedSeconds();
         g_cs->failure_flags |= TestCaseFailureReason::Crash;
         g_cs->error_string   = message.c_str();
         g_cs->should_reenter = false;
@@ -4232,16 +4244,8 @@ namespace {
 
         void separator_to_stream() {
             s << Color::Yellow
-              << "============================================================================="
-                 "=="
+              << "==============================================================================="
                  "\n";
-        }
-
-        void file_line_to_stream(const char* file, int line, const char* tail = "") {
-            s << Color::LightGrey << removePathFromFilename(file)
-              << (opt->gnu_file_line ? ":" : "(")
-              << (opt->no_line_numbers ? 0 : line) // 0 or the real num depending on the option
-              << (opt->gnu_file_line ? ":" : "):") << tail;
         }
 
         const char* getSuccessOrFailString(bool success, assertType::Enum at,
@@ -4283,7 +4287,7 @@ namespace {
                 return;
 
             separator_to_stream();
-            file_line_to_stream(tc->m_file, tc->m_line, "\n");
+            file_line_to_stream(s, tc->m_file, tc->m_line, "\n");
             if(tc->m_description)
                 s << Color::Yellow << "DESCRIPTION: " << Color::None << tc->m_description << "\n";
             if(tc->m_test_suite && tc->m_test_suite[0] != '\0')
@@ -4350,7 +4354,7 @@ namespace {
             // report test case exceptions and crashes
             bool crashed = st.failure_flags & TestCaseFailureReason::Crash;
             if(crashed || (st.failure_flags & TestCaseFailureReason::Exception)) {
-                file_line_to_stream(tc->m_file, tc->m_line, " ");
+                file_line_to_stream(s, tc->m_file, tc->m_line, " ");
                 successOrFailColoredStringToStream(false, crashed ? assertType::is_require :
                                                                     assertType::is_check);
                 s << Color::Red << (crashed ? "test case CRASHED: " : "test case THREW exception: ")
@@ -4373,7 +4377,7 @@ namespace {
                 return;
 
             if(opt->duration)
-                s << Color::None << std::setprecision(6) << std::fixed << st.seconds_so_far
+                s << Color::None << std::setprecision(6) << std::fixed << st.seconds
                   << " s: " << tc->m_name << "\n";
 
             if(st.failure_flags & TestCaseFailureReason::Timeout)
@@ -4417,7 +4421,7 @@ namespace {
 
             logTestStart();
 
-            file_line_to_stream(rb.m_file, rb.m_line, " ");
+            file_line_to_stream(s, rb.m_file, rb.m_line, " ");
             successOrFailColoredStringToStream(!rb.m_failed, rb.m_at);
             if((rb.m_at & (assertType::is_throws_as | assertType::is_throws_with)) ==
                0) //!OCLINT bitwise operator in conditional
@@ -4462,7 +4466,7 @@ namespace {
 
             logTestStart();
 
-            file_line_to_stream(mb.m_file, mb.m_line, " ");
+            file_line_to_stream(s, mb.m_file, mb.m_line, " ");
             s << getSuccessOrFailColor(false, mb.m_severity)
               << getSuccessOrFailString(mb.m_severity & assertType::is_warn, mb.m_severity,
                                         "MESSAGE: ");
@@ -5126,15 +5130,20 @@ int Context::run() {
         {
             p->currentTest = &tc;
 
-            p->failure_flags  = TestCaseFailureReason::None;
-            p->seconds_so_far = 0;
-            p->error_string   = "";
+            p->failure_flags = TestCaseFailureReason::None;
+            p->seconds       = 0;
+            p->error_string  = "";
 
-            // reset non-atomic counters
-            p->numAssertsFailedForCurrentTestCase = 0;
-            p->numAssertsForCurrentTestCase       = 0;
+            // reset atomic counters
+            p->numAssertsFailedCurrentTest_atomic = 0;
+            p->numAssertsCurrentTest_atomic       = 0;
 
             p->subcasesPassed.clear();
+
+            DOCTEST_ITERATE_THROUGH_REPORTERS(test_case_start, tc);
+
+            g_timer.start();
+
             do {
                 // reset some of the fields for subcases (except for the set of fully passed ones)
                 p->should_reenter       = false;
@@ -5143,14 +5152,6 @@ int Context::run() {
 
                 // reset stuff for logging with INFO()
                 p->stringifiedContexts.clear();
-
-                // reset atomic counters
-                p->numAssertsFailedForCurrentTestCase_atomic = 0;
-                p->numAssertsForCurrentTestCase_atomic       = 0;
-
-                DOCTEST_ITERATE_THROUGH_REPORTERS(test_case_start, tc);
-
-                g_timer.start();
 
 #ifndef DOCTEST_CONFIG_NO_EXCEPTIONS
                 try {
@@ -5168,36 +5169,27 @@ int Context::run() {
                 }
 #endif // DOCTEST_CONFIG_NO_EXCEPTIONS
 
-                p->seconds_so_far += g_timer.getElapsedSeconds();
-
-                // update the non-atomic counters
-                p->numAsserts += p->numAssertsForCurrentTestCase_atomic;
-                p->numAssertsForCurrentTestCase += p->numAssertsForCurrentTestCase_atomic;
-                p->numAssertsFailed += p->numAssertsFailedForCurrentTestCase_atomic;
-                p->numAssertsFailedForCurrentTestCase +=
-                        p->numAssertsFailedForCurrentTestCase_atomic;
-
                 // exit this loop if enough assertions have failed - even if there are more subcases
-                if(p->abort_after > 0 && p->numAssertsFailed >= p->abort_after) {
+                if(p->abort_after > 0 &&
+                   p->numAssertsFailed + p->numAssertsFailedCurrentTest_atomic >= p->abort_after) {
                     p->should_reenter = false;
                     p->failure_flags |= TestCaseFailureReason::TooManyFailedAsserts;
                 }
-
-                // call it from here only if we will continue looping for other subcases and
-                // call it again outside of the loop for one final time - with updated flags
-                if(p->should_reenter == true) {
-                    DOCTEST_ITERATE_THROUGH_REPORTERS(test_case_end, *g_cs);
-                    // remove these flags - it is expected that the reporters have handled these issues
-                    p->failure_flags &= ~TestCaseFailureReason::Exception;
-                    p->failure_flags &= ~TestCaseFailureReason::AssertFailure;
-                }
             } while(p->should_reenter == true);
 
-            if(p->numAssertsFailedForCurrentTestCase)
+            p->seconds = g_timer.getElapsedSeconds();
+
+            // update the non-atomic counters
+            p->numAsserts += p->numAssertsCurrentTest_atomic;
+            p->numAssertsFailed += p->numAssertsFailedCurrentTest_atomic;
+            p->numAssertsCurrentTest       = p->numAssertsCurrentTest_atomic;
+            p->numAssertsFailedCurrentTest = p->numAssertsFailedCurrentTest_atomic;
+
+            if(p->numAssertsFailedCurrentTest)
                 p->failure_flags |= TestCaseFailureReason::AssertFailure;
 
             if(Approx(p->currentTest->m_timeout).epsilon(DBL_EPSILON) != 0 &&
-               Approx(p->seconds_so_far).epsilon(DBL_EPSILON) > p->currentTest->m_timeout)
+               Approx(p->seconds).epsilon(DBL_EPSILON) > p->currentTest->m_timeout)
                 p->failure_flags |= TestCaseFailureReason::Timeout;
 
             if(tc.m_should_fail) {
@@ -5209,7 +5201,7 @@ int Context::run() {
             } else if(p->failure_flags && tc.m_may_fail) {
                 p->failure_flags |= TestCaseFailureReason::CouldHaveFailedAndDid;
             } else if(tc.m_expected_failures > 0) {
-                if(p->numAssertsFailedForCurrentTestCase == tc.m_expected_failures) {
+                if(p->numAssertsFailedCurrentTest == tc.m_expected_failures) {
                     p->failure_flags |= TestCaseFailureReason::FailedExactlyNumTimes;
                 } else {
                     p->failure_flags |= TestCaseFailureReason::DidntFailExactlyNumTimes;
