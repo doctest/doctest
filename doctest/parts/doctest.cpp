@@ -1714,9 +1714,9 @@ namespace {
 
         void ensureTagClosed();
 
-    private:
-
         void writeDeclaration();
+
+    private:
 
         void newlineIfNecessary();
 
@@ -1906,7 +1906,7 @@ namespace {
 
     XmlWriter::XmlWriter( std::ostream& os ) : m_os( os )
     {
-        writeDeclaration();
+        //writeDeclaration();
     }
 
     XmlWriter::~XmlWriter() {
@@ -2040,6 +2040,7 @@ namespace {
 
         void test_run_start(const ContextOptions& o) override {
             opt = &o;
+            xml.writeDeclaration();
             xml.startElement("doctest");
         }
 
@@ -2127,7 +2128,7 @@ namespace {
     };
 
     XmlReporter g_xr(std::cout);
-    REGISTER_REPORTER("xml", 2, g_xr);
+    REGISTER_REPORTER("xml", 0, g_xr);
 
     struct ConsoleReporter : public IReporter
     {

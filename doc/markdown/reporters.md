@@ -41,7 +41,7 @@ struct XmlReporter : public IReporter
 };
 
 XmlReporter r(std::cout);
-DOCTEST_REGISTER_REPORTER("xml", 1, r);
+REGISTER_REPORTER("xml", 1, r);
 ```
 
 Multiple reporters can be used at the same time - just specify them through the ```--reporters=...``` [**command line option**](commandline.md). The number ```1``` in this case is the priority - reporters will be called in the order defined by their priority when a few of them are selected to be used at the same time.
