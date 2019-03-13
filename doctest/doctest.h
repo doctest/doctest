@@ -4255,6 +4255,7 @@ namespace {
             std::logic_error, __FILE__ << ":" << __LINE__ << ": Internal doctest error: " << msg))
 
     DOCTEST_GCC_SUPPRESS_WARNING_WITH_PUSH("-Wunused-function")
+    DOCTEST_CLANG_SUPPRESS_WARNING_WITH_PUSH("-Wunused-member-function")
 
     // clang-format off
 
@@ -4631,6 +4632,7 @@ namespace {
     // clang-format on
 
     DOCTEST_GCC_SUPPRESS_WARNING_POP
+    DOCTEST_CLANG_SUPPRESS_WARNING_POP
 
     struct XmlReporter : public IReporter
     {
