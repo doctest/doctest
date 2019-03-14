@@ -2054,17 +2054,7 @@ constexpr T to_lvalue = x;
 #define DOCTEST_REQUIRE_FALSE_MESSAGE(cond, msg) do { DOCTEST_INFO(msg); DOCTEST_ASSERT_IMPLEMENT_2(DT_REQUIRE_FALSE, cond); } while((void)0, 0)
 // clang-format on
 
-#define DOCTEST_ASSERT_THROWS(expr, assert_type)                                                   \
-    do {                                                                                           \
-        if(!doctest::getContextOptions()->no_throw) {                                              \
-            doctest::detail::ResultBuilder _DOCTEST_RB(doctest::assertType::assert_type, __FILE__, \
-                                                       __LINE__, #expr);                           \
-            try {                                                                                  \
-                expr;                                                                              \
-            } catch(...) { _DOCTEST_RB.m_threw = true; }                                           \
-            DOCTEST_ASSERT_LOG_AND_REACT(_DOCTEST_RB);                                             \
-        }                                                                                          \
-    } while((void)0, 0)
+#define DOCTEST_ASSERT_THROWS(expr, assert_type) DOCTEST_ASSERT_THROWS_WITH(expr, assert_type, "")
 
 #define DOCTEST_ASSERT_THROWS_AS(expr, assert_type, ...)                                           \
     do {                                                                                           \
@@ -2075,7 +2065,7 @@ constexpr T to_lvalue = x;
                 expr;                                                                              \
             } catch(const doctest::detail::remove_const<                                           \
                     doctest::detail::remove_reference<__VA_ARGS__>::type>::type&) {                \
-                _DOCTEST_RB.m_threw    = true;                                                     \
+                _DOCTEST_RB.translateException();                                                  \
                 _DOCTEST_RB.m_threw_as = true;                                                     \
             } catch(...) { _DOCTEST_RB.translateException(); }                                     \
             DOCTEST_ASSERT_LOG_AND_REACT(_DOCTEST_RB);                                             \

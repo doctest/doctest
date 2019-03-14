@@ -1,18 +1,14 @@
 
 make a test where we exit due to an exception but re-enter the test case because of other subcases
 
-the mutex
-
 the registration...?
 
 coverage
 
-skipped?
-expectedFailures?
-
 decorators
-
-give credit to Catch for the XML reporter
+    timeouts
+    expectedFailures?
+    maybes? shoulds?
 
 log the "randomness" for example in the xml output
     also filters and options!

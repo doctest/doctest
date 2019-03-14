@@ -319,6 +319,8 @@ DOCTEST_MSVC_SUPPRESS_WARNING(26444) // Avoid unnamed objects with custom constr
 #define DOCTEST_ANONYMOUS(x) DOCTEST_CAT(x, __LINE__)
 #endif // __COUNTER__
 
+#define DOCTEST_TOSTR(x) #x
+
 #ifndef DOCTEST_CONFIG_ASSERTION_PARAMETERS_BY_VALUE
 #define DOCTEST_REF_WRAP(x) x&
 #else // DOCTEST_CONFIG_ASSERTION_PARAMETERS_BY_VALUE
@@ -2055,17 +2057,7 @@ constexpr T to_lvalue = x;
 #define DOCTEST_REQUIRE_FALSE_MESSAGE(cond, msg) do { DOCTEST_INFO(msg); DOCTEST_ASSERT_IMPLEMENT_2(DT_REQUIRE_FALSE, cond); } while((void)0, 0)
 // clang-format on
 
-#define DOCTEST_ASSERT_THROWS(expr, assert_type)                                                   \
-    do {                                                                                           \
-        if(!doctest::getContextOptions()->no_throw) {                                              \
-            doctest::detail::ResultBuilder _DOCTEST_RB(doctest::assertType::assert_type, __FILE__, \
-                                                       __LINE__, #expr);                           \
-            try {                                                                                  \
-                expr;                                                                              \
-            } catch(...) { _DOCTEST_RB.m_threw = true; }                                           \
-            DOCTEST_ASSERT_LOG_AND_REACT(_DOCTEST_RB);                                             \
-        }                                                                                          \
-    } while((void)0, 0)
+#define DOCTEST_ASSERT_THROWS(expr, assert_type) DOCTEST_ASSERT_THROWS_WITH(expr, assert_type, "")
 
 #define DOCTEST_ASSERT_THROWS_AS(expr, assert_type, ...)                                           \
     do {                                                                                           \
@@ -2076,7 +2068,7 @@ constexpr T to_lvalue = x;
                 expr;                                                                              \
             } catch(const doctest::detail::remove_const<                                           \
                     doctest::detail::remove_reference<__VA_ARGS__>::type>::type&) {                \
-                _DOCTEST_RB.m_threw    = true;                                                     \
+                _DOCTEST_RB.translateException();                                                  \
                 _DOCTEST_RB.m_threw_as = true;                                                     \
             } catch(...) { _DOCTEST_RB.translateException(); }                                     \
             DOCTEST_ASSERT_LOG_AND_REACT(_DOCTEST_RB);                                             \
@@ -4244,7 +4236,8 @@ namespace {
     }
 
 #define DOCTEST_INTERNAL_ERROR(msg)                                                                \
-    throw_exception(std::logic_error(__FILE__ ":" __LINE__ ": Internal doctest error: " msg))
+    throw_exception(std::logic_error(                                                              \
+            __FILE__ ":" DOCTEST_TOSTR(__LINE__) ": Internal doctest error: " msg))
 
     DOCTEST_GCC_SUPPRESS_WARNING_WITH_PUSH("-Wunused-function")
     DOCTEST_CLANG_SUPPRESS_WARNING_WITH_PUSH("-Wunused-member-function")
@@ -4308,6 +4301,8 @@ namespace {
         XmlWriter& endElement();
 
         XmlWriter& writeAttribute( std::string const& name, std::string const& attribute );
+
+        XmlWriter& writeAttribute( std::string const& name, const char* attribute );
 
         XmlWriter& writeAttribute( std::string const& name, bool attribute );
 
@@ -4565,6 +4560,12 @@ namespace {
         return *this;
     }
 
+    XmlWriter& XmlWriter::writeAttribute( std::string const& name, const char* attribute ) {
+        if( !name.empty() && attribute && attribute[0] != '\0' )
+            m_os << ' ' << name << "=\"" << XmlEncode( attribute, XmlEncode::ForAttributes ) << '"';
+        return *this;
+    }
+
     XmlWriter& XmlWriter::writeAttribute( std::string const& name, bool attribute ) {
         m_os << ' ' << name << "=\"" << ( attribute ? "true" : "false" ) << '"';
         return *this;
@@ -4656,7 +4657,7 @@ namespace {
         void test_run_start(const ContextOptions& o) override {
             opt = &o;
             xml.writeDeclaration();
-            xml.startElement("doctest");
+            xml.startElement("doctest").writeAttribute("version", DOCTEST_VERSION);
         }
 
         void test_run_end(const TestRunStats& p) override {
@@ -4665,7 +4666,8 @@ namespace {
 
             xml.scopedElement("OverallResults")
                     .writeAttribute("successes", p.numAsserts - p.numAssertsFailed)
-                    .writeAttribute("failures", p.numAssertsFailed);
+                    .writeAttribute("failures", p.numAssertsFailed)
+                    .writeAttribute("skipped", p.numTestCases - p.numTestCasesPassingFilters);
 
             xml.endElement();
         }
@@ -4687,10 +4689,11 @@ namespace {
             }
 
             tc = &in;
-            xml.startElement("TestCase");
-            xml.writeAttribute("name", in.m_name);
-            xml.writeAttribute("filename", in.m_file);
-            xml.writeAttribute("line", in.m_line);
+            xml.startElement("TestCase")
+                    .writeAttribute("name", in.m_name)
+                    .writeAttribute("filename", removePathFromFilename(in.m_file))
+                    .writeAttribute("line", in.m_line)
+                    .writeAttribute("description", in.m_description);
         }
 
         void test_case_end(const CurrentTestCaseStats& st) override {
@@ -4703,17 +4706,15 @@ namespace {
         }
 
         void test_case_exception(const TestCaseException& e) override {
-            if(e.is_crash) {
-                xml.scopedElement("Crash").writeAttribute("message", e.error_string);
-            } else {
-                xml.scopedElement("Exception").writeAttribute("message", e.error_string);
-            }
+            xml.scopedElement("Exception")
+                    .writeAttribute("crash", e.is_crash)
+                    .writeText(e.error_string.c_str());
         }
 
         void subcase_start(const SubcaseSignature& in) override {
             xml.startElement("SubCase")
                     .writeAttribute("name", in.m_name)
-                    .writeAttribute("filename", in.m_file)
+                    .writeAttribute("filename", removePathFromFilename(in.m_file))
                     .writeAttribute("line", in.m_line);
         }
 
@@ -4723,23 +4724,43 @@ namespace {
             if(!rb.m_failed && !opt->success)
                 return;
 
+            std::lock_guard<std::mutex> lock(g_mutex);
+
             xml.startElement("Expression")
                     .writeAttribute("success", !rb.m_failed)
                     .writeAttribute("type", assertString(rb.m_at))
-                    .writeAttribute("filename", rb.m_file)
+                    .writeAttribute("filename", removePathFromFilename(rb.m_file))
                     .writeAttribute("line", rb.m_line);
 
             xml.scopedElement("Original").writeText(rb.m_expr);
-            xml.scopedElement("Expanded").writeText(rb.m_decomp.c_str());
+
+            if(rb.m_threw)
+                xml.scopedElement("Exception").writeText(rb.m_exception.c_str());
+
+            if(rb.m_at & (assertType::is_throws_as | assertType::is_throws_with)) {
+                xml.scopedElement("ExpectedException").writeText(rb.m_exception_type);
+            } else if((rb.m_at & assertType::is_normal) && !rb.m_threw) {
+                xml.scopedElement("Expanded").writeText(rb.m_decomp.c_str());
+            }
 
             log_contexts();
 
             xml.endElement();
         }
 
-        void log_message(const MessageData& /*mb*/) override {}
+        void log_message(const MessageData& mb) override {
+            std::lock_guard<std::mutex> lock(g_mutex);
 
-        void test_case_skipped(const TestCaseData&) override {}
+            xml.scopedElement("Expanded").writeText(mb.m_string.c_str());
+
+            log_contexts();
+        }
+
+        void test_case_skipped(const TestCaseData& in) override {
+            test_case_start(in);
+            xml.writeAttribute("skipped", "true");
+            xml.endElement();
+        }
     };
 
     XmlReporter g_xr(std::cout);

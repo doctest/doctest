@@ -1689,6 +1689,8 @@ namespace {
 
         XmlWriter& writeAttribute( std::string const& name, std::string const& attribute );
 
+        XmlWriter& writeAttribute( std::string const& name, const char* attribute );
+
         XmlWriter& writeAttribute( std::string const& name, bool attribute );
 
         template<typename T>
@@ -1945,6 +1947,12 @@ namespace {
         return *this;
     }
 
+    XmlWriter& XmlWriter::writeAttribute( std::string const& name, const char* attribute ) {
+        if( !name.empty() && attribute && attribute[0] != '\0' )
+            m_os << ' ' << name << "=\"" << XmlEncode( attribute, XmlEncode::ForAttributes ) << '"';
+        return *this;
+    }
+
     XmlWriter& XmlWriter::writeAttribute( std::string const& name, bool attribute ) {
         m_os << ' ' << name << "=\"" << ( attribute ? "true" : "false" ) << '"';
         return *this;
@@ -2036,7 +2044,7 @@ namespace {
         void test_run_start(const ContextOptions& o) override {
             opt = &o;
             xml.writeDeclaration();
-            xml.startElement("doctest");
+            xml.startElement("doctest").writeAttribute("version", DOCTEST_VERSION_STR);
         }
 
         void test_run_end(const TestRunStats& p) override {
@@ -2045,7 +2053,8 @@ namespace {
 
             xml.scopedElement("OverallResults")
                     .writeAttribute("successes", p.numAsserts - p.numAssertsFailed)
-                    .writeAttribute("failures", p.numAssertsFailed);
+                    .writeAttribute("failures", p.numAssertsFailed)
+                    .writeAttribute("skipped", p.numTestCases - p.numTestCasesPassingFilters);
 
             xml.endElement();
         }
@@ -2067,10 +2076,11 @@ namespace {
             }
 
             tc = &in;
-            xml.startElement("TestCase");
-            xml.writeAttribute("name", in.m_name);
-            xml.writeAttribute("filename", in.m_file);
-            xml.writeAttribute("line", in.m_line);
+            xml.startElement("TestCase")
+                    .writeAttribute("name", in.m_name)
+                    .writeAttribute("filename", removePathFromFilename(in.m_file))
+                    .writeAttribute("line", in.m_line)
+                    .writeAttribute("description", in.m_description);
         }
 
         void test_case_end(const CurrentTestCaseStats& st) override {
@@ -2083,17 +2093,15 @@ namespace {
         }
 
         void test_case_exception(const TestCaseException& e) override {
-            if(e.is_crash) {
-                xml.scopedElement("Crash").writeAttribute("message", e.error_string);
-            } else {
-                xml.scopedElement("Exception").writeAttribute("message", e.error_string);
-            }
+            xml.scopedElement("Exception")
+                    .writeAttribute("crash", e.is_crash)
+                    .writeText(e.error_string.c_str());
         }
 
         void subcase_start(const SubcaseSignature& in) override {
             xml.startElement("SubCase")
                     .writeAttribute("name", in.m_name)
-                    .writeAttribute("filename", in.m_file)
+                    .writeAttribute("filename", removePathFromFilename(in.m_file))
                     .writeAttribute("line", in.m_line);
         }
 
@@ -2103,23 +2111,43 @@ namespace {
             if(!rb.m_failed && !opt->success)
                 return;
 
+            std::lock_guard<std::mutex> lock(g_mutex);
+
             xml.startElement("Expression")
                     .writeAttribute("success", !rb.m_failed)
                     .writeAttribute("type", assertString(rb.m_at))
-                    .writeAttribute("filename", rb.m_file)
+                    .writeAttribute("filename", removePathFromFilename(rb.m_file))
                     .writeAttribute("line", rb.m_line);
 
             xml.scopedElement("Original").writeText(rb.m_expr);
-            xml.scopedElement("Expanded").writeText(rb.m_decomp.c_str());
+
+            if(rb.m_threw)
+                xml.scopedElement("Exception").writeText(rb.m_exception.c_str());
+
+            if(rb.m_at & (assertType::is_throws_as | assertType::is_throws_with)) {
+                xml.scopedElement("ExpectedException").writeText(rb.m_exception_type);
+            } else if((rb.m_at & assertType::is_normal) && !rb.m_threw) {
+                xml.scopedElement("Expanded").writeText(rb.m_decomp.c_str());
+            }
 
             log_contexts();
 
             xml.endElement();
         }
 
-        void log_message(const MessageData& /*mb*/) override {}
+        void log_message(const MessageData& mb) override {
+            std::lock_guard<std::mutex> lock(g_mutex);
 
-        void test_case_skipped(const TestCaseData&) override {}
+            xml.scopedElement("Expanded").writeText(mb.m_string.c_str());
+
+            log_contexts();
+        }
+
+        void test_case_skipped(const TestCaseData& in) override {
+            test_case_start(in);
+            xml.writeAttribute("skipped", "true");
+            xml.endElement();
+        }
     };
 
     XmlReporter g_xr(std::cout);
