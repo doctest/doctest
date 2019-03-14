@@ -2790,14 +2790,12 @@ namespace {
         };
 
         static Arch which() {
-            union _
-            {
-                int  asInt;
-                char asChar[sizeof(int)];
-            } u;
-
-            u.asInt = 1;                                            // NOLINT
-            return (u.asChar[sizeof(int) - 1] == 1) ? Big : Little; // NOLINT
+            int x = 1;
+            // casting any data pointer to char* is allowed
+            auto ptr = reinterpret_cast<char*>(&x);
+            if(*ptr)
+                return Little;
+            return Big;
         }
     };
 } // namespace
