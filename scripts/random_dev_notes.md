@@ -5,7 +5,7 @@ the mutex
 
 the registration...?
 
-the _MSC_VER ifdef...
+coverage
 
 skipped?
 expectedFailures?

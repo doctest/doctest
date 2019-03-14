@@ -4243,16 +4243,8 @@ namespace {
 #endif // DOCTEST_CONFIG_NO_EXCEPTIONS
     }
 
-#ifdef _MSC_VER // TODO: CLEAN THIS SHIT UP!
-#define DOCTEST_PREPARE_EXCEPTION(type, msg) type((std::stringstream() << msg).str())
-#else
-#define DOCTEST_PREPARE_EXCEPTION(type, msg)                                                       \
-    type(static_cast<std::stringstream&>(std::stringstream() << msg).str())
-#endif
-
 #define DOCTEST_INTERNAL_ERROR(msg)                                                                \
-    throw_exception(DOCTEST_PREPARE_EXCEPTION(                                                     \
-            std::logic_error, __FILE__ << ":" << __LINE__ << ": Internal doctest error: " << msg))
+    throw_exception(std::logic_error(__FILE__ ":" __LINE__ ": Internal doctest error: " msg))
 
     DOCTEST_GCC_SUPPRESS_WARNING_WITH_PUSH("-Wunused-function")
     DOCTEST_CLANG_SUPPRESS_WARNING_WITH_PUSH("-Wunused-member-function")
