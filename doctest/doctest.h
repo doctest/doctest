@@ -364,8 +364,8 @@ extern "C" __declspec(dllimport) void __stdcall DebugBreak();
 #endif // linux
 
 #include <cstddef>
-#include <cstring>
 #include <iosfwd>
+#include <new>
 
 #ifdef DOCTEST_CONFIG_INCLUDE_TYPE_TRAITS
 #include <type_traits>
@@ -1478,8 +1478,7 @@ namespace detail {
 
         struct DOCTEST_INTERFACE Chunk
         {
-            char buf[sizeof(Capture<char>)] DOCTEST_ALIGNMENT(
-                    2 * sizeof(void*)); // place to construct a Capture<T>
+            alignas(Capture<char>) char buf[sizeof(Capture<char>)];
 
             DOCTEST_DECLARE_DEFAULTS(Chunk);
             DOCTEST_DELETE_COPIES(Chunk);
@@ -1511,13 +1510,8 @@ namespace detail {
 
         template <typename T>
         DOCTEST_NOINLINE ContextBuilder& operator<<(T& in) {
-            Capture<T> temp(&in);
-
-            // construct either on stack or on heap
-            // copy the bytes for the whole object - including the vtable because we cant construct
-            // the object directly in the buffer using placement new - need the <new> header...
             if(numCaptures < DOCTEST_CONFIG_NUM_CAPTURES_ON_STACK) {
-                memcpy(stackChunks[numCaptures].buf, &temp, sizeof(Chunk));
+                new(stackChunks[numCaptures].buf) Capture<T>(&in);
             } else {
                 auto curr  = new Node;
                 curr->next = nullptr;
@@ -1528,7 +1522,7 @@ namespace detail {
                     head = tail = curr;
                 }
 
-                memcpy(tail->chunk.buf, &temp, sizeof(Chunk));
+                new(tail->chunk.buf) Capture<T>(&in);
             }
             ++numCaptures;
             return *this;
@@ -2668,6 +2662,7 @@ DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_BEGIN
 #include <new>
 #include <cstdio>
 #include <cstdlib>
+#include <cstring>
 #include <limits>
 #include <utility>
 #include <sstream>
