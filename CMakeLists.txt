@@ -47,7 +47,6 @@ add_custom_target(assemble_single_header ALL DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}
 ################################################################################
 
 if(${DOCTEST_WITH_MAIN_IN_STATIC_LIB})
-    include(scripts/cmake/common.cmake)
     add_library(${PROJECT_NAME}_with_main STATIC EXCLUDE_FROM_ALL doctest/parts/doctest.cpp)
     target_compile_definitions(${PROJECT_NAME}_with_main PRIVATE
         DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN)
@@ -59,6 +58,7 @@ if(CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
 
     add_subdirectory(examples/all_features)
     
+    # for code coverage we want exactly one binary to be produced and exercised
     if(NOT DEFINED ENV{CODE_COVERAGE})
         add_subdirectory(examples/exe_with_static_libs)
         add_subdirectory(examples/executable_dll_and_plugin)

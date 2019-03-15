@@ -1,8 +1,3 @@
-if(doctest_common_included)
-    return()
-endif()
-set(doctest_common_included true)
-
 include(CMakeParseArguments)
 
 # cache this for use inside of the function
@@ -17,9 +12,8 @@ find_package(Threads)
 set(DOCTEST_TEST_MODE "COMPARE" CACHE STRING "Test mode - normal/run through valgrind/collect output/compare with output")
 set_property(CACHE DOCTEST_TEST_MODE PROPERTY STRINGS "NORMAL;VALGRIND;COLLECT;COMPARE")
 
-# a custom version of add_test() to suite my needs
-function(doctest_add_test)
-    cmake_parse_arguments(ARG "NO_VALGRIND;NO_OUTPUT" "NAME" "COMMAND" ${ARGN})
+function(doctest_add_test_impl)
+    cmake_parse_arguments(ARG "NO_VALGRIND;NO_OUTPUT;XML_OUTPUT" "NAME" "COMMAND" ${ARGN})
     if(NOT "${ARG_UNPARSED_ARGUMENTS}" STREQUAL "" OR "${ARG_NAME}" STREQUAL "" OR "${ARG_COMMAND}" STREQUAL "")
         message(FATAL_ERROR "doctest_add_test() called with wrong options!")
     endif()
@@ -35,6 +29,10 @@ function(doctest_add_test)
     foreach(cur ${ARG_COMMAND})
         set(the_command "${the_command} ${cur}")
     endforeach()
+    if(ARG_XML_OUTPUT)
+        set(the_command "${the_command} --reporter=xml")
+        set(ARG_NAME ${ARG_NAME}_xml)
+    endif()
     # append the argument for removing paths from filenames in the output so tests give the same output everywhere
     set(the_command "${the_command} --dt-no-path-filenames=1")
     # append the argument for substituting source line numbers with 0 in the output so tests give the same output when lines change a bit
@@ -58,6 +56,12 @@ function(doctest_add_test)
     list(APPEND ADDITIONAL_FLAGS -DTEST_MODE=${the_test_mode})
     
     add_test(NAME ${ARG_NAME} COMMAND ${CMAKE_COMMAND} -DCOMMAND=${the_command} ${ADDITIONAL_FLAGS} -P ${CURRENT_LIST_DIR_CACHED}/exec_test.cmake)
+endfunction()
+
+# a custom version of add_test() to suite my needs
+function(doctest_add_test)
+    doctest_add_test_impl(${ARGN})
+    #doctest_add_test_impl(${ARGN} XML_OUTPUT)
 endfunction()
 
 macro(add_compiler_flags)

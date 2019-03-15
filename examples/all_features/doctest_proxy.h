@@ -9,6 +9,7 @@
 #define MY_PROXY_MACROS
 
 #define my_testcase                 DOCTEST_TEST_CASE
+#define my_testcase_class           DOCTEST_TEST_CASE_CLASS
 #define my_testcase_fixture         DOCTEST_TEST_CASE_FIXTURE
 #define my_subcase                  DOCTEST_SUBCASE
 #define my_testsuite                DOCTEST_TEST_SUITE
