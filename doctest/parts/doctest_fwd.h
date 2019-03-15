@@ -360,39 +360,9 @@ extern "C" __declspec(dllimport) void __stdcall DebugBreak();
 #define DOCTEST_BREAK_INTO_DEBUGGER() ((void)0)
 #endif // linux
 
-#if DOCTEST_CLANG
-// to detect if libc++ is being used with clang (the _LIBCPP_VERSION identifier)
-#include <ciso646>
-#endif // clang
-
-// Forward declaring 'X' in namespace std is not permitted by the C++ Standard.
-DOCTEST_MSVC_SUPPRESS_WARNING_WITH_PUSH(4643)
-
-#if defined(_LIBCPP_VERSION) || defined(DOCTEST_CONFIG_USE_IOSFWD)
-// not forward declaring ostream for libc++ because I had some problems (inline namespaces vs c++98)
-// so the <iosfwd> header is used - also it is very light and doesn't drag a ton of stuff
-#include <iosfwd>
-#else  // _LIBCPP_VERSION
-namespace std {
-template <class charT>
-struct char_traits;
-template <>
-struct char_traits<char>;
-template <class charT, class traits>
-class basic_ostream;
-typedef basic_ostream<char, char_traits<char>> ostream;
-} // namespace std
-#endif // _LIBCPP_VERSION || DOCTEST_CONFIG_USE_IOSFWD
-
-#ifdef _LIBCPP_VERSION
 #include <cstddef>
-#else  // _LIBCPP_VERSION
-namespace std {
-typedef decltype(nullptr) nullptr_t;
-}
-#endif // _LIBCPP_VERSION
-
-DOCTEST_MSVC_SUPPRESS_WARNING_POP
+#include <cstring>
+#include <iosfwd>
 
 #ifdef DOCTEST_CONFIG_INCLUDE_TYPE_TRAITS
 #include <type_traits>
@@ -772,8 +742,6 @@ namespace detail {
     template <typename T>
     struct has_insertion_operator : has_insertion_operator_impl::has_insertion_operator<T>
     {};
-
-    DOCTEST_INTERFACE void my_memcpy(void* dest, const void* src, unsigned num);
 
     DOCTEST_INTERFACE std::ostream* getTlsOss(); // returns a thread-local ostringstream
     DOCTEST_INTERFACE String getTlsOssResult();
@@ -1546,7 +1514,7 @@ namespace detail {
             // copy the bytes for the whole object - including the vtable because we cant construct
             // the object directly in the buffer using placement new - need the <new> header...
             if(numCaptures < DOCTEST_CONFIG_NUM_CAPTURES_ON_STACK) {
-                my_memcpy(stackChunks[numCaptures].buf, &temp, sizeof(Chunk));
+                memcpy(stackChunks[numCaptures].buf, &temp, sizeof(Chunk));
             } else {
                 auto curr  = new Node;
                 curr->next = nullptr;
@@ -1557,7 +1525,7 @@ namespace detail {
                     head = tail = curr;
                 }
 
-                my_memcpy(tail->chunk.buf, &temp, sizeof(Chunk));
+                memcpy(tail->chunk.buf, &temp, sizeof(Chunk));
             }
             ++numCaptures;
             return *this;
