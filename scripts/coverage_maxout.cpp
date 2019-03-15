@@ -126,7 +126,7 @@ TEST_CASE("exercising tricky code paths of doctest") {
     // trigger another single line of code... lol
     auto oldVal = const_cast<ContextOptions*>(getContextOptions())->no_path_in_filenames;
     const_cast<ContextOptions*>(getContextOptions())->no_path_in_filenames = false;
-    CHECK(String(removePathFromFilename("")) == "");
+    CHECK(String(skipPathFromFilename("")) == "");
     const_cast<ContextOptions*>(getContextOptions())->no_path_in_filenames = oldVal;
 
     // a hack to trigger a bug in doctest: currently a 0 cannot be successfully parsed for an int option!

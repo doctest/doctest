@@ -41,7 +41,7 @@ struct XmlReporter : public IReporter
 };
 
 XmlReporter r(std::cout);
-REGISTER_REPORTER("xml", 1, r);
+REGISTER_REPORTER("xml", 1, r); // priority 1 - a number user for ordering
 ```
 
 Multiple reporters can be used at the same time - just specify them through the ```--reporters=...``` [**command line option**](commandline.md). The number ```1``` in this case is the priority - reporters will be called in the order defined by their priority when a few of them are selected to be used at the same time.
@@ -50,11 +50,9 @@ You can list all registered reporters with ```--list-reporters```. There is only
 
 Reporters will be fully implemented and more thoroughly documented (with examples) for version 2.1 - [**roadmap**](roadmap.md).
 
-TODO: think about:
+When implementing a reporter users are advised to use a mutex in the ```log_assert``` and ```log_message``` functions.
 
-- people having to handle locking on their own in the reporters - just like currently in the console reporter...
-    - or log_assert() can be called for reporters (so also for listeners) only when failed or when printing on success!
-    - or it could be a 'policy' for the reporter
+Look at the reporters implemented in the doctest header for reference.
 
 ---------------
 

@@ -3,7 +3,7 @@ make a test where we exit due to an exception but re-enter the test case because
 
 the registration...?
 
-coverage
+test, coverage
 
 decorators
     timeouts
@@ -15,6 +15,13 @@ log the "randomness" for example in the xml output
     also in the console reporter!
 name of binary in the doctest tag?
 
+
+
+merge this
+    https://github.com/onqtam/doctest/pull/197
+    fix docs
+    perhaps remove the clutter around the special member functions
+    redo benchmarks (and add a <string> include along with the framework haeder :D)
 
 
 https://github.com/catchorg/Catch2/blob/master/docs/tostring.md#catchis_range-specialisation

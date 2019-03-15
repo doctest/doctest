@@ -46,12 +46,10 @@ DOCTEST_GCC_SUPPRESS_WARNING("-Weffc++")
 DOCTEST_GCC_SUPPRESS_WARNING("-Wstrict-overflow")
 #endif // gcc 5
 
-DOCTEST_MSVC_SUPPRESS_WARNING_WITH_PUSH(26439) // This kind of function may not throw. Declare it 'noexcept'
-
 struct SomeFixture
 {
     int data;
-    SomeFixture()
+    SomeFixture() noexcept
             : data(42) {
         // setup here
     }
@@ -60,8 +58,6 @@ struct SomeFixture
         // teardown here
     }
 };
-
-DOCTEST_MSVC_SUPPRESS_WARNING_POP
 
 TEST_CASE_FIXTURE(SomeFixture, "fixtured test") {
     data /= 2;

@@ -604,7 +604,7 @@ namespace assertType {
 
 DOCTEST_INTERFACE const char* assertString(assertType::Enum at);
 DOCTEST_INTERFACE const char* failureString(assertType::Enum at);
-DOCTEST_INTERFACE const char* removePathFromFilename(const char* file);
+DOCTEST_INTERFACE const char* skipPathFromFilename(const char* file);
 
 struct DOCTEST_INTERFACE TestCaseData
 {
@@ -684,6 +684,8 @@ struct DOCTEST_INTERFACE IContextScope
 
 struct ContextOptions //!OCLINT too many fields
 {
+    String binary_name; // the test binary name
+
     // == parameters from the command line
     String   order_by;  // how tests should be ordered
     unsigned rand_seed; // the seed for rand ordering
@@ -3122,7 +3124,7 @@ const char* failureString(assertType::Enum at) {
 DOCTEST_CLANG_SUPPRESS_WARNING_WITH_PUSH("-Wnull-dereference")
 DOCTEST_GCC_SUPPRESS_WARNING_WITH_PUSH("-Wnull-dereference")
 // depending on the current options this will remove the path of filenames
-const char* removePathFromFilename(const char* file) {
+const char* skipPathFromFilename(const char* file) {
     if(getContextOptions()->no_path_in_filenames) {
         auto back    = std::strrchr(file, '\\');
         auto forward = std::strrchr(file, '/');
@@ -3791,8 +3793,7 @@ namespace detail {
         // Call sysctl.
         size = sizeof(info);
         if(sysctl(mib, DOCTEST_COUNTOF(mib), &info, &size, 0, 0) != 0) {
-            fprintf(stderr, "\n** Call to sysctl failed - unable to determine if debugger is "
-                            "active **\n\n");
+            std::cerr << "\nCall to sysctl failed - unable to determine if debugger is active **\n";
             return false;
         }
         // We're being debugged if the P_TRACED flag is set.
@@ -3912,7 +3913,7 @@ namespace {
     std::ostream& file_line_to_stream(std::ostream& s, const char* file, int line,
                                       const char* tail = "") {
         const auto opt = getContextOptions();
-        s << Color::LightGrey << removePathFromFilename(file) << (opt->gnu_file_line ? ":" : "(")
+        s << Color::LightGrey << skipPathFromFilename(file) << (opt->gnu_file_line ? ":" : "(")
           << (opt->no_line_numbers ? 0 : line) // 0 or the real num depending on the option
           << (opt->gnu_file_line ? ":" : "):") << tail;
         return s;
@@ -4218,8 +4219,6 @@ namespace detail {
     MessageBuilder::~MessageBuilder() = default;
 } // namespace detail
 namespace {
-    std::mutex g_mutex;
-
     using namespace detail;
 
     template <typename Ex>
@@ -4627,7 +4626,8 @@ namespace {
 
     struct XmlReporter : public IReporter
     {
-        XmlWriter xml;
+        XmlWriter  xml;
+        std::mutex mutex;
 
         // caching pointers to objects of these types - safe to do
         const ContextOptions* opt;
@@ -4635,10 +4635,6 @@ namespace {
 
         XmlReporter(std::ostream& in)
                 : xml(in) {}
-
-        // =========================================================================================
-        // WHAT FOLLOWS ARE OVERRIDES OF THE VIRTUAL METHODS OF THE REPORTER INTERFACE
-        // =========================================================================================
 
         void log_contexts() {
             int num_contexts = get_num_active_contexts();
@@ -4652,10 +4648,20 @@ namespace {
             }
         }
 
+        // =========================================================================================
+        // WHAT FOLLOWS ARE OVERRIDES OF THE VIRTUAL METHODS OF THE REPORTER INTERFACE
+        // =========================================================================================
+
         void test_run_start(const ContextOptions& o) override {
             opt = &o;
             xml.writeDeclaration();
-            xml.startElement("doctest").writeAttribute("version", DOCTEST_VERSION);
+            std::string binary_name = o.binary_name.c_str();
+            if(binary_name.rfind(".exe") != std::string::npos)
+                binary_name = binary_name.substr(0, binary_name.length() - 4);
+
+            xml.startElement("doctest")
+                    .writeAttribute("version", DOCTEST_VERSION_STR)
+                    .writeAttribute("binary", skipPathFromFilename(o.binary_name.c_str()));
         }
 
         void test_run_end(const TestRunStats& p) override {
@@ -4689,7 +4695,7 @@ namespace {
             tc = &in;
             xml.startElement("TestCase")
                     .writeAttribute("name", in.m_name)
-                    .writeAttribute("filename", removePathFromFilename(in.m_file))
+                    .writeAttribute("filename", skipPathFromFilename(in.m_file))
                     .writeAttribute("line", in.m_line)
                     .writeAttribute("description", in.m_description);
         }
@@ -4712,7 +4718,7 @@ namespace {
         void subcase_start(const SubcaseSignature& in) override {
             xml.startElement("SubCase")
                     .writeAttribute("name", in.m_name)
-                    .writeAttribute("filename", removePathFromFilename(in.m_file))
+                    .writeAttribute("filename", skipPathFromFilename(in.m_file))
                     .writeAttribute("line", in.m_line);
         }
 
@@ -4722,12 +4728,12 @@ namespace {
             if(!rb.m_failed && !opt->success)
                 return;
 
-            std::lock_guard<std::mutex> lock(g_mutex);
+            std::lock_guard<std::mutex> lock(mutex);
 
             xml.startElement("Expression")
                     .writeAttribute("success", !rb.m_failed)
                     .writeAttribute("type", assertString(rb.m_at))
-                    .writeAttribute("filename", removePathFromFilename(rb.m_file))
+                    .writeAttribute("filename", skipPathFromFilename(rb.m_file))
                     .writeAttribute("line", rb.m_line);
 
             xml.scopedElement("Original").writeText(rb.m_expr);
@@ -4747,7 +4753,7 @@ namespace {
         }
 
         void log_message(const MessageData& mb) override {
-            std::lock_guard<std::mutex> lock(g_mutex);
+            std::lock_guard<std::mutex> lock(mutex);
 
             xml.scopedElement("Expanded").writeText(mb.m_string.c_str());
 
@@ -4761,14 +4767,12 @@ namespace {
         }
     };
 
-    XmlReporter g_xr(std::cout);
-    REGISTER_REPORTER("xml", 0, g_xr);
-
     struct ConsoleReporter : public IReporter
     {
         std::ostream&                 s;
         bool                          hasLoggedCurrentTestStart;
         std::vector<SubcaseSignature> subcasesStack;
+        std::mutex                    mutex;
 
         // caching pointers to objects of these types - safe to do
         const ContextOptions* opt;
@@ -4952,7 +4956,7 @@ namespace {
             if(!rb.m_failed && !opt->success)
                 return;
 
-            std::lock_guard<std::mutex> lock(g_mutex);
+            std::lock_guard<std::mutex> lock(mutex);
 
             logTestStart();
 
@@ -4997,7 +5001,7 @@ namespace {
         }
 
         void log_message(const MessageData& mb) override {
-            std::lock_guard<std::mutex> lock(g_mutex);
+            std::lock_guard<std::mutex> lock(mutex);
 
             logTestStart();
 
@@ -5360,6 +5364,8 @@ namespace {
 Context::Context(int argc, const char* const* argv)
         : p(new detail::ContextState) {
     parseArgs(argc, argv, true);
+    if(argc)
+        p->binary_name = argv[0];
 }
 
 Context::~Context() {
@@ -5368,7 +5374,11 @@ Context::~Context() {
     delete p;
 }
 
-void Context::applyCommandLine(int argc, const char* const* argv) { parseArgs(argc, argv); }
+void Context::applyCommandLine(int argc, const char* const* argv) {
+    parseArgs(argc, argv);
+    if(argc)
+        p->binary_name = argv[0];
+}
 
 // parses args
 void Context::parseArgs(int argc, const char* const* argv, bool withDefaults) {
@@ -5530,6 +5540,9 @@ int Context::run() {
 
     ConsoleReporterWithHelpers con_rep(std::cout);
     registerReporter("console", 0, con_rep);
+
+    XmlReporter xml_rep(std::cout);
+    registerReporter("xml", 0, xml_rep);
 
     // setup default reporter if none is given through the command line
     p->reporters_currently_used.clear();

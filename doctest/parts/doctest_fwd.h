@@ -601,7 +601,7 @@ namespace assertType {
 
 DOCTEST_INTERFACE const char* assertString(assertType::Enum at);
 DOCTEST_INTERFACE const char* failureString(assertType::Enum at);
-DOCTEST_INTERFACE const char* removePathFromFilename(const char* file);
+DOCTEST_INTERFACE const char* skipPathFromFilename(const char* file);
 
 struct DOCTEST_INTERFACE TestCaseData
 {
@@ -681,6 +681,8 @@ struct DOCTEST_INTERFACE IContextScope
 
 struct ContextOptions //!OCLINT too many fields
 {
+    String binary_name; // the test binary name
+
     // == parameters from the command line
     String   order_by;  // how tests should be ordered
     unsigned rand_seed; // the seed for rand ordering
