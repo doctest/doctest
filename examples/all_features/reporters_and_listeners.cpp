@@ -1,10 +1,18 @@
-## Reporters
+#include <doctest/doctest.h>
 
-A very sloppy documentation of the partial reporters support.
+DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_BEGIN
+#include <vector>
+#include <mutex>
+DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_END
 
-Example how to define your own reporter:
+DOCTEST_GCC_SUPPRESS_WARNING("-Weffc++")
+DOCTEST_GCC_SUPPRESS_WARNING("-Wpedantic")
 
-```c++
+DOCTEST_MSVC_SUPPRESS_WARNING(5026) // move constructor was implicitly defined as deleted
+DOCTEST_MSVC_SUPPRESS_WARNING(4625) // copy constructor was implicitly defined as deleted
+DOCTEST_MSVC_SUPPRESS_WARNING(4626) // assignment operator was implicitly defined as deleted
+DOCTEST_MSVC_SUPPRESS_WARNING(5027) // move assignment operator was implicitly defined as deleted
+
 using namespace doctest;
 
 struct MyXmlReporter : public IReporter
@@ -61,16 +69,3 @@ struct MyXmlReporter : public IReporter
 
 // "1" is the priority - used for ordering when multiple reporters/listeners are used
 REGISTER_REPORTER("my_xml", 1, MyXmlReporter);
-```
-
-Multiple reporters can be used at the same time - just specify them through the ```--reporters=...``` [**command line filtering option**](commandline.md). Multiple ones can be specified using commas to separate them like this: ```--reporters=myListener,xml``` and their order of execution will be based on their priority - in the case of the example above - the number "1" (lower means earlier - the default console/xml reporters from the framework have 0 as their priority - negative numbers are accepted as well).
-
-You can list all registered reporters with ```--list-reporters```. There is only 1 implemented reporter in the framework - a console reporter - an xml one is coming in the next version. the reporter interface can also be used for "listening" to events.
-
-When implementing a reporter users are advised to follow the comments from the example above and look at the few implemented reporters in the framework itself.
-
----------------
-
-[Home](readme.md#reference)
-
-<p align="center"><img src="../../scripts/data/logo/icon_2.svg"></p>

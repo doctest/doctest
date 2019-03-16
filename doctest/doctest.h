@@ -4677,19 +4677,21 @@ namespace {
             if(binary_name.rfind(".exe") != std::string::npos)
                 binary_name = binary_name.substr(0, binary_name.length() - 4);
 
-            xml.startElement("doctest")
-                    .writeAttribute("version", DOCTEST_VERSION_STR)
-                    .writeAttribute("binary", binary_name);
+            xml.startElement("doctest").writeAttribute("binary", binary_name);
+            if(getContextOptions()->no_version == false)
+                xml.writeAttribute("version", DOCTEST_VERSION_STR);
         }
 
         void test_run_end(const TestRunStats& p) override {
             if(tc) // the TestSuite tag - only if there has been at least 1 test case
                 xml.endElement();
 
-            xml.scopedElement("OverallResults")
+            xml.startElement("OverallResults")
                     .writeAttribute("successes", p.numAsserts - p.numAssertsFailed)
-                    .writeAttribute("failures", p.numAssertsFailed)
-                    .writeAttribute("skipped", p.numTestCases - p.numTestCasesPassingFilters);
+                    .writeAttribute("failures", p.numAssertsFailed);
+            if(opt.no_skipped_summary == false)
+                xml.writeAttribute("skipped", p.numTestCases - p.numTestCasesPassingFilters);
+            xml.endElement();
 
             xml.endElement();
         }

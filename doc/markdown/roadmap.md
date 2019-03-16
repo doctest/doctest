@@ -24,9 +24,6 @@ Planned features for future releases - order changes constantly...
         - options
             - absolutely no output on success
             - summary only
-        - make sure all relevant parts of the reporters can be accessed from the doctest namespace without the need for detail
-        - examples
-        - documentation
 
 ### For 2.4:
 

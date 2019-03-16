@@ -3,6 +3,11 @@ get rid of DOCTEST_DECLARE_DEFAULTS & friends...
     AND get rid of DOCTEST_INTERFACE for simple structs!
 
 
+struct TestQuery
+{
+    String*  data     = nullptr;
+    unsigned num_data = 0;
+};
 
 
 make a test where we exit due to an exception but re-enter the test case because of other subcases

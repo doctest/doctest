@@ -9,6 +9,7 @@ set(files_with_output
     alternative_macros.cpp
     assertion_macros.cpp
     stringification.cpp
+    reporters_and_listeners.cpp
     subcases.cpp
     logging.cpp
     templated_test_cases.cpp
