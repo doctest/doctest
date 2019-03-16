@@ -681,9 +681,11 @@ struct DOCTEST_INTERFACE IContextScope
 
 struct ContextOptions //!OCLINT too many fields
 {
-    String binary_name; // the test binary name
+    std::ostream* stdout_stream; // stdout stream - std::cout by default
+    String        binary_name;   // the test binary name
 
     // == parameters from the command line
+    String   out;       // output filename
     String   order_by;  // how tests should be ordered
     unsigned rand_seed; // the seed for rand ordering
 
@@ -1429,21 +1431,17 @@ namespace detail {
 
     DOCTEST_INTERFACE void registerExceptionTranslatorImpl(const IExceptionTranslator* et);
 
-    // FIX FOR VISUAL STUDIO VERSIONS PRIOR TO 2015 - they failed to compile the call to operator<< with
-    // std::ostream passed as a reference noting that there is a use of an undefined type (which there isn't)
-    DOCTEST_INTERFACE void writeStringToStream(std::ostream* s, const String& str);
-
     template <bool C>
     struct StringStreamBase
     {
         template <typename T>
         static void convert(std::ostream* s, const T& in) {
-            writeStringToStream(s, toString(in));
+            *s << toString(in);
         }
 
         // always treat char* as a string in this context - no matter
         // if DOCTEST_CONFIG_TREAT_CHAR_STAR_AS_STRING is defined
-        static void convert(std::ostream* s, const char* in) { writeStringToStream(s, String(in)); }
+        static void convert(std::ostream* s, const char* in) { *s << String(in); }
     };
 
     template <>
@@ -1735,8 +1733,11 @@ struct DOCTEST_INTERFACE TestRunStats
 
 struct DOCTEST_INTERFACE IReporter
 {
-    // called when the whole test run starts (safe to cache a pointer to the input)
-    virtual void test_run_start(const ContextOptions&) = 0;
+    // The constructor has to accept "const ContextOptions&" as a single argument
+    // which has most of the options for the run + a pointer to the stdout stream
+
+    // called when the whole test run starts
+    virtual void test_run_start() = 0;
     // called when the whole test run ends (caching a pointer to the input doesn't make sense here)
     virtual void test_run_end(const TestRunStats&) = 0;
 
@@ -1774,8 +1775,22 @@ struct DOCTEST_INTERFACE IReporter
     static const String* get_stringified_contexts();
 };
 
-int registerReporter(const char* name, int priority, IReporter& r);
+namespace detail {
+    typedef IReporter* (*reporterCreatorFunc)(const ContextOptions&);
 
+    DOCTEST_INTERFACE void registerReporterImpl(const char* name, int prio, reporterCreatorFunc c);
+
+    template <typename Reporter>
+    IReporter* reporterCreator(const ContextOptions& o) {
+        return new Reporter(o);
+    }
+} // namespace detail
+
+template <typename Reporter>
+int registerReporter(const char* name, int priority) {
+    detail::registerReporterImpl(name, priority, detail::reporterCreator<Reporter>);
+    return 0;
+}
 } // namespace doctest
 
 // if registering is not disabled
@@ -1977,7 +1992,7 @@ int registerReporter(const char* name, int priority, IReporter& r);
 // for registering
 #define DOCTEST_REGISTER_REPORTER(name, priority, reporter)                                        \
     DOCTEST_GLOBAL_NO_WARNINGS(DOCTEST_ANONYMOUS(_DOCTEST_ANON_REPORTER_)) =                       \
-            doctest::registerReporter(name, priority, reporter);                                   \
+            doctest::registerReporter<reporter>(name, priority);                                   \
     DOCTEST_GLOBAL_NO_WARNINGS_END() typedef int DOCTEST_ANONYMOUS(_DOCTEST_ANON_FOR_SEMICOLON_)
 
 // for logging

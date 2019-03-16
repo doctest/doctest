@@ -90,6 +90,7 @@ DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_BEGIN
 #include <cstring>
 #include <limits>
 #include <utility>
+#include <fstream>
 #include <sstream>
 #include <iostream>
 #include <algorithm>
@@ -253,8 +254,12 @@ namespace detail {
         }
     };
 
-    ContextState*             g_cs = nullptr;
-    DOCTEST_THREAD_LOCAL bool g_no_colors; // used to avoid locks for the debug output
+    ContextState* g_cs = nullptr;
+
+    // used to avoid locks for the debug output
+    // TODO: figure out if this is indeed necessary/correct - seems like either there still
+    // could be a race or that there wouldn't be a race even if using the context directly
+    DOCTEST_THREAD_LOCAL bool g_no_colors;
 
 #endif // DOCTEST_CONFIG_DISABLE
 } // namespace detail
@@ -725,9 +730,10 @@ doctest::detail::TestSuite& getCurrentTestSuite() {
 
 namespace doctest {
 namespace {
-    using namespace detail;
-    typedef std::map<std::pair<int, String>, IReporter*> reporterMap;
-    reporterMap&                                         getReporters() {
+    // the int (priority) is part of the key for automatic sorting - sadly one can register a
+    // reporter with a duplicate name and a different priority but hopefully that won't happen often :|
+    typedef std::map<std::pair<int, String>, reporterCreatorFunc> reporterMap;
+    reporterMap&                                                  getReporters() {
         static reporterMap data;
         return data;
     }
@@ -1195,8 +1201,6 @@ namespace detail {
            getExceptionTranslators().end())
             getExceptionTranslators().push_back(et);
     }
-
-    void writeStringToStream(std::ostream* s, const String& str) { *s << str; }
 
 #ifdef DOCTEST_CONFIG_TREAT_CHAR_STAR_AS_STRING
     void toStream(std::ostream* s, char* in) { *s << in; }
@@ -1705,9 +1709,9 @@ namespace {
 
         void ensureTagClosed();
 
-        void writeDeclaration();
-
     private:
+
+        void writeDeclaration();
 
         void newlineIfNecessary();
 
@@ -1897,7 +1901,7 @@ namespace {
 
     XmlWriter::XmlWriter( std::ostream& os ) : m_os( os )
     {
-        //writeDeclaration();
+        writeDeclaration();
     }
 
     XmlWriter::~XmlWriter() {
@@ -2014,12 +2018,13 @@ namespace {
         XmlWriter  xml;
         std::mutex mutex;
 
-        // caching pointers to objects of these types - safe to do
-        const ContextOptions* opt;
+        // caching pointers/references to objects of these types - safe to do
+        const ContextOptions& opt;
         const TestCaseData*   tc = nullptr;
 
-        XmlReporter(std::ostream& in)
-                : xml(in) {}
+        XmlReporter(const ContextOptions& co)
+                : xml(*co.stdout_stream)
+                , opt(co) {}
 
         void log_contexts() {
             int num_contexts = get_num_active_contexts();
@@ -2033,16 +2038,15 @@ namespace {
             }
         }
 
+        unsigned line(unsigned l) const { return opt.no_line_numbers ? 0 : l; }
+
         // =========================================================================================
         // WHAT FOLLOWS ARE OVERRIDES OF THE VIRTUAL METHODS OF THE REPORTER INTERFACE
         // =========================================================================================
 
-        void test_run_start(const ContextOptions& o) override {
-            opt = &o;
-            xml.writeDeclaration();
-
+        void test_run_start() override {
             // remove .exe extension - mainly to have the same output on UNIX and Windows
-            std::string binary_name = skipPathFromFilename(o.binary_name.c_str());
+            std::string binary_name = skipPathFromFilename(opt.binary_name.c_str());
             if(binary_name.rfind(".exe") != std::string::npos)
                 binary_name = binary_name.substr(0, binary_name.length() - 4);
 
@@ -2083,7 +2087,7 @@ namespace {
             xml.startElement("TestCase")
                     .writeAttribute("name", in.m_name)
                     .writeAttribute("filename", skipPathFromFilename(in.m_file))
-                    .writeAttribute("line", in.m_line)
+                    .writeAttribute("line", line(in.m_line))
                     .writeAttribute("description", in.m_description);
         }
 
@@ -2106,13 +2110,13 @@ namespace {
             xml.startElement("SubCase")
                     .writeAttribute("name", in.m_name)
                     .writeAttribute("filename", skipPathFromFilename(in.m_file))
-                    .writeAttribute("line", in.m_line);
+                    .writeAttribute("line", line(in.m_line));
         }
 
         void subcase_end(const SubcaseSignature&) override { xml.endElement(); }
 
         void log_assert(const AssertData& rb) override {
-            if(!rb.m_failed && !opt->success)
+            if(!rb.m_failed && !opt.success)
                 return;
 
             std::lock_guard<std::mutex> lock(mutex);
@@ -2121,7 +2125,7 @@ namespace {
                     .writeAttribute("success", !rb.m_failed)
                     .writeAttribute("type", assertString(rb.m_at))
                     .writeAttribute("filename", skipPathFromFilename(rb.m_file))
-                    .writeAttribute("line", rb.m_line);
+                    .writeAttribute("line", line(rb.m_line));
 
             xml.scopedElement("Original").writeText(rb.m_expr);
 
@@ -2154,6 +2158,8 @@ namespace {
         }
     };
 
+    DOCTEST_REGISTER_REPORTER("xml", 0, XmlReporter);
+
     struct ConsoleReporter : public IReporter
     {
         std::ostream&                 s;
@@ -2161,12 +2167,17 @@ namespace {
         std::vector<SubcaseSignature> subcasesStack;
         std::mutex                    mutex;
 
-        // caching pointers to objects of these types - safe to do
-        const ContextOptions* opt;
+        // caching pointers/references to objects of these types - safe to do
+        const ContextOptions& opt;
         const TestCaseData*   tc;
 
-        ConsoleReporter(std::ostream& in)
-                : s(in) {}
+        ConsoleReporter(const ContextOptions& co)
+                : s(*co.stdout_stream)
+                , opt(co) {}
+
+        ConsoleReporter(const ContextOptions& co, std::ostream& ostr)
+                : s(ostr)
+                , opt(co) {}
 
         // =========================================================================================
         // WHAT FOLLOWS ARE HELPERS USED BY THE OVERRIDES OF THE VIRTUAL METHODS OF THE INTERFACE
@@ -2239,7 +2250,7 @@ namespace {
         // WHAT FOLLOWS ARE OVERRIDES OF THE VIRTUAL METHODS OF THE REPORTER INTERFACE
         // =========================================================================================
 
-        void test_run_start(const ContextOptions& o) override { opt = &o; }
+        void test_run_start() override {}
 
         void test_run_end(const TestRunStats& p) override {
             separator_to_stream();
@@ -2252,7 +2263,7 @@ namespace {
               << std::setw(6) << p.numTestCasesPassingFilters - p.numTestCasesFailed << " passed"
               << Color::None << " | " << (p.numTestCasesFailed > 0 ? Color::Red : Color::None)
               << std::setw(6) << p.numTestCasesFailed << " failed" << Color::None << " | ";
-            if(opt->no_skipped_summary == false) {
+            if(opt.no_skipped_summary == false) {
                 const int numSkipped = p.numTestCases - p.numTestCasesPassingFilters;
                 s << (numSkipped == 0 ? Color::None : Color::Yellow) << std::setw(6) << numSkipped
                   << " skipped" << Color::None;
@@ -2277,11 +2288,11 @@ namespace {
         void test_case_end(const CurrentTestCaseStats& st) override {
             // log the preamble of the test case only if there is something
             // else to print - something other than that an assert has failed
-            if(opt->duration ||
+            if(opt.duration ||
                (st.failure_flags && st.failure_flags != TestCaseFailureReason::AssertFailure))
                 logTestStart();
 
-            if(opt->duration)
+            if(opt.duration)
                 s << Color::None << std::setprecision(6) << std::fixed << st.seconds
                   << " s: " << tc->m_name << "\n";
 
@@ -2340,7 +2351,7 @@ namespace {
         }
 
         void log_assert(const AssertData& rb) override {
-            if(!rb.m_failed && !opt->success)
+            if(!rb.m_failed && !opt.success)
                 return;
 
             std::lock_guard<std::mutex> lock(mutex);
@@ -2403,6 +2414,8 @@ namespace {
         void test_case_skipped(const TestCaseData&) override {}
     };
 
+    DOCTEST_REGISTER_REPORTER("console", 0, ConsoleReporter);
+
     struct Whitespace
     {
         int nrSpaces;
@@ -2419,8 +2432,8 @@ namespace {
     // extension of the console reporter - with a bunch of helpers for the stdout stream redirection
     struct ConsoleReporterWithHelpers : public ConsoleReporter
     {
-        ConsoleReporterWithHelpers(std::ostream& in)
-                : ConsoleReporter(in) {}
+        ConsoleReporterWithHelpers(const ContextOptions& co)
+                : ConsoleReporter(co) {}
 
         void printVersion() {
             if(getContextOptions()->no_version == false)
@@ -2489,6 +2502,8 @@ namespace {
               << Whitespace(sizePrefixDisplay*1) << "filters OUT subcases by their name\n";
             s << " -" DOCTEST_OPTIONS_PREFIX_DISPLAY "r,   --" DOCTEST_OPTIONS_PREFIX_DISPLAY "reporters=<filters>           "
               << Whitespace(sizePrefixDisplay*1) << "reporters to use (console is default)\n";
+            s << " -" DOCTEST_OPTIONS_PREFIX_DISPLAY "o,   --" DOCTEST_OPTIONS_PREFIX_DISPLAY "out=<string>                  "
+              << Whitespace(sizePrefixDisplay*1) << "output filename\n";
             s << " -" DOCTEST_OPTIONS_PREFIX_DISPLAY "ob,  --" DOCTEST_OPTIONS_PREFIX_DISPLAY "order-by=<string>             "
               << Whitespace(sizePrefixDisplay*1) << "how the tests should be ordered\n";
             s << Whitespace(sizePrefixDisplay*3) << "                                       <string> - by [file/suite/name/rand]\n";
@@ -2585,31 +2600,29 @@ namespace {
     {
         DOCTEST_THREAD_LOCAL static std::ostringstream oss;
 
-        DebugOutputWindowReporter()
-                : ConsoleReporter(oss) {}
+        DebugOutputWindowReporter(const ContextOptions& co)
+                : ConsoleReporter(co, oss) {}
 
-#define DOCTEST_DEBUG_OUTPUT_WINDOW_REPORTER_OVERRIDE(func, type)                                  \
-    void func(type in) override {                                                                  \
-        if(isDebuggerActive()) {                                                                   \
-            bool with_col = g_no_colors;                                                           \
-            g_no_colors   = false;                                                                 \
-            ConsoleReporter::func(in);                                                             \
-            DOCTEST_OUTPUT_DEBUG_STRING(oss.str().c_str());                                        \
-            oss.str("");                                                                           \
-            g_no_colors = with_col;                                                                \
-        }                                                                                          \
+#define DOCTEST_DEBUG_OUTPUT_REPORTER_OVERRIDE(func, type, arg)                                    \
+    void func(type arg) override {                                                                 \
+        bool with_col = g_no_colors;                                                               \
+        g_no_colors   = false;                                                                     \
+        ConsoleReporter::func(arg);                                                                \
+        DOCTEST_OUTPUT_DEBUG_STRING(oss.str().c_str());                                            \
+        oss.str("");                                                                               \
+        g_no_colors = with_col;                                                                    \
     }
 
-        DOCTEST_DEBUG_OUTPUT_WINDOW_REPORTER_OVERRIDE(test_run_start, const ContextOptions&)
-        DOCTEST_DEBUG_OUTPUT_WINDOW_REPORTER_OVERRIDE(test_run_end, const TestRunStats&)
-        DOCTEST_DEBUG_OUTPUT_WINDOW_REPORTER_OVERRIDE(test_case_start, const TestCaseData&)
-        DOCTEST_DEBUG_OUTPUT_WINDOW_REPORTER_OVERRIDE(test_case_end, const CurrentTestCaseStats&)
-        DOCTEST_DEBUG_OUTPUT_WINDOW_REPORTER_OVERRIDE(test_case_exception, const TestCaseException&)
-        DOCTEST_DEBUG_OUTPUT_WINDOW_REPORTER_OVERRIDE(subcase_start, const SubcaseSignature&)
-        DOCTEST_DEBUG_OUTPUT_WINDOW_REPORTER_OVERRIDE(subcase_end, const SubcaseSignature&)
-        DOCTEST_DEBUG_OUTPUT_WINDOW_REPORTER_OVERRIDE(log_assert, const AssertData&)
-        DOCTEST_DEBUG_OUTPUT_WINDOW_REPORTER_OVERRIDE(log_message, const MessageData&)
-        DOCTEST_DEBUG_OUTPUT_WINDOW_REPORTER_OVERRIDE(test_case_skipped, const TestCaseData&)
+        DOCTEST_DEBUG_OUTPUT_REPORTER_OVERRIDE(test_run_start, DOCTEST_EMPTY, DOCTEST_EMPTY)
+        DOCTEST_DEBUG_OUTPUT_REPORTER_OVERRIDE(test_run_end, const TestRunStats&, in)
+        DOCTEST_DEBUG_OUTPUT_REPORTER_OVERRIDE(test_case_start, const TestCaseData&, in)
+        DOCTEST_DEBUG_OUTPUT_REPORTER_OVERRIDE(test_case_end, const CurrentTestCaseStats&, in)
+        DOCTEST_DEBUG_OUTPUT_REPORTER_OVERRIDE(test_case_exception, const TestCaseException&, in)
+        DOCTEST_DEBUG_OUTPUT_REPORTER_OVERRIDE(subcase_start, const SubcaseSignature&, in)
+        DOCTEST_DEBUG_OUTPUT_REPORTER_OVERRIDE(subcase_end, const SubcaseSignature&, in)
+        DOCTEST_DEBUG_OUTPUT_REPORTER_OVERRIDE(log_assert, const AssertData&, in)
+        DOCTEST_DEBUG_OUTPUT_REPORTER_OVERRIDE(log_message, const MessageData&, in)
+        DOCTEST_DEBUG_OUTPUT_REPORTER_OVERRIDE(test_case_skipped, const TestCaseData&, in)
     };
 
     DOCTEST_THREAD_LOCAL std::ostringstream DebugOutputWindowReporter::oss;
@@ -2737,7 +2750,7 @@ namespace {
             }
         } else {
             // integer
-            // TODO: change this to use std::stoi or something else! currently it uses undefined behavior - assumes '0' on unsuccessful parse...
+            // TODO: change this to use std::stoi or something else! currently it uses undefined behavior - assumes '0' on failed parse...
             int theInt = std::atoi(parsedValue.c_str()); // NOLINT
             if(theInt != 0) {
                 res = theInt; //!OCLINT parameter reassignment
@@ -2819,6 +2832,7 @@ void Context::parseArgs(int argc, const char* const* argv, bool withDefaults) {
     p->var = strRes
 
     // clang-format off
+    DOCTEST_PARSE_STR_OPTION("out", "o", out, "");
     DOCTEST_PARSE_STR_OPTION("order-by", "ob", order_by, "file");
     DOCTEST_PARSE_INT_OPTION("rand-seed", "rs", rand_seed, 0);
 
@@ -2919,35 +2933,61 @@ void Context::setAssertHandler(detail::assert_handler ah) { p->ah = ah; }
 int Context::run() {
     using namespace detail;
 
-    auto old_cs        = g_cs;
+    // save the old context state in case such was setup - for using asserts out of a testing context
+    auto old_cs = g_cs;
+    // this is the current contest
     g_cs               = p;
     is_running_in_test = true;
-    g_no_colors        = p->no_colors;
+
+    g_no_colors = p->no_colors;
     p->resetRunData();
 
-    ConsoleReporterWithHelpers con_rep(std::cout);
-    registerReporter("console", 0, con_rep);
+    // stdout by default
+    p->stdout_stream = &std::cout;
 
-    XmlReporter xml_rep(std::cout);
-    registerReporter("xml", 0, xml_rep);
+    // or to a file if specified
+    std::fstream fstr;
+    if(p->out.size()) {
+        fstr.open(p->out.c_str(), std::fstream::out);
+        p->stdout_stream = &fstr;
+    }
+
+    auto cleanup_and_return = [&]() {
+        if(fstr.is_open())
+            fstr.close();
+
+        // restore context
+        g_cs               = old_cs;
+        is_running_in_test = false;
+
+        // we have to free the reporters which were allocated when the run started
+        for(auto& curr : p->reporters_currently_used)
+            delete curr;
+        p->reporters_currently_used.clear();
+
+        if(p->numTestCasesFailed && !p->no_exitcode)
+            return EXIT_FAILURE;
+        return EXIT_SUCCESS;
+    };
+
+    DOCTEST_REGISTER_REPORTER("console", 0, ConsoleReporterWithHelpers);
 
     // setup default reporter if none is given through the command line
-    p->reporters_currently_used.clear();
     if(p->filters[8].empty())
-        p->reporters_currently_used.push_back(getReporters()[reporterMap::key_type(0, "console")]);
+        p->filters[8].push_back("console");
 
     // check to see if any of the registered reporters has been selected
     for(auto& curr : getReporters()) {
         if(matchesAny(curr.first.second.c_str(), p->filters[8], false, p->case_sensitive))
-            p->reporters_currently_used.push_back(curr.second);
+            p->reporters_currently_used.push_back(curr.second(*g_cs));
     }
 
-    // always use the debug output window reporter
 #ifdef DOCTEST_PLATFORM_WINDOWS
-    DebugOutputWindowReporter debug_output_rep;
     if(isDebuggerActive())
-        p->reporters_currently_used.push_back(&debug_output_rep);
+        p->reporters_currently_used.push_back(new DebugOutputWindowReporter(*g_cs));
 #endif // DOCTEST_PLATFORM_WINDOWS
+
+    ConsoleReporterWithHelpers con_rep(*g_cs);
 
     // handle version, help and no_run
     if(p->no_run || p->version || p->help || p->list_reporters) {
@@ -2958,10 +2998,7 @@ int Context::run() {
         if(p->list_reporters)
             con_rep.printRegisteredReporters();
 
-        g_cs               = old_cs;
-        is_running_in_test = false;
-
-        return EXIT_SUCCESS;
+        return cleanup_and_return();
     }
 
     con_rep.printIntro();
@@ -3005,7 +3042,7 @@ int Context::run() {
     bool query_mode = p->count || p->list_test_cases || p->list_test_suites;
 
     if(!query_mode)
-        DOCTEST_ITERATE_THROUGH_REPORTERS(test_run_start, *g_cs);
+        DOCTEST_ITERATE_THROUGH_REPORTERS(test_run_start, DOCTEST_EMPTY);
 
     // invoke the registered functions if they match the filter criteria (or just count them)
     for(auto& curr : testArray) {
@@ -3167,12 +3204,7 @@ int Context::run() {
     else
         con_rep.output_query_results();
 
-    g_cs               = old_cs;
-    is_running_in_test = false;
-
-    if(p->numTestCasesFailed && !p->no_exitcode)
-        return EXIT_FAILURE;
-    return EXIT_SUCCESS;
+    return cleanup_and_return();
 }
 
 DOCTEST_DEFINE_DEFAULTS(CurrentTestCaseStats);
@@ -3191,10 +3223,11 @@ const String* IReporter::get_stringified_contexts() {
     return get_num_stringified_contexts() ? &detail::g_cs->stringifiedContexts[0] : nullptr;
 }
 
-int registerReporter(const char* name, int priority, IReporter& r) {
-    getReporters().insert(reporterMap::value_type(reporterMap::key_type(priority, name), &r));
-    return 0;
-}
+namespace detail {
+    void registerReporterImpl(const char* name, int priority, reporterCreatorFunc c) {
+        getReporters().insert(reporterMap::value_type(reporterMap::key_type(priority, name), c));
+    }
+} // namespace detail
 
 // see these issues on the reasoning for this:
 // - https://github.com/onqtam/doctest/issues/143#issuecomment-414418903

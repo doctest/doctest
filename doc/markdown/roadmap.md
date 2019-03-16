@@ -16,13 +16,11 @@ Planned features for future releases - order changes constantly...
         - custom reporters can be written
         - register and choose reporters
         - list all reporters
-    - what is left:
         - output to file (or just not stdout)
         - xml output
-        - xUnit reporter
+    - what is left:
         - compact reporter - https://github.com/onqtam/doctest/issues/75
-        - progress reporter
-        - [junit related stuff](https://github.com/ujiro99/doctest-junit-report))
+        - xUnit/junit reporter - perhaps related: https://github.com/ujiro99/doctest-junit-report
         - options
             - absolutely no output on success
             - summary only

@@ -7,41 +7,42 @@ Example how to define your own reporter:
 ```c++
 using namespace doctest;
 
-struct XmlReporter : public IReporter
+struct MyXmlReporter : public IReporter
 {
-    std::ostream&                 s;
+    std::ostream&                 stdout_stream;
     std::vector<SubcaseSignature> subcasesStack;
 
-    // caching pointers to objects of these types - safe to do
-    const ContextOptions* opt;
+    // caching pointers/references to objects of these types - safe to do
+    const ContextOptions& opt;
     const TestCaseData*   tc;
 
-    XmlReporter(std::ostream& in)
-            : s(in) {}
+    // constructor has to accept the ContextOptions as a single argument
+    XmlReporter(const ContextOptions& in)
+                : stdout_stream(*in.stdout_stream)
+                , opt(in) {}
 
-    void test_run_start(const ContextOptions& o) override { opt = &o; }
+    void test_run_start() override {}
 
-    void test_run_end(const TestRunStats& /*p*/) override {}
+    void test_run_end(const TestRunStats& /*in*/) override {}
 
     void test_case_start(const TestCaseData& in) override { tc = &in; }
 
-    void test_case_end(const CurrentTestCaseStats& /*st*/) override {}
+    void test_case_end(const CurrentTestCaseStats& /*in*/) override {}
 
-    void test_case_exception(const TestCaseException& /*e*/) override {}
+    void test_case_exception(const TestCaseException& /*in*/) override {}
 
-    void subcase_start(const SubcaseSignature& subc) override { subcasesStack.push_back(subc); }
+    void subcase_start(const SubcaseSignature& in) override { subcasesStack.push_back(in); }
 
-    void subcase_end(const SubcaseSignature& /*subc*/) override { subcasesStack.pop_back(); }
+    void subcase_end(const SubcaseSignature& /*in*/) override { subcasesStack.pop_back(); }
 
-    void log_assert(const AssertData& /*rb*/) override {}
+    void log_assert(const AssertData& /*in*/) override {}
 
-    void log_message(const MessageData& /*mb*/) override {}
+    void log_message(const MessageData& /*in*/) override {}
 
     void test_case_skipped(const TestCaseData& /*in*/) override {}
 };
 
-XmlReporter r(std::cout);
-REGISTER_REPORTER("xml", 1, r); // priority 1 - a number user for ordering
+REGISTER_REPORTER("xml", 1, MyXmlReporter); // priority 1 - a number user for ordering
 ```
 
 Multiple reporters can be used at the same time - just specify them through the ```--reporters=...``` [**command line option**](commandline.md). The number ```1``` in this case is the priority - reporters will be called in the order defined by their priority when a few of them are selected to be used at the same time.

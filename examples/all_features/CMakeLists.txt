@@ -33,7 +33,7 @@ target_compile_definitions(all_features PRIVATE
     DOCTEST_CONFIG_NO_WINDOWS_SEH)
 
 # omit the version and the num test cases skipped from the summary - this way the output will change less often
-set(common_args COMMAND $<TARGET_FILE:all_features> --no-skipped-summary --no-version --reporters=console)
+set(common_args COMMAND $<TARGET_FILE:all_features> --no-skipped-summary --no-version)
 
 # add per-file tests
 foreach(f ${files_with_output})

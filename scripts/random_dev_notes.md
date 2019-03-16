@@ -1,9 +1,17 @@
 
+get rid of DOCTEST_DECLARE_DEFAULTS & friends...
+    AND get rid of DOCTEST_INTERFACE for simple structs!
+
+
+
+
 make a test where we exit due to an exception but re-enter the test case because of other subcases
 
-the registration...?
-
 test, coverage
+
+set outout stream from context
+    document it!
+    exercise it (with default std::cout for coverage)
 
 decorators
     timeouts
@@ -13,14 +21,12 @@ decorators
 log the "randomness" for example in the xml output
     also filters and options!
     also in the console reporter!
-name of binary in the doctest tag?
 
 
 
 merge this
     https://github.com/onqtam/doctest/pull/197
     fix docs
-    perhaps remove the clutter around the special member functions
     redo benchmarks (and add a <string> include along with the framework haeder :D)
 
 
