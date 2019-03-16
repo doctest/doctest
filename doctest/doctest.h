@@ -2657,6 +2657,7 @@ DOCTEST_CLANG_SUPPRESS_WARNING("-Wmissing-braces")
 DOCTEST_CLANG_SUPPRESS_WARNING("-Wmissing-field-initializers")
 DOCTEST_CLANG_SUPPRESS_WARNING("-Wc++98-compat")
 DOCTEST_CLANG_SUPPRESS_WARNING("-Wc++98-compat-pedantic")
+DOCTEST_CLANG_SUPPRESS_WARNING("-Wunused-member-function")
 
 DOCTEST_GCC_SUPPRESS_WARNING_PUSH
 DOCTEST_GCC_SUPPRESS_WARNING("-Wunknown-pragmas")
@@ -2677,6 +2678,7 @@ DOCTEST_GCC_SUPPRESS_WARNING("-Wunsafe-loop-optimizations")
 DOCTEST_GCC_SUPPRESS_WARNING("-Wold-style-cast")
 DOCTEST_GCC_SUPPRESS_WARNING("-Wunused-local-typedefs")
 DOCTEST_GCC_SUPPRESS_WARNING("-Wuseless-cast")
+DOCTEST_GCC_SUPPRESS_WARNING("-Wunused-function")
 
 DOCTEST_MSVC_SUPPRESS_WARNING_PUSH
 DOCTEST_MSVC_SUPPRESS_WARNING(4616) // invalid compiler warning
@@ -4256,9 +4258,6 @@ namespace {
     throw_exception(std::logic_error(                                                              \
             __FILE__ ":" DOCTEST_TOSTR(__LINE__) ": Internal doctest error: " msg))
 
-    DOCTEST_GCC_SUPPRESS_WARNING_WITH_PUSH("-Wunused-function")
-    DOCTEST_CLANG_SUPPRESS_WARNING_WITH_PUSH("-Wunused-member-function")
-
     // clang-format off
 
 // =================================================================================================
@@ -4640,9 +4639,6 @@ namespace {
 // =================================================================================================
 
     // clang-format on
-
-    DOCTEST_GCC_SUPPRESS_WARNING_POP
-    DOCTEST_CLANG_SUPPRESS_WARNING_POP
 
     struct XmlReporter : public IReporter
     {
