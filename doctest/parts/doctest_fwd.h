@@ -450,6 +450,7 @@ public:
     String();
     ~String();
 
+    // cppcheck-suppress noExplicitConstructor
     String(const char* in);
     String(const char* in, unsigned in_size);
 
@@ -769,7 +770,7 @@ namespace detail {
         {
             static std::ostream& s;
             static const DOCTEST_REF_WRAP(T) t;
-            static const bool value = sizeof(testStreamable(s << t)) == sizeof(yes);
+            static const bool value = sizeof(decltype(testStreamable(s << t))) == sizeof(yes);
         };
     } // namespace has_insertion_operator_impl
 
@@ -1411,7 +1412,7 @@ namespace detail {
         explicit ExceptionTranslator(String (*translateFunction)(T))
                 : m_translateFunction(translateFunction) {}
 
-        bool translate(String& res) const {
+        bool translate(String& res) const override {
 #ifndef DOCTEST_CONFIG_NO_EXCEPTIONS
             try {
                 throw; // lgtm [cpp/rethrow-no-exception]
