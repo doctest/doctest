@@ -5469,7 +5469,7 @@ void Context::parseArgs(int argc, const char* const* argv, bool withDefaults) {
     DOCTEST_PARSE_INT_OPTION("last", "l", last, UINT_MAX);
 
     DOCTEST_PARSE_INT_OPTION("abort-after", "aa", abort_after, 0);
-    DOCTEST_PARSE_INT_OPTION("subcase-filter-levels", "scfl", subcase_filter_levels, 2000000000);
+    DOCTEST_PARSE_INT_OPTION("subcase-filter-levels", "scfl", subcase_filter_levels, INT_MAX);
 
     DOCTEST_PARSE_AS_BOOL_OR_FLAG("success", "s", success, false);
     DOCTEST_PARSE_AS_BOOL_OR_FLAG("case-sensitive", "cs", case_sensitive, false);

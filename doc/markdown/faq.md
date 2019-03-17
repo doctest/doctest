@@ -32,7 +32,6 @@ Aside from everything mentioned so far doctest has some [**features**](features.
 
 Missing stuff:
 
-- xml reporter
 - matchers and generators
 - other small stuff
 

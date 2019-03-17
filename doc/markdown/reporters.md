@@ -1,10 +1,22 @@
 ## Reporters
 
-A very sloppy documentation of the partial reporters support.
+Doctest has a modular reporter/listener system with which users can write their own reporters and register them. The reporter interface can also be used for "listening" to events.
+
+You can list all registered reporters with ```--list-reporters```. There are a few implemented reporters in the framework:
+- ```console``` - streaming - writes normal lines of text with coloring if a capable terminal is detected
+- ```xml``` - streaming - writes in xml format tailored to doctest
+
+Streaming means that results are delivered progressively and not at the end of the test run.
+
+The output is by default written to ```stdout``` but can be redirected with the use of the ```--out=<filename>``` [**command line option**](commandline.md).
 
 Example how to define your own reporter:
 
 ```c++
+#include <doctest/doctest.h>
+
+#include <mutex>
+
 using namespace doctest;
 
 struct MyXmlReporter : public IReporter
@@ -63,11 +75,9 @@ struct MyXmlReporter : public IReporter
 REGISTER_REPORTER("my_xml", 1, MyXmlReporter);
 ```
 
-Multiple reporters can be used at the same time - just specify them through the ```--reporters=...``` [**command line filtering option**](commandline.md). Multiple ones can be specified using commas to separate them like this: ```--reporters=myListener,xml``` and their order of execution will be based on their priority - in the case of the example above - the number "1" (lower means earlier - the default console/xml reporters from the framework have 0 as their priority - negative numbers are accepted as well).
+Multiple reporters can be used at the same time - just specify them through the ```--reporters=...``` [**command line filtering option**](commandline.md) using commas to separate them like this: ```--reporters=myListener,xml``` and their order of execution will be based on their priority - that is the number "1" in the case of the example reporter above (lower means earlier - the default console/xml reporters from the framework have 0 as their priority and negative numbers are accepted as well).
 
-You can list all registered reporters with ```--list-reporters```. There is only 1 implemented reporter in the framework - a console reporter - an xml one is coming in the next version. the reporter interface can also be used for "listening" to events.
-
-When implementing a reporter users are advised to follow the comments from the example above and look at the few implemented reporters in the framework itself.
+When implementing a reporter users are advised to follow the comments from the example above and look at the few implemented reporters in the framework itself. Also check out the [**example**](../../examples/all_features/reporters_and_listeners.cpp).
 
 ---------------
 

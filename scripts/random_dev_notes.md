@@ -1,18 +1,11 @@
 
-get rid of DOCTEST_DECLARE_DEFAULTS & friends...
-    AND get rid of DOCTEST_INTERFACE for simple structs!
-
+move all remaining output to the reporter interface - "query mode" - list tests, get version/help, etc.
 
 struct TestQuery
 {
     String*  data     = nullptr;
     unsigned num_data = 0;
 };
-
-
-make a test where we exit due to an exception but re-enter the test case because of other subcases
-
-test, coverage
 
 set outout stream from context
     document it!
@@ -27,12 +20,34 @@ log the "randomness" for example in the xml output
     also filters and options!
     also in the console reporter!
 
+make a test where we exit due to an exception but re-enter the test case because of other subcases
 
+flip the xml output switch & commit the sources
+check coverage
+
+
+
+compact reporter - https://github.com/onqtam/doctest/issues/75
+    print test cases or +asserts?
+    also docs & tests/coverage!
+
+get rid of DOCTEST_DECLARE_DEFAULTS & friends...
+    AND get rid of DOCTEST_INTERFACE for simple structs!
 
 merge this
     https://github.com/onqtam/doctest/pull/197
-    fix docs
     redo benchmarks (and add a <string> include along with the framework haeder :D)
+    fix docs
+
+On release - mention these:
+    - can be used for listening for events
+    - multiple reporters can be used
+    - custom reporters can be written
+    - register and choose reporters
+    - list all reporters
+    - output to file (or just not stdout)
+    - xml output
+
 
 
 https://github.com/catchorg/Catch2/blob/master/docs/tostring.md#catchis_range-specialisation

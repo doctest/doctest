@@ -7,26 +7,13 @@ This library is free, and will stay free but needs your support to sustain its d
 
 Planned features for future releases - order changes constantly...
 
-### For 2.3:
-
-- finish the reporter system
-    - what is done:
-        - can be used for listening for events
-        - multiple reporters can be used
-        - custom reporters can be written
-        - register and choose reporters
-        - list all reporters
-        - output to file (or just not stdout)
-        - xml output
-    - what is left:
-        - compact reporter - https://github.com/onqtam/doctest/issues/75
-        - xUnit/junit reporter - perhaps related: https://github.com/ujiro99/doctest-junit-report
-        - options
-            - absolutely no output on success
-            - summary only
-
 ### For 2.4:
 
+- reporters:
+    - xUnit/junit/TeamCity reporter - perhaps related: https://github.com/ujiro99/doctest-junit-report
+    - options
+        - absolutely no output on success (AKA quiet mode)
+        - summary only (verbosity levels?)
 - matchers - should investigate what they are - look at google test/mock and Catch (also predicates and boost test)
 - header with extensions
     - demangling with the use of the cxxabi header
