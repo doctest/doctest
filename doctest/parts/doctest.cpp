@@ -2030,6 +2030,7 @@ namespace {
                 for(int i = 0; i < num_contexts; ++i) {
                     contexts[i]->stringify(&ss);
                     xml.scopedElement("Info").writeText(ss.str());
+                    ss.str("");
                 }
             }
         }
@@ -2146,9 +2147,13 @@ namespace {
         void log_message(const MessageData& mb) override {
             std::lock_guard<std::mutex> lock(mutex);
 
-            xml.scopedElement("Expanded").writeText(mb.m_string.c_str());
+            xml.startElement("Message");
+
+            xml.scopedElement("Text").writeText(mb.m_string.c_str());
 
             log_contexts();
+
+            xml.endElement();
         }
 
         void test_case_skipped(const TestCaseData& in) override {
@@ -3056,7 +3061,7 @@ int Context::run() {
 
     // invoke the registered functions if they match the filter criteria (or just count them)
     for(auto& curr : testArray) {
-        const auto tc = *curr;
+        const auto& tc = *curr;
 
         bool skip_me = false;
         if(tc.m_skip && !p->no_skip)
