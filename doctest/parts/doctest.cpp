@@ -3012,7 +3012,7 @@ int Context::run() {
 
     // handle version, help and no_run
     if(p->no_run || p->version || p->help || p->list_reporters) {
-        DOCTEST_ITERATE_THROUGH_REPORTERS(report_query, {});
+        DOCTEST_ITERATE_THROUGH_REPORTERS(report_query, QueryData());
 
         return cleanup_and_return();
     }
