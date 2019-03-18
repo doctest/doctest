@@ -1,16 +1,4 @@
 
-move all remaining output to the reporter interface - "query mode" - list tests, get version/help, etc.
-
-struct TestQuery
-{
-    String*  data     = nullptr;
-    unsigned num_data = 0;
-};
-
-set outout stream from context
-    document it!
-    exercise it (with default std::cout for coverage)
-
 decorators
     timeouts
     expectedFailures?

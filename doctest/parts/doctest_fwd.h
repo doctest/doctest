@@ -682,8 +682,9 @@ struct DOCTEST_INTERFACE IContextScope
 
 struct ContextOptions //!OCLINT too many fields
 {
-    std::ostream* stdout_stream; // stdout stream - std::cout by default
-    String        binary_name;   // the test binary name
+    std::ostream* cout;        // stdout stream - std::cout by default
+    std::ostream* cerr;        // stderr stream - std::cerr by default
+    String        binary_name; // the test binary name
 
     // == parameters from the command line
     String   out;       // output filename
@@ -1732,10 +1733,20 @@ struct DOCTEST_INTERFACE TestRunStats
     DOCTEST_DELETE_COPIES(TestRunStats);
 };
 
+struct QueryData
+{
+    String*  data     = nullptr;
+    unsigned num_data = 0;
+};
+
 struct DOCTEST_INTERFACE IReporter
 {
     // The constructor has to accept "const ContextOptions&" as a single argument
     // which has most of the options for the run + a pointer to the stdout stream
+    // Reporter(const ContextOptions& in)
+
+    // called when a query should be reported (listing test cases, printing the version, etc.)
+    virtual void report_query(const QueryData&) = 0;
 
     // called when the whole test run starts
     virtual void test_run_start() = 0;

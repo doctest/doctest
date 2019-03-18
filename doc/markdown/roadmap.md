@@ -11,6 +11,7 @@ Planned features for future releases - order changes constantly...
 
 - reporters:
     - xUnit/junit/TeamCity reporter - perhaps related: https://github.com/ujiro99/doctest-junit-report
+    - compact reporter
     - options
         - absolutely no output on success (AKA quiet mode)
         - summary only (verbosity levels?)

@@ -29,8 +29,10 @@ struct MyXmlReporter : public IReporter
 
     // constructor has to accept the ContextOptions by ref as a single argument
     MyXmlReporter(const ContextOptions& in)
-            : stdout_stream(*in.stdout_stream)
+            : stdout_stream(*in.cout)
             , opt(in) {}
+
+    void report_query(const QueryData& /*in*/) override {}
 
     void test_run_start() override {}
 
