@@ -8,8 +8,6 @@ log the "randomness" for example in the xml output
     also filters and options!
     also in the console reporter!
 
-make a test where we exit due to an exception but re-enter the test case because of other subcases
-
 flip the xml output switch & commit the sources
 check coverage
 
@@ -48,7 +46,9 @@ add in the faq about the compile errors with stream<<"array" - nikola goranov, a
 
 
 
-fix discoverability of subcases - wtf??? don't remember what I meant with this...
+fix discoverability of subcases
+    look at the subcase filtering and the filter_3 example - the test case is re-entered when in fact it shouldn't have
+        convoluted to solve - not really important
 
 https://github.com/catchorg/Catch2/commit/de36b2ada6e4593a9a32c4c86cd47d4bc002b148
 
