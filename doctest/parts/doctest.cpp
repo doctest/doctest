@@ -3209,11 +3209,14 @@ int Context::run() {
         }
     }
 
-    if(!query_mode)
+    if(!query_mode) {
         DOCTEST_ITERATE_THROUGH_REPORTERS(test_run_end, *g_cs);
-    else
-        DOCTEST_ITERATE_THROUGH_REPORTERS(report_query,
-                                          {queryResults.data(), unsigned(queryResults.size())});
+    } else {
+        QueryData qdata;
+        qdata.data     = queryResults.data();
+        qdata.num_data = unsigned(queryResults.size());
+        DOCTEST_ITERATE_THROUGH_REPORTERS(report_query, qdata);
+    }
 
     return cleanup_and_return();
 }
