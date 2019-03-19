@@ -117,10 +117,6 @@ DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_BEGIN
 #include <sys/sysctl.h>
 #endif // DOCTEST_PLATFORM_MAC
 
-#ifdef DOCTEST_CONFIG_COLORS_ANSI
-#include <unistd.h>
-#endif // DOCTEST_CONFIG_COLORS_ANSI
-
 #ifdef DOCTEST_PLATFORM_WINDOWS
 
 // defines for a leaner windows.h
@@ -145,6 +141,7 @@ DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_BEGIN
 #else // DOCTEST_PLATFORM_WINDOWS
 
 #include <sys/time.h>
+#include <unistd.h>
 
 #endif // DOCTEST_PLATFORM_WINDOWS
 
