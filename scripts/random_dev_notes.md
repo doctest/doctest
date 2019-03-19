@@ -1,4 +1,8 @@
 
+addFailedAssert should be called when an assert crashes
+
+
+
 decorators
     timeouts
     expectedFailures?
@@ -11,12 +15,6 @@ log the "randomness" for example in the xml output
 flip the xml output switch & commit the sources
 check coverage
 
-
-
-compact reporter - https://github.com/onqtam/doctest/issues/75
-    print test cases or +asserts?
-    also docs & tests/coverage!
-
 get rid of DOCTEST_DECLARE_DEFAULTS & friends...
     AND get rid of DOCTEST_INTERFACE for simple structs!
 
@@ -27,7 +25,7 @@ merge this
 
 On release - mention these:
     - can be used for listening for events
-    - multiple reporters can be used
+    - multiple reporters/listeners can be used at the same time
     - custom reporters can be written
     - register and choose reporters
     - list all reporters

@@ -1764,7 +1764,7 @@ struct DOCTEST_INTERFACE IReporter
     // called whenever a subcase is entered (don't cache pointers to the input)
     virtual void subcase_start(const SubcaseSignature&) = 0;
     // called whenever a subcase is exited (don't cache pointers to the input)
-    virtual void subcase_end(const SubcaseSignature&) = 0;
+    virtual void subcase_end() = 0;
 
     // called for each assert (don't cache pointers to the input)
     virtual void log_assert(const AssertData&) = 0;

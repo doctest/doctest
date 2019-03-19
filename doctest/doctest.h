@@ -1767,7 +1767,7 @@ struct DOCTEST_INTERFACE IReporter
     // called whenever a subcase is entered (don't cache pointers to the input)
     virtual void subcase_start(const SubcaseSignature&) = 0;
     // called whenever a subcase is exited (don't cache pointers to the input)
-    virtual void subcase_end(const SubcaseSignature&) = 0;
+    virtual void subcase_end() = 0;
 
     // called for each assert (don't cache pointers to the input)
     virtual void log_assert(const AssertData&) = 0;
@@ -2759,6 +2759,37 @@ DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_BEGIN
 #include <sys/sysctl.h>
 #endif // DOCTEST_PLATFORM_MAC
 
+#ifdef DOCTEST_CONFIG_COLORS_ANSI
+#include <unistd.h>
+#endif // DOCTEST_CONFIG_COLORS_ANSI
+
+#ifdef DOCTEST_PLATFORM_WINDOWS
+
+// defines for a leaner windows.h
+#ifndef WIN32_LEAN_AND_MEAN
+#define WIN32_LEAN_AND_MEAN
+#endif // WIN32_LEAN_AND_MEAN
+#ifndef VC_EXTRA_LEAN
+#define VC_EXTRA_LEAN
+#endif // VC_EXTRA_LEAN
+#ifndef NOMINMAX
+#define NOMINMAX
+#endif // NOMINMAX
+
+// not sure what AfxWin.h is for - here I do what Catch does
+#ifdef __AFXDLL
+#include <AfxWin.h>
+#else
+#include <Windows.h>
+#endif
+#include <io.h>
+
+#else // DOCTEST_PLATFORM_WINDOWS
+
+#include <sys/time.h>
+
+#endif // DOCTEST_PLATFORM_WINDOWS
+
 DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_END
 
 // counts the number of elements in a C array
@@ -2866,6 +2897,45 @@ namespace detail {
     }
 
 #ifndef DOCTEST_CONFIG_DISABLE
+
+    typedef uint64_t UInt64;
+
+#ifdef DOCTEST_CONFIG_GETCURRENTTICKS
+    UInt64 getCurrentTicks() { return DOCTEST_CONFIG_GETCURRENTTICKS(); }
+#elif defined(DOCTEST_PLATFORM_WINDOWS)
+    UInt64 getCurrentTicks() {
+        static UInt64 hz = 0, hzo = 0;
+        if(!hz) {
+            QueryPerformanceFrequency(reinterpret_cast<LARGE_INTEGER*>(&hz));
+            QueryPerformanceCounter(reinterpret_cast<LARGE_INTEGER*>(&hzo));
+        }
+        UInt64 t;
+        QueryPerformanceCounter(reinterpret_cast<LARGE_INTEGER*>(&t));
+        return ((t - hzo) * 1000000) / hz;
+    }
+#else  // DOCTEST_PLATFORM_WINDOWS
+    UInt64 getCurrentTicks() {
+        timeval t;
+        gettimeofday(&t, nullptr);
+        return static_cast<UInt64>(t.tv_sec) * 1000000 + static_cast<UInt64>(t.tv_usec);
+    }
+#endif // DOCTEST_PLATFORM_WINDOWS
+
+    struct Timer
+    {
+        void         start() { m_ticks = getCurrentTicks(); }
+        unsigned int getElapsedMicroseconds() const {
+            return static_cast<unsigned int>(getCurrentTicks() - m_ticks);
+        }
+        //unsigned int getElapsedMilliseconds() const {
+        //    return static_cast<unsigned int>(getElapsedMicroseconds() / 1000);
+        //}
+        double getElapsedSeconds() const { return getElapsedMicroseconds() / 1000000.0; }
+
+    private:
+        UInt64 m_ticks = 0;
+    };
+
     // this holds both parameters from the command line and runtime data for tests
     struct ContextState : ContextOptions, TestRunStats, CurrentTestCaseStats
     {
@@ -2879,6 +2949,8 @@ namespace detail {
         const TestCase* currentTest = nullptr;
 
         assert_handler ah = nullptr;
+
+        Timer timer;
 
         std::vector<String> stringifiedContexts; // logging from INFO() due to an exception
 
@@ -2895,6 +2967,49 @@ namespace detail {
             numTestCasesFailed          = 0;
             numAsserts                  = 0;
             numAssertsFailed            = 0;
+            numAssertsCurrentTest       = 0;
+            numAssertsFailedCurrentTest = 0;
+        }
+
+        void finalizeTestCaseData() {
+            seconds = timer.getElapsedSeconds();
+
+            // update the non-atomic counters
+            numAsserts += numAssertsCurrentTest_atomic;
+            numAssertsFailed += numAssertsFailedCurrentTest_atomic;
+            numAssertsCurrentTest       = numAssertsCurrentTest_atomic;
+            numAssertsFailedCurrentTest = numAssertsFailedCurrentTest_atomic;
+
+            if(numAssertsFailedCurrentTest)
+                failure_flags |= TestCaseFailureReason::AssertFailure;
+
+            if(Approx(currentTest->m_timeout).epsilon(DBL_EPSILON) != 0 &&
+               Approx(seconds).epsilon(DBL_EPSILON) > currentTest->m_timeout)
+                failure_flags |= TestCaseFailureReason::Timeout;
+
+            if(currentTest->m_should_fail) {
+                if(failure_flags) {
+                    failure_flags |= TestCaseFailureReason::ShouldHaveFailedAndDid;
+                } else {
+                    failure_flags |= TestCaseFailureReason::ShouldHaveFailedButDidnt;
+                }
+            } else if(failure_flags && currentTest->m_may_fail) {
+                failure_flags |= TestCaseFailureReason::CouldHaveFailedAndDid;
+            } else if(currentTest->m_expected_failures > 0) {
+                if(numAssertsFailedCurrentTest == currentTest->m_expected_failures) {
+                    failure_flags |= TestCaseFailureReason::FailedExactlyNumTimes;
+                } else {
+                    failure_flags |= TestCaseFailureReason::DidntFailExactlyNumTimes;
+                }
+            }
+
+            bool ok_to_fail = (TestCaseFailureReason::ShouldHaveFailedAndDid & failure_flags) ||
+                              (TestCaseFailureReason::CouldHaveFailedAndDid & failure_flags) ||
+                              (TestCaseFailureReason::FailedExactlyNumTimes & failure_flags);
+
+            // if any subcase has failed - the whole test case has failed
+            if(failure_flags && !ok_to_fail)
+                numTestCasesFailed++;
         }
     };
 
@@ -3329,41 +3444,6 @@ extern "C" __declspec(dllimport) void __stdcall OutputDebugStringA(
 extern "C" __declspec(dllimport) int __stdcall IsDebuggerPresent();
 #endif // MSVC || __MINGW32__
 
-#ifdef DOCTEST_CONFIG_COLORS_ANSI
-#include <unistd.h>
-#endif // DOCTEST_CONFIG_COLORS_ANSI
-
-#ifdef DOCTEST_PLATFORM_WINDOWS
-
-// defines for a leaner windows.h
-#ifndef WIN32_LEAN_AND_MEAN
-#define WIN32_LEAN_AND_MEAN
-#endif // WIN32_LEAN_AND_MEAN
-#ifndef VC_EXTRA_LEAN
-#define VC_EXTRA_LEAN
-#endif // VC_EXTRA_LEAN
-#ifndef NOMINMAX
-#define NOMINMAX
-#endif // NOMINMAX
-
-DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_BEGIN
-
-// not sure what AfxWin.h is for - here I do what Catch does
-#ifdef __AFXDLL
-#include <AfxWin.h>
-#else
-#include <Windows.h>
-#endif
-#include <io.h>
-
-DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_END
-
-#else // DOCTEST_PLATFORM_WINDOWS
-
-#include <sys/time.h>
-
-#endif // DOCTEST_PLATFORM_WINDOWS
-
 namespace doctest_detail_test_suite_ns {
 // holds the current test suite
 doctest::detail::TestSuite& getCurrentTestSuite() {
@@ -3468,46 +3548,6 @@ namespace {
                 return true;
         return false;
     }
-
-    typedef uint64_t UInt64;
-
-#ifdef DOCTEST_CONFIG_GETCURRENTTICKS
-    UInt64           getCurrentTicks() { return DOCTEST_CONFIG_GETCURRENTTICKS(); }
-#elif defined(DOCTEST_PLATFORM_WINDOWS)
-    UInt64 getCurrentTicks() {
-        static UInt64 hz = 0, hzo = 0;
-        if(!hz) {
-            QueryPerformanceFrequency(reinterpret_cast<LARGE_INTEGER*>(&hz));
-            QueryPerformanceCounter(reinterpret_cast<LARGE_INTEGER*>(&hzo));
-        }
-        UInt64 t;
-        QueryPerformanceCounter(reinterpret_cast<LARGE_INTEGER*>(&t));
-        return ((t - hzo) * 1000000) / hz;
-    }
-#else  // DOCTEST_PLATFORM_WINDOWS
-    UInt64 getCurrentTicks() {
-        timeval t;
-        gettimeofday(&t, nullptr);
-        return static_cast<UInt64>(t.tv_sec) * 1000000 + static_cast<UInt64>(t.tv_usec);
-    }
-#endif // DOCTEST_PLATFORM_WINDOWS
-
-    struct Timer
-    {
-        void         start() { m_ticks = getCurrentTicks(); }
-        unsigned int getElapsedMicroseconds() const {
-            return static_cast<unsigned int>(getCurrentTicks() - m_ticks);
-        }
-        //unsigned int getElapsedMilliseconds() const {
-        //    return static_cast<unsigned int>(getElapsedMicroseconds() / 1000);
-        //}
-        double getElapsedSeconds() const { return getElapsedMicroseconds() / 1000000.0; }
-
-    private:
-        UInt64 m_ticks = 0;
-    };
-
-    Timer g_timer;
 } // namespace
 namespace detail {
 
@@ -3548,7 +3588,7 @@ namespace detail {
             if(s->should_reenter == false)
                 s->subcasesPassed.insert(m_signature);
 
-            DOCTEST_ITERATE_THROUGH_REPORTERS(subcase_end, m_signature);
+            DOCTEST_ITERATE_THROUGH_REPORTERS(subcase_end, DOCTEST_EMPTY);
         }
     }
 
@@ -3965,7 +4005,7 @@ namespace {
 
     struct SignalDefs
     {
-        DWORD       id;
+        DWORD id;
         const char* name;
     };
     // There is no 1-1 mapping between signals and windows exceptions.
@@ -3995,7 +4035,7 @@ namespace {
             isSet = true;
             // 32k seems enough for doctest to handle stack overflow,
             // but the value was found experimentally, so there is no strong guarantee
-            guaranteeSize          = 32 * 1024;
+            guaranteeSize = 32 * 1024;
             exceptionHandlerHandle = nullptr;
             // Register as first handler in current chain
             exceptionHandlerHandle = AddVectoredExceptionHandler(1, handleVectoredException);
@@ -4009,20 +4049,20 @@ namespace {
                 RemoveVectoredExceptionHandler(exceptionHandlerHandle);
                 SetThreadStackGuarantee(&guaranteeSize);
                 exceptionHandlerHandle = nullptr;
-                isSet                  = false;
+                isSet = false;
             }
         }
 
         ~FatalConditionHandler() { reset(); }
 
     private:
-        static bool  isSet;
+        static bool isSet;
         static ULONG guaranteeSize;
         static PVOID exceptionHandlerHandle;
     };
 
-    bool  FatalConditionHandler::isSet                  = false;
-    ULONG FatalConditionHandler::guaranteeSize          = 0;
+    bool FatalConditionHandler::isSet = false;
+    ULONG FatalConditionHandler::guaranteeSize = 0;
     PVOID FatalConditionHandler::exceptionHandlerHandle = nullptr;
 
 #else // DOCTEST_PLATFORM_WINDOWS
@@ -4121,16 +4161,16 @@ namespace {
 
 #if defined(DOCTEST_CONFIG_POSIX_SIGNALS) || defined(DOCTEST_CONFIG_WINDOWS_SEH)
     void reportFatal(const std::string& message) {
-        g_cs->seconds += g_timer.getElapsedSeconds();
         g_cs->failure_flags |= TestCaseFailureReason::Crash;
-        g_cs->should_reenter = false;
 
-        // TODO: end all currently opened subcases...?
         DOCTEST_ITERATE_THROUGH_REPORTERS(test_case_exception, {message.c_str(), true});
 
-        DOCTEST_ITERATE_THROUGH_REPORTERS(test_case_end, *g_cs);
+        while(g_cs->subcasesCurrentLevel--)
+            DOCTEST_ITERATE_THROUGH_REPORTERS(subcase_end, DOCTEST_EMPTY);
 
-        g_cs->numTestCasesFailed++;
+        g_cs->finalizeTestCaseData();
+
+        DOCTEST_ITERATE_THROUGH_REPORTERS(test_case_end, *g_cs);
 
         DOCTEST_ITERATE_THROUGH_REPORTERS(test_run_end, *g_cs);
     }
@@ -4700,9 +4740,14 @@ namespace {
             if(tc) // the TestSuite tag - only if there has been at least 1 test case
                 xml.endElement();
 
-            xml.startElement("OverallResults")
+            xml.scopedElement("OverallResultsAsserts")
                     .writeAttribute("successes", p.numAsserts - p.numAssertsFailed)
                     .writeAttribute("failures", p.numAssertsFailed);
+
+            xml.startElement("OverallResultsTestCases")
+                    .writeAttribute("successes",
+                                    p.numTestCasesPassingFilters - p.numTestCasesFailed)
+                    .writeAttribute("failures", p.numTestCasesFailed);
             if(opt.no_skipped_summary == false)
                 xml.writeAttribute("skipped", p.numTestCases - p.numTestCasesPassingFilters);
             xml.endElement();
@@ -4735,7 +4780,7 @@ namespace {
         }
 
         void test_case_end(const CurrentTestCaseStats& st) override {
-            xml.scopedElement("OverallResults")
+            xml.scopedElement("OverallResultsAsserts")
                     .writeAttribute("successes",
                                     st.numAssertsCurrentTest - st.numAssertsFailedCurrentTest)
                     .writeAttribute("failures", st.numAssertsFailedCurrentTest);
@@ -4756,7 +4801,7 @@ namespace {
                     .writeAttribute("line", line(in.m_line));
         }
 
-        void subcase_end(const SubcaseSignature&) override { xml.endElement(); }
+        void subcase_end() override { xml.endElement(); }
 
         void log_assert(const AssertData& rb) override {
             if(!rb.m_failed && !opt.success)
@@ -5193,7 +5238,7 @@ namespace {
             hasLoggedCurrentTestStart = false;
         }
 
-        void subcase_end(const SubcaseSignature& /*subc*/) override {
+        void subcase_end() override {
             subcasesStack.pop_back();
             hasLoggedCurrentTestStart = false;
         }
@@ -5288,7 +5333,7 @@ namespace {
         DOCTEST_DEBUG_OUTPUT_REPORTER_OVERRIDE(test_case_end, const CurrentTestCaseStats&, in)
         DOCTEST_DEBUG_OUTPUT_REPORTER_OVERRIDE(test_case_exception, const TestCaseException&, in)
         DOCTEST_DEBUG_OUTPUT_REPORTER_OVERRIDE(subcase_start, const SubcaseSignature&, in)
-        DOCTEST_DEBUG_OUTPUT_REPORTER_OVERRIDE(subcase_end, const SubcaseSignature&, in)
+        DOCTEST_DEBUG_OUTPUT_REPORTER_OVERRIDE(subcase_end, DOCTEST_EMPTY, DOCTEST_EMPTY)
         DOCTEST_DEBUG_OUTPUT_REPORTER_OVERRIDE(log_assert, const AssertData&, in)
         DOCTEST_DEBUG_OUTPUT_REPORTER_OVERRIDE(log_message, const MessageData&, in)
         DOCTEST_DEBUG_OUTPUT_REPORTER_OVERRIDE(test_case_skipped, const TestCaseData&, in)
@@ -5771,7 +5816,7 @@ int Context::run() {
 
             DOCTEST_ITERATE_THROUGH_REPORTERS(test_case_start, tc);
 
-            g_timer.start();
+            p->timer.start();
 
             do {
                 // reset some of the fields for subcases (except for the set of fully passed ones)
@@ -5807,44 +5852,7 @@ int Context::run() {
                 }
             } while(p->should_reenter == true);
 
-            p->seconds = g_timer.getElapsedSeconds();
-
-            // update the non-atomic counters
-            p->numAsserts += p->numAssertsCurrentTest_atomic;
-            p->numAssertsFailed += p->numAssertsFailedCurrentTest_atomic;
-            p->numAssertsCurrentTest       = p->numAssertsCurrentTest_atomic;
-            p->numAssertsFailedCurrentTest = p->numAssertsFailedCurrentTest_atomic;
-
-            if(p->numAssertsFailedCurrentTest)
-                p->failure_flags |= TestCaseFailureReason::AssertFailure;
-
-            if(Approx(p->currentTest->m_timeout).epsilon(DBL_EPSILON) != 0 &&
-               Approx(p->seconds).epsilon(DBL_EPSILON) > p->currentTest->m_timeout)
-                p->failure_flags |= TestCaseFailureReason::Timeout;
-
-            if(tc.m_should_fail) {
-                if(p->failure_flags) {
-                    p->failure_flags |= TestCaseFailureReason::ShouldHaveFailedAndDid;
-                } else {
-                    p->failure_flags |= TestCaseFailureReason::ShouldHaveFailedButDidnt;
-                }
-            } else if(p->failure_flags && tc.m_may_fail) {
-                p->failure_flags |= TestCaseFailureReason::CouldHaveFailedAndDid;
-            } else if(tc.m_expected_failures > 0) {
-                if(p->numAssertsFailedCurrentTest == tc.m_expected_failures) {
-                    p->failure_flags |= TestCaseFailureReason::FailedExactlyNumTimes;
-                } else {
-                    p->failure_flags |= TestCaseFailureReason::DidntFailExactlyNumTimes;
-                }
-            }
-
-            bool ok_to_fail = (TestCaseFailureReason::ShouldHaveFailedAndDid & p->failure_flags) ||
-                              (TestCaseFailureReason::CouldHaveFailedAndDid & p->failure_flags) ||
-                              (TestCaseFailureReason::FailedExactlyNumTimes & p->failure_flags);
-
-            // if any subcase has failed - the whole test case has failed
-            if(p->failure_flags && !ok_to_fail)
-                p->numTestCasesFailed++;
+            p->finalizeTestCaseData();
 
             DOCTEST_ITERATE_THROUGH_REPORTERS(test_case_end, *g_cs);
 

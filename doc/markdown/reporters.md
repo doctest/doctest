@@ -46,7 +46,7 @@ struct MyXmlReporter : public IReporter
 
     void subcase_start(const SubcaseSignature& /*in*/) override {}
 
-    void subcase_end(const SubcaseSignature& /*in*/) override {}
+    void subcase_end() override {}
 
     void log_assert(const AssertData& in) override {
         // don't include successful asserts by default - this is done here
