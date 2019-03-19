@@ -3433,17 +3433,6 @@ int registerReporter(const char*, int, IReporter*) { return 0; }
 #endif // DOCTEST_CONFIG_COLORS_WINDOWS && DOCTEST_CONFIG_COLORS_ANSI
 #endif // DOCTEST_CONFIG_COLORS_NONE
 
-#if DOCTEST_MSVC || defined(__MINGW32__)
-#if DOCTEST_MSVC
-#define DOCTEST_WINDOWS_SAL_IN_OPT _In_opt_
-#else // MSVC
-#define DOCTEST_WINDOWS_SAL_IN_OPT
-#endif // MSVC
-extern "C" __declspec(dllimport) void __stdcall OutputDebugStringA(
-        DOCTEST_WINDOWS_SAL_IN_OPT const char*);
-extern "C" __declspec(dllimport) int __stdcall IsDebuggerPresent();
-#endif // MSVC || __MINGW32__
-
 namespace doctest_detail_test_suite_ns {
 // holds the current test suite
 doctest::detail::TestSuite& getCurrentTestSuite() {
