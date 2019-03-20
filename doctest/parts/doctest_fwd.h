@@ -368,12 +368,13 @@ extern "C" __declspec(dllimport) void __stdcall DebugBreak();
 // Forward declaring 'X' in namespace std is not permitted by the C++ Standard.
 DOCTEST_MSVC_SUPPRESS_WARNING_WITH_PUSH(4643)
 
-#if defined(_LIBCPP_VERSION) || defined(DOCTEST_CONFIG_USE_IOSFWD)
-// not forward declaring ostream for libc++ because I had some problems (inline namespaces vs c++98)
-// so the <iosfwd> header is used - also it is very light and doesn't drag a ton of stuff
+#if defined(DOCTEST_CONFIG_USE_IOSFWD)
 #include <iosfwd>
-#else  // _LIBCPP_VERSION
-namespace std {
+#endif // DOCTEST_CONFIG_USE_IOSFWD
+
+#ifdef _LIBCPP_VERSION
+_LIBCPP_BEGIN_NAMESPACE_STD
+typedef decltype(nullptr) nullptr_t;
 template <class charT>
 struct char_traits;
 template <>
@@ -381,15 +382,22 @@ struct char_traits<char>;
 template <class charT, class traits>
 class basic_ostream;
 typedef basic_ostream<char, char_traits<char>> ostream;
-} // namespace std
-#endif // _LIBCPP_VERSION || DOCTEST_CONFIG_USE_IOSFWD
-
-#ifdef _LIBCPP_VERSION
-#include <cstddef>
+template <class... Types>
+class tuple;
+_LIBCPP_END_NAMESPACE_STD
 #else  // _LIBCPP_VERSION
 namespace std {
 typedef decltype(nullptr) nullptr_t;
-}
+template <class charT>
+struct char_traits;
+template <>
+struct char_traits<char>;
+template <class charT, class traits>
+class basic_ostream;
+typedef basic_ostream<char, char_traits<char> > ostream;
+template <class... Types>
+class tuple;
+} // namespace std
 #endif // _LIBCPP_VERSION
 
 DOCTEST_MSVC_SUPPRESS_WARNING_POP
@@ -1901,20 +1909,20 @@ int registerReporter(const char* name, int priority) {
 #define DOCTEST_TEST_CASE_TEMPLATE_DEFINE_IMPL(dec, T, id, anon)                                   \
     template <typename T>                                                                          \
     inline void anon();                                                                            \
+    template <typename Tuple>                                                                      \
+    struct DOCTEST_CAT(id, ITERATOR);                                                              \
     template <typename Type, typename... Rest>                                                     \
-    struct DOCTEST_CAT(id, ITERATOR)                                                               \
+    struct DOCTEST_CAT(id, ITERATOR)<std::tuple<Type, Rest...> >                                   \
     {                                                                                              \
         DOCTEST_CAT(id, ITERATOR)(int line, int index) {                                           \
             DOCTEST_REGISTER_TYPED_TEST_CASE_IMPL(anon<Type>, Type, dec, line * 1000 + index);     \
-            DOCTEST_CAT(id, ITERATOR)<Rest...>(line, index + 1);                                   \
+            DOCTEST_CAT(id, ITERATOR)<std::tuple<Rest...> >(line, index + 1);                      \
         }                                                                                          \
     };                                                                                             \
-    template <typename Type>                                                                       \
-    struct DOCTEST_CAT(id, ITERATOR)<Type>                                                         \
+    template <>                                                                                    \
+    struct DOCTEST_CAT(id, ITERATOR)<std::tuple<> >                                                \
     {                                                                                              \
-        DOCTEST_CAT(id, ITERATOR)(int line, int index) {                                           \
-            DOCTEST_REGISTER_TYPED_TEST_CASE_IMPL(anon<Type>, Type, dec, line * 1000 + index);     \
-        }                                                                                          \
+        DOCTEST_CAT(id, ITERATOR)(int, int) {}                                                     \
     }
 
 #define DOCTEST_TEST_CASE_TEMPLATE_DEFINE_IMPL_PROXY(dec, T, id, anon)                             \
@@ -1926,9 +1934,9 @@ int registerReporter(const char* name, int priority) {
     DOCTEST_TEST_CASE_TEMPLATE_DEFINE_IMPL_PROXY(dec, T, id, DOCTEST_ANONYMOUS(_DOCTEST_ANON_TMP_))
 
 #define DOCTEST_TEST_CASE_TEMPLATE_INSTANTIATE_IMPL(id, anon, ...)                                 \
-    DOCTEST_GLOBAL_NO_WARNINGS(DOCTEST_CAT(anon, DUMMY)) = []() {                                  \
-        DOCTEST_CAT(id, ITERATOR)<__VA_ARGS__> DOCTEST_UNUSED DOCTEST_CAT(anon, inner_dummy)(      \
-                __LINE__, 0);                                                                      \
+    DOCTEST_GLOBAL_NO_WARNINGS(DOCTEST_CAT(anon, DUMMY)) = [] {                                    \
+        DOCTEST_CAT(id, ITERATOR)<std::tuple<__VA_ARGS__> > DOCTEST_UNUSED DOCTEST_CAT(            \
+                anon, inner_dummy)(__LINE__, 0);                                                   \
         return 0;                                                                                  \
     }();                                                                                           \
     DOCTEST_GLOBAL_NO_WARNINGS_END()
@@ -1936,6 +1944,17 @@ int registerReporter(const char* name, int priority) {
 #define DOCTEST_TEST_CASE_TEMPLATE_INSTANTIATE(id, ...)                                            \
     DOCTEST_TEST_CASE_TEMPLATE_INSTANTIATE_IMPL(id, DOCTEST_ANONYMOUS(_DOCTEST_ANON_TMP_),         \
                                                 __VA_ARGS__)                                       \
+    typedef int DOCTEST_ANONYMOUS(_DOCTEST_ANON_FOR_SEMICOLON_)
+
+#define DOCTEST_TEST_CASE_TEMPLATE_APPLY_IMPL(id, anon, tup)                                       \
+    DOCTEST_GLOBAL_NO_WARNINGS(DOCTEST_CAT(anon, DUMMY)) = [] {                                    \
+        DOCTEST_CAT(id, ITERATOR)<tup> DOCTEST_UNUSED DOCTEST_CAT(anon, inner_dummy)(__LINE__, 0); \
+        return 0;                                                                                  \
+    }();                                                                                           \
+    DOCTEST_GLOBAL_NO_WARNINGS_END()
+
+#define DOCTEST_TEST_CASE_TEMPLATE_APPLY(id, tup)                                                  \
+    DOCTEST_TEST_CASE_TEMPLATE_APPLY_IMPL(id, DOCTEST_ANONYMOUS(_DOCTEST_ANON_TMP_), tup)    \
     typedef int DOCTEST_ANONYMOUS(_DOCTEST_ANON_FOR_SEMICOLON_)
 
 #define DOCTEST_TEST_CASE_TEMPLATE_IMPL(dec, T, anon, ...)                                         \
@@ -2335,6 +2354,9 @@ constexpr T to_lvalue = x;
 #define DOCTEST_TEST_CASE_TEMPLATE_INSTANTIATE(id, ...)                                            \
     typedef int DOCTEST_ANONYMOUS(_DOCTEST_ANON_FOR_SEMICOLON_)
 
+#define DOCTEST_TEST_CASE_TEMPLATE_APPLY(id, tup)                                                  \
+    typedef int DOCTEST_ANONYMOUS(_DOCTEST_ANON_FOR_SEMICOLON_)
+
 // for subcases
 #define DOCTEST_SUBCASE(name)
 
@@ -2483,6 +2505,7 @@ constexpr T to_lvalue = x;
 #define TEST_CASE_TEMPLATE DOCTEST_TEST_CASE_TEMPLATE
 #define TEST_CASE_TEMPLATE_DEFINE DOCTEST_TEST_CASE_TEMPLATE_DEFINE
 #define TEST_CASE_TEMPLATE_INSTANTIATE DOCTEST_TEST_CASE_TEMPLATE_INSTANTIATE
+#define TEST_CASE_TEMPLATE_APPLY DOCTEST_TEST_CASE_TEMPLATE_APPLY
 #define SUBCASE DOCTEST_SUBCASE
 #define TEST_SUITE DOCTEST_TEST_SUITE
 #define TEST_SUITE_BEGIN DOCTEST_TEST_SUITE_BEGIN

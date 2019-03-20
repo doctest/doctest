@@ -34,6 +34,9 @@ TEST_CASE_TEMPLATE_DEFINE("default construction", T, test_id) {
 TEST_CASE_TEMPLATE_INSTANTIATE(test_id, signed char, short, int);
 TEST_CASE_TEMPLATE_INSTANTIATE(test_id, double, double); // note that types won't be filtered for uniqueness
 
+using Types = std::tuple<unsigned char, char>;
+TEST_CASE_TEMPLATE_APPLY(test_id, Types);
+
 // =================================================================================================
 // MULTIPLE TYPES AS PARAMETERS
 // =================================================================================================
