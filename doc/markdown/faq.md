@@ -136,7 +136,7 @@ Yes - but they can be disabled - see the [**```DOCTEST_CONFIG_NO_EXCEPTIONS```**
 
 ### Why do I get compiler errors in STL headers when including the doctest header?
 
-Try using the [**```DOCTEST_CONFIG_USE_IOSFWD```**](configuration.md#doctest_config_use_iosfwd) configuration identifier.
+Try using the [**```DOCTEST_CONFIG_USE_STD_HEADERS```**](configuration.md#doctest_config_use_std_headers) configuration identifier.
 
 ### Can different versions of the framework be used within the same binary (executable/dll)?
 

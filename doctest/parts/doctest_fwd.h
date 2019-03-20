@@ -360,20 +360,33 @@ extern "C" __declspec(dllimport) void __stdcall DebugBreak();
 #define DOCTEST_BREAK_INTO_DEBUGGER() ((void)0)
 #endif // linux
 
+// this is kept here for backwards compatibility since the config option was changed
+#ifdef DOCTEST_CONFIG_USE_IOSFWD
+#define DOCTEST_CONFIG_USE_STD_HEADERS
+#endif // DOCTEST_CONFIG_USE_IOSFWD
+
+#ifdef DOCTEST_CONFIG_USE_STD_HEADERS
+#include <iosfwd>
+#include <cstddef>
+#else // DOCTEST_CONFIG_USE_STD_HEADERS
+
 #if DOCTEST_CLANG
 // to detect if libc++ is being used with clang (the _LIBCPP_VERSION identifier)
 #include <ciso646>
 #endif // clang
 
+#ifdef _LIBCPP_VERSION
+#define DOCTEST_STD_NAMESPACE_BEGIN _LIBCPP_BEGIN_NAMESPACE_STD
+#define DOCTEST_STD_NAMESPACE_END _LIBCPP_END_NAMESPACE_STD
+#else // _LIBCPP_VERSION
+#define DOCTEST_STD_NAMESPACE_BEGIN namespace std {
+#define DOCTEST_STD_NAMESPACE_END }
+#endif // _LIBCPP_VERSION
+
 // Forward declaring 'X' in namespace std is not permitted by the C++ Standard.
 DOCTEST_MSVC_SUPPRESS_WARNING_WITH_PUSH(4643)
 
-#if defined(DOCTEST_CONFIG_USE_IOSFWD)
-#include <iosfwd>
-#endif // DOCTEST_CONFIG_USE_IOSFWD
-
-#ifdef _LIBCPP_VERSION
-_LIBCPP_BEGIN_NAMESPACE_STD
+DOCTEST_STD_NAMESPACE_BEGIN
 typedef decltype(nullptr) nullptr_t;
 template <class charT>
 struct char_traits;
@@ -384,23 +397,11 @@ class basic_ostream;
 typedef basic_ostream<char, char_traits<char>> ostream;
 template <class... Types>
 class tuple;
-_LIBCPP_END_NAMESPACE_STD
-#else  // _LIBCPP_VERSION
-namespace std {
-typedef decltype(nullptr) nullptr_t;
-template <class charT>
-struct char_traits;
-template <>
-struct char_traits<char>;
-template <class charT, class traits>
-class basic_ostream;
-typedef basic_ostream<char, char_traits<char>> ostream;
-template <class... Types>
-class tuple;
-} // namespace std
-#endif // _LIBCPP_VERSION
+DOCTEST_STD_NAMESPACE_END
 
 DOCTEST_MSVC_SUPPRESS_WARNING_POP
+
+#endif // DOCTEST_CONFIG_USE_STD_HEADERS
 
 #ifdef DOCTEST_CONFIG_INCLUDE_TYPE_TRAITS
 #include <type_traits>

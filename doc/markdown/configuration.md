@@ -14,7 +14,7 @@ Defining something ```globally``` means for every source file of the binary (exe
 - [**```DOCTEST_CONFIG_NUM_CAPTURES_ON_STACK```**](#doctest_config_num_captures_on_stack)
 - [**```DOCTEST_CONFIG_TREAT_CHAR_STAR_AS_STRING```**](#doctest_config_treat_char_star_as_string)
 - [**```DOCTEST_CONFIG_SUPER_FAST_ASSERTS```**](#doctest_config_super_fast_asserts)
-- [**```DOCTEST_CONFIG_USE_IOSFWD```**](#doctest_config_use_iosfwd)
+- [**```DOCTEST_CONFIG_USE_STD_HEADERS```**](#doctest_config_use_std_headers)
 - [**```DOCTEST_CONFIG_NO_COMPARISON_WARNING_SUPPRESSION```**](#doctest_config_no_comparison_warning_suppression)
 - [**```DOCTEST_CONFIG_OPTIONS_PREFIX```**](#doctest_config_options_prefix)
 - [**```DOCTEST_CONFIG_NO_UNPREFIXED_OPTIONS```**](#doctest_config_no_unprefixed_options)
@@ -101,9 +101,9 @@ It also implies [**```DOCTEST_CONFIG_NO_TRY_CATCH_IN_ASSERTS```**](#doctest_conf
 
 This can be defined both globally and in specific source files only.
 
-### **```DOCTEST_CONFIG_USE_IOSFWD```**
+### **```DOCTEST_CONFIG_USE_STD_HEADERS```**
 
-The library by default provides a forward declaration of ```std::ostream``` in order to support the ```operator<<``` [**stringification**](stringification.md) mechanism. This is forbidden by the standard (even though it works everywhere on all tested compilers). However if the user wishes to be 100% standards compliant - then this configuration option can be used to force the inclusion of ```<iosfwd>```.
+The library by default provides a forward declaration of ```std::ostream``` in order to support the ```operator<<``` [**stringification**](stringification.md) mechanism (also ```std::tuple<>``` and ```std::nullptr_t```). This is forbidden by the standard (even though it works everywhere on all tested compilers). However if the user wishes to be 100% standards compliant - then this configuration option can be used to force the inclusion of the relevant standard headers.
 
 Also it is possible that some STL implementation of a compiler with niche usage defines them differently - then there will be compilation errors in STL headers and using this option should fix the problem.  
 
