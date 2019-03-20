@@ -366,12 +366,13 @@ extern "C" __declspec(dllimport) void __stdcall DebugBreak();
 // Forward declaring 'X' in namespace std is not permitted by the C++ Standard.
 DOCTEST_MSVC_SUPPRESS_WARNING_WITH_PUSH(4643)
 
-#if defined(_LIBCPP_VERSION) || defined(DOCTEST_CONFIG_USE_IOSFWD)
-// not forward declaring ostream for libc++ because I had some problems (inline namespaces vs c++98)
-// so the <iosfwd> header is used - also it is very light and doesn't drag a ton of stuff
+#if defined(DOCTEST_CONFIG_USE_IOSFWD)
 #include <iosfwd>
-#else  // _LIBCPP_VERSION
-namespace std {
+#endif // DOCTEST_CONFIG_USE_IOSFWD
+
+#ifdef _LIBCPP_VERSION
+_LIBCPP_BEGIN_NAMESPACE_STD
+typedef decltype(nullptr) nullptr_t;
 template <class charT>
 struct char_traits;
 template <>
@@ -379,15 +380,22 @@ struct char_traits<char>;
 template <class charT, class traits>
 class basic_ostream;
 typedef basic_ostream<char, char_traits<char> > ostream;
-} // namespace std
-#endif // _LIBCPP_VERSION || DOCTEST_CONFIG_USE_IOSFWD
-
-#ifdef _LIBCPP_VERSION
-#include <cstddef>
+template <class... Types>
+class tuple;
+_LIBCPP_END_NAMESPACE_STD
 #else  // _LIBCPP_VERSION
 namespace std {
 typedef decltype(nullptr) nullptr_t;
-}
+template <class charT>
+struct char_traits;
+template <>
+struct char_traits<char>;
+template <class charT, class traits>
+class basic_ostream;
+typedef basic_ostream<char, char_traits<char> > ostream;
+template <class... Types>
+class tuple;
+} // namespace std
 #endif // _LIBCPP_VERSION
 
 DOCTEST_MSVC_SUPPRESS_WARNING_POP
