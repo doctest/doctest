@@ -18,11 +18,6 @@ check coverage
 get rid of DOCTEST_DECLARE_DEFAULTS & friends...
     AND get rid of DOCTEST_INTERFACE for simple structs!
 
-merge this
-    https://github.com/onqtam/doctest/pull/197
-    redo benchmarks (and add a <string> include along with the framework haeder :D)
-    fix docs
-
 On release - mention these:
     - can be used for listening for events
     - multiple reporters/listeners can be used at the same time
