@@ -1867,20 +1867,20 @@ int registerReporter(const char* name, int priority, IReporter& r);
 #define DOCTEST_TEST_CASE_TEMPLATE_DEFINE_IMPL(dec, T, id, anon)                                   \
     template <typename T>                                                                          \
     inline void anon();                                                                            \
+    template <typename Tuple>                                                                      \
+    struct DOCTEST_CAT(id, ITERATOR);                                                              \
     template <typename Type, typename... Rest>                                                     \
-    struct DOCTEST_CAT(id, ITERATOR)                                                               \
+    struct DOCTEST_CAT(id, ITERATOR)<std::tuple<Type, Rest...> >                                   \
     {                                                                                              \
         DOCTEST_CAT(id, ITERATOR)(int line, int index) {                                           \
             DOCTEST_REGISTER_TYPED_TEST_CASE_IMPL(anon<Type>, Type, dec, line * 1000 + index);     \
-            DOCTEST_CAT(id, ITERATOR)<Rest...>(line, index + 1);                                   \
+            DOCTEST_CAT(id, ITERATOR)<std::tuple<Rest...> >(line, index + 1);                      \
         }                                                                                          \
     };                                                                                             \
-    template <typename Type>                                                                       \
-    struct DOCTEST_CAT(id, ITERATOR)<Type>                                                         \
+    template <>                                                                                    \
+    struct DOCTEST_CAT(id, ITERATOR)<std::tuple<> >                                                \
     {                                                                                              \
-        DOCTEST_CAT(id, ITERATOR)(int line, int index) {                                           \
-            DOCTEST_REGISTER_TYPED_TEST_CASE_IMPL(anon<Type>, Type, dec, line * 1000 + index);     \
-        }                                                                                          \
+        DOCTEST_CAT(id, ITERATOR)(int, int) {}                                                     \
     }
 
 #define DOCTEST_TEST_CASE_TEMPLATE_DEFINE_IMPL_PROXY(dec, T, id, anon)                             \
@@ -1892,9 +1892,9 @@ int registerReporter(const char* name, int priority, IReporter& r);
     DOCTEST_TEST_CASE_TEMPLATE_DEFINE_IMPL_PROXY(dec, T, id, DOCTEST_ANONYMOUS(_DOCTEST_ANON_TMP_))
 
 #define DOCTEST_TEST_CASE_TEMPLATE_INSTANTIATE_IMPL(id, anon, ...)                                 \
-    DOCTEST_GLOBAL_NO_WARNINGS(DOCTEST_CAT(anon, DUMMY)) = []() {                                  \
-        DOCTEST_CAT(id, ITERATOR)<__VA_ARGS__> DOCTEST_UNUSED DOCTEST_CAT(anon, inner_dummy)(      \
-                __LINE__, 0);                                                                      \
+    DOCTEST_GLOBAL_NO_WARNINGS(DOCTEST_CAT(anon, DUMMY)) = [] {                                    \
+        DOCTEST_CAT(id, ITERATOR)<std::tuple<__VA_ARGS__> > DOCTEST_UNUSED DOCTEST_CAT(            \
+                anon, inner_dummy)(__LINE__, 0);                                                   \
         return 0;                                                                                  \
     }();                                                                                           \
     DOCTEST_GLOBAL_NO_WARNINGS_END()
@@ -1902,6 +1902,17 @@ int registerReporter(const char* name, int priority, IReporter& r);
 #define DOCTEST_TEST_CASE_TEMPLATE_INSTANTIATE(id, ...)                                            \
     DOCTEST_TEST_CASE_TEMPLATE_INSTANTIATE_IMPL(id, DOCTEST_ANONYMOUS(_DOCTEST_ANON_TMP_),         \
                                                 __VA_ARGS__)                                       \
+    typedef int DOCTEST_ANONYMOUS(_DOCTEST_ANON_FOR_SEMICOLON_)
+
+#define DOCTEST_TEST_CASE_TEMPLATE_APPLY_IMPL(id, anon, tup)                                       \
+    DOCTEST_GLOBAL_NO_WARNINGS(DOCTEST_CAT(anon, DUMMY)) = [] {                                    \
+        DOCTEST_CAT(id, ITERATOR)<tup> DOCTEST_UNUSED DOCTEST_CAT(anon, inner_dummy)(__LINE__, 0); \
+        return 0;                                                                                  \
+    }();                                                                                           \
+    DOCTEST_GLOBAL_NO_WARNINGS_END()
+
+#define DOCTEST_TEST_CASE_TEMPLATE_APPLY(id, tup)                                                  \
+    DOCTEST_TEST_CASE_TEMPLATE_APPLY_IMPL(id, DOCTEST_ANONYMOUS(_DOCTEST_ANON_TMP_), tup)    \
     typedef int DOCTEST_ANONYMOUS(_DOCTEST_ANON_FOR_SEMICOLON_)
 
 #define DOCTEST_TEST_CASE_TEMPLATE_IMPL(dec, T, anon, ...)                                         \
@@ -2311,6 +2322,9 @@ constexpr T to_lvalue = x;
 #define DOCTEST_TEST_CASE_TEMPLATE_INSTANTIATE(id, ...)                                            \
     typedef int DOCTEST_ANONYMOUS(_DOCTEST_ANON_FOR_SEMICOLON_)
 
+#define DOCTEST_TEST_CASE_TEMPLATE_APPLY(id, tup)                                                  \
+    typedef int DOCTEST_ANONYMOUS(_DOCTEST_ANON_FOR_SEMICOLON_)
+
 // for subcases
 #define DOCTEST_SUBCASE(name)
 
@@ -2459,6 +2473,7 @@ constexpr T to_lvalue = x;
 #define TEST_CASE_TEMPLATE DOCTEST_TEST_CASE_TEMPLATE
 #define TEST_CASE_TEMPLATE_DEFINE DOCTEST_TEST_CASE_TEMPLATE_DEFINE
 #define TEST_CASE_TEMPLATE_INSTANTIATE DOCTEST_TEST_CASE_TEMPLATE_INSTANTIATE
+#define TEST_CASE_TEMPLATE_APPLY DOCTEST_TEST_CASE_TEMPLATE_APPLY
 #define SUBCASE DOCTEST_SUBCASE
 #define TEST_SUITE DOCTEST_TEST_SUITE
 #define TEST_SUITE_BEGIN DOCTEST_TEST_SUITE_BEGIN
