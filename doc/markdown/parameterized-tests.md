@@ -127,7 +127,7 @@ There are 2 ways to do it:
 
     TEST_CASE_TEMPLATE_INSTANTIATE(test_id, char, short, int, long long int);
 
-    TEST_CASE_TEMPLATE_INSTANTIATE(test_id, float, double);
+    TEST_CASE_TEMPLATE_INSTANTIATE_TUPLE(test_id, std::tuple<float, double>);
     ```
     If you are designing an interface or concept, you can define a suite of type-parameterized tests to verify properties that any valid implementation of the interface/concept should have. Then, the author of each implementation can just instantiate the test suite with his type to verify that it conforms to the requirements, without having to write similar tests repeatedly.
 

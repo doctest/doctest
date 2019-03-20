@@ -1949,15 +1949,16 @@ int registerReporter(const char* name, int priority) {
                                                 __VA_ARGS__)                                       \
     typedef int DOCTEST_ANONYMOUS(_DOCTEST_ANON_FOR_SEMICOLON_)
 
-#define DOCTEST_TEST_CASE_TEMPLATE_APPLY_IMPL(id, anon, tup)                                       \
+#define DOCTEST_TEST_CASE_TEMPLATE_APPLY_IMPL(id, anon, ...)                                       \
     DOCTEST_GLOBAL_NO_WARNINGS(DOCTEST_CAT(anon, DUMMY)) = [] {                                    \
-        DOCTEST_CAT(id, ITERATOR)<tup> DOCTEST_UNUSED DOCTEST_CAT(anon, inner_dummy)(__LINE__, 0); \
+        DOCTEST_CAT(id, ITERATOR)<__VA_ARGS__> DOCTEST_UNUSED DOCTEST_CAT(anon, inner_dummy)(      \
+                __LINE__, 0);                                                                      \
         return 0;                                                                                  \
     }();                                                                                           \
     DOCTEST_GLOBAL_NO_WARNINGS_END()
 
-#define DOCTEST_TEST_CASE_TEMPLATE_APPLY(id, tup)                                                  \
-    DOCTEST_TEST_CASE_TEMPLATE_APPLY_IMPL(id, DOCTEST_ANONYMOUS(_DOCTEST_ANON_TMP_), tup)    \
+#define DOCTEST_TEST_CASE_TEMPLATE_APPLY(id, ...)                                                  \
+    DOCTEST_TEST_CASE_TEMPLATE_APPLY_IMPL(id, DOCTEST_ANONYMOUS(_DOCTEST_ANON_TMP_), __VA_ARGS__)  \
     typedef int DOCTEST_ANONYMOUS(_DOCTEST_ANON_FOR_SEMICOLON_)
 
 #define DOCTEST_TEST_CASE_TEMPLATE_IMPL(dec, T, anon, ...)                                         \
@@ -2357,7 +2358,7 @@ constexpr T to_lvalue = x;
 #define DOCTEST_TEST_CASE_TEMPLATE_INSTANTIATE(id, ...)                                            \
     typedef int DOCTEST_ANONYMOUS(_DOCTEST_ANON_FOR_SEMICOLON_)
 
-#define DOCTEST_TEST_CASE_TEMPLATE_APPLY(id, tup)                                                  \
+#define DOCTEST_TEST_CASE_TEMPLATE_APPLY(id, ...)                                                  \
     typedef int DOCTEST_ANONYMOUS(_DOCTEST_ANON_FOR_SEMICOLON_)
 
 // for subcases
