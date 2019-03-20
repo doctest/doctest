@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<doctest binary="all_features">
+  <TestSuite>
+    <TestCase name="[string] testing std::string" filename="main.cpp" line="0">
+      <OverallResultsAsserts successes="1" failures="0"/>
+    </TestCase>
+  </TestSuite>
+  <OverallResultsAsserts successes="1" failures="0"/>
+  <OverallResultsTestCases successes="1" failures="0"/>
+</doctest>
+Program code.

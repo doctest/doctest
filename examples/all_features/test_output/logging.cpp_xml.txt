@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<doctest binary="all_features">
+  <TestSuite>
+    <TestCase name="logging the counter of a loop" filename="logging.cpp" line="0">
+      <Expression success="false" type="CHECK" filename="logging.cpp" line="0">
+        <Original>
+          vec[i] != (1 &lt;&lt; i)
+        </Original>
+        <Expanded>
+          1 != 1
+        </Expanded>
+        <Info>
+          current iteration of loop:
+        </Info>
+        <Info>
+          i := 0
+        </Info>
+      </Expression>
+      <Expression success="false" type="CHECK" filename="logging.cpp" line="0">
+        <Original>
+          vec[i] != (1 &lt;&lt; i)
+        </Original>
+        <Expanded>
+          2 != 2
+        </Expanded>
+        <Info>
+          current iteration of loop:
+        </Info>
+        <Info>
+          i := 1
+        </Info>
+      </Expression>
+      <Expression success="false" type="CHECK" filename="logging.cpp" line="0">
+        <Original>
+          vec[i] != (1 &lt;&lt; i)
+        </Original>
+        <Expanded>
+          4 != 4
+        </Expanded>
+        <Info>
+          current iteration of loop:
+        </Info>
+        <Info>
+          i := 2
+        </Info>
+      </Expression>
+      <Expression success="false" type="CHECK" filename="logging.cpp" line="0">
+        <Original>
+          vec[i] != (1 &lt;&lt; i)
+        </Original>
+        <Expanded>
+          8 != 8
+        </Expanded>
+        <Info>
+          current iteration of loop:
+        </Info>
+        <Info>
+          i := 3
+        </Info>
+      </Expression>
+      <Expression success="false" type="CHECK" filename="logging.cpp" line="0">
+        <Original>
+          vec[i] != (1 &lt;&lt; i)
+        </Original>
+        <Expanded>
+          16 != 16
+        </Expanded>
+        <Info>
+          current iteration of loop:
+        </Info>
+        <Info>
+          i := 4
+        </Info>
+      </Expression>
+      <OverallResultsAsserts successes="0" failures="5"/>
+    </TestCase>
+    <TestCase name="a test case that will end from an exception" filename="logging.cpp" line="0">
+      <Message>
+        <Text>
+          forcing the many captures (including those on the heap) to be stringified
+        </Text>
+        <Info>
+          lots of captures - some on heap: 42 42 42;
+        </Info>
+      </Message>
+      <Expression success="false" type="CHECK" filename="logging.cpp" line="0">
+        <Original>
+          some_var == 666
+        </Original>
+        <Expanded>
+          42 == 666
+        </Expanded>
+        <Info>
+          someTests() returned: 42
+        </Info>
+        <Info>
+          this should be printed if an exception is thrown even if no assert has failed: 42
+        </Info>
+        <Info>
+          in a nested scope this should be printed as well: 42
+        </Info>
+        <Info>
+          why is this not 666 ?!
+        </Info>
+      </Expression>
+      <Exception crash="false">
+        0
+      </Exception>
+      <OverallResultsAsserts successes="0" failures="2"/>
+    </TestCase>
+    <TestCase name="a test case that will end from an exception and should print the unprinted context" filename="logging.cpp" line="0">
+      <Exception crash="false">
+        0
+      </Exception>
+      <OverallResultsAsserts successes="0" failures="0"/>
+    </TestCase>
+    <TestCase name="third party asserts can report failures to doctest" filename="logging.cpp" line="0">
+      <Message>
+        <Text>
+          MY_ASSERT(false)
+        </Text>
+      </Message>
+      <Message>
+        <Text>
+          MY_ASSERT_FATAL(false)
+        </Text>
+      </Message>
+      <OverallResultsAsserts successes="0" failures="2"/>
+    </TestCase>
+    <TestCase name="explicit failures 1" filename="logging.cpp" line="0">
+      <Message>
+        <Text>
+          this should not end the test case, but mark it as failing
+        </Text>
+      </Message>
+      <Message>
+        <Text>
+          reached!
+        </Text>
+      </Message>
+      <OverallResultsAsserts successes="0" failures="1"/>
+    </TestCase>
+    <TestCase name="explicit failures 2" filename="logging.cpp" line="0">
+      <Message>
+        <Text>
+          fail the test case and also end it
+        </Text>
+      </Message>
+      <OverallResultsAsserts successes="0" failures="1"/>
+    </TestCase>
+  </TestSuite>
+  <OverallResultsAsserts successes="0" failures="11"/>
+  <OverallResultsTestCases successes="0" failures="6"/>
+</doctest>
+Program code.

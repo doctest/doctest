@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<doctest binary="all_features">
+  <TestSuite>
+    <TestCase name="exercising tricky code paths of doctest" filename="coverage_maxout.cpp" line="0">
+      <Expression success="false" type="CHECK" filename="coverage_maxout.cpp" line="0">
+        <Original>
+          str.compare(const_str, true) != 0
+        </Original>
+        <Expanded>
+          0 != 0
+        </Expanded>
+        <Info>
+          should fail
+        </Info>
+      </Expression>
+      <Expression success="false" type="CHECK" filename="coverage_maxout.cpp" line="0">
+        <Original>
+          str.compare("omgomgomg", false) != 0
+        </Original>
+        <Expanded>
+          0 != 0
+        </Expanded>
+        <Info>
+          should fail
+        </Info>
+      </Expression>
+      <OverallResultsAsserts successes="5" failures="2"/>
+    </TestCase>
+  </TestSuite>
+  <OverallResultsAsserts successes="5" failures="2"/>
+  <OverallResultsTestCases successes="0" failures="1"/>
+</doctest>
+Program code.

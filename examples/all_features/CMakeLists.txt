@@ -54,6 +54,7 @@ doctest_add_test(NAME coverage_maxout.cpp ${common_args} -sf=*coverage_maxout.cp
 # queries
 doctest_add_test(NAME version           COMMAND $<TARGET_FILE:all_features> -v)
 doctest_add_test(NAME help              ${common_args} -h)
+doctest_add_test(NO_OUTPUT NAME outfile ${common_args} -c   -out=temp) # just to exercise the output option
 doctest_add_test(NAME count             ${common_args} -c   -sf=*coverage*)
 doctest_add_test(NAME list_test_cases   ${common_args} -ltc -sf=*coverage*)
 doctest_add_test(NAME list_test_suites  ${common_args} -lts -sf=*coverage*)

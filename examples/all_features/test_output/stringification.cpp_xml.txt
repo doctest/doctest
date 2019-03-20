@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<doctest binary="all_features">
+  <TestSuite>
+    <TestCase name="all asserts should fail and show how the objects get stringified" filename="stringification.cpp" line="0">
+      <Expression success="false" type="CHECK" filename="stringification.cpp" line="0">
+        <Original>
+          f1 == f2
+        </Original>
+        <Expanded>
+          Foo{} == Foo{}
+        </Expanded>
+      </Expression>
+      <Expression success="false" type="CHECK" filename="stringification.cpp" line="0">
+        <Original>
+          dummy1 == dummy2
+        </Original>
+        <Expanded>
+          omg == tralala
+        </Expanded>
+      </Expression>
+      <Expression success="false" type="CHECK" filename="stringification.cpp" line="0">
+        <Original>
+          vec1 == vec2
+        </Original>
+        <Expanded>
+          [1, 2, 3] == [1, 2, 4]
+        </Expanded>
+      </Expression>
+      <Expression success="false" type="CHECK" filename="stringification.cpp" line="0">
+        <Original>
+          lst_1 == lst_2
+        </Original>
+        <Expanded>
+          [1, 42, 3, ] == [1, 2, 666, ]
+        </Expanded>
+      </Expression>
+      <Exception crash="false">
+        MyTypeInherited&lt;int>(5, 4)
+      </Exception>
+      <OverallResultsAsserts successes="0" failures="4"/>
+    </TestCase>
+    <TestCase name="a test case that registers an exception translator for int and then throws one" filename="stringification.cpp" line="0">
+      <Exception crash="false">
+        5
+      </Exception>
+      <OverallResultsAsserts successes="0" failures="0"/>
+    </TestCase>
+  </TestSuite>
+  <OverallResultsAsserts successes="0" failures="4"/>
+  <OverallResultsTestCases successes="0" failures="2"/>
+</doctest>
+Program code.

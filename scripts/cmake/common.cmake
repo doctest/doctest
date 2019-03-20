@@ -30,7 +30,7 @@ function(doctest_add_test_impl)
         set(the_command "${the_command} ${cur}")
     endforeach()
     if(ARG_XML_OUTPUT)
-        set(the_command "${the_command} --reporter=xml")
+        set(the_command "${the_command} --reporters=xml")
         set(ARG_NAME ${ARG_NAME}_xml)
     endif()
     # append the argument for removing paths from filenames in the output so tests give the same output everywhere
@@ -61,7 +61,7 @@ endfunction()
 # a custom version of add_test() to suite my needs
 function(doctest_add_test)
     doctest_add_test_impl(${ARGN})
-    #doctest_add_test_impl(${ARGN} XML_OUTPUT)
+    doctest_add_test_impl(${ARGN} XML_OUTPUT)
 endfunction()
 
 macro(add_compiler_flags)

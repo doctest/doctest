@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<doctest binary="all_features">
+  <OverallResultsAsserts successes="0" failures="0"/>
+  <OverallResultsTestCases successes="0" failures="0"/>
+</doctest>
+Program code.

@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<doctest binary="all_features">
+  <TestSuite name="exception related">
+    <TestCase name="will end from a std::string exception" filename="coverage_maxout.cpp" line="0">
+      <Exception crash="false">
+        std::string!
+      </Exception>
+      <OverallResultsAsserts successes="0" failures="0"/>
+    </TestCase>
+    <TestCase name="will end from a const char* exception" filename="coverage_maxout.cpp" line="0">
+      <Exception crash="false">
+        const char*!
+      </Exception>
+      <OverallResultsAsserts successes="0" failures="0"/>
+    </TestCase>
+    <TestCase name="will end from an unknown exception" filename="coverage_maxout.cpp" line="0">
+      <Exception crash="false">
+        unknown exception
+      </Exception>
+      <OverallResultsAsserts successes="0" failures="0"/>
+    </TestCase>
+  </TestSuite>
+  <OverallResultsAsserts successes="0" failures="0"/>
+  <OverallResultsTestCases successes="1" failures="3"/>
+</doctest>
+Program code.

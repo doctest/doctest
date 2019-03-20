@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<doctest binary="all_features">
+  <TestSuite name="some TS">
+    <TestCase name="in TS" filename="header.h" line="0">
+      <Message>
+        <Text/>
+      </Message>
+      <OverallResultsAsserts successes="0" failures="1"/>
+    </TestCase>
+  </TestSuite>
+  <TestSuite>
+    <TestCase name="template 1&lt;char>" filename="header.h" line="0">
+      <Message>
+        <Text/>
+      </Message>
+      <OverallResultsAsserts successes="0" failures="1"/>
+    </TestCase>
+    <TestCase name="template 2&lt;doctest::String>" filename="header.h" line="0">
+      <Message>
+        <Text/>
+      </Message>
+      <OverallResultsAsserts successes="0" failures="1"/>
+    </TestCase>
+    <TestCase name="fixtured test" filename="header.h" line="0">
+      <OverallResultsAsserts successes="1" failures="0"/>
+    </TestCase>
+  </TestSuite>
+  <OverallResultsAsserts successes="1" failures="3"/>
+  <OverallResultsTestCases successes="1" failures="3"/>
+</doctest>
+Program code.

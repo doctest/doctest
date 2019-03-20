@@ -2063,6 +2063,31 @@ namespace {
 
         unsigned line(unsigned l) const { return opt.no_line_numbers ? 0 : l; }
 
+        void test_case_start_impl(const TestCaseData& in) {
+            bool open_ts_tag = false;
+            if(tc != nullptr) { // we have already opened a test suite
+                if(strcmp(tc->m_test_suite, in.m_test_suite) != 0) {
+                    xml.endElement();
+                    open_ts_tag = true;
+                }
+            }
+            else {
+                open_ts_tag = true; // first test case ==> first test suite
+            }
+
+            if(open_ts_tag) {
+                xml.startElement("TestSuite");
+                xml.writeAttribute("name", in.m_test_suite);
+            }
+
+            tc = &in;
+            xml.startElement("TestCase")
+                    .writeAttribute("name", in.m_name)
+                    .writeAttribute("filename", skipPathFromFilename(in.m_file))
+                    .writeAttribute("line", line(in.m_line))
+                    .writeAttribute("description", in.m_description);
+        }
+
         // =========================================================================================
         // WHAT FOLLOWS ARE OVERRIDES OF THE VIRTUAL METHODS OF THE REPORTER INTERFACE
         // =========================================================================================
@@ -2100,27 +2125,8 @@ namespace {
         }
 
         void test_case_start(const TestCaseData& in) override {
-            bool open_ts_tag = false;
-            if(tc != nullptr) { // we have already opened a test suite
-                if(strcmp(tc->m_test_suite, in.m_test_suite) != 0) {
-                    xml.endElement();
-                    open_ts_tag = true;
-                }
-            } else {
-                open_ts_tag = true; // first test case ==> first test suite
-            }
-
-            if(open_ts_tag) {
-                xml.startElement("TestSuite");
-                xml.writeAttribute("name", in.m_test_suite);
-            }
-
-            tc = &in;
-            xml.startElement("TestCase")
-                    .writeAttribute("name", in.m_name)
-                    .writeAttribute("filename", skipPathFromFilename(in.m_file))
-                    .writeAttribute("line", line(in.m_line))
-                    .writeAttribute("description", in.m_description);
+            test_case_start_impl(in);
+            xml.ensureTagClosed();
         }
 
         void test_case_end(const CurrentTestCaseStats& st) override {
@@ -2188,9 +2194,11 @@ namespace {
         }
 
         void test_case_skipped(const TestCaseData& in) override {
-            test_case_start(in);
-            xml.writeAttribute("skipped", "true");
-            xml.endElement();
+            if(opt.no_skipped_summary == false) {
+                test_case_start_impl(in);
+                xml.writeAttribute("skipped", "true");
+                xml.endElement();
+            }
         }
     };
 

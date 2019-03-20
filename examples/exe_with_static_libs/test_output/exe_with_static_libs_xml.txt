@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<doctest binary="exe_with_static_libs">
+  <TestSuite>
+    <TestCase name="asd" filename="lib_1_src1.cpp" line="0">
+hello from <lib_1_src1.cpp>
+      <OverallResultsAsserts successes="0" failures="0"/>
+    </TestCase>
+    <TestCase name="asd" filename="lib_1_src2.cpp" line="0">
+hello from <lib_1_src2.cpp>
+      <OverallResultsAsserts successes="0" failures="0"/>
+    </TestCase>
+    <TestCase name="asd" filename="lib_2_src.cpp" line="0">
+hello from <lib_2_src.cpp>
+      <OverallResultsAsserts successes="0" failures="0"/>
+    </TestCase>
+    <TestCase name="main" filename="main.cpp" line="0">
+hello from <main.cpp>
+      <OverallResultsAsserts successes="0" failures="0"/>
+    </TestCase>
+  </TestSuite>
+  <OverallResultsAsserts successes="0" failures="0"/>
+  <OverallResultsTestCases successes="4" failures="0" skipped="0"/>
+</doctest>

@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<doctest binary="all_features">
+  <TestSuite>
+    <TestCase name="an empty test that will succeed - not part of a test suite" filename="test_cases_and_suites.cpp" line="0">
+      <OverallResultsAsserts successes="0" failures="0"/>
+    </TestCase>
+    <TestCase name="should fail because of an exception" filename="test_cases_and_suites.cpp" line="0">
+      <Exception crash="false">
+        0
+      </Exception>
+      <OverallResultsAsserts successes="1" failures="0"/>
+    </TestCase>
+  </TestSuite>
+  <TestSuite name="scoped test suite">
+    <TestCase name="part of scoped" filename="test_cases_and_suites.cpp" line="0">
+      <Message>
+        <Text/>
+      </Message>
+      <OverallResultsAsserts successes="0" failures="1"/>
+    </TestCase>
+    <TestCase name="part of scoped 2" filename="test_cases_and_suites.cpp" line="0">
+      <Message>
+        <Text/>
+      </Message>
+      <OverallResultsAsserts successes="0" failures="1"/>
+    </TestCase>
+  </TestSuite>
+  <TestSuite name="some TS">
+    <TestCase name="part of some TS" filename="test_cases_and_suites.cpp" line="0">
+      <Message>
+        <Text/>
+      </Message>
+      <OverallResultsAsserts successes="0" failures="1"/>
+    </TestCase>
+  </TestSuite>
+  <TestSuite>
+    <TestCase name="fixtured test - not part of a test suite" filename="test_cases_and_suites.cpp" line="0">
+      <Expression success="false" type="CHECK" filename="test_cases_and_suites.cpp" line="0">
+        <Original>
+          data == 85
+        </Original>
+        <Expanded>
+          21 == 85
+        </Expanded>
+      </Expression>
+      <OverallResultsAsserts successes="0" failures="1"/>
+    </TestCase>
+  </TestSuite>
+  <TestSuite name="ts1">
+    <TestCase name="normal test in a test suite from a decorator" filename="test_cases_and_suites.cpp" line="0">
+      <Message>
+        <Text>
+          failing because of the timeout decorator!
+        </Text>
+      </Message>
+      <OverallResultsAsserts successes="0" failures="0"/>
+    </TestCase>
+  </TestSuite>
+  <TestSuite name="skipped test cases">
+    <TestCase name="unskipped" filename="test_cases_and_suites.cpp" line="0" description="this test has overrided its skip decorator">
+      <Message>
+        <Text/>
+      </Message>
+      <OverallResultsAsserts successes="0" failures="1"/>
+    </TestCase>
+  </TestSuite>
+  <TestSuite name="test suite with a description">
+    <TestCase name="fails - and its allowed" filename="test_cases_and_suites.cpp" line="0" description="regarding failures">
+      <Message>
+        <Text/>
+      </Message>
+      <OverallResultsAsserts successes="0" failures="1"/>
+    </TestCase>
+    <TestCase name="doesn't fail which is fine" filename="test_cases_and_suites.cpp" line="0" description="regarding failures">
+      <OverallResultsAsserts successes="0" failures="0"/>
+    </TestCase>
+    <TestCase name="fails as it should" filename="test_cases_and_suites.cpp" line="0" description="regarding failures">
+      <Message>
+        <Text/>
+      </Message>
+      <OverallResultsAsserts successes="0" failures="1"/>
+    </TestCase>
+    <TestCase name="doesn't fail but it should have" filename="test_cases_and_suites.cpp" line="0" description="regarding failures">
+      <OverallResultsAsserts successes="0" failures="0"/>
+    </TestCase>
+    <TestCase name="fails 1 time as it should" filename="test_cases_and_suites.cpp" line="0" description="regarding failures">
+      <Message>
+        <Text/>
+      </Message>
+      <OverallResultsAsserts successes="0" failures="1"/>
+    </TestCase>
+    <TestCase name="fails more times as it should" filename="test_cases_and_suites.cpp" line="0" description="regarding failures">
+      <Message>
+        <Text/>
+      </Message>
+      <Message>
+        <Text/>
+      </Message>
+      <OverallResultsAsserts successes="0" failures="2"/>
+    </TestCase>
+  </TestSuite>
+  <OverallResultsAsserts successes="1" failures="10"/>
+  <OverallResultsTestCases successes="5" failures="9"/>
+</doctest>
+Program code.

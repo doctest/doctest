@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<doctest binary="executable_dll_and_plugin">
+  <TestSuite>
+    <TestCase name="dll" filename="dll.cpp" line="0">
+I am a test from the dll!
+      <OverallResultsAsserts successes="0" failures="0"/>
+    </TestCase>
+    <TestCase name="implementation" filename="implementation.cpp" line="0">
+I am a test from the implementation!
+      <OverallResultsAsserts successes="0" failures="0"/>
+    </TestCase>
+    <TestCase name="implementation_2" filename="implementation_2.cpp" line="0">
+I am a test from the implementation_2!
+      <OverallResultsAsserts successes="0" failures="0"/>
+    </TestCase>
+    <TestCase name="executable" filename="main.cpp" line="0">
+I am a test from the executable!
+      <Exception crash="false">
+        char: 97
+      </Exception>
+      <OverallResultsAsserts successes="0" failures="0"/>
+    </TestCase>
+    <TestCase name="plugin" filename="plugin.cpp" line="0">
+I am a test from the plugin!
+      <OverallResultsAsserts successes="0" failures="0"/>
+    </TestCase>
+  </TestSuite>
+  <OverallResultsAsserts successes="0" failures="0"/>
+  <OverallResultsTestCases successes="4" failures="1" skipped="0"/>
+</doctest>

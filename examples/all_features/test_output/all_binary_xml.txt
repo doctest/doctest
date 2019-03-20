@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<doctest binary="all_features">
+  <TestSuite>
+    <TestCase name="all binary assertions" filename="assertion_macros.cpp" line="0">
+      <Expression success="true" type="WARN_EQ" filename="assertion_macros.cpp" line="0">
+        <Original>
+          1, 1
+        </Original>
+        <Expanded>
+          1, 1
+        </Expanded>
+      </Expression>
+      <Expression success="true" type="CHECK_EQ" filename="assertion_macros.cpp" line="0">
+        <Original>
+          1, 1
+        </Original>
+        <Expanded>
+          1, 1
+        </Expanded>
+      </Expression>
+      <Expression success="true" type="REQUIRE_EQ" filename="assertion_macros.cpp" line="0">
+        <Original>
+          1, 1
+        </Original>
+        <Expanded>
+          1, 1
+        </Expanded>
+      </Expression>
+      <Expression success="true" type="WARN_NE" filename="assertion_macros.cpp" line="0">
+        <Original>
+          1, 0
+        </Original>
+        <Expanded>
+          1, 0
+        </Expanded>
+      </Expression>
+      <Expression success="true" type="CHECK_NE" filename="assertion_macros.cpp" line="0">
+        <Original>
+          1, 0
+        </Original>
+        <Expanded>
+          1, 0
+        </Expanded>
+      </Expression>
+      <Expression success="true" type="REQUIRE_NE" filename="assertion_macros.cpp" line="0">
+        <Original>
+          1, 0
+        </Original>
+        <Expanded>
+          1, 0
+        </Expanded>
+      </Expression>
+      <Expression success="true" type="WARN_GT" filename="assertion_macros.cpp" line="0">
+        <Original>
+          1, 0
+        </Original>
+        <Expanded>
+          1, 0
+        </Expanded>
+      </Expression>
+      <Expression success="true" type="CHECK_GT" filename="assertion_macros.cpp" line="0">
+        <Original>
+          1, 0
+        </Original>
+        <Expanded>
+          1, 0
+        </Expanded>
+      </Expression>
+      <Expression success="true" type="REQUIRE_GT" filename="assertion_macros.cpp" line="0">
+        <Original>
+          1, 0
+        </Original>
+        <Expanded>
+          1, 0
+        </Expanded>
+      </Expression>
+      <Expression success="true" type="WARN_LT" filename="assertion_macros.cpp" line="0">
+        <Original>
+          0, 1
+        </Original>
+        <Expanded>
+          0, 1
+        </Expanded>
+      </Expression>
+      <Expression success="true" type="CHECK_LT" filename="assertion_macros.cpp" line="0">
+        <Original>
+          0, 1
+        </Original>
+        <Expanded>
+          0, 1
+        </Expanded>
+      </Expression>
+      <Expression success="true" type="REQUIRE_LT" filename="assertion_macros.cpp" line="0">
+        <Original>
+          0, 1
+        </Original>
+        <Expanded>
+          0, 1
+        </Expanded>
+      </Expression>
+      <Expression success="true" type="WARN_GE" filename="assertion_macros.cpp" line="0">
+        <Original>
+          1, 1
+        </Original>
+        <Expanded>
+          1, 1
+        </Expanded>
+      </Expression>
+      <Expression success="true" type="CHECK_GE" filename="assertion_macros.cpp" line="0">
+        <Original>
+          1, 1
+        </Original>
+        <Expanded>
+          1, 1
+        </Expanded>
+      </Expression>
+      <Expression success="true" type="REQUIRE_GE" filename="assertion_macros.cpp" line="0">
+        <Original>
+          1, 1
+        </Original>
+        <Expanded>
+          1, 1
+        </Expanded>
+      </Expression>
+      <Expression success="true" type="WARN_LE" filename="assertion_macros.cpp" line="0">
+        <Original>
+          1, 1
+        </Original>
+        <Expanded>
+          1, 1
+        </Expanded>
+      </Expression>
+      <Expression success="true" type="CHECK_LE" filename="assertion_macros.cpp" line="0">
+        <Original>
+          1, 1
+        </Original>
+        <Expanded>
+          1, 1
+        </Expanded>
+      </Expression>
+      <Expression success="true" type="REQUIRE_LE" filename="assertion_macros.cpp" line="0">
+        <Original>
+          1, 1
+        </Original>
+        <Expanded>
+          1, 1
+        </Expanded>
+      </Expression>
+      <Expression success="true" type="WARN_UNARY" filename="assertion_macros.cpp" line="0">
+        <Original>
+          1
+        </Original>
+        <Expanded>
+          1
+        </Expanded>
+      </Expression>
+      <Expression success="true" type="CHECK_UNARY" filename="assertion_macros.cpp" line="0">
+        <Original>
+          1
+        </Original>
+        <Expanded>
+          1
+        </Expanded>
+      </Expression>
+      <Expression success="true" type="REQUIRE_UNARY" filename="assertion_macros.cpp" line="0">
+        <Original>
+          1
+        </Original>
+        <Expanded>
+          1
+        </Expanded>
+      </Expression>
+      <Expression success="true" type="WARN_UNARY_FALSE" filename="assertion_macros.cpp" line="0">
+        <Original>
+          0
+        </Original>
+        <Expanded>
+          0
+        </Expanded>
+      </Expression>
+      <Expression success="true" type="CHECK_UNARY_FALSE" filename="assertion_macros.cpp" line="0">
+        <Original>
+          0
+        </Original>
+        <Expanded>
+          0
+        </Expanded>
+      </Expression>
+      <Expression success="true" type="REQUIRE_UNARY_FALSE" filename="assertion_macros.cpp" line="0">
+        <Original>
+          0
+        </Original>
+        <Expanded>
+          0
+        </Expanded>
+      </Expression>
+      <OverallResultsAsserts successes="16" failures="0"/>
+    </TestCase>
+  </TestSuite>
+  <OverallResultsAsserts successes="16" failures="0"/>
+  <OverallResultsTestCases successes="1" failures="0"/>
+</doctest>
+Program code.
