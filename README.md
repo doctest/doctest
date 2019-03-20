@@ -49,7 +49,7 @@ A complete example with a self-registering test that compiles to an executable l
 
 ![cover-example](scripts/data/using_doctest_888px_wide.gif)
 
-There are many C++ testing frameworks - [Catch](https://github.com/philsquared/Catch), [Boost.Test](http://www.boost.org/doc/libs/1_64_0/libs/test/doc/html/index.html), [UnitTest++](https://github.com/unittest-cpp/unittest-cpp), [cpputest](https://github.com/cpputest/cpputest), [googletest](https://github.com/google/googletest) and many [other](https://en.wikipedia.org/wiki/List_of_unit_testing_frameworks#C.2B.2B).
+There are many C++ testing frameworks - [Catch](https://github.com/catchorg/Catch2), [Boost.Test](http://www.boost.org/doc/libs/1_64_0/libs/test/doc/html/index.html), [UnitTest++](https://github.com/unittest-cpp/unittest-cpp), [cpputest](https://github.com/cpputest/cpputest), [googletest](https://github.com/google/googletest) and many [other](https://en.wikipedia.org/wiki/List_of_unit_testing_frameworks#C.2B.2B).
 
 The **key** differences between it and other testing frameworks are that it is light and unintrusive:
 - Ultra light on compile times both in terms of [**including the header**](doc/markdown/benchmarks.md#cost-of-including-the-header) and writing [**thousands of asserts**](doc/markdown/benchmarks.md#cost-of-an-assertion-macro)
@@ -74,15 +74,16 @@ Mantra: *Tests can be considered a form of documentation and should be able to r
 
 The framework can be used like any other if you don't want/need to mix production code and tests - check out the [**features**](doc/markdown/features.md).
 
-**doctest** is modeled after [**Catch**](https://github.com/philsquared/Catch) and some parts of the code have been taken directly - check out [**the differences**](doc/markdown/faq.md#how-is-doctest-different-from-catch).
+**doctest** is modeled after [**Catch**](https://github.com/catchorg/Catch2) and some parts of the code have been taken directly - check out [**the differences**](doc/markdown/faq.md#how-is-doctest-different-from-catch).
 
-[This table](https://github.com/martinmoene/catch-lest-other-comparison) compares **doctest** / [**Catch**](https://github.com/philsquared/Catch) / [**lest**](https://github.com/martinmoene/lest) which are all very similar.
+[This table](https://github.com/martinmoene/catch-lest-other-comparison) compares **doctest** / [**Catch**](https://github.com/catchorg/Catch2) / [**lest**](https://github.com/martinmoene/lest) which are all very similar.
 
-[![Standard](https://img.shields.io/badge/c%2B%2B-11/14/17-blue.svg)](https://en.wikipedia.org/wiki/C%2B%2B#Standardization)
+[![Standard](https://img.shields.io/badge/c%2B%2B-11/14/17/20-blue.svg)](https://en.wikipedia.org/wiki/C%2B%2B#Standardization)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 [![Version](https://badge.fury.io/gh/onqtam%2Fdoctest.svg)](https://github.com/onqtam/doctest/releases)
 [![download](https://img.shields.io/badge/download%20%20-latest-blue.svg)](https://raw.githubusercontent.com/onqtam/doctest/master/doctest/doctest.h)
 [![CII Best Practices](https://bestpractices.coreinfrastructure.org/projects/503/badge)](https://bestpractices.coreinfrastructure.org/projects/503)
+[![Language grade: C/C++](https://img.shields.io/lgtm/grade/cpp/g/onqtam/doctest.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/onqtam/doctest/context:cpp)
 [![Join the chat at https://gitter.im/onqtam/doctest](https://badges.gitter.im/onqtam/doctest.svg)](https://gitter.im/onqtam/doctest?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 [![Try it online](https://img.shields.io/badge/try%20it-online-orange.svg)](https://wandbox.org/permlink/nRXesFZUIjiLBQa6)
 <!--
@@ -134,9 +135,14 @@ If you work for a company using **doctest** or have the means to do so, please c
 
 Contributions in the form of issues and pull requests are welcome as well - check out the [**Contributing**](CONTRIBUTING.md) page.
 
+Stargazers over time
+------------
+
+[![Stargazers over time](https://starcharts.herokuapp.com/onqtam/doctest.svg)](https://starcharts.herokuapp.com/onqtam/doctest)
+
 Logo
 ------------
 
-The [logo](scripts/data/logo) is licensed under a Creative Commons Attribution 4.0 International License. Copyright &copy; 2018 [area55git](https://github.com/area55git) &nbsp; [![License: CC BY 4.0](https://licensebuttons.net/l/by/4.0/80x15.png)](https://creativecommons.org/licenses/by/4.0/)
+The [logo](scripts/data/logo) is licensed under a Creative Commons Attribution 4.0 International License. Copyright &copy; 2019 [area55git](https://github.com/area55git) &nbsp; [![License: CC BY 4.0](https://licensebuttons.net/l/by/4.0/80x15.png)](https://creativecommons.org/licenses/by/4.0/)
 
 <p align="center"><img src="scripts/data/logo/icon_2.svg"></p>

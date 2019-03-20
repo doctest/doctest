@@ -1,11 +1,3 @@
-cmake_minimum_required(VERSION 3.0)
-
-project(executable_dll_and_plugin)
-
-include(../../scripts/cmake/common.cmake)
-
-include_directories(../../)
-
 if(APPLE)
     set(CMAKE_MACOSX_RPATH ON)
     if(DEFINED ENV{TRAVIS})
@@ -14,29 +6,30 @@ if(APPLE)
     endif()
 endif()
 
-doctest_add_library(implementation SHARED implementation.cpp implementation_2.cpp)
+add_library(implementation SHARED implementation.cpp implementation_2.cpp)
+target_link_libraries(implementation PUBLIC doctest)
 
-doctest_add_library(dll SHARED dll.cpp)
+add_library(dll SHARED dll.cpp)
 target_link_libraries(dll implementation)
 
-doctest_add_library(plugin SHARED plugin.cpp)
+add_library(plugin SHARED plugin.cpp)
 target_link_libraries(plugin implementation)
 
-doctest_add_executable(${PROJECT_NAME} main.cpp)
-target_link_libraries(${PROJECT_NAME} dll)
-target_link_libraries(${PROJECT_NAME} implementation)
+add_executable(executable_dll_and_plugin main.cpp)
+target_link_libraries(executable_dll_and_plugin dll)
+target_link_libraries(executable_dll_and_plugin implementation)
 
 if(NOT WIN32)
-    target_link_libraries(${PROJECT_NAME} dl)
+    target_link_libraries(executable_dll_and_plugin dl)
 endif()
 
 # have the executable depend on the plugin so it gets built as well when building/starting only the executable
-add_dependencies(${PROJECT_NAME} plugin)
+add_dependencies(executable_dll_and_plugin plugin)
 
-#== group them together in a single folder inside IDEs
-set_target_properties(implementation PROPERTIES FOLDER ${PROJECT_NAME})
-set_target_properties(dll PROPERTIES FOLDER ${PROJECT_NAME})
-set_target_properties(plugin PROPERTIES FOLDER ${PROJECT_NAME})
-set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER ${PROJECT_NAME})
+# group them together in a single folder inside IDEs
+set_target_properties(implementation PROPERTIES FOLDER executable_dll_and_plugin)
+set_target_properties(dll PROPERTIES FOLDER executable_dll_and_plugin)
+set_target_properties(plugin PROPERTIES FOLDER executable_dll_and_plugin)
+set_target_properties(executable_dll_and_plugin PROPERTIES FOLDER executable_dll_and_plugin)
 
-doctest_add_test(NAME ${PROJECT_NAME} COMMAND $<TARGET_FILE:${PROJECT_NAME}> --no-version)
+doctest_add_test(NAME executable_dll_and_plugin COMMAND $<TARGET_FILE:executable_dll_and_plugin> --no-version)

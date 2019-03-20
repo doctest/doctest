@@ -1,7 +1,7 @@
 //
 // doctest.h - the lightest feature-rich C++ single-header testing framework for unit tests and TDD
 //
-// Copyright (c) 2016-2018 Viktor Kirilov
+// Copyright (c) 2016-2019 Viktor Kirilov
 //
 // Distributed under the MIT Software License
 // See accompanying file LICENSE.txt or copy at
@@ -14,9 +14,9 @@
 // =================================================================================================
 // =================================================================================================
 //
-// The library is heavily influenced by Catch - https://github.com/philsquared/Catch
+// The library is heavily influenced by Catch - https://github.com/catchorg/Catch2
 // which uses the Boost Software License - Version 1.0
-// see here - https://github.com/philsquared/Catch/blob/master/LICENSE.txt
+// see here - https://github.com/catchorg/Catch2/blob/master/LICENSE.txt
 //
 // The concept of subcases (sections in Catch) and expression decomposition are from there.
 // Some parts of the code are taken directly:
@@ -26,6 +26,7 @@
 // - breaking into a debugger
 // - signal / SEH handling
 // - timer
+// - XmlWriter class - thanks to Phil Nash for allowing the direct reuse (AKA copy/paste)
 //
 // The expression decomposing templates are taken from lest - https://github.com/martinmoene/lest
 // which uses the Boost Software License - Version 1.0
@@ -219,13 +220,15 @@ DOCTEST_MSVC_SUPPRESS_WARNING(26444) // Avoid unnamed objects with custom constr
 // MSVC C++11 feature support table: https://msdn.microsoft.com/en-us/library/hh567368.aspx
 // GCC C++11 feature support table: https://gcc.gnu.org/projects/cxx-status.html
 // MSVC version table:
-// MSVC++ 15.0 _MSC_VER == 1910 (Visual Studio 2017)
-// MSVC++ 14.0 _MSC_VER == 1900 (Visual Studio 2015)
-// MSVC++ 12.0 _MSC_VER == 1800 (Visual Studio 2013)
-// MSVC++ 11.0 _MSC_VER == 1700 (Visual Studio 2012)
-// MSVC++ 10.0 _MSC_VER == 1600 (Visual Studio 2010)
-// MSVC++ 9.0  _MSC_VER == 1500 (Visual Studio 2008)
-// MSVC++ 8.0  _MSC_VER == 1400 (Visual Studio 2005)
+// https://en.wikipedia.org/wiki/Microsoft_Visual_C%2B%2B#Internal_version_numbering
+// MSVC++ 14.2 (16) _MSC_VER == 1920 (Visual Studio 2019) << NOT YET RELEASED - April 2 2019
+// MSVC++ 14.1 (15) _MSC_VER == 1910 (Visual Studio 2017)
+// MSVC++ 14.0      _MSC_VER == 1900 (Visual Studio 2015)
+// MSVC++ 12.0      _MSC_VER == 1800 (Visual Studio 2013)
+// MSVC++ 11.0      _MSC_VER == 1700 (Visual Studio 2012)
+// MSVC++ 10.0      _MSC_VER == 1600 (Visual Studio 2010)
+// MSVC++ 9.0       _MSC_VER == 1500 (Visual Studio 2008)
+// MSVC++ 8.0       _MSC_VER == 1400 (Visual Studio 2005)
 
 #if DOCTEST_MSVC && !defined(DOCTEST_CONFIG_WINDOWS_SEH)
 #define DOCTEST_CONFIG_WINDOWS_SEH
@@ -242,12 +245,9 @@ DOCTEST_MSVC_SUPPRESS_WARNING(26444) // Avoid unnamed objects with custom constr
 #endif // DOCTEST_CONFIG_NO_POSIX_SIGNALS
 
 #ifndef DOCTEST_CONFIG_NO_EXCEPTIONS
-#if(DOCTEST_GCC || (DOCTEST_CLANG && !DOCTEST_MSVC)) && !defined(__EXCEPTIONS)
+#if !defined(__cpp_exceptions) && !defined(__EXCEPTIONS) && !defined(_CPPUNWIND)
 #define DOCTEST_CONFIG_NO_EXCEPTIONS
-#endif // clang and gcc
-#if DOCTEST_MSVC && (defined(_HAS_EXCEPTIONS) && _HAS_EXCEPTIONS == 0)
-#define DOCTEST_CONFIG_NO_EXCEPTIONS
-#endif // MSVC
+#endif // no exceptions
 #endif // DOCTEST_CONFIG_NO_EXCEPTIONS
 
 #ifdef DOCTEST_CONFIG_NO_EXCEPTIONS_BUT_WITH_ALL_ASSERTS
@@ -316,6 +316,8 @@ DOCTEST_MSVC_SUPPRESS_WARNING(26444) // Avoid unnamed objects with custom constr
 #define DOCTEST_ANONYMOUS(x) DOCTEST_CAT(x, __LINE__)
 #endif // __COUNTER__
 
+#define DOCTEST_TOSTR(x) #x
+
 #ifndef DOCTEST_CONFIG_ASSERTION_PARAMETERS_BY_VALUE
 #define DOCTEST_REF_WRAP(x) x&
 #else // DOCTEST_CONFIG_ASSERTION_PARAMETERS_BY_VALUE
@@ -379,7 +381,7 @@ template <>
 struct char_traits<char>;
 template <class charT, class traits>
 class basic_ostream;
-typedef basic_ostream<char, char_traits<char> > ostream;
+typedef basic_ostream<char, char_traits<char>> ostream;
 template <class... Types>
 class tuple;
 _LIBCPP_END_NAMESPACE_STD
@@ -456,6 +458,7 @@ public:
     String();
     ~String();
 
+    // cppcheck-suppress noExplicitConstructor
     String(const char* in);
     String(const char* in, unsigned in_size);
 
@@ -607,7 +610,7 @@ namespace assertType {
 
 DOCTEST_INTERFACE const char* assertString(assertType::Enum at);
 DOCTEST_INTERFACE const char* failureString(assertType::Enum at);
-DOCTEST_INTERFACE const char* removePathFromFilename(const char* file);
+DOCTEST_INTERFACE const char* skipPathFromFilename(const char* file);
 
 struct DOCTEST_INTERFACE TestCaseData
 {
@@ -687,7 +690,12 @@ struct DOCTEST_INTERFACE IContextScope
 
 struct ContextOptions //!OCLINT too many fields
 {
+    std::ostream* cout;        // stdout stream - std::cout by default
+    std::ostream* cerr;        // stderr stream - std::cerr by default
+    String        binary_name; // the test binary name
+
     // == parameters from the command line
+    String   out;       // output filename
     String   order_by;  // how tests should be ordered
     unsigned rand_seed; // the seed for rand ordering
 
@@ -771,7 +779,7 @@ namespace detail {
         {
             static std::ostream& s;
             static const DOCTEST_REF_WRAP(T) t;
-            static const bool value = sizeof(testStreamable(s << t)) == sizeof(yes);
+            static const bool value = sizeof(decltype(testStreamable(s << t))) == sizeof(yes);
         };
     } // namespace has_insertion_operator_impl
 
@@ -1011,6 +1019,9 @@ namespace detail {
         return Result(res);                                                                        \
     }
 
+    // more checks could be added - like in Catch:
+    // https://github.com/catchorg/Catch2/pull/1480/files
+    // https://github.com/catchorg/Catch2/pull/1481/files
 #define DOCTEST_FORBIT_EXPRESSION(rt, op)                                                          \
     template <typename R>                                                                          \
     rt& operator op(const R&) {                                                                    \
@@ -1195,8 +1206,8 @@ namespace detail {
 
         // The right operator for capturing expressions is "<=" instead of "<<" (based on the operator precedence table)
         // but then there will be warnings from GCC about "-Wparentheses" and since "_Pragma()" is problematic this will stay for now...
-        // https://github.com/philsquared/Catch/issues/870
-        // https://github.com/philsquared/Catch/issues/565
+        // https://github.com/catchorg/Catch2/issues/870
+        // https://github.com/catchorg/Catch2/issues/565
         template <typename L>
         Expression_lhs<const DOCTEST_REF_WRAP(L)> operator<<(const DOCTEST_REF_WRAP(L) operand) {
             return Expression_lhs<const DOCTEST_REF_WRAP(L)>(operand, m_at);
@@ -1410,10 +1421,10 @@ namespace detail {
         explicit ExceptionTranslator(String (*translateFunction)(T))
                 : m_translateFunction(translateFunction) {}
 
-        bool translate(String& res) const {
+        bool translate(String& res) const override {
 #ifndef DOCTEST_CONFIG_NO_EXCEPTIONS
             try {
-                throw;
+                throw; // lgtm [cpp/rethrow-no-exception]
                 // cppcheck-suppress catchExceptionByValue
             } catch(T ex) {                    // NOLINT
                 res = m_translateFunction(ex); //!OCLINT parameter reassignment
@@ -1430,21 +1441,17 @@ namespace detail {
 
     DOCTEST_INTERFACE void registerExceptionTranslatorImpl(const IExceptionTranslator* et);
 
-    // FIX FOR VISUAL STUDIO VERSIONS PRIOR TO 2015 - they failed to compile the call to operator<< with
-    // std::ostream passed as a reference noting that there is a use of an undefined type (which there isn't)
-    DOCTEST_INTERFACE void writeStringToStream(std::ostream* s, const String& str);
-
     template <bool C>
     struct StringStreamBase
     {
         template <typename T>
         static void convert(std::ostream* s, const T& in) {
-            writeStringToStream(s, toString(in));
+            *s << toString(in);
         }
 
         // always treat char* as a string in this context - no matter
         // if DOCTEST_CONFIG_TREAT_CHAR_STAR_AS_STRING is defined
-        static void convert(std::ostream* s, const char* in) { writeStringToStream(s, String(in)); }
+        static void convert(std::ostream* s, const char* in) { *s << String(in); }
     };
 
     template <>
@@ -1706,15 +1713,19 @@ namespace TestCaseFailureReason {
 
 struct DOCTEST_INTERFACE CurrentTestCaseStats
 {
-    int    numAssertsForCurrentTestCase;
-    int    numAssertsFailedForCurrentTestCase;
-    double seconds_so_far;
+    int    numAssertsCurrentTest;
+    int    numAssertsFailedCurrentTest;
+    double seconds;
     int    failure_flags; // use TestCaseFailureReason::Enum
-    String error_string;
-    bool   should_reenter; // means we are not done with the test case because of subcases
 
     DOCTEST_DECLARE_DEFAULTS(CurrentTestCaseStats);
     DOCTEST_DELETE_COPIES(CurrentTestCaseStats);
+};
+
+struct DOCTEST_INTERFACE TestCaseException
+{
+    String error_string;
+    bool   is_crash;
 };
 
 struct DOCTEST_INTERFACE TestRunStats
@@ -1730,23 +1741,38 @@ struct DOCTEST_INTERFACE TestRunStats
     DOCTEST_DELETE_COPIES(TestRunStats);
 };
 
+struct QueryData
+{
+    String*  data     = nullptr;
+    unsigned num_data = 0;
+};
+
 struct DOCTEST_INTERFACE IReporter
 {
-    // called when the whole test run starts (safe to cache a pointer to the input)
-    virtual void test_run_start(const ContextOptions&) = 0;
+    // The constructor has to accept "const ContextOptions&" as a single argument
+    // which has most of the options for the run + a pointer to the stdout stream
+    // Reporter(const ContextOptions& in)
+
+    // called when a query should be reported (listing test cases, printing the version, etc.)
+    virtual void report_query(const QueryData&) = 0;
+
+    // called when the whole test run starts
+    virtual void test_run_start() = 0;
     // called when the whole test run ends (caching a pointer to the input doesn't make sense here)
     virtual void test_run_end(const TestRunStats&) = 0;
 
     // called when a test case is started (safe to cache a pointer to the input)
     virtual void test_case_start(const TestCaseData&) = 0;
-    // called when a test case has ended - could be re-entered if more subcases have to be
-    // traversed - check CurrentTestCaseStats::should_reenter (caching a pointer to the input doesn't make sense here)
+    // called when a test case has ended
     virtual void test_case_end(const CurrentTestCaseStats&) = 0;
+
+    // called when an exception is thrown from the test case (or it crashes)
+    virtual void test_case_exception(const TestCaseException&) = 0;
 
     // called whenever a subcase is entered (don't cache pointers to the input)
     virtual void subcase_start(const SubcaseSignature&) = 0;
     // called whenever a subcase is exited (don't cache pointers to the input)
-    virtual void subcase_end(const SubcaseSignature&) = 0;
+    virtual void subcase_end() = 0;
 
     // called for each assert (don't cache pointers to the input)
     virtual void log_assert(const AssertData&) = 0;
@@ -1769,8 +1795,22 @@ struct DOCTEST_INTERFACE IReporter
     static const String* get_stringified_contexts();
 };
 
-int registerReporter(const char* name, int priority, IReporter& r);
+namespace detail {
+    typedef IReporter* (*reporterCreatorFunc)(const ContextOptions&);
 
+    DOCTEST_INTERFACE void registerReporterImpl(const char* name, int prio, reporterCreatorFunc c);
+
+    template <typename Reporter>
+    IReporter* reporterCreator(const ContextOptions& o) {
+        return new Reporter(o);
+    }
+} // namespace detail
+
+template <typename Reporter>
+int registerReporter(const char* name, int priority) {
+    detail::registerReporterImpl(name, priority, detail::reporterCreator<Reporter>);
+    return 0;
+}
 } // namespace doctest
 
 // if registering is not disabled
@@ -1830,10 +1870,15 @@ int registerReporter(const char* name, int priority, IReporter& r);
     DOCTEST_CREATE_AND_REGISTER_FUNCTION(DOCTEST_ANONYMOUS(_DOCTEST_ANON_FUNC_), decorators)
 
 // for registering tests in classes - requires C++17 for inline variables!
+#if __cplusplus >= 201703L || (DOCTEST_MSVC >= DOCTEST_COMPILER(19, 12, 0) && _MSVC_LANG >= 201703L)
 #define DOCTEST_TEST_CASE_CLASS(decorators)                                                        \
     DOCTEST_CREATE_AND_REGISTER_FUNCTION_IN_CLASS(DOCTEST_ANONYMOUS(_DOCTEST_ANON_FUNC_),          \
                                                   DOCTEST_ANONYMOUS(_DOCTEST_ANON_PROXY_),         \
                                                   decorators)
+#else // DOCTEST_TEST_CASE_CLASS
+#define DOCTEST_TEST_CASE_CLASS(...)                                                               \
+    TEST_CASES_CAN_BE_REGISTERED_IN_CLASSES_ONLY_IN_CPP17_MODE_OR_WITH_VS_2017_OR_NEWER
+#endif // DOCTEST_TEST_CASE_CLASS
 
 // for registering tests with a fixture
 #define DOCTEST_TEST_CASE_FIXTURE(c, decorators)                                                   \
@@ -1978,7 +2023,7 @@ int registerReporter(const char* name, int priority, IReporter& r);
 // for registering
 #define DOCTEST_REGISTER_REPORTER(name, priority, reporter)                                        \
     DOCTEST_GLOBAL_NO_WARNINGS(DOCTEST_ANONYMOUS(_DOCTEST_ANON_REPORTER_)) =                       \
-            doctest::registerReporter(name, priority, reporter);                                   \
+            doctest::registerReporter<reporter>(name, priority);                                   \
     DOCTEST_GLOBAL_NO_WARNINGS_END() typedef int DOCTEST_ANONYMOUS(_DOCTEST_ANON_FOR_SEMICOLON_)
 
 // for logging
@@ -2057,17 +2102,7 @@ constexpr T to_lvalue = x;
 #define DOCTEST_REQUIRE_FALSE_MESSAGE(cond, msg) do { DOCTEST_INFO(msg); DOCTEST_ASSERT_IMPLEMENT_2(DT_REQUIRE_FALSE, cond); } while((void)0, 0)
 // clang-format on
 
-#define DOCTEST_ASSERT_THROWS(expr, assert_type)                                                   \
-    do {                                                                                           \
-        if(!doctest::getContextOptions()->no_throw) {                                              \
-            doctest::detail::ResultBuilder _DOCTEST_RB(doctest::assertType::assert_type, __FILE__, \
-                                                       __LINE__, #expr);                           \
-            try {                                                                                  \
-                expr;                                                                              \
-            } catch(...) { _DOCTEST_RB.m_threw = true; }                                           \
-            DOCTEST_ASSERT_LOG_AND_REACT(_DOCTEST_RB);                                             \
-        }                                                                                          \
-    } while((void)0, 0)
+#define DOCTEST_ASSERT_THROWS(expr, assert_type) DOCTEST_ASSERT_THROWS_WITH(expr, assert_type, "")
 
 #define DOCTEST_ASSERT_THROWS_AS(expr, assert_type, ...)                                           \
     do {                                                                                           \
@@ -2078,7 +2113,7 @@ constexpr T to_lvalue = x;
                 expr;                                                                              \
             } catch(const doctest::detail::remove_const<                                           \
                     doctest::detail::remove_reference<__VA_ARGS__>::type>::type&) {                \
-                _DOCTEST_RB.m_threw    = true;                                                     \
+                _DOCTEST_RB.translateException();                                                  \
                 _DOCTEST_RB.m_threw_as = true;                                                     \
             } catch(...) { _DOCTEST_RB.translateException(); }                                     \
             DOCTEST_ASSERT_LOG_AND_REACT(_DOCTEST_RB);                                             \
@@ -2296,7 +2331,7 @@ constexpr T to_lvalue = x;
 
 // for registering tests in classes
 #define DOCTEST_TEST_CASE_CLASS(name)                                                              \
-    DOCTEST_CREATE_AND_REGISTER_FUNCTION(DOCTEST_ANONYMOUS(_DOCTEST_ANON_FUNC_), name))
+    DOCTEST_CREATE_AND_REGISTER_FUNCTION(DOCTEST_ANONYMOUS(_DOCTEST_ANON_FUNC_), name)
 
 // for registering tests with a fixture
 #define DOCTEST_TEST_CASE_FIXTURE(x, name)                                                         \

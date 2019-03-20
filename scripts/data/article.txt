@@ -243,7 +243,7 @@ Note that Catch 2 is on it's way (not public yet) and when it is released there 
 
 The development of doctest is supported with donations.
 
-[1] https://github.com/philsquared/Catch
+[1] https://github.com/catchorg/Catch2
 [2] http://www.boost.org/doc/libs/1_60_0/libs/test/doc/html/index.html
 [3] https://github.com/unittest-cpp/unittest-cpp
 [4] https://github.com/cpputest/cpputest

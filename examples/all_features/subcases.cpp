@@ -100,3 +100,16 @@ TEST_CASE("test case should fail even though the last subcase passes") {
         CHECK(true);
     }
 }
+
+TEST_CASE("fails from an exception but gets re-entered to traverse all subcases") {
+    SUBCASE("level zero") {
+        SUBCASE("one") {
+            CHECK(false);
+        }
+        SUBCASE("two") {
+            CHECK(false);
+        }
+
+        throw_if(true, "failure... but the show must go on!");
+    }
+}

@@ -1,8 +1,3 @@
-if(doctest_common_included)
-    return()
-endif()
-set(doctest_common_included true)
-
 include(CMakeParseArguments)
 
 # cache this for use inside of the function
@@ -17,9 +12,8 @@ find_package(Threads)
 set(DOCTEST_TEST_MODE "COMPARE" CACHE STRING "Test mode - normal/run through valgrind/collect output/compare with output")
 set_property(CACHE DOCTEST_TEST_MODE PROPERTY STRINGS "NORMAL;VALGRIND;COLLECT;COMPARE")
 
-# a custom version of add_test() to suite my needs
-function(doctest_add_test)
-    cmake_parse_arguments(ARG "NO_VALGRIND;NO_OUTPUT" "NAME" "COMMAND" ${ARGN})
+function(doctest_add_test_impl)
+    cmake_parse_arguments(ARG "NO_VALGRIND;NO_OUTPUT;XML_OUTPUT" "NAME" "COMMAND" ${ARGN})
     if(NOT "${ARG_UNPARSED_ARGUMENTS}" STREQUAL "" OR "${ARG_NAME}" STREQUAL "" OR "${ARG_COMMAND}" STREQUAL "")
         message(FATAL_ERROR "doctest_add_test() called with wrong options!")
     endif()
@@ -35,6 +29,10 @@ function(doctest_add_test)
     foreach(cur ${ARG_COMMAND})
         set(the_command "${the_command} ${cur}")
     endforeach()
+    if(ARG_XML_OUTPUT)
+        set(the_command "${the_command} --reporter=xml")
+        set(ARG_NAME ${ARG_NAME}_xml)
+    endif()
     # append the argument for removing paths from filenames in the output so tests give the same output everywhere
     set(the_command "${the_command} --dt-no-path-filenames=1")
     # append the argument for substituting source line numbers with 0 in the output so tests give the same output when lines change a bit
@@ -51,7 +49,7 @@ function(doctest_add_test)
             file(MAKE_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/test_output/)
             set(the_test_mode ${DOCTEST_TEST_MODE})
             list(APPEND ADDITIONAL_FLAGS -DTEST_OUTPUT_FILE=${CMAKE_CURRENT_SOURCE_DIR}/test_output/${ARG_NAME}.txt)
-            list(APPEND ADDITIONAL_FLAGS -DTEST_TEMP_FILE=${CMAKE_CURRENT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/temp_test_output.txt)
+            list(APPEND ADDITIONAL_FLAGS -DTEST_TEMP_FILE=${CMAKE_CURRENT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/temp_test_output_${ARG_NAME}.txt)
         endif()
     endif()
     
@@ -60,15 +58,10 @@ function(doctest_add_test)
     add_test(NAME ${ARG_NAME} COMMAND ${CMAKE_COMMAND} -DCOMMAND=${the_command} ${ADDITIONAL_FLAGS} -P ${CURRENT_LIST_DIR_CACHED}/exec_test.cmake)
 endfunction()
 
-function(doctest_add_executable name)
-    add_executable(${name} ${ARGN})
-    add_dependencies(${name} assemble_single_header)
-    target_link_libraries(${name} ${CMAKE_THREAD_LIBS_INIT})
-endfunction()
-
-function(doctest_add_library name)
-    add_library(${name} ${ARGN})
-    add_dependencies(${name} assemble_single_header)
+# a custom version of add_test() to suite my needs
+function(doctest_add_test)
+    doctest_add_test_impl(${ARGN})
+    #doctest_add_test_impl(${ARGN} XML_OUTPUT)
 endfunction()
 
 macro(add_compiler_flags)
@@ -181,22 +174,3 @@ if(MSVC)
         #/wd4623 # default constructor was implicitly defined as deleted
     )
 endif()
-
-# add a custom target that assembles the single header when any of the parts are touched
-
-set(doctest_include_folder "${CURRENT_LIST_DIR_CACHED}/../../doctest/")
-set(doctest_parts_folder "${CURRENT_LIST_DIR_CACHED}/../../doctest/parts/")
-if(WIN32)
-    STRING(REGEX REPLACE "/" "\\\\" doctest_include_folder ${doctest_include_folder})
-    STRING(REGEX REPLACE "/" "\\\\" doctest_parts_folder ${doctest_parts_folder})
-endif()
-
-add_custom_command(
-    OUTPUT ${doctest_include_folder}doctest.h
-    DEPENDS
-        ${doctest_parts_folder}doctest_fwd.h
-        ${doctest_parts_folder}doctest_impl.h
-    COMMAND ${CMAKE_COMMAND} -P ${CURRENT_LIST_DIR_CACHED}/asemble_single_header.cmake
-    COMMENT "assembling the single header")
-
-add_custom_target(assemble_single_header ALL DEPENDS ${doctest_include_folder}doctest.h)

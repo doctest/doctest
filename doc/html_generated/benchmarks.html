@@ -25,13 +25,13 @@ Environment used (Intel i7 3770k, 16g RAM):
 
 **doctest** version: 2.2.0 (released on 2018.12.02)
 
-[**Catch**](https://github.com/philsquared/Catch) version: 2.3.0 (released on 2018.07.22)
+[**Catch**](https://github.com/catchorg/Catch2) version: 2.3.0 (released on 2018.07.22)
 
 # Compile time benchmarks
 
 ## Cost of including the header
 
-This is a benchmark that is relevant only to single header and header only frameworks - like **doctest** and [**Catch**](https://github.com/philsquared/Catch).
+This is a benchmark that is relevant only to single header and header only frameworks - like **doctest** and [**Catch**](https://github.com/catchorg/Catch2).
 
 The script generates 201 source files and in 200 of them makes a function in the form of ```int f135() { return 135; }``` and in ```main.cpp``` it forward declares all the 200 such dummy functions and accumulates their result to return from the ```main()``` function. This is done to ensure that all source files are built and that the linker doesn't remove/optimize anything.
 
@@ -78,7 +78,7 @@ The script generates 201 source files and in 200 of them makes a function in the
 - the inclusion of ```doctest.h``` in one source file costs between 11ms - 23ms ```(header_everywhere - implement) / 200```
 - including the library everywhere but everything disabled costs around 2 seconds ```disabled - baseline``` for 200 files
 
-#### [Catch](https://github.com/philsquared/Catch)
+#### [Catch](https://github.com/catchorg/Catch2)
 
 - instantiating the test runner in one source file costs ~3-50 seconds ```implement - baseline```
 - the inclusion of ```catch.hpp```  in one source file costs between 380ms - 470ms ```(header_everywhere - implement) / 200```
@@ -90,7 +90,7 @@ So if ```doctest.h``` costs 11ms and ```catch.hpp``` costs 400ms on MSVC - then 
 
 ----------
 
-The results are in seconds and are in **no way** intended to bash [**Catch**](https://github.com/philsquared/Catch) - the **doctest** framework wouldn't exist without it.
+The results are in seconds and are in **no way** intended to bash [**Catch**](https://github.com/catchorg/Catch2) - the **doctest** framework wouldn't exist without it.
 
 The reason the **doctest** header is so light on compile times is because it forward declares everything and doesn't drag any headers in the source files (except for the source file where the test runner gets implemented). This was a key design decision.
 
@@ -108,9 +108,9 @@ The script generates 11 ```.cpp``` files and in 10 of them makes 50 test cases w
 - **+fast 2** - will add [**```DOCTEST_CONFIG_SUPER_FAST_ASSERTS```**](configuration.html#doctest_config_super_fast_asserts) to speed up the compilation of the binary asserts ```CHECK_EQ(a,b)```
 - **+disabled** - all test case and assert macros will be disabled with [**```DOCTEST_CONFIG_DISABLE```**](configuration.html#doctest_config_disable)
 
-[**Catch**](https://github.com/philsquared/Catch) specific:
+[**Catch**](https://github.com/catchorg/Catch2) specific:
 
-- **+fast** - will add [**```CATCH_CONFIG_FAST_COMPILE```**](https://github.com/philsquared/Catch/blob/master/docs/configuration.html#catch_config_fast_compile) which speeds up the compilation of the normal asserts ```CHECK(a==b)```
+- **+fast** - will add [**```CATCH_CONFIG_FAST_COMPILE```**](https://github.com/catchorg/Catch2/blob/master/docs/configuration.html#catch_config_fast_compile) which speeds up the compilation of the normal asserts ```CHECK(a==b)```
 - **+disabled** - all test case and assert macros will be disabled with **```CATCH_CONFIG_DISABLE```**
 
 | doctest             | baseline | ```CHECK(a==b)``` | +fast 1 | ```CHECK_EQ(a,b)``` | +fast 2 | +disabled |
@@ -124,7 +124,7 @@ The script generates 11 ```.cpp``` files and in 10 of them makes 50 test cases w
 | Linux Clang Debug   |    2.40 |   85.52 |   43.53 |   51.24 |    8.32 |    1.62 |
 | Linux Clang Release |    3.40 |  160.65 |   79.34 |   81.52 |   11.90 |    1.82 |
 
-And here is [**Catch**](https://github.com/philsquared/Catch) which only has normal ```CHECK(a==b)``` asserts:
+And here is [**Catch**](https://github.com/catchorg/Catch2) which only has normal ```CHECK(a==b)``` asserts:
 
 | Catch               | baseline | ```CHECK(a==b)``` | +fast | +disabled |
 |---------------------|----------|-------------------|-------|-----------|
@@ -143,15 +143,15 @@ And here is [**Catch**](https://github.com/philsquared/Catch) which only has nor
 
 **doctest**:
 
-- is between 0 and 8 times faster than [**Catch**](https://github.com/philsquared/Catch) when using normal expression decomposing ```CHECK(a==b)``` asserts
+- is between 0 and 8 times faster than [**Catch**](https://github.com/catchorg/Catch2) when using normal expression decomposing ```CHECK(a==b)``` asserts
 - asserts of the form ```CHECK_EQ(a,b)``` with no expression decomposition - around 31-63% faster than ```CHECK(a==b)```
 - the [**```DOCTEST_CONFIG_SUPER_FAST_ASSERTS```**](configuration.html#doctest_config_super_fast_asserts) identifier makes the normal asserts faster by 57-68%
 - the [**```DOCTEST_CONFIG_SUPER_FAST_ASSERTS```**](configuration.html#doctest_config_super_fast_asserts) identifier makes the binary asserts even faster by another 84-91%
 - using the [**```DOCTEST_CONFIG_DISABLE```**](configuration.html#doctest_config_disable) identifier the asserts just disappear as if they were never written - even lower than the baseline (because most of the implementation is also gone)
 
-[**Catch**](https://github.com/philsquared/Catch):
+[**Catch**](https://github.com/catchorg/Catch2):
 
-- using [**```CATCH_CONFIG_FAST_COMPILE```**](https://github.com/philsquared/Catch/blob/master/docs/configuration.html#catch_config_fast_compile) results in 10-30% faster build times for asserts (and in one case 73%).
+- using [**```CATCH_CONFIG_FAST_COMPILE```**](https://github.com/catchorg/Catch2/blob/master/docs/configuration.html#catch_config_fast_compile) results in 10-30% faster build times for asserts (and in one case 73%).
 - using the **```CATCH_CONFIG_DISABLE```** identifier provides the same great benefits for assert macros as the doctest version ([**```DOCTEST_CONFIG_DISABLE```**](configuration.html#doctest_config_disable)) - but not for the header cost
 
 ## Runtime benchmarks

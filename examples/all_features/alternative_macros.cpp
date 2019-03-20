@@ -6,8 +6,8 @@ my_testcase("custom macros") {
     my_check_eq(1, 1);
     
     my_subcase("bar") {
-        my_subcase("foo") {}
-        my_subcase("baz") {}
+        my_subcase("foo") { /* code code code */ }
+        my_subcase("baz") { /* code code code */ }
         
         my_require(5 > 3);
     }

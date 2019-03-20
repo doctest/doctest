@@ -6,6 +6,7 @@ static void doStuff() {
     int a = 5;
     a += 2;
     // asserts and other doctest functionality can be used in user code if checked for a testing context
+    // AND they can also be used without such checks - see "asserts_used_outside_of_tests.cpp"
     if(doctest::is_running_in_test)
         CHECK(a == 7);
 }

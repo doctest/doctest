@@ -48,6 +48,10 @@ assertion_macros.cpp(0): WARNING: WARN_FALSE( 1 ) is NOT correct!
 
 assertion_macros.cpp(0): WARNING: WARN_THROWS( throw_if(false, 0) ) did NOT throw at all!
 
+assertion_macros.cpp(0): WARNING: WARN_THROWS_WITH( throw_if(true, ""), "whops!" ) threw a DIFFERENT exception: 
+
+assertion_macros.cpp(0): WARNING: WARN_THROWS_WITH( throw_if(false, ""), "whops!" ) did NOT throw at all!
+
 assertion_macros.cpp(0): WARNING: WARN_THROWS_AS( throw_if(false, 0), bool ) did NOT throw at all!
 
 assertion_macros.cpp(0): WARNING: WARN_THROWS_AS( throw_if(true, 0), bool ) threw a DIFFERENT exception: "0"
@@ -128,6 +132,18 @@ assertion_macros.cpp(0): FATAL ERROR: REQUIRE_THROWS_AS( throw_if(true, 0), bool
 
 ===============================================================================
 assertion_macros.cpp(0):
+TEST CASE:  REQUIRE level of asserts fail and abort the test case - 4
+
+assertion_macros.cpp(0): FATAL ERROR: REQUIRE_THROWS_WITH( throw_if(false, ""), "whops!" ) did NOT throw at all!
+
+===============================================================================
+assertion_macros.cpp(0):
+TEST CASE:  REQUIRE level of asserts fail and abort the test case - 5
+
+assertion_macros.cpp(0): FATAL ERROR: REQUIRE_THROWS_WITH( throw_if(true, ""), "whops!" ) threw a DIFFERENT exception: 
+
+===============================================================================
+assertion_macros.cpp(0):
 TEST CASE:  REQUIRE level of asserts fail and abort the test case - 6
 
 assertion_macros.cpp(0): FATAL ERROR: REQUIRE_NOTHROW( throw_if(true, 0) ) THREW exception: "0"
@@ -154,7 +170,7 @@ assertion_macros.cpp(0): FATAL ERROR: REQUIRE_UNARY_FALSE( 1 ) is NOT correct!
   values: REQUIRE_UNARY_FALSE( 1 )
 
 ===============================================================================
-[doctest] test cases:     17 |      4 passed |     13 failed | 
-[doctest] assertions:     66 |     35 passed |     31 failed |
+[doctest] test cases:     19 |      4 passed |     15 failed | 
+[doctest] assertions:     68 |     35 passed |     33 failed |
 [doctest] Status: FAILURE!
 Program code.

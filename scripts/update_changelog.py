@@ -1,10 +1,6 @@
 #!/usr/bin/python2.7
 
 import os
-import sys
-import subprocess
-import fileinput
-import time
 
 # the version of the release
 with open("version.txt") as f: version = f.read()

@@ -1,14 +1,7 @@
-cmake_minimum_required(VERSION 3.0)
+add_executable(playground main.cpp test.cpp)
+target_link_libraries(playground doctest)
 
-project(playground)
+doctest_add_test(NAME playground NO_OUTPUT COMMAND $<TARGET_FILE:playground> -nv)
 
-include(../cmake/common.cmake)
-
-include_directories(../../doctest/)
-
-doctest_add_executable(${PROJECT_NAME} main.cpp test.cpp)
-
-doctest_add_test(NAME ${PROJECT_NAME} NO_OUTPUT COMMAND $<TARGET_FILE:${PROJECT_NAME}> -nv)
-
-#add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD COMMAND $<TARGET_FILE:${PROJECT_NAME}>)
-#add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD COMMAND ctest -C $<CONFIGURATION> --output-on-failure)
+#add_custom_command(TARGET playground POST_BUILD COMMAND $<TARGET_FILE:${PROJECT_NAME}>)
+#add_custom_command(TARGET playground POST_BUILD COMMAND ctest -C $<CONFIGURATION> --output-on-failure)

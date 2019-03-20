@@ -31,6 +31,7 @@ All the options can also be set with code (defaults/overrides) if the user [**su
 | ```-sc``` &nbsp; ```--subcase=<filters>``` | Same as ```--test-case=<filters>``` but filters subcases based on their names |
 | ```-sce``` ```--subcase-exclude=<filters>``` | Same as ```--test-case-exclude=<filters>``` but filters based on subcase names |
 | ```-r``` ```--reporters=<filters>``` | List of [**reporters**](reporters.md) to use (default is ```console```) |
+| ```-o``` &nbsp; ```--out=<string>``` | Output filename |
 | ```-ob``` &nbsp; ```--order-by=<string>``` | Test cases will be sorted before being executed either by **the file in which they are** / **the test suite they are in** / **their name** / **random**. The possible values of ```<string>``` are ```file```/```suite```/```name```/```rand```. The default is ```file``` |
 | ```-rs``` &nbsp; ```--rand-seed=<int>``` | The seed for random ordering |
 | ```-f``` &nbsp;&nbsp;&nbsp; ```--first=<int>``` | The **first** test case to execute which passes the current filters - for range-based execution - see [**the example python script**](../../examples/range_based_execution.py) |

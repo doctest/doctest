@@ -87,7 +87,37 @@ subcases.cpp(0): ERROR: CHECK( false ) is NOT correct!
   values: CHECK( false )
 
 ===============================================================================
-[doctest] test cases:      4 |      1 passed |      3 failed | 
-[doctest] assertions:     19 |     15 passed |      4 failed |
+subcases.cpp(0):
+TEST CASE:  fails from an exception but gets re-entered to traverse all subcases
+  level zero
+  one
+
+subcases.cpp(0): ERROR: CHECK( false ) is NOT correct!
+  values: CHECK( false )
+
+===============================================================================
+subcases.cpp(0):
+TEST CASE:  fails from an exception but gets re-entered to traverse all subcases
+
+subcases.cpp(0): ERROR: test case THREW exception: failure... but the show must go on!
+
+===============================================================================
+subcases.cpp(0):
+TEST CASE:  fails from an exception but gets re-entered to traverse all subcases
+  level zero
+  two
+
+subcases.cpp(0): ERROR: CHECK( false ) is NOT correct!
+  values: CHECK( false )
+
+===============================================================================
+subcases.cpp(0):
+TEST CASE:  fails from an exception but gets re-entered to traverse all subcases
+
+subcases.cpp(0): ERROR: test case THREW exception: failure... but the show must go on!
+
+===============================================================================
+[doctest] test cases:      5 |      1 passed |      4 failed | 
+[doctest] assertions:     21 |     15 passed |      6 failed |
 [doctest] Status: FAILURE!
 Program code.

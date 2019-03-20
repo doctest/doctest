@@ -7,33 +7,58 @@ cmake_minimum_required(VERSION 3.0)
 file(READ ${CMAKE_CURRENT_SOURCE_DIR}/scripts/version.txt ver)
 project(doctest VERSION ${ver})
 
-option(DOCTEST_WITH_TESTS               "Build tests/examples" ON)
-option(DOCTEST_WITH_MAIN_IN_STATIC_LIB  "Build a static lib (cmake target) with a main entry point" ON)
+option(DOCTEST_WITH_MAIN_IN_STATIC_LIB  "Build a static lib (cmake target) with a default main entry point" ON)
 option(DOCTEST_NO_INSTALL  "Skip the installation process" OFF)
+
+add_library(${PROJECT_NAME} INTERFACE)
+
+# use a special hidden version of the doctest header which directly includes the 2 parts - much easier during development
+if(CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
+    message("using the DEV version!")
+    target_include_directories(${PROJECT_NAME} INTERFACE
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/scripts/development_only/>
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/doctest/parts/>)
+else()
+    target_include_directories(${PROJECT_NAME} INTERFACE $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/>)
+endif()
 
 # hack to support building on XCode 6 and 7 - propagate the definition to everything
 if(DEFINED DOCTEST_THREAD_LOCAL)
-    add_definitions(-DDOCTEST_THREAD_LOCAL=${DOCTEST_THREAD_LOCAL})
+    target_compile_definitions(${PROJECT_NAME} INTERFACE
+        DOCTEST_THREAD_LOCAL=${DOCTEST_THREAD_LOCAL})
 endif()
 
-add_library(${PROJECT_NAME} INTERFACE)
-target_include_directories(${PROJECT_NAME} INTERFACE $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/>)
+# add a custom target that assembles the single header when any of the parts are touched
+
+set(doctest_parts_folder "${CMAKE_CURRENT_SOURCE_DIR}/doctest/parts")
+
+add_custom_command(
+    OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/doctest/doctest.h
+    DEPENDS
+        ${doctest_parts_folder}/doctest_fwd.h
+        ${doctest_parts_folder}/doctest.cpp
+    COMMAND ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_SOURCE_DIR}/scripts/cmake/assemble_single_header.cmake
+    COMMENT "assembling the single header")
+
+add_custom_target(assemble_single_header ALL DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/doctest/doctest.h)
 
 ################################################################################
 ## TESTS/EXAMPLES/HELPERS
 ################################################################################
 
 if(${DOCTEST_WITH_MAIN_IN_STATIC_LIB})
-    include(scripts/cmake/common.cmake)
-    doctest_add_library(${PROJECT_NAME}_with_main STATIC EXCLUDE_FROM_ALL doctest/parts/doctest_main.cpp)
+    add_library(${PROJECT_NAME}_with_main STATIC EXCLUDE_FROM_ALL doctest/parts/doctest.cpp)
+    target_compile_definitions(${PROJECT_NAME}_with_main PRIVATE
+        DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN)
     target_link_libraries(${PROJECT_NAME}_with_main PUBLIC ${PROJECT_NAME})
 endif()
 
-if(${DOCTEST_WITH_TESTS})
+if(CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
     include(scripts/cmake/common.cmake)
 
     add_subdirectory(examples/all_features)
     
+    # for code coverage we want exactly one binary to be produced and exercised
     if(NOT DEFINED ENV{CODE_COVERAGE})
         add_subdirectory(examples/exe_with_static_libs)
         add_subdirectory(examples/executable_dll_and_plugin)
