@@ -36,7 +36,7 @@ TEST_CASE_TEMPLATE_DEFINE("template 2", T, header_test) {
     FAIL("");
 }
 
-TEST_CASE_TEMPLATE_INSTANTIATE(header_test, doctest::String);
+TEST_CASE_TEMPLATE_INVOKE(header_test, doctest::String);
 
 // to silence GCC warnings when inheriting from some class which has no virtual destructor - happens only on gcc 4.7/4.8
 #if DOCTEST_GCC >= DOCTEST_COMPILER(4, 7, 0) && DOCTEST_GCC < DOCTEST_COMPILER(4, 9, 0)

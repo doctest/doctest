@@ -31,10 +31,10 @@ TEST_CASE_TEMPLATE_DEFINE("default construction", T, test_id) {
     CHECK(doctest::Approx(var) == T());
 }
 
-TEST_CASE_TEMPLATE_INSTANTIATE(test_id, signed char, short, int);
-TEST_CASE_TEMPLATE_INSTANTIATE(test_id, double, double); // note that types won't be filtered for uniqueness
+TEST_CASE_TEMPLATE_INVOKE(test_id, signed char, short, int);
+TEST_CASE_TEMPLATE_INVOKE(test_id, double, double); // note that types won't be filtered for uniqueness
 
-TEST_CASE_TEMPLATE_INSTANTIATE_TUPLE(test_id, std::tuple<unsigned char, char>);
+TEST_CASE_TEMPLATE_APPLY(test_id, std::tuple<unsigned char, char>);
 
 // =================================================================================================
 // MULTIPLE TYPES AS PARAMETERS

@@ -1934,7 +1934,7 @@ int registerReporter(const char* name, int priority) {
 #define DOCTEST_TEST_CASE_TEMPLATE_DEFINE(dec, T, id)                                              \
     DOCTEST_TEST_CASE_TEMPLATE_DEFINE_IMPL_PROXY(dec, T, id, DOCTEST_ANONYMOUS(_DOCTEST_ANON_TMP_))
 
-#define DOCTEST_TEST_CASE_TEMPLATE_INSTANTIATE_IMPL(id, anon, ...)                                 \
+#define DOCTEST_TEST_CASE_TEMPLATE_INVOKE_IMPL(id, anon, ...)                                      \
     DOCTEST_GLOBAL_NO_WARNINGS(DOCTEST_CAT(anon, DUMMY)) = [] {                                    \
         DOCTEST_CAT(id, ITERATOR)<std::tuple<__VA_ARGS__>> DOCTEST_UNUSED DOCTEST_CAT(             \
                 anon, inner_dummy)(__LINE__, 0);                                                   \
@@ -1942,12 +1942,11 @@ int registerReporter(const char* name, int priority) {
     }();                                                                                           \
     DOCTEST_GLOBAL_NO_WARNINGS_END()
 
-#define DOCTEST_TEST_CASE_TEMPLATE_INSTANTIATE(id, ...)                                            \
-    DOCTEST_TEST_CASE_TEMPLATE_INSTANTIATE_IMPL(id, DOCTEST_ANONYMOUS(_DOCTEST_ANON_TMP_),         \
-                                                __VA_ARGS__)                                       \
+#define DOCTEST_TEST_CASE_TEMPLATE_INVOKE(id, ...)                                                 \
+    DOCTEST_TEST_CASE_TEMPLATE_INVOKE_IMPL(id, DOCTEST_ANONYMOUS(_DOCTEST_ANON_TMP_), __VA_ARGS__) \
     typedef int DOCTEST_ANONYMOUS(_DOCTEST_ANON_FOR_SEMICOLON_)
 
-#define DOCTEST_TEST_CASE_TEMPLATE_INSTANTIATE_TUPLE_IMPL(id, anon, ...)                           \
+#define DOCTEST_TEST_CASE_TEMPLATE_APPLY_IMPL(id, anon, ...)                                       \
     DOCTEST_GLOBAL_NO_WARNINGS(DOCTEST_CAT(anon, DUMMY)) = [] {                                    \
         DOCTEST_CAT(id, ITERATOR)<__VA_ARGS__> DOCTEST_UNUSED DOCTEST_CAT(anon, inner_dummy)(      \
                 __LINE__, 0);                                                                      \
@@ -1955,14 +1954,13 @@ int registerReporter(const char* name, int priority) {
     }();                                                                                           \
     DOCTEST_GLOBAL_NO_WARNINGS_END()
 
-#define DOCTEST_TEST_CASE_TEMPLATE_INSTANTIATE_TUPLE(id, ...)                                      \
-    DOCTEST_TEST_CASE_TEMPLATE_INSTANTIATE_TUPLE_IMPL(id, DOCTEST_ANONYMOUS(_DOCTEST_ANON_TMP_),   \
-                                                      __VA_ARGS__)                                 \
+#define DOCTEST_TEST_CASE_TEMPLATE_APPLY(id, ...)                                                  \
+    DOCTEST_TEST_CASE_TEMPLATE_APPLY_IMPL(id, DOCTEST_ANONYMOUS(_DOCTEST_ANON_TMP_), __VA_ARGS__)  \
     typedef int DOCTEST_ANONYMOUS(_DOCTEST_ANON_FOR_SEMICOLON_)
 
 #define DOCTEST_TEST_CASE_TEMPLATE_IMPL(dec, T, anon, ...)                                         \
     DOCTEST_TEST_CASE_TEMPLATE_DEFINE_IMPL_PROXY(dec, T, anon, anon);                              \
-    DOCTEST_TEST_CASE_TEMPLATE_INSTANTIATE_IMPL(anon, anon, __VA_ARGS__)                           \
+    DOCTEST_TEST_CASE_TEMPLATE_INVOKE_IMPL(anon, anon, __VA_ARGS__)                                \
     template <typename T>                                                                          \
     inline void anon()
 
@@ -2354,10 +2352,10 @@ constexpr T to_lvalue = x;
     template <typename type>                                                                       \
     inline void DOCTEST_ANONYMOUS(_DOCTEST_ANON_TMP_)()
 
-#define DOCTEST_TEST_CASE_TEMPLATE_INSTANTIATE(id, ...)                                            \
+#define DOCTEST_TEST_CASE_TEMPLATE_INVOKE(id, ...)                                                 \
     typedef int DOCTEST_ANONYMOUS(_DOCTEST_ANON_FOR_SEMICOLON_)
 
-#define DOCTEST_TEST_CASE_TEMPLATE_INSTANTIATE_TUPLE(id, ...)                                      \
+#define DOCTEST_TEST_CASE_TEMPLATE_APPLY(id, ...)                                                  \
     typedef int DOCTEST_ANONYMOUS(_DOCTEST_ANON_FOR_SEMICOLON_)
 
 // for subcases
@@ -2482,6 +2480,8 @@ constexpr T to_lvalue = x;
 #define DOCTEST_FAST_WARN_UNARY_FALSE    DOCTEST_WARN_UNARY_FALSE
 #define DOCTEST_FAST_CHECK_UNARY_FALSE   DOCTEST_CHECK_UNARY_FALSE
 #define DOCTEST_FAST_REQUIRE_UNARY_FALSE DOCTEST_REQUIRE_UNARY_FALSE
+
+#define DOCTEST_TEST_CASE_TEMPLATE_INSTANTIATE DOCTEST_TEST_CASE_TEMPLATE_INVOKE
 // clang-format on
 
 // BDD style macros
@@ -2507,8 +2507,8 @@ constexpr T to_lvalue = x;
 #define TYPE_TO_STRING DOCTEST_TYPE_TO_STRING
 #define TEST_CASE_TEMPLATE DOCTEST_TEST_CASE_TEMPLATE
 #define TEST_CASE_TEMPLATE_DEFINE DOCTEST_TEST_CASE_TEMPLATE_DEFINE
-#define TEST_CASE_TEMPLATE_INSTANTIATE DOCTEST_TEST_CASE_TEMPLATE_INSTANTIATE
-#define TEST_CASE_TEMPLATE_INSTANTIATE_TUPLE DOCTEST_TEST_CASE_TEMPLATE_INSTANTIATE_TUPLE
+#define TEST_CASE_TEMPLATE_INVOKE DOCTEST_TEST_CASE_TEMPLATE_INVOKE
+#define TEST_CASE_TEMPLATE_APPLY DOCTEST_TEST_CASE_TEMPLATE_APPLY
 #define SUBCASE DOCTEST_SUBCASE
 #define TEST_SUITE DOCTEST_TEST_SUITE
 #define TEST_SUITE_BEGIN DOCTEST_TEST_SUITE_BEGIN
@@ -2617,12 +2617,15 @@ constexpr T to_lvalue = x;
 #define FAST_WARN_LE DOCTEST_FAST_WARN_LE
 #define FAST_CHECK_LE DOCTEST_FAST_CHECK_LE
 #define FAST_REQUIRE_LE DOCTEST_FAST_REQUIRE_LE
+
 #define FAST_WARN_UNARY DOCTEST_FAST_WARN_UNARY
 #define FAST_CHECK_UNARY DOCTEST_FAST_CHECK_UNARY
 #define FAST_REQUIRE_UNARY DOCTEST_FAST_REQUIRE_UNARY
 #define FAST_WARN_UNARY_FALSE DOCTEST_FAST_WARN_UNARY_FALSE
 #define FAST_CHECK_UNARY_FALSE DOCTEST_FAST_CHECK_UNARY_FALSE
 #define FAST_REQUIRE_UNARY_FALSE DOCTEST_FAST_REQUIRE_UNARY_FALSE
+
+#define TEST_CASE_TEMPLATE_INSTANTIATE DOCTEST_TEST_CASE_TEMPLATE_INSTANTIATE
 
 #endif // DOCTEST_CONFIG_NO_SHORT_MACRO_NAMES
 
