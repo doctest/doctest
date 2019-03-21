@@ -363,20 +363,33 @@ extern "C" __declspec(dllimport) void __stdcall DebugBreak();
 #define DOCTEST_BREAK_INTO_DEBUGGER() ((void)0)
 #endif // linux
 
+// this is kept here for backwards compatibility since the config option was changed
+#ifdef DOCTEST_CONFIG_USE_IOSFWD
+#define DOCTEST_CONFIG_USE_STD_HEADERS
+#endif // DOCTEST_CONFIG_USE_IOSFWD
+
+#ifdef DOCTEST_CONFIG_USE_STD_HEADERS
+#include <iosfwd>
+#include <cstddef>
+#else // DOCTEST_CONFIG_USE_STD_HEADERS
+
 #if DOCTEST_CLANG
 // to detect if libc++ is being used with clang (the _LIBCPP_VERSION identifier)
 #include <ciso646>
 #endif // clang
 
+#ifdef _LIBCPP_VERSION
+#define DOCTEST_STD_NAMESPACE_BEGIN _LIBCPP_BEGIN_NAMESPACE_STD
+#define DOCTEST_STD_NAMESPACE_END _LIBCPP_END_NAMESPACE_STD
+#else // _LIBCPP_VERSION
+#define DOCTEST_STD_NAMESPACE_BEGIN namespace std {
+#define DOCTEST_STD_NAMESPACE_END }
+#endif // _LIBCPP_VERSION
+
 // Forward declaring 'X' in namespace std is not permitted by the C++ Standard.
 DOCTEST_MSVC_SUPPRESS_WARNING_WITH_PUSH(4643)
 
-#if defined(DOCTEST_CONFIG_USE_IOSFWD)
-#include <iosfwd>
-#endif // DOCTEST_CONFIG_USE_IOSFWD
-
-#ifdef _LIBCPP_VERSION
-_LIBCPP_BEGIN_NAMESPACE_STD
+DOCTEST_STD_NAMESPACE_BEGIN
 typedef decltype(nullptr) nullptr_t;
 template <class charT>
 struct char_traits;
@@ -387,23 +400,11 @@ class basic_ostream;
 typedef basic_ostream<char, char_traits<char>> ostream;
 template <class... Types>
 class tuple;
-_LIBCPP_END_NAMESPACE_STD
-#else  // _LIBCPP_VERSION
-namespace std {
-typedef decltype(nullptr) nullptr_t;
-template <class charT>
-struct char_traits;
-template <>
-struct char_traits<char>;
-template <class charT, class traits>
-class basic_ostream;
-typedef basic_ostream<char, char_traits<char> > ostream;
-template <class... Types>
-class tuple;
-} // namespace std
-#endif // _LIBCPP_VERSION
+DOCTEST_STD_NAMESPACE_END
 
 DOCTEST_MSVC_SUPPRESS_WARNING_POP
+
+#endif // DOCTEST_CONFIG_USE_STD_HEADERS
 
 #ifdef DOCTEST_CONFIG_INCLUDE_TYPE_TRAITS
 #include <type_traits>
@@ -1915,15 +1916,15 @@ int registerReporter(const char* name, int priority) {
     template <typename Tuple>                                                                      \
     struct DOCTEST_CAT(id, ITERATOR);                                                              \
     template <typename Type, typename... Rest>                                                     \
-    struct DOCTEST_CAT(id, ITERATOR)<std::tuple<Type, Rest...> >                                   \
+    struct DOCTEST_CAT(id, ITERATOR)<std::tuple<Type, Rest...>>                                    \
     {                                                                                              \
         DOCTEST_CAT(id, ITERATOR)(int line, int index) {                                           \
             DOCTEST_REGISTER_TYPED_TEST_CASE_IMPL(anon<Type>, Type, dec, line * 1000 + index);     \
-            DOCTEST_CAT(id, ITERATOR)<std::tuple<Rest...> >(line, index + 1);                      \
+            DOCTEST_CAT(id, ITERATOR)<std::tuple<Rest...>>(line, index + 1);                       \
         }                                                                                          \
     };                                                                                             \
     template <>                                                                                    \
-    struct DOCTEST_CAT(id, ITERATOR)<std::tuple<> >                                                \
+    struct DOCTEST_CAT(id, ITERATOR)<std::tuple<>>                                                 \
     {                                                                                              \
         DOCTEST_CAT(id, ITERATOR)(int, int) {}                                                     \
     }
@@ -1936,17 +1937,16 @@ int registerReporter(const char* name, int priority) {
 #define DOCTEST_TEST_CASE_TEMPLATE_DEFINE(dec, T, id)                                              \
     DOCTEST_TEST_CASE_TEMPLATE_DEFINE_IMPL_PROXY(dec, T, id, DOCTEST_ANONYMOUS(_DOCTEST_ANON_TMP_))
 
-#define DOCTEST_TEST_CASE_TEMPLATE_INSTANTIATE_IMPL(id, anon, ...)                                 \
+#define DOCTEST_TEST_CASE_TEMPLATE_INVOKE_IMPL(id, anon, ...)                                      \
     DOCTEST_GLOBAL_NO_WARNINGS(DOCTEST_CAT(anon, DUMMY)) = [] {                                    \
-        DOCTEST_CAT(id, ITERATOR)<std::tuple<__VA_ARGS__> > DOCTEST_UNUSED DOCTEST_CAT(            \
+        DOCTEST_CAT(id, ITERATOR)<std::tuple<__VA_ARGS__>> DOCTEST_UNUSED DOCTEST_CAT(             \
                 anon, inner_dummy)(__LINE__, 0);                                                   \
         return 0;                                                                                  \
     }();                                                                                           \
     DOCTEST_GLOBAL_NO_WARNINGS_END()
 
-#define DOCTEST_TEST_CASE_TEMPLATE_INSTANTIATE(id, ...)                                            \
-    DOCTEST_TEST_CASE_TEMPLATE_INSTANTIATE_IMPL(id, DOCTEST_ANONYMOUS(_DOCTEST_ANON_TMP_),         \
-                                                __VA_ARGS__)                                       \
+#define DOCTEST_TEST_CASE_TEMPLATE_INVOKE(id, ...)                                                 \
+    DOCTEST_TEST_CASE_TEMPLATE_INVOKE_IMPL(id, DOCTEST_ANONYMOUS(_DOCTEST_ANON_TMP_), __VA_ARGS__) \
     typedef int DOCTEST_ANONYMOUS(_DOCTEST_ANON_FOR_SEMICOLON_)
 
 #define DOCTEST_TEST_CASE_TEMPLATE_APPLY_IMPL(id, anon, ...)                                       \
@@ -1963,7 +1963,7 @@ int registerReporter(const char* name, int priority) {
 
 #define DOCTEST_TEST_CASE_TEMPLATE_IMPL(dec, T, anon, ...)                                         \
     DOCTEST_TEST_CASE_TEMPLATE_DEFINE_IMPL_PROXY(dec, T, anon, anon);                              \
-    DOCTEST_TEST_CASE_TEMPLATE_INSTANTIATE_IMPL(anon, anon, __VA_ARGS__)                           \
+    DOCTEST_TEST_CASE_TEMPLATE_INVOKE_IMPL(anon, anon, __VA_ARGS__)                                \
     template <typename T>                                                                          \
     inline void anon()
 
@@ -2355,7 +2355,7 @@ constexpr T to_lvalue = x;
     template <typename type>                                                                       \
     inline void DOCTEST_ANONYMOUS(_DOCTEST_ANON_TMP_)()
 
-#define DOCTEST_TEST_CASE_TEMPLATE_INSTANTIATE(id, ...)                                            \
+#define DOCTEST_TEST_CASE_TEMPLATE_INVOKE(id, ...)                                                 \
     typedef int DOCTEST_ANONYMOUS(_DOCTEST_ANON_FOR_SEMICOLON_)
 
 #define DOCTEST_TEST_CASE_TEMPLATE_APPLY(id, ...)                                                  \
@@ -2483,6 +2483,8 @@ constexpr T to_lvalue = x;
 #define DOCTEST_FAST_WARN_UNARY_FALSE    DOCTEST_WARN_UNARY_FALSE
 #define DOCTEST_FAST_CHECK_UNARY_FALSE   DOCTEST_CHECK_UNARY_FALSE
 #define DOCTEST_FAST_REQUIRE_UNARY_FALSE DOCTEST_REQUIRE_UNARY_FALSE
+
+#define DOCTEST_TEST_CASE_TEMPLATE_INSTANTIATE DOCTEST_TEST_CASE_TEMPLATE_INVOKE
 // clang-format on
 
 // BDD style macros
@@ -2508,7 +2510,7 @@ constexpr T to_lvalue = x;
 #define TYPE_TO_STRING DOCTEST_TYPE_TO_STRING
 #define TEST_CASE_TEMPLATE DOCTEST_TEST_CASE_TEMPLATE
 #define TEST_CASE_TEMPLATE_DEFINE DOCTEST_TEST_CASE_TEMPLATE_DEFINE
-#define TEST_CASE_TEMPLATE_INSTANTIATE DOCTEST_TEST_CASE_TEMPLATE_INSTANTIATE
+#define TEST_CASE_TEMPLATE_INVOKE DOCTEST_TEST_CASE_TEMPLATE_INVOKE
 #define TEST_CASE_TEMPLATE_APPLY DOCTEST_TEST_CASE_TEMPLATE_APPLY
 #define SUBCASE DOCTEST_SUBCASE
 #define TEST_SUITE DOCTEST_TEST_SUITE
@@ -2618,12 +2620,15 @@ constexpr T to_lvalue = x;
 #define FAST_WARN_LE DOCTEST_FAST_WARN_LE
 #define FAST_CHECK_LE DOCTEST_FAST_CHECK_LE
 #define FAST_REQUIRE_LE DOCTEST_FAST_REQUIRE_LE
+
 #define FAST_WARN_UNARY DOCTEST_FAST_WARN_UNARY
 #define FAST_CHECK_UNARY DOCTEST_FAST_CHECK_UNARY
 #define FAST_REQUIRE_UNARY DOCTEST_FAST_REQUIRE_UNARY
 #define FAST_WARN_UNARY_FALSE DOCTEST_FAST_WARN_UNARY_FALSE
 #define FAST_CHECK_UNARY_FALSE DOCTEST_FAST_CHECK_UNARY_FALSE
 #define FAST_REQUIRE_UNARY_FALSE DOCTEST_FAST_REQUIRE_UNARY_FALSE
+
+#define TEST_CASE_TEMPLATE_INSTANTIATE DOCTEST_TEST_CASE_TEMPLATE_INSTANTIATE
 
 #endif // DOCTEST_CONFIG_NO_SHORT_MACRO_NAMES
 
@@ -4392,11 +4397,11 @@ namespace {
 
         XmlWriter& writeText( std::string const& text, bool indent = true );
 
-        XmlWriter& writeComment( std::string const& text );
+        //XmlWriter& writeComment( std::string const& text );
 
-        void writeStylesheetRef( std::string const& url );
+        //void writeStylesheetRef( std::string const& url );
 
-        XmlWriter& writeBlankLine();
+        //XmlWriter& writeBlankLine();
 
         void ensureTagClosed();
 
@@ -4660,22 +4665,22 @@ namespace {
         return *this;
     }
 
-    XmlWriter& XmlWriter::writeComment( std::string const& text ) {
-        ensureTagClosed();
-        m_os << m_indent << "<!--" << text << "-->";
-        m_needsNewline = true;
-        return *this;
-    }
+    //XmlWriter& XmlWriter::writeComment( std::string const& text ) {
+    //    ensureTagClosed();
+    //    m_os << m_indent << "<!--" << text << "-->";
+    //    m_needsNewline = true;
+    //    return *this;
+    //}
 
-    void XmlWriter::writeStylesheetRef( std::string const& url ) {
-        m_os << "<?xml-stylesheet type=\"text/xsl\" href=\"" << url << "\"?>\n";
-    }
+    //void XmlWriter::writeStylesheetRef( std::string const& url ) {
+    //    m_os << "<?xml-stylesheet type=\"text/xsl\" href=\"" << url << "\"?>\n";
+    //}
 
-    XmlWriter& XmlWriter::writeBlankLine() {
-        ensureTagClosed();
-        m_os << '\n';
-        return *this;
-    }
+    //XmlWriter& XmlWriter::writeBlankLine() {
+    //    ensureTagClosed();
+    //    m_os << '\n';
+    //    return *this;
+    //}
 
     void XmlWriter::ensureTagClosed() {
         if( m_tagIsOpen ) {
@@ -4729,6 +4734,31 @@ namespace {
 
         unsigned line(unsigned l) const { return opt.no_line_numbers ? 0 : l; }
 
+        void test_case_start_impl(const TestCaseData& in) {
+            bool open_ts_tag = false;
+            if(tc != nullptr) { // we have already opened a test suite
+                if(strcmp(tc->m_test_suite, in.m_test_suite) != 0) {
+                    xml.endElement();
+                    open_ts_tag = true;
+                }
+            }
+            else {
+                open_ts_tag = true; // first test case ==> first test suite
+            }
+
+            if(open_ts_tag) {
+                xml.startElement("TestSuite");
+                xml.writeAttribute("name", in.m_test_suite);
+            }
+
+            tc = &in;
+            xml.startElement("TestCase")
+                    .writeAttribute("name", in.m_name)
+                    .writeAttribute("filename", skipPathFromFilename(in.m_file))
+                    .writeAttribute("line", line(in.m_line))
+                    .writeAttribute("description", in.m_description);
+        }
+
         // =========================================================================================
         // WHAT FOLLOWS ARE OVERRIDES OF THE VIRTUAL METHODS OF THE REPORTER INTERFACE
         // =========================================================================================
@@ -4738,8 +4768,10 @@ namespace {
         void test_run_start() override {
             // remove .exe extension - mainly to have the same output on UNIX and Windows
             std::string binary_name = skipPathFromFilename(opt.binary_name.c_str());
+#ifdef DOCTEST_PLATFORM_WINDOWS
             if(binary_name.rfind(".exe") != std::string::npos)
                 binary_name = binary_name.substr(0, binary_name.length() - 4);
+#endif // DOCTEST_PLATFORM_WINDOWS
 
             xml.startElement("doctest").writeAttribute("binary", binary_name);
             if(getContextOptions()->no_version == false)
@@ -4766,27 +4798,8 @@ namespace {
         }
 
         void test_case_start(const TestCaseData& in) override {
-            bool open_ts_tag = false;
-            if(tc != nullptr) { // we have already opened a test suite
-                if(strcmp(tc->m_test_suite, in.m_test_suite) != 0) {
-                    xml.endElement();
-                    open_ts_tag = true;
-                }
-            } else {
-                open_ts_tag = true; // first test case ==> first test suite
-            }
-
-            if(open_ts_tag) {
-                xml.startElement("TestSuite");
-                xml.writeAttribute("name", in.m_test_suite);
-            }
-
-            tc = &in;
-            xml.startElement("TestCase")
-                    .writeAttribute("name", in.m_name)
-                    .writeAttribute("filename", skipPathFromFilename(in.m_file))
-                    .writeAttribute("line", line(in.m_line))
-                    .writeAttribute("description", in.m_description);
+            test_case_start_impl(in);
+            xml.ensureTagClosed();
         }
 
         void test_case_end(const CurrentTestCaseStats& st) override {
@@ -4854,9 +4867,11 @@ namespace {
         }
 
         void test_case_skipped(const TestCaseData& in) override {
-            test_case_start(in);
-            xml.writeAttribute("skipped", "true");
-            xml.endElement();
+            if(opt.no_skipped_summary == false) {
+                test_case_start_impl(in);
+                xml.writeAttribute("skipped", "true");
+                xml.endElement();
+            }
         }
     };
 

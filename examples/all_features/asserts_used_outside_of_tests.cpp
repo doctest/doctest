@@ -58,8 +58,7 @@ void some_program_code(int argc, char** argv) {
         return;
 
     // construct a context
-    doctest::Context context;
-    context.applyCommandLine(argc, argv);
+    doctest::Context context(argc, argv);
 
     // sets the context as the default one - so asserts used outside of a testing context do not crash
     context.setAsDefaultForAssertsOutOfTestCases();

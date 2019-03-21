@@ -1,19 +1,22 @@
 
+coverage:
+https://coveralls.io/builds/22305924/source?filename=doctest/parts/doctest.cpp#L1759
+
+
 addFailedAssert should be called when an assert crashes
 
+xml reporter - respond to queries
 
 
 decorators
     timeouts
     expectedFailures?
     maybes? shoulds?
+        Should have failed but didn't! Marking it as failed!
 
 log the "randomness" for example in the xml output
     also filters and options!
     also in the console reporter!
-
-flip the xml output switch & commit the sources
-check coverage
 
 get rid of DOCTEST_DECLARE_DEFAULTS & friends...
     AND get rid of DOCTEST_INTERFACE for simple structs!

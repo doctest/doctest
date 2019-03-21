@@ -1726,11 +1726,11 @@ namespace {
 
         XmlWriter& writeText( std::string const& text, bool indent = true );
 
-        XmlWriter& writeComment( std::string const& text );
+        //XmlWriter& writeComment( std::string const& text );
 
-        void writeStylesheetRef( std::string const& url );
+        //void writeStylesheetRef( std::string const& url );
 
-        XmlWriter& writeBlankLine();
+        //XmlWriter& writeBlankLine();
 
         void ensureTagClosed();
 
@@ -1994,22 +1994,22 @@ namespace {
         return *this;
     }
 
-    XmlWriter& XmlWriter::writeComment( std::string const& text ) {
-        ensureTagClosed();
-        m_os << m_indent << "<!--" << text << "-->";
-        m_needsNewline = true;
-        return *this;
-    }
+    //XmlWriter& XmlWriter::writeComment( std::string const& text ) {
+    //    ensureTagClosed();
+    //    m_os << m_indent << "<!--" << text << "-->";
+    //    m_needsNewline = true;
+    //    return *this;
+    //}
 
-    void XmlWriter::writeStylesheetRef( std::string const& url ) {
-        m_os << "<?xml-stylesheet type=\"text/xsl\" href=\"" << url << "\"?>\n";
-    }
+    //void XmlWriter::writeStylesheetRef( std::string const& url ) {
+    //    m_os << "<?xml-stylesheet type=\"text/xsl\" href=\"" << url << "\"?>\n";
+    //}
 
-    XmlWriter& XmlWriter::writeBlankLine() {
-        ensureTagClosed();
-        m_os << '\n';
-        return *this;
-    }
+    //XmlWriter& XmlWriter::writeBlankLine() {
+    //    ensureTagClosed();
+    //    m_os << '\n';
+    //    return *this;
+    //}
 
     void XmlWriter::ensureTagClosed() {
         if( m_tagIsOpen ) {
@@ -2097,8 +2097,10 @@ namespace {
         void test_run_start() override {
             // remove .exe extension - mainly to have the same output on UNIX and Windows
             std::string binary_name = skipPathFromFilename(opt.binary_name.c_str());
+#ifdef DOCTEST_PLATFORM_WINDOWS
             if(binary_name.rfind(".exe") != std::string::npos)
                 binary_name = binary_name.substr(0, binary_name.length() - 4);
+#endif // DOCTEST_PLATFORM_WINDOWS
 
             xml.startElement("doctest").writeAttribute("binary", binary_name);
             if(getContextOptions()->no_version == false)
