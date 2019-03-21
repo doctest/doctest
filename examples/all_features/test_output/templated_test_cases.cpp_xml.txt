@@ -21,9 +21,6 @@
       </Expression>
       <OverallResultsAsserts successes="0" failures="1"/>
     </TestCase>
-    <TestCase name="default construction&lt;unsigned char>" filename="templated_test_cases.cpp" line="0">
-      <OverallResultsAsserts successes="1" failures="0"/>
-    </TestCase>
     <TestCase name="default construction&lt;char>" filename="templated_test_cases.cpp" line="0">
       <OverallResultsAsserts successes="1" failures="0"/>
     </TestCase>
@@ -33,13 +30,16 @@
     <TestCase name="default construction&lt;signed char>" filename="templated_test_cases.cpp" line="0">
       <OverallResultsAsserts successes="1" failures="0"/>
     </TestCase>
-    <TestCase name="default construction&lt;int>" filename="templated_test_cases.cpp" line="0">
+    <TestCase name="default construction&lt;short int>" filename="templated_test_cases.cpp" line="0">
       <OverallResultsAsserts successes="1" failures="0"/>
     </TestCase>
     <TestCase name="default construction&lt;double>" filename="templated_test_cases.cpp" line="0">
       <OverallResultsAsserts successes="1" failures="0"/>
     </TestCase>
-    <TestCase name="default construction&lt;short int>" filename="templated_test_cases.cpp" line="0">
+    <TestCase name="default construction&lt;unsigned char>" filename="templated_test_cases.cpp" line="0">
+      <OverallResultsAsserts successes="1" failures="0"/>
+    </TestCase>
+    <TestCase name="default construction&lt;int>" filename="templated_test_cases.cpp" line="0">
       <OverallResultsAsserts successes="1" failures="0"/>
     </TestCase>
     <TestCase name="multiple types&lt;>" filename="templated_test_cases.cpp" line="0">
