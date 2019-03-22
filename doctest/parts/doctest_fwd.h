@@ -2644,7 +2644,9 @@ namespace doctest { namespace detail {
     DOCTEST_TYPE_TO_STRING_IMPL(char)
     DOCTEST_TYPE_TO_STRING_IMPL(signed char)
     DOCTEST_TYPE_TO_STRING_IMPL(unsigned char)
+#if !DOCTEST_MSVC || defined(_NATIVE_WCHAR_T_DEFINED)
     DOCTEST_TYPE_TO_STRING_IMPL(wchar_t)
+#endif // not MSVC or wchar_t support enabled
     DOCTEST_TYPE_TO_STRING_IMPL(short int)
     DOCTEST_TYPE_TO_STRING_IMPL(unsigned short int)
     DOCTEST_TYPE_TO_STRING_IMPL(int)
