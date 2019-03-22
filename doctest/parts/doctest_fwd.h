@@ -1908,29 +1908,30 @@ int registerReporter(const char* name, int priority) {
                                       doctest::detail::type_to_string<type>(), idx) *              \
             decorators)
 
-#define DOCTEST_TEST_CASE_TEMPLATE_DEFINE_IMPL(dec, T, id, anon)                                   \
+#define DOCTEST_TEST_CASE_TEMPLATE_DEFINE_IMPL(dec, T, iter, func)                                 \
     template <typename T>                                                                          \
-    inline void anon();                                                                            \
+    inline void func();                                                                            \
     template <typename Tuple>                                                                      \
-    struct DOCTEST_CAT(id, ITERATOR);                                                              \
+    struct iter;                                                                                   \
     template <typename Type, typename... Rest>                                                     \
-    struct DOCTEST_CAT(id, ITERATOR)<std::tuple<Type, Rest...>>                                    \
+    struct iter<std::tuple<Type, Rest...>>                                                         \
     {                                                                                              \
-        DOCTEST_CAT(id, ITERATOR)(int line, int index) {                                           \
-            DOCTEST_REGISTER_TYPED_TEST_CASE_IMPL(anon<Type>, Type, dec, line * 1000 + index);     \
-            DOCTEST_CAT(id, ITERATOR)<std::tuple<Rest...>>(line, index + 1);                       \
+        iter(int line, int index) {                                                                \
+            DOCTEST_REGISTER_TYPED_TEST_CASE_IMPL(func<Type>, Type, dec, line * 1000 + index);     \
+            iter<std::tuple<Rest...>>(line, index + 1);                                            \
         }                                                                                          \
     };                                                                                             \
     template <>                                                                                    \
-    struct DOCTEST_CAT(id, ITERATOR)<std::tuple<>>                                                 \
+    struct iter<std::tuple<>>                                                                      \
     {                                                                                              \
-        DOCTEST_CAT(id, ITERATOR)(int, int) {}                                                     \
+        iter(int, int) {}                                                                          \
     };                                                                                             \
     template <typename T>                                                                          \
-    inline void anon()
+    inline void func()
 
 #define DOCTEST_TEST_CASE_TEMPLATE_DEFINE(dec, T, id)                                              \
-    DOCTEST_TEST_CASE_TEMPLATE_DEFINE_IMPL(dec, T, id, DOCTEST_ANONYMOUS(_DOCTEST_ANON_TMP_))
+    DOCTEST_TEST_CASE_TEMPLATE_DEFINE_IMPL(dec, T, DOCTEST_CAT(id, ITERATOR),                      \
+                                           DOCTEST_ANONYMOUS(_DOCTEST_ANON_TMP_))
 
 #define DOCTEST_TEST_CASE_TEMPLATE_INVOKE_IMPL(id, anon, ...)                                      \
     DOCTEST_GLOBAL_NO_WARNINGS(DOCTEST_CAT(anon, DUMMY)) = [] {                                    \
@@ -1957,7 +1958,7 @@ int registerReporter(const char* name, int priority) {
     typedef int DOCTEST_ANONYMOUS(_DOCTEST_ANON_FOR_SEMICOLON_)
 
 #define DOCTEST_TEST_CASE_TEMPLATE_IMPL(dec, T, anon, ...)                                         \
-    DOCTEST_TEST_CASE_TEMPLATE_DEFINE_IMPL(dec, T, anon, anon);                                    \
+    DOCTEST_TEST_CASE_TEMPLATE_DEFINE_IMPL(dec, T, DOCTEST_CAT(anon, ITERATOR), anon);             \
     DOCTEST_TEST_CASE_TEMPLATE_INVOKE_IMPL(anon, anon, __VA_ARGS__)                                \
     template <typename T>                                                                          \
     inline void anon()
