@@ -1928,15 +1928,12 @@ int registerReporter(const char* name, int priority) {
     struct DOCTEST_CAT(id, ITERATOR)<std::tuple<>>                                                 \
     {                                                                                              \
         DOCTEST_CAT(id, ITERATOR)(int, int) {}                                                     \
-    }
-
-#define DOCTEST_TEST_CASE_TEMPLATE_DEFINE_IMPL_PROXY(dec, T, id, anon)                             \
-    DOCTEST_TEST_CASE_TEMPLATE_DEFINE_IMPL(dec, T, id, anon);                                      \
+    };                                                                                             \
     template <typename T>                                                                          \
     inline void anon()
 
 #define DOCTEST_TEST_CASE_TEMPLATE_DEFINE(dec, T, id)                                              \
-    DOCTEST_TEST_CASE_TEMPLATE_DEFINE_IMPL_PROXY(dec, T, id, DOCTEST_ANONYMOUS(_DOCTEST_ANON_TMP_))
+    DOCTEST_TEST_CASE_TEMPLATE_DEFINE_IMPL(dec, T, id, DOCTEST_ANONYMOUS(_DOCTEST_ANON_TMP_))
 
 #define DOCTEST_TEST_CASE_TEMPLATE_INVOKE_IMPL(id, anon, ...)                                      \
     DOCTEST_GLOBAL_NO_WARNINGS(DOCTEST_CAT(anon, DUMMY)) = [] {                                    \
@@ -1963,7 +1960,7 @@ int registerReporter(const char* name, int priority) {
     typedef int DOCTEST_ANONYMOUS(_DOCTEST_ANON_FOR_SEMICOLON_)
 
 #define DOCTEST_TEST_CASE_TEMPLATE_IMPL(dec, T, anon, ...)                                         \
-    DOCTEST_TEST_CASE_TEMPLATE_DEFINE_IMPL_PROXY(dec, T, anon, anon);                              \
+    DOCTEST_TEST_CASE_TEMPLATE_DEFINE_IMPL(dec, T, anon, anon);                                    \
     DOCTEST_TEST_CASE_TEMPLATE_INVOKE_IMPL(anon, anon, __VA_ARGS__)                                \
     template <typename T>                                                                          \
     inline void anon()

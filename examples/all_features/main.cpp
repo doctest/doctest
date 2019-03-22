@@ -13,7 +13,7 @@ int main(int argc, char** argv) {
 
     // defaults
     context.addFilter("test-case-exclude", "*math*"); // exclude test cases with "math" in the name
-    context.setOption("rand-seed", 324);              // if order-by is set to "rand" ise this seed
+    context.setOption("rand-seed", 324);              // if order-by is set to "rand" use this seed
     context.setOption("order-by", "file");            // sort the test cases by file and line
 
     context.applyCommandLine(argc, argv);
