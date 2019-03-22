@@ -3711,7 +3711,9 @@ namespace {
 #endif // MSVC
         if(res != 0)
             return res < 0;
-        return lhs->m_line < rhs->m_line;
+        if(lhs->m_line != rhs->m_line)
+            return lhs->m_line < rhs->m_line;
+        return lhs->m_template_id < rhs->m_template_id;
     }
 
     // for sorting tests by suite/file/line
