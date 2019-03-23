@@ -12,39 +12,23 @@ This library is free, and will stay free but needs your support to sustain its d
 
 Planned features for future releases - order changes constantly...
 
-### For 2.3:
-
-- finish the reporter system
-    - what is done:
-        - can be used for listening for events
-        - multiple reporters can be used
-        - custom reporters can be written
-        - register and choose reporters
-        - list all reporters
-    - what is left:
-        - output to file (or just not stdout)
-        - xml output
-        - xUnit reporter
-        - compact reporter - https://github.com/onqtam/doctest/issues/75
-        - progress reporter
-        - [junit related stuff](https://github.com/ujiro99/doctest-junit-report))
-        - options
-            - absolutely no output on success
-            - summary only
-        - make sure all relevant parts of the reporters can be accessed from the doctest namespace without the need for detail
-        - examples
-        - documentation
-- matchers - should investigate what they are - look at google test/mock and Catch (also predicates and boost test)
-
 ### For 2.4:
 
+- https://github.com/onqtam/doctest/issues/208
+- reporters:
+    - xUnit/junit/TeamCity reporter - perhaps related: https://github.com/ujiro99/doctest-junit-report
+    - compact reporter
+    - options
+        - absolutely no output on success (AKA quiet mode)
+        - summary only (verbosity levels?)
+- matchers - should investigate what they are - look at google test/mock and Catch (also predicates and boost test)
 - header with extensions
     - demangling with the use of the cxxabi header
     - stringification of types from std, also enums with the help of traits as discussed in #121
     - esoteric reporters
 - convolution support for the assertion macros (with a predicate)
 - Value-Parameterized test cases
-- generators? - look at Catch - and investigate what they are
+- generators? - look at Catch - and investigate what they are (also SUBCASEs can be while() loops instead of if() statements! that might be useful...)
 - look at property based testing
     - [rapidcheck](https://github.com/emil-e/rapidcheck)
     - [autocheck](https://github.com/thejohnfreeman/autocheck)

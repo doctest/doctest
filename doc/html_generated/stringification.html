@@ -85,11 +85,13 @@ An alternative way to register an exception translator is to do the following in
 
 The order of registering exception translators can be controlled - simply call the explicit function in the required order or list the exception translators with the macro in a top-to-bottom fashion in a single translation unit - everything that auto-registers in doctest works in a top-to-bottom way for a single translation unit (source file).
 
+You could also [override the translation mechanism](https://github.com/catchorg/Catch2/issues/539#issuecomment-454549904) for exceptions deriving from ```std::exception```.
+
 ------
 
 - Check out the [**example**](../../examples/all_features/stringification.cpp) which shows how to stringify ```std::vector<T>``` and other types/exceptions.
 - Note that the type ```String``` is used when specializing ```StringMaker<T>``` or overloading ```toString()``` - it is the string type **doctest** works with. ```std::string``` is not an option because doctest would have to include the ```<string>``` header.
-- To support the ```operator<<(std::ostream&...``` stringification the library has to offer a forward declaration of ```std::ostream``` and that is what the library does - but it is forbidden by the standard. It currently works everywhere - on all tested compilers - but if the user wishes to be 100% standards compliant - then the [**```DOCTEST_CONFIG_USE_IOSFWD```**](configuration.html#doctest_config_use_iosfwd) identifier can be used to force the inclusion of ```<iosfwd>```. The reason the header is not included by default is that on MSVC (for example) it drags a whole bunch of stuff with it - and after the preprocessor is finished the translation unit has grown to 42k lines of C++ code - while Clang and the libc++ are so well implemented that including ```<iosfwd>``` there results in 400 lines of code. 
+- To support the ```operator<<(std::ostream&...``` stringification the library has to offer a forward declaration of ```std::ostream``` and that is what the library does - but it is forbidden by the standard. It currently works everywhere - on all tested compilers - but if the user wishes to be 100% standards compliant - then the [**```DOCTEST_CONFIG_USE_STD_HEADERS```**](configuration.html#doctest_config_use_std_headers) identifier can be used to force the inclusion of ```<iosfwd>```. The reason the header is not included by default is that on MSVC (for example) it drags a whole bunch of stuff with it - and after the preprocessor is finished the translation unit has grown to 42k lines of C++ code - while Clang and the libc++ are so well implemented that including ```<iosfwd>``` there results in 400 lines of code. 
 
 ---
 
