@@ -9,6 +9,7 @@ Planned features for future releases - order changes constantly...
 
 ### For 2.4:
 
+- https://github.com/onqtam/doctest/issues/208
 - reporters:
     - xUnit/junit/TeamCity reporter - perhaps related: https://github.com/ujiro99/doctest-junit-report
     - compact reporter

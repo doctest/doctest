@@ -2128,6 +2128,18 @@ namespace {
             xml.startElement("doctest").writeAttribute("binary", binary_name);
             if(opt.no_version == false)
                 xml.writeAttribute("version", DOCTEST_VERSION_STR);
+
+            // only the consequential ones (TODO: filters)
+            xml.scopedElement("Options")
+                    .writeAttribute("order_by", opt.order_by.c_str())
+                    .writeAttribute("rand_seed", opt.rand_seed)
+                    .writeAttribute("first", opt.first)
+                    .writeAttribute("last", opt.last)
+                    .writeAttribute("abort_after", opt.abort_after)
+                    .writeAttribute("subcase_filter_levels", opt.subcase_filter_levels)
+                    .writeAttribute("case_sensitive", opt.case_sensitive)
+                    .writeAttribute("no_throw", opt.no_throw)
+                    .writeAttribute("no_skip", opt.no_skip);
         }
 
         void test_run_end(const TestRunStats& p) override {

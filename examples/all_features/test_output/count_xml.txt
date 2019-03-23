@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <doctest binary="all_features">
+  <Options order_by="file" rand_seed="324" first="0" last="4294967295" abort_after="0" subcase_filter_levels="2147483647" case_sensitive="false" no_throw="false" no_skip="false"/>
   <OverallResultsTestCases unskipped="4"/>
 </doctest>
