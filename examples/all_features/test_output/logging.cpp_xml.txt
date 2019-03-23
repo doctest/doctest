@@ -76,7 +76,7 @@
       <OverallResultsAsserts successes="0" failures="5"/>
     </TestCase>
     <TestCase name="a test case that will end from an exception" filename="logging.cpp" line="0">
-      <Message>
+      <Message type="ERROR" filename="logging.cpp" line="0">
         <Text>
           forcing the many captures (including those on the heap) to be stringified
         </Text>
@@ -116,12 +116,12 @@
       <OverallResultsAsserts successes="0" failures="0"/>
     </TestCase>
     <TestCase name="third party asserts can report failures to doctest" filename="logging.cpp" line="0">
-      <Message>
+      <Message type="ERROR" filename="logging.cpp" line="0">
         <Text>
           MY_ASSERT(false)
         </Text>
       </Message>
-      <Message>
+      <Message type="FATAL ERROR" filename="logging.cpp" line="0">
         <Text>
           MY_ASSERT_FATAL(false)
         </Text>
@@ -129,12 +129,12 @@
       <OverallResultsAsserts successes="0" failures="2"/>
     </TestCase>
     <TestCase name="explicit failures 1" filename="logging.cpp" line="0">
-      <Message>
+      <Message type="ERROR" filename="logging.cpp" line="0">
         <Text>
           this should not end the test case, but mark it as failing
         </Text>
       </Message>
-      <Message>
+      <Message type="WARNING" filename="logging.cpp" line="0">
         <Text>
           reached!
         </Text>
@@ -142,7 +142,7 @@
       <OverallResultsAsserts successes="0" failures="1"/>
     </TestCase>
     <TestCase name="explicit failures 2" filename="logging.cpp" line="0">
-      <Message>
+      <Message type="FATAL ERROR" filename="logging.cpp" line="0">
         <Text>
           fail the test case and also end it
         </Text>

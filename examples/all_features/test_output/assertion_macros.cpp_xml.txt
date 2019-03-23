@@ -289,7 +289,7 @@
           1
         </Expanded>
       </Expression>
-      <Message>
+      <Message type="WARNING" filename="assertion_macros.cpp" line="0">
         <Text>
           reached!
         </Text>

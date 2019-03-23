@@ -3,7 +3,7 @@
   <Options order_by="file" rand_seed="324" first="0" last="4294967295" abort_after="0" subcase_filter_levels="2147483647" case_sensitive="false" no_throw="false" no_skip="false"/>
   <TestSuite name="some TS">
     <TestCase name="in TS" filename="header.h" line="0">
-      <Message>
+      <Message type="FATAL ERROR" filename="header.h" line="0">
         <Text/>
       </Message>
       <OverallResultsAsserts successes="0" failures="1"/>
@@ -11,13 +11,13 @@
   </TestSuite>
   <TestSuite>
     <TestCase name="template 1&lt;char>" filename="header.h" line="0">
-      <Message>
+      <Message type="FATAL ERROR" filename="header.h" line="0">
         <Text/>
       </Message>
       <OverallResultsAsserts successes="0" failures="1"/>
     </TestCase>
     <TestCase name="template 2&lt;doctest::String>" filename="header.h" line="0">
-      <Message>
+      <Message type="FATAL ERROR" filename="header.h" line="0">
         <Text/>
       </Message>
       <OverallResultsAsserts successes="0" failures="1"/>

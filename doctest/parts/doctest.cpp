@@ -617,11 +617,11 @@ const char* assertString(assertType::Enum at) {
 
 const char* failureString(assertType::Enum at) {
     if(at & assertType::is_warn) //!OCLINT bitwise operator in conditional
-        return "WARNING: ";
+        return "WARNING";
     if(at & assertType::is_check) //!OCLINT bitwise operator in conditional
-        return "ERROR: ";
+        return "ERROR";
     if(at & assertType::is_require) //!OCLINT bitwise operator in conditional
-        return "FATAL ERROR: ";
+        return "FATAL ERROR";
     return "";
 }
 
@@ -2088,6 +2088,13 @@ namespace {
                     .writeAttribute("filename", skipPathFromFilename(in.m_file))
                     .writeAttribute("line", line(in.m_line))
                     .writeAttribute("description", in.m_description);
+
+            if(Approx(in.m_timeout) != 0)
+                xml.writeAttribute("timeout", in.m_timeout);
+            if(in.m_may_fail)
+                xml.writeAttribute("may_fail", true);
+            if(in.m_should_fail)
+                xml.writeAttribute("should_fail", true);
         }
 
         // =========================================================================================
@@ -2167,10 +2174,15 @@ namespace {
         }
 
         void test_case_end(const CurrentTestCaseStats& st) override {
-            xml.scopedElement("OverallResultsAsserts")
+            xml.startElement("OverallResultsAsserts")
                     .writeAttribute("successes",
                                     st.numAssertsCurrentTest - st.numAssertsFailedCurrentTest)
                     .writeAttribute("failures", st.numAssertsFailedCurrentTest);
+            if(opt.duration)
+                xml.writeAttribute("duration", st.seconds);
+            if(tc->m_expected_failures)
+                xml.writeAttribute("expected_failures", tc->m_expected_failures);
+            xml.endElement();
 
             xml.endElement();
         }
@@ -2221,7 +2233,10 @@ namespace {
         void log_message(const MessageData& mb) override {
             std::lock_guard<std::mutex> lock(mutex);
 
-            xml.startElement("Message");
+            xml.startElement("Message")
+                    .writeAttribute("type", failureString(mb.m_severity))
+                    .writeAttribute("filename", skipPathFromFilename(mb.m_file))
+                    .writeAttribute("line", line(mb.m_line));
 
             xml.scopedElement("Text").writeText(mb.m_string.c_str());
 
@@ -2296,9 +2311,9 @@ namespace {
         }
 
         void successOrFailColoredStringToStream(bool success, assertType::Enum at,
-                                                const char* success_str = "SUCCESS: ") {
+                                                const char* success_str = "SUCCESS") {
             s << getSuccessOrFailColor(success, at)
-              << getSuccessOrFailString(success, at, success_str);
+              << getSuccessOrFailString(success, at, success_str) << ": ";
         }
 
         void log_contexts() {
@@ -2688,7 +2703,7 @@ namespace {
             file_line_to_stream(s, mb.m_file, mb.m_line, " ");
             s << getSuccessOrFailColor(false, mb.m_severity)
               << getSuccessOrFailString(mb.m_severity & assertType::is_warn, mb.m_severity,
-                                        "MESSAGE: ");
+                                        "MESSAGE") << ": ";
             s << Color::None << mb.m_string << "\n";
             log_contexts();
         }

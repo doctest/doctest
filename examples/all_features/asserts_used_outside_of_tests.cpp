@@ -33,7 +33,7 @@ static void handler(const doctest::AssertData& ad) {
     // - call std::abort() or std::terminate()
 
     std::cout << Color::LightGrey << skipPathFromFilename(ad.m_file) << "(" << ad.m_line << "): ";
-    std::cout << Color::Red << failureString(ad.m_at);
+    std::cout << Color::Red << failureString(ad.m_at) << ": ";
 
     // handling only normal (comparison and unary) asserts - nothing exceptions-related
     if(ad.m_at & assertType::is_normal) {

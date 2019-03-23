@@ -14,13 +14,13 @@
   </TestSuite>
   <TestSuite name="scoped test suite">
     <TestCase name="part of scoped" filename="test_cases_and_suites.cpp" line="0">
-      <Message>
+      <Message type="FATAL ERROR" filename="test_cases_and_suites.cpp" line="0">
         <Text/>
       </Message>
       <OverallResultsAsserts successes="0" failures="1"/>
     </TestCase>
     <TestCase name="part of scoped 2" filename="test_cases_and_suites.cpp" line="0">
-      <Message>
+      <Message type="FATAL ERROR" filename="test_cases_and_suites.cpp" line="0">
         <Text/>
       </Message>
       <OverallResultsAsserts successes="0" failures="1"/>
@@ -28,7 +28,7 @@
   </TestSuite>
   <TestSuite name="some TS">
     <TestCase name="part of some TS" filename="test_cases_and_suites.cpp" line="0">
-      <Message>
+      <Message type="FATAL ERROR" filename="test_cases_and_suites.cpp" line="0">
         <Text/>
       </Message>
       <OverallResultsAsserts successes="0" failures="1"/>
@@ -49,7 +49,7 @@
   </TestSuite>
   <TestSuite name="ts1">
     <TestCase name="normal test in a test suite from a decorator" filename="test_cases_and_suites.cpp" line="0">
-      <Message>
+      <Message type="WARNING" filename="test_cases_and_suites.cpp" line="0">
         <Text>
           failing because of the timeout decorator!
         </Text>
@@ -59,45 +59,45 @@
   </TestSuite>
   <TestSuite name="skipped test cases">
     <TestCase name="unskipped" filename="test_cases_and_suites.cpp" line="0" description="this test has overrided its skip decorator">
-      <Message>
+      <Message type="FATAL ERROR" filename="test_cases_and_suites.cpp" line="0">
         <Text/>
       </Message>
       <OverallResultsAsserts successes="0" failures="1"/>
     </TestCase>
   </TestSuite>
   <TestSuite name="test suite with a description">
-    <TestCase name="fails - and its allowed" filename="test_cases_and_suites.cpp" line="0" description="regarding failures">
-      <Message>
+    <TestCase name="fails - and its allowed" filename="test_cases_and_suites.cpp" line="0" description="regarding failures" may_fail="true">
+      <Message type="FATAL ERROR" filename="test_cases_and_suites.cpp" line="0">
         <Text/>
       </Message>
       <OverallResultsAsserts successes="0" failures="1"/>
     </TestCase>
-    <TestCase name="doesn't fail which is fine" filename="test_cases_and_suites.cpp" line="0" description="regarding failures">
+    <TestCase name="doesn't fail which is fine" filename="test_cases_and_suites.cpp" line="0" description="regarding failures" may_fail="true">
       <OverallResultsAsserts successes="0" failures="0"/>
     </TestCase>
-    <TestCase name="fails as it should" filename="test_cases_and_suites.cpp" line="0" description="regarding failures">
-      <Message>
+    <TestCase name="fails as it should" filename="test_cases_and_suites.cpp" line="0" description="regarding failures" should_fail="true">
+      <Message type="FATAL ERROR" filename="test_cases_and_suites.cpp" line="0">
         <Text/>
       </Message>
       <OverallResultsAsserts successes="0" failures="1"/>
     </TestCase>
-    <TestCase name="doesn't fail but it should have" filename="test_cases_and_suites.cpp" line="0" description="regarding failures">
+    <TestCase name="doesn't fail but it should have" filename="test_cases_and_suites.cpp" line="0" description="regarding failures" should_fail="true">
       <OverallResultsAsserts successes="0" failures="0"/>
     </TestCase>
     <TestCase name="fails 1 time as it should" filename="test_cases_and_suites.cpp" line="0" description="regarding failures">
-      <Message>
+      <Message type="FATAL ERROR" filename="test_cases_and_suites.cpp" line="0">
         <Text/>
       </Message>
-      <OverallResultsAsserts successes="0" failures="1"/>
+      <OverallResultsAsserts successes="0" failures="1" expected_failures="1"/>
     </TestCase>
     <TestCase name="fails more times as it should" filename="test_cases_and_suites.cpp" line="0" description="regarding failures">
-      <Message>
+      <Message type="ERROR" filename="test_cases_and_suites.cpp" line="0">
         <Text/>
       </Message>
-      <Message>
+      <Message type="ERROR" filename="test_cases_and_suites.cpp" line="0">
         <Text/>
       </Message>
-      <OverallResultsAsserts successes="0" failures="2"/>
+      <OverallResultsAsserts successes="0" failures="2" expected_failures="1"/>
     </TestCase>
   </TestSuite>
   <OverallResultsAsserts successes="1" failures="10"/>

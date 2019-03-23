@@ -9,20 +9,20 @@ root
     </TestCase>
     <TestCase name="subcases can be used in a separate function as well" filename="subcases.cpp" line="0">
       <SubCase name="from function..." filename="subcases.cpp" line="0">
-        <Message>
+        <Message type="WARNING" filename="subcases.cpp" line="0">
           <Text>
             print me twice
           </Text>
         </Message>
         <SubCase name="sc1" filename="subcases.cpp" line="0">
-          <Message>
+          <Message type="WARNING" filename="subcases.cpp" line="0">
             <Text>
               hello! from sc1
             </Text>
           </Message>
         </SubCase>
       </SubCase>
-      <Message>
+      <Message type="WARNING" filename="subcases.cpp" line="0">
         <Text>
           lala
         </Text>

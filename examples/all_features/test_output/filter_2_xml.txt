@@ -82,10 +82,10 @@
     <TestCase name="skipped - inherited from the test suite" filename="test_cases_and_suites.cpp" line="0" skipped="true"/>
   </TestSuite>
   <TestSuite name="test suite with a description">
-    <TestCase name="fails - and its allowed" filename="test_cases_and_suites.cpp" line="0" description="regarding failures" skipped="true"/>
-    <TestCase name="doesn't fail which is fine" filename="test_cases_and_suites.cpp" line="0" description="regarding failures" skipped="true"/>
-    <TestCase name="fails as it should" filename="test_cases_and_suites.cpp" line="0" description="regarding failures" skipped="true"/>
-    <TestCase name="doesn't fail but it should have" filename="test_cases_and_suites.cpp" line="0" description="regarding failures" skipped="true"/>
+    <TestCase name="fails - and its allowed" filename="test_cases_and_suites.cpp" line="0" description="regarding failures" may_fail="true" skipped="true"/>
+    <TestCase name="doesn't fail which is fine" filename="test_cases_and_suites.cpp" line="0" description="regarding failures" may_fail="true" skipped="true"/>
+    <TestCase name="fails as it should" filename="test_cases_and_suites.cpp" line="0" description="regarding failures" should_fail="true" skipped="true"/>
+    <TestCase name="doesn't fail but it should have" filename="test_cases_and_suites.cpp" line="0" description="regarding failures" should_fail="true" skipped="true"/>
     <TestCase name="fails 1 time as it should" filename="test_cases_and_suites.cpp" line="0" description="regarding failures" skipped="true"/>
     <TestCase name="fails more times as it should" filename="test_cases_and_suites.cpp" line="0" description="regarding failures" skipped="true"/>
   </TestSuite>
