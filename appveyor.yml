@@ -25,8 +25,11 @@ environment:
   matrix:
   - gen: "MinGW Makefiles"
   - gen: "Visual Studio 14 2015"
+    APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
   - gen: "Visual Studio 15 2017"
     APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+  - gen: "Visual Studio 16 2019"
+    APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2019 Preview
 
 install:
   - IF "%gen%" == "MinGW Makefiles" appveyor-retry appveyor DownloadFile http://downloads.sourceforge.net/mingw-w64/x86_64-8.1.0-release-posix-seh-rt_v6-rev0.7z
@@ -60,32 +63,32 @@ build_script:
   # ============= VISUAL STUDIO
   - mkdir debug_64
   - cd debug_64
-  - cmake .. -G "%gen% Win64"
+  - cmake .. -G "%gen%" -A x64
   - msbuild doctest.sln /p:Configuration=Debug;Platform=x64 /maxcpucount
   - ctest -C Debug -j2 --output-on-failure
   - cd ..
   - mkdir release_64
   - cd release_64
-  - cmake .. -G "%gen% Win64"
+  - cmake .. -G "%gen%" -A x64
   - msbuild doctest.sln /p:Configuration=Release;Platform=x64 /maxcpucount
   - ctest -C Release -j2 --output-on-failure
   - cd ..
   # x86
   - mkdir debug_86
   - cd debug_86
-  - cmake .. -G "%gen%"
+  - cmake .. -G "%gen%" -A Win32
   - msbuild doctest.sln /p:Configuration=Debug;Platform=Win32 /maxcpucount
   - ctest -C Debug -j2 --output-on-failure
   - cd ..
   - mkdir release_86
   - cd release_86
-  - cmake .. -G "%gen%"
+  - cmake .. -G "%gen%" -A Win32
   - msbuild doctest.sln /p:Configuration=Release;Platform=Win32 /maxcpucount
   - ctest -C Release -j2 --output-on-failure
   - cd ..
   # static code analysis
   - IF "%gen%" == "Visual Studio 15 2017" mkdir analysis
   - IF "%gen%" == "Visual Studio 15 2017" cd analysis
-  - IF "%gen%" == "Visual Studio 15 2017" cmake .. -G "%gen% Win64"
+  - IF "%gen%" == "Visual Studio 15 2017" cmake .. -G "%gen%" -A x64
   - IF "%gen%" == "Visual Studio 15 2017" msbuild doctest.sln /p:Configuration=Debug;Platform=x64 /maxcpucount /p:RunCodeAnalysis=true /p:CodeAnalysisTreatWarningsAsErrors=true
   - IF "%gen%" == "Visual Studio 15 2017" cd ..

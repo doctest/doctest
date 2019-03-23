@@ -9,6 +9,8 @@ DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_BEGIN
 #include <sstream>
 DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_END
 
+DOCTEST_MSVC_SUPPRESS_WARNING(5045) // Spectre mitigation diagnostics
+
 // the standard forbids writing in the std namespace but it works on all compilers
 namespace std
 {
