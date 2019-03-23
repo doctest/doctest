@@ -2094,7 +2094,28 @@ namespace {
         // WHAT FOLLOWS ARE OVERRIDES OF THE VIRTUAL METHODS OF THE REPORTER INTERFACE
         // =========================================================================================
 
-        void report_query(const QueryData& /*in*/) override {}
+        void report_query(const QueryData& in) override {
+            test_run_start();
+            if(opt.list_reporters) {
+                for(auto& curr : getReporters())
+                    xml.scopedElement("Reporter")
+                            .writeAttribute("priority", curr.first.first)
+                            .writeAttribute("name", curr.first.second);
+            } else if(opt.count || opt.list_test_cases) {
+                for(unsigned i = 0; i < in.num_data; ++i)
+                    xml.scopedElement("TestCase").writeAttribute("name", in.data[i]);
+                xml.scopedElement("OverallResultsTestCases")
+                        .writeAttribute("unskipped", in.run_stats->numTestCasesPassingFilters);
+            } else if(opt.list_test_suites) {
+                for(unsigned i = 0; i < in.num_data; ++i)
+                    xml.scopedElement("TestSuite").writeAttribute("name", in.data[i]);
+                xml.scopedElement("OverallResultsTestCases")
+                        .writeAttribute("unskipped", in.run_stats->numTestCasesPassingFilters);
+                xml.scopedElement("OverallResultsTestSuites")
+                        .writeAttribute("unskipped", in.run_stats->numTestSuitesPassingFilters);
+            }
+            xml.endElement();
+        }
 
         void test_run_start() override {
             // remove .exe extension - mainly to have the same output on UNIX and Windows
@@ -2105,7 +2126,7 @@ namespace {
 #endif // DOCTEST_PLATFORM_WINDOWS
 
             xml.startElement("doctest").writeAttribute("binary", binary_name);
-            if(getContextOptions()->no_version == false)
+            if(opt.no_version == false)
                 xml.writeAttribute("version", DOCTEST_VERSION_STR);
         }
 
@@ -2308,7 +2329,7 @@ namespace {
         }
 
         void printVersion() {
-            if(getContextOptions()->no_version == false)
+            if(opt.no_version == false)
                 s << Color::Cyan << "[doctest] " << Color::None << "doctest version is \""
                   << DOCTEST_VERSION_STR << "\"\n";
         }
@@ -2440,11 +2461,11 @@ namespace {
 
         void list_query_results() {
             separator_to_stream();
-            if(getContextOptions()->count || getContextOptions()->list_test_cases) {
+            if(opt.count || opt.list_test_cases) {
                 s << Color::Cyan << "[doctest] " << Color::None
                   << "unskipped test cases passing the current filters: "
                   << g_cs->numTestCasesPassingFilters << "\n";
-            } else if(getContextOptions()->list_test_suites) {
+            } else if(opt.list_test_suites) {
                 s << Color::Cyan << "[doctest] " << Color::None
                   << "unskipped test cases passing the current filters: "
                   << g_cs->numTestCasesPassingFilters << "\n";
@@ -2465,7 +2486,7 @@ namespace {
                 printHelp();
             } else if(opt.list_reporters) {
                 printRegisteredReporters();
-            } else if(getContextOptions()->count || opt.list_test_cases) {
+            } else if(opt.count || opt.list_test_cases) {
                 if(opt.list_test_cases) {
                     s << Color::Cyan << "[doctest] " << Color::None
                       << "listing all test case names\n";
@@ -3224,8 +3245,9 @@ int Context::run() {
         DOCTEST_ITERATE_THROUGH_REPORTERS(test_run_end, *g_cs);
     } else {
         QueryData qdata;
-        qdata.data     = queryResults.data();
-        qdata.num_data = unsigned(queryResults.size());
+        qdata.run_stats = g_cs;
+        qdata.data      = queryResults.data();
+        qdata.num_data  = unsigned(queryResults.size());
         DOCTEST_ITERATE_THROUGH_REPORTERS(report_query, qdata);
     }
 

@@ -1,36 +1,6 @@
 
-coverage:
-https://coveralls.io/builds/22305924/source?filename=doctest/parts/doctest.cpp#L1759
-
-
-addFailedAssert should be called when an assert crashes
-
-xml reporter - respond to queries
-
-
-decorators
-    timeouts
-    expectedFailures?
-    maybes? shoulds?
-        Should have failed but didn't! Marking it as failed!
-
-log the "randomness" for example in the xml output
-    also filters and options!
-    also in the console reporter!
-
 get rid of DOCTEST_DECLARE_DEFAULTS & friends...
     AND get rid of DOCTEST_INTERFACE for simple structs!
-
-On release - mention these:
-    - can be used for listening for events
-    - multiple reporters/listeners can be used at the same time
-    - custom reporters can be written
-    - register and choose reporters
-    - list all reporters
-    - output to file (or just not stdout)
-    - xml output
-
-
 
 https://github.com/catchorg/Catch2/blob/master/docs/tostring.md#catchis_range-specialisation
 

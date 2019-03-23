@@ -1,1 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<doctest binary="all_features">
+  <OverallResultsTestCases unskipped="4"/>
+</doctest>

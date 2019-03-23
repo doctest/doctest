@@ -1,1 +1,2 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<doctest binary="all_features" version="2.2.3"/>

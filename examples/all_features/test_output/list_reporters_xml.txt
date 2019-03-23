@@ -1,1 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<doctest binary="all_features">
+  <Reporter priority="0" name="console"/>
+  <Reporter priority="0" name="xml"/>
+  <Reporter priority="1" name="my_xml"/>
+</doctest>

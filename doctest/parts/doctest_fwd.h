@@ -1746,8 +1746,9 @@ struct DOCTEST_INTERFACE TestRunStats
 
 struct QueryData
 {
-    String*  data     = nullptr;
-    unsigned num_data = 0;
+    const TestRunStats* run_stats = nullptr;
+    String*             data      = nullptr;
+    unsigned            num_data  = 0;
 };
 
 struct DOCTEST_INTERFACE IReporter

@@ -1,1 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<doctest binary="all_features">
+  <TestCase name="exercising tricky code paths of doctest"/>
+  <TestCase name="will end from a std::string exception"/>
+  <TestCase name="will end from a const char* exception"/>
+  <TestCase name="will end from an unknown exception"/>
+  <OverallResultsTestCases unskipped="4"/>
+</doctest>
