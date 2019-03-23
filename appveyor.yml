@@ -28,8 +28,8 @@ environment:
     APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
   - gen: "Visual Studio 15 2017"
     APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
-  - gen: "Visual Studio 16 2019"
-    APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2019 Preview
+#  - gen: "Visual Studio 16 2019"
+#    APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2019 Preview
 
 install:
   - IF "%gen%" == "MinGW Makefiles" appveyor-retry appveyor DownloadFile http://downloads.sourceforge.net/mingw-w64/x86_64-8.1.0-release-posix-seh-rt_v6-rev0.7z
