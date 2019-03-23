@@ -1,5 +1,35 @@
 # Change Log
 
+## [2.3.0](https://github.com/onqtam/doctest/tree/2.3.0) (2019-03-23)
+[Full Changelog](https://github.com/onqtam/doctest/compare/2.2.3...2.3.0)
+
+**Closed issues:**
+
+- Compilation with emscripten fails by default because of signal handling [\#207](https://github.com/onqtam/doctest/issues/207)
+- Compilation fails with cl.exe /Zc:wchar\_t- [\#206](https://github.com/onqtam/doctest/issues/206)
+- Parallel invocation of doctest's own testsuite via CTest fails [\#202](https://github.com/onqtam/doctest/issues/202)
+-  Get the number of passed/failed tests in the code [\#200](https://github.com/onqtam/doctest/issues/200)
+- Tests alongside code with multiple executables [\#199](https://github.com/onqtam/doctest/issues/199)
+- Cppcheck 1.86 warnings [\#198](https://github.com/onqtam/doctest/issues/198)
+- Compiling as Dll maybe is wrong [\#196](https://github.com/onqtam/doctest/issues/196)
+- Forward-declaring identifiers in std:: is UB - consider including some of the cheaper C/C++ stdlib headers [\#194](https://github.com/onqtam/doctest/issues/194)
+- QtCreator + clang warning about operator \<\< precedence [\#191](https://github.com/onqtam/doctest/issues/191)
+- run test fixture from cli [\#190](https://github.com/onqtam/doctest/issues/190)
+- Installing doctest using cmake and make fails on Ubuntu 16.04 \(C++11 is not used\) [\#189](https://github.com/onqtam/doctest/issues/189)
+- c++17 requirement for testing private members [\#188](https://github.com/onqtam/doctest/issues/188)
+- \[feature request\] implement a user-extendable reporter system [\#138](https://github.com/onqtam/doctest/issues/138)
+- Same test runs multiple times when written in a header and included with different unnormalized paths [\#45](https://github.com/onqtam/doctest/issues/45)
+
+**Merged pull requests:**
+
+- Fix unmatched bracket in DOCTEST\_TEST\_CASE\_CLASS [\#204](https://github.com/onqtam/doctest/pull/204) ([patstew](https://github.com/patstew))
+- Template apply [\#203](https://github.com/onqtam/doctest/pull/203) ([zhihaoy](https://github.com/zhihaoy))
+- No undefined behavior per C++ standard in detecting endianess. [\#195](https://github.com/onqtam/doctest/pull/195) ([dimztimz](https://github.com/dimztimz))
+- Fix propagating include directories of target doctest\_with\_main [\#193](https://github.com/onqtam/doctest/pull/193) ([dimztimz](https://github.com/dimztimz))
+-  Move single header to a separate folder [\#187](https://github.com/onqtam/doctest/pull/187) ([dimztimz](https://github.com/dimztimz))
+- Fix Clang format to handle C++11 [\#186](https://github.com/onqtam/doctest/pull/186) ([dimztimz](https://github.com/dimztimz))
+- Rename doctest\_impl.h to doctest.cpp for less confusion. [\#185](https://github.com/onqtam/doctest/pull/185) ([dimztimz](https://github.com/dimztimz))
+
 ## [2.2.3](https://github.com/onqtam/doctest/tree/2.2.3) (2019-02-10)
 [Full Changelog](https://github.com/onqtam/doctest/compare/2.2.2...2.2.3)
 
