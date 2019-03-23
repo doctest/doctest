@@ -3,29 +3,28 @@
 
 #include "dll.h"
 
-int main(int argc, char** argv)
-{
-    doctest::Context context;
-    context.applyCommandLine(argc, argv);
+int main(int argc, char **argv) {
+  doctest::Context context;
+  context.applyCommandLine(argc, argv);
 
-    int res = context.run(); // run doctest
+  int res = context.run(); // run doctest
 
-    // important - query flags (and --exit) rely on the user doing this
-    if(context.shouldExit()) {
-        // propagate the result of the tests
-        return res;
-    }
+  // important - query flags (and --exit) rely on the user doing this
+  if (context.shouldExit()) {
+    // propagate the result of the tests
+    return res;
+  }
 
-    say_hello_dll(); // test dll func
+  say_hello_dll(); // test dll func
 }
 
 int square(const int number) { return number * number; }
 
 TEST_CASE("testing the square function") {
-    CHECK(square(2) == 4);
-    CHECK(square(4) == 16);
-    CHECK(square(5) == 25);
-    CHECK(square(8) == 64);
+  CHECK(square(2) == 4);
+  CHECK(square(4) == 16);
+  CHECK(square(5) == 25);
+  CHECK(square(8) == 64);
 }
 
 // running notes
