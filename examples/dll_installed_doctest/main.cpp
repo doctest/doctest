@@ -28,7 +28,7 @@ TEST_CASE("testing the square function") {
 }
 
 // running notes
-// ./program --no-run (run normal program)
-// ./program --exit (run tests then exit)
-// ./program (run tests then run program)
-// ./program --success (print successful test casts)
+// ./example_dll --no-run (run normal program)
+// ./example_dll --exit (run tests then exit)
+// ./example_dll (run tests then run program)
+// ./example_dll --success (print successful test casts)
