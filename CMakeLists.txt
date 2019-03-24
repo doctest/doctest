@@ -87,7 +87,7 @@ write_basic_package_version_file(
 
 configure_file("scripts/cmake/Config.cmake.in" "${project_config}" @ONLY)
 
-if (NOT ${DOCTEST_NO_INSTALL})
+if(NOT ${DOCTEST_NO_INSTALL})
     install(
         TARGETS ${PROJECT_NAME}
         EXPORT "${targets_export_name}"

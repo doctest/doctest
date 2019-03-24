@@ -1874,7 +1874,7 @@ namespace {
                     (!valid) ||
                     // Overlong encodings
                     (value < 0x80) ||
-                    (0x80 <= value && value < 0x800   && encBytes > 2) ||
+                    (                 value < 0x800   && encBytes > 2) || // removed "0x80 <= value &&" because redundant
                     (0x800 < value && value < 0x10000 && encBytes > 3) ||
                     // Encoded value out of range
                     (value >= 0x110000)
