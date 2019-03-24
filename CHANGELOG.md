@@ -1,5 +1,16 @@
 # Change Log
 
+## [2.3.1](https://github.com/onqtam/doctest/tree/2.3.1) (2019-03-24)
+[Full Changelog](https://github.com/onqtam/doctest/compare/2.3.0...2.3.1)
+
+**Closed issues:**
+
+- CMake config deletes doctest.h on clean [\#210](https://github.com/onqtam/doctest/issues/210)
+
+**Merged pull requests:**
+
+- Add two very simple examples of using doctest with CMake [\#209](https://github.com/onqtam/doctest/pull/209) ([pr0g](https://github.com/pr0g))
+
 ## [2.3.0](https://github.com/onqtam/doctest/tree/2.3.0) (2019-03-23)
 [Full Changelog](https://github.com/onqtam/doctest/compare/2.2.3...2.3.0)
 

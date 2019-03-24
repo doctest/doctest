@@ -1,6 +1,8 @@
 
 figure out how to get the filters to the reporter interface so users can access them in any .cpp file (also the list of reporters)
 
+move down from /Wall to /W4 for Visual Studio... /Wall is absolutely unnecessary and handling it clutters the repository
+
 get rid of DOCTEST_DECLARE_DEFAULTS & friends...
     AND get rid of DOCTEST_INTERFACE for simple structs!
 
