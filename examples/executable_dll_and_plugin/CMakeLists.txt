@@ -1,11 +1,3 @@
-if(APPLE)
-    set(CMAKE_MACOSX_RPATH ON)
-    if(DEFINED ENV{TRAVIS})
-        # force 64 bit for OSX because -m32 fails >>> SOMETIMES <<< (x86_64 vs 386 - like the dll is not linked with -m32...)
-        add_compiler_flags(-m64)
-    endif()
-endif()
-
 add_library(implementation SHARED implementation.cpp implementation_2.cpp)
 target_link_libraries(implementation PUBLIC doctest)
 

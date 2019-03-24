@@ -40,7 +40,12 @@ reddit.com/r/gamedev
 reddit.com/r/cplusplus
 https://www.linkedin.com/groups/86782/profile
 twitter
-
+https://www.linkedin.com/groups/86998/
+https://www.linkedin.com/groups/100895/
+https://www.linkedin.com/groups/1917190/
+https://www.linkedin.com/groups/2771729/
+https://www.linkedin.com/groups/133720/
+https://www.linkedin.com/groups/2526482/
 https://www.viva64.com/en/b/0604/
 
 on big releases: update benchmarks, number of CI builds, differences with Catch, docs, etc.
