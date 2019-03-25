@@ -4872,6 +4872,7 @@ namespace {
                     .writeAttribute("name", in.m_name)
                     .writeAttribute("filename", skipPathFromFilename(in.m_file))
                     .writeAttribute("line", line(in.m_line));
+            xml.ensureTagClosed();
         }
 
         void subcase_end() override { xml.endElement(); }
