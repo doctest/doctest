@@ -4,10 +4,12 @@
   <TestSuite>
     <TestCase name="custom macros" filename="alternative_macros.cpp" line="0">
       <SubCase name="bar" filename="alternative_macros.cpp" line="0">
-        <SubCase name="foo" filename="alternative_macros.cpp" line="0"/>
+        <SubCase name="foo" filename="alternative_macros.cpp" line="0">
+        </SubCase>
       </SubCase>
       <SubCase name="bar" filename="alternative_macros.cpp" line="0">
-        <SubCase name="baz" filename="alternative_macros.cpp" line="0"/>
+        <SubCase name="baz" filename="alternative_macros.cpp" line="0">
+        </SubCase>
       </SubCase>
       <OverallResultsAsserts successes="6" failures="0"/>
     </TestCase>
