@@ -48,6 +48,9 @@ DOCTEST_GCC_SUPPRESS_WARNING("-Wold-style-cast")
 DOCTEST_GCC_SUPPRESS_WARNING("-Wunused-local-typedefs")
 DOCTEST_GCC_SUPPRESS_WARNING("-Wuseless-cast")
 DOCTEST_GCC_SUPPRESS_WARNING("-Wunused-function")
+DOCTEST_GCC_SUPPRESS_WARNING("-Wmultiple-inheritance")
+DOCTEST_GCC_SUPPRESS_WARNING("-Wnoexcept")
+DOCTEST_GCC_SUPPRESS_WARNING("-Wsuggest-attribute")
 
 DOCTEST_MSVC_SUPPRESS_WARNING_PUSH
 DOCTEST_MSVC_SUPPRESS_WARNING(4616) // invalid compiler warning
@@ -1162,6 +1165,7 @@ namespace {
             if(curr->translate(res))
                 return res;
         // clang-format off
+        DOCTEST_GCC_SUPPRESS_WARNING_WITH_PUSH("-Wcatch-value")
         try {
             throw;
         } catch(std::exception& ex) {
@@ -1173,6 +1177,7 @@ namespace {
         } catch(...) {
             return "unknown exception";
         }
+        DOCTEST_GCC_SUPPRESS_WARNING_POP
 // clang-format on
 #else  // DOCTEST_CONFIG_NO_EXCEPTIONS
         return "";
