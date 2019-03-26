@@ -157,6 +157,7 @@ DOCTEST_GCC_SUPPRESS_WARNING("-Wnon-virtual-dtor")
 DOCTEST_GCC_SUPPRESS_WARNING("-Winline")
 DOCTEST_GCC_SUPPRESS_WARNING("-Wunused-local-typedefs")
 DOCTEST_GCC_SUPPRESS_WARNING("-Wuseless-cast")
+DOCTEST_GCC_SUPPRESS_WARNING("-Wnoexcept")
 
 DOCTEST_MSVC_SUPPRESS_WARNING_PUSH
 DOCTEST_MSVC_SUPPRESS_WARNING(4616) // invalid compiler warning
@@ -1596,7 +1597,7 @@ namespace detail {
 
         ~ContextScope();
 
-        void stringify(std::ostream* s) const;
+        void stringify(std::ostream* s) const override;
     };
 
     struct DOCTEST_INTERFACE MessageBuilder : public MessageData
