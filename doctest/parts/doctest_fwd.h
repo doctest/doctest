@@ -144,7 +144,6 @@ DOCTEST_CLANG_SUPPRESS_WARNING("-Wmissing-prototypes")
 DOCTEST_CLANG_SUPPRESS_WARNING("-Wunused-local-typedef")
 DOCTEST_CLANG_SUPPRESS_WARNING("-Wc++98-compat")
 DOCTEST_CLANG_SUPPRESS_WARNING("-Wc++98-compat-pedantic")
-DOCTEST_CLANG_SUPPRESS_WARNING("-Winconsistent-missing-destructor-override")
 
 DOCTEST_GCC_SUPPRESS_WARNING_PUSH
 DOCTEST_GCC_SUPPRESS_WARNING("-Wunknown-pragmas")
@@ -1596,7 +1595,7 @@ namespace detail {
 
         DOCTEST_DELETE_COPIES(ContextScope);
 
-        ~ContextScope();
+        ~ContextScope() override;
 
         void stringify(std::ostream* s) const override;
     };
