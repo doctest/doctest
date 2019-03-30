@@ -44,9 +44,13 @@ struct MyXmlReporter : public IReporter
 
     void test_case_exception(const TestCaseException& /*in*/) override {}
 
-    void subcase_start(const SubcaseSignature& /*in*/) override {}
+    void subcase_start(const SubcaseSignature& /*in*/) override {
+        std::lock_guard<std::mutex> lock(mutex);
+    }
 
-    void subcase_end() override {}
+    void subcase_end() override {
+        std::lock_guard<std::mutex> lock(mutex);
+    }
 
     void log_assert(const AssertData& in) override {
         // don't include successful asserts by default - this is done here
