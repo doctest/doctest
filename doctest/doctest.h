@@ -5317,11 +5317,13 @@ namespace {
         }
 
         void subcase_start(const SubcaseSignature& subc) override {
+            std::lock_guard<std::mutex> lock(mutex);
             subcasesStack.push_back(subc);
             hasLoggedCurrentTestStart = false;
         }
 
         void subcase_end() override {
+            std::lock_guard<std::mutex> lock(mutex);
             subcasesStack.pop_back();
             hasLoggedCurrentTestStart = false;
         }
