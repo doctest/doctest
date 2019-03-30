@@ -2193,12 +2193,16 @@ namespace {
         }
 
         void test_case_exception(const TestCaseException& e) override {
+            std::lock_guard<std::mutex> lock(mutex);
+
             xml.scopedElement("Exception")
                     .writeAttribute("crash", e.is_crash)
                     .writeText(e.error_string.c_str());
         }
 
         void subcase_start(const SubcaseSignature& in) override {
+            std::lock_guard<std::mutex> lock(mutex);
+
             xml.startElement("SubCase")
                     .writeAttribute("name", in.m_name)
                     .writeAttribute("filename", skipPathFromFilename(in.m_file))
