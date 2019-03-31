@@ -1836,6 +1836,15 @@ int registerReporter(const char* name, int priority) {
     } catch(...) { _DOCTEST_RB.translateException(); }
 #endif // DOCTEST_CONFIG_NO_TRY_CATCH_IN_ASSERTS
 
+#ifdef DOCTEST_CONFIG_VOID_CAST_EXPRESSIONS
+#define DOCTEST_CAST_TO_VOID(x)                                                                    \
+    DOCTEST_GCC_SUPPRESS_WARNING_WITH_PUSH("-Wuseless-cast")                                       \
+    static_cast<void>(x);                                                                          \
+    DOCTEST_GCC_SUPPRESS_WARNING_POP
+#else // DOCTEST_CONFIG_VOID_CAST_EXPRESSIONS
+#define DOCTEST_CAST_TO_VOID(x) x;
+#endif // DOCTEST_CONFIG_VOID_CAST_EXPRESSIONS
+
 // registers the test by initializing a dummy var with a function
 #define DOCTEST_REGISTER_FUNCTION(global_prefix, f, decorators)                                    \
     global_prefix DOCTEST_GLOBAL_NO_WARNINGS(DOCTEST_ANONYMOUS(_DOCTEST_ANON_VAR_)) =              \
@@ -2111,7 +2120,7 @@ constexpr T to_lvalue = x;
             doctest::detail::ResultBuilder _DOCTEST_RB(doctest::assertType::assert_type, __FILE__, \
                                                        __LINE__, #expr, #__VA_ARGS__);             \
             try {                                                                                  \
-                expr;                                                                              \
+                DOCTEST_CAST_TO_VOID(expr)                                                         \
             } catch(const doctest::detail::remove_const<                                           \
                     doctest::detail::remove_reference<__VA_ARGS__>::type>::type&) {                \
                 _DOCTEST_RB.translateException();                                                  \
@@ -2127,7 +2136,7 @@ constexpr T to_lvalue = x;
             doctest::detail::ResultBuilder _DOCTEST_RB(doctest::assertType::assert_type, __FILE__, \
                                                        __LINE__, #expr, __VA_ARGS__);              \
             try {                                                                                  \
-                expr;                                                                              \
+                DOCTEST_CAST_TO_VOID(expr)                                                         \
             } catch(...) { _DOCTEST_RB.translateException(); }                                     \
             DOCTEST_ASSERT_LOG_AND_REACT(_DOCTEST_RB);                                             \
         }                                                                                          \
@@ -2138,7 +2147,7 @@ constexpr T to_lvalue = x;
         doctest::detail::ResultBuilder _DOCTEST_RB(doctest::assertType::assert_type, __FILE__,     \
                                                    __LINE__, #expr);                               \
         try {                                                                                      \
-            expr;                                                                                  \
+            DOCTEST_CAST_TO_VOID(expr)                                                             \
         } catch(...) { _DOCTEST_RB.translateException(); }                                         \
         DOCTEST_ASSERT_LOG_AND_REACT(_DOCTEST_RB);                                                 \
     } while((void)0, 0)
