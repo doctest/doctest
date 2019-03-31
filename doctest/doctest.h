@@ -995,6 +995,10 @@ namespace detail {
     };
 
     DOCTEST_INTERFACE bool checkIfShouldThrow(assertType::Enum at);
+    
+#ifndef DOCTEST_CONFIG_NO_EXCEPTIONS
+    [[noreturn]]
+#endif // DOCTEST_CONFIG_NO_EXCEPTIONS
     DOCTEST_INTERFACE void throwException();
 
     struct DOCTEST_INTERFACE Subcase
