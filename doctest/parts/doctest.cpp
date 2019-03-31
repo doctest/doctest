@@ -829,11 +829,11 @@ namespace detail {
         return false;
     }
 
-    void throwException() {
 #ifndef DOCTEST_CONFIG_NO_EXCEPTIONS
-        throw TestFailureException();
+    [[noreturn]] void throwException() { throw TestFailureException(); }
+#else // DOCTEST_CONFIG_NO_EXCEPTIONS
+    void throwException() {}
 #endif // DOCTEST_CONFIG_NO_EXCEPTIONS
-    }
 } // namespace detail
 
 namespace {
