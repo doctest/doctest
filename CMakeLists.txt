@@ -71,8 +71,15 @@ endif()
 
 set(generated_dir "${CMAKE_CURRENT_BINARY_DIR}/generated")
 
-set(include_install_dir "include")
-set(config_install_dir "lib/cmake/${PROJECT_NAME}")
+if(CMAKE_SYSTEM_NAME STREQUAL Linux)
+    include(GNUInstallDirs)
+    set(include_install_dir ${CMAKE_INSTALL_INCLUDEDIR})
+    set(config_install_dir "${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}")
+else()
+    set(include_install_dir "include")
+    set(config_install_dir "lib/cmake/${PROJECT_NAME}")
+endif()
+
 
 set(version_config "${generated_dir}/${PROJECT_NAME}ConfigVersion.cmake")
 set(project_config "${generated_dir}/${PROJECT_NAME}Config.cmake")
