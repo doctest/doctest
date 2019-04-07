@@ -3101,8 +3101,6 @@ int Context::run() {
         return EXIT_SUCCESS;
     };
 
-    DOCTEST_REGISTER_REPORTER("console", 0, ConsoleReporter);
-
     // setup default reporter if none is given through the command line
     if(p->filters[8].empty())
         p->filters[8].push_back("console");
