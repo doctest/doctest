@@ -87,9 +87,19 @@ set(targets_export_name "${PROJECT_NAME}Targets")
 set(namespace "${PROJECT_NAME}::")
 
 include(CMakePackageConfigHelpers)
+
+# CMake automatically adds an architecture compatibility check to make sure
+# 32 and 64 bit code is not accidentally mixed. For a header-only library this
+# is not required. The check can be disabled by temporarily unsetting
+# CMAKE_SIZEOF_VOID_P. In CMake 3.14 and later this can be achieved more cleanly
+# with write_basic_package_version_file(ARCH_INDEPENDENT).
+# TODO: Use this once a newer CMake can be required.
+set(DOCTEST_SIZEOF_VOID_P ${CMAKE_SIZEOF_VOID_P})
+unset(CMAKE_SIZEOF_VOID_P)
 write_basic_package_version_file(
     "${version_config}" VERSION ${PROJECT_VERSION} COMPATIBILITY SameMajorVersion
 )
+set(CMAKE_SIZEOF_VOID_P ${DOCTEST_SIZEOF_VOID_P})
 
 configure_file("scripts/cmake/Config.cmake.in" "${project_config}" @ONLY)
 
