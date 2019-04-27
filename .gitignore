@@ -34,3 +34,4 @@ scripts/bench/results.txt
 build/
 build-mingw/
 *.pyc
+*vscode*
