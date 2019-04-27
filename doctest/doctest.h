@@ -1931,24 +1931,26 @@ int registerReporter(const char* name, int priority) {
 
 #define DOCTEST_TEST_CASE_TEMPLATE_DEFINE_IMPL(dec, T, iter, func)                                 \
     template <typename T>                                                                          \
-    inline void func();                                                                            \
-    template <typename Tuple>                                                                      \
-    struct iter;                                                                                   \
-    template <typename Type, typename... Rest>                                                     \
-    struct iter<std::tuple<Type, Rest...>>                                                         \
-    {                                                                                              \
-        iter(int line, int index) {                                                                \
-            DOCTEST_REGISTER_TYPED_TEST_CASE_IMPL(func<Type>, Type, dec, line * 1000 + index);     \
-            iter<std::tuple<Rest...>>(line, index + 1);                                            \
-        }                                                                                          \
-    };                                                                                             \
-    template <>                                                                                    \
-    struct iter<std::tuple<>>                                                                      \
-    {                                                                                              \
-        iter(int, int) {}                                                                          \
-    };                                                                                             \
+    static void func();                                                                            \
+    namespace {                                                                                    \
+        template <typename Tuple>                                                                  \
+        struct iter;                                                                               \
+        template <typename Type, typename... Rest>                                                 \
+        struct iter<std::tuple<Type, Rest...>>                                                     \
+        {                                                                                          \
+            iter(int line, int index) {                                                            \
+                DOCTEST_REGISTER_TYPED_TEST_CASE_IMPL(func<Type>, Type, dec, line * 1000 + index); \
+                iter<std::tuple<Rest...>>(line, index + 1);                                        \
+            }                                                                                      \
+        };                                                                                         \
+        template <>                                                                                \
+        struct iter<std::tuple<>>                                                                  \
+        {                                                                                          \
+            iter(int, int) {}                                                                      \
+        };                                                                                         \
+    }                                                                                              \
     template <typename T>                                                                          \
-    inline void func()
+    static void func()
 
 #define DOCTEST_TEST_CASE_TEMPLATE_DEFINE(dec, T, id)                                              \
     DOCTEST_TEST_CASE_TEMPLATE_DEFINE_IMPL(dec, T, DOCTEST_CAT(id, ITERATOR),                      \
@@ -1982,7 +1984,7 @@ int registerReporter(const char* name, int priority) {
     DOCTEST_TEST_CASE_TEMPLATE_DEFINE_IMPL(dec, T, DOCTEST_CAT(anon, ITERATOR), anon);             \
     DOCTEST_TEST_CASE_TEMPLATE_INVOKE_IMPL(anon, anon, __VA_ARGS__)                                \
     template <typename T>                                                                          \
-    inline void anon()
+    static void anon()
 
 #define DOCTEST_TEST_CASE_TEMPLATE(dec, T, ...)                                                    \
     DOCTEST_TEST_CASE_TEMPLATE_IMPL(dec, T, DOCTEST_ANONYMOUS(_DOCTEST_ANON_TMP_), __VA_ARGS__)
