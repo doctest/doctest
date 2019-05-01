@@ -49,6 +49,9 @@ if(${DOCTEST_WITH_MAIN_IN_STATIC_LIB})
     add_library(${PROJECT_NAME}_with_main STATIC EXCLUDE_FROM_ALL ${doctest_parts_folder}/doctest.cpp)
     target_compile_definitions(${PROJECT_NAME}_with_main PRIVATE
         DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN)
+    set_target_properties(${PROJECT_NAME}_with_main PROPERTIES
+        CXX_STANDARD 11
+        CXX_STANDARD_REQUIRED ON)
     target_link_libraries(${PROJECT_NAME}_with_main PUBLIC ${PROJECT_NAME})
 endif()
 
