@@ -5,7 +5,7 @@ import sys
 if sys.version_info[0] < 3: raise Exception("Python 3 or a more recent version is required.")
 import pprint
 import argparse
-import urllib
+import urllib.request
 from datetime import datetime
 import shutil
 from time import sleep
@@ -57,7 +57,7 @@ catch_header = "catch." + catch_ver + ".hpp"
 
 # get the catch header
 if not os.path.exists("catch." + catch_ver + ".hpp"):
-    urllib.urlretrieve("https://github.com/catchorg/Catch2/releases/download/v" + catch_ver + "/catch.hpp", catch_header)
+    urllib.request.urlretrieve("https://github.com/catchorg/Catch2/releases/download/v" + catch_ver + "/catch.hpp", catch_header)
 
 # folder with generated code
 the_folder = 'project'
