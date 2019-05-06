@@ -116,6 +116,8 @@ Expects that no exception is thrown during evaluation of the expression.
 
 Note that these asserts also have a ```_MESSAGE``` form - like ```CHECK_THROWS_MESSAGE(expression, message)``` - these work identically to the ```_MESSAGE``` form of the normal macros (```CHECK_MESSAGE(a < b, "this shouldn't fail")```) described earlier.
 
+One may use the [**```DOCTEST_CONFIG_VOID_CAST_EXPRESSIONS```**](configuration.html#doctest_config_void_cast_expressions) config identifier to cast the expression in these asserts to void to avoid warnings or other issues - for example nodiscard statements whose result isn't checked. This will however limit the ability to write entire ```{}``` blocks of code as the expression (or multiple statements) but in that case a simple lambda can be used. This should have been the default behavior from day 1 of the framework...
+
 ## Using asserts out of a testing context
 
 Asserts can be used outside of a testing context (in code not called from a ```TEST_CASE()```) instead of [```assert()```](https://en.cppreference.com/w/cpp/error/assert).

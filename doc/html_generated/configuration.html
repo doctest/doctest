@@ -20,6 +20,7 @@ Defining something ```globally``` means for every source file of the binary (exe
 - [**```DOCTEST_CONFIG_TREAT_CHAR_STAR_AS_STRING```**](#doctest_config_treat_char_star_as_string)
 - [**```DOCTEST_CONFIG_SUPER_FAST_ASSERTS```**](#doctest_config_super_fast_asserts)
 - [**```DOCTEST_CONFIG_USE_STD_HEADERS```**](#doctest_config_use_std_headers)
+- [**```DOCTEST_CONFIG_VOID_CAST_EXPRESSIONS```**](#doctest_config_void_cast_expressions)
 - [**```DOCTEST_CONFIG_NO_COMPARISON_WARNING_SUPPRESSION```**](#doctest_config_no_comparison_warning_suppression)
 - [**```DOCTEST_CONFIG_OPTIONS_PREFIX```**](#doctest_config_options_prefix)
 - [**```DOCTEST_CONFIG_NO_UNPREFIXED_OPTIONS```**](#doctest_config_no_unprefixed_options)
@@ -113,6 +114,12 @@ The library by default provides a forward declaration of ```std::ostream``` in o
 Also it is possible that some STL implementation of a compiler with niche usage defines them differently - then there will be compilation errors in STL headers and using this option should fix the problem.  
 
 This should be defined globally.
+
+### **```DOCTEST_CONFIG_VOID_CAST_EXPRESSIONS```**
+
+This affects the [asserts dealing with exceptions](assertions.html#exceptions) - the expression is cast to void to avoid problems such as when functions with the ```[[nodiscard]]``` attribute are used but their result isn't checked.
+
+This can be defined both globally and in specific source files only.
 
 ### **```DOCTEST_CONFIG_NO_COMPARISON_WARNING_SUPPRESSION```**
 
