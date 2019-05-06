@@ -32,6 +32,18 @@ readme = open("../doctest/parts/doctest_fwd.h", "w")
 readme.write(doctest_contents)
 readme.close()
 
+# update meson file with version
+meson_contents = ""
+for line in fileinput.input(["../meson.build"]):
+    if line.startswith("project('doctest'"):
+        meson_contents += "project('doctest', ['cpp'], version: '" + version + "', meson_version:'>=0.50')\n"
+    else:
+        meson_contents += line
+
+meson = open("../meson.build", "w")
+meson.write(meson_contents)
+meson.close()
+
 # run generate_html.py
 print("generating html documentation from markdown")
 os.system("python generate_html.py")
