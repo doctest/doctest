@@ -1,5 +1,33 @@
 # Change Log
 
+## [2.3.2](https://github.com/onqtam/doctest/tree/2.3.2) (2019-05-06)
+[Full Changelog](https://github.com/onqtam/doctest/compare/2.3.1...2.3.2)
+
+**Closed issues:**
+
+- scripts/bench/run\_all.py : module 'urllib' has no attribute 'urlretrieve' [\#230](https://github.com/onqtam/doctest/issues/230)
+- wrong set of tests registered with TEST\_CASE\_TEMPLATE get executed [\#228](https://github.com/onqtam/doctest/issues/228)
+- Logging not Working for me [\#227](https://github.com/onqtam/doctest/issues/227)
+- Link test runner executable into dll? [\#226](https://github.com/onqtam/doctest/issues/226)
+- Linking issue for executables after including doctest in library [\#224](https://github.com/onqtam/doctest/issues/224)
+- Strange REQUIRE\_THROWS behaviour [\#223](https://github.com/onqtam/doctest/issues/223)
+- Windows clang-cl Wunused-variable warning [\#221](https://github.com/onqtam/doctest/issues/221)
+- Update doctest 2.3.1 in bincrafters [\#220](https://github.com/onqtam/doctest/issues/220)
+- make install, on 64 bit, installs cmake files into lib instead of lib64 folder  [\#218](https://github.com/onqtam/doctest/issues/218)
+- TSAN: data race related to hasLoggedCurrentTestStart [\#217](https://github.com/onqtam/doctest/issues/217)
+- REQUIRE\_THROWS\_AS does not support class constructors [\#216](https://github.com/onqtam/doctest/issues/216)
+- Build failure on clang 7.0.1 on Fedora 29 [\#214](https://github.com/onqtam/doctest/issues/214)
+- add example compatible with -\> https://github.com/report-ci/ [\#212](https://github.com/onqtam/doctest/issues/212)
+- No DOCTEST\_WITH\_TESTS? [\#211](https://github.com/onqtam/doctest/issues/211)
+
+**Merged pull requests:**
+
+- Added meson file, to declare a dependency. [\#232](https://github.com/onqtam/doctest/pull/232) ([jormundgand](https://github.com/jormundgand))
+- Explicitly specify the doctest\_with\_main C++ standard in CMake. [\#231](https://github.com/onqtam/doctest/pull/231) ([DaanDeMeyer](https://github.com/DaanDeMeyer))
+- Remove architecture check from CMake package [\#225](https://github.com/onqtam/doctest/pull/225) ([mmha](https://github.com/mmha))
+- add default install prefix [\#219](https://github.com/onqtam/doctest/pull/219) ([a4z](https://github.com/a4z))
+- \[regression\] Workaround MSVC preprocessor issue triggered by REQUIRE\_THROWS [\#213](https://github.com/onqtam/doctest/pull/213) ([zhihaoy](https://github.com/zhihaoy))
+
 ## [2.3.1](https://github.com/onqtam/doctest/tree/2.3.1) (2019-03-24)
 [Full Changelog](https://github.com/onqtam/doctest/compare/2.3.0...2.3.1)
 
