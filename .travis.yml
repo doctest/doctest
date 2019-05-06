@@ -117,6 +117,15 @@ matrix:
           packages: ["g++-8",   "valgrind", "libc6-dbg", "linux-libc-dev"]
           sources: *apt_sources
 
+    # GCC 9
+    - env: COMPILER=g++-9 HAS_ASAN=true HAS_UBSAN=true HAS_TSAN=true SANITIZER_CXX_FLAGS="-fuse-ld=gold" TSAN_CXX_FLAGS="-ltsan"
+      compiler: gcc
+      sudo: required      # see this issue for more details: https://github.com/travis-ci/travis-ci/issues/9033
+      addons: &gcc9
+        apt:
+          packages: ["g++-9",   "valgrind", "libc6-dbg", "linux-libc-dev"]
+          sources: *apt_sources
+
     # Clang 3.5
     - env: COMPILER=clang++-3.5 HAS_ASAN=true HAS_UBSAN=true # no HAS_TSAN - see errors: https://travis-ci.org/onqtam/doctest/builds/417926743
       addons: &clang35
