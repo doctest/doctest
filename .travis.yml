@@ -251,6 +251,11 @@ matrix:
 
     # static code analysis
     - env: COMPILER=clang++-4.0 STATIC_CODE_ANALYSIS=true
+    
+    # GCC 9
+    - env: COMPILER=g++-9 HAS_ASAN=true HAS_UBSAN=true HAS_TSAN=true SANITIZER_CXX_FLAGS="-fuse-ld=gold" TSAN_CXX_FLAGS="-ltsan"
+      compiler: gcc
+      sudo: required
 
 install:
   - if [[ "${CODE_COVERAGE}" == "true" ]]; then gem install coveralls-lcov ; fi
