@@ -359,7 +359,9 @@ DOCTEST_MSVC_SUPPRESS_WARNING(26444) // Avoid unnamed objects with custom constr
 #elif DOCTEST_MSVC
 #define DOCTEST_BREAK_INTO_DEBUGGER() __debugbreak()
 #elif defined(__MINGW32__)
+DOCTEST_GCC_SUPPRESS_WARNING_WITH_PUSH("-Wredundant-decls")
 extern "C" __declspec(dllimport) void __stdcall DebugBreak();
+DOCTEST_GCC_SUPPRESS_WARNING_POP
 #define DOCTEST_BREAK_INTO_DEBUGGER() ::DebugBreak()
 #else // linux
 #define DOCTEST_BREAK_INTO_DEBUGGER() ((void)0)
