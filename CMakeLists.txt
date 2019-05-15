@@ -124,6 +124,11 @@ if(NOT ${DOCTEST_NO_INSTALL})
     )
 
     install(
+        FILES "scripts/cmake/doctest.cmake" "scripts/cmake/doctestAddTests.cmake"
+        DESTINATION "${config_install_dir}"
+    )
+
+    install(
         EXPORT "${targets_export_name}"
         NAMESPACE "${namespace}"
         DESTINATION "${config_install_dir}"
