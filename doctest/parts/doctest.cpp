@@ -2644,9 +2644,9 @@ namespace {
             if(num_stringified_contexts) {
                 auto stringified_contexts = get_stringified_contexts();
                 s << Color::None << "  logged: ";
-                for(int i = num_stringified_contexts - 1; i >= 0; --i) {
-                    s << (i == num_stringified_contexts - 1 ? "" : "          ")
-                      << stringified_contexts[i] << "\n";
+                for(int i = num_stringified_contexts; i > 0; --i) {
+                    s << (i == num_stringified_contexts ? "" : "          ")
+                      << stringified_contexts[i - 1] << "\n";
                 }
             }
             s << "\n" << Color::None;
@@ -2764,7 +2764,7 @@ namespace {
 #endif // DOCTEST_PLATFORM_WINDOWS
 
     // the implementation of parseFlag()
-    bool parseFlagImpl(int argc, const char* const* argv, const char* pattern) {
+    DOCTEST_NOINLINE bool parseFlagImpl(int argc, const char* const* argv, const char* pattern) {
         for(int i = argc - 1; i >= 0; --i) {
             auto temp = std::strstr(argv[i], pattern);
             if(temp && strlen(temp) == strlen(pattern)) {
@@ -2794,7 +2794,7 @@ namespace {
     }
 
     // the implementation of parseOption()
-    bool parseOptionImpl(int argc, const char* const* argv, const char* pattern, String& res) {
+    DOCTEST_NOINLINE bool parseOptionImpl(int argc, const char* const* argv, const char* pattern, String& res) {
         for(int i = argc - 1; i >= 0; --i) {
             auto temp = std::strstr(argv[i], pattern);
             if(temp) { //!OCLINT prefer early exits and continue
