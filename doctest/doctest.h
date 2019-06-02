@@ -1288,6 +1288,9 @@ namespace detail {
     DOCTEST_INTERFACE int  setTestSuite(const TestSuite& ts);
     DOCTEST_INTERFACE bool isDebuggerActive();
 
+    template<typename T>
+    int instantiationHelper(const T&) { return 0; }
+
     namespace binaryAssertComparison {
         enum Enum
         {
@@ -1923,14 +1926,6 @@ int registerReporter(const char* name, int priority) {
     }                                                                                              \
     typedef int DOCTEST_ANONYMOUS(_DOCTEST_ANON_FOR_SEMICOLON_)
 
-// for typed tests
-#define DOCTEST_REGISTER_TYPED_TEST_CASE_IMPL(func, type, decorators, idx)                         \
-    doctest::detail::regTest(                                                                      \
-            doctest::detail::TestCase(func, __FILE__, __LINE__,                                    \
-                                      doctest_detail_test_suite_ns::getCurrentTestSuite(),         \
-                                      doctest::detail::type_to_string<type>(), idx) *              \
-            decorators)
-
 #define DOCTEST_TEST_CASE_TEMPLATE_DEFINE_IMPL(dec, T, iter, func)                                 \
     template <typename T>                                                                          \
     static void func();                                                                            \
@@ -1940,15 +1935,19 @@ int registerReporter(const char* name, int priority) {
         template <typename Type, typename... Rest>                                                 \
         struct iter<std::tuple<Type, Rest...>>                                                     \
         {                                                                                          \
-            iter(int line, int index) {                                                            \
-                DOCTEST_REGISTER_TYPED_TEST_CASE_IMPL(func<Type>, Type, dec, line * 1000 + index); \
-                iter<std::tuple<Rest...>>(line, index + 1);                                        \
+            iter(const char* file, unsigned line, int index) {                                     \
+                doctest::detail::regTest(doctest::detail::TestCase(func<Type>, file, line,         \
+                                            doctest_detail_test_suite_ns::getCurrentTestSuite(),   \
+                                            doctest::detail::type_to_string<Type>(),               \
+                                            int(line) * 1000 + index)                              \
+                                         * dec);                                                   \
+                iter<std::tuple<Rest...>>(file, line, index + 1);                                  \
             }                                                                                      \
         };                                                                                         \
         template <>                                                                                \
         struct iter<std::tuple<>>                                                                  \
         {                                                                                          \
-            iter(int, int) {}                                                                      \
+            iter(const char*, unsigned, int) {}                                                    \
         };                                                                                         \
     }                                                                                              \
     template <typename T>                                                                          \
@@ -1958,33 +1957,22 @@ int registerReporter(const char* name, int priority) {
     DOCTEST_TEST_CASE_TEMPLATE_DEFINE_IMPL(dec, T, DOCTEST_CAT(id, ITERATOR),                      \
                                            DOCTEST_ANONYMOUS(_DOCTEST_ANON_TMP_))
 
-#define DOCTEST_TEST_CASE_TEMPLATE_INVOKE_IMPL(id, anon, ...)                                      \
-    DOCTEST_GLOBAL_NO_WARNINGS(DOCTEST_CAT(anon, DUMMY)) = [] {                                    \
-        DOCTEST_CAT(id, ITERATOR)<std::tuple<__VA_ARGS__>> DOCTEST_UNUSED DOCTEST_CAT(             \
-                anon, inner_dummy)(__LINE__, 0);                                                   \
-        return 0;                                                                                  \
-    }();                                                                                           \
+#define DOCTEST_TEST_CASE_TEMPLATE_INSTANTIATE_IMPL(id, anon, ...)                                 \
+    DOCTEST_GLOBAL_NO_WARNINGS(DOCTEST_CAT(anon, DUMMY)) =                                         \
+        doctest::detail::instantiationHelper(DOCTEST_CAT(id, ITERATOR)<__VA_ARGS__>(__FILE__, __LINE__, 0));\
     DOCTEST_GLOBAL_NO_WARNINGS_END()
 
 #define DOCTEST_TEST_CASE_TEMPLATE_INVOKE(id, ...)                                                 \
-    DOCTEST_TEST_CASE_TEMPLATE_INVOKE_IMPL(id, DOCTEST_ANONYMOUS(_DOCTEST_ANON_TMP_), __VA_ARGS__) \
+    DOCTEST_TEST_CASE_TEMPLATE_INSTANTIATE_IMPL(id, DOCTEST_ANONYMOUS(_DOCTEST_ANON_TMP_), std::tuple<__VA_ARGS__>) \
     typedef int DOCTEST_ANONYMOUS(_DOCTEST_ANON_FOR_SEMICOLON_)
 
-#define DOCTEST_TEST_CASE_TEMPLATE_APPLY_IMPL(id, anon, ...)                                       \
-    DOCTEST_GLOBAL_NO_WARNINGS(DOCTEST_CAT(anon, DUMMY)) = [] {                                    \
-        DOCTEST_CAT(id, ITERATOR)<__VA_ARGS__> DOCTEST_UNUSED DOCTEST_CAT(anon, inner_dummy)(      \
-                __LINE__, 0);                                                                      \
-        return 0;                                                                                  \
-    }();                                                                                           \
-    DOCTEST_GLOBAL_NO_WARNINGS_END()
-
 #define DOCTEST_TEST_CASE_TEMPLATE_APPLY(id, ...)                                                  \
-    DOCTEST_TEST_CASE_TEMPLATE_APPLY_IMPL(id, DOCTEST_ANONYMOUS(_DOCTEST_ANON_TMP_), __VA_ARGS__)  \
+    DOCTEST_TEST_CASE_TEMPLATE_INSTANTIATE_IMPL(id, DOCTEST_ANONYMOUS(_DOCTEST_ANON_TMP_), __VA_ARGS__) \
     typedef int DOCTEST_ANONYMOUS(_DOCTEST_ANON_FOR_SEMICOLON_)
 
 #define DOCTEST_TEST_CASE_TEMPLATE_IMPL(dec, T, anon, ...)                                         \
     DOCTEST_TEST_CASE_TEMPLATE_DEFINE_IMPL(dec, T, DOCTEST_CAT(anon, ITERATOR), anon);             \
-    DOCTEST_TEST_CASE_TEMPLATE_INVOKE_IMPL(anon, anon, __VA_ARGS__)                                \
+    DOCTEST_TEST_CASE_TEMPLATE_INSTANTIATE_IMPL(anon, anon, std::tuple<__VA_ARGS__>)               \
     template <typename T>                                                                          \
     static void anon()
 
@@ -3664,7 +3652,7 @@ namespace detail {
                        const char* type, int template_id) {
         m_file              = file;
         m_line              = line;
-        m_name              = nullptr;
+        m_name              = nullptr; // will be later overridden in operator*
         m_test_suite        = test_suite.m_test_suite;
         m_description       = test_suite.m_description;
         m_skip              = test_suite.m_skip;

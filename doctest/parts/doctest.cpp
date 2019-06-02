@@ -972,7 +972,7 @@ namespace detail {
                        const char* type, int template_id) {
         m_file              = file;
         m_line              = line;
-        m_name              = nullptr;
+        m_name              = nullptr; // will be later overridden in operator*
         m_test_suite        = test_suite.m_test_suite;
         m_description       = test_suite.m_description;
         m_skip              = test_suite.m_skip;
