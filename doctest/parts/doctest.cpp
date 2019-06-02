@@ -704,6 +704,11 @@ DOCTEST_TO_STRING_OVERLOAD(int long long unsigned, "%llu")
 
 String toString(std::nullptr_t) { return "NULL"; }
 
+#if DOCTEST_MSVC >= DOCTEST_COMPILER(19, 20, 0)
+// see this issue on why this is needed: https://github.com/onqtam/doctest/issues/183
+String toString(const std::string& in) { return in.c_str(); }
+#endif // VS 2019
+
 Approx::Approx(double value)
         : m_epsilon(static_cast<double>(std::numeric_limits<float>::epsilon()) * 100)
         , m_scale(1.0)
