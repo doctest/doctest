@@ -3288,6 +3288,13 @@ int Context::run() {
         DOCTEST_ITERATE_THROUGH_REPORTERS(report_query, qdata);
     }
 
+    // see these issues on the reasoning for this:
+    // - https://github.com/onqtam/doctest/issues/143#issuecomment-414418903
+    // - https://github.com/onqtam/doctest/issues/126
+    auto DOCTEST_FIX_FOR_MACOS_LIBCPP_IOSFWD_STRING_LINK_ERRORS = []() DOCTEST_NOINLINE
+        { std::cout << std::string(); };
+    DOCTEST_FIX_FOR_MACOS_LIBCPP_IOSFWD_STRING_LINK_ERRORS();
+
     return cleanup_and_return();
 }
 
@@ -3312,11 +3319,6 @@ namespace detail {
         getReporters().insert(reporterMap::value_type(reporterMap::key_type(priority, name), c));
     }
 } // namespace detail
-
-// see these issues on the reasoning for this:
-// - https://github.com/onqtam/doctest/issues/143#issuecomment-414418903
-// - https://github.com/onqtam/doctest/issues/126
-void DOCTEST_FIX_FOR_MACOS_LIBCPP_IOSFWD_STRING_LINK_ERRORS() { std::cout << std::string(); }
 
 } // namespace doctest
 
