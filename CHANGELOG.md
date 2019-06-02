@@ -1,5 +1,24 @@
 # Change Log
 
+## [2.3.3](https://github.com/onqtam/doctest/tree/2.3.3) (2019-06-02)
+[Full Changelog](https://github.com/onqtam/doctest/compare/2.3.2...2.3.3)
+
+**Closed issues:**
+
+- Build fails with gcc9 because of -Wstrict-overflow=5 which is too high [\#241](https://github.com/onqtam/doctest/issues/241)
+- doctest given defined with short macro name [\#239](https://github.com/onqtam/doctest/issues/239)
+- Splitting templated test across different translation units [\#238](https://github.com/onqtam/doctest/issues/238)
+- Compile errors with iosfwd.h and Visual Studio 2019 Preview [\#183](https://github.com/onqtam/doctest/issues/183)
+- Add CMake test support as catch\_discover\_tests\(\) in Catch2 [\#171](https://github.com/onqtam/doctest/issues/171)
+- Doctest is not able to compile on OSX [\#126](https://github.com/onqtam/doctest/issues/126)
+
+**Merged pull requests:**
+
+- fix \#239 - use long macro name [\#240](https://github.com/onqtam/doctest/pull/240) ([m-bd](https://github.com/m-bd))
+- Add doctest\_discover\_tests\(\) [\#236](https://github.com/onqtam/doctest/pull/236) ([RedDwarf69](https://github.com/RedDwarf69))
+- Ignore redundant-decls warning on MinGW [\#235](https://github.com/onqtam/doctest/pull/235) ([AMS21](https://github.com/AMS21))
+- Fixed meson build file dependency declaration [\#233](https://github.com/onqtam/doctest/pull/233) ([jormundgand](https://github.com/jormundgand))
+
 ## [2.3.2](https://github.com/onqtam/doctest/tree/2.3.2) (2019-05-06)
 [Full Changelog](https://github.com/onqtam/doctest/compare/2.3.1...2.3.2)
 
@@ -177,7 +196,6 @@
 - Signal stack size too small on Linux [\#129](https://github.com/onqtam/doctest/issues/129)
 - Support Intel Compiler [\#128](https://github.com/onqtam/doctest/issues/128)
 - Please add support for MSVC 2005 [\#127](https://github.com/onqtam/doctest/issues/127)
-- Doctest is not able to compile on OSX [\#126](https://github.com/onqtam/doctest/issues/126)
 - scan-build report "Dereference of null pointer" for function wildcmp [\#124](https://github.com/onqtam/doctest/issues/124)
 - !!! BREAKING CHANGE \(console output only\)  !!! - Emulate the error/warning format emitted by native compiler gcc/clang/msvc when printing test failures in the log [\#123](https://github.com/onqtam/doctest/issues/123)
 - ARM builds: FTBFS on armhf - error: cast from 'const char\*' to 'const  [\#118](https://github.com/onqtam/doctest/issues/118)
