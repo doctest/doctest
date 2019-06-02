@@ -1301,9 +1301,9 @@ namespace detail {
     };
 
     // forward declarations of functions used by the macros
-    DOCTEST_INTERFACE DOCTEST_NOINLINE int  regTest(const TestCase& tc);
-    DOCTEST_INTERFACE DOCTEST_NOINLINE int  setTestSuite(const TestSuite& ts);
-    DOCTEST_INTERFACE DOCTEST_NOINLINE bool isDebuggerActive();
+    DOCTEST_INTERFACE int  regTest(const TestCase& tc);
+    DOCTEST_INTERFACE int  setTestSuite(const TestSuite& ts);
+    DOCTEST_INTERFACE bool isDebuggerActive();
 
     template<typename T>
     int instantiationHelper(const T&) { return 0; }
@@ -1336,13 +1336,13 @@ namespace detail {
 
     struct DOCTEST_INTERFACE ResultBuilder : public AssertData
     {
-        DOCTEST_NOINLINE ResultBuilder(assertType::Enum at, const char* file, int line,
-                                       const char* expr, const char* exception_type = "");
+        ResultBuilder(assertType::Enum at, const char* file, int line, const char* expr,
+                      const char* exception_type = "");
 
         DOCTEST_DECLARE_DEFAULTS(ResultBuilder);
         DOCTEST_DELETE_COPIES(ResultBuilder);
 
-        DOCTEST_NOINLINE void setResult(const Result& res);
+        void setResult(const Result& res);
 
         template <int comparison, typename L, typename R>
         DOCTEST_NOINLINE void binary_assert(const DOCTEST_REF_WRAP(L) lhs,
@@ -1363,10 +1363,10 @@ namespace detail {
                 m_decomp = toString(val);
         }
 
-        DOCTEST_NOINLINE void translateException();
+        void translateException();
 
-        DOCTEST_NOINLINE bool log();
-        DOCTEST_NOINLINE void react() const;
+        bool log();
+        void react() const;
     };
 
     namespace assertAction {
@@ -1635,20 +1635,20 @@ namespace detail {
     {
         std::ostream* m_stream;
 
-        DOCTEST_NOINLINE MessageBuilder(const char* file, int line, assertType::Enum severity);
+        MessageBuilder(const char* file, int line, assertType::Enum severity);
         MessageBuilder() = delete;
-        DOCTEST_NOINLINE ~MessageBuilder();
+        ~MessageBuilder();
 
         DOCTEST_DELETE_COPIES(MessageBuilder);
 
         template <typename T>
-        DOCTEST_NOINLINE MessageBuilder& operator<<(const T& in) {
+        MessageBuilder& operator<<(const T& in) {
             toStream(m_stream, in);
             return *this;
         }
 
-        DOCTEST_NOINLINE bool log();
-        DOCTEST_NOINLINE void react();
+        bool log();
+        void react();
     };
 } // namespace detail
 
@@ -1707,26 +1707,26 @@ class DOCTEST_INTERFACE Context
     void parseArgs(int argc, const char* const* argv, bool withDefaults = false);
 
 public:
-    DOCTEST_NOINLINE explicit Context(int argc = 0, const char* const* argv = nullptr);
+    explicit Context(int argc = 0, const char* const* argv = nullptr);
 
     DOCTEST_DELETE_COPIES(Context);
 
-    DOCTEST_NOINLINE ~Context();
+    ~Context();
 
-    DOCTEST_NOINLINE void applyCommandLine(int argc, const char* const* argv);
+    void applyCommandLine(int argc, const char* const* argv);
 
-    DOCTEST_NOINLINE void addFilter(const char* filter, const char* value);
-    DOCTEST_NOINLINE void clearFilters();
-    DOCTEST_NOINLINE void setOption(const char* option, int value);
-    DOCTEST_NOINLINE void setOption(const char* option, const char* value);
+    void addFilter(const char* filter, const char* value);
+    void clearFilters();
+    void setOption(const char* option, int value);
+    void setOption(const char* option, const char* value);
 
-    DOCTEST_NOINLINE bool shouldExit();
+    bool shouldExit();
 
-    DOCTEST_NOINLINE void setAsDefaultForAssertsOutOfTestCases();
+    void setAsDefaultForAssertsOutOfTestCases();
 
-    DOCTEST_NOINLINE void setAssertHandler(detail::assert_handler ah);
+    void setAssertHandler(detail::assert_handler ah);
 
-    DOCTEST_NOINLINE int run();
+    int run();
 };
 
 namespace TestCaseFailureReason {
@@ -5460,55 +5460,33 @@ namespace {
     DOCTEST_THREAD_LOCAL std::ostringstream DebugOutputWindowReporter::oss;
 #endif // DOCTEST_PLATFORM_WINDOWS
 
-    // the implementation of parseFlag()
-    DOCTEST_NOINLINE bool parseFlagImpl(int argc, const char* const* argv, const char* pattern) {
-        for(int i = argc - 1; i >= 0; --i) {
-            auto temp = std::strstr(argv[i], pattern);
-            if(temp && strlen(temp) == strlen(pattern)) {
-                // eliminate strings in which the chars before the option are not '-'
-                bool noBadCharsFound = true; //!OCLINT prefer early exits and continue
-                while(temp != argv[i]) {
-                    if(*--temp != '-') {
-                        noBadCharsFound = false;
-                        break;
-                    }
-                }
-                if(noBadCharsFound && argv[i][0] == '-')
-                    return true;
-            }
-        }
-        return false;
-    }
-
-    // locates a flag on the command line
-    bool parseFlag(int argc, const char* const* argv, const char* pattern) {
-#ifndef DOCTEST_CONFIG_NO_UNPREFIXED_OPTIONS
-        // offset (normally 3 for "dt-") to skip prefix
-        if(parseFlagImpl(argc, argv, pattern + strlen(DOCTEST_CONFIG_OPTIONS_PREFIX)))
-            return true;
-#endif // DOCTEST_CONFIG_NO_UNPREFIXED_OPTIONS
-        return parseFlagImpl(argc, argv, pattern);
-    }
-
     // the implementation of parseOption()
-    DOCTEST_NOINLINE bool parseOptionImpl(int argc, const char* const* argv, const char* pattern, String& res) {
-        for(int i = argc - 1; i >= 0; --i) {
-            auto temp = std::strstr(argv[i], pattern);
-            if(temp) { //!OCLINT prefer early exits and continue
+    bool parseOptionImpl(int argc, const char* const* argv, const char* pattern, String* value) {
+        // going from the end to the begining and stopping on the first occurance from the end
+        for(int i = argc; i > 0; --i) {
+            auto index = i - 1;
+            auto temp = std::strstr(argv[index], pattern);
+            if(temp && (value || strlen(temp) == strlen(pattern))) { //!OCLINT prefer early exits and continue
                 // eliminate matches in which the chars before the option are not '-'
                 bool noBadCharsFound = true;
-                auto curr            = argv[i];
+                auto curr            = argv[index];
                 while(curr != temp) {
                     if(*curr++ != '-') {
                         noBadCharsFound = false;
                         break;
                     }
                 }
-                if(noBadCharsFound && argv[i][0] == '-') {
-                    temp += strlen(pattern);
-                    const unsigned len = strlen(temp);
-                    if(len) {
-                        res = temp;
+                if(noBadCharsFound && argv[index][0] == '-') {
+                    if(value) {
+                        // parsing the value of an option
+                        temp += strlen(pattern);
+                        const unsigned len = strlen(temp);
+                        if(len) {
+                            *value = temp;
+                            return true;
+                        }
+                    } else {
+                        // just a flag - no value
                         return true;
                     }
                 }
@@ -5518,22 +5496,28 @@ namespace {
     }
 
     // parses an option and returns the string after the '=' character
-    bool parseOption(int argc, const char* const* argv, const char* pattern, String& res,
+    bool parseOption(int argc, const char* const* argv, const char* pattern, String* value = nullptr,
                      const String& defaultVal = String()) {
-        res = defaultVal;
+        if(value)
+            *value = defaultVal;
 #ifndef DOCTEST_CONFIG_NO_UNPREFIXED_OPTIONS
         // offset (normally 3 for "dt-") to skip prefix
-        if(parseOptionImpl(argc, argv, pattern + strlen(DOCTEST_CONFIG_OPTIONS_PREFIX), res))
+        if(parseOptionImpl(argc, argv, pattern + strlen(DOCTEST_CONFIG_OPTIONS_PREFIX), value))
             return true;
 #endif // DOCTEST_CONFIG_NO_UNPREFIXED_OPTIONS
-        return parseOptionImpl(argc, argv, pattern, res);
+        return parseOptionImpl(argc, argv, pattern, value);
+    }
+
+    // locates a flag on the command line
+    bool parseFlag(int argc, const char* const* argv, const char* pattern) {
+        return parseOption(argc, argv, pattern);
     }
 
     // parses a comma separated list of words after a pattern in one of the arguments in argv
     bool parseCommaSepArgs(int argc, const char* const* argv, const char* pattern,
                            std::vector<String>& res) {
         String filtersString;
-        if(parseOption(argc, argv, pattern, filtersString)) {
+        if(parseOption(argc, argv, pattern, &filtersString)) {
             // tokenize with "," as a separator
             // cppcheck-suppress strtokCalled
             DOCTEST_CLANG_SUPPRESS_WARNING_WITH_PUSH("-Wdeprecated-declarations")
@@ -5561,7 +5545,7 @@ namespace {
     bool parseIntOption(int argc, const char* const* argv, const char* pattern, optionType type,
                         int& res) {
         String parsedValue;
-        if(!parseOption(argc, argv, pattern, parsedValue))
+        if(!parseOption(argc, argv, pattern, &parsedValue))
             return false;
 
         if(type == 0) {
@@ -5658,8 +5642,8 @@ void Context::parseArgs(int argc, const char* const* argv, bool withDefaults) {
     p->var = default
 
 #define DOCTEST_PARSE_STR_OPTION(name, sname, var, default)                                        \
-    if(parseOption(argc, argv, DOCTEST_CONFIG_OPTIONS_PREFIX name "=", strRes, default) ||         \
-       parseOption(argc, argv, DOCTEST_CONFIG_OPTIONS_PREFIX sname "=", strRes, default) ||        \
+    if(parseOption(argc, argv, DOCTEST_CONFIG_OPTIONS_PREFIX name "=", &strRes, default) ||        \
+       parseOption(argc, argv, DOCTEST_CONFIG_OPTIONS_PREFIX sname "=", &strRes, default) ||       \
        withDefaults)                                                                               \
     p->var = strRes
 
