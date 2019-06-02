@@ -63,6 +63,8 @@ target_link_libraries(my_tests doctest)
 
 - The ```CMakeLists.txt``` file of the doctest repository has ```install()``` commands so you could also use doctest as a package.
 
+- To discover tests from an executable and register them in ctest you could use [```doctest_discover_tests(<target>)``` from scripts/cmake/doctest.cmake](../../scripts/cmake/doctest.cmake) - read the comments in the file on how to use it. It works just like [the same functionality in Catch](https://github.com/catchorg/Catch2/blob/master/docs/cmake-integration.md#automatic-test-registration).
+
 ### Package managers
 
 **doctest** is available through the following package managers:
