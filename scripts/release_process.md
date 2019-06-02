@@ -2,10 +2,12 @@
 - run update_stuff.py from the scripts folder
 - regenerate test output by running cmake with -DTEST_MODE=COLLECT and then running ctest
 - run update_wandbox_link.py
+    - might need to do this first: set path=C:/Python27;%PATH%
 - commit in dev
 - merge dev in master and coverity_scan (and rebase them?)
 - push all branches (git push --all)
 - run update_changelog.py in master
+    - might need a tmp folder in the root drive (C or D)
 - commit in master and push
 - create github release with the same semver tag as the changelog
 - merge master in dev
