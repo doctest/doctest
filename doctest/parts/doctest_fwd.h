@@ -1298,9 +1298,9 @@ namespace detail {
     };
 
     // forward declarations of functions used by the macros
-    DOCTEST_INTERFACE DOCTEST_NOINLINE int  regTest(const TestCase& tc);
-    DOCTEST_INTERFACE DOCTEST_NOINLINE int  setTestSuite(const TestSuite& ts);
-    DOCTEST_INTERFACE DOCTEST_NOINLINE bool isDebuggerActive();
+    DOCTEST_INTERFACE int  regTest(const TestCase& tc);
+    DOCTEST_INTERFACE int  setTestSuite(const TestSuite& ts);
+    DOCTEST_INTERFACE bool isDebuggerActive();
 
     template<typename T>
     int instantiationHelper(const T&) { return 0; }
@@ -1333,13 +1333,13 @@ namespace detail {
 
     struct DOCTEST_INTERFACE ResultBuilder : public AssertData
     {
-        DOCTEST_NOINLINE ResultBuilder(assertType::Enum at, const char* file, int line,
-                                       const char* expr, const char* exception_type = "");
+        ResultBuilder(assertType::Enum at, const char* file, int line, const char* expr,
+                      const char* exception_type = "");
 
         DOCTEST_DECLARE_DEFAULTS(ResultBuilder);
         DOCTEST_DELETE_COPIES(ResultBuilder);
 
-        DOCTEST_NOINLINE void setResult(const Result& res);
+        void setResult(const Result& res);
 
         template <int comparison, typename L, typename R>
         DOCTEST_NOINLINE void binary_assert(const DOCTEST_REF_WRAP(L) lhs,
@@ -1360,10 +1360,10 @@ namespace detail {
                 m_decomp = toString(val);
         }
 
-        DOCTEST_NOINLINE void translateException();
+        void translateException();
 
-        DOCTEST_NOINLINE bool log();
-        DOCTEST_NOINLINE void react() const;
+        bool log();
+        void react() const;
     };
 
     namespace assertAction {
@@ -1632,20 +1632,20 @@ namespace detail {
     {
         std::ostream* m_stream;
 
-        DOCTEST_NOINLINE MessageBuilder(const char* file, int line, assertType::Enum severity);
+        MessageBuilder(const char* file, int line, assertType::Enum severity);
         MessageBuilder() = delete;
-        DOCTEST_NOINLINE ~MessageBuilder();
+        ~MessageBuilder();
 
         DOCTEST_DELETE_COPIES(MessageBuilder);
 
         template <typename T>
-        DOCTEST_NOINLINE MessageBuilder& operator<<(const T& in) {
+        MessageBuilder& operator<<(const T& in) {
             toStream(m_stream, in);
             return *this;
         }
 
-        DOCTEST_NOINLINE bool log();
-        DOCTEST_NOINLINE void react();
+        bool log();
+        void react();
     };
 } // namespace detail
 
@@ -1704,26 +1704,26 @@ class DOCTEST_INTERFACE Context
     void parseArgs(int argc, const char* const* argv, bool withDefaults = false);
 
 public:
-    DOCTEST_NOINLINE explicit Context(int argc = 0, const char* const* argv = nullptr);
+    explicit Context(int argc = 0, const char* const* argv = nullptr);
 
     DOCTEST_DELETE_COPIES(Context);
 
-    DOCTEST_NOINLINE ~Context();
+    ~Context();
 
-    DOCTEST_NOINLINE void applyCommandLine(int argc, const char* const* argv);
+    void applyCommandLine(int argc, const char* const* argv);
 
-    DOCTEST_NOINLINE void addFilter(const char* filter, const char* value);
-    DOCTEST_NOINLINE void clearFilters();
-    DOCTEST_NOINLINE void setOption(const char* option, int value);
-    DOCTEST_NOINLINE void setOption(const char* option, const char* value);
+    void addFilter(const char* filter, const char* value);
+    void clearFilters();
+    void setOption(const char* option, int value);
+    void setOption(const char* option, const char* value);
 
-    DOCTEST_NOINLINE bool shouldExit();
+    bool shouldExit();
 
-    DOCTEST_NOINLINE void setAsDefaultForAssertsOutOfTestCases();
+    void setAsDefaultForAssertsOutOfTestCases();
 
-    DOCTEST_NOINLINE void setAssertHandler(detail::assert_handler ah);
+    void setAssertHandler(detail::assert_handler ah);
 
-    DOCTEST_NOINLINE int run();
+    int run();
 };
 
 namespace TestCaseFailureReason {

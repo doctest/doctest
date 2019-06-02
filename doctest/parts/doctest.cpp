@@ -2764,7 +2764,7 @@ namespace {
 #endif // DOCTEST_PLATFORM_WINDOWS
 
     // the implementation of parseFlag()
-    DOCTEST_NOINLINE bool parseFlagImpl(int argc, const char* const* argv, const char* pattern) {
+    bool parseFlagImpl(int argc, const char* const* argv, const char* pattern) {
         for(int i = argc - 1; i >= 0; --i) {
             auto temp = std::strstr(argv[i], pattern);
             if(temp && strlen(temp) == strlen(pattern)) {
@@ -2794,7 +2794,7 @@ namespace {
     }
 
     // the implementation of parseOption()
-    DOCTEST_NOINLINE bool parseOptionImpl(int argc, const char* const* argv, const char* pattern, String& res) {
+    bool parseOptionImpl(int argc, const char* const* argv, const char* pattern, String& res) {
         for(int i = argc - 1; i >= 0; --i) {
             auto temp = std::strstr(argv[i], pattern);
             if(temp) { //!OCLINT prefer early exits and continue
