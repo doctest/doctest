@@ -2765,18 +2765,20 @@ namespace {
 
     // the implementation of parseFlag()
     bool parseFlagImpl(int argc, const char* const* argv, const char* pattern) {
-        for(int i = argc - 1; i >= 0; --i) {
-            auto temp = std::strstr(argv[i], pattern);
+        // going from the end to the begining and stopping on the first occurance from the end
+        for(int i = argc; i > 0; --i) {
+            auto index = i - 1;
+            auto temp = std::strstr(argv[index], pattern);
             if(temp && strlen(temp) == strlen(pattern)) {
                 // eliminate strings in which the chars before the option are not '-'
                 bool noBadCharsFound = true; //!OCLINT prefer early exits and continue
-                while(temp != argv[i]) {
+                while(temp != argv[index]) {
                     if(*--temp != '-') {
                         noBadCharsFound = false;
                         break;
                     }
                 }
-                if(noBadCharsFound && argv[i][0] == '-')
+                if(noBadCharsFound && argv[index][0] == '-')
                     return true;
             }
         }
@@ -2795,19 +2797,21 @@ namespace {
 
     // the implementation of parseOption()
     bool parseOptionImpl(int argc, const char* const* argv, const char* pattern, String& res) {
-        for(int i = argc - 1; i >= 0; --i) {
-            auto temp = std::strstr(argv[i], pattern);
+        // going from the end to the begining and stopping on the first occurance from the end
+        for(int i = argc; i > 0; --i) {
+            auto index = i - 1;
+            auto temp = std::strstr(argv[index], pattern);
             if(temp) { //!OCLINT prefer early exits and continue
                 // eliminate matches in which the chars before the option are not '-'
                 bool noBadCharsFound = true;
-                auto curr            = argv[i];
+                auto curr            = argv[index];
                 while(curr != temp) {
                     if(*curr++ != '-') {
                         noBadCharsFound = false;
                         break;
                     }
                 }
-                if(noBadCharsFound && argv[i][0] == '-') {
+                if(noBadCharsFound && argv[index][0] == '-') {
                     temp += strlen(pattern);
                     const unsigned len = strlen(temp);
                     if(len) {
