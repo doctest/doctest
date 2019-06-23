@@ -12,6 +12,7 @@ option(DOCTEST_WITH_MAIN_IN_STATIC_LIB  "Build a static lib (cmake target) with 
 option(DOCTEST_NO_INSTALL  "Skip the installation process" OFF)
 
 add_library(${PROJECT_NAME} INTERFACE)
+add_library(${PROJECT_NAME}::${PROJECT_NAME} ALIAS ${PROJECT_NAME})
 
 set(doctest_parts_folder "${CMAKE_CURRENT_SOURCE_DIR}/doctest/parts")
 
