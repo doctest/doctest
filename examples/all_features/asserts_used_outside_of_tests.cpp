@@ -24,8 +24,13 @@ static void some_func() {
     CHECK_THROWS(std::cout << "hello! \n");
 }
 
+// std::mutex g_mut;
+
 static void handler(const doctest::AssertData& ad) {
     using namespace doctest;
+
+    // uncomment if asserts will be used in a multi-threaded context
+    // std::lock_guard<std::mutex> lock(g_mut);
 
     // here we can choose what to do:
     // - log the failed assert
@@ -35,7 +40,7 @@ static void handler(const doctest::AssertData& ad) {
     std::cout << Color::LightGrey << skipPathFromFilename(ad.m_file) << "(" << ad.m_line << "): ";
     std::cout << Color::Red << failureString(ad.m_at) << ": ";
 
-    // handling only normal (comparison and unary) asserts - nothing exceptions-related
+    // handling only normal (comparison and unary) asserts - exceptions-related asserts have been skipped
     if(ad.m_at & assertType::is_normal) {
         std::cout << Color::Cyan << assertString(ad.m_at) << "( " << ad.m_expr << " ) ";
         std::cout << Color::None << (ad.m_threw ? "THREW exception: " : "is NOT correct!\n");
@@ -51,11 +56,8 @@ static void handler(const doctest::AssertData& ad) {
 }
 
 void some_program_code(int argc, char** argv) {
-    // return if the current test from the doctest CMake tests is not for this file
-    if(std::find_if(argv, argv + argc, [](const char* str) {
-           return strcmp(str, "-sf=*asserts_used_outside_of_tests.cpp") == 0;
-       }) == argv + argc)
-        return;
+    // IGNORE THIS: return if the current test from the doctest CMake tests is not for this file
+    if(std::find_if(argv, argv + argc, [](const char* str) { return strcmp(str, "-sf=*asserts_used_outside_of_tests.cpp") == 0; }) == argv + argc) return;
 
     // construct a context
     doctest::Context context(argc, argv);

@@ -62,8 +62,8 @@ The script generates 201 source files and in 200 of them makes a function in the
 | Linux Clang Debug   |    8.76 |   15.60 |  107.99 |  110.61 |
 | Linux Clang Release |    9.32 |   25.75 |  118.67 |  117.11 |
 
-<img src="../../scripts/data/benchmarks/header.png" width="430" align="right">
-<img src="../../scripts/data/benchmarks/implement.png" width="430">
+<img src="../../scripts/data/benchmarks/header.png" width="410" align="right">
+<img src="../../scripts/data/benchmarks/implement.png" width="410">
 
 ### Conclusion
 
@@ -180,8 +180,8 @@ Note that the assert always passes - the goal should be to optimize for the comm
 | Linux Clang Debug   |    1.15 |    2.38 | | Linux Clang Debug   |    1.21 |    9.91 |
 | Linux Clang Release |    0.28 |    0.50 | | Linux Clang Release |    0.32 |    3.27 |
 
-<img src="../../scripts/data/benchmarks/runtime_info.png" width="430" align="right">
-<img src="../../scripts/data/benchmarks/runtime_assert.png" width="430">
+<img src="../../scripts/data/benchmarks/runtime_info.png" width="410" align="right">
+<img src="../../scripts/data/benchmarks/runtime_assert.png" width="410">
 
 ### Conclusion
 
