@@ -5,7 +5,7 @@ cmake_minimum_required(VERSION 3.0)
 ################################################################################
 
 file(READ ${CMAKE_CURRENT_SOURCE_DIR}/scripts/version.txt ver)
-project(doctest VERSION ${ver})
+project(doctest VERSION ${ver} LANGUAGES CXX)
 
 option(DOCTEST_WITH_TESTS               "Build tests/examples" ON)
 option(DOCTEST_WITH_MAIN_IN_STATIC_LIB  "Build a static lib (cmake target) with a default main entry point" ON)
