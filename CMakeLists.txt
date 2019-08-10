@@ -60,7 +60,7 @@ if(CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR AND DOCTEST_WITH_TESTS)
     include(scripts/cmake/common.cmake)
 
     add_subdirectory(examples/all_features)
-    
+
     # for code coverage we want exactly one binary to be produced and exercised
     if(NOT DEFINED ENV{CODE_COVERAGE})
         add_subdirectory(examples/exe_with_static_libs)

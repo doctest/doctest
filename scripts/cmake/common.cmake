@@ -17,9 +17,9 @@ function(doctest_add_test_impl)
     if(NOT "${ARG_UNPARSED_ARGUMENTS}" STREQUAL "" OR "${ARG_NAME}" STREQUAL "" OR "${ARG_COMMAND}" STREQUAL "")
         message(FATAL_ERROR "doctest_add_test() called with wrong options!")
     endif()
-    
+
     set(the_test_mode NORMAL)
-    
+
     # construct the command that will be called by the exec_test.cmake script
     set(the_command "")
     if(${DOCTEST_TEST_MODE} STREQUAL "VALGRIND" AND NOT ARG_NO_VALGRIND)
@@ -41,9 +41,9 @@ function(doctest_add_test_impl)
     set(the_command "${the_command} --dt-no-exitcode=1")
     # append the argument for using the same line format in the output - so gcc/non-gcc builds have the same output
     set(the_command "${the_command} --dt-gnu-file-line=0")
-    
+
     string(STRIP ${the_command} the_command)
-    
+
     if(${DOCTEST_TEST_MODE} STREQUAL "COLLECT" OR ${DOCTEST_TEST_MODE} STREQUAL "COMPARE")
         if(NOT ARG_NO_OUTPUT)
             file(MAKE_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/test_output/)
@@ -52,9 +52,9 @@ function(doctest_add_test_impl)
             list(APPEND ADDITIONAL_FLAGS -DTEST_TEMP_FILE=${CMAKE_CURRENT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/temp_test_output_${ARG_NAME}.txt)
         endif()
     endif()
-    
+
     list(APPEND ADDITIONAL_FLAGS -DTEST_MODE=${the_test_mode})
-    
+
     add_test(NAME ${ARG_NAME} COMMAND ${CMAKE_COMMAND} -DCOMMAND=${the_command} ${ADDITIONAL_FLAGS} -P ${CURRENT_LIST_DIR_CACHED}/exec_test.cmake)
 endfunction()
 
@@ -110,11 +110,11 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
     add_compiler_flags(-Woverloaded-virtual)
     add_compiler_flags(-Wunused-but-set-variable)
     add_compiler_flags(-Wunused-result)
-    
+
     # add_compiler_flags(-Wsuggest-override)
     # add_compiler_flags(-Wmultiple-inheritance)
     # add_compiler_flags(-Wcatch-value)
-	# add_compiler_flags(-Wsuggest-attribute=cold)
+    # add_compiler_flags(-Wsuggest-attribute=cold)
     # add_compiler_flags(-Wsuggest-attribute=const)
     # add_compiler_flags(-Wsuggest-attribute=format)
     # add_compiler_flags(-Wsuggest-attribute=malloc)
@@ -122,17 +122,17 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
     # add_compiler_flags(-Wsuggest-attribute=pure)
     # add_compiler_flags(-Wsuggest-final-methods)
     # add_compiler_flags(-Wsuggest-final-types)
-    
+
     if(NOT CMAKE_CXX_COMPILER_VERSION VERSION_LESS 4.6)
         add_compiler_flags(-Wnoexcept)
     endif()
-    
+
     # no way to silence it in the expression decomposition macros: _Pragma() in macros doesn't work for the c++ front-end of g++
     # https://gcc.gnu.org/bugzilla/show_bug.cgi?id=55578
     # https://gcc.gnu.org/bugzilla/show_bug.cgi?id=69543
     # Also the warning is completely worthless nowadays - http://stackoverflow.com/questions/14016993
     #add_compiler_flags(-Waggregate-return)
-    
+
     if(NOT CMAKE_CXX_COMPILER_VERSION VERSION_LESS 5.0)
         add_compiler_flags(-Wdouble-promotion)
         add_compiler_flags(-Wtrampolines)
@@ -140,22 +140,31 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
         add_compiler_flags(-Wuseless-cast)
         add_compiler_flags(-Wvector-operation-performance)
     endif()
-    
+
     if(NOT CMAKE_CXX_COMPILER_VERSION VERSION_LESS 6.0)
         add_compiler_flags(-Wshift-overflow=2)
         add_compiler_flags(-Wnull-dereference)
         add_compiler_flags(-Wduplicated-cond)
     endif()
-    
+
     if(NOT CMAKE_CXX_COMPILER_VERSION VERSION_LESS 7.0)
         add_compiler_flags(-Walloc-zero)
         add_compiler_flags(-Walloca)
         add_compiler_flags(-Wduplicated-branches)
     endif()
-    
+
     if(NOT CMAKE_CXX_COMPILER_VERSION VERSION_LESS 8.0)
         add_compiler_flags(-Wcast-align=strict)
     endif()
+endif()
+
+if(CMAKE_CXX_COMPILER_ID MATCHES "AppleClang")
+    add_compiler_flags(-std=c++11)
+    # add_compiler_flags(-Wno-c++11-inline-namespace)
+    # add_compiler_flags(-Wno-c++11-extensions)
+    # add_compiler_flags(-Wno-variadic-macros)
+    # add_compiler_flags(-Wno-c++11-compat)
+    # add_compiler_flags(-Wno-c++11-long-long)
 endif()
 
 if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
@@ -172,16 +181,16 @@ if(MSVC)
     add_compiler_flags(/permissive-)   # force standard conformance - this is the better flag than /Za
     add_compiler_flags(/WX)
     add_compiler_flags(/Wall) # turns on warnings from levels 1 through 4 which are off by default - https://msdn.microsoft.com/en-us/library/23k5d385.aspx
-    
+
     add_compiler_flags(
         /wd4514 # unreferenced inline function has been removed
         /wd4571 # SEH related
         /wd4710 # function not inlined
         /wd4711 # function 'x' selected for automatic inline expansion
-        
+
         /wd4616 # invalid compiler warnings - https://msdn.microsoft.com/en-us/library/t7ab6xtd.aspx
         /wd4619 # invalid compiler warnings - https://msdn.microsoft.com/en-us/library/tacee08d.aspx
-        
+
         #/wd4820 # padding in structs
         #/wd4625 # copy constructor was implicitly defined as deleted
         #/wd4626 # assignment operator was implicitly defined as deleted
