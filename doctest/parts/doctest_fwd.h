@@ -2009,14 +2009,7 @@ int registerReporter(const char* name, int priority) {
 #define DOCTEST_FAIL_CHECK(x) DOCTEST_ADD_FAIL_CHECK_AT(__FILE__, __LINE__, x)
 #define DOCTEST_FAIL(x) DOCTEST_ADD_FAIL_AT(__FILE__, __LINE__, x)
 
-// hack for macros like INFO() that require lvalues
-#if __cplusplus >= 201402L || (DOCTEST_MSVC >= DOCTEST_COMPILER(19, 10, 0))
-template <class T, T x>
-constexpr T to_lvalue = x;
-#define DOCTEST_TO_LVALUE(...) to_lvalue<decltype(__VA_ARGS__), __VA_ARGS__>
-#else // TO_LVALUE
-#define DOCTEST_TO_LVALUE(...) TO_LVALUE_CAN_BE_USED_ONLY_IN_CPP14_MODE_OR_WITH_VS_2017_OR_NEWER
-#endif // TO_LVALUE
+#define DOCTEST_TO_LVALUE(...) __VA_ARGS__ // Not removed to keep backwards compatibility.
 
 #ifndef DOCTEST_CONFIG_SUPER_FAST_ASSERTS
 
