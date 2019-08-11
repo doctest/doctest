@@ -397,7 +397,7 @@ DOCTEST_GCC_SUPPRESS_WARNING_POP
 // Forward declaring 'X' in namespace std is not permitted by the C++ Standard.
 DOCTEST_MSVC_SUPPRESS_WARNING_WITH_PUSH(4643)
 
-DOCTEST_STD_NAMESPACE_BEGIN
+DOCTEST_STD_NAMESPACE_BEGIN // NOLINT (cert-dcl58-cpp)
 typedef decltype(nullptr) nullptr_t;
 template <class charT>
 struct char_traits;
