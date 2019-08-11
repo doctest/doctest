@@ -1527,7 +1527,7 @@ namespace detail {
 
     // ContextScope base class used to allow implementing methods of ContextScope 
     // that don't depend on the template parameter in doctest.cpp.
-    class ContextScopeBase : public IContextScope {
+    class DOCTEST_INTERFACE ContextScopeBase : public IContextScope {
     protected:
         ContextScopeBase();
 
