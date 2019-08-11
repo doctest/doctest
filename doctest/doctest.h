@@ -1976,13 +1976,13 @@ int registerReporter(const char* name, int priority) {
 
 // for logging
 #define DOCTEST_INFO(expression)                                                                   \
-    DOCTEST_INFO_IMPL(DOCTEST_ANONYMOUS(_DOCTEST_CAPTURE_), expression)
+    DOCTEST_INFO_IMPL(DOCTEST_ANONYMOUS(_DOCTEST_CAPTURE_), DOCTEST_ANONYMOUS(_DOCTEST_CAPTURE_), expression)
 
-#define DOCTEST_INFO_IMPL(lambda_name, expression)                                                 \
+#define DOCTEST_INFO_IMPL(lambda_name, mb_name, expression)                                        \
     auto lambda_name = [&](std::ostream* s) {                                                      \
-        doctest::detail::MessageBuilder mb(__FILE__, __LINE__, doctest::assertType::is_warn);      \
-        mb.m_stream = s;                                                                           \
-        mb << expression;                                                                          \
+        doctest::detail::MessageBuilder mb_name(__FILE__, __LINE__, doctest::assertType::is_warn); \
+        mb_name.m_stream = s;                                                                      \
+        mb_name << expression;                                                                     \
     };                                                                                             \
     doctest::detail::ContextScope<decltype(lambda_name)> DOCTEST_ANONYMOUS(_DOCTEST_CAPTURE_)(lambda_name)
 
