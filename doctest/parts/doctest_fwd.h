@@ -1539,13 +1539,13 @@ namespace detail {
         const L &lambda_;
 
     public:
-        explicit ContextScope(const L &lambda) : lambda_(lambda) {};
+        explicit ContextScope(const L &lambda) : lambda_(lambda) {}
 
-        ContextScope(ContextScope &&other) : lambda_(other.lambda_) {};
+        ContextScope(ContextScope &&other) : lambda_(other.lambda_) {}
 
         void stringify(std::ostream* s) const override { lambda_(s); }
 
-        ~ContextScope() override { destroy(); };
+        ~ContextScope() override { destroy(); }
     };
 
     struct DOCTEST_INTERFACE MessageBuilder : public MessageData
