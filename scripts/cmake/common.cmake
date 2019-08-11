@@ -158,13 +158,9 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
     endif()
 endif()
 
-if(CMAKE_CXX_COMPILER_ID MATCHES "AppleClang")
+if(CMAKE_VERSION VERSION_LESS 3.8)
+    # necessary for some older compilers which don't default to C++11
     add_compiler_flags(-std=c++11)
-    # add_compiler_flags(-Wno-c++11-inline-namespace)
-    # add_compiler_flags(-Wno-c++11-extensions)
-    # add_compiler_flags(-Wno-variadic-macros)
-    # add_compiler_flags(-Wno-c++11-compat)
-    # add_compiler_flags(-Wno-c++11-long-long)
 endif()
 
 if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")

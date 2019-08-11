@@ -147,7 +147,7 @@ function(doctest_discover_tests TARGET)
     "endif()\n"
   )
 
-  if(NOT ${CMAKE_VERSION} VERSION_LESS "3.10.0")
+  if(NOT CMAKE_VERSION VERSION_LESS 3.10)
     # Add discovered tests to directory TEST_INCLUDE_FILES
     set_property(DIRECTORY
       APPEND PROPERTY TEST_INCLUDE_FILES "${ctest_include_file}"
