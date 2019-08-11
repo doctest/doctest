@@ -1267,64 +1267,14 @@ namespace detail {
 
     DOCTEST_THREAD_LOCAL std::vector<IContextScope*> g_infoContexts; // for logging with INFO()
 
-    ContextBuilder::ICapture::ICapture()  = default;
-    ContextBuilder::ICapture::~ICapture() = default;
-
-    ContextBuilder::Chunk::Chunk()  = default;
-    ContextBuilder::Chunk::~Chunk() = default;
-
-    ContextBuilder::Node::Node()  = default;
-    ContextBuilder::Node::~Node() = default;
-
-    // steal the contents of the other - acting as a move constructor...
-    ContextBuilder::ContextBuilder(ContextBuilder& other)
-            : numCaptures(other.numCaptures)
-            , head(other.head)
-            , tail(other.tail) {
-        other.numCaptures = 0;
-        other.head        = nullptr;
-        other.tail        = nullptr;
-        memcpy(stackChunks, other.stackChunks,
-               unsigned(int(sizeof(Chunk)) * DOCTEST_CONFIG_NUM_CAPTURES_ON_STACK));
-    }
-
-    DOCTEST_GCC_SUPPRESS_WARNING_WITH_PUSH("-Wcast-align")
-    void ContextBuilder::stringify(std::ostream* s) const {
-        int curr = 0;
-        // iterate over small buffer
-        while(curr < numCaptures && curr < DOCTEST_CONFIG_NUM_CAPTURES_ON_STACK)
-            reinterpret_cast<const ICapture*>(stackChunks[curr++].buf)->toStream(s);
-        // iterate over list
-        auto curr_elem = head;
-        while(curr < numCaptures) {
-            reinterpret_cast<const ICapture*>(curr_elem->chunk.buf)->toStream(s);
-            curr_elem = curr_elem->next;
-            ++curr;
-        }
-    }
-    DOCTEST_GCC_SUPPRESS_WARNING_POP
-
-    ContextBuilder::ContextBuilder() = default;
-
-    ContextBuilder::~ContextBuilder() {
-        // free the linked list - the ones on the stack are left as-is
-        // no destructors are called at all - there is no need
-        while(head) {
-            auto next = head->next;
-            delete head;
-            head = next;
-        }
-    }
-
-    ContextScope::ContextScope(ContextBuilder& temp)
-            : contextBuilder(temp) {
+    ContextScopeBase::ContextScopeBase() {
         g_infoContexts.push_back(this);
     }
 
     DOCTEST_MSVC_SUPPRESS_WARNING_WITH_PUSH(4996) // std::uncaught_exception is deprecated in C++17
     DOCTEST_GCC_SUPPRESS_WARNING_WITH_PUSH("-Wdeprecated-declarations")
     DOCTEST_CLANG_SUPPRESS_WARNING_WITH_PUSH("-Wdeprecated-declarations")
-    ContextScope::~ContextScope() {
+    void ContextScopeBase::destroy() {
         if(std::uncaught_exception()) {
             std::ostringstream s;
             this->stringify(&s);
@@ -1336,7 +1286,6 @@ namespace detail {
     DOCTEST_GCC_SUPPRESS_WARNING_POP
     DOCTEST_MSVC_SUPPRESS_WARNING_POP
 
-    void ContextScope::stringify(std::ostream* s) const { contextBuilder.stringify(s); }
 } // namespace detail
 namespace {
     using namespace detail;
