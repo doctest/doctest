@@ -160,7 +160,8 @@ endif()
 
 if(CMAKE_VERSION VERSION_LESS 3.8)
     # necessary for some older compilers which don't default to C++11
-    add_compiler_flags(-std=c++11)
+    set(CMAKE_CXX_STANDARD 11)
+    set(CXX_STANDARD_REQUIRED ON)
 endif()
 
 if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
