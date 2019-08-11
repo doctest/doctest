@@ -1541,7 +1541,7 @@ namespace detail {
     public:
         explicit ContextScope(const L &lambda) : lambda_(lambda) {};
 
-        DOCTEST_DELETE_COPIES(ContextScope);
+        ContextScope(ContextScope &&other) : lambda_(other.lambda_) {};
 
         void stringify(std::ostream* s) const override { lambda_(s); }
 
@@ -1567,6 +1567,11 @@ namespace detail {
         bool log();
         void react();
     };
+    
+    template <typename L>
+    ContextScope<L> MakeContextScope(const L &lambda) {
+        return ContextScope<L>(lambda);
+    }
 } // namespace detail
 
 #define DOCTEST_DEFINE_DECORATOR(name, type, def)                                                  \
@@ -1983,7 +1988,7 @@ int registerReporter(const char* name, int priority) {
         mb_name.m_stream = s;                                                                      \
         mb_name << expression;                                                                     \
     };                                                                                             \
-    doctest::detail::ContextScope<decltype(lambda_name)> DOCTEST_ANONYMOUS(_DOCTEST_CAPTURE_)(lambda_name)
+    auto DOCTEST_ANONYMOUS(_DOCTEST_CAPTURE_) = doctest::detail::MakeContextScope(lambda_name)
 
 #define DOCTEST_CAPTURE(x) DOCTEST_INFO(#x " := " << x)
 
