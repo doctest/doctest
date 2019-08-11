@@ -1525,6 +1525,8 @@ namespace detail {
     DOCTEST_INTERFACE void toStream(std::ostream* s, int long long in);
     DOCTEST_INTERFACE void toStream(std::ostream* s, int long long unsigned in);
 
+    // ContextScope base class used to allow implementing methods of ContextScope 
+    // that don't depend on the template parameter in doctest.cpp.
     class ContextScopeBase : public IContextScope {
     protected:
         ContextScopeBase();
