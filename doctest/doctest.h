@@ -1834,7 +1834,7 @@ struct DOCTEST_INTERFACE IReporter
 namespace detail {
     typedef IReporter* (*reporterCreatorFunc)(const ContextOptions&);
 
-    DOCTEST_INTERFACE void registerReporterImpl(const char* name, int prio, reporterCreatorFunc c);
+    DOCTEST_INTERFACE void registerReporterImpl(const char* name, int prio, reporterCreatorFunc c, bool isReporter);
 
     template <typename Reporter>
     IReporter* reporterCreator(const ContextOptions& o) {
@@ -1843,8 +1843,8 @@ namespace detail {
 } // namespace detail
 
 template <typename Reporter>
-int registerReporter(const char* name, int priority) {
-    detail::registerReporterImpl(name, priority, detail::reporterCreator<Reporter>);
+int registerReporter(const char* name, int priority, bool isReporter) {
+    detail::registerReporterImpl(name, priority, detail::reporterCreator<Reporter>, isReporter);
     return 0;
 }
 } // namespace doctest
@@ -2050,10 +2050,16 @@ int registerReporter(const char* name, int priority) {
     DOCTEST_REGISTER_EXCEPTION_TRANSLATOR_IMPL(DOCTEST_ANONYMOUS(_DOCTEST_ANON_TRANSLATOR_),       \
                                                signature)
 
-// for registering
+// for registering reporters
 #define DOCTEST_REGISTER_REPORTER(name, priority, reporter)                                        \
     DOCTEST_GLOBAL_NO_WARNINGS(DOCTEST_ANONYMOUS(_DOCTEST_ANON_REPORTER_)) =                       \
-            doctest::registerReporter<reporter>(name, priority);                                   \
+            doctest::registerReporter<reporter>(name, priority, true);                             \
+    DOCTEST_GLOBAL_NO_WARNINGS_END() typedef int DOCTEST_ANONYMOUS(_DOCTEST_ANON_FOR_SEMICOLON_)
+
+// for registering listeners
+#define DOCTEST_REGISTER_LISTENER(name, priority, reporter)                                        \
+    DOCTEST_GLOBAL_NO_WARNINGS(DOCTEST_ANONYMOUS(_DOCTEST_ANON_REPORTER_)) =                       \
+            doctest::registerReporter<reporter>(name, priority, false);                            \
     DOCTEST_GLOBAL_NO_WARNINGS_END() typedef int DOCTEST_ANONYMOUS(_DOCTEST_ANON_FOR_SEMICOLON_)
 
 // for logging
@@ -2402,6 +2408,7 @@ constexpr T to_lvalue = x;
     static inline doctest::String DOCTEST_ANONYMOUS(_DOCTEST_ANON_TRANSLATOR_)(signature)
 
 #define DOCTEST_REGISTER_REPORTER(name, priority, reporter)
+#define DOCTEST_REGISTER_LISTENER(name, priority, reporter)
 
 #define DOCTEST_INFO(x) ((void)0)
 #define DOCTEST_CAPTURE(x) ((void)0)
@@ -2542,6 +2549,7 @@ constexpr T to_lvalue = x;
 #define TEST_SUITE_END DOCTEST_TEST_SUITE_END
 #define REGISTER_EXCEPTION_TRANSLATOR DOCTEST_REGISTER_EXCEPTION_TRANSLATOR
 #define REGISTER_REPORTER DOCTEST_REGISTER_REPORTER
+#define REGISTER_LISTENER DOCTEST_REGISTER_LISTENER
 #define INFO DOCTEST_INFO
 #define CAPTURE DOCTEST_CAPTURE
 #define ADD_MESSAGE_AT DOCTEST_ADD_MESSAGE_AT
@@ -3508,7 +3516,12 @@ namespace {
     // the int (priority) is part of the key for automatic sorting - sadly one can register a
     // reporter with a duplicate name and a different priority but hopefully that won't happen often :|
     typedef std::map<std::pair<int, String>, reporterCreatorFunc> reporterMap;
-    reporterMap&                                                  getReporters() {
+
+    reporterMap& getReporters() {
+        static reporterMap data;
+        return data;
+    }
+    reporterMap& getListeners() {
         static reporterMap data;
         return data;
     }
@@ -4813,6 +4826,10 @@ namespace {
         void report_query(const QueryData& in) override {
             test_run_start();
             if(opt.list_reporters) {
+                for(auto& curr : getListeners())
+                    xml.scopedElement("Listener")
+                            .writeAttribute("priority", curr.first.first)
+                            .writeAttribute("name", curr.first.second);
                 for(auto& curr : getReporters())
                     xml.scopedElement("Reporter")
                             .writeAttribute("priority", curr.first.first)
@@ -5194,10 +5211,16 @@ namespace {
 
         void printRegisteredReporters() {
             printVersion();
-            s << Color::Cyan << "[doctest] " << Color::None << "listing all registered reporters\n";
-            for(auto& curr : getReporters())
-                s << "priority: " << std::setw(5) << curr.first.first
-                  << " name: " << curr.first.second << "\n";
+            auto printReporters = [this] (const reporterMap& reporters, const char* type) {
+                if(reporters.size()) {
+                    s << Color::Cyan << "[doctest] " << Color::None << "listing all registered " << type << "\n";
+                    for(auto& curr : reporters)
+                        s << "priority: " << std::setw(5) << curr.first.first
+                          << " name: " << curr.first.second << "\n";
+                }
+            };
+            printReporters(getListeners(), "listeners");
+            printReporters(getReporters(), "reporters");
         }
 
         void list_query_results() {
@@ -5799,6 +5822,12 @@ int Context::run() {
             p->reporters_currently_used.push_back(curr.second(*g_cs));
     }
 
+    // TODO: check if there is nothing in reporters_currently_used
+
+    // prepend all listeners
+    for(auto& curr : getListeners())
+        p->reporters_currently_used.insert(p->reporters_currently_used.begin(), curr.second(*g_cs));
+
 #ifdef DOCTEST_PLATFORM_WINDOWS
     if(isDebuggerActive())
         p->reporters_currently_used.push_back(new DebugOutputWindowReporter(*g_cs));
@@ -6003,8 +6032,11 @@ const String* IReporter::get_stringified_contexts() {
 }
 
 namespace detail {
-    void registerReporterImpl(const char* name, int priority, reporterCreatorFunc c) {
-        getReporters().insert(reporterMap::value_type(reporterMap::key_type(priority, name), c));
+    void registerReporterImpl(const char* name, int priority, reporterCreatorFunc c, bool isReporter) {
+        if(isReporter)
+            getReporters().insert(reporterMap::value_type(reporterMap::key_type(priority, name), c));
+        else
+            getListeners().insert(reporterMap::value_type(reporterMap::key_type(priority, name), c));
     }
 } // namespace detail
 

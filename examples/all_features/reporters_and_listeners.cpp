@@ -78,3 +78,6 @@ struct MyXmlReporter : public IReporter
 
 // "1" is the priority - used for ordering when multiple reporters/listeners are used
 REGISTER_REPORTER("my_xml", 1, MyXmlReporter);
+
+// registering the same class as a reporter and as a listener is nonsense but it's possible
+REGISTER_LISTENER("my_listener", 1, MyXmlReporter);
