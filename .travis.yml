@@ -68,7 +68,7 @@ matrix:
           sources: *apt_sources
 
     # GCC 4.8
-    - env: COMPILER=g++-4.8 HAS_ASAN=true HAS_TSAN=true SANITIZER_CXX_FLAGS="-fuse-ld=gold" TSAN_CXX_FLAGS="-ltsan"
+    - env: COMPILER=g++-4.8 HAS_ASAN=true SANITIZER_CXX_FLAGS="-fuse-ld=gold" TSAN_CXX_FLAGS="-ltsan" # TSAN broken for some time - seg faults
       compiler: gcc
       addons: &gcc48
         apt:
@@ -76,7 +76,7 @@ matrix:
           sources: *apt_sources
 
     # GCC 4.9
-    - env: COMPILER=g++-4.9 HAS_ASAN=true HAS_UBSAN=true HAS_TSAN=true SANITIZER_CXX_FLAGS="-fuse-ld=gold" TSAN_CXX_FLAGS="-ltsan"
+    - env: COMPILER=g++-4.9 HAS_ASAN=true HAS_UBSAN=true SANITIZER_CXX_FLAGS="-fuse-ld=gold" TSAN_CXX_FLAGS="-ltsan" # TSAN broken for some time - seg faults
       compiler: gcc
       addons: &gcc49
         apt:
@@ -84,7 +84,7 @@ matrix:
           sources: *apt_sources
 
     # GCC 5
-    - env: COMPILER=g++-5 HAS_ASAN=true HAS_UBSAN=true HAS_TSAN=true SANITIZER_CXX_FLAGS="-fuse-ld=gold" TSAN_CXX_FLAGS="-ltsan"
+    - env: COMPILER=g++-5 HAS_ASAN=true HAS_UBSAN=true SANITIZER_CXX_FLAGS="-fuse-ld=gold" TSAN_CXX_FLAGS="-ltsan" # TSAN broken for some time - seg faults
       compiler: gcc
       addons: &gcc5
         apt:
@@ -92,7 +92,7 @@ matrix:
           sources: *apt_sources
 
     # GCC 6
-    - env: COMPILER=g++-6 HAS_ASAN=true HAS_UBSAN=true HAS_TSAN=true SANITIZER_CXX_FLAGS="-fuse-ld=gold" TSAN_CXX_FLAGS="-ltsan"
+    - env: COMPILER=g++-6 HAS_ASAN=true HAS_UBSAN=true SANITIZER_CXX_FLAGS="-fuse-ld=gold" TSAN_CXX_FLAGS="-ltsan" # TSAN broken for some time - seg faults
       compiler: gcc
       addons: &gcc6
         apt:
@@ -100,7 +100,7 @@ matrix:
           sources: *apt_sources
 
     # GCC 7
-    - env: COMPILER=g++-7 HAS_ASAN=true HAS_UBSAN=true HAS_TSAN=true SANITIZER_CXX_FLAGS="-fuse-ld=gold" TSAN_CXX_FLAGS="-ltsan"
+    - env: COMPILER=g++-7 HAS_ASAN=true HAS_UBSAN=true SANITIZER_CXX_FLAGS="-fuse-ld=gold" TSAN_CXX_FLAGS="-ltsan" # TSAN broken for some time - seg faults
       compiler: gcc
       sudo: required      # see this issue for more details: https://github.com/travis-ci/travis-ci/issues/9033
       addons: &gcc7
@@ -251,22 +251,6 @@ matrix:
 
     # static code analysis
     - env: COMPILER=clang++-4.0 STATIC_CODE_ANALYSIS=true
-
-    # GCC 4.8
-    - env: COMPILER=g++-4.8 HAS_ASAN=true HAS_TSAN=true SANITIZER_CXX_FLAGS="-fuse-ld=gold" TSAN_CXX_FLAGS="-ltsan"
-      compiler: gcc
-    # GCC 4.9
-    - env: COMPILER=g++-4.9 HAS_ASAN=true HAS_UBSAN=true HAS_TSAN=true SANITIZER_CXX_FLAGS="-fuse-ld=gold" TSAN_CXX_FLAGS="-ltsan"
-      compiler: gcc
-    # GCC 5
-    - env: COMPILER=g++-5 HAS_ASAN=true HAS_UBSAN=true HAS_TSAN=true SANITIZER_CXX_FLAGS="-fuse-ld=gold" TSAN_CXX_FLAGS="-ltsan"
-      compiler: gcc
-    # GCC 6
-    - env: COMPILER=g++-6 HAS_ASAN=true HAS_UBSAN=true HAS_TSAN=true SANITIZER_CXX_FLAGS="-fuse-ld=gold" TSAN_CXX_FLAGS="-ltsan"
-      compiler: gcc
-    # GCC 7
-    - env: COMPILER=g++-7 HAS_ASAN=true HAS_UBSAN=true HAS_TSAN=true SANITIZER_CXX_FLAGS="-fuse-ld=gold" TSAN_CXX_FLAGS="-ltsan"
-      compiler: gcc
 
 install:
   - if [[ "${CODE_COVERAGE}" == "true" ]]; then gem install coveralls-lcov ; fi
