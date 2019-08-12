@@ -81,7 +81,7 @@ This allows the framework to be used in more ways than any other - tests can be 
 *Tests can be considered a form of documentation and should be able to reside near the production code which they test.*
 
 - This makes the barrier for writing tests **much lower** - you don't have to: **1)** make a separate source file **2)** include a bunch of stuff in it **3)** add it to the build system and **4)** add it to source control - You can just write the tests for a class or a piece of functionality at the bottom of its source file - or even header file!
-- Tests in the production code can be thought of as documentation or up-to-date comments - showing how an API is used
+- Tests in the production code can be thought of as documentation or up-to-date comments - showing the use of APIs
 - Testing internals that are not exposed through the public API and headers is no longer a mind-bending exercise
 - [**Test-driven development**](https://en.wikipedia.org/wiki/Test-driven_development) in C++ has never been easier!
 
@@ -91,7 +91,7 @@ The framework can be used like any other if you don't want/need to mix productio
 
 [This table](https://github.com/martinmoene/catch-lest-other-comparison) compares **doctest** / [**Catch**](https://github.com/catchorg/Catch2) / [**lest**](https://github.com/martinmoene/lest) which are all very similar.
 
-Checkout the [**CppCon 2017 talk**](https://cppcon2017.sched.com/event/BgsI/mix-tests-and-production-code-with-doctest-implementing-and-using-the-fastest-modern-c-testing-framework) on [**YouTube**](https://www.youtube.com/watch?v=eH1CxEC29l8) to get a better understanding of how the framework works and read about how to use it in [**the article**](https://accu.org/var/uploads/journals/Overload137.pdf) of the february edition of ACCU Overload 2017!
+Checkout the [**CppCon 2017 talk**](https://cppcon2017.sched.com/event/BgsI/mix-tests-and-production-code-with-doctest-implementing-and-using-the-fastest-modern-c-testing-framework) on [**YouTube**](https://www.youtube.com/watch?v=eH1CxEC29l8) to get a better understanding of how the framework works and read about how to use it in [**the JetBrains article**](https://blog.jetbrains.com/rscpp/better-ways-testing-with-doctest/) - highlighting the unique aspects of the framework! On a short description on how to use the framework along production code you could refer to [**this GitHub issue**](https://github.com/onqtam/doctest/issues/252). There is also an [**older article**](https://accu.org/var/uploads/journals/Overload137.pdf) in the february edition of ACCU Overload 2017.
 
 [![CppCon 2017 talk about doctest on youtube](scripts/data/youtube-cppcon-talk-thumbnail.png)](https://www.youtube.com/watch?v=eH1CxEC29l8)
 

@@ -1,0 +1,153 @@
+== TITLE: Better ways of testing with doctest - the fastest C++ unit testing framework
+
+doctest [0] is a relatively new C++ testing framework but is by far the fastest both in terms of compile times (by orders of magnitude [1]) and runtime compared to other feature-rich alternatives. It was released in 2016 and has been picking up in popularity [2] ever since.
+
+A complete example with a self-registering test that compiles to an executable looks like this:
+
+#define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
+#include "doctest.h"
+
+int fact(int n) {
+    return n <= 1 ? n : fact(n - 1) * n;
+}
+
+TEST_CASE("testing the factorial function") {
+    CHECK(fact(0) == 1); // should fail
+    CHECK(fact(1) == 1);
+    CHECK(fact(2) == 2);
+    CHECK(fact(3) == 6);
+    CHECK(fact(10) == 3628800);
+}
+
+There is no need to link to anything - the library is just a single header which depends only on the C++ standard library. The output from that program is the following:
+
+[doctest] doctest version is "2.3.3"
+[doctest] run with "--help" for options
+===============================================================================
+hello_world.cpp:8:
+TEST CASE:  testing the factorial function
+
+hello_world.cpp:9: ERROR: CHECK( fact(0) == 1 ) is NOT correct!
+  values: CHECK( 0 == 1 )
+
+===============================================================================
+[doctest] test cases:      1 |      0 passed |      1 failed |      0 skipped
+[doctest] assertions:      5 |      4 passed |      1 failed |
+[doctest] Status: FAILURE!
+
+A list of some of the important features can be summarized as follows:
+
+- expression decomposition [3] - use standard comparison operators in asserts instead of having to explicitly say if the assert is for equality, less than, etc.
+- thread-safe asserts which can be used in a multi-threaded context [4]
+- can be used without exceptions and RTTI [5]
+- Subcases [6] - an intuitive way to share common setup and teardown code for test cases (inspired by sections in Catch2)
+- crash handling, logging [7], an extensible reporter system [8] (xml, custom), templated test cases [9], test suites [10], decorators [11], a rich command line [12] and many more [13].
+
+# What makes doctest interesting
+
+So far doctest sounds like just another framework with some set of features. What truly sets it apart is the ability to use it alongside your production code. This might seem strange at first but writing your tests right next to the code they are testing is an actual pattern in other languages such as Rust, D, Nim, Python, etc - their unit testing modules let you do exactly that.
+
+But why is doctest the most suitable C++ framework for this? A few key reasons:
+
+- Ultra light - less than 20ms of compile time overhead for including the header in a source file [14]
+- The fastest possible assertion macros [15] - 50 000 asserts can compile for under 20 seconds (even under 10 sec)
+- Offers a way to remove everything testing-related from the binary with the DOCTEST_CONFIG_DISABLE [16] identifier (for the final release builds)
+- Doesn't produce any warnings [17] even on the most aggressive levels for MSVC / GCC / Clang
+- Very portable [18] and well tested C++11 - per commit tested on CI with over 180 different builds with different compilers and configurations (gcc 4.8-9.1 / clang 3.5-8.0 / MSVC 2015-2019, debug / release, x86/x64, linux / windows / osx, valgrind, sanitizers, static analysis...)
+
+The idea is that you shouldn't even notice if there are tests in the production code - the compile time penalty is negligible and there aren't any traces of the testing framework (no warnings, no namespace pollution, macros and command line options can be prefixed). The framework can still be used like any other even if the idea of writing tests in the production code doesn't appeal to you - but this is the biggest power of the framework and nothing else comes even close to being so practical in achieving this. Think of the improved workflow:
+
+- The barrier for writing tests becomes much lower - you won't have to: 1) make a separate source file 2) include a bunch of headers in it 3) add it to the build system 4) add it to source control 5) wait for excessive compile + link times (because your heavy headers would need to be parsed an extra time and the static libraries you link against are a few hundred megabytes...) - You can just write the tests for a class or a piece of functionality at the bottom of its source file (or even header file)!
+- Tests in the production code can be thought of as inline documentation - showing how an API is used (correctness enforced by the compiler - always up-to-date).
+- Testing internals that are not exposed through the public API and headers becomes easier.
+
+# Integration within programs
+
+Having tests next to your production code requires a few things:
+
+- everything testing-related should be optionally removable from builds
+- code and tests should be executable in 3 different scenarios: only the tests, only the program, and both
+- programs consisting of an executable + multiple shared objects (.dll/.so/.dylib) should have a single test registry
+
+The effect of the DOCTEST_CONFIG_DISABLE [16] identifier when defined globally in the entire project is that the TEST_CASE() macro becomes the following:
+
+#define TEST_CASE(name) template <typename T> \
+    static inline void ANONYMOUS(ANON_FUNC_)()
+
+There is no instantiation of the anonymous template and there is no test self-registration - the test code will not be present in the final binaries even in Debug. The other effects of this identifier are that asserts within the test case body are turned into noops so even less code is parsed/compiled within these uninstantiated templates, and the test runner is almost entirely removed. Using this identifier is equivalent to not having written any tests - they simply no longer exist.
+
+And here is an example main() function [19] showing how to foster the 3 execution scenarios when tests are present (also showing how defaults and overrides can be set for command line options [12]):
+
+#define DOCTEST_CONFIG_IMPLEMENT
+#include "doctest.h"
+
+int main(int argc, char** argv) {
+    doctest::Context ctx;
+
+    ctx.setOption("abort-after", 5);  // default - stop after 5 failed asserts
+
+    ctx.applyCommandLine(argc, argv); // apply command line - argc / argv
+
+    ctx.setOption("no-breaks", true); // override - don't break in the debugger
+
+    int res = ctx.run();              // run test cases unless with --no-run
+
+    if(ctx.shouldExit())              // query flags (and --exit) rely on this
+        return res;                   // propagate the result of the tests
+
+    // your actual program execution goes here - only if we haven't exited
+
+    return res; // + your_program_res
+}
+
+With this setup the following 3 scenarios are possible:
+
+- running only the tests (with the --exit option or just doing a query like listing all test cases)
+- running only the user code (with the --no-run option to the test runner)
+- running both the tests and the user code
+
+In the case of programs comprised of multiple binaries (shared objects) the DOCTEST_CONFIG_IMPLEMENTATION_IN_DLL [20] identifier can be used - then only a single binary should provide the test runner implementation. Even plugins which are loaded by the program after it has started will properly register their tests into the registry which should be separated into a common shared library to which every other binary links against (example [21]).
+
+# Going a step further - using doctest as a general purpose assert library
+
+Perhaps you use some custom assert for checking preconditions in the actual code. That assert won't play nicely within a testing context (failures won't be handled uniformly) - wouldn't it be nice if we could just use doctest asserts instead? Turns out that's possible [22] - this way a project could have a unified way of asserting invariants both in production code and in test scenarios - with the use of a single set of macros and a single point of configuration!
+
+All the user has to do is set a doctest::Context object somewhere as the default for asserts outside of a testing context. Asserts will call std::abort on failure but this behavior can be overridden by setting an assert handler - with a call to setAssertHandler() on the context. The handler is a function with the following signature: "void handler(const doctest::AssertData&)" and everything important for the assert can be extracted through the AssertData input. It can choose to abort, throw or even just to log an entry for the failure somewhere - the choice is yours! An example of what that would look like can be seen here [23]. Thankfully doctest is thread-safe [4] - there is nothing stopping us from using the same set of asserts in any context!
+
+This would be best combined with the use of the binary asserts [24] which are faster for compilation than the normal expression-decomposing ones (less template instantiations). And why not use the DOCTEST_CONFIG_SUPER_FAST_ASSERTS [25] identifier to reach the best possible [26] compile time - turning each assert into a single function call?
+
+# Conclusion
+
+Testing is a fundamental aspect of software engineering and the stakes are getting only higher - the world runs entirely on software and the responsibility is placed upon us to develop and enforce standards and procedures in the fastest changing and least mature industry. Using better tools that remove friction in the development process is the best approach towards a more robust and secure future - human nature should never be left out of the equation.
+
+doctest [0] stands out with its ability to write tests in a new and easier way - unlocking the potential for more thorough, up-to-date and uniform testing. Locality is king not only in CPU caches. There is quite a lot of work left which can be seen in the roadmap [27] - exciting times ahead! If you are curious about implementation details of the framework make sure to checkout the CppCon [28] presentation!
+
+[0] https://github.com/onqtam/doctest
+[1] https://github.com/onqtam/doctest/blob/master/doc/markdown/benchmarks.md
+[2] https://starcharts.herokuapp.com/onqtam/doctest
+[3] https://github.com/onqtam/doctest/blob/master/doc/markdown/assertions.md#expression-decomposing-asserts
+[4] https://github.com/onqtam/doctest/blob/master/doc/markdown/faq.md#is-doctest-thread-aware
+[5] https://github.com/onqtam/doctest/blob/master/doc/markdown/configuration.md#doctest_config_no_exceptions
+[6] https://github.com/onqtam/doctest/blob/master/doc/markdown/tutorial.md#test-cases-and-subcases
+[7] https://github.com/onqtam/doctest/blob/master/doc/markdown/logging.md
+[8] https://github.com/onqtam/doctest/blob/master/doc/markdown/reporters.md
+[9] https://github.com/onqtam/doctest/blob/master/doc/markdown/parameterized-tests.md#templated-test-cases---parameterized-by-type
+[10] https://github.com/onqtam/doctest/blob/master/doc/markdown/testcases.md#test-suites
+[11] https://github.com/onqtam/doctest/blob/master/doc/markdown/testcases.md#decorators
+[12] https://github.com/onqtam/doctest/blob/master/doc/markdown/commandline.md
+[13] https://github.com/onqtam/doctest/blob/master/doc/markdown/features.md#other-features
+[14] https://github.com/onqtam/doctest/blob/master/doc/markdown/benchmarks.md#cost-of-including-the-header
+[15] https://github.com/onqtam/doctest/blob/master/doc/markdown/benchmarks.md#cost-of-an-assertion-macro
+[16] https://github.com/onqtam/doctest/blob/master/doc/markdown/configuration.md#doctest_config_disable
+[17] https://github.com/onqtam/doctest/blob/master/doc/markdown/features.md#unintrusive-transparent
+[18] https://github.com/onqtam/doctest/blob/master/doc/markdown/features.md#extremely-portable
+[19] https://github.com/onqtam/doctest/blob/master/doc/markdown/main.md
+[20] https://github.com/onqtam/doctest/blob/master/doc/markdown/configuration.md#doctest_config_implementation_in_dll
+[21] https://github.com/onqtam/doctest/tree/master/examples/executable_dll_and_plugin
+[22] https://github.com/onqtam/doctest/blob/master/doc/markdown/assertions.md#using-asserts-out-of-a-testing-context
+[23] https://github.com/onqtam/doctest/blob/master/examples/all_features/asserts_used_outside_of_tests.cpp#L18
+[24] https://github.com/onqtam/doctest/blob/master/doc/markdown/assertions.md#binary-and-unary-asserts
+[25] https://github.com/onqtam/doctest/blob/master/doc/markdown/configuration.md#doctest_config_super_fast_asserts
+[26] https://github.com/onqtam/doctest/blob/master/doc/markdown/faq.md#how-to-get-the-best-compile-time-performance-with-the-framework
+[27] https://github.com/onqtam/doctest/blob/master/doc/markdown/roadmap.md
+[28] https://www.youtube.com/watch?v=eH1CxEC29l8

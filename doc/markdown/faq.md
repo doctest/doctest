@@ -1,6 +1,7 @@
 ## FAQ
 
 - [**How is doctest different from Catch?**](#how-is-doctest-different-from-catch)
+- [**How is doctest different from Google Test?**](#how-is-doctest-different-from-google-test)
 - [**How to get the best compile-time performance with the framework?**](#how-to-get-the-best-compile-time-performance-with-the-framework)
 - [**Is doctest thread-aware?**](#is-doctest-thread-aware)
 - [**Is mocking supported?**](#is-mocking-supported)
@@ -33,6 +34,7 @@ Aside from everything mentioned so far doctest has some [**features**](features.
 Missing stuff:
 
 - matchers and generators
+- micro benchmarking support - nonius is used in [**Catch**](https://github.com/catchorg/Catch2)
 - other small stuff
 
 But these things (and more!) are planned in the [**roadmap**](roadmap.md)!
@@ -55,6 +57,25 @@ A quick and easy way to migrate most of your Catch tests to doctest is to change
 // catch exposes this by default outside of its namespace
 using doctest::Approx;
 ```
+
+### How is **doctest** different from Google Test?
+
+Here are a couple of differences:
+
+– the main one is that only doctest from the C++ frameworks is usable next to your production code (speed of compilation, ability to remove the tests from the binary, ability to execute tests/code/both, ability to have tests in multiple shared objects and still a single registry for all of them)
+– doctest is a single header – Google Test has to be built as a separate static library and linked against.
+– doctest has the concept of [**Subcases**](https://github.com/onqtam/doctest/blob/master/doc/markdown/tutorial.md#test-cases-and-subcases) which is a much cleaner way to share setup and teardown code between tests compared to fixtures and class inheritance – Google Test is quite verbose!
+– doctest compiles faster and probably runs faster (although the runtime becomes an issue only when you have millions of asserts)
+– doctest asserts are thread-safe even on Windows (Google Test uses pthreads so thread-safe asserts are available only on UNIX)
+– doctest overall has a simpler API
+
+but there are also some areas in which doctest is lacking:
+
+– value-parameterized tests
+– death tests (where you check if calling a certain function doesn’t simply throw but if it crashes the process)
+– doctest has some integration with mocking libraries but Google Test works perfectly with Google Mock (although doctest should in theory work with it as well)
+
+The areas where doctest is behind are planned for improvement in the future. There are many other smaller differences – it would be impractical to cover them all.
 
 ### How to get the best compile-time performance with the framework?
 
@@ -115,7 +136,7 @@ It doesn't work in 2 scenarios:
 
 You can also checkout this repository for a different solution: [**pthom/doctest_registerlibrary**](https://github.com/pthom/doctest_registerlibrary).
 
-A compiler-specific solution for MSVC is to use the [```/OPT:NOREF```](https://msdn.microsoft.com/en-us/library/bxwfs976.aspx) linker flag (thanks to [lectem](https://github.com/Lectem) for [reporting](https://github.com/onqtam/doctest/issues/106) it!)
+A compiler-specific solution for MSVC is to use the [```/OPT:NOREF```](https://msdn.microsoft.com/en-us/library/bxwfs976.aspx) linker flag (thanks to [lectem](https://github.com/Lectem) for [reporting](https://github.com/onqtam/doctest/issues/106) it!). Another option is to look at [```/wholearchive```](https://docs.microsoft.com/en-us/cpp/build/reference/wholearchive-include-all-library-object-files?view=vs-2019) for MSVC.
 
 ### Why is comparing C strings (```char*```) actually comparing pointers?
 
