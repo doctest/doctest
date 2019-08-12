@@ -1528,107 +1528,27 @@ namespace detail {
     DOCTEST_INTERFACE void toStream(std::ostream* s, int long long in);
     DOCTEST_INTERFACE void toStream(std::ostream* s, int long long unsigned in);
 
-    class DOCTEST_INTERFACE ContextBuilder
-    {
-        friend class ContextScope;
+    // ContextScope base class used to allow implementing methods of ContextScope 
+    // that don't depend on the template parameter in doctest.cpp.
+    class DOCTEST_INTERFACE ContextScopeBase : public IContextScope {
+    protected:
+        ContextScopeBase();
 
-        struct DOCTEST_INTERFACE ICapture
-        {
-            DOCTEST_DELETE_COPIES(ICapture);
-            ICapture();
-            virtual ~ICapture();
-            virtual void toStream(std::ostream*) const = 0;
-        };
-
-        template <typename T>
-        struct Capture : public ICapture //!OCLINT destructor of virtual class
-        {
-            const T* capture;
-
-            explicit Capture(const T* in)
-                    : capture(in) {}
-            void toStream(std::ostream* s) const override { detail::toStream(s, *capture); }
-        };
-
-        struct DOCTEST_INTERFACE Chunk
-        {
-            char buf[sizeof(Capture<char>)] DOCTEST_ALIGNMENT(
-                    2 * sizeof(void*)); // place to construct a Capture<T>
-
-            DOCTEST_DECLARE_DEFAULTS(Chunk);
-            DOCTEST_DELETE_COPIES(Chunk);
-        };
-
-        struct DOCTEST_INTERFACE Node
-        {
-            Chunk chunk;
-            Node* next;
-
-            DOCTEST_DECLARE_DEFAULTS(Node);
-            DOCTEST_DELETE_COPIES(Node);
-        };
-
-        Chunk stackChunks[DOCTEST_CONFIG_NUM_CAPTURES_ON_STACK];
-        int   numCaptures = 0;
-        Node* head        = nullptr;
-        Node* tail        = nullptr;
-
-        ContextBuilder(ContextBuilder& other);
-
-        ContextBuilder& operator=(const ContextBuilder&) = delete;
-
-        void stringify(std::ostream* s) const;
-
-    public:
-        ContextBuilder();
-        ~ContextBuilder();
-
-        template <typename T>
-        DOCTEST_NOINLINE ContextBuilder& operator<<(T& in) {
-            Capture<T> temp(&in);
-
-            // construct either on stack or on heap
-            // copy the bytes for the whole object - including the vtable because we cant construct
-            // the object directly in the buffer using placement new - need the <new> header...
-            if(numCaptures < DOCTEST_CONFIG_NUM_CAPTURES_ON_STACK) {
-                my_memcpy(stackChunks[numCaptures].buf, &temp, sizeof(Chunk));
-            } else {
-                auto curr  = new Node;
-                curr->next = nullptr;
-                if(tail) {
-                    tail->next = curr;
-                    tail       = curr;
-                } else {
-                    head = tail = curr;
-                }
-
-                my_memcpy(tail->chunk.buf, &temp, sizeof(Chunk));
-            }
-            ++numCaptures;
-            return *this;
-        }
-
-        template <typename T>
-        ContextBuilder& operator<<(const T&&) {
-            static_assert(deferred_false<T>::value,
-                          "Cannot pass temporaries or rvalues to the streaming operator because it "
-                          "caches pointers to the passed objects for lazy evaluation!");
-            return *this;
-        }
+        void destroy();
     };
 
-    class DOCTEST_INTERFACE ContextScope : public IContextScope
+    template <typename L> class DOCTEST_INTERFACE ContextScope : public ContextScopeBase
     {
-        ContextBuilder contextBuilder;
+        const L &lambda_;
 
     public:
-        explicit ContextScope(ContextBuilder& temp);
+        explicit ContextScope(const L &lambda) : lambda_(lambda) {}
 
-        DOCTEST_DELETE_COPIES(ContextScope);
+        ContextScope(ContextScope &&other) : lambda_(other.lambda_) {}
 
-        ~ContextScope() override;
+        void stringify(std::ostream* s) const override { lambda_(s); }
 
-        void stringify(std::ostream* s) const override;
+        ~ContextScope() override { destroy(); }
     };
 
     struct DOCTEST_INTERFACE MessageBuilder : public MessageData
@@ -1650,6 +1570,11 @@ namespace detail {
         bool log();
         void react();
     };
+    
+    template <typename L>
+    ContextScope<L> MakeContextScope(const L &lambda) {
+        return ContextScope<L>(lambda);
+    }
 } // namespace detail
 
 #define DOCTEST_DEFINE_DECORATOR(name, type, def)                                                  \
@@ -2063,9 +1988,17 @@ int registerReporter(const char* name, int priority, bool isReporter) {
     DOCTEST_GLOBAL_NO_WARNINGS_END() typedef int DOCTEST_ANONYMOUS(_DOCTEST_ANON_FOR_SEMICOLON_)
 
 // for logging
-#define DOCTEST_INFO(x)                                                                            \
-    doctest::detail::ContextScope DOCTEST_ANONYMOUS(_DOCTEST_CAPTURE_)(                            \
-            doctest::detail::ContextBuilder() << x)
+#define DOCTEST_INFO(expression)                                                                   \
+    DOCTEST_INFO_IMPL(DOCTEST_ANONYMOUS(_DOCTEST_CAPTURE_), DOCTEST_ANONYMOUS(_DOCTEST_CAPTURE_), expression)
+
+#define DOCTEST_INFO_IMPL(lambda_name, mb_name, expression)                                        \
+    auto lambda_name = [&](std::ostream* s) {                                                      \
+        doctest::detail::MessageBuilder mb_name(__FILE__, __LINE__, doctest::assertType::is_warn); \
+        mb_name.m_stream = s;                                                                      \
+        mb_name << expression;                                                                     \
+    };                                                                                             \
+    auto DOCTEST_ANONYMOUS(_DOCTEST_CAPTURE_) = doctest::detail::MakeContextScope(lambda_name)
+
 #define DOCTEST_CAPTURE(x) DOCTEST_INFO(#x " := " << x)
 
 #define DOCTEST_ADD_AT_IMPL(type, file, line, mb, x)                                               \
@@ -2085,14 +2018,7 @@ int registerReporter(const char* name, int priority, bool isReporter) {
 #define DOCTEST_FAIL_CHECK(x) DOCTEST_ADD_FAIL_CHECK_AT(__FILE__, __LINE__, x)
 #define DOCTEST_FAIL(x) DOCTEST_ADD_FAIL_AT(__FILE__, __LINE__, x)
 
-// hack for macros like INFO() that require lvalues
-#if __cplusplus >= 201402L || (DOCTEST_MSVC >= DOCTEST_COMPILER(19, 10, 0))
-template <class T, T x>
-constexpr T to_lvalue = x;
-#define DOCTEST_TO_LVALUE(...) to_lvalue<decltype(__VA_ARGS__), __VA_ARGS__>
-#else // TO_LVALUE
-#define DOCTEST_TO_LVALUE(...) TO_LVALUE_CAN_BE_USED_ONLY_IN_CPP14_MODE_OR_WITH_VS_2017_OR_NEWER
-#endif // TO_LVALUE
+#define DOCTEST_TO_LVALUE(...) __VA_ARGS__ // Not removed to keep backwards compatibility.
 
 #ifndef DOCTEST_CONFIG_SUPER_FAST_ASSERTS
 
@@ -3977,64 +3903,17 @@ namespace detail {
 
     DOCTEST_THREAD_LOCAL std::vector<IContextScope*> g_infoContexts; // for logging with INFO()
 
-    ContextBuilder::ICapture::ICapture()  = default;
-    ContextBuilder::ICapture::~ICapture() = default;
-
-    ContextBuilder::Chunk::Chunk()  = default;
-    ContextBuilder::Chunk::~Chunk() = default;
-
-    ContextBuilder::Node::Node()  = default;
-    ContextBuilder::Node::~Node() = default;
-
-    // steal the contents of the other - acting as a move constructor...
-    ContextBuilder::ContextBuilder(ContextBuilder& other)
-            : numCaptures(other.numCaptures)
-            , head(other.head)
-            , tail(other.tail) {
-        other.numCaptures = 0;
-        other.head        = nullptr;
-        other.tail        = nullptr;
-        memcpy(stackChunks, other.stackChunks,
-               unsigned(int(sizeof(Chunk)) * DOCTEST_CONFIG_NUM_CAPTURES_ON_STACK));
-    }
-
-    DOCTEST_GCC_SUPPRESS_WARNING_WITH_PUSH("-Wcast-align")
-    void ContextBuilder::stringify(std::ostream* s) const {
-        int curr = 0;
-        // iterate over small buffer
-        while(curr < numCaptures && curr < DOCTEST_CONFIG_NUM_CAPTURES_ON_STACK)
-            reinterpret_cast<const ICapture*>(stackChunks[curr++].buf)->toStream(s);
-        // iterate over list
-        auto curr_elem = head;
-        while(curr < numCaptures) {
-            reinterpret_cast<const ICapture*>(curr_elem->chunk.buf)->toStream(s);
-            curr_elem = curr_elem->next;
-            ++curr;
-        }
-    }
-    DOCTEST_GCC_SUPPRESS_WARNING_POP
-
-    ContextBuilder::ContextBuilder() = default;
-
-    ContextBuilder::~ContextBuilder() {
-        // free the linked list - the ones on the stack are left as-is
-        // no destructors are called at all - there is no need
-        while(head) {
-            auto next = head->next;
-            delete head;
-            head = next;
-        }
-    }
-
-    ContextScope::ContextScope(ContextBuilder& temp)
-            : contextBuilder(temp) {
+    ContextScopeBase::ContextScopeBase() {
         g_infoContexts.push_back(this);
     }
 
     DOCTEST_MSVC_SUPPRESS_WARNING_WITH_PUSH(4996) // std::uncaught_exception is deprecated in C++17
     DOCTEST_GCC_SUPPRESS_WARNING_WITH_PUSH("-Wdeprecated-declarations")
     DOCTEST_CLANG_SUPPRESS_WARNING_WITH_PUSH("-Wdeprecated-declarations")
-    ContextScope::~ContextScope() {
+    // destroy cannot be inlined into the destructor because that would mean calling stringify after
+    // ContextScope has been destroyed (base class destructors run after derived class destructors).
+    // Instead, ContextScope calls this method directly from its destructor.
+    void ContextScopeBase::destroy() {
         if(std::uncaught_exception()) {
             std::ostringstream s;
             this->stringify(&s);
@@ -4046,7 +3925,6 @@ namespace detail {
     DOCTEST_GCC_SUPPRESS_WARNING_POP
     DOCTEST_MSVC_SUPPRESS_WARNING_POP
 
-    void ContextScope::stringify(std::ostream* s) const { contextBuilder.stringify(s); }
 } // namespace detail
 namespace {
     using namespace detail;
