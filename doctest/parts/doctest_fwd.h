@@ -1990,11 +1990,13 @@ int registerReporter(const char* name, int priority, bool isReporter) {
                       DOCTEST_ANONYMOUS(_DOCTEST_CAPTURE_), expression)
 
 #define DOCTEST_INFO_IMPL(lambda_name, mb_name, s_name, expression)                                \
+    DOCTEST_MSVC_SUPPRESS_WARNING_WITH_PUSH(4626)                                                  \
     auto lambda_name = [&](std::ostream* s_name) {                                                 \
         doctest::detail::MessageBuilder mb_name(__FILE__, __LINE__, doctest::assertType::is_warn); \
         mb_name.m_stream = s_name;                                                                 \
         mb_name << expression;                                                                     \
     };                                                                                             \
+    DOCTEST_MSVC_SUPPRESS_WARNING_POP                                                              \
     auto DOCTEST_ANONYMOUS(_DOCTEST_CAPTURE_) = doctest::detail::MakeContextScope(lambda_name)
 
 #define DOCTEST_CAPTURE(x) DOCTEST_INFO(#x " := " << x)
