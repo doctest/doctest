@@ -77,7 +77,7 @@ struct MyXmlReporter : public IReporter
     void test_case_skipped(const TestCaseData& /*in*/) override {}
 };
 
-// "1" is the priority - used for ordering when multiple reporters/listeners are used
+// "1" is the priority - used for ordering when multiple reporters are used
 REGISTER_REPORTER("my_xml", 1, MyXmlReporter);
 
 // registering the same class as a reporter and as a listener is nonsense but it's possible
@@ -87,7 +87,7 @@ REGISTER_LISTENER("my_listener", 1, MyXmlReporter);
 Custom `IReporter` implementations must be registered with one of:
 
 * `REGISTER_REPORTER`, for when the new reporter is an option that users may choose at run-time.
-* `REGISTER_LISTENER`, for when the reporter must always be executed, regardless of which listener(s) have been chosen at run-time.
+* `REGISTER_LISTENER`, for when the reporter is actually a listener and must always be executed, regardless of which reporters have been chosen at run-time.
 
 Multiple reporters can be used at the same time - just specify them through the ```--reporters=...``` [**command line filtering option**](commandline.md) using commas to separate them like this: ```--reporters=myReporter,xml``` and their order of execution will be based on their priority - that is the number "1" in the case of the example reporter above (lower means earlier - the default console/xml reporters from the framework have 0 as their priority and negative numbers are accepted as well).
 
