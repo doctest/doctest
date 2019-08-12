@@ -1,5 +1,36 @@
 # Change Log
 
+## [2.3.4](https://github.com/onqtam/doctest/tree/2.3.4) (2019-08-12)
+[Full Changelog](https://github.com/onqtam/doctest/compare/2.3.3...2.3.4)
+
+**Closed issues:**
+
+- Remove INFO\(\) limitation for using only lvalues and no rvalues [\#269](https://github.com/onqtam/doctest/issues/269)
+- Compile error on MAC OS with AppleClang 8.0.0.8000042  [\#266](https://github.com/onqtam/doctest/issues/266)
+- Throwing exception in a mocked method [\#265](https://github.com/onqtam/doctest/issues/265)
+- Illegal syntax for decorators compiles and runs without warning, but has no effect [\#264](https://github.com/onqtam/doctest/issues/264)
+- Support conditional expressions in REQUIRE [\#262](https://github.com/onqtam/doctest/issues/262)
+- Register a listener\(reporter\) that always listens [\#257](https://github.com/onqtam/doctest/issues/257)
+- Memory sanitizer complaint [\#255](https://github.com/onqtam/doctest/issues/255)
+- Windows Clang GNU command line warnings [\#253](https://github.com/onqtam/doctest/issues/253)
+- The build writes into the source directory [\#249](https://github.com/onqtam/doctest/issues/249)
+- How to enable tests inside another exe [\#246](https://github.com/onqtam/doctest/issues/246)
+- Testing multiple headers. [\#244](https://github.com/onqtam/doctest/issues/244)
+- CMakeLists.txt: Needs CMAKE\_CXX\_STANDARD=11 [\#243](https://github.com/onqtam/doctest/issues/243)
+- \[bug\] Can't compile the tests because of mutex, that is declared in the doctest [\#242](https://github.com/onqtam/doctest/issues/242)
+
+**Merged pull requests:**
+
+- Improve Listener docs [\#273](https://github.com/onqtam/doctest/pull/273) ([claremacrae](https://github.com/claremacrae))
+- Rework `INFO` lazy evaluation to use lambdas. [\#270](https://github.com/onqtam/doctest/pull/270) ([DaanDeMeyer](https://github.com/DaanDeMeyer))
+- Prevent compile errors with AppleClang compiler [\#268](https://github.com/onqtam/doctest/pull/268) ([ClausKlein](https://github.com/ClausKlein))
+- Revert "fix : includeing windows.h header caause error" [\#263](https://github.com/onqtam/doctest/pull/263) ([onqtam](https://github.com/onqtam))
+- Fix static analyzer URLs [\#259](https://github.com/onqtam/doctest/pull/259) ([godbyk](https://github.com/godbyk))
+- fix : includeing windows.h header caause error [\#258](https://github.com/onqtam/doctest/pull/258) ([rinechran](https://github.com/rinechran))
+- only look for C++ compiler with CMake [\#256](https://github.com/onqtam/doctest/pull/256) ([zhihaoy](https://github.com/zhihaoy))
+- Fix \#253 [\#254](https://github.com/onqtam/doctest/pull/254) ([DaanDeMeyer](https://github.com/DaanDeMeyer))
+- add alias target for doctest for use in build tree [\#247](https://github.com/onqtam/doctest/pull/247) ([trondhe](https://github.com/trondhe))
+
 ## [2.3.3](https://github.com/onqtam/doctest/tree/2.3.3) (2019-06-02)
 [Full Changelog](https://github.com/onqtam/doctest/compare/2.3.2...2.3.3)
 
@@ -10,7 +41,6 @@
 - Splitting templated test across different translation units [\#238](https://github.com/onqtam/doctest/issues/238)
 - Compile errors with iosfwd.h and Visual Studio 2019 Preview [\#183](https://github.com/onqtam/doctest/issues/183)
 - Add CMake test support as catch\_discover\_tests\(\) in Catch2 [\#171](https://github.com/onqtam/doctest/issues/171)
-- Doctest is not able to compile on OSX [\#126](https://github.com/onqtam/doctest/issues/126)
 
 **Merged pull requests:**
 
@@ -49,10 +79,6 @@
 
 ## [2.3.1](https://github.com/onqtam/doctest/tree/2.3.1) (2019-03-24)
 [Full Changelog](https://github.com/onqtam/doctest/compare/2.3.0...2.3.1)
-
-**Closed issues:**
-
-- CMake config deletes doctest.h on clean [\#210](https://github.com/onqtam/doctest/issues/210)
 
 **Merged pull requests:**
 
