@@ -11,7 +11,6 @@ Defining something ```globally``` means for every source file of the binary (exe
 - [**```DOCTEST_CONFIG_DISABLE```**](#doctest_config_disable)
 - [**```DOCTEST_CONFIG_IMPLEMENTATION_IN_DLL```**](#doctest_config_implementation_in_dll)
 - [**```DOCTEST_CONFIG_NO_SHORT_MACRO_NAMES```**](#doctest_config_no_short_macro_names)
-- [**```DOCTEST_CONFIG_NUM_CAPTURES_ON_STACK```**](#doctest_config_num_captures_on_stack)
 - [**```DOCTEST_CONFIG_TREAT_CHAR_STAR_AS_STRING```**](#doctest_config_treat_char_star_as_string)
 - [**```DOCTEST_CONFIG_SUPER_FAST_ASSERTS```**](#doctest_config_super_fast_asserts)
 - [**```DOCTEST_CONFIG_USE_STD_HEADERS```**](#doctest_config_use_std_headers)
@@ -72,19 +71,6 @@ This should be defined only in the source file where the library is implemented 
 This will remove all macros from **doctest** that don't have the **```DOCTEST_```** prefix - like **```CHECK```**, **```TEST_CASE```** and **```SUBCASE```**. Then only the full macro names will be available - **```DOCTEST_CHECK```**, **```DOCTEST_TEST_CASE```** and **```DOCTEST_SUBCASE```**. The user is free to make his own short versions of these macros - [**example**](../../examples/all_features/alternative_macros.cpp).
 
 This can be defined both globally and in specific source files only.
-
-### **```DOCTEST_CONFIG_NUM_CAPTURES_ON_STACK```**
-
-With this identifier the user may configure the number of captures on the stack by the ```INFO()``` [**logging macros**](logging.md) (read there for more info). The default is ```5``` - which means that for a call like this: ```INFO(var1 << "la la" << var2);``` all 3 logged variables will be captured on the stack (with the ability to hold 2 more - so no heap allocation unless an assert fails later in the same scope) - and a total of ```5 * (sizeof(void*) * 2))``` bytes are used on the stack for captures. A subsequent call to ```INFO()``` will have it's own stack space. Note that ```0``` is an invalid value. Examples:
-
-```c++
-#define DOCTEST_CONFIG_NUM_CAPTURES_ON_STACK 10
-#include <doctest.h>
-```
-
-or through the command line: ```-DDOCTEST_CONFIG_NUM_CAPTURES_ON_STACK=10```
-
-This should be defined globally.
 
 ### **```DOCTEST_CONFIG_TREAT_CHAR_STAR_AS_STRING```**
 
