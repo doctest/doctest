@@ -1210,6 +1210,9 @@ namespace detail {
         return 0;
     }
 
+#ifdef DOCTEST_IS_DEBUGGER_ACTIVE
+    bool isDebuggerActive() { return DOCTEST_IS_DEBUGGER_ACTIVE(); }
+#else // DOCTEST_IS_DEBUGGER_ACTIVE
 #ifdef DOCTEST_PLATFORM_MAC
     // The following function is taken directly from the following technical note:
     // http://developer.apple.com/library/mac/#qa/qa2004/qa1361.html
@@ -1242,6 +1245,7 @@ namespace detail {
 #else
     bool isDebuggerActive() { return false; }
 #endif // Platform
+#endif // DOCTEST_IS_DEBUGGER_ACTIVE
 
     void registerExceptionTranslatorImpl(const IExceptionTranslator* et) {
         if(std::find(getExceptionTranslators().begin(), getExceptionTranslators().end(), et) ==
