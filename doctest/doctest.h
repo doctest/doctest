@@ -356,6 +356,7 @@ DOCTEST_MSVC_SUPPRESS_WARNING(26444) // Avoid unnamed objects with custom constr
     static int var DOCTEST_UNUSED // NOLINT(fuchsia-statically-constructed-objects,cert-err58-cpp)
 #define DOCTEST_GLOBAL_NO_WARNINGS_END() DOCTEST_CLANG_SUPPRESS_WARNING_POP
 
+#ifndef DOCTEST_BREAK_INTO_DEBUGGER
 // should probably take a look at https://github.com/scottt/debugbreak
 #ifdef DOCTEST_PLATFORM_MAC
 #define DOCTEST_BREAK_INTO_DEBUGGER() __asm__("int $3\n" : :)
@@ -369,6 +370,7 @@ DOCTEST_GCC_SUPPRESS_WARNING_POP
 #else // linux
 #define DOCTEST_BREAK_INTO_DEBUGGER() ((void)0)
 #endif // linux
+#endif // DOCTEST_BREAK_INTO_DEBUGGER
 
 // this is kept here for backwards compatibility since the config option was changed
 #ifdef DOCTEST_CONFIG_USE_IOSFWD
@@ -3844,6 +3846,9 @@ namespace detail {
         return 0;
     }
 
+#ifdef DOCTEST_IS_DEBUGGER_ACTIVE
+    bool isDebuggerActive() { return DOCTEST_IS_DEBUGGER_ACTIVE(); }
+#else // DOCTEST_IS_DEBUGGER_ACTIVE
 #ifdef DOCTEST_PLATFORM_MAC
     // The following function is taken directly from the following technical note:
     // http://developer.apple.com/library/mac/#qa/qa2004/qa1361.html
@@ -3876,6 +3881,7 @@ namespace detail {
 #else
     bool isDebuggerActive() { return false; }
 #endif // Platform
+#endif // DOCTEST_IS_DEBUGGER_ACTIVE
 
     void registerExceptionTranslatorImpl(const IExceptionTranslator* et) {
         if(std::find(getExceptionTranslators().begin(), getExceptionTranslators().end(), et) ==
