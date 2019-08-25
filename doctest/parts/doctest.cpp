@@ -2149,6 +2149,8 @@ namespace {
             test_case_start_impl(in);
             xml.ensureTagClosed();
         }
+        
+        void test_case_reenter(const TestCaseData&) override {}
 
         void test_case_end(const CurrentTestCaseStats& st) override {
             xml.startElement("OverallResultsAsserts")
@@ -2569,6 +2571,8 @@ namespace {
             hasLoggedCurrentTestStart = false;
             tc                        = &in;
         }
+        
+        void test_case_reenter(const TestCaseData&) override {}
 
         void test_case_end(const CurrentTestCaseStats& st) override {
             // log the preamble of the test case only if there is something
@@ -2724,6 +2728,7 @@ namespace {
         DOCTEST_DEBUG_OUTPUT_REPORTER_OVERRIDE(test_run_start, DOCTEST_EMPTY, DOCTEST_EMPTY)
         DOCTEST_DEBUG_OUTPUT_REPORTER_OVERRIDE(test_run_end, const TestRunStats&, in)
         DOCTEST_DEBUG_OUTPUT_REPORTER_OVERRIDE(test_case_start, const TestCaseData&, in)
+        DOCTEST_DEBUG_OUTPUT_REPORTER_OVERRIDE(test_case_reenter, const TestCaseData&, in)
         DOCTEST_DEBUG_OUTPUT_REPORTER_OVERRIDE(test_case_end, const CurrentTestCaseStats&, in)
         DOCTEST_DEBUG_OUTPUT_REPORTER_OVERRIDE(test_case_exception, const TestCaseException&, in)
         DOCTEST_DEBUG_OUTPUT_REPORTER_OVERRIDE(subcase_start, const SubcaseSignature&, in)
@@ -3199,6 +3204,8 @@ int Context::run() {
             DOCTEST_ITERATE_THROUGH_REPORTERS(test_case_start, tc);
 
             p->timer.start();
+            
+            bool run_test = true;
 
             do {
                 // reset some of the fields for subcases (except for the set of fully passed ones)
@@ -3229,10 +3236,15 @@ int Context::run() {
                 // exit this loop if enough assertions have failed - even if there are more subcases
                 if(p->abort_after > 0 &&
                    p->numAssertsFailed + p->numAssertsFailedCurrentTest_atomic >= p->abort_after) {
-                    p->should_reenter = false;
+                    run_test = false;
                     p->failure_flags |= TestCaseFailureReason::TooManyFailedAsserts;
                 }
-            } while(p->should_reenter == true);
+                
+                if(p->should_reenter && run_test)
+                    DOCTEST_ITERATE_THROUGH_REPORTERS(test_case_reenter, tc);
+                if(!p->should_reenter)
+                    run_test = false;
+            } while(run_test);
 
             p->finalizeTestCaseData();
 

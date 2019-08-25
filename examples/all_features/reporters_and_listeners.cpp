@@ -38,6 +38,8 @@ struct MyXmlReporter : public IReporter
     void test_run_end(const TestRunStats& /*in*/) override {}
 
     void test_case_start(const TestCaseData& in) override { tc = &in; }
+    
+    void test_case_reenter(const TestCaseData& /*in*/) override {}
 
     void test_case_end(const CurrentTestCaseStats& /*in*/) override {}
 

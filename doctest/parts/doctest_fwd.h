@@ -1723,6 +1723,8 @@ struct DOCTEST_INTERFACE IReporter
 
     // called when a test case is started (safe to cache a pointer to the input)
     virtual void test_case_start(const TestCaseData&) = 0;
+    // called when a test case is reentered because of unfinished subcases (safe to cache a pointer to the input)
+    virtual void test_case_reenter(const TestCaseData&) = 0;
     // called when a test case has ended
     virtual void test_case_end(const CurrentTestCaseStats&) = 0;
 

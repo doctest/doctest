@@ -40,6 +40,9 @@ struct MyXmlReporter : public IReporter
 
     void test_case_start(const TestCaseData& in) override { tc = &in; }
 
+    // called when a test case is reentered because of unfinished subcases
+    void test_case_reenter(const TestCaseData& /*in*/) override {}
+
     void test_case_end(const CurrentTestCaseStats& /*in*/) override {}
 
     void test_case_exception(const TestCaseException& /*in*/) override {}
