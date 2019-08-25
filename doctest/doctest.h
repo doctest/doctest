@@ -2046,6 +2046,9 @@ int registerReporter(const char* name, int priority, bool isReporter) {
 
 #else // DOCTEST_CONFIG_SUPER_FAST_ASSERTS
 
+// necessary for <ASSERT>_MESSAGE
+#define DOCTEST_ASSERT_IMPLEMENT_2 DOCTEST_ASSERT_IMPLEMENT_1
+
 #define DOCTEST_ASSERT_IMPLEMENT_1(assert_type, ...)                                               \
     DOCTEST_CLANG_SUPPRESS_WARNING_WITH_PUSH("-Woverloaded-shift-op-parentheses")                  \
     doctest::detail::decomp_assert(                                                                \
