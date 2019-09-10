@@ -1,0 +1,186 @@
+name: CI
+
+on: push
+
+jobs:
+  ci:
+    name: ${{ matrix.name }}
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        # Github Actions requires a single row to be added to the build matrix.
+        # See https://help.github.com/en/articles/workflow-syntax-for-github-actions.
+        name: [
+          ubuntu-18.04-gcc-6,
+          ubuntu-18.04-gcc-9,
+          ubuntu-18.04-clang-6,
+          ubuntu-18.04-clang-8,
+          windows-2016-cl,
+          windows-2016-clang-cl,
+          windows-2016-clang,
+          windows-2016-gcc,
+          windows-2019-cl,
+          windows-2019-clang-cl,
+          windows-2019-clang,
+          windows-2019-gcc,
+          macOS-10.14-clang
+        ]
+
+        include:
+          - name: ubuntu-18.04-gcc-6
+            os: ubuntu-18.04
+            CC: gcc-6
+            CXX: g++-6
+
+          - name: ubuntu-18.04-gcc-9
+            os: ubuntu-18.04
+            CC: gcc-9
+            CXX: g++-9
+
+          - name: ubuntu-18.04-clang-6
+            os: ubuntu-18.04
+            CC: clang-6.0
+            CXX: clang++-6.0
+
+          - name: ubuntu-18.04-clang-8
+            os: ubuntu-18.04
+            CC: clang-8
+            CXX: clang++-8
+
+          - name: windows-2016-cl
+            os: windows-2016
+            CC: cl
+            CXX: cl
+
+          - name: windows-2016-clang-cl
+            os: windows-2016
+            CC: clang-cl
+            CXX: clang-cl
+
+          - name: windows-2016-clang
+            os: windows-2016
+            CC: clang
+            CXX: clang++
+
+          - name: windows-2019-cl
+            os: windows-2019
+            CC: cl
+            CXX: cl
+
+          - name: windows-2016-gcc
+            os: windows-2016
+            CC: gcc
+            CXX: g++
+
+          - name: windows-2019-clang-cl
+            os: windows-2019
+            CC: clang-cl
+            CXX: clang-cl
+
+          - name: windows-2019-clang
+            os: windows-2019
+            CC: clang
+            CXX: clang++
+
+          - name: macOS-10.14-clang
+            os: macOS-10.14
+            CC: clang
+            CXX: clang++
+
+          - name: windows-2019-gcc
+            os: windows-2019
+            CC: gcc
+            CXX: g++
+
+    # Github Actions resets environment variables between steps so we have to
+    # add the required environment variables at the start of each step.
+    # See https://github.community/t5/GitHub-Actions/Support-global-environment-variables/td-p/30481.
+
+    steps:
+      - uses: actions/checkout@v1
+
+      - name: Install (Ubuntu)
+        if: startsWith(matrix.os, 'ubuntu')
+        run: |
+          curl -sSL https://github.com/Kitware/CMake/releases/download/v3.13.5/cmake-3.13.5-Linux-x86_64.tar.gz -o cmake.tar.gz
+          sudo tar xf cmake.tar.gz --strip 1 -C /usr/local
+
+          sudo add-apt-repository "deb http://apt.llvm.org/bionic/ llvm-toolchain-bionic-8 main"
+          sudo apt-get update
+
+          sudo apt-get install -y ninja-build clang-tidy-8
+          sudo ln -s /usr/bin/clang-tidy-8 /usr/local/bin/clang-tidy
+
+      - name: Install (Ubuntu GCC)
+        if: startsWith(matrix.os, 'ubuntu') && startsWith(matrix.CC, 'gcc')
+        run: |
+          sudo add-apt-repository ppa:ubuntu-toolchain-r/test
+          sudo apt-get update
+          sudo apt-get install -y ${{ matrix.CXX }}
+
+      - name: Install (Ubuntu Clang)
+        if: startsWith(matrix.os, 'ubuntu') && startsWith(matrix.CC, 'clang')
+        run: |
+          CLANG_VERSION=`cut -d '-' -f2 <<< ${{ matrix.CC }}`
+
+          sudo add-apt-repository "deb http://apt.llvm.org/bionic/ llvm-toolchain-bionic-$CLANG_VERSION main"
+          sudo apt-get update
+          sudo apt-get install -y ${{ matrix.CC }}
+
+      - name: Install (macOS)
+        if: startsWith(matrix.os, 'macOS')
+        run: |
+          brew install ninja llvm
+          sudo ln -s /usr/local/opt/llvm/bin/clang-tidy /usr/local/bin/clang-tidy
+
+      - name: Install (Windows)
+        if: startsWith(matrix.os, 'windows')
+        shell: powershell
+        run: |
+          iex (new-object net.webclient).downloadstring('https://get.scoop.sh')
+          scoop install ninja llvm --global
+
+      - name: Configure (Ubuntu && macOS)
+        if: startsWith(matrix.os, 'ubuntu') || startsWith(matrix.os, 'macOS')
+        run: |
+          cmake \
+            -B build \
+            -S . \
+            -G Ninja \
+            -DCMAKE_BUILD_TYPE=Debug \
+            -DCMAKE_C_COMPILER=${{ matrix.CC }} \
+            -DCMAKE_CXX_COMPILER=${{ matrix.CXX }}
+
+      - name: Configure (Windows)
+        if: startsWith(matrix.os, 'windows')
+        run: |
+          set PATH=C:\ProgramData\scoop\shims;%PATH%
+          call .github\workflows\vsenv.bat -arch=x64 -host_arch=x64
+
+          cmake ^
+            -B build ^
+            -S . ^
+            -G Ninja ^
+            -DCMAKE_BUILD_TYPE=Debug ^
+            -DCMAKE_C_COMPILER=${{ matrix.CC }} ^
+            -DCMAKE_CXX_COMPILER=${{ matrix.CXX }}
+
+      - name: Build (Ubuntu && macOS)
+        if: startsWith(matrix.os, 'ubuntu') || startsWith(matrix.os, 'macOS')
+        run: cmake --build build
+
+      - name: Build (Windows)
+        if: startsWith(matrix.os, 'windows')
+        run: |
+          call .github\workflows\vsenv.bat -arch=x64 -host_arch=x64
+          cmake --build build
+
+      # Disable `filter_2_xml` until https://github.com/onqtam/doctest/issues/287
+      # is fixed.
+
+      - name: Test
+        run: |
+          cd build
+          ctest -E filter_2_xml -j2 --output-on-failure

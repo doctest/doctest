@@ -161,11 +161,9 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
     endif()
 endif()
 
-if(CMAKE_VERSION VERSION_LESS 3.8)
-    # necessary for some older compilers which don't default to C++11
-    set(CMAKE_CXX_STANDARD 11)
-    set(CXX_STANDARD_REQUIRED ON)
-endif()
+# necessary for some older compilers which don't default to C++11
+set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
     add_compiler_flags(-Weverything)
