@@ -255,10 +255,7 @@ jobs:
           call .github\workflows\vsenv.bat -arch=x64 -host_arch=x64
           cmake --build build
 
-      # Disable `filter_2_xml` until https://github.com/onqtam/doctest/issues/287
-      # is fixed.
-
       - name: Test
         run: |
           cd build
-          ctest -E filter_2_xml -j2 --output-on-failure
+          ctest -j2 --output-on-failure
