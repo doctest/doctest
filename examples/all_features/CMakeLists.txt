@@ -90,7 +90,9 @@ if(MSVC)
     target_compile_options(disabled PRIVATE /wd4505) # unreferenced local function has been removed
     target_compile_options(disabled PRIVATE /wd4100) # unreferenced formal parameter
     target_compile_options(disabled PRIVATE /wd4189) # local variable is initialized but not referenced
-elseif(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+endif()
+
+if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
     target_compile_options(disabled PRIVATE -Wno-unknown-warning-option)
     target_compile_options(disabled PRIVATE -Wno-unneeded-internal-declaration)
     target_compile_options(disabled PRIVATE -Wno-unused-function)

@@ -72,10 +72,14 @@ endmacro()
 
 if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
     add_compiler_flags(-Werror)
-    add_compiler_flags(-pedantic)
-    add_compiler_flags(-pedantic-errors)
-    add_compiler_flags(-fvisibility=hidden)
     add_compiler_flags(-fstrict-aliasing)
+
+    # The following options are not valid when clang-cl is used.
+    if(NOT MSVC)
+        add_compiler_flags(-pedantic)
+        add_compiler_flags(-pedantic-errors)
+        add_compiler_flags(-fvisibility=hidden)
+    endif()
 endif()
 
 if(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
