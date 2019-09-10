@@ -13,23 +13,23 @@ jobs:
         # Github Actions requires a single row to be added to the build matrix.
         # See https://help.github.com/en/articles/workflow-syntax-for-github-actions.
         name: [
-          ubuntu-18.04-gcc-4.8,
-          ubuntu-18.04-gcc-4.9,
-          ubuntu-18.04-gcc-5,
-          ubuntu-18.04-gcc-6,
-          ubuntu-18.04-gcc-7,
-          ubuntu-18.04-gcc-8,
-          ubuntu-18.04-gcc-9,
-          ubuntu-18.04-clang-3.5,
-          ubuntu-18.04-clang-3.6,
-          ubuntu-18.04-clang-3.7,
-          ubuntu-18.04-clang-3.8,
-          ubuntu-18.04-clang-3.9,
-          ubuntu-18.04-clang-4.0,
-          ubuntu-18.04-clang-5.0,
-          ubuntu-18.04-clang-6.0,
-          ubuntu-18.04-clang-7,
-          ubuntu-18.04-clang-8,
+          ubuntu-16.04-gcc-4.8,
+          ubuntu-16.04-gcc-4.9,
+          ubuntu-16.04-gcc-5,
+          ubuntu-16.04-gcc-6,
+          ubuntu-16.04-gcc-7,
+          ubuntu-16.04-gcc-8,
+          ubuntu-16.04-gcc-9,
+          ubuntu-16.04-clang-3.5,
+          ubuntu-16.04-clang-3.6,
+          ubuntu-16.04-clang-3.7,
+          ubuntu-16.04-clang-3.8,
+          ubuntu-16.04-clang-3.9,
+          ubuntu-16.04-clang-4.0,
+          ubuntu-16.04-clang-5.0,
+          ubuntu-16.04-clang-6.0,
+          ubuntu-16.04-clang-7,
+          ubuntu-16.04-clang-8,
           windows-2016-cl,
           windows-2016-clang-cl,
           windows-2016-clang,
@@ -42,88 +42,88 @@ jobs:
         ]
 
         include:
-          - name: ubuntu-18.04-gcc-4.8
-            os: ubuntu-18.04
+          - name: ubuntu-16.04-gcc-4.8
+            os: ubuntu-16.04
             CC: gcc-4.8
             CXX: g++-4.8
 
-          - name: ubuntu-18.04-gcc-4.9
-            os: ubuntu-18.04
+          - name: ubuntu-16.04-gcc-4.9
+            os: ubuntu-16.04
             CC: gcc-4.9
             CXX: g++-4.9
 
-          - name: ubuntu-18.04-gcc-5
-            os: ubuntu-18.04
+          - name: ubuntu-16.04-gcc-5
+            os: ubuntu-16.04
             CC: gcc-5
             CXX: g++-5
 
-          - name: ubuntu-18.04-gcc-6
-            os: ubuntu-18.04
+          - name: ubuntu-16.04-gcc-6
+            os: ubuntu-16.04
             CC: gcc-6
             CXX: g++-6
 
-          - name: ubuntu-18.04-gcc-7
-            os: ubuntu-18.04
+          - name: ubuntu-16.04-gcc-7
+            os: ubuntu-16.04
             CC: gcc-7
             CXX: g++-7
 
-          - name: ubuntu-18.04-gcc-8
-            os: ubuntu-18.04
+          - name: ubuntu-16.04-gcc-8
+            os: ubuntu-16.04
             CC: gcc-8
             CXX: g++-8
 
-          - name: ubuntu-18.04-gcc-9
-            os: ubuntu-18.04
+          - name: ubuntu-16.04-gcc-9
+            os: ubuntu-16.04
             CC: gcc-9
             CXX: g++-9
 
-          - name: ubuntu-18.04-clang-3.5
-            os: ubuntu-18.04
+          - name: ubuntu-16.04-clang-3.5
+            os: ubuntu-16.04
             CC: clang-3.5
             CXX: clang++-3.5
 
-          - name: ubuntu-18.04-clang-3.6
-            os: ubuntu-18.04
+          - name: ubuntu-16.04-clang-3.6
+            os: ubuntu-16.04
             CC: clang-3.6
             CXX: clang++-3.6
 
-          - name: ubuntu-18.04-clang-3.7
-            os: ubuntu-18.04
+          - name: ubuntu-16.04-clang-3.7
+            os: ubuntu-16.04
             CC: clang-3.7
             CXX: clang++-3.7
 
-          - name: ubuntu-18.04-clang-3.8
-            os: ubuntu-18.04
+          - name: ubuntu-16.04-clang-3.8
+            os: ubuntu-16.04
             CC: clang-3.8
             CXX: clang++-3.8
 
-          - name: ubuntu-18.04-clang-3.9
-            os: ubuntu-18.04
+          - name: ubuntu-16.04-clang-3.9
+            os: ubuntu-16.04
             CC: clang-3.9
             CXX: clang++-3.9
 
-          - name: ubuntu-18.04-clang-4.0
-            os: ubuntu-18.04
+          - name: ubuntu-16.04-clang-4.0
+            os: ubuntu-16.04
             CC: clang-4.0
             CXX: clang++-4.0
 
-          - name: ubuntu-18.04-clang-5.0
-            os: ubuntu-18.04
+          - name: ubuntu-16.04-clang-5.0
+            os: ubuntu-16.04
             CC: clang-5.0
             CXX: clang++-5.0
 
-          - name: ubuntu-18.04-clang-6.0
-            os: ubuntu-18.04
+          - name: ubuntu-16.04-clang-6.0
+            os: ubuntu-16.04
             CC: clang-6.0
             CXX: clang++-6.0
 
-          - name: ubuntu-18.04-clang-7
-            os: ubuntu-18.04
+          - name: ubuntu-16.04-clang-7
+            os: ubuntu-16.04
             CC: clang-7
             CXX: clang++-7
 
-          - name: ubuntu-18.04-clang-8
-            os: ubuntu-18.04
+          - name: ubuntu-16.04-clang-8
+            os: ubuntu-16.04
             CC: clang-8
             CXX: clang++-8
 
@@ -185,7 +185,7 @@ jobs:
           curl -sSL https://github.com/Kitware/CMake/releases/download/v3.13.5/cmake-3.13.5-Linux-x86_64.tar.gz -o cmake.tar.gz
           sudo tar xf cmake.tar.gz --strip 1 -C /usr/local
 
-          sudo add-apt-repository "deb http://apt.llvm.org/bionic/ llvm-toolchain-bionic-8 main"
+          sudo add-apt-repository "deb http://apt.llvm.org/xenial/ llvm-toolchain-xenial-8 main"
           sudo apt-get update
 
           sudo apt-get install -y ninja-build clang-tidy-8
@@ -203,7 +203,7 @@ jobs:
         run: |
           CLANG_VERSION=`cut -d '-' -f2 <<< ${{ matrix.CC }}`
 
-          sudo add-apt-repository "deb http://apt.llvm.org/bionic/ llvm-toolchain-bionic-$CLANG_VERSION main"
+          sudo add-apt-repository "deb http://apt.llvm.org/xenial/ llvm-toolchain-xenial-$CLANG_VERSION main"
           sudo apt-get update
           sudo apt-get install -y ${{ matrix.CC }}
 
