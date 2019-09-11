@@ -221,8 +221,6 @@ jobs:
           brew install ninja llvm
           sudo ln -s /usr/local/opt/llvm/bin/clang-tidy /usr/local/bin/clang-tidy
 
-          brew install --HEAD valgrind
-
           sudo xcode-select -switch /Applications/Xcode_${{ matrix.xcode }}.app
 
       - name: Install (Windows)
@@ -266,8 +264,8 @@ jobs:
           cmake -DCMAKE_BUILD_TYPE=Debug build
           cmake --build build
 
-      - name: Test Debug Valgrind (Ubuntu && macOS)
-        if: startsWith(matrix.os, 'ubuntu') || startsWith(matrix.os, 'macOS')
+      - name: Test Debug Valgrind (Ubuntu)
+        if: startsWith(matrix.os, 'ubuntu')
         run: |
           cmake -DDOCTEST_TEST_MODE=VALGRIND build
           cd build && ctest -j2 --output-on-failure
@@ -290,8 +288,8 @@ jobs:
           cmake -DCMAKE_BUILD_TYPE=Release build
           cmake --build build
 
-      - name: Test Release Valgrind (Ubuntu && macOS)
-        if: startsWith(matrix.os, 'ubuntu') || startsWith(matrix.os, 'macOS')
+      - name: Test Release Valgrind (Ubuntu)
+        if: startsWith(matrix.os, 'ubuntu')
         run: |
           cmake -DDOCTEST_TEST_MODE=VALGRIND build
           cd build && ctest -j2 --output-on-failure
