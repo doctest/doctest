@@ -38,7 +38,12 @@ jobs:
           windows-2019-clang-cl,
           windows-2019-clang,
           windows-2019-gcc,
-          macOS-10.14-clang
+          macOS-10.14-Xcode-9.4.1,
+          macOS-10.14-Xcode-10.0,
+          macOS-10.14-Xcode-10.1,
+          macOS-10.14-Xcode-10.2,
+          macOS-10.14-Xcode-10.2.1,
+          macOS-10.14-Xcode-10.3
         ]
 
         include:
@@ -167,8 +172,39 @@ jobs:
             CC: gcc
             CXX: g++
 
-          - name: macOS-10.14-clang
+          - name: macOS-10.14-Xcode-9.4.1
             os: macOS-10.14
+            xcode: "9.4.1"
+            CC: clang
+            CXX: clang++
+
+          - name: macOS-10.14-Xcode-10.0
+            os: macOS-10.14
+            xcode: "10"
+            CC: clang
+            CXX: clang++
+
+          - name: macOS-10.14-Xcode-10.1
+            os: macOS-10.14
+            xcode: "10.1"
+            CC: clang
+            CXX: clang++
+
+          - name: macOS-10.14-Xcode-10.2
+            os: macOS-10.14
+            xcode: "10.2"
+            CC: clang
+            CXX: clang++
+
+          - name: macOS-10.14-Xcode-10.2.1
+            os: macOS-10.14
+            xcode: "10.2.1"
+            CC: clang
+            CXX: clang++
+
+          - name: macOS-10.14-Xcode-10.3
+            os: macOS-10.14
+            xcode: "10.3"
             CC: clang
             CXX: clang++
 
@@ -215,6 +251,8 @@ jobs:
         run: |
           brew install ninja llvm
           sudo ln -s /usr/local/opt/llvm/bin/clang-tidy /usr/local/bin/clang-tidy
+
+          sudo xcode-select -switch /Applications/Xcode_${{ matrix.xcode }}.app
 
       - name: Install (Windows)
         if: startsWith(matrix.os, 'windows')
