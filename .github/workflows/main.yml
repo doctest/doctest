@@ -49,133 +49,133 @@ jobs:
         include:
           - name: ubuntu-16.04-gcc-4.8
             os: ubuntu-16.04
-            CXX: g++-4.8
+            cxx: g++-4.8
 
           - name: ubuntu-16.04-gcc-4.9
             os: ubuntu-16.04
-            CXX: g++-4.9
+            cxx: g++-4.9
 
           - name: ubuntu-16.04-gcc-5
             os: ubuntu-16.04
-            CXX: g++-5
+            cxx: g++-5
 
           - name: ubuntu-16.04-gcc-6
             os: ubuntu-16.04
-            CXX: g++-6
+            cxx: g++-6
 
           - name: ubuntu-16.04-gcc-7
             os: ubuntu-16.04
-            CXX: g++-7
+            cxx: g++-7
 
           - name: ubuntu-16.04-gcc-8
             os: ubuntu-16.04
-            CXX: g++-8
+            cxx: g++-8
 
           - name: ubuntu-16.04-gcc-9
             os: ubuntu-16.04
-            CXX: g++-9
+            cxx: g++-9
 
           - name: ubuntu-16.04-clang-3.5
             os: ubuntu-16.04
-            CXX: clang++-3.5
+            cxx: clang++-3.5
 
           - name: ubuntu-16.04-clang-3.6
             os: ubuntu-16.04
-            CXX: clang++-3.6
+            cxx: clang++-3.6
 
           - name: ubuntu-16.04-clang-3.7
             os: ubuntu-16.04
-            CXX: clang++-3.7
+            cxx: clang++-3.7
 
           - name: ubuntu-16.04-clang-3.8
             os: ubuntu-16.04
-            CXX: clang++-3.8
+            cxx: clang++-3.8
 
           - name: ubuntu-16.04-clang-3.9
             os: ubuntu-16.04
-            CXX: clang++-3.9
+            cxx: clang++-3.9
 
           - name: ubuntu-16.04-clang-4.0
             os: ubuntu-16.04
-            CXX: clang++-4.0
+            cxx: clang++-4.0
 
           - name: ubuntu-16.04-clang-5.0
             os: ubuntu-16.04
-            CXX: clang++-5.0
+            cxx: clang++-5.0
 
           - name: ubuntu-16.04-clang-6.0
             os: ubuntu-16.04
-            CXX: clang++-6.0
+            cxx: clang++-6.0
 
           - name: ubuntu-16.04-clang-7
             os: ubuntu-16.04
-            CXX: clang++-7
+            cxx: clang++-7
 
           - name: ubuntu-16.04-clang-8
             os: ubuntu-16.04
-            CXX: clang++-8
+            cxx: clang++-8
 
           - name: windows-2016-cl
             os: windows-2016
-            CXX: cl
+            cxx: cl
 
           - name: windows-2016-clang-cl
             os: windows-2016
-            CXX: clang-cl
+            cxx: clang-cl
 
           - name: windows-2016-clang
             os: windows-2016
-            CXX: clang++
+            cxx: clang++
 
           - name: windows-2019-cl
             os: windows-2019
-            CXX: cl
+            cxx: cl
 
           - name: windows-2016-gcc
             os: windows-2016
-            CXX: g++
+            cxx: g++
 
           - name: windows-2019-clang-cl
             os: windows-2019
-            CXX: clang-cl
+            cxx: clang-cl
 
           - name: windows-2019-clang
             os: windows-2019
-            CXX: clang++
+            cxx: clang++
 
           - name: windows-2019-gcc
             os: windows-2019
-            CXX: g++
+            cxx: g++
 
           - name: macOS-10.14-Xcode-9.4.1
             os: macOS-10.14
             xcode: "9.4.1"
-            CXX: clang++
+            cxx: clang++
 
           - name: macOS-10.14-Xcode-10.0
             os: macOS-10.14
             xcode: "10"
-            CXX: clang++
+            cxx: clang++
 
           - name: macOS-10.14-Xcode-10.1
             os: macOS-10.14
             xcode: "10.1"
-            CXX: clang++
+            cxx: clang++
 
           - name: macOS-10.14-Xcode-10.2
             os: macOS-10.14
             xcode: "10.2"
-            CXX: clang++
+            cxx: clang++
 
           - name: macOS-10.14-Xcode-10.2.1
             os: macOS-10.14
             xcode: "10.2.1"
-            CXX: clang++
+            cxx: clang++
 
           - name: macOS-10.14-Xcode-10.3
             os: macOS-10.14
             xcode: "10.3"
-            CXX: clang++
+            cxx: clang++
 
     # Github Actions resets environment variables between steps so we have to
     # add the required environment variables at the start of each step.
@@ -197,16 +197,16 @@ jobs:
           sudo ln -s /usr/bin/clang-tidy-8 /usr/local/bin/clang-tidy
 
       - name: Install (Ubuntu GCC)
-        if: startsWith(matrix.os, 'ubuntu') && startsWith(matrix.Cxx, 'g++')
+        if: startsWith(matrix.os, 'ubuntu') && startsWith(matrix.cxx, 'g++')
         run: |
           sudo add-apt-repository ppa:ubuntu-toolchain-r/test
           sudo apt-get update
-          sudo apt-get install -y ${{ matrix.CXX }}
+          sudo apt-get install -y ${{ matrix.cxx }}
 
       - name: Install (Ubuntu Clang)
-        if: startsWith(matrix.os, 'ubuntu') && startsWith(matrix.Cxx, 'clang')
+        if: startsWith(matrix.os, 'ubuntu') && startsWith(matrix.cxx, 'clang')
         run: |
-          CLANG_VERSION=`cut -d '-' -f2 <<< ${{ matrix.CXX }}`
+          CLANG_VERSION=`cut -d '-' -f2 <<< ${{ matrix.cxx }}`
 
           if dpkg --compare-versions $CLANG_VERSION gt 3.8; then
             sudo add-apt-repository "deb http://apt.llvm.org/xenial/ llvm-toolchain-xenial-$CLANG_VERSION main"
@@ -237,7 +237,7 @@ jobs:
             -B build \
             -S . \
             -G Ninja \
-            -DCMAKE_CXX_COMPILER=${{ matrix.CXX }}
+            -DCMAKE_CXX_COMPILER=${{ matrix.cxx }}
 
       - name: Configure (Windows)
         if: startsWith(matrix.os, 'windows')
@@ -249,7 +249,7 @@ jobs:
             -B build ^
             -S . ^
             -G Ninja ^
-            -DCMAKE_CXX_COMPILER=${{ matrix.CXX }}
+            -DCMAKE_CXX_COMPILER=${{ matrix.cxx }}
 
       - name: Build Debug (Ubuntu && macOS)
         if: startsWith(matrix.os, 'ubuntu') || startsWith(matrix.os, 'macOS')
