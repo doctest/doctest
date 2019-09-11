@@ -237,7 +237,6 @@ jobs:
             -B build \
             -S . \
             -G Ninja \
-            -DCMAKE_BUILD_TYPE=Debug \
             -DCMAKE_CXX_COMPILER=${{ matrix.CXX }}
 
       - name: Configure (Windows)
@@ -250,17 +249,32 @@ jobs:
             -B build ^
             -S . ^
             -G Ninja ^
-            -DCMAKE_BUILD_TYPE=Debug ^
             -DCMAKE_CXX_COMPILER=${{ matrix.CXX }}
 
-      - name: Build (Ubuntu && macOS)
+      - name: Build Debug (Ubuntu && macOS)
         if: startsWith(matrix.os, 'ubuntu') || startsWith(matrix.os, 'macOS')
-        run: cmake --build build
+        run: |
+          cmake -DCMAKE_BUILD_TYPE=Debug build
+          cmake --build build
 
-      - name: Build (Windows)
+      - name: Build Debug (Windows)
         if: startsWith(matrix.os, 'windows')
         run: |
           call .github\workflows\vsenv.bat -arch=x64 -host_arch=x64
+          cmake -DCMAKE_BUILD_TYPE=Debug build
+          cmake --build build
+
+      - name: Build Release (Ubuntu && macOS)
+        if: startsWith(matrix.os, 'ubuntu') || startsWith(matrix.os, 'macOS')
+        run: |
+          cmake -DCMAKE_BUILD_TYPE=Release build
+          cmake --build build
+
+      - name: Build Release (Windows)
+        if: startsWith(matrix.os, 'windows')
+        run: |
+          call .github\workflows\vsenv.bat -arch=x64 -host_arch=x64
+          cmake -DCMAKE_BUILD_TYPE=Release build
           cmake --build build
 
       - name: Test
