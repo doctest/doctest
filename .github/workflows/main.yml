@@ -162,15 +162,15 @@ jobs:
             CC: clang
             CXX: clang++
 
-          - name: macOS-10.14-clang
-            os: macOS-10.14
-            CC: clang
-            CXX: clang++
-
           - name: windows-2019-gcc
             os: windows-2019
             CC: gcc
             CXX: g++
+
+          - name: macOS-10.14-clang
+            os: macOS-10.14
+            CC: clang
+            CXX: clang++
 
     # Github Actions resets environment variables between steps so we have to
     # add the required environment variables at the start of each step.
