@@ -193,7 +193,7 @@ jobs:
           sudo add-apt-repository "deb http://apt.llvm.org/xenial/ llvm-toolchain-xenial-8 main"
           sudo apt-get update
 
-          sudo apt-get install -y ninja-build clang-tidy-8
+          sudo apt-get install -y ninja-build valgrind clang-tidy-8
           sudo ln -s /usr/bin/clang-tidy-8 /usr/local/bin/clang-tidy
 
       - name: Install (Ubuntu GCC)
@@ -218,7 +218,7 @@ jobs:
       - name: Install (macOS)
         if: startsWith(matrix.os, 'macOS')
         run: |
-          brew install ninja llvm
+          brew install ninja valgrind llvm
           sudo ln -s /usr/local/opt/llvm/bin/clang-tidy /usr/local/bin/clang-tidy
 
           sudo xcode-select -switch /Applications/Xcode_${{ matrix.xcode }}.app
@@ -264,6 +264,17 @@ jobs:
           cmake -DCMAKE_BUILD_TYPE=Debug build
           cmake --build build
 
+      - name: Test Debug Valgrind (Ubuntu && macOS)
+        if: startsWith(matrix.os, 'ubuntu') || startsWith(matrix.os, 'macOS')
+        run: |
+          cmake -DDOCTEST_TEST_MODE=VALGRIND build
+          cd build && ctest -j2 --output-on-failure
+
+      - name: Test Debug Compare
+        run: |
+          cmake -DDOCTEST_TEST_MODE=COMPARE build
+          cd build && ctest -j2 --output-on-failure
+
       - name: Build Release (Ubuntu && macOS)
         if: startsWith(matrix.os, 'ubuntu') || startsWith(matrix.os, 'macOS')
         run: |
@@ -276,6 +287,17 @@ jobs:
           call .github\workflows\vsenv.bat -arch=x64 -host_arch=x64
           cmake -DCMAKE_BUILD_TYPE=Release build
           cmake --build build
+
+      - name: Test Release Valgrind (Ubuntu && macOS)
+        if: startsWith(matrix.os, 'ubuntu') || startsWith(matrix.os, 'macOS')
+        run: |
+          cmake -DDOCTEST_TEST_MODE=VALGRIND build
+          cd build && ctest -j2 --output-on-failure
+
+      - name: Test Release Compare
+        run: |
+          cmake -DDOCTEST_TEST_MODE=COMPARE build
+          cd build && ctest -j2 --output-on-failure
 
       - name: Test
         run: |
