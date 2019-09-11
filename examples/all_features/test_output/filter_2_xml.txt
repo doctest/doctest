@@ -1,68 +1,79 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <doctest binary="all_features">
-  <Options order_by="file" rand_seed="324" first="0" last="4294967295" abort_after="0" subcase_filter_levels="2147483647" case_sensitive="false" no_throw="false" no_skip="false"/>
+  <Options order_by="name" rand_seed="324" first="0" last="4294967295" abort_after="0" subcase_filter_levels="2147483647" case_sensitive="false" no_throw="false" no_skip="false"/>
   <TestSuite>
-    <TestCase name="custom macros" filename="alternative_macros.cpp" line="0" skipped="true"/>
-    <TestCase name="normal macros" filename="assertion_macros.cpp" line="0" skipped="true"/>
-    <TestCase name="expressions should be evaluated only once" filename="assertion_macros.cpp" line="0" skipped="true"/>
-    <TestCase name="exceptions-related macros" filename="assertion_macros.cpp" line="0" skipped="true"/>
-    <TestCase name="exceptions-related macros for std::exception" filename="assertion_macros.cpp" line="0" skipped="true"/>
-    <TestCase name="WARN level of asserts don't fail the test case" filename="assertion_macros.cpp" line="0" skipped="true"/>
+    <TestCase name="  Scenario: vectors can be sized and resized" filename="subcases.cpp" line="0" skipped="true"/>
     <TestCase name="CHECK level of asserts fail the test case but don't abort it" filename="assertion_macros.cpp" line="0" skipped="true"/>
     <TestCase name="REQUIRE level of asserts fail and abort the test case - 1" filename="assertion_macros.cpp" line="0" skipped="true"/>
     <TestCase name="REQUIRE level of asserts fail and abort the test case - 2" filename="assertion_macros.cpp" line="0" skipped="true"/>
     <TestCase name="REQUIRE level of asserts fail and abort the test case - 3" filename="assertion_macros.cpp" line="0" skipped="true"/>
     <TestCase name="REQUIRE level of asserts fail and abort the test case - 4" filename="assertion_macros.cpp" line="0" skipped="true"/>
-    <TestCase name="REQUIRE level of asserts fail and abort the test case - 5" filename="assertion_macros.cpp" line="0" skipped="true"/>
     <TestCase name="REQUIRE level of asserts fail and abort the test case - 4" filename="assertion_macros.cpp" line="0" skipped="true"/>
+    <TestCase name="REQUIRE level of asserts fail and abort the test case - 5" filename="assertion_macros.cpp" line="0" skipped="true"/>
     <TestCase name="REQUIRE level of asserts fail and abort the test case - 5" filename="assertion_macros.cpp" line="0" skipped="true"/>
     <TestCase name="REQUIRE level of asserts fail and abort the test case - 6" filename="assertion_macros.cpp" line="0" skipped="true"/>
     <TestCase name="REQUIRE level of asserts fail and abort the test case - 7" filename="assertion_macros.cpp" line="0" skipped="true"/>
     <TestCase name="REQUIRE level of asserts fail and abort the test case - 8" filename="assertion_macros.cpp" line="0" skipped="true"/>
     <TestCase name="REQUIRE level of asserts fail and abort the test case - 9" filename="assertion_macros.cpp" line="0" skipped="true"/>
+    <TestCase name="WARN level of asserts don't fail the test case" filename="assertion_macros.cpp" line="0" skipped="true"/>
+    <TestCase name="[math] basic stuff" filename="main.cpp" line="0" skipped="true"/>
+    <TestCase name="[string] testing std::string" filename="main.cpp" line="0" skipped="true"/>
+    <TestCase name="a test case that registers an exception translator for int and then throws one" filename="stringification.cpp" line="0" skipped="true"/>
+    <TestCase name="a test case that will end from an exception" filename="logging.cpp" line="0" skipped="true"/>
+    <TestCase name="a test case that will end from an exception and should print the unprinted context" filename="logging.cpp" line="0" skipped="true"/>
+    <TestCase name="all asserts should fail and show how the objects get stringified" filename="stringification.cpp" line="0" skipped="true"/>
     <TestCase name="all binary assertions" filename="assertion_macros.cpp" line="0" skipped="true"/>
-    <TestCase name="some asserts used in a function called by a test case" filename="assertion_macros.cpp" line="0" skipped="true"/>
-    <TestCase name="threads..." filename="concurrency.cpp" line="0" skipped="true"/>
+    <TestCase name="an empty test that will succeed - not part of a test suite" filename="test_cases_and_suites.cpp" line="0" skipped="true"/>
+    <TestCase name="bad stringification of type pair&lt;int_pair>" filename="templated_test_cases.cpp" line="0" skipped="true"/>
+    <TestCase name="custom macros" filename="alternative_macros.cpp" line="0" skipped="true"/>
+    <TestCase name="default construction&lt;char>" filename="templated_test_cases.cpp" line="0" skipped="true"/>
+    <TestCase name="default construction&lt;double>" filename="templated_test_cases.cpp" line="0" skipped="true"/>
+    <TestCase name="default construction&lt;double>" filename="templated_test_cases.cpp" line="0" skipped="true"/>
+    <TestCase name="default construction&lt;int>" filename="templated_test_cases.cpp" line="0" skipped="true"/>
+    <TestCase name="default construction&lt;short int>" filename="templated_test_cases.cpp" line="0" skipped="true"/>
+    <TestCase name="default construction&lt;signed char>" filename="templated_test_cases.cpp" line="0" skipped="true"/>
+    <TestCase name="default construction&lt;unsigned char>" filename="templated_test_cases.cpp" line="0" skipped="true"/>
+  </TestSuite>
+  <TestSuite name="test suite with a description">
+    <TestCase name="doesn't fail but it should have" filename="test_cases_and_suites.cpp" line="0" description="regarding failures" should_fail="true" skipped="true"/>
+    <TestCase name="doesn't fail which is fine" filename="test_cases_and_suites.cpp" line="0" description="regarding failures" may_fail="true" skipped="true"/>
+  </TestSuite>
+  <TestSuite>
+    <TestCase name="exceptions-related macros" filename="assertion_macros.cpp" line="0" skipped="true"/>
+    <TestCase name="exceptions-related macros for std::exception" filename="assertion_macros.cpp" line="0" skipped="true"/>
+    <TestCase name="exercising tricky code paths of doctest" filename="coverage_maxout.cpp" line="0" skipped="true"/>
+    <TestCase name="explicit failures 1" filename="logging.cpp" line="0" skipped="true"/>
+    <TestCase name="explicit failures 2" filename="logging.cpp" line="0" skipped="true"/>
+    <TestCase name="expressions should be evaluated only once" filename="assertion_macros.cpp" line="0" skipped="true"/>
+  </TestSuite>
+  <TestSuite name="test suite with a description">
+    <TestCase name="fails - and its allowed" filename="test_cases_and_suites.cpp" line="0" description="regarding failures" may_fail="true" skipped="true"/>
+    <TestCase name="fails 1 time as it should" filename="test_cases_and_suites.cpp" line="0" description="regarding failures" skipped="true"/>
+    <TestCase name="fails as it should" filename="test_cases_and_suites.cpp" line="0" description="regarding failures" should_fail="true" skipped="true"/>
+  </TestSuite>
+  <TestSuite>
+    <TestCase name="fails from an exception but gets re-entered to traverse all subcases" filename="subcases.cpp" line="0" skipped="true"/>
+  </TestSuite>
+  <TestSuite name="test suite with a description">
+    <TestCase name="fails more times as it should" filename="test_cases_and_suites.cpp" line="0" description="regarding failures" skipped="true"/>
+  </TestSuite>
+  <TestSuite>
+    <TestCase name="fixtured test" filename="header.h" line="0" skipped="true"/>
+    <TestCase name="fixtured test - not part of a test suite" filename="test_cases_and_suites.cpp" line="0" skipped="true"/>
   </TestSuite>
   <TestSuite name="some TS">
     <TestCase name="in TS" filename="header.h" line="0" skipped="true"/>
   </TestSuite>
   <TestSuite>
-    <TestCase name="template 1&lt;char>" filename="header.h" line="0" skipped="true"/>
-    <TestCase name="template 2&lt;doctest::String>" filename="header.h" line="0" skipped="true"/>
-    <TestCase name="fixtured test" filename="header.h" line="0" skipped="true"/>
     <TestCase name="logging the counter of a loop" filename="logging.cpp" line="0" skipped="true"/>
-    <TestCase name="a test case that will end from an exception" filename="logging.cpp" line="0" skipped="true"/>
-    <TestCase name="a test case that will end from an exception and should print the unprinted context" filename="logging.cpp" line="0" skipped="true"/>
-    <TestCase name="third party asserts can report failures to doctest" filename="logging.cpp" line="0" skipped="true"/>
-    <TestCase name="explicit failures 1" filename="logging.cpp" line="0" skipped="true"/>
-    <TestCase name="explicit failures 2" filename="logging.cpp" line="0" skipped="true"/>
-    <TestCase name="[string] testing std::string" filename="main.cpp" line="0" skipped="true"/>
-    <TestCase name="[math] basic stuff" filename="main.cpp" line="0" skipped="true"/>
-    <TestCase name="all asserts should fail and show how the objects get stringified" filename="stringification.cpp" line="0" skipped="true"/>
-    <TestCase name="a test case that registers an exception translator for int and then throws one" filename="stringification.cpp" line="0" skipped="true"/>
     <TestCase name="lots of nested subcases" filename="subcases.cpp" line="0" skipped="true"/>
-    <TestCase name="subcases can be used in a separate function as well" filename="subcases.cpp" line="0" skipped="true"/>
-    <TestCase name="  Scenario: vectors can be sized and resized" filename="subcases.cpp" line="0" skipped="true"/>
-    <TestCase name="test case should fail even though the last subcase passes" filename="subcases.cpp" line="0" skipped="true"/>
-    <TestCase name="fails from an exception but gets re-entered to traverse all subcases" filename="subcases.cpp" line="0" skipped="true"/>
-    <TestCase name="signed integers stuff&lt;signed char>" filename="templated_test_cases.cpp" line="0" skipped="true"/>
-    <TestCase name="signed integers stuff&lt;short int>" filename="templated_test_cases.cpp" line="0" skipped="true"/>
-    <TestCase name="signed integers stuff&lt;int>" filename="templated_test_cases.cpp" line="0" skipped="true"/>
-    <TestCase name="vector stuff&lt;std::vector&lt;int>>" filename="templated_test_cases.cpp" line="0" skipped="true"/>
-    <TestCase name="default construction&lt;signed char>" filename="templated_test_cases.cpp" line="0" skipped="true"/>
-    <TestCase name="default construction&lt;short int>" filename="templated_test_cases.cpp" line="0" skipped="true"/>
-    <TestCase name="default construction&lt;int>" filename="templated_test_cases.cpp" line="0" skipped="true"/>
-    <TestCase name="default construction&lt;double>" filename="templated_test_cases.cpp" line="0" skipped="true"/>
-    <TestCase name="default construction&lt;double>" filename="templated_test_cases.cpp" line="0" skipped="true"/>
-    <TestCase name="default construction&lt;unsigned char>" filename="templated_test_cases.cpp" line="0" skipped="true"/>
-    <TestCase name="default construction&lt;char>" filename="templated_test_cases.cpp" line="0" skipped="true"/>
     <TestCase name="multiple types&lt;>" filename="templated_test_cases.cpp" line="0" skipped="true"/>
     <TestCase name="multiple types&lt;>" filename="templated_test_cases.cpp" line="0" skipped="true"/>
     <TestCase name="multiple types&lt;>" filename="templated_test_cases.cpp" line="0" skipped="true"/>
-    <TestCase name="bad stringification of type pair&lt;int_pair>" filename="templated_test_cases.cpp" line="0" skipped="true"/>
-    <TestCase name="an empty test that will succeed - not part of a test suite" filename="test_cases_and_suites.cpp" line="0" skipped="true"/>
-    <TestCase name="should fail because of an exception" filename="test_cases_and_suites.cpp" line="0" skipped="true"/>
+    <TestCase name="normal macros" filename="assertion_macros.cpp" line="0" skipped="true"/>
+  </TestSuite>
+  <TestSuite name="ts1">
+    <TestCase name="normal test in a test suite from a decorator" filename="test_cases_and_suites.cpp" line="0" skipped="true"/>
   </TestSuite>
   <TestSuite name="scoped test suite">
     <TestCase name="part of scoped" filename="test_cases_and_suites.cpp" line="0" skipped="true"/>
@@ -72,29 +83,32 @@
     <TestCase name="part of some TS" filename="test_cases_and_suites.cpp" line="0" skipped="true"/>
   </TestSuite>
   <TestSuite>
-    <TestCase name="fixtured test - not part of a test suite" filename="test_cases_and_suites.cpp" line="0" skipped="true"/>
+    <TestCase name="should fail because of an exception" filename="test_cases_and_suites.cpp" line="0" skipped="true"/>
+    <TestCase name="signed integers stuff&lt;int>" filename="templated_test_cases.cpp" line="0" skipped="true"/>
+    <TestCase name="signed integers stuff&lt;short int>" filename="templated_test_cases.cpp" line="0" skipped="true"/>
+    <TestCase name="signed integers stuff&lt;signed char>" filename="templated_test_cases.cpp" line="0" skipped="true"/>
   </TestSuite>
-  <TestSuite name="ts1">
-    <TestCase name="normal test in a test suite from a decorator" filename="test_cases_and_suites.cpp" line="0" skipped="true"/>
+  <TestSuite name="skipped test cases">
+    <TestCase name="skipped - inherited from the test suite" filename="test_cases_and_suites.cpp" line="0" skipped="true"/>
+  </TestSuite>
+  <TestSuite>
+    <TestCase name="some asserts used in a function called by a test case" filename="assertion_macros.cpp" line="0" skipped="true"/>
+    <TestCase name="subcases can be used in a separate function as well" filename="subcases.cpp" line="0" skipped="true"/>
+    <TestCase name="template 1&lt;char>" filename="header.h" line="0" skipped="true"/>
+    <TestCase name="template 2&lt;doctest::String>" filename="header.h" line="0" skipped="true"/>
+    <TestCase name="test case should fail even though the last subcase passes" filename="subcases.cpp" line="0" skipped="true"/>
+    <TestCase name="third party asserts can report failures to doctest" filename="logging.cpp" line="0" skipped="true"/>
+    <TestCase name="threads..." filename="concurrency.cpp" line="0" skipped="true"/>
   </TestSuite>
   <TestSuite name="skipped test cases">
     <TestCase name="unskipped" filename="test_cases_and_suites.cpp" line="0" description="this test has overrided its skip decorator" skipped="true"/>
-    <TestCase name="skipped - inherited from the test suite" filename="test_cases_and_suites.cpp" line="0" skipped="true"/>
-  </TestSuite>
-  <TestSuite name="test suite with a description">
-    <TestCase name="fails - and its allowed" filename="test_cases_and_suites.cpp" line="0" description="regarding failures" may_fail="true" skipped="true"/>
-    <TestCase name="doesn't fail which is fine" filename="test_cases_and_suites.cpp" line="0" description="regarding failures" may_fail="true" skipped="true"/>
-    <TestCase name="fails as it should" filename="test_cases_and_suites.cpp" line="0" description="regarding failures" should_fail="true" skipped="true"/>
-    <TestCase name="doesn't fail but it should have" filename="test_cases_and_suites.cpp" line="0" description="regarding failures" should_fail="true" skipped="true"/>
-    <TestCase name="fails 1 time as it should" filename="test_cases_and_suites.cpp" line="0" description="regarding failures" skipped="true"/>
-    <TestCase name="fails more times as it should" filename="test_cases_and_suites.cpp" line="0" description="regarding failures" skipped="true"/>
   </TestSuite>
   <TestSuite>
-    <TestCase name="exercising tricky code paths of doctest" filename="coverage_maxout.cpp" line="0" skipped="true"/>
+    <TestCase name="vector stuff&lt;std::vector&lt;int>>" filename="templated_test_cases.cpp" line="0" skipped="true"/>
   </TestSuite>
   <TestSuite name="exception related">
-    <TestCase name="will end from a std::string exception" filename="coverage_maxout.cpp" line="0" skipped="true"/>
     <TestCase name="will end from a const char* exception" filename="coverage_maxout.cpp" line="0" skipped="true"/>
+    <TestCase name="will end from a std::string exception" filename="coverage_maxout.cpp" line="0" skipped="true"/>
     <TestCase name="will end from an unknown exception" filename="coverage_maxout.cpp" line="0" skipped="true"/>
   </TestSuite>
   <OverallResultsAsserts successes="0" failures="0"/>
