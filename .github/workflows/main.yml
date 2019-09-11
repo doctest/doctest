@@ -218,8 +218,10 @@ jobs:
       - name: Install (macOS)
         if: startsWith(matrix.os, 'macOS')
         run: |
-          brew install ninja valgrind llvm
+          brew install ninja llvm
           sudo ln -s /usr/local/opt/llvm/bin/clang-tidy /usr/local/bin/clang-tidy
+
+          brew install --HEAD valgrind
 
           sudo xcode-select -switch /Applications/Xcode_${{ matrix.xcode }}.app
 
