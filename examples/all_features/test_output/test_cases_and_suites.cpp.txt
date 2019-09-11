@@ -43,7 +43,7 @@ test_cases_and_suites.cpp(0): MESSAGE: failing because of the timeout decorator!
 Test case exceeded time limit of 0.000001!
 ===============================================================================
 test_cases_and_suites.cpp(0):
-DESCRIPTION: this test has overrided its skip decorator
+DESCRIPTION: this test has overridden its skip decorator
 TEST SUITE: skipped test cases
 TEST CASE:  unskipped
 
