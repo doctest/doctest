@@ -203,8 +203,11 @@ jobs:
         run: |
           CLANG_VERSION=`cut -d '-' -f2 <<< ${{ matrix.CC }}`
 
-          sudo add-apt-repository "deb http://apt.llvm.org/xenial/ llvm-toolchain-xenial-$CLANG_VERSION main"
-          sudo apt-get update
+          if dpkg --compare-versions $CLANG_VERSION gt 3.8; then
+            sudo add-apt-repository "deb http://apt.llvm.org/xenial/ llvm-toolchain-xenial-$CLANG_VERSION main"
+            sudo apt-get update
+          fi
+
           sudo apt-get install -y ${{ matrix.CC }}
 
       - name: Install (macOS)
