@@ -230,26 +230,29 @@ jobs:
           iex (new-object net.webclient).downloadstring('https://get.scoop.sh')
           scoop install ninja llvm --global
 
+      # YAML folded multiline strings ('>') require the same indentation for all
+      # lines in order to turn newlines into spaces.
+
       - name: Configure (Ubuntu && macOS)
         if: startsWith(matrix.os, 'ubuntu') || startsWith(matrix.os, 'macOS')
-        run: |
-          cmake \
-            -B build \
-            -S . \
-            -G Ninja \
-            -DCMAKE_CXX_COMPILER=${{ matrix.cxx }}
+        run: >
+          cmake
+          -B build
+          -S .
+          -G Ninja
+          -DCMAKE_CXX_COMPILER=${{ matrix.cxx }}
 
       - name: Configure (Windows)
         if: startsWith(matrix.os, 'windows')
-        run: |
-          set PATH=C:\ProgramData\scoop\shims;%PATH%
-          call .github\workflows\vsenv.bat -arch=x64 -host_arch=x64
+        run: >
+          set PATH=C:\ProgramData\scoop\shims;%PATH% &
+          call .github\workflows\vsenv.bat -arch=x64 -host_arch=x64 &
 
-          cmake ^
-            -B build ^
-            -S . ^
-            -G Ninja ^
-            -DCMAKE_CXX_COMPILER=${{ matrix.cxx }}
+          cmake
+          -B build
+          -S .
+          -G Ninja
+          -DCMAKE_CXX_COMPILER=${{ matrix.cxx }}
 
       - name: Build Debug (Ubuntu && macOS)
         if: startsWith(matrix.os, 'ubuntu') || startsWith(matrix.os, 'macOS')
