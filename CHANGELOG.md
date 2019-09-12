@@ -108,7 +108,7 @@
 
 - Fix unmatched bracket in DOCTEST\_TEST\_CASE\_CLASS [\#204](https://github.com/onqtam/doctest/pull/204) ([patstew](https://github.com/patstew))
 - Template apply [\#203](https://github.com/onqtam/doctest/pull/203) ([zhihaoy](https://github.com/zhihaoy))
-- No undefined behavior per C++ standard in detecting endianess. [\#195](https://github.com/onqtam/doctest/pull/195) ([dimztimz](https://github.com/dimztimz))
+- No undefined behavior per C++ standard in detecting endianness. [\#195](https://github.com/onqtam/doctest/pull/195) ([dimztimz](https://github.com/dimztimz))
 - Fix propagating include directories of target doctest\_with\_main [\#193](https://github.com/onqtam/doctest/pull/193) ([dimztimz](https://github.com/dimztimz))
 -  Move single header to a separate folder [\#187](https://github.com/onqtam/doctest/pull/187) ([dimztimz](https://github.com/dimztimz))
 - Fix Clang format to handle C++11 [\#186](https://github.com/onqtam/doctest/pull/186) ([dimztimz](https://github.com/dimztimz))
@@ -250,7 +250,7 @@
 - Nullptr issue. [\#110](https://github.com/onqtam/doctest/issues/110)
 - MemorySanitizer: use-of-uninitialized-value [\#109](https://github.com/onqtam/doctest/issues/109)
 - Potential memory leak through scan-build [\#108](https://github.com/onqtam/doctest/issues/108)
-- Warnings raised to error with lastest MSVC version [\#107](https://github.com/onqtam/doctest/issues/107)
+- Warnings raised to error with latest MSVC version [\#107](https://github.com/onqtam/doctest/issues/107)
 - New solution for tests in static libraries ! \(MSVC\) [\#106](https://github.com/onqtam/doctest/issues/106)
 - Command line flags do not work after code formatter/beautifier [\#104](https://github.com/onqtam/doctest/issues/104)
 - Cppcheck 1.81 warnings [\#102](https://github.com/onqtam/doctest/issues/102)
@@ -422,7 +422,7 @@
 
 **Merged pull requests:**
 
-- dont show green when tests fail [\#26](https://github.com/onqtam/doctest/pull/26) ([ferkulat](https://github.com/ferkulat))
+- don't show green when tests fail [\#26](https://github.com/onqtam/doctest/pull/26) ([ferkulat](https://github.com/ferkulat))
 - Include "program code" in example [\#15](https://github.com/onqtam/doctest/pull/15) ([martinmoene](https://github.com/martinmoene))
 
 ## [1.0.0](https://github.com/onqtam/doctest/tree/1.0.0) (2016-05-22)

@@ -51,7 +51,7 @@ static bool shouldSkip() { return false; }
 
 TEST_SUITE("skipped test cases" * doctest::skip()) {
     TEST_CASE("unskipped" * doctest::skip(shouldSkip()) *
-              doctest::description("this test has overrided its skip decorator")) {
+              doctest::description("this test has overridden its skip decorator")) {
         FAIL("");
     }
     TEST_CASE("skipped - inherited from the test suite") { FAIL(""); }

@@ -1594,7 +1594,7 @@ namespace detail {
 
         const bool isWarn = m_severity & assertType::is_warn;
 
-        // warn is just a message in this context so we dont treat it as an assert
+        // warn is just a message in this context so we don't treat it as an assert
         if(!isWarn) {
             addAssert(m_severity);
             addFailedAssert(m_severity);
@@ -2743,7 +2743,7 @@ namespace {
 
     // the implementation of parseOption()
     bool parseOptionImpl(int argc, const char* const* argv, const char* pattern, String* value) {
-        // going from the end to the begining and stopping on the first occurance from the end
+        // going from the end to the beginning and stopping on the first occurrence from the end
         for(int i = argc; i > 0; --i) {
             auto index = i - 1;
             auto temp = std::strstr(argv[index], pattern);

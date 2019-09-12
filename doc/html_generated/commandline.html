@@ -27,7 +27,7 @@ All the options can also be set with code (defaults/overrides) if the user [**su
 | ```-lts``` ```--list-test-suites``` | Lists all test suites by name which have at least one test case matching the current filters (see below) |
 | ```-lr``` ```--list-reporters``` | Lists all registered [**reporters**](reporters.html) |
 | **Int/String Options** | <hr> |
-| ```-tc``` &nbsp; ```--test-case=<filters>``` | Filters test cases based on their name. By default all test cases match but if a value is given to this filter like ```--test-case=*math*,*sound*``` then only test cases who match atleast one of the patterns in the comma-separated list with wildcards will get executed/counted/listed |
+| ```-tc``` &nbsp; ```--test-case=<filters>``` | Filters test cases based on their name. By default all test cases match but if a value is given to this filter like ```--test-case=*math*,*sound*``` then only test cases who match at least one of the patterns in the comma-separated list with wildcards will get executed/counted/listed |
 | ```-tce``` ```--test-case-exclude=<filters>``` | Same as the ```-test-case=<filters>``` option but if any of the patterns in the comma-separated list of values matches - then the test case is skipped |
 | ```-sf``` &nbsp; ```--source-file=<filters>``` | Same as ```--test-case=<filters>``` but filters based on the file in which test cases are written |
 | ```-sfe``` ```--source-file-exclude=<filters>``` | Same as ```--test-case-exclude=<filters>``` but filters based on the file in which test cases are written |

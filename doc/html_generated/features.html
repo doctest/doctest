@@ -16,7 +16,7 @@
 - doesn't drag any headers when included (except for in the translation unit where the library gets implemented)
 - everything is in the ```doctest``` namespace (and the implementation details are in a nested ```detail``` namespace)
 - all macros have prefixes - some by default have unprefixed versions as well but that is optional - see [**configuration**](configuration.html)
-- 0 warnings even with the most aggresive flags (on all tested compilers!!!)
+- 0 warnings even with the most aggressive flags (on all tested compilers!!!)
 	- ```-Weverything -pedantic``` for **clang**
 	- ```-Wall -Wextra -pedantic``` and **>> over 35 <<** other warnings **not** covered by these flags for **GCC**!!! - see [**here**](../../scripts/cmake/common.cmake#L84)
 	- ```/Wall``` for **MSVC** (except for: ```C4514```, ```C4571```, ```C4710```, ```C4711```)
