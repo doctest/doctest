@@ -13,23 +13,23 @@ jobs:
         # Github Actions requires a single row to be added to the build matrix.
         # See https://help.github.com/en/articles/workflow-syntax-for-github-actions.
         name: [
-          ubuntu-16.04-gcc-4.8,
-          ubuntu-16.04-gcc-4.9,
-          ubuntu-16.04-gcc-5,
-          ubuntu-16.04-gcc-6,
-          ubuntu-16.04-gcc-7,
-          ubuntu-16.04-gcc-8,
-          ubuntu-16.04-gcc-9,
-          ubuntu-16.04-clang-3.5,
-          ubuntu-16.04-clang-3.6,
-          ubuntu-16.04-clang-3.7,
-          ubuntu-16.04-clang-3.8,
-          ubuntu-16.04-clang-3.9,
-          ubuntu-16.04-clang-4.0,
-          ubuntu-16.04-clang-5.0,
-          ubuntu-16.04-clang-6.0,
-          ubuntu-16.04-clang-7,
-          ubuntu-16.04-clang-8,
+          ubuntu-18.04-gcc-4.8,
+          ubuntu-18.04-gcc-4.9,
+          ubuntu-18.04-gcc-5,
+          ubuntu-18.04-gcc-6,
+          ubuntu-18.04-gcc-7,
+          ubuntu-18.04-gcc-8,
+          ubuntu-18.04-gcc-9,
+          ubuntu-18.04-clang-3.5,
+          ubuntu-18.04-clang-3.6,
+          ubuntu-18.04-clang-3.7,
+          ubuntu-18.04-clang-3.8,
+          ubuntu-18.04-clang-3.9,
+          ubuntu-18.04-clang-4.0,
+          ubuntu-18.04-clang-5.0,
+          ubuntu-18.04-clang-6.0,
+          ubuntu-18.04-clang-7,
+          ubuntu-18.04-clang-8,
           windows-2016-cl,
           windows-2016-clang-cl,
           windows-2016-clang,
@@ -47,139 +47,152 @@ jobs:
         ]
 
         include:
-          - name: ubuntu-16.04-gcc-4.8
-            os: ubuntu-16.04
-            cxx: g++-4.8
+          - name: ubuntu-18.04-gcc-4.8
+            os: ubuntu-18.04
+            compiler: gcc
+            version: "4.8"
 
-          - name: ubuntu-16.04-gcc-4.9
-            os: ubuntu-16.04
-            cxx: g++-4.9
+          - name: ubuntu-18.04-gcc-4.9
+            os: ubuntu-18.04
+            compiler: gcc
+            version: "4.9"
 
-          - name: ubuntu-16.04-gcc-5
-            os: ubuntu-16.04
-            cxx: g++-5
+          - name: ubuntu-18.04-gcc-5
+            os: ubuntu-18.04
+            compiler: gcc
+            version: "5"
 
-          - name: ubuntu-16.04-gcc-6
-            os: ubuntu-16.04
-            cxx: g++-6
+          - name: ubuntu-18.04-gcc-6
+            os: ubuntu-18.04
+            compiler: gcc
+            version: "6"
 
-          - name: ubuntu-16.04-gcc-7
-            os: ubuntu-16.04
-            cxx: g++-7
+          - name: ubuntu-18.04-gcc-7
+            os: ubuntu-18.04
+            compiler: gcc
+            version: "7"
 
-          - name: ubuntu-16.04-gcc-8
-            os: ubuntu-16.04
-            cxx: g++-8
+          - name: ubuntu-18.04-gcc-8
+            os: ubuntu-18.04
+            compiler: gcc
+            version: "8"
 
-          - name: ubuntu-16.04-gcc-9
-            os: ubuntu-16.04
-            cxx: g++-9
+          - name: ubuntu-18.04-gcc-9
+            os: ubuntu-18.04
+            compiler: gcc
+            version: "9"
 
-          - name: ubuntu-16.04-clang-3.5
-            os: ubuntu-16.04
-            cxx: clang++-3.5
+          - name: ubuntu-18.04-clang-3.5
+            os: ubuntu-18.04
+            compiler: clang
+            version: "3.5"
 
-          - name: ubuntu-16.04-clang-3.6
-            os: ubuntu-16.04
-            cxx: clang++-3.6
+          - name: ubuntu-18.04-clang-3.6
+            os: ubuntu-18.04
+            compiler: clang
+            version: "3.6"
 
-          - name: ubuntu-16.04-clang-3.7
-            os: ubuntu-16.04
-            cxx: clang++-3.7
+          - name: ubuntu-18.04-clang-3.7
+            os: ubuntu-18.04
+            compiler: clang
+            version: "3.7"
 
-          - name: ubuntu-16.04-clang-3.8
-            os: ubuntu-16.04
-            cxx: clang++-3.8
+          - name: ubuntu-18.04-clang-3.8
+            os: ubuntu-18.04
+            compiler: clang
+            version: "3.8"
 
-          - name: ubuntu-16.04-clang-3.9
-            os: ubuntu-16.04
-            cxx: clang++-3.9
+          - name: ubuntu-18.04-clang-3.9
+            os: ubuntu-18.04
+            compiler: clang
+            version: "3.9"
 
-          - name: ubuntu-16.04-clang-4.0
-            os: ubuntu-16.04
-            cxx: clang++-4.0
+          - name: ubuntu-18.04-clang-4.0
+            os: ubuntu-18.04
+            compiler: clang
+            version: "4.0"
 
-          - name: ubuntu-16.04-clang-5.0
-            os: ubuntu-16.04
-            cxx: clang++-5.0
+          - name: ubuntu-18.04-clang-5.0
+            os: ubuntu-18.04
+            compiler: clang
+            version: "5.0"
 
-          - name: ubuntu-16.04-clang-6.0
-            os: ubuntu-16.04
-            cxx: clang++-6.0
+          - name: ubuntu-18.04-clang-6.0
+            os: ubuntu-18.04
+            compiler: clang
+            version: "6.0"
 
-          - name: ubuntu-16.04-clang-7
-            os: ubuntu-16.04
-            cxx: clang++-7
+          - name: ubuntu-18.04-clang-7
+            os: ubuntu-18.04
+            compiler: clang
+            version: "7"
 
-          - name: ubuntu-16.04-clang-8
-            os: ubuntu-16.04
-            cxx: clang++-8
+          - name: ubuntu-18.04-clang-8
+            os: ubuntu-18.04
+            compiler: clang
+            version: "8"
 
           - name: windows-2016-cl
             os: windows-2016
-            cxx: cl
+            compiler: cl
 
           - name: windows-2016-clang-cl
             os: windows-2016
-            cxx: clang-cl
+            compiler: clang-cl
 
           - name: windows-2016-clang
             os: windows-2016
-            cxx: clang++
+            compiler: clang
 
           - name: windows-2019-cl
             os: windows-2019
-            cxx: cl
+            compiler: cl
 
           - name: windows-2016-gcc
             os: windows-2016
-            cxx: g++
+            compiler: gcc
 
           - name: windows-2019-clang-cl
             os: windows-2019
-            cxx: clang-cl
+            compiler: clang-cl
 
           - name: windows-2019-clang
             os: windows-2019
-            cxx: clang++
+            compiler: clang
 
           - name: windows-2019-gcc
             os: windows-2019
-            cxx: g++
+            compiler: gcc
 
           - name: macOS-10.14-Xcode-9.4.1
             os: macOS-10.14
-            xcode: "9.4.1"
-            cxx: clang++
+            compiler: xcode
+            version: "9.4.1"
 
           - name: macOS-10.14-Xcode-10.0
             os: macOS-10.14
-            xcode: "10"
-            cxx: clang++
+            compiler: xcode
+            version: "10"
 
           - name: macOS-10.14-Xcode-10.1
             os: macOS-10.14
-            xcode: "10.1"
-            cxx: clang++
+            compiler: xcode
+            version: "10.1"
 
           - name: macOS-10.14-Xcode-10.2
             os: macOS-10.14
-            xcode: "10.2"
-            cxx: clang++
+            compiler: xcode
+            version: "10.2"
 
           - name: macOS-10.14-Xcode-10.2.1
             os: macOS-10.14
-            xcode: "10.2.1"
-            cxx: clang++
+            compiler: xcode
+            version: "10.2.1"
 
           - name: macOS-10.14-Xcode-10.3
             os: macOS-10.14
-            xcode: "10.3"
-            cxx: clang++
-
-    # Github Actions resets environment variables between steps so we have to
-    # add the required environment variables at the start of each step.
-    # See https://github.community/t5/GitHub-Actions/Support-global-environment-variables/td-p/30481.
+            compiler: xcode
+            version: "10.3"
 
     steps:
       - uses: actions/checkout@v1
@@ -190,82 +203,60 @@ jobs:
           curl -sSL https://github.com/Kitware/CMake/releases/download/v3.13.5/cmake-3.13.5-Linux-x86_64.tar.gz -o cmake.tar.gz
           sudo tar xf cmake.tar.gz --strip 1 -C /usr/local
 
-          sudo add-apt-repository "deb http://apt.llvm.org/xenial/ llvm-toolchain-xenial-8 main"
+          sudo apt-get install -y ninja-build valgrind
+
+          sudo add-apt-repository "deb http://dk.archive.ubuntu.com/ubuntu/ xenial main"
+          sudo add-apt-repository "deb http://dk.archive.ubuntu.com/ubuntu/ xenial universe"
           sudo apt-get update
 
-          sudo apt-get install -y ninja-build valgrind clang-tidy-8
-          sudo ln -s /usr/bin/clang-tidy-8 /usr/local/bin/clang-tidy
-
-      - name: Install (Ubuntu GCC)
-        if: startsWith(matrix.os, 'ubuntu') && startsWith(matrix.cxx, 'g++')
-        run: |
-          sudo add-apt-repository ppa:ubuntu-toolchain-r/test
-          sudo apt-get update
-          sudo apt-get install -y ${{ matrix.cxx }}
-
-      - name: Install (Ubuntu Clang)
-        if: startsWith(matrix.os, 'ubuntu') && startsWith(matrix.cxx, 'clang')
-        run: |
-          CLANG_VERSION=`cut -d '-' -f2 <<< ${{ matrix.cxx }}`
-
-          if dpkg --compare-versions $CLANG_VERSION gt 3.8; then
-            sudo add-apt-repository "deb http://apt.llvm.org/xenial/ llvm-toolchain-xenial-$CLANG_VERSION main"
-            sudo apt-get update
+          if [ "${{ matrix.compiler }}" = "gcc" ]; then
+            sudo apt-get install -y g++-${{ matrix.version }}
+            echo ::set-env name=CC::gcc-${{ matrix.version }}
+            echo ::set-env name=CXX::g++-${{ matrix.version }}
+          else
+            sudo apt-get install -y clang-${{ matrix.version }}
+            echo ::set-env name=CC::clang-${{ matrix.version }}
+            echo ::set-env name=CXX::clang++-${{ matrix.version }}
           fi
-
-          sudo apt-get install -y clang-$CLANG_VERSION
 
       - name: Install (macOS)
         if: startsWith(matrix.os, 'macOS')
         run: |
-          brew install ninja llvm
-          sudo ln -s /usr/local/opt/llvm/bin/clang-tidy /usr/local/bin/clang-tidy
-
-          sudo xcode-select -switch /Applications/Xcode_${{ matrix.xcode }}.app
+          brew install ninja
+          sudo xcode-select -switch /Applications/Xcode_${{ matrix.version }}.app
 
       - name: Install (Windows)
         if: startsWith(matrix.os, 'windows')
         shell: powershell
         run: |
           iex (new-object net.webclient).downloadstring('https://get.scoop.sh')
-          scoop install ninja llvm --global
+          scoop install ninja --global
 
-      # YAML folded multiline strings ('>') require the same indentation for all
-      # lines in order to turn newlines into spaces.
+          if ("${{ matrix.compiler }}".StartsWith("clang")) {
+            scoop install llvm --global
+          }
 
-      - name: Configure (Ubuntu && macOS)
-        if: startsWith(matrix.os, 'ubuntu') || startsWith(matrix.os, 'macOS')
-        run: >
-          cmake
-          -B build
-          -S .
-          -G Ninja
-          -DCMAKE_CXX_COMPILER=${{ matrix.cxx }}
+          if ("${{ matrix.compiler }}" -eq "gcc") {
+            echo ::set-env name=CC::gcc
+            echo ::set-env name=CXX::g++
+          } elseif ("${{ matrix.compiler }}" -eq "clang") {
+            echo ::set-env name=CC::clang
+            echo ::set-env name=CXX::clang++
+          } else {
+            echo ::set-env name=CC::${{ matrix.compiler }}
+            echo ::set-env name=CXX::${{ matrix.compiler }}
+          }
 
-      - name: Configure (Windows)
-        if: startsWith(matrix.os, 'windows')
-        run: >
-          set PATH=C:\ProgramData\scoop\shims;%PATH% &
-          call .github\workflows\vsenv.bat -arch=x64 -host_arch=x64 &
+          & .github\workflows\vsenv.bat -arch=x64 -host_arch=x64
 
-          cmake
-          -B build
-          -S .
-          -G Ninja
-          -DCMAKE_CXX_COMPILER=${{ matrix.cxx }}
+      - name: Configure
+        run: cmake -B build -S . -G Ninja
 
-      - name: Build Debug (Ubuntu && macOS)
-        if: startsWith(matrix.os, 'ubuntu') || startsWith(matrix.os, 'macOS')
+      - name: Build & Test Debug
         run: |
-          cmake -DCMAKE_BUILD_TYPE=Debug build
+          cmake -DCMAKE_BUILD_TYPE=Debug -DDOCTEST_TEST_MODE=COMPARE build
           cmake --build build
-
-      - name: Build Debug (Windows)
-        if: startsWith(matrix.os, 'windows')
-        run: |
-          call .github\workflows\vsenv.bat -arch=x64 -host_arch=x64
-          cmake -DCMAKE_BUILD_TYPE=Debug build
-          cmake --build build
+          cd build && ctest -j2 --output-on-failure
 
       - name: Test Debug Valgrind (Ubuntu)
         if: startsWith(matrix.os, 'ubuntu')
@@ -273,36 +264,14 @@ jobs:
           cmake -DDOCTEST_TEST_MODE=VALGRIND build
           cd build && ctest -j2 --output-on-failure
 
-      - name: Test Debug Compare
+      - name: Build & Test Release
         run: |
-          cmake -DDOCTEST_TEST_MODE=COMPARE build
+          cmake -DCMAKE_BUILD_TYPE=Release -DDOCTEST_TEST_MODE=COMPARE build
+          cmake --build build
           cd build && ctest -j2 --output-on-failure
-
-      - name: Build Release (Ubuntu && macOS)
-        if: startsWith(matrix.os, 'ubuntu') || startsWith(matrix.os, 'macOS')
-        run: |
-          cmake -DCMAKE_BUILD_TYPE=Release build
-          cmake --build build
-
-      - name: Build Release (Windows)
-        if: startsWith(matrix.os, 'windows')
-        run: |
-          call .github\workflows\vsenv.bat -arch=x64 -host_arch=x64
-          cmake -DCMAKE_BUILD_TYPE=Release build
-          cmake --build build
 
       - name: Test Release Valgrind (Ubuntu)
         if: startsWith(matrix.os, 'ubuntu')
         run: |
           cmake -DDOCTEST_TEST_MODE=VALGRIND build
           cd build && ctest -j2 --output-on-failure
-
-      - name: Test Release Compare
-        run: |
-          cmake -DDOCTEST_TEST_MODE=COMPARE build
-          cd build && ctest -j2 --output-on-failure
-
-      - name: Test
-        run: |
-          cd build
-          ctest -j2 --output-on-failure
