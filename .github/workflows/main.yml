@@ -197,8 +197,8 @@ jobs:
     steps:
       - uses: actions/checkout@v1
 
-      - name: Install (Ubuntu)
-        if: startsWith(matrix.os, 'ubuntu')
+      - name: Install (Linux)
+        if: runner.os == 'Linux'
         run: |
           curl -sSL https://github.com/Kitware/CMake/releases/download/v3.13.5/cmake-3.13.5-Linux-x86_64.tar.gz -o cmake.tar.gz
           sudo tar xf cmake.tar.gz --strip 1 -C /usr/local
@@ -220,13 +220,13 @@ jobs:
           fi
 
       - name: Install (macOS)
-        if: startsWith(matrix.os, 'macOS')
+        if: runner.os == 'macOS'
         run: |
           brew install ninja
           sudo xcode-select -switch /Applications/Xcode_${{ matrix.version }}.app
 
       - name: Install (Windows)
-        if: startsWith(matrix.os, 'windows')
+        if: runner.os == 'Windows'
         shell: powershell
         run: |
           iex (new-object net.webclient).downloadstring('https://get.scoop.sh')
@@ -259,7 +259,7 @@ jobs:
           cd build && ctest -j2 --output-on-failure
 
       - name: Test Debug Valgrind (Ubuntu)
-        if: startsWith(matrix.os, 'ubuntu')
+        if: runner.os == 'Linux'
         run: |
           cmake -DDOCTEST_TEST_MODE=VALGRIND build
           cd build && ctest -j2 --output-on-failure
@@ -271,7 +271,7 @@ jobs:
           cd build && ctest -j2 --output-on-failure
 
       - name: Test Release Valgrind (Ubuntu)
-        if: startsWith(matrix.os, 'ubuntu')
+        if: runner.os == 'Linux'
         run: |
           cmake -DDOCTEST_TEST_MODE=VALGRIND build
           cd build && ctest -j2 --output-on-failure
