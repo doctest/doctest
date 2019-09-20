@@ -211,12 +211,12 @@ jobs:
 
           if [ "${{ matrix.compiler }}" = "gcc" ]; then
             sudo apt-get install -y g++-${{ matrix.version }}
-            echo ::set-env name=CC::gcc-${{ matrix.version }}
-            echo ::set-env name=CXX::g++-${{ matrix.version }}
+            echo "::set-env name=CC::gcc-${{ matrix.version }}"
+            echo "::set-env name=CXX::g++-${{ matrix.version }}"
           else
             sudo apt-get install -y clang-${{ matrix.version }}
-            echo ::set-env name=CC::clang-${{ matrix.version }}
-            echo ::set-env name=CXX::clang++-${{ matrix.version }}
+            echo "::set-env name=CC::clang-${{ matrix.version }}"
+            echo "::set-env name=CXX::clang++-${{ matrix.version }}"
           fi
 
       - name: Install (macOS)
@@ -237,14 +237,14 @@ jobs:
           }
 
           if ("${{ matrix.compiler }}" -eq "gcc") {
-            echo ::set-env name=CC::gcc
-            echo ::set-env name=CXX::g++
+            echo "::set-env name=CC::gcc"
+            echo "::set-env name=CXX::g++"
           } elseif ("${{ matrix.compiler }}" -eq "clang") {
-            echo ::set-env name=CC::clang
-            echo ::set-env name=CXX::clang++
+            echo "::set-env name=CC::clang"
+            echo "::set-env name=CXX::clang++"
           } else {
-            echo ::set-env name=CC::${{ matrix.compiler }}
-            echo ::set-env name=CXX::${{ matrix.compiler }}
+            echo "::set-env name=CC::${{ matrix.compiler }}"
+            echo "::set-env name=CXX::${{ matrix.compiler }}"
           }
 
           & .github\workflows\vsenv.bat -arch=x64 -host_arch=x64
