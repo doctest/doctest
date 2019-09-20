@@ -225,6 +225,9 @@ jobs:
           brew install ninja
           sudo xcode-select -switch /Applications/Xcode_${{ matrix.version }}.app
 
+          echo "::set-env name=CC::clang"
+          echo "::set-env name=CXX::clang++"
+
       - name: Install (Windows)
         if: runner.os == 'Windows'
         shell: powershell
