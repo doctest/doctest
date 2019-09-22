@@ -4,6 +4,7 @@
   <TestSuite>
     <TestCase name="  Scenario: vectors can be sized and resized" filename="subcases.cpp" line="0" skipped="true"/>
     <TestCase name="CHECK level of asserts fail the test case but don't abort it" filename="assertion_macros.cpp" line="0" skipped="true"/>
+    <TestCase name="Nested - related to https://github.com/onqtam/doctest/issues/282" filename="subcases.cpp" line="0" skipped="true"/>
     <TestCase name="REQUIRE level of asserts fail and abort the test case - 1" filename="assertion_macros.cpp" line="0" skipped="true"/>
     <TestCase name="REQUIRE level of asserts fail and abort the test case - 10" filename="assertion_macros.cpp" line="0" skipped="true"/>
     <TestCase name="REQUIRE level of asserts fail and abort the test case - 11" filename="assertion_macros.cpp" line="0" skipped="true"/>
@@ -114,6 +115,6 @@
     <TestCase name="will end from an unknown exception" filename="coverage_maxout.cpp" line="0" skipped="true"/>
   </TestSuite>
   <OverallResultsAsserts successes="0" failures="0"/>
-  <OverallResultsTestCases successes="0" failures="0" skipped="76"/>
+  <OverallResultsTestCases successes="0" failures="0" skipped="77"/>
 </doctest>
 Program code.

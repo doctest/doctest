@@ -698,12 +698,7 @@ struct DOCTEST_INTERFACE SubcaseSignature
     const char* m_file;
     int         m_line;
 
-    SubcaseSignature(const char* name, const char* file, int line);
-
     bool operator<(const SubcaseSignature& other) const;
-
-    DOCTEST_DECLARE_DEFAULTS(SubcaseSignature);
-    DOCTEST_DECLARE_COPIES(SubcaseSignature);
 };
 
 struct DOCTEST_INTERFACE IContextScope

@@ -113,3 +113,27 @@ TEST_CASE("fails from an exception but gets re-entered to traverse all subcases"
         throw_if(true, "failure... but the show must go on!");
     }
 }
+
+static void checks(int data)
+{
+    DOCTEST_SUBCASE("check data 1") { REQUIRE(data % 2 == 0); }
+    DOCTEST_SUBCASE("check data 2") { REQUIRE(data % 4 == 0); }
+}
+
+TEST_CASE("Nested - related to https://github.com/onqtam/doctest/issues/282")
+{
+    DOCTEST_SUBCASE("generate data variant 1")
+    {
+        int data(44);
+        
+        // checks
+        checks(data);
+    }
+    DOCTEST_SUBCASE("generate data variant 1")
+    {
+        int data(80);
+        
+        // checks (identical in both variants)
+        checks(data);
+    }
+}

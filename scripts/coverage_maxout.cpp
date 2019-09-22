@@ -27,7 +27,7 @@ TEST_CASE("exercising tricky code paths of doctest") {
     using namespace doctest;
 
     // trigger code path for comparing the file in "operator<" of SubcaseSignature
-    CHECK(SubcaseSignature("", "a.cpp", 0) < SubcaseSignature("", "b.cpp", 0));
+    CHECK(SubcaseSignature{"", "a.cpp", 0} < SubcaseSignature{"", "b.cpp", 0});
     // same for String
     CHECK(String("a.cpp") < String("b.cpp"));
 

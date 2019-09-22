@@ -701,12 +701,7 @@ struct DOCTEST_INTERFACE SubcaseSignature
     const char* m_file;
     int         m_line;
 
-    SubcaseSignature(const char* name, const char* file, int line);
-
     bool operator<(const SubcaseSignature& other) const;
-
-    DOCTEST_DECLARE_DEFAULTS(SubcaseSignature);
-    DOCTEST_DECLARE_COPIES(SubcaseSignature);
 };
 
 struct DOCTEST_INTERFACE IContextScope
@@ -2992,10 +2987,10 @@ namespace detail {
         std::vector<String> stringifiedContexts; // logging from INFO() due to an exception
 
         // stuff for subcases
-        std::set<SubcaseSignature> subcasesPassed;
-        std::set<int>              subcasesEnteredLevels;
-        int                        subcasesCurrentLevel;
-        bool                       should_reenter;
+        std::vector<SubcaseSignature>    subcaseStack;
+        std::set<decltype(subcaseStack)> subcasesPassed;
+        int                              subcasesCurrentMaxLevel;
+        bool                             should_reenter;
 
         void resetRunData() {
             numTestCases                = 0;
@@ -3336,14 +3331,6 @@ DOCTEST_DEFINE_DEFAULTS(AssertData);
 
 DOCTEST_DEFINE_DEFAULTS(MessageData);
 
-SubcaseSignature::SubcaseSignature(const char* name, const char* file, int line)
-        : m_name(name)
-        , m_file(file)
-        , m_line(line) {}
-
-DOCTEST_DEFINE_DEFAULTS(SubcaseSignature);
-DOCTEST_DEFINE_COPIES(SubcaseSignature);
-
 bool SubcaseSignature::operator<(const SubcaseSignature& other) const {
     if(m_line != other.m_line)
         return m_line < other.m_line;
@@ -3592,28 +3579,33 @@ namespace {
 namespace detail {
 
     Subcase::Subcase(const char* name, const char* file, int line)
-            : m_signature(name, file, line) {
+            : m_signature({name, file, line}) {
         ContextState* s = g_cs;
 
-        // if we have already completed it
-        if(s->subcasesPassed.count(m_signature) != 0)
-            return;
-
         // check subcase filters
-        if(s->subcasesCurrentLevel < s->subcase_filter_levels) {
+        if(s->subcaseStack.size() < size_t(s->subcase_filter_levels)) {
             if(!matchesAny(m_signature.m_name, s->filters[6], true, s->case_sensitive))
                 return;
             if(matchesAny(m_signature.m_name, s->filters[7], false, s->case_sensitive))
                 return;
         }
-
+        
         // if a Subcase on the same level has already been entered
-        if(s->subcasesEnteredLevels.count(s->subcasesCurrentLevel) != 0) {
+        if(s->subcaseStack.size() < size_t(s->subcasesCurrentMaxLevel)) {
             s->should_reenter = true;
             return;
         }
 
-        s->subcasesEnteredLevels.insert(s->subcasesCurrentLevel++);
+        // push the current signature to the stack so we can check if the
+        // current stack + the current new subcase have been traversed
+        s->subcaseStack.push_back(m_signature);
+        if(s->subcasesPassed.count(s->subcaseStack) != 0) {
+            // pop - revert to previous stack since we've already passed this
+            s->subcaseStack.pop_back();
+            return;
+        }
+
+        s->subcasesCurrentMaxLevel = s->subcaseStack.size();
         m_entered = true;
 
         DOCTEST_ITERATE_THROUGH_REPORTERS(subcase_start, m_signature);
@@ -3623,10 +3615,11 @@ namespace detail {
         if(m_entered) {
             ContextState* s = g_cs;
 
-            s->subcasesCurrentLevel--;
             // only mark the subcase as passed if no subcases have been skipped
             if(s->should_reenter == false)
-                s->subcasesPassed.insert(m_signature);
+                s->subcasesPassed.insert(s->subcaseStack);
+            
+            s->subcaseStack.pop_back();
 
             DOCTEST_ITERATE_THROUGH_REPORTERS(subcase_end, DOCTEST_EMPTY);
         }
@@ -4165,8 +4158,10 @@ namespace {
 
         DOCTEST_ITERATE_THROUGH_REPORTERS(test_case_exception, {message.c_str(), true});
 
-        while(g_cs->subcasesCurrentLevel--)
+        while(g_cs->subcaseStack.size()) {
+            g_cs->subcaseStack.pop_back();
             DOCTEST_ITERATE_THROUGH_REPORTERS(subcase_end, DOCTEST_EMPTY);
+        }
 
         g_cs->finalizeTestCaseData();
 
@@ -5907,9 +5902,9 @@ int Context::run() {
 
             do {
                 // reset some of the fields for subcases (except for the set of fully passed ones)
-                p->should_reenter       = false;
-                p->subcasesCurrentLevel = 0;
-                p->subcasesEnteredLevels.clear();
+                p->should_reenter          = false;
+                p->subcasesCurrentMaxLevel = 0;
+                p->subcaseStack.clear();
 
                 // reset stuff for logging with INFO()
                 p->stringifiedContexts.clear();

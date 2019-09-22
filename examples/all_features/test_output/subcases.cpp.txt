@@ -117,7 +117,7 @@ TEST CASE:  fails from an exception but gets re-entered to traverse all subcases
 subcases.cpp(0): ERROR: test case THREW exception: failure... but the show must go on!
 
 ===============================================================================
-[doctest] test cases:      5 |      1 passed |      4 failed | 
-[doctest] assertions:     21 |     15 passed |      6 failed |
+[doctest] test cases:      6 |      2 passed |      4 failed | 
+[doctest] assertions:     25 |     19 passed |      6 failed |
 [doctest] Status: FAILURE!
 Program code.
