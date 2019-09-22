@@ -142,6 +142,9 @@ root
             </Expanded>
           </Expression>
         </SubCase>
+        <Exception crash="false">
+          exception thrown in subcase - will translate later when the whole test case has been exited (cannot translate while there is an active exception)
+        </Exception>
       </SubCase>
       <Exception crash="false">
         failure... but the show must go on!
@@ -157,6 +160,9 @@ root
             </Expanded>
           </Expression>
         </SubCase>
+        <Exception crash="false">
+          exception thrown in subcase - will translate later when the whole test case has been exited (cannot translate while there is an active exception)
+        </Exception>
       </SubCase>
       <Exception crash="false">
         failure... but the show must go on!

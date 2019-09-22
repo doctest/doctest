@@ -2930,10 +2930,11 @@ namespace detail {
         std::vector<String> stringifiedContexts; // logging from INFO() due to an exception
 
         // stuff for subcases
-        std::vector<SubcaseSignature>    subcaseStack;
-        std::set<decltype(subcaseStack)> subcasesPassed;
-        int                              subcasesCurrentMaxLevel;
-        bool                             should_reenter;
+        std::vector<SubcaseSignature>     subcasesStack;
+        std::set<decltype(subcasesStack)> subcasesPassed;
+        int                               subcasesCurrentMaxLevel;
+        bool                              should_reenter;
+        std::atomic<bool>                 shouldLogCurrentException;
 
         void resetRunData() {
             numTestCases                = 0;
@@ -3436,7 +3437,10 @@ namespace detail {
     }
 
 #ifndef DOCTEST_CONFIG_NO_EXCEPTIONS
-    [[noreturn]] void throwException() { throw TestFailureException(); } // NOLINT(cert-err60-cpp)
+    [[noreturn]] void throwException() {
+        g_cs->shouldLogCurrentException = false;
+        throw TestFailureException();
+    } // NOLINT(cert-err60-cpp)
 #else // DOCTEST_CONFIG_NO_EXCEPTIONS
     void throwException() {}
 #endif // DOCTEST_CONFIG_NO_EXCEPTIONS
@@ -3509,7 +3513,7 @@ namespace detail {
         ContextState* s = g_cs;
 
         // check subcase filters
-        if(s->subcaseStack.size() < size_t(s->subcase_filter_levels)) {
+        if(s->subcasesStack.size() < size_t(s->subcase_filter_levels)) {
             if(!matchesAny(m_signature.m_name, s->filters[6], true, s->case_sensitive))
                 return;
             if(matchesAny(m_signature.m_name, s->filters[7], false, s->case_sensitive))
@@ -3517,39 +3521,50 @@ namespace detail {
         }
         
         // if a Subcase on the same level has already been entered
-        if(s->subcaseStack.size() < size_t(s->subcasesCurrentMaxLevel)) {
+        if(s->subcasesStack.size() < size_t(s->subcasesCurrentMaxLevel)) {
             s->should_reenter = true;
             return;
         }
 
         // push the current signature to the stack so we can check if the
         // current stack + the current new subcase have been traversed
-        s->subcaseStack.push_back(m_signature);
-        if(s->subcasesPassed.count(s->subcaseStack) != 0) {
+        s->subcasesStack.push_back(m_signature);
+        if(s->subcasesPassed.count(s->subcasesStack) != 0) {
             // pop - revert to previous stack since we've already passed this
-            s->subcaseStack.pop_back();
+            s->subcasesStack.pop_back();
             return;
         }
 
-        s->subcasesCurrentMaxLevel = s->subcaseStack.size();
+        s->subcasesCurrentMaxLevel = s->subcasesStack.size();
         m_entered = true;
 
         DOCTEST_ITERATE_THROUGH_REPORTERS(subcase_start, m_signature);
     }
 
+    DOCTEST_MSVC_SUPPRESS_WARNING_WITH_PUSH(4996) // std::uncaught_exception is deprecated in C++17
+    DOCTEST_GCC_SUPPRESS_WARNING_WITH_PUSH("-Wdeprecated-declarations")
+    DOCTEST_CLANG_SUPPRESS_WARNING_WITH_PUSH("-Wdeprecated-declarations")
     Subcase::~Subcase() {
         if(m_entered) {
-            ContextState* s = g_cs;
+            // only mark the subcase stack as passed if no subcases have been skipped
+            if(g_cs->should_reenter == false)
+                g_cs->subcasesPassed.insert(g_cs->subcasesStack);
+            g_cs->subcasesStack.pop_back();
 
-            // only mark the subcase as passed if no subcases have been skipped
-            if(s->should_reenter == false)
-                s->subcasesPassed.insert(s->subcaseStack);
-            
-            s->subcaseStack.pop_back();
-
+            if(std::uncaught_exception() && g_cs->shouldLogCurrentException) {
+                DOCTEST_ITERATE_THROUGH_REPORTERS(
+                        test_case_exception, {"exception thrown in subcase - will translate later "
+                                              "when the whole test case has been exited (cannot "
+                                              "translate while there is an active exception)",
+                                              false});
+                g_cs->shouldLogCurrentException = false;
+            }
             DOCTEST_ITERATE_THROUGH_REPORTERS(subcase_end, DOCTEST_EMPTY);
         }
     }
+    DOCTEST_CLANG_SUPPRESS_WARNING_POP
+    DOCTEST_GCC_SUPPRESS_WARNING_POP
+    DOCTEST_MSVC_SUPPRESS_WARNING_POP
 
     Subcase::operator bool() const { return m_entered; }
 
@@ -4074,8 +4089,8 @@ namespace {
 
         DOCTEST_ITERATE_THROUGH_REPORTERS(test_case_exception, {message.c_str(), true});
 
-        while(g_cs->subcaseStack.size()) {
-            g_cs->subcaseStack.pop_back();
+        while(g_cs->subcasesStack.size()) {
+            g_cs->subcasesStack.pop_back();
             DOCTEST_ITERATE_THROUGH_REPORTERS(subcase_end, DOCTEST_EMPTY);
         }
 
@@ -5818,7 +5833,9 @@ int Context::run() {
                 // reset some of the fields for subcases (except for the set of fully passed ones)
                 p->should_reenter          = false;
                 p->subcasesCurrentMaxLevel = 0;
-                p->subcaseStack.clear();
+                p->subcasesStack.clear();
+
+                p->shouldLogCurrentException = true;
 
                 // reset stuff for logging with INFO()
                 p->stringifiedContexts.clear();
