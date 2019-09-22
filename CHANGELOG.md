@@ -1,5 +1,35 @@
 # Change Log
 
+## [2.3.5](https://github.com/onqtam/doctest/tree/2.3.5) (2019-09-22)
+[Full Changelog](https://github.com/onqtam/doctest/compare/2.3.4...2.3.5)
+
+**Closed issues:**
+
+- \[feature request\] Assertion macros for throwing exception of a specific type with message - \<LEVEL\>\_THROWS\_WITH\_AS\(expr, string, ex\_type\) [\#295](https://github.com/onqtam/doctest/issues/295)
+- CHECK\_THROWS\_AS of non-default constructor wants to call default constructor [\#293](https://github.com/onqtam/doctest/issues/293)
+- Typos and spelling errors in source, documentation and scripts [\#291](https://github.com/onqtam/doctest/issues/291)
+- Customize test names / variable substitution [\#284](https://github.com/onqtam/doctest/issues/284)
+- SUBCASE in function not behaving as expected [\#282](https://github.com/onqtam/doctest/issues/282)
+- SUPER\_FAST\_ASSERTS fails to compile CHECK\_MESSAGE [\#281](https://github.com/onqtam/doctest/issues/281)
+- CHECK\_MESSAGE no longer works with DOCTEST\_CONFIG\_SUPER\_FAST\_ASSERTS [\#280](https://github.com/onqtam/doctest/issues/280)
+- CAPTURE of structured binding element no longer works [\#279](https://github.com/onqtam/doctest/issues/279)
+- Reporter: `test\_case\_end` no longer fired after test case restart [\#278](https://github.com/onqtam/doctest/issues/278)
+- Add debug break override support [\#277](https://github.com/onqtam/doctest/issues/277)
+- Running tests from within Visual Studio in a static lib project [\#275](https://github.com/onqtam/doctest/issues/275)
+- Compile-time error when using a raw string literal inside of REQUIRE \(MSVC 2017\) [\#274](https://github.com/onqtam/doctest/issues/274)
+- Give example for having tests in production code [\#252](https://github.com/onqtam/doctest/issues/252)
+- Memory leaks just by including doctest.h [\#205](https://github.com/onqtam/doctest/issues/205)
+- Feature request: print subcase when an exception is thrown inside one [\#136](https://github.com/onqtam/doctest/issues/136)
+
+**Merged pull requests:**
+
+- Fix typos and misspellings found by codespell. [\#292](https://github.com/onqtam/doctest/pull/292) ([warmsocks](https://github.com/warmsocks))
+- Document order by issue correctly [\#290](https://github.com/onqtam/doctest/pull/290) ([DaanDeMeyer](https://github.com/DaanDeMeyer))
+- Document that -order-by=file is compiler-dependent [\#289](https://github.com/onqtam/doctest/pull/289) ([DaanDeMeyer](https://github.com/DaanDeMeyer))
+- Add -order-by=name to filter\_2 test [\#288](https://github.com/onqtam/doctest/pull/288) ([DaanDeMeyer](https://github.com/DaanDeMeyer))
+- Add support for compiling with clang-cl [\#286](https://github.com/onqtam/doctest/pull/286) ([DaanDeMeyer](https://github.com/DaanDeMeyer))
+- No minimum version limitation of Meson [\#283](https://github.com/onqtam/doctest/pull/283) ([ydm](https://github.com/ydm))
+
 ## [2.3.4](https://github.com/onqtam/doctest/tree/2.3.4) (2019-08-12)
 [Full Changelog](https://github.com/onqtam/doctest/compare/2.3.3...2.3.4)
 
