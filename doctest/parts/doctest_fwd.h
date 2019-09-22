@@ -211,7 +211,8 @@ DOCTEST_MSVC_SUPPRESS_WARNING(26444) // Avoid unnamed objects with custom constr
     DOCTEST_MSVC_SUPPRESS_WARNING(5026)                                                            \
     DOCTEST_MSVC_SUPPRESS_WARNING(4623)                                                            \
     DOCTEST_MSVC_SUPPRESS_WARNING(5039)                                                            \
-    DOCTEST_MSVC_SUPPRESS_WARNING(5045)
+    DOCTEST_MSVC_SUPPRESS_WARNING(5045)                                                            \
+    DOCTEST_MSVC_SUPPRESS_WARNING(5105)
 
 #define DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_END DOCTEST_MSVC_SUPPRESS_WARNING_POP
 
