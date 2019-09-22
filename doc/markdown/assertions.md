@@ -105,6 +105,14 @@ Expects that an exception is thrown during evaluation of the expression and is s
 CHECK_THROWS_WITH(func(), "invalid operation!");
 ```
 
+- ```<LEVEL>_THROWS_WITH_AS(expression, c_string, exception_type)```
+
+This is a combination of ```<LEVEL>_THROWS_WITH``` and ```<LEVEL>_THROWS_AS```.
+
+```c++
+CHECK_THROWS_WITH_AS(func(), "invalid operation!", std::runtime_error);
+```
+
 - ```<LEVEL>_NOTHROW(expression)```
 
 Expects that no exception is thrown during evaluation of the expression.

@@ -36,6 +36,8 @@ TEST_CASE("exceptions-related macros") {
     CHECK_THROWS_AS(throw_if(false, 0), int); // fails
 
     CHECK_THROWS_WITH(throw_if(true, "whops!"), "whops! no match!"); // fails
+    CHECK_THROWS_WITH_AS(throw_if(true, "whops!"), "whops! no match!", bool); // fails
+    CHECK_THROWS_WITH_AS(throw_if(true, "whops!"), "whops!", int); // fails
 
     CHECK_NOTHROW(throw_if(true, 0)); // fails
     CHECK_NOTHROW(throw_if(false, 0));
@@ -64,6 +66,8 @@ TEST_CASE("WARN level of asserts don't fail the test case") {
     WARN_THROWS_WITH(throw_if(false, ""), "whops!");
     WARN_THROWS_AS(throw_if(false, 0), bool);
     WARN_THROWS_AS(throw_if(true, 0), bool);
+    WARN_THROWS_WITH_AS(throw_if(false, ""), "whops!", int);
+    WARN_THROWS_WITH_AS(throw_if(true, ""), "whops!", int);
     WARN_NOTHROW(throw_if(true, 0));
 
     WARN_EQ(1, 0);
@@ -78,6 +82,7 @@ TEST_CASE("CHECK level of asserts fail the test case but don't abort it") {
     CHECK_THROWS_AS(throw_if(false, 0), bool);
     CHECK_THROWS_AS(throw_if(true, 0), bool);
     CHECK_THROWS_WITH(throw_if(true, 0), "unrecognized");
+    CHECK_THROWS_WITH_AS(throw_if(true, 0), "unrecognized", int);
     CHECK_NOTHROW(throw_if(true, 0));
 
     CHECK_EQ(1, 0);
@@ -107,27 +112,35 @@ TEST_CASE("REQUIRE level of asserts fail and abort the test case - 5") {
     REQUIRE_THROWS_AS(throw_if(true, 0), bool);
     MESSAGE("should not be reached!");
 }
-TEST_CASE("REQUIRE level of asserts fail and abort the test case - 4") {
+TEST_CASE("REQUIRE level of asserts fail and abort the test case - 6") {
 	REQUIRE_THROWS_WITH(throw_if(false, ""), "whops!");
     MESSAGE("should not be reached!");
 }
-TEST_CASE("REQUIRE level of asserts fail and abort the test case - 5") {
+TEST_CASE("REQUIRE level of asserts fail and abort the test case - 7") {
 	REQUIRE_THROWS_WITH(throw_if(true, ""), "whops!");
     MESSAGE("should not be reached!");
 }
-TEST_CASE("REQUIRE level of asserts fail and abort the test case - 6") {
-    REQUIRE_NOTHROW(throw_if(true, 0));
-    MESSAGE("should not be reached!");
-}
-TEST_CASE("REQUIRE level of asserts fail and abort the test case - 7") {
-    REQUIRE_EQ(1, 0);
-    MESSAGE("should not be reached!");
-}
 TEST_CASE("REQUIRE level of asserts fail and abort the test case - 8") {
-    REQUIRE_UNARY(0);
+	REQUIRE_THROWS_WITH_AS(throw_if(false, ""), "whops!", bool);
     MESSAGE("should not be reached!");
 }
 TEST_CASE("REQUIRE level of asserts fail and abort the test case - 9") {
+	REQUIRE_THROWS_WITH_AS(throw_if(true, ""), "whops!", bool);
+    MESSAGE("should not be reached!");
+}
+TEST_CASE("REQUIRE level of asserts fail and abort the test case - 10") {
+    REQUIRE_NOTHROW(throw_if(true, 0));
+    MESSAGE("should not be reached!");
+}
+TEST_CASE("REQUIRE level of asserts fail and abort the test case - 11") {
+    REQUIRE_EQ(1, 0);
+    MESSAGE("should not be reached!");
+}
+TEST_CASE("REQUIRE level of asserts fail and abort the test case - 12") {
+    REQUIRE_UNARY(0);
+    MESSAGE("should not be reached!");
+}
+TEST_CASE("REQUIRE level of asserts fail and abort the test case - 13") {
     REQUIRE_UNARY_FALSE(1);
     MESSAGE("should not be reached!");
 }
@@ -167,6 +180,7 @@ static void someAssertsInFunction() {
     CHECK_THROWS(throw_if(true, 0));
     CHECK_THROWS_AS(throw_if(true, 0), int);
     CHECK_THROWS_WITH(throw_if(true, false), "unknown exception");
+    CHECK_THROWS_WITH_AS(throw_if(true, false), "unknown exception", int);
     CHECK_NOTHROW(throw_if(false, 0));
 
     CHECK_EQ(a, b);

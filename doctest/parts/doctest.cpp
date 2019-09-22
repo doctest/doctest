@@ -585,6 +585,10 @@ const char* assertString(assertType::Enum at) {
         case assertType::DT_CHECK_THROWS_WITH       : return "CHECK_THROWS_WITH";
         case assertType::DT_REQUIRE_THROWS_WITH     : return "REQUIRE_THROWS_WITH";
 
+        case assertType::DT_WARN_THROWS_WITH_AS     : return "WARN_THROWS_WITH_AS";
+        case assertType::DT_CHECK_THROWS_WITH_AS    : return "CHECK_THROWS_WITH_AS";
+        case assertType::DT_REQUIRE_THROWS_WITH_AS  : return "REQUIRE_THROWS_WITH_AS";
+
         case assertType::DT_WARN_NOTHROW            : return "WARN_NOTHROW";
         case assertType::DT_CHECK_NOTHROW           : return "CHECK_NOTHROW";
         case assertType::DT_REQUIRE_NOTHROW         : return "REQUIRE_NOTHROW";
@@ -1498,16 +1502,17 @@ namespace {
 namespace detail {
 
     ResultBuilder::ResultBuilder(assertType::Enum at, const char* file, int line, const char* expr,
-                                 const char* exception_type) {
-        m_test_case      = g_cs->currentTest;
-        m_at             = at;
-        m_file           = file;
-        m_line           = line;
-        m_expr           = expr;
-        m_failed         = true;
-        m_threw          = false;
-        m_threw_as       = false;
-        m_exception_type = exception_type;
+                                 const char* exception_type, const char* exception_string) {
+        m_test_case        = g_cs->currentTest;
+        m_at               = at;
+        m_file             = file;
+        m_line             = line;
+        m_expr             = expr;
+        m_failed           = true;
+        m_threw            = false;
+        m_threw_as         = false;
+        m_exception_type   = exception_type;
+        m_exception_string = exception_string;
 #if DOCTEST_MSVC
         if(m_expr[0] == ' ') // this happens when variadic macros are disabled under MSVC
             ++m_expr;
@@ -1529,10 +1534,12 @@ namespace detail {
     bool ResultBuilder::log() {
         if(m_at & assertType::is_throws) { //!OCLINT bitwise operator in conditional
             m_failed = !m_threw;
+        } else if((m_at & assertType::is_throws_as) && (m_at & assertType::is_throws_with)) { //!OCLINT
+            m_failed = !m_threw_as || (m_exception != m_exception_string);
         } else if(m_at & assertType::is_throws_as) { //!OCLINT bitwise operator in conditional
             m_failed = !m_threw_as;
         } else if(m_at & assertType::is_throws_with) { //!OCLINT bitwise operator in conditional
-            m_failed = m_exception != m_exception_type;
+            m_failed = m_exception != m_exception_string;
         } else if(m_at & assertType::is_nothrow) { //!OCLINT bitwise operator in conditional
             m_failed = m_threw;
         }
@@ -2203,11 +2210,12 @@ namespace {
             if(rb.m_threw)
                 xml.scopedElement("Exception").writeText(rb.m_exception.c_str());
 
-            if(rb.m_at & (assertType::is_throws_as | assertType::is_throws_with)) {
+            if(rb.m_at & assertType::is_throws_as)
                 xml.scopedElement("ExpectedException").writeText(rb.m_exception_type);
-            } else if((rb.m_at & assertType::is_normal) && !rb.m_threw) {
+            if(rb.m_at & assertType::is_throws_with)
+                xml.scopedElement("ExpectedExceptionString").writeText(rb.m_exception_string);
+            if((rb.m_at & assertType::is_normal) && !rb.m_threw)
                 xml.scopedElement("Expanded").writeText(rb.m_decomp.c_str());
-            }
 
             log_contexts();
 
@@ -2658,6 +2666,19 @@ namespace {
 
             if(rb.m_at & assertType::is_throws) { //!OCLINT bitwise operator in conditional
                 s << (rb.m_threw ? "threw as expected!" : "did NOT throw at all!") << "\n";
+            } else if((rb.m_at & assertType::is_throws_as) &&
+                      (rb.m_at & assertType::is_throws_with)) { //!OCLINT
+                s << Color::Cyan << assertString(rb.m_at) << "( " << rb.m_expr << ", \""
+                  << rb.m_exception_string << "\", " << rb.m_exception_type << " ) " << Color::None;
+                if(rb.m_threw) {
+                    if(!rb.m_failed) {
+                        s << "threw as expected!\n";
+                    } else {
+                        s << "threw a DIFFERENT exception! (contents: " << rb.m_exception << ")\n";
+                    }
+                } else {
+                    s << "did NOT throw at all!\n";
+                }
             } else if(rb.m_at &
                       assertType::is_throws_as) { //!OCLINT bitwise operator in conditional
                 s << Color::Cyan << assertString(rb.m_at) << "( " << rb.m_expr << ", "
@@ -2669,7 +2690,7 @@ namespace {
             } else if(rb.m_at &
                       assertType::is_throws_with) { //!OCLINT bitwise operator in conditional
                 s << Color::Cyan << assertString(rb.m_at) << "( " << rb.m_expr << ", \""
-                  << rb.m_exception_type << "\" ) " << Color::None
+                  << rb.m_exception_string << "\" ) " << Color::None
                   << (rb.m_threw ? (!rb.m_failed ? "threw as expected!" :
                                                    "threw a DIFFERENT exception: ") :
                                    "did NOT throw at all!")
