@@ -240,6 +240,10 @@ jobs:
           }
 
           if ("${{ matrix.compiler }}" -eq "gcc") {
+            # Chocolatey GCC is broken on the windows-2019 image.
+            # See: https://github.com/DaanDeMeyer/doctest/runs/231595515
+            # See: https://github.community/t5/GitHub-Actions/Something-is-wrong-with-the-chocolatey-installed-version-of-gcc/td-p/32413
+            scoop install gcc --global
             echo "::set-env name=CC::gcc"
             echo "::set-env name=CXX::g++"
           } elseif ("${{ matrix.compiler }}" -eq "clang") {
