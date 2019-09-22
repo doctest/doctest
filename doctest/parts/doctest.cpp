@@ -652,13 +652,6 @@ const char* skipPathFromFilename(const char* file) {
 DOCTEST_CLANG_SUPPRESS_WARNING_POP
 DOCTEST_GCC_SUPPRESS_WARNING_POP
 
-DOCTEST_DEFINE_DEFAULTS(TestCaseData);
-DOCTEST_DEFINE_COPIES(TestCaseData);
-
-DOCTEST_DEFINE_DEFAULTS(AssertData);
-
-DOCTEST_DEFINE_DEFAULTS(MessageData);
-
 bool SubcaseSignature::operator<(const SubcaseSignature& other) const {
     if(m_line != other.m_line)
         return m_line < other.m_line;
@@ -669,8 +662,6 @@ bool SubcaseSignature::operator<(const SubcaseSignature& other) const {
 
 IContextScope::IContextScope()  = default;
 IContextScope::~IContextScope() = default;
-
-DOCTEST_DEFINE_DEFAULTS(ContextOptions);
 
 #ifdef DOCTEST_CONFIG_TREAT_CHAR_STAR_AS_STRING
 String toString(char* in) { return toString(static_cast<const char*>(in)); }
@@ -711,8 +702,6 @@ Approx::Approx(double value)
         : m_epsilon(static_cast<double>(std::numeric_limits<float>::epsilon()) * 100)
         , m_scale(1.0)
         , m_value(value) {}
-
-DOCTEST_DEFINE_COPIES(Approx);
 
 Approx Approx::operator()(double value) const {
     Approx approx(value);
@@ -768,10 +757,6 @@ void Context::setAsDefaultForAssertsOutOfTestCases() {}
 void Context::setAssertHandler(detail::assert_handler) {}
 int  Context::run() { return 0; }
 
-DOCTEST_DEFINE_DEFAULTS(CurrentTestCaseStats);
-
-DOCTEST_DEFINE_DEFAULTS(TestRunStats);
-
 IReporter::~IReporter() = default;
 
 int                         IReporter::get_num_active_contexts() { return 0; }
@@ -822,8 +807,6 @@ namespace detail {
     for(auto& curr_rep : g_cs->reporters_currently_used)                                           \
     curr_rep->function(__VA_ARGS__)
 
-    DOCTEST_DEFINE_DEFAULTS(TestFailureException);
-    DOCTEST_DEFINE_COPIES(TestFailureException);
     bool checkIfShouldThrow(assertType::Enum at) {
         if(at & assertType::is_require) //!OCLINT bitwise operator in conditional
             return true;
@@ -959,16 +942,8 @@ namespace detail {
             : m_passed(passed)
             , m_decomp(decomposition) {}
 
-    DOCTEST_DEFINE_DEFAULTS(Result);
-    DOCTEST_DEFINE_COPIES(Result);
-
     ExpressionDecomposer::ExpressionDecomposer(assertType::Enum at)
             : m_at(at) {}
-
-    DOCTEST_DEFINE_DEFAULTS(ExpressionDecomposer);
-
-    DOCTEST_DEFINE_DEFAULTS(TestSuite);
-    DOCTEST_DEFINE_COPIES(TestSuite);
 
     TestSuite& TestSuite::operator*(const char* in) {
         m_test_suite = in;
@@ -999,8 +974,6 @@ namespace detail {
         m_type        = type;
         m_template_id = template_id;
     }
-
-    DOCTEST_DEFINE_DEFAULTS(TestCase);
 
     TestCase::TestCase(const TestCase& other)
             : TestCaseData() {
@@ -1518,8 +1491,6 @@ namespace detail {
             ++m_expr;
 #endif // MSVC
     }
-
-    DOCTEST_DEFINE_DEFAULTS(ResultBuilder);
 
     void ResultBuilder::setResult(const Result& res) {
         m_decomp = res.m_decomp;
@@ -3298,10 +3269,6 @@ int Context::run() {
 
     return cleanup_and_return();
 }
-
-DOCTEST_DEFINE_DEFAULTS(CurrentTestCaseStats);
-
-DOCTEST_DEFINE_DEFAULTS(TestRunStats);
 
 IReporter::~IReporter() = default;
 
