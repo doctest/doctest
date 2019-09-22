@@ -38,12 +38,12 @@ jobs:
           windows-2019-clang-cl,
           windows-2019-clang,
           windows-2019-gcc,
-          macOS-10.14-Xcode-9.4.1,
-          macOS-10.14-Xcode-10.0,
-          macOS-10.14-Xcode-10.1,
-          macOS-10.14-Xcode-10.2,
-          macOS-10.14-Xcode-10.2.1,
-          macOS-10.14-Xcode-10.3
+          macOS-10.14-xcode-9.4.1,
+          macOS-10.14-xcode-10.0,
+          macOS-10.14-xcode-10.1,
+          macOS-10.14-xcode-10.2,
+          macOS-10.14-xcode-10.2.1,
+          macOS-10.14-xcode-10.3
         ]
 
         include:
@@ -164,17 +164,17 @@ jobs:
             os: windows-2019
             compiler: gcc
 
-          - name: macOS-10.14-Xcode-9.4.1
+          - name: macOS-10.14-xcode-9.4.1
             os: macOS-10.14
             compiler: xcode
             version: "9.4.1"
 
-          - name: macOS-10.14-Xcode-10.0
+          - name: macOS-10.14-xcode-10.0
             os: macOS-10.14
             compiler: xcode
             version: "10"
 
-          - name: macOS-10.14-Xcode-10.1
+          - name: macOS-10.14-xcode-10.1
             os: macOS-10.14
             compiler: xcode
             version: "10.1"
@@ -184,12 +184,12 @@ jobs:
             compiler: xcode
             version: "10.2"
 
-          - name: macOS-10.14-Xcode-10.2.1
+          - name: macOS-10.14-xcode-10.2.1
             os: macOS-10.14
             compiler: xcode
             version: "10.2.1"
 
-          - name: macOS-10.14-Xcode-10.3
+          - name: macOS-10.14-xcode-10.3
             os: macOS-10.14
             compiler: xcode
             version: "10.3"
