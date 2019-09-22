@@ -43,7 +43,11 @@ jobs:
           macOS-10.14-xcode-10.1,
           macOS-10.14-xcode-10.2,
           macOS-10.14-xcode-10.2.1,
-          macOS-10.14-xcode-10.3
+          macOS-10.14-xcode-10.3,
+          macOS-10.14-gcc-6,
+          macOS-10.14-gcc-7,
+          macOS-10.14-gcc-8,
+          macOS-10.14-gcc-9,
         ]
 
         include:
@@ -194,6 +198,26 @@ jobs:
             compiler: xcode
             version: "10.3"
 
+          - name: macOS-10.14-gcc-6
+            os: macOS-10.14
+            compiler: gcc
+            version: "6"
+
+          - name: macOS-10.14-gcc-7
+            os: macOS-10.14
+            compiler: gcc
+            version: "7"
+
+          - name: macOS-10.14-gcc-8
+            os: macOS-10.14
+            compiler: gcc
+            version: "8"
+
+          - name: macOS-10.14-gcc-9
+            os: macOS-10.14
+            compiler: gcc
+            version: "9"
+
     steps:
       - uses: actions/checkout@v1
 
@@ -223,10 +247,16 @@ jobs:
         if: runner.os == 'macOS'
         run: |
           brew install ninja
-          sudo xcode-select -switch /Applications/Xcode_${{ matrix.version }}.app
 
-          echo "::set-env name=CC::clang"
-          echo "::set-env name=CXX::clang++"
+          if [ "${{ matrix.compiler }}" = "gcc" ]; then
+            brew install gcc@${{ matrix.version }}
+            echo "::set-env name=CC::gcc-${{ matrix.version }}"
+            echo "::set-env name=CXX::g++-${{ matrix.version }}"
+          else
+            sudo xcode-select -switch /Applications/Xcode_${{ matrix.version }}.app
+            echo "::set-env name=CC::clang"
+            echo "::set-env name=CXX::clang++"
+          fi
 
       - name: Install (Windows)
         if: runner.os == 'Windows'
