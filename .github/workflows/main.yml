@@ -30,6 +30,7 @@ jobs:
           ubuntu-18.04-clang-6.0,
           ubuntu-18.04-clang-7,
           ubuntu-18.04-clang-8,
+          ubuntu-18.04-clang-9,
           windows-2016-cl,
           windows-2016-clang-cl,
           windows-2016-clang,
@@ -136,6 +137,11 @@ jobs:
             compiler: clang
             version: "8"
 
+          - name: ubuntu-18.04-clang-9
+            os: ubuntu-18.04
+            compiler: clang
+            version: "9"
+
           - name: windows-2016-cl
             os: windows-2016
             compiler: cl
@@ -230,6 +236,11 @@ jobs:
           sudo dpkg --add-architecture i386
           sudo add-apt-repository "deb http://dk.archive.ubuntu.com/ubuntu/ xenial main"
           sudo add-apt-repository "deb http://dk.archive.ubuntu.com/ubuntu/ xenial universe"
+          
+          if [ "${{ matrix.compiler }}" = "clang" ] && [ "${{ matrix.version }}" = "9" ]; then
+            sudo add-apt-repository "deb http://apt.llvm.org/bionic/ llvm-toolchain-bionic-9 main"
+          fi
+
           sudo apt-get update
 
           sudo apt-get install -y ninja-build valgrind libc6-dbg:i386
