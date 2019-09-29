@@ -311,6 +311,8 @@ jobs:
           cmake --build build
           cd build && ctest -j2 --output-on-failure
 
+      # Valgrind doesn't support the latest macOS versions.
+
       - name: Test Debug x64 Valgrind (Linux)
         if: runner.os == 'Linux'
         run: |
@@ -329,20 +331,16 @@ jobs:
           cmake -DDOCTEST_TEST_MODE=VALGRIND build
           cd build && ctest -j2 --output-on-failure
 
-      - name: Configure x86 (Windows)
-        if: runner.os == 'Windows'
-        shell: powershell
-        run: |
-          if ("${{ matrix.compiler }}" -eq "gcc") {
-            scoop uninstall gcc --global
-            scoop install gcc --global -a 32bit
-          }
+      # MinGW x86 tests fail on Windows: https://github.com/DaanDeMeyer/doctest/runs/240600881.
+      # MacOS doesn't support x86 from Xcode 10 onwards.
 
-          .github\workflows\vsenv.bat -arch=x86 -host_arch=x64
+      - name: Configure x86 (Windows)
+        if: (runner.os == 'Windows' && matrix.compiler != 'gcc')
+        run: .github\workflows\vsenv.bat -arch=x86 -host_arch=x64
 
       - name: Configure x86 (Windows && Linux)
         shell: pwsh
-        if: runner.os == 'Windows' || runner.os == 'Linux'
+        if: (runner.os == 'Windows' && matrix.compiler != 'gcc') || runner.os == 'Linux'
         run: |
           rm -r build
 
@@ -354,7 +352,7 @@ jobs:
           cmake -B build -S . -G Ninja
 
       - name: Build & Test Debug x86 (Windows && Linux)
-        if: runner.os == 'Windows' || runner.os == 'Linux'
+        if: (runner.os == 'Windows' && matrix.compiler != 'gcc') || runner.os == 'Linux'
         run: |
           cmake -DCMAKE_BUILD_TYPE=Debug -DDOCTEST_TEST_MODE=COMPARE build
           cmake --build build
@@ -367,7 +365,7 @@ jobs:
           cd build && ctest -j2 --output-on-failure
 
       - name: Build & Test Release x86 (Windows && Linux)
-        if: runner.os == 'Windows' || runner.os == 'Linux'
+        if: (runner.os == 'Windows' && matrix.compiler != 'gcc') || runner.os == 'Linux'
         run: |
           cmake -DCMAKE_BUILD_TYPE=Release -DDOCTEST_TEST_MODE=COMPARE build
           cmake --build build
