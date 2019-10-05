@@ -7,6 +7,9 @@ jobs:
     name: ${{ matrix.name }}
     runs-on: ${{ matrix.os }}
 
+    env:
+      CMAKE_GENERATOR: Ninja
+
     strategy:
       fail-fast: false
       matrix:
@@ -306,7 +309,7 @@ jobs:
 
           echo "::set-env name=PATH::$env:PATH"
 
-      - name: Configure Sanitizers (Linux && macOS)
+      - name: Configure Sanitizers
         if: runner.os == 'Linux' || runner.os == 'macOS'
         run: |
           # https://stackoverflow.com/a/37939589/11900641
@@ -320,13 +323,13 @@ jobs:
 
           if [ "${{ runner.os }}" = "Linux" ] && \
              [ "${{ matrix.compiler }}" = "gcc" ] && \
-             [ $(version ${{ matrix.version }}) -le $(version "4.8") ]; then
+             [ $(version ${{ matrix.version }}) -le $(version "5.0") ]; then
             exit 0
           fi
 
           if [ "${{ runner.os }}" = "Linux" ] && \
              [ "${{ matrix.compiler }}" = "clang" ] && \
-             [ $(version ${{ matrix.version }}) -le $(version "3.8") ]; then
+             [ $(version ${{ matrix.version }}) -le $(version "6.0") ]; then
             exit 0
           fi
 
@@ -351,95 +354,87 @@ jobs:
           fi
 
           # CXXFLAGS is automatically picked up by CMake on its first run.
-          echo "::set-env name=SANITIZER_FLAGS::$SANITIZER_FLAGS"
+          echo "::set-env name=CXXFLAGS::$SANITIZER_FLAGS"
 
-      - name: Configure x64 (Windows) 
+      - name: Configure x64
         if: runner.os == 'Windows'
         run: .github\workflows\vsenv.bat -arch=x64 -host_arch=x64
 
-      - name: Configure x64
-        run: cmake -B build -S . -G Ninja
-
-      - name: Configure x64 Sanitizers (Linux && macOS)
-        if: runner.os == 'Linux' || runner.os == 'macOS'
-        run: cmake build -DCMAKE_CXX_FLAGS="$SANITIZER_FLAGS"
-
       - name: Build & Test Debug x64
         run: |
-          cmake -DCMAKE_BUILD_TYPE=Debug -DDOCTEST_TEST_MODE=COMPARE build
+          cmake -E remove_directory build
+          cmake -B build -S . -DCMAKE_BUILD_TYPE=Debug -DDOCTEST_TEST_MODE=COMPARE
           cmake --build build
           cd build && ctest -j2 --output-on-failure
 
       - name: Build & Test Release x64
         run: |
-          cmake -DCMAKE_BUILD_TYPE=Release -DDOCTEST_TEST_MODE=COMPARE build
+          cmake -E remove_directory build
+          cmake -B build -S . -DCMAKE_BUILD_TYPE=Release -DDOCTEST_TEST_MODE=COMPARE
           cmake --build build
           cd build && ctest -j2 --output-on-failure
 
       # Valgrind doesn't support the latest macOS versions.
 
-      - name: Build & Test Debug x64 Valgrind (Linux)
+      - name: Build & Test Debug x64 Valgrind
         if: runner.os == 'Linux'
         run: |
-          cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_FLAGS="" -DDOCTEST_TEST_MODE=VALGRIND build
+          cmake -E remove_directory build
+          cmake -B build -S . -DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_FLAGS="" -DDOCTEST_TEST_MODE=VALGRIND
           cmake --build build
           cd build && ctest -j2 --output-on-failure
 
-      - name: Build & Test Release x64 Valgrind (Linux)
+      - name: Build & Test Release x64 Valgrind
         if: runner.os == 'Linux'
         run: |
-          cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="" -DDOCTEST_TEST_MODE=VALGRIND build
+          cmake -E remove_directory build
+          cmake -B build -S . -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="" -DDOCTEST_TEST_MODE=VALGRIND
           cmake --build build
           cd build && ctest -j2 --output-on-failure
 
       # MinGW x86 tests fail on Windows: https://github.com/DaanDeMeyer/doctest/runs/240600881.
       # MacOS doesn't support x86 from Xcode 10 onwards.
 
-      - name: Configure x86 (Windows)
-        if: (runner.os == 'Windows' && matrix.compiler != 'gcc')
-        run: .github\workflows\vsenv.bat -arch=x86 -host_arch=x64
-
-      - name: Configure x86 (Windows && Linux)
+      - name: Configure x86
         shell: pwsh
         if: (runner.os == 'Windows' && matrix.compiler != 'gcc') || runner.os == 'Linux'
         run: |
-          rm -r build
-
-          if ("${{ matrix.compiler }}" -notcontains "cl") {
-            $env:CFLAGS = "-m32"
-            $env:CXXFLAGS = "-m32"
+          if ("${{ runner.os }}" -eq "Windows") {
+            & .github\workflows\vsenv.bat -arch=x86 -host_arch=x64
           }
 
-          cmake -B build -S . -G Ninja
+          if ("${{ matrix.compiler }}" -notcontains "cl") {
+            echo "::set-env name=CXXFLAGS::$env:CXXFLAGS -m32"
+          }
 
-      - name: Configure x86 Sanitizers (Linux)
-        if: runner.os == 'Linux'
-        run: cmake build -DCMAKE_CXX_FLAGS="$SANITIZER_FLAGS"
-
-      - name: Build & Test Debug x86 (Windows && Linux)
+      - name: Build & Test Debug x86
         if: (runner.os == 'Windows' && matrix.compiler != 'gcc') || runner.os == 'Linux'
         run: |
-          cmake -DCMAKE_BUILD_TYPE=Debug -DDOCTEST_TEST_MODE=COMPARE build
+          cmake -E remove_directory build
+          cmake -B build -S . -DCMAKE_BUILD_TYPE=Debug -DDOCTEST_TEST_MODE=COMPARE
           cmake --build build
           cd build && ctest -j2 --output-on-failure
 
-      - name: Build & Test Release x86 (Windows && Linux)
+      - name: Build & Test Release x86
         if: (runner.os == 'Windows' && matrix.compiler != 'gcc') || runner.os == 'Linux'
         run: |
-          cmake -DCMAKE_BUILD_TYPE=Release -DDOCTEST_TEST_MODE=COMPARE build
+          cmake -E remove_directory build
+          cmake -B build -S . -DCMAKE_BUILD_TYPE=Release -DDOCTEST_TEST_MODE=COMPARE
           cmake --build build
           cd build && ctest -j2 --output-on-failure
 
-      - name: Build & Test Debug x86 Valgrind (Linux)
+      - name: Build & Test Debug x86 Valgrind
         if: runner.os == 'Linux'
         run: |
-          cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_FLAGS="" -DDOCTEST_TEST_MODE=VALGRIND build
+          cmake -E remove_directory build
+          cmake -B build -S . -DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_FLAGS="" -DDOCTEST_TEST_MODE=VALGRIND
           cmake --build build
           cd build && ctest -j2 --output-on-failure
 
-      - name: Build & Test Release x86 Valgrind (Linux)
+      - name: Build & Test Release x86 Valgrind
         if: runner.os == 'Linux'
         run: |
-          cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="" -DDOCTEST_TEST_MODE=VALGRIND build
+          cmake -E remove_directory build
+          cmake -B build -S . -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="" -DDOCTEST_TEST_MODE=VALGRIND
           cmake --build build
           cd build && ctest -j2 --output-on-failure

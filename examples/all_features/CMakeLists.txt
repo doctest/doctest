@@ -25,7 +25,7 @@ set(files_all
 
 # add the executable
 add_executable(all_features ${files_all})
-target_link_libraries(all_features doctest ${CMAKE_THREAD_LIBS_INIT})
+target_link_libraries(all_features doctest Threads::Threads)
 
 # easy way to fix test coverage - disable colors and crash handling
 target_compile_definitions(all_features PRIVATE
@@ -82,7 +82,7 @@ endif()
 
 add_executable(disabled ${files_all})
 target_compile_definitions(disabled PRIVATE DOCTEST_CONFIG_DISABLE)
-target_link_libraries(disabled doctest ${CMAKE_THREAD_LIBS_INIT})
+target_link_libraries(disabled doctest Threads::Threads)
 
 doctest_add_test(NAME disabled COMMAND $<TARGET_FILE:disabled>)
 
