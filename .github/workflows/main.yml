@@ -309,7 +309,7 @@ jobs:
 
           echo "::set-env name=PATH::$env:PATH"
 
-      - name: Configure Sanitizers
+      - name: Configure ASAN/UBSAN
         if: runner.os == 'Linux' || runner.os == 'macOS'
         run: |
           # https://stackoverflow.com/a/37939589/11900641
@@ -344,17 +344,55 @@ jobs:
             exit 0
           fi
 
-          SANITIZER_FLAGS="-fsanitize=address,undefined -fno-omit-frame-pointer"
+          ASAN_UBSAN_FLAGS="-fsanitize=address,undefined -fno-omit-frame-pointer"
           
           # Link statically against ASAN libraries because dynamically linking 
           # against ASAN libraries causes problems when using dlopen on Ubuntu.
           # See: https://github.com/DaanDeMeyer/doctest/runs/249002713
           if [ "${{ runner.os }}" = "Linux" ] && [ "${{ matrix.compiler }}" = "gcc" ]; then
-            SANITIZER_FLAGS="$SANITIZER_FLAGS -static-libasan"
+            ASAN_UBSAN_FLAGS="$ASAN_UBSAN_FLAGS -static-libasan"
           fi
 
-          # CXXFLAGS is automatically picked up by CMake on its first run.
-          echo "::set-env name=CXXFLAGS::$SANITIZER_FLAGS"
+          # Compiling in bash on Windows doesn't work and powershell doesn't 
+          # exit on non-zero exit codes so we're forced to use cmd which means
+          # we don't have a cross platform way to access environment variables. 
+          # To circumvent this, we put the sanitizer flags in an environment 
+          # variable that is automatically picked up by CMake.
+          echo "::set-env name=CXXFLAGS::$ASAN_UBSAN_FLAGS"
+
+      - name: Configure TSAN
+        if: runner.os == 'Linux' || runner.os == 'macOS'
+        run: |
+          # https://stackoverflow.com/a/37939589/11900641
+          function version { echo "$@" | awk -F. '{ printf("%d%03d%03d%03d\n", $1,$2,$3,$4); }'; }
+          
+          if [ "${{ runner.os }}" = "Linux" ] && \
+             [ "${{ matrix.compiler }}" = "gcc" ] && \
+             [ $(version ${{ matrix.version }}) -le $(version "6.0") ]; then
+            exit 0
+          fi
+
+          if [ "${{ runner.os }}" = "Linux" ] && \
+             [ "${{ matrix.compiler }}" = "clang" ] && \
+             [ $(version ${{ matrix.version }}) -le $(version "3.9") ]; then
+            exit 0
+          fi
+
+          if [ "${{ runner.os }}" = "macOS" ] && \
+             [ "${{ matrix.compiler }}" = "gcc" ]; then
+            exit 0
+          fi
+
+          TSAN_FLAGS="-fsanitize=thread -pie -fPIE"
+
+          if [ "${{ runner.os }}" = "Linux" ] && [ "${{ matrix.compiler }}" = "gcc" ]; then
+            TSAN_FLAGS="$TSAN_FLAGS -static-libtsan"
+          fi
+
+          # The thread sanitizers build does not run on Windows so we can just 
+          # use bash syntax to access the TSAN flags in the thread sanitizers 
+          # build step.
+          echo "::set-env name=TSAN_FLAGS::$TSAN_FLAGS"
 
       - name: Configure x64
         if: runner.os == 'Windows'
@@ -375,6 +413,7 @@ jobs:
           cd build && ctest -j2 --output-on-failure
 
       # Valgrind doesn't support the latest macOS versions.
+      # `-DCMAKE_CXX_FLAGS=""` overrides CXXFLAGS (disables sanitizers).
 
       - name: Build & Test Debug x64 Valgrind
         if: runner.os == 'Linux'
@@ -389,6 +428,14 @@ jobs:
         run: |
           cmake -E remove_directory build
           cmake -B build -S . -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="" -DDOCTEST_TEST_MODE=VALGRIND
+          cmake --build build
+          cd build && ctest -j2 --output-on-failure
+
+      - name: Build & Test Debug x64 Thread Sanitizers
+        if: runner.os == 'Linux' || runner.os == 'macOS'
+        run: |
+          cmake -E remove_directory build
+          cmake -B build -S . -DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_FLAGS="$TSAN_FLAGS" -DDOCTEST_TEST_MODE=COMPARE
           cmake --build build
           cd build && ctest -j2 --output-on-failure
 
@@ -427,7 +474,7 @@ jobs:
         if: runner.os == 'Linux'
         run: |
           cmake -E remove_directory build
-          cmake -B build -S . -DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_FLAGS="" -DDOCTEST_TEST_MODE=VALGRIND
+          cmake -B build -S . -DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_FLAGS="-m32" -DDOCTEST_TEST_MODE=VALGRIND
           cmake --build build
           cd build && ctest -j2 --output-on-failure
 
@@ -435,6 +482,6 @@ jobs:
         if: runner.os == 'Linux'
         run: |
           cmake -E remove_directory build
-          cmake -B build -S . -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="" -DDOCTEST_TEST_MODE=VALGRIND
+          cmake -B build -S . -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="-m32" -DDOCTEST_TEST_MODE=VALGRIND
           cmake --build build
           cd build && ctest -j2 --output-on-failure
