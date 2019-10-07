@@ -50,7 +50,6 @@ jobs:
           macOS-10.14-xcode-10.2,
           macOS-10.14-xcode-10.2.1,
           macOS-10.14-xcode-10.3,
-          macOS-10.14-gcc-6,
           macOS-10.14-gcc-7,
           macOS-10.14-gcc-8,
           macOS-10.14-gcc-9,
@@ -208,11 +207,6 @@ jobs:
             os: macOS-10.14
             compiler: xcode
             version: "10.3"
-
-          - name: macOS-10.14-gcc-6
-            os: macOS-10.14
-            compiler: gcc
-            version: "6"
 
           - name: macOS-10.14-gcc-7
             os: macOS-10.14
