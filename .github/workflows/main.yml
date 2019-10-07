@@ -310,6 +310,7 @@ jobs:
             echo "::set-env name=CXX::${{ matrix.compiler }}"
           }
 
+          # Scoop modifies the PATH so we make the modified PATH global.
           echo "::set-env name=PATH::$env:PATH"
 
       - name: Configure ASAN/UBSAN
