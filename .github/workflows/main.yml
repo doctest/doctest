@@ -442,6 +442,21 @@ jobs:
           cmake --build build
           cd build && ctest -j2 --output-on-failure
 
+      - name: Build & Test Debug x64 without RTTI
+        if: runner.os == 'Linux' || runner.os == 'macOS'
+        run: |
+          cmake -E remove_directory build
+          cmake -B build -S . -DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_FLAGS="-fno-rtti" -DDOCTEST_TEST_MODE=COMPARE
+          cmake --build build
+          cd build && ctest -j2 --output-on-failure
+
+      - name: Build x64 Debug without exceptions
+        if: runner.os == 'Linux' || runner.os == 'macOS'
+        run: |
+          cmake -E remove_directory build
+          cmake -B build -S . -DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_FLAGS="-fno-exceptions -DDOCTEST_CONFIG_NO_EXCEPTIONS_BUT_WITH_ALL_ASSERTS"
+          cmake --build build
+
       # MinGW x86 tests fail on Windows: https://github.com/DaanDeMeyer/doctest/runs/240600881.
       # MacOS doesn't support x86 from Xcode 10 onwards.
 
