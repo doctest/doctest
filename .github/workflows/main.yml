@@ -288,7 +288,7 @@ jobs:
         if: runner.os == 'Windows'
         shell: powershell
         run: |
-          iex (new-object net.webclient).downloadstring('https://get.scoop.sh')
+          Invoke-Expression (New-Object System.Net.WebClient).DownloadString('https://get.scoop.sh')
           scoop install ninja --global
 
           if ("${{ matrix.compiler }}".StartsWith("clang")) {
