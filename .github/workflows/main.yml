@@ -235,8 +235,9 @@ jobs:
       - name: Install (Linux)
         if: runner.os == 'Linux'
         run: |
-          # CMake 3.13 has the -B and -S options (Bionic only has 3.12).
-          curl -sSL https://github.com/Kitware/CMake/releases/download/v3.13.5/cmake-3.13.5-Linux-x86_64.tar.gz -o cmake.tar.gz
+          # CMake 3.15 allows specifying the generator using the CMAKE_GENERATOR
+          # environment variable.
+          curl -sSL https://github.com/Kitware/CMake/releases/download/v3.15.4/cmake-3.15.4-Linux-x86_64.tar.gz -o cmake.tar.gz
           sudo tar xf cmake.tar.gz --strip 1 -C /usr/local
 
           # Required for libc6-dbg:i386 and g++-multilib packages which are 
@@ -271,7 +272,7 @@ jobs:
       - name: Install (macOS)
         if: runner.os == 'macOS'
         run: |
-          brew install ninja
+          brew install cmake ninja
 
           if [ "${{ matrix.compiler }}" = "gcc" ]; then
             brew install gcc@${{ matrix.version }}
