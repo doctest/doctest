@@ -181,6 +181,7 @@ DOCTEST_MSVC_SUPPRESS_WARNING(26439) // This kind of function may not throw. Dec
 DOCTEST_MSVC_SUPPRESS_WARNING(26495) // Always initialize a member variable
 DOCTEST_MSVC_SUPPRESS_WARNING(26451) // Arithmetic overflow ...
 DOCTEST_MSVC_SUPPRESS_WARNING(26444) // Avoid unnamed objects with custom construction and dtr...
+DOCTEST_MSVC_SUPPRESS_WARNING(26812) // Prefer 'enum class' over 'enum'
 
 // 4548 - expression before comma has no effect; expected expression with side - effect
 // 4265 - class has virtual functions, but destructor is not virtual
@@ -2696,6 +2697,7 @@ DOCTEST_MSVC_SUPPRESS_WARNING(26439) // This kind of function may not throw. Dec
 DOCTEST_MSVC_SUPPRESS_WARNING(26495) // Always initialize a member variable
 DOCTEST_MSVC_SUPPRESS_WARNING(26451) // Arithmetic overflow ...
 DOCTEST_MSVC_SUPPRESS_WARNING(26444) // Avoid unnamed objects with custom construction and dtor...
+DOCTEST_MSVC_SUPPRESS_WARNING(26812) // Prefer 'enum class' over 'enum'
 
 DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_BEGIN
 
