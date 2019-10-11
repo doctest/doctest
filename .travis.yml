@@ -68,7 +68,7 @@ matrix:
           sources: *apt_sources
 
     # GCC 4.8
-    - env: COMPILER=g++-4.8 HAS_ASAN=true SANITIZER_CXX_FLAGS="-fuse-ld=gold" TSAN_CXX_FLAGS="-ltsan" # TSAN broken for some time - seg faults
+    - env: COMPILER=g++-4.8 HAS_ASAN=true SANITIZER_CXX_FLAGS="-fuse-ld=gold -static-libasan" TSAN_CXX_FLAGS="-ltsan" # TSAN broken for some time - seg faults
       compiler: gcc
       addons: &gcc48
         apt:
@@ -76,7 +76,7 @@ matrix:
           sources: *apt_sources
 
     # GCC 4.9
-    - env: COMPILER=g++-4.9 HAS_ASAN=true HAS_UBSAN=true SANITIZER_CXX_FLAGS="-fuse-ld=gold" TSAN_CXX_FLAGS="-ltsan" # TSAN broken for some time - seg faults
+    - env: COMPILER=g++-4.9 HAS_ASAN=true HAS_UBSAN=true SANITIZER_CXX_FLAGS="-fuse-ld=gold -static-libasan" TSAN_CXX_FLAGS="-ltsan" # TSAN broken for some time - seg faults
       compiler: gcc
       addons: &gcc49
         apt:
@@ -84,7 +84,7 @@ matrix:
           sources: *apt_sources
 
     # GCC 5
-    - env: COMPILER=g++-5 HAS_ASAN=true HAS_UBSAN=true SANITIZER_CXX_FLAGS="-fuse-ld=gold" TSAN_CXX_FLAGS="-ltsan" # TSAN broken for some time - seg faults
+    - env: COMPILER=g++-5 HAS_ASAN=true HAS_UBSAN=true SANITIZER_CXX_FLAGS="-fuse-ld=gold -static-libasan" TSAN_CXX_FLAGS="-ltsan" # TSAN broken for some time - seg faults
       compiler: gcc
       addons: &gcc5
         apt:
@@ -92,7 +92,7 @@ matrix:
           sources: *apt_sources
 
     # GCC 6
-    - env: COMPILER=g++-6 HAS_ASAN=true HAS_UBSAN=true SANITIZER_CXX_FLAGS="-fuse-ld=gold" TSAN_CXX_FLAGS="-ltsan" # TSAN broken for some time - seg faults
+    - env: COMPILER=g++-6 HAS_ASAN=true HAS_UBSAN=true SANITIZER_CXX_FLAGS="-fuse-ld=gold -static-libasan" TSAN_CXX_FLAGS="-ltsan" # TSAN broken for some time - seg faults
       compiler: gcc
       addons: &gcc6
         apt:
@@ -100,7 +100,7 @@ matrix:
           sources: *apt_sources
 
     # GCC 7
-    - env: COMPILER=g++-7 HAS_ASAN=true HAS_UBSAN=true SANITIZER_CXX_FLAGS="-fuse-ld=gold" TSAN_CXX_FLAGS="-ltsan" # TSAN broken for some time - seg faults
+    - env: COMPILER=g++-7 HAS_ASAN=true HAS_UBSAN=true SANITIZER_CXX_FLAGS="-fuse-ld=gold -static-libasan" TSAN_CXX_FLAGS="-ltsan" # TSAN broken for some time - seg faults
       compiler: gcc
       sudo: required      # see this issue for more details: https://github.com/travis-ci/travis-ci/issues/9033
       addons: &gcc7
@@ -109,7 +109,7 @@ matrix:
           sources: *apt_sources
 
     # GCC 8
-    - env: COMPILER=g++-8 HAS_ASAN=true HAS_UBSAN=true HAS_TSAN=true SANITIZER_CXX_FLAGS="-fuse-ld=gold" TSAN_CXX_FLAGS="-ltsan"
+    - env: COMPILER=g++-8 HAS_ASAN=true HAS_UBSAN=true HAS_TSAN=true SANITIZER_CXX_FLAGS="-fuse-ld=gold -static-libasan" TSAN_CXX_FLAGS="-ltsan"
       compiler: gcc
       sudo: required      # see this issue for more details: https://github.com/travis-ci/travis-ci/issues/9033
       addons: &gcc8
@@ -118,7 +118,7 @@ matrix:
           sources: *apt_sources
 
     # GCC 9
-    - env: COMPILER=g++-9 HAS_ASAN=true HAS_UBSAN=true HAS_TSAN=true SANITIZER_CXX_FLAGS="-fuse-ld=gold" TSAN_CXX_FLAGS="-ltsan"
+    - env: COMPILER=g++-9 HAS_ASAN=true HAS_UBSAN=true HAS_TSAN=true SANITIZER_CXX_FLAGS="-fuse-ld=gold -static-libasan" TSAN_CXX_FLAGS="-ltsan"
       compiler: gcc
       sudo: required      # see this issue for more details: https://github.com/travis-ci/travis-ci/issues/9033
       addons: &gcc9
@@ -375,8 +375,8 @@ script:
   - cmake -DDOCTEST_TEST_MODE=NORMAL .
 
   - export ASAN_OPTIONS=verbosity=2:strict_string_checks=true:detect_odr_violation=2:detect_stack_use_after_return=true:check_initialization_order=true:strict_init_order=true
-  - if [[ "${HAS_ASAN}" = "true" ]];  then cmake -DCMAKE_BUILD_TYPE=Debug   -DCMAKE_CXX_FLAGS="${CXX_FLAGS} ${SANITIZER_CXX_FLAGS} -g -fno-omit-frame-pointer -fsanitize=address -static-libasan"             . && make clean && make -k -j2 && ctest -j2 --output-on-failure ; fi
-  - if [[ "${HAS_ASAN}" = "true" ]];  then cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="${CXX_FLAGS} ${SANITIZER_CXX_FLAGS} -g -fno-omit-frame-pointer -fsanitize=address -static-libasan"             . && make clean && make -k -j2 && ctest -j2 --output-on-failure ; fi
+  - if [[ "${HAS_ASAN}" = "true" ]];  then cmake -DCMAKE_BUILD_TYPE=Debug   -DCMAKE_CXX_FLAGS="${CXX_FLAGS} ${SANITIZER_CXX_FLAGS} -g -fno-omit-frame-pointer -fsanitize=address"                             . && make clean && make -k -j2 && ctest -j2 --output-on-failure ; fi
+  - if [[ "${HAS_ASAN}" = "true" ]];  then cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="${CXX_FLAGS} ${SANITIZER_CXX_FLAGS} -g -fno-omit-frame-pointer -fsanitize=address"                             . && make clean && make -k -j2 && ctest -j2 --output-on-failure ; fi
 
   - export UBSAN_OPTIONS=verbosity=2
   - if [[ "${HAS_UBSAN}" = "true" ]]; then cmake -DCMAKE_BUILD_TYPE=Debug   -DCMAKE_CXX_FLAGS="${CXX_FLAGS} ${SANITIZER_CXX_FLAGS} -g -fno-omit-frame-pointer -fsanitize=undefined"                           . && make clean && make -k -j2 && ctest -j2 --output-on-failure ; fi
