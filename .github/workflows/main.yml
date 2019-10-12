@@ -50,6 +50,7 @@ jobs:
           macOS-10.14-xcode-10.2,
           macOS-10.14-xcode-10.2.1,
           macOS-10.14-xcode-10.3,
+          macOS-10.14-xcode-11.0,
           macOS-10.14-gcc-7,
           macOS-10.14-gcc-8,
           macOS-10.14-gcc-9,
@@ -208,6 +209,11 @@ jobs:
             compiler: xcode
             version: "10.3"
 
+          - name: macOS-10.14-xcode-11.0
+            os: macOS-10.14
+            compiler: xcode
+            version: "11"
+
           - name: macOS-10.14-gcc-7
             os: macOS-10.14
             compiler: gcc
@@ -234,7 +240,7 @@ jobs:
           curl -sSL https://github.com/Kitware/CMake/releases/download/v3.15.4/cmake-3.15.4-Linux-x86_64.tar.gz -o cmake.tar.gz
           sudo tar xf cmake.tar.gz --strip 1 -C /usr/local
 
-          # Required for libc6-dbg:i386 and g++-multilib packages which are 
+          # Required for libc6-dbg:i386 and g++-multilib packages which are
           # needed for x86 builds.
           sudo dpkg --add-architecture i386
 
@@ -242,7 +248,7 @@ jobs:
           # them from the Xenial repositories instead.
           sudo add-apt-repository "deb http://dk.archive.ubuntu.com/ubuntu/ xenial main"
           sudo add-apt-repository "deb http://dk.archive.ubuntu.com/ubuntu/ xenial universe"
-          
+
           # LLVM 9 is not in Bionic's repositories so we add the official LLVM repository.
           if [ "${{ matrix.compiler }}" = "clang" ] && [ "${{ matrix.version }}" = "9" ]; then
             sudo add-apt-repository "deb http://apt.llvm.org/bionic/ llvm-toolchain-bionic-9 main"
@@ -314,8 +320,8 @@ jobs:
           function version { echo "$@" | awk -F. '{ printf("%d%03d%03d%03d\n", $1,$2,$3,$4); }'; }
 
           # Disable sanitizers in configurations where we know they are buggy.
-          
-          # TODO: Move these conditions to the if clause if Github Actions ever 
+
+          # TODO: Move these conditions to the if clause if Github Actions ever
           # adds support for comparing versions.
           # See: https://github.community/t5/GitHub-Actions/Allow-comparing-versions-in-if-conditions/m-p/33912#M1710
 
@@ -343,18 +349,18 @@ jobs:
           fi
 
           ASAN_UBSAN_FLAGS="-fsanitize=address,undefined -fno-omit-frame-pointer"
-          
-          # Link statically against ASAN libraries because dynamically linking 
+
+          # Link statically against ASAN libraries because dynamically linking
           # against ASAN libraries causes problems when using dlopen on Ubuntu.
           # See: https://github.com/DaanDeMeyer/doctest/runs/249002713
           if [ "${{ runner.os }}" = "Linux" ] && [ "${{ matrix.compiler }}" = "gcc" ]; then
             ASAN_UBSAN_FLAGS="$ASAN_UBSAN_FLAGS -static-libasan"
           fi
 
-          # Compiling in bash on Windows doesn't work and powershell doesn't 
+          # Compiling in bash on Windows doesn't work and powershell doesn't
           # exit on non-zero exit codes so we're forced to use cmd which means
-          # we don't have a cross platform way to access environment variables. 
-          # To circumvent this, we put the sanitizer flags in an environment 
+          # we don't have a cross platform way to access environment variables.
+          # To circumvent this, we put the sanitizer flags in an environment
           # variable that is automatically picked up by CMake.
           echo "::set-env name=CXXFLAGS::$ASAN_UBSAN_FLAGS"
 
@@ -363,7 +369,7 @@ jobs:
         run: |
           # https://stackoverflow.com/a/37939589/11900641
           function version { echo "$@" | awk -F. '{ printf("%d%03d%03d%03d\n", $1,$2,$3,$4); }'; }
-          
+
           if [ "${{ runner.os }}" = "Linux" ] && \
              [ "${{ matrix.compiler }}" = "gcc" ] && \
              [ $(version ${{ matrix.version }}) -le $(version "6.0") ]; then
@@ -387,8 +393,8 @@ jobs:
             TSAN_FLAGS="$TSAN_FLAGS -static-libtsan"
           fi
 
-          # The thread sanitizers build does not run on Windows so we can just 
-          # use bash syntax to access the TSAN flags in the thread sanitizers 
+          # The thread sanitizers build does not run on Windows so we can just
+          # use bash syntax to access the TSAN flags in the thread sanitizers
           # build step.
           echo "::set-env name=TSAN_FLAGS::$TSAN_FLAGS"
 
