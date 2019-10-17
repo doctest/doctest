@@ -298,27 +298,35 @@ DOCTEST_MSVC_SUPPRESS_WARNING(26812) // Prefer 'enum class' over 'enum'
 #define DOCTEST_NOINLINE __declspec(noinline)
 #define DOCTEST_UNUSED
 #define DOCTEST_ALIGNMENT(x)
-#elif DOCTEST_CLANG && DOCTEST_CLANG < DOCTEST_COMPILER(3, 5, 0)
+#if DOCTEST_MSVC < DOCTEST_COMPILER(19, 0, 0)
+#define DOCTEST_THREAD_LOCAL /* not supported */
+#define DOCTEST_NOEXCEPT /* not supported */
+#define DOCTEST_NORETURN __declspec(noreturn)
+#else // MSVC 19 or newer
+#define DOCTEST_THREAD_LOCAL thread_local
+#define DOCTEST_NOEXCEPT noexcept
+#define DOCTEST_NORETURN [[noreturn]]
+#endif // MSVC version 19 check
+#else // NOT DOCTEST_MSVC
+#define DOCTEST_THREAD_LOCAL thread_local
+#define DOCTEST_NOEXCEPT noexcept
+#define DOCTEST_NORETURN __attribute__((noreturn))
+#if DOCTEST_CLANG && DOCTEST_CLANG < DOCTEST_COMPILER(3, 5, 0)
 #define DOCTEST_NOINLINE
 #define DOCTEST_UNUSED
 #define DOCTEST_ALIGNMENT(x)
-#else
+#else // DOCTEST_CLANG
 #define DOCTEST_NOINLINE __attribute__((noinline))
 #define DOCTEST_UNUSED __attribute__((unused))
 #define DOCTEST_ALIGNMENT(x) __attribute__((aligned(x)))
-#endif
+#endif // DOCTEST_CLANG
+#endif // DOCTEST_MSVC
 
-#ifndef DOCTEST_NORETURN
-#define DOCTEST_NORETURN [[noreturn]]
-#endif // DOCTEST_NORETURN
-
-#ifndef DOCTEST_NOEXCEPT
-#define DOCTEST_NOEXCEPT noexcept
-#endif // DOCTEST_NOEXCEPT
-
-#ifndef DOCTEST_CONSTEXPR
+#if DOCTEST_MSVC < DOCTEST_COMPILER(19, 0, 0)
+#define DOCTEST_CONSTEXPR const
+#else // MSVC 2017 or newer, all other compilers
 #define DOCTEST_CONSTEXPR constexpr
-#endif // DOCTEST_CONSTEXPR
+#endif
 
 // =================================================================================================
 // == FEATURE DETECTION END ========================================================================
@@ -610,7 +618,7 @@ namespace assertType {
         DT_WARN_THROWS_WITH    = is_throws_with | is_warn,
         DT_CHECK_THROWS_WITH   = is_throws_with | is_check,
         DT_REQUIRE_THROWS_WITH = is_throws_with | is_require,
-        
+
         DT_WARN_THROWS_WITH_AS    = is_throws_with | is_throws_as | is_warn,
         DT_CHECK_THROWS_WITH_AS   = is_throws_with | is_throws_as | is_check,
         DT_REQUIRE_THROWS_WITH_AS = is_throws_with | is_throws_as | is_require,
@@ -784,9 +792,9 @@ namespace detail {
     template<class T> struct remove_reference<T&>  { typedef T type; };
     template<class T> struct remove_reference<T&&> { typedef T type; };
 
-    template<typename T, typename U = T&&> U declval(int); 
+    template<typename T, typename U = T&&> U declval(int);
 
-    template<typename T> T declval(long); 
+    template<typename T> T declval(long);
 
     template<typename T> auto declval() DOCTEST_NOEXCEPT -> decltype(declval<T>(0)) ;
 
@@ -1572,7 +1580,7 @@ DOCTEST_CLANG_SUPPRESS_WARNING_POP
     DOCTEST_INTERFACE void toStream(std::ostream* s, int long long in);
     DOCTEST_INTERFACE void toStream(std::ostream* s, int long long unsigned in);
 
-    // ContextScope base class used to allow implementing methods of ContextScope 
+    // ContextScope base class used to allow implementing methods of ContextScope
     // that don't depend on the template parameter in doctest.cpp.
     class DOCTEST_INTERFACE ContextScopeBase : public IContextScope {
     protected:
@@ -1630,7 +1638,7 @@ DOCTEST_CLANG_SUPPRESS_WARNING_POP
         bool log();
         void react();
     };
-    
+
     template <typename L>
     ContextScope<L> MakeContextScope(const L &lambda) {
         return ContextScope<L>(lambda);
