@@ -1489,7 +1489,7 @@ namespace detail {
         void destroy();
     };
 
-    template <typename L> class DOCTEST_INTERFACE ContextScope : public ContextScopeBase
+    template <typename L> class ContextScope : public ContextScopeBase
     {
         const L &lambda_;
 

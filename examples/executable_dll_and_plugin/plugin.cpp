@@ -5,8 +5,16 @@ DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_BEGIN
 #include <cstdio>
 DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_END
 
-TEST_CASE("plugin") {
-    printf("I am a test from the plugin!\n");
+// most of these are used here just to test that they compile successfully from within a plugin
+TEST_SUITE("some test suite") {
+    TEST_CASE("test case in a plugin") {
+        SUBCASE("some subcase") {
+            INFO("some info");
+            MESSAGE("triggering the INFO above to be printed");
+            CHECK(1 == 2);
+            FAIL("certain death!");
+        }
+    }
 }
 
 // set an exception translator for char
