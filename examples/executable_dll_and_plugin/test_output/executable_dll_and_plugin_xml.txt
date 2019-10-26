@@ -21,11 +21,41 @@ I am a test from the executable!
       </Exception>
       <OverallResultsAsserts successes="0" failures="0"/>
     </TestCase>
-    <TestCase name="plugin" filename="plugin.cpp" line="0">
-I am a test from the plugin!
-      <OverallResultsAsserts successes="0" failures="0"/>
+  </TestSuite>
+  <TestSuite name="some test suite">
+    <TestCase name="test case in a plugin" filename="plugin.cpp" line="0">
+      <SubCase name="some subcase" filename="plugin.cpp" line="0">
+        <Message type="WARNING" filename="plugin.cpp" line="0">
+          <Text>
+            triggering the INFO above to be printed
+          </Text>
+          <Info>
+            some info
+          </Info>
+        </Message>
+        <Expression success="false" type="CHECK" filename="plugin.cpp" line="0">
+          <Original>
+            1 == 2
+          </Original>
+          <Expanded>
+            1 == 2
+          </Expanded>
+          <Info>
+            some info
+          </Info>
+        </Expression>
+        <Message type="FATAL ERROR" filename="plugin.cpp" line="0">
+          <Text>
+            certain death!
+          </Text>
+          <Info>
+            some info
+          </Info>
+        </Message>
+      </SubCase>
+      <OverallResultsAsserts successes="0" failures="2"/>
     </TestCase>
   </TestSuite>
-  <OverallResultsAsserts successes="0" failures="0"/>
-  <OverallResultsTestCases successes="4" failures="1" skipped="0"/>
+  <OverallResultsAsserts successes="0" failures="2"/>
+  <OverallResultsTestCases successes="3" failures="2" skipped="0"/>
 </doctest>
