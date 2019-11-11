@@ -317,8 +317,8 @@ namespace detail {
         // stuff for subcases
         std::vector<SubcaseSignature>     subcasesStack;
         std::set<decltype(subcasesStack)> subcasesPassed;
-        int                               subcasesCurrentMaxLevel;
-        bool                              should_reenter;
+        int                               subcasesCurrentMaxLevel = 0;
+        bool                              should_reenter = false;
         std::atomic<bool>                 shouldLogCurrentException;
 
         void resetRunData() {
@@ -635,23 +635,20 @@ const char* failureString(assertType::Enum at) {
     return "";
 }
 
-DOCTEST_CLANG_SUPPRESS_WARNING_WITH_PUSH("-Wnull-dereference")
-DOCTEST_GCC_SUPPRESS_WARNING_WITH_PUSH("-Wnull-dereference")
 // depending on the current options this will remove the path of filenames
 const char* skipPathFromFilename(const char* file) {
     if(getContextOptions()->no_path_in_filenames) {
-        auto back    = std::strrchr(file, '\\');
         auto forward = std::strrchr(file, '/');
-        if(back || forward) {
-            if(back > forward)
-                forward = back;
+        if(forward) {
+            return forward + 1;
+        }
+        forward = std::strrchr(file, '\\');
+        if(forward) {
             return forward + 1;
         }
     }
     return file;
 }
-DOCTEST_CLANG_SUPPRESS_WARNING_POP
-DOCTEST_GCC_SUPPRESS_WARNING_POP
 
 bool SubcaseSignature::operator<(const SubcaseSignature& other) const {
     if(m_line != other.m_line)
@@ -2250,13 +2247,13 @@ namespace {
     struct ConsoleReporter : public IReporter
     {
         std::ostream&                 s;
-        bool                          hasLoggedCurrentTestStart;
+        bool                          hasLoggedCurrentTestStart = false;
         std::vector<SubcaseSignature> subcasesStack;
         std::mutex                    mutex;
 
         // caching pointers/references to objects of these types - safe to do
         const ContextOptions& opt;
-        const TestCaseData*   tc;
+        const TestCaseData*   tc = nullptr;
 
         ConsoleReporter(const ContextOptions& co)
                 : s(*co.cout)
@@ -3051,7 +3048,6 @@ int Context::run() {
     p->cerr = &std::cerr;
 
     // or to a file if specified
-    std::fstream fstr;
     if(p->out.size()) {
         fstr.open(p->out.c_str(), std::fstream::out);
         p->cout = &fstr;

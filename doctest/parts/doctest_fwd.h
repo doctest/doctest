@@ -372,6 +372,7 @@ DOCTEST_GCC_SUPPRESS_WARNING_POP
 #endif // VS 2019
 #else // DOCTEST_CONFIG_USE_STD_HEADERS
 
+#include <fstream>
 #if DOCTEST_CLANG
 // to detect if libc++ is being used with clang (the _LIBCPP_VERSION identifier)
 #include <ciso646>
@@ -1116,12 +1117,12 @@ namespace detail {
     DOCTEST_RELATIONAL_OP(ge, >=)
 
 #ifndef DOCTEST_CONFIG_TREAT_CHAR_STAR_AS_STRING
-#define DOCTEST_CMP_EQ(l, r) l == r
-#define DOCTEST_CMP_NE(l, r) l != r
-#define DOCTEST_CMP_GT(l, r) l > r
-#define DOCTEST_CMP_LT(l, r) l < r
-#define DOCTEST_CMP_GE(l, r) l >= r
-#define DOCTEST_CMP_LE(l, r) l <= r
+#define DOCTEST_CMP_EQ(l, r) (l) == (r)
+#define DOCTEST_CMP_NE(l, r) (l) != (r)
+#define DOCTEST_CMP_GT(l, r) (l) > (r)
+#define DOCTEST_CMP_LT(l, r) (l) < (r)
+#define DOCTEST_CMP_GE(l, r) (l) >= (r)
+#define DOCTEST_CMP_LE(l, r) (l) <= (r)
 #else // DOCTEST_CONFIG_TREAT_CHAR_STAR_AS_STRING
 #define DOCTEST_CMP_EQ(l, r) eq(l, r)
 #define DOCTEST_CMP_NE(l, r) ne(l, r)
@@ -1342,7 +1343,7 @@ namespace detail {
         if(!is_running_in_test) {                                                                  \
             if(failed) {                                                                           \
                 ResultBuilder rb(at, file, line, expr);                                            \
-                rb.m_failed = failed;                                                              \
+                rb.m_failed = true;                                                              \
                 rb.m_decomp = decomp;                                                              \
                 failed_out_of_a_testing_context(rb);                                               \
                 if(isDebuggerActive() && !getContextOptions()->no_breaks)                          \
@@ -1413,7 +1414,7 @@ namespace detail {
             try {
                 throw; // lgtm [cpp/rethrow-no-exception]
                 // cppcheck-suppress catchExceptionByValue
-            } catch(T ex) {                    // NOLINT
+            } catch(const T &ex) {                    // NOLINT
                 res = m_translateFunction(ex); //!OCLINT parameter reassignment
                 return true;
             } catch(...) {} //!OCLINT -  empty catch statement
@@ -1600,6 +1601,9 @@ public:
     void setAssertHandler(detail::assert_handler ah);
 
     int run();
+
+private:
+    std::fstream fstr;
 };
 
 namespace TestCaseFailureReason {
