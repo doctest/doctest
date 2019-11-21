@@ -24,7 +24,7 @@ TEST_CASE("executable") {
 #ifdef _WIN32
 #define WIN32_LEAN_AND_MEAN
 DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_BEGIN
-#include <Windows.h>
+#include <windows.h>
 DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_END
 #ifdef _MSC_VER
 #define LoadDynamicLib(lib) LoadLibrary(lib ".dll")
