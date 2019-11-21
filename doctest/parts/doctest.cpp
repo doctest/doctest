@@ -138,7 +138,7 @@ DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_BEGIN
 #ifdef __AFXDLL
 #include <AfxWin.h>
 #else
-#include <Windows.h>
+#include <windows.h>
 #endif
 #include <io.h>
 
