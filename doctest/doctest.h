@@ -1645,9 +1645,9 @@ struct DOCTEST_INTERFACE TestRunStats
 
 struct QueryData
 {
-    const TestRunStats* run_stats = nullptr;
-    const TestCaseData* data      = nullptr;
-    unsigned            num_data  = 0;
+    const TestRunStats*  run_stats = nullptr;
+    const TestCaseData** data      = nullptr;
+    unsigned             num_data  = 0;
 };
 
 struct DOCTEST_INTERFACE IReporter
@@ -2751,7 +2751,7 @@ DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_BEGIN
 #ifdef __AFXDLL
 #include <AfxWin.h>
 #else
-#include <Windows.h>
+#include <windows.h>
 #endif
 #include <io.h>
 
@@ -4692,16 +4692,16 @@ namespace {
                             .writeAttribute("name", curr.first.second);
             } else if(opt.count || opt.list_test_cases) {
                 for(unsigned i = 0; i < in.num_data; ++i) {
-                    xml.scopedElement("TestCase").writeAttribute("name", in.data[i].m_name)
-                        .writeAttribute("testsuite", in.data[i].m_test_suite)
-                        .writeAttribute("filename", skipPathFromFilename(in.data[i].m_file))
-                        .writeAttribute("line", line(in.data[i].m_line));
+                    xml.scopedElement("TestCase").writeAttribute("name", in.data[i]->m_name)
+                        .writeAttribute("testsuite", in.data[i]->m_test_suite)
+                        .writeAttribute("filename", skipPathFromFilename(in.data[i]->m_file))
+                        .writeAttribute("line", line(in.data[i]->m_line));
                 }
                 xml.scopedElement("OverallResultsTestCases")
                         .writeAttribute("unskipped", in.run_stats->numTestCasesPassingFilters);
             } else if(opt.list_test_suites) {
                 for(unsigned i = 0; i < in.num_data; ++i)
-                    xml.scopedElement("TestSuite").writeAttribute("name", in.data[i].m_test_suite);
+                    xml.scopedElement("TestSuite").writeAttribute("name", in.data[i]->m_test_suite);
                 xml.scopedElement("OverallResultsTestCases")
                         .writeAttribute("unskipped", in.run_stats->numTestCasesPassingFilters);
                 xml.scopedElement("OverallResultsTestSuites")
@@ -5121,7 +5121,7 @@ namespace {
                 }
 
                 for(unsigned i = 0; i < in.num_data; ++i)
-                    s << Color::None << in.data[i].m_name << "\n";
+                    s << Color::None << in.data[i]->m_name << "\n";
 
                 separator_to_stream();
 
@@ -5134,7 +5134,7 @@ namespace {
                 separator_to_stream();
 
                 for(unsigned i = 0; i < in.num_data; ++i)
-                    s << Color::None << in.data[i].m_test_suite << "\n";
+                    s << Color::None << in.data[i]->m_test_suite << "\n";
 
                 separator_to_stream();
 
@@ -5888,7 +5888,7 @@ int Context::run() {
     } else {
         QueryData qdata;
         qdata.run_stats = g_cs;
-        qdata.data      = *queryResults.data();
+        qdata.data      = queryResults.data();
         qdata.num_data  = unsigned(queryResults.size());
         DOCTEST_ITERATE_THROUGH_REPORTERS(report_query, qdata);
     }
