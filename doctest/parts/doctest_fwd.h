@@ -1643,7 +1643,7 @@ struct DOCTEST_INTERFACE TestRunStats
 struct QueryData
 {
     const TestRunStats* run_stats = nullptr;
-    String*             data      = nullptr;
+    const TestCaseData* data      = nullptr;
     unsigned            num_data  = 0;
 };
 

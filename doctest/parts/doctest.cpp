@@ -2079,13 +2079,17 @@ namespace {
                             .writeAttribute("priority", curr.first.first)
                             .writeAttribute("name", curr.first.second);
             } else if(opt.count || opt.list_test_cases) {
-                for(unsigned i = 0; i < in.num_data; ++i)
-                    xml.scopedElement("TestCase").writeAttribute("name", in.data[i]);
+                for(unsigned i = 0; i < in.num_data; ++i) {
+                    xml.scopedElement("TestCase").writeAttribute("name", in.data[i].m_name)
+                        .writeAttribute("testsuite", in.data[i].m_test_suite)
+                        .writeAttribute("filename", skipPathFromFilename(in.data[i].m_file))
+                        .writeAttribute("line", line(in.data[i].m_line));
+                }
                 xml.scopedElement("OverallResultsTestCases")
                         .writeAttribute("unskipped", in.run_stats->numTestCasesPassingFilters);
             } else if(opt.list_test_suites) {
                 for(unsigned i = 0; i < in.num_data; ++i)
-                    xml.scopedElement("TestSuite").writeAttribute("name", in.data[i]);
+                    xml.scopedElement("TestSuite").writeAttribute("name", in.data[i].m_test_suite);
                 xml.scopedElement("OverallResultsTestCases")
                         .writeAttribute("unskipped", in.run_stats->numTestCasesPassingFilters);
                 xml.scopedElement("OverallResultsTestSuites")
@@ -2505,7 +2509,7 @@ namespace {
                 }
 
                 for(unsigned i = 0; i < in.num_data; ++i)
-                    s << Color::None << in.data[i] << "\n";
+                    s << Color::None << in.data[i].m_name << "\n";
 
                 separator_to_stream();
 
@@ -2518,7 +2522,7 @@ namespace {
                 separator_to_stream();
 
                 for(unsigned i = 0; i < in.num_data; ++i)
-                    s << Color::None << in.data[i] << "\n";
+                    s << Color::None << in.data[i].m_test_suite << "\n";
 
                 separator_to_stream();
 
@@ -3134,8 +3138,8 @@ int Context::run() {
 
     std::set<String> testSuitesPassingFilt;
 
-    bool                query_mode = p->count || p->list_test_cases || p->list_test_suites;
-    std::vector<String> queryResults;
+    bool                             query_mode = p->count || p->list_test_cases || p->list_test_suites;
+    std::vector<const TestCaseData*> queryResults;
 
     if(!query_mode)
         DOCTEST_ITERATE_THROUGH_REPORTERS(test_run_start, DOCTEST_EMPTY);
@@ -3181,14 +3185,14 @@ int Context::run() {
 
         // print the name of the test and don't execute it
         if(p->list_test_cases) {
-            queryResults.push_back(tc.m_name);
+            queryResults.push_back(&tc);
             continue;
         }
 
         // print the name of the test suite if not done already and don't execute it
         if(p->list_test_suites) {
             if((testSuitesPassingFilt.count(tc.m_test_suite) == 0) && tc.m_test_suite[0] != '\0') {
-                queryResults.push_back(tc.m_test_suite);
+                queryResults.push_back(&tc);
                 testSuitesPassingFilt.insert(tc.m_test_suite);
                 p->numTestSuitesPassingFilters++;
             }
@@ -3272,7 +3276,7 @@ int Context::run() {
     } else {
         QueryData qdata;
         qdata.run_stats = g_cs;
-        qdata.data      = queryResults.data();
+        qdata.data      = *queryResults.data();
         qdata.num_data  = unsigned(queryResults.size());
         DOCTEST_ITERATE_THROUGH_REPORTERS(report_query, qdata);
     }
