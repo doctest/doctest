@@ -1329,10 +1329,11 @@ namespace {
 
     struct FatalConditionHandler
     {
-        static LONG CALLBACK handleVectoredException(PEXCEPTION_POINTERS ExceptionInfo) {
+        static LONG CALLBACK handleException(PEXCEPTION_POINTERS ExceptionInfo) {
             for(size_t i = 0; i < DOCTEST_COUNTOF(signalDefs); ++i) {
                 if(ExceptionInfo->ExceptionRecord->ExceptionCode == signalDefs[i].id) {
                     reportFatal(signalDefs[i].name);
+                    break;
                 }
             }
             // If its not an exception we care about, pass it along.
@@ -1345,9 +1346,8 @@ namespace {
             // 32k seems enough for doctest to handle stack overflow,
             // but the value was found experimentally, so there is no strong guarantee
             guaranteeSize = 32 * 1024;
-            exceptionHandlerHandle = nullptr;
-            // Register as first handler in current chain
-            exceptionHandlerHandle = AddVectoredExceptionHandler(1, handleVectoredException);
+            // Register an unhandled exception filter
+            previousTop = SetUnhandledExceptionFilter(handleException);
             // Pass in guarantee size to be filled
             SetThreadStackGuarantee(&guaranteeSize);
         }
@@ -1355,9 +1355,9 @@ namespace {
         static void reset() {
             if(isSet) {
                 // Unregister handler and restore the old guarantee
-                RemoveVectoredExceptionHandler(exceptionHandlerHandle);
+                SetUnhandledExceptionFilter(previousTop);
                 SetThreadStackGuarantee(&guaranteeSize);
-                exceptionHandlerHandle = nullptr;
+                previousTop = nullptr;
                 isSet = false;
             }
         }
@@ -1367,12 +1367,12 @@ namespace {
     private:
         static bool isSet;
         static ULONG guaranteeSize;
-        static PVOID exceptionHandlerHandle;
+        static LPTOP_LEVEL_EXCEPTION_FILTER previousTop;
     };
 
     bool FatalConditionHandler::isSet = false;
     ULONG FatalConditionHandler::guaranteeSize = 0;
-    PVOID FatalConditionHandler::exceptionHandlerHandle = nullptr;
+    LPTOP_LEVEL_EXCEPTION_FILTER FatalConditionHandler::previousTop = nullptr;
 
 #else // DOCTEST_PLATFORM_WINDOWS
 
