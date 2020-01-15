@@ -24,24 +24,6 @@
 *.ii
 *.s
 
-# Visual Studio garbage
-.vs/
-*.sln
-*.vcxproj
-*.vcxproj.filters
-*.vcxproj.user
-*.log
-*.tlog*
-*.ilk
-*.pdb
-*.exp
-
-# CMake garbage
-*.rule
-*.cmake
-generate.stamp*
-CMakeFiles/
-
 # My garbage :)
 Win32/
 x64/
@@ -55,6 +37,3 @@ build-mingw/
 *vscode*
 .idea/
 cmake-build-*/
-CMakeCache.txt
-examples/all_features/temp
-Testing/Temporary/
