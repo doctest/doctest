@@ -412,7 +412,13 @@ DOCTEST_STD_NAMESPACE_END
 DOCTEST_MSVC_SUPPRESS_WARNING_POP
 
 #endif // DOCTEST_CONFIG_USE_STD_HEADERS
+
+DOCTEST_MSVC_SUPPRESS_WARNING_PUSH
+DOCTEST_MSVC_SUPPRESS_WARNING(4365) // signed/unsigned mismatch
+DOCTEST_MSVC_SUPPRESS_WARNING(4774) // format string expected in argument X is not a string literal
+DOCTEST_MSVC_SUPPRESS_WARNING(4987) // nonstandard extension used: 'throw (...)'
 #include <string>
+DOCTEST_MSVC_SUPPRESS_WARNING_POP
 
 #ifdef DOCTEST_CONFIG_INCLUDE_TYPE_TRAITS
 #include <type_traits>
@@ -2690,6 +2696,7 @@ DOCTEST_MSVC_SUPPRESS_WARNING(5027) // move assignment operator was implicitly d
 DOCTEST_MSVC_SUPPRESS_WARNING(5026) // move constructor was implicitly defined as deleted
 DOCTEST_MSVC_SUPPRESS_WARNING(4625) // copy constructor was implicitly defined as deleted
 DOCTEST_MSVC_SUPPRESS_WARNING(4800) // forcing value to bool 'true' or 'false' (performance warning)
+DOCTEST_MSVC_SUPPRESS_WARNING(4061) // enumerator 'X' in switch of enum 'Y' is not explicitly handled by a case label
 // static analysis
 DOCTEST_MSVC_SUPPRESS_WARNING(26439) // This kind of function may not throw. Declare it 'noexcept'
 DOCTEST_MSVC_SUPPRESS_WARNING(26495) // Always initialize a member variable
