@@ -5,7 +5,7 @@
     <TestCase name="lots of nested subcases" filename="subcases.cpp" line="0">
 
 root
-      <SubCase filename="subcases.cpp" line="0">
+      <SubCase name="&lt;doctest::String>" filename="subcases.cpp" line="0">
 1
         <SubCase filename="subcases.cpp" line="0">
 1.1

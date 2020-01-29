@@ -409,6 +409,7 @@ DOCTEST_STD_NAMESPACE_END
 DOCTEST_MSVC_SUPPRESS_WARNING_POP
 
 #endif // DOCTEST_CONFIG_USE_STD_HEADERS
+#include <string>
 
 #ifdef DOCTEST_CONFIG_INCLUDE_TYPE_TRAITS
 #include <type_traits>
@@ -671,7 +672,7 @@ struct DOCTEST_INTERFACE MessageData
 
 struct DOCTEST_INTERFACE SubcaseSignature
 {
-    const char* m_name;
+    std::string m_name;
     const char* m_file;
     int         m_line;
 
@@ -993,7 +994,7 @@ namespace detail {
         SubcaseSignature m_signature;
         bool             m_entered = false;
 
-        Subcase(const char* name, const char* file, int line);
+        Subcase(const char* file, int line, std::string name);
         ~Subcase();
 
         operator bool() const;
@@ -1863,9 +1864,9 @@ int registerReporter(const char* name, int priority, bool isReporter) {
     DOCTEST_TEST_CASE_TEMPLATE_IMPL(dec, T, DOCTEST_ANONYMOUS(_DOCTEST_ANON_TMP_), __VA_ARGS__)
 
 // for subcases
-#define DOCTEST_SUBCASE(name)                                                                      \
+#define DOCTEST_SUBCASE(...)                                                                      \
     if(const doctest::detail::Subcase & DOCTEST_ANONYMOUS(_DOCTEST_ANON_SUBCASE_) DOCTEST_UNUSED = \
-               doctest::detail::Subcase(name, __FILE__, __LINE__))
+               doctest::detail::Subcase(__FILE__, __LINE__, __VA_ARGS__))
 
 // for grouping tests in test suites by using code blocks
 #define DOCTEST_TEST_SUITE_IMPL(decorators, ns_name)                                               \
