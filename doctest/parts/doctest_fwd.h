@@ -672,7 +672,7 @@ struct DOCTEST_INTERFACE MessageData
 
 struct DOCTEST_INTERFACE SubcaseSignature
 {
-    std::string m_name;
+    String      m_name;
     const char* m_file;
     int         m_line;
 

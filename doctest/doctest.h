@@ -675,7 +675,7 @@ struct DOCTEST_INTERFACE MessageData
 
 struct DOCTEST_INTERFACE SubcaseSignature
 {
-    std::string m_name;
+    String      m_name;
     const char* m_file;
     int         m_line;
 
@@ -3271,7 +3271,7 @@ bool SubcaseSignature::operator<(const SubcaseSignature& other) const {
         return m_line < other.m_line;
     if(std::strcmp(m_file, other.m_file) != 0)
         return std::strcmp(m_file, other.m_file) < 0;
-    return m_name < other.m_name;
+    return m_name.compare(other.m_name) < 0;
 }
 
 IContextScope::IContextScope()  = default;
@@ -3507,7 +3507,7 @@ namespace {
 namespace detail {
 
     Subcase::Subcase(const char* file, int line, std::string name)
-            : m_signature({name, file, line}) {
+            : m_signature({name.c_str(), file, line}) {
         ContextState* s = g_cs;
 
         // check subcase filters

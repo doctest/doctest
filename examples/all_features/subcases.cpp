@@ -10,7 +10,7 @@ DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_END
 
 TEST_CASE("lots of nested subcases") {
     cout << endl << "root" << endl;
-    SUBCASE("" + 1) {
+    SUBCASE("" + std::string("1")) {
         cout << "1" << endl;
         SUBCASE("") { cout << "1.1" << endl; }
     }
