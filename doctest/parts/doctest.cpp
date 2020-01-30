@@ -894,8 +894,8 @@ namespace {
 } // namespace
 namespace detail {
 
-    Subcase::Subcase(const char* file, int line, std::string name)
-            : m_signature({name.c_str(), file, line}) {
+    Subcase::Subcase(const char* file, int line, String name)
+            : m_signature({std::move(name), file, line}) {
         ContextState* s = g_cs;
 
         // check subcase filters

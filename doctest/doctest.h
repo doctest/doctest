@@ -1003,7 +1003,7 @@ namespace detail {
         SubcaseSignature m_signature;
         bool             m_entered = false;
 
-        Subcase(const char* file, int line, std::string name);
+        Subcase(const char* file, int line, String name);
         ~Subcase();
 
         operator bool() const;
@@ -1873,9 +1873,12 @@ int registerReporter(const char* name, int priority, bool isReporter) {
     DOCTEST_TEST_CASE_TEMPLATE_IMPL(dec, T, DOCTEST_ANONYMOUS(_DOCTEST_ANON_TMP_), __VA_ARGS__)
 
 // for subcases
-#define DOCTEST_SUBCASE(...)                                                                      \
+#define DOCTEST_SUBCASE(...)                                                                       \
+    DOCTEST_GCC_SUPPRESS_WARNING_WITH_PUSH("-Wuseless-cast")                                       \
     if(const doctest::detail::Subcase & DOCTEST_ANONYMOUS(_DOCTEST_ANON_SUBCASE_) DOCTEST_UNUSED = \
-               doctest::detail::Subcase(__FILE__, __LINE__, __VA_ARGS__))
+               doctest::detail::Subcase(__FILE__, __LINE__, std::string(__VA_ARGS__).c_str()))     \
+               DOCTEST_GCC_SUPPRESS_WARNING_POP \
+
 
 // for grouping tests in test suites by using code blocks
 #define DOCTEST_TEST_SUITE_IMPL(decorators, ns_name)                                               \
@@ -3513,8 +3516,8 @@ namespace {
 } // namespace
 namespace detail {
 
-    Subcase::Subcase(const char* file, int line, std::string name)
-            : m_signature({name.c_str(), file, line}) {
+    Subcase::Subcase(const char* file, int line, String name)
+            : m_signature({std::move(name), file, line}) {
         ContextState* s = g_cs;
 
         // check subcase filters
