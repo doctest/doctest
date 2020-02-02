@@ -133,7 +133,7 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
     # no way to silence it in the expression decomposition macros: _Pragma() in macros doesn't work for the c++ front-end of g++
     # https://gcc.gnu.org/bugzilla/show_bug.cgi?id=55578
     # https://gcc.gnu.org/bugzilla/show_bug.cgi?id=69543
-    # Also the warning is completely worthless nowadays - http://stackoverflow.com/questions/14016993
+    # Also the warning is completely worthless nowadays - https://stackoverflow.com/questions/14016993
     #add_compiler_flags(-Waggregate-return)
 
     if(NOT CMAKE_CXX_COMPILER_VERSION VERSION_LESS 5.0)

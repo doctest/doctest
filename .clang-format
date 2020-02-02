@@ -1,4 +1,4 @@
-# http://clang.llvm.org/docs/ClangFormatStyleOptions.html
+# https://clang.llvm.org/docs/ClangFormatStyleOptions.html
 
 DisableFormat: false
 Language: Cpp
