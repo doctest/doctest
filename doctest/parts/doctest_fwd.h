@@ -1034,7 +1034,7 @@ namespace detail {
 
         Result(bool passed, const String& decomposition = String());
 
-        // forbidding some expressions based on this table: http://en.cppreference.com/w/cpp/language/operator_precedence
+        // forbidding some expressions based on this table: https://en.cppreference.com/w/cpp/language/operator_precedence
         DOCTEST_FORBIT_EXPRESSION(Result, &)
         DOCTEST_FORBIT_EXPRESSION(Result, ^)
         DOCTEST_FORBIT_EXPRESSION(Result, |)
@@ -1076,7 +1076,7 @@ namespace detail {
     //DOCTEST_GCC_SUPPRESS_WARNING("-Wfloat-equal")
 
     DOCTEST_MSVC_SUPPRESS_WARNING_PUSH
-    // http://stackoverflow.com/questions/39479163 what's the difference between 4018 and 4389
+    // https://stackoverflow.com/questions/39479163 what's the difference between 4018 and 4389
     DOCTEST_MSVC_SUPPRESS_WARNING(4388) // signed/unsigned mismatch
     DOCTEST_MSVC_SUPPRESS_WARNING(4389) // 'operator' : signed/unsigned mismatch
     DOCTEST_MSVC_SUPPRESS_WARNING(4018) // 'expression' : signed/unsigned mismatch
@@ -1158,7 +1158,7 @@ namespace detail {
         DOCTEST_DO_BINARY_EXPRESSION_COMPARISON(<=, " <= ", DOCTEST_CMP_LE) //!OCLINT bitwise operator in conditional
         // clang-format on
 
-        // forbidding some expressions based on this table: http://en.cppreference.com/w/cpp/language/operator_precedence
+        // forbidding some expressions based on this table: https://en.cppreference.com/w/cpp/language/operator_precedence
         DOCTEST_FORBIT_EXPRESSION(Expression_lhs, &)
         DOCTEST_FORBIT_EXPRESSION(Expression_lhs, ^)
         DOCTEST_FORBIT_EXPRESSION(Expression_lhs, |)
