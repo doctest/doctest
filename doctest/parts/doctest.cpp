@@ -1205,7 +1205,7 @@ namespace detail {
 #else // DOCTEST_IS_DEBUGGER_ACTIVE
 #ifdef DOCTEST_PLATFORM_MAC
     // The following function is taken directly from the following technical note:
-    // http://developer.apple.com/library/mac/#qa/qa2004/qa1361.html
+    // https://developer.apple.com/library/archive/qa/qa1361/_index.html
     // Returns true if the current process is being debugged (either
     // running under the debugger or has a debugger attached post facto).
     bool isDebuggerActive() {
@@ -1767,7 +1767,7 @@ namespace {
 
     void XmlEncode::encodeTo( std::ostream& os ) const {
         // Apostrophe escaping not necessary if we always use " to write attributes
-        // (see: http://www.w3.org/TR/xml/#syntax)
+        // (see: https://www.w3.org/TR/xml/#syntax)
 
         for( std::size_t idx = 0; idx < m_str.size(); ++ idx ) {
             uchar c = m_str[idx];
@@ -1776,7 +1776,7 @@ namespace {
             case '&':   os << "&amp;"; break;
 
             case '>':
-                // See: http://www.w3.org/TR/xml/#syntax
+                // See: https://www.w3.org/TR/xml/#syntax
                 if (idx > 2 && m_str[idx - 1] == ']' && m_str[idx - 2] == ']')
                     os << "&gt;";
                 else
@@ -1794,7 +1794,7 @@ namespace {
                 // Check for control characters and invalid utf-8
 
                 // Escape control characters in standard ascii
-                // see http://stackoverflow.com/questions/404107/why-are-control-characters-illegal-in-xml-1-0
+                // see https://stackoverflow.com/questions/404107/why-are-control-characters-illegal-in-xml-1-0
                 if (c < 0x09 || (c > 0x0D && c < 0x20) || c == 0x7F) {
                     hexEscapeChar(os, c);
                     break;
