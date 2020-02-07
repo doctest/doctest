@@ -176,7 +176,7 @@ jobs:
           - name: macOS-latest-xcode-11.0
             os: macOS-latest
             compiler: xcode
-            version: "11.0"
+            version: "11"
 
           - name: macOS-latest-xcode-11.3
             os: macOS-latest
