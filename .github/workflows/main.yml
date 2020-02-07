@@ -409,14 +409,16 @@ jobs:
           cmake -E remove_directory build
           cmake -B build -S . -DCMAKE_BUILD_TYPE=Debug -DDOCTEST_TEST_MODE=COMPARE
           cmake --build build
-          cd build && ctest
+          cd build
+          ctest
 
       - name: Build & Test Release x64
         run: |
           cmake -E remove_directory build
           cmake -B build -S . -DCMAKE_BUILD_TYPE=Release -DDOCTEST_TEST_MODE=COMPARE
           cmake --build build
-          cd build && ctest
+          cd build
+          ctest
 
       # Valgrind doesn't support the latest macOS versions.
       # `-DCMAKE_CXX_FLAGS=""` overrides CXXFLAGS (disables sanitizers).
@@ -427,7 +429,8 @@ jobs:
           cmake -E remove_directory build
           cmake -B build -S . -DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_FLAGS="" -DDOCTEST_TEST_MODE=VALGRIND
           cmake --build build
-          cd build && ctest
+          cd build
+          ctest
 
       - name: Build & Test Release x64 Valgrind
         if: runner.os == 'Linux'
@@ -435,7 +438,8 @@ jobs:
           cmake -E remove_directory build
           cmake -B build -S . -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="" -DDOCTEST_TEST_MODE=VALGRIND
           cmake --build build
-          cd build && ctest
+          cd build
+          ctest
 
       - name: Build & Test Debug x64 Thread Sanitizers
         if: runner.os == 'Linux' || runner.os == 'macOS'
@@ -443,7 +447,8 @@ jobs:
           cmake -E remove_directory build
           cmake -B build -S . -DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_FLAGS="$TSAN_FLAGS" -DDOCTEST_TEST_MODE=COMPARE
           cmake --build build
-          cd build && ctest
+          cd build
+          ctest
 
       - name: Build & Test Debug x64 without RTTI
         if: runner.os == 'Linux' || runner.os == 'macOS'
@@ -451,7 +456,8 @@ jobs:
           cmake -E remove_directory build
           cmake -B build -S . -DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_FLAGS="-fno-rtti" -DDOCTEST_TEST_MODE=COMPARE
           cmake --build build
-          cd build && ctest
+          cd build
+          ctest
 
       - name: Build x64 Debug without exceptions
         if: runner.os == 'Linux' || runner.os == 'macOS'
@@ -481,7 +487,8 @@ jobs:
           cmake -E remove_directory build
           cmake -B build -S . -DCMAKE_BUILD_TYPE=Debug -DDOCTEST_TEST_MODE=COMPARE
           cmake --build build
-          cd build && ctest
+          cd build
+          ctest
 
       - name: Build & Test Release x86
         if: (runner.os == 'Windows' && matrix.compiler != 'gcc') || runner.os == 'Linux'
@@ -489,7 +496,8 @@ jobs:
           cmake -E remove_directory build
           cmake -B build -S . -DCMAKE_BUILD_TYPE=Release -DDOCTEST_TEST_MODE=COMPARE
           cmake --build build
-          cd build && ctest
+          cd build
+          ctest
 
       - name: Build & Test Debug x86 Valgrind
         if: runner.os == 'Linux'
@@ -497,7 +505,8 @@ jobs:
           cmake -E remove_directory build
           cmake -B build -S . -DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_FLAGS="-m32" -DDOCTEST_TEST_MODE=VALGRIND
           cmake --build build
-          cd build && ctest
+          cd build
+          ctest
 
       - name: Build & Test Release x86 Valgrind
         if: runner.os == 'Linux'
@@ -505,4 +514,5 @@ jobs:
           cmake -E remove_directory build
           cmake -B build -S . -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="-m32" -DDOCTEST_TEST_MODE=VALGRIND
           cmake --build build
-          cd build && ctest
+          cd build
+          ctest
