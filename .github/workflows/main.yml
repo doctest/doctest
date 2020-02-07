@@ -281,6 +281,7 @@ jobs:
             echo "::set-env name=CC::gcc-${{ matrix.version }}"
             echo "::set-env name=CXX::g++-${{ matrix.version }}"
           else
+            ls -ls /Applications/
             sudo xcode-select -switch /Applications/Xcode_${{ matrix.version }}.app
             echo "::set-env name=CC::clang"
             echo "::set-env name=CXX::clang++"
