@@ -47,6 +47,7 @@ jobs:
           windows-2019-clang,
           windows-2019-gcc,
           macOS-latest-xcode-11.0,
+          macOS-latest-xcode-11.3,
         ]
 
         include:
@@ -175,7 +176,12 @@ jobs:
           - name: macOS-latest-xcode-11.0
             os: macOS-latest
             compiler: xcode
-            version: "11"
+            version: "11.0"
+
+          - name: macOS-latest-xcode-11.3
+            os: macOS-latest
+            compiler: xcode
+            version: "11.3"
 
     steps:
       - uses: actions/checkout@v1
