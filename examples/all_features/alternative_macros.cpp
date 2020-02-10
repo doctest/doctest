@@ -1,6 +1,8 @@
 #include "doctest_proxy.h"
 
+DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_BEGIN
 #include <string>
+DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_END
 
 my_testcase("custom macros") {
     my_check(1 == 1);
