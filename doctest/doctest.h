@@ -413,13 +413,6 @@ DOCTEST_MSVC_SUPPRESS_WARNING_POP
 
 #endif // DOCTEST_CONFIG_USE_STD_HEADERS
 
-DOCTEST_MSVC_SUPPRESS_WARNING_PUSH
-DOCTEST_MSVC_SUPPRESS_WARNING(4365) // signed/unsigned mismatch
-DOCTEST_MSVC_SUPPRESS_WARNING(4774) // format string expected in argument X is not a string literal
-DOCTEST_MSVC_SUPPRESS_WARNING(4987) // nonstandard extension used: 'throw (...)'
-#include <string>
-DOCTEST_MSVC_SUPPRESS_WARNING_POP
-
 #ifdef DOCTEST_CONFIG_INCLUDE_TYPE_TRAITS
 #include <type_traits>
 #endif // DOCTEST_CONFIG_INCLUDE_TYPE_TRAITS

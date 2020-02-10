@@ -1,5 +1,7 @@
 #include "doctest_proxy.h"
 
+#include <string>
+
 my_testcase("custom macros") {
     my_check(1 == 1);
     
