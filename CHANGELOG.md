@@ -1,5 +1,30 @@
 # Change Log
 
+## [2.3.6](https://github.com/onqtam/doctest/tree/2.3.6) (2019-12-17)
+[Full Changelog](https://github.com/onqtam/doctest/compare/2.3.5...2.3.6)
+
+**Closed issues:**
+
+- \[Feature\] Better integration with tools \(VS Code Test Adapter Extension\) [\#320](https://github.com/onqtam/doctest/issues/320)
+- Link problem w/ BUILD=Release if MESSAGE\(\) with std::string/ostream-operator is used [\#316](https://github.com/onqtam/doctest/issues/316)
+- the FAQ about difference to Catch2 is missing tags [\#315](https://github.com/onqtam/doctest/issues/315)
+- include Windows.h in small caps to silence clang warnings [\#312](https://github.com/onqtam/doctest/issues/312)
+- Mistake in generator with lgtm error [\#311](https://github.com/onqtam/doctest/issues/311)
+- CMake: cannot install target doctest\_with\_main [\#310](https://github.com/onqtam/doctest/issues/310)
+- \[bug\] INFO\(\) and CAPTURE\(\) cannot compile using MSVC when used with DOCTEST\_CONFIG\_IMPLEMENTATION\_IN\_DLL [\#306](https://github.com/onqtam/doctest/issues/306)
+- Skip subcase [\#304](https://github.com/onqtam/doctest/issues/304)
+- Does some equivalent features from google test exist here? [\#300](https://github.com/onqtam/doctest/issues/300)
+- How to use doctest in dll only\(without main.cpp and .exe\) [\#299](https://github.com/onqtam/doctest/issues/299)
+- Warning: C26812: The enum type 'doctest::assertType::Enum' is unscoped. Prefer 'enum class' over 'enum' \(Enum.3\). [\#298](https://github.com/onqtam/doctest/issues/298)
+- test executable\_dll\_and\_plugin fails on Linux, GCC 8.1.0, -fsanitize=address [\#201](https://github.com/onqtam/doctest/issues/201)
+
+**Merged pull requests:**
+
+- Fixed missing ostream include for MacOS when defining DOCTEST\_CONFIG\_… [\#314](https://github.com/onqtam/doctest/pull/314) ([NKTomHaygarth](https://github.com/NKTomHaygarth))
+- include windows.h in cmall caps to silence clang nonportable warnings [\#313](https://github.com/onqtam/doctest/pull/313) ([suoniq](https://github.com/suoniq))
+- Add .editorconfig file. [\#301](https://github.com/onqtam/doctest/pull/301) ([DaanDeMeyer](https://github.com/DaanDeMeyer))
+- Add Github Actions CI [\#285](https://github.com/onqtam/doctest/pull/285) ([DaanDeMeyer](https://github.com/DaanDeMeyer))
+
 ## [2.3.5](https://github.com/onqtam/doctest/tree/2.3.5) (2019-09-22)
 [Full Changelog](https://github.com/onqtam/doctest/compare/2.3.4...2.3.5)
 
@@ -301,7 +326,7 @@
 
 **Merged pull requests:**
 
-- Added an option to not install Doctest in the CMake scripts [\#96](https://github.com/onqtam/doctest/pull/96) ([NeverMine17](https://github.com/NeverMine17))
+- Added an option to not install Doctest in the CMake scripts [\#96](https://github.com/onqtam/doctest/pull/96) ([nm17](https://github.com/nm17))
 - Adding a defensive check against a null pointer for the current test suite [\#94](https://github.com/onqtam/doctest/pull/94) ([Lectem](https://github.com/Lectem))
 - Remove incomplete copy ctor [\#93](https://github.com/onqtam/doctest/pull/93) ([McMartin](https://github.com/McMartin))
 
