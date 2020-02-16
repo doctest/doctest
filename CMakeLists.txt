@@ -14,7 +14,7 @@ option(DOCTEST_NO_INSTALL  "Skip the installation process" OFF)
 add_library(${PROJECT_NAME} INTERFACE)
 add_library(${PROJECT_NAME}::${PROJECT_NAME} ALIAS ${PROJECT_NAME})
 
-if(NOT CMAKE_VERSION VERSION_LESS 3.8) 
+if(NOT CMAKE_VERSION VERSION_LESS 3.8)
     target_compile_features(${PROJECT_NAME} INTERFACE cxx_std_11)
 endif()
 
@@ -60,6 +60,7 @@ endif()
 
 if(CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR AND DOCTEST_WITH_TESTS)
     include(scripts/cmake/common.cmake)
+    include(scripts/cmake/clang-tidy.cmake)
 
     add_subdirectory(examples/all_features)
 

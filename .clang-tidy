@@ -1,0 +1,21 @@
+---
+Checks:          "-*,\
+clang-diagnostic-*,clang-analyzer-*,-clang-analyzer-security.insecureAPI.strcpy,-clang-diagnostic-variadic-macros,-clang-diagnostic-c++11-compat,\
+cert-*,-cert-err58-cpp,\
+cppcoreguidelines-*,-cppcoreguidelines-interfaces-global-init,-cppcoreguidelines-avoid-*,-cppcoreguidelines-macro-usage,-cppcoreguidelines-pro-*,-cppcoreguidelines-special-member-functions,
+-readability-*,-readability-braces-around-statements,-readability-named-parameter,-readability-else-after-return,-readability-redundant-declaration,-readability-implicit-bool-cast,-readability-magic-numbers,\
+portability-*,\
+-misc-*,-misc-misplaced-widening-cast,-misc-macro-parentheses,-misc-definitions-in-headers,-misc-unused-parameters,\
+-llvm-*,-llvm-header-guard,-llvm-include-order,\
+-google-*,-google-readability-braces-around-statements,-google-runtime-references,-google-readability-todo,-google-build-using-namespace,-google-explicit-constructor,\
+-modernize-*,-modernize-loop-convert,-modernize-use-auto,-modernize-use-bool-literals,-modernize-use-trailing-return-type,-modernize-use-using,\
+"
+
+WarningsAsErrors: ''
+HeaderFilterRegex: '.*'
+AnalyzeTemporaryDtors: false
+FormatStyle:     file
+User:            root
+CheckOptions:    
+...
+
