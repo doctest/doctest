@@ -162,7 +162,9 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
 endif()
 
 # necessary for some older compilers which don't default to C++11
-set(CMAKE_CXX_STANDARD 11)
+if(NOT DEFINED CMAKE_CXX_STANDARD)
+    set(CMAKE_CXX_STANDARD 11)
+endif()
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
