@@ -31,7 +31,7 @@ if(CLANG_TIDY_EXE)
         if(NOT TARGET check)
             add_custom_target(check)
             message(STATUS "check target added")
-            set_target_properties(check PROPERTIES EXCLUDE_FROM_ALL TRUE)
+            # TBD: set_target_properties(check PROPERTIES EXCLUDE_FROM_ALL TRUE)
         endif()
 
         add_custom_command(TARGET check PRE_BUILD
