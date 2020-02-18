@@ -388,6 +388,7 @@ void String::setOnHeap() { *reinterpret_cast<unsigned char*>(&buf[last]) = 128; 
 void String::setLast(unsigned in) { buf[last] = char(in); }
 
 void String::copy(const String& other) {
+    using namespace std;
     if(other.isOnStack()) {
         memcpy(buf, other.buf, len);
     } else {
@@ -413,6 +414,7 @@ String::String(const char* in)
         : String(in, strlen(in)) {}
 
 String::String(const char* in, unsigned in_size) {
+    using namespace std;
     if(in_size <= last) {
         memcpy(buf, in, in_size + 1);
         setLast(last - in_size);
@@ -442,6 +444,7 @@ String& String::operator+=(const String& other) {
     const unsigned my_old_size = size();
     const unsigned other_size  = other.size();
     const unsigned total_size  = my_old_size + other_size;
+    using namespace std;
     if(isOnStack()) {
         if(total_size < len) {
             // append to the current stack space
@@ -490,12 +493,14 @@ String& String::operator+=(const String& other) {
 String String::operator+(const String& other) const { return String(*this) += other; }
 
 String::String(String&& other) {
+    using namespace std;
     memcpy(buf, other.buf, len);
     other.buf[0] = '\0';
     other.setLast();
 }
 
 String& String::operator=(String&& other) {
+    using namespace std;
     if(this != &other) {
         if(!isOnStack())
             delete[] data.ptr;
@@ -532,7 +537,7 @@ unsigned String::capacity() const {
 
 int String::compare(const char* other, bool no_case) const {
     if(no_case)
-        return stricmp(c_str(), other);
+        return doctest::stricmp(c_str(), other);
     return std::strcmp(c_str(), other);
 }
 
@@ -1038,7 +1043,7 @@ namespace {
 #if DOCTEST_MSVC
         // this is needed because MSVC gives different case for drive letters
         // for __FILE__ when evaluated in a header and a source file
-        const int res = stricmp(lhs->m_file, rhs->m_file);
+        const int res = doctest::stricmp(lhs->m_file, rhs->m_file);
 #else  // MSVC
         const int res = std::strcmp(lhs->m_file, rhs->m_file);
 #endif // MSVC
@@ -2034,7 +2039,7 @@ namespace {
         void test_case_start_impl(const TestCaseData& in) {
             bool open_ts_tag = false;
             if(tc != nullptr) { // we have already opened a test suite
-                if(strcmp(tc->m_test_suite, in.m_test_suite) != 0) {
+                if(std::strcmp(tc->m_test_suite, in.m_test_suite) != 0) {
                     xml.endElement();
                     open_ts_tag = true;
                 }
