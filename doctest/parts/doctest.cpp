@@ -258,26 +258,37 @@ namespace detail {
 
 #ifndef DOCTEST_CONFIG_DISABLE
 
-    typedef uint64_t UInt64;
+namespace timer_large_integer
+{
+    
+#if defined(DOCTEST_PLATFORM_WINDOWS)
+    typedef ULONGLONG type;
+#else // DOCTEST_PLATFORM_WINDOWS
+    using namespace std;
+    typedef uint64_t type;
+#endif // DOCTEST_PLATFORM_WINDOWS
+}
+
+typedef timer_large_integer::type ticks_t;
 
 #ifdef DOCTEST_CONFIG_GETCURRENTTICKS
-    UInt64 getCurrentTicks() { return DOCTEST_CONFIG_GETCURRENTTICKS(); }
+    ticks_t getCurrentTicks() { return DOCTEST_CONFIG_GETCURRENTTICKS(); }
 #elif defined(DOCTEST_PLATFORM_WINDOWS)
-    UInt64 getCurrentTicks() {
-        static UInt64 hz = 0, hzo = 0;
-        if(!hz) {
-            QueryPerformanceFrequency(reinterpret_cast<LARGE_INTEGER*>(&hz));
-            QueryPerformanceCounter(reinterpret_cast<LARGE_INTEGER*>(&hzo));
+    ticks_t getCurrentTicks() {
+        static LARGE_INTEGER hz = {0}, hzo = {0};
+        if(!hz.QuadPart) {
+            QueryPerformanceFrequency(&hz);
+            QueryPerformanceCounter(&hzo);
         }
-        UInt64 t;
-        QueryPerformanceCounter(reinterpret_cast<LARGE_INTEGER*>(&t));
-        return ((t - hzo) * 1000000) / hz;
+        LARGE_INTEGER t;
+        QueryPerformanceCounter(&t);
+        return ((t.QuadPart - hzo.QuadPart) * LONGLONG(1000000)) / hz.QuadPart;
     }
 #else  // DOCTEST_PLATFORM_WINDOWS
-    UInt64 getCurrentTicks() {
+    ticks_t getCurrentTicks() {
         timeval t;
         gettimeofday(&t, nullptr);
-        return static_cast<UInt64>(t.tv_sec) * 1000000 + static_cast<UInt64>(t.tv_usec);
+        return static_cast<ticks_t>(t.tv_sec) * 1000000 + static_cast<ticks_t>(t.tv_usec);
     }
 #endif // DOCTEST_PLATFORM_WINDOWS
 
@@ -290,10 +301,10 @@ namespace detail {
         //unsigned int getElapsedMilliseconds() const {
         //    return static_cast<unsigned int>(getElapsedMicroseconds() / 1000);
         //}
-        double getElapsedSeconds() const { return getElapsedMicroseconds() / 1000000.0; }
+        double getElapsedSeconds() const { return (getCurrentTicks() - m_ticks) / 1000000.0; }
 
     private:
-        UInt64 m_ticks = 0;
+        ticks_t m_ticks = 0;
     };
 
     // this holds both parameters from the command line and runtime data for tests
