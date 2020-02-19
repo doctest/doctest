@@ -46,16 +46,8 @@ jobs:
           windows-2019-clang-cl,
           windows-2019-clang,
           windows-2019-gcc,
-          macOS-10.14-xcode-9.4.1,
-          macOS-10.14-xcode-10.0,
-          macOS-10.14-xcode-10.1,
-          macOS-10.14-xcode-10.2,
-          macOS-10.14-xcode-10.2.1,
-          macOS-10.14-xcode-10.3,
-          macOS-10.14-xcode-11.0,
-          macOS-10.14-gcc-7,
-          macOS-10.14-gcc-8,
-          macOS-10.14-gcc-9,
+          macOS-latest-xcode-11.0,
+          macOS-latest-xcode-11.3,
         ]
 
         include:
@@ -181,55 +173,15 @@ jobs:
             os: windows-2019
             compiler: gcc
 
-          - name: macOS-10.14-xcode-9.4.1
-            os: macOS-10.14
-            compiler: xcode
-            version: "9.4.1"
-
-          - name: macOS-10.14-xcode-10.0
-            os: macOS-10.14
-            compiler: xcode
-            version: "10"
-
-          - name: macOS-10.14-xcode-10.1
-            os: macOS-10.14
-            compiler: xcode
-            version: "10.1"
-
-          - name: macOS-10.14-Xcode-10.2
-            os: macOS-10.14
-            compiler: xcode
-            version: "10.2"
-
-          - name: macOS-10.14-xcode-10.2.1
-            os: macOS-10.14
-            compiler: xcode
-            version: "10.2.1"
-
-          - name: macOS-10.14-xcode-10.3
-            os: macOS-10.14
-            compiler: xcode
-            version: "10.3"
-
-          - name: macOS-10.14-xcode-11.0
-            os: macOS-10.14
+          - name: macOS-latest-xcode-11.0
+            os: macOS-latest
             compiler: xcode
             version: "11"
 
-          - name: macOS-10.14-gcc-7
-            os: macOS-10.14
-            compiler: gcc
-            version: "7"
-
-          - name: macOS-10.14-gcc-8
-            os: macOS-10.14
-            compiler: gcc
-            version: "8"
-
-          - name: macOS-10.14-gcc-9
-            os: macOS-10.14
-            compiler: gcc
-            version: "9"
+          - name: macOS-latest-xcode-11.3
+            os: macOS-latest
+            compiler: xcode
+            version: "11.3"
 
     steps:
       - uses: actions/checkout@v1
@@ -281,6 +233,7 @@ jobs:
             echo "::set-env name=CC::gcc-${{ matrix.version }}"
             echo "::set-env name=CXX::g++-${{ matrix.version }}"
           else
+            ls -ls /Applications/
             sudo xcode-select -switch /Applications/Xcode_${{ matrix.version }}.app
             echo "::set-env name=CC::clang"
             echo "::set-env name=CXX::clang++"
@@ -409,14 +362,16 @@ jobs:
           cmake -E remove_directory build
           cmake -B build -S . -DCMAKE_BUILD_TYPE=Debug -DDOCTEST_TEST_MODE=COMPARE
           cmake --build build
-          cd build && ctest
+          cd build
+          ctest
 
       - name: Build & Test Release x64
         run: |
           cmake -E remove_directory build
           cmake -B build -S . -DCMAKE_BUILD_TYPE=Release -DDOCTEST_TEST_MODE=COMPARE
           cmake --build build
-          cd build && ctest
+          cd build
+          ctest
 
       # Valgrind doesn't support the latest macOS versions.
       # `-DCMAKE_CXX_FLAGS=""` overrides CXXFLAGS (disables sanitizers).
@@ -427,7 +382,8 @@ jobs:
           cmake -E remove_directory build
           cmake -B build -S . -DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_FLAGS="" -DDOCTEST_TEST_MODE=VALGRIND
           cmake --build build
-          cd build && ctest
+          cd build
+          ctest
 
       - name: Build & Test Release x64 Valgrind
         if: runner.os == 'Linux'
@@ -435,7 +391,8 @@ jobs:
           cmake -E remove_directory build
           cmake -B build -S . -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="" -DDOCTEST_TEST_MODE=VALGRIND
           cmake --build build
-          cd build && ctest
+          cd build
+          ctest
 
       - name: Build & Test Debug x64 Thread Sanitizers
         if: runner.os == 'Linux' || runner.os == 'macOS'
@@ -443,7 +400,8 @@ jobs:
           cmake -E remove_directory build
           cmake -B build -S . -DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_FLAGS="$TSAN_FLAGS" -DDOCTEST_TEST_MODE=COMPARE
           cmake --build build
-          cd build && ctest
+          cd build
+          ctest
 
       - name: Build & Test Debug x64 without RTTI
         if: runner.os == 'Linux' || runner.os == 'macOS'
@@ -451,7 +409,8 @@ jobs:
           cmake -E remove_directory build
           cmake -B build -S . -DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_FLAGS="-fno-rtti" -DDOCTEST_TEST_MODE=COMPARE
           cmake --build build
-          cd build && ctest
+          cd build
+          ctest
 
       - name: Build x64 Debug without exceptions
         if: runner.os == 'Linux' || runner.os == 'macOS'
@@ -481,7 +440,8 @@ jobs:
           cmake -E remove_directory build
           cmake -B build -S . -DCMAKE_BUILD_TYPE=Debug -DDOCTEST_TEST_MODE=COMPARE
           cmake --build build
-          cd build && ctest
+          cd build
+          ctest
 
       - name: Build & Test Release x86
         if: (runner.os == 'Windows' && matrix.compiler != 'gcc') || runner.os == 'Linux'
@@ -489,7 +449,8 @@ jobs:
           cmake -E remove_directory build
           cmake -B build -S . -DCMAKE_BUILD_TYPE=Release -DDOCTEST_TEST_MODE=COMPARE
           cmake --build build
-          cd build && ctest
+          cd build
+          ctest
 
       - name: Build & Test Debug x86 Valgrind
         if: runner.os == 'Linux'
@@ -497,7 +458,8 @@ jobs:
           cmake -E remove_directory build
           cmake -B build -S . -DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_FLAGS="-m32" -DDOCTEST_TEST_MODE=VALGRIND
           cmake --build build
-          cd build && ctest
+          cd build
+          ctest
 
       - name: Build & Test Release x86 Valgrind
         if: runner.os == 'Linux'
@@ -505,4 +467,5 @@ jobs:
           cmake -E remove_directory build
           cmake -B build -S . -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="-m32" -DDOCTEST_TEST_MODE=VALGRIND
           cmake --build build
-          cd build && ctest
+          cd build
+          ctest
