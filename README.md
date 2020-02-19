@@ -17,9 +17,11 @@
         <td>
             <a href="https://coveralls.io/github/onqtam/doctest?branch=master"><img src="https://coveralls.io/repos/github/onqtam/doctest/badge.svg?branch=master"></a>
         </td>
+        <!--
         <td>
             <a href="https://scan.coverity.com/projects/onqtam-doctest"><img src="https://scan.coverity.com/projects/7865/badge.svg"></a>
         </td>
+        -->
     </tr>
     <tr>
         <td>
@@ -37,8 +39,10 @@
         <td>
             <a href="https://coveralls.io/github/onqtam/doctest?branch=dev"><img src="https://coveralls.io/repos/github/onqtam/doctest/badge.svg?branch=dev"></a>
         </td>
+        <!--
         <td>
         </td>
+        -->
     </tr>
 </table>
 </b>
