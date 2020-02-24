@@ -1,11 +1,28 @@
 # Change Log
 
-## [2.3.6](https://github.com/onqtam/doctest/tree/2.3.6) (2019-12-17)
+## [2.3.7](https://github.com/onqtam/doctest/tree/2.3.7) (2020-02-24)
+[Full Changelog](https://github.com/onqtam/doctest/compare/2.3.6...2.3.7)
+
+**Closed issues:**
+
+- No reset to std::dec for printing the test summary table [\#343](https://github.com/onqtam/doctest/issues/343)
+- Some of the GitHub CI builds are failing [\#334](https://github.com/onqtam/doctest/issues/334)
+- C++20 removed std::uncaught\_exception [\#333](https://github.com/onqtam/doctest/issues/333)
+- Doctest SEH handlers are called before \_\_except handlers [\#324](https://github.com/onqtam/doctest/issues/324)
+
+**Merged pull requests:**
+
+- using std namespace where necessary [\#341](https://github.com/onqtam/doctest/pull/341) ([oktonion](https://github.com/oktonion))
+- fix std::uncaught\_exceptions [\#340](https://github.com/onqtam/doctest/pull/340) ([cyyever](https://github.com/cyyever))
+- Fix GitHub CI and add GitHub build badges [\#336](https://github.com/onqtam/doctest/pull/336) ([claremacrae](https://github.com/claremacrae))
+- http -\> https [\#331](https://github.com/onqtam/doctest/pull/331) ([Coeur](https://github.com/Coeur))
+- Switch to catching unhandled exceptions on Windows Closes \#324 [\#325](https://github.com/onqtam/doctest/pull/325) ([jkriegshauser](https://github.com/jkriegshauser))
+
+## [2.3.6](https://github.com/onqtam/doctest/tree/2.3.6) (2019-12-16)
 [Full Changelog](https://github.com/onqtam/doctest/compare/2.3.5...2.3.6)
 
 **Closed issues:**
 
-- \[Feature\] Better integration with tools \(VS Code Test Adapter Extension\) [\#320](https://github.com/onqtam/doctest/issues/320)
 - Link problem w/ BUILD=Release if MESSAGE\(\) with std::string/ostream-operator is used [\#316](https://github.com/onqtam/doctest/issues/316)
 - the FAQ about difference to Catch2 is missing tags [\#315](https://github.com/onqtam/doctest/issues/315)
 - include Windows.h in small caps to silence clang warnings [\#312](https://github.com/onqtam/doctest/issues/312)
