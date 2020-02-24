@@ -188,8 +188,54 @@ root
       </SubCase>
       <OverallResultsAsserts successes="4" failures="0"/>
     </TestCase>
+    <TestCase name="subcases with changing names" filename="subcases.cpp" line="0">
+      <SubCase name="outer 0" filename="subcases.cpp" line="0">
+        <SubCase name="inner 0" filename="subcases.cpp" line="0">
+          <Message type="WARNING" filename="subcases.cpp" line="0">
+            <Text>
+              msg!
+            </Text>
+          </Message>
+        </SubCase>
+      </SubCase>
+      <SubCase name="outer 0" filename="subcases.cpp" line="0">
+        <SubCase name="inner 1" filename="subcases.cpp" line="0">
+          <Message type="WARNING" filename="subcases.cpp" line="0">
+            <Text>
+              msg!
+            </Text>
+          </Message>
+        </SubCase>
+      </SubCase>
+      <SubCase name="outer 1" filename="subcases.cpp" line="0">
+        <SubCase name="inner 0" filename="subcases.cpp" line="0">
+          <Message type="WARNING" filename="subcases.cpp" line="0">
+            <Text>
+              msg!
+            </Text>
+          </Message>
+        </SubCase>
+      </SubCase>
+      <SubCase name="outer 1" filename="subcases.cpp" line="0">
+        <SubCase name="inner 1" filename="subcases.cpp" line="0">
+          <Message type="WARNING" filename="subcases.cpp" line="0">
+            <Text>
+              msg!
+            </Text>
+          </Message>
+        </SubCase>
+      </SubCase>
+      <SubCase name="separate" filename="subcases.cpp" line="0">
+        <Message type="WARNING" filename="subcases.cpp" line="0">
+          <Text>
+            separate msg!
+          </Text>
+        </Message>
+      </SubCase>
+      <OverallResultsAsserts successes="0" failures="0"/>
+    </TestCase>
   </TestSuite>
   <OverallResultsAsserts successes="19" failures="6"/>
-  <OverallResultsTestCases successes="2" failures="4"/>
+  <OverallResultsTestCases successes="3" failures="4"/>
 </doctest>
 Program code.

@@ -674,7 +674,7 @@ bool SubcaseSignature::operator<(const SubcaseSignature& other) const {
         return m_line < other.m_line;
     if(std::strcmp(m_file, other.m_file) != 0)
         return std::strcmp(m_file, other.m_file) < 0;
-    return std::strcmp(m_name, other.m_name) < 0;
+    return m_name.compare(other.m_name) < 0;
 }
 
 IContextScope::IContextScope()  = default;
@@ -909,15 +909,15 @@ namespace {
 } // namespace
 namespace detail {
 
-    Subcase::Subcase(const char* name, const char* file, int line)
+    Subcase::Subcase(const String& name, const char* file, int line)
             : m_signature({name, file, line}) {
         ContextState* s = g_cs;
 
         // check subcase filters
         if(s->subcasesStack.size() < size_t(s->subcase_filter_levels)) {
-            if(!matchesAny(m_signature.m_name, s->filters[6], true, s->case_sensitive))
+            if(!matchesAny(m_signature.m_name.c_str(), s->filters[6], true, s->case_sensitive))
                 return;
-            if(matchesAny(m_signature.m_name, s->filters[7], false, s->case_sensitive))
+            if(matchesAny(m_signature.m_name.c_str(), s->filters[7], false, s->case_sensitive))
                 return;
         }
         

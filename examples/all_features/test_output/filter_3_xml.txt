@@ -41,8 +41,11 @@ root
     <TestCase name="Nested - related to https://github.com/onqtam/doctest/issues/282" filename="subcases.cpp" line="0">
       <OverallResultsAsserts successes="0" failures="0"/>
     </TestCase>
+    <TestCase name="subcases with changing names" filename="subcases.cpp" line="0">
+      <OverallResultsAsserts successes="0" failures="0"/>
+    </TestCase>
   </TestSuite>
   <OverallResultsAsserts successes="0" failures="0"/>
-  <OverallResultsTestCases successes="6" failures="0"/>
+  <OverallResultsTestCases successes="7" failures="0"/>
 </doctest>
 Program code.

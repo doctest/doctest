@@ -671,7 +671,7 @@ struct DOCTEST_INTERFACE MessageData
 
 struct DOCTEST_INTERFACE SubcaseSignature
 {
-    const char* m_name;
+    String      m_name;
     const char* m_file;
     int         m_line;
 
@@ -993,7 +993,7 @@ namespace detail {
         SubcaseSignature m_signature;
         bool             m_entered = false;
 
-        Subcase(const char* name, const char* file, int line);
+        Subcase(const String& name, const char* file, int line);
         ~Subcase();
 
         operator bool() const;
