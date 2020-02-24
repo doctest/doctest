@@ -23,7 +23,7 @@
 
 - Standards compliant **C++11** code - should work with any **C++11** capable compiler (use tag [**1.2.9**](https://github.com/onqtam/doctest/tree/1.2.9) for C++98 and older compilers)
 - tested with **GCC**: **4.8**, **4.9**, **5**, **6**, **7**, **8**, **9**
-- tested with **Clang**: **3.5**, **3.6**, **3.7**, **3.8**, **3.9**, **4**, **5**, **6**, **7**, **8** (XCode 6+)
+- tested with **Clang**: **3.5**, **3.6**, **3.7**, **3.8**, **3.9**, **4**, **5**, **6**, **7**, **8**, **9** (XCode 6+)
 - tested with **MSVC**: **2015**, **2017**, **2019** (also in 32 bit mode)
 - per-commit tested on [**travis**](https://travis-ci.org/onqtam/doctest) and [**appveyor**](https://ci.appveyor.com/project/onqtam/doctest) CI services
 	- warnings as errors even on the most aggressive warning levels - see [**here**](../../scripts/cmake/common.cmake#L84)

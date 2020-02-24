@@ -47,6 +47,7 @@ addons:
       - llvm-toolchain-trusty-6.0
       - llvm-toolchain-trusty-7
       - llvm-toolchain-trusty-8
+      - llvm-toolchain-trusty-9
 
 compiler: clang
 os: linux
@@ -199,6 +200,14 @@ matrix:
       addons: &clang8
         apt:
           packages: ["clang-8", "valgrind", "libc6-dbg", "g++-6"]
+          sources: *apt_sources
+
+    # Clang 9
+    - env: COMPILER=clang++-9 HAS_ASAN=true HAS_UBSAN=true HAS_TSAN=true
+      sudo: required # see this issue for more details: https://github.com/travis-ci/travis-ci/issues/9033
+      addons: &clang9
+        apt:
+          packages: ["clang-9", "valgrind", "libc6-dbg", "g++-6"]
           sources: *apt_sources
 
     # Xcode 6.4 Clang
