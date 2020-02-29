@@ -3554,6 +3554,10 @@ namespace detail {
         DOCTEST_ITERATE_THROUGH_REPORTERS(subcase_start, m_signature);
     }
 
+    DOCTEST_MSVC_SUPPRESS_WARNING_WITH_PUSH(4996) // std::uncaught_exception is deprecated in C++17	
+    DOCTEST_GCC_SUPPRESS_WARNING_WITH_PUSH("-Wdeprecated-declarations")	
+    DOCTEST_CLANG_SUPPRESS_WARNING_WITH_PUSH("-Wdeprecated-declarations")
+
     Subcase::~Subcase() {
         if(m_entered) {
             // only mark the subcase stack as passed if no subcases have been skipped
@@ -3577,6 +3581,10 @@ namespace detail {
             DOCTEST_ITERATE_THROUGH_REPORTERS(subcase_end, DOCTEST_EMPTY);
         }
     }
+
+    DOCTEST_CLANG_SUPPRESS_WARNING_POP	
+    DOCTEST_GCC_SUPPRESS_WARNING_POP	
+    DOCTEST_MSVC_SUPPRESS_WARNING_POP
 
     Subcase::operator bool() const { return m_entered; }
 
@@ -3897,6 +3905,10 @@ namespace detail {
         g_infoContexts.push_back(this);
     }
 
+    DOCTEST_MSVC_SUPPRESS_WARNING_WITH_PUSH(4996) // std::uncaught_exception is deprecated in C++17	
+    DOCTEST_GCC_SUPPRESS_WARNING_WITH_PUSH("-Wdeprecated-declarations")	
+    DOCTEST_CLANG_SUPPRESS_WARNING_WITH_PUSH("-Wdeprecated-declarations")
+
     // destroy cannot be inlined into the destructor because that would mean calling stringify after
     // ContextScope has been destroyed (base class destructors run after derived class destructors).
     // Instead, ContextScope calls this method directly from its destructor.
@@ -3913,6 +3925,9 @@ namespace detail {
         g_infoContexts.pop_back();
     }
 
+    DOCTEST_CLANG_SUPPRESS_WARNING_POP	
+    DOCTEST_GCC_SUPPRESS_WARNING_POP	
+    DOCTEST_MSVC_SUPPRESS_WARNING_POP
 } // namespace detail
 namespace {
     using namespace detail;
