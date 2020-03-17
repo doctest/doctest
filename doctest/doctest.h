@@ -629,7 +629,7 @@ DOCTEST_INTERFACE const char* skipPathFromFilename(const char* file);
 
 struct DOCTEST_INTERFACE TestCaseData
 {
-    const char* m_file;       // the file in which the test was registered
+    String      m_file;       // the file in which the test was registered
     unsigned    m_line;       // the line where the test was registered
     const char* m_name;       // name of the test case
     const char* m_test_suite; // the test suite in which the test was added
@@ -3660,7 +3660,7 @@ namespace detail {
     bool TestCase::operator<(const TestCase& other) const {
         if(m_line != other.m_line)
             return m_line < other.m_line;
-        const int file_cmp = std::strcmp(m_file, other.m_file);
+        const int file_cmp = m_file.compare(other.m_file);
         if(file_cmp != 0)
             return file_cmp < 0;
         return m_template_id < other.m_template_id;
@@ -3675,7 +3675,7 @@ namespace {
         // for __FILE__ when evaluated in a header and a source file
         const int res = doctest::stricmp(lhs->m_file, rhs->m_file);
 #else  // MSVC
-        const int res = std::strcmp(lhs->m_file, rhs->m_file);
+        const int res = lhs->m_file.compare(rhs->m_file);
 #endif // MSVC
         if(res != 0)
             return res < 0;
@@ -4691,7 +4691,7 @@ namespace {
             tc = &in;
             xml.startElement("TestCase")
                     .writeAttribute("name", in.m_name)
-                    .writeAttribute("filename", skipPathFromFilename(in.m_file))
+                    .writeAttribute("filename", skipPathFromFilename(in.m_file.c_str()))
                     .writeAttribute("line", line(in.m_line))
                     .writeAttribute("description", in.m_description);
 
@@ -4722,7 +4722,7 @@ namespace {
                 for(unsigned i = 0; i < in.num_data; ++i) {
                     xml.scopedElement("TestCase").writeAttribute("name", in.data[i]->m_name)
                         .writeAttribute("testsuite", in.data[i]->m_test_suite)
-                        .writeAttribute("filename", skipPathFromFilename(in.data[i]->m_file))
+                        .writeAttribute("filename", skipPathFromFilename(in.data[i]->m_file.c_str()))
                         .writeAttribute("line", line(in.data[i]->m_line));
                 }
                 xml.scopedElement("OverallResultsTestCases")
@@ -4959,7 +4959,7 @@ namespace {
                 return;
 
             separator_to_stream();
-            file_line_to_stream(s, tc->m_file, tc->m_line, "\n");
+            file_line_to_stream(s, tc->m_file.c_str(), tc->m_line, "\n");
             if(tc->m_description)
                 s << Color::Yellow << "DESCRIPTION: " << Color::None << tc->m_description << "\n";
             if(tc->m_test_suite && tc->m_test_suite[0] != '\0')
@@ -5250,7 +5250,7 @@ namespace {
         void test_case_exception(const TestCaseException& e) override {
             logTestStart();
 
-            file_line_to_stream(s, tc->m_file, tc->m_line, " ");
+            file_line_to_stream(s, tc->m_file.c_str(), tc->m_line, " ");
             successOrFailColoredStringToStream(false, e.is_crash ? assertType::is_require :
                                                                    assertType::is_check);
             s << Color::Red << (e.is_crash ? "test case CRASHED: " : "test case THREW exception: ")
@@ -5793,9 +5793,9 @@ int Context::run() {
         if(tc.m_skip && !p->no_skip)
             skip_me = true;
 
-        if(!matchesAny(tc.m_file, p->filters[0], true, p->case_sensitive))
+        if(!matchesAny(tc.m_file.c_str(), p->filters[0], true, p->case_sensitive))
             skip_me = true;
-        if(matchesAny(tc.m_file, p->filters[1], false, p->case_sensitive))
+        if(matchesAny(tc.m_file.c_str(), p->filters[1], false, p->case_sensitive))
             skip_me = true;
         if(!matchesAny(tc.m_test_suite, p->filters[2], true, p->case_sensitive))
             skip_me = true;
