@@ -3670,13 +3670,9 @@ namespace {
     using namespace detail;
     // for sorting tests by file/line
     bool fileOrderComparator(const TestCase* lhs, const TestCase* rhs) {
-#if DOCTEST_MSVC
         // this is needed because MSVC gives different case for drive letters
         // for __FILE__ when evaluated in a header and a source file
-        const int res = doctest::stricmp(lhs->m_file, rhs->m_file);
-#else  // MSVC
-        const int res = lhs->m_file.compare(rhs->m_file);
-#endif // MSVC
+        const int res = lhs->m_file.compare(rhs->m_file, bool(DOCTEST_MSVC));
         if(res != 0)
             return res < 0;
         if(lhs->m_line != rhs->m_line)
