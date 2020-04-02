@@ -953,7 +953,7 @@ namespace detail {
                 g_cs->subcasesPassed.insert(g_cs->subcasesStack);
             g_cs->subcasesStack.pop_back();
 
-#if __cplusplus >= 201703L && defined(__cpp_lib_uncaught_exceptions) && __cpp_lib_uncaught_exceptions >= 201411
+#if defined(__cpp_lib_uncaught_exceptions) && __cpp_lib_uncaught_exceptions >= 201411L
             if(std::uncaught_exceptions() > 0
 #else
             if(std::uncaught_exception()
@@ -1301,7 +1301,7 @@ namespace detail {
     // ContextScope has been destroyed (base class destructors run after derived class destructors).
     // Instead, ContextScope calls this method directly from its destructor.
     void ContextScopeBase::destroy() {
-#if __cplusplus >= 201703L && defined(__cpp_lib_uncaught_exceptions) && __cpp_lib_uncaught_exceptions >= 201411
+#if defined(__cpp_lib_uncaught_exceptions) && __cpp_lib_uncaught_exceptions >= 201411L
         if(std::uncaught_exceptions() > 0) {
 #else
         if(std::uncaught_exception()) {
