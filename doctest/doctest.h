@@ -5268,6 +5268,12 @@ namespace {
             std::lock_guard<std::mutex> lock(mutex);
             subcasesStack.push_back(subc);
             hasLoggedCurrentTestStart = false;
+
+            s << Color::Cyan << "[doctest] SUBCASE" << Color::None << "\n";
+            for(auto& curr : subcasesStack)
+                if(curr.m_name[0] != '\0')
+                    s << " - " << Color::LightGrey << curr.m_name << Color::None << " (" << curr.m_file << ":" << curr.m_line << ")\n";
+            s << "\n";
         }
 
         void subcase_end() override {
