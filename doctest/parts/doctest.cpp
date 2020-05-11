@@ -1316,15 +1316,6 @@ namespace detail {
 namespace {
     using namespace detail;
 
-    std::ostream& file_line_to_stream(std::ostream& s, const char* file, int line,
-                                      const char* tail = "") {
-        const auto opt = getContextOptions();
-        s << Color::LightGrey << skipPathFromFilename(file) << (opt->gnu_file_line ? ":" : "(")
-          << (opt->no_line_numbers ? 0 : line) // 0 or the real num depending on the option
-          << (opt->gnu_file_line ? ":" : "):") << tail;
-        return s;
-    }
-
 #if !defined(DOCTEST_CONFIG_POSIX_SIGNALS) && !defined(DOCTEST_CONFIG_WINDOWS_SEH)
     struct FatalConditionHandler
     {
@@ -1641,9 +1632,11 @@ namespace {
 #endif // DOCTEST_CONFIG_NO_EXCEPTIONS
     }
 
+#ifndef DOCTEST_INTERNAL_ERROR
 #define DOCTEST_INTERNAL_ERROR(msg)                                                                \
     throw_exception(std::logic_error(                                                              \
             __FILE__ ":" DOCTEST_TOSTR(__LINE__) ": Internal doctest error: " msg))
+#endif // DOCTEST_INTERNAL_ERROR
 
     // clang-format off
 
@@ -2338,12 +2331,19 @@ namespace {
             s << "\n";
         }
 
+        virtual void file_line_to_stream(const char* file, int line,
+                                        const char* tail = "") {
+            s << Color::LightGrey << skipPathFromFilename(file) << (opt.gnu_file_line ? ":" : "(")
+            << (opt.no_line_numbers ? 0 : line) // 0 or the real num depending on the option
+            << (opt.gnu_file_line ? ":" : "):") << tail;
+        }
+
         void logTestStart() {
             if(hasLoggedCurrentTestStart)
                 return;
 
             separator_to_stream();
-            file_line_to_stream(s, tc->m_file.c_str(), tc->m_line, "\n");
+            file_line_to_stream(tc->m_file.c_str(), tc->m_line, "\n");
             if(tc->m_description)
                 s << Color::Yellow << "DESCRIPTION: " << Color::None << tc->m_description << "\n";
             if(tc->m_test_suite && tc->m_test_suite[0] != '\0')
@@ -2634,7 +2634,7 @@ namespace {
         void test_case_exception(const TestCaseException& e) override {
             logTestStart();
 
-            file_line_to_stream(s, tc->m_file.c_str(), tc->m_line, " ");
+            file_line_to_stream(tc->m_file.c_str(), tc->m_line, " ");
             successOrFailColoredStringToStream(false, e.is_crash ? assertType::is_require :
                                                                    assertType::is_check);
             s << Color::Red << (e.is_crash ? "test case CRASHED: " : "test case THREW exception: ")
@@ -2672,7 +2672,7 @@ namespace {
 
             logTestStart();
 
-            file_line_to_stream(s, rb.m_file, rb.m_line, " ");
+            file_line_to_stream(rb.m_file, rb.m_line, " ");
             successOrFailColoredStringToStream(!rb.m_failed, rb.m_at);
             if((rb.m_at & (assertType::is_throws_as | assertType::is_throws_with)) ==
                0) //!OCLINT bitwise operator in conditional
@@ -2730,7 +2730,7 @@ namespace {
 
             logTestStart();
 
-            file_line_to_stream(s, mb.m_file, mb.m_line, " ");
+            file_line_to_stream(mb.m_file, mb.m_line, " ");
             s << getSuccessOrFailColor(false, mb.m_severity)
               << getSuccessOrFailString(mb.m_severity & assertType::is_warn, mb.m_severity,
                                         "MESSAGE") << ": ";
