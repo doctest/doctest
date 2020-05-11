@@ -4244,9 +4244,11 @@ namespace {
 #endif // DOCTEST_CONFIG_NO_EXCEPTIONS
     }
 
+#ifndef DOCTEST_INTERNAL_ERROR
 #define DOCTEST_INTERNAL_ERROR(msg)                                                                \
     throw_exception(std::logic_error(                                                              \
             __FILE__ ":" DOCTEST_TOSTR(__LINE__) ": Internal doctest error: " msg))
+#endif // DOCTEST_INTERNAL_ERROR
 
     // clang-format off
 
