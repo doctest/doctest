@@ -139,7 +139,11 @@ DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_BEGIN
 #ifdef __AFXDLL
 #include <AfxWin.h>
 #else
+#if defined(__MINGW32__) || defined(__MINGW64__)
+#include <windows.h>
+#else // MINGW
 #include <Windows.h>
+#endif // MINGW
 #endif
 #include <io.h>
 
@@ -1249,7 +1253,7 @@ namespace detail {
         // We're being debugged if the P_TRACED flag is set.
         return ((info.kp_proc.p_flag & P_TRACED) != 0);
     }
-#elif DOCTEST_MSVC || defined(__MINGW32__)
+#elif DOCTEST_MSVC || defined(__MINGW32__) || defined(__MINGW64__)
     bool isDebuggerActive() { return ::IsDebuggerPresent() != 0; }
 #else
     bool isDebuggerActive() { return false; }
