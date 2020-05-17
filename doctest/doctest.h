@@ -307,6 +307,14 @@ DOCTEST_MSVC_SUPPRESS_WARNING(26812) // Prefer 'enum class' over 'enum'
 #define DOCTEST_ALIGNMENT(x) __attribute__((aligned(x)))
 #endif // MSVC
 
+#ifndef DOCTEST_NORETURN
+#define DOCTEST_NORETURN [[noreturn]]
+#endif // DOCTEST_NORETURN
+
+#ifndef DOCTEST_NOEXCEPT
+#define DOCTEST_NOEXCEPT noexcept
+#endif // DOCTEST_NOEXCEPT
+
 // =================================================================================================
 // == FEATURE DETECTION END ========================================================================
 // =================================================================================================
@@ -987,7 +995,7 @@ namespace detail {
     DOCTEST_INTERFACE bool checkIfShouldThrow(assertType::Enum at);
 
 #ifndef DOCTEST_CONFIG_NO_EXCEPTIONS
-    [[noreturn]]
+    DOCTEST_NORETURN
 #endif // DOCTEST_CONFIG_NO_EXCEPTIONS
     DOCTEST_INTERFACE void throwException();
 
@@ -3454,7 +3462,7 @@ namespace detail {
     }
 
 #ifndef DOCTEST_CONFIG_NO_EXCEPTIONS
-    [[noreturn]] void throwException() {
+    DOCTEST_NORETURN void throwException() {
         g_cs->shouldLogCurrentException = false;
         throw TestFailureException();
     } // NOLINT(cert-err60-cpp)
@@ -4238,7 +4246,7 @@ namespace {
     using namespace detail;
 
     template <typename Ex>
-    [[noreturn]] void throw_exception(Ex const& e) {
+    DOCTEST_NORETURN void throw_exception(Ex const& e) {
 #ifndef DOCTEST_CONFIG_NO_EXCEPTIONS
         throw e;
 #else  // DOCTEST_CONFIG_NO_EXCEPTIONS
@@ -4283,8 +4291,8 @@ namespace {
         public:
             ScopedElement( XmlWriter* writer );
 
-            ScopedElement( ScopedElement&& other ) noexcept;
-            ScopedElement& operator=( ScopedElement&& other ) noexcept;
+            ScopedElement( ScopedElement&& other ) DOCTEST_NOEXCEPT;
+            ScopedElement& operator=( ScopedElement&& other ) DOCTEST_NOEXCEPT;
 
             ~ScopedElement();
 
@@ -4501,11 +4509,11 @@ namespace {
     :   m_writer( writer )
     {}
 
-    XmlWriter::ScopedElement::ScopedElement( ScopedElement&& other ) noexcept
+    XmlWriter::ScopedElement::ScopedElement( ScopedElement&& other ) DOCTEST_NOEXCEPT
     :   m_writer( other.m_writer ){
         other.m_writer = nullptr;
     }
-    XmlWriter::ScopedElement& XmlWriter::ScopedElement::operator=( ScopedElement&& other ) noexcept {
+    XmlWriter::ScopedElement& XmlWriter::ScopedElement::operator=( ScopedElement&& other ) DOCTEST_NOEXCEPT {
         if ( m_writer ) {
             m_writer->endElement();
         }

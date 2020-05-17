@@ -304,6 +304,14 @@ DOCTEST_MSVC_SUPPRESS_WARNING(26812) // Prefer 'enum class' over 'enum'
 #define DOCTEST_ALIGNMENT(x) __attribute__((aligned(x)))
 #endif // MSVC
 
+#ifndef DOCTEST_NORETURN
+#define DOCTEST_NORETURN [[noreturn]]
+#endif // DOCTEST_NORETURN
+
+#ifndef DOCTEST_NOEXCEPT
+#define DOCTEST_NOEXCEPT noexcept
+#endif // DOCTEST_NOEXCEPT
+
 // =================================================================================================
 // == FEATURE DETECTION END ========================================================================
 // =================================================================================================
@@ -984,7 +992,7 @@ namespace detail {
     DOCTEST_INTERFACE bool checkIfShouldThrow(assertType::Enum at);
 
 #ifndef DOCTEST_CONFIG_NO_EXCEPTIONS
-    [[noreturn]]
+    DOCTEST_NORETURN
 #endif // DOCTEST_CONFIG_NO_EXCEPTIONS
     DOCTEST_INTERFACE void throwException();
 
