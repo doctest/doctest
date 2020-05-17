@@ -27,7 +27,6 @@ jobs:
           ubuntu-18.04-gcc-7,
           ubuntu-18.04-gcc-8,
           ubuntu-18.04-gcc-9,
-          ubuntu-18.04-gcc-10,
           ubuntu-18.04-clang-3.5,
           ubuntu-18.04-clang-3.6,
           ubuntu-18.04-clang-3.7,
