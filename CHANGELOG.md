@@ -1,18 +1,43 @@
 # Change Log
 
+## [2.3.8](https://github.com/onqtam/doctest/tree/2.3.8) (2020-05-17)
+[Full Changelog](https://github.com/onqtam/doctest/compare/2.3.7...2.3.8)
+
+**Closed issues:**
+
+- Scenario name can not be passed to -tc to execute single scenario [\#373](https://github.com/onqtam/doctest/issues/373)
+- Compile Error with CHECK\_NOTHROW when using 2 Template Arguments [\#372](https://github.com/onqtam/doctest/issues/372)
+- dll example won't compile [\#371](https://github.com/onqtam/doctest/issues/371)
+- Build error with MinGW \(Mingw-w64\) due to missing Windows.h \(with capital W\) [\#370](https://github.com/onqtam/doctest/issues/370)
+- How to override file\_line\_to\_stream? [\#369](https://github.com/onqtam/doctest/issues/369)
+- Memory sanitizer fails. [\#365](https://github.com/onqtam/doctest/issues/365)
+- Warning c6319 in Visual Studio [\#359](https://github.com/onqtam/doctest/issues/359)
+- Any option to show each test case's execute time? [\#358](https://github.com/onqtam/doctest/issues/358)
+- doctest in embedded [\#355](https://github.com/onqtam/doctest/issues/355)
+- Reloading a plugin with test cases leads to a segmentation fault [\#350](https://github.com/onqtam/doctest/issues/350)
+- Compiling with DOCTEST\_CONFIG\_COLORS\_ANSI fails on Windows [\#348](https://github.com/onqtam/doctest/issues/348)
+- Can I inherit ConsoleReporter? [\#344](https://github.com/onqtam/doctest/issues/344)
+- Data-driven testing -- print out the deepest DOCTEST\_SUBCASE [\#215](https://github.com/onqtam/doctest/issues/215)
+- Print the SUBCASE path when an assert fails in the TEST\_CASE body [\#125](https://github.com/onqtam/doctest/issues/125)
+
+**Merged pull requests:**
+
+- fix: possible UB with nullptr increment [\#368](https://github.com/onqtam/doctest/pull/368) ([oktonion](https://github.com/oktonion))
+- Use CMake's CMP0077 policy if available [\#363](https://github.com/onqtam/doctest/pull/363) ([thelink2012](https://github.com/thelink2012))
+- Fix warning c6319 in Visual Studio 16.5 [\#361](https://github.com/onqtam/doctest/pull/361) ([Cvelth](https://github.com/Cvelth))
+
 ## [2.3.7](https://github.com/onqtam/doctest/tree/2.3.7) (2020-02-24)
 [Full Changelog](https://github.com/onqtam/doctest/compare/2.3.6...2.3.7)
 
 **Closed issues:**
 
-- No reset to std::dec for printing the test summary table [\#343](https://github.com/onqtam/doctest/issues/343)
 - Some of the GitHub CI builds are failing [\#334](https://github.com/onqtam/doctest/issues/334)
 - C++20 removed std::uncaught\_exception [\#333](https://github.com/onqtam/doctest/issues/333)
 - Doctest SEH handlers are called before \_\_except handlers [\#324](https://github.com/onqtam/doctest/issues/324)
 
 **Merged pull requests:**
 
-- using std namespace where necessary [\#341](https://github.com/onqtam/doctest/pull/341) ([oktonion](https://github.com/oktonion))
+- using std namespace where necessary and timer ticks fix [\#341](https://github.com/onqtam/doctest/pull/341) ([oktonion](https://github.com/oktonion))
 - fix std::uncaught\_exceptions [\#340](https://github.com/onqtam/doctest/pull/340) ([cyyever](https://github.com/cyyever))
 - Fix GitHub CI and add GitHub build badges [\#336](https://github.com/onqtam/doctest/pull/336) ([claremacrae](https://github.com/claremacrae))
 - http -\> https [\#331](https://github.com/onqtam/doctest/pull/331) ([Coeur](https://github.com/Coeur))
