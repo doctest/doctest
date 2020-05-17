@@ -167,7 +167,7 @@ jobs:
           - name: windows-2019-clang-cl
             os: windows-2019
             compiler: clang-cl
-            continue-on-error: true
+            #continue-on-error: true # nope, this doesn't work - still fails like this: https://github.com/onqtam/doctest/runs/683112050
 
           - name: windows-2019-clang
             os: windows-2019
