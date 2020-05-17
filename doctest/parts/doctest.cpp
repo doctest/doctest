@@ -2283,6 +2283,7 @@ namespace {
         std::ostream&                 s;
         bool                          hasLoggedCurrentTestStart;
         std::vector<SubcaseSignature> subcasesStack;
+        size_t                        currentSubcaseLevel;
         std::mutex                    mutex;
 
         // caching pointers/references to objects of these types - safe to do
@@ -2359,12 +2360,21 @@ namespace {
             if(tc->m_test_suite && tc->m_test_suite[0] != '\0')
                 s << Color::Yellow << "TEST SUITE: " << Color::None << tc->m_test_suite << "\n";
             if(strncmp(tc->m_name, "  Scenario:", 11) != 0)
-                s << Color::None << "TEST CASE:  ";
+                s << Color::Yellow << "TEST CASE:  ";
             s << Color::None << tc->m_name << "\n";
 
-            for(auto& curr : subcasesStack)
-                if(curr.m_name[0] != '\0')
-                    s << "  " << curr.m_name << "\n";
+            for(size_t i = 0; i < currentSubcaseLevel; ++i) {
+                if(subcasesStack[i].m_name[0] != '\0')
+                    s << "  " << subcasesStack[i].m_name << "\n";
+            }
+
+            if(currentSubcaseLevel != subcasesStack.size()) {
+                s << Color::Yellow << "\nDEEPEST SUBCASE STACK REACHED (DIFFERENT FROM THE CURRENT ONE):\n" << Color::None;
+                for(size_t i = 0; i < subcasesStack.size(); ++i) {
+                    if(subcasesStack[i].m_name[0] != '\0')
+                        s << "  " << subcasesStack[i].m_name << "\n";
+                }
+            }
 
             s << "\n";
 
@@ -2603,9 +2613,13 @@ namespace {
         void test_case_start(const TestCaseData& in) override {
             hasLoggedCurrentTestStart = false;
             tc                        = &in;
+            subcasesStack.clear();
+            currentSubcaseLevel = 0;
         }
         
-        void test_case_reenter(const TestCaseData&) override {}
+        void test_case_reenter(const TestCaseData&) override {
+            subcasesStack.clear();
+        }
 
         void test_case_end(const CurrentTestCaseStats& st) override {
             // log the preamble of the test case only if there is something
@@ -2665,12 +2679,13 @@ namespace {
         void subcase_start(const SubcaseSignature& subc) override {
             std::lock_guard<std::mutex> lock(mutex);
             subcasesStack.push_back(subc);
+            ++currentSubcaseLevel;
             hasLoggedCurrentTestStart = false;
         }
 
         void subcase_end() override {
             std::lock_guard<std::mutex> lock(mutex);
-            subcasesStack.pop_back();
+            --currentSubcaseLevel;
             hasLoggedCurrentTestStart = false;
         }
 

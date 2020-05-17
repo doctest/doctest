@@ -35,6 +35,10 @@ subcases.cpp(0): MESSAGE: hello! from sc1
 subcases.cpp(0):
 TEST CASE:  subcases can be used in a separate function as well
 
+DEEPEST SUBCASE STACK REACHED (DIFFERENT FROM THE CURRENT ONE):
+  from function...
+  sc1
+
 subcases.cpp(0): MESSAGE: lala
 
 ===============================================================================
@@ -55,6 +59,10 @@ subcases.cpp(0): MESSAGE: hello! from sc2
 ===============================================================================
 subcases.cpp(0):
 TEST CASE:  subcases can be used in a separate function as well
+
+DEEPEST SUBCASE STACK REACHED (DIFFERENT FROM THE CURRENT ONE):
+  from function...
+  sc2
 
 subcases.cpp(0): MESSAGE: lala
 
@@ -100,11 +108,19 @@ subcases.cpp(0):
 TEST CASE:  fails from an exception but gets re-entered to traverse all subcases
   level zero
 
+DEEPEST SUBCASE STACK REACHED (DIFFERENT FROM THE CURRENT ONE):
+  level zero
+  one
+
 subcases.cpp(0): ERROR: test case THREW exception: exception thrown in subcase - will translate later when the whole test case has been exited (cannot translate while there is an active exception)
 
 ===============================================================================
 subcases.cpp(0):
 TEST CASE:  fails from an exception but gets re-entered to traverse all subcases
+
+DEEPEST SUBCASE STACK REACHED (DIFFERENT FROM THE CURRENT ONE):
+  level zero
+  one
 
 subcases.cpp(0): ERROR: test case THREW exception: failure... but the show must go on!
 
@@ -122,11 +138,19 @@ subcases.cpp(0):
 TEST CASE:  fails from an exception but gets re-entered to traverse all subcases
   level zero
 
+DEEPEST SUBCASE STACK REACHED (DIFFERENT FROM THE CURRENT ONE):
+  level zero
+  two
+
 subcases.cpp(0): ERROR: test case THREW exception: exception thrown in subcase - will translate later when the whole test case has been exited (cannot translate while there is an active exception)
 
 ===============================================================================
 subcases.cpp(0):
 TEST CASE:  fails from an exception but gets re-entered to traverse all subcases
+
+DEEPEST SUBCASE STACK REACHED (DIFFERENT FROM THE CURRENT ONE):
+  level zero
+  two
 
 subcases.cpp(0): ERROR: test case THREW exception: failure... but the show must go on!
 

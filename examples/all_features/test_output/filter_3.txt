@@ -20,6 +20,10 @@ subcases.cpp(0): MESSAGE: hello! from sc1
 subcases.cpp(0):
 TEST CASE:  subcases can be used in a separate function as well
 
+DEEPEST SUBCASE STACK REACHED (DIFFERENT FROM THE CURRENT ONE):
+  from function...
+  sc1
+
 subcases.cpp(0): MESSAGE: lala
 
 ===============================================================================
