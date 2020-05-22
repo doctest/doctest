@@ -1,8 +1,4 @@
-cmake_minimum_required(VERSION 3.0)
-
-if(POLICY CMP0077)
-    cmake_policy(SET CMP0077 NEW)
-endif()
+cmake_minimum_required(VERSION 3.1...3.17.2)
 
 ################################################################################
 ## DOCTEST
@@ -11,9 +7,13 @@ endif()
 file(READ ${CMAKE_CURRENT_SOURCE_DIR}/scripts/version.txt ver)
 project(doctest VERSION ${ver} LANGUAGES CXX)
 
+set(CMAKE_CXX_STANDARD "11")
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
+
 option(DOCTEST_WITH_TESTS               "Build tests/examples" ON)
 option(DOCTEST_WITH_MAIN_IN_STATIC_LIB  "Build a static lib (cmake target) with a default main entry point" ON)
-option(DOCTEST_NO_INSTALL  "Skip the installation process" OFF)
+option(DOCTEST_INSTALL  "Perform the installation process" ON)
 
 add_library(${PROJECT_NAME} INTERFACE)
 add_library(${PROJECT_NAME}::${PROJECT_NAME} ALIAS ${PROJECT_NAME})
@@ -58,7 +58,6 @@ if(${DOCTEST_WITH_MAIN_IN_STATIC_LIB})
     add_library(${PROJECT_NAME}_with_main STATIC EXCLUDE_FROM_ALL ${doctest_parts_folder}/doctest.cpp)
     target_compile_definitions(${PROJECT_NAME}_with_main PRIVATE
         DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN)
-    set_target_properties(${PROJECT_NAME}_with_main PROPERTIES CXX_STANDARD 11 CXX_STANDARD_REQUIRED ON)
     target_link_libraries(${PROJECT_NAME}_with_main PUBLIC ${PROJECT_NAME})
 endif()
 
@@ -113,7 +112,7 @@ set(CMAKE_SIZEOF_VOID_P ${DOCTEST_SIZEOF_VOID_P})
 
 configure_file("scripts/cmake/Config.cmake.in" "${project_config}" @ONLY)
 
-if(NOT ${DOCTEST_NO_INSTALL})
+if(${DOCTEST_INSTALL})
     install(
         TARGETS ${PROJECT_NAME}
         EXPORT "${targets_export_name}"
