@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+  <testsuite name="all_features" errors="2" failures="6" tests="11">
+    <testcase classname="logging.cpp" name="logging the counter of a loop" status="run">
+      <failure message="1 != 1" type="CHECK">
+logging.cpp(0):
+CHECK( vec[i] != (1 &lt;&lt; i) ) is NOT correct!
+  values: CHECK( 1 != 1 )
+
+      </failure>
+      <failure message="2 != 2" type="CHECK">
+logging.cpp(0):
+CHECK( vec[i] != (1 &lt;&lt; i) ) is NOT correct!
+  values: CHECK( 2 != 2 )
+
+      </failure>
+      <failure message="4 != 4" type="CHECK">
+logging.cpp(0):
+CHECK( vec[i] != (1 &lt;&lt; i) ) is NOT correct!
+  values: CHECK( 4 != 4 )
+
+      </failure>
+      <failure message="8 != 8" type="CHECK">
+logging.cpp(0):
+CHECK( vec[i] != (1 &lt;&lt; i) ) is NOT correct!
+  values: CHECK( 8 != 8 )
+
+      </failure>
+      <failure message="16 != 16" type="CHECK">
+logging.cpp(0):
+CHECK( vec[i] != (1 &lt;&lt; i) ) is NOT correct!
+  values: CHECK( 16 != 16 )
+
+      </failure>
+    </testcase>
+    <testcase classname="logging.cpp" name="a test case that will end from an exception" status="run">
+      <failure message="42 == 666" type="CHECK">
+logging.cpp(0):
+CHECK( some_var == 666 ) is NOT correct!
+  values: CHECK( 42 == 666 )
+
+      </failure>
+      <error message="exception">
+        0
+      </error>
+    </testcase>
+    <testcase classname="logging.cpp" name="a test case that will end from an exception and should print the unprinted context" status="run">
+      <error message="exception">
+        0
+      </error>
+    </testcase>
+    <testcase classname="logging.cpp" name="third party asserts can report failures to doctest" status="run"/>
+    <testcase classname="logging.cpp" name="explicit failures 1" status="run"/>
+    <testcase classname="logging.cpp" name="explicit failures 2" status="run"/>
+  </testsuite>
+</testsuites>
+Program code.

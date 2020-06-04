@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+  <testsuite name="all_features" errors="0" failures="0" tests="0"/>
+</testsuites>
+Program code.
+asserts_used_outside_of_tests.cpp(19): ERROR: CHECK_EQ( true, false ) is NOT correct!
+  values: CHECK_EQ( true, false )
+asserts_used_outside_of_tests.cpp(20): ERROR: CHECK_UNARY( false ) is NOT correct!
+  values: CHECK_UNARY( false )
+asserts_used_outside_of_tests.cpp(21): ERROR: CHECK_UNARY_FALSE( true ) is NOT correct!
+  values: CHECK_UNARY_FALSE( true )
+asserts_used_outside_of_tests.cpp(23): ERROR: CHECK( false ) is NOT correct!
+  values: CHECK( false )
+hello! 
+asserts_used_outside_of_tests.cpp(24): ERROR: an assert dealing with exceptions has failed!

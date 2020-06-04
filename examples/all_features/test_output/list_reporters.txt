@@ -2,5 +2,6 @@
 priority:     1 name: my_listener
 [doctest] listing all registered reporters
 priority:     0 name: console
+priority:     0 name: junit
 priority:     0 name: xml
 priority:     1 name: my_xml

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+root
+<testsuites>
+  <testsuite name="all_features" errors="0" failures="0" tests="0">
+    <testcase classname="subcases.cpp" name="lots of nested subcases" status="run"/>
+    <testcase classname="subcases.cpp" name="subcases can be used in a separate function as well/from function.../sc1" status="run"/>
+    <testcase classname="subcases.cpp" name="  Scenario: vectors can be sized and resized" status="run"/>
+    <testcase classname="subcases.cpp" name="test case should fail even though the last subcase passes" status="run"/>
+    <testcase classname="subcases.cpp" name="fails from an exception but gets re-entered to traverse all subcases" status="run"/>
+    <testcase classname="subcases.cpp" name="Nested - related to https://github.com/onqtam/doctest/issues/282" status="run"/>
+    <testcase classname="subcases.cpp" name="subcases with changing names" status="run"/>
+  </testsuite>
+</testsuites>
+Program code.

@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+  <testsuite name="all_features" errors="0" failures="5" tests="19">
+    <testcase classname="templated_test_cases.cpp" name="signed integers stuff&lt;signed char>" status="run"/>
+    <testcase classname="templated_test_cases.cpp" name="signed integers stuff&lt;short int>" status="run"/>
+    <testcase classname="templated_test_cases.cpp" name="signed integers stuff&lt;int>" status="run"/>
+    <testcase classname="templated_test_cases.cpp" name="vector stuff&lt;std::vector&lt;int>>" status="run">
+      <failure message="10 == 20" type="CHECK">
+templated_test_cases.cpp(0):
+CHECK( vec.size() == 20 ) is NOT correct!
+  values: CHECK( 10 == 20 )
+
+      </failure>
+    </testcase>
+    <testcase classname="templated_test_cases.cpp" name="default construction&lt;signed char>" status="run"/>
+    <testcase classname="templated_test_cases.cpp" name="default construction&lt;short int>" status="run"/>
+    <testcase classname="templated_test_cases.cpp" name="default construction&lt;int>" status="run"/>
+    <testcase classname="templated_test_cases.cpp" name="default construction&lt;double>" status="run"/>
+    <testcase classname="templated_test_cases.cpp" name="default construction&lt;double>" status="run"/>
+    <testcase classname="templated_test_cases.cpp" name="default construction&lt;unsigned char>" status="run"/>
+    <testcase classname="templated_test_cases.cpp" name="default construction&lt;char>" status="run"/>
+    <testcase classname="templated_test_cases.cpp" name="multiple types&lt;>" status="run">
+      <failure message="0 != 0" type="CHECK">
+templated_test_cases.cpp(0):
+CHECK( t2 != T2() ) is NOT correct!
+  values: CHECK( 0 != 0 )
+
+      </failure>
+    </testcase>
+    <testcase classname="templated_test_cases.cpp" name="multiple types&lt;>" status="run">
+      <failure message="0 != 0" type="CHECK">
+templated_test_cases.cpp(0):
+CHECK( t2 != T2() ) is NOT correct!
+  values: CHECK( 0 != 0 )
+
+      </failure>
+    </testcase>
+    <testcase classname="templated_test_cases.cpp" name="multiple types&lt;>" status="run">
+      <failure message="0 != 0" type="CHECK">
+templated_test_cases.cpp(0):
+CHECK( t2 != T2() ) is NOT correct!
+  values: CHECK( 0 != 0 )
+
+      </failure>
+    </testcase>
+    <testcase classname="templated_test_cases.cpp" name="bad stringification of type pair&lt;int_pair>" status="run">
+      <failure message="0 != 0" type="CHECK">
+templated_test_cases.cpp(0):
+CHECK( t2 != T2() ) is NOT correct!
+  values: CHECK( 0 != 0 )
+
+      </failure>
+    </testcase>
+  </testsuite>
+</testsuites>
+Program code.

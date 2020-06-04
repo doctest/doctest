@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+hello from <lib_1_src1.cpp>
+hello from <lib_1_src2.cpp>
+hello from <lib_2_src.cpp>
+hello from <main.cpp>
+<testsuites>
+  <testsuite name="exe_with_static_libs" errors="0" failures="0" tests="0">
+    <testcase classname="lib_1_src1.cpp" name="asd" status="run"/>
+    <testcase classname="lib_1_src2.cpp" name="asd" status="run"/>
+    <testcase classname="lib_2_src.cpp" name="asd" status="run"/>
+    <testcase classname="main.cpp" name="main" status="run"/>
+  </testsuite>
+</testsuites>

@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+  <testsuite name="all_features" errors="0" failures="0" tests="0"/>
+</testsuites>
+Program code.

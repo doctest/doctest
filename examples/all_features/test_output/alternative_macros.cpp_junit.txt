@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+  <testsuite name="all_features" errors="0" failures="0" tests="6">
+    <testcase classname="alternative_macros.cpp" name="custom macros/bar/foo" status="run"/>
+    <testcase classname="alternative_macros.cpp" name="custom macros/bar/baz" status="run"/>
+  </testsuite>
+</testsuites>
+Program code.

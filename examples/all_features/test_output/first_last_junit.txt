@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+  <testsuite name="all_features" errors="3" failures="0" tests="0">
+    <testcase classname="coverage_maxout.cpp" name="will end from a std::string exception" status="run">
+      <error message="exception">
+        std::string!
+      </error>
+    </testcase>
+    <testcase classname="coverage_maxout.cpp" name="will end from a const char* exception" status="run">
+      <error message="exception">
+        const char*!
+      </error>
+    </testcase>
+    <testcase classname="coverage_maxout.cpp" name="will end from an unknown exception" status="run">
+      <error message="exception">
+        unknown exception
+      </error>
+    </testcase>
+  </testsuite>
+</testsuites>
+Program code.

@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+root
+1
+1.1
+
+root
+2
+2.1
+
+root
+2
+<testsuites>
+  <testsuite name="all_features" errors="4" failures="5" tests="25">
+    <testcase classname="subcases.cpp" name="lots of nested subcases" status="run"/>
+    <testcase classname="subcases.cpp" name="lots of nested subcases" status="run"/>
+    <testcase classname="subcases.cpp" name="lots of nested subcases" status="run"/>
+    <testcase classname="subcases.cpp" name="subcases can be used in a separate function as well/from function.../sc1" status="run"/>
+    <testcase classname="subcases.cpp" name="subcases can be used in a separate function as well/from function.../sc2" status="run"/>
+    <testcase classname="subcases.cpp" name="  Scenario: vectors can be sized and resized/   Given: A vector with some items/    When: the size is increased/    Then: the size and capacity change" status="run">
+      <failure message="10 == 20" type="CHECK">
+subcases.cpp(0):
+CHECK( v.size() == 20 ) is NOT correct!
+  values: CHECK( 10 == 20 )
+
+      </failure>
+    </testcase>
+    <testcase classname="subcases.cpp" name="  Scenario: vectors can be sized and resized/   Given: A vector with some items/    When: the size is reduced/    Then: the size changes but not capacity" status="run"/>
+    <testcase classname="subcases.cpp" name="  Scenario: vectors can be sized and resized/   Given: A vector with some items/    When: more capacity is reserved/    Then: the capacity changes but not the size" status="run"/>
+    <testcase classname="subcases.cpp" name="  Scenario: vectors can be sized and resized/   Given: A vector with some items/    When: less capacity is reserved/    Then: neither size nor capacity are changed" status="run">
+      <failure message="5 == 10" type="CHECK">
+subcases.cpp(0):
+CHECK( v.size() == 10 ) is NOT correct!
+  values: CHECK( 5 == 10 )
+
+      </failure>
+    </testcase>
+    <testcase classname="subcases.cpp" name="test case should fail even though the last subcase passes/one" status="run">
+      <failure message="false" type="CHECK">
+subcases.cpp(0):
+CHECK( false ) is NOT correct!
+  values: CHECK( false )
+
+      </failure>
+    </testcase>
+    <testcase classname="subcases.cpp" name="test case should fail even though the last subcase passes/two" status="run"/>
+    <testcase classname="subcases.cpp" name="fails from an exception but gets re-entered to traverse all subcases/level zero/one" status="run">
+      <failure message="false" type="CHECK">
+subcases.cpp(0):
+CHECK( false ) is NOT correct!
+  values: CHECK( false )
+
+      </failure>
+      <error message="exception">
+        exception thrown in subcase - will translate later when the whole test case has been exited (cannot translate while there is an active exception)
+      </error>
+      <error message="exception">
+        failure... but the show must go on!
+      </error>
+    </testcase>
+    <testcase classname="subcases.cpp" name="fails from an exception but gets re-entered to traverse all subcases/level zero/two" status="run">
+      <failure message="false" type="CHECK">
+subcases.cpp(0):
+CHECK( false ) is NOT correct!
+  values: CHECK( false )
+
+      </failure>
+      <error message="exception">
+        exception thrown in subcase - will translate later when the whole test case has been exited (cannot translate while there is an active exception)
+      </error>
+      <error message="exception">
+        failure... but the show must go on!
+      </error>
+    </testcase>
+    <testcase classname="subcases.cpp" name="Nested - related to https://github.com/onqtam/doctest/issues/282/generate data variant 1/check data 1" status="run"/>
+    <testcase classname="subcases.cpp" name="Nested - related to https://github.com/onqtam/doctest/issues/282/generate data variant 1/check data 2" status="run"/>
+    <testcase classname="subcases.cpp" name="Nested - related to https://github.com/onqtam/doctest/issues/282/generate data variant 1/check data 1" status="run"/>
+    <testcase classname="subcases.cpp" name="Nested - related to https://github.com/onqtam/doctest/issues/282/generate data variant 1/check data 2" status="run"/>
+    <testcase classname="subcases.cpp" name="subcases with changing names/outer 0/inner 0" status="run"/>
+    <testcase classname="subcases.cpp" name="subcases with changing names/outer 0/inner 1" status="run"/>
+    <testcase classname="subcases.cpp" name="subcases with changing names/outer 1/inner 0" status="run"/>
+    <testcase classname="subcases.cpp" name="subcases with changing names/outer 1/inner 1" status="run"/>
+    <testcase classname="subcases.cpp" name="subcases with changing names/separate" status="run"/>
+  </testsuite>
+</testsuites>
+Program code.

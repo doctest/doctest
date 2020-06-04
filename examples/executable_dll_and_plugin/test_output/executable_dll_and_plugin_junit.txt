@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+I am a test from the dll!
+I am a test from the implementation!
+I am a test from the implementation_2!
+I am a test from the executable!
+<testsuites>
+  <testsuite name="executable_dll_and_plugin" errors="1" failures="1" tests="2">
+    <testcase classname="dll.cpp" name="dll" status="run"/>
+    <testcase classname="implementation.cpp" name="implementation" status="run"/>
+    <testcase classname="implementation_2.cpp" name="implementation_2" status="run"/>
+    <testcase classname="main.cpp" name="executable" status="run">
+      <error message="exception">
+        char: 97
+      </error>
+    </testcase>
+    <testcase classname="plugin.cpp" name="test case in a plugin/some subcase" status="run">
+      <failure message="1 == 2" type="CHECK">
+plugin.cpp(0):
+CHECK( 1 == 2 ) is NOT correct!
+  values: CHECK( 1 == 2 )
+
+      </failure>
+    </testcase>
+  </testsuite>
+</testsuites>

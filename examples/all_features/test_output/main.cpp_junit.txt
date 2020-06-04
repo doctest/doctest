@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+  <testsuite name="all_features" errors="0" failures="0" tests="1">
+    <testcase classname="main.cpp" name="[string] testing std::string" status="run"/>
+  </testsuite>
+</testsuites>
+Program code.

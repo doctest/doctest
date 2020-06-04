@@ -5,6 +5,7 @@ Doctest has a modular reporter/listener system with which users can write their 
 You can list all registered reporters/listeners with ```--list-reporters```. There are a few implemented reporters in the framework:
 - ```console``` - streaming - writes normal lines of text with coloring if a capable terminal is detected
 - ```xml``` - streaming - writes in xml format tailored to doctest
+- ```junit``` - buffering - writes in JUnit-compatible xml - for more information look [here](https://github.com/onqtam/doctest/issues/318) and [here](https://github.com/onqtam/doctest/issues/376).
 
 Streaming means that results are delivered progressively and not at the end of the test run.
 

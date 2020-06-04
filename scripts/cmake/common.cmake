@@ -13,7 +13,7 @@ set(DOCTEST_TEST_MODE "COMPARE" CACHE STRING "Test mode - normal/run through val
 set_property(CACHE DOCTEST_TEST_MODE PROPERTY STRINGS "NORMAL;VALGRIND;COLLECT;COMPARE")
 
 function(doctest_add_test_impl)
-    cmake_parse_arguments(ARG "NO_VALGRIND;NO_OUTPUT;XML_OUTPUT" "NAME" "COMMAND" ${ARGN})
+    cmake_parse_arguments(ARG "NO_VALGRIND;NO_OUTPUT;XML_OUTPUT;JUNIT_OUTPUT" "NAME" "COMMAND" ${ARGN})
     if(NOT "${ARG_UNPARSED_ARGUMENTS}" STREQUAL "" OR "${ARG_NAME}" STREQUAL "" OR "${ARG_COMMAND}" STREQUAL "")
         message(FATAL_ERROR "doctest_add_test() called with wrong options!")
     endif()
@@ -33,6 +33,11 @@ function(doctest_add_test_impl)
         set(the_command "${the_command} --reporters=xml")
         set(ARG_NAME ${ARG_NAME}_xml)
     endif()
+    if(ARG_JUNIT_OUTPUT)
+        set(the_command "${the_command} --reporters=junit")
+        set(ARG_NAME ${ARG_NAME}_junit)
+    endif()
+
     # append the argument for removing paths from filenames in the output so tests give the same output everywhere
     set(the_command "${the_command} --dt-no-path-filenames=1")
     # append the argument for substituting source line numbers with 0 in the output so tests give the same output when lines change a bit
@@ -41,6 +46,8 @@ function(doctest_add_test_impl)
     set(the_command "${the_command} --dt-no-exitcode=1")
     # append the argument for using the same line format in the output - so gcc/non-gcc builds have the same output
     set(the_command "${the_command} --dt-gnu-file-line=0")
+    # append the argument for skipping any time-related output so that the reference output from reporters is stable on CI
+    set(the_command "${the_command} --dt-no-time-in-output=1")
 
     string(STRIP ${the_command} the_command)
 
@@ -62,6 +69,7 @@ endfunction()
 function(doctest_add_test)
     doctest_add_test_impl(${ARGN})
     doctest_add_test_impl(${ARGN} XML_OUTPUT)
+    doctest_add_test_impl(${ARGN} JUNIT_OUTPUT)
 endfunction()
 
 macro(add_compiler_flags)

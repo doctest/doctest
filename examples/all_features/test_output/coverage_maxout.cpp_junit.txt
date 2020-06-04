@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+  <testsuite name="all_features" errors="3" failures="9" tests="31">
+    <testcase classname="coverage_maxout.cpp" name="exercising tricky code paths of doctest" status="run">
+      <failure message="0 != 0" type="CHECK">
+coverage_maxout.cpp(0):
+CHECK( str.compare(const_str, true) != 0 ) is NOT correct!
+  values: CHECK( 0 != 0 )
+
+      </failure>
+      <failure message="0 != 0" type="CHECK">
+coverage_maxout.cpp(0):
+CHECK( str.compare("omgomgomg", false) != 0 ) is NOT correct!
+  values: CHECK( 0 != 0 )
+
+      </failure>
+      <failure message="false" type="CHECK">
+coverage_maxout.cpp(0):
+CHECK( len_is_zero ) is NOT correct!
+  values: CHECK( false )
+
+      </failure>
+      <failure message="Approx( 7.0 ) == 5" type="CHECK">
+coverage_maxout.cpp(0):
+CHECK( b == 5 ) is NOT correct!
+  values: CHECK( Approx( 7.0 ) == 5 )
+
+      </failure>
+      <failure message="Approx( 7.0 ) &lt;  5" type="CHECK">
+coverage_maxout.cpp(0):
+CHECK( b &lt; 5 ) is NOT correct!
+  values: CHECK( Approx( 7.0 ) &lt;  5 )
+
+      </failure>
+      <failure message="Approx( 7.0 ) &lt;= 5" type="CHECK">
+coverage_maxout.cpp(0):
+CHECK( b &lt;= 5 ) is NOT correct!
+  values: CHECK( Approx( 7.0 ) &lt;= 5 )
+
+      </failure>
+      <failure message="6 == Approx( 5.0 )" type="CHECK">
+coverage_maxout.cpp(0):
+CHECK( 6 == a ) is NOT correct!
+  values: CHECK( 6 == Approx( 5.0 ) )
+
+      </failure>
+      <failure message="6 &lt;  Approx( 5.0 )" type="CHECK">
+coverage_maxout.cpp(0):
+CHECK( 6 &lt; a ) is NOT correct!
+  values: CHECK( 6 &lt;  Approx( 5.0 ) )
+
+      </failure>
+      <failure message="6 &lt;= Approx( 5.0 )" type="CHECK">
+coverage_maxout.cpp(0):
+CHECK( 6 &lt;= a ) is NOT correct!
+  values: CHECK( 6 &lt;= Approx( 5.0 ) )
+
+      </failure>
+    </testcase>
+    <testcase classname="coverage_maxout.cpp" name="will end from a std::string exception" status="run">
+      <error message="exception">
+        std::string!
+      </error>
+    </testcase>
+    <testcase classname="coverage_maxout.cpp" name="will end from a const char* exception" status="run">
+      <error message="exception">
+        const char*!
+      </error>
+    </testcase>
+    <testcase classname="coverage_maxout.cpp" name="will end from an unknown exception" status="run">
+      <error message="exception">
+        unknown exception
+      </error>
+    </testcase>
+  </testsuite>
+</testsuites>
+Program code.

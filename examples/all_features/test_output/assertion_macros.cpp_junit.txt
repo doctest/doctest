@@ -1,0 +1,322 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+  <testsuite name="all_features" errors="0" failures="52" tests="74">
+    <testcase classname="assertion_macros.cpp" name="normal macros" status="run">
+      <failure type="CHECK">
+assertion_macros.cpp(0):
+CHECK( throw_if(true, std::runtime_error("whops!")) == 42 ) THREW exception: "whops!"
+
+      </failure>
+      <failure message="Approx( 0.502 ) == 0.501" type="CHECK">
+assertion_macros.cpp(0):
+CHECK( doctest::Approx(0.502) == 0.501 ) is NOT correct!
+  values: CHECK( Approx( 0.502 ) == 0.501 )
+
+      </failure>
+    </testcase>
+    <testcase classname="assertion_macros.cpp" name="expressions should be evaluated only once" status="run"/>
+    <testcase classname="assertion_macros.cpp" name="exceptions-related macros" status="run">
+      <failure type="CHECK_THROWS">
+assertion_macros.cpp(0):
+CHECK_THROWS( throw_if(false, 0) ) did NOT throw at all!
+
+      </failure>
+      <failure type="CHECK_THROWS_AS">
+assertion_macros.cpp(0):
+CHECK_THROWS_AS( throw_if(true, 0), char ) threw a DIFFERENT exception: "0"
+
+      </failure>
+      <failure type="CHECK_THROWS_AS">
+assertion_macros.cpp(0):
+CHECK_THROWS_AS( throw_if(false, 0), int ) did NOT throw at all!
+
+      </failure>
+      <failure type="CHECK_THROWS_WITH">
+assertion_macros.cpp(0):
+CHECK_THROWS_WITH( throw_if(true, "whops!"), "whops! no match!" ) threw a DIFFERENT exception: "whops!"
+
+      </failure>
+      <failure type="CHECK_THROWS_WITH_AS">
+assertion_macros.cpp(0):
+CHECK_THROWS_WITH_AS( throw_if(true, "whops!"), "whops! no match!", bool ) threw a DIFFERENT exception! (contents: "whops!")
+
+      </failure>
+      <failure type="CHECK_THROWS_WITH_AS">
+assertion_macros.cpp(0):
+CHECK_THROWS_WITH_AS( throw_if(true, "whops!"), "whops!", int ) threw a DIFFERENT exception! (contents: "whops!")
+
+      </failure>
+      <failure type="CHECK_NOTHROW">
+assertion_macros.cpp(0):
+CHECK_NOTHROW( throw_if(true, 0) ) THREW exception: "0"
+
+      </failure>
+    </testcase>
+    <testcase classname="assertion_macros.cpp" name="exceptions-related macros for std::exception" status="run">
+      <failure type="CHECK_THROWS">
+assertion_macros.cpp(0):
+CHECK_THROWS( throw_if(false, 0) ) did NOT throw at all!
+
+      </failure>
+      <failure type="CHECK_THROWS_AS">
+assertion_macros.cpp(0):
+CHECK_THROWS_AS( throw_if(false, std::runtime_error("whops!")), std::exception ) did NOT throw at all!
+
+      </failure>
+      <failure type="CHECK_THROWS_AS">
+assertion_macros.cpp(0):
+CHECK_THROWS_AS( throw_if(true, std::runtime_error("whops!")), int ) threw a DIFFERENT exception: "whops!"
+
+      </failure>
+      <failure type="CHECK_THROWS_WITH">
+assertion_macros.cpp(0):
+CHECK_THROWS_WITH( throw_if(false, ""), "whops!" ) did NOT throw at all!
+
+      </failure>
+      <failure type="REQUIRE_NOTHROW">
+assertion_macros.cpp(0):
+REQUIRE_NOTHROW( throw_if(true, std::runtime_error("whops!")) ) THREW exception: "whops!"
+
+      </failure>
+    </testcase>
+    <testcase classname="assertion_macros.cpp" name="WARN level of asserts don't fail the test case" status="run">
+      <failure message="0" type="WARN">
+assertion_macros.cpp(0):
+WARN( 0 ) is NOT correct!
+  values: WARN( 0 )
+
+      </failure>
+      <failure message="1" type="WARN_FALSE">
+assertion_macros.cpp(0):
+WARN_FALSE( 1 ) is NOT correct!
+  values: WARN_FALSE( 1 )
+
+      </failure>
+      <failure type="WARN_THROWS">
+assertion_macros.cpp(0):
+WARN_THROWS( throw_if(false, 0) ) did NOT throw at all!
+
+      </failure>
+      <failure type="WARN_THROWS_WITH">
+assertion_macros.cpp(0):
+WARN_THROWS_WITH( throw_if(true, ""), "whops!" ) threw a DIFFERENT exception: 
+
+      </failure>
+      <failure type="WARN_THROWS_WITH">
+assertion_macros.cpp(0):
+WARN_THROWS_WITH( throw_if(false, ""), "whops!" ) did NOT throw at all!
+
+      </failure>
+      <failure type="WARN_THROWS_AS">
+assertion_macros.cpp(0):
+WARN_THROWS_AS( throw_if(false, 0), bool ) did NOT throw at all!
+
+      </failure>
+      <failure type="WARN_THROWS_AS">
+assertion_macros.cpp(0):
+WARN_THROWS_AS( throw_if(true, 0), bool ) threw a DIFFERENT exception: "0"
+
+      </failure>
+      <failure type="WARN_THROWS_WITH_AS">
+assertion_macros.cpp(0):
+WARN_THROWS_WITH_AS( throw_if(false, ""), "whops!", int ) did NOT throw at all!
+
+      </failure>
+      <failure type="WARN_THROWS_WITH_AS">
+assertion_macros.cpp(0):
+WARN_THROWS_WITH_AS( throw_if(true, ""), "whops!", int ) threw a DIFFERENT exception! (contents: )
+
+      </failure>
+      <failure type="WARN_NOTHROW">
+assertion_macros.cpp(0):
+WARN_NOTHROW( throw_if(true, 0) ) THREW exception: "0"
+
+      </failure>
+      <failure message="1, 0" type="WARN_EQ">
+assertion_macros.cpp(0):
+WARN_EQ( 1, 0 ) is NOT correct!
+  values: WARN_EQ( 1, 0 )
+
+      </failure>
+      <failure message="0" type="WARN_UNARY">
+assertion_macros.cpp(0):
+WARN_UNARY( 0 ) is NOT correct!
+  values: WARN_UNARY( 0 )
+
+      </failure>
+      <failure message="1" type="WARN_UNARY_FALSE">
+assertion_macros.cpp(0):
+WARN_UNARY_FALSE( 1 ) is NOT correct!
+  values: WARN_UNARY_FALSE( 1 )
+
+      </failure>
+    </testcase>
+    <testcase classname="assertion_macros.cpp" name="CHECK level of asserts fail the test case but don't abort it" status="run">
+      <failure message="0" type="CHECK">
+assertion_macros.cpp(0):
+CHECK( 0 ) is NOT correct!
+  values: CHECK( 0 )
+
+      </failure>
+      <failure message="1" type="CHECK_FALSE">
+assertion_macros.cpp(0):
+CHECK_FALSE( 1 ) is NOT correct!
+  values: CHECK_FALSE( 1 )
+
+      </failure>
+      <failure type="CHECK_THROWS">
+assertion_macros.cpp(0):
+CHECK_THROWS( throw_if(false, 0) ) did NOT throw at all!
+
+      </failure>
+      <failure type="CHECK_THROWS_AS">
+assertion_macros.cpp(0):
+CHECK_THROWS_AS( throw_if(false, 0), bool ) did NOT throw at all!
+
+      </failure>
+      <failure type="CHECK_THROWS_AS">
+assertion_macros.cpp(0):
+CHECK_THROWS_AS( throw_if(true, 0), bool ) threw a DIFFERENT exception: "0"
+
+      </failure>
+      <failure type="CHECK_THROWS_WITH">
+assertion_macros.cpp(0):
+CHECK_THROWS_WITH( throw_if(true, 0), "unrecognized" ) threw a DIFFERENT exception: "0"
+
+      </failure>
+      <failure type="CHECK_THROWS_WITH_AS">
+assertion_macros.cpp(0):
+CHECK_THROWS_WITH_AS( throw_if(true, 0), "unrecognized", int ) threw a DIFFERENT exception! (contents: "0")
+
+      </failure>
+      <failure type="CHECK_NOTHROW">
+assertion_macros.cpp(0):
+CHECK_NOTHROW( throw_if(true, 0) ) THREW exception: "0"
+
+      </failure>
+      <failure message="1, 0" type="CHECK_EQ">
+assertion_macros.cpp(0):
+CHECK_EQ( 1, 0 ) is NOT correct!
+  values: CHECK_EQ( 1, 0 )
+
+      </failure>
+      <failure message="0" type="CHECK_UNARY">
+assertion_macros.cpp(0):
+CHECK_UNARY( 0 ) is NOT correct!
+  values: CHECK_UNARY( 0 )
+
+      </failure>
+      <failure message="1" type="CHECK_UNARY_FALSE">
+assertion_macros.cpp(0):
+CHECK_UNARY_FALSE( 1 ) is NOT correct!
+  values: CHECK_UNARY_FALSE( 1 )
+
+      </failure>
+    </testcase>
+    <testcase classname="assertion_macros.cpp" name="REQUIRE level of asserts fail and abort the test case - 1" status="run">
+      <failure message="0" type="REQUIRE">
+assertion_macros.cpp(0):
+REQUIRE( 0 ) is NOT correct!
+  values: REQUIRE( 0 )
+
+      </failure>
+    </testcase>
+    <testcase classname="assertion_macros.cpp" name="REQUIRE level of asserts fail and abort the test case - 2" status="run">
+      <failure message="1" type="REQUIRE_FALSE">
+assertion_macros.cpp(0):
+REQUIRE_FALSE( 1 ) is NOT correct!
+  values: REQUIRE_FALSE( 1 )
+
+      </failure>
+    </testcase>
+    <testcase classname="assertion_macros.cpp" name="REQUIRE level of asserts fail and abort the test case - 3" status="run">
+      <failure type="REQUIRE_THROWS">
+assertion_macros.cpp(0):
+REQUIRE_THROWS( throw_if(false, 0) ) did NOT throw at all!
+
+      </failure>
+    </testcase>
+    <testcase classname="assertion_macros.cpp" name="REQUIRE level of asserts fail and abort the test case - 4" status="run">
+      <failure type="REQUIRE_THROWS_AS">
+assertion_macros.cpp(0):
+REQUIRE_THROWS_AS( throw_if(false, 0), bool ) did NOT throw at all!
+
+      </failure>
+    </testcase>
+    <testcase classname="assertion_macros.cpp" name="REQUIRE level of asserts fail and abort the test case - 5" status="run">
+      <failure type="REQUIRE_THROWS_AS">
+assertion_macros.cpp(0):
+REQUIRE_THROWS_AS( throw_if(true, 0), bool ) threw a DIFFERENT exception: "0"
+
+      </failure>
+    </testcase>
+    <testcase classname="assertion_macros.cpp" name="REQUIRE level of asserts fail and abort the test case - 6" status="run">
+      <failure type="REQUIRE_THROWS_WITH">
+assertion_macros.cpp(0):
+REQUIRE_THROWS_WITH( throw_if(false, ""), "whops!" ) did NOT throw at all!
+
+      </failure>
+    </testcase>
+    <testcase classname="assertion_macros.cpp" name="REQUIRE level of asserts fail and abort the test case - 7" status="run">
+      <failure type="REQUIRE_THROWS_WITH">
+assertion_macros.cpp(0):
+REQUIRE_THROWS_WITH( throw_if(true, ""), "whops!" ) threw a DIFFERENT exception: 
+
+      </failure>
+    </testcase>
+    <testcase classname="assertion_macros.cpp" name="REQUIRE level of asserts fail and abort the test case - 8" status="run">
+      <failure type="REQUIRE_THROWS_WITH_AS">
+assertion_macros.cpp(0):
+REQUIRE_THROWS_WITH_AS( throw_if(false, ""), "whops!", bool ) did NOT throw at all!
+
+      </failure>
+    </testcase>
+    <testcase classname="assertion_macros.cpp" name="REQUIRE level of asserts fail and abort the test case - 9" status="run">
+      <failure type="REQUIRE_THROWS_WITH_AS">
+assertion_macros.cpp(0):
+REQUIRE_THROWS_WITH_AS( throw_if(true, ""), "whops!", bool ) threw a DIFFERENT exception! (contents: )
+
+      </failure>
+    </testcase>
+    <testcase classname="assertion_macros.cpp" name="REQUIRE level of asserts fail and abort the test case - 10" status="run">
+      <failure type="REQUIRE_NOTHROW">
+assertion_macros.cpp(0):
+REQUIRE_NOTHROW( throw_if(true, 0) ) THREW exception: "0"
+
+      </failure>
+    </testcase>
+    <testcase classname="assertion_macros.cpp" name="REQUIRE level of asserts fail and abort the test case - 11" status="run">
+      <failure message="1, 0" type="REQUIRE_EQ">
+assertion_macros.cpp(0):
+REQUIRE_EQ( 1, 0 ) is NOT correct!
+  values: REQUIRE_EQ( 1, 0 )
+
+      </failure>
+    </testcase>
+    <testcase classname="assertion_macros.cpp" name="REQUIRE level of asserts fail and abort the test case - 12" status="run">
+      <failure message="0" type="REQUIRE_UNARY">
+assertion_macros.cpp(0):
+REQUIRE_UNARY( 0 ) is NOT correct!
+  values: REQUIRE_UNARY( 0 )
+
+      </failure>
+    </testcase>
+    <testcase classname="assertion_macros.cpp" name="REQUIRE level of asserts fail and abort the test case - 13" status="run">
+      <failure message="1" type="REQUIRE_UNARY_FALSE">
+assertion_macros.cpp(0):
+REQUIRE_UNARY_FALSE( 1 ) is NOT correct!
+  values: REQUIRE_UNARY_FALSE( 1 )
+
+      </failure>
+    </testcase>
+    <testcase classname="assertion_macros.cpp" name="all binary assertions" status="run"/>
+    <testcase classname="assertion_macros.cpp" name="some asserts used in a function called by a test case" status="run">
+      <failure type="CHECK_THROWS_WITH_AS">
+assertion_macros.cpp(0):
+CHECK_THROWS_WITH_AS( throw_if(true, false), "unknown exception", int ) threw a DIFFERENT exception! (contents: "unknown exception")
+
+      </failure>
+    </testcase>
+  </testsuite>
+</testsuites>
+Program code.

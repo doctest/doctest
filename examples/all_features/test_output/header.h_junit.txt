@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+  <testsuite name="all_features" errors="0" failures="0" tests="4">
+    <testcase classname="header.h" name="in TS" status="run"/>
+    <testcase classname="header.h" name="template 1&lt;char>" status="run"/>
+    <testcase classname="header.h" name="template 2&lt;doctest::String>" status="run"/>
+    <testcase classname="header.h" name="fixtured test" status="run"/>
+  </testsuite>
+</testsuites>
+Program code.
