@@ -13,7 +13,7 @@ want it.
 This is only relevant for bug reports, but if you do have one,
 please provide a minimal set of steps to reproduce the problem.
 
-Usually this means providing a small and self-contained code using Catch
+Usually this means providing a small and self-contained code using doctest
 and specifying compiler flags/tools used if relevant.
 -->
 
