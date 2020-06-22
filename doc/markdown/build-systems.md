@@ -74,6 +74,7 @@ target_link_libraries(my_tests doctest)
 - conan
     - https://bintray.com/bincrafters/public-conan/doctest:bincrafters
     - https://bintray.com/mmha/conan/doctest%3Ammha
+- Homebrew (`brew install doctest`)
 
 ---
 
