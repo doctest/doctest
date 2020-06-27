@@ -1,5 +1,26 @@
 # Change Log
 
+## [2.4.0](https://github.com/onqtam/doctest/tree/2.4.0) (2020-06-27)
+[Full Changelog](https://github.com/onqtam/doctest/compare/2.3.8...2.4.0)
+
+**Closed issues:**
+
+- Count points based on the number of passed/failed cases? [\#386](https://github.com/onqtam/doctest/issues/386)
+- How to understand "\#data\_array" in std::string? [\#383](https://github.com/onqtam/doctest/issues/383)
+- crash: doctest with custom allocator [\#382](https://github.com/onqtam/doctest/issues/382)
+- Feature Request: format PRIVATE/PUBLIC/INTERFACE entries with constant indentation [\#378](https://github.com/onqtam/doctest/issues/378)
+- JUnit Reporter for Doctest [\#376](https://github.com/onqtam/doctest/issues/376)
+- Avoiding Feature Bloat [\#374](https://github.com/onqtam/doctest/issues/374)
+- StringMaker\<wchar\_t\> fail to compile with C++20 enabled \(GCC\) [\#357](https://github.com/onqtam/doctest/issues/357)
+- doctest\_discover\_tests and FetchContent\_Declare [\#351](https://github.com/onqtam/doctest/issues/351)
+- Junit reporter [\#318](https://github.com/onqtam/doctest/issues/318)
+
+**Merged pull requests:**
+
+- Add a note that doctest can be installed through Homebrew [\#388](https://github.com/onqtam/doctest/pull/388) ([cameronwhite](https://github.com/cameronwhite))
+- provide alternative implementation of has\_insertion\_operator for C++20 [\#387](https://github.com/onqtam/doctest/pull/387) ([lukaszgemborowski](https://github.com/lukaszgemborowski))
+- Fix issue template to mention doctest [\#380](https://github.com/onqtam/doctest/pull/380) ([nyanpasu64](https://github.com/nyanpasu64))
+
 ## [2.3.8](https://github.com/onqtam/doctest/tree/2.3.8) (2020-05-17)
 [Full Changelog](https://github.com/onqtam/doctest/compare/2.3.7...2.3.8)
 
@@ -17,6 +38,7 @@
 - Reloading a plugin with test cases leads to a segmentation fault [\#350](https://github.com/onqtam/doctest/issues/350)
 - Compiling with DOCTEST\_CONFIG\_COLORS\_ANSI fails on Windows [\#348](https://github.com/onqtam/doctest/issues/348)
 - Can I inherit ConsoleReporter? [\#344](https://github.com/onqtam/doctest/issues/344)
+- Noreturn and noexcept defines for Visual Studio 2013 support [\#327](https://github.com/onqtam/doctest/issues/327)
 - Data-driven testing -- print out the deepest DOCTEST\_SUBCASE [\#215](https://github.com/onqtam/doctest/issues/215)
 - Print the SUBCASE path when an assert fails in the TEST\_CASE body [\#125](https://github.com/onqtam/doctest/issues/125)
 
