@@ -1,1 +1,1 @@
-[doctest] doctest version is "2.3.8"
+[doctest] doctest version is "2.4.0"
