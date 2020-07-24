@@ -353,7 +353,11 @@ DOCTEST_MSVC_SUPPRESS_WARNING(26812) // Prefer 'enum class' over 'enum'
 #ifndef DOCTEST_BREAK_INTO_DEBUGGER
 // should probably take a look at https://github.com/scottt/debugbreak
 #ifdef DOCTEST_PLATFORM_MAC
+#if defined(__x86_64) || defined(__x86_64__) || defined(__amd64__)
 #define DOCTEST_BREAK_INTO_DEBUGGER() __asm__("int $3\n" : :)
+#else
+#define DOCTEST_BREAK_INTO_DEBUGGER() __asm__("brk #0");
+#endif
 #elif DOCTEST_MSVC
 #define DOCTEST_BREAK_INTO_DEBUGGER() __debugbreak()
 #elif defined(__MINGW32__)
