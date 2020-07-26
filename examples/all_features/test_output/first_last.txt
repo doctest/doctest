@@ -21,7 +21,7 @@ TEST CASE:  will end from an unknown exception
 coverage_maxout.cpp(0): ERROR: test case THREW exception: unknown exception
 
 ===============================================================================
-[doctest] test cases:      4 |      1 passed |      3 failed | 
-[doctest] assertions:      0 |      0 passed |      0 failed |
+[doctest] test cases: 4 | 1 passed | 3 failed |
+[doctest] assertions: 0 | 0 passed | 0 failed |
 [doctest] Status: FAILURE!
 Program code.

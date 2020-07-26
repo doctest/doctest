@@ -198,7 +198,7 @@ TEST CASE:  some asserts used in a function called by a test case
 assertion_macros.cpp(0): ERROR: CHECK_THROWS_WITH_AS( throw_if(true, false), "unknown exception", int ) threw a DIFFERENT exception! (contents: "unknown exception")
 
 ===============================================================================
-[doctest] test cases:     21 |      3 passed |     18 failed | 
-[doctest] assertions:     74 |     35 passed |     39 failed |
+[doctest] test cases: 21 |  3 passed | 18 failed |
+[doctest] assertions: 74 | 35 passed | 39 failed |
 [doctest] Status: FAILURE!
 Program code.
