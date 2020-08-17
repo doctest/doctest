@@ -24,12 +24,14 @@ if(NOT CMAKE_VERSION VERSION_LESS 3.8)
 endif()
 
 set(doctest_parts_folder "${CMAKE_CURRENT_SOURCE_DIR}/doctest/parts")
+set(doctest_folder "${CMAKE_CURRENT_SOURCE_DIR}/") # in order to have the mpi extension files, not included into the doctest.h single header
 
 if(CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
     # use a special hidden version of the header which directly includes the 2 parts - proper reporting of file/line locations during dev
     target_include_directories(${PROJECT_NAME} INTERFACE
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/scripts/development_only/>
-        $<BUILD_INTERFACE:${doctest_parts_folder}>)
+        $<BUILD_INTERFACE:${doctest_parts_folder}>
+        $<BUILD_INTERFACE:${doctest_folder}>)
 
     # add a custom target that assembles the single header when any of the parts are touched
     add_custom_command(
@@ -77,6 +79,7 @@ if(CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR AND DOCTEST_WITH_TESTS)
         add_subdirectory(examples/exe_with_static_libs)
         add_subdirectory(examples/executable_dll_and_plugin)
         add_subdirectory(scripts/playground)
+        add_subdirectory(examples/mpi)
     endif()
 endif()
 
