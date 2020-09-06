@@ -24,7 +24,7 @@ TEST CASE:  a test case that registers an exception translator for int and then 
 stringification.cpp(0): ERROR: test case THREW exception: 5
 
 ===============================================================================
-[doctest] test cases:      2 |      0 passed |      2 failed | 
-[doctest] assertions:      4 |      0 passed |      4 failed |
+[doctest] test cases: 2 | 0 passed | 2 failed |
+[doctest] assertions: 4 | 0 passed | 4 failed |
 [doctest] Status: FAILURE!
 Program code.
