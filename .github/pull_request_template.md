@@ -2,7 +2,7 @@
 Make sure the PR is against the dev branch and not master which contains
 the latest stable release. Also make sure to have read CONTRIBUTING.md.
 Please do not submit pull requests changing the single-include `doctest.h`
-file, it is generated from the 2 headers in the doctest/parts/ folder.
+file, it is generated from the 2 files in the doctest/parts/ folder.
 -->
 
 
