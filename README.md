@@ -128,6 +128,7 @@ Usage:
 - [Configuration](doc/markdown/configuration.md)
 - [String conversions](doc/markdown/stringification.md)
 - [Reporters](doc/markdown/reporters.md)
+- [Extensions](doc/markdown/extensions.md)
 - [FAQ](doc/markdown/faq.md)
 - [Build systems](doc/markdown/build-systems.md)
 - [Examples](examples)
