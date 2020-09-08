@@ -6,6 +6,7 @@ set(suffix "${TEST_SUFFIX}")
 set(spec ${TEST_SPEC})
 set(extra_args ${TEST_EXTRA_ARGS})
 set(properties ${TEST_PROPERTIES})
+set(junit_output_dir "${TEST_JUNIT_OUTPUT_DIR}")
 set(script)
 set(suite)
 set(tests)
@@ -54,6 +55,13 @@ foreach(line ${output})
     continue()
   endif()
   set(test ${line})
+  if(NOT "${junit_output_dir}" STREQUAL "")
+    # turn testname into a valid filename by replacing all special characters with "-"
+    string(REGEX REPLACE "[/\\:\"|<>]" "-" test_filename "${test}")
+    set(TEST_JUNIT_OUTPUT_PARAM "--reporters=junit" "--out=${junit_output_dir}/${prefix}${test_filename}${suffix}.xml")
+  else()
+    unset(TEST_JUNIT_OUTPUT_PARAM)
+  endif()
   # use escape commas to handle properly test cases with commas inside the name
   string(REPLACE "," "\\," test_name ${test})
   # ...and add to script
@@ -62,6 +70,7 @@ foreach(line ${output})
     ${TEST_EXECUTOR}
     "${TEST_EXECUTABLE}"
     "--test-case=${test_name}"
+    "${TEST_JUNIT_OUTPUT_PARAM}"
     ${extra_args}
   )
   add_command(set_tests_properties

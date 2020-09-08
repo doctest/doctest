@@ -14,6 +14,7 @@ project(doctest VERSION ${ver} LANGUAGES CXX)
 option(DOCTEST_WITH_TESTS               "Build tests/examples" ON)
 option(DOCTEST_WITH_MAIN_IN_STATIC_LIB  "Build a static lib (cmake target) with a default main entry point" ON)
 option(DOCTEST_NO_INSTALL  "Skip the installation process" OFF)
+option(DOCTEST_USE_STD_HEADERS  "Use std headers" OFF)
 
 add_library(${PROJECT_NAME} INTERFACE)
 add_library(${PROJECT_NAME}::${PROJECT_NAME} ALIAS ${PROJECT_NAME})
@@ -48,6 +49,10 @@ endif()
 if(DEFINED DOCTEST_THREAD_LOCAL)
     target_compile_definitions(${PROJECT_NAME} INTERFACE
         DOCTEST_THREAD_LOCAL=${DOCTEST_THREAD_LOCAL})
+endif()
+
+if(DOCTEST_USE_STD_HEADERS)
+    target_compile_definitions(${PROJECT_NAME} INTERFACE DOCTEST_CONFIG_USE_STD_HEADERS)
 endif()
 
 ################################################################################

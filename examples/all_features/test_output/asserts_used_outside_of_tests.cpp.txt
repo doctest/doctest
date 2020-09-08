@@ -1,7 +1,7 @@
 [doctest] run with "--help" for options
 ===============================================================================
-[doctest] test cases:      0 |      0 passed |      0 failed | 
-[doctest] assertions:      0 |      0 passed |      0 failed |
+[doctest] test cases: 0 | 0 passed | 0 failed |
+[doctest] assertions: 0 | 0 passed | 0 failed |
 [doctest] Status: SUCCESS!
 Program code.
 asserts_used_outside_of_tests.cpp(19): ERROR: CHECK_EQ( true, false ) is NOT correct!

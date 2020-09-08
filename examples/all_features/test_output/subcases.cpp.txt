@@ -194,7 +194,7 @@ TEST CASE:  subcases with changing names
 subcases.cpp(0): MESSAGE: separate msg!
 
 ===============================================================================
-[doctest] test cases:      7 |      3 passed |      4 failed | 
-[doctest] assertions:     25 |     19 passed |      6 failed |
+[doctest] test cases:  7 |  3 passed | 4 failed |
+[doctest] assertions: 25 | 19 passed | 6 failed |
 [doctest] Status: FAILURE!
 Program code.

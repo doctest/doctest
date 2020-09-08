@@ -35,7 +35,7 @@ templated_test_cases.cpp(0): ERROR: CHECK( t2 != T2() ) is NOT correct!
   values: CHECK( 0 != 0 )
 
 ===============================================================================
-[doctest] test cases:     15 |     10 passed |      5 failed | 
-[doctest] assertions:     19 |     14 passed |      5 failed |
+[doctest] test cases: 15 | 10 passed | 5 failed |
+[doctest] assertions: 19 | 14 passed | 5 failed |
 [doctest] Status: FAILURE!
 Program code.

@@ -21,6 +21,7 @@ Usage:
 - [Configuration](configuration.md)
 - [String conversions](stringification.md)
 - [Reporters](reporters.md)
+- [Extensions](extensions.md)
 - [FAQ](faq.md)
 - [Build systems](build-systems.md)
 - [Examples](../../examples)
