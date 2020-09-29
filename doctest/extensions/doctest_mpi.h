@@ -28,6 +28,9 @@ struct mpi_sub_comm {
   int rank;
   MPI_Comm comm;
 
+  mpi_sub_comm( mpi_sub_comm const& ) = delete;
+  mpi_sub_comm& operator=( mpi_sub_comm const& ) = delete;
+
   mpi_sub_comm(int nb_prcs) noexcept
     : nb_procs(nb_prcs)
     , rank(-1)
@@ -97,11 +100,11 @@ void execute_mpi_test_case(F func) {
 #define DOCTEST_MPI_REQUIRE_FALSE(rank_to_test, ...)  DOCTEST_MPI_GEN_ASSERTION(rank_to_test,DOCTEST_REQUIRE_FALSE,__VA_ARGS__)
 
 #define DOCTEST_CREATE_MPI_TEST_CASE(name,nb_procs,func) \
-  static void func([[maybe_unused]] int test_rank, [[maybe_unused]] int test_nb_procs, [[maybe_unused]] MPI_Comm test_comm, std::integral_constant<int,nb_procs>); \
+  static void func(DOCTEST_UNUSED int test_rank, DOCTEST_UNUSED int test_nb_procs, DOCTEST_UNUSED MPI_Comm test_comm, DOCTEST_UNUSED std::integral_constant<int,nb_procs>); \
   TEST_CASE(name * doctest::description("MPI_TEST_CASE")) { \
     doctest::execute_mpi_test_case<nb_procs>(func); \
   } \
-  static void func([[maybe_unused]] int test_rank, [[maybe_unused]] int test_nb_procs, [[maybe_unused]] MPI_Comm test_comm, std::integral_constant<int,nb_procs> test_nb_procs_as_int_constant)
+  static void func(DOCTEST_UNUSED int test_rank, DOCTEST_UNUSED int test_nb_procs, DOCTEST_UNUSED MPI_Comm test_comm, DOCTEST_UNUSED std::integral_constant<int,nb_procs> test_nb_procs_as_int_constant)
   // DOC: test_rank, test_nb_procs, and test_comm are available UNDER THESE SPECIFIC NAMES in the body of the unit test
   // DOC: test_nb_procs_as_int_constant is equal to test_nb_procs, but as a compile time value
   //          (used in CHECK-like macros to assert the checked rank exists)

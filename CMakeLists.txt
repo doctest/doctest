@@ -19,7 +19,7 @@ option(DOCTEST_USE_STD_HEADERS  "Use std headers" OFF)
 add_library(${PROJECT_NAME} INTERFACE)
 add_library(${PROJECT_NAME}::${PROJECT_NAME} ALIAS ${PROJECT_NAME})
 
-if(NOT CMAKE_VERSION VERSION_LESS 3.8) 
+if(NOT CMAKE_VERSION VERSION_LESS 3.8)
     target_compile_features(${PROJECT_NAME} INTERFACE cxx_std_11)
 endif()
 
