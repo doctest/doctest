@@ -36,12 +36,16 @@ struct mpi_sub_comm {
     , rank(-1)
     , comm(MPI_COMM_NULL)
   {
+    int comm_world_rank;
+    MPI_Comm_rank(MPI_COMM_WORLD, &comm_world_rank);
     if (nb_procs>mpi_world_nb_procs()) {
-      CHECK_MESSAGE(
-        nb_procs<=mpi_world_nb_procs(),
-        "Unable to run test: need "+std::to_string(nb_procs) + " procs"
-        + " but program launched with only "+std::to_string(doctest::mpi_world_nb_procs()) + "."
-      );
+      if (comm_world_rank==0) {
+        MESSAGE(
+          "Unable to run test: need "+std::to_string(nb_procs) + " procs"
+          + " but program launched with only "+std::to_string(doctest::mpi_world_nb_procs()) + "."
+        );
+        CHECK(nb_procs<=mpi_world_nb_procs());
+      }
     } else {
       MPI_Group world_group;
       MPI_Comm_group(MPI_COMM_WORLD, &world_group);
@@ -59,8 +63,6 @@ struct mpi_sub_comm {
       // Get rank of the process
       if(comm != MPI_COMM_NULL){
         MPI_Comm_rank(comm, &rank);
-        int comm_world_rank;
-        MPI_Comm_rank(MPI_COMM_WORLD, &comm_world_rank);
         assert(rank==comm_world_rank);
       }
 

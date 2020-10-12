@@ -25,6 +25,7 @@ class NullStream : public std::ostream {
   private:
     NullBuffer nullBuff = {};
 };
+static NullStream nullStream;
 
 
 /* \brief Extends the ConsoleReporter of doctest
@@ -53,18 +54,15 @@ struct MpiFileReporter : public ConsoleReporter {
  */
 struct MpiConsoleReporter : public ConsoleReporter {
 private:
-  NullStream null_stream = {};
-
-  std::ostream& replace_by_null_if_not_rank_0(std::ostream* os) {
+  static std::ostream& replace_by_null_if_not_rank_0(std::ostream* os) {
     int rank = 0;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     if (rank==0) {
       return *os;
     } else {
-      return null_stream;
+      return nullStream;
     }
   }
-
 public:
   MpiConsoleReporter(const ContextOptions& co)
     : ConsoleReporter(co,replace_by_null_if_not_rank_0(co.cout))
