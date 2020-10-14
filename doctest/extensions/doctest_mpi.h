@@ -47,27 +47,16 @@ struct mpi_sub_comm {
         CHECK(nb_procs<=mpi_world_nb_procs());
       }
     } else {
-      MPI_Group world_group;
-      MPI_Comm_group(MPI_COMM_WORLD, &world_group);
+      int color = MPI_UNDEFINED;
+      if(comm_world_rank < nb_procs){
+        color = 0;
+      }
+      MPI_Comm_split(MPI_COMM_WORLD, color, comm_world_rank, &comm);
 
-      // Prepare array to create the group that include only processes [0, nb_procs)
-      std::vector<int> test_procs(static_cast<std::size_t>(nb_procs));
-      std::iota(begin(test_procs), end(test_procs), 0);
-
-      // Create sub_group and sub_comm
-      MPI_Group test_group;
-      MPI_Group_incl(world_group, nb_procs, test_procs.data(), &test_group);
-      MPI_Comm_create_group(MPI_COMM_WORLD, test_group, 0, &comm);
-      // If not in test_group we have comm==MPI_COMM_NULL
-
-      // Get rank of the process
       if(comm != MPI_COMM_NULL){
         MPI_Comm_rank(comm, &rank);
         assert(rank==comm_world_rank);
       }
-
-      MPI_Group_free(&world_group);
-      MPI_Group_free(&test_group);
     }
   }
 
