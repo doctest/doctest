@@ -213,6 +213,8 @@ jobs:
           fi
 
           sudo apt-get update
+          # sudo apt-get install libopenmpi-dev
+          # sudo apt-get install openmpi-bin
 
           # libc6-dbg:i386 is required for running valgrind on x86.
           sudo apt-get install -y ninja-build valgrind libc6-dbg:i386
