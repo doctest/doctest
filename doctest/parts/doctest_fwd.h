@@ -766,6 +766,13 @@ namespace detail {
 
     template<class T> struct remove_const          { typedef T type; };
     template<class T> struct remove_const<const T> { typedef T type; };
+
+    template<bool T, class Ty1, class Ty2> struct conditional { typedef Ty1 type; };
+    template<class Ty1, class Ty2> struct conditional<false, Ty1, Ty2> { typedef Ty2 type; };
+
+    // Use compiler intrinsics
+    template<class T> struct is_enum { constexpr static bool value = __is_enum(T); };
+    template<class T> struct underlying_type { typedef __underlying_type(T) type; };
     // clang-format on
 
     template <typename T>
@@ -780,12 +787,12 @@ namespace detail {
 
         template<class, class = void>
         struct check {
-            static constexpr auto value = false;
+            static constexpr bool value = false;
         };
 
         template<class T>
         struct check<T, decltype(os() << val<T>(), void())> {
-            static constexpr auto value = true;
+            static constexpr bool value = true;
         };
     } // namespace has_insertion_operator_impl
 
@@ -816,6 +823,76 @@ namespace detail {
         }
     };
 
+    template <class UT>
+    struct EnumStringMakerBase
+    {
+        template <class E>
+        static String convert(const DOCTEST_REF_WRAP(E) in) {
+            static_assert(is_enum<E>::value);
+            *getTlsOss() << static_cast<UT>(in);
+            return getTlsOssResult();
+        };
+    };
+    template <>
+    struct EnumStringMakerBase<char>
+    {
+        template <class E>
+        static String convert(const DOCTEST_REF_WRAP(E) in) {
+            static_assert(is_enum<E>::value);
+            signed char c = static_cast<signed char>(static_cast<char>(in));
+            if (c >= 32 && c < 127) // ASCII Printable
+            {
+                *getTlsOss() << "'" << c << "'";
+            }
+            else
+            {
+                *getTlsOss() << static_cast<int>(c);
+            }
+            return getTlsOssResult();
+        }
+    };
+    template <>
+    struct EnumStringMakerBase<signed char>
+    {
+        template <class E>
+        static String convert(const DOCTEST_REF_WRAP(E) in) {
+            static_assert(is_enum<E>::value);
+            signed char c = static_cast<signed char>(in);
+            if (c >= 32 && c < 127) // ASCII Printable
+            {
+                *getTlsOss() << "'" << c << "'";
+            }
+            else
+            {
+                *getTlsOss() << static_cast<int>(c);
+            }
+            return getTlsOssResult();
+        }
+    };
+    template <>
+    struct EnumStringMakerBase<unsigned char>
+    {
+        template <class E>
+        static String convert(const DOCTEST_REF_WRAP(E) in) {
+            static_assert(is_enum<E>::value);
+            unsigned char c = static_cast<unsigned char>(in);
+            if (c >= 32 && c < 127) // ASCII Printable
+            {
+                *getTlsOss() << "'" << c << "'";
+            }
+            else
+            {
+                *getTlsOss() << static_cast<unsigned>(c);
+            }
+            return getTlsOssResult();
+        }
+    };
+
+    template<class T>
+    struct EnumStringMaker : EnumStringMakerBase<typename underlying_type<T>::type> {
+        static_assert(is_enum<T>::value);
+    };
+
     DOCTEST_INTERFACE String rawMemoryToString(const void* object, unsigned size);
 
     template <typename T>
@@ -830,7 +907,7 @@ namespace detail {
 } // namespace detail
 
 template <typename T>
-struct StringMaker : public detail::StringMakerBase<detail::has_insertion_operator<T>::value>
+struct StringMaker : public detail::conditional<detail::is_enum<T>::value, detail::EnumStringMaker<T>, detail::StringMakerBase<detail::has_insertion_operator<T>::value>>::type
 {};
 
 template <typename T>
