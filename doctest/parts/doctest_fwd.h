@@ -776,6 +776,8 @@ namespace detail {
     template<bool T, class Ty1, class Ty2> struct conditional { typedef Ty1 type; };
     template<class Ty1, class Ty2> struct conditional<false, Ty1, Ty2> { typedef Ty2 type; };
 
+    template<class T> struct is_signed { constexpr static bool value = T(-1) < T(0); };
+
     // Use compiler intrinsics
     template<class T> struct is_enum { constexpr static bool value = __is_enum(T); };
     template<class T> struct underlying_type { typedef __underlying_type(T) type; };
@@ -855,7 +857,7 @@ DOCTEST_CLANG_SUPPRESS_WARNING_WITH_PUSH("-Wsign-conversion")
             }
             else
             {
-                *getTlsOss() << static_cast<int>(c);
+                return EnumStringMakerBase<conditional<is_signed<char>::value, int, unsigned int>::type>::convert(in);
             }
             return getTlsOssResult();
         }
@@ -873,7 +875,7 @@ DOCTEST_CLANG_SUPPRESS_WARNING_WITH_PUSH("-Wsign-conversion")
             }
             else
             {
-                *getTlsOss() << static_cast<int>(c);
+                return EnumStringMakerBase<int>::convert(in);
             }
             return getTlsOssResult();
         }
@@ -891,7 +893,7 @@ DOCTEST_CLANG_SUPPRESS_WARNING_WITH_PUSH("-Wsign-conversion")
             }
             else
             {
-                *getTlsOss() << static_cast<unsigned int>(c);
+                return EnumStringMakerBase<unsigned int>::convert(in);
             }
             return getTlsOssResult();
         }

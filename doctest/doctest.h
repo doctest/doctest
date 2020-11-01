@@ -417,6 +417,12 @@ struct char_traits<char>;
 template <class charT, class traits>
 class basic_ostream;
 typedef basic_ostream<char, char_traits<char>> ostream;
+template <class charT, class traits>
+basic_ostream<charT, traits>& operator <<(basic_ostream<charT, traits>& os, charT ch);
+template <class charT, class traits>
+basic_ostream<charT, traits>& operator <<(basic_ostream<charT, traits>& os, char ch);
+template <class traits>
+basic_ostream<char, traits>& operator <<(basic_ostream<char, traits>& os, char ch);
 template <class... Types>
 class tuple;
 #if DOCTEST_MSVC >= DOCTEST_COMPILER(19, 20, 0)
@@ -773,6 +779,8 @@ namespace detail {
     template<bool T, class Ty1, class Ty2> struct conditional { typedef Ty1 type; };
     template<class Ty1, class Ty2> struct conditional<false, Ty1, Ty2> { typedef Ty2 type; };
 
+    template<class T> struct is_signed { constexpr static bool value = T(-1) < T(0); };
+
     // Use compiler intrinsics
     template<class T> struct is_enum { constexpr static bool value = __is_enum(T); };
     template<class T> struct underlying_type { typedef __underlying_type(T) type; };
@@ -826,30 +834,33 @@ namespace detail {
         }
     };
 
+DOCTEST_MSVC_SUPPRESS_WARNING_WITH_PUSH(5045) // Spectre mitigation
+DOCTEST_GCC_SUPPRESS_WARNING_WITH_PUSH("-Wsign-conversion")
+DOCTEST_CLANG_SUPPRESS_WARNING_WITH_PUSH("-Wsign-conversion")
     template <class UT>
     struct EnumStringMakerBase
     {
         template <class E>
         static String convert(const DOCTEST_REF_WRAP(E) in) {
-            static_assert(is_enum<E>::value);
+            static_assert(is_enum<E>::value, "");
             *getTlsOss() << static_cast<UT>(in);
             return getTlsOssResult();
-        };
+        }
     };
     template <>
     struct EnumStringMakerBase<char>
     {
         template <class E>
         static String convert(const DOCTEST_REF_WRAP(E) in) {
-            static_assert(is_enum<E>::value);
-            signed char c = static_cast<signed char>(static_cast<char>(in));
+            static_assert(is_enum<E>::value, "");
+            char c = static_cast<char>(in);
             if (c >= 32 && c < 127) // ASCII Printable
             {
                 *getTlsOss() << "'" << c << "'";
             }
             else
             {
-                *getTlsOss() << static_cast<int>(c);
+                return EnumStringMakerBase<conditional<is_signed<char>::value, int, unsigned int>::type>::convert(in);
             }
             return getTlsOssResult();
         }
@@ -859,7 +870,7 @@ namespace detail {
     {
         template <class E>
         static String convert(const DOCTEST_REF_WRAP(E) in) {
-            static_assert(is_enum<E>::value);
+            static_assert(is_enum<E>::value, "");
             signed char c = static_cast<signed char>(in);
             if (c >= 32 && c < 127) // ASCII Printable
             {
@@ -867,7 +878,7 @@ namespace detail {
             }
             else
             {
-                *getTlsOss() << static_cast<int>(c);
+                return EnumStringMakerBase<int>::convert(in);
             }
             return getTlsOssResult();
         }
@@ -877,7 +888,7 @@ namespace detail {
     {
         template <class E>
         static String convert(const DOCTEST_REF_WRAP(E) in) {
-            static_assert(is_enum<E>::value);
+            static_assert(is_enum<E>::value, "");
             unsigned char c = static_cast<unsigned char>(in);
             if (c >= 32 && c < 127) // ASCII Printable
             {
@@ -885,15 +896,18 @@ namespace detail {
             }
             else
             {
-                *getTlsOss() << static_cast<unsigned>(c);
+                return EnumStringMakerBase<unsigned int>::convert(in);
             }
             return getTlsOssResult();
         }
     };
+DOCTEST_MSVC_SUPPRESS_WARNING_POP
+DOCTEST_GCC_SUPPRESS_WARNING_POP
+DOCTEST_CLANG_SUPPRESS_WARNING_POP
 
     template<class T>
     struct EnumStringMaker : EnumStringMakerBase<typename underlying_type<T>::type> {
-        static_assert(is_enum<T>::value);
+        static_assert(is_enum<T>::value, "");
     };
 
     DOCTEST_INTERFACE String rawMemoryToString(const void* object, unsigned size);
