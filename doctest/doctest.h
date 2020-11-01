@@ -417,12 +417,6 @@ struct char_traits<char>;
 template <class charT, class traits>
 class basic_ostream;
 typedef basic_ostream<char, char_traits<char>> ostream;
-template <class charT, class traits>
-basic_ostream<charT, traits>& operator <<(basic_ostream<charT, traits>& os, charT ch);
-template <class charT, class traits>
-basic_ostream<charT, traits>& operator <<(basic_ostream<charT, traits>& os, char ch);
-template <class traits>
-basic_ostream<char, traits>& operator <<(basic_ostream<char, traits>& os, char ch);
 template <class... Types>
 class tuple;
 #if DOCTEST_MSVC >= DOCTEST_COMPILER(19, 20, 0)
@@ -815,101 +809,79 @@ namespace detail {
     DOCTEST_INTERFACE std::ostream* getTlsOss(); // returns a thread-local ostringstream
     DOCTEST_INTERFACE String getTlsOssResult();
 
-    template <bool C>
+    template <typename T, bool C = has_insertion_operator<T>::value>
     struct StringMakerBase
     {
-        template <typename T>
-        static String convert(const DOCTEST_REF_WRAP(T)) {
+        template <typename U>
+        static String convert(const DOCTEST_REF_WRAP(U)) {
             return "{?}";
         }
     };
 
-    template <>
-    struct StringMakerBase<true>
+    template <typename T>
+    struct StringMakerBase<T, true>
     {
-        template <typename T>
-        static String convert(const DOCTEST_REF_WRAP(T) in) {
+        template <typename U>
+        static String convert(const DOCTEST_REF_WRAP(U) in) {
             *getTlsOss() << in;
             return getTlsOssResult();
         }
     };
 
-DOCTEST_MSVC_SUPPRESS_WARNING_WITH_PUSH(5045) // Spectre mitigation
-DOCTEST_GCC_SUPPRESS_WARNING_WITH_PUSH("-Wsign-conversion")
-DOCTEST_CLANG_SUPPRESS_WARNING_WITH_PUSH("-Wsign-conversion")
-    template <class UT>
-    struct EnumStringMakerBase
-    {
-        template <class E>
-        static String convert(const DOCTEST_REF_WRAP(E) in) {
-            static_assert(is_enum<E>::value, "");
-            *getTlsOss() << static_cast<UT>(in);
-            return getTlsOssResult();
-        }
-    };
+#ifdef DOCTEST_CONFIG_USE_STD_HEADERS
+    DOCTEST_MSVC_SUPPRESS_WARNING_WITH_PUSH(5045) // Spectre mitigation
     template <>
-    struct EnumStringMakerBase<char>
+    struct StringMakerBase<char, true>
     {
-        template <class E>
-        static String convert(const DOCTEST_REF_WRAP(E) in) {
-            static_assert(is_enum<E>::value, "");
-            char c = static_cast<char>(in);
-            if (c >= 32 && c < 127) // ASCII Printable
+        static String convert(char c) {
+            if (c >= 32 && c < 127) // ASCII printable
             {
-                *getTlsOss() << "'" << c << "'";
+                *detail::getTlsOss() << '\'' << c << '\'';
+                return detail::getTlsOssResult();
             }
-            else
-            {
-                return EnumStringMakerBase<conditional<is_signed<char>::value, int, unsigned int>::type>::convert(in);
-            }
-            return getTlsOssResult();
+            // char can be either signed or unsigned, so delegate based on which it is
+            typedef typename detail::conditional<detail::is_signed<char>::value, int, unsigned int>::type IntType;
+            return StringMakerBase<IntType, true>::convert(static_cast<IntType>(c));
         }
-    };
-    template <>
-    struct EnumStringMakerBase<signed char>
-    {
-        template <class E>
-        static String convert(const DOCTEST_REF_WRAP(E) in) {
-            static_assert(is_enum<E>::value, "");
-            signed char c = static_cast<signed char>(in);
-            if (c >= 32 && c < 127) // ASCII Printable
-            {
-                *getTlsOss() << "'" << c << "'";
-            }
-            else
-            {
-                return EnumStringMakerBase<int>::convert(in);
-            }
-            return getTlsOssResult();
-        }
-    };
-    template <>
-    struct EnumStringMakerBase<unsigned char>
-    {
-        template <class E>
-        static String convert(const DOCTEST_REF_WRAP(E) in) {
-            static_assert(is_enum<E>::value, "");
-            unsigned char c = static_cast<unsigned char>(in);
-            if (c >= 32 && c < 127) // ASCII Printable
-            {
-                *getTlsOss() << "'" << c << "'";
-            }
-            else
-            {
-                return EnumStringMakerBase<unsigned int>::convert(in);
-            }
-            return getTlsOssResult();
-        }
-    };
-DOCTEST_MSVC_SUPPRESS_WARNING_POP
-DOCTEST_GCC_SUPPRESS_WARNING_POP
-DOCTEST_CLANG_SUPPRESS_WARNING_POP
-
-    template<class T>
-    struct EnumStringMaker : EnumStringMakerBase<typename underlying_type<T>::type> {
-        static_assert(is_enum<T>::value, "");
     };
 
+    template <>
+    struct StringMakerBase<signed char, true>
+    {
+        static String convert(signed char c) {
+            if (c >= 32 && c < 127) // ASCII printable
+            {
+                *detail::getTlsOss() << '\'' << c << '\'';
+                return detail::getTlsOssResult();
+            }
+            return StringMakerBase<int, true>::convert(static_cast<int>(c));
+        }
+    };
+
+    template <>
+    struct StringMakerBase<unsigned char, true>
+    {
+        static String convert(unsigned char c) {
+            if (c >= 32 && c < 127) // ASCII printable
+            {
+                *detail::getTlsOss() << '\'' << c << '\'';
+                return detail::getTlsOssResult();
+            }
+            return StringMakerBase<unsigned int, true>::convert(static_cast<unsigned int>(c));
+        }  
+    };
+    DOCTEST_MSVC_SUPPRESS_WARNING_POP
+#endif
+
+    template <typename T>
+    struct EnumStringMakerBase : public StringMakerBase<typename underlying_type<T>::type>
+    {
+        template <typename U>
+        static String convert(const DOCTEST_REF_WRAP(U) in) {
+            typedef typename underlying_type<T>::type UT;
+            return StringMakerBase<UT>::convert(static_cast<UT>(in));
+        }
+    };
     DOCTEST_INTERFACE String rawMemoryToString(const void* object, unsigned size);
 
     template <typename T>
@@ -924,7 +896,10 @@ DOCTEST_CLANG_SUPPRESS_WARNING_POP
 } // namespace detail
 
 template <typename T>
-struct StringMaker : public detail::conditional<detail::is_enum<T>::value, detail::EnumStringMaker<T>, detail::StringMakerBase<detail::has_insertion_operator<T>::value>>::type
+struct StringMaker;
+
+template <typename T>
+struct StringMaker : public detail::conditional<detail::is_enum<T>::value, detail::EnumStringMakerBase<T>, detail::StringMakerBase<T>>::type
 {};
 
 template <typename T>
