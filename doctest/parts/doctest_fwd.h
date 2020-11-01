@@ -823,6 +823,7 @@ namespace detail {
         }
     };
 
+DOCTEST_MSVC_SUPPRESS_WARNING_WITH_PUSH(5045) // Spectre mitigation
     template <class UT>
     struct EnumStringMakerBase
     {
@@ -887,6 +888,7 @@ namespace detail {
             return getTlsOssResult();
         }
     };
+DOCTEST_MSVC_SUPPRESS_WARNING_POP
 
     template<class T>
     struct EnumStringMaker : EnumStringMakerBase<typename underlying_type<T>::type> {
