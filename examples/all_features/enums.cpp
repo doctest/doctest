@@ -5,7 +5,7 @@
 DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_BEGIN
 #include <cstdint>
 #include <sstream>
-// using namespace std;
+#include <type_traits>
 DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_END
 
 namespace
@@ -53,7 +53,7 @@ enum class EnumClassU8 : uint8_t
     Two,
 };
 
-template<class E, class T = std::underlying_type<E>::type>
+template<class E, class T = typename std::underlying_type<E>::type>
 T printable(E val)
 {
     return T(val);

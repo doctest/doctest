@@ -867,7 +867,7 @@ DOCTEST_MSVC_SUPPRESS_WARNING_WITH_PUSH(5045) // Spectre mitigation
             signed char c = static_cast<signed char>(in);
             if (c >= 32 && c < 127) // ASCII Printable
             {
-                *getTlsOss() << "'" << static_cast<char>(c) << "'";
+                *getTlsOss() << "'" << c << "'";
             }
             else
             {
@@ -885,11 +885,11 @@ DOCTEST_MSVC_SUPPRESS_WARNING_WITH_PUSH(5045) // Spectre mitigation
             unsigned char c = static_cast<unsigned char>(in);
             if (c >= 32 && c < 127) // ASCII Printable
             {
-                *getTlsOss() << "'" << static_cast<char>(c) << "'";
+                *getTlsOss() << "'" << c << "'";
             }
             else
             {
-                *getTlsOss() << static_cast<unsigned>(c);
+                *getTlsOss() << static_cast<unsigned int>(c);
             }
             return getTlsOssResult();
         }
