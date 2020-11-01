@@ -830,6 +830,8 @@ namespace detail {
     };
 
 DOCTEST_MSVC_SUPPRESS_WARNING_WITH_PUSH(5045) // Spectre mitigation
+DOCTEST_GCC_SUPPRESS_WARNING_WITH_PUSH("-Wsign-conversion")
+DOCTEST_CLANG_SUPPRESS_WARNING_WITH_PUSH("-Wsign-conversion")
     template <class UT>
     struct EnumStringMakerBase
     {
@@ -895,6 +897,8 @@ DOCTEST_MSVC_SUPPRESS_WARNING_WITH_PUSH(5045) // Spectre mitigation
         }
     };
 DOCTEST_MSVC_SUPPRESS_WARNING_POP
+DOCTEST_GCC_SUPPRESS_WARNING_POP
+DOCTEST_CLANG_SUPPRESS_WARNING_POP
 
     template<class T>
     struct EnumStringMaker : EnumStringMakerBase<typename underlying_type<T>::type> {
