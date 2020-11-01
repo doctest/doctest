@@ -414,6 +414,12 @@ struct char_traits<char>;
 template <class charT, class traits>
 class basic_ostream;
 typedef basic_ostream<char, char_traits<char>> ostream;
+template <class charT, class traits>
+basic_ostream<charT, traits>& operator <<(basic_ostream<charT, traits>& os, charT ch);
+template <class charT, class traits>
+basic_ostream<charT, traits>& operator <<(basic_ostream<charT, traits>& os, char ch);
+template <class traits>
+basic_ostream<char, traits>& operator <<(basic_ostream<char, traits>& os, char ch);
 template <class... Types>
 class tuple;
 #if DOCTEST_MSVC >= DOCTEST_COMPILER(19, 20, 0)
