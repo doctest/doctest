@@ -384,6 +384,9 @@ DOCTEST_GCC_SUPPRESS_WARNING_POP
 #endif // DOCTEST_CONFIG_USE_IOSFWD
 
 #ifdef DOCTEST_CONFIG_USE_STD_HEADERS
+#ifndef DOCTEST_CONFIG_INCLUDE_TYPE_TRAITS
+#define DOCTEST_CONFIG_INCLUDE_TYPE_TRAITS
+#endif // DOCTEST_CONFIG_INCLUDE_TYPE_TRAITS
 #include <iosfwd>
 #include <cstddef>
 #include <ostream>
@@ -764,10 +767,14 @@ namespace detail {
 
     template<class T> struct remove_const          { typedef T type; };
     template<class T> struct remove_const<const T> { typedef T type; };
-
+#ifdef DOCTEST_CONFIG_INCLUDE_TYPE_TRAITS
+    template<class T> struct is_enum : public std::is_enum<T> {};
+    template<class T> struct underlying_type : public std::underlying_type<T> {};
+#else
     // Use compiler intrinsics
     template<class T> struct is_enum { constexpr static bool value = __is_enum(T); };
     template<class T> struct underlying_type { typedef __underlying_type(T) type; };
+#endif
     // clang-format on
 
     template <typename T>
