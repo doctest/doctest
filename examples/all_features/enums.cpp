@@ -1,4 +1,3 @@
-#define DOCTEST_CONFIG_USE_STD_HEADERS
 #include <doctest/doctest.h>
 
 #include "header.h"
@@ -6,7 +5,6 @@
 DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_BEGIN
 #include <cstdint>
 #include <sstream>
-#include <type_traits>
 DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_END
 
 namespace

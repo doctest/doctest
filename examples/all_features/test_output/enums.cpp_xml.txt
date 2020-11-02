@@ -59,7 +59,7 @@
           EnumClassC::Zero, EnumClassC::One
         </Original>
         <Expanded>
-          '0', '1'
+          48, 49
         </Expanded>
       </Expression>
       <Expression success="false" type="CHECK_EQ" filename="enums.cpp" line="0">
@@ -67,7 +67,7 @@
           EnumClassC::One, EnumClassC::Two
         </Original>
         <Expanded>
-          '1', '2'
+          49, 50
         </Expanded>
       </Expression>
       <Expression success="false" type="CHECK_EQ" filename="enums.cpp" line="0">
@@ -75,7 +75,7 @@
           EnumClassC::Two, EnumClassC::Zero
         </Original>
         <Expanded>
-          '2', '0'
+          50, 48
         </Expanded>
       </Expression>
       <Expression success="false" type="CHECK_EQ" filename="enums.cpp" line="0">
@@ -83,7 +83,7 @@
           EnumClassSC::Zero, EnumClassSC::One
         </Original>
         <Expanded>
-          '0', '1'
+          48, 49
         </Expanded>
       </Expression>
       <Expression success="false" type="CHECK_EQ" filename="enums.cpp" line="0">
@@ -91,7 +91,7 @@
           EnumClassSC::One, EnumClassSC::Two
         </Original>
         <Expanded>
-          '1', '2'
+          49, 50
         </Expanded>
       </Expression>
       <Expression success="false" type="CHECK_EQ" filename="enums.cpp" line="0">
@@ -99,7 +99,7 @@
           EnumClassSC::Two, EnumClassSC::Zero
         </Original>
         <Expanded>
-          '2', '0'
+          50, 48
         </Expanded>
       </Expression>
       <Expression success="false" type="CHECK_EQ" filename="enums.cpp" line="0">
@@ -107,7 +107,7 @@
           EnumClassUC::Zero, EnumClassUC::One
         </Original>
         <Expanded>
-          '0', '1'
+          48, 49
         </Expanded>
       </Expression>
       <Expression success="false" type="CHECK_EQ" filename="enums.cpp" line="0">
@@ -115,7 +115,7 @@
           EnumClassUC::One, EnumClassUC::Two
         </Original>
         <Expanded>
-          '1', '2'
+          49, 50
         </Expanded>
       </Expression>
       <Expression success="false" type="CHECK_EQ" filename="enums.cpp" line="0">
@@ -123,7 +123,7 @@
           EnumClassUC::Two, EnumClassUC::Zero
         </Original>
         <Expanded>
-          '2', '0'
+          50, 48
         </Expanded>
       </Expression>
       <Expression success="false" type="CHECK_EQ" filename="enums.cpp" line="0">

@@ -414,12 +414,6 @@ struct char_traits<char>;
 template <class charT, class traits>
 class basic_ostream;
 typedef basic_ostream<char, char_traits<char>> ostream;
-template <class traits>
-basic_ostream<char, traits>& operator<<(basic_ostream<char, traits>& os, char ch);
-template <class traits>
-basic_ostream<char, traits>& operator<<(basic_ostream<char, traits>& os, signed char ch);
-template <class traits>
-basic_ostream<char, traits>& operator<<(basic_ostream<char, traits>& os, unsigned char ch);
 template <class... Types>
 class tuple;
 #if DOCTEST_MSVC >= DOCTEST_COMPILER(19, 20, 0)
@@ -755,7 +749,6 @@ struct ContextOptions //!OCLINT too many fields
 };
 
 namespace detail {
-#if defined(DOCTEST_CONFIG_TREAT_CHAR_STAR_AS_STRING) || defined(DOCTEST_CONFIG_INCLUDE_TYPE_TRAITS)
     template <bool CONDITION, typename TYPE = void>
     struct enable_if
     {};
@@ -763,7 +756,6 @@ namespace detail {
     template <typename TYPE>
     struct enable_if<true, TYPE>
     { typedef TYPE type; };
-#endif // DOCTEST_CONFIG_TREAT_CHAR_STAR_AS_STRING) || DOCTEST_CONFIG_INCLUDE_TYPE_TRAITS
 
     // clang-format off
     template<class T> struct remove_reference      { typedef T type; };
@@ -772,11 +764,6 @@ namespace detail {
 
     template<class T> struct remove_const          { typedef T type; };
     template<class T> struct remove_const<const T> { typedef T type; };
-
-    template<bool T, class Ty1, class Ty2> struct conditional { typedef Ty1 type; };
-    template<class Ty1, class Ty2> struct conditional<false, Ty1, Ty2> { typedef Ty2 type; };
-
-    template<class T> struct is_signed { constexpr static bool value = T(-1) < T(0); };
 
     // Use compiler intrinsics
     template<class T> struct is_enum { constexpr static bool value = __is_enum(T); };
@@ -812,79 +799,25 @@ namespace detail {
     DOCTEST_INTERFACE std::ostream* getTlsOss(); // returns a thread-local ostringstream
     DOCTEST_INTERFACE String getTlsOssResult();
 
-    template <typename T, bool C = has_insertion_operator<T>::value>
+    template <bool C>
     struct StringMakerBase
     {
-        template <typename U>
-        static String convert(const DOCTEST_REF_WRAP(U)) {
+        template <typename T>
+        static String convert(const DOCTEST_REF_WRAP(T)) {
             return "{?}";
         }
     };
 
-    template <typename T>
-    struct StringMakerBase<T, true>
+    template <>
+    struct StringMakerBase<true>
     {
-        template <typename U>
-        static String convert(const DOCTEST_REF_WRAP(U) in) {
+        template <typename T>
+        static String convert(const DOCTEST_REF_WRAP(T) in) {
             *getTlsOss() << in;
             return getTlsOssResult();
         }
     };
 
-#ifdef DOCTEST_CONFIG_USE_STD_HEADERS
-    DOCTEST_MSVC_SUPPRESS_WARNING_WITH_PUSH(5045) // Spectre mitigation
-    template <>
-    struct StringMakerBase<char, true>
-    {
-        static String convert(char c) {
-            if (c >= 32 && c < 127) // ASCII printable
-            {
-                *detail::getTlsOss() << '\'' << c << '\'';
-                return detail::getTlsOssResult();
-            }
-            // char can be either signed or unsigned, so delegate based on which it is
-            typedef typename detail::conditional<detail::is_signed<char>::value, int, unsigned int>::type IntType;
-            return StringMakerBase<IntType, true>::convert(static_cast<IntType>(c));
-        }
-    };
-
-    template <>
-    struct StringMakerBase<signed char, true>
-    {
-        static String convert(signed char c) {
-            if (c >= 32 && c < 127) // ASCII printable
-            {
-                *detail::getTlsOss() << '\'' << c << '\'';
-                return detail::getTlsOssResult();
-            }
-            return StringMakerBase<int, true>::convert(static_cast<int>(c));
-        }
-    };
-
-    template <>
-    struct StringMakerBase<unsigned char, true>
-    {
-        static String convert(unsigned char c) {
-            if (c >= 32 && c < 127) // ASCII printable
-            {
-                *detail::getTlsOss() << '\'' << c << '\'';
-                return detail::getTlsOssResult();
-            }
-            return StringMakerBase<unsigned int, true>::convert(static_cast<unsigned int>(c));
-        }  
-    };
-    DOCTEST_MSVC_SUPPRESS_WARNING_POP
-#endif
-
-    template <typename T>
-    struct EnumStringMakerBase : public StringMakerBase<typename underlying_type<T>::type>
-    {
-        template <typename U>
-        static String convert(const DOCTEST_REF_WRAP(U) in) {
-            typedef typename underlying_type<T>::type UT;
-            return StringMakerBase<UT>::convert(static_cast<UT>(in));
-        }
-    };
     DOCTEST_INTERFACE String rawMemoryToString(const void* object, unsigned size);
 
     template <typename T>
@@ -899,10 +832,7 @@ namespace detail {
 } // namespace detail
 
 template <typename T>
-struct StringMaker;
-
-template <typename T>
-struct StringMaker : public detail::conditional<detail::is_enum<T>::value, detail::EnumStringMakerBase<T>, detail::StringMakerBase<T>>::type
+struct StringMaker : public detail::StringMakerBase<detail::has_insertion_operator<T>::value>
 {};
 
 template <typename T>
@@ -926,7 +856,7 @@ struct StringMaker<R C::*>
     }
 };
 
-template <typename T>
+template <typename T, typename detail::enable_if<!detail::is_enum<T>::value, bool>::type = true>
 String toString(const DOCTEST_REF_WRAP(T) value) {
     return StringMaker<T>::convert(value);
 }
@@ -952,6 +882,12 @@ DOCTEST_INTERFACE String toString(int long unsigned in);
 DOCTEST_INTERFACE String toString(int long long in);
 DOCTEST_INTERFACE String toString(int long long unsigned in);
 DOCTEST_INTERFACE String toString(std::nullptr_t in);
+
+template <typename T, typename detail::enable_if<detail::is_enum<T>::value, bool>::type = true>
+String toString(const DOCTEST_REF_WRAP(T) value) {
+    typedef typename detail::underlying_type<T>::type UT;
+    return toString(static_cast<UT>(value));
+}
 
 #if DOCTEST_MSVC >= DOCTEST_COMPILER(19, 20, 0)
 // see this issue on why this is needed: https://github.com/onqtam/doctest/issues/183
