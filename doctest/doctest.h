@@ -301,11 +301,15 @@ DOCTEST_MSVC_SUPPRESS_WARNING(26812) // Prefer 'enum class' over 'enum'
 #define DOCTEST_NOINLINE __declspec(noinline)
 #define DOCTEST_UNUSED
 #define DOCTEST_ALIGNMENT(x)
-#else // MSVC
+#elif DOCTEST_CLANG && DOCTEST_CLANG < DOCTEST_COMPILER(3, 5, 0)
+#define DOCTEST_NOINLINE
+#define DOCTEST_UNUSED
+#define DOCTEST_ALIGNMENT(x)
+#else
 #define DOCTEST_NOINLINE __attribute__((noinline))
 #define DOCTEST_UNUSED __attribute__((unused))
 #define DOCTEST_ALIGNMENT(x) __attribute__((aligned(x)))
-#endif // MSVC
+#endif
 
 #ifndef DOCTEST_NORETURN
 #define DOCTEST_NORETURN [[noreturn]]
@@ -376,9 +380,9 @@ DOCTEST_GCC_SUPPRESS_WARNING_WITH_PUSH("-Wredundant-decls")
 extern "C" __declspec(dllimport) void __stdcall DebugBreak();
 DOCTEST_GCC_SUPPRESS_WARNING_POP
 #define DOCTEST_BREAK_INTO_DEBUGGER() ::DebugBreak()
-#else
-#define DOCTEST_BREAK_INTO_DEBUGGER() ((void)0)
-#endif
+#else // linux
+#define DOCTEST_BREAK_INTO_DEBUGGER() (static_cast<void>(0))
+#endif // linux
 #endif // DOCTEST_BREAK_INTO_DEBUGGER
 
 // this is kept here for backwards compatibility since the config option was changed
@@ -1442,9 +1446,9 @@ namespace detail {
             } catch(T ex) {                    // NOLINT
                 res = m_translateFunction(ex); //!OCLINT parameter reassignment
                 return true;
-            } catch(...) {} //!OCLINT -  empty catch statement
-#endif                      // DOCTEST_CONFIG_NO_EXCEPTIONS
-            ((void)res);    // to silence -Wunused-parameter
+            } catch(...) {}         //!OCLINT -  empty catch statement
+#endif                              // DOCTEST_CONFIG_NO_EXCEPTIONS
+            static_cast<void>(res); // to silence -Wunused-parameter
             return false;
         }
 
@@ -2210,37 +2214,37 @@ int registerReporter(const char* name, int priority, bool isReporter) {
 
 #ifdef DOCTEST_CONFIG_NO_EXCEPTIONS_BUT_WITH_ALL_ASSERTS
 
-#define DOCTEST_WARN_THROWS(...) ((void)0)
-#define DOCTEST_CHECK_THROWS(...) ((void)0)
-#define DOCTEST_REQUIRE_THROWS(...) ((void)0)
-#define DOCTEST_WARN_THROWS_AS(expr, ...) ((void)0)
-#define DOCTEST_CHECK_THROWS_AS(expr, ...) ((void)0)
-#define DOCTEST_REQUIRE_THROWS_AS(expr, ...) ((void)0)
-#define DOCTEST_WARN_THROWS_WITH(expr, ...) ((void)0)
-#define DOCTEST_CHECK_THROWS_WITH(expr, ...) ((void)0)
-#define DOCTEST_REQUIRE_THROWS_WITH(expr, ...) ((void)0)
-#define DOCTEST_WARN_THROWS_WITH_AS(expr, with, ...) ((void)0)
-#define DOCTEST_CHECK_THROWS_WITH_AS(expr, with, ...) ((void)0)
-#define DOCTEST_REQUIRE_THROWS_WITH_AS(expr, with, ...) ((void)0)
-#define DOCTEST_WARN_NOTHROW(...) ((void)0)
-#define DOCTEST_CHECK_NOTHROW(...) ((void)0)
-#define DOCTEST_REQUIRE_NOTHROW(...) ((void)0)
+#define DOCTEST_WARN_THROWS(...) (static_cast<void>(0))
+#define DOCTEST_CHECK_THROWS(...) (static_cast<void>(0))
+#define DOCTEST_REQUIRE_THROWS(...) (static_cast<void>(0))
+#define DOCTEST_WARN_THROWS_AS(expr, ...) (static_cast<void>(0))
+#define DOCTEST_CHECK_THROWS_AS(expr, ...) (static_cast<void>(0))
+#define DOCTEST_REQUIRE_THROWS_AS(expr, ...) (static_cast<void>(0))
+#define DOCTEST_WARN_THROWS_WITH(expr, ...) (static_cast<void>(0))
+#define DOCTEST_CHECK_THROWS_WITH(expr, ...) (static_cast<void>(0))
+#define DOCTEST_REQUIRE_THROWS_WITH(expr, ...) (static_cast<void>(0))
+#define DOCTEST_WARN_THROWS_WITH_AS(expr, with, ...) (static_cast<void>(0))
+#define DOCTEST_CHECK_THROWS_WITH_AS(expr, with, ...) (static_cast<void>(0))
+#define DOCTEST_REQUIRE_THROWS_WITH_AS(expr, with, ...) (static_cast<void>(0))
+#define DOCTEST_WARN_NOTHROW(...) (static_cast<void>(0))
+#define DOCTEST_CHECK_NOTHROW(...) (static_cast<void>(0))
+#define DOCTEST_REQUIRE_NOTHROW(...) (static_cast<void>(0))
 
-#define DOCTEST_WARN_THROWS_MESSAGE(expr, msg) ((void)0)
-#define DOCTEST_CHECK_THROWS_MESSAGE(expr, msg) ((void)0)
-#define DOCTEST_REQUIRE_THROWS_MESSAGE(expr, msg) ((void)0)
-#define DOCTEST_WARN_THROWS_AS_MESSAGE(expr, ex, msg) ((void)0)
-#define DOCTEST_CHECK_THROWS_AS_MESSAGE(expr, ex, msg) ((void)0)
-#define DOCTEST_REQUIRE_THROWS_AS_MESSAGE(expr, ex, msg) ((void)0)
-#define DOCTEST_WARN_THROWS_WITH_MESSAGE(expr, with, msg) ((void)0)
-#define DOCTEST_CHECK_THROWS_WITH_MESSAGE(expr, with, msg) ((void)0)
-#define DOCTEST_REQUIRE_THROWS_WITH_MESSAGE(expr, with, msg) ((void)0)
-#define DOCTEST_WARN_THROWS_WITH_AS_MESSAGE(expr, with, ex, msg) ((void)0)
-#define DOCTEST_CHECK_THROWS_WITH_AS_MESSAGE(expr, with, ex, msg) ((void)0)
-#define DOCTEST_REQUIRE_THROWS_WITH_AS_MESSAGE(expr, with, ex, msg) ((void)0)
-#define DOCTEST_WARN_NOTHROW_MESSAGE(expr, msg) ((void)0)
-#define DOCTEST_CHECK_NOTHROW_MESSAGE(expr, msg) ((void)0)
-#define DOCTEST_REQUIRE_NOTHROW_MESSAGE(expr, msg) ((void)0)
+#define DOCTEST_WARN_THROWS_MESSAGE(expr, msg) (static_cast<void>(0))
+#define DOCTEST_CHECK_THROWS_MESSAGE(expr, msg) (static_cast<void>(0))
+#define DOCTEST_REQUIRE_THROWS_MESSAGE(expr, msg) (static_cast<void>(0))
+#define DOCTEST_WARN_THROWS_AS_MESSAGE(expr, ex, msg) (static_cast<void>(0))
+#define DOCTEST_CHECK_THROWS_AS_MESSAGE(expr, ex, msg) (static_cast<void>(0))
+#define DOCTEST_REQUIRE_THROWS_AS_MESSAGE(expr, ex, msg) (static_cast<void>(0))
+#define DOCTEST_WARN_THROWS_WITH_MESSAGE(expr, with, msg) (static_cast<void>(0))
+#define DOCTEST_CHECK_THROWS_WITH_MESSAGE(expr, with, msg) (static_cast<void>(0))
+#define DOCTEST_REQUIRE_THROWS_WITH_MESSAGE(expr, with, msg) (static_cast<void>(0))
+#define DOCTEST_WARN_THROWS_WITH_AS_MESSAGE(expr, with, ex, msg) (static_cast<void>(0))
+#define DOCTEST_CHECK_THROWS_WITH_AS_MESSAGE(expr, with, ex, msg) (static_cast<void>(0))
+#define DOCTEST_REQUIRE_THROWS_WITH_AS_MESSAGE(expr, with, ex, msg) (static_cast<void>(0))
+#define DOCTEST_WARN_NOTHROW_MESSAGE(expr, msg) (static_cast<void>(0))
+#define DOCTEST_CHECK_NOTHROW_MESSAGE(expr, msg) (static_cast<void>(0))
+#define DOCTEST_REQUIRE_NOTHROW_MESSAGE(expr, msg) (static_cast<void>(0))
 
 #else // DOCTEST_CONFIG_NO_EXCEPTIONS_BUT_WITH_ALL_ASSERTS
 
@@ -2331,86 +2335,86 @@ int registerReporter(const char* name, int priority, bool isReporter) {
 #define DOCTEST_REGISTER_REPORTER(name, priority, reporter)
 #define DOCTEST_REGISTER_LISTENER(name, priority, reporter)
 
-#define DOCTEST_INFO(x) ((void)0)
-#define DOCTEST_CAPTURE(x) ((void)0)
-#define DOCTEST_ADD_MESSAGE_AT(file, line, x) ((void)0)
-#define DOCTEST_ADD_FAIL_CHECK_AT(file, line, x) ((void)0)
-#define DOCTEST_ADD_FAIL_AT(file, line, x) ((void)0)
-#define DOCTEST_MESSAGE(x) ((void)0)
-#define DOCTEST_FAIL_CHECK(x) ((void)0)
-#define DOCTEST_FAIL(x) ((void)0)
+#define DOCTEST_INFO(x) (static_cast<void>(0))
+#define DOCTEST_CAPTURE(x) (static_cast<void>(0))
+#define DOCTEST_ADD_MESSAGE_AT(file, line, x) (static_cast<void>(0))
+#define DOCTEST_ADD_FAIL_CHECK_AT(file, line, x) (static_cast<void>(0))
+#define DOCTEST_ADD_FAIL_AT(file, line, x) (static_cast<void>(0))
+#define DOCTEST_MESSAGE(x) (static_cast<void>(0))
+#define DOCTEST_FAIL_CHECK(x) (static_cast<void>(0))
+#define DOCTEST_FAIL(x) (static_cast<void>(0))
 
-#define DOCTEST_WARN(...) ((void)0)
-#define DOCTEST_CHECK(...) ((void)0)
-#define DOCTEST_REQUIRE(...) ((void)0)
-#define DOCTEST_WARN_FALSE(...) ((void)0)
-#define DOCTEST_CHECK_FALSE(...) ((void)0)
-#define DOCTEST_REQUIRE_FALSE(...) ((void)0)
+#define DOCTEST_WARN(...) (static_cast<void>(0))
+#define DOCTEST_CHECK(...) (static_cast<void>(0))
+#define DOCTEST_REQUIRE(...) (static_cast<void>(0))
+#define DOCTEST_WARN_FALSE(...) (static_cast<void>(0))
+#define DOCTEST_CHECK_FALSE(...) (static_cast<void>(0))
+#define DOCTEST_REQUIRE_FALSE(...) (static_cast<void>(0))
 
-#define DOCTEST_WARN_MESSAGE(cond, msg) ((void)0)
-#define DOCTEST_CHECK_MESSAGE(cond, msg) ((void)0)
-#define DOCTEST_REQUIRE_MESSAGE(cond, msg) ((void)0)
-#define DOCTEST_WARN_FALSE_MESSAGE(cond, msg) ((void)0)
-#define DOCTEST_CHECK_FALSE_MESSAGE(cond, msg) ((void)0)
-#define DOCTEST_REQUIRE_FALSE_MESSAGE(cond, msg) ((void)0)
+#define DOCTEST_WARN_MESSAGE(cond, msg) (static_cast<void>(0))
+#define DOCTEST_CHECK_MESSAGE(cond, msg) (static_cast<void>(0))
+#define DOCTEST_REQUIRE_MESSAGE(cond, msg) (static_cast<void>(0))
+#define DOCTEST_WARN_FALSE_MESSAGE(cond, msg) (static_cast<void>(0))
+#define DOCTEST_CHECK_FALSE_MESSAGE(cond, msg) (static_cast<void>(0))
+#define DOCTEST_REQUIRE_FALSE_MESSAGE(cond, msg) (static_cast<void>(0))
 
-#define DOCTEST_WARN_THROWS(...) ((void)0)
-#define DOCTEST_CHECK_THROWS(...) ((void)0)
-#define DOCTEST_REQUIRE_THROWS(...) ((void)0)
-#define DOCTEST_WARN_THROWS_AS(expr, ...) ((void)0)
-#define DOCTEST_CHECK_THROWS_AS(expr, ...) ((void)0)
-#define DOCTEST_REQUIRE_THROWS_AS(expr, ...) ((void)0)
-#define DOCTEST_WARN_THROWS_WITH(expr, ...) ((void)0)
-#define DOCTEST_CHECK_THROWS_WITH(expr, ...) ((void)0)
-#define DOCTEST_REQUIRE_THROWS_WITH(expr, ...) ((void)0)
-#define DOCTEST_WARN_THROWS_WITH_AS(expr, with, ...) ((void)0)
-#define DOCTEST_CHECK_THROWS_WITH_AS(expr, with, ...) ((void)0)
-#define DOCTEST_REQUIRE_THROWS_WITH_AS(expr, with, ...) ((void)0)
-#define DOCTEST_WARN_NOTHROW(...) ((void)0)
-#define DOCTEST_CHECK_NOTHROW(...) ((void)0)
-#define DOCTEST_REQUIRE_NOTHROW(...) ((void)0)
+#define DOCTEST_WARN_THROWS(...) (static_cast<void>(0))
+#define DOCTEST_CHECK_THROWS(...) (static_cast<void>(0))
+#define DOCTEST_REQUIRE_THROWS(...) (static_cast<void>(0))
+#define DOCTEST_WARN_THROWS_AS(expr, ...) (static_cast<void>(0))
+#define DOCTEST_CHECK_THROWS_AS(expr, ...) (static_cast<void>(0))
+#define DOCTEST_REQUIRE_THROWS_AS(expr, ...) (static_cast<void>(0))
+#define DOCTEST_WARN_THROWS_WITH(expr, ...) (static_cast<void>(0))
+#define DOCTEST_CHECK_THROWS_WITH(expr, ...) (static_cast<void>(0))
+#define DOCTEST_REQUIRE_THROWS_WITH(expr, ...) (static_cast<void>(0))
+#define DOCTEST_WARN_THROWS_WITH_AS(expr, with, ...) (static_cast<void>(0))
+#define DOCTEST_CHECK_THROWS_WITH_AS(expr, with, ...) (static_cast<void>(0))
+#define DOCTEST_REQUIRE_THROWS_WITH_AS(expr, with, ...) (static_cast<void>(0))
+#define DOCTEST_WARN_NOTHROW(...) (static_cast<void>(0))
+#define DOCTEST_CHECK_NOTHROW(...) (static_cast<void>(0))
+#define DOCTEST_REQUIRE_NOTHROW(...) (static_cast<void>(0))
 
-#define DOCTEST_WARN_THROWS_MESSAGE(expr, msg) ((void)0)
-#define DOCTEST_CHECK_THROWS_MESSAGE(expr, msg) ((void)0)
-#define DOCTEST_REQUIRE_THROWS_MESSAGE(expr, msg) ((void)0)
-#define DOCTEST_WARN_THROWS_AS_MESSAGE(expr, ex, msg) ((void)0)
-#define DOCTEST_CHECK_THROWS_AS_MESSAGE(expr, ex, msg) ((void)0)
-#define DOCTEST_REQUIRE_THROWS_AS_MESSAGE(expr, ex, msg) ((void)0)
-#define DOCTEST_WARN_THROWS_WITH_MESSAGE(expr, with, msg) ((void)0)
-#define DOCTEST_CHECK_THROWS_WITH_MESSAGE(expr, with, msg) ((void)0)
-#define DOCTEST_REQUIRE_THROWS_WITH_MESSAGE(expr, with, msg) ((void)0)
-#define DOCTEST_WARN_THROWS_WITH_AS_MESSAGE(expr, with, ex, msg) ((void)0)
-#define DOCTEST_CHECK_THROWS_WITH_AS_MESSAGE(expr, with, ex, msg) ((void)0)
-#define DOCTEST_REQUIRE_THROWS_WITH_AS_MESSAGE(expr, with, ex, msg) ((void)0)
-#define DOCTEST_WARN_NOTHROW_MESSAGE(expr, msg) ((void)0)
-#define DOCTEST_CHECK_NOTHROW_MESSAGE(expr, msg) ((void)0)
-#define DOCTEST_REQUIRE_NOTHROW_MESSAGE(expr, msg) ((void)0)
+#define DOCTEST_WARN_THROWS_MESSAGE(expr, msg) (static_cast<void>(0))
+#define DOCTEST_CHECK_THROWS_MESSAGE(expr, msg) (static_cast<void>(0))
+#define DOCTEST_REQUIRE_THROWS_MESSAGE(expr, msg) (static_cast<void>(0))
+#define DOCTEST_WARN_THROWS_AS_MESSAGE(expr, ex, msg) (static_cast<void>(0))
+#define DOCTEST_CHECK_THROWS_AS_MESSAGE(expr, ex, msg) (static_cast<void>(0))
+#define DOCTEST_REQUIRE_THROWS_AS_MESSAGE(expr, ex, msg) (static_cast<void>(0))
+#define DOCTEST_WARN_THROWS_WITH_MESSAGE(expr, with, msg) (static_cast<void>(0))
+#define DOCTEST_CHECK_THROWS_WITH_MESSAGE(expr, with, msg) (static_cast<void>(0))
+#define DOCTEST_REQUIRE_THROWS_WITH_MESSAGE(expr, with, msg) (static_cast<void>(0))
+#define DOCTEST_WARN_THROWS_WITH_AS_MESSAGE(expr, with, ex, msg) (static_cast<void>(0))
+#define DOCTEST_CHECK_THROWS_WITH_AS_MESSAGE(expr, with, ex, msg) (static_cast<void>(0))
+#define DOCTEST_REQUIRE_THROWS_WITH_AS_MESSAGE(expr, with, ex, msg) (static_cast<void>(0))
+#define DOCTEST_WARN_NOTHROW_MESSAGE(expr, msg) (static_cast<void>(0))
+#define DOCTEST_CHECK_NOTHROW_MESSAGE(expr, msg) (static_cast<void>(0))
+#define DOCTEST_REQUIRE_NOTHROW_MESSAGE(expr, msg) (static_cast<void>(0))
 
-#define DOCTEST_WARN_EQ(...) ((void)0)
-#define DOCTEST_CHECK_EQ(...) ((void)0)
-#define DOCTEST_REQUIRE_EQ(...) ((void)0)
-#define DOCTEST_WARN_NE(...) ((void)0)
-#define DOCTEST_CHECK_NE(...) ((void)0)
-#define DOCTEST_REQUIRE_NE(...) ((void)0)
-#define DOCTEST_WARN_GT(...) ((void)0)
-#define DOCTEST_CHECK_GT(...) ((void)0)
-#define DOCTEST_REQUIRE_GT(...) ((void)0)
-#define DOCTEST_WARN_LT(...) ((void)0)
-#define DOCTEST_CHECK_LT(...) ((void)0)
-#define DOCTEST_REQUIRE_LT(...) ((void)0)
-#define DOCTEST_WARN_GE(...) ((void)0)
-#define DOCTEST_CHECK_GE(...) ((void)0)
-#define DOCTEST_REQUIRE_GE(...) ((void)0)
-#define DOCTEST_WARN_LE(...) ((void)0)
-#define DOCTEST_CHECK_LE(...) ((void)0)
-#define DOCTEST_REQUIRE_LE(...) ((void)0)
+#define DOCTEST_WARN_EQ(...) (static_cast<void>(0))
+#define DOCTEST_CHECK_EQ(...) (static_cast<void>(0))
+#define DOCTEST_REQUIRE_EQ(...) (static_cast<void>(0))
+#define DOCTEST_WARN_NE(...) (static_cast<void>(0))
+#define DOCTEST_CHECK_NE(...) (static_cast<void>(0))
+#define DOCTEST_REQUIRE_NE(...) (static_cast<void>(0))
+#define DOCTEST_WARN_GT(...) (static_cast<void>(0))
+#define DOCTEST_CHECK_GT(...) (static_cast<void>(0))
+#define DOCTEST_REQUIRE_GT(...) (static_cast<void>(0))
+#define DOCTEST_WARN_LT(...) (static_cast<void>(0))
+#define DOCTEST_CHECK_LT(...) (static_cast<void>(0))
+#define DOCTEST_REQUIRE_LT(...) (static_cast<void>(0))
+#define DOCTEST_WARN_GE(...) (static_cast<void>(0))
+#define DOCTEST_CHECK_GE(...) (static_cast<void>(0))
+#define DOCTEST_REQUIRE_GE(...) (static_cast<void>(0))
+#define DOCTEST_WARN_LE(...) (static_cast<void>(0))
+#define DOCTEST_CHECK_LE(...) (static_cast<void>(0))
+#define DOCTEST_REQUIRE_LE(...) (static_cast<void>(0))
 
-#define DOCTEST_WARN_UNARY(...) ((void)0)
-#define DOCTEST_CHECK_UNARY(...) ((void)0)
-#define DOCTEST_REQUIRE_UNARY(...) ((void)0)
-#define DOCTEST_WARN_UNARY_FALSE(...) ((void)0)
-#define DOCTEST_CHECK_UNARY_FALSE(...) ((void)0)
-#define DOCTEST_REQUIRE_UNARY_FALSE(...) ((void)0)
+#define DOCTEST_WARN_UNARY(...) (static_cast<void>(0))
+#define DOCTEST_CHECK_UNARY(...) (static_cast<void>(0))
+#define DOCTEST_REQUIRE_UNARY(...) (static_cast<void>(0))
+#define DOCTEST_WARN_UNARY_FALSE(...) (static_cast<void>(0))
+#define DOCTEST_CHECK_UNARY_FALSE(...) (static_cast<void>(0))
+#define DOCTEST_REQUIRE_UNARY_FALSE(...) (static_cast<void>(0))
 
 #endif // DOCTEST_CONFIG_DISABLE
 
@@ -3763,8 +3767,8 @@ namespace {
 
     DOCTEST_CLANG_SUPPRESS_WARNING_WITH_PUSH("-Wdeprecated-declarations")
     void color_to_stream(std::ostream& s, Color::Enum code) {
-        ((void)s);    // for DOCTEST_CONFIG_COLORS_NONE or DOCTEST_CONFIG_COLORS_WINDOWS
-        ((void)code); // for DOCTEST_CONFIG_COLORS_NONE
+        static_cast<void>(s);    // for DOCTEST_CONFIG_COLORS_NONE or DOCTEST_CONFIG_COLORS_WINDOWS
+        static_cast<void>(code); // for DOCTEST_CONFIG_COLORS_NONE
 #ifdef DOCTEST_CONFIG_COLORS_ANSI
         if(g_no_colors ||
            (isatty(STDOUT_FILENO) == false && getContextOptions()->force_colors == false))
