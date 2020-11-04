@@ -14,7 +14,7 @@ Testing code over distributed processes requires support from the testing framew
 
 ## Example
 
-See [**the complete test**](../../examples/mpi.cpp) and [**the configuration of main()**](../../examples/main.cpp)
+See [**the complete test**](../../examples/mpi/mpi.cpp) and [**the configuration of main()**](../../examples/mpi/main.cpp)
 
 ### MPI_TEST_CASE
 

@@ -3,7 +3,7 @@
 #ifdef DOCTEST_CONFIG_IMPLEMENT
 
 #include "doctest/doctest.h"
-#include "doctest/extensions/mpi_reporter.h"
+#include "mpi_reporter.h"
 
 #else
 
