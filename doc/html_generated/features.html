@@ -71,7 +71,8 @@
 - integration with the output window of Visual Studio for failing tests
 - a ```main()``` can be provided when implementing the library with the [**```DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN```**](main.html#doctest_config_implement_with_main) identifier
 - can write tests in headers - they will still be registered only once in the executable/shared object
-- [**range-based**](commandline.html) execution of tests - see the [**example python script**](../../examples/range_based_execution.py)
+- [**range-based**](commandline.html) execution of tests within a binary - see the [**example python script**](../../examples/range_based_execution.py)
+- [**extension headers**](extensions.html) for extra functionality which doesn't need to go into the main `doctest.h` header
 - colored output in the console
 - controlling the order of test execution
 - different ```doctest::Context```s can be created and ran many times within a single execution of the program
