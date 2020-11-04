@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<doctest binary="all_features">
+  <Options order_by="file" rand_seed="324" first="0" last="4294967295" abort_after="0" subcase_filter_levels="2147483647" case_sensitive="false" no_throw="false" no_skip="false"/>
+  <TestSuite>
+    <TestCase name="enum 1" filename="enums.cpp" line="0">
+      <OverallResultsAsserts successes="9" failures="0"/>
+    </TestCase>
+    <TestCase name="enum 2" filename="enums.cpp" line="0" should_fail="true">
+      <Expression success="false" type="CHECK_EQ" filename="enums.cpp" line="0">
+        <Original>
+          Zero, 1
+        </Original>
+        <Expanded>
+          0, 1
+        </Expanded>
+      </Expression>
+      <Expression success="false" type="CHECK_EQ" filename="enums.cpp" line="0">
+        <Original>
+          One, 2
+        </Original>
+        <Expanded>
+          1, 2
+        </Expanded>
+      </Expression>
+      <Expression success="false" type="CHECK_EQ" filename="enums.cpp" line="0">
+        <Original>
+          Two, 3
+        </Original>
+        <Expanded>
+          2, 3
+        </Expanded>
+      </Expression>
+      <Expression success="false" type="CHECK_EQ" filename="enums.cpp" line="0">
+        <Original>
+          TypedZero, 1
+        </Original>
+        <Expanded>
+          0, 1
+        </Expanded>
+      </Expression>
+      <Expression success="false" type="CHECK_EQ" filename="enums.cpp" line="0">
+        <Original>
+          TypedOne, 2
+        </Original>
+        <Expanded>
+          1, 2
+        </Expanded>
+      </Expression>
+      <Expression success="false" type="CHECK_EQ" filename="enums.cpp" line="0">
+        <Original>
+          TypedTwo, 3
+        </Original>
+        <Expanded>
+          2, 3
+        </Expanded>
+      </Expression>
+      <Expression success="false" type="CHECK_EQ" filename="enums.cpp" line="0">
+        <Original>
+          EnumClassC::Zero, EnumClassC::One
+        </Original>
+        <Expanded>
+          48, 49
+        </Expanded>
+      </Expression>
+      <Expression success="false" type="CHECK_EQ" filename="enums.cpp" line="0">
+        <Original>
+          EnumClassC::One, EnumClassC::Two
+        </Original>
+        <Expanded>
+          49, 50
+        </Expanded>
+      </Expression>
+      <Expression success="false" type="CHECK_EQ" filename="enums.cpp" line="0">
+        <Original>
+          EnumClassC::Two, EnumClassC::Zero
+        </Original>
+        <Expanded>
+          50, 48
+        </Expanded>
+      </Expression>
+      <Expression success="false" type="CHECK_EQ" filename="enums.cpp" line="0">
+        <Original>
+          EnumClassSC::Zero, EnumClassSC::One
+        </Original>
+        <Expanded>
+          48, 49
+        </Expanded>
+      </Expression>
+      <Expression success="false" type="CHECK_EQ" filename="enums.cpp" line="0">
+        <Original>
+          EnumClassSC::One, EnumClassSC::Two
+        </Original>
+        <Expanded>
+          49, 50
+        </Expanded>
+      </Expression>
+      <Expression success="false" type="CHECK_EQ" filename="enums.cpp" line="0">
+        <Original>
+          EnumClassSC::Two, EnumClassSC::Zero
+        </Original>
+        <Expanded>
+          50, 48
+        </Expanded>
+      </Expression>
+      <Expression success="false" type="CHECK_EQ" filename="enums.cpp" line="0">
+        <Original>
+          EnumClassUC::Zero, EnumClassUC::One
+        </Original>
+        <Expanded>
+          48, 49
+        </Expanded>
+      </Expression>
+      <Expression success="false" type="CHECK_EQ" filename="enums.cpp" line="0">
+        <Original>
+          EnumClassUC::One, EnumClassUC::Two
+        </Original>
+        <Expanded>
+          49, 50
+        </Expanded>
+      </Expression>
+      <Expression success="false" type="CHECK_EQ" filename="enums.cpp" line="0">
+        <Original>
+          EnumClassUC::Two, EnumClassUC::Zero
+        </Original>
+        <Expanded>
+          50, 48
+        </Expanded>
+      </Expression>
+      <Expression success="false" type="CHECK_EQ" filename="enums.cpp" line="0">
+        <Original>
+          EnumClassU8::Zero, EnumClassU8::One
+        </Original>
+        <Expanded>
+          0, 1
+        </Expanded>
+      </Expression>
+      <Expression success="false" type="CHECK_EQ" filename="enums.cpp" line="0">
+        <Original>
+          EnumClassU8::One, EnumClassU8::Two
+        </Original>
+        <Expanded>
+          1, 2
+        </Expanded>
+      </Expression>
+      <Expression success="false" type="CHECK_EQ" filename="enums.cpp" line="0">
+        <Original>
+          EnumClassU8::Two, EnumClassU8::Zero
+        </Original>
+        <Expanded>
+          2, 0
+        </Expanded>
+      </Expression>
+      <OverallResultsAsserts successes="0" failures="18"/>
+    </TestCase>
+  </TestSuite>
+  <OverallResultsAsserts successes="9" failures="18"/>
+  <OverallResultsTestCases successes="2" failures="0"/>
+</doctest>
+Program code.

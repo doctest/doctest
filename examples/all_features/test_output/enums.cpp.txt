@@ -1,0 +1,65 @@
+[doctest] run with "--help" for options
+===============================================================================
+enums.cpp(0):
+TEST CASE:  enum 2
+
+enums.cpp(0): ERROR: CHECK_EQ( Zero, 1 ) is NOT correct!
+  values: CHECK_EQ( 0, 1 )
+
+enums.cpp(0): ERROR: CHECK_EQ( One, 2 ) is NOT correct!
+  values: CHECK_EQ( 1, 2 )
+
+enums.cpp(0): ERROR: CHECK_EQ( Two, 3 ) is NOT correct!
+  values: CHECK_EQ( 2, 3 )
+
+enums.cpp(0): ERROR: CHECK_EQ( TypedZero, 1 ) is NOT correct!
+  values: CHECK_EQ( 0, 1 )
+
+enums.cpp(0): ERROR: CHECK_EQ( TypedOne, 2 ) is NOT correct!
+  values: CHECK_EQ( 1, 2 )
+
+enums.cpp(0): ERROR: CHECK_EQ( TypedTwo, 3 ) is NOT correct!
+  values: CHECK_EQ( 2, 3 )
+
+enums.cpp(0): ERROR: CHECK_EQ( EnumClassC::Zero, EnumClassC::One ) is NOT correct!
+  values: CHECK_EQ( 48, 49 )
+
+enums.cpp(0): ERROR: CHECK_EQ( EnumClassC::One, EnumClassC::Two ) is NOT correct!
+  values: CHECK_EQ( 49, 50 )
+
+enums.cpp(0): ERROR: CHECK_EQ( EnumClassC::Two, EnumClassC::Zero ) is NOT correct!
+  values: CHECK_EQ( 50, 48 )
+
+enums.cpp(0): ERROR: CHECK_EQ( EnumClassSC::Zero, EnumClassSC::One ) is NOT correct!
+  values: CHECK_EQ( 48, 49 )
+
+enums.cpp(0): ERROR: CHECK_EQ( EnumClassSC::One, EnumClassSC::Two ) is NOT correct!
+  values: CHECK_EQ( 49, 50 )
+
+enums.cpp(0): ERROR: CHECK_EQ( EnumClassSC::Two, EnumClassSC::Zero ) is NOT correct!
+  values: CHECK_EQ( 50, 48 )
+
+enums.cpp(0): ERROR: CHECK_EQ( EnumClassUC::Zero, EnumClassUC::One ) is NOT correct!
+  values: CHECK_EQ( 48, 49 )
+
+enums.cpp(0): ERROR: CHECK_EQ( EnumClassUC::One, EnumClassUC::Two ) is NOT correct!
+  values: CHECK_EQ( 49, 50 )
+
+enums.cpp(0): ERROR: CHECK_EQ( EnumClassUC::Two, EnumClassUC::Zero ) is NOT correct!
+  values: CHECK_EQ( 50, 48 )
+
+enums.cpp(0): ERROR: CHECK_EQ( EnumClassU8::Zero, EnumClassU8::One ) is NOT correct!
+  values: CHECK_EQ( 0, 1 )
+
+enums.cpp(0): ERROR: CHECK_EQ( EnumClassU8::One, EnumClassU8::Two ) is NOT correct!
+  values: CHECK_EQ( 1, 2 )
+
+enums.cpp(0): ERROR: CHECK_EQ( EnumClassU8::Two, EnumClassU8::Zero ) is NOT correct!
+  values: CHECK_EQ( 2, 0 )
+
+Failed as expected so marking it as not failed
+===============================================================================
+[doctest] test cases:  2 | 2 passed |  0 failed |
+[doctest] assertions: 27 | 9 passed | 18 failed |
+[doctest] Status: SUCCESS!
+Program code.

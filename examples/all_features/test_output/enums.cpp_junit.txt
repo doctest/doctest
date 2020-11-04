@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+  <testsuite name="all_features" errors="0" failures="18" tests="27">
+    <testcase classname="enums.cpp" name="enum 1" status="run"/>
+    <testcase classname="enums.cpp" name="enum 2" status="run">
+      <failure message="0, 1" type="CHECK_EQ">
+enums.cpp(0):
+CHECK_EQ( Zero, 1 ) is NOT correct!
+  values: CHECK_EQ( 0, 1 )
+
+      </failure>
+      <failure message="1, 2" type="CHECK_EQ">
+enums.cpp(0):
+CHECK_EQ( One, 2 ) is NOT correct!
+  values: CHECK_EQ( 1, 2 )
+
+      </failure>
+      <failure message="2, 3" type="CHECK_EQ">
+enums.cpp(0):
+CHECK_EQ( Two, 3 ) is NOT correct!
+  values: CHECK_EQ( 2, 3 )
+
+      </failure>
+      <failure message="0, 1" type="CHECK_EQ">
+enums.cpp(0):
+CHECK_EQ( TypedZero, 1 ) is NOT correct!
+  values: CHECK_EQ( 0, 1 )
+
+      </failure>
+      <failure message="1, 2" type="CHECK_EQ">
+enums.cpp(0):
+CHECK_EQ( TypedOne, 2 ) is NOT correct!
+  values: CHECK_EQ( 1, 2 )
+
+      </failure>
+      <failure message="2, 3" type="CHECK_EQ">
+enums.cpp(0):
+CHECK_EQ( TypedTwo, 3 ) is NOT correct!
+  values: CHECK_EQ( 2, 3 )
+
+      </failure>
+      <failure message="48, 49" type="CHECK_EQ">
+enums.cpp(0):
+CHECK_EQ( EnumClassC::Zero, EnumClassC::One ) is NOT correct!
+  values: CHECK_EQ( 48, 49 )
+
+      </failure>
+      <failure message="49, 50" type="CHECK_EQ">
+enums.cpp(0):
+CHECK_EQ( EnumClassC::One, EnumClassC::Two ) is NOT correct!
+  values: CHECK_EQ( 49, 50 )
+
+      </failure>
+      <failure message="50, 48" type="CHECK_EQ">
+enums.cpp(0):
+CHECK_EQ( EnumClassC::Two, EnumClassC::Zero ) is NOT correct!
+  values: CHECK_EQ( 50, 48 )
+
+      </failure>
+      <failure message="48, 49" type="CHECK_EQ">
+enums.cpp(0):
+CHECK_EQ( EnumClassSC::Zero, EnumClassSC::One ) is NOT correct!
+  values: CHECK_EQ( 48, 49 )
+
+      </failure>
+      <failure message="49, 50" type="CHECK_EQ">
+enums.cpp(0):
+CHECK_EQ( EnumClassSC::One, EnumClassSC::Two ) is NOT correct!
+  values: CHECK_EQ( 49, 50 )
+
+      </failure>
+      <failure message="50, 48" type="CHECK_EQ">
+enums.cpp(0):
+CHECK_EQ( EnumClassSC::Two, EnumClassSC::Zero ) is NOT correct!
+  values: CHECK_EQ( 50, 48 )
+
+      </failure>
+      <failure message="48, 49" type="CHECK_EQ">
+enums.cpp(0):
+CHECK_EQ( EnumClassUC::Zero, EnumClassUC::One ) is NOT correct!
+  values: CHECK_EQ( 48, 49 )
+
+      </failure>
+      <failure message="49, 50" type="CHECK_EQ">
+enums.cpp(0):
+CHECK_EQ( EnumClassUC::One, EnumClassUC::Two ) is NOT correct!
+  values: CHECK_EQ( 49, 50 )
+
+      </failure>
+      <failure message="50, 48" type="CHECK_EQ">
+enums.cpp(0):
+CHECK_EQ( EnumClassUC::Two, EnumClassUC::Zero ) is NOT correct!
+  values: CHECK_EQ( 50, 48 )
+
+      </failure>
+      <failure message="0, 1" type="CHECK_EQ">
+enums.cpp(0):
+CHECK_EQ( EnumClassU8::Zero, EnumClassU8::One ) is NOT correct!
+  values: CHECK_EQ( 0, 1 )
+
+      </failure>
+      <failure message="1, 2" type="CHECK_EQ">
+enums.cpp(0):
+CHECK_EQ( EnumClassU8::One, EnumClassU8::Two ) is NOT correct!
+  values: CHECK_EQ( 1, 2 )
+
+      </failure>
+      <failure message="2, 0" type="CHECK_EQ">
+enums.cpp(0):
+CHECK_EQ( EnumClassU8::Two, EnumClassU8::Zero ) is NOT correct!
+  values: CHECK_EQ( 2, 0 )
+
+      </failure>
+    </testcase>
+  </testsuite>
+</testsuites>
+Program code.
