@@ -1,5 +1,38 @@
 # Change Log
 
+## [2.4.1](https://github.com/onqtam/doctest/tree/2.4.1) (2020-11-04)
+[Full Changelog](https://github.com/onqtam/doctest/compare/2.4.0...2.4.1)
+
+**Closed issues:**
+
+- Avoid old C-style casts [\#424](https://github.com/onqtam/doctest/issues/424)
+- Segfault in unwind [\#422](https://github.com/onqtam/doctest/issues/422)
+- Inspect exception with gdb [\#421](https://github.com/onqtam/doctest/issues/421)
+- use-of-uninitialized-value [\#414](https://github.com/onqtam/doctest/issues/414)
+- Support unit tests with MPI [\#413](https://github.com/onqtam/doctest/issues/413)
+- Break into debugger support is missing for Linux [\#411](https://github.com/onqtam/doctest/issues/411)
+- What if built doctest as static library instead of header-only [\#408](https://github.com/onqtam/doctest/issues/408)
+- \[Question\] How to get test case name [\#407](https://github.com/onqtam/doctest/issues/407)
+- create extensions header for optional features requiring more std includes or newer C++ features [\#405](https://github.com/onqtam/doctest/issues/405)
+- tests/asserts summary lines are misaligned when counts exceed 999999 [\#402](https://github.com/onqtam/doctest/issues/402)
+- Call to 'ne' is ambiguous -- with solution [\#395](https://github.com/onqtam/doctest/issues/395)
+- Intermittent Segfaults [\#391](https://github.com/onqtam/doctest/issues/391)
+- Junit classname [\#390](https://github.com/onqtam/doctest/issues/390)
+- Add default printers for enums [\#121](https://github.com/onqtam/doctest/issues/121)
+
+**Merged pull requests:**
+
+- Enum support \(fix for Issue \#121\) [\#429](https://github.com/onqtam/doctest/pull/429) ([jkriegshauser](https://github.com/jkriegshauser))
+- Support Clang 3.4 [\#428](https://github.com/onqtam/doctest/pull/428) ([AlexanderLanin](https://github.com/AlexanderLanin))
+- Silence remarks on old C-style casts [\#425](https://github.com/onqtam/doctest/pull/425) ([UnePierre](https://github.com/UnePierre))
+- Initial MPI unit tests implementation [\#418](https://github.com/onqtam/doctest/pull/418) ([BerengerBerthoul](https://github.com/BerengerBerthoul))
+- Add JUNIT\_OUTPUT\_DIR option to doctest\_discover\_tests [\#417](https://github.com/onqtam/doctest/pull/417) ([Tradias](https://github.com/Tradias))
+- Add option to build with std headers. [\#416](https://github.com/onqtam/doctest/pull/416) ([avostrik](https://github.com/avostrik))
+- Port Catch2 break into debugger for Linux. closes \#411 [\#412](https://github.com/onqtam/doctest/pull/412) ([mikezackles](https://github.com/mikezackles))
+- summary: align even large values \#402 [\#403](https://github.com/onqtam/doctest/pull/403) ([dankamongmen](https://github.com/dankamongmen))
+- Add breakpoint inline assembly for the Apple Silicon macOS. [\#400](https://github.com/onqtam/doctest/pull/400) ([bruvzg](https://github.com/bruvzg))
+- fix google's death test URI in roadmap [\#393](https://github.com/onqtam/doctest/pull/393) ([ashutosh108](https://github.com/ashutosh108))
+
 ## [2.4.0](https://github.com/onqtam/doctest/tree/2.4.0) (2020-06-27)
 [Full Changelog](https://github.com/onqtam/doctest/compare/2.3.8...2.4.0)
 
