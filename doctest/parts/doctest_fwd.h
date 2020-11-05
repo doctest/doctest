@@ -1544,6 +1544,8 @@ namespace detail {
             return *this;
         }
 
+        MessageBuilder& write(const char* data, unsigned size);
+
         bool log();
         void react();
     };

@@ -1627,6 +1627,11 @@ namespace detail {
     IExceptionTranslator::IExceptionTranslator()  = default;
     IExceptionTranslator::~IExceptionTranslator() = default;
 
+    MessageBuilder& MessageBuilder::write(const char* data, unsigned size) {
+        m_stream->write(data, std::streamsize(size));
+        return *this;
+    }
+
     bool MessageBuilder::log() {
         m_string = getTlsOssResult();
         DOCTEST_ITERATE_THROUGH_REPORTERS(log_message, *this);

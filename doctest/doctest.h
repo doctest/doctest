@@ -1547,6 +1547,8 @@ namespace detail {
             return *this;
         }
 
+        MessageBuilder& write(const char* data, unsigned size);
+
         bool log();
         void react();
     };
@@ -4268,6 +4270,11 @@ namespace detail {
 
     IExceptionTranslator::IExceptionTranslator()  = default;
     IExceptionTranslator::~IExceptionTranslator() = default;
+
+    MessageBuilder& MessageBuilder::write(const char* data, unsigned size) {
+        m_stream->write(data, std::streamsize(size));
+        return *this;
+    }
 
     bool MessageBuilder::log() {
         m_string = getTlsOssResult();
