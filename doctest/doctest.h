@@ -3703,6 +3703,9 @@ namespace detail {
         const int file_cmp = m_file.compare(other.m_file);
         if(file_cmp != 0)
             return file_cmp < 0;
+        const int name_cmp = strcmp(m_name, other.m_name);
+        if(name_cmp != 0)
+            return name_cmp < 0;
         return m_template_id < other.m_template_id;
     }
 } // namespace detail
