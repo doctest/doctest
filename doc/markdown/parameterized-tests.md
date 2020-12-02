@@ -48,24 +48,19 @@ There will be proper support for this in the future. For now there are 2 ways of
     
     --------------------------------
     
-    There is however an easy way to encapsulate this into a macro (written with C++11 for simplicity):
+    There is however an easy way to encapsulate this into a macro (written with C++14 for simplicity):
     
     ```c++
     #include <algorithm>
-    #include <vector>
     #include <string>
 
-    #define DOCTEST_VALUE_PARAMETERIZED_DATA(data, data_array)                                      \
-        static std::vector<std::string> _doctest_subcases = [&data_array]() {                       \
-            std::vector<std::string> out;                                                           \
-            while(out.size() != data_array.size())                                                  \
-                out.push_back(std::string(#data_array "[") + std::to_string(out.size() + 1) + "]"); \
-            return out;                                                                             \
-        }();                                                                                        \
-        int _doctest_subcase_idx = 0;                                                               \
-        std::for_each(data_array.begin(), data_array.end(), [&](const auto& in) {                   \
-            DOCTEST_SUBCASE(_doctest_subcases[_doctest_subcase_idx++].c_str()) { data = in; }       \
-        })
+    #define DOCTEST_VALUE_PARAMETERIZED_DATA(data, data_container)                                  \
+        static size_t _doctest_subcase_idx = 0;                                                     \
+        std::for_each(data_container.begin(), data_container.end(), [&](const auto& in) {           \
+            DOCTEST_SUBCASE((std::string(#data_container "[") +                                     \
+                            std::to_string(_doctest_subcase_idx++) + "]").c_str()) { data = in; }  \
+        });                                                                                         \
+        _doctest_subcase_idx = 0
     ```
     
     and now this can be used as follows:
@@ -73,9 +68,9 @@ There will be proper support for this in the future. For now there are 2 ways of
     ```c++
     TEST_CASE("test name") {
         int data;
-        std::list<int> data_array = {1, 2, 3, 4}; // must be iterable - std::vector<> would work as well
+        std::list<int> data_container = {1, 2, 3, 4}; // must be iterable - std::vector<> would work as well
 
-        DOCTEST_VALUE_PARAMETERIZED_DATA(data, data_array);
+        DOCTEST_VALUE_PARAMETERIZED_DATA(data, data_container);
         
         printf("%d\n", data);
     }
@@ -89,10 +84,8 @@ There will be proper support for this in the future. For now there are 2 ways of
     3
     4
     ```
-    
+
     The big limitation of this approach is that the macro cannot be used with other subcases at the same code block {} indentation level (will act weird) - it can only be used within a subcase.
-    
-    The ```static std::vector<std::string>``` is necessary because the ```SUBCASE()``` macro accepts ```const char*``` and doesn't copy the strings but keeps the pointers internally - that's why we need to construct persistent versions of the strings. This might be changed in the future (to accept a string class) for ease of use...
 
 Stay tuned for proper value-parameterization in doctest!
 
