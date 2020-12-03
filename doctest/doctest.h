@@ -368,7 +368,7 @@ DOCTEST_MSVC_SUPPRESS_WARNING(26812) // Prefer 'enum class' over 'enum'
 #define DOCTEST_BREAK_INTO_DEBUGGER() raise(SIGTRAP)
 #endif
 #elif defined(DOCTEST_PLATFORM_MAC)
-#if defined(__x86_64) || defined(__x86_64__) || defined(__amd64__)
+#if defined(__x86_64) || defined(__x86_64__) || defined(__amd64__) || defined(__i386)
 #define DOCTEST_BREAK_INTO_DEBUGGER() __asm__("int $3\n" : :)
 #else
 #define DOCTEST_BREAK_INTO_DEBUGGER() __asm__("brk #0");
