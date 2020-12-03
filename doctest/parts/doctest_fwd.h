@@ -744,6 +744,7 @@ struct ContextOptions //!OCLINT too many fields
     bool gnu_file_line;        // if line numbers should be surrounded with :x: and not (x):
     bool no_path_in_filenames; // if the path to files should be removed from the output
     bool no_line_numbers;      // if source code line numbers should be omitted from the output
+    bool no_debug_output;      // no output in the debug console when a debugger is attached
     bool no_skipped_summary;   // don't print "skipped" in the summary !!! UNDOCUMENTED !!!
     bool no_time_in_output;    // omit any time/timestamps from output !!! UNDOCUMENTED !!!
 

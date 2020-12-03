@@ -747,6 +747,7 @@ struct ContextOptions //!OCLINT too many fields
     bool gnu_file_line;        // if line numbers should be surrounded with :x: and not (x):
     bool no_path_in_filenames; // if the path to files should be removed from the output
     bool no_line_numbers;      // if source code line numbers should be omitted from the output
+    bool no_debug_output;      // no output in the debug console when a debugger is attached
     bool no_skipped_summary;   // don't print "skipped" in the summary !!! UNDOCUMENTED !!!
     bool no_time_in_output;    // omit any time/timestamps from output !!! UNDOCUMENTED !!!
 
@@ -5919,6 +5920,7 @@ void Context::parseArgs(int argc, const char* const* argv, bool withDefaults) {
     DOCTEST_PARSE_AS_BOOL_OR_FLAG("gnu-file-line", "gfl", gnu_file_line, !bool(DOCTEST_MSVC));
     DOCTEST_PARSE_AS_BOOL_OR_FLAG("no-path-filenames", "npf", no_path_in_filenames, false);
     DOCTEST_PARSE_AS_BOOL_OR_FLAG("no-line-numbers", "nln", no_line_numbers, false);
+    DOCTEST_PARSE_AS_BOOL_OR_FLAG("no-debug-output", "ndo", no_debug_output, false);
     DOCTEST_PARSE_AS_BOOL_OR_FLAG("no-skipped-summary", "nss", no_skipped_summary, false);
     DOCTEST_PARSE_AS_BOOL_OR_FLAG("no-time-in-output", "ntio", no_time_in_output, false);
     // clang-format on
@@ -6052,7 +6054,7 @@ int Context::run() {
         p->reporters_currently_used.insert(p->reporters_currently_used.begin(), curr.second(*g_cs));
 
 #ifdef DOCTEST_PLATFORM_WINDOWS
-    if(isDebuggerActive())
+    if(isDebuggerActive() && p->no_debug_output == false)
         p->reporters_currently_used.push_back(new DebugOutputWindowReporter(*g_cs));
 #endif // DOCTEST_PLATFORM_WINDOWS
 
