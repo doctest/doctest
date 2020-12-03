@@ -6,30 +6,40 @@
 logging.cpp(0):
 CHECK( vec[i] != (1 &lt;&lt; i) ) is NOT correct!
   values: CHECK( 1 != 1 )
+  logged: current iteration of loop:
+          i := 0
 
       </failure>
       <failure message="2 != 2" type="CHECK">
 logging.cpp(0):
 CHECK( vec[i] != (1 &lt;&lt; i) ) is NOT correct!
   values: CHECK( 2 != 2 )
+  logged: current iteration of loop:
+          i := 1
 
       </failure>
       <failure message="4 != 4" type="CHECK">
 logging.cpp(0):
 CHECK( vec[i] != (1 &lt;&lt; i) ) is NOT correct!
   values: CHECK( 4 != 4 )
+  logged: current iteration of loop:
+          i := 2
 
       </failure>
       <failure message="8 != 8" type="CHECK">
 logging.cpp(0):
 CHECK( vec[i] != (1 &lt;&lt; i) ) is NOT correct!
   values: CHECK( 8 != 8 )
+  logged: current iteration of loop:
+          i := 3
 
       </failure>
       <failure message="16 != 16" type="CHECK">
 logging.cpp(0):
 CHECK( vec[i] != (1 &lt;&lt; i) ) is NOT correct!
   values: CHECK( 16 != 16 )
+  logged: current iteration of loop:
+          i := 4
 
       </failure>
     </testcase>
@@ -38,6 +48,10 @@ CHECK( vec[i] != (1 &lt;&lt; i) ) is NOT correct!
 logging.cpp(0):
 CHECK( some_var == 666 ) is NOT correct!
   values: CHECK( 42 == 666 )
+  logged: someTests() returned: 42
+          this should be printed if an exception is thrown even if no assert has failed: 42
+          in a nested scope this should be printed as well: 42
+          why is this not 666 ?!
 
       </failure>
       <error message="exception">

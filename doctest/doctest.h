@@ -4990,7 +4990,6 @@ namespace {
     }
 
     // TODO:
-    // - log_contexts()
     // - log_message()
     // - respond to queries
     // - honor remaining options
@@ -5186,12 +5185,27 @@ DOCTEST_CLANG_SUPPRESS_WARNING_POP
               << line(rb.m_line) << (opt.gnu_file_line ? ":" : "):") << std::endl;
 
             fulltext_log_assert_to_stream(os, rb);
+            log_contexts(os);
             testCaseData.addFailure(rb.m_decomp.c_str(), assertString(rb.m_at), os.str());
         }
 
         void log_message(const MessageData&) override {}
 
         void test_case_skipped(const TestCaseData&) override {}
+
+        void log_contexts(std::ostringstream& s) {
+            int num_contexts = get_num_active_contexts();
+            if(num_contexts) {
+                auto contexts = get_active_contexts();
+
+                s << "  logged: ";
+                for(int i = 0; i < num_contexts; ++i) {
+                    s << (i == 0 ? "" : "          ");
+                    contexts[i]->stringify(&s);
+                    s << std::endl;
+                }
+            }
+        }
     };
 
     DOCTEST_REGISTER_REPORTER("junit", 0, JUnitReporter);

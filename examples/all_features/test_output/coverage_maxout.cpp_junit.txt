@@ -6,18 +6,21 @@
 coverage_maxout.cpp(0):
 CHECK( str.compare(const_str, true) != 0 ) is NOT correct!
   values: CHECK( 0 != 0 )
+  logged: should fail
 
       </failure>
       <failure message="0 != 0" type="CHECK">
 coverage_maxout.cpp(0):
 CHECK( str.compare("omgomgomg", false) != 0 ) is NOT correct!
   values: CHECK( 0 != 0 )
+  logged: should fail
 
       </failure>
       <failure message="false" type="CHECK">
 coverage_maxout.cpp(0):
 CHECK( len_is_zero ) is NOT correct!
   values: CHECK( false )
+  logged: should fail
 
       </failure>
       <failure message="Approx( 7.0 ) == 5" type="CHECK">
