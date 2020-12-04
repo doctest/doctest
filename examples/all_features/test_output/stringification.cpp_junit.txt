@@ -26,19 +26,19 @@ CHECK( lst_1 == lst_2 ) is NOT correct!
   values: CHECK( [1, 42, 3, ] == [1, 2, 666, ] )
 
       </failure>
-      <failure message="'some' == 'contents'" type="CHECK">
+      <failure message="MyOtherType: 42 == MyOtherType: 666" type="CHECK">
 stringification.cpp(0):
 CHECK( s1 == s2 ) is NOT correct!
-  values: CHECK( 'some' == 'contents' )
-  logged: s1='some' s2='contents'
+  values: CHECK( MyOtherType: 42 == MyOtherType: 666 )
+  logged: s1=MyOtherType: 42 s2=MyOtherType: 666
 
       </failure>
-      <failure message="'some' == 'contents'" type="CHECK">
+      <failure message="MyOtherType: 42 == MyOtherType: 666" type="CHECK">
 stringification.cpp(0):
 CHECK( s1 == s2 ) is NOT correct!
-  values: CHECK( 'some' == 'contents' )
-  logged: s1='some' s2='contents'
-          'some' is not really 'contents'
+  values: CHECK( MyOtherType: 42 == MyOtherType: 666 )
+  logged: s1=MyOtherType: 42 s2=MyOtherType: 666
+          MyOtherType: 42 is not really MyOtherType: 666
 
       </failure>
       <error message="exception">
