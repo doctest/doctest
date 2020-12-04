@@ -16,13 +16,13 @@ stringification.cpp(0): ERROR: CHECK( lst_1 == lst_2 ) is NOT correct!
   values: CHECK( [1, 42, 3, ] == [1, 2, 666, ] )
 
 stringification.cpp(0): ERROR: CHECK( s1 == s2 ) is NOT correct!
-  values: CHECK( 'some' == 'contents' )
-  logged: s1='some' s2='contents'
+  values: CHECK( MyOtherType: 42 == MyOtherType: 666 )
+  logged: s1=MyOtherType: 42 s2=MyOtherType: 666
 
 stringification.cpp(0): ERROR: CHECK( s1 == s2 ) is NOT correct!
-  values: CHECK( 'some' == 'contents' )
-  logged: s1='some' s2='contents'
-          'some' is not really 'contents'
+  values: CHECK( MyOtherType: 42 == MyOtherType: 666 )
+  logged: s1=MyOtherType: 42 s2=MyOtherType: 666
+          MyOtherType: 42 is not really MyOtherType: 666
 
 stringification.cpp(0): ERROR: test case THREW exception: MyTypeInherited<int>(5, 4)
 

@@ -40,10 +40,10 @@
           s1 == s2
         </Original>
         <Expanded>
-          'some' == 'contents'
+          MyOtherType: 42 == MyOtherType: 666
         </Expanded>
         <Info>
-          s1='some' s2='contents'
+          s1=MyOtherType: 42 s2=MyOtherType: 666
         </Info>
       </Expression>
       <Expression success="false" type="CHECK" filename="stringification.cpp" line="0">
@@ -51,13 +51,13 @@
           s1 == s2
         </Original>
         <Expanded>
-          'some' == 'contents'
+          MyOtherType: 42 == MyOtherType: 666
         </Expanded>
         <Info>
-          s1='some' s2='contents'
+          s1=MyOtherType: 42 s2=MyOtherType: 666
         </Info>
         <Info>
-          'some' is not really 'contents'
+          MyOtherType: 42 is not really MyOtherType: 666
         </Info>
       </Expression>
       <Exception crash="false">
