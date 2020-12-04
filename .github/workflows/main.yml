@@ -13,6 +13,7 @@ jobs:
       TSAN_OPTIONS: force_seq_cst_atomics=1
       CTEST_OUTPUT_ON_FAILURE: ON
       CTEST_PARALLEL_LEVEL: 2
+      ACTIONS_ALLOW_UNSECURE_COMMANDS: true # because of the set-env calls
 
     strategy:
       fail-fast: false
