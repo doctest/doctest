@@ -15,6 +15,15 @@ stringification.cpp(0): ERROR: CHECK( vec1 == vec2 ) is NOT correct!
 stringification.cpp(0): ERROR: CHECK( lst_1 == lst_2 ) is NOT correct!
   values: CHECK( [1, 42, 3, ] == [1, 2, 666, ] )
 
+stringification.cpp(0): ERROR: CHECK( s1 == s2 ) is NOT correct!
+  values: CHECK( 'some' == 'contents' )
+  logged: s1='some' s2='contents'
+
+stringification.cpp(0): ERROR: CHECK( s1 == s2 ) is NOT correct!
+  values: CHECK( 'some' == 'contents' )
+  logged: s1='some' s2='contents'
+          'some' is not really 'contents'
+
 stringification.cpp(0): ERROR: test case THREW exception: MyTypeInherited<int>(5, 4)
 
 ===============================================================================
@@ -25,6 +34,6 @@ stringification.cpp(0): ERROR: test case THREW exception: 5
 
 ===============================================================================
 [doctest] test cases: 2 | 0 passed | 2 failed |
-[doctest] assertions: 4 | 0 passed | 4 failed |
+[doctest] assertions: 6 | 0 passed | 6 failed |
 [doctest] Status: FAILURE!
 Program code.

@@ -77,6 +77,28 @@ struct Foo
 
 // as a third option you may provide an overload of toString()
 inline doctest::String toString(const Foo&) { return "Foo{}"; }
+
+struct MyStringType
+{
+    std::string s;
+    template <size_t N> MyStringType(const char (&in)[N]) : s(in, in + N) {}
+    friend bool operator==(const MyStringType &lhs, const MyStringType &rhs) { return lhs.s == rhs.s; }
+};
+
+// you can use the stream.write() method to write blocks of characters, and
+// you also can use a template operator<< if your code does not use
+// std::ostream and you'd like to avoid the include
+template <class OStream>
+OStream& operator<<(OStream& stream, const MyStringType& in) {
+    // the terminating \0 character may be present in size()
+    auto size = in.s.size() > 0u ? in.s.size() - 1u : 0u;
+    const char quote = '\'';
+    stream.write(&quote, 1u);
+    stream.write(in.s.data(), static_cast<unsigned>(size));
+    stream.write(&quote, 1u);
+    return stream;
+}
+
 } // namespace Bar
 
 // set an exception translator for MyTypeInherited<int>
@@ -126,6 +148,18 @@ TEST_CASE("all asserts should fail and show how the objects get stringified") {
     lst_2.push_back(666);
 
     CHECK(lst_1 == lst_2);
+
+    {
+        // use of ostream::write() is possible:
+        Bar::MyStringType s1 = "some";
+        Bar::MyStringType s2 = "contents";
+
+        // also inside the message builder
+        INFO("s1=", s1, " s2=", s2);
+
+        CHECK(s1 == s2);
+        CHECK_MESSAGE(s1 == s2, s1, " is not really ", s2);
+    }
 
     // lets see if this exception gets translated
     throw_if(true, bla1);
