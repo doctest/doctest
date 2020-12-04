@@ -78,10 +78,13 @@
     <TestCase name="a test case that will end from an exception" filename="logging.cpp" line="0">
       <Message type="ERROR" filename="logging.cpp" line="0">
         <Text>
-          forcing the many captures (including those on the heap) to be stringified
+          forcing the many captures to be stringified
         </Text>
         <Info>
-          lots of captures - some on heap: 42 42 42;
+          lots of captures: 42 42 42;
+        </Info>
+        <Info>
+          old way of capturing - using the streaming operator: 42 42
         </Info>
       </Message>
       <Expression success="false" type="CHECK" filename="logging.cpp" line="0">

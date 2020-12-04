@@ -50,14 +50,14 @@ REQUIRE_FALSE(thisReturnsFalse());
 Examples:
 
 ```c++
-INFO("this is relevant to all asserts, and here is some var: " << local);
+INFO("this is relevant to all asserts, and here is some var: ", local);
 
-CHECK_MESSAGE(a < b, "relevant only to this assert " << other_local << "more text!");
+CHECK_MESSAGE(a < b, "relevant only to this assert ", other_local, " more text!");
 
 CHECK(b < c); // here only the first INFO() will be relevant
 ```
 
-For more information about the ```INFO()``` macro and logging with the streaming ```operator<<``` visit the [logging page](logging.md).
+For more information about the ```INFO()``` macro visit the [logging page](logging.md).
 
 ## Binary and unary asserts
 

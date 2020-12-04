@@ -32,8 +32,9 @@ logging.cpp(0): ERROR: CHECK( vec[i] != (1 << i) ) is NOT correct!
 logging.cpp(0):
 TEST CASE:  a test case that will end from an exception
 
-logging.cpp(0): ERROR: forcing the many captures (including those on the heap) to be stringified
-  logged: lots of captures - some on heap: 42 42 42;
+logging.cpp(0): ERROR: forcing the many captures to be stringified
+  logged: lots of captures: 42 42 42;
+          old way of capturing - using the streaming operator: 42 42
 
 logging.cpp(0): ERROR: CHECK( some_var == 666 ) is NOT correct!
   values: CHECK( 42 == 666 )
