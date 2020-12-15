@@ -1,5 +1,26 @@
 # Change Log
 
+## [2.4.2](https://github.com/onqtam/doctest/tree/2.4.2) (2020-12-15)
+[Full Changelog](https://github.com/onqtam/doctest/compare/2.4.1...2.4.2)
+
+**Closed issues:**
+
+- DOCTEST\_CHECK\_THROWS\_WITH\_AS fails to work with dependant exception type [\#447](https://github.com/onqtam/doctest/issues/447)
+- MSVC warnings: narrowing conversion, signed/unsigned mismatch [\#446](https://github.com/onqtam/doctest/issues/446)
+-  log contexts for failures in JUnit reporter [\#441](https://github.com/onqtam/doctest/issues/441)
+- MinGW "'mutex' in namespace 'std' does not name a type" error. [\#438](https://github.com/onqtam/doctest/issues/438)
+- Test runner thread initialization [\#435](https://github.com/onqtam/doctest/issues/435)
+- PLATFORM is misdetected on MacOSX Big Sur [\#415](https://github.com/onqtam/doctest/issues/415)
+- CHECK\_EQ with enum values [\#276](https://github.com/onqtam/doctest/issues/276)
+
+**Merged pull requests:**
+
+- Squash MSVC warnings when including ntstatus.h [\#449](https://github.com/onqtam/doctest/pull/449) ([nickhutchinson](https://github.com/nickhutchinson))
+- Add MAIN\_PROJECT check for test option [\#445](https://github.com/onqtam/doctest/pull/445) ([globberwops](https://github.com/globberwops))
+- Suppress clang-analyzer-cplusplus.NewDeleteLeaks [\#444](https://github.com/onqtam/doctest/pull/444) ([ncihnegn](https://github.com/ncihnegn))
+- log contexts for failures in JUnit reporter [\#442](https://github.com/onqtam/doctest/pull/442) ([runave](https://github.com/runave))
+- Fix 32bit support on macOS [\#440](https://github.com/onqtam/doctest/pull/440) ([AlexanderLanin](https://github.com/AlexanderLanin))
+
 ## [2.4.1](https://github.com/onqtam/doctest/tree/2.4.1) (2020-11-04)
 [Full Changelog](https://github.com/onqtam/doctest/compare/2.4.0...2.4.1)
 
