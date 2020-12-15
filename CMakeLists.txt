@@ -11,7 +11,13 @@ endif()
 file(READ ${CMAKE_CURRENT_SOURCE_DIR}/scripts/version.txt ver)
 project(doctest VERSION ${ver} LANGUAGES CXX)
 
-option(DOCTEST_WITH_TESTS               "Build tests/examples" ON)
+# Determine if doctest is built as a subproject (using add_subdirectory) or if it is the main project.
+set(MAIN_PROJECT OFF)
+if(CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
+    set(MAIN_PROJECT ON)
+endif()
+
+option(DOCTEST_WITH_TESTS               "Build tests/examples" ${MAIN_PROJECT})
 option(DOCTEST_WITH_MAIN_IN_STATIC_LIB  "Build a static lib (cmake target) with a default main entry point" ON)
 option(DOCTEST_NO_INSTALL  "Skip the installation process" OFF)
 option(DOCTEST_USE_STD_HEADERS  "Use std headers" OFF)
@@ -26,7 +32,7 @@ endif()
 set(doctest_parts_folder "${CMAKE_CURRENT_SOURCE_DIR}/doctest/parts")
 set(doctest_folder "${CMAKE_CURRENT_SOURCE_DIR}/") # in order to have the mpi extension files, not included into the doctest.h single header
 
-if(CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
+if(MAIN_PROJECT)
     # use a special hidden version of the header which directly includes the 2 parts - proper reporting of file/line locations during dev
     target_include_directories(${PROJECT_NAME} INTERFACE
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/scripts/development_only/>
@@ -69,7 +75,7 @@ if(${DOCTEST_WITH_MAIN_IN_STATIC_LIB})
     target_link_libraries(${PROJECT_NAME}_with_main PUBLIC ${PROJECT_NAME})
 endif()
 
-if(CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR AND DOCTEST_WITH_TESTS)
+if(MAIN_PROJECT AND DOCTEST_WITH_TESTS)
     include(scripts/cmake/common.cmake)
 
     add_subdirectory(examples/all_features)
