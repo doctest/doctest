@@ -9,10 +9,10 @@ Additional messages can be logged during a test case (safely even in [**concurre
 
 ## INFO()
 
-The ```INFO()``` macro allows heterogeneous sequences of expressions to be streamed using the insertion operator (```<<```) in the same way that ```std::ostream```, ```std::cout```, etc support it.
+The ```INFO()``` macro allows heterogeneous sequences of expressions to be captured by listing them with commas.
 
 ```
-INFO("The number is " << i);
+INFO("The number is ", i);
 ```
 
 This message will be relevant to all asserts after it in the current scope or in scopes nested in the current one and will be printed later only if an assert fails.
@@ -50,13 +50,11 @@ There are a few other macros for logging information:
 
 ```FAIL()``` is like a ```REQUIRE``` assert - fails the test case and exits it. ```FAIL_CHECK()``` acts like a ```CHECK``` assert - fails the test case but continues with the execution. ```MESSAGE()``` just prints a message.
 
-In all these macros the messages are again composed using the ```<<``` streaming operator - like this:
-
 ```
-FAIL("This is not supposed to happen! some var: " << var);
+FAIL("This is not supposed to happen! some var: ", var);
 ```
 
-Also there is no lazy stringification here - strings are always constructed and printed and thus there are no limitations to the values being logged - temporaries and rvalues are accepted - unlike with the ```INFO()``` macro.
+Also there is no lazy stringification here - strings are always constructed and printed.
 
 There are also a few more intended for use by third party libraries such as mocking frameworks:
 
