@@ -112,9 +112,7 @@ DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_BEGIN
 #include <map>
 #include <exception>
 #include <stdexcept>
-#ifdef DOCTEST_CONFIG_POSIX_SIGNALS
 #include <csignal>
-#endif // DOCTEST_CONFIG_POSIX_SIGNALS
 #include <cfloat>
 #include <cctype>
 #include <cstdint>
@@ -1406,6 +1404,28 @@ namespace {
             previousTop = SetUnhandledExceptionFilter(handleException);
             // Pass in guarantee size to be filled
             SetThreadStackGuarantee(&guaranteeSize);
+
+            // On Windows uncaught exceptions from another thread, exceptions from
+            // destructors, or calls to std::terminate are not a SEH exception
+
+            // The terminal handler gets called when:
+            // - std::terminate is called FROM THE TEST RUNNER THREAD
+            // - an exception is thrown from a destructor FROM THE TEST RUNNER THREAD
+            original_terminate_handler = std::get_terminate();
+            std::set_terminate([]() noexcept {
+                reportFatal("Terminate handler called");
+                std::exit(EXIT_FAILURE); // explicitly exit - otherwise the SIGABRT handler may be called as well
+            });
+
+            // SIGABRT is raised when:
+            // - std::terminate is called FROM A DIFFERENT THREAD
+            // - an exception is thrown from a destructor FROM A DIFFERENT THREAD
+            // - an uncaught exception is thrown FROM A DIFFERENT THREAD
+            prev_sigabrt_handler = std::signal(SIGABRT, [](int signal) noexcept {
+                if(signal == SIGABRT) {
+                    reportFatal("SIGABRT - Abort (abnormal termination) signal");
+                }
+            });
         }
 
         static void reset() {
@@ -1415,17 +1435,23 @@ namespace {
                 SetThreadStackGuarantee(&guaranteeSize);
                 previousTop = nullptr;
                 isSet = false;
+                std::set_terminate(original_terminate_handler);
+                std::signal(SIGABRT, prev_sigabrt_handler);
             }
         }
 
         ~FatalConditionHandler() { reset(); }
 
     private:
+        static void (*prev_sigabrt_handler)(int);
+        static std::terminate_handler original_terminate_handler;
         static bool isSet;
         static ULONG guaranteeSize;
         static LPTOP_LEVEL_EXCEPTION_FILTER previousTop;
     };
 
+    void (*FatalConditionHandler::prev_sigabrt_handler)(int);
+    std::terminate_handler FatalConditionHandler::original_terminate_handler;
     bool FatalConditionHandler::isSet = false;
     ULONG FatalConditionHandler::guaranteeSize = 0;
     LPTOP_LEVEL_EXCEPTION_FILTER FatalConditionHandler::previousTop = nullptr;
