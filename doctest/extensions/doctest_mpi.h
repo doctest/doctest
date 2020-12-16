@@ -41,8 +41,8 @@ struct mpi_sub_comm {
     if (nb_procs>mpi_world_nb_procs()) {
       if (comm_world_rank==0) {
         MESSAGE(
-          "Unable to run test: need "+std::to_string(nb_procs) + " procs"
-          + " but program launched with only "+std::to_string(doctest::mpi_world_nb_procs()) + "."
+          "Unable to run test: need ", std::to_string(nb_procs), " procs", 
+          " but program launched with only ", std::to_string(doctest::mpi_world_nb_procs()), "."
         );
         CHECK(nb_procs<=mpi_world_nb_procs());
       }
