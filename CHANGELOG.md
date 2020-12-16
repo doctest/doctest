@@ -1,5 +1,12 @@
 # Change Log
 
+## [2.4.3](https://github.com/onqtam/doctest/tree/2.4.3) (2020-12-16)
+[Full Changelog](https://github.com/onqtam/doctest/compare/2.4.2...2.4.3)
+
+**Closed issues:**
+
+- 2.4.2: build fails [\#450](https://github.com/onqtam/doctest/issues/450)
+
 ## [2.4.2](https://github.com/onqtam/doctest/tree/2.4.2) (2020-12-15)
 [Full Changelog](https://github.com/onqtam/doctest/compare/2.4.1...2.4.2)
 

@@ -48,8 +48,8 @@
 
 #define DOCTEST_VERSION_MAJOR 2
 #define DOCTEST_VERSION_MINOR 4
-#define DOCTEST_VERSION_PATCH 2
-#define DOCTEST_VERSION_STR "2.4.2"
+#define DOCTEST_VERSION_PATCH 3
+#define DOCTEST_VERSION_STR "2.4.3"
 
 #define DOCTEST_VERSION                                                                            \
     (DOCTEST_VERSION_MAJOR * 10000 + DOCTEST_VERSION_MINOR * 100 + DOCTEST_VERSION_PATCH)
@@ -3323,6 +3323,7 @@ DOCTEST_CLANG_SUPPRESS_WARNING_WITH_PUSH("-Wnull-dereference")
 DOCTEST_GCC_SUPPRESS_WARNING_WITH_PUSH("-Wnull-dereference")
 // depending on the current options this will remove the path of filenames
 const char* skipPathFromFilename(const char* file) {
+#ifndef DOCTEST_CONFIG_DISABLE
     if(getContextOptions()->no_path_in_filenames) {
         auto back    = std::strrchr(file, '\\');
         auto forward = std::strrchr(file, '/');
@@ -3332,6 +3333,7 @@ const char* skipPathFromFilename(const char* file) {
             return forward + 1;
         }
     }
+#endif // DOCTEST_CONFIG_DISABLE
     return file;
 }
 DOCTEST_CLANG_SUPPRESS_WARNING_POP
