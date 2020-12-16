@@ -28,6 +28,8 @@ jobs:
           ubuntu-18.04-gcc-7,
           ubuntu-18.04-gcc-8,
           ubuntu-18.04-gcc-9,
+          ubuntu-18.04-gcc-10,
+          ubuntu-18.04-gcc-11,
           ubuntu-18.04-clang-3.5,
           ubuntu-18.04-clang-3.6,
           ubuntu-18.04-clang-3.7,
@@ -39,6 +41,8 @@ jobs:
           ubuntu-18.04-clang-7,
           ubuntu-18.04-clang-8,
           ubuntu-18.04-clang-9,
+          ubuntu-18.04-clang-10,
+          ubuntu-18.04-clang-11,
           windows-2016-cl,
           windows-2016-clang-cl,
           windows-2016-clang,
@@ -47,7 +51,6 @@ jobs:
           windows-2019-clang-cl,
           windows-2019-clang,
           windows-2019-gcc,
-          macOS-latest-xcode-11.0,
           macOS-latest-xcode-11.3,
         ]
 
@@ -86,6 +89,16 @@ jobs:
             os: ubuntu-18.04
             compiler: gcc
             version: "9"
+
+          - name: ubuntu-18.04-gcc-10
+            os: ubuntu-latest
+            compiler: gcc
+            version: "10"
+
+          - name: ubuntu-18.04-gcc-11
+            os: ubuntu-latest
+            compiler: gcc
+            version: "11"
 
           - name: ubuntu-18.04-clang-3.5
             os: ubuntu-18.04
@@ -138,9 +151,19 @@ jobs:
             version: "8"
 
           - name: ubuntu-18.04-clang-9
-            os: ubuntu-18.04
+            os: ubuntu-latest
             compiler: clang
             version: "9"
+
+          - name: ubuntu-18.04-clang-10
+            os: ubuntu-latest
+            compiler: clang
+            version: "10"
+
+          - name: ubuntu-18.04-clang-11
+            os: ubuntu-latest
+            compiler: clang
+            version: "11"
 
           - name: windows-2016-cl
             os: windows-2016
@@ -162,13 +185,9 @@ jobs:
             os: windows-2016
             compiler: gcc
 
-          # this one fails like this: https://github.com/onqtam/doctest/runs/683076654
-          # #error Despite the presence of some Clang-related bits, this header currently does not support Clang.
-          # perhaps _SILENCE_CLANG_CONCEPTS_MESSAGE could be used, as indicated in the error message...
           - name: windows-2019-clang-cl
             os: windows-2019
             compiler: clang-cl
-            #continue-on-error: true # nope, this doesn't work - still fails like this: https://github.com/onqtam/doctest/runs/683112050
 
           - name: windows-2019-clang
             os: windows-2019
@@ -177,11 +196,6 @@ jobs:
           - name: windows-2019-gcc
             os: windows-2019
             compiler: gcc
-
-          - name: macOS-latest-xcode-11.0
-            os: macOS-latest
-            compiler: xcode
-            version: "11"
 
           - name: macOS-latest-xcode-11.3
             os: macOS-latest
