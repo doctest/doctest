@@ -666,6 +666,7 @@ DOCTEST_CLANG_SUPPRESS_WARNING_WITH_PUSH("-Wnull-dereference")
 DOCTEST_GCC_SUPPRESS_WARNING_WITH_PUSH("-Wnull-dereference")
 // depending on the current options this will remove the path of filenames
 const char* skipPathFromFilename(const char* file) {
+#ifndef DOCTEST_CONFIG_DISABLE
     if(getContextOptions()->no_path_in_filenames) {
         auto back    = std::strrchr(file, '\\');
         auto forward = std::strrchr(file, '/');
@@ -675,6 +676,7 @@ const char* skipPathFromFilename(const char* file) {
             return forward + 1;
         }
     }
+#endif
     return file;
 }
 DOCTEST_CLANG_SUPPRESS_WARNING_POP
