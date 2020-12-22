@@ -5046,7 +5046,6 @@ namespace {
 
         struct JUnitTestCaseData
         {
-DOCTEST_CLANG_SUPPRESS_WARNING_WITH_PUSH("-Wdeprecated-declarations") // gmtime
             static std::string getCurrentTimestamp() {
                 // Beware, this is not reentrant because of backward compatibility issues
                 // Also, UTC only, again because of backward compatibility (%z is C++11)
@@ -5054,16 +5053,19 @@ DOCTEST_CLANG_SUPPRESS_WARNING_WITH_PUSH("-Wdeprecated-declarations") // gmtime
                 std::time(&rawtime);
                 auto const timeStampSize = sizeof("2017-01-16T17:06:45Z");
 
-                std::tm* timeInfo;
-                timeInfo = std::gmtime(&rawtime);
+                std::tm timeInfo;
+#ifdef DOCTEST_PLATFORM_WINDOWS
+                gmtime_s(&timeInfo, &rawtime);
+#else // DOCTEST_PLATFORM_WINDOWS
+                gmtime_r(&rawtime, &timeInfo);
+#endif // DOCTEST_PLATFORM_WINDOWS
 
                 char timeStamp[timeStampSize];
                 const char* const fmt = "%Y-%m-%dT%H:%M:%SZ";
 
-                std::strftime(timeStamp, timeStampSize, fmt, timeInfo);
+                std::strftime(timeStamp, timeStampSize, fmt, &timeInfo);
                 return std::string(timeStamp);
             }
-DOCTEST_CLANG_SUPPRESS_WARNING_POP
 
             struct JUnitTestMessage
             {
