@@ -2,6 +2,7 @@
 #include "doctest/doctest.h"
 #include <type_traits>
 
+DOCTEST_CLANG_SUPPRESS_WARNING("-Wmissing-prototypes")
 DOCTEST_GCC_SUPPRESS_WARNING("-Wmissing-declarations")
 
 #ifdef RETURN_42
