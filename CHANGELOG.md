@@ -1,5 +1,13 @@
 # Change Log
 
+## [2.4.4](https://github.com/onqtam/doctest/tree/2.4.4) (2020-12-25)
+[Full Changelog](https://github.com/onqtam/doctest/compare/2.4.3...2.4.4)
+
+**Closed issues:**
+
+- Issue with GitHub Security Scanning: gmtime [\#423](https://github.com/onqtam/doctest/issues/423)
+- combine the same tests for different build configurations from multiple shared objects without having symbol clashes [\#436](https://github.com/onqtam/doctest/issues/436)
+
 ## [2.4.3](https://github.com/onqtam/doctest/tree/2.4.3) (2020-12-16)
 [Full Changelog](https://github.com/onqtam/doctest/compare/2.4.2...2.4.3)
 
