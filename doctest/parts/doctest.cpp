@@ -1077,7 +1077,6 @@ namespace {
     using namespace detail;
     // for sorting tests by file/line
     bool fileOrderComparator(const TestCase* lhs, const TestCase* rhs) {
-        std::cout << rhs->m_file << std::endl;
         // this is needed because MSVC gives different case for drive letters
         // for __FILE__ when evaluated in a header and a source file
         const int res = lhs->m_file.compare(rhs->m_file, bool(DOCTEST_MSVC));
