@@ -1076,6 +1076,7 @@ namespace {
     using namespace detail;
     // for sorting tests by file/line
     bool fileOrderComparator(const TestCase* lhs, const TestCase* rhs) {
+        std::cout << rhs->m_file << std::endl;
         const int res = lhs->m_file.compare(rhs->m_file, true); // always ignore case
         if(res != 0)
             return res < 0;
