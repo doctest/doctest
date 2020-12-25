@@ -1063,7 +1063,9 @@ namespace detail {
     bool TestCase::operator<(const TestCase& other) const {
         if(m_line != other.m_line)
             return m_line < other.m_line;
-        const int file_cmp = m_file.compare(other.m_file);
+        // this is needed because MSVC gives different case for drive letters
+        // for __FILE__ when evaluated in a header and a source file
+        const int file_cmp = m_file.compare(other.m_file, bool(DOCTEST_MSVC));
         if(file_cmp != 0)
             return file_cmp < 0;
         const int name_cmp = strcmp(m_name, other.m_name);
