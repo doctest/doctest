@@ -37,7 +37,5 @@ TEST_CASE(TEST_LABEL "bartest"){
 
 TEST_CASE(TEST_LABEL "commontest"){
     INFO("Running " TEST_LABEL "commontest"); MESSAGE("");
-    auto x = bar();
-    CHECK(std::is_same<decltype(x), int>::value);
 }
 #endif // DOCTEST_LIBRARY_INCLUDED

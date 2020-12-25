@@ -27,7 +27,7 @@
           Running [default] commontest
         </Info>
       </Message>
-      <OverallResultsAsserts successes="1" failures="0"/>
+      <OverallResultsAsserts successes="0" failures="0"/>
     </TestCase>
     <TestCase name="[return42] commontest" filename="foo.h" line="0">
       <Message type="WARNING" filename="foo.h" line="0">
@@ -36,7 +36,7 @@
           Running [return42] commontest
         </Info>
       </Message>
-      <OverallResultsAsserts successes="1" failures="0"/>
+      <OverallResultsAsserts successes="0" failures="0"/>
     </TestCase>
     <TestCase name="main" filename="main.cpp" line="0">
       <Message type="WARNING" filename="main.cpp" line="0">
@@ -55,6 +55,6 @@
       <OverallResultsAsserts successes="0" failures="0"/>
     </TestCase>
   </TestSuite>
-  <OverallResultsAsserts successes="4" failures="0"/>
+  <OverallResultsAsserts successes="2" failures="0"/>
   <OverallResultsTestCases successes="6" failures="0" skipped="0"/>
 </doctest>
