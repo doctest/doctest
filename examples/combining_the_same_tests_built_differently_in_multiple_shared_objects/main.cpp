@@ -1,5 +1,4 @@
 #define DOCTEST_CONFIG_IMPLEMENTATION_IN_DLL
-#define DOCTEST_CONFIG_IMPLEMENT
 #include "doctest/doctest.h"
 
 DOCTEST_SYMBOL_IMPORT void default_cpp_force_link();
