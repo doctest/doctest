@@ -1061,9 +1061,10 @@ namespace detail {
     }
 
     bool TestCase::operator<(const TestCase& other) const {
+        // this will be used only to differentiate between test cases - not relevant for sorting
         if(m_line != other.m_line)
             return m_line < other.m_line;
-        const int file_cmp = m_file.compare(other.m_file, true); // always ignore case
+        const int file_cmp = m_file.compare(other.m_file);
         if(file_cmp != 0)
             return file_cmp < 0;
         const int name_cmp = strcmp(m_name, other.m_name);
@@ -1077,7 +1078,9 @@ namespace {
     // for sorting tests by file/line
     bool fileOrderComparator(const TestCase* lhs, const TestCase* rhs) {
         std::cout << rhs->m_file << std::endl;
-        const int res = lhs->m_file.compare(rhs->m_file, true); // always ignore case
+        // this is needed because MSVC gives different case for drive letters
+        // for __FILE__ when evaluated in a header and a source file
+        const int res = lhs->m_file.compare(rhs->m_file, bool(DOCTEST_MSVC));
         if(res != 0)
             return res < 0;
         if(lhs->m_line != rhs->m_line)
