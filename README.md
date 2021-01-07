@@ -6,9 +6,6 @@
             master branch
         </td>
         <td>
-            Linux/OSX <a href="https://travis-ci.org/onqtam/doctest"><img src="https://travis-ci.org/onqtam/doctest.svg?branch=master"></a>
-        </td>
-        <td>
             Windows <a href="https://ci.appveyor.com/project/onqtam/doctest/branch/master"><img src="https://ci.appveyor.com/api/projects/status/j89qxtahyw1dp4gd/branch/master?svg=true"></a>
         </td>
         <td>
@@ -26,9 +23,6 @@
     <tr>
         <td>
             dev branch
-        </td>
-        <td>
-            Linux/OSX <a href="https://travis-ci.org/onqtam/doctest"><img src="https://travis-ci.org/onqtam/doctest.svg?branch=dev"></a>
         </td>
         <td>
             Windows <a href="https://ci.appveyor.com/project/onqtam/doctest/branch/dev"><img src="https://ci.appveyor.com/api/projects/status/j89qxtahyw1dp4gd/branch/dev?svg=true"></a>
