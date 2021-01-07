@@ -1575,8 +1575,8 @@ namespace {
                 SetErrorMode(prev_error_mode_1);
                 _set_error_mode(prev_error_mode_2);
                 _set_abort_behavior(prev_abort_behavior, _WRITE_ABORT_MSG | _CALL_REPORTFAULT);
-                _CrtSetReportMode(_CRT_ASSERT, prev_report_mode);
-                _CrtSetReportFile(_CRT_ASSERT, prev_report_file);
+                static_cast<void>(_CrtSetReportMode(_CRT_ASSERT, prev_report_mode));
+                static_cast<void>(_CrtSetReportFile(_CRT_ASSERT, prev_report_file));
                 isSet = false;
             }
         }

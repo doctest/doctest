@@ -3057,9 +3057,9 @@ typedef timer_large_integer::type ticks_t;
         // 3. This tlsLaneIdx is stored in the thread local data, so it is directly available with
         //    little overhead.
         std::atomic<T>& myAtomic() noexcept {
-            static std::atomic<size_t> s_laneCounter;
+            static std::atomic<size_t> laneCounter;
             DOCTEST_THREAD_LOCAL size_t tlsLaneIdx =
-                    s_laneCounter++ % DOCTEST_MULTI_LANE_ATOMICS_THREAD_LANES;
+                    laneCounter++ % DOCTEST_MULTI_LANE_ATOMICS_THREAD_LANES;
 
             return m_atomics[tlsLaneIdx].atomic;
         }
@@ -4232,8 +4232,8 @@ namespace {
                 SetErrorMode(prev_error_mode_1);
                 _set_error_mode(prev_error_mode_2);
                 _set_abort_behavior(prev_abort_behavior, _WRITE_ABORT_MSG | _CALL_REPORTFAULT);
-                _CrtSetReportMode(_CRT_ASSERT, prev_report_mode);
-                _CrtSetReportFile(_CRT_ASSERT, prev_report_file);
+                static_cast<void>(_CrtSetReportMode(_CRT_ASSERT, prev_report_mode));
+                static_cast<void>(_CrtSetReportFile(_CRT_ASSERT, prev_report_file));
                 isSet = false;
             }
         }
