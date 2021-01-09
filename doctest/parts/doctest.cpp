@@ -422,8 +422,6 @@ typedef timer_large_integer::type ticks_t;
 
         std::vector<IReporter*> reporters_currently_used;
 
-        const TestCase* currentTest = nullptr;
-
         assert_handler ah = nullptr;
 
         Timer timer;
@@ -1023,7 +1021,7 @@ namespace detail {
 
     Subcase::Subcase(const String& name, const char* file, int line)
             : m_signature({name, file, line}) {
-        ContextState* s = g_cs;
+        auto* s = g_cs;
 
         // check subcase filters
         if(s->subcasesStack.size() < size_t(s->subcase_filter_levels)) {
@@ -1776,8 +1774,8 @@ namespace detail {
             failed_out_of_a_testing_context(*this);
         }
 
-        return m_failed && isDebuggerActive() &&
-               !getContextOptions()->no_breaks; // break into debugger
+        return m_failed && isDebuggerActive() && !getContextOptions()->no_breaks &&
+            (g_cs->currentTest == nullptr || !g_cs->currentTest->m_no_breaks); // break into debugger
     }
 
     void ResultBuilder::react() const {
@@ -1827,7 +1825,8 @@ namespace detail {
             addFailedAssert(m_severity);
         }
 
-        return isDebuggerActive() && !getContextOptions()->no_breaks && !isWarn; // break
+        return isDebuggerActive() && !getContextOptions()->no_breaks && !isWarn &&
+            (g_cs->currentTest == nullptr || !g_cs->currentTest->m_no_breaks); // break into debugger
     }
 
     void MessageBuilder::react() {
