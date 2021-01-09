@@ -660,6 +660,7 @@ struct DOCTEST_INTERFACE TestCaseData
     const char* m_description;
     bool        m_skip;
     bool        m_no_breaks;
+    bool        m_no_output;
     bool        m_may_fail;
     bool        m_should_fail;
     int         m_expected_failures;
@@ -1251,6 +1252,7 @@ namespace detail {
         const char* m_description;
         bool        m_skip;
         bool        m_no_breaks;
+        bool        m_no_output;
         bool        m_may_fail;
         bool        m_should_fail;
         int         m_expected_failures;
@@ -1591,6 +1593,7 @@ DOCTEST_DEFINE_DECORATOR(test_suite, const char*, "");
 DOCTEST_DEFINE_DECORATOR(description, const char*, "");
 DOCTEST_DEFINE_DECORATOR(skip, bool, true);
 DOCTEST_DEFINE_DECORATOR(no_breaks, bool, true);
+DOCTEST_DEFINE_DECORATOR(no_output, bool, true);
 DOCTEST_DEFINE_DECORATOR(timeout, double, 0);
 DOCTEST_DEFINE_DECORATOR(may_fail, bool, true);
 DOCTEST_DEFINE_DECORATOR(should_fail, bool, true);

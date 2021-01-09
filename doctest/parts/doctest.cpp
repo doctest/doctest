@@ -1098,6 +1098,8 @@ namespace detail {
         // clear state
         m_description       = nullptr;
         m_skip              = false;
+        m_no_breaks         = false;
+        m_no_output         = false;
         m_may_fail          = false;
         m_should_fail       = false;
         m_expected_failures = 0;
@@ -1113,6 +1115,8 @@ namespace detail {
         m_test_suite        = test_suite.m_test_suite;
         m_description       = test_suite.m_description;
         m_skip              = test_suite.m_skip;
+        m_no_breaks         = test_suite.m_no_breaks;
+        m_no_output         = test_suite.m_no_output;
         m_may_fail          = test_suite.m_may_fail;
         m_should_fail       = test_suite.m_should_fail;
         m_expected_failures = test_suite.m_expected_failures;
@@ -3107,6 +3111,9 @@ namespace {
         }
 
         void test_case_end(const CurrentTestCaseStats& st) override {
+            if(tc->m_no_output)
+                return;
+
             // log the preamble of the test case only if there is something
             // else to print - something other than that an assert has failed
             if(opt.duration ||
@@ -3141,6 +3148,9 @@ namespace {
         }
 
         void test_case_exception(const TestCaseException& e) override {
+            if(tc->m_no_output)
+                return;
+
             logTestStart();
 
             file_line_to_stream(tc->m_file.c_str(), tc->m_line, " ");
@@ -3175,7 +3185,7 @@ namespace {
         }
 
         void log_assert(const AssertData& rb) override {
-            if(!rb.m_failed && !opt.success)
+            if((!rb.m_failed && !opt.success) || tc->m_no_output)
                 return;
 
             std::lock_guard<std::mutex> lock(mutex);
@@ -3191,6 +3201,9 @@ namespace {
         }
 
         void log_message(const MessageData& mb) override {
+            if(tc->m_no_output)
+                return;
+
             std::lock_guard<std::mutex> lock(mutex);
 
             logTestStart();

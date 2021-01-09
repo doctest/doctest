@@ -95,7 +95,7 @@ TEST CASE:  unskipped
 test_cases_and_suites.cpp(0): FATAL ERROR: 
 
 ===============================================================================
-[doctest] test cases: 14 | 5 passed |  9 failed |
-[doctest] assertions: 11 | 1 passed | 10 failed |
+[doctest] test cases: 15 | 6 passed |  9 failed |
+[doctest] assertions: 12 | 1 passed | 11 failed |
 [doctest] Status: FAILURE!
 Program code.

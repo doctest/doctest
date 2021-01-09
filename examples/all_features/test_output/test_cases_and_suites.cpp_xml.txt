@@ -100,7 +100,15 @@
       <OverallResultsAsserts successes="0" failures="2" expected_failures="1"/>
     </TestCase>
   </TestSuite>
-  <OverallResultsAsserts successes="1" failures="10"/>
-  <OverallResultsTestCases successes="5" failures="9"/>
+  <TestSuite>
+    <TestCase name="should fail and no output" filename="test_cases_and_suites.cpp" line="0" should_fail="true">
+      <Message type="FATAL ERROR" filename="test_cases_and_suites.cpp" line="0">
+        <Text/>
+      </Message>
+      <OverallResultsAsserts successes="0" failures="1"/>
+    </TestCase>
+  </TestSuite>
+  <OverallResultsAsserts successes="1" failures="11"/>
+  <OverallResultsTestCases successes="6" failures="9"/>
 </doctest>
 Program code.

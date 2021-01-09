@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <testsuites>
-  <testsuite name="all_features" errors="1" failures="1" tests="11">
+  <testsuite name="all_features" errors="1" failures="1" tests="12">
     <testcase classname="test_cases_and_suites.cpp" name="an empty test that will succeed - not part of a test suite" status="run"/>
     <testcase classname="test_cases_and_suites.cpp" name="doesn't fail but it should have" status="run"/>
     <testcase classname="test_cases_and_suites.cpp" name="doesn't fail which is fine" status="run"/>
@@ -20,6 +20,7 @@ CHECK( data == 85 ) is NOT correct!
     <testcase classname="test_cases_and_suites.cpp" name="part of scoped" status="run"/>
     <testcase classname="test_cases_and_suites.cpp" name="part of scoped 2" status="run"/>
     <testcase classname="test_cases_and_suites.cpp" name="part of some TS" status="run"/>
+    <testcase classname="test_cases_and_suites.cpp" name="should fail and no output" status="run"/>
     <testcase classname="test_cases_and_suites.cpp" name="should fail because of an exception" status="run">
       <error message="exception">
         0

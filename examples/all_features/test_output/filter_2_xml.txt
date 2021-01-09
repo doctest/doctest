@@ -88,6 +88,7 @@
     <TestCase name="part of some TS" filename="test_cases_and_suites.cpp" line="0" skipped="true"/>
   </TestSuite>
   <TestSuite>
+    <TestCase name="should fail and no output" filename="test_cases_and_suites.cpp" line="0" should_fail="true" skipped="true"/>
     <TestCase name="should fail because of an exception" filename="test_cases_and_suites.cpp" line="0" skipped="true"/>
     <TestCase name="signed integers stuff&lt;int>" filename="templated_test_cases.cpp" line="0" skipped="true"/>
     <TestCase name="signed integers stuff&lt;short int>" filename="templated_test_cases.cpp" line="0" skipped="true"/>
@@ -118,6 +119,6 @@
     <TestCase name="will end from an unknown exception" filename="coverage_maxout.cpp" line="0" skipped="true"/>
   </TestSuite>
   <OverallResultsAsserts successes="0" failures="0"/>
-  <OverallResultsTestCases successes="0" failures="0" skipped="80"/>
+  <OverallResultsTestCases successes="0" failures="0" skipped="81"/>
 </doctest>
 Program code.
