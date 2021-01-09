@@ -102,7 +102,7 @@ test_cases_and_suites.cpp(0): MESSAGE: failing because of the timeout decorator!
 
 Test case exceeded time limit of 0.000001!
 ===============================================================================
-[doctest] test cases: 15 | 5 passed | 10 failed |
-[doctest] assertions: 12 | 1 passed | 11 failed |
+[doctest] test cases: 16 | 6 passed | 10 failed |
+[doctest] assertions: 13 | 1 passed | 12 failed |
 [doctest] Status: FAILURE!
 Program code.

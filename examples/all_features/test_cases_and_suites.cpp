@@ -70,3 +70,5 @@ TEST_SUITE("test suite with a description" * doctest::description("regarding fai
         FAIL_CHECK("");
     }
 }
+
+TEST_CASE("should fail and no output" * doctest::should_fail() * doctest::no_breaks() * doctest::no_output()) { FAIL(""); }
