@@ -653,12 +653,13 @@ DOCTEST_INTERFACE const char* skipPathFromFilename(const char* file);
 
 struct DOCTEST_INTERFACE TestCaseData
 {
-    String      m_file;       // the file in which the test was registered
+    String      m_file;       // the file in which the test was registered (using String - see #350)
     unsigned    m_line;       // the line where the test was registered
     const char* m_name;       // name of the test case
     const char* m_test_suite; // the test suite in which the test was added
     const char* m_description;
     bool        m_skip;
+    bool        m_no_breaks;
     bool        m_may_fail;
     bool        m_should_fail;
     int         m_expected_failures;
@@ -712,11 +713,17 @@ struct DOCTEST_INTERFACE IContextScope
     virtual void stringify(std::ostream*) const = 0;
 };
 
+namespace detail {
+    struct DOCTEST_INTERFACE TestCase;
+} // namespace detail
+
 struct ContextOptions //!OCLINT too many fields
 {
     std::ostream* cout;        // stdout stream - std::cout by default
     std::ostream* cerr;        // stderr stream - std::cerr by default
     String        binary_name; // the test binary name
+
+    const detail::TestCase* currentTest = nullptr;
 
     // == parameters from the command line
     String   out;       // output filename
@@ -1243,6 +1250,7 @@ namespace detail {
         const char* m_test_suite;
         const char* m_description;
         bool        m_skip;
+        bool        m_no_breaks;
         bool        m_may_fail;
         bool        m_should_fail;
         int         m_expected_failures;
@@ -1582,6 +1590,7 @@ namespace detail {
 DOCTEST_DEFINE_DECORATOR(test_suite, const char*, "");
 DOCTEST_DEFINE_DECORATOR(description, const char*, "");
 DOCTEST_DEFINE_DECORATOR(skip, bool, true);
+DOCTEST_DEFINE_DECORATOR(no_breaks, bool, true);
 DOCTEST_DEFINE_DECORATOR(timeout, double, 0);
 DOCTEST_DEFINE_DECORATOR(may_fail, bool, true);
 DOCTEST_DEFINE_DECORATOR(should_fail, bool, true);
