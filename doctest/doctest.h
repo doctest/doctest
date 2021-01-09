@@ -3818,12 +3818,12 @@ namespace detail {
         // this will be used only to differentiate between test cases - not relevant for sorting
         if(m_line != other.m_line)
             return m_line < other.m_line;
-        const int file_cmp = m_file.compare(other.m_file);
-        if(file_cmp != 0)
-            return file_cmp < 0;
         const int name_cmp = strcmp(m_name, other.m_name);
         if(name_cmp != 0)
             return name_cmp < 0;
+        const int file_cmp = m_file.compare(other.m_file);
+        if(file_cmp != 0)
+            return file_cmp < 0;
         return m_template_id < other.m_template_id;
     }
 } // namespace detail
