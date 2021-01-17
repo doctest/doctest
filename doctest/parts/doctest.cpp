@@ -32,6 +32,7 @@ DOCTEST_CLANG_SUPPRESS_WARNING("-Wmissing-field-initializers")
 DOCTEST_CLANG_SUPPRESS_WARNING("-Wc++98-compat")
 DOCTEST_CLANG_SUPPRESS_WARNING("-Wc++98-compat-pedantic")
 DOCTEST_CLANG_SUPPRESS_WARNING("-Wunused-member-function")
+DOCTEST_CLANG_SUPPRESS_WARNING("-Wnonportable-system-include-path")
 
 DOCTEST_GCC_SUPPRESS_WARNING_PUSH
 DOCTEST_GCC_SUPPRESS_WARNING("-Wunknown-pragmas")
@@ -137,11 +138,7 @@ DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_BEGIN
 #ifdef __AFXDLL
 #include <AfxWin.h>
 #else
-#if defined(__MINGW32__) || defined(__MINGW64__)
 #include <windows.h>
-#else // MINGW
-#include <Windows.h>
-#endif // MINGW
 #endif
 #include <io.h>
 
