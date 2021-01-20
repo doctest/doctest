@@ -528,14 +528,16 @@ String::String(const char* in)
 String::String(const char* in, unsigned in_size) {
     using namespace std;
     if(in_size <= last) {
-        memcpy(buf, in, in_size + 1);
+        memcpy(buf, in, in_size);
+        buf[in_size] = '\0';
         setLast(last - in_size);
     } else {
         setOnHeap();
         data.size     = in_size;
         data.capacity = data.size + 1;
         data.ptr      = new char[data.capacity];
-        memcpy(data.ptr, in, in_size + 1);
+        memcpy(data.ptr, in, in_size);
+        data.ptr[in_size] = '\0';
     }
 }
 
