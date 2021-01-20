@@ -351,7 +351,7 @@ DOCTEST_MSVC_SUPPRESS_WARNING(26812) // Prefer 'enum class' over 'enum'
 #define DOCTEST_GLOBAL_NO_WARNINGS(var)                                                            \
     DOCTEST_CLANG_SUPPRESS_WARNING_WITH_PUSH("-Wglobal-constructors")                              \
     DOCTEST_CLANG_SUPPRESS_WARNING("-Wunused-variable")                                            \
-    static int var DOCTEST_UNUSED // NOLINT(fuchsia-statically-constructed-objects,cert-err58-cpp)
+    static const int var DOCTEST_UNUSED // NOLINT(fuchsia-statically-constructed-objects,cert-err58-cpp)
 #define DOCTEST_GLOBAL_NO_WARNINGS_END() DOCTEST_CLANG_SUPPRESS_WARNING_POP
 
 #ifndef DOCTEST_BREAK_INTO_DEBUGGER
@@ -359,16 +359,16 @@ DOCTEST_MSVC_SUPPRESS_WARNING(26812) // Prefer 'enum class' over 'enum'
 #ifdef DOCTEST_PLATFORM_LINUX
 #if defined(__GNUC__) && (defined(__i386) || defined(__x86_64))
 // Break at the location of the failing check if possible
-#define DOCTEST_BREAK_INTO_DEBUGGER() __asm__("int $3\n" : :)
+#define DOCTEST_BREAK_INTO_DEBUGGER() __asm__("int $3\n" : :) // NOLINT (icpp-no-assembler)
 #else
 #include <signal.h>
 #define DOCTEST_BREAK_INTO_DEBUGGER() raise(SIGTRAP)
 #endif
 #elif defined(DOCTEST_PLATFORM_MAC)
 #if defined(__x86_64) || defined(__x86_64__) || defined(__amd64__) || defined(__i386)
-#define DOCTEST_BREAK_INTO_DEBUGGER() __asm__("int $3\n" : :)
+#define DOCTEST_BREAK_INTO_DEBUGGER() __asm__("int $3\n" : :) // NOLINT (icpp-no-assembler)
 #else
-#define DOCTEST_BREAK_INTO_DEBUGGER() __asm__("brk #0");
+#define DOCTEST_BREAK_INTO_DEBUGGER() __asm__("brk #0"); // NOLINT (icpp-no-assembler)
 #endif
 #elif DOCTEST_MSVC
 #define DOCTEST_BREAK_INTO_DEBUGGER() __debugbreak()
