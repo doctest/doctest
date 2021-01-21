@@ -1,7 +1,7 @@
 //
 // doctest_util.h - an accompanying extensions header to the main doctest.h header
 //
-// Copyright (c) 2016-2020 Viktor Kirilov
+// Copyright (c) 2016-2021 Viktor Kirilov
 //
 // Distributed under the MIT Software License
 // See accompanying file LICENSE.txt or copy at
