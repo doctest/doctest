@@ -55,6 +55,28 @@ foreach(line ${output})
     continue()
   endif()
   set(test ${line})
+  # get test suite that test belongs to
+  execute_process(
+    COMMAND ${TEST_EXECUTOR} "${TEST_EXECUTABLE}" --test-case=${test} --list-test-suites
+    OUTPUT_VARIABLE labeloutput
+    RESULT_VARIABLE labelresult
+  )
+  if(NOT ${labelresult} EQUAL 0)
+    message(FATAL_ERROR
+      "Error running test executable '${TEST_EXECUTABLE}':\n"
+      "  Result: ${labelresult}\n"
+      "  Output: ${labeloutput}\n"
+    )
+  endif()
+
+  string(REPLACE "\n" ";" labeloutput "${labeloutput}")
+  foreach(labelline ${labeloutput})
+    if("${labelline}" STREQUAL "===============================================================================" OR "${labelline}" MATCHES [==[^\[doctest\] ]==])
+      continue()
+    endif()
+    list(APPEND labels ${labelline})
+  endforeach()
+
   if(NOT "${junit_output_dir}" STREQUAL "")
     # turn testname into a valid filename by replacing all special characters with "-"
     string(REGEX REPLACE "[/\\:\"|<>]" "-" test_filename "${test}")
@@ -77,8 +99,10 @@ foreach(line ${output})
     "${prefix}${test}${suffix}"
     PROPERTIES
     WORKING_DIRECTORY "${TEST_WORKING_DIR}"
+    LABELS ${labels}
     ${properties}
   )
+  unset(labels)
   list(APPEND tests "${prefix}${test}${suffix}")
 endforeach()
 
