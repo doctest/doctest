@@ -1,5 +1,22 @@
 # Change Log
 
+## [2.4.5](https://github.com/onqtam/doctest/tree/2.4.5) (2021-02-02)
+[Full Changelog](https://github.com/onqtam/doctest/compare/2.4.4...2.4.5)
+
+**Closed issues:**
+
+- Use of std::atomic can slow down multithreaded tests [\#452](https://github.com/onqtam/doctest/issues/452)
+- compilation issue in MSVC when defining DOCTEST_THREAD_LOCAL to static [\#458](https://github.com/onqtam/doctest/issues/458)
+- nvcc compiler warning; doctest.h(4138): warning : expression has no effect [\#454](https://github.com/onqtam/doctest/issues/454)
+- Stack buffer overflow in `String` constructor [\#460](https://github.com/onqtam/doctest/issues/460)
+- Surpress warnings from clang-tidy [\#459](https://github.com/onqtam/doctest/issues/459)
+
+**Merged pull requests:**
+
+- Fix compilation on case-sensitive filesystems [\#463](https://github.com/onqtam/doctest/pull/463) ([jhasse](https://github.com/onqtam/jhasse))
+- Use function-like macros for prefixless macro names [\#462](https://github.com/onqtam/doctest/pull/462) ([tbleher](https://github.com/tbleher))
+- Implement a multi lane atomic for assertion counts [\#453](https://github.com/onqtam/doctest/pull/453) ([martinus](https://github.com/martinus))
+
 ## [2.4.4](https://github.com/onqtam/doctest/tree/2.4.4) (2020-12-25)
 [Full Changelog](https://github.com/onqtam/doctest/compare/2.4.3...2.4.4)
 
