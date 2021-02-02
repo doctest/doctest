@@ -5606,7 +5606,7 @@ namespace {
               << Whitespace(sizePrefixDisplay*1) << "output filename\n";
             s << " -" DOCTEST_OPTIONS_PREFIX_DISPLAY "ob,  --" DOCTEST_OPTIONS_PREFIX_DISPLAY "order-by=<string>             "
               << Whitespace(sizePrefixDisplay*1) << "how the tests should be ordered\n";
-            s << Whitespace(sizePrefixDisplay*3) << "                                       <string> - by [file/suite/name/rand]\n";
+            s << Whitespace(sizePrefixDisplay*3) << "                                       <string> - [file/suite/name/rand/none]\n";
             s << " -" DOCTEST_OPTIONS_PREFIX_DISPLAY "rs,  --" DOCTEST_OPTIONS_PREFIX_DISPLAY "rand-seed=<int>               "
               << Whitespace(sizePrefixDisplay*1) << "seed for random ordering\n";
             s << " -" DOCTEST_OPTIONS_PREFIX_DISPLAY "f,   --" DOCTEST_OPTIONS_PREFIX_DISPLAY "first=<int>                   "
@@ -6307,6 +6307,9 @@ int Context::run() {
                 first[i]         = first[idxToSwap];
                 first[idxToSwap] = temp;
             }
+        } else if(p->order_by.compare("none", true) == 0) {
+            // means no sorting - beneficial for death tests which call into the executable
+            // with a specific test case in mind - we don't want to slow down the startup times
         }
     }
 
