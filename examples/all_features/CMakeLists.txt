@@ -22,6 +22,15 @@ set(files_all
     ${files_with_output}
     concurrency.cpp
     ../../scripts/coverage_maxout.cpp
+    namespace1.cpp
+    namespace2.cpp
+    namespace3.cpp
+    namespace4.cpp
+    namespace5.cpp
+    namespace6.cpp
+    namespace7.cpp
+    namespace8.cpp
+    namespace9.cpp
 )
 
 # add the executable
@@ -48,6 +57,16 @@ endforeach()
 if(NOT MINGW AND NOT DEFINED DOCTEST_THREAD_LOCAL)
     doctest_add_test(NO_OUTPUT NAME concurrency.cpp ${common_args} -sf=*concurrency.cpp -d) # duration: there is no output anyway
 endif()
+
+doctest_add_test(NO_OUTPUT NAME namespace1.cpp ${common_args} -sf=*namespace1.cpp )
+doctest_add_test(NO_OUTPUT NAME namespace2.cpp ${common_args} -sf=*namespace2.cpp )
+doctest_add_test(NO_OUTPUT NAME namespace3.cpp ${common_args} -sf=*namespace3.cpp )
+doctest_add_test(NO_OUTPUT NAME namespace4.cpp ${common_args} -sf=*namespace4.cpp )
+doctest_add_test(NO_OUTPUT NAME namespace5.cpp ${common_args} -sf=*namespace5.cpp )
+doctest_add_test(NO_OUTPUT NAME namespace6.cpp ${common_args} -sf=*namespace6.cpp )
+doctest_add_test(NO_OUTPUT NAME namespace7.cpp ${common_args} -sf=*namespace7.cpp )
+doctest_add_test(NO_OUTPUT NAME namespace8.cpp ${common_args} -sf=*namespace8.cpp )
+doctest_add_test(NO_OUTPUT NAME namespace9.cpp ${common_args} -sf=*namespace9.cpp )
 
 # add this separately since the file has a non-straightforward path
 doctest_add_test(NAME coverage_maxout.cpp ${common_args} -sf=*coverage_maxout.cpp)

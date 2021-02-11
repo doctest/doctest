@@ -443,6 +443,7 @@ DOCTEST_MSVC_SUPPRESS_WARNING_POP
 #ifdef DOCTEST_CONFIG_INCLUDE_TYPE_TRAITS
 #include <type_traits>
 #endif // DOCTEST_CONFIG_INCLUDE_TYPE_TRAITS
+#include<utility>
 
 namespace doctest {
 
@@ -1048,9 +1049,15 @@ namespace detail {
         return toString(lhs) + op + toString(rhs);
     }
 
+// This will check if there is any way it could find a operator like member or friend and uses it.
+// If not it doesn't find the operator or if the operator at global scope is defined after
+// this template, the template won't be instantiated due to SFINAE. Once the template is not
+// instantiated it can look for global operator using normal conversions.
+#define SFINAE_OP(ret,op) decltype(std::declval<const L&>() op std::declval<const R&>(),static_cast<ret>(0))
+
 #define DOCTEST_DO_BINARY_EXPRESSION_COMPARISON(op, op_str, op_macro)                              \
     template <typename R>                                                                          \
-    DOCTEST_NOINLINE Result operator op(const DOCTEST_REF_WRAP(R) rhs) {                           \
+    DOCTEST_NOINLINE SFINAE_OP(Result,op) operator op(const DOCTEST_REF_WRAP(R) rhs) {             \
         bool res = op_macro(lhs, rhs);                                                             \
         if(m_at & assertType::is_false)                                                            \
             res = !res;                                                                            \
@@ -1192,6 +1199,9 @@ namespace detail {
                 return Result(res, toString(lhs));
             return Result(res);
         }
+
+	/* This is required for user-defined conversions from Expression_lhs to L */
+	operator L() const { return lhs; }
 
         // clang-format off
         DOCTEST_DO_BINARY_EXPRESSION_COMPARISON(==, " == ", DOCTEST_CMP_EQ) //!OCLINT bitwise operator in conditional
