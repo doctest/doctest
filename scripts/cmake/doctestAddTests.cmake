@@ -55,27 +55,30 @@ foreach(line ${output})
     continue()
   endif()
   set(test ${line})
-  # get test suite that test belongs to
-  execute_process(
-    COMMAND ${TEST_EXECUTOR} "${TEST_EXECUTABLE}" --test-case=${test} --list-test-suites
-    OUTPUT_VARIABLE labeloutput
-    RESULT_VARIABLE labelresult
-  )
-  if(NOT ${labelresult} EQUAL 0)
-    message(FATAL_ERROR
-      "Error running test executable '${TEST_EXECUTABLE}':\n"
-      "  Result: ${labelresult}\n"
-      "  Output: ${labeloutput}\n"
+  set(labels "")
+  if(DOCTEST_LABEL_TESTS)
+    # get test suite that test belongs to
+    execute_process(
+      COMMAND ${TEST_EXECUTOR} "${TEST_EXECUTABLE}" --test-case=${test} --list-test-suites
+      OUTPUT_VARIABLE labeloutput
+      RESULT_VARIABLE labelresult
     )
-  endif()
-
-  string(REPLACE "\n" ";" labeloutput "${labeloutput}")
-  foreach(labelline ${labeloutput})
-    if("${labelline}" STREQUAL "===============================================================================" OR "${labelline}" MATCHES [==[^\[doctest\] ]==])
-      continue()
+    if(NOT ${labelresult} EQUAL 0)
+      message(FATAL_ERROR
+        "Error running test executable '${TEST_EXECUTABLE}':\n"
+        "  Result: ${labelresult}\n"
+        "  Output: ${labeloutput}\n"
+      )
     endif()
-    list(APPEND labels ${labelline})
-  endforeach()
+
+    string(REPLACE "\n" ";" labeloutput "${labeloutput}")
+    foreach(labelline ${labeloutput})
+      if("${labelline}" STREQUAL "===============================================================================" OR "${labelline}" MATCHES [==[^\[doctest\] ]==])
+        continue()
+      endif()
+      list(APPEND labels ${labelline})
+    endforeach()
+  endif()
 
   if(NOT "${junit_output_dir}" STREQUAL "")
     # turn testname into a valid filename by replacing all special characters with "-"
