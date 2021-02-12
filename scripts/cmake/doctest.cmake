@@ -32,6 +32,7 @@ same as the doctest name; see also ``TEST_PREFIX`` and ``TEST_SUFFIX``.
                          [TEST_PREFIX prefix]
                          [TEST_SUFFIX suffix]
                          [PROPERTIES name1 value1...]
+                         [ADD_LABELS value]
                          [TEST_LIST var]
                          [JUNIT_OUTPUT_DIR dir]
     )
@@ -85,6 +86,9 @@ same as the doctest name; see also ``TEST_PREFIX`` and ``TEST_SUFFIX``.
     Specifies additional properties to be set on all tests discovered by this
     invocation of ``doctest_discover_tests``.
 
+  ``ADD_LABELS value``
+    Specifies if the test labels should be set automatically.
+
   ``TEST_LIST var``
     Make the list of tests available in the variable ``var``, rather than the
     default ``<target>_TESTS``.  This can be useful when the same test
@@ -106,7 +110,7 @@ function(doctest_discover_tests TARGET)
     ""
     ""
     "TEST_PREFIX;TEST_SUFFIX;WORKING_DIRECTORY;TEST_LIST;JUNIT_OUTPUT_DIR"
-    "TEST_SPEC;EXTRA_ARGS;PROPERTIES"
+    "TEST_SPEC;EXTRA_ARGS;PROPERTIES;ADD_LABELS"
     ${ARGN}
   )
 
@@ -139,6 +143,7 @@ function(doctest_discover_tests TARGET)
             -D "TEST_SPEC=${_TEST_SPEC}"
             -D "TEST_EXTRA_ARGS=${_EXTRA_ARGS}"
             -D "TEST_PROPERTIES=${_PROPERTIES}"
+            -D "TEST_ADD_LABELS=${_ADD_LABELS}"
             -D "TEST_PREFIX=${_TEST_PREFIX}"
             -D "TEST_SUFFIX=${_TEST_SUFFIX}"
             -D "TEST_LIST=${_TEST_LIST}"
