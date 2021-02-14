@@ -1930,10 +1930,12 @@ int registerReporter(const char* name, int priority, bool isReporter) {
             static DOCTEST_NOINLINE doctest::detail::TestSuite& getCurrentTestSuite() {            \
                 DOCTEST_MSVC_SUPPRESS_WARNING_WITH_PUSH(4640)                                      \
                 DOCTEST_CLANG_SUPPRESS_WARNING_WITH_PUSH("-Wexit-time-destructors")                \
-                static doctest::detail::TestSuite data;                                            \
+                DOCTEST_GCC_SUPPRESS_WARNING_WITH_PUSH("-Wmissing-field-initializers")             \
+                static doctest::detail::TestSuite data{};                                          \
                 static bool                       inited = false;                                  \
                 DOCTEST_MSVC_SUPPRESS_WARNING_POP                                                  \
                 DOCTEST_CLANG_SUPPRESS_WARNING_POP                                                 \
+                DOCTEST_GCC_SUPPRESS_WARNING_POP                                                   \
                 if(!inited) {                                                                      \
                     data* decorators;                                                              \
                     inited = true;                                                                 \
