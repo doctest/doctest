@@ -440,9 +440,15 @@ DOCTEST_MSVC_SUPPRESS_WARNING_POP
 #ifdef DOCTEST_CONFIG_INCLUDE_TYPE_TRAITS
 #include <type_traits>
 #endif // DOCTEST_CONFIG_INCLUDE_TYPE_TRAITS
-#include<utility>
+
+
 
 namespace doctest {
+template<typename T, typename U = T&&> U declval(int); 
+
+template<typename T> T declval(long); 
+
+template<typename T> auto declval() noexcept -> decltype(declval<T>(0)) ;
 
 DOCTEST_INTERFACE extern bool is_running_in_test;
 
@@ -1050,7 +1056,7 @@ namespace detail {
 // If not it doesn't find the operator or if the operator at global scope is defined after
 // this template, the template won't be instantiated due to SFINAE. Once the template is not
 // instantiated it can look for global operator using normal conversions.
-#define SFINAE_OP(ret,op) decltype(std::declval<const L&>() op std::declval<const R&>(),static_cast<ret>(0))
+#define SFINAE_OP(ret,op) decltype(doctest::declval<const L&>() op doctest::declval<const R&>(),static_cast<ret>(0))
 
 #define DOCTEST_DO_BINARY_EXPRESSION_COMPARISON(op, op_str, op_macro)                              \
     template <typename R>                                                                          \
