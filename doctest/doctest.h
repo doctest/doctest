@@ -3837,6 +3837,12 @@ namespace detail {
             return file_cmp < 0;
         return m_template_id < other.m_template_id;
     }
+
+    // all the registered tests
+    std::set<TestCase>& getRegisteredTests() {
+        static std::set<TestCase> data;
+        return data;
+    }
 } // namespace detail
 namespace {
     using namespace detail;
@@ -3866,12 +3872,6 @@ namespace {
         if(res != 0)
             return res < 0;
         return suiteOrderComparator(lhs, rhs);
-    }
-
-    // all the registered tests
-    std::set<TestCase>& getRegisteredTests() {
-        static std::set<TestCase> data;
-        return data;
     }
 
 #ifdef DOCTEST_CONFIG_COLORS_WINDOWS
