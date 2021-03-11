@@ -1181,7 +1181,7 @@ namespace detail {
                 , m_at(at) {}
 
         DOCTEST_NOINLINE operator Result() {
-            bool res = !!lhs;
+            bool res = static_cast<bool>(lhs);
             if(m_at & assertType::is_false) //!OCLINT bitwise operator in conditional
                 res = !res;
 
