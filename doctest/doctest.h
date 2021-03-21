@@ -444,7 +444,35 @@ DOCTEST_MSVC_SUPPRESS_WARNING_POP
 #include <type_traits>
 #endif // DOCTEST_CONFIG_INCLUDE_TYPE_TRAITS
 
+
+
 namespace doctest {
+template<typename T, typename U = T&&> U declval(int); 
+
+template<typename T> T declval(long); 
+
+template<typename T> auto declval() noexcept -> decltype(declval<T>(0)) ;
+
+template< class T > struct remove_reference      {typedef T type;};
+template< class T > struct remove_reference<T&>  {typedef T type;};
+template< class T > struct remove_reference<T&&> {typedef T type;};
+
+template<class T> struct is_lvalue_reference { const static bool value=false; };
+template<class T> struct is_lvalue_reference<T&> { const static bool value=true; };
+
+template <class T>
+inline T&& forward(typename remove_reference<T>::type& t) noexcept
+{
+	return static_cast<T&&>(t);
+}
+
+template <class T>
+inline T&& forward(typename remove_reference<T>::type&& t) noexcept
+{
+    static_assert(!is_lvalue_reference<T>::value,
+                     "Can not forward an rvalue as an lvalue.");
+    return static_cast<T&&>(t);
+}
 
 DOCTEST_INTERFACE extern bool is_running_in_test;
 
@@ -1048,10 +1076,16 @@ namespace detail {
         return toString(lhs) + op + toString(rhs);
     }
 
+// This will check if there is any way it could find a operator like member or friend and uses it.
+// If not it doesn't find the operator or if the operator at global scope is defined after
+// this template, the template won't be instantiated due to SFINAE. Once the template is not
+// instantiated it can look for global operator using normal conversions.
+#define SFINAE_OP(ret,op) decltype(doctest::declval<L>() op doctest::declval<R>(),static_cast<ret>(0))
+
 #define DOCTEST_DO_BINARY_EXPRESSION_COMPARISON(op, op_str, op_macro)                              \
     template <typename R>                                                                          \
-    DOCTEST_NOINLINE Result operator op(const DOCTEST_REF_WRAP(R) rhs) {                           \
-        bool res = op_macro(lhs, rhs);                                                             \
+    DOCTEST_NOINLINE SFINAE_OP(Result,op) operator op(R&& rhs) {             \
+	    bool res = op_macro(doctest::forward<L>(lhs), doctest::forward<R>(rhs));                                                             \
         if(m_at & assertType::is_false)                                                            \
             res = !res;                                                                            \
         if(!res || doctest::getContextOptions()->success)                                          \
@@ -1179,8 +1213,8 @@ namespace detail {
         L                lhs;
         assertType::Enum m_at;
 
-        explicit Expression_lhs(L in, assertType::Enum at)
-                : lhs(in)
+        explicit Expression_lhs(L&& in, assertType::Enum at)
+                : lhs(doctest::forward<L>(in))
                 , m_at(at) {}
 
         DOCTEST_NOINLINE operator Result() {
@@ -1192,6 +1226,10 @@ namespace detail {
                 return Result(res, toString(lhs));
             return Result(res);
         }
+
+	/* This is required for user-defined conversions from Expression_lhs to L */
+	//operator L() const { return lhs; }
+	operator L() const { return lhs; }
 
         // clang-format off
         DOCTEST_DO_BINARY_EXPRESSION_COMPARISON(==, " == ", DOCTEST_CMP_EQ) //!OCLINT bitwise operator in conditional
@@ -1244,8 +1282,8 @@ namespace detail {
         // https://github.com/catchorg/Catch2/issues/870
         // https://github.com/catchorg/Catch2/issues/565
         template <typename L>
-        Expression_lhs<const DOCTEST_REF_WRAP(L)> operator<<(const DOCTEST_REF_WRAP(L) operand) {
-            return Expression_lhs<const DOCTEST_REF_WRAP(L)>(operand, m_at);
+	Expression_lhs<L> operator<<(L &&operand) {
+            return Expression_lhs<L>(doctest::forward<L>(operand), m_at);
         }
     };
 
