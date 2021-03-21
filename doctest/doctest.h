@@ -1076,6 +1076,10 @@ namespace detail {
         return toString(lhs) + op + toString(rhs);
     }
 
+#if DOCTEST_CLANG && DOCTEST_CLANG < DOCTEST_COMPILER(3, 6, 0)
+DOCTEST_CLANG_SUPPRESS_WARNING_WITH_PUSH("-Wunused-comparison")
+#endif
+
 // This will check if there is any way it could find a operator like member or friend and uses it.
 // If not it doesn't find the operator or if the operator at global scope is defined after
 // this template, the template won't be instantiated due to SFINAE. Once the template is not
@@ -1270,6 +1274,10 @@ namespace detail {
     DOCTEST_GCC_SUPPRESS_WARNING_POP
 
 #endif // DOCTEST_CONFIG_NO_COMPARISON_WARNING_SUPPRESSION
+
+#if DOCTEST_CLANG && DOCTEST_CLANG < DOCTEST_COMPILER(3, 6, 0)
+DOCTEST_CLANG_SUPPRESS_WARNING_POP("-Wunused-comparison")
+#endif
 
     struct DOCTEST_INTERFACE ExpressionDecomposer
     {
