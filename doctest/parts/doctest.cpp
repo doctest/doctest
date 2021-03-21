@@ -908,7 +908,7 @@ int registerReporter(const char*, int, IReporter*) { return 0; }
 namespace doctest_detail_test_suite_ns {
 // holds the current test suite
 doctest::detail::TestSuite& getCurrentTestSuite() {
-    static doctest::detail::TestSuite data;
+    static doctest::detail::TestSuite data{};
     return data;
 }
 } // namespace doctest_detail_test_suite_ns
