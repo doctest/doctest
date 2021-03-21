@@ -138,6 +138,10 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
         add_compiler_flags(-Wnoexcept)
     endif()
 
+    if(CMAKE_CXX_COMPILER_VERSION VERSION_LESS 5.0)
+        add_compiler_flags(-Wno-missing-field-initializers)
+    endif()
+
     # no way to silence it in the expression decomposition macros: _Pragma() in macros doesn't work for the c++ front-end of g++
     # https://gcc.gnu.org/bugzilla/show_bug.cgi?id=55578
     # https://gcc.gnu.org/bugzilla/show_bug.cgi?id=69543
