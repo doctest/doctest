@@ -441,35 +441,7 @@ DOCTEST_MSVC_SUPPRESS_WARNING_POP
 #include <type_traits>
 #endif // DOCTEST_CONFIG_INCLUDE_TYPE_TRAITS
 
-
-
 namespace doctest {
-template<typename T, typename U = T&&> U declval(int); 
-
-template<typename T> T declval(long); 
-
-template<typename T> auto declval() noexcept -> decltype(declval<T>(0)) ;
-
-template< class T > struct remove_reference      {typedef T type;};
-template< class T > struct remove_reference<T&>  {typedef T type;};
-template< class T > struct remove_reference<T&&> {typedef T type;};
-
-template<class T> struct is_lvalue_reference { const static bool value=false; };
-template<class T> struct is_lvalue_reference<T&> { const static bool value=true; };
-
-template <class T>
-inline T&& forward(typename remove_reference<T>::type& t) noexcept
-{
-	return static_cast<T&&>(t);
-}
-
-template <class T>
-inline T&& forward(typename remove_reference<T>::type&& t) noexcept
-{
-    static_assert(!is_lvalue_reference<T>::value,
-                     "Can not forward an rvalue as an lvalue.");
-    return static_cast<T&&>(t);
-}
 
 DOCTEST_INTERFACE extern bool is_running_in_test;
 
@@ -806,6 +778,29 @@ namespace detail {
     template<class T> struct remove_reference<T&>  { typedef T type; };
     template<class T> struct remove_reference<T&&> { typedef T type; };
 
+    template<typename T, typename U = T&&> U declval(int); 
+
+    template<typename T> T declval(long); 
+
+    template<typename T> auto declval() noexcept -> decltype(declval<T>(0)) ;
+
+    template<class T> struct is_lvalue_reference { const static bool value=false; };
+    template<class T> struct is_lvalue_reference<T&> { const static bool value=true; };
+
+    template <class T>
+    inline T&& forward(typename remove_reference<T>::type& t) noexcept
+    {
+        return static_cast<T&&>(t);
+    }
+
+    template <class T>
+    inline T&& forward(typename remove_reference<T>::type&& t) noexcept
+    {
+        static_assert(!is_lvalue_reference<T>::value,
+                        "Can not forward an rvalue as an lvalue.");
+        return static_cast<T&&>(t);
+    }
+
     template<class T> struct remove_const          { typedef T type; };
     template<class T> struct remove_const<const T> { typedef T type; };
 #ifdef DOCTEST_CONFIG_INCLUDE_TYPE_TRAITS
@@ -1081,12 +1076,12 @@ DOCTEST_CLANG_SUPPRESS_WARNING_WITH_PUSH("-Wunused-comparison")
 // If not it doesn't find the operator or if the operator at global scope is defined after
 // this template, the template won't be instantiated due to SFINAE. Once the template is not
 // instantiated it can look for global operator using normal conversions.
-#define SFINAE_OP(ret,op) decltype(doctest::declval<L>() op doctest::declval<R>(),static_cast<ret>(0))
+#define SFINAE_OP(ret,op) decltype(doctest::detail::declval<L>() op doctest::detail::declval<R>(),static_cast<ret>(0))
 
 #define DOCTEST_DO_BINARY_EXPRESSION_COMPARISON(op, op_str, op_macro)                              \
     template <typename R>                                                                          \
     DOCTEST_NOINLINE SFINAE_OP(Result,op) operator op(R&& rhs) {             \
-	    bool res = op_macro(doctest::forward<L>(lhs), doctest::forward<R>(rhs));                                                             \
+	    bool res = op_macro(doctest::detail::forward<L>(lhs), doctest::detail::forward<R>(rhs));                                                             \
         if(m_at & assertType::is_false)                                                            \
             res = !res;                                                                            \
         if(!res || doctest::getContextOptions()->success)                                          \
@@ -1215,7 +1210,7 @@ DOCTEST_CLANG_SUPPRESS_WARNING_WITH_PUSH("-Wunused-comparison")
         assertType::Enum m_at;
 
         explicit Expression_lhs(L&& in, assertType::Enum at)
-                : lhs(doctest::forward<L>(in))
+                : lhs(doctest::detail::forward<L>(in))
                 , m_at(at) {}
 
         DOCTEST_NOINLINE operator Result() {
@@ -1288,7 +1283,7 @@ DOCTEST_CLANG_SUPPRESS_WARNING_POP("-Wunused-comparison")
         // https://github.com/catchorg/Catch2/issues/565
         template <typename L>
 	Expression_lhs<L> operator<<(L &&operand) {
-            return Expression_lhs<L>(doctest::forward<L>(operand), m_at);
+            return Expression_lhs<L>(doctest::detail::forward<L>(operand), m_at);
         }
     };
 
