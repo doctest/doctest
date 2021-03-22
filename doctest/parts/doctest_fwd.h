@@ -782,19 +782,19 @@ namespace detail {
 
     template<typename T> T declval(long); 
 
-    template<typename T> auto declval() noexcept -> decltype(declval<T>(0)) ;
+    template<typename T> auto declval() DOCTEST_NOEXCEPT -> decltype(declval<T>(0)) ;
 
     template<class T> struct is_lvalue_reference { const static bool value=false; };
     template<class T> struct is_lvalue_reference<T&> { const static bool value=true; };
 
     template <class T>
-    inline T&& forward(typename remove_reference<T>::type& t) noexcept
+    inline T&& forward(typename remove_reference<T>::type& t) DOCTEST_NOEXCEPT
     {
         return static_cast<T&&>(t);
     }
 
     template <class T>
-    inline T&& forward(typename remove_reference<T>::type&& t) noexcept
+    inline T&& forward(typename remove_reference<T>::type&& t) DOCTEST_NOEXCEPT
     {
         static_assert(!is_lvalue_reference<T>::value,
                         "Can not forward an rvalue as an lvalue.");

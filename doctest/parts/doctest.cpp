@@ -352,21 +352,21 @@ typedef timer_large_integer::type ticks_t;
                       "guarantee one atomic takes exactly one cache line");
 
     public:
-        T operator++() noexcept { return fetch_add(1) + 1; }
+        T operator++() DOCTEST_NOEXCEPT { return fetch_add(1) + 1; }
 
-        T operator++(int) noexcept { return fetch_add(1); }
+        T operator++(int) DOCTEST_NOEXCEPT { return fetch_add(1); }
 
-        T fetch_add(T arg, std::memory_order order = std::memory_order_seq_cst) noexcept {
+        T fetch_add(T arg, std::memory_order order = std::memory_order_seq_cst) DOCTEST_NOEXCEPT {
             return myAtomic().fetch_add(arg, order);
         }
 
-        T fetch_sub(T arg, std::memory_order order = std::memory_order_seq_cst) noexcept {
+        T fetch_sub(T arg, std::memory_order order = std::memory_order_seq_cst) DOCTEST_NOEXCEPT {
             return myAtomic().fetch_sub(arg, order);
         }
 
-        operator T() const noexcept { return load(); }
+        operator T() const DOCTEST_NOEXCEPT { return load(); }
 
-        T load(std::memory_order order = std::memory_order_seq_cst) const noexcept {
+        T load(std::memory_order order = std::memory_order_seq_cst) const DOCTEST_NOEXCEPT {
             auto result = T();
             for(auto const& c : m_atomics) {
                 result += c.atomic.load(order);
@@ -374,12 +374,12 @@ typedef timer_large_integer::type ticks_t;
             return result;
         }
 
-        T operator=(T desired) noexcept {
+        T operator=(T desired) DOCTEST_NOEXCEPT {
             store(desired);
             return desired;
         }
 
-        void store(T desired, std::memory_order order = std::memory_order_seq_cst) noexcept {
+        void store(T desired, std::memory_order order = std::memory_order_seq_cst) DOCTEST_NOEXCEPT {
             // first value becomes desired", all others become 0.
             for(auto& c : m_atomics) {
                 c.atomic.store(desired, order);
@@ -400,7 +400,7 @@ typedef timer_large_integer::type ticks_t;
         //    assigned in a round-robin fashion.
         // 3. This tlsLaneIdx is stored in the thread local data, so it is directly available with
         //    little overhead.
-        std::atomic<T>& myAtomic() noexcept {
+        std::atomic<T>& myAtomic() DOCTEST_NOEXCEPT {
             static std::atomic<size_t> laneCounter;
             DOCTEST_THREAD_LOCAL size_t tlsLaneIdx =
                     laneCounter++ % DOCTEST_MULTI_LANE_ATOMICS_THREAD_LANES;
@@ -1536,7 +1536,7 @@ namespace {
             // - std::terminate is called FROM THE TEST RUNNER THREAD
             // - an exception is thrown from a destructor FROM THE TEST RUNNER THREAD
             original_terminate_handler = std::get_terminate();
-            std::set_terminate([]() noexcept {
+            std::set_terminate([]() DOCTEST_NOEXCEPT {
                 reportFatal("Terminate handler called");
                 if(isDebuggerActive() && !g_cs->no_breaks)
                     DOCTEST_BREAK_INTO_DEBUGGER();
@@ -1547,7 +1547,7 @@ namespace {
             // - std::terminate is called FROM A DIFFERENT THREAD
             // - an exception is thrown from a destructor FROM A DIFFERENT THREAD
             // - an uncaught exception is thrown FROM A DIFFERENT THREAD
-            prev_sigabrt_handler = std::signal(SIGABRT, [](int signal) noexcept {
+            prev_sigabrt_handler = std::signal(SIGABRT, [](int signal) DOCTEST_NOEXCEPT {
                 if(signal == SIGABRT) {
                     reportFatal("SIGABRT - Abort (abnormal termination) signal");
                     if(isDebuggerActive() && !g_cs->no_breaks)
