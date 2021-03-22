@@ -1,19 +1,48 @@
 # Change Log
 
+## [2.4.6](https://github.com/onqtam/doctest/tree/2.4.6) (2021-03-22)
+[Full Changelog](https://github.com/onqtam/doctest/compare/2.4.5...2.4.6)
+
+**Fixed bugs:**
+
+- REQUIRE does not compile when operator== in different namespace [\#443](https://github.com/onqtam/doctest/issues/443)
+- Using templated operator== inside TEST\_CASE changes deduced types of forwarding references [\#399](https://github.com/onqtam/doctest/issues/399)
+
+**Closed issues:**
+
+- CMake doesn't link package [\#483](https://github.com/onqtam/doctest/issues/483)
+- Assertions are slow when running on Windows with a debugger attached [\#481](https://github.com/onqtam/doctest/issues/481)
+- Get list of registered test-case names [\#479](https://github.com/onqtam/doctest/issues/479)
+- Can't compile with glibc master \(future 2.34\): SIGSTKSZ is no longer a constant [\#473](https://github.com/onqtam/doctest/issues/473)
+- How to use Doctest with Github Actions [\#472](https://github.com/onqtam/doctest/issues/472)
+- Link error \(multiple definition...\) in simple project [\#470](https://github.com/onqtam/doctest/issues/470)
+- INFO does not compile when used like a function call [\#469](https://github.com/onqtam/doctest/issues/469)
+- std::uncaught\_exceptions is only available if compiling for macOS 10.12 or above [\#466](https://github.com/onqtam/doctest/issues/466)
+- Compile failure with WinRT on 2.4.5 [\#465](https://github.com/onqtam/doctest/issues/465)
+
+**Merged pull requests:**
+
+- Improve speed with attached debugger \(Windows\) [\#482](https://github.com/onqtam/doctest/pull/482) ([pgroke](https://github.com/pgroke))
+- Convert to bool by casting, rather than double negation [\#480](https://github.com/onqtam/doctest/pull/480) ([kitegi](https://github.com/kitegi))
+- Fix compile error when targeting macOS version earlier and macOS 10.12 [\#478](https://github.com/onqtam/doctest/pull/478) ([SamWindell](https://github.com/SamWindell))
+- Fix MSVC linter warning about uninitialized TestSuite variables [\#471](https://github.com/onqtam/doctest/pull/471) ([Reedbeta](https://github.com/Reedbeta))
+- REQUIRE does not compile when operator== in different namespace \#443 . [\#468](https://github.com/onqtam/doctest/pull/468) ([navinp0304](https://github.com/navinp0304))
+- Automatically add TEST\_SUITE labels to discovered tests [\#464](https://github.com/onqtam/doctest/pull/464) ([shivupa](https://github.com/shivupa))
+
 ## [2.4.5](https://github.com/onqtam/doctest/tree/2.4.5) (2021-02-02)
 [Full Changelog](https://github.com/onqtam/doctest/compare/2.4.4...2.4.5)
 
 **Closed issues:**
 
-- Use of std::atomic can slow down multithreaded tests [\#452](https://github.com/onqtam/doctest/issues/452)
-- compilation issue in MSVC when defining DOCTEST_THREAD_LOCAL to static [\#458](https://github.com/onqtam/doctest/issues/458)
-- nvcc compiler warning; doctest.h(4138): warning : expression has no effect [\#454](https://github.com/onqtam/doctest/issues/454)
 - Stack buffer overflow in `String` constructor [\#460](https://github.com/onqtam/doctest/issues/460)
 - Surpress warnings from clang-tidy [\#459](https://github.com/onqtam/doctest/issues/459)
+- compilation issue in MSVC when defining DOCTEST\_THREAD\_LOCAL to static [\#458](https://github.com/onqtam/doctest/issues/458)
+- nvcc compiler warning; doctest.h\(4138\): warning : expression has no effect [\#454](https://github.com/onqtam/doctest/issues/454)
+- Use of std::atomic can slow down multithreaded tests [\#452](https://github.com/onqtam/doctest/issues/452)
 
 **Merged pull requests:**
 
-- Fix compilation on case-sensitive filesystems [\#463](https://github.com/onqtam/doctest/pull/463) ([jhasse](https://github.com/onqtam/jhasse))
+- Fix compilation on case-sensitive filesystems [\#463](https://github.com/onqtam/doctest/pull/463) ([jhasse](https://github.com/jhasse))
 - Use function-like macros for prefixless macro names [\#462](https://github.com/onqtam/doctest/pull/462) ([tbleher](https://github.com/tbleher))
 - Implement a multi lane atomic for assertion counts [\#453](https://github.com/onqtam/doctest/pull/453) ([martinus](https://github.com/martinus))
 
@@ -22,15 +51,12 @@
 
 **Closed issues:**
 
-- Issue with GitHub Security Scanning: gmtime [\#423](https://github.com/onqtam/doctest/issues/423)
+- 2.4.2: build fails [\#450](https://github.com/onqtam/doctest/issues/450)
 - combine the same tests for different build configurations from multiple shared objects without having symbol clashes [\#436](https://github.com/onqtam/doctest/issues/436)
+- Issue with GitHub Security Scanning: gmtime [\#423](https://github.com/onqtam/doctest/issues/423)
 
 ## [2.4.3](https://github.com/onqtam/doctest/tree/2.4.3) (2020-12-16)
 [Full Changelog](https://github.com/onqtam/doctest/compare/2.4.2...2.4.3)
-
-**Closed issues:**
-
-- 2.4.2: build fails [\#450](https://github.com/onqtam/doctest/issues/450)
 
 ## [2.4.2](https://github.com/onqtam/doctest/tree/2.4.2) (2020-12-15)
 [Full Changelog](https://github.com/onqtam/doctest/compare/2.4.1...2.4.2)
