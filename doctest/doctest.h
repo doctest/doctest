@@ -842,8 +842,9 @@ namespace detail {
 
     DOCTEST_INTERFACE void my_memcpy(void* dest, const void* src, unsigned num);
 
-    DOCTEST_INTERFACE std::ostream* getTlsOss(); // returns a thread-local ostringstream
+    DOCTEST_INTERFACE std::ostream* getTlsOss(bool reset=true); // returns a thread-local ostringstream
     DOCTEST_INTERFACE String getTlsOssResult();
+
 
     template <bool C>
     struct StringMakerBase
@@ -854,12 +855,57 @@ namespace detail {
         }
     };
 
+    // Vector<int> and various type other than pointer or array.
+    template<typename T>
+    struct filldata
+    {
+        static void fill(const  T &in) {
+          *getTlsOss() << in;
+        }
+    };
+
+    /* This method can be chained */
+    template<typename T,unsigned long N>
+    void fillstream(const T (&in)[N] ) {
+            for(unsigned long i=0;i<N;i++) {
+		*getTlsOss(false)<<in[i];
+            }
+    }
+
+    template<typename T,unsigned long N>
+    struct filldata<T[N]>
+    {
+        static void fill(const T (&in)[N]) {
+                    fillstream(in);
+                    *getTlsOss(false)<<"";
+        }
+    };
+
+    template<typename T>
+    void filloss(const T& in){
+	filldata<T>::fill(in);
+    }
+
+    template<typename T,unsigned long N>
+    void filloss(const T (&in)[N]) {
+	// T[N], T(&)[N], T(&&)[N] have same behaviour.
+        // Hence remove reference.
+	filldata<typename remove_reference <decltype(in)>::type >::fill(in);
+    }
+
     template <>
     struct StringMakerBase<true>
     {
         template <typename T>
         static String convert(const DOCTEST_REF_WRAP(T) in) {
-            *getTlsOss() << in;
+            /* When parameter "in" is a null terminated const char* it works.
+	     * When parameter "in" is a T arr[N] without '\0' we can fill the
+             * stringstream with N objects (T=char).If in is char pointer *
+             * without '\0' , it would cause segfault
+	     * stepping over unaccessible memory.
+             */
+
+            filloss(in);
             return getTlsOssResult();
         }
     };
@@ -2975,10 +3021,13 @@ namespace detail {
 
     DOCTEST_THREAD_LOCAL std::ostringstream g_oss; // NOLINT(cert-err58-cpp)
 
-    std::ostream* getTlsOss() {
-        g_oss.clear(); // there shouldn't be anything worth clearing in the flags
-        g_oss.str(""); // the slow way of resetting a string stream
-        //g_oss.seekp(0); // optimal reset - as seen here: https://stackoverflow.com/a/624291/3162383
+    //reset default value is true. getTlsOss(bool reset=true);
+    std::ostream* getTlsOss(bool reset) {
+        if(reset) {
+          g_oss.clear(); // there shouldn't be anything worth clearing in the flags
+          g_oss.str(""); // the slow way of resetting a string stream
+          //g_oss.seekp(0); // optimal reset - as seen here: https://stackoverflow.com/a/624291/3162383
+	}
         return &g_oss;
     }
 

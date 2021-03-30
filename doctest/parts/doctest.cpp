@@ -261,10 +261,13 @@ namespace detail {
 
     DOCTEST_THREAD_LOCAL std::ostringstream g_oss; // NOLINT(cert-err58-cpp)
 
-    std::ostream* getTlsOss() {
-        g_oss.clear(); // there shouldn't be anything worth clearing in the flags
-        g_oss.str(""); // the slow way of resetting a string stream
-        //g_oss.seekp(0); // optimal reset - as seen here: https://stackoverflow.com/a/624291/3162383
+    //reset default value is true. getTlsOss(bool reset=true);
+    std::ostream* getTlsOss(bool reset) {
+        if(reset) {
+          g_oss.clear(); // there shouldn't be anything worth clearing in the flags
+          g_oss.str(""); // the slow way of resetting a string stream
+          //g_oss.seekp(0); // optimal reset - as seen here: https://stackoverflow.com/a/624291/3162383
+	}
         return &g_oss;
     }
 
