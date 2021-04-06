@@ -9,7 +9,7 @@
 **Bool options** - they expect ```1```/```yes```/```on```/```true``` or ```0```/```no```/```off```/```false``` after the ```=``` sign - but they can also be used like flags and the ```=value``` part can be skipped - then ```true``` is assumed.  
 
 **Filters** - a comma-separated list of wildcards for matching values - where ```*``` means "match any sequence" and ```?``` means "match any one character".
-To pass patterns with intervals use ```""``` like this:  ```--test-case="*no sound*,vaguely named test number ?"```. Patterns that contain a comma can be escaped with ```\``` (example: ```--test-case="this\,test\,has\,commas```).
+To pass patterns with intervals use ```""``` like this:  ```--test-case="*no sound*,vaguely named test number ?"```. Patterns that contain a comma can be escaped with ```\``` (example: ```--test-case=this\,test\,has\,commas```).
 
 All the options can also be set with code (defaults/overrides) if the user [**supplies the ```main()``` function**](main.md).
 
