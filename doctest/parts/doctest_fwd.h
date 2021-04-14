@@ -787,6 +787,9 @@ namespace detail {
     template<class T> struct is_lvalue_reference { const static bool value=false; };
     template<class T> struct is_lvalue_reference<T&> { const static bool value=true; };
 
+    template<class T> struct is_rvalue_reference { const static bool value=false; };
+    template<class T> struct is_rvalue_reference<T&&> { const static bool value=true; };
+
     template <class T>
     inline T&& forward(typename remove_reference<T>::type& t) DOCTEST_NOEXCEPT
     {
@@ -1126,14 +1129,24 @@ DOCTEST_CLANG_SUPPRESS_WARNING_WITH_PUSH("-Wunused-comparison")
 
 #define DOCTEST_DO_BINARY_EXPRESSION_COMPARISON(op, op_str, op_macro)                              \
     template <typename R>                                                                          \
-    DOCTEST_NOINLINE SFINAE_OP(Result,op) operator op(R&& rhs) {             \
-	    bool res = op_macro(doctest::detail::forward<L>(lhs), doctest::detail::forward<R>(rhs));                                                             \
+    DOCTEST_NOINLINE SFINAE_OP(Result,op) operator op(const R&& rhs) {             \
+    bool res = op_macro(doctest::detail::forward<const L>(lhs), doctest::detail::forward<const R>(rhs));                                                             \
+        if(m_at & assertType::is_false)                                                            \
+            res = !res;                                                                            \
+        if(!res || doctest::getContextOptions()->success)                                          \
+            return Result(res, stringifyBinaryExpr(lhs, op_str, rhs));                             \
+        return Result(res);                                                                        \
+    }												   \
+    template <typename R ,typename enable_if<  !doctest::detail::is_rvalue_reference<R>::value   , void >::type* = nullptr>                                         \
+    DOCTEST_NOINLINE SFINAE_OP(Result,op) operator op(const R& rhs) {             \
+    bool res = op_macro(doctest::detail::forward<const L>(lhs), doctest::detail::forward<const R>(rhs));                                                             \
         if(m_at & assertType::is_false)                                                            \
             res = !res;                                                                            \
         if(!res || doctest::getContextOptions()->success)                                          \
             return Result(res, stringifyBinaryExpr(lhs, op_str, rhs));                             \
         return Result(res);                                                                        \
     }
+
 
     // more checks could be added - like in Catch:
     // https://github.com/catchorg/Catch2/pull/1480/files
@@ -1332,8 +1345,13 @@ DOCTEST_CLANG_SUPPRESS_WARNING_POP
         // https://github.com/catchorg/Catch2/issues/870
         // https://github.com/catchorg/Catch2/issues/565
         template <typename L>
-	Expression_lhs<L> operator<<(L &&operand) {
-            return Expression_lhs<L>(doctest::detail::forward<L>(operand), m_at);
+	Expression_lhs<const L> operator<<(const L &&operand) {
+            return Expression_lhs<const L>(doctest::detail::forward<const L>(operand), m_at);
+        }
+
+        template <typename L,typename enable_if<!doctest::detail::is_rvalue_reference<L>::value,void >::type* = nullptr>
+	Expression_lhs<const L&> operator<<(const L &operand) {
+            return Expression_lhs<const L&>(operand, m_at);
         }
     };
 
