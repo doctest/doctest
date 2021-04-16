@@ -1,0 +1,32 @@
+cc_library(
+    name = "doctest",
+    hdrs = glob(["**/*.h"]),
+    defines = [
+        "DOCTEST_CONFIG_IMPLEMENTATION_IN_DLL",
+        "DOCTEST_CONFIG_NO_UNPREFIXED_OPTIONS",
+    ],
+    visibility = ["//visibility:public"],
+)
+
+genrule(
+    name = "dummy-main",
+    outs = ["dummy-main.cc"],
+    cmd = """
+    echo '#include "doctest/doctest.h"' > $@
+    """,
+)
+
+cc_library(
+    name = "main",
+    srcs = glob(["**/*.h"]) + ["dummy-main.cc"],
+    local_defines = ["DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN"],
+    visibility = ["//visibility:public"],
+)
+
+cc_library(
+    name = "custom_main",
+    srcs = glob(["**/*.h"]) + ["dummy-main.cc"],
+    local_defines = ["DOCTEST_CONFIG_IMPLEMENT"],
+    visibility = ["//visibility:public"],
+)
+
