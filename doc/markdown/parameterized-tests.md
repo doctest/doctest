@@ -15,7 +15,7 @@ There will be proper support for this in the future. For now there are 2 ways of
 
     TEST_CASE("test name") {
         std::vector<int> data {1, 2, 3, 4, 5, 6};
-        
+
         for(auto& i : data) {
             CAPTURE(i); // log the current input data
             doChecks(i);
@@ -26,7 +26,7 @@ There will be proper support for this in the future. For now there are 2 ways of
     This has several drawbacks:
     - in case of an exception (or a ```REQUIRE``` assert failing) the entire test case ends and the checks are not done for the rest of the input data
     - the user has to manually log the data with calls to ```CAPTURE()``` ( or ```INFO()```)
-    - more boilerplate - doctest should supply primitives for generating data but currently doesnt - so the user has to write his own data generation
+    - more boilerplate - doctest should supply primitives for generating data but currently doesnt - so the user has to write their own data generation
 
 - using subcases to initialize data differently:
 
@@ -35,9 +35,9 @@ There will be proper support for this in the future. For now there are 2 ways of
         int data;
         SUBCASE("") { data = 1; }
         SUBCASE("") { data = 2; }
-        
+
         CAPTURE(data);
-        
+
         // do asserts with data
     }
     ```
@@ -45,11 +45,11 @@ There will be proper support for this in the future. For now there are 2 ways of
     This has the following drawbacks:
     - doesn't scale well - it is very impractical to write such code for more than a few different inputs
     - the user has to manually log the data with calls to ```CAPTURE()``` (or ```INFO()```)
-    
+
     --------------------------------
-    
+
     There is however an easy way to encapsulate this into a macro (written with C++14 for simplicity):
-    
+
     ```c++
     #include <algorithm>
     #include <string>
@@ -62,22 +62,22 @@ There will be proper support for this in the future. For now there are 2 ways of
         });                                                                                         \
         _doctest_subcase_idx = 0
     ```
-    
+
     and now this can be used as follows:
-    
+
     ```c++
     TEST_CASE("test name") {
         int data;
         std::list<int> data_container = {1, 2, 3, 4}; // must be iterable - std::vector<> would work as well
 
         DOCTEST_VALUE_PARAMETERIZED_DATA(data, data_container);
-        
+
         printf("%d\n", data);
     }
     ```
-    
+
     and will print the 4 numbers by re-entering the test case 3 times (after the first entry) - just like subcases work:
-    
+
     ```
     1
     2
@@ -122,7 +122,7 @@ There are 2 ways to do it:
 
     TEST_CASE_TEMPLATE_APPLY(test_id, std::tuple<float, double>);
     ```
-    If you are designing an interface or concept, you can define a suite of type-parameterized tests to verify properties that any valid implementation of the interface/concept should have. Then, the author of each implementation can just instantiate the test suite with his type to verify that it conforms to the requirements, without having to write similar tests repeatedly.
+    If you are designing an interface or concept, you can define a suite of type-parameterized tests to verify properties that any valid implementation of the interface/concept should have. Then, the author of each implementation can just instantiate the test suite with their type to verify that it conforms to the requirements, without having to write similar tests repeatedly.
 
 
 A test case named ```signed integers stuff``` instantiated for type ```int``` will yield the following test case name:

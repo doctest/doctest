@@ -31,7 +31,7 @@ There will be proper support for this in the future. For now there are 2 ways of
     This has several drawbacks:
     - in case of an exception (or a ```REQUIRE``` assert failing) the entire test case ends and the checks are not done for the rest of the input data
     - the user has to manually log the data with calls to ```CAPTURE()``` ( or ```INFO()```)
-    - more boilerplate - doctest should supply primitives for generating data but currently doesnt - so the user has to write his own data generation
+    - more boilerplate - doctest should supply primitives for generating data but currently doesnt - so the user has to write their own data generation
 
 - using subcases to initialize data differently:
 
@@ -127,7 +127,7 @@ There are 2 ways to do it:
 
     TEST_CASE_TEMPLATE_APPLY(test_id, std::tuple<float, double>);
     ```
-    If you are designing an interface or concept, you can define a suite of type-parameterized tests to verify properties that any valid implementation of the interface/concept should have. Then, the author of each implementation can just instantiate the test suite with his type to verify that it conforms to the requirements, without having to write similar tests repeatedly.
+    If you are designing an interface or concept, you can define a suite of type-parameterized tests to verify properties that any valid implementation of the interface/concept should have. Then, the author of each implementation can just instantiate the test suite with their type to verify that it conforms to the requirements, without having to write similar tests repeatedly.
 
 
 A test case named ```signed integers stuff``` instantiated for type ```int``` will yield the following test case name:
