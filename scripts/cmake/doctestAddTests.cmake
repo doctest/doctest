@@ -50,12 +50,31 @@ endif()
 
 string(REPLACE "\n" ";" output "${output}")
 
+function(is_doctest_line line result)
+  set(_result FALSE)
+  if("${line}" STREQUAL "===============================================================================" OR "${line}" MATCHES [==[^\[doctest\] ]==])
+    set(_result TRUE)
+  endif()
+  set(${result} ${_result} PARENT_SCOPE)
+endfunction()
+
 # Parse output
 foreach(line ${output})
-  if("${line}" STREQUAL "===============================================================================" OR "${line}" MATCHES [==[^\[doctest\] ]==])
+  is_doctest_line("${line}" filter)
+  if(${filter})
     continue()
   endif()
-  set(test ${line})
+  list(APPEND test_names "${line}")
+endforeach()
+
+# Deduplicate. If there are multiple tests sharing the same name, they will
+# also share a single invocation of the test executable, rather than creating
+# N invocations that run N tests each. The user can give the tests different
+# names to expose more parallelism to the test runner.
+list(REMOVE_DUPLICATES test_names)
+
+# Parse output
+foreach(test ${test_names})
   set(labels "")
   if(${add_labels} EQUAL 1)
     # get test suite that test belongs to
@@ -74,7 +93,8 @@ foreach(line ${output})
 
     string(REPLACE "\n" ";" labeloutput "${labeloutput}")
     foreach(labelline ${labeloutput})
-      if("${labelline}" STREQUAL "===============================================================================" OR "${labelline}" MATCHES [==[^\[doctest\] ]==])
+      is_doctest_line("${labelline}" filter)
+      if(${filter})
         continue()
       endif()
       list(APPEND labels ${labelline})
