@@ -37,3 +37,4 @@ build-mingw/
 *vscode*
 .idea/
 cmake-build-*/
+bazel-*
