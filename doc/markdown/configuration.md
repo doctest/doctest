@@ -45,7 +45,7 @@ This should be defined only in the source file where the library is implemented.
 
 ### **```DOCTEST_CONFIG_IMPLEMENT```**
 
-If the client wants to [**supply the ```main()``` function**](main.md) (either to set an option with some value from the code or to integrate the framework into his existing project codebase) this identifier should be used.
+If the client wants to [**supply the ```main()``` function**](main.md) (either to set an option with some value from the code or to integrate the framework into their existing project codebase) this identifier should be used.
 
 This should be defined only in the source file where the library is implemented.
 
@@ -69,7 +69,7 @@ This should be defined only in the source file where the library is implemented 
 
 ### **```DOCTEST_CONFIG_NO_SHORT_MACRO_NAMES```**
 
-This will remove all macros from **doctest** that don't have the **```DOCTEST_```** prefix - like **```CHECK```**, **```TEST_CASE```** and **```SUBCASE```**. Then only the full macro names will be available - **```DOCTEST_CHECK```**, **```DOCTEST_TEST_CASE```** and **```DOCTEST_SUBCASE```**. The user is free to make his own short versions of these macros - [**example**](../../examples/all_features/alternative_macros.cpp).
+This will remove all macros from **doctest** that don't have the **```DOCTEST_```** prefix - like **```CHECK```**, **```TEST_CASE```** and **```SUBCASE```**. Then only the full macro names will be available - **```DOCTEST_CHECK```**, **```DOCTEST_TEST_CASE```** and **```DOCTEST_SUBCASE```**. The user is free to make their own short versions of these macros - [**example**](../../examples/all_features/alternative_macros.cpp).
 
 This can be defined both globally and in specific source files only.
 
