@@ -39,6 +39,7 @@ execute_process(
   COMMAND ${TEST_EXECUTOR} "${TEST_EXECUTABLE}" ${spec} --list-test-cases
   OUTPUT_VARIABLE output
   RESULT_VARIABLE result
+  WORKING_DIRECTORY "${TEST_WORKING_DIR}"
 )
 if(NOT ${result} EQUAL 0)
   message(FATAL_ERROR
@@ -63,6 +64,7 @@ foreach(line ${output})
       COMMAND ${TEST_EXECUTOR} "${TEST_EXECUTABLE}" --test-case=${test} --list-test-suites
       OUTPUT_VARIABLE labeloutput
       RESULT_VARIABLE labelresult
+      WORKING_DIRECTORY "${TEST_WORKING_DIR}"
     )
     if(NOT ${labelresult} EQUAL 0)
       message(FATAL_ERROR
