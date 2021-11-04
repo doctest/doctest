@@ -424,7 +424,7 @@ typedef basic_ostream<char, char_traits<char>> ostream;
 template <class... Types>
 class tuple;
 #if DOCTEST_MSVC >= DOCTEST_COMPILER(19, 20, 0)
-DOCTEST_CLANG_SUPPRESS_WARNING("-Wreserved-identifier")
+DOCTEST_CLANG_SUPPRESS_WARNING_WITH_PUSH("-Wreserved-identifier")
 // see this issue on why this is needed: https://github.com/onqtam/doctest/issues/183
 template <class _Ty>
 class allocator;
