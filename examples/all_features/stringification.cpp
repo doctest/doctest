@@ -103,9 +103,6 @@ TEST_CASE("all asserts should fail and show how the objects get stringified") {
     MyTypeInherited<int> bla1;
     bla1.one = 5;
     bla1.two = 4u;
-    MyTypeInherited<int> bla2;
-    bla2.one = 5;
-    bla2.two = 6u;
 
     Bar::Foo f1;
     Bar::Foo f2;
