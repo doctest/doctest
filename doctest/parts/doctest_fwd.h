@@ -424,12 +424,14 @@ typedef basic_ostream<char, char_traits<char>> ostream;
 template <class... Types>
 class tuple;
 #if DOCTEST_MSVC >= DOCTEST_COMPILER(19, 20, 0)
+DOCTEST_CLANG_SUPPRESS_WARNING("-Wreserved-identifier")
 // see this issue on why this is needed: https://github.com/onqtam/doctest/issues/183
 template <class _Ty>
 class allocator;
 template <class _Elem, class _Traits, class _Alloc>
 class basic_string;
 using string = basic_string<char, char_traits<char>, allocator<char>>;
+DOCTEST_CLANG_SUPPRESS_WARNING_POP
 #endif // VS 2019
 DOCTEST_STD_NAMESPACE_END
 
