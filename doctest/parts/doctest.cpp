@@ -1216,12 +1216,12 @@ namespace {
     HANDLE g_stdoutHandle;
     WORD   g_origFgAttrs;
     WORD   g_origBgAttrs;
-    bool   g_attrsInitted = false;
+    bool   g_attrsInited = false;
 
     int colors_init() {
-        if(!g_attrsInitted) {
+        if(!g_attrsInited) {
             g_stdoutHandle = GetStdHandle(STD_OUTPUT_HANDLE);
-            g_attrsInitted = true;
+            g_attrsInited = true;
             CONSOLE_SCREEN_BUFFER_INFO csbiInfo;
             GetConsoleScreenBufferInfo(g_stdoutHandle, &csbiInfo);
             g_origFgAttrs = csbiInfo.wAttributes & ~(BACKGROUND_GREEN | BACKGROUND_RED |
