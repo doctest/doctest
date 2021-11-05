@@ -100,7 +100,6 @@ There is also an option to run a [**range**](commandline.md) of tests from an ex
 **doctest** doesn't support mocking but should be easy to integrate with third-party libraries such as:
 
 - [trompeloeil](https://github.com/rollbear/trompeloeil) - integration shown [here](https://github.com/rollbear/trompeloeil/blob/master/docs/CookBook.md#adapt_doctest)
-- [googlemock](https://github.com/google/googletest/tree/master/googlemock) - for integration check [this](https://github.com/google/googletest/blob/master/googlemock/docs/ForDummies.md#using-google-mock-with-any-testing-framework)
 - [FakeIt](https://github.com/eranpeer/FakeIt) - integration might be similar to that of [catch](https://github.com/eranpeer/FakeIt/tree/master/config/catch) but this has not been looked into
 
 by using the [**logging**](logging.md#messages-which-can-optionally-fail-test-cases) macros such as ```ADD_FAIL_AT(file, line, message)```
