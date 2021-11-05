@@ -35,7 +35,7 @@
 **Closed issues:**
 
 - Stack buffer overflow in `String` constructor [\#460](https://github.com/onqtam/doctest/issues/460)
-- Surpress warnings from clang-tidy [\#459](https://github.com/onqtam/doctest/issues/459)
+- Suppress warnings from clang-tidy [\#459](https://github.com/onqtam/doctest/issues/459)
 - compilation issue in MSVC when defining DOCTEST\_THREAD\_LOCAL to static [\#458](https://github.com/onqtam/doctest/issues/458)
 - nvcc compiler warning; doctest.h\(4138\): warning : expression has no effect [\#454](https://github.com/onqtam/doctest/issues/454)
 - Use of std::atomic can slow down multithreaded tests [\#452](https://github.com/onqtam/doctest/issues/452)
