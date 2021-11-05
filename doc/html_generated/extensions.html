@@ -46,7 +46,7 @@ MPI_TEST_CASE("test over two processes",2) { // Parallel test on 2 processes
 
 An ```MPI_TEST_CASE``` is like a regular ```TEST_CASE```, except it takes a second argument, which is the number of processes needed to run the test.  If the number of processes is less than 2, the test will fail. If the number of processes is greater than or equal to 2, it will create a sub-communicator over 2 processes, called ```test_comm```, and execute the test over these processes. Three objects are provided by ```MPI_TEST_CASE```: 
  * ```test_comm```, of type ```MPI_Comm```: the mpi communicator on which the test is running,
- * ```test_rank``` and ```test_nb_procs```, two ```int``` giving respectively the rank of the current process and the size of the communicator for ```test_comm```. These last two are just here for convenience and could be retrived from ```test_comm```.
+ * ```test_rank``` and ```test_nb_procs```, two ```int``` giving respectively the rank of the current process and the size of the communicator for ```test_comm```. These last two are just here for convenience and could be retrieved from ```test_comm```.
  
 We always have:
 
