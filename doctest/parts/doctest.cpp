@@ -375,7 +375,7 @@ typedef timer_large_integer::type ticks_t;
             return result;
         }
 
-        T operator=(T desired) DOCTEST_NOEXCEPT {
+        T operator=(T desired) DOCTEST_NOEXCEPT { // lgtm [cpp/assignment-does-not-return-this]
             store(desired);
             return desired;
         }
