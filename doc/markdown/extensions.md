@@ -135,7 +135,7 @@ This feature is provided to unit-test mpi-distributed code. It is **not** a way 
 
  * Pass ```s``` member variable of ```ConsoleReporter``` as an argument to member functions so we can use them with another object (would help to factorize ```MPIConsoleReporter```)
  * Only MPI_CHECK tested. MPI_REQUIRE, exception handling: nothing tested
- * If the number of processes is not enought, prints the correct message, but then deadlocks (comes from ```MPI_Probe``` in ```MpiConsoleReporter```)
+ * If the number of processes is not enough, prints the correct message, but then deadlocks (comes from ```MPI_Probe``` in ```MpiConsoleReporter```)
  * [[maybe_unused]] is C++17
  * More testing, automatic testing
  * Packaging: create a new target ```mpi_doctest```? (probably cleaner to depend explicitly on MPI for mpi/doctest.h)
