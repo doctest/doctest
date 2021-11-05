@@ -291,7 +291,7 @@
 - Link test runner executable into dll? [\#226](https://github.com/onqtam/doctest/issues/226)
 - Linking issue for executables after including doctest in library [\#224](https://github.com/onqtam/doctest/issues/224)
 - Strange REQUIRE\_THROWS behaviour [\#223](https://github.com/onqtam/doctest/issues/223)
-- Windows clang-cl Wunused-variable warning [\#221](https://github.com/onqtam/doctest/issues/221)
+- Windows clang-cl -Wunused-variable warning [\#221](https://github.com/onqtam/doctest/issues/221)
 - Update doctest 2.3.1 in bincrafters [\#220](https://github.com/onqtam/doctest/issues/220)
 - make install, on 64 bit, installs cmake files into lib instead of lib64 folder  [\#218](https://github.com/onqtam/doctest/issues/218)
 - TSAN: data race related to hasLoggedCurrentTestStart [\#217](https://github.com/onqtam/doctest/issues/217)
@@ -432,7 +432,7 @@
 **Closed issues:**
 
 - MSVC 2017 15.8.1, New Warnings as Errors [\#144](https://github.com/onqtam/doctest/issues/144)
-- Windows clang-cl Wdeprecated-declarations warnings [\#143](https://github.com/onqtam/doctest/issues/143)
+- Windows clang-cl -Wdeprecated-declarations warnings [\#143](https://github.com/onqtam/doctest/issues/143)
 - Logo Proposal for Doctest [\#141](https://github.com/onqtam/doctest/issues/141)
 - PCH Support [\#140](https://github.com/onqtam/doctest/issues/140)
 - improve compile times even further [\#139](https://github.com/onqtam/doctest/issues/139)
