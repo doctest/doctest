@@ -12,6 +12,7 @@
 - [**Why do I get compiler errors in STL headers when including the doctest header?**](#why-do-i-get-compiler-errors-in-stl-headers-when-including-the-doctest-header)
 - [**Can different versions of the framework be used within the same binary (executable/dll)?**](#can-different-versions-of-the-framework-be-used-within-the-same-binary-executabledll)
 - [**Why is doctest using macros?**](#why-is-doctest-using-macros)
+- [**How to use with multiple files?**](#how-to-use-with-multiple-files)
 
 ### How is **doctest** different from Catch?
 
@@ -166,6 +167,10 @@ Currently no. Single header libraries like [**stb**](https://github.com/nothings
 ### Why is doctest using macros?
 
 Aren't they evil and not *modern*? - Check out the answer Phil Nash gives to this question [**here**](http://accu.org/index.php/journals/2064) (the creator of [**Catch**](https://github.com/catchorg/Catch2)).
+
+### How to use with multiple files?
+
+All you need to do is define either [**```DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN```**](configuration.md#doctest_config_implement_with_main) or [**```DOCTEST_CONFIG_IMPLEMENT```**](configuration.md#doctest_config_implement) in only ONE of the source files just before including the doctest header - in all other source files you just include the header and use the framework. The difference between the two is that one of them provides a `main()` entry point - for more info on that please refer to [`The main() entry point`](main.md).
 
 ---------------
 
