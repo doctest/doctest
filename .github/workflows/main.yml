@@ -194,7 +194,7 @@ jobs:
             compiler: gcc
 
           - name: macOS-latest-xcode-11.3
-            os: macOS-latest
+            os: macOS-10.15
             compiler: xcode
             version: "11.3"
 
