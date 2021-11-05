@@ -132,7 +132,7 @@ public:
   void test_case_end(const CurrentTestCaseStats& st) override {
     if (is_mpi_test_case()) {
       // function called by every rank at the end of a test
-      // if failed assertions happended, they have been sent to rank 0
+      // if failed assertions happened, they have been sent to rank 0
       // here rank zero gathers them and prints them all
 
       int rank;
