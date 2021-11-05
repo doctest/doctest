@@ -57,7 +57,7 @@ target_link_libraries(same_tests_multiple_configurations PUBLIC default return42
 # regardless of case sensitivity (for which there is a difference in fileOrderComparator) we will always
 # get a different sorting of the test cases and thus we need NO_OUTPUT on this test so that the CI passes
 #
-# otherwise the output from test_runner.cpp and main.cpp gets reordered before/after the output frmo the header
+# otherwise the output from test_runner.cpp and main.cpp gets reordered before/after the output from the header
 # TODO: maybe we should simply remove the output from those 2 .cpp files? then there won't be a problem...
 #
 doctest_add_test(NO_OUTPUT NAME same_tests_multiple_configurations COMMAND $<TARGET_FILE:same_tests_multiple_configurations> --no-version)
