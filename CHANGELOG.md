@@ -35,7 +35,7 @@
 **Closed issues:**
 
 - Stack buffer overflow in `String` constructor [\#460](https://github.com/onqtam/doctest/issues/460)
-- Surpress warnings from clang-tidy [\#459](https://github.com/onqtam/doctest/issues/459)
+- Suppress warnings from clang-tidy [\#459](https://github.com/onqtam/doctest/issues/459)
 - compilation issue in MSVC when defining DOCTEST\_THREAD\_LOCAL to static [\#458](https://github.com/onqtam/doctest/issues/458)
 - nvcc compiler warning; doctest.h\(4138\): warning : expression has no effect [\#454](https://github.com/onqtam/doctest/issues/454)
 - Use of std::atomic can slow down multithreaded tests [\#452](https://github.com/onqtam/doctest/issues/452)
@@ -255,9 +255,9 @@
 - Improve Listener docs [\#273](https://github.com/onqtam/doctest/pull/273) ([claremacrae](https://github.com/claremacrae))
 - Rework `INFO` lazy evaluation to use lambdas. [\#270](https://github.com/onqtam/doctest/pull/270) ([DaanDeMeyer](https://github.com/DaanDeMeyer))
 - Prevent compile errors with AppleClang compiler [\#268](https://github.com/onqtam/doctest/pull/268) ([ClausKlein](https://github.com/ClausKlein))
-- Revert "fix : includeing windows.h header caause error" [\#263](https://github.com/onqtam/doctest/pull/263) ([onqtam](https://github.com/onqtam))
+- Revert "fix : including windows.h header cause error" [\#263](https://github.com/onqtam/doctest/pull/263) ([onqtam](https://github.com/onqtam))
 - Fix static analyzer URLs [\#259](https://github.com/onqtam/doctest/pull/259) ([godbyk](https://github.com/godbyk))
-- fix : includeing windows.h header caause error [\#258](https://github.com/onqtam/doctest/pull/258) ([rinechran](https://github.com/rinechran))
+- fix : including windows.h header cause error [\#258](https://github.com/onqtam/doctest/pull/258) ([rinechran](https://github.com/rinechran))
 - only look for C++ compiler with CMake [\#256](https://github.com/onqtam/doctest/pull/256) ([zhihaoy](https://github.com/zhihaoy))
 - Fix \#253 [\#254](https://github.com/onqtam/doctest/pull/254) ([DaanDeMeyer](https://github.com/DaanDeMeyer))
 - add alias target for doctest for use in build tree [\#247](https://github.com/onqtam/doctest/pull/247) ([trondhe](https://github.com/trondhe))
@@ -291,7 +291,7 @@
 - Link test runner executable into dll? [\#226](https://github.com/onqtam/doctest/issues/226)
 - Linking issue for executables after including doctest in library [\#224](https://github.com/onqtam/doctest/issues/224)
 - Strange REQUIRE\_THROWS behaviour [\#223](https://github.com/onqtam/doctest/issues/223)
-- Windows clang-cl Wunused-variable warning [\#221](https://github.com/onqtam/doctest/issues/221)
+- Windows clang-cl -Wunused-variable warning [\#221](https://github.com/onqtam/doctest/issues/221)
 - Update doctest 2.3.1 in bincrafters [\#220](https://github.com/onqtam/doctest/issues/220)
 - make install, on 64 bit, installs cmake files into lib instead of lib64 folder  [\#218](https://github.com/onqtam/doctest/issues/218)
 - TSAN: data race related to hasLoggedCurrentTestStart [\#217](https://github.com/onqtam/doctest/issues/217)
@@ -432,7 +432,7 @@
 **Closed issues:**
 
 - MSVC 2017 15.8.1, New Warnings as Errors [\#144](https://github.com/onqtam/doctest/issues/144)
-- Windows clang-cl Wdeprecated-declarations warnings [\#143](https://github.com/onqtam/doctest/issues/143)
+- Windows clang-cl -Wdeprecated-declarations warnings [\#143](https://github.com/onqtam/doctest/issues/143)
 - Logo Proposal for Doctest [\#141](https://github.com/onqtam/doctest/issues/141)
 - PCH Support [\#140](https://github.com/onqtam/doctest/issues/140)
 - improve compile times even further [\#139](https://github.com/onqtam/doctest/issues/139)
