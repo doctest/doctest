@@ -45,11 +45,11 @@ jobs:
           windows-2016-cl,
           windows-2016-clang-cl,
           windows-2016-clang,
-          windows-2016-gcc,
+          # windows-2016-gcc,
           windows-2019-cl,
           windows-2019-clang-cl,
           windows-2019-clang,
-          windows-2019-gcc,
+          # windows-2019-gcc,
           macOS-latest-xcode-11.3,
         ]
 
@@ -177,9 +177,10 @@ jobs:
             os: windows-2019
             compiler: cl
 
-          - name: windows-2016-gcc
-            os: windows-2016
-            compiler: gcc
+          # fails to install it...
+          # - name: windows-2016-gcc
+          #   os: windows-2016
+          #   compiler: gcc
 
           - name: windows-2019-clang-cl
             os: windows-2019
@@ -189,9 +190,10 @@ jobs:
             os: windows-2019
             compiler: clang
 
-          - name: windows-2019-gcc
-            os: windows-2019
-            compiler: gcc
+          # fails to install it...
+          # - name: windows-2019-gcc
+          #   os: windows-2019
+          #   compiler: gcc
 
           - name: macOS-latest-xcode-11.3
             os: macOS-10.15
