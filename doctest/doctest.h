@@ -1891,7 +1891,7 @@ int registerReporter(const char* name, int priority, bool isReporter) {
 
 #define DOCTEST_CREATE_AND_REGISTER_FUNCTION_IN_CLASS(f, proxy, decorators)                        \
     static doctest::detail::funcType proxy() { return f; }                                         \
-    DOCTEST_REGISTER_FUNCTION(inline const, proxy(), decorators)                                   \
+    DOCTEST_REGISTER_FUNCTION(inline, proxy(), decorators)                                   \
     static void f()
 
 // for registering tests
