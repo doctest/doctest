@@ -2050,7 +2050,8 @@ int registerReporter(const char* name, int priority, bool isReporter) {
 
 // for logging
 #define DOCTEST_INFO(...)                                                                          \
-    DOCTEST_INFO_IMPL(DOCTEST_ANONYMOUS(DOCTEST_CAPTURE_), DOCTEST_ANONYMOUS(DOCTEST_CAPTURE_),    \
+    DOCTEST_INFO_IMPL(DOCTEST_ANONYMOUS(DOCTEST_CAPTURE_),                                         \
+                      DOCTEST_ANONYMOUS(DOCTEST_CAPTURE_OTHER_),                                   \
                       __VA_ARGS__)
 
 #define DOCTEST_INFO_IMPL(mb_name, s_name, ...)                                       \
