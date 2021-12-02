@@ -4031,7 +4031,7 @@ namespace {
         return 0;
     }
 
-    int dummy_init_console_colors = colors_init();
+    volatile int dummy_init_console_colors = colors_init();
 #endif // DOCTEST_CONFIG_COLORS_WINDOWS
 
     DOCTEST_CLANG_SUPPRESS_WARNING_WITH_PUSH("-Wdeprecated-declarations")
