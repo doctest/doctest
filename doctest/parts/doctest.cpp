@@ -235,10 +235,11 @@ namespace detail {
         return oss.str().c_str();
     }
 
-    DOCTEST_THREAD_LOCAL std::ostringstream g_oss; // NOLINT(cert-err58-cpp)
+    DOCTEST_THREAD_LOCAL doctest_thread_local_wrapper<std::ostringstream> wrapped_g_oss; // NOLINT(cert-err58-cpp)
 
     //reset default value is true. getTlsOss(bool reset=true);
     std::ostream* getTlsOss(bool reset) {
+        auto& g_oss = wrapped_g_oss.get();
         if(reset) {
           g_oss.clear(); // there shouldn't be anything worth clearing in the flags
           g_oss.str(""); // the slow way of resetting a string stream
@@ -249,7 +250,7 @@ namespace detail {
 
     String getTlsOssResult() {
         //g_oss << std::ends; // needed - as shown here: https://stackoverflow.com/a/624291/3162383
-        return g_oss.str().c_str();
+        return wrapped_g_oss.get().str().c_str();
     }
 
 #ifndef DOCTEST_CONFIG_DISABLE
@@ -1398,10 +1399,10 @@ namespace detail {
     void toStream(std::ostream* s, int long long in) { *s << in; }
     void toStream(std::ostream* s, int long long unsigned in) { *s << in; }
 
-    DOCTEST_THREAD_LOCAL std::vector<IContextScope*> g_infoContexts; // for logging with INFO()
+    DOCTEST_THREAD_LOCAL doctest_thread_local_wrapper<std::vector<IContextScope*>> wrapped_g_infoContexts; // for logging with INFO()
 
     ContextScopeBase::ContextScopeBase() {
-        g_infoContexts.push_back(this);
+        wrapped_g_infoContexts.get().push_back(this);
     }
 
     ContextScopeBase::ContextScopeBase(ContextScopeBase&& other) {
@@ -1409,7 +1410,7 @@ namespace detail {
             other.destroy();
         }
         other.need_to_destroy = false;
-        g_infoContexts.push_back(this);
+        wrapped_g_infoContexts.get().push_back(this);
     }
 
     DOCTEST_MSVC_SUPPRESS_WARNING_WITH_PUSH(4996) // std::uncaught_exception is deprecated in C++17	
@@ -1429,7 +1430,7 @@ namespace detail {
             this->stringify(&s);
             g_cs->stringifiedContexts.push_back(s.str().c_str());
         }
-        g_infoContexts.pop_back();
+        wrapped_g_infoContexts.get().pop_back();
     }
 
     DOCTEST_CLANG_SUPPRESS_WARNING_POP	
@@ -3219,19 +3220,19 @@ namespace {
 #ifdef DOCTEST_PLATFORM_WINDOWS
     struct DebugOutputWindowReporter : public ConsoleReporter
     {
-        DOCTEST_THREAD_LOCAL static std::ostringstream oss;
+        DOCTEST_THREAD_LOCAL static doctest_thread_local_wrapper<std::ostringstream> wrapped_oss;
 
         DebugOutputWindowReporter(const ContextOptions& co)
-                : ConsoleReporter(co, oss) {}
+                : ConsoleReporter(co, wrapped_oss.get()) {}
 
 #define DOCTEST_DEBUG_OUTPUT_REPORTER_OVERRIDE(func, type, arg)                                    \
     void func(type arg) override {                                                                 \
         bool with_col = g_no_colors;                                                               \
         g_no_colors   = false;                                                                     \
         ConsoleReporter::func(arg);                                                                \
-        if(oss.tellp() != std::streampos{}) {                                                      \
-            DOCTEST_OUTPUT_DEBUG_STRING(oss.str().c_str());                                        \
-            oss.str("");                                                                           \
+        if(wrapped_oss.get().tellp() != std::streampos{}) {                                        \
+            DOCTEST_OUTPUT_DEBUG_STRING(wrapped_oss.get().str().c_str());                          \
+            wrapped_oss.get().str("");                                                             \
         }                                                                                          \
         g_no_colors = with_col;                                                                    \
     }
@@ -3249,7 +3250,7 @@ namespace {
         DOCTEST_DEBUG_OUTPUT_REPORTER_OVERRIDE(test_case_skipped, const TestCaseData&, in)
     };
 
-    DOCTEST_THREAD_LOCAL std::ostringstream DebugOutputWindowReporter::oss;
+    DOCTEST_THREAD_LOCAL doctest_thread_local_wrapper<std::ostringstream> DebugOutputWindowReporter::wrapped_oss;
 #endif // DOCTEST_PLATFORM_WINDOWS
 
     // the implementation of parseOption()
@@ -3859,9 +3860,9 @@ DOCTEST_MSVC_SUPPRESS_WARNING_POP
 
 IReporter::~IReporter() = default;
 
-int IReporter::get_num_active_contexts() { return detail::g_infoContexts.size(); }
+int IReporter::get_num_active_contexts() { return detail::wrapped_g_infoContexts.get().size(); }
 const IContextScope* const* IReporter::get_active_contexts() {
-    return get_num_active_contexts() ? &detail::g_infoContexts[0] : nullptr;
+    return get_num_active_contexts() ? &detail::wrapped_g_infoContexts.get()[0] : nullptr;
 }
 
 int IReporter::get_num_stringified_contexts() { return detail::g_cs->stringifiedContexts.size(); }

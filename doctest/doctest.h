@@ -6088,7 +6088,7 @@ namespace {
         g_no_colors   = false;                                                                     \
         ConsoleReporter::func(arg);                                                                \
         if(wrapped_oss.get().tellp() != std::streampos{}) {                                        \
-            DOCTEST_OUTPUT_DEBUG_STRING(wrapped_oss.get().str().c_str());                                        \
+            DOCTEST_OUTPUT_DEBUG_STRING(wrapped_oss.get().str().c_str());                          \
             wrapped_oss.get().str("");                                                             \
         }                                                                                          \
         g_no_colors = with_col;                                                                    \
@@ -6719,12 +6719,12 @@ IReporter::~IReporter() = default;
 
 int IReporter::get_num_active_contexts() { return detail::wrapped_g_infoContexts.get().size(); }
 const IContextScope* const* IReporter::get_active_contexts() {
-    return get_num_active_contexts() ? &detail::g_infoContexts[0] : nullptr;
+    return get_num_active_contexts() ? &detail::wrapped_g_infoContexts.get()[0] : nullptr;
 }
 
 int IReporter::get_num_stringified_contexts() { return detail::g_cs->stringifiedContexts.size(); }
 const String* IReporter::get_stringified_contexts() {
-    return get_num_stringified_contexts() ? &detail::wrapped_g_infoContexts.get()[0] : nullptr;
+    return get_num_stringified_contexts() ? &detail::g_cs->stringifiedContexts[0] : nullptr;
 }
 
 namespace detail {
