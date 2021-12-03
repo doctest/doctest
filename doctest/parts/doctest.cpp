@@ -1439,7 +1439,7 @@ namespace detail {
 namespace {
     using namespace detail;
 
-#if !defined(DOCTEST_CONFIG_POSIX_SIGNALS) && !defined(DOCTEST_CONFIG_WINDOWS_SEH)
+#if !defined(DOCTEST_CONFIG_POSIX_SIGNALS) && (!defined(DOCTEST_CONFIG_WINDOWS_SEH) || defined(WINAPI_FAMILY))
     struct FatalConditionHandler
     {
         static void reset() {}
@@ -1702,7 +1702,7 @@ namespace {
             g_cs->numAssertsFailedCurrentTest_atomic++;
     }
 
-#if defined(DOCTEST_CONFIG_POSIX_SIGNALS) || defined(DOCTEST_CONFIG_WINDOWS_SEH)
+#if defined(DOCTEST_CONFIG_POSIX_SIGNALS) || (defined(DOCTEST_CONFIG_WINDOWS_SEH) && !defined(WINAPI_FAMILY))
     void reportFatal(const std::string& message) {
         g_cs->failure_flags |= TestCaseFailureReason::Crash;
 
