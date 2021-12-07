@@ -43,6 +43,7 @@ All the options can also be set with code (defaults/overrides) if the user [**su
 | ```-cs``` &nbsp; ```--case-sensitive=<bool>``` | Filters being treated as case sensitive |
 | ```-e``` &nbsp;&nbsp;&nbsp; ```--exit=<bool>``` | Exits after the tests finish - this is meaningful only when the client has [**provided the ```main()``` entry point**](main.md)  - the program should check the ```shouldExit()``` method after calling ```run()``` on a ```doctest::Context``` object and should exit - this is left up to the user. The idea is to be able to execute just the tests in a client program and to not continue with it's execution |
 | ```-d``` &nbsp; ```--duration=<bool>``` | Prints the time each test case took in seconds |
+| ```-q``` &nbsp; ```--quiet=<bool>``` | Does not print any output |
 | ```-nt``` &nbsp; ```--no-throw=<bool>``` | Skips [**exceptions-related assertion**](assertions.md#exceptions) checks |
 | ```-ne``` &nbsp; ```--no-exitcode=<bool>``` | Always returns a successful exit code - even if a test case has failed |
 | ```-nr``` &nbsp; ```--no-run=<bool>``` | Skips all runtime **doctest** operations (except the test registering which happens before the program enters ```main()```). This is useful if the testing framework is integrated into a client codebase which has [**provided the ```main()``` entry point**](main.md) and the user wants to skip running the tests and just use the program |
