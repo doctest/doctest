@@ -3826,15 +3826,6 @@ namespace detail {
 
     TestSuite& TestSuite::operator*(const char* in) {
         m_test_suite = in;
-        // clear state
-        m_description       = nullptr;
-        m_skip              = false;
-        m_no_breaks         = false;
-        m_no_output         = false;
-        m_may_fail          = false;
-        m_should_fail       = false;
-        m_expected_failures = 0;
-        m_timeout           = 0;
         return *this;
     }
 
