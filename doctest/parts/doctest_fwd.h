@@ -309,15 +309,27 @@ DOCTEST_MSVC_SUPPRESS_WARNING(26812) // Prefer 'enum class' over 'enum'
 #endif
 
 #ifndef DOCTEST_NORETURN
+#if DOCTEST_MSVC && (DOCTEST_MSVC < DOCTEST_COMPILER(19, 0, 0))
+#define DOCTEST_NORETURN
+#else // DOCTEST_MSVC
 #define DOCTEST_NORETURN [[noreturn]]
+#endif // DOCTEST_MSVC
 #endif // DOCTEST_NORETURN
 
 #ifndef DOCTEST_NOEXCEPT
+#if DOCTEST_MSVC && (DOCTEST_MSVC < DOCTEST_COMPILER(19, 0, 0))
+#define DOCTEST_NOEXCEPT
+#else // DOCTEST_MSVC
 #define DOCTEST_NOEXCEPT noexcept
+#endif // DOCTEST_MSVC
 #endif // DOCTEST_NOEXCEPT
 
 #ifndef DOCTEST_CONSTEXPR
+#if DOCTEST_MSVC && (DOCTEST_MSVC < DOCTEST_COMPILER(19, 0, 0))
+#define DOCTEST_CONSTEXPR const
+#else // DOCTEST_MSVC
 #define DOCTEST_CONSTEXPR constexpr
+#endif // DOCTEST_MSVC
 #endif // DOCTEST_CONSTEXPR
 
 // =================================================================================================
@@ -1300,15 +1312,15 @@ DOCTEST_CLANG_SUPPRESS_WARNING_POP
 
     struct DOCTEST_INTERFACE TestSuite
     {
-        const char* m_test_suite;
-        const char* m_description;
-        bool        m_skip;
-        bool        m_no_breaks;
-        bool        m_no_output;
-        bool        m_may_fail;
-        bool        m_should_fail;
-        int         m_expected_failures;
-        double      m_timeout;
+        const char* m_test_suite = nullptr;
+        const char* m_description = nullptr;
+        bool        m_skip = false;
+        bool        m_no_breaks = false;
+        bool        m_no_output = false;
+        bool        m_may_fail = false;
+        bool        m_should_fail = false;
+        int         m_expected_failures = 0;
+        double      m_timeout = 0;
 
         TestSuite& operator*(const char* in);
 
@@ -2047,10 +2059,13 @@ int registerReporter(const char* name, int priority, bool isReporter) {
             doctest::registerReporter<reporter>(name, priority, false);                            \
     DOCTEST_GLOBAL_NO_WARNINGS_END() typedef int DOCTEST_ANONYMOUS(DOCTEST_ANON_FOR_SEMICOLON_)
 
-// for logging
+// clang-format off
+// for logging - disabling formatting because it's important to have these on 2 separate lines - see PR #557
 #define DOCTEST_INFO(...)                                                                          \
-    DOCTEST_INFO_IMPL(DOCTEST_ANONYMOUS(DOCTEST_CAPTURE_), DOCTEST_ANONYMOUS(DOCTEST_CAPTURE_),    \
+    DOCTEST_INFO_IMPL(DOCTEST_ANONYMOUS(DOCTEST_CAPTURE_),                                         \
+                      DOCTEST_ANONYMOUS(DOCTEST_CAPTURE_OTHER_),                                   \
                       __VA_ARGS__)
+// clang-format on
 
 #define DOCTEST_INFO_IMPL(mb_name, s_name, ...)                                       \
     auto DOCTEST_ANONYMOUS(DOCTEST_CAPTURE_) = doctest::detail::MakeContextScope(                  \

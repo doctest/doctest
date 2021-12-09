@@ -172,8 +172,12 @@ DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_END
 #endif
 
 #ifndef DOCTEST_THREAD_LOCAL
+#if DOCTEST_MSVC && (DOCTEST_MSVC < DOCTEST_COMPILER(19, 0, 0))
+#define DOCTEST_THREAD_LOCAL
+#else // DOCTEST_MSVC
 #define DOCTEST_THREAD_LOCAL thread_local
-#endif
+#endif // DOCTEST_MSVC
+#endif // DOCTEST_THREAD_LOCAL
 
 #ifndef DOCTEST_MULTI_LANE_ATOMICS_THREAD_LANES
 #define DOCTEST_MULTI_LANE_ATOMICS_THREAD_LANES 32
@@ -191,6 +195,10 @@ DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_END
 
 #if defined(WINAPI_FAMILY) && (WINAPI_FAMILY == WINAPI_FAMILY_APP)
 #define DOCTEST_CONFIG_NO_MULTI_LANE_ATOMICS
+#endif
+
+#ifndef DOCTEST_CDECL
+#define DOCTEST_CDECL __cdecl
 #endif
 
 namespace doctest {
@@ -1100,15 +1108,6 @@ namespace detail {
 
     TestSuite& TestSuite::operator*(const char* in) {
         m_test_suite = in;
-        // clear state
-        m_description       = nullptr;
-        m_skip              = false;
-        m_no_breaks         = false;
-        m_no_output         = false;
-        m_may_fail          = false;
-        m_should_fail       = false;
-        m_expected_failures = 0;
-        m_timeout           = 0;
         return *this;
     }
 
@@ -1609,7 +1608,7 @@ namespace {
         static unsigned int prev_abort_behavior;
         static int          prev_report_mode;
         static _HFILE       prev_report_file;
-        static void (*prev_sigabrt_handler)(int);
+        static void (DOCTEST_CDECL *prev_sigabrt_handler)(int);
         static std::terminate_handler original_terminate_handler;
         static bool isSet;
         static ULONG guaranteeSize;
@@ -1621,7 +1620,7 @@ namespace {
     unsigned int FatalConditionHandler::prev_abort_behavior;
     int          FatalConditionHandler::prev_report_mode;
     _HFILE       FatalConditionHandler::prev_report_file;
-    void (*FatalConditionHandler::prev_sigabrt_handler)(int);
+    void (DOCTEST_CDECL *FatalConditionHandler::prev_sigabrt_handler)(int);
     std::terminate_handler FatalConditionHandler::original_terminate_handler;
     bool FatalConditionHandler::isSet = false;
     ULONG FatalConditionHandler::guaranteeSize = 0;
