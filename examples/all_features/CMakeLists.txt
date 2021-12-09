@@ -92,7 +92,7 @@ doctest_add_test(NAME filter_3        ${common_args} -sc=from*,sc* -sce=sc2 -sf=
 doctest_add_test(NAME order_1         ${common_args} -ob=suite -ns          -sf=*test_cases_and_suites*)
 doctest_add_test(NAME order_2         ${common_args} -ob=name               -sf=*test_cases_and_suites*)
 doctest_add_test(NAME order_3         ${common_args} -ob=rand               -sfe=*) # exclude everything for no output
-doctest_add_test(NAME quiet           ${common_args} -q -sf=*test_cases_and_suites*) # quiet
+doctest_add_test(NO_OUTPUT NAME quiet ${common_args} -q -sf=*test_cases_and_suites*) # quiet
 doctest_add_test(NAME minimal         ${common_args} -m -sf=*test_cases_and_suites*) # minimal with summary
 doctest_add_test(NAME minimal_no_fail ${common_args} -m -sf=*no_failures.cpp) # minimal
 
