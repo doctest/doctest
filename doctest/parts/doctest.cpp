@@ -2903,10 +2903,11 @@ namespace {
         }
 
         void printIntro() {
-            printVersion();
-            if(opt.no_intro == false)
+            if(opt.no_intro == false) {
+                printVersion();
                 s << Color::Cyan << "[doctest] " << Color::None
                   << "run with \"--" DOCTEST_OPTIONS_PREFIX_DISPLAY "help\" for options\n";
+            }
         }
 
         void printHelp() {
