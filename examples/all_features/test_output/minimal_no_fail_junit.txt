@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+  <testsuite name="all_features" errors="0" failures="0" tests="3">
+    <testcase classname="no_failures.cpp" name="no checks" status="run"/>
+    <testcase classname="no_failures.cpp" name="simple check" status="run"/>
+    <testcase classname="no_failures.cpp" name="fails - and its allowed" status="run"/>
+    <testcase classname="no_failures.cpp" name="should fail and no output" status="run"/>
+  </testsuite>
+</testsuites>
+Program code.

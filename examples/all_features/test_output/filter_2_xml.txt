@@ -51,6 +51,9 @@
     <TestCase name="explicit failures 2" filename="logging.cpp" line="0" skipped="true"/>
     <TestCase name="expressions should be evaluated only once" filename="assertion_macros.cpp" line="0" skipped="true"/>
   </TestSuite>
+  <TestSuite name="some suite">
+    <TestCase name="fails - and its allowed" filename="no_failures.cpp" line="0" may_fail="true" skipped="true"/>
+  </TestSuite>
   <TestSuite name="test suite with a description">
     <TestCase name="fails - and its allowed" filename="test_cases_and_suites.cpp" line="0" description="regarding failures" may_fail="true" skipped="true"/>
     <TestCase name="fails 1 time as it should" filename="test_cases_and_suites.cpp" line="0" description="regarding failures" skipped="true"/>
@@ -84,6 +87,7 @@
     <TestCase name="namespace 7 member vs global" filename="namespace7.cpp" line="0" skipped="true"/>
     <TestCase name="namespace 8 friend vs global" filename="namespace8.cpp" line="0" skipped="true"/>
     <TestCase name="namespace 9 both global" filename="namespace9.cpp" line="0" skipped="true"/>
+    <TestCase name="no checks" filename="no_failures.cpp" line="0" skipped="true"/>
     <TestCase name="normal macros" filename="assertion_macros.cpp" line="0" skipped="true"/>
   </TestSuite>
   <TestSuite name="ts1">
@@ -97,11 +101,13 @@
     <TestCase name="part of some TS" filename="test_cases_and_suites.cpp" line="0" skipped="true"/>
   </TestSuite>
   <TestSuite>
+    <TestCase name="should fail and no output" filename="no_failures.cpp" line="0" should_fail="true" skipped="true"/>
     <TestCase name="should fail and no output" filename="test_cases_and_suites.cpp" line="0" should_fail="true" skipped="true"/>
     <TestCase name="should fail because of an exception" filename="test_cases_and_suites.cpp" line="0" skipped="true"/>
     <TestCase name="signed integers stuff&lt;int>" filename="templated_test_cases.cpp" line="0" skipped="true"/>
     <TestCase name="signed integers stuff&lt;short int>" filename="templated_test_cases.cpp" line="0" skipped="true"/>
     <TestCase name="signed integers stuff&lt;signed char>" filename="templated_test_cases.cpp" line="0" skipped="true"/>
+    <TestCase name="simple check" filename="no_failures.cpp" line="0" skipped="true"/>
   </TestSuite>
   <TestSuite name="skipped test cases">
     <TestCase name="skipped - inherited from the test suite" filename="test_cases_and_suites.cpp" line="0" skipped="true"/>
@@ -128,6 +134,6 @@
     <TestCase name="will end from an unknown exception" filename="coverage_maxout.cpp" line="0" skipped="true"/>
   </TestSuite>
   <OverallResultsAsserts successes="0" failures="0"/>
-  <OverallResultsTestCases successes="0" failures="0" skipped="90"/>
+  <OverallResultsTestCases successes="0" failures="0" skipped="94"/>
 </doctest>
 Program code.

@@ -1,0 +1,9 @@
+===============================================================================
+no_failures.cpp(0):
+TEST SUITE: some suite
+TEST CASE:  fails - and its allowed
+
+no_failures.cpp(0): FATAL ERROR: 
+
+Allowed to fail so marking it as not failed
+Program code.
