@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+  <testsuite name="all_features" errors="1" failures="1" tests="12">
+    <testcase classname="test_cases_and_suites.cpp" name="an empty test that will succeed - not part of a test suite" status="run"/>
+    <testcase classname="test_cases_and_suites.cpp" name="should fail because of an exception" status="run">
+      <error message="exception">
+        0
+      </error>
+    </testcase>
+    <testcase classname="test_cases_and_suites.cpp" name="part of scoped" status="run"/>
+    <testcase classname="test_cases_and_suites.cpp" name="part of scoped 2" status="run"/>
+    <testcase classname="test_cases_and_suites.cpp" name="part of some TS" status="run"/>
+    <testcase classname="test_cases_and_suites.cpp" name="fixtured test - not part of a test suite" status="run">
+      <failure message="21 == 85" type="CHECK">
+test_cases_and_suites.cpp(0):
+CHECK( data == 85 ) is NOT correct!
+  values: CHECK( 21 == 85 )
+
+      </failure>
+    </testcase>
+    <testcase classname="test_cases_and_suites.cpp" name="normal test in a test suite from a decorator" status="run"/>
+    <testcase classname="test_cases_and_suites.cpp" name="unskipped" status="run"/>
+    <testcase classname="test_cases_and_suites.cpp" name="fails - and its allowed" status="run"/>
+    <testcase classname="test_cases_and_suites.cpp" name="doesn't fail which is fine" status="run"/>
+    <testcase classname="test_cases_and_suites.cpp" name="fails as it should" status="run"/>
+    <testcase classname="test_cases_and_suites.cpp" name="doesn't fail but it should have" status="run"/>
+    <testcase classname="test_cases_and_suites.cpp" name="fails 1 time as it should" status="run"/>
+    <testcase classname="test_cases_and_suites.cpp" name="fails more times as it should" status="run"/>
+    <testcase classname="test_cases_and_suites.cpp" name="should fail and no output" status="run"/>
+  </testsuite>
+</testsuites>
+Program code.

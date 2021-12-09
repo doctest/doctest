@@ -92,6 +92,7 @@ doctest_add_test(NAME order_1     ${common_args} -ob=suite -ns          -sf=*tes
 doctest_add_test(NAME order_2     ${common_args} -ob=name               -sf=*test_cases_and_suites*)
 doctest_add_test(NAME order_3     ${common_args} -ob=rand               -sfe=*) # exclude everything for no output
 doctest_add_test(NAME quiet       ${common_args} -q -sf=*test_cases_and_suites*) # quiet
+doctest_add_test(NAME minimal     ${common_args} -m -sf=*test_cases_and_suites*) # minimal
 
 ################################################################################
 ## VARIATION OF THE BUILD WITH DOCTEST DISABLED - SHOULD STILL COMPILE
