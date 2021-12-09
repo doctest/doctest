@@ -65,7 +65,6 @@ The **key** differences between it and other testing frameworks are that it is l
 - Can remove **everything** testing-related from the binary with the [**```DOCTEST_CONFIG_DISABLE```**](doc/markdown/configuration.md#doctest_config_disable) identifier
 - [**thread-safe**](doc/markdown/faq.md#is-doctest-thread-aware) - asserts can be used from multiple threads spawned from a single test case - [**example**](examples/all_features/concurrency.cpp)
 - asserts can be used [**outside of a testing context**](doc/markdown/assertions.md#using-asserts-out-of-a-testing-context) - as a general purpose assert library - [**example**](examples/all_features/asserts_used_outside_of_tests.cpp)
-- Doesn't pollute the global namespace (everything is in namespace ```doctest```) and doesn't drag **any** headers with it
 - No global namespace pollution (everything is in ```doctest::```) & doesn't drag **any** headers with it
 - [**Portable**](doc/markdown/features.md#extremely-portable) C++11 (use tag [**1.2.9**](https://github.com/onqtam/doctest/tree/1.2.9) for C++98) with over 100 different CI builds (static analysis, sanitizers..)
 - binaries (exe/dll) can use the test runner of another binary => tests in a single registry - [**example**](examples/executable_dll_and_plugin/)
@@ -74,14 +73,14 @@ The **key** differences between it and other testing frameworks are that it is l
 
 This allows the framework to be used in more ways than any other - tests can be written directly in the production code!
 
-*Tests can be considered a form of documentation and should be able to reside near the production code which they test.*
+*Tests can be a form of documentation and should be able to reside near the production code which they test.*
 
 - This makes the barrier for writing tests **much lower** - you don't have to: **1)** make a separate source file **2)** include a bunch of stuff in it **3)** add it to the build system and **4)** add it to source control - You can just write the tests for a class or a piece of functionality at the bottom of its source file - or even header file!
-- Tests in the production code can be thought of as documentation or up-to-date comments - showing the use of APIs
+- Tests in the production code can be thought of as documentation/up-to-date comments - showcasing the APIs
 - Testing internals that are not exposed through the public API and headers is no longer a mind-bending exercise
 - [**Test-driven development**](https://en.wikipedia.org/wiki/Test-driven_development) in C++ has never been easier!
 
-The framework can be used like any other if you don't want/need to mix production code and tests - check out the [**features**](doc/markdown/features.md).
+The framework can be used just like any other without mixing production code and tests - check out the [**features**](doc/markdown/features.md).
 
 **doctest** is modeled after [**Catch**](https://github.com/catchorg/Catch2) and some parts of the code have been taken directly - check out [**the differences**](doc/markdown/faq.md#how-is-doctest-different-from-catch).
 
