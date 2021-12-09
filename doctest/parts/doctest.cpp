@@ -3083,7 +3083,8 @@ namespace {
         }
 
         void test_run_end(const TestRunStats& p) override {
-            if(opt.minimal)
+            const bool anythingFailed = p.numTestCasesFailed > 0 || p.numAssertsFailed > 0;
+            if(opt.minimal && !anythingFailed)
                 return;
 
             separator_to_stream();
@@ -3092,7 +3093,6 @@ namespace {
             auto totwidth = int(std::ceil(log10((std::max(p.numTestCasesPassingFilters, static_cast<unsigned>(p.numAsserts))) + 1)));
             auto passwidth = int(std::ceil(log10((std::max(p.numTestCasesPassingFilters - p.numTestCasesFailed, static_cast<unsigned>(p.numAsserts - p.numAssertsFailed))) + 1)));
             auto failwidth = int(std::ceil(log10((std::max(p.numTestCasesFailed, static_cast<unsigned>(p.numAssertsFailed))) + 1)));
-            const bool anythingFailed = p.numTestCasesFailed > 0 || p.numAssertsFailed > 0;
             s << Color::Cyan << "[doctest] " << Color::None << "test cases: " << std::setw(totwidth)
               << p.numTestCasesPassingFilters << " | "
               << ((p.numTestCasesPassingFilters == 0 || anythingFailed) ? Color::None :
