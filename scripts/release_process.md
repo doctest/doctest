@@ -1,8 +1,6 @@
 - update version in version.txt
 - run update_stuff.py from the scripts folder
 - regenerate test output by running cmake with -DDOCTEST_TEST_MODE=COLLECT and then running ctest
-- run update_wandbox_link.py
-    - might need to do this first: set path=C:/Python27;%PATH% - or just call python from C:\Python27\python.exe
 - commit in dev
 - merge dev in master and coverity_scan (and rebase them?)
 - push all branches (git push --all)
