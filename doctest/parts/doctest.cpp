@@ -3636,7 +3636,7 @@ int Context::run() {
     if(p->cout == nullptr) {
         if(p->quiet) {
             p->cout = &discardOut;
-        } else if (p->out.size()) {
+        } else if(p->out.size()) {
             // to a file if specified
             fstr.open(p->out.c_str(), std::fstream::out);
             p->cout = &fstr;
