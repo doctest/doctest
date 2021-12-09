@@ -173,6 +173,7 @@ DOCTEST_MSVC_SUPPRESS_WARNING(5027) // move assignment operator was implicitly d
 DOCTEST_MSVC_SUPPRESS_WARNING(5026) // move constructor was implicitly defined as deleted
 DOCTEST_MSVC_SUPPRESS_WARNING(4623) // default constructor was implicitly defined as deleted
 DOCTEST_MSVC_SUPPRESS_WARNING(4640) // construction of local static object is not thread-safe
+DOCTEST_MSVC_SUPPRESS_WARNING(5045) // Spectre mitigation for memory load
 // static analysis
 DOCTEST_MSVC_SUPPRESS_WARNING(26439) // This kind of function may not throw. Declare it 'noexcept'
 DOCTEST_MSVC_SUPPRESS_WARNING(26495) // Always initialize a member variable
@@ -763,6 +764,7 @@ struct ContextOptions //!OCLINT too many fields
     bool no_throw;             // to skip exceptions-related assertion macros
     bool no_exitcode;          // if the framework should return 0 as the exitcode
     bool no_run;               // to not run the tests at all (can be done with an "*" exclude)
+    bool no_intro;             // to not print the intro of the framework
     bool no_version;           // to not print the version of the framework
     bool no_colors;            // if output to the console should be colorized
     bool force_colors;         // forces the use of colors even when a tty cannot be detected
@@ -805,6 +807,9 @@ namespace detail {
 
     template<class T> struct is_lvalue_reference { const static bool value=false; };
     template<class T> struct is_lvalue_reference<T&> { const static bool value=true; };
+
+    template<class T> struct is_rvalue_reference { const static bool value=false; };
+    template<class T> struct is_rvalue_reference<T&&> { const static bool value=true; };
 
     template <class T>
     inline T&& forward(typename remove_reference<T>::type& t) DOCTEST_NOEXCEPT
@@ -858,8 +863,9 @@ namespace detail {
 
     DOCTEST_INTERFACE void my_memcpy(void* dest, const void* src, unsigned num);
 
-    DOCTEST_INTERFACE std::ostream* getTlsOss(); // returns a thread-local ostringstream
+    DOCTEST_INTERFACE std::ostream* getTlsOss(bool reset=true); // returns a thread-local ostringstream
     DOCTEST_INTERFACE String getTlsOssResult();
+
 
     template <bool C>
     struct StringMakerBase
@@ -870,12 +876,57 @@ namespace detail {
         }
     };
 
+    // Vector<int> and various type other than pointer or array.
+    template<typename T>
+    struct filldata
+    {
+        static void fill(const  T &in) {
+          *getTlsOss() << in;
+        }
+    };
+
+    /* This method can be chained */
+    template<typename T,unsigned long N>
+    void fillstream(const T (&in)[N] ) {
+        for(unsigned long i = 0; i < N; i++) {
+            *getTlsOss(false) << in[i];
+        }
+    }
+
+    template<typename T,unsigned long N>
+    struct filldata<T[N]>
+    {
+        static void fill(const T (&in)[N]) {
+                    fillstream(in);
+                    *getTlsOss(false)<<"";
+        }
+    };
+
+    template<typename T>
+    void filloss(const T& in){
+	filldata<T>::fill(in);
+    }
+
+    template<typename T,unsigned long N>
+    void filloss(const T (&in)[N]) {
+	// T[N], T(&)[N], T(&&)[N] have same behaviour.
+        // Hence remove reference.
+	filldata<typename remove_reference <decltype(in)>::type >::fill(in);
+    }
+
     template <>
     struct StringMakerBase<true>
     {
         template <typename T>
         static String convert(const DOCTEST_REF_WRAP(T) in) {
-            *getTlsOss() << in;
+            /* When parameter "in" is a null terminated const char* it works.
+	     * When parameter "in" is a T arr[N] without '\0' we can fill the
+             * stringstream with N objects (T=char).If in is char pointer *
+             * without '\0' , it would cause segfault
+	     * stepping over unaccessible memory.
+             */
+
+            filloss(in);
             return getTlsOssResult();
         }
     };
@@ -1099,14 +1150,24 @@ DOCTEST_CLANG_SUPPRESS_WARNING_WITH_PUSH("-Wunused-comparison")
 
 #define DOCTEST_DO_BINARY_EXPRESSION_COMPARISON(op, op_str, op_macro)                              \
     template <typename R>                                                                          \
-    DOCTEST_NOINLINE SFINAE_OP(Result,op) operator op(R&& rhs) {             \
-	    bool res = op_macro(doctest::detail::forward<L>(lhs), doctest::detail::forward<R>(rhs));                                                             \
+    DOCTEST_NOINLINE SFINAE_OP(Result,op) operator op(const R&& rhs) {             \
+    bool res = op_macro(doctest::detail::forward<const L>(lhs), doctest::detail::forward<const R>(rhs));                                                             \
+        if(m_at & assertType::is_false)                                                            \
+            res = !res;                                                                            \
+        if(!res || doctest::getContextOptions()->success)                                          \
+            return Result(res, stringifyBinaryExpr(lhs, op_str, rhs));                             \
+        return Result(res);                                                                        \
+    }												   \
+    template <typename R ,typename enable_if<  !doctest::detail::is_rvalue_reference<R>::value   , void >::type* = nullptr>                                         \
+    DOCTEST_NOINLINE SFINAE_OP(Result,op) operator op(const R& rhs) {             \
+    bool res = op_macro(doctest::detail::forward<const L>(lhs), doctest::detail::forward<const R>(rhs));                                                             \
         if(m_at & assertType::is_false)                                                            \
             res = !res;                                                                            \
         if(!res || doctest::getContextOptions()->success)                                          \
             return Result(res, stringifyBinaryExpr(lhs, op_str, rhs));                             \
         return Result(res);                                                                        \
     }
+
 
     // more checks could be added - like in Catch:
     // https://github.com/catchorg/Catch2/pull/1480/files
@@ -1306,8 +1367,13 @@ DOCTEST_CLANG_SUPPRESS_WARNING_POP
         // https://github.com/catchorg/Catch2/issues/870
         // https://github.com/catchorg/Catch2/issues/565
         template <typename L>
-	Expression_lhs<L> operator<<(L &&operand) {
-            return Expression_lhs<L>(doctest::detail::forward<L>(operand), m_at);
+	Expression_lhs<const L> operator<<(const L &&operand) {
+            return Expression_lhs<const L>(doctest::detail::forward<const L>(operand), m_at);
+        }
+
+        template <typename L,typename enable_if<!doctest::detail::is_rvalue_reference<L>::value,void >::type* = nullptr>
+	Expression_lhs<const L&> operator<<(const L &operand) {
+            return Expression_lhs<const L&>(operand, m_at);
         }
     };
 

@@ -3,9 +3,6 @@ figure out how to get the filters to the reporter interface so users can access 
 
 move down from /Wall to /W4 for Visual Studio... /Wall is absolutely unnecessary and handling it clutters the repository
 
-get rid of DOCTEST_DECLARE_DEFAULTS & friends...
-    AND get rid of DOCTEST_INTERFACE for simple structs!
-
 https://github.com/catchorg/Catch2/blob/master/docs/tostring.md#catchis_range-specialisation
 
 rope-ish startup of doctest - and filter duplicates on run()
