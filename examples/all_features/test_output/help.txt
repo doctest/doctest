@@ -44,9 +44,12 @@
  -cs,  --case-sensitive=<bool>         filters being treated as case sensitive
  -e,   --exit=<bool>                   exits after the tests finish
  -d,   --duration=<bool>               prints the time duration of each test
+ -m,   --minimal=<bool>                minimal console output (only failures)
+ -q,   --quiet=<bool>                  no console output
  -nt,  --no-throw=<bool>               skips exceptions-related assert checks
  -ne,  --no-exitcode=<bool>            returns (or exits) always with success
  -nr,  --no-run=<bool>                 skips all runtime doctest operations
+ -ni,  --no-intro=<bool>               omit the framework intro in the output
  -nv,  --no-version=<bool>             omit the framework version in the output
  -nc,  --no-colors=<bool>              disables colors in output
  -fc,  --force-colors=<bool>           use colors even when not in a tty
