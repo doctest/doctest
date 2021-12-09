@@ -8,9 +8,6 @@
             master branch
         </td>
         <td>
-            Windows <a href="https://ci.appveyor.com/project/onqtam/doctest/branch/master"><img src="https://ci.appveyor.com/api/projects/status/j89qxtahyw1dp4gd/branch/master?svg=true"></a>
-        </td>
-        <td>
             All <a href="https://github.com/onqtam/doctest/actions?query=branch%3Amaster"><img src="https://github.com/onqtam/doctest/workflows/CI/badge.svg?branch=master"></a>
         </td>
         <td>
@@ -27,18 +24,11 @@
             dev branch
         </td>
         <td>
-            Windows <a href="https://ci.appveyor.com/project/onqtam/doctest/branch/dev"><img src="https://ci.appveyor.com/api/projects/status/j89qxtahyw1dp4gd/branch/dev?svg=true"></a>
-        </td>
-        <td>
             All <a href="https://github.com/onqtam/doctest/actions?query=branch%3Adev"><img src="https://github.com/onqtam/doctest/workflows/CI/badge.svg?branch=dev"></a>
         </td>
         <td>
             <a href="https://coveralls.io/github/onqtam/doctest?branch=dev"><img src="https://coveralls.io/repos/github/onqtam/doctest/badge.svg?branch=dev"></a>
         </td>
-        <!--
-        <td>
-        </td>
-        -->
     </tr>
 </table>
 </b>
@@ -67,17 +57,18 @@ A complete example with a self-registering test that compiles to an executable l
 
 ![cover-example](scripts/data/using_doctest_888px_wide.gif)
 
-There are many C++ testing frameworks - [Catch](https://github.com/catchorg/Catch2), [Boost.Test](http://www.boost.org/doc/libs/1_64_0/libs/test/doc/html/index.html), [UnitTest++](https://github.com/unittest-cpp/unittest-cpp), [cpputest](https://github.com/cpputest/cpputest), [googletest](https://github.com/google/googletest) and many [other](https://en.wikipedia.org/wiki/List_of_unit_testing_frameworks#C.2B.2B).
+There are many C++ testing frameworks - [Catch](https://github.com/catchorg/Catch2), [Boost.Test](http://www.boost.org/doc/libs/1_64_0/libs/test/doc/html/index.html), [UnitTest++](https://github.com/unittest-cpp/unittest-cpp), [cpputest](https://github.com/cpputest/cpputest), [googletest](https://github.com/google/googletest) and [others](https://en.wikipedia.org/wiki/List_of_unit_testing_frameworks#C.2B.2B).
 
 The **key** differences between it and other testing frameworks are that it is light and unintrusive:
 - Ultra light on compile times both in terms of [**including the header**](doc/markdown/benchmarks.md#cost-of-including-the-header) and writing [**thousands of asserts**](doc/markdown/benchmarks.md#cost-of-an-assertion-macro)
 - Doesn't produce any warnings even on the [**most aggressive**](scripts/cmake/common.cmake#L84) warning levels for **MSVC**/**GCC**/**Clang**
-- Offers a way to remove **everything** testing-related from the binary with the [**```DOCTEST_CONFIG_DISABLE```**](doc/markdown/configuration.md#doctest_config_disable) identifier
-- [**thread-safe**](doc/markdown/faq.md#is-doctest-thread-aware) - asserts (and logging) can be used from multiple threads spawned from a single test case - [**example**](examples/all_features/concurrency.cpp)
+- Can remove **everything** testing-related from the binary with the [**```DOCTEST_CONFIG_DISABLE```**](doc/markdown/configuration.md#doctest_config_disable) identifier
+- [**thread-safe**](doc/markdown/faq.md#is-doctest-thread-aware) - asserts can be used from multiple threads spawned from a single test case - [**example**](examples/all_features/concurrency.cpp)
 - asserts can be used [**outside of a testing context**](doc/markdown/assertions.md#using-asserts-out-of-a-testing-context) - as a general purpose assert library - [**example**](examples/all_features/asserts_used_outside_of_tests.cpp)
 - Doesn't pollute the global namespace (everything is in namespace ```doctest```) and doesn't drag **any** headers with it
-- Very [**portable**](doc/markdown/features.md#extremely-portable) C++11 (use tag [**1.2.9**](https://github.com/onqtam/doctest/tree/1.2.9) for C++98) with over 180 different CI builds (static analysis, sanitizers...)
-- binaries (exe/dll) can use the test runner of another binary - so tests end up in a single registry - [**example**](examples/executable_dll_and_plugin/)
+- No global namespace pollution (everything is in ```doctest::```) & doesn't drag **any** headers with it
+- [**Portable**](doc/markdown/features.md#extremely-portable) C++11 (use tag [**1.2.9**](https://github.com/onqtam/doctest/tree/1.2.9) for C++98) with over 100 different CI builds (static analysis, sanitizers..)
+- binaries (exe/dll) can use the test runner of another binary => tests in a single registry - [**example**](examples/executable_dll_and_plugin/)
 
 ![cost-of-including-the-framework-header](scripts/data/benchmarks/header.png)
 
