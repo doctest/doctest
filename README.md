@@ -1,3 +1,5 @@
+# [>> doctest is looking for maintainers <<](https://github.com/doctest/doctest/issues/554)
+
 <p align="center"><img src="scripts/data/logo/logo_1.svg"></p>
 <b>
 <table>
@@ -54,8 +56,6 @@
 [![Language](https://img.shields.io/badge/language-C++-blue.svg)](https://isocpp.org/)
 [![documentation](https://img.shields.io/badge/documentation%20%20-online-blue.svg)](https://github.com/onqtam/doctest/blob/master/doc/markdown/readme.md#reference)
 -->
-
-# [doctest is looking for maintainers](https://github.com/doctest/doctest/issues/554)
 
 [<img src="https://cloud.githubusercontent.com/assets/8225057/5990484/70413560-a9ab-11e4-8942-1a63607c0b00.png" align="right">](http://www.patreon.com/onqtam)
 
