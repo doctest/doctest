@@ -12,6 +12,10 @@ set(script)
 set(suite)
 set(tests)
 
+if(NOT DEFINED ${add_labels})
+    set(add_labels 0)
+endif()
+
 function(add_command NAME)
   set(_args "")
   foreach(_arg ${ARGN})
