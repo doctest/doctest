@@ -1,5 +1,82 @@
 # Change Log
 
+## [2.4.7](https://github.com/doctest/doctest/tree/2.4.7) (2021-12-10)
+[Full Changelog](https://github.com/doctest/doctest/compare/2.4.6...2.4.7)
+
+**Implemented enhancements:**
+
+- Add a default Bazel BUILD file [\#433](https://github.com/doctest/doctest/issues/433)
+
+**Fixed bugs:**
+
+- Stack-buffer-overflow probably because char array is viewed as NULL terminated string [\#476](https://github.com/doctest/doctest/issues/476)
+
+**Closed issues:**
+
+- "C4834: discarding return value" with REQUIRE\_THROWS [\#549](https://github.com/doctest/doctest/issues/549)
+- Xcode 11.3 is gone from macOS-latest \(=macOS-11\) [\#547](https://github.com/doctest/doctest/issues/547)
+- is it possible to define dependency for CHECKs [\#545](https://github.com/doctest/doctest/issues/545)
+- Output summary explanation [\#541](https://github.com/doctest/doctest/issues/541)
+- compiler errors in doctest.h using cmake in CLion [\#540](https://github.com/doctest/doctest/issues/540)
+- Fails to build in VS2013 because of constexpr [\#539](https://github.com/doctest/doctest/issues/539)
+- -Wreserved-identifier warnings with Clang 13.0.0 [\#536](https://github.com/doctest/doctest/issues/536)
+- Build fails with latest MSVC 2019 \(v16.11\) due to /WX [\#535](https://github.com/doctest/doctest/issues/535)
+- VS 16.11 warning about unreferenced function with internal linkage [\#533](https://github.com/doctest/doctest/issues/533)
+- Faq googletest mocking dead link [\#532](https://github.com/doctest/doctest/issues/532)
+- FR: Documentation: FAQ: Add sectoin 'multiple files' [\#526](https://github.com/doctest/doctest/issues/526)
+- CMAKE: doctest\_discover\_tests\(\) error when ADD\_LABELS is not specified [\#524](https://github.com/doctest/doctest/issues/524)
+- Register tests based on test data available [\#521](https://github.com/doctest/doctest/issues/521)
+- naming override in different testcase files [\#517](https://github.com/doctest/doctest/issues/517)
+- Segmentation fault during the compilation without the copy elision optimization [\#515](https://github.com/doctest/doctest/issues/515)
+- Compiler warnings on Xcode 12.5 [\#514](https://github.com/doctest/doctest/issues/514)
+- Using filter `-sc` does not work properly? [\#513](https://github.com/doctest/doctest/issues/513)
+- \[question\] Example of tests in production code & DLLs & shared libraries? [\#511](https://github.com/doctest/doctest/issues/511)
+- Dumping fixture state to disk on error [\#509](https://github.com/doctest/doctest/issues/509)
+- Macros construct reserved identifiers [\#507](https://github.com/doctest/doctest/issues/507)
+- Running doctest on embedded ARM Cortex µCs [\#506](https://github.com/doctest/doctest/issues/506)
+- Asserts Outside of Tests Example Does Not Link [\#504](https://github.com/doctest/doctest/issues/504)
+- \[FEATURE REQUEST\] Quiet flag [\#503](https://github.com/doctest/doctest/issues/503)
+- Compile error on Intel C++ Classic Compilers [\#502](https://github.com/doctest/doctest/issues/502)
+- compiling doctest in 32-bit with \_\_stdcall calling convention fails [\#500](https://github.com/doctest/doctest/issues/500)
+- Duplicate 'const' compilation error from TEST\_CASE\_CLASS macro [\#498](https://github.com/doctest/doctest/issues/498)
+- Packed fields can't be accessed in 2.4.6 [\#495](https://github.com/doctest/doctest/issues/495)
+- Dangling pointers with .str\(\).c\_str\(\) [\#494](https://github.com/doctest/doctest/issues/494)
+- Automatic adding of TEST\_SUITE labels to discovered tests fails if ADD\_LABELS not set [\#489](https://github.com/doctest/doctest/issues/489)
+- Adding a bunch of REQUIRE/CHECK utilities [\#487](https://github.com/doctest/doctest/issues/487)
+- Warning C4114 in MSVC [\#485](https://github.com/doctest/doctest/issues/485)
+- Own repository [\#410](https://github.com/doctest/doctest/issues/410)
+- Linking problem with Clang 10 on Windows [\#362](https://github.com/doctest/doctest/issues/362)
+- Add option not to print the intro text [\#342](https://github.com/doctest/doctest/issues/342)
+- \[Feature\] Better integration with tools \(VS Code Test Adapter Extension\) [\#320](https://github.com/doctest/doctest/issues/320)
+- vscode test explorer [\#303](https://github.com/doctest/doctest/issues/303)
+- Want an option not to print any intro [\#245](https://github.com/doctest/doctest/issues/245)
+- Add way to disable printing of intro [\#181](https://github.com/doctest/doctest/issues/181)
+
+**Merged pull requests:**
+
+- Make String::operator+ non-member [\#564](https://github.com/doctest/doctest/pull/564) ([Saalvage](https://github.com/Saalvage))
+- Add -minimal flag [\#562](https://github.com/doctest/doctest/pull/562) ([Saalvage](https://github.com/Saalvage))
+- Quiet flag [\#561](https://github.com/doctest/doctest/pull/561) ([Saalvage](https://github.com/Saalvage))
+- Fix redefinition error while using double time DOCTEST\_ANONYMOUS\(DOCTEST\_CAPTURE\_\) [\#557](https://github.com/doctest/doctest/pull/557) ([isaevil](https://github.com/isaevil))
+- Fix error: missing initializer for member doctest::detail::TestSuite [\#556](https://github.com/doctest/doctest/pull/556) ([isaevil](https://github.com/isaevil))
+- Xcode 11.3 with macos 10.15 [\#548](https://github.com/doctest/doctest/pull/548) ([jsoref](https://github.com/jsoref))
+- Spelling [\#546](https://github.com/doctest/doctest/pull/546) ([jsoref](https://github.com/jsoref))
+- Fix build with -Wunused-but-set-variable [\#543](https://github.com/doctest/doctest/pull/543) ([jktjkt](https://github.com/jktjkt))
+- build\(meson\): use `override\_dependency` if supported [\#538](https://github.com/doctest/doctest/pull/538) ([Tachi107](https://github.com/Tachi107))
+- Fix google death test URL [\#528](https://github.com/doctest/doctest/pull/528) ([emrecil](https://github.com/emrecil))
+- Fixing issue with doctestAddTests.cmake [\#527](https://github.com/doctest/doctest/pull/527) ([jharmer95](https://github.com/jharmer95))
+- Replace gendered pronouns [\#525](https://github.com/doctest/doctest/pull/525) ([mletterle](https://github.com/mletterle))
+- Fixed intel compiler parser bug. Should fix \#502 [\#523](https://github.com/doctest/doctest/pull/523) ([BerengerBerthoul](https://github.com/BerengerBerthoul))
+- specifying working directory for execute\_process in doctest\_discover\_tests [\#518](https://github.com/doctest/doctest/pull/518) ([philbucher](https://github.com/philbucher))
+- Fix the logic that depends on optional copy elision optimization [\#516](https://github.com/doctest/doctest/pull/516) ([ivankochin](https://github.com/ivankochin))
+- Fix reserved identifiers [\#510](https://github.com/doctest/doctest/pull/510) ([ts826848](https://github.com/ts826848))
+- Fix build with GCC 11 [\#505](https://github.com/doctest/doctest/pull/505) ([jktjkt](https://github.com/jktjkt))
+- minor fixes in MPI docs [\#499](https://github.com/doctest/doctest/pull/499) ([philbucher](https://github.com/philbucher))
+- Add a minimal bazel config [\#497](https://github.com/doctest/doctest/pull/497) ([elliottt](https://github.com/elliottt))
+- Handle escaped commas in parsed arguments [\#493](https://github.com/doctest/doctest/pull/493) ([friendlyanon](https://github.com/friendlyanon))
+- Fixes Issue 476 . When running executables with "-s" stringifyBinaryE… [\#491](https://github.com/doctest/doctest/pull/491) ([navinp0304](https://github.com/navinp0304))
+- Set variable to 0 if not set [\#490](https://github.com/doctest/doctest/pull/490) ([shivupa](https://github.com/shivupa))
+
 ## [2.4.6](https://github.com/doctest/doctest/tree/2.4.6) (2021-03-22)
 [Full Changelog](https://github.com/doctest/doctest/compare/2.4.5...2.4.6)
 
