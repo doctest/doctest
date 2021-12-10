@@ -1,11 +1,13 @@
 - update version in version.txt (following semver)
 - run update_stuff.py from the scripts folder
-- regenerate test output by running cmake with -DDOCTEST_TEST_MODE=COLLECT and then running ctest
+- regenerate test output
+    - first run cmake with -DDOCTEST_TEST_MODE=COLLECT
+    - then run ctest & git add the changed and/or new .txt files
 - run update_changelog.py to update the changelog based on the closed issues & PRs
     - might need credentials/access tokens
     - might need a tmp folder in the root drive (C or D) if on Windows
 - commit in dev
-- rebase dev onto master
+- rebase dev onto master (linear history instead of merge commits)
 - push all branches (git push --all)
 - create github release with the same semver tag as the changelog
     - copy the text from a previous release and update the version numbers & dates
