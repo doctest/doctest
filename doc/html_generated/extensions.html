@@ -28,7 +28,7 @@ See [**the complete test**](../../examples/mpi/mpi.cpp) and [**the configuration
 
 int my_function_to_test(MPI_Comm comm) {
   int rank;
-  MPI_comm_rank(comm,&rank);
+  MPI_Comm_rank(comm,&rank);
   if (rank == 0) {
     return 10;
   }
@@ -73,7 +73,7 @@ mpirun -np 2 unit_test_executable.exe
 ```
 #define DOCTEST_CONFIG_IMPLEMENT
 
-#include "doctest/mpi/doctest.h"
+#include "doctest/extensions/doctest_mpi.h"
 
 int main(int argc, char** argv) {
   MPI_Init(&argc, &argv);
