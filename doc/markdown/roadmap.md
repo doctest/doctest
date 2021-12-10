@@ -14,9 +14,6 @@ Planned features for future releases - order changes constantly... Also look thr
     - ability to redirect the stdout/stderr from test cases and capture it - like Catch does it
     - xUnit/TeamCity reporter
     - compact reporter
-    - options
-        - absolutely no output on success (AKA quiet mode)
-        - summary only (verbosity levels?)
 - matchers - should investigate what they are - look at google test/mock and Catch (also predicates and boost test)
 - header with extensions
     - demangling with the use of the cxxabi header
