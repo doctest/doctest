@@ -6,19 +6,19 @@
       <Exception crash="false">
         std::string!
       </Exception>
-      <OverallResultsAsserts successes="0" failures="0"/>
+      <OverallResultsAsserts successes="0" failures="0" test_case_success="false"/>
     </TestCase>
     <TestCase name="will end from a const char* exception" filename="coverage_maxout.cpp" line="0">
       <Exception crash="false">
         const char*!
       </Exception>
-      <OverallResultsAsserts successes="0" failures="0"/>
+      <OverallResultsAsserts successes="0" failures="0" test_case_success="false"/>
     </TestCase>
     <TestCase name="will end from an unknown exception" filename="coverage_maxout.cpp" line="0">
       <Exception crash="false">
         unknown exception
       </Exception>
-      <OverallResultsAsserts successes="0" failures="0"/>
+      <OverallResultsAsserts successes="0" failures="0" test_case_success="false"/>
     </TestCase>
   </TestSuite>
   <OverallResultsAsserts successes="0" failures="0"/>

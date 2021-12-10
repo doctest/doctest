@@ -63,7 +63,7 @@
     <TestCase name="fails from an exception but gets re-entered to traverse all subcases" filename="subcases.cpp" line="0" skipped="true"/>
   </TestSuite>
   <TestSuite name="test suite with a description">
-    <TestCase name="fails more times as it should" filename="test_cases_and_suites.cpp" line="0" description="regarding failures" skipped="true"/>
+    <TestCase name="fails more times than it should" filename="test_cases_and_suites.cpp" line="0" description="regarding failures" skipped="true"/>
   </TestSuite>
   <TestSuite>
     <TestCase name="fixtured test" filename="header.h" line="0" skipped="true"/>

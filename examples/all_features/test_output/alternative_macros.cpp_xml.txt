@@ -11,7 +11,7 @@
         <SubCase name="baz" filename="alternative_macros.cpp" line="0">
         </SubCase>
       </SubCase>
-      <OverallResultsAsserts successes="6" failures="0"/>
+      <OverallResultsAsserts successes="6" failures="0" test_case_success="true"/>
     </TestCase>
   </TestSuite>
   <OverallResultsAsserts successes="6" failures="0"/>

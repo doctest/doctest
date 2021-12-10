@@ -3,10 +3,10 @@
   <Options order_by="file" rand_seed="324" first="0" last="4294967295" abort_after="0" subcase_filter_levels="2147483647" case_sensitive="false" no_throw="false" no_skip="false"/>
   <TestSuite>
     <TestCase name="no checks" filename="no_failures.cpp" line="0">
-      <OverallResultsAsserts successes="0" failures="0"/>
+      <OverallResultsAsserts successes="0" failures="0" test_case_success="true"/>
     </TestCase>
     <TestCase name="simple check" filename="no_failures.cpp" line="0">
-      <OverallResultsAsserts successes="1" failures="0"/>
+      <OverallResultsAsserts successes="1" failures="0" test_case_success="true"/>
     </TestCase>
   </TestSuite>
   <TestSuite name="some suite">
@@ -14,7 +14,7 @@
       <Message type="FATAL ERROR" filename="no_failures.cpp" line="0">
         <Text/>
       </Message>
-      <OverallResultsAsserts successes="0" failures="1"/>
+      <OverallResultsAsserts successes="0" failures="1" test_case_success="true"/>
     </TestCase>
   </TestSuite>
   <TestSuite>
@@ -22,7 +22,7 @@
       <Message type="FATAL ERROR" filename="no_failures.cpp" line="0">
         <Text/>
       </Message>
-      <OverallResultsAsserts successes="0" failures="1"/>
+      <OverallResultsAsserts successes="0" failures="1" test_case_success="true"/>
     </TestCase>
   </TestSuite>
   <OverallResultsAsserts successes="1" failures="2"/>

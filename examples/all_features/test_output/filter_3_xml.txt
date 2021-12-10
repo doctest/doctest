@@ -5,7 +5,7 @@
     <TestCase name="lots of nested subcases" filename="subcases.cpp" line="0">
 
 root
-      <OverallResultsAsserts successes="0" failures="0"/>
+      <OverallResultsAsserts successes="0" failures="0" test_case_success="true"/>
     </TestCase>
     <TestCase name="subcases can be used in a separate function as well" filename="subcases.cpp" line="0">
       <SubCase name="from function..." filename="subcases.cpp" line="0">
@@ -27,22 +27,22 @@ root
           lala
         </Text>
       </Message>
-      <OverallResultsAsserts successes="0" failures="0"/>
+      <OverallResultsAsserts successes="0" failures="0" test_case_success="true"/>
     </TestCase>
     <TestCase name="  Scenario: vectors can be sized and resized" filename="subcases.cpp" line="0">
-      <OverallResultsAsserts successes="0" failures="0"/>
+      <OverallResultsAsserts successes="0" failures="0" test_case_success="true"/>
     </TestCase>
     <TestCase name="test case should fail even though the last subcase passes" filename="subcases.cpp" line="0">
-      <OverallResultsAsserts successes="0" failures="0"/>
+      <OverallResultsAsserts successes="0" failures="0" test_case_success="true"/>
     </TestCase>
     <TestCase name="fails from an exception but gets re-entered to traverse all subcases" filename="subcases.cpp" line="0">
-      <OverallResultsAsserts successes="0" failures="0"/>
+      <OverallResultsAsserts successes="0" failures="0" test_case_success="true"/>
     </TestCase>
     <TestCase name="Nested - related to https://github.com/onqtam/doctest/issues/282" filename="subcases.cpp" line="0">
-      <OverallResultsAsserts successes="0" failures="0"/>
+      <OverallResultsAsserts successes="0" failures="0" test_case_success="true"/>
     </TestCase>
     <TestCase name="subcases with changing names" filename="subcases.cpp" line="0">
-      <OverallResultsAsserts successes="0" failures="0"/>
+      <OverallResultsAsserts successes="0" failures="0" test_case_success="true"/>
     </TestCase>
   </TestSuite>
   <OverallResultsAsserts successes="0" failures="0"/>

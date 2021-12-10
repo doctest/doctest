@@ -73,7 +73,7 @@
           i := 4
         </Info>
       </Expression>
-      <OverallResultsAsserts successes="0" failures="5"/>
+      <OverallResultsAsserts successes="0" failures="5" test_case_success="false"/>
     </TestCase>
     <TestCase name="a test case that will end from an exception" filename="logging.cpp" line="0">
       <Message type="ERROR" filename="logging.cpp" line="0">
@@ -110,13 +110,13 @@
       <Exception crash="false">
         0
       </Exception>
-      <OverallResultsAsserts successes="0" failures="2"/>
+      <OverallResultsAsserts successes="0" failures="2" test_case_success="false"/>
     </TestCase>
     <TestCase name="a test case that will end from an exception and should print the unprinted context" filename="logging.cpp" line="0">
       <Exception crash="false">
         0
       </Exception>
-      <OverallResultsAsserts successes="0" failures="0"/>
+      <OverallResultsAsserts successes="0" failures="0" test_case_success="false"/>
     </TestCase>
     <TestCase name="third party asserts can report failures to doctest" filename="logging.cpp" line="0">
       <Message type="ERROR" filename="logging.cpp" line="0">
@@ -129,7 +129,7 @@
           MY_ASSERT_FATAL(false)
         </Text>
       </Message>
-      <OverallResultsAsserts successes="0" failures="2"/>
+      <OverallResultsAsserts successes="0" failures="2" test_case_success="false"/>
     </TestCase>
     <TestCase name="explicit failures 1" filename="logging.cpp" line="0">
       <Message type="ERROR" filename="logging.cpp" line="0">
@@ -142,7 +142,7 @@
           reached!
         </Text>
       </Message>
-      <OverallResultsAsserts successes="0" failures="1"/>
+      <OverallResultsAsserts successes="0" failures="1" test_case_success="false"/>
     </TestCase>
     <TestCase name="explicit failures 2" filename="logging.cpp" line="0">
       <Message type="FATAL ERROR" filename="logging.cpp" line="0">
@@ -150,7 +150,7 @@
           fail the test case and also end it
         </Text>
       </Message>
-      <OverallResultsAsserts successes="0" failures="1"/>
+      <OverallResultsAsserts successes="0" failures="1" test_case_success="false"/>
     </TestCase>
   </TestSuite>
   <OverallResultsAsserts successes="0" failures="11"/>

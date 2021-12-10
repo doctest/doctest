@@ -195,7 +195,7 @@
           0
         </Expanded>
       </Expression>
-      <OverallResultsAsserts successes="16" failures="0"/>
+      <OverallResultsAsserts successes="16" failures="0" test_case_success="true"/>
     </TestCase>
   </TestSuite>
   <OverallResultsAsserts successes="16" failures="0"/>

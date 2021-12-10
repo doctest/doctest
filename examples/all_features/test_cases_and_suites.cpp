@@ -67,7 +67,7 @@ TEST_SUITE("test suite with a description" * doctest::description("regarding fai
     TEST_CASE("doesn't fail but it should have" * doctest::should_fail()) {}
 
     TEST_CASE("fails 1 time as it should" * doctest::expected_failures(1)) { FAIL(""); }
-    TEST_CASE("fails more times as it should" * doctest::expected_failures(1)) {
+    TEST_CASE("fails more times than it should" * doctest::expected_failures(1)) {
         FAIL_CHECK("");
         FAIL_CHECK("");
     }

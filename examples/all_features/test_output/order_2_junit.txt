@@ -7,7 +7,7 @@
     <testcase classname="test_cases_and_suites.cpp" name="fails - and its allowed" status="run"/>
     <testcase classname="test_cases_and_suites.cpp" name="fails 1 time as it should" status="run"/>
     <testcase classname="test_cases_and_suites.cpp" name="fails as it should" status="run"/>
-    <testcase classname="test_cases_and_suites.cpp" name="fails more times as it should" status="run"/>
+    <testcase classname="test_cases_and_suites.cpp" name="fails more times than it should" status="run"/>
     <testcase classname="test_cases_and_suites.cpp" name="fixtured test - not part of a test suite" status="run">
       <failure message="21 == 85" type="CHECK">
 test_cases_and_suites.cpp(0):

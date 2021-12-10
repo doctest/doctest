@@ -6,7 +6,7 @@
       <Message type="FATAL ERROR" filename="header.h" line="0">
         <Text/>
       </Message>
-      <OverallResultsAsserts successes="0" failures="1"/>
+      <OverallResultsAsserts successes="0" failures="1" test_case_success="false"/>
     </TestCase>
   </TestSuite>
   <TestSuite>
@@ -14,16 +14,16 @@
       <Message type="FATAL ERROR" filename="header.h" line="0">
         <Text/>
       </Message>
-      <OverallResultsAsserts successes="0" failures="1"/>
+      <OverallResultsAsserts successes="0" failures="1" test_case_success="false"/>
     </TestCase>
     <TestCase name="template 2&lt;doctest::String>" filename="header.h" line="0">
       <Message type="FATAL ERROR" filename="header.h" line="0">
         <Text/>
       </Message>
-      <OverallResultsAsserts successes="0" failures="1"/>
+      <OverallResultsAsserts successes="0" failures="1" test_case_success="false"/>
     </TestCase>
     <TestCase name="fixtured test" filename="header.h" line="0">
-      <OverallResultsAsserts successes="1" failures="0"/>
+      <OverallResultsAsserts successes="1" failures="0" test_case_success="true"/>
     </TestCase>
   </TestSuite>
   <OverallResultsAsserts successes="1" failures="3"/>

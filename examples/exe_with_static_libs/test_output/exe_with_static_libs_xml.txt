@@ -4,19 +4,19 @@
   <TestSuite>
     <TestCase name="asd" filename="lib_1_src1.cpp" line="0">
 hello from <lib_1_src1.cpp>
-      <OverallResultsAsserts successes="0" failures="0"/>
+      <OverallResultsAsserts successes="0" failures="0" test_case_success="true"/>
     </TestCase>
     <TestCase name="asd" filename="lib_1_src2.cpp" line="0">
 hello from <lib_1_src2.cpp>
-      <OverallResultsAsserts successes="0" failures="0"/>
+      <OverallResultsAsserts successes="0" failures="0" test_case_success="true"/>
     </TestCase>
     <TestCase name="asd" filename="lib_2_src.cpp" line="0">
 hello from <lib_2_src.cpp>
-      <OverallResultsAsserts successes="0" failures="0"/>
+      <OverallResultsAsserts successes="0" failures="0" test_case_success="true"/>
     </TestCase>
     <TestCase name="main" filename="main.cpp" line="0">
 hello from <main.cpp>
-      <OverallResultsAsserts successes="0" failures="0"/>
+      <OverallResultsAsserts successes="0" failures="0" test_case_success="true"/>
     </TestCase>
   </TestSuite>
   <OverallResultsAsserts successes="0" failures="0"/>

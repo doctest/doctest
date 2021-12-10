@@ -26,7 +26,7 @@ CHECK( data == 85 ) is NOT correct!
     <testcase classname="test_cases_and_suites.cpp" name="fails as it should" status="run"/>
     <testcase classname="test_cases_and_suites.cpp" name="doesn't fail but it should have" status="run"/>
     <testcase classname="test_cases_and_suites.cpp" name="fails 1 time as it should" status="run"/>
-    <testcase classname="test_cases_and_suites.cpp" name="fails more times as it should" status="run"/>
+    <testcase classname="test_cases_and_suites.cpp" name="fails more times than it should" status="run"/>
     <testcase classname="test_cases_and_suites.cpp" name="normal test in a test suite from a decorator" status="run"/>
   </testsuite>
 </testsuites>

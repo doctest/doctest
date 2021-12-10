@@ -37,7 +37,7 @@ Failed as expected so marking it as not failed
 test_cases_and_suites.cpp(0):
 DESCRIPTION: regarding failures
 TEST SUITE: test suite with a description
-TEST CASE:  fails more times as it should
+TEST CASE:  fails more times than it should
 
 test_cases_and_suites.cpp(0): ERROR: 
 

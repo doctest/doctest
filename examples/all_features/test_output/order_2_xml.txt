@@ -3,42 +3,42 @@
   <Options order_by="name" rand_seed="324" first="0" last="4294967295" abort_after="0" subcase_filter_levels="2147483647" case_sensitive="false" no_throw="false" no_skip="false"/>
   <TestSuite>
     <TestCase name="an empty test that will succeed - not part of a test suite" filename="test_cases_and_suites.cpp" line="0">
-      <OverallResultsAsserts successes="0" failures="0"/>
+      <OverallResultsAsserts successes="0" failures="0" test_case_success="true"/>
     </TestCase>
   </TestSuite>
   <TestSuite name="test suite with a description">
     <TestCase name="doesn't fail but it should have" filename="test_cases_and_suites.cpp" line="0" description="regarding failures" should_fail="true">
-      <OverallResultsAsserts successes="0" failures="0"/>
+      <OverallResultsAsserts successes="0" failures="0" test_case_success="false"/>
     </TestCase>
     <TestCase name="doesn't fail which is fine" filename="test_cases_and_suites.cpp" line="0" description="regarding failures" may_fail="true">
-      <OverallResultsAsserts successes="0" failures="0"/>
+      <OverallResultsAsserts successes="0" failures="0" test_case_success="true"/>
     </TestCase>
     <TestCase name="fails - and its allowed" filename="test_cases_and_suites.cpp" line="0" description="regarding failures" may_fail="true">
       <Message type="FATAL ERROR" filename="test_cases_and_suites.cpp" line="0">
         <Text/>
       </Message>
-      <OverallResultsAsserts successes="0" failures="1"/>
+      <OverallResultsAsserts successes="0" failures="1" test_case_success="true"/>
     </TestCase>
     <TestCase name="fails 1 time as it should" filename="test_cases_and_suites.cpp" line="0" description="regarding failures">
       <Message type="FATAL ERROR" filename="test_cases_and_suites.cpp" line="0">
         <Text/>
       </Message>
-      <OverallResultsAsserts successes="0" failures="1" expected_failures="1"/>
+      <OverallResultsAsserts successes="0" failures="1" test_case_success="true" expected_failures="1"/>
     </TestCase>
     <TestCase name="fails as it should" filename="test_cases_and_suites.cpp" line="0" description="regarding failures" should_fail="true">
       <Message type="FATAL ERROR" filename="test_cases_and_suites.cpp" line="0">
         <Text/>
       </Message>
-      <OverallResultsAsserts successes="0" failures="1"/>
+      <OverallResultsAsserts successes="0" failures="1" test_case_success="true"/>
     </TestCase>
-    <TestCase name="fails more times as it should" filename="test_cases_and_suites.cpp" line="0" description="regarding failures">
+    <TestCase name="fails more times than it should" filename="test_cases_and_suites.cpp" line="0" description="regarding failures">
       <Message type="ERROR" filename="test_cases_and_suites.cpp" line="0">
         <Text/>
       </Message>
       <Message type="ERROR" filename="test_cases_and_suites.cpp" line="0">
         <Text/>
       </Message>
-      <OverallResultsAsserts successes="0" failures="2" expected_failures="1"/>
+      <OverallResultsAsserts successes="0" failures="2" test_case_success="false" expected_failures="1"/>
     </TestCase>
   </TestSuite>
   <TestSuite>
@@ -51,7 +51,7 @@
           21 == 85
         </Expanded>
       </Expression>
-      <OverallResultsAsserts successes="0" failures="1"/>
+      <OverallResultsAsserts successes="0" failures="1" test_case_success="false"/>
     </TestCase>
   </TestSuite>
   <TestSuite name="ts1">
@@ -61,7 +61,7 @@
           failing because of the timeout decorator!
         </Text>
       </Message>
-      <OverallResultsAsserts successes="0" failures="0"/>
+      <OverallResultsAsserts successes="0" failures="0" test_case_success="false"/>
     </TestCase>
   </TestSuite>
   <TestSuite name="scoped test suite">
@@ -69,13 +69,13 @@
       <Message type="FATAL ERROR" filename="test_cases_and_suites.cpp" line="0">
         <Text/>
       </Message>
-      <OverallResultsAsserts successes="0" failures="1"/>
+      <OverallResultsAsserts successes="0" failures="1" test_case_success="false"/>
     </TestCase>
     <TestCase name="part of scoped 2" filename="test_cases_and_suites.cpp" line="0">
       <Message type="FATAL ERROR" filename="test_cases_and_suites.cpp" line="0">
         <Text/>
       </Message>
-      <OverallResultsAsserts successes="0" failures="1"/>
+      <OverallResultsAsserts successes="0" failures="1" test_case_success="false"/>
     </TestCase>
   </TestSuite>
   <TestSuite name="some TS">
@@ -83,7 +83,7 @@
       <Message type="FATAL ERROR" filename="test_cases_and_suites.cpp" line="0">
         <Text/>
       </Message>
-      <OverallResultsAsserts successes="0" failures="1"/>
+      <OverallResultsAsserts successes="0" failures="1" test_case_success="false"/>
     </TestCase>
   </TestSuite>
   <TestSuite>
@@ -91,13 +91,13 @@
       <Message type="FATAL ERROR" filename="test_cases_and_suites.cpp" line="0">
         <Text/>
       </Message>
-      <OverallResultsAsserts successes="0" failures="1"/>
+      <OverallResultsAsserts successes="0" failures="1" test_case_success="true"/>
     </TestCase>
     <TestCase name="should fail because of an exception" filename="test_cases_and_suites.cpp" line="0">
       <Exception crash="false">
         0
       </Exception>
-      <OverallResultsAsserts successes="1" failures="0"/>
+      <OverallResultsAsserts successes="1" failures="0" test_case_success="false"/>
     </TestCase>
   </TestSuite>
   <TestSuite name="skipped test cases">
@@ -105,7 +105,7 @@
       <Message type="FATAL ERROR" filename="test_cases_and_suites.cpp" line="0">
         <Text/>
       </Message>
-      <OverallResultsAsserts successes="0" failures="1"/>
+      <OverallResultsAsserts successes="0" failures="1" test_case_success="false"/>
     </TestCase>
   </TestSuite>
   <OverallResultsAsserts successes="1" failures="11"/>

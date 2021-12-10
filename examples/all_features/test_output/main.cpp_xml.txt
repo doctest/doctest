@@ -3,7 +3,7 @@
   <Options order_by="file" rand_seed="324" first="0" last="4294967295" abort_after="0" subcase_filter_levels="2147483647" case_sensitive="false" no_throw="false" no_skip="false"/>
   <TestSuite>
     <TestCase name="[string] testing std::string" filename="main.cpp" line="0">
-      <OverallResultsAsserts successes="1" failures="0"/>
+      <OverallResultsAsserts successes="1" failures="0" test_case_success="true"/>
     </TestCase>
   </TestSuite>
   <OverallResultsAsserts successes="1" failures="0"/>
