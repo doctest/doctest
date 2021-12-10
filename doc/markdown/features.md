@@ -14,7 +14,7 @@
 - 0 warnings even with the most aggressive flags (on all tested compilers!!!)
 	- ```-Weverything -pedantic``` for **clang**
 	- ```-Wall -Wextra -pedantic``` and **>> over 35 <<** other warnings **not** covered by these flags for **GCC**!!! - see [**here**](../../scripts/cmake/common.cmake#L84)
-	- ```/Wall``` for **MSVC** (except for: ```C4514```, ```C4571```, ```C4710```, ```C4711```)
+	- ```/Wall``` for **MSVC**
 - doesn't error on unrecognized [**command line**](commandline.md) options and supports prefixes for interop with client command line parsing
 - can set options [**procedurally**](main.md) and not deal with passing ```argc```/```argv``` from the command line
 - doesn't leave warnings disabled after itself
