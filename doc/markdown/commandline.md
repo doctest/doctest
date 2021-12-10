@@ -48,7 +48,7 @@ All the options can also be set with code (defaults/overrides) if the user [**su
 | ```-nt``` &nbsp; ```--no-throw=<bool>``` | Skips [**exceptions-related assertion**](assertions.md#exceptions) checks |
 | ```-ne``` &nbsp; ```--no-exitcode=<bool>``` | Always returns a successful exit code - even if a test case has failed |
 | ```-nr``` &nbsp; ```--no-run=<bool>``` | Skips all runtime **doctest** operations (except the test registering which happens before the program enters ```main()```). This is useful if the testing framework is integrated into a client codebase which has [**provided the ```main()``` entry point**](main.md) and the user wants to skip running the tests and just use the program |
-| ```-nv``` &nbsp; ```--no-intro=<bool>``` | Omits the framework intro in the output |
+| ```-ni``` &nbsp; ```--no-intro=<bool>``` | Omits the framework intro in the output |
 | ```-nv``` &nbsp; ```--no-version=<bool>``` | Omits the framework version in the output |
 | ```-nc``` &nbsp; ```--no-colors=<bool>``` | Disables colors in the output |
 | ```-fc``` &nbsp; ```--force-colors=<bool>``` | Forces the use of colors even when a tty cannot be detected |
