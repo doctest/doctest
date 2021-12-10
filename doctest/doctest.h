@@ -523,7 +523,6 @@ public:
     String& operator=(const String& other);
 
     String& operator+=(const String& other);
-    String  operator+(const String& other) const;
 
     String(String&& other);
     String& operator=(String&& other);
@@ -545,6 +544,8 @@ public:
     int compare(const char* other, bool no_case = false) const;
     int compare(const String& other, bool no_case = false) const;
 };
+
+DOCTEST_INTERFACE String operator+(const String& lhs, const String& rhs);
 
 DOCTEST_INTERFACE bool operator==(const String& lhs, const String& rhs);
 DOCTEST_INTERFACE bool operator!=(const String& lhs, const String& rhs);
@@ -3433,9 +3434,6 @@ String& String::operator+=(const String& other) {
     return *this;
 }
 
-// NOLINTNEXTLINE(clang-analyzer-cplusplus.NewDeleteLeaks)
-String String::operator+(const String& other) const { return String(*this) += other; }
-
 String::String(String&& other) {
     using namespace std;
     memcpy(buf, other.buf, len);
@@ -3488,6 +3486,9 @@ int String::compare(const char* other, bool no_case) const {
 int String::compare(const String& other, bool no_case) const {
     return compare(other.c_str(), no_case);
 }
+
+// NOLINTNEXTLINE(clang-analyzer-cplusplus.NewDeleteLeaks)
+String operator+(const String& lhs, const String& rhs) { return  String(lhs) += rhs; }
 
 // clang-format off
 bool operator==(const String& lhs, const String& rhs) { return lhs.compare(rhs) == 0; }
@@ -3691,7 +3692,7 @@ bool operator>(const Approx& lhs, double rhs) { return lhs.m_value > rhs && lhs 
 
 String toString(const Approx& in) {
     // NOLINTNEXTLINE(clang-analyzer-cplusplus.NewDeleteLeaks)
-    return String("Approx( ") + doctest::toString(in.m_value) + " )";
+    return "Approx( " + doctest::toString(in.m_value) + " )";
 }
 const ContextOptions* getContextOptions() { return DOCTEST_BRANCH_ON_DISABLED(nullptr, g_cs); }
 
@@ -4609,7 +4610,7 @@ namespace detail {
         }
 
         if(m_exception.size())
-            m_exception = String("\"") + m_exception + "\"";
+            m_exception = "\"" + m_exception + "\"";
 
         if(is_running_in_test) {
             addAssert(m_at);
