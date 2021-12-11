@@ -250,8 +250,6 @@ namespace {
 } // namespace
 
 namespace detail {
-    void my_memcpy(void* dest, const void* src, unsigned num) { memcpy(dest, src, num); }
-
     String rawMemoryToString(const void* object, unsigned size) {
         // Reverse order for little endian architectures
         int i = 0, end = static_cast<int>(size), inc = 1;
@@ -270,19 +268,16 @@ namespace detail {
 
     DOCTEST_THREAD_LOCAL std::ostringstream g_oss; // NOLINT(cert-err58-cpp)
 
-    //reset default value is true. getTlsOss(bool reset=true);
-    std::ostream* getTlsOss(bool reset) {
-        if(reset) {
-          g_oss.clear(); // there shouldn't be anything worth clearing in the flags
-          g_oss.str(""); // the slow way of resetting a string stream
-          //g_oss.seekp(0); // optimal reset - as seen here: https://stackoverflow.com/a/624291/3162383
-	}
+    std::ostream* getTlsOss() {
         return &g_oss;
     }
 
     String getTlsOssResult() {
-        //g_oss << std::ends; // needed - as shown here: https://stackoverflow.com/a/624291/3162383
-        return g_oss.str().c_str();
+        g_oss << std::ends; // append terminating null char
+        String res = g_oss.str().c_str();
+        g_oss.clear(); // there shouldn't be anything worth clearing in the flags
+        g_oss.seekp(0); // optimal reset - as seen here: https://stackoverflow.com/a/624291/3162383
+        return res;
     }
 
 #ifndef DOCTEST_CONFIG_DISABLE

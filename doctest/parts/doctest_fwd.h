@@ -862,10 +862,8 @@ namespace detail {
     template<class T>
     using has_insertion_operator = has_insertion_operator_impl::check<const T>;
 
-    DOCTEST_INTERFACE void my_memcpy(void* dest, const void* src, unsigned num);
-
-    DOCTEST_INTERFACE std::ostream* getTlsOss(bool reset=true); // returns a thread-local ostringstream
-    DOCTEST_INTERFACE String getTlsOssResult();
+    DOCTEST_INTERFACE std::ostream* getTlsOss(); // returns a thread-local ostringstream
+    DOCTEST_INTERFACE String getTlsOssResult(); // clears the thread-local ostringstream as well
 
 
     template <bool C>
@@ -890,7 +888,7 @@ namespace detail {
     template<typename T,unsigned long N>
     void fillstream(const T (&in)[N] ) {
         for(unsigned long i = 0; i < N; i++) {
-            *getTlsOss(false) << in[i];
+            *getTlsOss() << in[i];
         }
     }
 
@@ -899,7 +897,7 @@ namespace detail {
     {
         static void fill(const T (&in)[N]) {
                     fillstream(in);
-                    *getTlsOss(false)<<"";
+                    *getTlsOss() << "";
         }
     };
 
