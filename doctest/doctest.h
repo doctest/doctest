@@ -525,7 +525,7 @@ public:
     String(const char* in);
     String(const char* in, unsigned in_size);
 
-    String(std::istream& in, unsigned size);
+    String(std::istream& in, unsigned in_size);
 
     String(const String& other);
     String& operator=(const String& other);
@@ -902,6 +902,15 @@ namespace detail {
             for (unsigned long i = 0; i < N; i++) {
                 stream << in[i];
             }
+        }
+    };
+
+    // Specialized since we don't want the terminating null byte!
+    template<unsigned long N>
+    struct filldata<const char[N]>
+    {
+        static void fill(std::ostream& stream, const char(&in)[N]) {
+            stream << in;
         }
     };
 
@@ -3401,8 +3410,8 @@ String::String(const char* in, unsigned in_size) {
     memcpy(allocate(in_size), in, in_size);
 }
 
-String::String(std::istream& in, unsigned size) {
-    in.read(allocate(size), size);
+String::String(std::istream& in, unsigned in_size) {
+    in.read(allocate(in_size), in_size);
 }
 
 String::String(const String& other) { copy(other); }

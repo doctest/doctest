@@ -586,8 +586,8 @@ String::String(const char* in, unsigned in_size) {
     memcpy(allocate(in_size), in, in_size);
 }
 
-String::String(std::istream& in, unsigned size) {
-    in.read(allocate(size), size);
+String::String(std::istream& in, unsigned in_size) {
+    in.read(allocate(in_size), in_size);
 }
 
 String::String(const String& other) { copy(other); }
