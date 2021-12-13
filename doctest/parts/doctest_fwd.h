@@ -404,32 +404,30 @@ DOCTEST_GCC_SUPPRESS_WARNING_POP
 #define DOCTEST_CONFIG_USE_STD_HEADERS
 #endif // DOCTEST_CONFIG_USE_IOSFWD
 
+// for clang - always include ciso646 (which drags some std stuff) because
+// we want to check if we are using libc++ with the _LIBCPP_VERSION macro in
+// which case we don't want to forward declare stuff from std - for reference:
+// https://github.com/doctest/doctest/issues/126
+// https://github.com/doctest/doctest/issues/356
+#if DOCTEST_CLANG
+#include <ciso646>
+#ifdef _LIBCPP_VERSION
+#define DOCTEST_CONFIG_USE_STD_HEADERS
+#endif // _LIBCPP_VERSION
+#endif // clang
+
 #ifdef DOCTEST_CONFIG_USE_STD_HEADERS
 #ifndef DOCTEST_CONFIG_INCLUDE_TYPE_TRAITS
 #define DOCTEST_CONFIG_INCLUDE_TYPE_TRAITS
 #endif // DOCTEST_CONFIG_INCLUDE_TYPE_TRAITS
-#include <iosfwd>
 #include <cstddef>
 #include <ostream>
 #else // DOCTEST_CONFIG_USE_STD_HEADERS
 
-#if DOCTEST_CLANG
-// to detect if libc++ is being used with clang (the _LIBCPP_VERSION identifier)
-#include <ciso646>
-#endif // clang
-
-#ifdef _LIBCPP_VERSION
-#define DOCTEST_STD_NAMESPACE_BEGIN _LIBCPP_BEGIN_NAMESPACE_STD
-#define DOCTEST_STD_NAMESPACE_END _LIBCPP_END_NAMESPACE_STD
-#else // _LIBCPP_VERSION
-#define DOCTEST_STD_NAMESPACE_BEGIN namespace std {
-#define DOCTEST_STD_NAMESPACE_END }
-#endif // _LIBCPP_VERSION
-
 // Forward declaring 'X' in namespace std is not permitted by the C++ Standard.
 DOCTEST_MSVC_SUPPRESS_WARNING_WITH_PUSH(4643)
 
-DOCTEST_STD_NAMESPACE_BEGIN // NOLINT (cert-dcl58-cpp)
+namespace std { // NOLINT (cert-dcl58-cpp)
 typedef decltype(nullptr) nullptr_t;
 template <class charT>
 struct char_traits;
@@ -450,7 +448,7 @@ class basic_string;
 using string = basic_string<char, char_traits<char>, allocator<char>>;
 DOCTEST_CLANG_SUPPRESS_WARNING_POP
 #endif // VS 2019
-DOCTEST_STD_NAMESPACE_END
+} // namespace std
 
 DOCTEST_MSVC_SUPPRESS_WARNING_POP
 
