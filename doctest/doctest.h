@@ -49,7 +49,15 @@
 #define DOCTEST_VERSION_MAJOR 2
 #define DOCTEST_VERSION_MINOR 4
 #define DOCTEST_VERSION_PATCH 7
-#define DOCTEST_VERSION_STR "2.4.7"
+
+// util we need here
+#define DOCTEST_TOSTR_IMPL(x) #x
+#define DOCTEST_TOSTR(x) DOCTEST_TOSTR_IMPL(x)
+
+#define DOCTEST_VERSION_STR                                                                        \
+    DOCTEST_TOSTR(DOCTEST_VERSION_MAJOR) "."                                                       \
+    DOCTEST_TOSTR(DOCTEST_VERSION_MINOR) "."                                                       \
+    DOCTEST_TOSTR(DOCTEST_VERSION_PATCH)
 
 #define DOCTEST_VERSION                                                                            \
     (DOCTEST_VERSION_MAJOR * 10000 + DOCTEST_VERSION_MINOR * 100 + DOCTEST_VERSION_PATCH)
@@ -137,86 +145,93 @@
 // == COMPILER WARNINGS ============================================================================
 // =================================================================================================
 
+// both the header and the implementation suppress all of these,
+// so it only makes sense to aggregrate them like so
+#define DOCTEST_SUPPRESS_COMMON_WARNINGS_PUSH                                                      \
+    DOCTEST_CLANG_SUPPRESS_WARNING_PUSH                                                            \
+    DOCTEST_CLANG_SUPPRESS_WARNING("-Wunknown-pragmas")                                            \
+    DOCTEST_CLANG_SUPPRESS_WARNING("-Wweak-vtables")                                               \
+    DOCTEST_CLANG_SUPPRESS_WARNING("-Wpadded")                                                     \
+    DOCTEST_CLANG_SUPPRESS_WARNING("-Wmissing-prototypes")                                         \
+    DOCTEST_CLANG_SUPPRESS_WARNING("-Wunused-local-typedef")                                       \
+    DOCTEST_CLANG_SUPPRESS_WARNING("-Wc++98-compat")                                               \
+    DOCTEST_CLANG_SUPPRESS_WARNING("-Wc++98-compat-pedantic")                                      \
+                                                                                                   \
+    DOCTEST_GCC_SUPPRESS_WARNING_PUSH                                                              \
+    DOCTEST_GCC_SUPPRESS_WARNING("-Wunknown-pragmas")                                              \
+    DOCTEST_GCC_SUPPRESS_WARNING("-Wpragmas")                                                      \
+    DOCTEST_GCC_SUPPRESS_WARNING("-Weffc++")                                                       \
+    DOCTEST_GCC_SUPPRESS_WARNING("-Wstrict-overflow")                                              \
+    DOCTEST_GCC_SUPPRESS_WARNING("-Wstrict-aliasing")                                              \
+    DOCTEST_GCC_SUPPRESS_WARNING("-Wmissing-declarations")                                         \
+    DOCTEST_GCC_SUPPRESS_WARNING("-Wunused-local-typedefs")                                        \
+    DOCTEST_GCC_SUPPRESS_WARNING("-Wuseless-cast")                                                 \
+    DOCTEST_GCC_SUPPRESS_WARNING("-Wnoexcept")                                                     \
+                                                                                                   \
+    DOCTEST_MSVC_SUPPRESS_WARNING_PUSH                                                             \
+    /* these 4 also disabled globally via cmake: */                                                \
+    DOCTEST_MSVC_SUPPRESS_WARNING(4514) /* unreferenced inline function has been removed */        \
+    DOCTEST_MSVC_SUPPRESS_WARNING(4571) /* SEH related */                                          \
+    DOCTEST_MSVC_SUPPRESS_WARNING(4710) /* function not inlined */                                 \
+    DOCTEST_MSVC_SUPPRESS_WARNING(4711) /* function selected for inline expansion*/                \
+    /* */                                                                                          \
+    DOCTEST_MSVC_SUPPRESS_WARNING(4616) /* invalid compiler warning */                             \
+    DOCTEST_MSVC_SUPPRESS_WARNING(4619) /* invalid compiler warning */                             \
+    DOCTEST_MSVC_SUPPRESS_WARNING(4996) /* The compiler encountered a deprecated declaration */    \
+    DOCTEST_MSVC_SUPPRESS_WARNING(4706) /* assignment within conditional expression */             \
+    DOCTEST_MSVC_SUPPRESS_WARNING(4512) /* 'class' : assignment operator could not be generated */ \
+    DOCTEST_MSVC_SUPPRESS_WARNING(4127) /* conditional expression is constant */                   \
+    DOCTEST_MSVC_SUPPRESS_WARNING(4820) /* padding */                                              \
+    DOCTEST_MSVC_SUPPRESS_WARNING(4625) /* copy constructor was implicitly deleted */              \
+    DOCTEST_MSVC_SUPPRESS_WARNING(4626) /* assignment operator was implicitly deleted */           \
+    DOCTEST_MSVC_SUPPRESS_WARNING(5027) /* move assignment operator implicitly deleted */          \
+    DOCTEST_MSVC_SUPPRESS_WARNING(5026) /* move constructor was implicitly deleted */              \
+    DOCTEST_MSVC_SUPPRESS_WARNING(4640) /* construction of local static object not thread-safe */  \
+    DOCTEST_MSVC_SUPPRESS_WARNING(5045) /* Spectre mitigation for memory load */                   \
+    /* static analysis */                                                                          \
+    DOCTEST_MSVC_SUPPRESS_WARNING(26439) /* Function may not throw. Declare it 'noexcept' */       \
+    DOCTEST_MSVC_SUPPRESS_WARNING(26495) /* Always initialize a member variable */                 \
+    DOCTEST_MSVC_SUPPRESS_WARNING(26451) /* Arithmetic overflow ... */                             \
+    DOCTEST_MSVC_SUPPRESS_WARNING(26444) /* Avoid unnamed objects with custom ctor and dtor... */  \
+    DOCTEST_MSVC_SUPPRESS_WARNING(26812) /* Prefer 'enum class' over 'enum' */
+
+#define DOCTEST_SUPPRESS_COMMON_WARNINGS_POP                                                       \
+    DOCTEST_CLANG_SUPPRESS_WARNING_POP                                                             \
+    DOCTEST_GCC_SUPPRESS_WARNING_POP                                                               \
+    DOCTEST_MSVC_SUPPRESS_WARNING_POP
+
+DOCTEST_SUPPRESS_COMMON_WARNINGS_PUSH
+
 DOCTEST_CLANG_SUPPRESS_WARNING_PUSH
-DOCTEST_CLANG_SUPPRESS_WARNING("-Wunknown-pragmas")
 DOCTEST_CLANG_SUPPRESS_WARNING("-Wnon-virtual-dtor")
-DOCTEST_CLANG_SUPPRESS_WARNING("-Wweak-vtables")
-DOCTEST_CLANG_SUPPRESS_WARNING("-Wpadded")
 DOCTEST_CLANG_SUPPRESS_WARNING("-Wdeprecated")
-DOCTEST_CLANG_SUPPRESS_WARNING("-Wmissing-prototypes")
-DOCTEST_CLANG_SUPPRESS_WARNING("-Wunused-local-typedef")
-DOCTEST_CLANG_SUPPRESS_WARNING("-Wc++98-compat")
-DOCTEST_CLANG_SUPPRESS_WARNING("-Wc++98-compat-pedantic")
 
 DOCTEST_GCC_SUPPRESS_WARNING_PUSH
-DOCTEST_GCC_SUPPRESS_WARNING("-Wunknown-pragmas")
-DOCTEST_GCC_SUPPRESS_WARNING("-Wpragmas")
-DOCTEST_GCC_SUPPRESS_WARNING("-Weffc++")
-DOCTEST_GCC_SUPPRESS_WARNING("-Wstrict-overflow")
-DOCTEST_GCC_SUPPRESS_WARNING("-Wstrict-aliasing")
 DOCTEST_GCC_SUPPRESS_WARNING("-Wctor-dtor-privacy")
-DOCTEST_GCC_SUPPRESS_WARNING("-Wmissing-declarations")
 DOCTEST_GCC_SUPPRESS_WARNING("-Wnon-virtual-dtor")
-DOCTEST_GCC_SUPPRESS_WARNING("-Wunused-local-typedefs")
-DOCTEST_GCC_SUPPRESS_WARNING("-Wuseless-cast")
-DOCTEST_GCC_SUPPRESS_WARNING("-Wnoexcept")
 DOCTEST_GCC_SUPPRESS_WARNING("-Wsign-promo")
 
 DOCTEST_MSVC_SUPPRESS_WARNING_PUSH
-DOCTEST_MSVC_SUPPRESS_WARNING(4616) // invalid compiler warning
-DOCTEST_MSVC_SUPPRESS_WARNING(4619) // invalid compiler warning
-DOCTEST_MSVC_SUPPRESS_WARNING(4996) // The compiler encountered a deprecated declaration
-DOCTEST_MSVC_SUPPRESS_WARNING(4706) // assignment within conditional expression
-DOCTEST_MSVC_SUPPRESS_WARNING(4512) // 'class' : assignment operator could not be generated
-DOCTEST_MSVC_SUPPRESS_WARNING(4127) // conditional expression is constant
-DOCTEST_MSVC_SUPPRESS_WARNING(4820) // padding
-DOCTEST_MSVC_SUPPRESS_WARNING(4625) // copy constructor was implicitly defined as deleted
-DOCTEST_MSVC_SUPPRESS_WARNING(4626) // assignment operator was implicitly defined as deleted
-DOCTEST_MSVC_SUPPRESS_WARNING(5027) // move assignment operator was implicitly defined as deleted
-DOCTEST_MSVC_SUPPRESS_WARNING(5026) // move constructor was implicitly defined as deleted
 DOCTEST_MSVC_SUPPRESS_WARNING(4623) // default constructor was implicitly defined as deleted
-DOCTEST_MSVC_SUPPRESS_WARNING(4640) // construction of local static object is not thread-safe
-DOCTEST_MSVC_SUPPRESS_WARNING(5045) // Spectre mitigation for memory load
-// static analysis
-DOCTEST_MSVC_SUPPRESS_WARNING(26439) // This kind of function may not throw. Declare it 'noexcept'
-DOCTEST_MSVC_SUPPRESS_WARNING(26495) // Always initialize a member variable
-DOCTEST_MSVC_SUPPRESS_WARNING(26451) // Arithmetic overflow ...
-DOCTEST_MSVC_SUPPRESS_WARNING(26444) // Avoid unnamed objects with custom construction and dtr...
-DOCTEST_MSVC_SUPPRESS_WARNING(26812) // Prefer 'enum class' over 'enum'
-
-// 4548 - expression before comma has no effect; expected expression with side - effect
-// 4265 - class has virtual functions, but destructor is not virtual
-// 4986 - exception specification does not match previous declaration
-// 4350 - behavior change: 'member1' called instead of 'member2'
-// 4668 - 'x' is not defined as a preprocessor macro, replacing with '0' for '#if/#elif'
-// 4365 - conversion from 'int' to 'unsigned long', signed/unsigned mismatch
-// 4774 - format string expected in argument 'x' is not a string literal
-// 4820 - padding in structs
-
-// only 4 should be disabled globally:
-// - 4514 # unreferenced inline function has been removed
-// - 4571 # SEH related
-// - 4710 # function not inlined
-// - 4711 # function 'x' selected for automatic inline expansion
 
 #define DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_BEGIN                                 \
     DOCTEST_MSVC_SUPPRESS_WARNING_PUSH                                                             \
-    DOCTEST_MSVC_SUPPRESS_WARNING(4548)                                                            \
-    DOCTEST_MSVC_SUPPRESS_WARNING(4265)                                                            \
-    DOCTEST_MSVC_SUPPRESS_WARNING(4986)                                                            \
-    DOCTEST_MSVC_SUPPRESS_WARNING(4350)                                                            \
-    DOCTEST_MSVC_SUPPRESS_WARNING(4668)                                                            \
-    DOCTEST_MSVC_SUPPRESS_WARNING(4365)                                                            \
-    DOCTEST_MSVC_SUPPRESS_WARNING(4774)                                                            \
-    DOCTEST_MSVC_SUPPRESS_WARNING(4820)                                                            \
-    DOCTEST_MSVC_SUPPRESS_WARNING(4625)                                                            \
-    DOCTEST_MSVC_SUPPRESS_WARNING(4626)                                                            \
-    DOCTEST_MSVC_SUPPRESS_WARNING(5027)                                                            \
-    DOCTEST_MSVC_SUPPRESS_WARNING(5026)                                                            \
-    DOCTEST_MSVC_SUPPRESS_WARNING(4623)                                                            \
-    DOCTEST_MSVC_SUPPRESS_WARNING(5039)                                                            \
-    DOCTEST_MSVC_SUPPRESS_WARNING(5045)                                                            \
-    DOCTEST_MSVC_SUPPRESS_WARNING(5105)
+    DOCTEST_MSVC_SUPPRESS_WARNING(4548) /* before comma no effect; expected side - effect */       \
+    DOCTEST_MSVC_SUPPRESS_WARNING(4265) /* virtual functions, but destructor is not virtual */     \
+    DOCTEST_MSVC_SUPPRESS_WARNING(4986) /* exception specification does not match previous */      \
+    DOCTEST_MSVC_SUPPRESS_WARNING(4350) /* 'member1' called instead of 'member2' */                \
+    DOCTEST_MSVC_SUPPRESS_WARNING(4668) /* not defined as a preprocessor macro */                  \
+    DOCTEST_MSVC_SUPPRESS_WARNING(4365) /* signed/unsigned mismatch */                             \
+    DOCTEST_MSVC_SUPPRESS_WARNING(4774) /* format string not a string literal */                   \
+    DOCTEST_MSVC_SUPPRESS_WARNING(4820) /* padding */                                              \
+    DOCTEST_MSVC_SUPPRESS_WARNING(4625) /* copy constructor was implicitly deleted */              \
+    DOCTEST_MSVC_SUPPRESS_WARNING(4626) /* assignment operator was implicitly deleted */           \
+    DOCTEST_MSVC_SUPPRESS_WARNING(5027) /* move assignment operator implicitly deleted */          \
+    DOCTEST_MSVC_SUPPRESS_WARNING(5026) /* move constructor was implicitly deleted */              \
+    DOCTEST_MSVC_SUPPRESS_WARNING(4623) /* default constructor was implicitly deleted */           \
+    DOCTEST_MSVC_SUPPRESS_WARNING(5039) /* pointer to pot. throwing function passed to extern C */ \
+    DOCTEST_MSVC_SUPPRESS_WARNING(5045) /* Spectre mitigation for memory load */                   \
+    DOCTEST_MSVC_SUPPRESS_WARNING(5105) /* macro producing 'defined' has undefined behavior */
 
 #define DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_END DOCTEST_MSVC_SUPPRESS_WARNING_POP
 
@@ -229,6 +244,7 @@ DOCTEST_MSVC_SUPPRESS_WARNING(26812) // Prefer 'enum class' over 'enum'
 // GCC C++11 feature support table: https://gcc.gnu.org/projects/cxx-status.html
 // MSVC version table:
 // https://en.wikipedia.org/wiki/Microsoft_Visual_C%2B%2B#Internal_version_numbering
+// MSVC++ 14.3 (17) _MSC_VER == 1930 (Visual Studio 2022)
 // MSVC++ 14.2 (16) _MSC_VER == 1920 (Visual Studio 2019)
 // MSVC++ 14.1 (15) _MSC_VER == 1910 (Visual Studio 2017)
 // MSVC++ 14.0      _MSC_VER == 1900 (Visual Studio 2015)
@@ -348,8 +364,6 @@ DOCTEST_MSVC_SUPPRESS_WARNING(26812) // Prefer 'enum class' over 'enum'
 #else // __COUNTER__
 #define DOCTEST_ANONYMOUS(x) DOCTEST_CAT(x, __LINE__)
 #endif // __COUNTER__
-
-#define DOCTEST_TOSTR(x) #x
 
 #ifndef DOCTEST_CONFIG_ASSERTION_PARAMETERS_BY_VALUE
 #define DOCTEST_REF_WRAP(x) x&
@@ -2804,6 +2818,8 @@ DOCTEST_CLANG_SUPPRESS_WARNING_POP
 DOCTEST_MSVC_SUPPRESS_WARNING_POP
 DOCTEST_GCC_SUPPRESS_WARNING_POP
 
+DOCTEST_SUPPRESS_COMMON_WARNINGS_POP
+
 #endif // DOCTEST_LIBRARY_INCLUDED
 
 #ifndef DOCTEST_SINGLE_HEADER
@@ -2823,13 +2839,11 @@ DOCTEST_CLANG_SUPPRESS_WARNING_WITH_PUSH("-Wunused-macros")
 
 DOCTEST_CLANG_SUPPRESS_WARNING_POP
 
+DOCTEST_SUPPRESS_COMMON_WARNINGS_PUSH
+
 DOCTEST_CLANG_SUPPRESS_WARNING_PUSH
-DOCTEST_CLANG_SUPPRESS_WARNING("-Wunknown-pragmas")
-DOCTEST_CLANG_SUPPRESS_WARNING("-Wpadded")
-DOCTEST_CLANG_SUPPRESS_WARNING("-Wweak-vtables")
 DOCTEST_CLANG_SUPPRESS_WARNING("-Wglobal-constructors")
 DOCTEST_CLANG_SUPPRESS_WARNING("-Wexit-time-destructors")
-DOCTEST_CLANG_SUPPRESS_WARNING("-Wmissing-prototypes")
 DOCTEST_CLANG_SUPPRESS_WARNING("-Wsign-conversion")
 DOCTEST_CLANG_SUPPRESS_WARNING("-Wshorten-64-to-32")
 DOCTEST_CLANG_SUPPRESS_WARNING("-Wmissing-variable-declarations")
@@ -2837,66 +2851,35 @@ DOCTEST_CLANG_SUPPRESS_WARNING("-Wswitch")
 DOCTEST_CLANG_SUPPRESS_WARNING("-Wswitch-enum")
 DOCTEST_CLANG_SUPPRESS_WARNING("-Wcovered-switch-default")
 DOCTEST_CLANG_SUPPRESS_WARNING("-Wmissing-noreturn")
-DOCTEST_CLANG_SUPPRESS_WARNING("-Wunused-local-typedef")
 DOCTEST_CLANG_SUPPRESS_WARNING("-Wdisabled-macro-expansion")
 DOCTEST_CLANG_SUPPRESS_WARNING("-Wmissing-braces")
 DOCTEST_CLANG_SUPPRESS_WARNING("-Wmissing-field-initializers")
-DOCTEST_CLANG_SUPPRESS_WARNING("-Wc++98-compat")
-DOCTEST_CLANG_SUPPRESS_WARNING("-Wc++98-compat-pedantic")
 DOCTEST_CLANG_SUPPRESS_WARNING("-Wunused-member-function")
 DOCTEST_CLANG_SUPPRESS_WARNING("-Wnonportable-system-include-path")
 
 DOCTEST_GCC_SUPPRESS_WARNING_PUSH
-DOCTEST_GCC_SUPPRESS_WARNING("-Wunknown-pragmas")
-DOCTEST_GCC_SUPPRESS_WARNING("-Wpragmas")
 DOCTEST_GCC_SUPPRESS_WARNING("-Wconversion")
-DOCTEST_GCC_SUPPRESS_WARNING("-Weffc++")
 DOCTEST_GCC_SUPPRESS_WARNING("-Wsign-conversion")
-DOCTEST_GCC_SUPPRESS_WARNING("-Wstrict-overflow")
-DOCTEST_GCC_SUPPRESS_WARNING("-Wstrict-aliasing")
 DOCTEST_GCC_SUPPRESS_WARNING("-Wmissing-field-initializers")
 DOCTEST_GCC_SUPPRESS_WARNING("-Wmissing-braces")
-DOCTEST_GCC_SUPPRESS_WARNING("-Wmissing-declarations")
 DOCTEST_GCC_SUPPRESS_WARNING("-Wswitch")
 DOCTEST_GCC_SUPPRESS_WARNING("-Wswitch-enum")
 DOCTEST_GCC_SUPPRESS_WARNING("-Wswitch-default")
 DOCTEST_GCC_SUPPRESS_WARNING("-Wunsafe-loop-optimizations")
 DOCTEST_GCC_SUPPRESS_WARNING("-Wold-style-cast")
-DOCTEST_GCC_SUPPRESS_WARNING("-Wunused-local-typedefs")
-DOCTEST_GCC_SUPPRESS_WARNING("-Wuseless-cast")
 DOCTEST_GCC_SUPPRESS_WARNING("-Wunused-function")
 DOCTEST_GCC_SUPPRESS_WARNING("-Wmultiple-inheritance")
-DOCTEST_GCC_SUPPRESS_WARNING("-Wnoexcept")
 DOCTEST_GCC_SUPPRESS_WARNING("-Wsuggest-attribute")
 
 DOCTEST_MSVC_SUPPRESS_WARNING_PUSH
-DOCTEST_MSVC_SUPPRESS_WARNING(4616) // invalid compiler warning
-DOCTEST_MSVC_SUPPRESS_WARNING(4619) // invalid compiler warning
-DOCTEST_MSVC_SUPPRESS_WARNING(4996) // The compiler encountered a deprecated declaration
 DOCTEST_MSVC_SUPPRESS_WARNING(4267) // 'var' : conversion from 'x' to 'y', possible loss of data
-DOCTEST_MSVC_SUPPRESS_WARNING(4706) // assignment within conditional expression
-DOCTEST_MSVC_SUPPRESS_WARNING(4512) // 'class' : assignment operator could not be generated
-DOCTEST_MSVC_SUPPRESS_WARNING(4127) // conditional expression is constant
 DOCTEST_MSVC_SUPPRESS_WARNING(4530) // C++ exception handler used, but unwind semantics not enabled
 DOCTEST_MSVC_SUPPRESS_WARNING(4577) // 'noexcept' used with no exception handling mode specified
 DOCTEST_MSVC_SUPPRESS_WARNING(4774) // format string expected in argument is not a string literal
 DOCTEST_MSVC_SUPPRESS_WARNING(4365) // conversion from 'int' to 'unsigned', signed/unsigned mismatch
-DOCTEST_MSVC_SUPPRESS_WARNING(4820) // padding in structs
-DOCTEST_MSVC_SUPPRESS_WARNING(4640) // construction of local static object is not thread-safe
 DOCTEST_MSVC_SUPPRESS_WARNING(5039) // pointer to potentially throwing function passed to extern C
-DOCTEST_MSVC_SUPPRESS_WARNING(5045) // Spectre mitigation stuff
-DOCTEST_MSVC_SUPPRESS_WARNING(4626) // assignment operator was implicitly defined as deleted
-DOCTEST_MSVC_SUPPRESS_WARNING(5027) // move assignment operator was implicitly defined as deleted
-DOCTEST_MSVC_SUPPRESS_WARNING(5026) // move constructor was implicitly defined as deleted
-DOCTEST_MSVC_SUPPRESS_WARNING(4625) // copy constructor was implicitly defined as deleted
 DOCTEST_MSVC_SUPPRESS_WARNING(4800) // forcing value to bool 'true' or 'false' (performance warning)
 DOCTEST_MSVC_SUPPRESS_WARNING(5245) // unreferenced function with internal linkage has been removed
-// static analysis
-DOCTEST_MSVC_SUPPRESS_WARNING(26439) // This kind of function may not throw. Declare it 'noexcept'
-DOCTEST_MSVC_SUPPRESS_WARNING(26495) // Always initialize a member variable
-DOCTEST_MSVC_SUPPRESS_WARNING(26451) // Arithmetic overflow ...
-DOCTEST_MSVC_SUPPRESS_WARNING(26444) // Avoid unnamed objects with custom construction and dtor...
-DOCTEST_MSVC_SUPPRESS_WARNING(26812) // Prefer 'enum class' over 'enum'
 
 DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_BEGIN
 
@@ -6736,6 +6719,8 @@ DOCTEST_MSVC_SUPPRESS_WARNING_POP
 DOCTEST_CLANG_SUPPRESS_WARNING_POP
 DOCTEST_MSVC_SUPPRESS_WARNING_POP
 DOCTEST_GCC_SUPPRESS_WARNING_POP
+
+DOCTEST_SUPPRESS_COMMON_WARNINGS_POP
 
 #endif // DOCTEST_LIBRARY_IMPLEMENTATION
 #endif // DOCTEST_CONFIG_IMPLEMENT
