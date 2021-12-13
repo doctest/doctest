@@ -6,14 +6,17 @@
             master branch
         </td>
         <td>
-            All <a href="https://github.com/onqtam/doctest/actions?query=branch%3Amaster"><img src="https://github.com/onqtam/doctest/workflows/CI/badge.svg?branch=master"></a>
+            Windows <a href="https://ci.appveyor.com/project/doctest/doctest/branch/master"><img src="https://ci.appveyor.com/api/projects/status/j89qxtahyw1dp4gd/branch/master?svg=true"></a>
         </td>
         <td>
-            <a href="https://coveralls.io/github/onqtam/doctest?branch=master"><img src="https://coveralls.io/repos/github/onqtam/doctest/badge.svg?branch=master"></a>
+            All <a href="https://github.com/doctest/doctest/actions?query=branch%3Amaster"><img src="https://github.com/doctest/doctest/workflows/CI/badge.svg?branch=master"></a>
+        </td>
+        <td>
+            <a href="https://coveralls.io/github/doctest/doctest?branch=master"><img src="https://coveralls.io/repos/github/doctest/doctest/badge.svg?branch=master"></a>
         </td>
         <!--
         <td>
-            <a href="https://scan.coverity.com/projects/onqtam-doctest"><img src="https://scan.coverity.com/projects/7865/badge.svg"></a>
+            <a href="https://scan.coverity.com/projects/doctest-doctest"><img src="https://scan.coverity.com/projects/7865/badge.svg"></a>
         </td>
         -->
     </tr>
@@ -22,10 +25,13 @@
             dev branch
         </td>
         <td>
-            All <a href="https://github.com/onqtam/doctest/actions?query=branch%3Adev"><img src="https://github.com/onqtam/doctest/workflows/CI/badge.svg?branch=dev"></a>
+            Windows <a href="https://ci.appveyor.com/project/doctest/doctest/branch/dev"><img src="https://ci.appveyor.com/api/projects/status/j89qxtahyw1dp4gd/branch/dev?svg=true"></a>
         </td>
         <td>
-            <a href="https://coveralls.io/github/onqtam/doctest?branch=dev"><img src="https://coveralls.io/repos/github/onqtam/doctest/badge.svg?branch=dev"></a>
+            All <a href="https://github.com/doctest/doctest/actions?query=branch%3Adev"><img src="https://github.com/doctest/doctest/workflows/CI/badge.svg?branch=dev"></a>
+        </td>
+        <td>
+            <a href="https://coveralls.io/github/doctest/doctest?branch=dev"><img src="https://coveralls.io/repos/github/doctest/doctest/badge.svg?branch=dev"></a>
         </td>
     </tr>
 </table>
