@@ -873,7 +873,7 @@ namespace detail {
     template<class T>
     using has_insertion_operator = has_insertion_operator_impl::check<const T>;
 
-    DOCTEST_INTERFACE std::ostream& tlssPush();
+    DOCTEST_INTERFACE std::ostream* tlssPush();
     DOCTEST_INTERFACE String tlssPop();
 
 
@@ -890,17 +890,17 @@ namespace detail {
     template<typename T>
     struct filldata
     {
-        static void fill(std::ostream& stream, const  T &in) {
-          stream << in;
+        static void fill(std::ostream* stream, const T &in) {
+          *stream << in;
         }
     };
 
     template<typename T,unsigned long N>
     struct filldata<T[N]>
     {
-        static void fill(std::ostream& stream, const T (&in)[N]) {
+        static void fill(std::ostream* stream, const T (&in)[N]) {
             for (unsigned long i = 0; i < N; i++) {
-                stream << in[i];
+                *stream << in[i];
             }
         }
     };
@@ -909,18 +909,18 @@ namespace detail {
     template<unsigned long N>
     struct filldata<const char[N]>
     {
-        static void fill(std::ostream& stream, const char(&in)[N]) {
-            stream << in;
+        static void fill(std::ostream* stream, const char(&in)[N]) {
+            *stream << in;
         }
     };
 
     template<typename T>
-    void filloss(std::ostream& stream, const T& in){
+    void filloss(std::ostream* stream, const T& in){
 	    filldata<T>::fill(stream, in);
     }
 
     template<typename T,unsigned long N>
-    void filloss(std::ostream& stream, const T (&in)[N]) {
+    void filloss(std::ostream* stream, const T (&in)[N]) {
         // T[N], T(&)[N], T(&&)[N] have same behaviour.
         // Hence remove reference.
         filldata<typename remove_reference<decltype(in)>::type>::fill(stream, in);
@@ -938,7 +938,7 @@ namespace detail {
 	         * stepping over unaccessible memory.
              */
 
-            std::ostream& stream = tlssPush();
+            std::ostream* stream = tlssPush();
             filloss(stream, in);
             return tlssPop();
         }
@@ -1616,21 +1616,21 @@ DOCTEST_CLANG_SUPPRESS_WARNING_POP
     struct StringStreamBase
     {
         template <typename T>
-        static void convert(std::ostream& s, const T& in) {
-            s << toString(in);
+        static void convert(std::ostream* s, const T& in) {
+            *s << toString(in);
         }
 
         // always treat char* as a string in this context - no matter
         // if DOCTEST_CONFIG_TREAT_CHAR_STAR_AS_STRING is defined
-        static void convert(std::ostream& s, const char* in) { s << String(in); }
+        static void convert(std::ostream* s, const char* in) { *s << String(in); }
     };
 
     template <>
     struct StringStreamBase<true>
     {
         template <typename T>
-        static void convert(std::ostream& s, const T& in) {
-            s << in;
+        static void convert(std::ostream* s, const T& in) {
+            *s << in;
         }
     };
 
@@ -1639,7 +1639,7 @@ DOCTEST_CLANG_SUPPRESS_WARNING_POP
     {};
 
     template <typename T>
-    void toStream(std::ostream& s, const T& value) {
+    void toStream(std::ostream* s, const T& value) {
         StringStream<T>::convert(s, value);
     }
 
@@ -1705,7 +1705,7 @@ DOCTEST_CLANG_SUPPRESS_WARNING_POP
         // the preferred way of chaining parameters for stringification
         template <typename T>
         MessageBuilder& operator,(const T& in) {
-            toStream(*m_stream, in);
+            toStream(m_stream, in);
             return *this;
         }
 
@@ -3101,10 +3101,10 @@ namespace detail {
         }
 
         unsigned const char* bytes = static_cast<unsigned const char*>(object);
-        std::ostream&        oss = tlssPush();
-        oss << "0x" << std::setfill('0') << std::hex;
+        std::ostream*        oss   = tlssPush();
+        *oss << "0x" << std::setfill('0') << std::hex;
         for(; i != end; i += inc)
-            oss << std::setw(2) << static_cast<unsigned>(bytes[i]);
+            *oss << std::setw(2) << static_cast<unsigned>(bytes[i]);
         return tlssPop();
     }
 
@@ -3132,8 +3132,8 @@ namespace detail {
         }
     } g_oss;
 
-    std::ostream& tlssPush() {
-        return g_oss.push();
+    std::ostream* tlssPush() {
+        return &g_oss.push();
     }
 
     String tlssPop() {
@@ -4693,7 +4693,7 @@ namespace detail {
     }
 
     MessageBuilder::MessageBuilder(const char* file, int line, assertType::Enum severity) {
-        m_stream   = &tlssPush();
+        m_stream   = tlssPush();
         m_file     = file;
         m_line     = line;
         m_severity = severity;

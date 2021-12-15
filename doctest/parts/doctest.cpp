@@ -277,10 +277,10 @@ namespace detail {
         }
 
         unsigned const char* bytes = static_cast<unsigned const char*>(object);
-        std::ostream&        oss = tlssPush();
-        oss << "0x" << std::setfill('0') << std::hex;
+        std::ostream*        oss   = tlssPush();
+        *oss << "0x" << std::setfill('0') << std::hex;
         for(; i != end; i += inc)
-            oss << std::setw(2) << static_cast<unsigned>(bytes[i]);
+            *oss << std::setw(2) << static_cast<unsigned>(bytes[i]);
         return tlssPop();
     }
 
@@ -308,8 +308,8 @@ namespace detail {
         }
     } g_oss;
 
-    std::ostream& tlssPush() {
-        return g_oss.push();
+    std::ostream* tlssPush() {
+        return &g_oss.push();
     }
 
     String tlssPop() {
@@ -1869,7 +1869,7 @@ namespace detail {
     }
 
     MessageBuilder::MessageBuilder(const char* file, int line, assertType::Enum severity) {
-        m_stream   = &tlssPush();
+        m_stream   = tlssPush();
         m_file     = file;
         m_line     = line;
         m_severity = severity;
