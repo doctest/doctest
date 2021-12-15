@@ -5,8 +5,6 @@ move down from /Wall to /W4 for Visual Studio... /Wall is absolutely unnecessary
 
 https://github.com/catchorg/Catch2/blob/master/docs/tostring.md#catchis_range-specialisation
 
-rope-ish startup of doctest - and filter duplicates on run()
-
 https://blog.travis-ci.com/2018-10-11-windows-early-release
 
 add in the faq about the compile errors with stream<<"array" - nikola goranov, also moving to catch undef/define stuffs - use vararg macro, also make the "moving from catch to doctest" easier to find, also this: https://stackoverflow.com/questions/35530850/how-to-require-a-semicolon-after-a-macro/52122660#52122660
@@ -66,7 +64,3 @@ https://github.com/martinmoene/catch-lest-other-comparison
     - https://github.com/catchorg/Catch2/pull/1405
 - toString trouble - https://github.com/catchorg/Catch2/issues/741
 - https://github.com/catchorg/Catch2/commit/33ed1773f40b406dbf3b7201bf52694bd86b1503
-
-- I suspect -Wsign-compare is not being silenced by the pragmas...
-  see this build - https://travis-ci.org/onqtam/game/jobs/196987454
-  check_eq(numDigits(0), 1);     numDigits returns uint32

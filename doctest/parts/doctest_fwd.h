@@ -8,7 +8,7 @@
 // https://opensource.org/licenses/MIT
 //
 // The documentation can be found at the library's page:
-// https://github.com/onqtam/doctest/blob/master/doc/markdown/readme.md
+// https://github.com/doctest/doctest/blob/master/doc/markdown/readme.md
 //
 // =================================================================================================
 // =================================================================================================
@@ -454,7 +454,7 @@ template <class... Types>
 class tuple;
 #if DOCTEST_MSVC >= DOCTEST_COMPILER(19, 20, 0)
 DOCTEST_CLANG_SUPPRESS_WARNING_WITH_PUSH("-Wreserved-identifier")
-// see this issue on why this is needed: https://github.com/onqtam/doctest/issues/183
+// see this issue on why this is needed: https://github.com/doctest/doctest/issues/183
 template <class _Ty>
 class allocator;
 template <class _Elem, class _Traits, class _Alloc>
@@ -1016,7 +1016,7 @@ String toString(const DOCTEST_REF_WRAP(T) value) {
 }
 
 #if DOCTEST_MSVC >= DOCTEST_COMPILER(19, 20, 0)
-// see this issue on why this is needed: https://github.com/onqtam/doctest/issues/183
+// see this issue on why this is needed: https://github.com/doctest/doctest/issues/183
 DOCTEST_INTERFACE String toString(const std::string& in);
 #endif // VS 2019
 
@@ -1308,7 +1308,7 @@ DOCTEST_CLANG_SUPPRESS_WARNING_WITH_PUSH("-Wunused-comparison")
 
         DOCTEST_NOINLINE operator Result() {
 // this is needed only for MSVC 2015:
-// https://ci.appveyor.com/project/onqtam/doctest/builds/38181202
+// https://ci.appveyor.com/project/doctest/doctest/builds/38181202
 DOCTEST_MSVC_SUPPRESS_WARNING_WITH_PUSH(4800) // 'int': forcing value to bool
             bool res = static_cast<bool>(lhs);
 DOCTEST_MSVC_SUPPRESS_WARNING_POP

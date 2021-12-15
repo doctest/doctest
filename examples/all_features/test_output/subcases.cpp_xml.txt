@@ -169,7 +169,7 @@ root
       </Exception>
       <OverallResultsAsserts successes="0" failures="2" test_case_success="false"/>
     </TestCase>
-    <TestCase name="Nested - related to https://github.com/onqtam/doctest/issues/282" filename="subcases.cpp" line="0">
+    <TestCase name="Nested - related to https://github.com/doctest/doctest/issues/282" filename="subcases.cpp" line="0">
       <SubCase name="generate data variant 1" filename="subcases.cpp" line="0">
         <SubCase name="check data 1" filename="subcases.cpp" line="0">
         </SubCase>

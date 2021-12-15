@@ -1,6 +1,6 @@
 ## Build systems
 
-The latest released version of doctest can be obtained from here: https://raw.githubusercontent.com/onqtam/doctest/master/doctest/doctest.h
+The latest released version of doctest can be obtained from here: https://raw.githubusercontent.com/doctest/doctest/master/doctest/doctest.h
 
 You can substitute ```master``` with ```dev``` or a tag like ```1.2.9``` for a specific version in the URL above.
 
@@ -30,7 +30,7 @@ find_package(Git REQUIRED)
 ExternalProject_Add(
     doctest
     PREFIX ${CMAKE_BINARY_DIR}/doctest
-    GIT_REPOSITORY https://github.com/onqtam/doctest.git
+    GIT_REPOSITORY https://github.com/doctest/doctest.git
     TIMEOUT 10
     UPDATE_COMMAND ${GIT_EXECUTABLE} pull
     CONFIGURE_COMMAND ""

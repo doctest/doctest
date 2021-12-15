@@ -3,7 +3,7 @@
 **doctest** needs to be able to convert types you use in assertions and logging expressions into strings (for logging and reporting purposes).
 Most built-in types are supported out of the box but there are three ways that you can tell **doctest** how to convert your own types (or other, third-party types) into strings.
 
-For stringifying enums checkout [this issue](https://github.com/onqtam/doctest/issues/121).
+For stringifying enums checkout [this issue](https://github.com/doctest/doctest/issues/121).
 
 ## ```operator<<``` overload for ```std::ostream```
 

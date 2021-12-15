@@ -1,6 +1,6 @@
 ## Tutorial
 
-To get started with **doctest** all you need is to download the [**latest version**](https://raw.githubusercontent.com/onqtam/doctest/master/doctest/doctest.h) which is just a single header and include it in your source files (or add this repository as a git submodule).
+To get started with **doctest** all you need is to download the [**latest version**](https://raw.githubusercontent.com/doctest/doctest/master/doctest/doctest.h) which is just a single header and include it in your source files (or add this repository as a git submodule).
 
 This tutorial assumes you can use the header directly: ```#include "doctest.h"``` - so it is either in the same folder with your test source files or you have set up the include paths to it in your build system properly. 
 
