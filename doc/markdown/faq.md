@@ -65,7 +65,7 @@ Here are a couple of differences:
 
 - the main one is that only doctest from the C++ frameworks is usable next to your production code (speed of compilation, ability to remove the tests from the binary, ability to execute tests/code/both, ability to have tests in multiple shared objects and still a single registry for all of them)
 - doctest is a single header - Google Test has to be built as a separate static library and linked against.
-- doctest has the concept of [**Subcases**](https://github.com/onqtam/doctest/blob/master/doc/markdown/tutorial.md#test-cases-and-subcases) which is a much cleaner way to share setup and teardown code between tests compared to fixtures and class inheritance - Google Test is quite verbose!
+- doctest has the concept of [**Subcases**](https://github.com/doctest/doctest/blob/master/doc/markdown/tutorial.md#test-cases-and-subcases) which is a much cleaner way to share setup and teardown code between tests compared to fixtures and class inheritance - Google Test is quite verbose!
 - doctest compiles faster and probably runs faster (although the runtime becomes an issue only when you have millions of asserts)
 - doctest asserts are thread-safe even on Windows (Google Test uses pthreads so thread-safe asserts are available only on UNIX)
 - doctest overall has a simpler API
@@ -131,12 +131,12 @@ As an alternative I have created a CMake function that forces every object file 
 
 It doesn't work in 2 scenarios:
 
-- either the target or the library uses a precompiled header - see [**this**](https://github.com/onqtam/doctest/issues/21#issuecomment-247001423) issue for details
+- either the target or the library uses a precompiled header - see [**this**](https://github.com/doctest/doctest/issues/21#issuecomment-247001423) issue for details
 - either the target or the library is an imported target (pre-built) and not built within the current cmake tree
 
 You can also checkout this repository for a different solution: [**pthom/doctest_registerlibrary**](https://github.com/pthom/doctest_registerlibrary).
 
-A compiler-specific solution for MSVC is to use the [```/OPT:NOREF```](https://msdn.microsoft.com/en-us/library/bxwfs976.aspx) linker flag (thanks to [lectem](https://github.com/Lectem) for [reporting](https://github.com/onqtam/doctest/issues/106) it!). Another option is to look at [```/wholearchive```](https://docs.microsoft.com/en-us/cpp/build/reference/wholearchive-include-all-library-object-files?view=vs-2019) for MSVC.
+A compiler-specific solution for MSVC is to use the [```/OPT:NOREF```](https://msdn.microsoft.com/en-us/library/bxwfs976.aspx) linker flag (thanks to [lectem](https://github.com/Lectem) for [reporting](https://github.com/doctest/doctest/issues/106) it!). Another option is to look at [```/wholearchive```](https://docs.microsoft.com/en-us/cpp/build/reference/wholearchive-include-all-library-object-files?view=vs-2019) for MSVC.
 
 ### Why is comparing C strings (```char*```) actually comparing pointers?
 

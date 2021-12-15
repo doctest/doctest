@@ -72,10 +72,10 @@ CHECK( false ) is NOT correct!
         failure... but the show must go on!
       </error>
     </testcase>
-    <testcase classname="subcases.cpp" name="Nested - related to https://github.com/onqtam/doctest/issues/282/generate data variant 1/check data 1" status="run"/>
-    <testcase classname="subcases.cpp" name="Nested - related to https://github.com/onqtam/doctest/issues/282/generate data variant 1/check data 2" status="run"/>
-    <testcase classname="subcases.cpp" name="Nested - related to https://github.com/onqtam/doctest/issues/282/generate data variant 1/check data 1" status="run"/>
-    <testcase classname="subcases.cpp" name="Nested - related to https://github.com/onqtam/doctest/issues/282/generate data variant 1/check data 2" status="run"/>
+    <testcase classname="subcases.cpp" name="Nested - related to https://github.com/doctest/doctest/issues/282/generate data variant 1/check data 1" status="run"/>
+    <testcase classname="subcases.cpp" name="Nested - related to https://github.com/doctest/doctest/issues/282/generate data variant 1/check data 2" status="run"/>
+    <testcase classname="subcases.cpp" name="Nested - related to https://github.com/doctest/doctest/issues/282/generate data variant 1/check data 1" status="run"/>
+    <testcase classname="subcases.cpp" name="Nested - related to https://github.com/doctest/doctest/issues/282/generate data variant 1/check data 2" status="run"/>
     <testcase classname="subcases.cpp" name="subcases with changing names/outer 0/inner 0" status="run"/>
     <testcase classname="subcases.cpp" name="subcases with changing names/outer 0/inner 1" status="run"/>
     <testcase classname="subcases.cpp" name="subcases with changing names/outer 1/inner 0" status="run"/>

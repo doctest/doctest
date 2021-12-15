@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <testsuites>
-  <testsuite name="all_features" errors="2" failures="6" tests="6">
+  <testsuite name="all_features" errors="2" failures="7" tests="7">
     <testcase classname="stringification.cpp" name="all asserts should fail and show how the objects get stringified" status="run">
       <failure message="Foo{} == Foo{}" type="CHECK">
 stringification.cpp(0):
@@ -10,8 +10,14 @@ CHECK( f1 == f2 ) is NOT correct!
       </failure>
       <failure message="omg == tralala" type="CHECK">
 stringification.cpp(0):
-CHECK( dummy1 == dummy2 ) is NOT correct!
+CHECK( dummy == "tralala" ) is NOT correct!
   values: CHECK( omg == tralala )
+
+      </failure>
+      <failure message="tralala == omg" type="CHECK">
+stringification.cpp(0):
+CHECK( "tralala" == dummy ) is NOT correct!
+  values: CHECK( tralala == omg )
 
       </failure>
       <failure message="[1, 2, 3] == [1, 2, 4]" type="CHECK">

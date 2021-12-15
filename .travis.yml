@@ -31,7 +31,7 @@
 #   coverity_scan:
 #     # COVERITY_SCAN_TOKEN added as env var in travis project
 #     project:
-#       name: onqtam/doctest
+#       name: doctest/doctest
 #     notification_email: vik.kirilov@gmail.com
 #     build_command: clang++ scripts/hello_world.cpp -I doctest
 #     branch_pattern: coverity_scan
@@ -138,14 +138,14 @@
 #           sources: *apt_sources
 
 #     # Clang 3.5
-#     - env: COMPILER=clang++-3.5 HAS_ASAN=true HAS_UBSAN=true # no HAS_TSAN - see errors: https://travis-ci.org/onqtam/doctest/builds/417926743
+#     - env: COMPILER=clang++-3.5 HAS_ASAN=true HAS_UBSAN=true # no HAS_TSAN - see errors: https://travis-ci.org/doctest/doctest/builds/417926743
 #       addons: &clang35
 #         apt:
 #           packages: ["clang-3.5", "valgrind", "libc6-dbg", "g++-6"]
 #           sources: *apt_sources
 
 #     # Clang 3.6
-#     - env: COMPILER=clang++-3.6 HAS_ASAN=true HAS_UBSAN=true # no HAS_TSAN - see errors: https://travis-ci.org/onqtam/doctest/builds/417926743
+#     - env: COMPILER=clang++-3.6 HAS_ASAN=true HAS_UBSAN=true # no HAS_TSAN - see errors: https://travis-ci.org/doctest/doctest/builds/417926743
 #       addons: &clang36
 #         apt:
 #           packages: ["clang-3.6", "valgrind", "libc6-dbg", "g++-6"]
@@ -159,14 +159,14 @@
 #           sources: *apt_sources
 
 #     # Clang 3.8
-#     - env: COMPILER=clang++-3.8 HAS_ASAN=true HAS_UBSAN=true # no HAS_TSAN - see errors: https://travis-ci.org/onqtam/doctest/builds/417926743
+#     - env: COMPILER=clang++-3.8 HAS_ASAN=true HAS_UBSAN=true # no HAS_TSAN - see errors: https://travis-ci.org/doctest/doctest/builds/417926743
 #       addons: &clang38
 #         apt:
 #           packages: ["clang-3.8", "valgrind", "libc6-dbg", "g++-6"]
 #           sources: *apt_sources
 
 #     # Clang 3.9
-#     - env: COMPILER=clang++-3.9 # no HAS_ASAN/HAS_UBSAN - see errors: https://travis-ci.org/onqtam/doctest/jobs/386263910
+#     - env: COMPILER=clang++-3.9 # no HAS_ASAN/HAS_UBSAN - see errors: https://travis-ci.org/doctest/doctest/jobs/386263910
 #       addons: &clang39
 #         apt:
 #           packages: ["clang-3.9", "valgrind", "libc6-dbg", "g++-6"]
@@ -229,7 +229,7 @@
 #           sources: *apt_sources
 
 #     # Xcode 9.4 Clang
-#     - env: COMPILER=clang++ HAS_UBSAN=true HAS_TSAN=true # no HAS_ASAN - errors since using thread_local even in single-threaded cases - see errors: https://travis-ci.org/onqtam/doctest/builds/417181981
+#     - env: COMPILER=clang++ HAS_UBSAN=true HAS_TSAN=true # no HAS_ASAN - errors since using thread_local even in single-threaded cases - see errors: https://travis-ci.org/doctest/doctest/builds/417181981
 #       osx_image: xcode9.4
 #       os: osx
 
@@ -259,7 +259,7 @@
 #     # static code analysis
 #     - env: COMPILER=clang++-4.0 STATIC_CODE_ANALYSIS=true
 
-#     # seems to not be present yet: https://travis-ci.org/github/onqtam/doctest/jobs/688097537
+#     # seems to not be present yet: https://travis-ci.org/github/doctest/doctest/jobs/688097537
 #     # GCC 10
 #     - env: COMPILER=g++-10 HAS_ASAN=true HAS_UBSAN=true HAS_TSAN=true SANITIZER_CXX_FLAGS="-fuse-ld=gold -static-libasan" TSAN_CXX_FLAGS="-ltsan"
 #       compiler: gcc

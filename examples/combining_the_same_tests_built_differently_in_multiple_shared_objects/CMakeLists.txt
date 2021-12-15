@@ -1,4 +1,4 @@
-# for more information about this example refer to the GitHub issue: https://github.com/onqtam/doctest/issues/436
+# for more information about this example refer to the GitHub issue: https://github.com/doctest/doctest/issues/436
 
 # create the test runner, to which all other targets will link to
 add_library(test_runner SHARED test_runner.cpp)

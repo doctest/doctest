@@ -121,7 +121,7 @@ static void checks(int data)
     DOCTEST_SUBCASE("check data 2") { REQUIRE(data % 4 == 0); }
 }
 
-TEST_CASE("Nested - related to https://github.com/onqtam/doctest/issues/282")
+TEST_CASE("Nested - related to https://github.com/doctest/doctest/issues/282")
 {
     DOCTEST_SUBCASE("generate data variant 1")
     {

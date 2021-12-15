@@ -48,7 +48,7 @@ When any of these macros are used the console reporter recognises them and forma
 
 Other than the additional prefixes and the formatting in the console reporter these macros behave exactly as ```TEST_CASE```s and ```SUBCASE```s. As such there is nothing enforcing the correct sequencing of these macros - that's up to the programmer!
 
-Note that when using the [`--test-case=<filters>`](https://github.com/onqtam/doctest/blob/master/doc/markdown/commandline.md) command line option (or `--subcase=<filters>`) you will have to pass the prefix `Scenario: ` as well.
+Note that when using the [`--test-case=<filters>`](https://github.com/doctest/doctest/blob/master/doc/markdown/commandline.md) command line option (or `--subcase=<filters>`) you will have to pass the prefix `Scenario: ` as well.
 
 ## Test fixtures
 

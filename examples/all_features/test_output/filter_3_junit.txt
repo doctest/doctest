@@ -8,7 +8,7 @@ root
     <testcase classname="subcases.cpp" name="  Scenario: vectors can be sized and resized" status="run"/>
     <testcase classname="subcases.cpp" name="test case should fail even though the last subcase passes" status="run"/>
     <testcase classname="subcases.cpp" name="fails from an exception but gets re-entered to traverse all subcases" status="run"/>
-    <testcase classname="subcases.cpp" name="Nested - related to https://github.com/onqtam/doctest/issues/282" status="run"/>
+    <testcase classname="subcases.cpp" name="Nested - related to https://github.com/doctest/doctest/issues/282" status="run"/>
     <testcase classname="subcases.cpp" name="subcases with changing names" status="run"/>
   </testsuite>
 </testsuites>
