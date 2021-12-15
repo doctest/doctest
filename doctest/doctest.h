@@ -913,8 +913,8 @@ namespace detail {
     struct filldata<T[N]>
     {
         static void fill(const T (&in)[N]) {
-                    fillstream(in);
-                    *getTlsOss(false)<<"";
+            getTlsOss(); // called once here to clear the stringstream
+            fillstream(in);
         }
     };
 
@@ -1166,7 +1166,7 @@ DOCTEST_CLANG_SUPPRESS_WARNING_WITH_PUSH("-Wunused-comparison")
 
 #define DOCTEST_DO_BINARY_EXPRESSION_COMPARISON(op, op_str, op_macro)                              \
     template <typename R>                                                                          \
-    DOCTEST_NOINLINE SFINAE_OP(Result,op) operator op(const R&& rhs) {             \
+    DOCTEST_NOINLINE SFINAE_OP(Result,op) operator op(const R&& rhs) {                             \
     bool res = op_macro(doctest::detail::forward<const L>(lhs), doctest::detail::forward<const R>(rhs));                                                             \
         if(m_at & assertType::is_false)                                                            \
             res = !res;                                                                            \
@@ -1175,15 +1175,14 @@ DOCTEST_CLANG_SUPPRESS_WARNING_WITH_PUSH("-Wunused-comparison")
         return Result(res);                                                                        \
     }												   \
     template <typename R ,typename enable_if<  !doctest::detail::is_rvalue_reference<R>::value   , void >::type* = nullptr>                                         \
-    DOCTEST_NOINLINE SFINAE_OP(Result,op) operator op(const R& rhs) {             \
-    bool res = op_macro(doctest::detail::forward<const L>(lhs), doctest::detail::forward<const R>(rhs));                                                             \
+    DOCTEST_NOINLINE SFINAE_OP(Result,op) operator op(const R& rhs) {                              \
+    bool res = op_macro(doctest::detail::forward<const L>(lhs), rhs);                              \
         if(m_at & assertType::is_false)                                                            \
             res = !res;                                                                            \
         if(!res || doctest::getContextOptions()->success)                                          \
             return Result(res, stringifyBinaryExpr(lhs, op_str, rhs));                             \
         return Result(res);                                                                        \
     }
-
 
     // more checks could be added - like in Catch:
     // https://github.com/catchorg/Catch2/pull/1480/files
