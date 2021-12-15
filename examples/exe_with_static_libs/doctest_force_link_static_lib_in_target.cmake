@@ -29,7 +29,7 @@ endfunction()
 
 # this is the magic function - forces every object file from the library to be linked into the target (dll or executable)
 # it doesn't work in 2 scenarios:
-# - either the target or the library uses a precompiled header - see the end of this issue for details: https://github.com/onqtam/doctest/issues/21
+# - either the target or the library uses a precompiled header - see the end of this issue for details: https://github.com/doctest/doctest/issues/21
 # - either the target or the library is an imported target (pre-built) and not built within the current cmake tree
 # Alternatives:
 # - use CMake object libraries instead of static libraries - >> THIS IS ACTUALLY PREFERRED << to all this CMake trickery

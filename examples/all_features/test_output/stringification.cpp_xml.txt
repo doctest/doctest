@@ -13,10 +13,18 @@
       </Expression>
       <Expression success="false" type="CHECK" filename="stringification.cpp" line="0">
         <Original>
-          dummy1 == dummy2
+          dummy == "tralala"
         </Original>
         <Expanded>
           omg == tralala
+        </Expanded>
+      </Expression>
+      <Expression success="false" type="CHECK" filename="stringification.cpp" line="0">
+        <Original>
+          "tralala" == dummy
+        </Original>
+        <Expanded>
+          tralala == omg
         </Expanded>
       </Expression>
       <Expression success="false" type="CHECK" filename="stringification.cpp" line="0">
@@ -63,7 +71,7 @@
       <Exception crash="false">
         MyTypeInherited&lt;int>(5, 4)
       </Exception>
-      <OverallResultsAsserts successes="0" failures="6" test_case_success="false"/>
+      <OverallResultsAsserts successes="0" failures="7" test_case_success="false"/>
     </TestCase>
     <TestCase name="a test case that registers an exception translator for int and then throws one" filename="stringification.cpp" line="0">
       <Exception crash="false">
@@ -72,7 +80,7 @@
       <OverallResultsAsserts successes="0" failures="0" test_case_success="false"/>
     </TestCase>
   </TestSuite>
-  <OverallResultsAsserts successes="0" failures="6"/>
+  <OverallResultsAsserts successes="0" failures="7"/>
   <OverallResultsTestCases successes="0" failures="2"/>
 </doctest>
 Program code.

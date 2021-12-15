@@ -134,7 +134,7 @@ A ```doctest::Context``` object still has to be created somewhere and set as the
 
 The results would be best when using the [**```DOCTEST_CONFIG_SUPER_FAST_ASSERTS```**](configuration.html#doctest_config_super_fast_asserts) config identifier.
 
-Checkout the [**example**](../../examples/all_features/asserts_used_outside_of_tests.cpp) showcasing how that is done. For more information see the [**issue for the feature request**](https://github.com/onqtam/doctest/issues/114).
+Checkout the [**example**](../../examples/all_features/asserts_used_outside_of_tests.cpp) showcasing how that is done. For more information see the [**issue for the feature request**](https://github.com/doctest/doctest/issues/114).
 
 Currently [**logging macros**](logging.html) cannot be used for extra context for asserts outside of a test run. That means that the ```_MESSAGE``` variants of asserts are also not usable - since they are just a packed ```INFO()``` with an assert right after it.
 

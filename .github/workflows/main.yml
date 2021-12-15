@@ -144,7 +144,7 @@ jobs:
             compiler: clang
             version: "8"
 
-          # fails like this: https://github.com/onqtam/doctest/runs/1562896476?check_suite_focus=true
+          # fails like this: https://github.com/doctest/doctest/runs/1562896476?check_suite_focus=true
           # - name: ubuntu-latest-clang-9
           #   os: ubuntu-latest
           #   compiler: clang
@@ -155,7 +155,7 @@ jobs:
             compiler: clang
             version: "10"
 
-          # fails like this: https://github.com/onqtam/doctest/runs/1562896512?check_suite_focus=true
+          # fails like this: https://github.com/doctest/doctest/runs/1562896512?check_suite_focus=true
           # - name: ubuntu-latest-clang-11
           #   os: ubuntu-latest
           #   compiler: clang

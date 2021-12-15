@@ -112,7 +112,7 @@ By default the library suppresses warnings about comparing signed and unsigned t
 - msvc ```C4389``` 'operator' : signed/unsigned mismatch
 - msvc ```C4018``` 'expression' : signed/unsigned mismatch
 
-You can checkout [**this**](https://github.com/onqtam/doctest/issues/16#issuecomment-246803303) issue to better understand why I suppress these warnings by default.
+You can checkout [**this**](https://github.com/doctest/doctest/issues/16#issuecomment-246803303) issue to better understand why I suppress these warnings by default.
 
 This can be defined both globally and in specific source files only.
 
@@ -231,7 +231,7 @@ This should be defined only in the source file where the library is implemented 
 
 ### **```DOCTEST_CONFIG_INCLUDE_TYPE_TRAITS```**
 
-This can be used to include the ```<type_traits>``` C++11 header. That in turn will enable the ability for the ```Approx``` helper to be used with strong typedefs of ```double``` - check [this](https://github.com/onqtam/doctest/issues/62) or [this](https://github.com/onqtam/doctest/issues/85) issue for more details on that.
+This can be used to include the ```<type_traits>``` C++11 header. That in turn will enable the ability for the ```Approx``` helper to be used with strong typedefs of ```double``` - check [this](https://github.com/doctest/doctest/issues/62) or [this](https://github.com/doctest/doctest/issues/85) issue for more details on that.
 
 This can be defined both globally and in specific source files only.
 
