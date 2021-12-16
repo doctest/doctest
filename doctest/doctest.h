@@ -3094,9 +3094,9 @@ namespace detail {
         std::stringstream           ss;
 
     public:
-        std::ostream& push() {
+        std::ostream* push() {
             stack.push_back(ss.tellp());
-            return ss;
+            return &ss;
         }
 
         String pop() {
@@ -3113,7 +3113,7 @@ namespace detail {
     } g_oss;
 
     std::ostream* tlssPush() {
-        return &g_oss.push();
+        return g_oss.push();
     }
 
     String tlssPop() {
