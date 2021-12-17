@@ -476,7 +476,7 @@ namespace doctest {
 
 DOCTEST_INTERFACE extern bool is_running_in_test;
 
-#if _MSC_VER
+#if DOCTEST_MSVC
 template <typename T>
 struct doctest_thread_local_wrapper {
     doctest_thread_local_wrapper() {
@@ -497,14 +497,14 @@ private:
     union { T value; };
     bool initialized = false;
 };
-#else  // _MSC_VER
+#else  // DOCTEST_MSVC
 template <typename T>
 struct doctest_thread_local_wrapper {
     T& get() { return value; }
 private:
     T value{};
 };
-#endif // _MSC_VER
+#endif // DOCTEST_MSVC
 
 // A 24 byte string class (can be as small as 17 for x64 and 13 for x86) that can hold strings with length
 // of up to 23 chars on the stack before going on the heap - the last byte of the buffer is used for:
