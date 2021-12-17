@@ -1493,11 +1493,6 @@ DOCTEST_CLANG_SUPPRESS_WARNING_POP
         int         m_expected_failures = 0;
         double      m_timeout = 0;
 
-        // Fix segfault on Intel Compiler 2021 during the DOCTEST_TEST_SUITE_END execution
-        TestSuite(const char* in = nullptr) {
-            m_test_suite = in;
-        }
-
         TestSuite& operator*(const char* in);
 
         template <typename T>
