@@ -1942,11 +1942,11 @@ int registerReporter(const char* name, int priority, bool isReporter) {
 
 // common code in asserts - for convenience
 #define DOCTEST_ASSERT_LOG_AND_REACT(b)                                                            \
-    if(b.log()) {                                                                                  \
+    bool DOCTEST_RES = b.log();                                                                    \
+    if(DOCTEST_RES) {                                                                              \
         DOCTEST_BREAK_INTO_DEBUGGER();                                                             \
-        return false;                                                                              \
     }                                                                                              \
-    b.react(); return true
+    b.react(); return DOCTEST_RES
 
 #ifdef DOCTEST_CONFIG_NO_TRY_CATCH_IN_ASSERTS
 #define DOCTEST_WRAP_IN_TRY(x) x;
