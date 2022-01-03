@@ -1804,7 +1804,7 @@ namespace detail {
         DOCTEST_ASSERT_OUT_OF_TESTS(result.m_decomp);
         DOCTEST_ASSERT_IN_TESTS(result.m_decomp);
         // NOLINTNEXTLINE(clang-analyzer-cplusplus.NewDeleteLeaks)
-        return result.m_passed;
+        return !failed;
     }
 
     MessageBuilder::MessageBuilder(const char* file, int line, assertType::Enum severity) {

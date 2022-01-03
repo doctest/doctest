@@ -1489,15 +1489,16 @@ DOCTEST_CLANG_SUPPRESS_WARNING_POP
         void setResult(const Result& res);
 
         template <int comparison, typename L, typename R>
-        DOCTEST_NOINLINE void binary_assert(const DOCTEST_REF_WRAP(L) lhs,
+        DOCTEST_NOINLINE bool binary_assert(const DOCTEST_REF_WRAP(L) lhs,
                                             const DOCTEST_REF_WRAP(R) rhs) {
             m_failed = !RelationalComparator<comparison, L, R>()(lhs, rhs);
             if(m_failed || getContextOptions()->success)
                 m_decomp = stringifyBinaryExpr(lhs, ", ", rhs);
+            return !m_failed;
         }
 
         template <typename L>
-        DOCTEST_NOINLINE void unary_assert(const DOCTEST_REF_WRAP(L) val) {
+        DOCTEST_NOINLINE bool unary_assert(const DOCTEST_REF_WRAP(L) val) {
             m_failed = !val;
 
             if(m_at & assertType::is_false) //!OCLINT bitwise operator in conditional
@@ -1505,6 +1506,8 @@ DOCTEST_CLANG_SUPPRESS_WARNING_POP
 
             if(m_failed || getContextOptions()->success)
                 m_decomp = toString(val);
+
+            return !m_failed;
         }
 
         void translateException();
@@ -1528,7 +1531,7 @@ DOCTEST_CLANG_SUPPRESS_WARNING_POP
                                          const char* expr, Result result);
 
 #define DOCTEST_ASSERT_OUT_OF_TESTS(decomp)                                                        \
-    [&] {                                                                                          \
+    do {                                                                                           \
         if(!is_running_in_test) {                                                                  \
             if(failed) {                                                                           \
                 ResultBuilder rb(at, file, line, expr);                                            \
@@ -1540,9 +1543,9 @@ DOCTEST_CLANG_SUPPRESS_WARNING_POP
                 if(checkIfShouldThrow(at))                                                         \
                     throwException();                                                              \
             }                                                                                      \
-            return;                                                                                \
+            return !failed;                                                                        \
         }                                                                                          \
-    }()
+    } while(false);
 
 #define DOCTEST_ASSERT_IN_TESTS(decomp)                                                            \
     ResultBuilder rb(at, file, line, expr);                                                        \
@@ -1555,7 +1558,7 @@ DOCTEST_CLANG_SUPPRESS_WARNING_POP
     throwException()
 
     template <int comparison, typename L, typename R>
-    DOCTEST_NOINLINE void binary_assert(assertType::Enum at, const char* file, int line,
+    DOCTEST_NOINLINE bool binary_assert(assertType::Enum at, const char* file, int line,
                                         const char* expr, const DOCTEST_REF_WRAP(L) lhs,
                                         const DOCTEST_REF_WRAP(R) rhs) {
         bool failed = !RelationalComparator<comparison, L, R>()(lhs, rhs);
@@ -1566,10 +1569,11 @@ DOCTEST_CLANG_SUPPRESS_WARNING_POP
         // ###################################################################################
         DOCTEST_ASSERT_OUT_OF_TESTS(stringifyBinaryExpr(lhs, ", ", rhs));
         DOCTEST_ASSERT_IN_TESTS(stringifyBinaryExpr(lhs, ", ", rhs));
+        return !failed;
     }
 
     template <typename L>
-    DOCTEST_NOINLINE void unary_assert(assertType::Enum at, const char* file, int line,
+    DOCTEST_NOINLINE bool unary_assert(assertType::Enum at, const char* file, int line,
                                        const char* expr, const DOCTEST_REF_WRAP(L) val) {
         bool failed = !val;
 
@@ -1582,6 +1586,7 @@ DOCTEST_CLANG_SUPPRESS_WARNING_POP
         // ###################################################################################
         DOCTEST_ASSERT_OUT_OF_TESTS(toString(val));
         DOCTEST_ASSERT_IN_TESTS(toString(val));
+        return !failed;
     }
 
     struct DOCTEST_INTERFACE IExceptionTranslator
@@ -4641,7 +4646,7 @@ namespace detail {
         DOCTEST_ASSERT_OUT_OF_TESTS(result.m_decomp);
         DOCTEST_ASSERT_IN_TESTS(result.m_decomp);
         // NOLINTNEXTLINE(clang-analyzer-cplusplus.NewDeleteLeaks)
-        return result.m_passed;
+        return !failed;
     }
 
     MessageBuilder::MessageBuilder(const char* file, int line, assertType::Enum severity) {
