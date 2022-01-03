@@ -1542,7 +1542,7 @@ DOCTEST_CLANG_SUPPRESS_WARNING_POP
             }                                                                                      \
             return !failed;                                                                        \
         }                                                                                          \
-    } while(false);
+    } while(false)
 
 #define DOCTEST_ASSERT_IN_TESTS(decomp)                                                            \
     ResultBuilder rb(at, file, line, expr);                                                        \
