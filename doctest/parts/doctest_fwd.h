@@ -1938,12 +1938,11 @@ int registerReporter(const char* name, int priority, bool isReporter) {
 #if !defined(DOCTEST_CONFIG_DISABLE)
 
 // common code in asserts - for convenience
-#define DOCTEST_ASSERT_LOG_AND_REACT(b)                                                            \
-    bool DOCTEST_RES = b.log();                                                                    \
-    if(DOCTEST_RES) {                                                                              \
+#define DOCTEST_ASSERT_LOG_REACT_RETURN(b)                                                         \
+    if(b.log())                                                                                    \
         DOCTEST_BREAK_INTO_DEBUGGER();                                                             \
-    }                                                                                              \
-    b.react(); return DOCTEST_RES
+    b.react(); \
+    return !b.m_failed
 
 #ifdef DOCTEST_CONFIG_NO_TRY_CATCH_IN_ASSERTS
 #define DOCTEST_WRAP_IN_TRY(x) x;
@@ -2173,7 +2172,9 @@ int registerReporter(const char* name, int priority, bool isReporter) {
     [&] {                                                                                          \
         doctest::detail::MessageBuilder mb(file, line, doctest::assertType::type);                 \
         mb * __VA_ARGS__;                                                                          \
-        DOCTEST_ASSERT_LOG_AND_REACT(mb);                                                          \
+        if(mb.log())                                                                               \
+            DOCTEST_BREAK_INTO_DEBUGGER();                                                         \
+        mb.react();                                                                                \
     }()
 
 // clang-format off
@@ -2197,7 +2198,7 @@ int registerReporter(const char* name, int priority, bool isReporter) {
     DOCTEST_WRAP_IN_TRY(DOCTEST_RB.setResult(                                                      \
             doctest::detail::ExpressionDecomposer(doctest::assertType::assert_type)                \
             << __VA_ARGS__))                                                                       \
-    DOCTEST_ASSERT_LOG_AND_REACT(DOCTEST_RB)                                                       \
+    DOCTEST_ASSERT_LOG_REACT_RETURN(DOCTEST_RB)                                                    \
     DOCTEST_CLANG_SUPPRESS_WARNING_POP
 
 #define DOCTEST_ASSERT_IMPLEMENT_1(assert_type, ...)                                               \
@@ -2247,9 +2248,9 @@ int registerReporter(const char* name, int priority, bool isReporter) {
                 DOCTEST_RB.translateException();                                                   \
                 DOCTEST_RB.m_threw_as = true;                                                      \
             } catch(...) { DOCTEST_RB.translateException(); }                                      \
-            DOCTEST_ASSERT_LOG_AND_REACT(DOCTEST_RB);                                              \
+            DOCTEST_ASSERT_LOG_REACT_RETURN(DOCTEST_RB);                                           \
         } else {                                                                                   \
-            return true;                                                                           \
+            return false;                                                                          \
         }                                                                                          \
     }()
 
@@ -2261,9 +2262,9 @@ int registerReporter(const char* name, int priority, bool isReporter) {
             try {                                                                                  \
                 DOCTEST_CAST_TO_VOID(expr)                                                         \
             } catch(...) { DOCTEST_RB.translateException(); }                                      \
-            DOCTEST_ASSERT_LOG_AND_REACT(DOCTEST_RB);                                              \
+            DOCTEST_ASSERT_LOG_REACT_RETURN(DOCTEST_RB);                                           \
         } else {                                                                                   \
-           return true;                                                                            \
+           return false;                                                                           \
         }                                                                                          \
     }()
 
@@ -2274,7 +2275,7 @@ int registerReporter(const char* name, int priority, bool isReporter) {
         try {                                                                                      \
             DOCTEST_CAST_TO_VOID(__VA_ARGS__)                                                      \
         } catch(...) { DOCTEST_RB.translateException(); }                                          \
-        DOCTEST_ASSERT_LOG_AND_REACT(DOCTEST_RB);                                                  \
+        DOCTEST_ASSERT_LOG_REACT_RETURN(DOCTEST_RB);                                               \
     }()
 
 // clang-format off
@@ -2324,7 +2325,7 @@ int registerReporter(const char* name, int priority, bool isReporter) {
         DOCTEST_WRAP_IN_TRY(                                                                       \
                 DOCTEST_RB.binary_assert<doctest::detail::binaryAssertComparison::comp>(           \
                         __VA_ARGS__))                                                              \
-        DOCTEST_ASSERT_LOG_AND_REACT(DOCTEST_RB);                                                  \
+        DOCTEST_ASSERT_LOG_REACT_RETURN(DOCTEST_RB);                                               \
     }()
 
 #define DOCTEST_UNARY_ASSERT(assert_type, ...)                                                     \
@@ -2332,7 +2333,7 @@ int registerReporter(const char* name, int priority, bool isReporter) {
         doctest::detail::ResultBuilder DOCTEST_RB(doctest::assertType::assert_type, __FILE__,      \
                                                    __LINE__, #__VA_ARGS__);                        \
         DOCTEST_WRAP_IN_TRY(DOCTEST_RB.unary_assert(__VA_ARGS__))                                  \
-        DOCTEST_ASSERT_LOG_AND_REACT(DOCTEST_RB);                                                  \
+        DOCTEST_ASSERT_LOG_REACT_RETURN(DOCTEST_RB);                                               \
     }()
 
 #else // DOCTEST_CONFIG_SUPER_FAST_ASSERTS

@@ -191,3 +191,14 @@ static void someAssertsInFunction() {
 TEST_CASE("some asserts used in a function called by a test case") {
     someAssertsInFunction();
 }
+
+TEST_CASE("macro return values") {
+    int a = 4;
+    int b = 2;
+    if (CHECK(a == b)) { MESSAGE("should not be reached!"); }
+    if (CHECK_FALSE(a != b)) { MESSAGE("should not be reached!"); }
+    if (CHECK_EQ(a, b)) { MESSAGE("should not be reached!"); }
+    if (CHECK_UNARY(a == b)) { MESSAGE("should not be reached!"); }
+    if (CHECK_UNARY_FALSE(a != b)) { MESSAGE("should not be reached!"); }
+    if (CHECK_THROWS([]{}())) { MESSAGE("should not be reached!"); }
+}

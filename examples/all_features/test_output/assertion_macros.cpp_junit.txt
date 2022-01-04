@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <testsuites>
-  <testsuite name="all_features" errors="0" failures="52" tests="74">
+  <testsuite name="all_features" errors="0" failures="58" tests="80">
     <testcase classname="assertion_macros.cpp" name="normal macros" status="run">
       <failure type="CHECK">
 assertion_macros.cpp(0):
@@ -314,6 +314,43 @@ REQUIRE_UNARY_FALSE( 1 ) is NOT correct!
       <failure type="CHECK_THROWS_WITH_AS">
 assertion_macros.cpp(0):
 CHECK_THROWS_WITH_AS( throw_if(true, false), "unknown exception", int ) threw a DIFFERENT exception! (contents: "unknown exception")
+
+      </failure>
+    </testcase>
+    <testcase classname="assertion_macros.cpp" name="macro return values" status="run">
+      <failure message="4 == 2" type="CHECK">
+assertion_macros.cpp(0):
+CHECK( a == b ) is NOT correct!
+  values: CHECK( 4 == 2 )
+
+      </failure>
+      <failure message="4 != 2" type="CHECK_FALSE">
+assertion_macros.cpp(0):
+CHECK_FALSE( a != b ) is NOT correct!
+  values: CHECK_FALSE( 4 != 2 )
+
+      </failure>
+      <failure message="4, 2" type="CHECK_EQ">
+assertion_macros.cpp(0):
+CHECK_EQ( a, b ) is NOT correct!
+  values: CHECK_EQ( 4, 2 )
+
+      </failure>
+      <failure message="false" type="CHECK_UNARY">
+assertion_macros.cpp(0):
+CHECK_UNARY( a == b ) is NOT correct!
+  values: CHECK_UNARY( false )
+
+      </failure>
+      <failure message="true" type="CHECK_UNARY_FALSE">
+assertion_macros.cpp(0):
+CHECK_UNARY_FALSE( a != b ) is NOT correct!
+  values: CHECK_UNARY_FALSE( true )
+
+      </failure>
+      <failure type="CHECK_THROWS">
+assertion_macros.cpp(0):
+CHECK_THROWS( []{}() ) did NOT throw at all!
 
       </failure>
     </testcase>

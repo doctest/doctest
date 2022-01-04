@@ -198,7 +198,28 @@ TEST CASE:  some asserts used in a function called by a test case
 assertion_macros.cpp(0): ERROR: CHECK_THROWS_WITH_AS( throw_if(true, false), "unknown exception", int ) threw a DIFFERENT exception! (contents: "unknown exception")
 
 ===============================================================================
-[doctest] test cases: 21 |  3 passed | 18 failed |
-[doctest] assertions: 74 | 35 passed | 39 failed |
+assertion_macros.cpp(0):
+TEST CASE:  macro return values
+
+assertion_macros.cpp(0): ERROR: CHECK( a == b ) is NOT correct!
+  values: CHECK( 4 == 2 )
+
+assertion_macros.cpp(0): ERROR: CHECK_FALSE( a != b ) is NOT correct!
+  values: CHECK_FALSE( 4 != 2 )
+
+assertion_macros.cpp(0): ERROR: CHECK_EQ( a, b ) is NOT correct!
+  values: CHECK_EQ( 4, 2 )
+
+assertion_macros.cpp(0): ERROR: CHECK_UNARY( a == b ) is NOT correct!
+  values: CHECK_UNARY( false )
+
+assertion_macros.cpp(0): ERROR: CHECK_UNARY_FALSE( a != b ) is NOT correct!
+  values: CHECK_UNARY_FALSE( true )
+
+assertion_macros.cpp(0): ERROR: CHECK_THROWS( []{}() ) did NOT throw at all!
+
+===============================================================================
+[doctest] test cases: 22 |  3 passed | 19 failed |
+[doctest] assertions: 80 | 35 passed | 45 failed |
 [doctest] Status: FAILURE!
 Program code.

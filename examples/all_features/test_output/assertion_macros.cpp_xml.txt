@@ -532,8 +532,56 @@
       </Expression>
       <OverallResultsAsserts successes="9" failures="1" test_case_success="false"/>
     </TestCase>
+    <TestCase name="macro return values" filename="assertion_macros.cpp" line="0">
+      <Expression success="false" type="CHECK" filename="assertion_macros.cpp" line="0">
+        <Original>
+          a == b
+        </Original>
+        <Expanded>
+          4 == 2
+        </Expanded>
+      </Expression>
+      <Expression success="false" type="CHECK_FALSE" filename="assertion_macros.cpp" line="0">
+        <Original>
+          a != b
+        </Original>
+        <Expanded>
+          4 != 2
+        </Expanded>
+      </Expression>
+      <Expression success="false" type="CHECK_EQ" filename="assertion_macros.cpp" line="0">
+        <Original>
+          a, b
+        </Original>
+        <Expanded>
+          4, 2
+        </Expanded>
+      </Expression>
+      <Expression success="false" type="CHECK_UNARY" filename="assertion_macros.cpp" line="0">
+        <Original>
+          a == b
+        </Original>
+        <Expanded>
+          false
+        </Expanded>
+      </Expression>
+      <Expression success="false" type="CHECK_UNARY_FALSE" filename="assertion_macros.cpp" line="0">
+        <Original>
+          a != b
+        </Original>
+        <Expanded>
+          true
+        </Expanded>
+      </Expression>
+      <Expression success="false" type="CHECK_THROWS" filename="assertion_macros.cpp" line="0">
+        <Original>
+          []{}()
+        </Original>
+      </Expression>
+      <OverallResultsAsserts successes="0" failures="6" test_case_success="false"/>
+    </TestCase>
   </TestSuite>
-  <OverallResultsAsserts successes="35" failures="39"/>
-  <OverallResultsTestCases successes="3" failures="18"/>
+  <OverallResultsAsserts successes="35" failures="45"/>
+  <OverallResultsTestCases successes="3" failures="19"/>
 </doctest>
 Program code.
