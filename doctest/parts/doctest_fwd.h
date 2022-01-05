@@ -383,9 +383,9 @@ DOCTEST_MSVC_SUPPRESS_WARNING(4623) // default constructor was implicitly define
 #define DOCTEST_PLATFORM_LINUX
 #endif // DOCTEST_PLATFORM
 
-namespace doctest::detail {
+namespace doctest { namespace detail {
     static int consume(int, int) { return 0; }
-}
+}}
 
 #define DOCTEST_GLOBAL_NO_WARNINGS(var, ...) \
     static const int var = doctest::detail::consume(var, __VA_ARGS__);
