@@ -387,11 +387,11 @@ DOCTEST_MSVC_SUPPRESS_WARNING(4623) // default constructor was implicitly define
 #endif // DOCTEST_PLATFORM
 
 namespace doctest { namespace detail {
-    static int consume(int, int) { return 0; }
+    static int consume(const int*, int) { return 0; }
 }}
 
 #define DOCTEST_GLOBAL_NO_WARNINGS(var, ...) \
-    static const int var = doctest::detail::consume(var, __VA_ARGS__);
+    static const int var = doctest::detail::consume(&var, __VA_ARGS__)
 
 #ifndef DOCTEST_BREAK_INTO_DEBUGGER
 // should probably take a look at https://github.com/scottt/debugbreak
@@ -1981,8 +1981,7 @@ int registerReporter(const char* name, int priority, bool isReporter) {
                     doctest::detail::TestCase(                                                     \
                             f, __FILE__, __LINE__,                                                 \
                             doctest_detail_test_suite_ns::getCurrentTestSuite()) *                 \
-                    decorators)                                                                    \
-    )
+                    decorators));
 
 #define DOCTEST_IMPLEMENT_FIXTURE(der, base, func, decorators)                                     \
     namespace {                                                                                    \
