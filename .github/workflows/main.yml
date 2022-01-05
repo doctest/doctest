@@ -50,6 +50,9 @@ jobs:
           windows-2019-clang-cl,
           windows-2019-clang,
           # windows-2019-gcc,
+          windows-2022-cl,
+          windows-2022-clang-cl,
+          windows-2022-clang,
           macOS-latest-xcode-11.3,
         ]
 
@@ -188,6 +191,18 @@ jobs:
 
           - name: windows-2019-clang
             os: windows-2019
+            compiler: clang
+
+          - name: windows-2022-cl
+            os: windows-2022
+            compiler: cl
+
+          - name: windows-2022-clang-cl
+            os: windows-2022
+            compiler: clang-cl
+
+          - name: windows-2022-clang
+            os: windows-2022
             compiler: clang
 
           # fails to install it...
