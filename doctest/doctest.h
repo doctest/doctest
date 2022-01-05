@@ -3120,8 +3120,7 @@ namespace detail {
             std::streampos pos = stack.back();
             stack.pop_back();
             unsigned sz = static_cast<unsigned>(ss.tellp() - pos);
-            ss.seekg(pos);
-            ss.seekp(pos);
+            ss.rdbuf()->pubseekpos(pos, std::ios::in | std::ios::out);
             return String(ss, sz);
         }
     } g_oss;
