@@ -75,6 +75,7 @@
   <TestSuite>
     <TestCase name="logging the counter of a loop" filename="logging.cpp" line="0" skipped="true"/>
     <TestCase name="lots of nested subcases" filename="subcases.cpp" line="0" skipped="true"/>
+    <TestCase name="macro return values" filename="assertion_macros.cpp" line="0" skipped="true"/>
     <TestCase name="multiple types&lt;>" filename="templated_test_cases.cpp" line="0" skipped="true"/>
     <TestCase name="multiple types&lt;>" filename="templated_test_cases.cpp" line="0" skipped="true"/>
     <TestCase name="multiple types&lt;>" filename="templated_test_cases.cpp" line="0" skipped="true"/>
@@ -134,6 +135,6 @@
     <TestCase name="will end from an unknown exception" filename="coverage_maxout.cpp" line="0" skipped="true"/>
   </TestSuite>
   <OverallResultsAsserts successes="0" failures="0"/>
-  <OverallResultsTestCases successes="0" failures="0" skipped="94"/>
+  <OverallResultsTestCases successes="0" failures="0" skipped="95"/>
 </doctest>
 Program code.
