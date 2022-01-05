@@ -478,6 +478,36 @@ namespace doctest {
 
 DOCTEST_INTERFACE extern bool is_running_in_test;
 
+#if DOCTEST_MSVC
+template <typename T>
+struct doctest_thread_local_wrapper {
+    doctest_thread_local_wrapper() {
+        // Default definition is ill-formed in case of non-trivial type T.
+    }
+    T& get() {
+        if( !initialized ) {
+            new(&value) T;
+            initialized = true;
+        }
+        return value;
+    }
+    ~doctest_thread_local_wrapper() {
+        if( initialized )
+            value.~T();
+    }
+private:
+    union { T value; };
+    bool initialized = false;
+};
+#else  // DOCTEST_MSVC
+template <typename T>
+struct doctest_thread_local_wrapper {
+    T& get() { return value; }
+private:
+    T value{};
+};
+#endif // DOCTEST_MSVC
+
 // A 24 byte string class (can be as small as 17 for x64 and 13 for x86) that can hold strings with length
 // of up to 23 chars on the stack before going on the heap - the last byte of the buffer is used for:
 // - "is small" bit - the highest bit - if "0" then it is small - otherwise its "1" (128)
