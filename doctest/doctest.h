@@ -390,8 +390,10 @@ namespace doctest { namespace detail {
     static int consume(const int*, int) { return 0; }
 }}
 
-#define DOCTEST_GLOBAL_NO_WARNINGS(var, ...) \
-    static const int var = doctest::detail::consume(&var, __VA_ARGS__)
+#define DOCTEST_GLOBAL_NO_WARNINGS(var, ...)                                                       \
+    DOCTEST_CLANG_SUPPRESS_WARNING_WITH_PUSH("-Wglobal-constructors")                              \
+    static const int var = doctest::detail::consume(&var, __VA_ARGS__);                            \
+    DOCTEST_CLANG_SUPPRESS_WARNING_POP()
 
 #ifndef DOCTEST_BREAK_INTO_DEBUGGER
 // should probably take a look at https://github.com/scottt/debugbreak
@@ -1981,7 +1983,7 @@ int registerReporter(const char* name, int priority, bool isReporter) {
                     doctest::detail::TestCase(                                                     \
                             f, __FILE__, __LINE__,                                                 \
                             doctest_detail_test_suite_ns::getCurrentTestSuite()) *                 \
-                    decorators));
+                    decorators))
 
 #define DOCTEST_IMPLEMENT_FIXTURE(der, base, func, decorators)                                     \
     namespace {                                                                                    \
@@ -2074,7 +2076,7 @@ int registerReporter(const char* name, int priority, bool isReporter) {
 #define DOCTEST_TEST_CASE_TEMPLATE_INSTANTIATE_IMPL(id, anon, ...)                                 \
     DOCTEST_GLOBAL_NO_WARNINGS(DOCTEST_CAT(anon, DUMMY),                                           \
         doctest::detail::instantiationHelper(                                                      \
-            DOCTEST_CAT(id, ITERATOR)<__VA_ARGS__>(__FILE__, __LINE__, 0)));
+            DOCTEST_CAT(id, ITERATOR)<__VA_ARGS__>(__FILE__, __LINE__, 0)))
 
 #define DOCTEST_TEST_CASE_TEMPLATE_INVOKE(id, ...)                                                 \
     DOCTEST_TEST_CASE_TEMPLATE_INSTANTIATE_IMPL(id, DOCTEST_ANONYMOUS(DOCTEST_ANON_TMP_), std::tuple<__VA_ARGS__>) \
@@ -2126,20 +2128,20 @@ int registerReporter(const char* name, int priority, bool isReporter) {
 // for starting a testsuite block
 #define DOCTEST_TEST_SUITE_BEGIN(decorators)                                                       \
     DOCTEST_GLOBAL_NO_WARNINGS(DOCTEST_ANONYMOUS(DOCTEST_ANON_VAR_),                               \
-            doctest::detail::setTestSuite(doctest::detail::TestSuite() * decorators));             \
+            doctest::detail::setTestSuite(doctest::detail::TestSuite() * decorators))              \
     typedef int DOCTEST_ANONYMOUS(DOCTEST_ANON_FOR_SEMICOLON_)
 
 // for ending a testsuite block
 #define DOCTEST_TEST_SUITE_END                                                                     \
     DOCTEST_GLOBAL_NO_WARNINGS(DOCTEST_ANONYMOUS(DOCTEST_ANON_VAR_),                               \
-            doctest::detail::setTestSuite(doctest::detail::TestSuite() * ""));                     \
+            doctest::detail::setTestSuite(doctest::detail::TestSuite() * ""))                      \
     typedef int DOCTEST_ANONYMOUS(DOCTEST_ANON_FOR_SEMICOLON_)
 
 // for registering exception translators
 #define DOCTEST_REGISTER_EXCEPTION_TRANSLATOR_IMPL(translatorName, signature)                      \
     inline doctest::String translatorName(signature);                                              \
     DOCTEST_GLOBAL_NO_WARNINGS(DOCTEST_ANONYMOUS(DOCTEST_ANON_TRANSLATOR_),                        \
-            doctest::registerExceptionTranslator(translatorName));                                 \
+            doctest::registerExceptionTranslator(translatorName))                                  \
     doctest::String translatorName(signature)
 
 #define DOCTEST_REGISTER_EXCEPTION_TRANSLATOR(signature)                                           \
@@ -2149,13 +2151,13 @@ int registerReporter(const char* name, int priority, bool isReporter) {
 // for registering reporters
 #define DOCTEST_REGISTER_REPORTER(name, priority, reporter)                                        \
     DOCTEST_GLOBAL_NO_WARNINGS(DOCTEST_ANONYMOUS(DOCTEST_ANON_REPORTER_),                          \
-            doctest::registerReporter<reporter>(name, priority, true));                            \
+            doctest::registerReporter<reporter>(name, priority, true))                             \
     typedef int DOCTEST_ANONYMOUS(DOCTEST_ANON_FOR_SEMICOLON_)
 
 // for registering listeners
 #define DOCTEST_REGISTER_LISTENER(name, priority, reporter)                                        \
     DOCTEST_GLOBAL_NO_WARNINGS(DOCTEST_ANONYMOUS(DOCTEST_ANON_REPORTER_),                          \
-            doctest::registerReporter<reporter>(name, priority, false));                           \
+            doctest::registerReporter<reporter>(name, priority, false))                            \
     typedef int DOCTEST_ANONYMOUS(DOCTEST_ANON_FOR_SEMICOLON_)
 
 // clang-format off
