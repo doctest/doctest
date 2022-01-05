@@ -390,7 +390,7 @@ namespace doctest { namespace detail {
 #define DOCTEST_GLOBAL_NO_WARNINGS(var, ...)                                                       \
     DOCTEST_CLANG_SUPPRESS_WARNING_WITH_PUSH("-Wglobal-constructors")                              \
     static const int var = doctest::detail::consume(&var, __VA_ARGS__);                            \
-    DOCTEST_CLANG_SUPPRESS_WARNING_POP()
+    DOCTEST_CLANG_SUPPRESS_WARNING_POP
 
 #ifndef DOCTEST_BREAK_INTO_DEBUGGER
 // should probably take a look at https://github.com/scottt/debugbreak
