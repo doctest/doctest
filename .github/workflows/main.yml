@@ -39,20 +39,21 @@ jobs:
           ubuntu-18.04-clang-6.0,
           ubuntu-18.04-clang-7,
           ubuntu-18.04-clang-8,
-          # ubuntu-latest-clang-9,
+          ubuntu-latest-clang-9,
           ubuntu-latest-clang-10,
-          # ubuntu-latest-clang-11,
+          ubuntu-latest-clang-11,
           windows-2016-cl,
           windows-2016-clang-cl,
           windows-2016-clang,
-          # windows-2016-gcc,
+          windows-2016-gcc,
           windows-2019-cl,
           windows-2019-clang-cl,
           windows-2019-clang,
-          # windows-2019-gcc,
+          windows-2019-gcc,
           windows-2022-cl,
           windows-2022-clang-cl,
           windows-2022-clang,
+          windows-2022-gcc,
           macOS-latest-xcode-11.3,
         ]
 
@@ -147,22 +148,20 @@ jobs:
             compiler: clang
             version: "8"
 
-          # fails like this: https://github.com/doctest/doctest/runs/1562896476?check_suite_focus=true
-          # - name: ubuntu-latest-clang-9
-          #   os: ubuntu-latest
-          #   compiler: clang
-          #   version: "9"
+          - name: ubuntu-latest-clang-9
+            os: ubuntu-latest
+            compiler: clang
+            version: "9"
 
           - name: ubuntu-latest-clang-10
             os: ubuntu-latest
             compiler: clang
             version: "10"
 
-          # fails like this: https://github.com/doctest/doctest/runs/1562896512?check_suite_focus=true
-          # - name: ubuntu-latest-clang-11
-          #   os: ubuntu-latest
-          #   compiler: clang
-          #   version: "11"
+          - name: ubuntu-latest-clang-11
+            os: ubuntu-latest
+            compiler: clang
+            version: "11"
 
           - name: windows-2016-cl
             os: windows-2016
@@ -180,10 +179,9 @@ jobs:
             os: windows-2019
             compiler: cl
 
-          # fails to install it...
-          # - name: windows-2016-gcc
-          #   os: windows-2016
-          #   compiler: gcc
+          - name: windows-2016-gcc
+            os: windows-2016
+            compiler: gcc
 
           - name: windows-2019-clang-cl
             os: windows-2019
@@ -192,6 +190,10 @@ jobs:
           - name: windows-2019-clang
             os: windows-2019
             compiler: clang
+
+          - name: windows-2019-gcc
+            os: windows-2019
+            compiler: gcc
 
           - name: windows-2022-cl
             os: windows-2022
@@ -205,10 +207,9 @@ jobs:
             os: windows-2022
             compiler: clang
 
-          # fails to install it...
-          # - name: windows-2019-gcc
-          #   os: windows-2019
-          #   compiler: gcc
+          - name: windows-2022-gcc
+            os: windows-2022
+            compiler: gcc
 
           - name: macOS-latest-xcode-11.3
             os: macOS-10.15
