@@ -4,6 +4,7 @@ on: [push, pull_request]
 
 jobs:
   ci:
+    if: false
     name: ${{ matrix.name }}
     runs-on: ${{ matrix.os }}
 
