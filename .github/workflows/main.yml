@@ -2,6 +2,10 @@ name: CI
 
 on: [push, pull_request]
 
+env:
+  CTEST_OUTPUT_ON_FAILURE: ON
+  CTEST_PARALLEL_LEVEL: 2
+
 jobs:
   ci:
     name: ${{ matrix.name }}
@@ -11,144 +15,115 @@ jobs:
       CMAKE_GENERATOR: Ninja
       ASAN_OPTIONS: strict_string_checks=true:detect_odr_violation=2:detect_stack_use_after_return=true:check_initialization_order=true:strict_init_order=true
       TSAN_OPTIONS: force_seq_cst_atomics=1
-      CTEST_OUTPUT_ON_FAILURE: ON
-      CTEST_PARALLEL_LEVEL: 2
       ACTIONS_ALLOW_UNSECURE_COMMANDS: true # because of the set-env calls
 
     strategy:
       fail-fast: false
       matrix:
         include:
-          - name: ubuntu-18.04-gcc-4.8
-            os: ubuntu-18.04
+          - os: ubuntu-18.04
             compiler: gcc
             version: "4.8"
 
-          - name: ubuntu-18.04-gcc-4.9
-            os: ubuntu-18.04
+          - os: ubuntu-18.04
             compiler: gcc
             version: "4.9"
 
-          - name: ubuntu-18.04-gcc-5
-            os: ubuntu-18.04
+          - os: ubuntu-18.04
             compiler: gcc
             version: "5"
 
-          - name: ubuntu-18.04-gcc-6
-            os: ubuntu-18.04
+          - os: ubuntu-18.04
             compiler: gcc
             version: "6"
 
-          - name: ubuntu-18.04-gcc-7
-            os: ubuntu-18.04
+          - os: ubuntu-18.04
             compiler: gcc
             version: "7"
 
-          - name: ubuntu-18.04-gcc-8
-            os: ubuntu-18.04
+          - os: ubuntu-18.04
             compiler: gcc
             version: "8"
 
-          - name: ubuntu-latest-gcc-9
-            os: ubuntu-latest
+          - os: ubuntu-latest
             compiler: gcc
             version: "9"
 
-          - name: ubuntu-latest-gcc-10
-            os: ubuntu-latest
+          - os: ubuntu-latest
             compiler: gcc
             version: "10"
 
-          - name: ubuntu-latest-gcc-11
-            os: ubuntu-latest
+          - os: ubuntu-latest
             compiler: gcc
             version: "11"
 
-          - name: ubuntu-18.04-clang-3.5
-            os: ubuntu-18.04
+          - os: ubuntu-18.04
             compiler: clang
             version: "3.5"
 
-          - name: ubuntu-18.04-clang-3.6
-            os: ubuntu-18.04
+          - os: ubuntu-18.04
             compiler: clang
             version: "3.6"
 
-          - name: ubuntu-18.04-clang-3.7
-            os: ubuntu-18.04
+          - os: ubuntu-18.04
             compiler: clang
             version: "3.7"
 
-          - name: ubuntu-18.04-clang-3.8
-            os: ubuntu-18.04
+          - os: ubuntu-18.04
             compiler: clang
             version: "3.8"
 
-          - name: ubuntu-18.04-clang-3.9
-            os: ubuntu-18.04
+          - os: ubuntu-18.04
             compiler: clang
             version: "3.9"
 
-          - name: ubuntu-18.04-clang-4.0
-            os: ubuntu-18.04
+          - os: ubuntu-18.04
             compiler: clang
             version: "4.0"
 
-          - name: ubuntu-18.04-clang-5.0
-            os: ubuntu-18.04
+          - os: ubuntu-18.04
             compiler: clang
             version: "5.0"
 
-          - name: ubuntu-18.04-clang-6.0
-            os: ubuntu-18.04
+          - os: ubuntu-18.04
             compiler: clang
             version: "6.0"
 
-          - name: ubuntu-18.04-clang-7
-            os: ubuntu-18.04
+          - os: ubuntu-18.04
             compiler: clang
             version: "7"
 
-          - name: ubuntu-18.04-clang-8
-            os: ubuntu-18.04
+          - os: ubuntu-18.04
             compiler: clang
             version: "8"
 
-          - name: ubuntu-latest-clang-9
-            os: ubuntu-latest
+          - os: ubuntu-latest
             compiler: clang
             version: "9"
 
-          - name: ubuntu-latest-clang-10
-            os: ubuntu-latest
+          - os: ubuntu-latest
             compiler: clang
             version: "10"
 
-          - name: ubuntu-latest-clang-11
-            os: ubuntu-latest
+          - os: ubuntu-latest
             compiler: clang
             version: "11"
 
-          - name: ubuntu-latest-clang-12
-            os: ubuntu-latest
+          - os: ubuntu-latest
             compiler: clang
             version: "12"
 
-          - name: macOS-latest-xcode-11.7
-            os: macOS-latest
+          - os: macOS-latest
             compiler: xcode
             version: "11.7"
 
-          - name: macOS-latest-xcode-12.5
-            os: macOS-latest
+          - os: macOS-latest
             compiler: xcode
             version: "12.5"
 
-          - name: macOS-latest-xcode-13.2
-            os: macOS-latest
+          - os: macOS-latest
             compiler: xcode
             version: "13.2"
-
             
     steps:
       - uses: actions/checkout@v2
@@ -395,12 +370,28 @@ jobs:
           cd build
           ctest
 
+  ci-min-gw:
+    runs-on: windows-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        configuration: ["Debug", "Release"]
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: "Generate"
+        run: cmake -B build -S . -G "MinGW Makefiles" -DCMAKE_BUILD_TYPE=${{ matrix.configuration }}
+
+      - name: "Build"
+        run: cmake --build build
+
+      - name: "Test"
+        run: ctest -C --test-dir build
+
   ci-windows:
     runs-on: ${{ matrix.toolset == 'v143' && 'windows-2022' || 'windows-latest' }}
-
-    env:
-      CTEST_OUTPUT_ON_FAILURE: ON
-      CTEST_PARALLEL_LEVEL: 2
 
     strategy:
       fail-fast: false
@@ -412,11 +403,12 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       
-      - name: "Test"
-        shell: bash
-        run: |
-          set -e
-          cmake -B build -S . -DDOCTEST_TEST_MODE=COMPARE -G "${{ matrix.toolset == 'v143' && 'Visual Studio 17 2022' || 'Visual Studio 16 2019' }}" \
+      - name: "Generate"
+        run: cmake -B build -S . -G "${{ matrix.toolset == 'v143' && 'Visual Studio 17 2022' || 'Visual Studio 16 2019' }}" \
             -A ${{ matrix.architecture }} -T ${{ matrix.toolset }}
-          cmake --build build --config ${{ matrix.configuration }}
-          ctest -C ${{ matrix.configuration }} --test-dir build
+
+      - name: "Build"
+        run: cmake --build build --config ${{ matrix.configuration }}
+
+      - name: "Test"
+        run: ctest -C ${{ matrix.configuration }} --test-dir build
