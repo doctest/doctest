@@ -408,6 +408,7 @@ jobs:
       matrix:
         toolset: ["v140", "v141", "v142", "v143"]
         architecture: ["Win32", "x64"]
+        configuration: ["Debug", "Release"]
 
     steps:
       - uses: actions/checkout@v2
@@ -417,8 +418,5 @@ jobs:
         run: |
           set -e
           cmake -B build -S . -DDOCTEST_TEST_MODE=COMPARE -G "${{ matrix.toolset == 'v143' && 'Visual Studio 17 2022' || 'Visual Studio 16 2019' }}" -A ${{ matrix.architecture }} -T ${{ matrix.toolset }}
-          for CONFIG in Debug Release
-          do
-            cmake --build build --config $CONFIG
-            ctest -C $CONFIG --test-dir build
-          done
+          cmake --build build --config ${{ matrix.configuration }}
+          ctest -C ${{ matrix.configuration }} --test-dir build
