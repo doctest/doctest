@@ -151,7 +151,7 @@ jobs:
 
             
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v2
 
       - name: Install (Linux)
         if: runner.os == 'Linux'
@@ -396,7 +396,6 @@ jobs:
           ctest
 
   ci-windows:
-    name: SASD
     runs-on: windows-2022
 
     env:
@@ -417,7 +416,7 @@ jobs:
         shell: bash
         run: |
           set -e
-          cmake -B build -S . -DDOCTEST_TEST_MODE=COMPARE -G "Visual Studio 16 2019" -A ${{ matrix.architecture }} -T ${{ matrix.toolset }}
+          cmake -B build -S . -DDOCTEST_TEST_MODE=COMPARE -G "Visual Studio 16 2022" -A ${{ matrix.architecture }} -T ${{ matrix.toolset }}
           cmake --build build
           cd build
           ctest -C ${{ matrix.config }}
