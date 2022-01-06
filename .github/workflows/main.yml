@@ -24,28 +24,28 @@ jobs:
             compiler: cl
             version: "[14.0, 15.0)"
 
-          - name: windows-latest-clang-cl-2015
-            os: windows-latest
+          - name: windows-2016-clang-cl-2015
+            os: windows-2016
             compiler: clang-cl
             version: "[14.0, 15.0)"
 
-          - name: windows-latest-clang-2015
-            os: windows-latest
+          - name: windows-2016-clang-2015
+            os: windows-2016
             compiler: clang
             version: "[14.0, 15.0)"
 
-          - name: windows-latest-cl-2017
-            os: windows-latest
+          - name: windows-2016-cl-2017
+            os: windows-2016
             compiler: cl
             version: "[15.0, 16.0)"
 
-          - name: windows-latest-clang-cl-2017
-            os: windows-latest
+          - name: windows-2016-clang-cl-2017
+            os: windows-2016
             compiler: clang-cl
             version: "[15.0, 16.0)"
 
-          - name: windows-latest-clang-2017
-            os: windows-latest
+          - name: windows-2016-clang-2017
+            os: windows-2016
             compiler: clang
             version: "[15.0, 16.0)"
 
