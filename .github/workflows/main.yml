@@ -19,65 +19,136 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - name: windows-latest-cl-2015
-            os: windows-latest
-            compiler: cl
-            version: "v140"
+          - name: ubuntu-18.04-gcc-4.8
+            os: ubuntu-18.04
+            compiler: gcc
+            version: "4.8"
 
-          - name: windows-latest-clang-cl-2015
-            os: windows-latest
-            compiler: clang-cl
-            version: "v140"
+          - name: ubuntu-18.04-gcc-4.9
+            os: ubuntu-18.04
+            compiler: gcc
+            version: "4.9"
 
-          - name: windows-latest-clang-2015
-            os: windows-latest
+          - name: ubuntu-18.04-gcc-5
+            os: ubuntu-18.04
+            compiler: gcc
+            version: "5"
+
+          - name: ubuntu-18.04-gcc-6
+            os: ubuntu-18.04
+            compiler: gcc
+            version: "6"
+
+          - name: ubuntu-18.04-gcc-7
+            os: ubuntu-18.04
+            compiler: gcc
+            version: "7"
+
+          - name: ubuntu-18.04-gcc-8
+            os: ubuntu-18.04
+            compiler: gcc
+            version: "8"
+
+          - name: ubuntu-latest-gcc-9
+            os: ubuntu-latest
+            compiler: gcc
+            version: "9"
+
+          - name: ubuntu-latest-gcc-10
+            os: ubuntu-latest
+            compiler: gcc
+            version: "10"
+
+          - name: ubuntu-latest-gcc-11
+            os: ubuntu-latest
+            compiler: gcc
+            version: "11"
+
+          - name: ubuntu-18.04-clang-3.5
+            os: ubuntu-18.04
             compiler: clang
-            version: "v140"
+            version: "3.5"
 
-          - name: windows-latest-cl-2017
-            os: windows-latest
-            compiler: cl
-            version: "v141"
-
-          - name: windows-latest-clang-cl-2017
-            os: windows-latest
-            compiler: clang-cl
-            version: "v141"
-
-          - name: windows-latest-clang-2017
-            os: windows-latest
+          - name: ubuntu-18.04-clang-3.6
+            os: ubuntu-18.04
             compiler: clang
-            version: "v141"
+            version: "3.6"
 
-          - name: windows-latest-cl-2019
-            os: windows-latest
-            compiler: cl
-            version: "v142"
-
-          - name: windows-latest-clang-cl-2019
-            os: windows-latest
-            compiler: clang-cl
-            version: "v142"
-
-          - name: windows-latest-clang-2019
-            os: windows-latest
+          - name: ubuntu-18.04-clang-3.7
+            os: ubuntu-18.04
             compiler: clang
-            version: "v142"
+            version: "3.7"
 
-          - name: windows-2022-cl-2022
-            os: windows-2022
-            compiler: cl
-            version: "v143"
-
-          - name: windows-2022-clang-cl-2022
-            os: windows-2022
-            compiler: clang-cl
-            version: "v143"
-
-          - name: windows-2022-clang-2022
-            os: windows-2022
+          - name: ubuntu-18.04-clang-3.8
+            os: ubuntu-18.04
             compiler: clang
-            version: "v143"
+            version: "3.8"
+
+          - name: ubuntu-18.04-clang-3.9
+            os: ubuntu-18.04
+            compiler: clang
+            version: "3.9"
+
+          - name: ubuntu-18.04-clang-4.0
+            os: ubuntu-18.04
+            compiler: clang
+            version: "4.0"
+
+          - name: ubuntu-18.04-clang-5.0
+            os: ubuntu-18.04
+            compiler: clang
+            version: "5.0"
+
+          - name: ubuntu-18.04-clang-6.0
+            os: ubuntu-18.04
+            compiler: clang
+            version: "6.0"
+
+          - name: ubuntu-18.04-clang-7
+            os: ubuntu-18.04
+            compiler: clang
+            version: "7"
+
+          - name: ubuntu-18.04-clang-8
+            os: ubuntu-18.04
+            compiler: clang
+            version: "8"
+
+          - name: ubuntu-latest-clang-9
+            os: ubuntu-latest
+            compiler: clang
+            version: "9"
+
+          - name: ubuntu-latest-clang-10
+            os: ubuntu-latest
+            compiler: clang
+            version: "10"
+
+          - name: ubuntu-latest-clang-11
+            os: ubuntu-latest
+            compiler: clang
+            version: "11"
+
+          - name: ubuntu-latest-clang-12
+            os: ubuntu-latest
+            compiler: clang
+            version: "12"
+
+          - name: macOS-latest-xcode-11.7
+            os: macOS-latest
+            compiler: xcode
+            version: "11.7"
+
+          - name: macOS-latest-xcode-12.5
+            os: macOS-latest
+            compiler: xcode
+            version: "12.5"
+
+          - name: macOS-latest-xcode-13.2
+            os: macOS-latest
+            compiler: xcode
+            version: "13.2"
+
             
     steps:
       - uses: actions/checkout@v1
@@ -131,35 +202,6 @@ jobs:
             echo "::set-env name=CC::clang"
             echo "::set-env name=CXX::clang++"
           fi
-
-      - name: Install (Windows)
-        if: runner.os == 'Windows'
-        shell: powershell
-        run: |
-          Invoke-Expression (New-Object System.Net.WebClient).DownloadString('https://get.scoop.sh')
-          scoop install ninja --global
-
-          if ("${{ matrix.compiler }}".StartsWith("clang")) {
-            scoop install llvm --global
-          }
-
-          if ("${{ matrix.compiler }}" -eq "gcc") {
-            # Chocolatey GCC is broken on the windows-2019 image.
-            # See: https://github.com/DaanDeMeyer/doctest/runs/231595515
-            # See: https://github.community/t5/GitHub-Actions/Something-is-wrong-with-the-chocolatey-installed-version-of-gcc/td-p/32413
-            scoop install gcc --global
-            echo "::set-env name=CC::gcc"
-            echo "::set-env name=CXX::g++"
-          } elseif ("${{ matrix.compiler }}" -eq "clang") {
-            echo "::set-env name=CC::clang"
-            echo "::set-env name=CXX::clang++"
-          } else {
-            echo "::set-env name=CC::${{ matrix.compiler }}"
-            echo "::set-env name=CXX::${{ matrix.compiler }}"
-          }
-
-          # Scoop modifies the PATH so we make the modified PATH global.
-          echo "::set-env name=PATH::$env:PATH"
 
       - name: Configure ASAN/UBSAN
         if: runner.os == 'Linux' || runner.os == 'macOS'
@@ -246,30 +288,7 @@ jobs:
           # build step.
           echo "::set-env name=TSAN_FLAGS::$TSAN_FLAGS"
 
-      - name: Configure x64
-        if: runner.os == 'Windows'
-        run: .github\workflows\vsenv.bat -arch=x64 -host_arch=x64
-
-      - name: Build & Test Debug x64 Windows
-        if: runner.os == 'Windows'
-        run: |
-          cmake -E remove_directory build
-          cmake -B build -S . -DDOCTEST_TEST_MODE=COMPARE || Exit 1
-          cmake --build build
-          cd build
-          ctest -C Debug
-
-      - name: Build & Test Release x64 Windows
-        if: runner.os == 'Windows'
-        run: |
-          cmake -E remove_directory build
-          cmake -B build -S . -DDOCTEST_TEST_MODE=COMPARE || Exit 1
-          cmake --build build
-          cd build
-          ctest -C Debug
-
       - name: Build & Test Debug x64
-        if: runner.os != 'Windows'
         run: |
           cmake -E remove_directory build
           cmake -B build -S . -DCMAKE_BUILD_TYPE=Debug -DDOCTEST_TEST_MODE=COMPARE
@@ -278,7 +297,6 @@ jobs:
           ctest
 
       - name: Build & Test Release x64
-        if: runner.os != 'Windows'
         run: |
           cmake -E remove_directory build
           cmake -B build -S . -DCMAKE_BUILD_TYPE=Release -DDOCTEST_TEST_MODE=COMPARE
@@ -331,12 +349,7 @@ jobs:
           cmake -B build -S . -DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_FLAGS="-fno-exceptions -DDOCTEST_CONFIG_NO_EXCEPTIONS_BUT_WITH_ALL_ASSERTS"
           cmake --build build
 
-      # MinGW x86 tests fail on Windows: https://github.com/DaanDeMeyer/doctest/runs/240600881.
       # MacOS doesn't support x86 from Xcode 10 onwards.
-
-      - name: Configure x86 Windows
-        if: runner.os == 'Windows'
-        run: .github\workflows\vsenv.bat -arch=x86 -host_arch=x64
 
       - name: Configure x86
         shell: pwsh
@@ -345,24 +358,6 @@ jobs:
           if ("${{ matrix.compiler }}" -notcontains "cl") {
             echo "::set-env name=CXXFLAGS::$env:CXXFLAGS -m32"
           }
-
-      - name: Build & Test Debug x86 Windows
-        if: runner.os == 'Windows'
-        run: |
-          cmake -E remove_directory build
-          cmake -B build -S . -DDOCTEST_TEST_MODE=COMPARE -G || Exit 1
-          cmake --build build
-          cd build
-          ctest -C Debug
-
-      - name: Build & Test Release x86 Windows
-        if: runner.os == 'Windows'
-        run: |
-          cmake -E remove_directory build
-          cmake -B build -S . -DDOCTEST_TEST_MODE=COMPARE -G || Exit 1
-          cmake --build build
-          cd build
-          ctest -C Debug
 
       - name: Build & Test Debug x86
         if: runner.os == 'Linux'
@@ -399,3 +394,31 @@ jobs:
           cmake --build build
           cd build
           ctest
+
+  ci-windows:
+    name: SASD
+    runs-on: windows-2022
+
+    env:
+      CTEST_OUTPUT_ON_FAILURE: ON
+      CTEST_PARALLEL_LEVEL: 2
+
+    strategy:
+      fail-fast: false
+      matrix:
+        toolset: ["v140", "v141", "v142", "v143"]
+        architecture: ["Win32", "x64"]
+        config: ["Debug", "Release"]
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: "Test"
+        shell: bash
+        run: |
+          set -e
+          cmake -B build -S . -DDOCTEST_TEST_MODE=COMPARE -G "Visual Studio 16 2019" -A ${{ matrix.architecture }} -T ${{ matrix.toolset }}
+          cmake --build build
+          cd build
+          ctest -C ${{ matrix.config }}
+          
