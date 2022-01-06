@@ -397,7 +397,7 @@ jobs:
           ctest
 
   ci-windows:
-    runs-on: windows-latest
+    runs-on: ${{ matrix.os }}
 
     env:
       CTEST_OUTPUT_ON_FAILURE: ON
@@ -406,9 +406,16 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
+        os: ["windows-latest"]
         toolset: ["v140", "v141", "v142", "v143"]
         architecture: ["Win32", "x64"]
         config: ["Debug", "Release"]
+        exclude:
+          - os: "windows-latest"
+          - toolset: "v143"
+        include:
+          - os: "windows-2022"
+          - toolset: "v143"
 
     steps:
       - uses: actions/checkout@v2
