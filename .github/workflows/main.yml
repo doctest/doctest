@@ -250,26 +250,7 @@ jobs:
         if: runner.os == 'Windows'
         run: .github\workflows\vsenv.bat -arch=x64 -host_arch=x64
 
-      - name: Build & Test Debug x64 Windows
-        if: runner.os == 'Windows'
-        run: |
-          cmake -E remove_directory build
-          cmake -B build -S . -DDOCTEST_TEST_MODE=COMPARE || Exit 1
-          cmake --build build
-          cd build
-          ctest -C Debug
-
-      - name: Build & Test Release x64 Windows
-        if: runner.os == 'Windows'
-        run: |
-          cmake -E remove_directory build
-          cmake -B build -S . -DDOCTEST_TEST_MODE=COMPARE || Exit 1
-          cmake --build build
-          cd build
-          ctest -C Debug
-
       - name: Build & Test Debug x64
-        if: runner.os != 'Windows'
         run: |
           cmake -E remove_directory build
           cmake -B build -S . -DCMAKE_BUILD_TYPE=Debug -DDOCTEST_TEST_MODE=COMPARE
@@ -278,7 +259,6 @@ jobs:
           ctest
 
       - name: Build & Test Release x64
-        if: runner.os != 'Windows'
         run: |
           cmake -E remove_directory build
           cmake -B build -S . -DCMAKE_BUILD_TYPE=Release -DDOCTEST_TEST_MODE=COMPARE
@@ -346,26 +326,7 @@ jobs:
             echo "::set-env name=CXXFLAGS::$env:CXXFLAGS -m32"
           }
 
-      - name: Build & Test Debug x86 Windows
-        if: runner.os == 'Windows'
-        run: |
-          cmake -E remove_directory build
-          cmake -B build -S . -DDOCTEST_TEST_MODE=COMPARE -G || Exit 1
-          cmake --build build
-          cd build
-          ctest -C Debug
-
-      - name: Build & Test Release x86 Windows
-        if: runner.os == 'Windows'
-        run: |
-          cmake -E remove_directory build
-          cmake -B build -S . -DDOCTEST_TEST_MODE=COMPARE -G || Exit 1
-          cmake --build build
-          cd build
-          ctest -C Debug
-
       - name: Build & Test Debug x86
-        if: runner.os == 'Linux'
         run: |
           cmake -E remove_directory build
           cmake -B build -S . -DCMAKE_BUILD_TYPE=Debug -DDOCTEST_TEST_MODE=COMPARE
@@ -374,7 +335,6 @@ jobs:
           ctest
 
       - name: Build & Test Release x86
-        if: runner.os == 'Linux'
         run: |
           cmake -E remove_directory build
           cmake -B build -S . -DCMAKE_BUILD_TYPE=Release -DDOCTEST_TEST_MODE=COMPARE
