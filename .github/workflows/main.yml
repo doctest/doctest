@@ -250,7 +250,7 @@ jobs:
         if: runner.os == 'Windows'
         uses: microsoft/setup-msbuild@v1.1
         with:
-          vs-version: runner.version
+          vs-version: ${{ runner.version }}
 
       - name: Build & Test Debug x64
         run: |
