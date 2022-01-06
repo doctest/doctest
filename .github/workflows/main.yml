@@ -175,6 +175,10 @@ jobs:
           # build step.
           echo "::set-env name=TSAN_FLAGS::$TSAN_FLAGS"
 
+     - name: Configure x64
+        if: runner.os == 'Windows'
+        run: .github\workflows\vsenv.bat -arch=x64 -host_arch=x64
+
       - name: Build & Test Debug x64
         run: |
           cmake -B build -S . -DCMAKE_BUILD_TYPE=Debug -DDOCTEST_TEST_MODE=COMPARE
@@ -229,6 +233,10 @@ jobs:
         shell: pwsh
         if: runner.os != 'macOS'
         run: |
+          if ("${{ runner.os }}" -eq "Windows") {
+            & .github\workflows\vsenv.bat -arch=x86 -host_arch=x64
+          }
+
           if ("${{ matrix.compiler }}" -notcontains "cl") {
             echo "::set-env name=CXXFLAGS::$env:CXXFLAGS -m32"
           }
