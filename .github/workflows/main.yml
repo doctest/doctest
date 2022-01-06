@@ -22,62 +22,62 @@ jobs:
           - name: windows-latest-cl-2015
             os: windows-latest
             compiler: cl
-            version: '[14.0, 15.0)'
+            version: "[14.0, 15.0)"
 
           - name: windows-latest-clang-cl-2015
             os: windows-latest
             compiler: clang-cl
-            version: '[14.0, 15.0)'
+            version: "[14.0, 15.0)"
 
           - name: windows-latest-clang-2015
             os: windows-latest
             compiler: clang
-            version: '[14.0, 15.0)'
+            version: "[14.0, 15.0)"
 
           - name: windows-latest-cl-2017
             os: windows-latest
             compiler: cl
-            version: '[15.0, 16.0)'
+            version: "[15.0, 16.0)"
 
           - name: windows-latest-clang-cl-2017
             os: windows-latest
             compiler: clang-cl
-            version: '[15.0, 16.0)'
+            version: "[15.0, 16.0)"
 
           - name: windows-latest-clang-2017
             os: windows-latest
             compiler: clang
-            version: '[15.0, 16.0)'
+            version: "[15.0, 16.0)"
 
           - name: windows-latest-cl-2019
             os: windows-latest
             compiler: cl
-            version: '[16.0, 17.0)'
+            version: "[16.0, 17.0)"
 
           - name: windows-latest-clang-cl-2019
             os: windows-latest
             compiler: clang-cl
-            version: '[16.0, 17.0)'
+            version: "[16.0, 17.0)"
 
           - name: windows-latest-clang-2019
             os: windows-latest
             compiler: clang
-            version: '[16.0, 17.0)'
+            version: "[16.0, 17.0)"
 
-          - name: windows-2022-cl
+          - name: windows-2022-cl-2022
             os: windows-2022
             compiler: cl
-            version: '[17.0, 18.0)'
+            version: "[17.0, 18.0)"
 
-          - name: windows-2022-clang-cl
+          - name: windows-2022-clang-cl-2022
             os: windows-2022
             compiler: clang-cl
-            version: '[17.0, 18.0)'
+            version: "[17.0, 18.0)"
 
-          - name: windows-2022-clang
+          - name: windows-2022-clang-2022
             os: windows-2022
             compiler: clang
-            version: '[17.0, 18.0)'
+            version: "[17.0, 18.0)"
 
     steps:
       - uses: actions/checkout@v1
@@ -251,6 +251,7 @@ jobs:
         uses: microsoft/setup-msbuild@v1.1
         with:
           vs-version: ${{ runner.version }}
+          msbuild-architecture: x64
 
       - name: Build & Test Debug x64
         run: |
