@@ -397,7 +397,7 @@ jobs:
           ctest
 
   ci-windows:
-    runs-on: ${{ matrix.toolset == 'v143' && windows-2022 || windows-latest }}
+    runs-on: ${{ matrix.toolset == 'v143' && 'windows-2022' || 'windows-latest' }}
 
     env:
       CTEST_OUTPUT_ON_FAILURE: ON
