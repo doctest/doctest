@@ -406,17 +406,13 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        toolset: ["clang-cl"]
+        toolset: ["ClangCl"]
         architecture: ["Win32", "x64"]
         configuration: ["Debug", "Release"]
 
     steps:
       - uses: actions/checkout@v2
-
-      - name: Instal LLVM
-        if: matrix.toolset == 'clang-cl'
-        run: choco install -y llvm
-
+      
       - name: "Test"
         shell: bash
         run: |
