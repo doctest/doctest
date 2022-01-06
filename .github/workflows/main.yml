@@ -29,6 +29,7 @@ jobs:
           ubuntu-18.04-gcc-8,
           ubuntu-18.04-gcc-9,
           ubuntu-latest-gcc-10,
+          ubuntu-latest-gcc-11,
           ubuntu-18.04-clang-3.5,
           ubuntu-18.04-clang-3.6,
           ubuntu-18.04-clang-3.7,
@@ -42,6 +43,9 @@ jobs:
           ubuntu-18.04-clang-9,
           ubuntu-latest-clang-10,
           ubuntu-latest-clang-11,
+          ubuntu-latest-clang-12,
+          ubuntu-latest-clang-13,
+          ubuntu-latest-clang-14,
           windows-2016-cl,
           windows-2016-clang-cl,
           windows-2016-clang,
@@ -54,7 +58,9 @@ jobs:
           windows-2022-clang-cl,
           windows-2022-clang,
           windows-2022-gcc,
-          macOS-latest-xcode-11.3,
+          macOS-latest-xcode-11.7,
+          macOS-latest-xcode-12.5,
+          macOS-latest-xcode-13.2,
         ]
 
         include:
@@ -97,6 +103,11 @@ jobs:
             os: ubuntu-latest
             compiler: gcc
             version: "10"
+
+          - name: ubuntu-latest-gcc-11
+            os: ubuntu-latest
+            compiler: gcc
+            version: "11"
 
           - name: ubuntu-18.04-clang-3.5
             os: ubuntu-18.04
@@ -163,6 +174,21 @@ jobs:
             compiler: clang
             version: "11"
 
+          - name: ubuntu-latest-clang-12
+            os: ubuntu-latest
+            compiler: clang
+            version: "12"
+
+          - name: ubuntu-latest-clang-13
+            os: ubuntu-latest
+            compiler: clang
+            version: "13"
+
+          - name: ubuntu-latest-clang-14
+            os: ubuntu-latest
+            compiler: clang
+            version: "14"
+
           - name: windows-2016-cl
             os: windows-2016
             compiler: cl
@@ -211,10 +237,20 @@ jobs:
             os: windows-2022
             compiler: gcc
 
-          - name: macOS-latest-xcode-11.3
-            os: macOS-10.15
+          - name: macOS-latest-xcode-11.7
+            os: macOS-latest
             compiler: xcode
-            version: "11.3"
+            version: "11.7"
+
+          - name: macOS-latest-xcode-12.5
+            os: macOS-latest
+            compiler: xcode
+            version: "12.5"
+
+          - name: macOS-latest-xcode-13.2
+            os: macOS-latest
+            compiler: xcode
+            version: "13.2"
 
     steps:
       - uses: actions/checkout@v1
