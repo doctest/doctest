@@ -248,9 +248,7 @@ jobs:
 
       - name: Configure x64
         if: runner.os == 'Windows'
-        uses: microsoft/setup-msbuild@v1.1
-        with:
-          msbuild-architecture: x64
+        run: .github\workflows\vsenv.bat -arch=x64 -host_arch=x64
 
       - name: Build & Test Debug x64 Windows
         if: runner.os == 'Windows'
@@ -338,9 +336,7 @@ jobs:
 
       - name: Configure x86 Windows
         if: runner.os == 'Windows'
-        uses: microsoft/setup-msbuild@v1.1
-        with:
-          msbuild-architecture: x86
+        run: .github\workflows\vsenv.bat -arch=x86 -host_arch=x64
 
       - name: Configure x86
         shell: pwsh
