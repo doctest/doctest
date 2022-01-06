@@ -415,6 +415,9 @@ jobs:
 
       - name: "Test"
         shell: bash
+        env:
+          CC: clang
+          CXX: clang++
         run: |
           set -e
           cmake -B build -S . -DDOCTEST_TEST_MODE=COMPARE -G "${{ matrix.toolset == 'v143' && 'Visual Studio 17 2022' || 'Visual Studio 16 2019' }}" -A ${{ matrix.architecture }} -T ${{ matrix.toolset }}
