@@ -413,6 +413,10 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
+      - name: Instal LLVM
+        if: matrix.toolset == 'clang-cl'
+        run: choco install -y llvm
+
       - name: "Test"
         shell: bash
         run: |
