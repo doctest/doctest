@@ -4,7 +4,6 @@ on: [push, pull_request]
 
 jobs:
   ci:
-    if: false
     name: ${{ matrix.name }}
     runs-on: ${{ matrix.os }}
 
@@ -397,7 +396,7 @@ jobs:
           ctest
 
   ci-windows:
-    runs-on: ${{ matrix.toolset != 'v143' && 'windows-2022' || 'windows-latest' }}
+    runs-on: ${{ matrix.toolset == 'v143' && 'windows-2022' || 'windows-latest' }}
 
     env:
       CTEST_OUTPUT_ON_FAILURE: ON
@@ -406,7 +405,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        toolset: ["ClangCl"]
+        toolset: ["v140", "v141", "v142", "v143", "ClangCl"]
         architecture: ["Win32", "x64"]
         configuration: ["Debug", "Release"]
 
@@ -417,7 +416,7 @@ jobs:
         shell: bash
         run: |
           set -e
-          cmake -B build -S . -DDOCTEST_TEST_MODE=COMPARE -G "${{ matrix.toolset != 'v143' && 'Visual Studio 17 2022' || 'Visual Studio 16 2019' }}" \
+          cmake -B build -S . -DDOCTEST_TEST_MODE=COMPARE -G "${{ matrix.toolset == 'v143' && 'Visual Studio 17 2022' || 'Visual Studio 16 2019' }}" \
             -A ${{ matrix.architecture }} -T ${{ matrix.toolset }}
           cmake --build build --config ${{ matrix.configuration }}
           ctest -C ${{ matrix.configuration }} --test-dir build
