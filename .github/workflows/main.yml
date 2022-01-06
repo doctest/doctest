@@ -402,6 +402,8 @@ jobs:
     env:
       CTEST_OUTPUT_ON_FAILURE: ON
       CTEST_PARALLEL_LEVEL: 2
+      CC: 'clang'
+      CXX: 'clang++'
 
     strategy:
       fail-fast: false
@@ -415,9 +417,6 @@ jobs:
 
       - name: "Test"
         shell: bash
-        env:
-          CMAKE_C_COMPILER: clang
-          CMAKE_CXX_COMPILER: clang++
         run: |
           set -e
           cmake -B build -S . -DDOCTEST_TEST_MODE=COMPARE -G "${{ matrix.toolset == 'v143' && 'Visual Studio 17 2022' || 'Visual Studio 16 2019' }}" -A ${{ matrix.architecture }} -T ${{ matrix.toolset }}
