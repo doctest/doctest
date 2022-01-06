@@ -256,19 +256,15 @@ jobs:
         if: runner.os == 'Windows'
         run: |
           cmake -E remove_directory build
-          cmake -B build -S . -DCMAKE_BUILD_TYPE=Debug -DDOCTEST_TEST_MODE=COMPARE -T ${{ matrix.version }}
-          cmake --build build
-          cd build
-          ctest
+          cmake -B build -S . -DCMAKE_BUILD_TYPE=Debug -DDOCTEST_TEST_MODE=COMPARE -G "Visual Studio 16 2019" -A x64 -T ${{ matrix.version }}
+          msbuild build/RUN_TESTS.vcxproj
 
-      - name: Build & Test Release x64
+      - name: Build & Test Release x64 Windows
         if: runner.os == 'Windows'
         run: |
           cmake -E remove_directory build
-          cmake -B build -S . -DCMAKE_BUILD_TYPE=Release -DDOCTEST_TEST_MODE=COMPARE -T ${{ matrix.version }}
-          cmake --build build
-          cd build
-          ctest
+          cmake -B build -S . -DCMAKE_BUILD_TYPE=Release -DDOCTEST_TEST_MODE=COMPARE -G "Visual Studio 16 2019" -A x64 -T ${{ matrix.version }}
+          msbuild build/RUN_TESTS.vcxproj
 
       - name: Build & Test Debug x64
         if: runner.os != 'Windows'
@@ -354,19 +350,15 @@ jobs:
         if: runner.os == 'Windows'
         run: |
           cmake -E remove_directory build
-          cmake -B build -S . -DCMAKE_BUILD_TYPE=Debug -DDOCTEST_TEST_MODE=COMPARE -T ${{ matrix.version }}
-          cmake --build build
-          cd build
-          ctest
+          cmake -B build -S . -DCMAKE_BUILD_TYPE=Debug -DDOCTEST_TEST_MODE=COMPARE -G "Visual Studio 16 2019" -A Win32 -T ${{ matrix.version }}
+          msbuild build/RUN_TESTS.vcxproj
 
       - name: Build & Test Release x86 Windows
         if: runner.os == 'Windows'
         run: |
           cmake -E remove_directory build
-          cmake -B build -S . -DCMAKE_BUILD_TYPE=Release -DDOCTEST_TEST_MODE=COMPARE -T ${{ matrix.version }}
-          cmake --build build
-          cd build
-          ctest
+          cmake -B build -S . -DCMAKE_BUILD_TYPE=Release -DDOCTEST_TEST_MODE=COMPARE -G "Visual Studio 16 2019" -A Win32 -T ${{ matrix.version }}
+          msbuild build/RUN_TESTS.vcxproj
 
       - name: Build & Test Debug x86
         if: runner.os == 'Linux'
