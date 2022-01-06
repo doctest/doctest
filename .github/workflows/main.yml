@@ -255,6 +255,7 @@ jobs:
       - name: Build & Test Debug x64 Windows
         if: runner.os == 'Windows'
         run: |
+          set -e
           cmake -E remove_directory build
           cmake -B build -S . -DDOCTEST_TEST_MODE=COMPARE -G "Visual Studio 16 2019" -A x64 -T ${{ matrix.version }}
           cmake --build build
@@ -264,6 +265,7 @@ jobs:
       - name: Build & Test Release x64 Windows
         if: runner.os == 'Windows'
         run: |
+          set -e
           cmake -E remove_directory build
           cmake -B build -S . -DDOCTEST_TEST_MODE=COMPARE -G "Visual Studio 16 2019" -A x64 -T ${{ matrix.version }}
           cmake --build build
@@ -353,6 +355,7 @@ jobs:
       - name: Build & Test Debug x86 Windows
         if: runner.os == 'Windows'
         run: |
+          set -e
           cmake -E remove_directory build
           cmake -B build -S . -DDOCTEST_TEST_MODE=COMPARE -G "Visual Studio 16 2019" -A Win32 -T ${{ matrix.version }}
           cmake --build build
@@ -362,11 +365,12 @@ jobs:
       - name: Build & Test Release x86 Windows
         if: runner.os == 'Windows'
         run: |
+          set -e
           cmake -E remove_directory build
           cmake -B build -S . -DDOCTEST_TEST_MODE=COMPARE -G "Visual Studio 16 2019" -A Win32 -T ${{ matrix.version }}
           cmake --build build
           cd build
-          ctest -C Release
+          ctest -C Debug
 
       - name: Build & Test Debug x86
         if: runner.os == 'Linux'
