@@ -256,7 +256,7 @@ jobs:
         if: runner.os == 'Windows'
         run: |
           cmake -E remove_directory build
-          cmake -B build -S . -DCMAKE_BUILD_TYPE=Debug -DDOCTEST_TEST_MODE=COMPARE -T ${{ matrix.version }}
+          cmake -B build -S . -DCMAKE_BUILD_TYPE=Debug -DDOCTEST_TEST_MODE=COMPARE -G "Visual Studio 16 2019" -A x64 -T ${{ matrix.version }}
           cmake --build build
           cd build
           ctest
@@ -265,7 +265,7 @@ jobs:
         if: runner.os == 'Windows'
         run: |
           cmake -E remove_directory build
-          cmake -B build -S . -DCMAKE_BUILD_TYPE=Release -DDOCTEST_TEST_MODE=COMPARE -T ${{ matrix.version }}
+          cmake -B build -S . -DCMAKE_BUILD_TYPE=Release -DDOCTEST_TEST_MODE=COMPARE -G "Visual Studio 16 2019" -A x64 -T ${{ matrix.version }}
           cmake --build build
           cd build
           ctest
@@ -354,7 +354,7 @@ jobs:
         if: runner.os == 'Windows'
         run: |
           cmake -E remove_directory build
-          cmake -B build -S . -DCMAKE_BUILD_TYPE=Debug -DDOCTEST_TEST_MODE=COMPARE -T ${{ matrix.version }}
+          cmake -B build -S . -DCMAKE_BUILD_TYPE=Debug -DDOCTEST_TEST_MODE=COMPARE -G "Visual Studio 16 2019" -A Win32 -T ${{ matrix.version }}
           cmake --build build
           cd build
           ctest
@@ -363,7 +363,7 @@ jobs:
         if: runner.os == 'Windows'
         run: |
           cmake -E remove_directory build
-          cmake -B build -S . -DCMAKE_BUILD_TYPE=Release -DDOCTEST_TEST_MODE=COMPARE -T ${{ matrix.version }}
+          cmake -B build -S . -DCMAKE_BUILD_TYPE=Release -DDOCTEST_TEST_MODE=COMPARE -G "Visual Studio 16 2019" -A Win32 -T ${{ matrix.version }}
           cmake --build build
           cd build
           ctest
