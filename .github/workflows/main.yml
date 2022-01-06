@@ -134,16 +134,6 @@ jobs:
             compiler: clang
             version: "12"
 
-          - name: ubuntu-latest-clang-13
-            os: ubuntu-latest
-            compiler: clang
-            version: "13"
-
-          - name: ubuntu-latest-clang-14
-            os: ubuntu-latest
-            compiler: clang
-            version: "14"
-
           - name: windows-2016-cl
             os: windows-2016
             compiler: cl
