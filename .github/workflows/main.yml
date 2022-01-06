@@ -175,7 +175,7 @@ jobs:
           # build step.
           echo "::set-env name=TSAN_FLAGS::$TSAN_FLAGS"
 
-     - name: Configure x64
+      - name: Configure x64
         if: runner.os == 'Windows'
         run: .github\workflows\vsenv.bat -arch=x64 -host_arch=x64
 
