@@ -19,36 +19,121 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - name: windows-latest-cl-2015
-            os: windows-latest
-            compiler: cl
-            version: "[14.0, 15.0)"
+          - name: ubuntu-18.04-gcc-4.8
+            os: ubuntu-18.04
+            compiler: gcc
+            version: "4.8"
 
-          - name: windows-2016-clang-cl-2015
-            os: windows-2016
-            compiler: clang-cl
-            version: "[14.0, 15.0)"
+          - name: ubuntu-18.04-gcc-4.9
+            os: ubuntu-18.04
+            compiler: gcc
+            version: "4.9"
 
-          - name: windows-2016-clang-2015
-            os: windows-2016
+          - name: ubuntu-18.04-gcc-5
+            os: ubuntu-18.04
+            compiler: gcc
+            version: "5"
+
+          - name: ubuntu-18.04-gcc-6
+            os: ubuntu-18.04
+            compiler: gcc
+            version: "6"
+
+          - name: ubuntu-18.04-gcc-7
+            os: ubuntu-18.04
+            compiler: gcc
+            version: "7"
+
+          - name: ubuntu-18.04-gcc-8
+            os: ubuntu-18.04
+            compiler: gcc
+            version: "8"
+
+          - name: ubuntu-latest-gcc-9
+            os: ubuntu-latest
+            compiler: gcc
+            version: "9"
+
+          - name: ubuntu-latest-gcc-10
+            os: ubuntu-latest
+            compiler: gcc
+            version: "10"
+
+          - name: ubuntu-latest-gcc-11
+            os: ubuntu-latest
+            compiler: gcc
+            version: "11"
+
+          - name: ubuntu-18.04-clang-3.5
+            os: ubuntu-18.04
             compiler: clang
-            version: "[14.0, 15.0)"
+            version: "3.5"
 
-          - name: windows-2016-cl-2017
-            os: windows-2016
-            compiler: cl
-            version: "[15.0, 16.0)"
-
-          - name: windows-2016-clang-cl-2017
-            os: windows-2016
-            compiler: clang-cl
-            version: "[15.0, 16.0)"
-
-          - name: windows-2016-clang-2017
-            os: windows-2016
+          - name: ubuntu-18.04-clang-3.6
+            os: ubuntu-18.04
             compiler: clang
-            version: "[15.0, 16.0)"
+            version: "3.6"
 
+          - name: ubuntu-18.04-clang-3.7
+            os: ubuntu-18.04
+            compiler: clang
+            version: "3.7"
+
+          - name: ubuntu-18.04-clang-3.8
+            os: ubuntu-18.04
+            compiler: clang
+            version: "3.8"
+
+          - name: ubuntu-18.04-clang-3.9
+            os: ubuntu-18.04
+            compiler: clang
+            version: "3.9"
+
+          - name: ubuntu-18.04-clang-4.0
+            os: ubuntu-18.04
+            compiler: clang
+            version: "4.0"
+
+          - name: ubuntu-18.04-clang-5.0
+            os: ubuntu-18.04
+            compiler: clang
+            version: "5.0"
+
+          - name: ubuntu-18.04-clang-6.0
+            os: ubuntu-18.04
+            compiler: clang
+            version: "6.0"
+
+          - name: ubuntu-18.04-clang-7
+            os: ubuntu-18.04
+            compiler: clang
+            version: "7"
+
+          - name: ubuntu-18.04-clang-8
+            os: ubuntu-18.04
+            compiler: clang
+            version: "8"
+
+          - name: ubuntu-latest-clang-9
+            os: ubuntu-latest
+            compiler: clang
+            version: "9"
+
+          - name: ubuntu-latest-clang-10
+            os: ubuntu-latest
+            compiler: clang
+            version: "10"
+
+          - name: ubuntu-latest-clang-11
+            os: ubuntu-latest
+            compiler: clang
+            version: "11"
+
+          - name: ubuntu-latest-clang-12
+            os: ubuntu-latest
+            compiler: clang
+            version: "12"
+            
           - name: windows-latest-cl-2019
             os: windows-latest
             compiler: cl
@@ -78,6 +163,21 @@ jobs:
             os: windows-2022
             compiler: clang
             version: "[17.0, 18.0)"
+            
+          - name: macOS-latest-xcode-11.7
+            os: macOS-latest
+            compiler: xcode
+            version: "11.7"
+
+          - name: macOS-latest-xcode-12.5
+            os: macOS-latest
+            compiler: xcode
+            version: "12.5"
+
+          - name: macOS-latest-xcode-13.2
+            os: macOS-latest
+            compiler: xcode
+            version: "13.2"
 
     steps:
       - uses: actions/checkout@v1
@@ -272,7 +372,7 @@ jobs:
       # `-DCMAKE_CXX_FLAGS=""` overrides CXXFLAGS (disables sanitizers).
 
       - name: Build & Test Debug x64 Valgrind
-        if: runner.os == 'Linux' || (runner.os == 'macOS' && runner.version == '9.4')
+        if: runner.os == 'Linux'
         run: |
           cmake -E remove_directory build
           cmake -B build -S . -DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_FLAGS="" -DDOCTEST_TEST_MODE=VALGRIND
@@ -281,7 +381,7 @@ jobs:
           ctest
 
       - name: Build & Test Release x64 Valgrind
-        if: runner.os == 'Linux' || (runner.os == 'macOS' && runner.version == '9.4')
+        if: runner.os == 'Linux'
         run: |
           cmake -E remove_directory build
           cmake -B build -S . -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="" -DDOCTEST_TEST_MODE=VALGRIND
