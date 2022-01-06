@@ -98,10 +98,6 @@
 // =================================================================================================
 
 #if DOCTEST_CLANG
-#error LOEL
-#endif
-
-#if DOCTEST_CLANG
 #define DOCTEST_PRAGMA_TO_STR(x) _Pragma(#x)
 #define DOCTEST_CLANG_SUPPRESS_WARNING_PUSH _Pragma("clang diagnostic push")
 #define DOCTEST_CLANG_SUPPRESS_WARNING(w) DOCTEST_PRAGMA_TO_STR(clang diagnostic ignored w)
