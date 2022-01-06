@@ -397,7 +397,7 @@ jobs:
           ctest
 
   ci-windows:
-    runs-on: windows-2022
+    runs-on: windows-latest
 
     env:
       CTEST_OUTPUT_ON_FAILURE: ON
@@ -417,7 +417,7 @@ jobs:
         shell: bash
         run: |
           set -e
-          cmake -B build -S . -DDOCTEST_TEST_MODE=COMPARE -G "Visual Studio 17 2022" -A ${{ matrix.architecture }} -T ${{ matrix.toolset }}
+          cmake -B build -S . -DDOCTEST_TEST_MODE=COMPARE -G "Visual Studio 16 2019" -A ${{ matrix.architecture }} -T ${{ matrix.toolset }}
           cmake --build build
           cd build
           ctest -C ${{ matrix.config }}
