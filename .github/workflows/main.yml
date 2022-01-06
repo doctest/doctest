@@ -19,151 +19,135 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - name: ubuntu-18.04-gcc-4.8
-            os: ubuntu-18.04
+          - name: ubuntu-gcc-4.8
+            os: ubuntu-latest
             compiler: gcc
             version: "4.8"
 
-          - name: ubuntu-18.04-gcc-4.9
-            os: ubuntu-18.04
+          - name: ubuntu-gcc-4.9
+            os: ubuntu-latest
             compiler: gcc
             version: "4.9"
 
-          - name: ubuntu-18.04-gcc-5
-            os: ubuntu-18.04
+          - name: ubuntu-gcc-5
+            os: ubuntu-latest
             compiler: gcc
             version: "5"
 
-          - name: ubuntu-18.04-gcc-6
-            os: ubuntu-18.04
+          - name: ubuntu-gcc-6
+            os: ubuntu-latest
             compiler: gcc
             version: "6"
 
-          - name: ubuntu-18.04-gcc-7
-            os: ubuntu-18.04
+          - name: ubuntu-gcc-7
+            os: ubuntu-latest
             compiler: gcc
             version: "7"
 
-          - name: ubuntu-18.04-gcc-8
-            os: ubuntu-18.04
+          - name: ubuntu-gcc-8
+            os: ubuntu-latest
             compiler: gcc
             version: "8"
 
-          - name: ubuntu-18.04-gcc-9
-            os: ubuntu-18.04
+          - name: ubuntu-gcc-9
+            os: ubuntu-latest
             compiler: gcc
             version: "9"
 
-          - name: ubuntu-latest-gcc-10
+          - name: ubuntu-gcc-10
             os: ubuntu-latest
             compiler: gcc
             version: "10"
 
-          - name: ubuntu-latest-gcc-11
+          - name: ubuntu-gcc-11
             os: ubuntu-latest
             compiler: gcc
             version: "11"
 
-          - name: ubuntu-18.04-clang-3.5
-            os: ubuntu-18.04
+          - name: ubuntu-clang-3.5
+            os: ubuntu-latest
             compiler: clang
             version: "3.5"
 
-          - name: ubuntu-18.04-clang-3.6
-            os: ubuntu-18.04
+          - name: ubuntu-clang-3.6
+            os: ubuntu-latest
             compiler: clang
             version: "3.6"
 
-          - name: ubuntu-18.04-clang-3.7
-            os: ubuntu-18.04
+          - name: ubuntu-clang-3.7
+            os: ubuntu-latest
             compiler: clang
             version: "3.7"
 
-          - name: ubuntu-18.04-clang-3.8
-            os: ubuntu-18.04
+          - name: ubuntu-clang-3.8
+            os: ubuntu-latest
             compiler: clang
             version: "3.8"
 
-          - name: ubuntu-18.04-clang-3.9
-            os: ubuntu-18.04
+          - name: ubuntu-clang-3.9
+            os: ubuntu-latest
             compiler: clang
             version: "3.9"
 
-          - name: ubuntu-18.04-clang-4.0
-            os: ubuntu-18.04
+          - name: ubuntu-clang-4.0
+            os: ubuntu-latest
             compiler: clang
             version: "4.0"
 
-          - name: ubuntu-18.04-clang-5.0
-            os: ubuntu-18.04
+          - name: ubuntu-clang-5.0
+            os: ubuntu-latest
             compiler: clang
             version: "5.0"
 
-          - name: ubuntu-18.04-clang-6.0
-            os: ubuntu-18.04
+          - name: ubuntu-clang-6.0
+            os: ubuntu-latest
             compiler: clang
             version: "6.0"
 
-          - name: ubuntu-18.04-clang-7
-            os: ubuntu-18.04
+          - name: ubuntu-clang-7
+            os: ubuntu-latest
             compiler: clang
             version: "7"
 
-          - name: ubuntu-18.04-clang-8
-            os: ubuntu-18.04
+          - name: ubuntu-clang-8
+            os: ubuntu-latest
             compiler: clang
             version: "8"
 
-          - name: ubuntu-18.04-clang-9
-            os: ubuntu-18.04
+          - name: ubuntu-clang-9
+            os: ubuntu-latest
             compiler: clang
             version: "9"
 
-          - name: ubuntu-latest-clang-10
+          - name: ubuntu-clang-10
             os: ubuntu-latest
             compiler: clang
             version: "10"
 
-          - name: ubuntu-latest-clang-11
+          - name: ubuntu-clang-11
             os: ubuntu-latest
             compiler: clang
             version: "11"
 
-          - name: ubuntu-latest-clang-12
+          - name: ubuntu-clang-12
             os: ubuntu-latest
             compiler: clang
             version: "12"
 
-          - name: windows-2016-cl
-            os: windows-2016
+          - name: windows-latest-cl
+            os: windows-latest
             compiler: cl
 
-          - name: windows-2016-clang-cl
-            os: windows-2016
+          - name: windows-latest-clang-cl
+            os: windows-latest
             compiler: clang-cl
 
-          - name: windows-2016-clang
-            os: windows-2016
+          - name: windows-latest-clang
+            os: windows-latest
             compiler: clang
 
-          - name: windows-2019-cl
-            os: windows-2019
-            compiler: cl
-
-          - name: windows-2016-gcc
-            os: windows-2016
-            compiler: gcc
-
-          - name: windows-2019-clang-cl
-            os: windows-2019
-            compiler: clang-cl
-
-          - name: windows-2019-clang
-            os: windows-2019
-            compiler: clang
-
-          - name: windows-2019-gcc
-            os: windows-2019
+          - name: windows-latest-gcc
+            os: windows-latest
             compiler: gcc
 
           - name: windows-2022-cl
@@ -435,7 +419,7 @@ jobs:
 
       - name: Configure x86
         shell: pwsh
-        if: (runner.os == 'Windows' && matrix.compiler != 'gcc') || runner.os == 'Linux'
+        if: runner.os == 'Windows' || runner.os == 'Linux'
         run: |
           if ("${{ runner.os }}" -eq "Windows") {
             & .github\workflows\vsenv.bat -arch=x86 -host_arch=x64
