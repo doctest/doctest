@@ -137,17 +137,17 @@ jobs:
           - name: windows-latest-cl-2019
             os: windows-latest
             compiler: cl
-            version: "[16.0, 17.0)"
+            version: "v140"
 
           - name: windows-latest-clang-cl-2019
             os: windows-latest
             compiler: clang-cl
-            version: "[16.0, 17.0)"
+            version: "v140"
 
           - name: windows-latest-clang-2019
             os: windows-latest
             compiler: clang
-            version: "[16.0, 17.0)"
+            version: "v140"
 
           - name: windows-2022-cl-2022
             os: windows-2022
@@ -350,10 +350,28 @@ jobs:
         if: runner.os == 'Windows'
         uses: microsoft/setup-msbuild@v1.1
         with:
-          vs-version: ${{ matrix.version }}
           msbuild-architecture: x64
 
+      - name: Build & Test Debug x64 Windows
+        if: runner.os == 'Windows'
+        run: |
+          cmake -E remove_directory build
+          cmake -B build -S . -DCMAKE_BUILD_TYPE=Debug -DDOCTEST_TEST_MODE=COMPARE -T ${{ matrix.version }}
+          cmake --build build
+          cd build
+          ctest
+
+      - name: Build & Test Release x64
+        if: runner.os == 'Windows'
+        run: |
+          cmake -E remove_directory build
+          cmake -B build -S . -DCMAKE_BUILD_TYPE=Release -DDOCTEST_TEST_MODE=COMPARE -T ${{ matrix.version }}
+          cmake --build build
+          cd build
+          ctest
+
       - name: Build & Test Debug x64
+        if: runner.os != 'Windows'
         run: |
           cmake -E remove_directory build
           cmake -B build -S . -DCMAKE_BUILD_TYPE=Debug -DDOCTEST_TEST_MODE=COMPARE
@@ -362,6 +380,7 @@ jobs:
           ctest
 
       - name: Build & Test Release x64
+        if: runner.os != 'Windows'
         run: |
           cmake -E remove_directory build
           cmake -B build -S . -DCMAKE_BUILD_TYPE=Release -DDOCTEST_TEST_MODE=COMPARE
@@ -421,7 +440,6 @@ jobs:
         if: runner.os == 'Windows'
         uses: microsoft/setup-msbuild@v1.1
         with:
-          vs-version: ${{ runner.version }}
           msbuild-architecture: x86
 
       - name: Configure x86
