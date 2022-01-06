@@ -413,11 +413,16 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
+      - name: "Build"
+        shell: bash
+        run: cmake -B build -S . -DDOCTEST_TEST_MODE=COMPARE -G "${{ matrix.toolset == 'v143' && 'Visual Studio 17 2022' || 'Visual Studio 16 2019' }}" -A ${{ matrix.architecture }} -T ${{ matrix.toolset }}
+
       - name: "Test"
         shell: bash
+        strategy:
+          matrixx:
+            config: ["Debug", "Release"]
         run: |
           set -e
-          cmake -B build -S . -DDOCTEST_TEST_MODE=COMPARE -G "${{ matrix.toolset == 'v143' && 'Visual Studio 17 2022' || 'Visual Studio 16 2019' }}" -A ${{ matrix.architecture }} -T ${{ matrix.toolset }}
-          cmake --build build --config ${{ matrix.config }}
-          cd build
-          ctest -C ${{ matrix.config }}
+          cmake --build build --config ${{ matrixx.config }}
+          ctest -C ${{ matrixx.config }} --test-dir build
