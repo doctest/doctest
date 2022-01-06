@@ -316,14 +316,17 @@ jobs:
       # MinGW x86 tests fail on Windows: https://github.com/DaanDeMeyer/doctest/runs/240600881.
       # MacOS doesn't support x86 from Xcode 10 onwards.
 
+      - name: Configure x86 Windows
+        if: runner.os == 'Windows'
+        uses: microsoft/setup-msbuild@v1.1
+        with:
+          vs-version: ${{ runner.version }}
+          msbuild-architecture: x86
+
       - name: Configure x86
         shell: pwsh
-        if: runner.os == 'Windows' || runner.os == 'Linux'
+        if: runner.os == 'Linux'
         run: |
-          if ("${{ runner.os }}" -eq "Windows") {
-            & .github\workflows\vsenv.bat -arch=x86 -host_arch=x64
-          }
-
           if ("${{ matrix.compiler }}" -notcontains "cl") {
             echo "::set-env name=CXXFLAGS::$env:CXXFLAGS -m32"
           }
