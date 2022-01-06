@@ -259,7 +259,7 @@ jobs:
           cmake -B build -S . -DDOCTEST_TEST_MODE=COMPARE -G "Visual Studio 16 2019" -A x64 -T ${{ matrix.version }}
           cmake --build build
           cd build
-          ctest
+          ctest -C Debug
 
       - name: Build & Test Release x64 Windows
         if: runner.os == 'Windows'
@@ -268,7 +268,7 @@ jobs:
           cmake -B build -S . -DDOCTEST_TEST_MODE=COMPARE -G "Visual Studio 16 2019" -A x64 -T ${{ matrix.version }}
           cmake --build build
           cd build
-          ctest
+          ctest -C Debug
 
       - name: Build & Test Debug x64
         if: runner.os != 'Windows'
@@ -277,7 +277,7 @@ jobs:
           cmake -B build -S . -DCMAKE_BUILD_TYPE=Debug -DDOCTEST_TEST_MODE=COMPARE
           cmake --build build
           cd build
-          ctest -C Debug
+          ctest
 
       - name: Build & Test Release x64
         if: runner.os != 'Windows'
@@ -286,7 +286,7 @@ jobs:
           cmake -B build -S . -DCMAKE_BUILD_TYPE=Release -DDOCTEST_TEST_MODE=COMPARE
           cmake --build build
           cd build
-          ctest -C Release
+          ctest
 
       # `-DCMAKE_CXX_FLAGS=""` overrides CXXFLAGS (disables sanitizers).
 
