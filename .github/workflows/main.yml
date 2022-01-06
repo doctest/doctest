@@ -236,11 +236,6 @@ jobs:
           sudo add-apt-repository "deb http://dk.archive.ubuntu.com/ubuntu/ xenial main"
           sudo add-apt-repository "deb http://dk.archive.ubuntu.com/ubuntu/ xenial universe"
 
-          # LLVM 9 is not in Bionic's repositories so we add the official LLVM repository.
-          if [ "${{ matrix.compiler }}" = "clang" ] && [ "${{ matrix.version }}" = "9" ]; then
-            sudo add-apt-repository "deb http://apt.llvm.org/bionic/ llvm-toolchain-bionic-9 main"
-          fi
-
           sudo apt-get update
           # sudo apt-get install libopenmpi-dev
           # sudo apt-get install openmpi-bin
