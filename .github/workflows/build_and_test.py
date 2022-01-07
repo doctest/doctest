@@ -6,15 +6,22 @@ _arch = sys.argv[1]
 _compiler = sys.argv[2]
 _version = sys.argv[3] if len(sys.argv) >= 4 else ""
 
+print("Env: " + "; ".join([_os, _arch, _compiler, _version]))
+
+def logAndCall(command):
+    print(command)
+    return os.system(command)
+
 def runTest(buildType, testMode, flags, extra = "", test = True):
-    if os.system("cmake -E remove_directory build"):
+    print("Running: " + "; ".join([buildType, testMode, flags, extra, test]))
+    if logAndCall("cmake -E remove_directory build"):
         exit(1)
-    if os.system("cmake -S . -B build -DCMAKE_BUILD_TYPE=" + buildType + " -DDOCTEST_TEST_MODE="
+    if logAndCall("cmake -S . -B build -DCMAKE_BUILD_TYPE=" + buildType + " -DDOCTEST_TEST_MODE="
         + testMode + " -DCMAKE_CXX_FLAGS=\"" + flags + '"' + extra):
         exit(2)
-    if os.system("cmake --build build"):
+    if logAndCall("cmake --build build"):
         exit(3)
-    if test and os.system("ctest --test-dir build"):
+    if test and logAndCall("ctest --test-dir build"):
         exit(4)
 
 def versiontuple(v):
