@@ -13,7 +13,7 @@ def logAndCall(command):
     return os.system(command)
 
 def runTest(buildType, testMode, flags, extra = "", test = True):
-    print("Running: " + "; ".join([buildType, testMode, flags, extra, test]))
+    print("Running: " + "; ".join([buildType, testMode, flags, extra, str(test)]))
     if logAndCall("cmake -E remove_directory build"):
         exit(1)
     if logAndCall("cmake -S . -B build -DCMAKE_BUILD_TYPE=" + buildType + " -DDOCTEST_TEST_MODE="
