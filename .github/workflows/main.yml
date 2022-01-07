@@ -133,22 +133,21 @@ jobs:
       - name: Install (Linux)
         if: runner.os == 'Linux'
         run: |
-          # CMake 3.15 allows specifying the generator using the CMAKE_GENERATOR
-          # environment variable.
-          curl -sSL https://github.com/Kitware/CMake/releases/download/v3.15.4/cmake-3.15.4-Linux-x86_64.tar.gz -o cmake.tar.gz
-          sudo tar xf cmake.tar.gz --strip 1 -C /usr/local
           # Required for libc6-dbg:i386 and g++-multilib packages which are
           # needed for x86 builds.
           sudo dpkg --add-architecture i386
+
           # clang-3.7 and earlier are not available in Bionic anymore so we get
           # them from the Xenial repositories instead.
           sudo add-apt-repository "deb http://dk.archive.ubuntu.com/ubuntu/ xenial main"
           sudo add-apt-repository "deb http://dk.archive.ubuntu.com/ubuntu/ xenial universe"
           sudo apt-get update
+
           # sudo apt-get install libopenmpi-dev
           # sudo apt-get install openmpi-bin
           # libc6-dbg:i386 is required for running valgrind on x86.
           sudo apt-get install -y ninja-build valgrind libc6-dbg:i386
+
           if [ "${{ matrix.compiler }}" = "gcc" ]; then
             sudo apt-get install -y g++-${{ matrix.version }} g++-${{ matrix.version }}-multilib
             echo "::set-env name=CC::gcc-${{ matrix.version }}"
@@ -368,6 +367,7 @@ jobs:
       - name: Build & Test Debug x86 Valgrind
         if: runner.os == 'Linux'
         run: |
+          cmake -E remove_directory build
           cmake -B build -S . -DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_FLAGS="-m32" -DDOCTEST_TEST_MODE=VALGRIND
           cmake --build build
           ctest --test-dir build
