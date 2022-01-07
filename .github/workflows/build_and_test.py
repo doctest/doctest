@@ -63,7 +63,7 @@ for configuration in ["Debug", "Release"]:
     if tsanFlags != "":
         runTest(configuration, "COMPARE", tsanFlags)
     if _os != "Windows":
-        runTest(configuration, "COMPARE", "-fno-exceptions", "-DDOCTEST_CONFIG_NO_EXCEPTIONS_BUT_WITH_ALL_ASSERTS=ON")
-        runTest(configuration, "COMPARE", "-fno-rtti", test = False)
+        runTest(configuration, "COMPARE", "-fno-exceptions", "-DDOCTEST_CONFIG_NO_EXCEPTIONS_BUT_WITH_ALL_ASSERTS=ON", test = False)
+        runTest(configuration, "COMPARE", "-fno-rtti")
     if _os == "Linux":
         runTest(configuration, "VALGRIND", possibleX86Flag)
