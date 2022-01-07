@@ -113,19 +113,19 @@ TEST_CASE("REQUIRE level of asserts fail and abort the test case - 5") {
     MESSAGE("should not be reached!");
 }
 TEST_CASE("REQUIRE level of asserts fail and abort the test case - 6") {
-	REQUIRE_THROWS_WITH(throw_if(false, ""), "whops!");
+    REQUIRE_THROWS_WITH(throw_if(false, ""), "whops!");
     MESSAGE("should not be reached!");
 }
 TEST_CASE("REQUIRE level of asserts fail and abort the test case - 7") {
-	REQUIRE_THROWS_WITH(throw_if(true, ""), "whops!");
+    REQUIRE_THROWS_WITH(throw_if(true, ""), "whops!");
     MESSAGE("should not be reached!");
 }
 TEST_CASE("REQUIRE level of asserts fail and abort the test case - 8") {
-	REQUIRE_THROWS_WITH_AS(throw_if(false, ""), "whops!", bool);
+    REQUIRE_THROWS_WITH_AS(throw_if(false, ""), "whops!", bool);
     MESSAGE("should not be reached!");
 }
 TEST_CASE("REQUIRE level of asserts fail and abort the test case - 9") {
-	REQUIRE_THROWS_WITH_AS(throw_if(true, ""), "whops!", bool);
+    REQUIRE_THROWS_WITH_AS(throw_if(true, ""), "whops!", bool);
     MESSAGE("should not be reached!");
 }
 TEST_CASE("REQUIRE level of asserts fail and abort the test case - 10") {

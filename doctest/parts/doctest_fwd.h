@@ -926,8 +926,8 @@ namespace detail {
     };
 
     template<typename T>
-    void filloss(std::ostream* stream, const T& in){
-	    filldata<T>::fill(stream, in);
+    void filloss(std::ostream* stream, const T& in) {
+        filldata<T>::fill(stream, in);
     }
 
     template<typename T,unsigned long N>
@@ -943,10 +943,10 @@ namespace detail {
         template <typename T>
         static String convert(const DOCTEST_REF_WRAP(T) in) {
             /* When parameter "in" is a null terminated const char* it works.
-	         * When parameter "in" is a T arr[N] without '\0' we can fill the
+             * When parameter "in" is a T arr[N] without '\0' we can fill the
              * stringstream with N objects (T=char).If in is char pointer *
              * without '\0' , it would cause segfault
-	         * stepping over unaccessible memory.
+             * stepping over unaccessible memory.
              */
 
             std::ostream* stream = tlssPush();
@@ -1181,8 +1181,8 @@ DOCTEST_CLANG_SUPPRESS_WARNING_WITH_PUSH("-Wunused-comparison")
         if(!res || doctest::getContextOptions()->success)                                          \
             return Result(res, stringifyBinaryExpr(lhs, op_str, rhs));                             \
         return Result(res);                                                                        \
-    }												   \
-    template <typename R ,typename enable_if<  !doctest::detail::is_rvalue_reference<R>::value   , void >::type* = nullptr>                                         \
+    }                                                                                              \
+    template <typename R ,typename enable_if<!doctest::detail::is_rvalue_reference<R>::value, void >::type* = nullptr> \
     DOCTEST_NOINLINE SFINAE_OP(Result,op) operator op(const R& rhs) {                              \
     bool res = op_macro(doctest::detail::forward<const L>(lhs), rhs);                              \
         if(m_at & assertType::is_false)                                                            \
@@ -1331,9 +1331,8 @@ DOCTEST_MSVC_SUPPRESS_WARNING_POP
             return Result(res);
         }
 
-	/* This is required for user-defined conversions from Expression_lhs to L */
-	//operator L() const { return lhs; }
-	operator L() const { return lhs; }
+        /* This is required for user-defined conversions from Expression_lhs to L */
+        operator L() const { return lhs; }
 
         // clang-format off
         DOCTEST_DO_BINARY_EXPRESSION_COMPARISON(==, " == ", DOCTEST_CMP_EQ) //!OCLINT bitwise operator in conditional
@@ -1390,12 +1389,12 @@ DOCTEST_CLANG_SUPPRESS_WARNING_POP
         // https://github.com/catchorg/Catch2/issues/870
         // https://github.com/catchorg/Catch2/issues/565
         template <typename L>
-	Expression_lhs<const L> operator<<(const L &&operand) {
+        Expression_lhs<const L> operator<<(const L &&operand) {
             return Expression_lhs<const L>(doctest::detail::forward<const L>(operand), m_at);
         }
 
         template <typename L,typename enable_if<!doctest::detail::is_rvalue_reference<L>::value,void >::type* = nullptr>
-	Expression_lhs<const L&> operator<<(const L &operand) {
+        Expression_lhs<const L&> operator<<(const L &operand) {
             return Expression_lhs<const L&>(operand, m_at);
         }
     };
