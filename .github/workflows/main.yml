@@ -21,8 +21,6 @@ jobs:
       matrix:
         os: ["windows-2019", "windows-2022"]
         compiler: ["cl", "clang", "clang-cl"]
-        architecture: ["x86", "x64"]
-        configuration: ["Debug", "Release"]
 
         include:
           - os: ubuntu-18.04
@@ -149,9 +147,7 @@ jobs:
           # sudo apt-get install openmpi-bin
 
           # libc6-dbg:i386 is required for running valgrind on x86.
-          if [ "${{ matrix.architecture }}" = "x86"]; then
-            sudo apt-get install -y ninja-build valgrind libc6-dbg:i386
-          fi
+          sudo apt-get install -y ninja-build valgrind libc6-dbg:i386
 
           if [ "${{ matrix.compiler }}" = "gcc" ]; then
             sudo apt-get install -y g++-${{ matrix.version }} g++-${{ matrix.version }}-multilib
@@ -284,52 +280,100 @@ jobs:
           # build step.
           echo "::set-env name=TSAN_FLAGS::$TSAN_FLAGS"
 
+      - name: Configure x64
+        if: runner.os == 'Windows'
+        run: .github\workflows\vsenv.bat -arch=x64 -host_arch=x64
+
+      - name: Build & Test Debug x64
+        run: |
+          cmake -B build -S . -DCMAKE_BUILD_TYPE=Debug -DDOCTEST_TEST_MODE=COMPARE
+          cmake --build build
+          ctest --test-dir build
+
+      - name: Build & Test Release x64
+        run: |
+          cmake -B build -S . -DCMAKE_BUILD_TYPE=Release -DDOCTEST_TEST_MODE=COMPARE
+          cmake --build build
+          ctest --test-dir build
+
+      # `-DCMAKE_CXX_FLAGS=""` overrides CXXFLAGS (disables sanitizers).
+
+      - name: Build & Test Debug x64 Valgrind
+        if: runner.os == 'Linux'
+        run: |
+          cmake -B build -S . -DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_FLAGS="" -DDOCTEST_TEST_MODE=VALGRIND
+          cmake --build build
+          ctest --test-dir build
+
+      - name: Build & Test Release x64 Valgrind
+        if: runner.os == 'Linux'
+        run: |
+          cmake -B build -S . -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="" -DDOCTEST_TEST_MODE=VALGRIND
+          cmake --build build
+          ctest --test-dir build
+
+      - name: Build & Test Debug x64 Thread Sanitizers
+        if: runner.os == 'Linux' || runner.os == 'macOS'
+        run: |
+          cmake -B build -S . -DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_FLAGS="$TSAN_FLAGS" -DDOCTEST_TEST_MODE=COMPARE
+          cmake --build build
+          ctest --test-dir build
+
+      - name: Build & Test Debug x64 without RTTI
+        if: runner.os == 'Linux' || runner.os == 'macOS'
+        run: |
+          cmake -B build -S . -DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_FLAGS="-fno-rtti" -DDOCTEST_TEST_MODE=COMPARE
+          cmake --build build
+          ctest --test-dir build
+
+      - name: Build x64 Debug without exceptions
+        if: runner.os == 'Linux' || runner.os == 'macOS'
+        run: |
+          cmake -B build -S . -DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_FLAGS="-fno-exceptions -DDOCTEST_CONFIG_NO_EXCEPTIONS_BUT_WITH_ALL_ASSERTS"
+          cmake --build build
+
       # MacOS doesn't support x86 from Xcode 10 onwards.
 
-      - name: Configure
+      - name: Configure x86
         shell: pwsh
         if: runner.os != 'macOS'
         run: |
           if ("${{ runner.os }}" -eq "Windows") {
-            & .github\workflows\vsenv.bat -arch=${{ matrix.architecture }} -host_arch=x64
+            & .github\workflows\vsenv.bat -arch=x86 -host_arch=x64
           }
 
-          if (("${{ matrix.architecture }}" -eq "x86") -and ("${{ matrix.compiler }}" -notcontains "cl")) {
+          if ("${{ matrix.compiler }}" -notcontains "cl") {
             echo "::set-env name=CXXFLAGS::$env:CXXFLAGS -m32"
           }
 
-      - name: Build & Test
+      - name: Build & Test Debug x86
+        if: runner.os != 'macOS'
         run: |
-          cmake -B build -S . -DCMAKE_BUILD_TYPE=${{ matrix.configuration }}
+          cmake -B build -S . -DCMAKE_BUILD_TYPE=Debug -DDOCTEST_TEST_MODE=COMPARE
           cmake --build build
           ctest --test-dir build
 
-      - name: Build & Test Valgrind
-        if: runner.os != 'Windows'
+      - name: Build & Test Release x86
+        if: runner.os != 'macOS'
         run: |
-          cmake -B build -S . -DCMAKE_BUILD_TYPE=${{ matrix.configuration }} -DDOCTEST_TEST_MODE=VALGRIND
+          cmake -B build -S . -DCMAKE_BUILD_TYPE=Release -DDOCTEST_TEST_MODE=COMPARE
           cmake --build build
           ctest --test-dir build
 
-      - name: Build & Test Thread Sanitizers
-        if: runner.os != 'Windows'
+      - name: Build & Test Debug x86 Valgrind
+        if: runner.os == 'Linux'
         run: |
-          cmake -B build -S . -DCMAKE_BUILD_TYPE=${{ matrix.configuration }} -DCMAKE_CXX_FLAGS="$TSAN_FLAGS"
+          cmake -B build -S . -DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_FLAGS="-m32" -DDOCTEST_TEST_MODE=VALGRIND
           cmake --build build
           ctest --test-dir build
 
-      - name: Build & Test without RTTI
-        if: runner.os != 'Windows'
+      - name: Build & Test Release x86 Valgrind
+        if: runner.os == 'Linux'
         run: |
-          cmake -B build -S . -DCMAKE_BUILD_TYPE=${{ matrix.configuration }} -DCMAKE_CXX_FLAGS="-fno-rtti"
+          cmake -E remove_directory build
+          cmake -B build -S . -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="-m32" -DDOCTEST_TEST_MODE=VALGRIND
           cmake --build build
           ctest --test-dir build
-
-      - name: Build without exceptions
-        if: runner.os != 'Windows'
-        run: |
-          cmake -B build -S . -DCMAKE_BUILD_TYPE=${{ matrix.configuration }} -DCMAKE_CXX_FLAGS="-fno-exceptions -DDOCTEST_CONFIG_NO_EXCEPTIONS_BUT_WITH_ALL_ASSERTS"
-          cmake --build build
 
   ci-min-gw:
     if: false
