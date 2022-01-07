@@ -28,158 +28,106 @@ jobs:
           - os: ubuntu-18.04
             compiler: gcc
             version: "4.8"
-            architecture: ["x86", "x64"]
-            configuration: ["Debug", "Release"]
 
           - os: ubuntu-18.04
             compiler: gcc
             version: "4.9"
-            architecture: ["x86", "x64"]
-            configuration: ["Debug", "Release"]
 
           - os: ubuntu-18.04
             compiler: gcc
             version: "5"
-            architecture: ["x86", "x64"]
-            configuration: ["Debug", "Release"]
 
           - os: ubuntu-18.04
             compiler: gcc
             version: "6"
-            architecture: ["x86", "x64"]
-            configuration: ["Debug", "Release"]
 
           - os: ubuntu-18.04
             compiler: gcc
             version: "7"
-            architecture: ["x86", "x64"]
-            configuration: ["Debug", "Release"]
 
           - os: ubuntu-18.04
             compiler: gcc
             version: "8"
-            architecture: ["x86", "x64"]
-            configuration: ["Debug", "Release"]
 
           - os: ubuntu-latest
             compiler: gcc
             version: "9"
-            architecture: ["x86", "x64"]
-            configuration: ["Debug", "Release"]
 
           - os: ubuntu-latest
             compiler: gcc
             version: "10"
-            architecture: ["x86", "x64"]
-            configuration: ["Debug", "Release"]
 
           - os: ubuntu-latest
             compiler: gcc
             version: "11"
-            architecture: ["x86", "x64"]
-            configuration: ["Debug", "Release"]
 
           - os: ubuntu-18.04
             compiler: clang
             version: "3.5"
-            architecture: ["x86", "x64"]
-            configuration: ["Debug", "Release"]
 
           - os: ubuntu-18.04
             compiler: clang
             version: "3.6"
-            architecture: ["x86", "x64"]
-            configuration: ["Debug", "Release"]
 
           - os: ubuntu-18.04
             compiler: clang
             version: "3.7"
-            architecture: ["x86", "x64"]
-            configuration: ["Debug", "Release"]
 
           - os: ubuntu-18.04
             compiler: clang
             version: "3.8"
-            architecture: ["x86", "x64"]
-            configuration: ["Debug", "Release"]
 
           - os: ubuntu-18.04
             compiler: clang
             version: "3.9"
-            architecture: ["x86", "x64"]
-            configuration: ["Debug", "Release"]
 
           - os: ubuntu-18.04
             compiler: clang
             version: "4.0"
-            architecture: ["x86", "x64"]
-            configuration: ["Debug", "Release"]
 
           - os: ubuntu-18.04
             compiler: clang
             version: "5.0"
-            architecture: ["x86", "x64"]
-            configuration: ["Debug", "Release"]
 
           - os: ubuntu-18.04
             compiler: clang
             version: "6.0"
-            architecture: ["x86", "x64"]
-            configuration: ["Debug", "Release"]
 
           - os: ubuntu-18.04
             compiler: clang
             version: "7"
-            architecture: ["x86", "x64"]
-            configuration: ["Debug", "Release"]
 
           - os: ubuntu-18.04
             compiler: clang
             version: "8"
-            architecture: ["x86", "x64"]
-            configuration: ["Debug", "Release"]
 
           - os: ubuntu-latest
             compiler: clang
             version: "9"
-            architecture: ["x86", "x64"]
-            configuration: ["Debug", "Release"]
 
           - os: ubuntu-latest
             compiler: clang
             version: "10"
-            architecture: ["x86", "x64"]
-            configuration: ["Debug", "Release"]
 
           - os: ubuntu-latest
             compiler: clang
             version: "11"
-            architecture: ["x86", "x64"]
-            configuration: ["Debug", "Release"]
 
           - os: ubuntu-latest
             compiler: clang
             version: "12"
-            architecture: ["x86", "x64"]
-            configuration: ["Debug", "Release"]
 
           - os: macOS-latest
             compiler: xcode
             version: "11.7"
-            architecture: ["x86", "x64"]
-            configuration: ["Debug", "Release"]
 
           - os: macOS-latest
             compiler: xcode
             version: "12.5"
-            architecture: ["x86", "x64"]
-            configuration: ["Debug", "Release"]
 
           - os: macOS-latest
             compiler: xcode
             version: "13.2"
-            architecture: ["x86", "x64"]
-            configuration: ["Debug", "Release"]
             
     steps:
       - uses: actions/checkout@v2
