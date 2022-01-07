@@ -93,27 +93,27 @@ jobs:
 
           - os: ubuntu-18.04
             compiler: clang
-            version: "7.0"
+            version: "7"
 
           - os: ubuntu-18.04
             compiler: clang
-            version: "8.0"
+            version: "8"
 
           - os: ubuntu-latest
             compiler: clang
-            version: "9.0"
+            version: "9"
 
           - os: ubuntu-latest
             compiler: clang
-            version: "10.0"
+            version: "10"
 
           - os: ubuntu-latest
             compiler: clang
-            version: "11.0"
+            version: "11"
 
           - os: ubuntu-latest
             compiler: clang
-            version: "12.0"
+            version: "12"
 
           - os: macOS-latest
             compiler: xcode
