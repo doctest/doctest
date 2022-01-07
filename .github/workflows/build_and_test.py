@@ -4,16 +4,16 @@ import sys
 _os = sys.argv[0]
 _arch = sys.argv[1]
 _compiler = sys.argv[2]
-_version = sys.argv[3]
+_version = sys.argv[3] if len(sys.argv) >= 4 else ""
 
-def runTest(buildType, testMode, flags, extra = ""):
+def runTest(buildType, testMode, flags, extra = "", test = True):
     if os.system("cmake -E remove_directory build"):
         exit(1)
     if os.system(f"cmake -S . -B build -DCMAKE_BUILD_TYPE={buildType} -DDOCTEST_TEST_MODE={testMode} -DCMAKE_CXX_FLAGS=\"{flags}\" {extra}"):
         exit(2)
     if os.system("cmake --build build"):
         exit(3)
-    if os.system("ctest --test-dir build"):
+    if test and os.system("ctest --test-dir build"):
         exit(4)
 
 def versiontuple(v):
@@ -55,7 +55,7 @@ for configuration in ["Debug", "Release"]:
     if tsanFlags != "":
         runTest(configuration, "COMPARE", tsanFlags)
     if _os != "Windows":
-        runTest(configuration, "COMPARE", "-fno-exceptions", "-DDOCTEST_CONFIG_NO_EXCEPTIONS_BUT_WITH_ALL_ASSERTS")
-        runTest(configuration, "COMPARE", "-fno-rtti")
+        runTest(configuration, "COMPARE", "-fno-exceptions", "-DDOCTEST_CONFIG_NO_EXCEPTIONS_BUT_WITH_ALL_ASSERTS=ON")
+        runTest(configuration, "COMPARE", "-fno-rtti", test = False)
     if _os == "Linux":
         runTest(configuration, "VALGRIND", possibleX86Flag)
