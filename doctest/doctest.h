@@ -2556,12 +2556,12 @@ int registerReporter(const char* name, int priority, bool isReporter) {
 #define DOCTEST_CHECK_FALSE(...) [&] { return !(__VA_ARGS__); }()
 #define DOCTEST_REQUIRE_FALSE(...) [&] { return !(__VA_ARGS__); }()
 
-#define DOCTEST_WARN_MESSAGE(...) [&] { return __VA_ARGS__; }()
-#define DOCTEST_CHECK_MESSAGE(...) [&] { return __VA_ARGS__; }()
-#define DOCTEST_REQUIRE_MESSAGE(...) [&] { return __VA_ARGS__; }()
-#define DOCTEST_WARN_FALSE_MESSAGE(...) [&] { return !(__VA_ARGS__); }()
-#define DOCTEST_CHECK_FALSE_MESSAGE(...) [&] { return !(__VA_ARGS__); }()
-#define DOCTEST_REQUIRE_FALSE_MESSAGE(...) [&] { return !(__VA_ARGS__); }()
+#define DOCTEST_WARN_MESSAGE(cond, ...) [&] { return cond; }()
+#define DOCTEST_CHECK_MESSAGE(cond, ...) [&] { return cond; }()
+#define DOCTEST_REQUIRE_MESSAGE(cond, ...) [&] { return cond; }()
+#define DOCTEST_WARN_FALSE_MESSAGE(cond, ...) [&] { return !(cond); }()
+#define DOCTEST_CHECK_FALSE_MESSAGE(cond, ...) [&] { return !(cond); }()
+#define DOCTEST_REQUIRE_FALSE_MESSAGE(cond, ...) [&] { return !(cond); }()
 
 // TODO: think about if these also need to work properly even when doctest is disabled
 #define DOCTEST_WARN_THROWS(...) ([] { return false; })
