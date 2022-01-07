@@ -179,190 +179,22 @@ jobs:
             echo "::set-env name=CXX::${{ matrix.compiler }}"
           }
 
-      - name: Configure ASAN/UBSAN
-        if: runner.os != 'Windows'
-        run: |
-          # https://stackoverflow.com/a/37939589/11900641
-          function version { echo "$@" | awk -F. '{ printf("%d%03d%03d%03d\n", $1,$2,$3,$4); }'; }
-
-          # Disable sanitizers in configurations where we know they are buggy.
-
-          # TODO: Move these conditions to the if clause if Github Actions ever
-          # adds support for comparing versions.
-          # See: https://github.community/t5/GitHub-Actions/Allow-comparing-versions-in-if-conditions/m-p/33912#M1710
-
-          if [ "${{ runner.os }}" = "Linux" ] && \
-             [ "${{ matrix.compiler }}" = "gcc" ] && \
-             [ $(version ${{ matrix.version }}) -le $(version "5.0") ]; then
-            exit 0
-          fi
-
-          if [ "${{ runner.os }}" = "Linux" ] && \
-             [ "${{ matrix.compiler }}" = "clang" ] && \
-             [ $(version ${{ matrix.version }}) -le $(version "6.0") ]; then
-            exit 0
-          fi
-
-          if [ "${{ runner.os }}" = "macOS" ] && \
-             [ "${{ matrix.compiler }}" = "xcode" ] && \
-             [ $(version ${{ matrix.version }}) -le $(version "9.4.1") ]; then
-            exit 0
-          fi
-
-          if [ "${{ runner.os }}" = "macOS" ] && \
-             [ "${{ matrix.compiler }}" = "gcc" ]; then
-            exit 0
-          fi
-
-          ASAN_UBSAN_FLAGS="-fsanitize=address,undefined -fno-omit-frame-pointer"
-
-          # Link statically against ASAN libraries because dynamically linking
-          # against ASAN libraries causes problems when using dlopen on Ubuntu.
-          # See: https://github.com/DaanDeMeyer/doctest/runs/249002713
-          if [ "${{ runner.os }}" = "Linux" ] && [ "${{ matrix.compiler }}" = "gcc" ]; then
-            ASAN_UBSAN_FLAGS="$ASAN_UBSAN_FLAGS -static-libasan"
-          fi
-
-          # Compiling in bash on Windows doesn't work and powershell doesn't
-          # exit on non-zero exit codes so we're forced to use cmd which means
-          # we don't have a cross platform way to access environment variables.
-          # To circumvent this, we put the sanitizer flags in an environment
-          # variable that is automatically picked up by CMake.
-          echo "::set-env name=CXXFLAGS::$ASAN_UBSAN_FLAGS"
-
-      - name: Configure TSAN
-        if: runner.os != 'Windows'
-        run: |
-          # https://stackoverflow.com/a/37939589/11900641
-          function version { echo "$@" | awk -F. '{ printf("%d%03d%03d%03d\n", $1,$2,$3,$4); }'; }
-
-          if [ "${{ runner.os }}" = "Linux" ] && \
-             [ "${{ matrix.compiler }}" = "gcc" ] && \
-             [ $(version ${{ matrix.version }}) -le $(version "6.0") ]; then
-            exit 0
-          fi
-
-          if [ "${{ runner.os }}" = "Linux" ] && \
-             [ "${{ matrix.compiler }}" = "clang" ] && \
-             [ $(version ${{ matrix.version }}) -le $(version "3.9") ]; then
-            exit 0
-          fi
-
-          TSAN_FLAGS="-fsanitize=thread -pie -fPIE"
-
-          if [ "${{ runner.os }}" = "Linux" ] && [ "${{ matrix.compiler }}" = "gcc" ]; then
-            TSAN_FLAGS="$TSAN_FLAGS -static-libtsan"
-          fi
-
-          # The thread sanitizers build does not run on Windows so we can just
-          # use bash syntax to access the TSAN flags in the thread sanitizers
-          # build step.
-          echo "::set-env name=TSAN_FLAGS::$TSAN_FLAGS"
-
       - name: Configure x64
         uses: ilammy/msvc-dev-cmd@v1
 
-      - name: Build & Test Debug x64
-        run: |
-          cmake -E remove_directory build
-          cmake -B build -S . -DCMAKE_BUILD_TYPE=Debug
-          cmake --build build
-          ctest --test-dir build
+      - name: Build & Test x64
+        run: python .github/workflows/build_and_test.py ${{ runner.os }} x64 ${{ matrix.compiler }} ${{ matrix.version }}
 
-      - name: Build & Test Release x64
-        run: |
-          cmake -E remove_directory build
-          cmake -B build -S . -DCMAKE_BUILD_TYPE=Release
-          cmake --build build
-          ctest --test-dir build
-
-      # `-DCMAKE_CXX_FLAGS=""` overrides CXXFLAGS (disables sanitizers).
-
-      - name: Build & Test Debug x64 Valgrind
-        if: runner.os == 'Linux'
-        run: |
-          cmake -E remove_directory build
-          cmake -B build -S . -DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_FLAGS="" -DDOCTEST_TEST_MODE=VALGRIND
-          cmake --build build
-          ctest --test-dir build
-
-      - name: Build & Test Release x64 Valgrind
-        if: runner.os == 'Linux'
-        run: |
-          cmake -E remove_directory build
-          cmake -B build -S . -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="" -DDOCTEST_TEST_MODE=VALGRIND
-          cmake --build build
-          ctest --test-dir build
-
-      - name: Build & Test Debug x64 Thread Sanitizers
-        if: runner.os != 'Windows'
-        run: |
-          cmake -E remove_directory build
-          cmake -B build -S . -DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_FLAGS="$TSAN_FLAGS"
-          cmake --build build
-          ctest --test-dir build
-
-      - name: Build & Test Debug x64 without RTTI
-        if: runner.os != 'Windows'
-        run: |
-          cmake -E remove_directory build
-          cmake -B build -S . -DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_FLAGS="-fno-rtti"
-          cmake --build build
-          ctest --test-dir build
-
-      - name: Build x64 Debug without exceptions
-        if: runner.os != 'Windows'
-        run: |
-          cmake -E remove_directory build
-          cmake -B build -S . -DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_FLAGS="-fno-exceptions -DDOCTEST_CONFIG_NO_EXCEPTIONS_BUT_WITH_ALL_ASSERTS"
-          cmake --build build
-
-      # MacOS doesn't support x86 from Xcode 10 onwards.
-
-      - name: Configure x86 Windows
+      - name: Configure x86
         uses: ilammy/msvc-dev-cmd@v1
         with:
           arch: x86
 
-      - name: Configure x86
-        shell: pwsh
+      # MacOS doesn't support x86 from Xcode 10 onwards.
+
+      - name: Build & Test x86
         if: runner.os != 'macOS'
-        run: |
-          if ("${{ matrix.compiler }}" -notcontains "cl") {
-            echo "::set-env name=CXXFLAGS::$env:CXXFLAGS -m32"
-          }
-
-      - name: Build & Test Debug x86
-        if: runner.os != 'macOS'
-        run: |
-          cmake -E remove_directory build
-          cmake -B build -S . -DCMAKE_BUILD_TYPE=Debug
-          cmake --build build
-          ctest --test-dir build
-
-      - name: Build & Test Release x86
-        if: runner.os != 'macOS'
-        run: |
-          cmake -E remove_directory build
-          cmake -B build -S . -DCMAKE_BUILD_TYPE=Release
-          cmake --build build
-          ctest --test-dir build
-
-      - name: Build & Test Debug x86 Valgrind
-        if: runner.os == 'Linux'
-        run: |
-          cmake -E remove_directory build
-          cmake -B build -S . -DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_FLAGS="-m32" -DDOCTEST_TEST_MODE=VALGRIND
-          cmake --build build
-          ctest --test-dir build
-
-      - name: Build & Test Release x86 Valgrind
-        if: runner.os == 'Linux'
-        run: |
-          cmake -E remove_directory build
-          cmake -B build -S . -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="-m32" -DDOCTEST_TEST_MODE=VALGRIND
-          cmake --build build
-          ctest --test-dir build
+        run: python .github/workflows/build_and_test.py ${{ runner.os }} x86 ${{ matrix.compiler }} ${{ matrix.version }}
 
   ci-min-gw:
     if: false
