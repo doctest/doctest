@@ -2549,6 +2549,8 @@ int registerReporter(const char* name, int priority, bool isReporter) {
 #define DOCTEST_FAIL_CHECK(...) (static_cast<void>(0))
 #define DOCTEST_FAIL(...) (static_cast<void>(0))
 
+#ifdef DOCTEST_CONFIG_EVALUATE_ASSERTS_EVEN_WHEN_DISABLED
+
 #define DOCTEST_WARN(...) [&] { return __VA_ARGS__; }()
 #define DOCTEST_CHECK(...) [&] { return __VA_ARGS__; }()
 #define DOCTEST_REQUIRE(...) [&] { return __VA_ARGS__; }()
@@ -2562,39 +2564,6 @@ int registerReporter(const char* name, int priority, bool isReporter) {
 #define DOCTEST_WARN_FALSE_MESSAGE(cond, ...) [&] { return !(cond); }()
 #define DOCTEST_CHECK_FALSE_MESSAGE(cond, ...) [&] { return !(cond); }()
 #define DOCTEST_REQUIRE_FALSE_MESSAGE(cond, ...) [&] { return !(cond); }()
-
-// TODO: think about if these also need to work properly even when doctest is disabled
-#define DOCTEST_WARN_THROWS(...) ([] { return false; })
-#define DOCTEST_CHECK_THROWS(...) ([] { return false; })
-#define DOCTEST_REQUIRE_THROWS(...) ([] { return false; })
-#define DOCTEST_WARN_THROWS_AS(expr, ...) ([] { return false; })
-#define DOCTEST_CHECK_THROWS_AS(expr, ...) ([] { return false; })
-#define DOCTEST_REQUIRE_THROWS_AS(expr, ...) ([] { return false; })
-#define DOCTEST_WARN_THROWS_WITH(expr, ...) ([] { return false; })
-#define DOCTEST_CHECK_THROWS_WITH(expr, ...) ([] { return false; })
-#define DOCTEST_REQUIRE_THROWS_WITH(expr, ...) ([] { return false; })
-#define DOCTEST_WARN_THROWS_WITH_AS(expr, with, ...) ([] { return false; })
-#define DOCTEST_CHECK_THROWS_WITH_AS(expr, with, ...) ([] { return false; })
-#define DOCTEST_REQUIRE_THROWS_WITH_AS(expr, with, ...) ([] { return false; })
-#define DOCTEST_WARN_NOTHROW(...) ([] { return false; })
-#define DOCTEST_CHECK_NOTHROW(...) ([] { return false; })
-#define DOCTEST_REQUIRE_NOTHROW(...) ([] { return false; })
-
-#define DOCTEST_WARN_THROWS_MESSAGE(expr, ...) ([] { return false; })
-#define DOCTEST_CHECK_THROWS_MESSAGE(expr, ...) ([] { return false; })
-#define DOCTEST_REQUIRE_THROWS_MESSAGE(expr, ...) ([] { return false; })
-#define DOCTEST_WARN_THROWS_AS_MESSAGE(expr, ex, ...) ([] { return false; })
-#define DOCTEST_CHECK_THROWS_AS_MESSAGE(expr, ex, ...) ([] { return false; })
-#define DOCTEST_REQUIRE_THROWS_AS_MESSAGE(expr, ex, ...) ([] { return false; })
-#define DOCTEST_WARN_THROWS_WITH_MESSAGE(expr, with, ...) ([] { return false; })
-#define DOCTEST_CHECK_THROWS_WITH_MESSAGE(expr, with, ...) ([] { return false; })
-#define DOCTEST_REQUIRE_THROWS_WITH_MESSAGE(expr, with, ...) ([] { return false; })
-#define DOCTEST_WARN_THROWS_WITH_AS_MESSAGE(expr, with, ex, ...) ([] { return false; })
-#define DOCTEST_CHECK_THROWS_WITH_AS_MESSAGE(expr, with, ex, ...) ([] { return false; })
-#define DOCTEST_REQUIRE_THROWS_WITH_AS_MESSAGE(expr, with, ex, ...) ([] { return false; })
-#define DOCTEST_WARN_NOTHROW_MESSAGE(expr, ...) ([] { return false; })
-#define DOCTEST_CHECK_NOTHROW_MESSAGE(expr, ...) ([] { return false; })
-#define DOCTEST_REQUIRE_NOTHROW_MESSAGE(expr, ...) ([] { return false; })
 
 namespace doctest {
 namespace detail {
@@ -2635,6 +2604,83 @@ namespace detail {
 #define DOCTEST_WARN_UNARY_FALSE(...) [&] { return !(__VA_ARGS__); }()
 #define DOCTEST_CHECK_UNARY_FALSE(...) [&] { return !(__VA_ARGS__); }()
 #define DOCTEST_REQUIRE_UNARY_FALSE(...) [&] { return !(__VA_ARGS__); }()
+
+#else // DOCTEST_CONFIG_EVALUATE_ASSERTS_EVEN_WHEN_DISABLED
+
+#define DOCTEST_WARN(...) ([] { return false; })
+#define DOCTEST_CHECK(...) ([] { return false; })
+#define DOCTEST_REQUIRE(...) ([] { return false; })
+#define DOCTEST_WARN_FALSE(...) ([] { return false; })
+#define DOCTEST_CHECK_FALSE(...) ([] { return false; })
+#define DOCTEST_REQUIRE_FALSE(...) ([] { return false; })
+
+#define DOCTEST_WARN_MESSAGE(cond, ...) ([] { return false; })
+#define DOCTEST_CHECK_MESSAGE(cond, ...) ([] { return false; })
+#define DOCTEST_REQUIRE_MESSAGE(cond, ...) ([] { return false; })
+#define DOCTEST_WARN_FALSE_MESSAGE(cond, ...) ([] { return false; })
+#define DOCTEST_CHECK_FALSE_MESSAGE(cond, ...) ([] { return false; })
+#define DOCTEST_REQUIRE_FALSE_MESSAGE(cond, ...) ([] { return false; })
+
+#define DOCTEST_WARN_EQ(...) ([] { return false; })
+#define DOCTEST_CHECK_EQ(...) ([] { return false; })
+#define DOCTEST_REQUIRE_EQ(...) ([] { return false; })
+#define DOCTEST_WARN_NE(...) ([] { return false; })
+#define DOCTEST_CHECK_NE(...) ([] { return false; })
+#define DOCTEST_REQUIRE_NE(...) ([] { return false; })
+#define DOCTEST_WARN_GT(...) ([] { return false; })
+#define DOCTEST_CHECK_GT(...) ([] { return false; })
+#define DOCTEST_REQUIRE_GT(...) ([] { return false; })
+#define DOCTEST_WARN_LT(...) ([] { return false; })
+#define DOCTEST_CHECK_LT(...) ([] { return false; })
+#define DOCTEST_REQUIRE_LT(...) ([] { return false; })
+#define DOCTEST_WARN_GE(...) ([] { return false; })
+#define DOCTEST_CHECK_GE(...) ([] { return false; })
+#define DOCTEST_REQUIRE_GE(...) ([] { return false; })
+#define DOCTEST_WARN_LE(...) ([] { return false; })
+#define DOCTEST_CHECK_LE(...) ([] { return false; })
+#define DOCTEST_REQUIRE_LE(...) ([] { return false; })
+
+#define DOCTEST_WARN_UNARY(...) ([] { return false; })
+#define DOCTEST_CHECK_UNARY(...) ([] { return false; })
+#define DOCTEST_REQUIRE_UNARY(...) ([] { return false; })
+#define DOCTEST_WARN_UNARY_FALSE(...) ([] { return false; })
+#define DOCTEST_CHECK_UNARY_FALSE(...) ([] { return false; })
+#define DOCTEST_REQUIRE_UNARY_FALSE(...) ([] { return false; })
+
+#endif // DOCTEST_CONFIG_EVALUATE_ASSERTS_EVEN_WHEN_DISABLED
+
+// TODO: think about if these also need to work properly even when doctest is disabled
+#define DOCTEST_WARN_THROWS(...) ([] { return false; })
+#define DOCTEST_CHECK_THROWS(...) ([] { return false; })
+#define DOCTEST_REQUIRE_THROWS(...) ([] { return false; })
+#define DOCTEST_WARN_THROWS_AS(expr, ...) ([] { return false; })
+#define DOCTEST_CHECK_THROWS_AS(expr, ...) ([] { return false; })
+#define DOCTEST_REQUIRE_THROWS_AS(expr, ...) ([] { return false; })
+#define DOCTEST_WARN_THROWS_WITH(expr, ...) ([] { return false; })
+#define DOCTEST_CHECK_THROWS_WITH(expr, ...) ([] { return false; })
+#define DOCTEST_REQUIRE_THROWS_WITH(expr, ...) ([] { return false; })
+#define DOCTEST_WARN_THROWS_WITH_AS(expr, with, ...) ([] { return false; })
+#define DOCTEST_CHECK_THROWS_WITH_AS(expr, with, ...) ([] { return false; })
+#define DOCTEST_REQUIRE_THROWS_WITH_AS(expr, with, ...) ([] { return false; })
+#define DOCTEST_WARN_NOTHROW(...) ([] { return false; })
+#define DOCTEST_CHECK_NOTHROW(...) ([] { return false; })
+#define DOCTEST_REQUIRE_NOTHROW(...) ([] { return false; })
+
+#define DOCTEST_WARN_THROWS_MESSAGE(expr, ...) ([] { return false; })
+#define DOCTEST_CHECK_THROWS_MESSAGE(expr, ...) ([] { return false; })
+#define DOCTEST_REQUIRE_THROWS_MESSAGE(expr, ...) ([] { return false; })
+#define DOCTEST_WARN_THROWS_AS_MESSAGE(expr, ex, ...) ([] { return false; })
+#define DOCTEST_CHECK_THROWS_AS_MESSAGE(expr, ex, ...) ([] { return false; })
+#define DOCTEST_REQUIRE_THROWS_AS_MESSAGE(expr, ex, ...) ([] { return false; })
+#define DOCTEST_WARN_THROWS_WITH_MESSAGE(expr, with, ...) ([] { return false; })
+#define DOCTEST_CHECK_THROWS_WITH_MESSAGE(expr, with, ...) ([] { return false; })
+#define DOCTEST_REQUIRE_THROWS_WITH_MESSAGE(expr, with, ...) ([] { return false; })
+#define DOCTEST_WARN_THROWS_WITH_AS_MESSAGE(expr, with, ex, ...) ([] { return false; })
+#define DOCTEST_CHECK_THROWS_WITH_AS_MESSAGE(expr, with, ex, ...) ([] { return false; })
+#define DOCTEST_REQUIRE_THROWS_WITH_AS_MESSAGE(expr, with, ex, ...) ([] { return false; })
+#define DOCTEST_WARN_NOTHROW_MESSAGE(expr, ...) ([] { return false; })
+#define DOCTEST_CHECK_NOTHROW_MESSAGE(expr, ...) ([] { return false; })
+#define DOCTEST_REQUIRE_NOTHROW_MESSAGE(expr, ...) ([] { return false; })
 
 #endif // DOCTEST_CONFIG_DISABLE
 
