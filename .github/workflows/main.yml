@@ -20,7 +20,7 @@ jobs:
       fail-fast: false
       matrix:
         os: ["windows-2019", "windows-2022"]
-        compiler: ["cl", "clang", "clang-cl"]
+        compiler: ["cl", "clang", "clang-cl", "gcc"]
 
         include:
           - os: ubuntu-18.04
@@ -286,12 +286,14 @@ jobs:
 
       - name: Build & Test Debug x64
         run: |
+          cmake -E remove_directory build
           cmake -B build -S . -DCMAKE_BUILD_TYPE=Debug -DDOCTEST_TEST_MODE=COMPARE
           cmake --build build
           ctest --test-dir build
 
       - name: Build & Test Release x64
         run: |
+          cmake -E remove_directory build
           cmake -B build -S . -DCMAKE_BUILD_TYPE=Release -DDOCTEST_TEST_MODE=COMPARE
           cmake --build build
           ctest --test-dir build
@@ -301,6 +303,7 @@ jobs:
       - name: Build & Test Debug x64 Valgrind
         if: runner.os == 'Linux'
         run: |
+          cmake -E remove_directory build
           cmake -B build -S . -DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_FLAGS="" -DDOCTEST_TEST_MODE=VALGRIND
           cmake --build build
           ctest --test-dir build
@@ -308,6 +311,7 @@ jobs:
       - name: Build & Test Release x64 Valgrind
         if: runner.os == 'Linux'
         run: |
+          cmake -E remove_directory build
           cmake -B build -S . -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="" -DDOCTEST_TEST_MODE=VALGRIND
           cmake --build build
           ctest --test-dir build
@@ -315,6 +319,7 @@ jobs:
       - name: Build & Test Debug x64 Thread Sanitizers
         if: runner.os == 'Linux' || runner.os == 'macOS'
         run: |
+          cmake -E remove_directory build
           cmake -B build -S . -DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_FLAGS="$TSAN_FLAGS" -DDOCTEST_TEST_MODE=COMPARE
           cmake --build build
           ctest --test-dir build
@@ -322,6 +327,7 @@ jobs:
       - name: Build & Test Debug x64 without RTTI
         if: runner.os == 'Linux' || runner.os == 'macOS'
         run: |
+          cmake -E remove_directory build
           cmake -B build -S . -DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_FLAGS="-fno-rtti" -DDOCTEST_TEST_MODE=COMPARE
           cmake --build build
           ctest --test-dir build
@@ -329,6 +335,7 @@ jobs:
       - name: Build x64 Debug without exceptions
         if: runner.os == 'Linux' || runner.os == 'macOS'
         run: |
+          cmake -E remove_directory build
           cmake -B build -S . -DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_FLAGS="-fno-exceptions -DDOCTEST_CONFIG_NO_EXCEPTIONS_BUT_WITH_ALL_ASSERTS"
           cmake --build build
 
@@ -349,6 +356,7 @@ jobs:
       - name: Build & Test Debug x86
         if: runner.os != 'macOS'
         run: |
+          cmake -E remove_directory build
           cmake -B build -S . -DCMAKE_BUILD_TYPE=Debug -DDOCTEST_TEST_MODE=COMPARE
           cmake --build build
           ctest --test-dir build
@@ -356,6 +364,7 @@ jobs:
       - name: Build & Test Release x86
         if: runner.os != 'macOS'
         run: |
+          cmake -E remove_directory build
           cmake -B build -S . -DCMAKE_BUILD_TYPE=Release -DDOCTEST_TEST_MODE=COMPARE
           cmake --build build
           ctest --test-dir build
