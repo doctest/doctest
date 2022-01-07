@@ -9,7 +9,8 @@ _version = sys.argv[3] if len(sys.argv) >= 4 else ""
 def runTest(buildType, testMode, flags, extra = "", test = True):
     if os.system("cmake -E remove_directory build"):
         exit(1)
-    if os.system(f"cmake -S . -B build -DCMAKE_BUILD_TYPE={buildType} -DDOCTEST_TEST_MODE={testMode} -DCMAKE_CXX_FLAGS=\"{flags}\" {extra}"):
+    if os.system("cmake -S . -B build -DCMAKE_BUILD_TYPE=" + buildType + " -DDOCTEST_TEST_MODE="
+        + testMode + " -DCMAKE_CXX_FLAGS=\"" + flags + '"' + extra + '"'):
         exit(2)
     if os.system("cmake --build build"):
         exit(3)
