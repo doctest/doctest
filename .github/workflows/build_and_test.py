@@ -1,10 +1,10 @@
 import os
 import sys
 
-_os = sys.argv[0]
-_arch = sys.argv[1]
-_compiler = sys.argv[2]
-_version = sys.argv[3] if len(sys.argv) >= 4 else ""
+_os = sys.argv[1]
+_arch = sys.argv[2]
+_compiler = sys.argv[3]
+_version = sys.argv[4] if len(sys.argv) >= 5 else ""
 
 print("Env: " + "; ".join([_os, _arch, _compiler, _version]))
 
