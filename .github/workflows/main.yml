@@ -23,6 +23,111 @@ jobs:
         compiler: ["cl", "clang", "clang-cl"]
         architecture: ["x86", "x64"]
         configuration: ["Debug", "Release"]
+
+        include:
+          - os: ubuntu-18.04
+            compiler: gcc
+            version: "4.8"
+
+          - os: ubuntu-18.04
+            compiler: gcc
+            version: "4.9"
+
+          - os: ubuntu-18.04
+            compiler: gcc
+            version: "5"
+
+          - os: ubuntu-18.04
+            compiler: gcc
+            version: "6"
+
+          - os: ubuntu-18.04
+            compiler: gcc
+            version: "7"
+
+          - os: ubuntu-18.04
+            compiler: gcc
+            version: "8"
+
+          - os: ubuntu-latest
+            compiler: gcc
+            version: "9"
+
+          - os: ubuntu-latest
+            compiler: gcc
+            version: "10"
+
+          - os: ubuntu-latest
+            compiler: gcc
+            version: "11"
+
+          - os: ubuntu-18.04
+            compiler: clang
+            version: "3.5"
+
+          - os: ubuntu-18.04
+            compiler: clang
+            version: "3.6"
+
+          - os: ubuntu-18.04
+            compiler: clang
+            version: "3.7"
+
+          - os: ubuntu-18.04
+            compiler: clang
+            version: "3.8"
+
+          - os: ubuntu-18.04
+            compiler: clang
+            version: "3.9"
+
+          - os: ubuntu-18.04
+            compiler: clang
+            version: "4.0"
+
+          - os: ubuntu-18.04
+            compiler: clang
+            version: "5.0"
+
+          - os: ubuntu-18.04
+            compiler: clang
+            version: "6.0"
+
+          - os: ubuntu-18.04
+            compiler: clang
+            version: "7"
+
+          - os: ubuntu-18.04
+            compiler: clang
+            version: "8"
+
+          - os: ubuntu-latest
+            compiler: clang
+            version: "9"
+
+          - os: ubuntu-latest
+            compiler: clang
+            version: "10"
+
+          - os: ubuntu-latest
+            compiler: clang
+            version: "11"
+
+          - os: ubuntu-latest
+            compiler: clang
+            version: "12"
+
+          - os: macOS-latest
+            compiler: xcode
+            version: "11.7"
+
+          - os: macOS-latest
+            compiler: xcode
+            version: "12.5"
+
+          - os: macOS-latest
+            compiler: xcode
+            version: "13.2"
             
     steps:
       - uses: actions/checkout@v2
