@@ -376,14 +376,14 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: "Generate"
+      - name: Generate
         run: cmake -B build -S . -G "MinGW Makefiles" -DCMAKE_BUILD_TYPE=${{ matrix.configuration }}
 
-      - name: "Build"
+      - name: Build
         run: cmake --build build
 
-      - name: "Test"
-        run: ctest -C --test-dir build
+      - name: Test
+        run: ctest --test-dir build
 
   ci-windows:
     if: false
@@ -399,12 +399,12 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       
-      - name: "Generate"
+      - name: Generate
         run: cmake -B build -S . -G "${{ matrix.toolset == 'v143' && 'Visual Studio 17 2022' || 'Visual Studio 16 2019' }}" \
             -A ${{ matrix.architecture }} -T ${{ matrix.toolset }}
 
-      - name: "Build"
+      - name: Build
         run: cmake --build build --config ${{ matrix.configuration }}
 
-      - name: "Test"
+      - name: Test
         run: ctest -C ${{ matrix.configuration }} --test-dir build
