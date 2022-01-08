@@ -19,10 +19,9 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - os: ubuntu-latest
-            compiler: clang
-            version: "13"
-            
+          - os: macOS-10.15
+            compiler: xcode
+            version: "10.3"
     steps:
       - uses: actions/checkout@v2
 
