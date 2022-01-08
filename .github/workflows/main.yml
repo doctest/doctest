@@ -21,7 +21,7 @@ jobs:
         include:
           - os: ubuntu-latest
             compiler: clang
-            version: "13"
+            version: "12"
             
     steps:
       - uses: actions/checkout@v2
