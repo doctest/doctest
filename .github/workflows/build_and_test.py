@@ -17,7 +17,7 @@ print("Env: " + "; ".join([_os, _arch, _compiler, _version]))
 usedCc = _compiler
 usedCxx = ""
 if usedCc == "gcc":
-    usedCxx = "gxx"
+    usedCxx = "g++"
 elif usedCc == "clang":
     usedCxx = "clang++"
 else:
@@ -31,12 +31,13 @@ def logAndCall(command):
     print(command)
     return os.system(command)
 
-def runTest(buildType, testMode, flags, test = True):
+def runTest(buildType, testMode, flags, extra = "", test = True):
     print("Running: " + "; ".join([buildType, testMode, flags, str(test)]))
     if logAndCall("cmake -E remove_directory build"):
         exit(1)
-    if logAndCall("cmake -S . -B build -DCMAKE_BUILD_TYPE=" + buildType + " -DDOCTEST_TEST_MODE=" + testMode +
-        " -DCMAKE_CXX_FLAGS=\"" + flags + "\" -DCMAKE_C_COMPILER=" + usedCc + " -DCMAKE_CXX_COMPILER=" + usedCxx):
+    if logAndCall("cmake -S . -B build -DCMAKE_BUILD_TYPE=" + buildType + " -DDOCTEST_TEST_MODE=" + testMode
+        + " -DCMAKE_CXX_FLAGS=\"" + flags + "\" -DCMAKE_C_COMPILER=" + usedCc + " -DCMAKE_CXX_COMPILER=" + usedCxx
+        + " " + extra):
         exit(2)
     if logAndCall("cmake --build build"):
         exit(3)
@@ -82,7 +83,7 @@ for configuration in ["Debug", "Release"]:
     if tsanFlags != "":
         runTest(configuration, "COMPARE", tsanFlags)
     if _os != "Windows":
-        runTest(configuration, "COMPARE", "-fno-exceptions -DDOCTEST_CONFIG_NO_EXCEPTIONS_BUT_WITH_ALL_ASSERTS", test = False)
+        runTest(configuration, "COMPARE", "-fno-exceptions", "-DDOCTEST_CONFIG_NO_EXCEPTIONS_BUT_WITH_ALL_ASSERTS", test = False)
         runTest(configuration, "COMPARE", "-fno-rtti")
     if _os == "Linux":
         runTest(configuration, "VALGRIND", possibleX86Flag)
