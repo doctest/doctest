@@ -14,7 +14,7 @@ _version = sys.argv[4] if len(sys.argv) >= 5 else ""
 
 print("Env: " + "; ".join([_os, _arch, _compiler, _version]))
 
-usedCc = _compiler
+usedCc = _compiler if _compiler != "xcode" else "clang"
 usedCxx = ""
 if usedCc == "gcc":
     usedCxx = "g++"
@@ -35,8 +35,8 @@ def runTest(buildType, testMode, flags, test = True):
     print("Running: " + "; ".join([buildType, testMode, flags, str(test)]))
     if logAndCall("cmake -E remove_directory build"):
         exit(1)
-    if logAndCall("cmake -S . -B build -DCMAKE_BUILD_TYPE=" + buildType + " -DDOCTEST_TEST_MODE=" + testMode +
-        " -DCMAKE_CXX_FLAGS=\"" + flags + "\" -DCMAKE_C_COMPILER=" + usedCc + " -DCMAKE_CXX_COMPILER=" + usedCxx):
+    if logAndCall("cmake -S . -B build -D CMAKE_BUILD_TYPE=" + buildType + " -D DOCTEST_TEST_MODE=" + testMode +
+        " -D CMAKE_CXX_FLAGS=\"" + flags + "\" -D CMAKE_C_COMPILER=" + usedCc + " -D CMAKE_CXX_COMPILER=" + usedCxx):
         exit(2)
     if logAndCall("cmake --build build"):
         exit(3)
@@ -75,14 +75,14 @@ elif _os == "Linux":
 if _os == "Linux" and _compiler == "gcc":
     tsanFlags += " -static-libtsan"
 
-possibleX86Flag = " -m32" if (_arch == "x86" and _compiler != "cl") else ""
+possibleX86Flag = " -m32" if _arch == "x86" and _compiler != "cl" else ""
 
 for configuration in ["Debug", "Release"]:
     runTest(configuration, "COMPARE", flags + possibleX86Flag)
     if tsanFlags != "":
         runTest(configuration, "COMPARE", tsanFlags)
     if _os != "Windows":
-        runTest(configuration, "COMPARE", "-fno-exceptions -DDOCTEST_CONFIG_NO_EXCEPTIONS_BUT_WITH_ALL_ASSERTS", test = False)
+        runTest(configuration, "COMPARE", "-fno-exceptions -D DOCTEST_CONFIG_NO_EXCEPTIONS_BUT_WITH_ALL_ASSERTS", test = False)
         runTest(configuration, "COMPARE", "-fno-rtti")
     if _os == "Linux":
         runTest(configuration, "VALGRIND", possibleX86Flag)

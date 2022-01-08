@@ -115,15 +115,15 @@ jobs:
             version: "12"
 
           - os: macOS-latest
-            compiler: clang
+            compiler: xcode
             version: "11.7"
 
           - os: macOS-latest
-            compiler: clang
+            compiler: xcode
             version: "12.5"
 
           - os: macOS-latest
-            compiler: clang
+            compiler: xcode
             version: "13.2"
             
     steps:
@@ -191,7 +191,7 @@ jobs:
       - uses: actions/checkout@v2
 
       - name: Generate
-        run: cmake -B build -S . -G "MinGW Makefiles" -DCMAKE_BUILD_TYPE=${{ matrix.configuration }}
+        run: cmake -B build -S . -G "MinGW Makefiles" -D CMAKE_BUILD_TYPE=${{ matrix.configuration }}
 
       - name: Build
         run: cmake --build build
