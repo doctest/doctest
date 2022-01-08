@@ -18,8 +18,10 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: ["windows-2019"]
-        compiler: ["cl"]
+        include:
+          - os: macOS-latest
+            compiler: gcc
+            version: "11"
             
     steps:
       - uses: actions/checkout@v2
@@ -49,8 +51,12 @@ jobs:
       - name: Install (macOS)
         if: runner.os == 'macOS'
         run: |
-          brew install ninja
-          sudo xcode-select -switch /Applications/Xcode_${{ matrix.version }}.app
+            if [ ${{ matrix.compiler }} = "gcc" ]; then
+              brew install gcc@${{ matrix.version }}
+            else
+              brew install ninja
+              sudo xcode-select -switch /Applications/Xcode_${{ matrix.version }}.app
+            fi
 
       - name: Configure x64
         uses: ilammy/msvc-dev-cmd@v1
