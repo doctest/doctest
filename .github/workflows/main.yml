@@ -14,7 +14,6 @@ jobs:
       CMAKE_GENERATOR: Ninja
       ASAN_OPTIONS: strict_string_checks=true:detect_odr_violation=2:detect_stack_use_after_return=true:check_initialization_order=true:strict_init_order=true
       TSAN_OPTIONS: force_seq_cst_atomics=1
-      ACTIONS_ALLOW_UNSECURE_COMMANDS: true # because of the set-env calls
 
     strategy:
       fail-fast: false
@@ -116,15 +115,15 @@ jobs:
             version: "12"
 
           - os: macOS-latest
-            compiler: xcode
+            compiler: clang
             version: "11.7"
 
           - os: macOS-latest
-            compiler: xcode
+            compiler: clang
             version: "12.5"
 
           - os: macOS-latest
-            compiler: xcode
+            compiler: clang
             version: "13.2"
             
     steps:
@@ -150,12 +149,8 @@ jobs:
 
           if [ "${{ matrix.compiler }}" = "gcc" ]; then
             sudo apt-get install -y g++-${{ matrix.version }} g++-${{ matrix.version }}-multilib
-            echo "::set-env name=CC::gcc-${{ matrix.version }}"
-            echo "::set-env name=CXX::g++-${{ matrix.version }}"
           else
             sudo apt-get install -y clang-${{ matrix.version }} g++-multilib
-            echo "::set-env name=CC::clang-${{ matrix.version }}"
-            echo "::set-env name=CXX::clang++-${{ matrix.version }}"
           fi
 
       - name: Install (macOS)
@@ -165,19 +160,6 @@ jobs:
 
           ls -ls /Applications/
           sudo xcode-select -switch /Applications/Xcode_${{ matrix.version }}.app
-          echo "::set-env name=CC::clang"
-          echo "::set-env name=CXX::clang++"
-
-      - name: Install (Windows)
-        if: runner.os == 'Windows'
-        run: |
-          if ("${{ matrix.compiler }}" -eq "clang") {
-            echo "::set-env name=CC::clang"
-            echo "::set-env name=CXX::clang++"
-          } else {
-            echo "::set-env name=CC::${{ matrix.compiler }}"
-            echo "::set-env name=CXX::${{ matrix.compiler }}"
-          }
 
       - name: Configure x64
         uses: ilammy/msvc-dev-cmd@v1

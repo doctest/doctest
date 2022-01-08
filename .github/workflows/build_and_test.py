@@ -2,22 +2,41 @@ import os
 import sys
 
 _os = sys.argv[1]
+assert _os in ["Linux", "macOS", "Windows"]
+
 _arch = sys.argv[2]
+assert _arch in ["x86", "x64"]
+
 _compiler = sys.argv[3]
+assert _compiler in ["cl", "clang-cl", "clang", "gcc", "xcode"]
+
 _version = sys.argv[4] if len(sys.argv) >= 5 else ""
 
 print("Env: " + "; ".join([_os, _arch, _compiler, _version]))
+
+usedCc = _compiler
+usedCxx = ""
+if usedCc == "gcc":
+    usedCxx = "gxx"
+elif usedCc == "clang":
+    usedCxx = "clang++"
+else:
+    usedCxx = usedCc
+
+if (_os == "Linux"):
+    usedCc += "-" + _version
+    usedCxx += "-" + _version
 
 def logAndCall(command):
     print(command)
     return os.system(command)
 
-def runTest(buildType, testMode, flags, extra = "", test = True):
-    print("Running: " + "; ".join([buildType, testMode, flags, extra, str(test)]))
+def runTest(buildType, testMode, flags, test = True):
+    print("Running: " + "; ".join([buildType, testMode, flags, str(test)]))
     if logAndCall("cmake -E remove_directory build"):
         exit(1)
-    if logAndCall("cmake -S . -B build -DCMAKE_BUILD_TYPE=" + buildType + " -DDOCTEST_TEST_MODE="
-        + testMode + " -DCMAKE_CXX_FLAGS=\"" + flags + "\" " + extra):
+    if logAndCall("cmake -S . -B build -DCMAKE_BUILD_TYPE=" + buildType + " -DDOCTEST_TEST_MODE=" + testMode +
+        " -DCMAKE_CXX_FLAGS=\"" + flags + "\" -DCMAKE_C_COMPILER=" + usedCc + " -DCMAKE_CXX_COMPILER=" + usedCxx):
         exit(2)
     if logAndCall("cmake --build build"):
         exit(3)
