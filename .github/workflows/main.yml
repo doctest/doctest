@@ -51,6 +51,7 @@ jobs:
       - name: Install (macOS)
         if: runner.os == 'macOS'
         run: |
+            brew install ninja
             if [ "${{ matrix.compiler }}" = "xcode" ]; then
               sudo xcode-select -switch /Applications/Xcode_${{ matrix.version }}.app
             fi
