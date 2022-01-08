@@ -38,8 +38,9 @@ jobs:
           sudo add-apt-repository "deb http://dk.archive.ubuntu.com/ubuntu/ xenial main"
           sudo add-apt-repository "deb http://dk.archive.ubuntu.com/ubuntu/ xenial universe"
 
-          # clang-13 is not currently available by default
-          sudo add-apt-repository "deb https://apt.llvm.org/focal/ llvm-toolchain-focal main"
+          # clang->=13 is not currently available by default
+          wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | sudo apt-key add -
+          sudo add-apt-repository "deb https://apt.llvm.org/focal/ llvm-toolchain-focal-${{ matrix.version }} universe"
 
           sudo apt-get update
 
