@@ -21,7 +21,7 @@ jobs:
         include:
           - os: ubuntu-latest
             compiler: clang
-            version: "12"
+            version: "13"
             
     steps:
       - uses: actions/checkout@v2
@@ -45,7 +45,7 @@ jobs:
           if [ "${{ matrix.compiler }}" = "gcc" ]; then
             sudo apt-get install -y g++-${{ matrix.version }} g++-${{ matrix.version }}-multilib
           else
-            sudo apt-get install -y clang-${{ matrix.version }}
+            sudo apt-get install -y clang-${{ matrix.version }} g++-multilib
           fi
 
       - name: Install (macOS)
