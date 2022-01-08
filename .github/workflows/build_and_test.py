@@ -39,7 +39,7 @@ def run_test(build_type, test_mode, flags, test = True):
         f"-B build "
         f"-D CMAKE_BUILD_TYPE={build_type} "
         f'-D CXX={used_cxx} '
-        f'-D CC={used_cxx} '
+        f'-D CC={used_cxx}'
     ):
         exit(2)
     if log_and_call("cmake --build build"):
