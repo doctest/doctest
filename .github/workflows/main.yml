@@ -195,7 +195,7 @@ jobs:
       - name: Test
         run: ctest --test-dir build
 
-  ci-windows:
+  ci-msvs:
     if: false
     runs-on: ${{ matrix.toolset == 'v143' && 'windows-2022' || 'windows-latest' }}
 
