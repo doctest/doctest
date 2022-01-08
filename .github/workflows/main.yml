@@ -18,8 +18,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: ["windows-2019", "windows-2022"]
-        compiler: ["cl", "clang", "clang-cl"]
+        os: ["windows-2019"]
+        compiler: ["cl"]
             
     steps:
       - uses: actions/checkout@v2
