@@ -39,7 +39,7 @@ def run_test(build_type, test_mode, flags, test = True):
         f"-B build "
         f"-D CMAKE_BUILD_TYPE={build_type} "
         f"-D DOCTEST_TEST_MODE={test_mode} "
-        f"-D CMAKE_CXX_FLAGS=\"{flags}\" " if flags != "" else ""
+        (f"-D CMAKE_CXX_FLAGS=\"{flags}\" " if flags != "" else "")
         f"-D CMAKE_CXX_COMPILER={used_cxx}"
     ):
         exit(2)
