@@ -2128,10 +2128,10 @@ int registerReporter(const char* name, int priority, bool isReporter) {
     static_assert(true, "")
 
 // for ending a testsuite block
-#define DOCTEST_TEST_SUITE_END()                                                                   \
+#define DOCTEST_TEST_SUITE_END                                                                     \
     DOCTEST_GLOBAL_NO_WARNINGS(DOCTEST_ANONYMOUS(DOCTEST_ANON_VAR_),                               \
             doctest::detail::setTestSuite(doctest::detail::TestSuite() * ""))                      \
-    static_assert(true, "")
+    typedef int DOCTEST_ANONYMOUS(DOCTEST_ANON_FOR_SEMICOLON_)
 
 // for registering exception translators
 #define DOCTEST_REGISTER_EXCEPTION_TRANSLATOR_IMPL(translatorName, signature)                      \
@@ -2512,11 +2512,8 @@ int registerReporter(const char* name, int priority, bool isReporter) {
     template <typename type>                                                                       \
     inline void DOCTEST_ANONYMOUS(DOCTEST_ANON_TMP_)()
 
-#define DOCTEST_TEST_CASE_TEMPLATE_INVOKE(id, ...)                                                 \
-    static_assert(true, "")
-
-#define DOCTEST_TEST_CASE_TEMPLATE_APPLY(id, ...)                                                  \
-    static_assert(true, "")
+#define DOCTEST_TEST_CASE_TEMPLATE_INVOKE(id, ...) static_assert(true, "")
+#define DOCTEST_TEST_CASE_TEMPLATE_APPLY(id, ...) static_assert(true, "")
 
 // for subcases
 #define DOCTEST_SUBCASE(name)
@@ -2528,7 +2525,7 @@ int registerReporter(const char* name, int priority, bool isReporter) {
 #define DOCTEST_TEST_SUITE_BEGIN(name) static_assert(true, "")
 
 // for ending a testsuite block
-#define DOCTEST_TEST_SUITE_END() static_assert(true, "")
+#define DOCTEST_TEST_SUITE_END typedef int DOCTEST_ANONYMOUS(DOCTEST_ANON_FOR_SEMICOLON_)
 
 #define DOCTEST_REGISTER_EXCEPTION_TRANSLATOR(signature)                                           \
     template <typename DOCTEST_UNUSED_TEMPLATE_TYPE>                                               \
