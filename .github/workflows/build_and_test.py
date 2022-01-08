@@ -14,75 +14,86 @@ _version = sys.argv[4] if len(sys.argv) >= 5 else ""
 
 print("Env: " + "; ".join([_os, _arch, _compiler, _version]))
 
-usedCc = _compiler if _compiler != "xcode" else "clang"
-usedCxx = ""
-if usedCc == "gcc":
-    usedCxx = "g++"
-elif usedCc == "clang":
-    usedCxx = "clang++"
+if _compiler == "gcc":
+    used_cxx = "g++"
+elif _compiler == "clang" or _compiler == "xcode":
+    used_cxx = "clang++"
 else:
-    usedCxx = usedCc
+    used_cxx = _compiler
 
-if (_os == "Linux"):
-    usedCc += "-" + _version
-    usedCxx += "-" + _version
+if _os == "Linux":
+    used_cxx += "-" + _version
 
-def logAndCall(command):
+
+def log_and_call(command):
     print(command)
     return os.system(command)
 
-def runTest(buildType, testMode, flags, test = True):
-    print("Running: " + "; ".join([buildType, testMode, flags, str(test)]))
-    if logAndCall("cmake -E remove_directory build"):
+
+def run_test(build_type, test_mode, flags, test = True):
+    print("Running: " + "; ".join([build_type, test_mode, flags, str(test)]))
+    if log_and_call("cmake -E remove_directory build"):
         exit(1)
-    if logAndCall("cmake -S . -B build -D CMAKE_BUILD_TYPE=" + buildType + " -D DOCTEST_TEST_MODE=" + testMode +
-        " -D CMAKE_CXX_FLAGS=\"" + flags + "\" -D CMAKE_C_COMPILER=" + usedCc + " -D CMAKE_CXX_COMPILER=" + usedCxx):
+    if log_and_call(
+        f"cmake -S . "
+        f"-B build "
+        f"-D CMAKE_BUILD_TYPE={build_type} "
+        f"-D DOCTEST_TEST_MODE={test_mode} "
+        f'-D CMAKE_CXX_FLAGS="{flags}" '
+        f'-D CMAKE_CXX_COMPILER="{used_cxx}'
+    ):
         exit(2)
-    if logAndCall("cmake --build build"):
+    if log_and_call("cmake --build build"):
         exit(3)
-    if test and logAndCall("ctest --test-dir build"):
+    if test and log_and_call("ctest --test-dir build"):
         exit(4)
 
-def versiontuple(v):
+
+def version_tuple(v):
     return tuple(map(int, (v.split("."))))
+
 
 flags = "-fsanitize=address,undefined -fno-omit-frame-pointer"
 if _os == "Windows":
     flags = ""
 elif _os == "Linux":
     if _compiler == "clang":
-        if versiontuple(_version) <= versiontuple("6.0"):
+        if version_tuple(_version) <= version_tuple("6.0"):
             flags = ""
     elif _compiler == "gcc":
-        if versiontuple(_version) <= versiontuple("5.0"):
+        if version_tuple(_version) <= version_tuple("5.0"):
             flags = ""
 
 if _os == "Linux" and _compiler == "gcc":
     flags += " -static-libasan"
 
-
-tsanFlags = "-fsanitize=thread -pie -fPIE"
+tsan_flags = "-fsanitize=thread -pie -fPIE"
 if _os == "Windows":
-    tsanFlags = ""
+    tsan_flags = ""
 elif _os == "Linux":
     if _compiler == "clang":
-        if versiontuple(_version) <= versiontuple("3.9"):
-            tsanFlags = ""
+        if version_tuple(_version) <= version_tuple("3.9"):
+            tsan_flags = ""
     elif _compiler == "gcc":
-        if versiontuple(_version) <= versiontuple("6.0"):
-            tsanFlags = ""
+        if version_tuple(_version) <= version_tuple("6.0"):
+            tsan_flags = ""
 
 if _os == "Linux" and _compiler == "gcc":
-    tsanFlags += " -static-libtsan"
+    tsan_flags += " -static-libtsan"
 
-possibleX86Flag = " -m32" if _arch == "x86" and _compiler != "cl" else ""
+x86_flag = " -m32" if _arch == "x86" and _compiler != "cl" else ""
 
 for configuration in ["Debug", "Release"]:
-    runTest(configuration, "COMPARE", flags + possibleX86Flag)
-    if tsanFlags != "":
-        runTest(configuration, "COMPARE", tsanFlags)
+    run_test(configuration, "COMPARE", flags + x86_flag)
+    if tsan_flags != "":
+        run_test(configuration, "COMPARE", tsan_flags)
     if _os != "Windows":
-        runTest(configuration, "COMPARE", "-fno-exceptions -D DOCTEST_CONFIG_NO_EXCEPTIONS_BUT_WITH_ALL_ASSERTS", test = False)
-        runTest(configuration, "COMPARE", "-fno-rtti")
+        run_test(
+            configuration,
+            "COMPARE",
+            "-fno-exceptions -D DOCTEST_CONFIG_NO_EXCEPTIONS_BUT_WITH_ALL_ASSERTS",
+            test = False,
+        )
+        run_test(configuration, "COMPARE", "-fno-rtti")
     if _os == "Linux":
-        runTest(configuration, "VALGRIND", possibleX86Flag)
+        run_test(configuration, "VALGRIND", x86_flag)

@@ -120,11 +120,11 @@ jobs:
 
           - os: macOS-latest
             compiler: xcode
-            version: "12.5"
+            version: "12.5.1"
 
           - os: macOS-latest
             compiler: xcode
-            version: "13.2"
+            version: "13.2.1"
             
     steps:
       - uses: actions/checkout@v2
@@ -142,8 +142,6 @@ jobs:
           sudo add-apt-repository "deb http://dk.archive.ubuntu.com/ubuntu/ xenial universe"
           sudo apt-get update
 
-          # sudo apt-get install libopenmpi-dev
-          # sudo apt-get install openmpi-bin
           # libc6-dbg:i386 is required for running valgrind on x86.
           sudo apt-get install -y ninja-build valgrind libc6-dbg:i386
 
@@ -157,15 +155,13 @@ jobs:
         if: runner.os == 'macOS'
         run: |
           brew install ninja
-
-          ls -ls /Applications/
           sudo xcode-select -switch /Applications/Xcode_${{ matrix.version }}.app
 
       - name: Configure x64
         uses: ilammy/msvc-dev-cmd@v1
 
       - name: Build & Test x64
-        run: python .github/workflows/build_and_test.py ${{ runner.os }} x64 ${{ matrix.compiler }} ${{ matrix.version }}
+        run: python3 .github/workflows/build_and_test.py ${{ runner.os }} x64 ${{ matrix.compiler }} ${{ matrix.version }}
 
       - name: Configure x86
         uses: ilammy/msvc-dev-cmd@v1
@@ -176,7 +172,7 @@ jobs:
 
       - name: Build & Test x86
         if: runner.os != 'macOS'
-        run: python .github/workflows/build_and_test.py ${{ runner.os }} x86 ${{ matrix.compiler }} ${{ matrix.version }}
+        run: python3 .github/workflows/build_and_test.py ${{ runner.os }} x86 ${{ matrix.compiler }} ${{ matrix.version }}
 
   ci-min-gw:
     if: false
