@@ -81,7 +81,7 @@ elif _os == "Linux":
 if _os == "Linux" and _compiler == "gcc":
     tsan_flags += " -static-libtsan"
 
-x86_flag = " -m32" if _arch == "x86" and _compiler != "cl" else ""
+x86_flag = " -m32" if _arch == "x86" and not "cl" in _compiler else ""
 
 for configuration in ["Debug", "Release"]:
     run_test(configuration, "COMPARE", flags + x86_flag)
