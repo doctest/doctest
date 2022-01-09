@@ -45,7 +45,7 @@ def run_test(build_type, test_mode, flags, test = True):
         exit(2)
     if log_and_call("cmake --build build"):
         exit(3)
-    if test and log_and_call("ctest --test-dir build"):
+    if test and log_and_call("ctest --test-dir build --no-tests=error"):
         exit(4)
 
 

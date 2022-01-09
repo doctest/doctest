@@ -202,9 +202,15 @@ jobs:
       fail-fast: false
       matrix:
         configuration: ["Debug", "Release"]
+        architecture: ["x86", "x64"]
 
     steps:
       - uses: actions/checkout@v2
+
+      - name: Set up MinGW
+        uses: egor-tensin/setup-mingw@v2
+        with:
+          platform: ${{ matrix.architecture }}
 
       - name: Generate
         run: cmake -B build -S . -G "MinGW Makefiles" -D CMAKE_BUILD_TYPE=${{ matrix.configuration }}
@@ -213,7 +219,7 @@ jobs:
         run: cmake --build build
 
       - name: Test
-        run: ctest --test-dir build
+        run: ctest --test-dir build --no-tests=error
 
   ci-msvs:
     runs-on: ${{ matrix.toolset == 'v143' && 'windows-2022' || 'windows-latest' }}
@@ -236,4 +242,4 @@ jobs:
         run: cmake --build build --config ${{ matrix.configuration }}
 
       - name: Test
-        run: ctest -C ${{ matrix.configuration }} --test-dir build
+        run: ctest -C ${{ matrix.configuration }} --test-dir build --no-tests=error
