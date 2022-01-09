@@ -202,15 +202,12 @@ jobs:
       fail-fast: false
       matrix:
         configuration: ["Debug", "Release"]
-        architecture: ["x86", "x64"]
 
     steps:
       - uses: actions/checkout@v2
 
       - name: Set up MinGW
         uses: egor-tensin/setup-mingw@v2
-        with:
-          platform: ${{ matrix.architecture }}
 
       - name: Generate
         run: cmake -B build -S . -G "MinGW Makefiles" -D CMAKE_BUILD_TYPE=${{ matrix.configuration }}
