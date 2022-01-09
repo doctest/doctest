@@ -18,10 +18,126 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
+        os: ["windows-2019", "windows-2022"]
+        compiler: ["cl", "clang", "clang-cl"]
+
         include:
+          - os: ubuntu-18.04
+            compiler: gcc
+            version: "4.8"
+
+          - os: ubuntu-18.04
+            compiler: gcc
+            version: "4.9"
+
+          - os: ubuntu-18.04
+            compiler: gcc
+            version: "5"
+
+          - os: ubuntu-18.04
+            compiler: gcc
+            version: "6"
+
+          - os: ubuntu-18.04
+            compiler: gcc
+            version: "7"
+
+          - os: ubuntu-18.04
+            compiler: gcc
+            version: "8"
+
+          - os: ubuntu-latest
+            compiler: gcc
+            version: "9"
+
+          - os: ubuntu-latest
+            compiler: gcc
+            version: "10"
+
+          - os: ubuntu-latest
+            compiler: gcc
+            version: "11"
+
+          - os: ubuntu-18.04
+            compiler: clang
+            version: "3.5"
+
+          - os: ubuntu-18.04
+            compiler: clang
+            version: "3.6"
+
+          - os: ubuntu-18.04
+            compiler: clang
+            version: "3.7"
+
+          - os: ubuntu-18.04
+            compiler: clang
+            version: "3.8"
+
+          - os: ubuntu-18.04
+            compiler: clang
+            version: "3.9"
+
+          - os: ubuntu-18.04
+            compiler: clang
+            version: "4.0"
+
+          - os: ubuntu-18.04
+            compiler: clang
+            version: "5.0"
+
+          - os: ubuntu-18.04
+            compiler: clang
+            version: "6.0"
+
+          - os: ubuntu-18.04
+            compiler: clang
+            version: "7"
+
+          - os: ubuntu-18.04
+            compiler: clang
+            version: "8"
+
+          - os: ubuntu-latest
+            compiler: clang
+            version: "9"
+
+          - os: ubuntu-latest
+            compiler: clang
+            version: "10"
+
+          - os: ubuntu-latest
+            compiler: clang
+            version: "11"
+
+          - os: ubuntu-latest
+            compiler: clang
+            version: "12"
+
+          - os: ubuntu-latest
+            compiler: clang
+            version: "13"
+
           - os: macOS-10.15
             compiler: xcode
             version: "10.3"
+
+          - os: macOS-latest
+            compiler: xcode
+            version: "11.7"
+
+          - os: macOS-latest
+            compiler: xcode
+            version: "12.5.1"
+
+          - os: macOS-latest
+            compiler: xcode
+            version: "13.2.1"
+
+          - os: macOS-latest
+            compiler: gcc
+            version: "11"
+
     steps:
       - uses: actions/checkout@v2
 
@@ -80,7 +196,6 @@ jobs:
         run: python3 .github/workflows/build_and_test.py ${{ runner.os }} x86 ${{ matrix.compiler }} ${{ matrix.version }}
 
   ci-min-gw:
-    if: false
     runs-on: windows-latest
 
     strategy:
@@ -101,7 +216,6 @@ jobs:
         run: ctest --test-dir build
 
   ci-msvs:
-    if: false
     runs-on: ${{ matrix.toolset == 'v143' && 'windows-2022' || 'windows-latest' }}
 
     strategy:
