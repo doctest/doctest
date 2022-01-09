@@ -192,7 +192,7 @@ jobs:
       # MacOS doesn't support x86 from Xcode 10 onwards.
 
       - name: Build & Test x86
-        if: runner.os != 'macOS'
+        if: runner.os == 'Linux' || runner.os == 'Windows' && matrix.compiler != 'clang-cl'
         run: python3 .github/workflows/build_and_test.py ${{ runner.os }} x86 ${{ matrix.compiler }} ${{ matrix.version }}
 
   ci-min-gw:
