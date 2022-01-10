@@ -5,8 +5,6 @@ move down from /Wall to /W4 for Visual Studio... /Wall is absolutely unnecessary
 
 https://github.com/catchorg/Catch2/blob/master/docs/tostring.md#catchis_range-specialisation
 
-https://blog.travis-ci.com/2018-10-11-windows-early-release
-
 add in the faq about the compile errors with stream<<"array" - nikola goranov, also moving to catch undef/define stuffs - use vararg macro, also make the "moving from catch to doctest" easier to find, also this: https://stackoverflow.com/questions/35530850/how-to-require-a-semicolon-after-a-macro/52122660#52122660
 
 
