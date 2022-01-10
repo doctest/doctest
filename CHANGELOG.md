@@ -1,5 +1,36 @@
 # Change Log
 
+## [2.4.8](https://github.com/doctest/doctest/tree/2.4.8) (2022-01-10)
+[Full Changelog](https://github.com/doctest/doctest/compare/2.4.7...2.4.8)
+
+**Closed issues:**
+
+- \[meta\] Change git tagging pattern [\#579](https://github.com/doctest/doctest/issues/579)
+- TEST\_CASE\_TEMPLATE causes "-Wunused-local-typedef" warning on Clang [\#577](https://github.com/doctest/doctest/issues/577)
+- Regression between 2.4.6 and 2.4.7 with Visual Studio 2015 [\#573](https://github.com/doctest/doctest/issues/573)
+- Regression between 2.4.6 and 2.4.7 [\#571](https://github.com/doctest/doctest/issues/571)
+- Compilation error on MSVS2019 with ClangCL [\#570](https://github.com/doctest/doctest/issues/570)
+- Compilation errors on MSVC 2015 after doctest update to 2.4.7 [\#568](https://github.com/doctest/doctest/issues/568)
+- `g\_oss` is causing incorrect stringification results [\#567](https://github.com/doctest/doctest/issues/567)
+- MSVC warnings leak through when using the library as a single header with /Wall [\#565](https://github.com/doctest/doctest/issues/565)
+- \[PROJECT ANNOUNCEMENT\] Looking for maintainers for Doctest [\#554](https://github.com/doctest/doctest/issues/554)
+- Is this still maintained? [\#537](https://github.com/doctest/doctest/issues/537)
+- \[Feature request\] CHECK could return the value of expression [\#496](https://github.com/doctest/doctest/issues/496)
+- Feature: check or return false [\#426](https://github.com/doctest/doctest/issues/426)
+- Undefined reference of `operator\<\<\(ostream&, const string&\)` when compiling with clang 10 and libc++ 10 on Ubuntu 16.04.6 LTS [\#356](https://github.com/doctest/doctest/issues/356)
+- Doctest is not able to compile on OSX [\#126](https://github.com/doctest/doctest/issues/126)
+
+**Merged pull requests:**
+
+- Continuous Integration Refactor [\#580](https://github.com/doctest/doctest/pull/580) ([Saalvage](https://github.com/Saalvage))
+- Fix semicolon enforcement [\#578](https://github.com/doctest/doctest/pull/578) ([Saalvage](https://github.com/Saalvage))
+- Fix unused variable 2 [\#576](https://github.com/doctest/doctest/pull/576) ([Saalvage](https://github.com/Saalvage))
+- Alternative approach to Windows color initialization [\#575](https://github.com/doctest/doctest/pull/575) ([Saalvage](https://github.com/Saalvage))
+- Assertions returning booleans [\#574](https://github.com/doctest/doctest/pull/574) ([Saalvage](https://github.com/Saalvage))
+- Fix the thread-local string-stream [\#569](https://github.com/doctest/doctest/pull/569) ([Saalvage](https://github.com/Saalvage))
+- Clean up warning suppression a bit; Fixes \#565 [\#566](https://github.com/doctest/doctest/pull/566) ([Saalvage](https://github.com/Saalvage))
+- Add Universal Windows Platform support [\#558](https://github.com/doctest/doctest/pull/558) ([isaevil](https://github.com/isaevil))
+
 ## [2.4.7](https://github.com/doctest/doctest/tree/2.4.7) (2021-12-10)
 [Full Changelog](https://github.com/doctest/doctest/compare/2.4.6...2.4.7)
 

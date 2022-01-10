@@ -36,6 +36,7 @@ Defining something ```globally``` means for every source file of the binary (exe
 - [**```DOCTEST_CONFIG_NO_POSIX_SIGNALS```**](#doctest_config_no_posix_signals)
 - [**```DOCTEST_CONFIG_INCLUDE_TYPE_TRAITS```**](#doctest_config_include_type_traits)
 - [**```DOCTEST_CONFIG_NO_MULTI_LANE_ATOMICS```**](#doctest_config_no_multi_lane_atomics)
+- [**```DOCTEST_CONFIG_EVALUATE_ASSERTS_EVEN_WHEN_DISABLED```**](#doctest_config_evaluate_asserts_even_when_disabled)
 
 For most people the only configuration needed is telling **doctest** which source file should host all the implementation code:
 
@@ -243,6 +244,10 @@ This can be defined both globally and in specific source files only.
 ### **```DOCTEST_CONFIG_NO_MULTI_LANE_ATOMICS```**
 
 This can be used to disable multi lane atomics. Multi lane atomics can speed up highly parallel use of assert statements, but have a small overhead for single threaded applications.
+
+### **```DOCTEST_CONFIG_EVALUATE_ASSERTS_EVEN_WHEN_DISABLED```**
+
+This can be used to evaluate asserts even when **```DOCTEST_CONFIG_DISABLE```** is used - this is useful when they are used in production code within if statements so that the condition continues to be evaluated.
 
 ---------------
 
