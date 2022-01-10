@@ -2,215 +2,148 @@ name: CI
 
 on: [push, pull_request]
 
+env:
+  CTEST_OUTPUT_ON_FAILURE: ON
+  CTEST_PARALLEL_LEVEL: 2
+
 jobs:
   ci:
-    name: ${{ matrix.name }}
     runs-on: ${{ matrix.os }}
 
     env:
       CMAKE_GENERATOR: Ninja
       ASAN_OPTIONS: strict_string_checks=true:detect_odr_violation=2:detect_stack_use_after_return=true:check_initialization_order=true:strict_init_order=true
       TSAN_OPTIONS: force_seq_cst_atomics=1
-      CTEST_OUTPUT_ON_FAILURE: ON
-      CTEST_PARALLEL_LEVEL: 2
-      ACTIONS_ALLOW_UNSECURE_COMMANDS: true # because of the set-env calls
 
     strategy:
       fail-fast: false
       matrix:
-        # Github Actions requires a single row to be added to the build matrix.
-        # See https://help.github.com/en/articles/workflow-syntax-for-github-actions.
-        name: [
-          ubuntu-18.04-gcc-4.8,
-          ubuntu-18.04-gcc-4.9,
-          ubuntu-18.04-gcc-5,
-          ubuntu-18.04-gcc-6,
-          ubuntu-18.04-gcc-7,
-          ubuntu-18.04-gcc-8,
-          ubuntu-18.04-gcc-9,
-          ubuntu-latest-gcc-10,
-          ubuntu-18.04-clang-3.5,
-          ubuntu-18.04-clang-3.6,
-          ubuntu-18.04-clang-3.7,
-          ubuntu-18.04-clang-3.8,
-          ubuntu-18.04-clang-3.9,
-          ubuntu-18.04-clang-4.0,
-          ubuntu-18.04-clang-5.0,
-          ubuntu-18.04-clang-6.0,
-          ubuntu-18.04-clang-7,
-          ubuntu-18.04-clang-8,
-          # ubuntu-latest-clang-9,
-          ubuntu-latest-clang-10,
-          # ubuntu-latest-clang-11,
-          windows-2016-cl,
-          windows-2016-clang-cl,
-          windows-2016-clang,
-          # windows-2016-gcc,
-          windows-2019-cl,
-          windows-2019-clang-cl,
-          windows-2019-clang,
-          # windows-2019-gcc,
-          macOS-latest-xcode-11.3,
-        ]
+        os: ["windows-2019", "windows-2022"]
+        compiler: ["cl", "clang", "clang-cl"]
 
         include:
-          - name: ubuntu-18.04-gcc-4.8
-            os: ubuntu-18.04
+          - os: ubuntu-18.04
             compiler: gcc
             version: "4.8"
 
-          - name: ubuntu-18.04-gcc-4.9
-            os: ubuntu-18.04
+          - os: ubuntu-18.04
             compiler: gcc
             version: "4.9"
 
-          - name: ubuntu-18.04-gcc-5
-            os: ubuntu-18.04
+          - os: ubuntu-18.04
             compiler: gcc
             version: "5"
 
-          - name: ubuntu-18.04-gcc-6
-            os: ubuntu-18.04
+          - os: ubuntu-18.04
             compiler: gcc
             version: "6"
 
-          - name: ubuntu-18.04-gcc-7
-            os: ubuntu-18.04
+          - os: ubuntu-18.04
             compiler: gcc
             version: "7"
 
-          - name: ubuntu-18.04-gcc-8
-            os: ubuntu-18.04
+          - os: ubuntu-18.04
             compiler: gcc
             version: "8"
 
-          - name: ubuntu-18.04-gcc-9
-            os: ubuntu-18.04
+          - os: ubuntu-latest
             compiler: gcc
             version: "9"
 
-          - name: ubuntu-latest-gcc-10
-            os: ubuntu-latest
+          - os: ubuntu-latest
             compiler: gcc
             version: "10"
 
-          - name: ubuntu-18.04-clang-3.5
-            os: ubuntu-18.04
+          - os: ubuntu-latest
+            compiler: gcc
+            version: "11"
+
+          - os: ubuntu-18.04
             compiler: clang
             version: "3.5"
 
-          - name: ubuntu-18.04-clang-3.6
-            os: ubuntu-18.04
+          - os: ubuntu-18.04
             compiler: clang
             version: "3.6"
 
-          - name: ubuntu-18.04-clang-3.7
-            os: ubuntu-18.04
+          - os: ubuntu-18.04
             compiler: clang
             version: "3.7"
 
-          - name: ubuntu-18.04-clang-3.8
-            os: ubuntu-18.04
+          - os: ubuntu-18.04
             compiler: clang
             version: "3.8"
 
-          - name: ubuntu-18.04-clang-3.9
-            os: ubuntu-18.04
+          - os: ubuntu-18.04
             compiler: clang
             version: "3.9"
 
-          - name: ubuntu-18.04-clang-4.0
-            os: ubuntu-18.04
+          - os: ubuntu-18.04
             compiler: clang
             version: "4.0"
 
-          - name: ubuntu-18.04-clang-5.0
-            os: ubuntu-18.04
+          - os: ubuntu-18.04
             compiler: clang
             version: "5.0"
 
-          - name: ubuntu-18.04-clang-6.0
-            os: ubuntu-18.04
+          - os: ubuntu-18.04
             compiler: clang
             version: "6.0"
 
-          - name: ubuntu-18.04-clang-7
-            os: ubuntu-18.04
+          - os: ubuntu-18.04
             compiler: clang
             version: "7"
 
-          - name: ubuntu-18.04-clang-8
-            os: ubuntu-18.04
+          - os: ubuntu-18.04
             compiler: clang
             version: "8"
 
-          # fails like this: https://github.com/doctest/doctest/runs/1562896476?check_suite_focus=true
-          # - name: ubuntu-latest-clang-9
-          #   os: ubuntu-latest
-          #   compiler: clang
-          #   version: "9"
+          - os: ubuntu-latest
+            compiler: clang
+            version: "9"
 
-          - name: ubuntu-latest-clang-10
-            os: ubuntu-latest
+          - os: ubuntu-latest
             compiler: clang
             version: "10"
 
-          # fails like this: https://github.com/doctest/doctest/runs/1562896512?check_suite_focus=true
-          # - name: ubuntu-latest-clang-11
-          #   os: ubuntu-latest
-          #   compiler: clang
-          #   version: "11"
-
-          - name: windows-2016-cl
-            os: windows-2016
-            compiler: cl
-
-          - name: windows-2016-clang-cl
-            os: windows-2016
-            compiler: clang-cl
-
-          - name: windows-2016-clang
-            os: windows-2016
+          - os: ubuntu-latest
             compiler: clang
+            version: "11"
 
-          - name: windows-2019-cl
-            os: windows-2019
-            compiler: cl
-
-          # fails to install it...
-          # - name: windows-2016-gcc
-          #   os: windows-2016
-          #   compiler: gcc
-
-          - name: windows-2019-clang-cl
-            os: windows-2019
-            compiler: clang-cl
-
-          - name: windows-2019-clang
-            os: windows-2019
+          - os: ubuntu-latest
             compiler: clang
+            version: "12"
 
-          # fails to install it...
-          # - name: windows-2019-gcc
-          #   os: windows-2019
-          #   compiler: gcc
+          - os: ubuntu-latest
+            compiler: clang
+            version: "13"
 
-          - name: macOS-latest-xcode-11.3
-            os: macOS-10.15
+          - os: macOS-10.15
             compiler: xcode
-            version: "11.3"
+            version: "10.3"
+
+          - os: macOS-latest
+            compiler: xcode
+            version: "11.7"
+
+          - os: macOS-latest
+            compiler: xcode
+            version: "12.5.1"
+
+          - os: macOS-latest
+            compiler: xcode
+            version: "13.2.1"
+
+          - os: macOS-latest
+            compiler: gcc
+            version: "11"
 
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v2
 
       - name: Install (Linux)
         if: runner.os == 'Linux'
         run: |
-          # CMake 3.15 allows specifying the generator using the CMAKE_GENERATOR
-          # environment variable.
-          curl -sSL https://github.com/Kitware/CMake/releases/download/v3.15.4/cmake-3.15.4-Linux-x86_64.tar.gz -o cmake.tar.gz
-          sudo tar xf cmake.tar.gz --strip 1 -C /usr/local
-
           # Required for libc6-dbg:i386 and g++-multilib packages which are
           # needed for x86 builds.
           sudo dpkg --add-architecture i386
@@ -220,271 +153,90 @@ jobs:
           sudo add-apt-repository "deb http://dk.archive.ubuntu.com/ubuntu/ xenial main"
           sudo add-apt-repository "deb http://dk.archive.ubuntu.com/ubuntu/ xenial universe"
 
-          # LLVM 9 is not in Bionic's repositories so we add the official LLVM repository.
-          if [ "${{ matrix.compiler }}" = "clang" ] && [ "${{ matrix.version }}" = "9" ]; then
-            sudo add-apt-repository "deb http://apt.llvm.org/bionic/ llvm-toolchain-bionic-9 main"
+          # clang->=13 is not currently available by default
+          if [ "${{ matrix.compiler }}" = "clang" -a ${{ matrix.version }} -ge 13  ]; then
+            wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | sudo apt-key add -
+            sudo add-apt-repository "deb https://apt.llvm.org/focal/ llvm-toolchain-focal-${{ matrix.version }} main"
           fi
 
           sudo apt-get update
-          # sudo apt-get install libopenmpi-dev
-          # sudo apt-get install openmpi-bin
 
           # libc6-dbg:i386 is required for running valgrind on x86.
           sudo apt-get install -y ninja-build valgrind libc6-dbg:i386
 
           if [ "${{ matrix.compiler }}" = "gcc" ]; then
             sudo apt-get install -y g++-${{ matrix.version }} g++-${{ matrix.version }}-multilib
-            echo "::set-env name=CC::gcc-${{ matrix.version }}"
-            echo "::set-env name=CXX::g++-${{ matrix.version }}"
           else
             sudo apt-get install -y clang-${{ matrix.version }} g++-multilib
-            echo "::set-env name=CC::clang-${{ matrix.version }}"
-            echo "::set-env name=CXX::clang++-${{ matrix.version }}"
           fi
 
       - name: Install (macOS)
         if: runner.os == 'macOS'
         run: |
-          brew install cmake ninja
-
-          if [ "${{ matrix.compiler }}" = "gcc" ]; then
-            brew install gcc@${{ matrix.version }}
-            echo "::set-env name=CC::gcc-${{ matrix.version }}"
-            echo "::set-env name=CXX::g++-${{ matrix.version }}"
-          else
-            ls -ls /Applications/
-            sudo xcode-select -switch /Applications/Xcode_${{ matrix.version }}.app
-            echo "::set-env name=CC::clang"
-            echo "::set-env name=CXX::clang++"
-          fi
-
-      - name: Install (Windows)
-        if: runner.os == 'Windows'
-        shell: powershell
-        run: |
-          Invoke-Expression (New-Object System.Net.WebClient).DownloadString('https://get.scoop.sh')
-          scoop install ninja --global
-
-          if ("${{ matrix.compiler }}".StartsWith("clang")) {
-            scoop install llvm --global
-          }
-
-          if ("${{ matrix.compiler }}" -eq "gcc") {
-            # Chocolatey GCC is broken on the windows-2019 image.
-            # See: https://github.com/DaanDeMeyer/doctest/runs/231595515
-            # See: https://github.community/t5/GitHub-Actions/Something-is-wrong-with-the-chocolatey-installed-version-of-gcc/td-p/32413
-            scoop install gcc --global
-            echo "::set-env name=CC::gcc"
-            echo "::set-env name=CXX::g++"
-          } elseif ("${{ matrix.compiler }}" -eq "clang") {
-            echo "::set-env name=CC::clang"
-            echo "::set-env name=CXX::clang++"
-          } else {
-            echo "::set-env name=CC::${{ matrix.compiler }}"
-            echo "::set-env name=CXX::${{ matrix.compiler }}"
-          }
-
-          # Scoop modifies the PATH so we make the modified PATH global.
-          echo "::set-env name=PATH::$env:PATH"
-
-      - name: Configure ASAN/UBSAN
-        if: runner.os == 'Linux' || runner.os == 'macOS'
-        run: |
-          # https://stackoverflow.com/a/37939589/11900641
-          function version { echo "$@" | awk -F. '{ printf("%d%03d%03d%03d\n", $1,$2,$3,$4); }'; }
-
-          # Disable sanitizers in configurations where we know they are buggy.
-
-          # TODO: Move these conditions to the if clause if Github Actions ever
-          # adds support for comparing versions.
-          # See: https://github.community/t5/GitHub-Actions/Allow-comparing-versions-in-if-conditions/m-p/33912#M1710
-
-          if [ "${{ runner.os }}" = "Linux" ] && \
-             [ "${{ matrix.compiler }}" = "gcc" ] && \
-             [ $(version ${{ matrix.version }}) -le $(version "5.0") ]; then
-            exit 0
-          fi
-
-          if [ "${{ runner.os }}" = "Linux" ] && \
-             [ "${{ matrix.compiler }}" = "clang" ] && \
-             [ $(version ${{ matrix.version }}) -le $(version "6.0") ]; then
-            exit 0
-          fi
-
-          if [ "${{ runner.os }}" = "macOS" ] && \
-             [ "${{ matrix.compiler }}" = "xcode" ] && \
-             [ $(version ${{ matrix.version }}) -le $(version "9.4.1") ]; then
-            exit 0
-          fi
-
-          if [ "${{ runner.os }}" = "macOS" ] && \
-             [ "${{ matrix.compiler }}" = "gcc" ]; then
-            exit 0
-          fi
-
-          ASAN_UBSAN_FLAGS="-fsanitize=address,undefined -fno-omit-frame-pointer"
-
-          # Link statically against ASAN libraries because dynamically linking
-          # against ASAN libraries causes problems when using dlopen on Ubuntu.
-          # See: https://github.com/DaanDeMeyer/doctest/runs/249002713
-          if [ "${{ runner.os }}" = "Linux" ] && [ "${{ matrix.compiler }}" = "gcc" ]; then
-            ASAN_UBSAN_FLAGS="$ASAN_UBSAN_FLAGS -static-libasan"
-          fi
-
-          # Compiling in bash on Windows doesn't work and powershell doesn't
-          # exit on non-zero exit codes so we're forced to use cmd which means
-          # we don't have a cross platform way to access environment variables.
-          # To circumvent this, we put the sanitizer flags in an environment
-          # variable that is automatically picked up by CMake.
-          echo "::set-env name=CXXFLAGS::$ASAN_UBSAN_FLAGS"
-
-      - name: Configure TSAN
-        if: runner.os == 'Linux' || runner.os == 'macOS'
-        run: |
-          # https://stackoverflow.com/a/37939589/11900641
-          function version { echo "$@" | awk -F. '{ printf("%d%03d%03d%03d\n", $1,$2,$3,$4); }'; }
-
-          if [ "${{ runner.os }}" = "Linux" ] && \
-             [ "${{ matrix.compiler }}" = "gcc" ] && \
-             [ $(version ${{ matrix.version }}) -le $(version "6.0") ]; then
-            exit 0
-          fi
-
-          if [ "${{ runner.os }}" = "Linux" ] && \
-             [ "${{ matrix.compiler }}" = "clang" ] && \
-             [ $(version ${{ matrix.version }}) -le $(version "3.9") ]; then
-            exit 0
-          fi
-
-          if [ "${{ runner.os }}" = "macOS" ] && \
-             [ "${{ matrix.compiler }}" = "gcc" ]; then
-            exit 0
-          fi
-
-          TSAN_FLAGS="-fsanitize=thread -pie -fPIE"
-
-          if [ "${{ runner.os }}" = "Linux" ] && [ "${{ matrix.compiler }}" = "gcc" ]; then
-            TSAN_FLAGS="$TSAN_FLAGS -static-libtsan"
-          fi
-
-          # The thread sanitizers build does not run on Windows so we can just
-          # use bash syntax to access the TSAN flags in the thread sanitizers
-          # build step.
-          echo "::set-env name=TSAN_FLAGS::$TSAN_FLAGS"
+            brew install ninja
+            if [ "${{ matrix.compiler }}" = "xcode" ]; then
+              sudo xcode-select -switch /Applications/Xcode_${{ matrix.version }}.app
+            fi
 
       - name: Configure x64
-        if: runner.os == 'Windows'
-        run: .github\workflows\vsenv.bat -arch=x64 -host_arch=x64
+        uses: ilammy/msvc-dev-cmd@v1
 
-      - name: Build & Test Debug x64
-        run: |
-          cmake -E remove_directory build
-          cmake -B build -S . -DCMAKE_BUILD_TYPE=Debug -DDOCTEST_TEST_MODE=COMPARE
-          cmake --build build
-          cd build
-          ctest
-
-      - name: Build & Test Release x64
-        run: |
-          cmake -E remove_directory build
-          cmake -B build -S . -DCMAKE_BUILD_TYPE=Release -DDOCTEST_TEST_MODE=COMPARE
-          cmake --build build
-          cd build
-          ctest
-
-      # Valgrind doesn't support the latest macOS versions.
-      # `-DCMAKE_CXX_FLAGS=""` overrides CXXFLAGS (disables sanitizers).
-
-      - name: Build & Test Debug x64 Valgrind
-        if: runner.os == 'Linux'
-        run: |
-          cmake -E remove_directory build
-          cmake -B build -S . -DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_FLAGS="" -DDOCTEST_TEST_MODE=VALGRIND
-          cmake --build build
-          cd build
-          ctest
-
-      - name: Build & Test Release x64 Valgrind
-        if: runner.os == 'Linux'
-        run: |
-          cmake -E remove_directory build
-          cmake -B build -S . -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="" -DDOCTEST_TEST_MODE=VALGRIND
-          cmake --build build
-          cd build
-          ctest
-
-      - name: Build & Test Debug x64 Thread Sanitizers
-        if: runner.os == 'Linux' || runner.os == 'macOS'
-        run: |
-          cmake -E remove_directory build
-          cmake -B build -S . -DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_FLAGS="$TSAN_FLAGS" -DDOCTEST_TEST_MODE=COMPARE
-          cmake --build build
-          cd build
-          ctest
-
-      - name: Build & Test Debug x64 without RTTI
-        if: runner.os == 'Linux' || runner.os == 'macOS'
-        run: |
-          cmake -E remove_directory build
-          cmake -B build -S . -DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_FLAGS="-fno-rtti" -DDOCTEST_TEST_MODE=COMPARE
-          cmake --build build
-          cd build
-          ctest
-
-      - name: Build x64 Debug without exceptions
-        if: runner.os == 'Linux' || runner.os == 'macOS'
-        run: |
-          cmake -E remove_directory build
-          cmake -B build -S . -DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_FLAGS="-fno-exceptions -DDOCTEST_CONFIG_NO_EXCEPTIONS_BUT_WITH_ALL_ASSERTS"
-          cmake --build build
-
-      # MinGW x86 tests fail on Windows: https://github.com/DaanDeMeyer/doctest/runs/240600881.
-      # MacOS doesn't support x86 from Xcode 10 onwards.
+      - name: Build & Test x64
+        run: python3 .github/workflows/build_and_test.py ${{ runner.os }} x64 ${{ matrix.compiler }} ${{ matrix.version }}
 
       - name: Configure x86
-        shell: pwsh
-        if: (runner.os == 'Windows' && matrix.compiler != 'gcc') || runner.os == 'Linux'
-        run: |
-          if ("${{ runner.os }}" -eq "Windows") {
-            & .github\workflows\vsenv.bat -arch=x86 -host_arch=x64
-          }
+        uses: ilammy/msvc-dev-cmd@v1
+        with:
+          arch: x86
 
-          if ("${{ matrix.compiler }}" -notcontains "cl") {
-            echo "::set-env name=CXXFLAGS::$env:CXXFLAGS -m32"
-          }
+      # MacOS doesn't support x86 from Xcode 10 onwards.
 
-      - name: Build & Test Debug x86
-        if: (runner.os == 'Windows' && matrix.compiler != 'gcc') || runner.os == 'Linux'
-        run: |
-          cmake -E remove_directory build
-          cmake -B build -S . -DCMAKE_BUILD_TYPE=Debug -DDOCTEST_TEST_MODE=COMPARE
-          cmake --build build
-          cd build
-          ctest
+      - name: Build & Test x86
+        if: runner.os == 'Linux' || runner.os == 'Windows' && matrix.compiler != 'clang-cl'
+        run: python3 .github/workflows/build_and_test.py ${{ runner.os }} x86 ${{ matrix.compiler }} ${{ matrix.version }}
 
-      - name: Build & Test Release x86
-        if: (runner.os == 'Windows' && matrix.compiler != 'gcc') || runner.os == 'Linux'
-        run: |
-          cmake -E remove_directory build
-          cmake -B build -S . -DCMAKE_BUILD_TYPE=Release -DDOCTEST_TEST_MODE=COMPARE
-          cmake --build build
-          cd build
-          ctest
+  ci-min-gw:
+    runs-on: windows-latest
 
-      - name: Build & Test Debug x86 Valgrind
-        if: runner.os == 'Linux'
-        run: |
-          cmake -E remove_directory build
-          cmake -B build -S . -DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_FLAGS="-m32" -DDOCTEST_TEST_MODE=VALGRIND
-          cmake --build build
-          cd build
-          ctest
+    strategy:
+      fail-fast: false
+      matrix:
+        configuration: ["Debug", "Release"]
 
-      - name: Build & Test Release x86 Valgrind
-        if: runner.os == 'Linux'
-        run: |
-          cmake -E remove_directory build
-          cmake -B build -S . -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="-m32" -DDOCTEST_TEST_MODE=VALGRIND
-          cmake --build build
-          cd build
-          ctest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Set up MinGW
+        uses: egor-tensin/setup-mingw@v2
+
+      - name: Generate
+        run: cmake -B build -S . -G "MinGW Makefiles" -D CMAKE_BUILD_TYPE=${{ matrix.configuration }}
+
+      - name: Build
+        run: cmake --build build
+
+      - name: Test
+        run: ctest --test-dir build --no-tests=error
+
+  ci-msvs:
+    runs-on: ${{ matrix.toolset == 'v143' && 'windows-2022' || 'windows-latest' }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        toolset: ["v140", "v141", "v142", "v143", "ClangCl"]
+        architecture: ["Win32", "x64"]
+        configuration: ["Debug", "Release"]
+
+    steps:
+      - uses: actions/checkout@v2
+      
+      - name: Generate
+        run: cmake -B build -S . -G "${{ matrix.toolset == 'v143' && 'Visual Studio 17 2022' || 'Visual Studio 16 2019' }}" \
+            -A ${{ matrix.architecture }} -T ${{ matrix.toolset }}
+
+      - name: Build
+        run: cmake --build build --config ${{ matrix.configuration }}
+
+      - name: Test
+        run: ctest -C ${{ matrix.configuration }} --test-dir build --no-tests=error

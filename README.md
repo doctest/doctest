@@ -1,4 +1,5 @@
 <p align="center"><img src="scripts/data/logo/logo_1.svg"></p>
+
 <b>
 <table>
     <tr>
@@ -6,37 +7,22 @@
             master branch
         </td>
         <td>
-            Windows <a href="https://ci.appveyor.com/project/onqtam/doctest/branch/master"><img src="https://ci.appveyor.com/api/projects/status/j89qxtahyw1dp4gd/branch/master?svg=true"></a>
+            <a href="https://github.com/doctest/doctest/actions?query=branch%3Amaster"><img src="https://github.com/doctest/doctest/workflows/CI/badge.svg?branch=master"></a>
         </td>
-        <td>
-            All <a href="https://github.com/doctest/doctest/actions?query=branch%3Amaster"><img src="https://github.com/doctest/doctest/workflows/CI/badge.svg?branch=master"></a>
-        </td>
-        <!--
         <td>
             <a href="https://coveralls.io/github/onqtam/doctest?branch=master"><img src="https://coveralls.io/repos/github/onqtam/doctest/badge.svg?branch=master"></a>
         </td>
-        -->
-        <!--
-        <td>
-            <a href="https://scan.coverity.com/projects/doctest-doctest"><img src="https://scan.coverity.com/projects/7865/badge.svg"></a>
-        </td>
-        -->
     </tr>
     <tr>
         <td>
             dev branch
         </td>
         <td>
-            Windows <a href="https://ci.appveyor.com/project/onqtam/doctest/branch/dev"><img src="https://ci.appveyor.com/api/projects/status/j89qxtahyw1dp4gd/branch/dev?svg=true"></a>
+            <a href="https://github.com/doctest/doctest/actions?query=branch%3Adev"><img src="https://github.com/doctest/doctest/workflows/CI/badge.svg?branch=dev"></a>
         </td>
-        <td>
-            All <a href="https://github.com/doctest/doctest/actions?query=branch%3Adev"><img src="https://github.com/doctest/doctest/workflows/CI/badge.svg?branch=dev"></a>
-        </td>
-        <!--
         <td>
             <a href="https://coveralls.io/github/onqtam/doctest?branch=dev"><img src="https://coveralls.io/repos/github/onqtam/doctest/badge.svg?branch=dev"></a>
         </td>
-        -->
     </tr>
 </table>
 </b>
