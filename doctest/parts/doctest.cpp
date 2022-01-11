@@ -698,7 +698,7 @@ namespace Color {
 // clang-format off
 const char* assertString(assertType::Enum at) {
     DOCTEST_MSVC_SUPPRESS_WARNING_WITH_PUSH(4061) // enum 'x' in switch of enum 'y' is not explicitely handled
-    #define DOCTEST_GENERATE_ASSERT_TYPE_CASE(assert_type) case assertType::DT_ ## assert_type ##: return #assert_type
+    #define DOCTEST_GENERATE_ASSERT_TYPE_CASE(assert_type) case assertType::DT_ ## assert_type: return #assert_type
     #define DOCTEST_GENERATE_ASSERT_TYPE_CASES(assert_type) \
         DOCTEST_GENERATE_ASSERT_TYPE_CASE(WARN_ ## assert_type); \
         DOCTEST_GENERATE_ASSERT_TYPE_CASE(CHECK_ ## assert_type); \
