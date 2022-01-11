@@ -133,6 +133,17 @@ Checkout the [**example**](../../examples/all_features/asserts_used_outside_of_t
 
 Currently [**logging macros**](logging.md) cannot be used for extra context for asserts outside of a test run. That means that the ```_MESSAGE``` variants of asserts are also not usable - since they are just a packed ```INFO()``` with an assert right after it.
 
+## NaN checking
+
+```<LEVEL>``` is one of 3 possible: ```REQUIRE```/```CHECK```/```WARN```.
+
+- ```<LEVEL>_NAN(expression)```
+- ```<LEVEL>_NOT_NAN(expression)```
+
+These utility macros are able to check if a floating point value is or is not NaN respectively.
+
+They are able to capture the actual value on assertion failure.
+
 ## Floating point comparisons
 
 When comparing floating point numbers - especially if at least one of them has been computed - great care must be taken to allow for rounding errors and inexact representations.
