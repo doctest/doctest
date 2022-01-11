@@ -1131,7 +1131,7 @@ DOCTEST_INTERFACE String toString(const Approx& in);
 
 DOCTEST_INTERFACE const ContextOptions* getContextOptions();
 
-#if !defined(DOCTEST_CONFIG_DISABLE)
+#ifndef DOCTEST_CONFIG_DISABLE
 
 namespace detail {
     // clang-format off
@@ -1992,7 +1992,7 @@ int registerReporter(const char* name, int priority, bool isReporter) {
 } // namespace doctest
 
 // if registering is not disabled
-#if !defined(DOCTEST_CONFIG_DISABLE)
+#ifndef DOCTEST_CONFIG_DISABLE
 
 // common code in asserts - for convenience
 #define DOCTEST_ASSERT_LOG_REACT_RETURN(b)                                                         \
@@ -2810,7 +2810,7 @@ namespace detail {
 // clang-format on
 
 // == SHORT VERSIONS OF THE MACROS
-#if !defined(DOCTEST_CONFIG_NO_SHORT_MACRO_NAMES)
+#ifndef DOCTEST_CONFIG_NO_SHORT_MACRO_NAMES
 
 #define TEST_CASE(name) DOCTEST_TEST_CASE(name)
 #define TEST_CASE_CLASS(name) DOCTEST_TEST_CASE_CLASS(name)
@@ -2954,7 +2954,7 @@ namespace detail {
 
 #endif // DOCTEST_CONFIG_NO_SHORT_MACRO_NAMES
 
-#if !defined(DOCTEST_CONFIG_DISABLE)
+#ifndef DOCTEST_CONFIG_DISABLE
 
 // this is here to clear the 'current test suite' for the current translation unit - at the top
 DOCTEST_TEST_SUITE_END();
