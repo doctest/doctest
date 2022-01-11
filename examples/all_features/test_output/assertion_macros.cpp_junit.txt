@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <testsuites>
-  <testsuite name="all_features" errors="0" failures="58" tests="80">
+  <testsuite name="all_features" errors="0" failures="60" tests="84">
     <testcase classname="assertion_macros.cpp" name="normal macros" status="run">
       <failure type="CHECK">
 assertion_macros.cpp(0):
@@ -351,6 +351,20 @@ CHECK_UNARY_FALSE( a != b ) is NOT correct!
       <failure type="CHECK_THROWS">
 assertion_macros.cpp(0):
 CHECK_THROWS( []{}() ) did NOT throw at all!
+
+      </failure>
+    </testcase>
+    <testcase classname="assertion_macros.cpp" name="nan" status="run">
+      <failure message="inf" type="CHECK_NAN">
+assertion_macros.cpp(0):
+CHECK_NAN( std::numeric_limits&lt;long double>::infinity() ) is NOT correct!
+  values: CHECK_NAN( inf )
+
+      </failure>
+      <failure message="nanf" type="WARN_NOT_NAN">
+assertion_macros.cpp(0):
+WARN_NOT_NAN( std::numeric_limits&lt;float>::quiet_NaN() ) is NOT correct!
+  values: WARN_NOT_NAN( nanf )
 
       </failure>
     </testcase>

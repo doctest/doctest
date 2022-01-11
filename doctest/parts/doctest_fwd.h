@@ -441,6 +441,7 @@ DOCTEST_GCC_SUPPRESS_WARNING_POP
 #ifndef DOCTEST_CONFIG_INCLUDE_TYPE_TRAITS
 #define DOCTEST_CONFIG_INCLUDE_TYPE_TRAITS
 #endif // DOCTEST_CONFIG_INCLUDE_TYPE_TRAITS
+#include <cmath>
 #include <cstddef>
 #include <ostream>
 #include <istream>
@@ -449,7 +450,11 @@ DOCTEST_GCC_SUPPRESS_WARNING_POP
 // Forward declaring 'X' in namespace std is not permitted by the C++ Standard.
 DOCTEST_MSVC_SUPPRESS_WARNING_WITH_PUSH(4643)
 
+template <typename T>
+bool isnan(T) throw();
+
 namespace std { // NOLINT (cert-dcl58-cpp)
+using ::isnan;
 typedef decltype(nullptr) nullptr_t;
 template <class charT>
 struct char_traits;
@@ -628,6 +633,8 @@ namespace assertType {
         is_ge = 2 * is_gt,
         is_le = 2 * is_ge,
 
+        is_nan = 2 * is_le,
+
         // macro types
 
         DT_WARN    = is_normal | is_warn,
@@ -689,6 +696,14 @@ namespace assertType {
         DT_WARN_UNARY_FALSE    = is_normal | is_false | is_unary | is_warn,
         DT_CHECK_UNARY_FALSE   = is_normal | is_false | is_unary | is_check,
         DT_REQUIRE_UNARY_FALSE = is_normal | is_false | is_unary | is_require,
+
+        DT_WARN_NAN = is_normal | is_nan | is_warn,
+        DT_CHECK_NAN = is_normal | is_nan | is_check,
+        DT_REQUIRE_NAN = is_normal | is_nan | is_require,
+
+        DT_WARN_NOT_NAN = is_normal | is_nan | is_false | is_warn,
+        DT_CHECK_NOT_NAN = is_normal | is_nan | is_false | is_check,
+        DT_REQUIRE_NOT_NAN = is_normal | is_nan | is_false | is_require,
     };
 } // namespace assertType
 
@@ -1515,6 +1530,19 @@ DOCTEST_CLANG_SUPPRESS_WARNING_POP
             return !m_failed;
         }
 
+        template <typename L>
+        DOCTEST_NOINLINE bool nan_assert(L val) {
+            m_failed = !std::isnan(val);
+
+            if(m_at & assertType::is_false) //!OCLINT bitwise operator in conditional
+                m_failed = !m_failed;
+
+            if(m_failed || getContextOptions()->success)
+                m_decomp = toString(val);
+
+            return !m_failed;
+        }
+
         void translateException();
 
         bool log();
@@ -1581,6 +1609,23 @@ DOCTEST_CLANG_SUPPRESS_WARNING_POP
     DOCTEST_NOINLINE bool unary_assert(assertType::Enum at, const char* file, int line,
                                        const char* expr, const DOCTEST_REF_WRAP(L) val) {
         bool failed = !val;
+
+        if(at & assertType::is_false) //!OCLINT bitwise operator in conditional
+            failed = !failed;
+
+        // ###################################################################################
+        // IF THE DEBUGGER BREAKS HERE - GO 1 LEVEL UP IN THE CALLSTACK FOR THE FAILING ASSERT
+        // THIS IS THE EFFECT OF HAVING 'DOCTEST_CONFIG_SUPER_FAST_ASSERTS' DEFINED
+        // ###################################################################################
+        DOCTEST_ASSERT_OUT_OF_TESTS(toString(val));
+        DOCTEST_ASSERT_IN_TESTS(toString(val));
+        return !failed;
+    }
+
+    template <typename L>
+    DOCTEST_NOINLINE bool nan_assert(assertType::Enum at, const char* file, int line,
+                                       const char* expr, L val) {
+        bool failed = !std::isnan(val);
 
         if(at & assertType::is_false) //!OCLINT bitwise operator in conditional
             failed = !failed;
@@ -2379,6 +2424,32 @@ int registerReporter(const char* name, int priority, bool isReporter) {
 #define DOCTEST_CHECK_UNARY_FALSE(...) DOCTEST_UNARY_ASSERT(DT_CHECK_UNARY_FALSE, __VA_ARGS__)
 #define DOCTEST_REQUIRE_UNARY_FALSE(...) DOCTEST_UNARY_ASSERT(DT_REQUIRE_UNARY_FALSE, __VA_ARGS__)
 
+#ifndef DOCTEST_CONFIG_SUPER_FAST_ASSERTS
+
+#define DOCTEST_NAN_ASSERT(assert_type, ...)                                                       \
+    [&] {                                                                                          \
+        doctest::detail::ResultBuilder DOCTEST_RB(doctest::assertType::assert_type, __FILE__,      \
+                                                   __LINE__, #__VA_ARGS__);                        \
+        DOCTEST_WRAP_IN_TRY(                                                                       \
+            DOCTEST_RB.nan_assert(__VA_ARGS__))                                                    \
+        DOCTEST_ASSERT_LOG_REACT_RETURN(DOCTEST_RB);                                               \
+    }()
+
+#else // DOCTEST_CONFIG_SUPER_FAST_ASSERTS
+
+#define DOCTEST_NAN_ASSERT(assert_type, ...)                                            \
+    doctest::detail::nan_assert(doctest::assertType::assert_type, __FILE__, __LINE__,   \
+        #__VA_ARGS__, __VA_ARGS__)
+
+#endif
+
+#define DOCTEST_WARN_NAN(...) DOCTEST_NAN_ASSERT(DT_WARN_NAN, __VA_ARGS__)
+#define DOCTEST_CHECK_NAN(...) DOCTEST_NAN_ASSERT(DT_CHECK_NAN, __VA_ARGS__)
+#define DOCTEST_REQUIRE_NAN(...) DOCTEST_NAN_ASSERT(DT_REQUIRE_NAN, __VA_ARGS__)
+#define DOCTEST_WARN_NOT_NAN(...) DOCTEST_NAN_ASSERT(DT_WARN_NOT_NAN, __VA_ARGS__)
+#define DOCTEST_CHECK_NOT_NAN(...) DOCTEST_NAN_ASSERT(DT_CHECK_NOT_NAN, __VA_ARGS__)
+#define DOCTEST_REQUIRE_NOT_NAN(...) DOCTEST_NAN_ASSERT(DT_REQUIRE_NOT_NAN, __VA_ARGS__)
+
 #ifdef DOCTEST_CONFIG_NO_EXCEPTIONS
 
 #undef DOCTEST_WARN_THROWS
@@ -2597,6 +2668,12 @@ namespace detail {
 #define DOCTEST_WARN_UNARY_FALSE(...) [&] { return !(__VA_ARGS__); }()
 #define DOCTEST_CHECK_UNARY_FALSE(...) [&] { return !(__VA_ARGS__); }()
 #define DOCTEST_REQUIRE_UNARY_FALSE(...) [&] { return !(__VA_ARGS__); }()
+#define DOCTEST_WARN_NAN(...) [&] { return std::is_nan(__VA_ARGS__); }()
+#define DOCTEST_CHECK_NAN(...) [&] { return std::is_nan(__VA_ARGS__); }()
+#define DOCTEST_REQUIRE_NAN(...) [&] { return std::is_nan(__VA_ARGS__); }()
+#define DOCTEST_WARN_NOT_NAN(...) [&] { return !std::is_nan(__VA_ARGS__); }()
+#define DOCTEST_CHECK_NOT_NAN(...) [&] { return !std::is_nan(__VA_ARGS__); }()
+#define DOCTEST_REQUIRE_NOT_NAN(...) [&] { return !std::is_nan(__VA_ARGS__); }()
 
 #else // DOCTEST_CONFIG_EVALUATE_ASSERTS_EVEN_WHEN_DISABLED
 
@@ -2639,6 +2716,13 @@ namespace detail {
 #define DOCTEST_WARN_UNARY_FALSE(...) ([] { return false; })
 #define DOCTEST_CHECK_UNARY_FALSE(...) ([] { return false; })
 #define DOCTEST_REQUIRE_UNARY_FALSE(...) ([] { return false; })
+
+#define DOCTEST_WARN_NAN(...) [&] { return false; }()
+#define DOCTEST_CHECK_NAN(...) [&] { return false; }()
+#define DOCTEST_REQUIRE_NAN(...) [&] { return false; }()
+#define DOCTEST_WARN_NOT_NAN(...) [&] { return false; }()
+#define DOCTEST_CHECK_NOT_NAN(...) [&] { return false; }()
+#define DOCTEST_REQUIRE_NOT_NAN(...) [&] { return false; }()
 
 #endif // DOCTEST_CONFIG_EVALUATE_ASSERTS_EVEN_WHEN_DISABLED
 
@@ -2828,6 +2912,13 @@ namespace detail {
 #define WARN_UNARY_FALSE(...) DOCTEST_WARN_UNARY_FALSE(__VA_ARGS__)
 #define CHECK_UNARY_FALSE(...) DOCTEST_CHECK_UNARY_FALSE(__VA_ARGS__)
 #define REQUIRE_UNARY_FALSE(...) DOCTEST_REQUIRE_UNARY_FALSE(__VA_ARGS__)
+
+#define WARN_NAN(...) DOCTEST_WARN_NAN(__VA_ARGS__)
+#define CHECK_NAN(...) DOCTEST_CHECK_NAN(__VA_ARGS__)
+#define REQUIRE_NAN(...) DOCTEST_REQUIRE_NAN(__VA_ARGS__)
+#define WARN_NOT_NAN(...) DOCTEST_WARN_NOT_NAN(__VA_ARGS__)
+#define CHECK_NOT_NAN(...) DOCTEST_CHECK_NOT_NAN(__VA_ARGS__)
+#define REQUIRE_NOT_NAN(...) DOCTEST_REQUIRE_NOT_NAN(__VA_ARGS__)
 
 // KEPT FOR BACKWARDS COMPATIBILITY
 #define FAST_WARN_EQ(...) DOCTEST_FAST_WARN_EQ(__VA_ARGS__)

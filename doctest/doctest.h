@@ -444,6 +444,7 @@ DOCTEST_GCC_SUPPRESS_WARNING_POP
 #ifndef DOCTEST_CONFIG_INCLUDE_TYPE_TRAITS
 #define DOCTEST_CONFIG_INCLUDE_TYPE_TRAITS
 #endif // DOCTEST_CONFIG_INCLUDE_TYPE_TRAITS
+#include <cmath>
 #include <cstddef>
 #include <ostream>
 #include <istream>
@@ -452,7 +453,11 @@ DOCTEST_GCC_SUPPRESS_WARNING_POP
 // Forward declaring 'X' in namespace std is not permitted by the C++ Standard.
 DOCTEST_MSVC_SUPPRESS_WARNING_WITH_PUSH(4643)
 
+template <typename T>
+bool isnan(T) throw();
+
 namespace std { // NOLINT (cert-dcl58-cpp)
+using ::isnan;
 typedef decltype(nullptr) nullptr_t;
 template <class charT>
 struct char_traits;
@@ -631,6 +636,8 @@ namespace assertType {
         is_ge = 2 * is_gt,
         is_le = 2 * is_ge,
 
+        is_nan = 2 * is_le,
+
         // macro types
 
         DT_WARN    = is_normal | is_warn,
@@ -692,6 +699,14 @@ namespace assertType {
         DT_WARN_UNARY_FALSE    = is_normal | is_false | is_unary | is_warn,
         DT_CHECK_UNARY_FALSE   = is_normal | is_false | is_unary | is_check,
         DT_REQUIRE_UNARY_FALSE = is_normal | is_false | is_unary | is_require,
+
+        DT_WARN_NAN = is_normal | is_nan | is_warn,
+        DT_CHECK_NAN = is_normal | is_nan | is_check,
+        DT_REQUIRE_NAN = is_normal | is_nan | is_require,
+
+        DT_WARN_NOT_NAN = is_normal | is_nan | is_false | is_warn,
+        DT_CHECK_NOT_NAN = is_normal | is_nan | is_false | is_check,
+        DT_REQUIRE_NOT_NAN = is_normal | is_nan | is_false | is_require,
     };
 } // namespace assertType
 
@@ -1518,6 +1533,19 @@ DOCTEST_CLANG_SUPPRESS_WARNING_POP
             return !m_failed;
         }
 
+        template <typename L>
+        DOCTEST_NOINLINE bool nan_assert(L val) {
+            m_failed = !std::isnan(val);
+
+            if(m_at & assertType::is_false) //!OCLINT bitwise operator in conditional
+                m_failed = !m_failed;
+
+            if(m_failed || getContextOptions()->success)
+                m_decomp = toString(val);
+
+            return !m_failed;
+        }
+
         void translateException();
 
         bool log();
@@ -1584,6 +1612,23 @@ DOCTEST_CLANG_SUPPRESS_WARNING_POP
     DOCTEST_NOINLINE bool unary_assert(assertType::Enum at, const char* file, int line,
                                        const char* expr, const DOCTEST_REF_WRAP(L) val) {
         bool failed = !val;
+
+        if(at & assertType::is_false) //!OCLINT bitwise operator in conditional
+            failed = !failed;
+
+        // ###################################################################################
+        // IF THE DEBUGGER BREAKS HERE - GO 1 LEVEL UP IN THE CALLSTACK FOR THE FAILING ASSERT
+        // THIS IS THE EFFECT OF HAVING 'DOCTEST_CONFIG_SUPER_FAST_ASSERTS' DEFINED
+        // ###################################################################################
+        DOCTEST_ASSERT_OUT_OF_TESTS(toString(val));
+        DOCTEST_ASSERT_IN_TESTS(toString(val));
+        return !failed;
+    }
+
+    template <typename L>
+    DOCTEST_NOINLINE bool nan_assert(assertType::Enum at, const char* file, int line,
+                                       const char* expr, L val) {
+        bool failed = !std::isnan(val);
 
         if(at & assertType::is_false) //!OCLINT bitwise operator in conditional
             failed = !failed;
@@ -2382,6 +2427,32 @@ int registerReporter(const char* name, int priority, bool isReporter) {
 #define DOCTEST_CHECK_UNARY_FALSE(...) DOCTEST_UNARY_ASSERT(DT_CHECK_UNARY_FALSE, __VA_ARGS__)
 #define DOCTEST_REQUIRE_UNARY_FALSE(...) DOCTEST_UNARY_ASSERT(DT_REQUIRE_UNARY_FALSE, __VA_ARGS__)
 
+#ifndef DOCTEST_CONFIG_SUPER_FAST_ASSERTS
+
+#define DOCTEST_NAN_ASSERT(assert_type, ...)                                                       \
+    [&] {                                                                                          \
+        doctest::detail::ResultBuilder DOCTEST_RB(doctest::assertType::assert_type, __FILE__,      \
+                                                   __LINE__, #__VA_ARGS__);                        \
+        DOCTEST_WRAP_IN_TRY(                                                                       \
+            DOCTEST_RB.nan_assert(__VA_ARGS__))                                                    \
+        DOCTEST_ASSERT_LOG_REACT_RETURN(DOCTEST_RB);                                               \
+    }()
+
+#else // DOCTEST_CONFIG_SUPER_FAST_ASSERTS
+
+#define DOCTEST_NAN_ASSERT(assert_type, ...)                                            \
+    doctest::detail::nan_assert(doctest::assertType::assert_type, __FILE__, __LINE__,   \
+        #__VA_ARGS__, __VA_ARGS__)
+
+#endif
+
+#define DOCTEST_WARN_NAN(...) DOCTEST_NAN_ASSERT(DT_WARN_NAN, __VA_ARGS__)
+#define DOCTEST_CHECK_NAN(...) DOCTEST_NAN_ASSERT(DT_CHECK_NAN, __VA_ARGS__)
+#define DOCTEST_REQUIRE_NAN(...) DOCTEST_NAN_ASSERT(DT_REQUIRE_NAN, __VA_ARGS__)
+#define DOCTEST_WARN_NOT_NAN(...) DOCTEST_NAN_ASSERT(DT_WARN_NOT_NAN, __VA_ARGS__)
+#define DOCTEST_CHECK_NOT_NAN(...) DOCTEST_NAN_ASSERT(DT_CHECK_NOT_NAN, __VA_ARGS__)
+#define DOCTEST_REQUIRE_NOT_NAN(...) DOCTEST_NAN_ASSERT(DT_REQUIRE_NOT_NAN, __VA_ARGS__)
+
 #ifdef DOCTEST_CONFIG_NO_EXCEPTIONS
 
 #undef DOCTEST_WARN_THROWS
@@ -2600,6 +2671,12 @@ namespace detail {
 #define DOCTEST_WARN_UNARY_FALSE(...) [&] { return !(__VA_ARGS__); }()
 #define DOCTEST_CHECK_UNARY_FALSE(...) [&] { return !(__VA_ARGS__); }()
 #define DOCTEST_REQUIRE_UNARY_FALSE(...) [&] { return !(__VA_ARGS__); }()
+#define DOCTEST_WARN_NAN(...) [&] { return std::is_nan(__VA_ARGS__); }()
+#define DOCTEST_CHECK_NAN(...) [&] { return std::is_nan(__VA_ARGS__); }()
+#define DOCTEST_REQUIRE_NAN(...) [&] { return std::is_nan(__VA_ARGS__); }()
+#define DOCTEST_WARN_NOT_NAN(...) [&] { return !std::is_nan(__VA_ARGS__); }()
+#define DOCTEST_CHECK_NOT_NAN(...) [&] { return !std::is_nan(__VA_ARGS__); }()
+#define DOCTEST_REQUIRE_NOT_NAN(...) [&] { return !std::is_nan(__VA_ARGS__); }()
 
 #else // DOCTEST_CONFIG_EVALUATE_ASSERTS_EVEN_WHEN_DISABLED
 
@@ -2642,6 +2719,13 @@ namespace detail {
 #define DOCTEST_WARN_UNARY_FALSE(...) ([] { return false; })
 #define DOCTEST_CHECK_UNARY_FALSE(...) ([] { return false; })
 #define DOCTEST_REQUIRE_UNARY_FALSE(...) ([] { return false; })
+
+#define DOCTEST_WARN_NAN(...) [&] { return false; }()
+#define DOCTEST_CHECK_NAN(...) [&] { return false; }()
+#define DOCTEST_REQUIRE_NAN(...) [&] { return false; }()
+#define DOCTEST_WARN_NOT_NAN(...) [&] { return false; }()
+#define DOCTEST_CHECK_NOT_NAN(...) [&] { return false; }()
+#define DOCTEST_REQUIRE_NOT_NAN(...) [&] { return false; }()
 
 #endif // DOCTEST_CONFIG_EVALUATE_ASSERTS_EVEN_WHEN_DISABLED
 
@@ -2831,6 +2915,13 @@ namespace detail {
 #define WARN_UNARY_FALSE(...) DOCTEST_WARN_UNARY_FALSE(__VA_ARGS__)
 #define CHECK_UNARY_FALSE(...) DOCTEST_CHECK_UNARY_FALSE(__VA_ARGS__)
 #define REQUIRE_UNARY_FALSE(...) DOCTEST_REQUIRE_UNARY_FALSE(__VA_ARGS__)
+
+#define WARN_NAN(...) DOCTEST_WARN_NAN(__VA_ARGS__)
+#define CHECK_NAN(...) DOCTEST_CHECK_NAN(__VA_ARGS__)
+#define REQUIRE_NAN(...) DOCTEST_REQUIRE_NAN(__VA_ARGS__)
+#define WARN_NOT_NAN(...) DOCTEST_WARN_NOT_NAN(__VA_ARGS__)
+#define CHECK_NOT_NAN(...) DOCTEST_CHECK_NOT_NAN(__VA_ARGS__)
+#define REQUIRE_NOT_NAN(...) DOCTEST_REQUIRE_NOT_NAN(__VA_ARGS__)
 
 // KEPT FOR BACKWARDS COMPATIBILITY
 #define FAST_WARN_EQ(...) DOCTEST_FAST_WARN_EQ(__VA_ARGS__)
@@ -3603,64 +3694,45 @@ namespace Color {
 
 // clang-format off
 const char* assertString(assertType::Enum at) {
-    DOCTEST_MSVC_SUPPRESS_WARNING_WITH_PUSH(4062) // enum 'x' in switch of enum 'y' is not handled
-    switch(at) {  //!OCLINT missing default in switch statements
-        case assertType::DT_WARN                    : return "WARN";
-        case assertType::DT_CHECK                   : return "CHECK";
-        case assertType::DT_REQUIRE                 : return "REQUIRE";
+    DOCTEST_MSVC_SUPPRESS_WARNING_WITH_PUSH(4061) // enum 'x' in switch of enum 'y' is not explicitely handled
+    #define DOCTEST_GENERATE_ASSERT_TYPE_CASE(assert_type) case assertType::DT_ ## assert_type ##: return #assert_type
+    #define DOCTEST_GENERATE_ASSERT_TYPE_CASES(assert_type) \
+        DOCTEST_GENERATE_ASSERT_TYPE_CASE(WARN_ ## assert_type); \
+        DOCTEST_GENERATE_ASSERT_TYPE_CASE(CHECK_ ## assert_type); \
+        DOCTEST_GENERATE_ASSERT_TYPE_CASE(REQUIRE_ ## assert_type)
+    switch(at) {
+        DOCTEST_GENERATE_ASSERT_TYPE_CASE(WARN);
+        DOCTEST_GENERATE_ASSERT_TYPE_CASE(CHECK);
+        DOCTEST_GENERATE_ASSERT_TYPE_CASE(REQUIRE);
 
-        case assertType::DT_WARN_FALSE              : return "WARN_FALSE";
-        case assertType::DT_CHECK_FALSE             : return "CHECK_FALSE";
-        case assertType::DT_REQUIRE_FALSE           : return "REQUIRE_FALSE";
+        DOCTEST_GENERATE_ASSERT_TYPE_CASES(FALSE);
 
-        case assertType::DT_WARN_THROWS             : return "WARN_THROWS";
-        case assertType::DT_CHECK_THROWS            : return "CHECK_THROWS";
-        case assertType::DT_REQUIRE_THROWS          : return "REQUIRE_THROWS";
+        DOCTEST_GENERATE_ASSERT_TYPE_CASES(THROWS);
 
-        case assertType::DT_WARN_THROWS_AS          : return "WARN_THROWS_AS";
-        case assertType::DT_CHECK_THROWS_AS         : return "CHECK_THROWS_AS";
-        case assertType::DT_REQUIRE_THROWS_AS       : return "REQUIRE_THROWS_AS";
+        DOCTEST_GENERATE_ASSERT_TYPE_CASES(THROWS_AS);
 
-        case assertType::DT_WARN_THROWS_WITH        : return "WARN_THROWS_WITH";
-        case assertType::DT_CHECK_THROWS_WITH       : return "CHECK_THROWS_WITH";
-        case assertType::DT_REQUIRE_THROWS_WITH     : return "REQUIRE_THROWS_WITH";
+        DOCTEST_GENERATE_ASSERT_TYPE_CASES(THROWS_WITH);
 
-        case assertType::DT_WARN_THROWS_WITH_AS     : return "WARN_THROWS_WITH_AS";
-        case assertType::DT_CHECK_THROWS_WITH_AS    : return "CHECK_THROWS_WITH_AS";
-        case assertType::DT_REQUIRE_THROWS_WITH_AS  : return "REQUIRE_THROWS_WITH_AS";
+        DOCTEST_GENERATE_ASSERT_TYPE_CASES(THROWS_WITH_AS);
 
-        case assertType::DT_WARN_NOTHROW            : return "WARN_NOTHROW";
-        case assertType::DT_CHECK_NOTHROW           : return "CHECK_NOTHROW";
-        case assertType::DT_REQUIRE_NOTHROW         : return "REQUIRE_NOTHROW";
+        DOCTEST_GENERATE_ASSERT_TYPE_CASES(NOTHROW);
 
-        case assertType::DT_WARN_EQ                 : return "WARN_EQ";
-        case assertType::DT_CHECK_EQ                : return "CHECK_EQ";
-        case assertType::DT_REQUIRE_EQ              : return "REQUIRE_EQ";
-        case assertType::DT_WARN_NE                 : return "WARN_NE";
-        case assertType::DT_CHECK_NE                : return "CHECK_NE";
-        case assertType::DT_REQUIRE_NE              : return "REQUIRE_NE";
-        case assertType::DT_WARN_GT                 : return "WARN_GT";
-        case assertType::DT_CHECK_GT                : return "CHECK_GT";
-        case assertType::DT_REQUIRE_GT              : return "REQUIRE_GT";
-        case assertType::DT_WARN_LT                 : return "WARN_LT";
-        case assertType::DT_CHECK_LT                : return "CHECK_LT";
-        case assertType::DT_REQUIRE_LT              : return "REQUIRE_LT";
-        case assertType::DT_WARN_GE                 : return "WARN_GE";
-        case assertType::DT_CHECK_GE                : return "CHECK_GE";
-        case assertType::DT_REQUIRE_GE              : return "REQUIRE_GE";
-        case assertType::DT_WARN_LE                 : return "WARN_LE";
-        case assertType::DT_CHECK_LE                : return "CHECK_LE";
-        case assertType::DT_REQUIRE_LE              : return "REQUIRE_LE";
+        DOCTEST_GENERATE_ASSERT_TYPE_CASES(EQ);
+        DOCTEST_GENERATE_ASSERT_TYPE_CASES(NE);
+        DOCTEST_GENERATE_ASSERT_TYPE_CASES(GT);
+        DOCTEST_GENERATE_ASSERT_TYPE_CASES(LT);
+        DOCTEST_GENERATE_ASSERT_TYPE_CASES(GE);
+        DOCTEST_GENERATE_ASSERT_TYPE_CASES(LE);
 
-        case assertType::DT_WARN_UNARY              : return "WARN_UNARY";
-        case assertType::DT_CHECK_UNARY             : return "CHECK_UNARY";
-        case assertType::DT_REQUIRE_UNARY           : return "REQUIRE_UNARY";
-        case assertType::DT_WARN_UNARY_FALSE        : return "WARN_UNARY_FALSE";
-        case assertType::DT_CHECK_UNARY_FALSE       : return "CHECK_UNARY_FALSE";
-        case assertType::DT_REQUIRE_UNARY_FALSE     : return "REQUIRE_UNARY_FALSE";
+        DOCTEST_GENERATE_ASSERT_TYPE_CASES(UNARY);
+        DOCTEST_GENERATE_ASSERT_TYPE_CASES(UNARY_FALSE);
+
+        DOCTEST_GENERATE_ASSERT_TYPE_CASES(NAN);
+        DOCTEST_GENERATE_ASSERT_TYPE_CASES(NOT_NAN);
+
+        default: DOCTEST_INTERNAL_ERROR("Tried stringifying invalid assert type!");
     }
     DOCTEST_MSVC_SUPPRESS_WARNING_POP
-    return "";
 }
 // clang-format on
 

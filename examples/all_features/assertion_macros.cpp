@@ -4,6 +4,8 @@
 
 DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_BEGIN
 #include <stdexcept>
+#include <cmath>
+#include <numeric>
 DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_END
 
 TEST_CASE("normal macros") {
@@ -203,4 +205,12 @@ TEST_CASE("macro return values") {
     if (CHECK_UNARY_FALSE(a != b)) { MESSAGE("should not be reached!"); }
     if (CHECK_THROWS([]{}())) { MESSAGE("should not be reached!"); }
     DOCTEST_MSVC_SUPPRESS_WARNING_POP
+}
+
+TEST_CASE("nan") {
+    REQUIRE_NOT_NAN(0.f);
+    CHECK_NAN(std::numeric_limits<long double>::infinity());
+    CHECK_NOT_NAN(0.);
+    WARN_NOT_NAN(std::numeric_limits<float>::quiet_NaN());
+    REQUIRE_NAN(std::numeric_limits<long double>::signaling_NaN());
 }
