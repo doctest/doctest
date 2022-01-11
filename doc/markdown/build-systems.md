@@ -72,8 +72,8 @@ target_link_libraries(my_tests doctest)
 - vcpkg
 - hunter
 - conan
-    - https://bintray.com/bincrafters/public-conan/doctest:bincrafters
-    - https://bintray.com/mmha/conan/doctest%3Ammha
+    - https://conan.io/center/doctest
+    - https://github.com/conan-io/conan-center-index/tree/master/recipes/doctest
 - Homebrew (`brew install doctest`)
 
 ---
