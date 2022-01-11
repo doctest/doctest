@@ -1,0 +1,4 @@
+#define DOCTEST_CONFIG_EVALUATE_ASSERTS_EVEN_WHEN_DISABLED
+#define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
+#define TEST_FLIP 1
+#include "assert_returns_disabled.cpp"

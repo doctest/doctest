@@ -194,17 +194,34 @@ TEST_CASE("some asserts used in a function called by a test case") {
     someAssertsInFunction();
 }
 
-TEST_CASE("macro return values") {
-    int a = 4;
-    int b = 2;
-    DOCTEST_MSVC_SUPPRESS_WARNING_WITH_PUSH(4702) // unreachable code
-    if (CHECK(a == b)) { MESSAGE("should not be reached!"); }
-    if (CHECK_FALSE(a != b)) { MESSAGE("should not be reached!"); }
-    if (CHECK_EQ(a, b)) { MESSAGE("should not be reached!"); }
-    if (CHECK_UNARY(a == b)) { MESSAGE("should not be reached!"); }
-    if (CHECK_UNARY_FALSE(a != b)) { MESSAGE("should not be reached!"); }
-    if (CHECK_THROWS([]{}())) { MESSAGE("should not be reached!"); }
-    DOCTEST_MSVC_SUPPRESS_WARNING_POP
+inline DOCTEST_NOINLINE void comp(int a, int b) {
+    if (CHECK(a == b)) { MESSAGE(":D"); }
+    if (CHECK_FALSE(a != b)) { MESSAGE(":D"); }
+    if (CHECK_EQ(a, b)) { MESSAGE(":D"); }
+    if (CHECK_UNARY(a == b)) { MESSAGE(":D"); }
+    if (CHECK_UNARY_FALSE(a != b)) { MESSAGE(":D"); }
+}
+
+TEST_CASE("check return values") {
+    comp(0, 0);
+
+    if (CHECK_THROWS([] { throw 2; }())) { MESSAGE(":D"); }
+    if (CHECK_THROWS_AS([] { throw 2; }(), int)) { MESSAGE(":D"); }
+    if (CHECK_NOTHROW([] { }())) { MESSAGE(":D"); }
+    if (CHECK_THROWS_WITH([] { throw 2; }(), "2")) { MESSAGE(":D"); }
+    if (CHECK_NAN(std::numeric_limits<float>::quiet_NaN())) { MESSAGE(":D"); }
+    if (CHECK_NOT_NAN(2'2.)) { MESSAGE(":D"); }
+}
+
+TEST_CASE("check return values no print") {
+    comp(4, 2);
+
+    if (CHECK_THROWS([] { }())) { MESSAGE(":D"); }
+    if (CHECK_THROWS_AS([] { throw 2; }(), doctest::Approx)) { MESSAGE(":D"); }
+    if (CHECK_NOTHROW([] { throw 2; }())) { MESSAGE(":D"); }
+    if (CHECK_THROWS_WITH([] { throw 2; }(), "1")) { MESSAGE(":D"); }
+    if (CHECK_NAN(0.)) { MESSAGE(":D"); }
+    if (CHECK_NOT_NAN(std::numeric_limits<long double>::signaling_NaN())) { MESSAGE(":D"); }
 }
 
 TEST_CASE("nan") {

@@ -28,6 +28,8 @@
     <TestCase name="all binary assertions" filename="assertion_macros.cpp" line="0" skipped="true"/>
     <TestCase name="an empty test that will succeed - not part of a test suite" filename="test_cases_and_suites.cpp" line="0" skipped="true"/>
     <TestCase name="bad stringification of type pair&lt;int_pair>" filename="templated_test_cases.cpp" line="0" skipped="true"/>
+    <TestCase name="check return values" filename="assertion_macros.cpp" line="0" skipped="true"/>
+    <TestCase name="check return values no print" filename="assertion_macros.cpp" line="0" skipped="true"/>
     <TestCase name="custom macros" filename="alternative_macros.cpp" line="0" skipped="true"/>
     <TestCase name="default construction&lt;char>" filename="templated_test_cases.cpp" line="0" skipped="true"/>
     <TestCase name="default construction&lt;double>" filename="templated_test_cases.cpp" line="0" skipped="true"/>
@@ -75,7 +77,6 @@
   <TestSuite>
     <TestCase name="logging the counter of a loop" filename="logging.cpp" line="0" skipped="true"/>
     <TestCase name="lots of nested subcases" filename="subcases.cpp" line="0" skipped="true"/>
-    <TestCase name="macro return values" filename="assertion_macros.cpp" line="0" skipped="true"/>
     <TestCase name="multiple types&lt;>" filename="templated_test_cases.cpp" line="0" skipped="true"/>
     <TestCase name="multiple types&lt;>" filename="templated_test_cases.cpp" line="0" skipped="true"/>
     <TestCase name="multiple types&lt;>" filename="templated_test_cases.cpp" line="0" skipped="true"/>
@@ -136,6 +137,6 @@
     <TestCase name="will end from an unknown exception" filename="coverage_maxout.cpp" line="0" skipped="true"/>
   </TestSuite>
   <OverallResultsAsserts successes="0" failures="0"/>
-  <OverallResultsTestCases successes="0" failures="0" skipped="96"/>
+  <OverallResultsTestCases successes="0" failures="0" skipped="97"/>
 </doctest>
 Program code.

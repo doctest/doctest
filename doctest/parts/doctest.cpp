@@ -875,7 +875,7 @@ void Context::setOption(const char*, const char*) {}
 bool Context::shouldExit() { return false; }
 void Context::setAsDefaultForAssertsOutOfTestCases() {}
 void Context::setAssertHandler(detail::assert_handler) {}
-void Context::setCout(std::ostream* out) {}
+void Context::setCout(std::ostream*) {}
 int  Context::run() { return 0; }
 
 IReporter::~IReporter() = default;

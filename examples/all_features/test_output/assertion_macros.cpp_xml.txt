@@ -532,7 +532,65 @@
       </Expression>
       <OverallResultsAsserts successes="9" failures="1" test_case_success="false"/>
     </TestCase>
-    <TestCase name="macro return values" filename="assertion_macros.cpp" line="0">
+    <TestCase name="check return values" filename="assertion_macros.cpp" line="0">
+      <Message type="WARNING" filename="assertion_macros.cpp" line="0">
+        <Text>
+          :D
+        </Text>
+      </Message>
+      <Message type="WARNING" filename="assertion_macros.cpp" line="0">
+        <Text>
+          :D
+        </Text>
+      </Message>
+      <Message type="WARNING" filename="assertion_macros.cpp" line="0">
+        <Text>
+          :D
+        </Text>
+      </Message>
+      <Message type="WARNING" filename="assertion_macros.cpp" line="0">
+        <Text>
+          :D
+        </Text>
+      </Message>
+      <Message type="WARNING" filename="assertion_macros.cpp" line="0">
+        <Text>
+          :D
+        </Text>
+      </Message>
+      <Message type="WARNING" filename="assertion_macros.cpp" line="0">
+        <Text>
+          :D
+        </Text>
+      </Message>
+      <Message type="WARNING" filename="assertion_macros.cpp" line="0">
+        <Text>
+          :D
+        </Text>
+      </Message>
+      <Message type="WARNING" filename="assertion_macros.cpp" line="0">
+        <Text>
+          :D
+        </Text>
+      </Message>
+      <Message type="WARNING" filename="assertion_macros.cpp" line="0">
+        <Text>
+          :D
+        </Text>
+      </Message>
+      <Message type="WARNING" filename="assertion_macros.cpp" line="0">
+        <Text>
+          :D
+        </Text>
+      </Message>
+      <Message type="WARNING" filename="assertion_macros.cpp" line="0">
+        <Text>
+          :D
+        </Text>
+      </Message>
+      <OverallResultsAsserts successes="11" failures="0" test_case_success="true"/>
+    </TestCase>
+    <TestCase name="check return values no print" filename="assertion_macros.cpp" line="0">
       <Expression success="false" type="CHECK" filename="assertion_macros.cpp" line="0">
         <Original>
           a == b
@@ -575,10 +633,56 @@
       </Expression>
       <Expression success="false" type="CHECK_THROWS" filename="assertion_macros.cpp" line="0">
         <Original>
-          []{}()
+          [] { }()
         </Original>
       </Expression>
-      <OverallResultsAsserts successes="0" failures="6" test_case_success="false"/>
+      <Expression success="false" type="CHECK_THROWS_AS" filename="assertion_macros.cpp" line="0">
+        <Original>
+          [] { throw 2; }()
+        </Original>
+        <Exception>
+          "2"
+        </Exception>
+        <ExpectedException>
+          doctest::Approx
+        </ExpectedException>
+      </Expression>
+      <Expression success="false" type="CHECK_NOTHROW" filename="assertion_macros.cpp" line="0">
+        <Original>
+          [] { throw 2; }()
+        </Original>
+        <Exception>
+          "2"
+        </Exception>
+      </Expression>
+      <Expression success="false" type="CHECK_THROWS_WITH" filename="assertion_macros.cpp" line="0">
+        <Original>
+          [] { throw 2; }()
+        </Original>
+        <Exception>
+          "2"
+        </Exception>
+        <ExpectedExceptionString>
+          1
+        </ExpectedExceptionString>
+      </Expression>
+      <Expression success="false" type="CHECK_NAN" filename="assertion_macros.cpp" line="0">
+        <Original>
+          0.
+        </Original>
+        <Expanded>
+          0.0
+        </Expanded>
+      </Expression>
+      <Expression success="false" type="CHECK_NOT_NAN" filename="assertion_macros.cpp" line="0">
+        <Original>
+          std::numeric_limits&lt;long double>::signaling_NaN()
+        </Original>
+        <Expanded>
+          nan
+        </Expanded>
+      </Expression>
+      <OverallResultsAsserts successes="0" failures="11" test_case_success="false"/>
     </TestCase>
     <TestCase name="nan" filename="assertion_macros.cpp" line="0">
       <Expression success="false" type="CHECK_NAN" filename="assertion_macros.cpp" line="0">
@@ -600,7 +704,7 @@
       <OverallResultsAsserts successes="3" failures="1" test_case_success="false"/>
     </TestCase>
   </TestSuite>
-  <OverallResultsAsserts successes="38" failures="46"/>
-  <OverallResultsTestCases successes="3" failures="20"/>
+  <OverallResultsAsserts successes="49" failures="51"/>
+  <OverallResultsTestCases successes="4" failures="20"/>
 </doctest>
 Program code.

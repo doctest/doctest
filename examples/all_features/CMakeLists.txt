@@ -97,6 +97,16 @@ doctest_add_test(NAME minimal         ${common_args} -m -sf=*test_cases_and_suit
 doctest_add_test(NAME minimal_no_fail ${common_args} -m -sf=*no_failures.cpp) # minimal
 
 ################################################################################
+## DOCTEST DISABLED - EXPRESSIONS STILL EVALUATE TO RETURN PROPER VALUES
+################################################################################
+
+add_executable(disabled_but_evaluated assert_returns_disabled.cpp assert_returns_disabled_evaluate.cpp)
+target_compile_definitions(disabled_but_evaluated PRIVATE DOCTEST_CONFIG_DISABLE)
+target_link_libraries(disabled_but_evaluated doctest ${CMAKE_THREAD_LIBS_INIT})
+
+doctest_add_test_impl(NAME disabled_but_evaluated COMMAND $<TARGET_FILE:disabled_but_evaluated>)
+
+################################################################################
 ## VARIATION OF THE BUILD WITH DOCTEST DISABLED - SHOULD STILL COMPILE
 ################################################################################
 
@@ -108,7 +118,7 @@ add_executable(disabled ${files_all})
 target_compile_definitions(disabled PRIVATE DOCTEST_CONFIG_DISABLE)
 target_link_libraries(disabled doctest ${CMAKE_THREAD_LIBS_INIT})
 
-doctest_add_test(NAME disabled COMMAND $<TARGET_FILE:disabled>)
+doctest_add_test_impl(NAME disabled COMMAND $<TARGET_FILE:disabled>)
 
 # TODO: think about fixing these in a different way! - see issue #61 or commit 6b61e8aa3818c5ea100cedc1bb48a60ea10df6e8
 if(MSVC)
