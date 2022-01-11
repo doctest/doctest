@@ -15,6 +15,7 @@ int throw_if(bool in, const T& ex) {
 DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_BEGIN
 #include <ostream>
 #include <sstream>
+#include <stdexcept>
 DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_END
 
 #ifndef DOCTEST_CONFIG_DISABLE

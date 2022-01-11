@@ -1725,6 +1725,16 @@ namespace {
 } // namespace
 namespace detail {
 
+    template <typename T>
+    bool is_nan(T t) {
+        DOCTEST_MSVC_SUPPRESS_WARNING_WITH_PUSH(4738)
+        return std::isnan(t);
+        DOCTEST_MSVC_SUPPRESS_WARNING_POP
+    }
+    template bool is_nan(float);
+    template bool is_nan(double);
+    template bool is_nan(long double);
+
     ResultBuilder::ResultBuilder(assertType::Enum at, const char* file, int line, const char* expr,
                                  const char* exception_type, const char* exception_string) {
         m_test_case        = g_cs->currentTest;
@@ -1742,22 +1752,6 @@ namespace detail {
             ++m_expr;
 #endif // MSVC
     }
-
-    template <typename L>
-    DOCTEST_NOINLINE bool ResultBuilder::nan_assert(L val) {
-        m_failed = !std::isnan(val);
-
-        if(m_at & assertType::is_false) //!OCLINT bitwise operator in conditional
-            m_failed = !m_failed;
-
-        if(m_failed || getContextOptions()->success)
-            m_decomp = toString(val);
-
-        return !m_failed;
-    }
-    template bool ResultBuilder::nan_assert(float);
-    template bool ResultBuilder::nan_assert(double);
-    template bool ResultBuilder::nan_assert(long double);
 
     void ResultBuilder::setResult(const Result& res) {
         m_decomp = res.m_decomp;
@@ -1836,26 +1830,6 @@ namespace detail {
         if (!logged)
             tlssPop();
     }
-
-    template <typename L>
-    DOCTEST_NOINLINE bool nan_assert(assertType::Enum at, const char* file, int line,
-                                     const char* expr, L val) {
-        bool failed = !std::isnan(val);
-
-        if (at & assertType::is_false) //!OCLINT bitwise operator in conditional
-            failed = !failed;
-
-        // ###################################################################################
-        // IF THE DEBUGGER BREAKS HERE - GO 1 LEVEL UP IN THE CALLSTACK FOR THE FAILING ASSERT
-        // THIS IS THE EFFECT OF HAVING 'DOCTEST_CONFIG_SUPER_FAST_ASSERTS' DEFINED
-        // ###################################################################################
-        DOCTEST_ASSERT_OUT_OF_TESTS(toString(val));
-        DOCTEST_ASSERT_IN_TESTS(toString(val));
-        return !failed;
-    }
-    template bool nan_assert(assertType::Enum, const char*, int, const char*, float);
-    template bool nan_assert(assertType::Enum, const char*, int, const char*, double);
-    template bool nan_assert(assertType::Enum, const char*, int, const char*, long double);
 
     IExceptionTranslator::IExceptionTranslator()  = default;
     IExceptionTranslator::~IExceptionTranslator() = default;
