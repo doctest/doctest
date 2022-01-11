@@ -697,64 +697,45 @@ namespace Color {
 
 // clang-format off
 const char* assertString(assertType::Enum at) {
-    DOCTEST_MSVC_SUPPRESS_WARNING_WITH_PUSH(4062) // enum 'x' in switch of enum 'y' is not handled
-    switch(at) {  //!OCLINT missing default in switch statements
-        case assertType::DT_WARN                    : return "WARN";
-        case assertType::DT_CHECK                   : return "CHECK";
-        case assertType::DT_REQUIRE                 : return "REQUIRE";
+    DOCTEST_MSVC_SUPPRESS_WARNING_WITH_PUSH(4061) // enum 'x' in switch of enum 'y' is not explicitely handled
+    #define DOCTEST_GENERATE_ASSERT_TYPE_CASE(assert_type) case assertType::DT_ ## assert_type: return #assert_type
+    #define DOCTEST_GENERATE_ASSERT_TYPE_CASES(assert_type) \
+        DOCTEST_GENERATE_ASSERT_TYPE_CASE(WARN_ ## assert_type); \
+        DOCTEST_GENERATE_ASSERT_TYPE_CASE(CHECK_ ## assert_type); \
+        DOCTEST_GENERATE_ASSERT_TYPE_CASE(REQUIRE_ ## assert_type)
+    switch(at) {
+        DOCTEST_GENERATE_ASSERT_TYPE_CASE(WARN);
+        DOCTEST_GENERATE_ASSERT_TYPE_CASE(CHECK);
+        DOCTEST_GENERATE_ASSERT_TYPE_CASE(REQUIRE);
 
-        case assertType::DT_WARN_FALSE              : return "WARN_FALSE";
-        case assertType::DT_CHECK_FALSE             : return "CHECK_FALSE";
-        case assertType::DT_REQUIRE_FALSE           : return "REQUIRE_FALSE";
+        DOCTEST_GENERATE_ASSERT_TYPE_CASES(FALSE);
 
-        case assertType::DT_WARN_THROWS             : return "WARN_THROWS";
-        case assertType::DT_CHECK_THROWS            : return "CHECK_THROWS";
-        case assertType::DT_REQUIRE_THROWS          : return "REQUIRE_THROWS";
+        DOCTEST_GENERATE_ASSERT_TYPE_CASES(THROWS);
 
-        case assertType::DT_WARN_THROWS_AS          : return "WARN_THROWS_AS";
-        case assertType::DT_CHECK_THROWS_AS         : return "CHECK_THROWS_AS";
-        case assertType::DT_REQUIRE_THROWS_AS       : return "REQUIRE_THROWS_AS";
+        DOCTEST_GENERATE_ASSERT_TYPE_CASES(THROWS_AS);
 
-        case assertType::DT_WARN_THROWS_WITH        : return "WARN_THROWS_WITH";
-        case assertType::DT_CHECK_THROWS_WITH       : return "CHECK_THROWS_WITH";
-        case assertType::DT_REQUIRE_THROWS_WITH     : return "REQUIRE_THROWS_WITH";
+        DOCTEST_GENERATE_ASSERT_TYPE_CASES(THROWS_WITH);
 
-        case assertType::DT_WARN_THROWS_WITH_AS     : return "WARN_THROWS_WITH_AS";
-        case assertType::DT_CHECK_THROWS_WITH_AS    : return "CHECK_THROWS_WITH_AS";
-        case assertType::DT_REQUIRE_THROWS_WITH_AS  : return "REQUIRE_THROWS_WITH_AS";
+        DOCTEST_GENERATE_ASSERT_TYPE_CASES(THROWS_WITH_AS);
 
-        case assertType::DT_WARN_NOTHROW            : return "WARN_NOTHROW";
-        case assertType::DT_CHECK_NOTHROW           : return "CHECK_NOTHROW";
-        case assertType::DT_REQUIRE_NOTHROW         : return "REQUIRE_NOTHROW";
+        DOCTEST_GENERATE_ASSERT_TYPE_CASES(NOTHROW);
 
-        case assertType::DT_WARN_EQ                 : return "WARN_EQ";
-        case assertType::DT_CHECK_EQ                : return "CHECK_EQ";
-        case assertType::DT_REQUIRE_EQ              : return "REQUIRE_EQ";
-        case assertType::DT_WARN_NE                 : return "WARN_NE";
-        case assertType::DT_CHECK_NE                : return "CHECK_NE";
-        case assertType::DT_REQUIRE_NE              : return "REQUIRE_NE";
-        case assertType::DT_WARN_GT                 : return "WARN_GT";
-        case assertType::DT_CHECK_GT                : return "CHECK_GT";
-        case assertType::DT_REQUIRE_GT              : return "REQUIRE_GT";
-        case assertType::DT_WARN_LT                 : return "WARN_LT";
-        case assertType::DT_CHECK_LT                : return "CHECK_LT";
-        case assertType::DT_REQUIRE_LT              : return "REQUIRE_LT";
-        case assertType::DT_WARN_GE                 : return "WARN_GE";
-        case assertType::DT_CHECK_GE                : return "CHECK_GE";
-        case assertType::DT_REQUIRE_GE              : return "REQUIRE_GE";
-        case assertType::DT_WARN_LE                 : return "WARN_LE";
-        case assertType::DT_CHECK_LE                : return "CHECK_LE";
-        case assertType::DT_REQUIRE_LE              : return "REQUIRE_LE";
+        DOCTEST_GENERATE_ASSERT_TYPE_CASES(EQ);
+        DOCTEST_GENERATE_ASSERT_TYPE_CASES(NE);
+        DOCTEST_GENERATE_ASSERT_TYPE_CASES(GT);
+        DOCTEST_GENERATE_ASSERT_TYPE_CASES(LT);
+        DOCTEST_GENERATE_ASSERT_TYPE_CASES(GE);
+        DOCTEST_GENERATE_ASSERT_TYPE_CASES(LE);
 
-        case assertType::DT_WARN_UNARY              : return "WARN_UNARY";
-        case assertType::DT_CHECK_UNARY             : return "CHECK_UNARY";
-        case assertType::DT_REQUIRE_UNARY           : return "REQUIRE_UNARY";
-        case assertType::DT_WARN_UNARY_FALSE        : return "WARN_UNARY_FALSE";
-        case assertType::DT_CHECK_UNARY_FALSE       : return "CHECK_UNARY_FALSE";
-        case assertType::DT_REQUIRE_UNARY_FALSE     : return "REQUIRE_UNARY_FALSE";
+        DOCTEST_GENERATE_ASSERT_TYPE_CASES(UNARY);
+        DOCTEST_GENERATE_ASSERT_TYPE_CASES(UNARY_FALSE);
+
+        DOCTEST_GENERATE_ASSERT_TYPE_CASES(NAN);
+        DOCTEST_GENERATE_ASSERT_TYPE_CASES(NOT_NAN);
+
+        default: DOCTEST_INTERNAL_ERROR("Tried stringifying invalid assert type!");
     }
     DOCTEST_MSVC_SUPPRESS_WARNING_POP
-    return "";
 }
 // clang-format on
 
@@ -1743,6 +1724,16 @@ namespace {
 #endif // DOCTEST_CONFIG_POSIX_SIGNALS || DOCTEST_CONFIG_WINDOWS_SEH
 } // namespace
 namespace detail {
+
+    DOCTEST_MSVC_SUPPRESS_WARNING_WITH_PUSH(4738)
+    template <typename T>
+    bool is_nan(T t) {
+        return std::isnan(t);
+    }
+    DOCTEST_MSVC_SUPPRESS_WARNING_POP
+    template bool is_nan(float);
+    template bool is_nan(double);
+    template bool is_nan(long double);
 
     ResultBuilder::ResultBuilder(assertType::Enum at, const char* file, int line, const char* expr,
                                  const char* exception_type, const char* exception_string) {

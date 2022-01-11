@@ -219,7 +219,17 @@ assertion_macros.cpp(0): ERROR: CHECK_UNARY_FALSE( a != b ) is NOT correct!
 assertion_macros.cpp(0): ERROR: CHECK_THROWS( []{}() ) did NOT throw at all!
 
 ===============================================================================
-[doctest] test cases: 22 |  3 passed | 19 failed |
-[doctest] assertions: 80 | 35 passed | 45 failed |
+assertion_macros.cpp(0):
+TEST CASE:  nan
+
+assertion_macros.cpp(0): ERROR: CHECK_NAN( std::numeric_limits<long double>::infinity() ) is NOT correct!
+  values: CHECK_NAN( inf )
+
+assertion_macros.cpp(0): WARNING: WARN_NOT_NAN( std::numeric_limits<float>::quiet_NaN() ) is NOT correct!
+  values: WARN_NOT_NAN( nanf )
+
+===============================================================================
+[doctest] test cases: 23 |  3 passed | 20 failed |
+[doctest] assertions: 84 | 38 passed | 46 failed |
 [doctest] Status: FAILURE!
 Program code.

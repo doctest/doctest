@@ -13,3 +13,5 @@ asserts_used_outside_of_tests.cpp(23): ERROR: CHECK( false ) is NOT correct!
   values: CHECK( false )
 hello! 
 asserts_used_outside_of_tests.cpp(24): ERROR: an assert dealing with exceptions has failed!
+asserts_used_outside_of_tests.cpp(25): ERROR: CHECK_NAN( 0. ) is NOT correct!
+  values: CHECK_NAN( 0.0 )
