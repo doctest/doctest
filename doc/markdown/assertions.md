@@ -140,9 +140,9 @@ Currently [**logging macros**](logging.md) cannot be used for extra context for 
 - ```<LEVEL>_NAN(expression)```
 - ```<LEVEL>_NOT_NAN(expression)```
 
-These utility macros are able to check if a floating point value is or is not NaN respectively.
+These utility macros check if a floating point value is or is not NaN respectively.
 
-They are able to capture the actual value on assertion failure.
+They capture the actual float value on assertion failure.
 
 ## Floating point comparisons
 
