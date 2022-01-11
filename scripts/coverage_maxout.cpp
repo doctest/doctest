@@ -94,9 +94,11 @@ TEST_CASE("exercising tricky code paths of doctest") {
     // trigger code path for String to ostream through operator<<
     oss << str;
     // trigger code path for assert string of a non-existent assert type
+#ifndef DOCTEST_CONFIG_NO_EXCEPTIONS
     try {
         assertString(static_cast<assertType::Enum>(3));
     } catch (const std::logic_error&) { }
+#endif
     str += oss.str().c_str();
     str += failureString(assertType::is_normal);
     CHECK(str == "omgomgomgaaaNULLtrue00.5f0.50.199991111111true0.50.50.1cc"

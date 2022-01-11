@@ -1537,6 +1537,9 @@ DOCTEST_CLANG_SUPPRESS_WARNING_POP
         bool log();
         void react() const;
     };
+    extern template bool ResultBuilder::nan_assert(float);
+    extern template bool ResultBuilder::nan_assert(double);
+    extern template bool ResultBuilder::nan_assert(long double);
 
     namespace assertAction {
         enum Enum
@@ -1614,6 +1617,12 @@ DOCTEST_CLANG_SUPPRESS_WARNING_POP
     template <typename L>
     DOCTEST_NOINLINE bool nan_assert(assertType::Enum at, const char* file, int line,
                                      const char* expr, L val);
+    extern template bool nan_assert(assertType::Enum, const char*, int, const char*,
+                                    float);
+    extern template bool nan_assert(assertType::Enum, const char*, int, const char*,
+                                    double);
+    extern template bool nan_assert(assertType::Enum, const char*, int, const char*,
+                                    long double);
 
     struct DOCTEST_INTERFACE IExceptionTranslator
     {
