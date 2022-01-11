@@ -1725,12 +1725,12 @@ namespace {
 } // namespace
 namespace detail {
 
+    DOCTEST_MSVC_SUPPRESS_WARNING_WITH_PUSH(4738)
     template <typename T>
     bool is_nan(T t) {
-        DOCTEST_MSVC_SUPPRESS_WARNING_WITH_PUSH(4738)
         return std::isnan(t);
-        DOCTEST_MSVC_SUPPRESS_WARNING_POP
     }
+    DOCTEST_MSVC_SUPPRESS_WARNING_POP
     template bool is_nan(float);
     template bool is_nan(double);
     template bool is_nan(long double);
