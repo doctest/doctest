@@ -697,17 +697,6 @@ DOCTEST_INTERFACE const char* assertString(assertType::Enum at);
 DOCTEST_INTERFACE const char* failureString(assertType::Enum at);
 DOCTEST_INTERFACE const char* skipPathFromFilename(const char* file);
 
-template <typename F>
-struct IsNaN
-{
-    F val;
-    IsNaN(F f) : val(f) { }
-    operator bool() const;
-};
-std::ostream& operator<<(std::ostream& out, IsNaN<float> nanCheck);
-std::ostream& operator<<(std::ostream& out, IsNaN<double> nanCheck);
-std::ostream& operator<<(std::ostream& out, IsNaN<long double> nanCheck);
-
 struct DOCTEST_INTERFACE TestCaseData
 {
     String      m_file;       // the file in which the test was registered (using String - see #350)
@@ -1130,6 +1119,17 @@ private:
 DOCTEST_INTERFACE String toString(const Approx& in);
 
 DOCTEST_INTERFACE const ContextOptions* getContextOptions();
+
+template <typename F>
+struct DOCTEST_INTERFACE IsNaN
+{
+    F val;
+    IsNaN(F f) : val(f) { }
+    operator bool() const;
+};
+std::ostream& operator<<(std::ostream& out, IsNaN<float> nanCheck);
+std::ostream& operator<<(std::ostream& out, IsNaN<double> nanCheck);
+std::ostream& operator<<(std::ostream& out, IsNaN<long double> nanCheck);
 
 #ifndef DOCTEST_CONFIG_DISABLE
 

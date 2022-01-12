@@ -766,22 +766,6 @@ const char* skipPathFromFilename(const char* file) {
 DOCTEST_CLANG_SUPPRESS_WARNING_POP
 DOCTEST_GCC_SUPPRESS_WARNING_POP
 
-DOCTEST_MSVC_SUPPRESS_WARNING_WITH_PUSH(4738)
-template <typename F>
-IsNaN<F>::operator bool() const {
-    return std::isnan(val);
-}
-DOCTEST_MSVC_SUPPRESS_WARNING_POP
-template IsNaN<float>;
-template IsNaN<double>;
-template IsNaN<long double>;
-std::ostream& operator<<(std::ostream& out, IsNaN<float> nanCheck)
-    { out << nanCheck.val; return out; }
-std::ostream& operator<<(std::ostream& out, IsNaN<double> nanCheck)
-    { out << nanCheck.val; return out; }
-std::ostream& operator<<(std::ostream& out, IsNaN<long double> nanCheck)
-    { out << nanCheck.val; return out; }
-
 bool SubcaseSignature::operator<(const SubcaseSignature& other) const {
     if(m_line != other.m_line)
         return m_line < other.m_line;
@@ -872,6 +856,22 @@ String toString(const Approx& in) {
     return "Approx( " + doctest::toString(in.m_value) + " )";
 }
 const ContextOptions* getContextOptions() { return DOCTEST_BRANCH_ON_DISABLED(nullptr, g_cs); }
+
+DOCTEST_MSVC_SUPPRESS_WARNING_WITH_PUSH(4738)
+template <typename F>
+IsNaN<F>::operator bool() const {
+    return std::isnan(val);
+}
+DOCTEST_MSVC_SUPPRESS_WARNING_POP
+template IsNaN<float>;
+template IsNaN<double>;
+template IsNaN<long double>;
+std::ostream& operator<<(std::ostream& out, IsNaN<float> nanCheck)
+    { out << nanCheck.val; return out; }
+std::ostream& operator<<(std::ostream& out, IsNaN<double> nanCheck)
+    { out << nanCheck.val; return out; }
+std::ostream& operator<<(std::ostream& out, IsNaN<long double> nanCheck)
+    { out << nanCheck.val; return out; }
 
 } // namespace doctest
 

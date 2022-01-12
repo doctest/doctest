@@ -49,13 +49,13 @@ CHECK( s1 == s2 ) is NOT correct!
       </failure>
       <failure message="0.5" type="CHECK">
 stringification.cpp(0):
-CHECK( doctest::IsNaN(0.5) ) is NOT correct!
+CHECK( doctest::IsNaN&lt;double>(0.5) ) is NOT correct!
   values: CHECK( 0.5 )
 
       </failure>
       <failure message="inf" type="CHECK">
 stringification.cpp(0):
-CHECK( doctest::IsNaN(std::numeric_limits&lt;float>::infinity()) ) is NOT correct!
+CHECK( doctest::IsNaN&lt;float>(std::numeric_limits&lt;float>::infinity()) ) is NOT correct!
   values: CHECK( inf )
 
       </failure>

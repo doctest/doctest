@@ -146,8 +146,8 @@ TEST_CASE("all asserts should fail and show how the objects get stringified") {
         CHECK_MESSAGE(s1 == s2, s1, " is not really ", s2);
     }
 
-    CHECK(doctest::IsNaN(0.5));
-    CHECK(doctest::IsNaN(std::numeric_limits<float>::infinity()));
+    CHECK(doctest::IsNaN<double>(0.5));
+    CHECK(doctest::IsNaN<float>(std::numeric_limits<float>::infinity()));
     // can't test actual nan because it's implementation definedDOCTEST_MSVC_SUPPRESS_WARNING_WITH_PUSH(4738)
 
     // lets see if this exception gets translated

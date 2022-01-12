@@ -700,17 +700,6 @@ DOCTEST_INTERFACE const char* assertString(assertType::Enum at);
 DOCTEST_INTERFACE const char* failureString(assertType::Enum at);
 DOCTEST_INTERFACE const char* skipPathFromFilename(const char* file);
 
-template <typename F>
-struct IsNaN
-{
-    F val;
-    IsNaN(F f) : val(f) { }
-    operator bool() const;
-};
-std::ostream& operator<<(std::ostream& out, IsNaN<float> nanCheck);
-std::ostream& operator<<(std::ostream& out, IsNaN<double> nanCheck);
-std::ostream& operator<<(std::ostream& out, IsNaN<long double> nanCheck);
-
 struct DOCTEST_INTERFACE TestCaseData
 {
     String      m_file;       // the file in which the test was registered (using String - see #350)
@@ -1133,6 +1122,17 @@ private:
 DOCTEST_INTERFACE String toString(const Approx& in);
 
 DOCTEST_INTERFACE const ContextOptions* getContextOptions();
+
+template <typename F>
+struct DOCTEST_INTERFACE IsNaN
+{
+    F val;
+    IsNaN(F f) : val(f) { }
+    operator bool() const;
+};
+std::ostream& operator<<(std::ostream& out, IsNaN<float> nanCheck);
+std::ostream& operator<<(std::ostream& out, IsNaN<double> nanCheck);
+std::ostream& operator<<(std::ostream& out, IsNaN<long double> nanCheck);
 
 #ifndef DOCTEST_CONFIG_DISABLE
 
@@ -3705,22 +3705,6 @@ const char* skipPathFromFilename(const char* file) {
 DOCTEST_CLANG_SUPPRESS_WARNING_POP
 DOCTEST_GCC_SUPPRESS_WARNING_POP
 
-DOCTEST_MSVC_SUPPRESS_WARNING_WITH_PUSH(4738)
-template <typename F>
-IsNaN<F>::operator bool() const {
-    return std::isnan(val);
-}
-DOCTEST_MSVC_SUPPRESS_WARNING_POP
-template IsNaN<float>;
-template IsNaN<double>;
-template IsNaN<long double>;
-std::ostream& operator<<(std::ostream& out, IsNaN<float> nanCheck)
-    { out << nanCheck.val; return out; }
-std::ostream& operator<<(std::ostream& out, IsNaN<double> nanCheck)
-    { out << nanCheck.val; return out; }
-std::ostream& operator<<(std::ostream& out, IsNaN<long double> nanCheck)
-    { out << nanCheck.val; return out; }
-
 bool SubcaseSignature::operator<(const SubcaseSignature& other) const {
     if(m_line != other.m_line)
         return m_line < other.m_line;
@@ -3811,6 +3795,22 @@ String toString(const Approx& in) {
     return "Approx( " + doctest::toString(in.m_value) + " )";
 }
 const ContextOptions* getContextOptions() { return DOCTEST_BRANCH_ON_DISABLED(nullptr, g_cs); }
+
+DOCTEST_MSVC_SUPPRESS_WARNING_WITH_PUSH(4738)
+template <typename F>
+IsNaN<F>::operator bool() const {
+    return std::isnan(val);
+}
+DOCTEST_MSVC_SUPPRESS_WARNING_POP
+template IsNaN<float>;
+template IsNaN<double>;
+template IsNaN<long double>;
+std::ostream& operator<<(std::ostream& out, IsNaN<float> nanCheck)
+    { out << nanCheck.val; return out; }
+std::ostream& operator<<(std::ostream& out, IsNaN<double> nanCheck)
+    { out << nanCheck.val; return out; }
+std::ostream& operator<<(std::ostream& out, IsNaN<long double> nanCheck)
+    { out << nanCheck.val; return out; }
 
 } // namespace doctest
 
