@@ -202,27 +202,29 @@ inline DOCTEST_NOINLINE void comp(int a, int b) {
     if (CHECK_UNARY_FALSE(a != b)) { MESSAGE(":D"); }
 }
 
+DOCTEST_MSVC_SUPPRESS_WARNING_WITH_PUSH(4702)
 TEST_CASE("check return values") {
     comp(0, 0);
 
-    if (CHECK_THROWS([] { throw 2; }())) { MESSAGE(":D"); }
-    if (CHECK_THROWS_AS([] { throw 2; }(), int)) { MESSAGE(":D"); }
-    if (CHECK_NOTHROW([] { }())) { MESSAGE(":D"); }
-    if (CHECK_THROWS_WITH([] { throw 2; }(), "2")) { MESSAGE(":D"); }
+    if (CHECK_THROWS(throw_if(true, true))) { MESSAGE(":D"); }
+    if (CHECK_THROWS_AS(throw_if(true, 2), int)) { MESSAGE(":D"); }
+    if (CHECK_NOTHROW(throw_if(false, 2))) { MESSAGE(":D"); }
+    if (CHECK_THROWS_WITH(throw_if(true, 2), "2")) { MESSAGE(":D"); }
     if (CHECK_NAN(std::numeric_limits<float>::quiet_NaN())) { MESSAGE(":D"); }
-    if (CHECK_NOT_NAN(2'2.)) { MESSAGE(":D"); }
+    if (CHECK_NOT_NAN(22.)) { MESSAGE(":D"); }
 }
 
 TEST_CASE("check return values no print") {
     comp(4, 2);
 
-    if (CHECK_THROWS([] { }())) { MESSAGE(":D"); }
-    if (CHECK_THROWS_AS([] { throw 2; }(), doctest::Approx)) { MESSAGE(":D"); }
-    if (CHECK_NOTHROW([] { throw 2; }())) { MESSAGE(":D"); }
-    if (CHECK_THROWS_WITH([] { throw 2; }(), "1")) { MESSAGE(":D"); }
+    if (CHECK_THROWS(throw_if(false, false))) { MESSAGE(":D"); }
+    if (CHECK_THROWS_AS(throw_if(true, 2), doctest::Approx)) { MESSAGE(":D"); }
+    if (CHECK_NOTHROW(throw_if(true, 2))) { MESSAGE(":D"); }
+    if (CHECK_THROWS_WITH(throw_if(true, 2), "1")) { MESSAGE(":D"); }
     if (CHECK_NAN(0.)) { MESSAGE(":D"); }
-    if (CHECK_NOT_NAN(std::numeric_limits<long double>::signaling_NaN())) { MESSAGE(":D"); }
+    // CHECK_NOT_NAN can't be checked because stringification is (partly) implementation defined
 }
+DOCTEST_MSVC_SUPPRESS_WARNING_POP
 
 TEST_CASE("nan") {
     REQUIRE_NOT_NAN(0.f);

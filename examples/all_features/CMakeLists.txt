@@ -106,6 +106,17 @@ target_link_libraries(disabled_but_evaluated doctest ${CMAKE_THREAD_LIBS_INIT})
 
 doctest_add_test_impl(NAME disabled_but_evaluated COMMAND $<TARGET_FILE:disabled_but_evaluated>)
 
+if(MSVC)
+    target_compile_options(disabled_but_evaluated PRIVATE /wd4702) # unreachable code
+endif()
+
+if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+    target_compile_options(disabled_but_evaluated PRIVATE -Wno-global-constructors)
+    target_compile_options(disabled_but_evaluated PRIVATE -Wno-unused-variable)
+elseif(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
+    target_compile_options(disabled_but_evaluated PRIVATE -Wno-unused-variable)
+endif()
+
 ################################################################################
 ## VARIATION OF THE BUILD WITH DOCTEST DISABLED - SHOULD STILL COMPILE
 ################################################################################

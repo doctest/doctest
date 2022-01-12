@@ -633,12 +633,12 @@
       </Expression>
       <Expression success="false" type="CHECK_THROWS" filename="assertion_macros.cpp" line="0">
         <Original>
-          [] { }()
+          throw_if(false, false)
         </Original>
       </Expression>
       <Expression success="false" type="CHECK_THROWS_AS" filename="assertion_macros.cpp" line="0">
         <Original>
-          [] { throw 2; }()
+          throw_if(true, 2)
         </Original>
         <Exception>
           "2"
@@ -649,7 +649,7 @@
       </Expression>
       <Expression success="false" type="CHECK_NOTHROW" filename="assertion_macros.cpp" line="0">
         <Original>
-          [] { throw 2; }()
+          throw_if(true, 2)
         </Original>
         <Exception>
           "2"
@@ -657,7 +657,7 @@
       </Expression>
       <Expression success="false" type="CHECK_THROWS_WITH" filename="assertion_macros.cpp" line="0">
         <Original>
-          [] { throw 2; }()
+          throw_if(true, 2)
         </Original>
         <Exception>
           "2"
@@ -674,15 +674,7 @@
           0.0
         </Expanded>
       </Expression>
-      <Expression success="false" type="CHECK_NOT_NAN" filename="assertion_macros.cpp" line="0">
-        <Original>
-          std::numeric_limits&lt;long double>::signaling_NaN()
-        </Original>
-        <Expanded>
-          nan
-        </Expanded>
-      </Expression>
-      <OverallResultsAsserts successes="0" failures="11" test_case_success="false"/>
+      <OverallResultsAsserts successes="0" failures="10" test_case_success="false"/>
     </TestCase>
     <TestCase name="nan" filename="assertion_macros.cpp" line="0">
       <Expression success="false" type="CHECK_NAN" filename="assertion_macros.cpp" line="0">
@@ -704,7 +696,7 @@
       <OverallResultsAsserts successes="3" failures="1" test_case_success="false"/>
     </TestCase>
   </TestSuite>
-  <OverallResultsAsserts successes="49" failures="51"/>
+  <OverallResultsAsserts successes="49" failures="50"/>
   <OverallResultsTestCases successes="4" failures="20"/>
 </doctest>
 Program code.

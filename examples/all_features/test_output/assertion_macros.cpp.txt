@@ -242,19 +242,16 @@ assertion_macros.cpp(0): ERROR: CHECK_UNARY( a == b ) is NOT correct!
 assertion_macros.cpp(0): ERROR: CHECK_UNARY_FALSE( a != b ) is NOT correct!
   values: CHECK_UNARY_FALSE( true )
 
-assertion_macros.cpp(0): ERROR: CHECK_THROWS( [] { }() ) did NOT throw at all!
+assertion_macros.cpp(0): ERROR: CHECK_THROWS( throw_if(false, false) ) did NOT throw at all!
 
-assertion_macros.cpp(0): ERROR: CHECK_THROWS_AS( [] { throw 2; }(), doctest::Approx ) threw a DIFFERENT exception: "2"
+assertion_macros.cpp(0): ERROR: CHECK_THROWS_AS( throw_if(true, 2), doctest::Approx ) threw a DIFFERENT exception: "2"
 
-assertion_macros.cpp(0): ERROR: CHECK_NOTHROW( [] { throw 2; }() ) THREW exception: "2"
+assertion_macros.cpp(0): ERROR: CHECK_NOTHROW( throw_if(true, 2) ) THREW exception: "2"
 
-assertion_macros.cpp(0): ERROR: CHECK_THROWS_WITH( [] { throw 2; }(), "1" ) threw a DIFFERENT exception: "2"
+assertion_macros.cpp(0): ERROR: CHECK_THROWS_WITH( throw_if(true, 2), "1" ) threw a DIFFERENT exception: "2"
 
 assertion_macros.cpp(0): ERROR: CHECK_NAN( 0. ) is NOT correct!
   values: CHECK_NAN( 0.0 )
-
-assertion_macros.cpp(0): ERROR: CHECK_NOT_NAN( std::numeric_limits<long double>::signaling_NaN() ) is NOT correct!
-  values: CHECK_NOT_NAN( nan )
 
 ===============================================================================
 assertion_macros.cpp(0):
@@ -267,7 +264,7 @@ assertion_macros.cpp(0): WARNING: WARN_NOT_NAN( std::numeric_limits<float>::quie
   values: WARN_NOT_NAN( nanf )
 
 ===============================================================================
-[doctest] test cases:  24 |  4 passed | 20 failed |
-[doctest] assertions: 100 | 49 passed | 51 failed |
+[doctest] test cases: 24 |  4 passed | 20 failed |
+[doctest] assertions: 99 | 49 passed | 50 failed |
 [doctest] Status: FAILURE!
 Program code.

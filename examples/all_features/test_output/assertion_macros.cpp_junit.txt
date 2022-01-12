@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <testsuites>
-  <testsuite name="all_features" errors="0" failures="65" tests="100">
+  <testsuite name="all_features" errors="0" failures="64" tests="99">
     <testcase classname="assertion_macros.cpp" name="normal macros" status="run">
       <failure type="CHECK">
 assertion_macros.cpp(0):
@@ -351,34 +351,28 @@ CHECK_UNARY_FALSE( a != b ) is NOT correct!
       </failure>
       <failure type="CHECK_THROWS">
 assertion_macros.cpp(0):
-CHECK_THROWS( [] { }() ) did NOT throw at all!
+CHECK_THROWS( throw_if(false, false) ) did NOT throw at all!
 
       </failure>
       <failure type="CHECK_THROWS_AS">
 assertion_macros.cpp(0):
-CHECK_THROWS_AS( [] { throw 2; }(), doctest::Approx ) threw a DIFFERENT exception: "2"
+CHECK_THROWS_AS( throw_if(true, 2), doctest::Approx ) threw a DIFFERENT exception: "2"
 
       </failure>
       <failure type="CHECK_NOTHROW">
 assertion_macros.cpp(0):
-CHECK_NOTHROW( [] { throw 2; }() ) THREW exception: "2"
+CHECK_NOTHROW( throw_if(true, 2) ) THREW exception: "2"
 
       </failure>
       <failure type="CHECK_THROWS_WITH">
 assertion_macros.cpp(0):
-CHECK_THROWS_WITH( [] { throw 2; }(), "1" ) threw a DIFFERENT exception: "2"
+CHECK_THROWS_WITH( throw_if(true, 2), "1" ) threw a DIFFERENT exception: "2"
 
       </failure>
       <failure message="0.0" type="CHECK_NAN">
 assertion_macros.cpp(0):
 CHECK_NAN( 0. ) is NOT correct!
   values: CHECK_NAN( 0.0 )
-
-      </failure>
-      <failure message="nan" type="CHECK_NOT_NAN">
-assertion_macros.cpp(0):
-CHECK_NOT_NAN( std::numeric_limits&lt;long double>::signaling_NaN() ) is NOT correct!
-  values: CHECK_NOT_NAN( nan )
 
       </failure>
     </testcase>
