@@ -1123,18 +1123,22 @@ DOCTEST_INTERFACE String toString(const Approx& in);
 
 DOCTEST_INTERFACE const ContextOptions* getContextOptions();
 
+#if DOCTEST_MSVC
+#define DOCTEST_INTERFACE_DECL
+#else
+#define DOCTEST_INTERFACE_DECL DOCTEST_INTERFACE
+#endif
+
 template <typename F>
-struct DOCTEST_INTERFACE IsNaN
+struct DOCTEST_INTERFACE_DECL IsNaN
 {
     F val;
     IsNaN(F f) : val(f) { }
     operator bool() const;
 };
-#ifndef DOCTEST_CONFIG_IMPLEMENTATION_IN_DLL
-extern template struct IsNaN<float>;
-extern template struct IsNaN<double>;
-extern template struct IsNaN<long double>;
-#endif
+extern template struct DOCTEST_INTERFACE_DECL IsNaN<float>;
+extern template struct DOCTEST_INTERFACE_DECL IsNaN<double>;
+extern template struct DOCTEST_INTERFACE_DECL IsNaN<long double>;
 DOCTEST_INTERFACE std::ostream& operator<<(std::ostream& out, IsNaN<float> nanCheck);
 DOCTEST_INTERFACE std::ostream& operator<<(std::ostream& out, IsNaN<double> nanCheck);
 DOCTEST_INTERFACE std::ostream& operator<<(std::ostream& out, IsNaN<long double> nanCheck);
@@ -3801,15 +3805,21 @@ String toString(const Approx& in) {
 }
 const ContextOptions* getContextOptions() { return DOCTEST_BRANCH_ON_DISABLED(nullptr, g_cs); }
 
+#if DOCTEST_MSVC
+#define DOCTEST_INTERFACE_DEF DOCTEST_INTERFACE
+#else
+#define DOCTEST_INTERFACE_DEF
+#endif
+
 DOCTEST_MSVC_SUPPRESS_WARNING_WITH_PUSH(4738)
 template <typename F>
 IsNaN<F>::operator bool() const {
     return std::isnan(val);
 }
 DOCTEST_MSVC_SUPPRESS_WARNING_POP
-template struct IsNaN<float>;
-template struct IsNaN<double>;
-template struct IsNaN<long double>;
+template struct DOCTEST_INTERFACE_DEF IsNaN<float>;
+template struct DOCTEST_INTERFACE_DEF IsNaN<double>;
+template struct DOCTEST_INTERFACE_DEF IsNaN<long double>;
 std::ostream& operator<<(std::ostream& out, IsNaN<float> nanCheck)
     { out << nanCheck.val; return out; }
 std::ostream& operator<<(std::ostream& out, IsNaN<double> nanCheck)

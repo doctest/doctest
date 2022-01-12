@@ -1120,18 +1120,22 @@ DOCTEST_INTERFACE String toString(const Approx& in);
 
 DOCTEST_INTERFACE const ContextOptions* getContextOptions();
 
+#if DOCTEST_MSVC
+#define DOCTEST_INTERFACE_DECL
+#else
+#define DOCTEST_INTERFACE_DECL DOCTEST_INTERFACE
+#endif
+
 template <typename F>
-struct DOCTEST_INTERFACE IsNaN
+struct DOCTEST_INTERFACE_DECL IsNaN
 {
     F val;
     IsNaN(F f) : val(f) { }
     operator bool() const;
 };
-#ifndef DOCTEST_CONFIG_IMPLEMENTATION_IN_DLL
-extern template struct IsNaN<float>;
-extern template struct IsNaN<double>;
-extern template struct IsNaN<long double>;
-#endif
+extern template struct DOCTEST_INTERFACE_DECL IsNaN<float>;
+extern template struct DOCTEST_INTERFACE_DECL IsNaN<double>;
+extern template struct DOCTEST_INTERFACE_DECL IsNaN<long double>;
 DOCTEST_INTERFACE std::ostream& operator<<(std::ostream& out, IsNaN<float> nanCheck);
 DOCTEST_INTERFACE std::ostream& operator<<(std::ostream& out, IsNaN<double> nanCheck);
 DOCTEST_INTERFACE std::ostream& operator<<(std::ostream& out, IsNaN<long double> nanCheck);
