@@ -863,9 +863,9 @@ IsNaN<F>::operator bool() const {
     return std::isnan(val);
 }
 DOCTEST_MSVC_SUPPRESS_WARNING_POP
-template class IsNaN<float>;
-template class IsNaN<double>;
-template class IsNaN<long double>;
+template struct IsNaN<float>;
+template struct IsNaN<double>;
+template struct IsNaN<long double>;
 std::ostream& operator<<(std::ostream& out, IsNaN<float> nanCheck)
     { out << nanCheck.val; return out; }
 std::ostream& operator<<(std::ostream& out, IsNaN<double> nanCheck)
