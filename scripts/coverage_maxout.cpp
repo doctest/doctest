@@ -77,21 +77,6 @@ TEST_CASE("exercising tricky code paths of doctest") {
 
     std::ostringstream oss;
 
-    // toStream
-    detail::toStream(&oss, true);
-    detail::toStream(&oss, 0.5f);
-    detail::toStream(&oss, 0.5);
-    detail::toStream(&oss, static_cast<long double>(0.1));
-    detail::toStream(&oss, 'c');
-    detail::toStream(&oss, static_cast<signed char>('c'));
-    detail::toStream(&oss, static_cast<unsigned char>(1));
-    detail::toStream(&oss, static_cast<short>(1));
-    detail::toStream(&oss, static_cast<long>(1));
-    detail::toStream(&oss, static_cast<unsigned long>(1));
-    detail::toStream(&oss, static_cast<unsigned short>(1));
-    detail::toStream(&oss, static_cast<long long>(1));
-    detail::toStream(&oss, static_cast<unsigned long long>(1));
-
     // trigger code path for String to ostream through operator<<
     oss << str;
     // trigger code path for assert string of a non-existent assert type
@@ -102,8 +87,8 @@ TEST_CASE("exercising tricky code paths of doctest") {
 #endif
     str += oss.str().c_str();
     str += failureString(assertType::is_normal);
-    CHECK(str == "omgomgomgaaaNULLtrue00.5f0.50.199991111111true0.50.50.1cc"
-                 "111111omgomgomgaaaNULLtrue00.5f0.50.199991111111");
+    CHECK(str == "omgomgomgaaaNULLtrue00.5f0.50.199991111111"
+                 "omgomgomgaaaNULLtrue00.5f0.50.199991111111");
     // trigger code path for rawMemoryToString
     bool   isThereAnything = str.size() > 0u;
     bool   len_is_zero     = detail::rawMemoryToString(isThereAnything).size() == 0u;

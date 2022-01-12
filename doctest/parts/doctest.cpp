@@ -235,6 +235,10 @@ namespace {
 } // namespace
 
 namespace detail {
+    void writeChars(std::ostream* stream, const char* cstr, unsigned long count) {
+        stream->write(cstr, count);
+    }
+
     String rawMemoryToString(const void* object, unsigned size) {
         // Reverse order for little endian architectures
         int i = 0, end = static_cast<int>(size), inc = 1;

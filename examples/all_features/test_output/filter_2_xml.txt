@@ -90,6 +90,7 @@
     <TestCase name="namespace 8 friend vs global" filename="namespace8.cpp" line="0" skipped="true"/>
     <TestCase name="namespace 9 both global" filename="namespace9.cpp" line="0" skipped="true"/>
     <TestCase name="no checks" filename="no_failures.cpp" line="0" skipped="true"/>
+    <TestCase name="no headers" filename="stringification.cpp" line="0" skipped="true"/>
     <TestCase name="normal macros" filename="assertion_macros.cpp" line="0" skipped="true"/>
   </TestSuite>
   <TestSuite name="ts1">
@@ -136,6 +137,6 @@
     <TestCase name="will end from an unknown exception" filename="coverage_maxout.cpp" line="0" skipped="true"/>
   </TestSuite>
   <OverallResultsAsserts successes="0" failures="0"/>
-  <OverallResultsTestCases successes="0" failures="0" skipped="96"/>
+  <OverallResultsTestCases successes="0" failures="0" skipped="97"/>
 </doctest>
 Program code.

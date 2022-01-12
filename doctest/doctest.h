@@ -904,16 +904,6 @@ namespace detail {
     DOCTEST_INTERFACE std::ostream* tlssPush();
     DOCTEST_INTERFACE String tlssPop();
 
-
-    template <bool C>
-    struct StringMakerBase
-    {
-        template <typename T>
-        static String convert(const DOCTEST_REF_WRAP(T)) {
-            return "{?}";
-        }
-    };
-
     // Vector<int> and various type other than pointer or array.
     template<typename T>
     struct filldata
@@ -923,22 +913,29 @@ namespace detail {
         }
     };
 
-    template<typename T,unsigned long N>
+    template<typename T, unsigned long N>
     struct filldata<T[N]>
     {
         static void fill(std::ostream* stream, const T (&in)[N]) {
+            *stream << "[";
             for (unsigned long i = 0; i < N; i++) {
+                if (i != 0) { *stream << ", "; }
                 *stream << in[i];
             }
+            *stream << "]";
         }
     };
+
+    // "forward declaration" for ostream::write
+    DOCTEST_INTERFACE void writeChars(std::ostream* stream, const char* cstr, unsigned long count);
 
     // Specialized since we don't want the terminating null byte!
     template<unsigned long N>
     struct filldata<const char[N]>
     {
         static void fill(std::ostream* stream, const char(&in)[N]) {
-            *stream << in;
+            // Cut off 0 byte if null-terminated
+            writeChars(stream, in, in[N-1] == '\0' ? N-1 : N);
         }
     };
 
@@ -947,30 +944,12 @@ namespace detail {
         filldata<T>::fill(stream, in);
     }
 
-    template<typename T,unsigned long N>
+    template<typename T, unsigned long N>
     void filloss(std::ostream* stream, const T (&in)[N]) {
         // T[N], T(&)[N], T(&&)[N] have same behaviour.
         // Hence remove reference.
         filldata<typename remove_reference<decltype(in)>::type>::fill(stream, in);
     }
-
-    template <>
-    struct StringMakerBase<true>
-    {
-        template <typename T>
-        static String convert(const DOCTEST_REF_WRAP(T) in) {
-            /* When parameter "in" is a null terminated const char* it works.
-             * When parameter "in" is a T arr[N] without '\0' we can fill the
-             * stringstream with N objects (T=char).If in is char pointer *
-             * without '\0' , it would cause segfault
-             * stepping over unaccessible memory.
-             */
-
-            std::ostream* stream = tlssPush();
-            filloss(stream, in);
-            return tlssPop();
-        }
-    };
 
     DOCTEST_INTERFACE String rawMemoryToString(const void* object, unsigned size);
 
@@ -985,34 +964,65 @@ namespace detail {
     }
 } // namespace detail
 
-template <typename T>
-struct StringMaker : public detail::StringMakerBase<detail::has_insertion_operator<T>::value>
-{};
+namespace detail {
+    template <bool C>
+    struct StringStreamBase
+    {
+        template <typename T>
+        static void convert(std::ostream* s, const T&) {
+            *s << "{?}";
+        }
 
-template <typename T>
-struct StringMaker<T*>
-{
-    template <typename U>
-    static String convert(U* p) {
-        if(p)
-            return detail::rawMemoryToString(p);
-        return "NULL";
-    }
-};
+        // always treat char* as a string in this context - no matter
+        // if DOCTEST_CONFIG_TREAT_CHAR_STAR_AS_STRING is defined
+        static void convert(std::ostream* s, const char* in) { *s << String(in); }
+    };
 
-template <typename R, typename C>
-struct StringMaker<R C::*>
-{
-    static String convert(R C::*p) {
-        if(p)
-            return detail::rawMemoryToString(p);
-        return "NULL";
+    template <>
+    struct StringStreamBase<true>
+    {
+        template <typename T>
+        static void convert(std::ostream* s, const T& in) {
+            filloss(s, in);
+        }
+    };
+
+    template <typename T>
+    struct StringStream : public StringStreamBase<has_insertion_operator<T>::value>
+    {};
+
+    template <typename T>
+    void toStream(std::ostream* s, const T& value) {
+        StringStream<T>::convert(s, value);
     }
-};
+
+#ifdef DOCTEST_CONFIG_TREAT_CHAR_STAR_AS_STRING
+    DOCTEST_INTERFACE void toStream(std::ostream* s, char* in);
+    DOCTEST_INTERFACE void toStream(std::ostream* s, const char* in);
+#endif // DOCTEST_CONFIG_TREAT_CHAR_STAR_AS_STRING
+    DOCTEST_INTERFACE void toStream(std::ostream* s, bool in);
+    DOCTEST_INTERFACE void toStream(std::ostream* s, float in);
+    DOCTEST_INTERFACE void toStream(std::ostream* s, double in);
+    DOCTEST_INTERFACE void toStream(std::ostream* s, double long in);
+
+    DOCTEST_INTERFACE void toStream(std::ostream* s, char in);
+    DOCTEST_INTERFACE void toStream(std::ostream* s, char signed in);
+    DOCTEST_INTERFACE void toStream(std::ostream* s, char unsigned in);
+    DOCTEST_INTERFACE void toStream(std::ostream* s, int short in);
+    DOCTEST_INTERFACE void toStream(std::ostream* s, int short unsigned in);
+    DOCTEST_INTERFACE void toStream(std::ostream* s, int in);
+    DOCTEST_INTERFACE void toStream(std::ostream* s, int unsigned in);
+    DOCTEST_INTERFACE void toStream(std::ostream* s, int long in);
+    DOCTEST_INTERFACE void toStream(std::ostream* s, int long unsigned in);
+    DOCTEST_INTERFACE void toStream(std::ostream* s, int long long in);
+    DOCTEST_INTERFACE void toStream(std::ostream* s, int long long unsigned in);
+}
 
 template <typename T, typename detail::enable_if<!detail::is_enum<T>::value, bool>::type = true>
 String toString(const DOCTEST_REF_WRAP(T) value) {
-    return StringMaker<T>::convert(value);
+    std::ostream* stream = detail::tlssPush();
+    detail::toStream(stream, value);
+    return detail::tlssPop();
 }
 
 #ifdef DOCTEST_CONFIG_TREAT_CHAR_STAR_AS_STRING
@@ -1663,58 +1673,6 @@ DOCTEST_CLANG_SUPPRESS_WARNING_POP
     };
 
     DOCTEST_INTERFACE void registerExceptionTranslatorImpl(const IExceptionTranslator* et);
-
-    template <bool C>
-    struct StringStreamBase
-    {
-        template <typename T>
-        static void convert(std::ostream* s, const T& in) {
-            *s << toString(in);
-        }
-
-        // always treat char* as a string in this context - no matter
-        // if DOCTEST_CONFIG_TREAT_CHAR_STAR_AS_STRING is defined
-        static void convert(std::ostream* s, const char* in) { *s << String(in); }
-    };
-
-    template <>
-    struct StringStreamBase<true>
-    {
-        template <typename T>
-        static void convert(std::ostream* s, const T& in) {
-            *s << in;
-        }
-    };
-
-    template <typename T>
-    struct StringStream : public StringStreamBase<has_insertion_operator<T>::value>
-    {};
-
-    template <typename T>
-    void toStream(std::ostream* s, const T& value) {
-        StringStream<T>::convert(s, value);
-    }
-
-#ifdef DOCTEST_CONFIG_TREAT_CHAR_STAR_AS_STRING
-    DOCTEST_INTERFACE void toStream(std::ostream* s, char* in);
-    DOCTEST_INTERFACE void toStream(std::ostream* s, const char* in);
-#endif // DOCTEST_CONFIG_TREAT_CHAR_STAR_AS_STRING
-    DOCTEST_INTERFACE void toStream(std::ostream* s, bool in);
-    DOCTEST_INTERFACE void toStream(std::ostream* s, float in);
-    DOCTEST_INTERFACE void toStream(std::ostream* s, double in);
-    DOCTEST_INTERFACE void toStream(std::ostream* s, double long in);
-
-    DOCTEST_INTERFACE void toStream(std::ostream* s, char in);
-    DOCTEST_INTERFACE void toStream(std::ostream* s, char signed in);
-    DOCTEST_INTERFACE void toStream(std::ostream* s, char unsigned in);
-    DOCTEST_INTERFACE void toStream(std::ostream* s, int short in);
-    DOCTEST_INTERFACE void toStream(std::ostream* s, int short unsigned in);
-    DOCTEST_INTERFACE void toStream(std::ostream* s, int in);
-    DOCTEST_INTERFACE void toStream(std::ostream* s, int unsigned in);
-    DOCTEST_INTERFACE void toStream(std::ostream* s, int long in);
-    DOCTEST_INTERFACE void toStream(std::ostream* s, int long unsigned in);
-    DOCTEST_INTERFACE void toStream(std::ostream* s, int long long in);
-    DOCTEST_INTERFACE void toStream(std::ostream* s, int long long unsigned in);
 
     // ContextScope base class used to allow implementing methods of ContextScope 
     // that don't depend on the template parameter in doctest.cpp.
@@ -3195,6 +3153,10 @@ namespace {
 } // namespace
 
 namespace detail {
+    void writeChars(std::ostream* stream, const char* cstr, unsigned long count) {
+        stream->write(cstr, count);
+    }
+
     String rawMemoryToString(const void* object, unsigned size) {
         // Reverse order for little endian architectures
         int i = 0, end = static_cast<int>(size), inc = 1;

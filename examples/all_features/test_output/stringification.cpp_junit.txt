@@ -1,6 +1,32 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <testsuites>
-  <testsuite name="all_features" errors="2" failures="9" tests="9">
+  <testsuite name="all_features" errors="2" failures="13" tests="13">
+    <testcase classname="stringification.cpp" name="no headers" status="run">
+      <failure message="1as == NULL" type="CHECK">
+stringification.cpp(0):
+CHECK( chs1 == nullptr ) is NOT correct!
+  values: CHECK( 1as == NULL )
+
+      </failure>
+      <failure message="1as == NULL" type="CHECK">
+stringification.cpp(0):
+CHECK( chs2 == nullptr ) is NOT correct!
+  values: CHECK( 1as == NULL )
+
+      </failure>
+      <failure message="1as == NULL" type="CHECK">
+stringification.cpp(0):
+CHECK( "1as" == nullptr ) is NOT correct!
+  values: CHECK( 1as == NULL )
+
+      </failure>
+      <failure message="[0, 1, 1, 2, 3, 5, 8, 13] == NULL" type="CHECK">
+stringification.cpp(0):
+CHECK( ints == nullptr ) is NOT correct!
+  values: CHECK( [0, 1, 1, 2, 3, 5, 8, 13] == NULL )
+
+      </failure>
+    </testcase>
     <testcase classname="stringification.cpp" name="all asserts should fail and show how the objects get stringified" status="run">
       <failure message="Foo{} == Foo{}" type="CHECK">
 stringification.cpp(0):
@@ -26,10 +52,10 @@ CHECK( vec1 == vec2 ) is NOT correct!
   values: CHECK( [1, 2, 3] == [1, 2, 4] )
 
       </failure>
-      <failure message="[1, 42, 3, ] == [1, 2, 666, ]" type="CHECK">
+      <failure message="[1, 42, 3] == [1, 2, 666]" type="CHECK">
 stringification.cpp(0):
 CHECK( lst_1 == lst_2 ) is NOT correct!
-  values: CHECK( [1, 42, 3, ] == [1, 2, 666, ] )
+  values: CHECK( [1, 42, 3] == [1, 2, 666] )
 
       </failure>
       <failure message="MyOtherType: 42 == MyOtherType: 666" type="CHECK">
