@@ -730,9 +730,6 @@ const char* assertString(assertType::Enum at) {
         DOCTEST_GENERATE_ASSERT_TYPE_CASES(UNARY);
         DOCTEST_GENERATE_ASSERT_TYPE_CASES(UNARY_FALSE);
 
-        DOCTEST_GENERATE_ASSERT_TYPE_CASES(NAN);
-        DOCTEST_GENERATE_ASSERT_TYPE_CASES(NOT_NAN);
-
         default: DOCTEST_INTERNAL_ERROR("Tried stringifying invalid assert type!");
     }
     DOCTEST_MSVC_SUPPRESS_WARNING_POP
@@ -768,6 +765,22 @@ const char* skipPathFromFilename(const char* file) {
 }
 DOCTEST_CLANG_SUPPRESS_WARNING_POP
 DOCTEST_GCC_SUPPRESS_WARNING_POP
+
+DOCTEST_MSVC_SUPPRESS_WARNING_WITH_PUSH(4738)
+template <typename F>
+IsNaN<F>::operator bool() const {
+    return std::isnan(val);
+}
+DOCTEST_MSVC_SUPPRESS_WARNING_POP
+template IsNaN<float>;
+template IsNaN<double>;
+template IsNaN<long double>;
+std::ostream& operator<<(std::ostream& out, IsNaN<float> nanCheck)
+    { out << nanCheck.val; return out; }
+std::ostream& operator<<(std::ostream& out, IsNaN<double> nanCheck)
+    { out << nanCheck.val; return out; }
+std::ostream& operator<<(std::ostream& out, IsNaN<long double> nanCheck)
+    { out << nanCheck.val; return out; }
 
 bool SubcaseSignature::operator<(const SubcaseSignature& other) const {
     if(m_line != other.m_line)
@@ -1724,17 +1737,6 @@ namespace {
 #endif // DOCTEST_CONFIG_POSIX_SIGNALS || DOCTEST_CONFIG_WINDOWS_SEH
 } // namespace
 namespace detail {
-
-    DOCTEST_MSVC_SUPPRESS_WARNING_WITH_PUSH(4738)
-    template <typename T>
-    bool is_nan(T t) {
-        return std::isnan(t);
-    }
-    DOCTEST_MSVC_SUPPRESS_WARNING_POP
-    template bool is_nan(float);
-    template bool is_nan(double);
-    template bool is_nan(long double);
-
     ResultBuilder::ResultBuilder(assertType::Enum at, const char* file, int line, const char* expr,
                                  const char* exception_type, const char* exception_string) {
         m_test_case        = g_cs->currentTest;

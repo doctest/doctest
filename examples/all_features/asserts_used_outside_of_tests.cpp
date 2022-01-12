@@ -22,7 +22,6 @@ static void some_func() {
 
     CHECK(false);
     CHECK_THROWS(std::cout << "hello! \n");
-    CHECK_NAN(0.);
 }
 
 // std::mutex g_mut;

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <testsuites>
-  <testsuite name="all_features" errors="2" failures="7" tests="7">
+  <testsuite name="all_features" errors="2" failures="9" tests="9">
     <testcase classname="stringification.cpp" name="all asserts should fail and show how the objects get stringified" status="run">
       <failure message="Foo{} == Foo{}" type="CHECK">
 stringification.cpp(0):
@@ -45,6 +45,18 @@ CHECK( s1 == s2 ) is NOT correct!
   values: CHECK( MyOtherType: 42 == MyOtherType: 666 )
   logged: s1=MyOtherType: 42 s2=MyOtherType: 666
           MyOtherType: 42 is not really MyOtherType: 666
+
+      </failure>
+      <failure message="0.5" type="CHECK">
+stringification.cpp(0):
+CHECK( doctest::IsNaN(0.5) ) is NOT correct!
+  values: CHECK( 0.5 )
+
+      </failure>
+      <failure message="inf" type="CHECK">
+stringification.cpp(0):
+CHECK( doctest::IsNaN(std::numeric_limits&lt;float>::infinity()) ) is NOT correct!
+  values: CHECK( inf )
 
       </failure>
       <error message="exception">

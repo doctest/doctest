@@ -210,8 +210,6 @@ TEST_CASE("check return values") {
     if (CHECK_THROWS_AS(throw_if(true, 2), int)) { MESSAGE(":D"); }
     if (CHECK_NOTHROW(throw_if(false, 2))) { MESSAGE(":D"); }
     if (CHECK_THROWS_WITH(throw_if(true, 2), "2")) { MESSAGE(":D"); }
-    if (CHECK_NAN(std::numeric_limits<float>::quiet_NaN())) { MESSAGE(":D"); }
-    if (CHECK_NOT_NAN(22.)) { MESSAGE(":D"); }
 }
 
 TEST_CASE("check return values no print") {
@@ -221,15 +219,5 @@ TEST_CASE("check return values no print") {
     if (CHECK_THROWS_AS(throw_if(true, 2), doctest::Approx)) { MESSAGE(":D"); }
     if (CHECK_NOTHROW(throw_if(true, 2))) { MESSAGE(":D"); }
     if (CHECK_THROWS_WITH(throw_if(true, 2), "1")) { MESSAGE(":D"); }
-    if (CHECK_NAN(0.)) { MESSAGE(":D"); }
-    // CHECK_NOT_NAN can't be checked because stringification is (partly) implementation defined
 }
 DOCTEST_MSVC_SUPPRESS_WARNING_POP
-
-TEST_CASE("nan") {
-    REQUIRE_NOT_NAN(0.f);
-    CHECK_NAN(std::numeric_limits<long double>::infinity());
-    CHECK_NOT_NAN(0.);
-    WARN_NOT_NAN(std::numeric_limits<float>::quiet_NaN());
-    REQUIRE_NAN(std::numeric_limits<long double>::signaling_NaN());
-}
