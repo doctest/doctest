@@ -1,7 +1,6 @@
 #include <doctest/doctest.h>
 
 #include <cstdio>
-#include <limits>
 
 
 #ifndef TEST_FLIP
