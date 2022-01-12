@@ -8,7 +8,7 @@ I am a test from the executable!
     <testcase classname="dll.cpp" name="dll" status="run">
       <failure message="0.1" type="CHECK">
 dll.cpp(0):
-CHECK( doctest::IsNaN&lt;long double>(0.1) ) is NOT correct!
+CHECK( doctest::IsNaN&lt;long double>(0.1L) ) is NOT correct!
   values: CHECK( 0.1 )
 
       </failure>

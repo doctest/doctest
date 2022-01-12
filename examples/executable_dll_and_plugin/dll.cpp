@@ -8,7 +8,7 @@ DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_END
 TEST_CASE("dll") {
     std::cout << "I am a test from the dll!\n";
     CHECK(true);
-    CHECK(doctest::IsNaN<long double>(0.1));
+    CHECK(doctest::IsNaN<long double>(0.1L));
 }
 
 DOCTEST_SYMBOL_EXPORT void from_dll();   // to silence "-Wmissing-declarations" with GCC

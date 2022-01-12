@@ -6,7 +6,7 @@
 I am a test from the dll!
       <Expression success="false" type="CHECK" filename="dll.cpp" line="0">
         <Original>
-          doctest::IsNaN&lt;long double>(0.1)
+          doctest::IsNaN&lt;long double>(0.1L)
         </Original>
         <Expanded>
           0.1
