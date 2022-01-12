@@ -84,11 +84,6 @@ struct Foo
     friend bool operator==(const Foo&, const Foo&) { return false; }
 };
 
-std::ostream& operator<<(std::ostream& stream, const Bar::Foo&) {
-    stream << "Foo{}";
-    return stream;
-}
-
 struct MyOtherType
 {
     int data;
@@ -103,6 +98,16 @@ OStream& operator<<(OStream& stream, const MyOtherType& in) {
 }
 
 } // namespace Bar
+
+namespace doctest {
+    namespace detail {
+        template <> struct StringStream<Bar::Foo> {
+            static void convert(std::ostream* s, const Bar::Foo&) {
+                *s << "Foo{}";
+            }
+        };
+    }
+}
 
 // set an exception translator for MyTypeInherited<int>
 REGISTER_EXCEPTION_TRANSLATOR(MyTypeInherited<int>& ex) {
