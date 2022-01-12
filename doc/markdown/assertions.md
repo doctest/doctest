@@ -113,6 +113,8 @@ This is a combination of ```<LEVEL>_THROWS_WITH``` and ```<LEVEL>_THROWS_AS```.
 CHECK_THROWS_WITH_AS(func(), "invalid operation!", std::runtime_error);
 ```
 
+All `THROWS_WITH` macros are unaffected by `DOCTEST_CONFIG_EVALUATE_ASSERTS_EVEN_WHEN_DISABLED`.
+
 - ```<LEVEL>_NOTHROW(expression)```
 
 Expects that no exception is thrown during evaluation of the expression.
@@ -120,6 +122,19 @@ Expects that no exception is thrown during evaluation of the expression.
 Note that these asserts also have a ```_MESSAGE``` form - like ```CHECK_THROWS_MESSAGE(expression, message)``` - these work identically to the ```_MESSAGE``` form of the normal macros (```CHECK_MESSAGE(a < b, "this shouldn't fail")```) described earlier.
 
 One may use the [**```DOCTEST_CONFIG_VOID_CAST_EXPRESSIONS```**](configuration.md#doctest_config_void_cast_expressions) config identifier to cast the expression in these asserts to void to avoid warnings or other issues - for example nodiscard statements whose result isn't checked. This will however limit the ability to write entire ```{}``` blocks of code as the expression (or multiple statements) but in that case a simple lambda can be used. This should have been the default behavior from day 1 of the framework...
+
+## NaN checking
+
+```<LEVEL>``` is one of 3 possible: ```REQUIRE```/```CHECK```/```WARN```.
+
+- ```<LEVEL>_NAN(expression)```
+- ```<LEVEL>_NOT_NAN(expression)```
+
+These utility macros check if a floating point value is or is not NaN respectively.
+
+They capture the actual float value on assertion failure.
+
+These macros are unaffected by `DOCTEST_CONFIG_EVALUATE_ASSERTS_EVEN_WHEN_DISABLED`.
 
 ## Using asserts out of a testing context
 
@@ -133,16 +148,21 @@ Checkout the [**example**](../../examples/all_features/asserts_used_outside_of_t
 
 Currently [**logging macros**](logging.md) cannot be used for extra context for asserts outside of a test run. That means that the ```_MESSAGE``` variants of asserts are also not usable - since they are just a packed ```INFO()``` with an assert right after it.
 
-## NaN checking
+## Using asserts as conditions
 
-```<LEVEL>``` is one of 3 possible: ```REQUIRE```/```CHECK```/```WARN```.
+All assertion macros return a boolean value, reporting whether they succeeded. This can be used, for example, to have `nullptr` checks that don't terminate the test case on failure.
 
-- ```<LEVEL>_NAN(expression)```
-- ```<LEVEL>_NOT_NAN(expression)```
+Example:
+```c++
+if (CHECK(somePtr != nullptr))
+    CHECK(somePtr->someMethod() == 42);
+```
 
-These utility macros check if a floating point value is or is not NaN respectively.
+When `DOCTEST_CONFIG_DISABLE` is defined, all macros return `false` by default.
 
-They capture the actual float value on assertion failure.
+However, defining `DOCTEST_CONFIG_EVALUATE_ASSERTS_EVEN_WHEN_DISABLED` with `DOCTEST_CONFIG_DISABLE` causes the macros to evaluate their arguments and return the appropriate boolean value.
+
+Some macros are unaffected by `DOCTEST_CONFIG_EVALUATE_ASSERTS_EVEN_WHEN_DISABLED` because they rely on doctest functionality which is not available when `DOCTEST_CONFIG_DISABLE` is defined. This is stated in their documentation.
 
 ## Floating point comparisons
 
