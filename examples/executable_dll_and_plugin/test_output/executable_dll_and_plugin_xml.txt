@@ -4,7 +4,15 @@
   <TestSuite>
     <TestCase name="dll" filename="dll.cpp" line="0">
 I am a test from the dll!
-      <OverallResultsAsserts successes="0" failures="0" test_case_success="true"/>
+      <Expression success="false" type="CHECK" filename="dll.cpp" line="0">
+        <Original>
+          doctest::IsNaN&lt;long double>(0.1)
+        </Original>
+        <Expanded>
+          0.1
+        </Expanded>
+      </Expression>
+      <OverallResultsAsserts successes="1" failures="1" test_case_success="false"/>
     </TestCase>
     <TestCase name="implementation" filename="implementation.cpp" line="0">
 I am a test from the implementation!
@@ -56,6 +64,6 @@ I am a test from the executable!
       <OverallResultsAsserts successes="0" failures="2" test_case_success="false"/>
     </TestCase>
   </TestSuite>
-  <OverallResultsAsserts successes="0" failures="2"/>
-  <OverallResultsTestCases successes="3" failures="2" skipped="0"/>
+  <OverallResultsAsserts successes="1" failures="3"/>
+  <OverallResultsTestCases successes="2" failures="3" skipped="0"/>
 </doctest>

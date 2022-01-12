@@ -1127,9 +1127,14 @@ struct DOCTEST_INTERFACE IsNaN
     IsNaN(F f) : val(f) { }
     operator bool() const;
 };
-std::ostream& operator<<(std::ostream& out, IsNaN<float> nanCheck);
-std::ostream& operator<<(std::ostream& out, IsNaN<double> nanCheck);
-std::ostream& operator<<(std::ostream& out, IsNaN<long double> nanCheck);
+#ifndef DOCTEST_CONFIG_IMPLEMENTATION_IN_DLL
+extern template struct IsNaN<float>;
+extern template struct IsNaN<double>;
+extern template struct IsNaN<long double>;
+#endif
+DOCTEST_INTERFACE std::ostream& operator<<(std::ostream& out, IsNaN<float> nanCheck);
+DOCTEST_INTERFACE std::ostream& operator<<(std::ostream& out, IsNaN<double> nanCheck);
+DOCTEST_INTERFACE std::ostream& operator<<(std::ostream& out, IsNaN<long double> nanCheck);
 
 #ifndef DOCTEST_CONFIG_DISABLE
 

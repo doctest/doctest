@@ -2,11 +2,13 @@
 #include <doctest/doctest.h>
 
 DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_BEGIN
-#include <cstdio>
+#include <iostream>
 DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_END
 
 TEST_CASE("dll") {
-    printf("I am a test from the dll!\n");
+    std::cout << "I am a test from the dll!\n";
+    CHECK(true);
+    CHECK(doctest::IsNaN<long double>(0.1));
 }
 
 DOCTEST_SYMBOL_EXPORT void from_dll();   // to silence "-Wmissing-declarations" with GCC
