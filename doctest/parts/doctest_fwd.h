@@ -704,9 +704,6 @@ struct IsNaN
     IsNaN(F f) : val(f) { }
     operator bool() const;
 };
-extern template IsNaN<float>;
-extern template IsNaN<double>;
-extern template IsNaN<long double>;
 std::ostream& operator<<(std::ostream& out, IsNaN<float> nanCheck);
 std::ostream& operator<<(std::ostream& out, IsNaN<double> nanCheck);
 std::ostream& operator<<(std::ostream& out, IsNaN<long double> nanCheck);
