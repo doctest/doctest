@@ -857,12 +857,6 @@ String toString(const Approx& in) {
 }
 const ContextOptions* getContextOptions() { return DOCTEST_BRANCH_ON_DISABLED(nullptr, g_cs); }
 
-#if DOCTEST_MSVC
-#define DOCTEST_INTERFACE_DEF DOCTEST_INTERFACE
-#else
-#define DOCTEST_INTERFACE_DEF
-#endif
-
 DOCTEST_MSVC_SUPPRESS_WARNING_WITH_PUSH(4738)
 template <typename F>
 IsNaN<F>::operator bool() const {

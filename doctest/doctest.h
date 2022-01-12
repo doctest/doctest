@@ -317,6 +317,16 @@ DOCTEST_MSVC_SUPPRESS_WARNING(4623) // default constructor was implicitly define
 #define DOCTEST_INTERFACE
 #endif // DOCTEST_CONFIG_IMPLEMENTATION_IN_DLL
 
+// needed for extern template instantiations
+// see https://github.com/fmtlib/fmt/issues/2228
+#if DOCTEST_MSVC
+#define DOCTEST_INTERFACE_DECL
+#define DOCTEST_INTERFACE_DEF DOCTEST_INTERFACE
+#else // DOCTEST_MSVC
+#define DOCTEST_INTERFACE_DECL DOCTEST_INTERFACE
+#define DOCTEST_INTERFACE_DEF
+#endif // DOCTEST_MSVC
+
 #define DOCTEST_EMPTY
 
 #if DOCTEST_MSVC
@@ -3806,12 +3816,6 @@ String toString(const Approx& in) {
     return "Approx( " + doctest::toString(in.m_value) + " )";
 }
 const ContextOptions* getContextOptions() { return DOCTEST_BRANCH_ON_DISABLED(nullptr, g_cs); }
-
-#if DOCTEST_MSVC
-#define DOCTEST_INTERFACE_DEF DOCTEST_INTERFACE
-#else
-#define DOCTEST_INTERFACE_DEF
-#endif
 
 DOCTEST_MSVC_SUPPRESS_WARNING_WITH_PUSH(4738)
 template <typename F>
