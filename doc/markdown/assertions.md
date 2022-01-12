@@ -123,19 +123,6 @@ Note that these asserts also have a ```_MESSAGE``` form - like ```CHECK_THROWS_M
 
 One may use the [**```DOCTEST_CONFIG_VOID_CAST_EXPRESSIONS```**](configuration.md#doctest_config_void_cast_expressions) config identifier to cast the expression in these asserts to void to avoid warnings or other issues - for example nodiscard statements whose result isn't checked. This will however limit the ability to write entire ```{}``` blocks of code as the expression (or multiple statements) but in that case a simple lambda can be used. This should have been the default behavior from day 1 of the framework...
 
-## NaN checking
-
-```<LEVEL>``` is one of 3 possible: ```REQUIRE```/```CHECK```/```WARN```.
-
-- ```<LEVEL>_NAN(expression)```
-- ```<LEVEL>_NOT_NAN(expression)```
-
-These utility macros check if a floating point value is or is not NaN respectively.
-
-They capture the actual float value on assertion failure.
-
-These macros are unaffected by `DOCTEST_CONFIG_EVALUATE_ASSERTS_EVEN_WHEN_DISABLED`.
-
 ## Using asserts out of a testing context
 
 Asserts can be used outside of a testing context (in code not called from a ```TEST_CASE()```) instead of [```assert()```](https://en.cppreference.com/w/cpp/error/assert).
@@ -181,6 +168,18 @@ REQUIRE(22.0/7 == doctest::Approx(3.141).epsilon(0.01)); // allow for a 1% error
 ```
 
 When dealing with very large or very small numbers it can be useful to specify a scale, which can be achieved by calling the ```scale()``` method on the ```doctest::Approx``` instance.
+
+## NaN checking
+
+Two NaN floating point numbers do not compare equal to each other. This makes it quite inconvenient to check for NaN while capturing the value.
+```c++
+CHECK(std::isnan(performComputation()); // does not capture the result of the call
+```
+
+**doctest** provides `doctest::IsNaN` which can be used in assertions to check if a float (or any other floating point fundamental type) is indeed NaN, outputting the actual value if it is not.
+```c++
+CHECK(doctest::IsNaN(performComputation()); // captures the result!
+```
 
 --------
 
