@@ -3721,6 +3721,55 @@ std::ostream& operator<<(std::ostream& out, IsNaN<double> nanCheck)
 std::ostream& operator<<(std::ostream& out, IsNaN<long double> nanCheck)
     { out << nanCheck.val; return out; }
 
+namespace detail {
+    void toStream(std::ostream* s, bool in) { *s << (in ? "true" : "false"); }
+
+    template <typename T>
+    void fpToStream(std::ostream* s, T value, int precision) {
+        std::ostringstream oss;
+        oss << std::setprecision(precision) << std::fixed << value;
+        std::string d = oss.str();
+        size_t      i = d.find_last_not_of('0');
+        if (i != std::string::npos && i != d.size() - 1) {
+            if (d[i] == '.')
+                i++;
+            d = d.substr(0, i + 1);
+        }
+        *s << d;
+    }
+
+    void toStream(std::ostream* s, float in) { fpToStream(s, in, 5); }
+    void toStream(std::ostream* s, double in) { fpToStream(s, in, 10); }
+    void toStream(std::ostream* s, long double in) { fpToStream(s, in, 15); }
+
+#define DOCTEST_TO_STRING_OVERLOAD(type, fmt)                                                      \
+    void toStream(std::ostream* s, type in) {                                                      \
+        char buf[64];                                                                              \
+        std::sprintf(buf, fmt, in);                                                                \
+        *s << buf;                                                                                  \
+    }
+
+    DOCTEST_TO_STRING_OVERLOAD(char, "%d")
+    DOCTEST_TO_STRING_OVERLOAD(char signed, "%d")
+    DOCTEST_TO_STRING_OVERLOAD(char unsigned, "%u")
+    DOCTEST_TO_STRING_OVERLOAD(short, "%d")
+    DOCTEST_TO_STRING_OVERLOAD(short unsigned, "%u")
+    DOCTEST_TO_STRING_OVERLOAD(signed, "%d")
+    DOCTEST_TO_STRING_OVERLOAD(unsigned, "%u")
+    DOCTEST_TO_STRING_OVERLOAD(long, "%ld")
+    DOCTEST_TO_STRING_OVERLOAD(long unsigned, "%lu")
+    DOCTEST_TO_STRING_OVERLOAD(long long, "%lld")
+    DOCTEST_TO_STRING_OVERLOAD(long long unsigned, "%llu")
+
+    void toStream(std::ostream* s, std::nullptr_t) { *s << "NULL"; }
+
+    void toStream(std::ostream* s, const Approx& in) {
+        *s << "Approx( ";
+        toStream(s, in.m_value);
+        *s << " )";
+    }
+}
+
 } // namespace doctest
 
 #ifdef DOCTEST_CONFIG_DISABLE
@@ -4238,53 +4287,6 @@ namespace detail {
         if(std::find(getExceptionTranslators().begin(), getExceptionTranslators().end(), et) ==
            getExceptionTranslators().end())
             getExceptionTranslators().push_back(et);
-    }
-
-    void toStream(std::ostream* s, bool in) { *s << (in ? "true" : "false"); }
-
-    template <typename T>
-    void fpToStream(std::ostream* s, T value, int precision) {
-        std::ostringstream oss;
-        oss << std::setprecision(precision) << std::fixed << value;
-        std::string d = oss.str();
-        size_t      i = d.find_last_not_of('0');
-        if (i != std::string::npos && i != d.size() - 1) {
-            if (d[i] == '.')
-                i++;
-            d = d.substr(0, i + 1);
-        }
-        *s << d;
-    }
-
-    void toStream(std::ostream* s, float in) { fpToStream(s, in, 5); }
-    void toStream(std::ostream* s, double in) { fpToStream(s, in, 10); }
-    void toStream(std::ostream* s, long double in) { fpToStream(s, in, 15); }
-
-#define DOCTEST_TO_STRING_OVERLOAD(type, fmt)                                                      \
-    void toStream(std::ostream* s, type in) {                                                      \
-        char buf[64];                                                                              \
-        std::sprintf(buf, fmt, in);                                                                \
-        *s << buf;                                                                                  \
-    }
-
-    DOCTEST_TO_STRING_OVERLOAD(char, "%d")
-    DOCTEST_TO_STRING_OVERLOAD(char signed, "%d")
-    DOCTEST_TO_STRING_OVERLOAD(char unsigned, "%u")
-    DOCTEST_TO_STRING_OVERLOAD(short, "%d")
-    DOCTEST_TO_STRING_OVERLOAD(short unsigned, "%u")
-    DOCTEST_TO_STRING_OVERLOAD(signed, "%d")
-    DOCTEST_TO_STRING_OVERLOAD(unsigned, "%u")
-    DOCTEST_TO_STRING_OVERLOAD(long, "%ld")
-    DOCTEST_TO_STRING_OVERLOAD(long unsigned, "%lu")
-    DOCTEST_TO_STRING_OVERLOAD(long long, "%lld")
-    DOCTEST_TO_STRING_OVERLOAD(long long unsigned, "%llu")
-
-    void toStream(std::ostream* s, std::nullptr_t) { *s << "NULL"; }
-
-    void toStream(std::ostream* s, const Approx& in) {
-        *s << "Approx( ";
-        toStream(s, in.m_value);
-        *s << " )";
     }
 
     DOCTEST_THREAD_LOCAL std::vector<IContextScope*> g_infoContexts; // for logging with INFO()
