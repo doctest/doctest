@@ -3572,7 +3572,7 @@ bool operator>=(const String& lhs, const String& rhs) { return (lhs != rhs) ? lh
 
 std::ostream& operator<<(std::ostream& s, const String& in) { return s << in.c_str(); }
 
-namespace detail {
+namespace {
     void color_to_stream(std::ostream&, Color::Enum) DOCTEST_BRANCH_ON_DISABLED({}, ;)
 } // namespace
 
@@ -4023,7 +4023,9 @@ namespace detail {
         static std::set<TestCase> data;
         return data;
     }
-
+} // namespace detail
+namespace {
+    using namespace detail;
     // for sorting tests by file/line
     bool fileOrderComparator(const TestCase* lhs, const TestCase* rhs) {
         // this is needed because MSVC gives different case for drive letters
