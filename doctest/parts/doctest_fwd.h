@@ -912,21 +912,40 @@ namespace detail {
         }
     };
 
+    // "forward declarations" for ostream output ops
+    DOCTEST_INTERFACE void writeChars(std::ostream* stream, const char* cstr, unsigned long count);
+    DOCTEST_INTERFACE void writeChars(std::ostream* stream, const char* cstr);
+
     template<typename T, unsigned long N>
     struct filldata<T[N]>
     {
         static void fill(std::ostream* stream, const T (&in)[N]) {
-            *stream << "[";
+            writeChars(stream, "[");
             for (unsigned long i = 0; i < N; i++) {
-                if (i != 0) { *stream << ", "; }
+                if (i != 0) {  writeChars(stream, ", "); }
                 *stream << in[i];
             }
-            *stream << "]";
+            writeChars(stream, "]");
         }
     };
 
-    // "forward declaration" for ostream::write
-    DOCTEST_INTERFACE void writeChars(std::ostream* stream, const char* cstr, unsigned long count);
+    DOCTEST_INTERFACE String rawMemoryToString(const void* object, unsigned size);
+
+    template <typename T>
+    String rawMemoryToString(const T& object) {
+        return rawMemoryToString(&object, sizeof(object));
+    }
+
+    template <typename T>
+    struct filldata<T*>
+    {
+        static void fill(std::ostream* stream, const T* in) {
+            if (in)
+                *stream << rawMemoryToString(*in);
+            else
+                writeChars(stream, "NULL");
+        }
+    };
 
     // Specialized since we don't want the terminating null byte!
     template<unsigned long N>
@@ -950,117 +969,15 @@ namespace detail {
         filldata<typename remove_reference<decltype(in)>::type>::fill(stream, in);
     }
 
-    DOCTEST_INTERFACE String rawMemoryToString(const void* object, unsigned size);
-
-    template <typename T>
-    String rawMemoryToString(const DOCTEST_REF_WRAP(T) object) {
-        return rawMemoryToString(&object, sizeof(object));
-    }
-
     template <typename T>
     const char* type_to_string() {
         return "<>";
     }
 } // namespace detail
 
-namespace detail {
-    template <bool C>
-    struct StringStreamBase
-    {
-        template <typename T>
-        static void convert(std::ostream* s, const T&) {
-            *s << "{?}";
-        }
-
-        // always treat char* as a string in this context - no matter
-        // if DOCTEST_CONFIG_TREAT_CHAR_STAR_AS_STRING is defined
-        static void convert(std::ostream* s, const char* in) { *s << in; }
-    };
-
-    template <>
-    struct StringStreamBase<true>
-    {
-        template <typename T>
-        static void convert(std::ostream* s, const T& in) {
-            filloss(s, in);
-        }
-    };
-
-    template <typename T>
-    struct StringStream : public StringStreamBase<has_insertion_operator<T>::value>
-    {};
-
-    template <typename T>
-    void toStream(std::ostream* s, const T& value) {
-        StringStream<T>::convert(s, value);
-    }
-
-#ifdef DOCTEST_CONFIG_TREAT_CHAR_STAR_AS_STRING
-    DOCTEST_INTERFACE void toStream(std::ostream* s, char* in);
-    DOCTEST_INTERFACE void toStream(std::ostream* s, const char* in);
-#endif // DOCTEST_CONFIG_TREAT_CHAR_STAR_AS_STRING
-    DOCTEST_INTERFACE void toStream(std::ostream* s, bool in);
-    DOCTEST_INTERFACE void toStream(std::ostream* s, float in);
-    DOCTEST_INTERFACE void toStream(std::ostream* s, double in);
-    DOCTEST_INTERFACE void toStream(std::ostream* s, double long in);
-
-    DOCTEST_INTERFACE void toStream(std::ostream* s, char in);
-    DOCTEST_INTERFACE void toStream(std::ostream* s, char signed in);
-    DOCTEST_INTERFACE void toStream(std::ostream* s, char unsigned in);
-    DOCTEST_INTERFACE void toStream(std::ostream* s, int short in);
-    DOCTEST_INTERFACE void toStream(std::ostream* s, int short unsigned in);
-    DOCTEST_INTERFACE void toStream(std::ostream* s, int in);
-    DOCTEST_INTERFACE void toStream(std::ostream* s, int unsigned in);
-    DOCTEST_INTERFACE void toStream(std::ostream* s, int long in);
-    DOCTEST_INTERFACE void toStream(std::ostream* s, int long unsigned in);
-    DOCTEST_INTERFACE void toStream(std::ostream* s, int long long in);
-    DOCTEST_INTERFACE void toStream(std::ostream* s, int long long unsigned in);
-}
-
-template <typename T, typename detail::enable_if<!detail::is_enum<T>::value, bool>::type = true>
-String toString(const DOCTEST_REF_WRAP(T) value) {
-    std::ostream* stream = detail::tlssPush();
-    detail::toStream(stream, value);
-    return detail::tlssPop();
-}
-
-#ifdef DOCTEST_CONFIG_TREAT_CHAR_STAR_AS_STRING
-DOCTEST_INTERFACE String toString(char* in);
-DOCTEST_INTERFACE String toString(const char* in);
-#endif // DOCTEST_CONFIG_TREAT_CHAR_STAR_AS_STRING
-DOCTEST_INTERFACE String toString(bool in);
-DOCTEST_INTERFACE String toString(float in);
-DOCTEST_INTERFACE String toString(double in);
-DOCTEST_INTERFACE String toString(double long in);
-
-DOCTEST_INTERFACE String toString(char in);
-DOCTEST_INTERFACE String toString(char signed in);
-DOCTEST_INTERFACE String toString(char unsigned in);
-DOCTEST_INTERFACE String toString(int short in);
-DOCTEST_INTERFACE String toString(int short unsigned in);
-DOCTEST_INTERFACE String toString(int in);
-DOCTEST_INTERFACE String toString(int unsigned in);
-DOCTEST_INTERFACE String toString(int long in);
-DOCTEST_INTERFACE String toString(int long unsigned in);
-DOCTEST_INTERFACE String toString(int long long in);
-DOCTEST_INTERFACE String toString(int long long unsigned in);
-DOCTEST_INTERFACE String toString(std::nullptr_t in);
-
-template <typename T, typename detail::enable_if<detail::is_enum<T>::value, bool>::type = true>
-String toString(const DOCTEST_REF_WRAP(T) value) {
-    typedef typename detail::underlying_type<T>::type UT;
-    return toString(static_cast<UT>(value));
-}
-
-#if DOCTEST_MSVC >= DOCTEST_COMPILER(19, 20, 0)
-// see this issue on why this is needed: https://github.com/doctest/doctest/issues/183
-DOCTEST_INTERFACE String toString(const std::string& in);
-#endif // VS 2019
-
-class DOCTEST_INTERFACE Approx
+struct DOCTEST_INTERFACE Approx
 {
-public:
-    explicit Approx(double value);
+    Approx(double value);
 
     Approx operator()(double value) const;
 
@@ -1109,8 +1026,6 @@ public:
     DOCTEST_INTERFACE friend bool operator> (double lhs, const Approx & rhs);
     DOCTEST_INTERFACE friend bool operator> (const Approx & lhs, double rhs);
 
-    DOCTEST_INTERFACE friend String toString(const Approx& in);
-
 #ifdef DOCTEST_CONFIG_INCLUDE_TYPE_TRAITS
 #define DOCTEST_APPROX_PREFIX \
     template <typename T> friend typename detail::enable_if<std::is_constructible<double, T>::value, bool>::type
@@ -1132,13 +1047,81 @@ public:
 
     // clang-format on
 
-private:
     double m_epsilon;
     double m_scale;
     double m_value;
 };
 
-DOCTEST_INTERFACE String toString(const Approx& in);
+namespace detail {
+    template <bool C>
+    struct StringStreamBase
+    {
+        template <typename T>
+        static void convert(std::ostream* s, const T&) {
+            writeChars(s, "{?}");
+        }
+
+        // always treat char* as a string in this context - no matter
+        // if DOCTEST_CONFIG_TREAT_CHAR_STAR_AS_STRING is defined
+        static void convert(std::ostream* s, const char* in) { *s << in; }
+    };
+
+    template <>
+    struct StringStreamBase<true>
+    {
+        template <typename T>
+        static void convert(std::ostream* s, const T& in) {
+            filloss(s, in);
+        }
+    };
+
+    template <typename T>
+    struct StringStream : public StringStreamBase<has_insertion_operator<T>::value>
+    {};
+
+#ifdef DOCTEST_CONFIG_TREAT_CHAR_STAR_AS_STRING
+    DOCTEST_INTERFACE void toStream(std::ostream* s, const char* in) { writeChars(s, in); }
+#endif // DOCTEST_CONFIG_TREAT_CHAR_STAR_AS_STRING
+    DOCTEST_INTERFACE void toStream(std::ostream* s, bool in);
+    DOCTEST_INTERFACE void toStream(std::ostream* s, float in);
+    DOCTEST_INTERFACE void toStream(std::ostream* s, double in);
+    DOCTEST_INTERFACE void toStream(std::ostream* s, double long in);
+
+    DOCTEST_INTERFACE void toStream(std::ostream* s, char in);
+    DOCTEST_INTERFACE void toStream(std::ostream* s, char signed in);
+    DOCTEST_INTERFACE void toStream(std::ostream* s, char unsigned in);
+    DOCTEST_INTERFACE void toStream(std::ostream* s, short in);
+    DOCTEST_INTERFACE void toStream(std::ostream* s, short unsigned in);
+    DOCTEST_INTERFACE void toStream(std::ostream* s, signed in);
+    DOCTEST_INTERFACE void toStream(std::ostream* s, unsigned in);
+    DOCTEST_INTERFACE void toStream(std::ostream* s, long in);
+    DOCTEST_INTERFACE void toStream(std::ostream* s, long unsigned in);
+    DOCTEST_INTERFACE void toStream(std::ostream* s, long long in);
+    DOCTEST_INTERFACE void toStream(std::ostream* s, long long unsigned in);
+
+    DOCTEST_INTERFACE void toStream(std::ostream* s, std::nullptr_t in);
+
+    DOCTEST_INTERFACE void toStream(std::ostream* s, const std::string& in);
+
+    DOCTEST_INTERFACE void toStream(std::ostream* s, const Approx& in);
+
+    template <typename T, typename detail::enable_if<!detail::is_enum<T>::value, bool>::type = true>
+    void toStream(std::ostream* s, const DOCTEST_REF_WRAP(T) value) {
+        StringStream<T>::convert(s, value);
+    }
+
+    template <typename T, typename detail::enable_if<detail::is_enum<T>::value, bool>::type = true>
+    void toStream(std::ostream* s, const DOCTEST_REF_WRAP(T) value) {
+        return toStream(s, static_cast<typename detail::underlying_type<T>::type>(value));
+    }
+}
+
+template <typename T>
+String toString(const DOCTEST_REF_WRAP(T) value) {
+    std::ostream* stream = detail::tlssPush();
+    detail::toStream(stream, value);
+    return detail::tlssPop();
+}
 
 DOCTEST_INTERFACE const ContextOptions* getContextOptions();
 

@@ -8,10 +8,10 @@ stringification.cpp(0): MESSAGE: 1as
 stringification.cpp(0): ERROR: CHECK( chs1 == nullptr ) is NOT correct!
   values: CHECK( 1as == NULL )
 
-stringification.cpp(0): MESSAGE: 1as
+stringification.cpp(0): MESSAGE: 0x31
 
 stringification.cpp(0): ERROR: CHECK( chs2 == nullptr ) is NOT correct!
-  values: CHECK( 1as == NULL )
+  values: CHECK( 0x31 == NULL )
 
 stringification.cpp(0): MESSAGE: 1as
 
@@ -22,6 +22,14 @@ stringification.cpp(0): MESSAGE: [0, 1, 1, 2, 3, 5, 8, 13]
 
 stringification.cpp(0): ERROR: CHECK( ints == nullptr ) is NOT correct!
   values: CHECK( [0, 1, 1, 2, 3, 5, 8, 13] == NULL )
+
+stringification.cpp(0): ERROR: CHECK( cptr == nullptr ) is NOT correct!
+  values: CHECK( 0x03 == NULL )
+
+stringification.cpp(0): MESSAGE: 0
+
+stringification.cpp(0): ERROR: CHECK( A == C ) is NOT correct!
+  values: CHECK( 0 == 100 )
 
 ===============================================================================
 stringification.cpp(0):
@@ -75,6 +83,6 @@ stringification.cpp(0): ERROR: test case THREW exception: 5
 
 ===============================================================================
 [doctest] test cases:  3 | 0 passed |  3 failed |
-[doctest] assertions: 13 | 0 passed | 13 failed |
+[doctest] assertions: 15 | 0 passed | 15 failed |
 [doctest] Status: FAILURE!
 Program code.

@@ -11,6 +11,14 @@ TEST_CASE("no headers") {
 
     int ints[] = { 0, 1, 1, 2, 3, 5, 8, 13 };
     MESSAGE(ints); CHECK(ints == nullptr);
+
+    char* cptr = (char*)(ints + 4);
+    CHECK(cptr == nullptr);
+
+    enum Test {
+        A = 0, B, C = 100,
+    };
+    MESSAGE(A); CHECK(A == C);
 }
 
 DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_BEGIN

@@ -16,10 +16,10 @@ CHECK( str.compare("omgomgomg", false) != 0 ) is NOT correct!
   logged: should fail
 
       </failure>
-      <failure message="false" type="CHECK">
+      <failure message="true" type="CHECK_FALSE">
 coverage_maxout.cpp(0):
-CHECK( len_is_zero ) is NOT correct!
-  values: CHECK( false )
+CHECK_FALSE( isThereAnything ) is NOT correct!
+  values: CHECK_FALSE( true )
   logged: should fail
 
       </failure>

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <testsuites>
-  <testsuite name="all_features" errors="2" failures="13" tests="13">
+  <testsuite name="all_features" errors="2" failures="15" tests="15">
     <testcase classname="stringification.cpp" name="no headers" status="run">
       <failure message="1as == NULL" type="CHECK">
 stringification.cpp(0):
@@ -8,10 +8,10 @@ CHECK( chs1 == nullptr ) is NOT correct!
   values: CHECK( 1as == NULL )
 
       </failure>
-      <failure message="1as == NULL" type="CHECK">
+      <failure message="0x31 == NULL" type="CHECK">
 stringification.cpp(0):
 CHECK( chs2 == nullptr ) is NOT correct!
-  values: CHECK( 1as == NULL )
+  values: CHECK( 0x31 == NULL )
 
       </failure>
       <failure message="1as == NULL" type="CHECK">
@@ -24,6 +24,18 @@ CHECK( "1as" == nullptr ) is NOT correct!
 stringification.cpp(0):
 CHECK( ints == nullptr ) is NOT correct!
   values: CHECK( [0, 1, 1, 2, 3, 5, 8, 13] == NULL )
+
+      </failure>
+      <failure message="0x03 == NULL" type="CHECK">
+stringification.cpp(0):
+CHECK( cptr == nullptr ) is NOT correct!
+  values: CHECK( 0x03 == NULL )
+
+      </failure>
+      <failure message="0 == 100" type="CHECK">
+stringification.cpp(0):
+CHECK( A == C ) is NOT correct!
+  values: CHECK( 0 == 100 )
 
       </failure>
     </testcase>

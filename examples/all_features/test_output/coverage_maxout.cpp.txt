@@ -11,8 +11,8 @@ coverage_maxout.cpp(0): ERROR: CHECK( str.compare("omgomgomg", false) != 0 ) is 
   values: CHECK( 0 != 0 )
   logged: should fail
 
-coverage_maxout.cpp(0): ERROR: CHECK( len_is_zero ) is NOT correct!
-  values: CHECK( false )
+coverage_maxout.cpp(0): ERROR: CHECK_FALSE( isThereAnything ) is NOT correct!
+  values: CHECK_FALSE( true )
   logged: should fail
 
 coverage_maxout.cpp(0): ERROR: CHECK( b == 5 ) is NOT correct!

@@ -18,7 +18,7 @@
       </Expression>
       <Message type="WARNING" filename="stringification.cpp" line="0">
         <Text>
-          1as
+          0x31
         </Text>
       </Message>
       <Expression success="false" type="CHECK" filename="stringification.cpp" line="0">
@@ -26,7 +26,7 @@
           chs2 == nullptr
         </Original>
         <Expanded>
-          1as == NULL
+          0x31 == NULL
         </Expanded>
       </Expression>
       <Message type="WARNING" filename="stringification.cpp" line="0">
@@ -55,7 +55,28 @@
           [0, 1, 1, 2, 3, 5, 8, 13] == NULL
         </Expanded>
       </Expression>
-      <OverallResultsAsserts successes="0" failures="4" test_case_success="false"/>
+      <Expression success="false" type="CHECK" filename="stringification.cpp" line="0">
+        <Original>
+          cptr == nullptr
+        </Original>
+        <Expanded>
+          0x03 == NULL
+        </Expanded>
+      </Expression>
+      <Message type="WARNING" filename="stringification.cpp" line="0">
+        <Text>
+          0
+        </Text>
+      </Message>
+      <Expression success="false" type="CHECK" filename="stringification.cpp" line="0">
+        <Original>
+          A == C
+        </Original>
+        <Expanded>
+          0 == 100
+        </Expanded>
+      </Expression>
+      <OverallResultsAsserts successes="0" failures="6" test_case_success="false"/>
     </TestCase>
     <TestCase name="all asserts should fail and show how the objects get stringified" filename="stringification.cpp" line="0">
       <Message type="WARNING" filename="stringification.cpp" line="0">
@@ -171,7 +192,7 @@
       <OverallResultsAsserts successes="0" failures="0" test_case_success="false"/>
     </TestCase>
   </TestSuite>
-  <OverallResultsAsserts successes="0" failures="13"/>
+  <OverallResultsAsserts successes="0" failures="15"/>
   <OverallResultsTestCases successes="0" failures="3"/>
 </doctest>
 Program code.

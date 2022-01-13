@@ -87,14 +87,13 @@ TEST_CASE("exercising tricky code paths of doctest") {
 #endif
     str += oss.str().c_str();
     str += failureString(assertType::is_normal);
-    CHECK(str == "omgomgomgaaaNULLtrue00.5f0.50.199991111111"
-                 "omgomgomgaaaNULLtrue00.5f0.50.199991111111");
+    CHECK(str == "omgomgomgaaaNULLtrue00.50.50.199991111111"
+                 "omgomgomgaaaNULLtrue00.50.50.199991111111");
     // trigger code path for rawMemoryToString
     bool   isThereAnything = str.size() > 0u;
-    bool   len_is_zero     = detail::rawMemoryToString(isThereAnything).size() == 0u;
     String unknown         = toString(skip()); // trigger code path for "{?}"
     str                    = unknown;          // trigger code path for deleting memory in operator=
-    CHECK_MESSAGE(len_is_zero, "should fail");
+    CHECK_FALSE_MESSAGE(isThereAnything, "should fail");
 
     Approx a(5);
     a.scale(4);
