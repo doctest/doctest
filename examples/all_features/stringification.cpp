@@ -47,21 +47,24 @@ ostream& operator<<(ostream& stream, const vector<T>& in) {
 }
 
 // as an alternative you may write a specialization of doctest::StringMaker
-namespace doctest 
-{ namespace detail {
-template <typename T>
-struct StringStream<std::list<T>>
+namespace doctest
 {
-    static void convert(std::ostream* s, const std::list<T>& in) {
-        *s << "[";
+template <typename T>
+struct StringMaker<std::list<T>>
+{
+    static String convert(const std::list<T>& in) {
+        std::ostringstream oss;
+
+        oss << "[";
         for (typename std::list<T>::const_iterator it = in.begin(); it != in.end();) {
-            *s << *it;
-            if (++it != in.end()) { *s << ", "; }
+            oss << *it;
+            if (++it != in.end()) { oss << ", "; }
         }
-        *s << "]";
+        oss << "]";
+        return oss.str().c_str();
     }
 };
-} }
+}
 
 template <typename T, typename K>
 struct MyType
@@ -92,6 +95,9 @@ struct Foo
     friend bool operator==(const Foo&, const Foo&) { return false; }
 };
 
+// as a third option you may provide an overload of toString()
+inline doctest::String toString(const Foo&) { return "Foo{}"; }
+
 struct MyOtherType
 {
     int data;
@@ -106,16 +112,6 @@ OStream& operator<<(OStream& stream, const MyOtherType& in) {
 }
 
 } // namespace Bar
-
-namespace doctest {
-    namespace detail {
-        template <> struct StringStream<Bar::Foo> {
-            static void convert(std::ostream* s, const Bar::Foo&) {
-                *s << "Foo{}";
-            }
-        };
-    }
-}
 
 // set an exception translator for MyTypeInherited<int>
 REGISTER_EXCEPTION_TRANSLATOR(MyTypeInherited<int>& ex) {

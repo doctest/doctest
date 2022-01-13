@@ -845,9 +845,9 @@ namespace detail {
         *s << d;
     }
 
-    void toStream(std::ostream* s, float in) { fpToStream(s, in, 5); }
+    void toStream(std::ostream* s, float in) { fpToStream(s, in, 5); *s << "f"; }
     void toStream(std::ostream* s, double in) { fpToStream(s, in, 10); }
-    void toStream(std::ostream* s, long double in) { fpToStream(s, in, 15); }
+    void toStream(std::ostream* s, long double in) { fpToStream(s, in, 15); *s << "L"; }
 
 #define DOCTEST_TO_STRING_OVERLOAD(type, fmt)                                                      \
     void toStream(std::ostream* s, type in) {                                                      \

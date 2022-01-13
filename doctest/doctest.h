@@ -1110,10 +1110,17 @@ namespace detail {
 }
 
 template <typename T>
+struct StringMaker {
+    static String convert(const T& in) {
+        std::ostream* stream = detail::tlssPush();
+        detail::toStream(stream, in);
+        return detail::tlssPop();
+    }
+};
+
+template <typename T>
 String toString(const DOCTEST_REF_WRAP(T) value) {
-    std::ostream* stream = detail::tlssPush();
-    detail::toStream(stream, value);
-    return detail::tlssPop();
+    return StringMaker<T>::convert(value);
 }
 
 DOCTEST_INTERFACE const ContextOptions* getContextOptions();
@@ -1690,7 +1697,8 @@ DOCTEST_CLANG_SUPPRESS_WARNING_POP
         // the preferred way of chaining parameters for stringification
         template <typename T>
         MessageBuilder& operator,(const T& in) {
-            toStream(m_stream, in);
+            // TODO: Make use of toStream here
+            *m_stream << toString(in);
             return *this;
         }
 
@@ -3738,9 +3746,9 @@ namespace detail {
         *s << d;
     }
 
-    void toStream(std::ostream* s, float in) { fpToStream(s, in, 5); }
+    void toStream(std::ostream* s, float in) { fpToStream(s, in, 5); *s << "f"; }
     void toStream(std::ostream* s, double in) { fpToStream(s, in, 10); }
-    void toStream(std::ostream* s, long double in) { fpToStream(s, in, 15); }
+    void toStream(std::ostream* s, long double in) { fpToStream(s, in, 15); *s << "L"; }
 
 #define DOCTEST_TO_STRING_OVERLOAD(type, fmt)                                                      \
     void toStream(std::ostream* s, type in) {                                                      \

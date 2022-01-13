@@ -61,19 +61,19 @@ TEST_CASE("exercising tricky code paths of doctest") {
     str += toString("aaa")                            //
            + toString(nullptr)                        //
            + toString(true)                           //
-           + toString(static_cast<unsigned int>(0))   //
+           + toString(0u)                             //
            + toString(0.5f)                           //
            + toString(0.5)                            //
-           + toString(static_cast<long double>(0.1))  //
+           + toString(0.1L)                           //
            + toString('c')                            //
            + toString(static_cast<signed char>('c'))  //
            + toString(static_cast<unsigned char>(1))  //
            + toString(static_cast<short>(1))          //
-           + toString(static_cast<long>(1))           //
-           + toString(static_cast<unsigned long>(1))  //
+           + toString(1L)                             //
+           + toString(1UL)                            //
            + toString(static_cast<unsigned short>(1)) //
-           + toString(static_cast<long long>(1))      //
-           + toString(static_cast<unsigned long long>(1));
+           + toString(1LL)                            //
+           + toString(1ULL);
 
     std::ostringstream oss;
 
@@ -87,8 +87,8 @@ TEST_CASE("exercising tricky code paths of doctest") {
 #endif
     str += oss.str().c_str();
     str += failureString(assertType::is_normal);
-    CHECK(str == "omgomgomgaaaNULLtrue00.50.50.199991111111"
-                 "omgomgomgaaaNULLtrue00.50.50.199991111111");
+    CHECK(str == "omgomgomgaaaNULLtrue00.5f0.50.1L99991111111"
+                 "omgomgomgaaaNULLtrue00.5f0.50.1L99991111111");
     // trigger code path for rawMemoryToString
     bool   isThereAnything = str.size() > 0u;
     String unknown         = toString(skip()); // trigger code path for "{?}"
