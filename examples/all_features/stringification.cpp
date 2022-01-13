@@ -7,6 +7,7 @@ DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_BEGIN
 #include <vector>
 #include <list>
 #include <sstream>
+#include <limits>
 DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_END
 
 DOCTEST_MSVC_SUPPRESS_WARNING(5045) // Spectre mitigation diagnostics
@@ -145,6 +146,10 @@ TEST_CASE("all asserts should fail and show how the objects get stringified") {
         CHECK(s1 == s2);
         CHECK_MESSAGE(s1 == s2, s1, " is not really ", s2);
     }
+
+    CHECK(doctest::IsNaN<double>(0.5));
+    CHECK(doctest::IsNaN<float>(std::numeric_limits<float>::infinity()));
+    // can't test actual nan because it's implementation defined
 
     // lets see if this exception gets translated
     throw_if(true, bla1);

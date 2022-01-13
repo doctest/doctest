@@ -219,10 +219,6 @@ assertion_macros.cpp(0): MESSAGE: :D
 
 assertion_macros.cpp(0): MESSAGE: :D
 
-assertion_macros.cpp(0): MESSAGE: :D
-
-assertion_macros.cpp(0): MESSAGE: :D
-
 ===============================================================================
 assertion_macros.cpp(0):
 TEST CASE:  check return values no print
@@ -250,21 +246,8 @@ assertion_macros.cpp(0): ERROR: CHECK_NOTHROW( throw_if(true, 2) ) THREW excepti
 
 assertion_macros.cpp(0): ERROR: CHECK_THROWS_WITH( throw_if(true, 2), "1" ) threw a DIFFERENT exception: "2"
 
-assertion_macros.cpp(0): ERROR: CHECK_NAN( 0. ) is NOT correct!
-  values: CHECK_NAN( 0.0 )
-
 ===============================================================================
-assertion_macros.cpp(0):
-TEST CASE:  nan
-
-assertion_macros.cpp(0): ERROR: CHECK_NAN( std::numeric_limits<long double>::infinity() ) is NOT correct!
-  values: CHECK_NAN( inf )
-
-assertion_macros.cpp(0): WARNING: WARN_NOT_NAN( std::numeric_limits<float>::quiet_NaN() ) is NOT correct!
-  values: WARN_NOT_NAN( nanf )
-
-===============================================================================
-[doctest] test cases: 24 |  4 passed | 20 failed |
-[doctest] assertions: 99 | 49 passed | 50 failed |
+[doctest] test cases: 23 |  4 passed | 19 failed |
+[doctest] assertions: 92 | 44 passed | 48 failed |
 [doctest] Status: FAILURE!
 Program code.

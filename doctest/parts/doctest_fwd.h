@@ -314,6 +314,16 @@ DOCTEST_MSVC_SUPPRESS_WARNING(4623) // default constructor was implicitly define
 #define DOCTEST_INTERFACE
 #endif // DOCTEST_CONFIG_IMPLEMENTATION_IN_DLL
 
+// needed for extern template instantiations
+// see https://github.com/fmtlib/fmt/issues/2228
+#if DOCTEST_MSVC
+#define DOCTEST_INTERFACE_DECL
+#define DOCTEST_INTERFACE_DEF DOCTEST_INTERFACE
+#else // DOCTEST_MSVC
+#define DOCTEST_INTERFACE_DECL DOCTEST_INTERFACE
+#define DOCTEST_INTERFACE_DEF
+#endif // DOCTEST_MSVC
+
 #define DOCTEST_EMPTY
 
 #if DOCTEST_MSVC
@@ -442,7 +452,6 @@ DOCTEST_GCC_SUPPRESS_WARNING_POP
 #ifndef DOCTEST_CONFIG_INCLUDE_TYPE_TRAITS
 #define DOCTEST_CONFIG_INCLUDE_TYPE_TRAITS
 #endif // DOCTEST_CONFIG_INCLUDE_TYPE_TRAITS
-#include <cmath>
 #include <cstddef>
 #include <ostream>
 #include <istream>
@@ -630,8 +639,6 @@ namespace assertType {
         is_ge = 2 * is_gt,
         is_le = 2 * is_ge,
 
-        is_nan = 2 * is_le,
-
         // macro types
 
         DT_WARN    = is_normal | is_warn,
@@ -693,14 +700,6 @@ namespace assertType {
         DT_WARN_UNARY_FALSE    = is_normal | is_false | is_unary | is_warn,
         DT_CHECK_UNARY_FALSE   = is_normal | is_false | is_unary | is_check,
         DT_REQUIRE_UNARY_FALSE = is_normal | is_false | is_unary | is_require,
-
-        DT_WARN_NAN = is_normal | is_nan | is_warn,
-        DT_CHECK_NAN = is_normal | is_nan | is_check,
-        DT_REQUIRE_NAN = is_normal | is_nan | is_require,
-
-        DT_WARN_NOT_NAN = is_normal | is_nan | is_false | is_warn,
-        DT_CHECK_NOT_NAN = is_normal | is_nan | is_false | is_check,
-        DT_REQUIRE_NOT_NAN = is_normal | is_nan | is_false | is_require,
     };
 } // namespace assertType
 
@@ -1131,6 +1130,22 @@ DOCTEST_INTERFACE String toString(const Approx& in);
 
 DOCTEST_INTERFACE const ContextOptions* getContextOptions();
 
+template <typename F>
+struct DOCTEST_INTERFACE_DECL IsNaN
+{
+    F val;
+    IsNaN(F f) : val(f) { }
+    operator bool() const;
+};
+#ifndef __MINGW32__
+extern template struct DOCTEST_INTERFACE_DECL IsNaN<float>;
+extern template struct DOCTEST_INTERFACE_DECL IsNaN<double>;
+extern template struct DOCTEST_INTERFACE_DECL IsNaN<long double>;
+#endif
+DOCTEST_INTERFACE std::ostream& operator<<(std::ostream& out, IsNaN<float> nanCheck);
+DOCTEST_INTERFACE std::ostream& operator<<(std::ostream& out, IsNaN<double> nanCheck);
+DOCTEST_INTERFACE std::ostream& operator<<(std::ostream& out, IsNaN<long double> nanCheck);
+
 #ifndef DOCTEST_CONFIG_DISABLE
 
 namespace detail {
@@ -1498,12 +1513,6 @@ DOCTEST_CLANG_SUPPRESS_WARNING_POP
     DOCTEST_BINARY_RELATIONAL_OP(4, doctest::detail::ge)
     DOCTEST_BINARY_RELATIONAL_OP(5, doctest::detail::le)
 
-    template <typename T>
-    bool is_nan(T);
-    extern template bool is_nan(float);
-    extern template bool is_nan(double);
-    extern template bool is_nan(long double);
-
     struct DOCTEST_INTERFACE ResultBuilder : public AssertData
     {
         ResultBuilder(assertType::Enum at, const char* file, int line, const char* expr,
@@ -1523,19 +1532,6 @@ DOCTEST_CLANG_SUPPRESS_WARNING_POP
         template <typename L>
         DOCTEST_NOINLINE bool unary_assert(const DOCTEST_REF_WRAP(L) val) {
             m_failed = !val;
-
-            if(m_at & assertType::is_false) //!OCLINT bitwise operator in conditional
-                m_failed = !m_failed;
-
-            if(m_failed || getContextOptions()->success)
-                m_decomp = toString(val);
-
-            return !m_failed;
-        }
-
-        template <typename L>
-        DOCTEST_NOINLINE bool nan_assert(L val) {
-            m_failed = !is_nan(val);
 
             if(m_at & assertType::is_false) //!OCLINT bitwise operator in conditional
                 m_failed = !m_failed;
@@ -1614,23 +1610,6 @@ DOCTEST_CLANG_SUPPRESS_WARNING_POP
         bool failed = !val;
 
         if(at & assertType::is_false) //!OCLINT bitwise operator in conditional
-            failed = !failed;
-
-        // ###################################################################################
-        // IF THE DEBUGGER BREAKS HERE - GO 1 LEVEL UP IN THE CALLSTACK FOR THE FAILING ASSERT
-        // THIS IS THE EFFECT OF HAVING 'DOCTEST_CONFIG_SUPER_FAST_ASSERTS' DEFINED
-        // ###################################################################################
-        DOCTEST_ASSERT_OUT_OF_TESTS(toString(val));
-        DOCTEST_ASSERT_IN_TESTS(toString(val));
-        return !failed;
-    }
-
-    template <typename L>
-    DOCTEST_NOINLINE bool nan_assert(assertType::Enum at, const char* file, int line,
-                                     const char* expr, L val) {
-        bool failed = !is_nan(val);
-
-        if (at & assertType::is_false) //!OCLINT bitwise operator in conditional
             failed = !failed;
 
         // ###################################################################################
@@ -2427,32 +2406,6 @@ int registerReporter(const char* name, int priority, bool isReporter) {
 #define DOCTEST_CHECK_UNARY_FALSE(...) DOCTEST_UNARY_ASSERT(DT_CHECK_UNARY_FALSE, __VA_ARGS__)
 #define DOCTEST_REQUIRE_UNARY_FALSE(...) DOCTEST_UNARY_ASSERT(DT_REQUIRE_UNARY_FALSE, __VA_ARGS__)
 
-#ifndef DOCTEST_CONFIG_SUPER_FAST_ASSERTS
-
-#define DOCTEST_NAN_ASSERT(assert_type, ...)                                                       \
-    [&] {                                                                                          \
-        doctest::detail::ResultBuilder DOCTEST_RB(doctest::assertType::assert_type, __FILE__,      \
-                                                   __LINE__, #__VA_ARGS__);                        \
-        DOCTEST_WRAP_IN_TRY(                                                                       \
-            DOCTEST_RB.nan_assert(__VA_ARGS__))                                                    \
-        DOCTEST_ASSERT_LOG_REACT_RETURN(DOCTEST_RB);                                               \
-    }()
-
-#else // DOCTEST_CONFIG_SUPER_FAST_ASSERTS
-
-#define DOCTEST_NAN_ASSERT(assert_type, ...)                                            \
-    doctest::detail::nan_assert(doctest::assertType::assert_type, __FILE__, __LINE__,   \
-        #__VA_ARGS__, __VA_ARGS__)
-
-#endif
-
-#define DOCTEST_WARN_NAN(...) DOCTEST_NAN_ASSERT(DT_WARN_NAN, __VA_ARGS__)
-#define DOCTEST_CHECK_NAN(...) DOCTEST_NAN_ASSERT(DT_CHECK_NAN, __VA_ARGS__)
-#define DOCTEST_REQUIRE_NAN(...) DOCTEST_NAN_ASSERT(DT_REQUIRE_NAN, __VA_ARGS__)
-#define DOCTEST_WARN_NOT_NAN(...) DOCTEST_NAN_ASSERT(DT_WARN_NOT_NAN, __VA_ARGS__)
-#define DOCTEST_CHECK_NOT_NAN(...) DOCTEST_NAN_ASSERT(DT_CHECK_NOT_NAN, __VA_ARGS__)
-#define DOCTEST_REQUIRE_NOT_NAN(...) DOCTEST_NAN_ASSERT(DT_REQUIRE_NOT_NAN, __VA_ARGS__)
-
 #ifdef DOCTEST_CONFIG_NO_EXCEPTIONS
 
 #undef DOCTEST_WARN_THROWS
@@ -2756,13 +2709,6 @@ namespace detail {
 
 #endif // DOCTEST_CONFIG_EVALUATE_ASSERTS_EVEN_WHEN_DISABLED
 
-#define DOCTEST_WARN_NAN(...) [] { return false; }()
-#define DOCTEST_CHECK_NAN(...) [] { return false; }()
-#define DOCTEST_REQUIRE_NAN(...) [] { return false; }()
-#define DOCTEST_WARN_NOT_NAN(...) [] { return false; }()
-#define DOCTEST_CHECK_NOT_NAN(...) [] { return false; }()
-#define DOCTEST_REQUIRE_NOT_NAN(...) [] { return false; }()
-
 #define DOCTEST_WARN_THROWS_WITH(expr, ...) [] { return false; }()
 #define DOCTEST_CHECK_THROWS_WITH(expr, ...) [] { return false; }()
 #define DOCTEST_REQUIRE_THROWS_WITH(expr, ...) [] { return false; }()
@@ -2930,13 +2876,6 @@ namespace detail {
 #define WARN_UNARY_FALSE(...) DOCTEST_WARN_UNARY_FALSE(__VA_ARGS__)
 #define CHECK_UNARY_FALSE(...) DOCTEST_CHECK_UNARY_FALSE(__VA_ARGS__)
 #define REQUIRE_UNARY_FALSE(...) DOCTEST_REQUIRE_UNARY_FALSE(__VA_ARGS__)
-
-#define WARN_NAN(...) DOCTEST_WARN_NAN(__VA_ARGS__)
-#define CHECK_NAN(...) DOCTEST_CHECK_NAN(__VA_ARGS__)
-#define REQUIRE_NAN(...) DOCTEST_REQUIRE_NAN(__VA_ARGS__)
-#define WARN_NOT_NAN(...) DOCTEST_WARN_NOT_NAN(__VA_ARGS__)
-#define CHECK_NOT_NAN(...) DOCTEST_CHECK_NOT_NAN(__VA_ARGS__)
-#define REQUIRE_NOT_NAN(...) DOCTEST_REQUIRE_NOT_NAN(__VA_ARGS__)
 
 // KEPT FOR BACKWARDS COMPATIBILITY
 #define FAST_WARN_EQ(...) DOCTEST_FAST_WARN_EQ(__VA_ARGS__)

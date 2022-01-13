@@ -578,17 +578,7 @@
           :D
         </Text>
       </Message>
-      <Message type="WARNING" filename="assertion_macros.cpp" line="0">
-        <Text>
-          :D
-        </Text>
-      </Message>
-      <Message type="WARNING" filename="assertion_macros.cpp" line="0">
-        <Text>
-          :D
-        </Text>
-      </Message>
-      <OverallResultsAsserts successes="11" failures="0" test_case_success="true"/>
+      <OverallResultsAsserts successes="9" failures="0" test_case_success="true"/>
     </TestCase>
     <TestCase name="check return values no print" filename="assertion_macros.cpp" line="0">
       <Expression success="false" type="CHECK" filename="assertion_macros.cpp" line="0">
@@ -666,37 +656,10 @@
           1
         </ExpectedExceptionString>
       </Expression>
-      <Expression success="false" type="CHECK_NAN" filename="assertion_macros.cpp" line="0">
-        <Original>
-          0.
-        </Original>
-        <Expanded>
-          0.0
-        </Expanded>
-      </Expression>
-      <OverallResultsAsserts successes="0" failures="10" test_case_success="false"/>
-    </TestCase>
-    <TestCase name="nan" filename="assertion_macros.cpp" line="0">
-      <Expression success="false" type="CHECK_NAN" filename="assertion_macros.cpp" line="0">
-        <Original>
-          std::numeric_limits&lt;long double>::infinity()
-        </Original>
-        <Expanded>
-          inf
-        </Expanded>
-      </Expression>
-      <Expression success="false" type="WARN_NOT_NAN" filename="assertion_macros.cpp" line="0">
-        <Original>
-          std::numeric_limits&lt;float>::quiet_NaN()
-        </Original>
-        <Expanded>
-          nanf
-        </Expanded>
-      </Expression>
-      <OverallResultsAsserts successes="3" failures="1" test_case_success="false"/>
+      <OverallResultsAsserts successes="0" failures="9" test_case_success="false"/>
     </TestCase>
   </TestSuite>
-  <OverallResultsAsserts successes="49" failures="50"/>
-  <OverallResultsTestCases successes="4" failures="20"/>
+  <OverallResultsAsserts successes="44" failures="48"/>
+  <OverallResultsTestCases successes="4" failures="19"/>
 </doctest>
 Program code.

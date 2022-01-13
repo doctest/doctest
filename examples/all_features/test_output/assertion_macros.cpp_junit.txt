@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <testsuites>
-  <testsuite name="all_features" errors="0" failures="64" tests="99">
+  <testsuite name="all_features" errors="0" failures="61" tests="92">
     <testcase classname="assertion_macros.cpp" name="normal macros" status="run">
       <failure type="CHECK">
 assertion_macros.cpp(0):
@@ -367,26 +367,6 @@ CHECK_NOTHROW( throw_if(true, 2) ) THREW exception: "2"
       <failure type="CHECK_THROWS_WITH">
 assertion_macros.cpp(0):
 CHECK_THROWS_WITH( throw_if(true, 2), "1" ) threw a DIFFERENT exception: "2"
-
-      </failure>
-      <failure message="0.0" type="CHECK_NAN">
-assertion_macros.cpp(0):
-CHECK_NAN( 0. ) is NOT correct!
-  values: CHECK_NAN( 0.0 )
-
-      </failure>
-    </testcase>
-    <testcase classname="assertion_macros.cpp" name="nan" status="run">
-      <failure message="inf" type="CHECK_NAN">
-assertion_macros.cpp(0):
-CHECK_NAN( std::numeric_limits&lt;long double>::infinity() ) is NOT correct!
-  values: CHECK_NAN( inf )
-
-      </failure>
-      <failure message="nanf" type="WARN_NOT_NAN">
-assertion_macros.cpp(0):
-WARN_NOT_NAN( std::numeric_limits&lt;float>::quiet_NaN() ) is NOT correct!
-  values: WARN_NOT_NAN( nanf )
 
       </failure>
     </testcase>

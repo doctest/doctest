@@ -1,7 +1,6 @@
 #include <doctest/doctest.h>
 
 #include <cstdio>
-#include <limits>
 
 
 #ifndef TEST_FLIP
@@ -24,8 +23,6 @@ static int test_disabled_var_ = [] {
     if (TEST_FLIP ^ CHECK_NOTHROW([]{ }())) { TEST_FAIL(); }
     if (CHECK_THROWS_WITH([] { throw 2; }(), "2")) { TEST_FAIL(); }
 #endif
-    if (CHECK_NAN(std::numeric_limits<float>::quiet_NaN())) { TEST_FAIL(); }
-    if (CHECK_NOT_NAN(22.)) { TEST_FAIL(); }
 
     return 0;
 }();

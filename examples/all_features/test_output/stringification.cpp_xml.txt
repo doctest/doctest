@@ -68,10 +68,26 @@
           MyOtherType: 42 is not really MyOtherType: 666
         </Info>
       </Expression>
+      <Expression success="false" type="CHECK" filename="stringification.cpp" line="0">
+        <Original>
+          doctest::IsNaN&lt;double>(0.5)
+        </Original>
+        <Expanded>
+          0.5
+        </Expanded>
+      </Expression>
+      <Expression success="false" type="CHECK" filename="stringification.cpp" line="0">
+        <Original>
+          doctest::IsNaN&lt;float>(std::numeric_limits&lt;float>::infinity())
+        </Original>
+        <Expanded>
+          inf
+        </Expanded>
+      </Expression>
       <Exception crash="false">
         MyTypeInherited&lt;int>(5, 4)
       </Exception>
-      <OverallResultsAsserts successes="0" failures="7" test_case_success="false"/>
+      <OverallResultsAsserts successes="0" failures="9" test_case_success="false"/>
     </TestCase>
     <TestCase name="a test case that registers an exception translator for int and then throws one" filename="stringification.cpp" line="0">
       <Exception crash="false">
@@ -80,7 +96,7 @@
       <OverallResultsAsserts successes="0" failures="0" test_case_success="false"/>
     </TestCase>
   </TestSuite>
-  <OverallResultsAsserts successes="0" failures="7"/>
+  <OverallResultsAsserts successes="0" failures="9"/>
   <OverallResultsTestCases successes="0" failures="2"/>
 </doctest>
 Program code.
