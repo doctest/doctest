@@ -476,14 +476,6 @@ class basic_istream;
 typedef basic_istream<char, char_traits<char>> istream;
 template <class... Types>
 class tuple;
-#if DOCTEST_MSVC >= DOCTEST_COMPILER(19, 20, 0)
-// see this issue on why this is needed: https://github.com/doctest/doctest/issues/183
-template <class Ty>
-class allocator;
-template <class Elem, class Traits, class Alloc>
-class basic_string;
-using string = basic_string<char, char_traits<char>, allocator<char>>;
-#endif // VS 2019
 } // namespace std
 
 DOCTEST_MSVC_SUPPRESS_WARNING_POP
@@ -1100,8 +1092,6 @@ namespace detail {
     DOCTEST_INTERFACE void toStream(std::ostream* s, long long unsigned in);
 
     DOCTEST_INTERFACE void toStream(std::ostream* s, std::nullptr_t in);
-
-    DOCTEST_INTERFACE void toStream(std::ostream* s, const std::string& in);
 
     DOCTEST_INTERFACE void toStream(std::ostream* s, const Approx& in);
 

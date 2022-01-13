@@ -12,7 +12,7 @@ TEST_CASE("no headers") {
     int ints[] = { 0, 1, 1, 2, 3, 5, 8, 13 };
     MESSAGE(ints); CHECK(ints == nullptr);
 
-    char* cptr = (char*)(ints + 4);
+    char* cptr = reinterpret_cast<char*>(ints + 4);
     CHECK(cptr == nullptr);
 
     enum Test {

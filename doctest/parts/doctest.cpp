@@ -1388,8 +1388,6 @@ namespace detail {
 
     void toStream(std::ostream* s, std::nullptr_t) { *s << "NULL"; }
 
-    void toStream(std::ostream* s, const std::string& in) { *s << in.c_str(); }
-
     void toStream(std::ostream* s, const Approx& in) {
         *s << "Approx( ";
         toStream(s, in.m_value);
