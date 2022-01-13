@@ -974,7 +974,7 @@ namespace detail {
 
         // always treat char* as a string in this context - no matter
         // if DOCTEST_CONFIG_TREAT_CHAR_STAR_AS_STRING is defined
-        static void convert(std::ostream* s, const char* in) { *s << String(in); }
+        static void convert(std::ostream* s, const char* in) { *s << in; }
     };
 
     template <>
