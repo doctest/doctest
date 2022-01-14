@@ -1973,12 +1973,21 @@ int registerReporter(const char* name, int priority, bool isReporter) {
 // if registering is not disabled
 #ifndef DOCTEST_CONFIG_DISABLE
 
+#ifdef DOCTEST_CONFIG_ASSERTS_RETURN_VALUES
+#define DOCTEST_FUNC_SCOPE_BEGIN [&]
+#define DOCTEST_FUNC_SCOPE_END ()
+#define DOCTEST_FUNC_SCOPE_RET(v) return v
+#else
+#define DOCTEST_FUNC_SCOPE_BEGIN do
+#define DOCTEST_FUNC_SCOPE_END while(false)
+#define DOCTEST_FUNC_SCOPE_RET(v) (void)0
+#endif
+
 // common code in asserts - for convenience
 #define DOCTEST_ASSERT_LOG_REACT_RETURN(b)                                                         \
-    if(b.log())                                                                                    \
-        DOCTEST_BREAK_INTO_DEBUGGER();                                                             \
-    b.react(); \
-    return !b.m_failed
+    if(b.log()) DOCTEST_BREAK_INTO_DEBUGGER();                                                     \
+    b.react();                                                                                     \
+    DOCTEST_FUNC_SCOPE_RET(!b.m_failed)
 
 #ifdef DOCTEST_CONFIG_NO_TRY_CATCH_IN_ASSERTS
 #define DOCTEST_WRAP_IN_TRY(x) x;
@@ -2201,13 +2210,13 @@ int registerReporter(const char* name, int priority, bool isReporter) {
 #define DOCTEST_CAPTURE(x) DOCTEST_INFO(#x " := ", x)
 
 #define DOCTEST_ADD_AT_IMPL(type, file, line, mb, ...)                                             \
-    [&] {                                                                                          \
+    DOCTEST_FUNC_SCOPE_BEGIN {                                                                     \
         doctest::detail::MessageBuilder mb(file, line, doctest::assertType::type);                 \
         mb * __VA_ARGS__;                                                                          \
         if(mb.log())                                                                               \
             DOCTEST_BREAK_INTO_DEBUGGER();                                                         \
         mb.react();                                                                                \
-    }()
+    } DOCTEST_FUNC_SCOPE_END
 
 // clang-format off
 #define DOCTEST_ADD_MESSAGE_AT(file, line, ...) DOCTEST_ADD_AT_IMPL(is_warn, file, line, DOCTEST_ANONYMOUS(DOCTEST_MESSAGE_), __VA_ARGS__)
@@ -2234,9 +2243,9 @@ int registerReporter(const char* name, int priority, bool isReporter) {
     DOCTEST_CLANG_SUPPRESS_WARNING_POP
 
 #define DOCTEST_ASSERT_IMPLEMENT_1(assert_type, ...)                                               \
-    [&] {                                                                                          \
+    DOCTEST_FUNC_SCOPE_BEGIN {                                                                     \
         DOCTEST_ASSERT_IMPLEMENT_2(assert_type, __VA_ARGS__);                                      \
-    }()
+    } DOCTEST_FUNC_SCOPE_END
 
 #else // DOCTEST_CONFIG_SUPER_FAST_ASSERTS
 
@@ -2260,16 +2269,16 @@ int registerReporter(const char* name, int priority, bool isReporter) {
 #define DOCTEST_REQUIRE_FALSE(...) DOCTEST_ASSERT_IMPLEMENT_1(DT_REQUIRE_FALSE, __VA_ARGS__)
 
 // clang-format off
-#define DOCTEST_WARN_MESSAGE(cond, ...) [&] {DOCTEST_INFO(__VA_ARGS__); DOCTEST_ASSERT_IMPLEMENT_2(DT_WARN, cond); }()
-#define DOCTEST_CHECK_MESSAGE(cond, ...) [&] {DOCTEST_INFO(__VA_ARGS__); DOCTEST_ASSERT_IMPLEMENT_2(DT_CHECK, cond); }()
-#define DOCTEST_REQUIRE_MESSAGE(cond, ...) [&] {DOCTEST_INFO(__VA_ARGS__); DOCTEST_ASSERT_IMPLEMENT_2(DT_REQUIRE, cond); }()
-#define DOCTEST_WARN_FALSE_MESSAGE(cond, ...) [&] {DOCTEST_INFO(__VA_ARGS__); DOCTEST_ASSERT_IMPLEMENT_2(DT_WARN_FALSE, cond); }()
-#define DOCTEST_CHECK_FALSE_MESSAGE(cond, ...) [&] {DOCTEST_INFO(__VA_ARGS__); DOCTEST_ASSERT_IMPLEMENT_2(DT_CHECK_FALSE, cond); }()
-#define DOCTEST_REQUIRE_FALSE_MESSAGE(cond, ...) [&] {DOCTEST_INFO(__VA_ARGS__); DOCTEST_ASSERT_IMPLEMENT_2(DT_REQUIRE_FALSE, cond); }()
+#define DOCTEST_WARN_MESSAGE(cond, ...) DOCTEST_FUNC_SCOPE_BEGIN { DOCTEST_INFO(__VA_ARGS__); DOCTEST_ASSERT_IMPLEMENT_2(DT_WARN, cond); } DOCTEST_FUNC_SCOPE_END
+#define DOCTEST_CHECK_MESSAGE(cond, ...) DOCTEST_FUNC_SCOPE_BEGIN { DOCTEST_INFO(__VA_ARGS__); DOCTEST_ASSERT_IMPLEMENT_2(DT_CHECK, cond); } DOCTEST_FUNC_SCOPE_END
+#define DOCTEST_REQUIRE_MESSAGE(cond, ...) DOCTEST_FUNC_SCOPE_BEGIN { DOCTEST_INFO(__VA_ARGS__); DOCTEST_ASSERT_IMPLEMENT_2(DT_REQUIRE, cond); } DOCTEST_FUNC_SCOPE_END
+#define DOCTEST_WARN_FALSE_MESSAGE(cond, ...) DOCTEST_FUNC_SCOPE_BEGIN { DOCTEST_INFO(__VA_ARGS__); DOCTEST_ASSERT_IMPLEMENT_2(DT_WARN_FALSE, cond); } DOCTEST_FUNC_SCOPE_END
+#define DOCTEST_CHECK_FALSE_MESSAGE(cond, ...) DOCTEST_FUNC_SCOPE_BEGIN { DOCTEST_INFO(__VA_ARGS__); DOCTEST_ASSERT_IMPLEMENT_2(DT_CHECK_FALSE, cond); } DOCTEST_FUNC_SCOPE_END
+#define DOCTEST_REQUIRE_FALSE_MESSAGE(cond, ...) DOCTEST_FUNC_SCOPE_BEGIN { DOCTEST_INFO(__VA_ARGS__); DOCTEST_ASSERT_IMPLEMENT_2(DT_REQUIRE_FALSE, cond); } DOCTEST_FUNC_SCOPE_END
 // clang-format on
 
 #define DOCTEST_ASSERT_THROWS_AS(expr, assert_type, message, ...)                                  \
-    [&] {                                                                                          \
+    DOCTEST_FUNC_SCOPE_BEGIN {                                                                     \
         if(!doctest::getContextOptions()->no_throw) {                                              \
             doctest::detail::ResultBuilder DOCTEST_RB(doctest::assertType::assert_type, __FILE__,  \
                                                        __LINE__, #expr, #__VA_ARGS__, message);    \
@@ -2282,12 +2291,12 @@ int registerReporter(const char* name, int priority, bool isReporter) {
             } catch(...) { DOCTEST_RB.translateException(); }                                      \
             DOCTEST_ASSERT_LOG_REACT_RETURN(DOCTEST_RB);                                           \
         } else {                                                                                   \
-            return false;                                                                          \
+            DOCTEST_FUNC_SCOPE_RET(false);                                                         \
         }                                                                                          \
-    }()
+    } DOCTEST_FUNC_SCOPE_END
 
 #define DOCTEST_ASSERT_THROWS_WITH(expr, expr_str, assert_type, ...)                               \
-    [&] {                                                                                          \
+    DOCTEST_FUNC_SCOPE_BEGIN {                                                                     \
         if(!doctest::getContextOptions()->no_throw) {                                              \
             doctest::detail::ResultBuilder DOCTEST_RB(doctest::assertType::assert_type, __FILE__,  \
                                                        __LINE__, expr_str, "", __VA_ARGS__);       \
@@ -2296,19 +2305,19 @@ int registerReporter(const char* name, int priority, bool isReporter) {
             } catch(...) { DOCTEST_RB.translateException(); }                                      \
             DOCTEST_ASSERT_LOG_REACT_RETURN(DOCTEST_RB);                                           \
         } else {                                                                                   \
-           return false;                                                                           \
+           DOCTEST_FUNC_SCOPE_RET(false);                                                          \
         }                                                                                          \
-    }()
+    } DOCTEST_FUNC_SCOPE_END
 
 #define DOCTEST_ASSERT_NOTHROW(assert_type, ...)                                                   \
-    [&] {                                                                                          \
+    DOCTEST_FUNC_SCOPE_BEGIN {                                                                     \
         doctest::detail::ResultBuilder DOCTEST_RB(doctest::assertType::assert_type, __FILE__,      \
                                                    __LINE__, #__VA_ARGS__);                        \
         try {                                                                                      \
             DOCTEST_CAST_TO_VOID(__VA_ARGS__)                                                      \
         } catch(...) { DOCTEST_RB.translateException(); }                                          \
         DOCTEST_ASSERT_LOG_REACT_RETURN(DOCTEST_RB);                                               \
-    }()
+    } DOCTEST_FUNC_SCOPE_END
 
 // clang-format off
 #define DOCTEST_WARN_THROWS(...) DOCTEST_ASSERT_THROWS_WITH((__VA_ARGS__), #__VA_ARGS__, DT_WARN_THROWS, "")
@@ -2331,42 +2340,42 @@ int registerReporter(const char* name, int priority, bool isReporter) {
 #define DOCTEST_CHECK_NOTHROW(...) DOCTEST_ASSERT_NOTHROW(DT_CHECK_NOTHROW, __VA_ARGS__)
 #define DOCTEST_REQUIRE_NOTHROW(...) DOCTEST_ASSERT_NOTHROW(DT_REQUIRE_NOTHROW, __VA_ARGS__)
 
-#define DOCTEST_WARN_THROWS_MESSAGE(expr, ...) [&] {DOCTEST_INFO(__VA_ARGS__); DOCTEST_WARN_THROWS(expr); }()
-#define DOCTEST_CHECK_THROWS_MESSAGE(expr, ...) [&] {DOCTEST_INFO(__VA_ARGS__); DOCTEST_CHECK_THROWS(expr); }()
-#define DOCTEST_REQUIRE_THROWS_MESSAGE(expr, ...) [&] {DOCTEST_INFO(__VA_ARGS__); DOCTEST_REQUIRE_THROWS(expr); }()
-#define DOCTEST_WARN_THROWS_AS_MESSAGE(expr, ex, ...) [&] {DOCTEST_INFO(__VA_ARGS__); DOCTEST_WARN_THROWS_AS(expr, ex); }()
-#define DOCTEST_CHECK_THROWS_AS_MESSAGE(expr, ex, ...) [&] {DOCTEST_INFO(__VA_ARGS__); DOCTEST_CHECK_THROWS_AS(expr, ex); }()
-#define DOCTEST_REQUIRE_THROWS_AS_MESSAGE(expr, ex, ...) [&] {DOCTEST_INFO(__VA_ARGS__); DOCTEST_REQUIRE_THROWS_AS(expr, ex); }()
-#define DOCTEST_WARN_THROWS_WITH_MESSAGE(expr, with, ...) [&] {DOCTEST_INFO(__VA_ARGS__); DOCTEST_WARN_THROWS_WITH(expr, with); }()
-#define DOCTEST_CHECK_THROWS_WITH_MESSAGE(expr, with, ...) [&] {DOCTEST_INFO(__VA_ARGS__); DOCTEST_CHECK_THROWS_WITH(expr, with); }()
-#define DOCTEST_REQUIRE_THROWS_WITH_MESSAGE(expr, with, ...) [&] {DOCTEST_INFO(__VA_ARGS__); DOCTEST_REQUIRE_THROWS_WITH(expr, with); }()
-#define DOCTEST_WARN_THROWS_WITH_AS_MESSAGE(expr, with, ex, ...) [&] {DOCTEST_INFO(__VA_ARGS__); DOCTEST_WARN_THROWS_WITH_AS(expr, with, ex); }()
-#define DOCTEST_CHECK_THROWS_WITH_AS_MESSAGE(expr, with, ex, ...) [&] {DOCTEST_INFO(__VA_ARGS__); DOCTEST_CHECK_THROWS_WITH_AS(expr, with, ex); }()
-#define DOCTEST_REQUIRE_THROWS_WITH_AS_MESSAGE(expr, with, ex, ...) [&] {DOCTEST_INFO(__VA_ARGS__); DOCTEST_REQUIRE_THROWS_WITH_AS(expr, with, ex); }()
-#define DOCTEST_WARN_NOTHROW_MESSAGE(expr, ...) [&] {DOCTEST_INFO(__VA_ARGS__); DOCTEST_WARN_NOTHROW(expr); }()
-#define DOCTEST_CHECK_NOTHROW_MESSAGE(expr, ...) [&] {DOCTEST_INFO(__VA_ARGS__); DOCTEST_CHECK_NOTHROW(expr); }()
-#define DOCTEST_REQUIRE_NOTHROW_MESSAGE(expr, ...) [&] {DOCTEST_INFO(__VA_ARGS__); DOCTEST_REQUIRE_NOTHROW(expr); }()
+#define DOCTEST_WARN_THROWS_MESSAGE(expr, ...) DOCTEST_FUNC_SCOPE_BEGIN { DOCTEST_INFO(__VA_ARGS__); DOCTEST_WARN_THROWS(expr); } DOCTEST_FUNC_SCOPE_END
+#define DOCTEST_CHECK_THROWS_MESSAGE(expr, ...) DOCTEST_FUNC_SCOPE_BEGIN { DOCTEST_INFO(__VA_ARGS__); DOCTEST_CHECK_THROWS(expr); } DOCTEST_FUNC_SCOPE_END
+#define DOCTEST_REQUIRE_THROWS_MESSAGE(expr, ...) DOCTEST_FUNC_SCOPE_BEGIN { DOCTEST_INFO(__VA_ARGS__); DOCTEST_REQUIRE_THROWS(expr); } DOCTEST_FUNC_SCOPE_END
+#define DOCTEST_WARN_THROWS_AS_MESSAGE(expr, ex, ...) DOCTEST_FUNC_SCOPE_BEGIN { DOCTEST_INFO(__VA_ARGS__); DOCTEST_WARN_THROWS_AS(expr, ex); } DOCTEST_FUNC_SCOPE_END
+#define DOCTEST_CHECK_THROWS_AS_MESSAGE(expr, ex, ...) DOCTEST_FUNC_SCOPE_BEGIN { DOCTEST_INFO(__VA_ARGS__); DOCTEST_CHECK_THROWS_AS(expr, ex); } DOCTEST_FUNC_SCOPE_END
+#define DOCTEST_REQUIRE_THROWS_AS_MESSAGE(expr, ex, ...) DOCTEST_FUNC_SCOPE_BEGIN { DOCTEST_INFO(__VA_ARGS__); DOCTEST_REQUIRE_THROWS_AS(expr, ex); } DOCTEST_FUNC_SCOPE_END
+#define DOCTEST_WARN_THROWS_WITH_MESSAGE(expr, with, ...) DOCTEST_FUNC_SCOPE_BEGIN { DOCTEST_INFO(__VA_ARGS__); DOCTEST_WARN_THROWS_WITH(expr, with); } DOCTEST_FUNC_SCOPE_END
+#define DOCTEST_CHECK_THROWS_WITH_MESSAGE(expr, with, ...) DOCTEST_FUNC_SCOPE_BEGIN { DOCTEST_INFO(__VA_ARGS__); DOCTEST_CHECK_THROWS_WITH(expr, with); } DOCTEST_FUNC_SCOPE_END
+#define DOCTEST_REQUIRE_THROWS_WITH_MESSAGE(expr, with, ...) DOCTEST_FUNC_SCOPE_BEGIN { DOCTEST_INFO(__VA_ARGS__); DOCTEST_REQUIRE_THROWS_WITH(expr, with); } DOCTEST_FUNC_SCOPE_END
+#define DOCTEST_WARN_THROWS_WITH_AS_MESSAGE(expr, with, ex, ...) DOCTEST_FUNC_SCOPE_BEGIN { DOCTEST_INFO(__VA_ARGS__); DOCTEST_WARN_THROWS_WITH_AS(expr, with, ex); } DOCTEST_FUNC_SCOPE_END
+#define DOCTEST_CHECK_THROWS_WITH_AS_MESSAGE(expr, with, ex, ...) DOCTEST_FUNC_SCOPE_BEGIN { DOCTEST_INFO(__VA_ARGS__); DOCTEST_CHECK_THROWS_WITH_AS(expr, with, ex); } DOCTEST_FUNC_SCOPE_END
+#define DOCTEST_REQUIRE_THROWS_WITH_AS_MESSAGE(expr, with, ex, ...) DOCTEST_FUNC_SCOPE_BEGIN { DOCTEST_INFO(__VA_ARGS__); DOCTEST_REQUIRE_THROWS_WITH_AS(expr, with, ex); } DOCTEST_FUNC_SCOPE_END
+#define DOCTEST_WARN_NOTHROW_MESSAGE(expr, ...) DOCTEST_FUNC_SCOPE_BEGIN { DOCTEST_INFO(__VA_ARGS__); DOCTEST_WARN_NOTHROW(expr); } DOCTEST_FUNC_SCOPE_END
+#define DOCTEST_CHECK_NOTHROW_MESSAGE(expr, ...) DOCTEST_FUNC_SCOPE_BEGIN { DOCTEST_INFO(__VA_ARGS__); DOCTEST_CHECK_NOTHROW(expr); } DOCTEST_FUNC_SCOPE_END
+#define DOCTEST_REQUIRE_NOTHROW_MESSAGE(expr, ...) DOCTEST_FUNC_SCOPE_BEGIN { DOCTEST_INFO(__VA_ARGS__); DOCTEST_REQUIRE_NOTHROW(expr); } DOCTEST_FUNC_SCOPE_END
 // clang-format on
 
 #ifndef DOCTEST_CONFIG_SUPER_FAST_ASSERTS
 
 #define DOCTEST_BINARY_ASSERT(assert_type, comp, ...)                                              \
-    [&] {                                                                                          \
+    DOCTEST_FUNC_SCOPE_BEGIN {                                                                     \
         doctest::detail::ResultBuilder DOCTEST_RB(doctest::assertType::assert_type, __FILE__,      \
                                                    __LINE__, #__VA_ARGS__);                        \
         DOCTEST_WRAP_IN_TRY(                                                                       \
                 DOCTEST_RB.binary_assert<doctest::detail::binaryAssertComparison::comp>(           \
                         __VA_ARGS__))                                                              \
         DOCTEST_ASSERT_LOG_REACT_RETURN(DOCTEST_RB);                                               \
-    }()
+    } DOCTEST_FUNC_SCOPE_END
 
 #define DOCTEST_UNARY_ASSERT(assert_type, ...)                                                     \
-    [&] {                                                                                          \
+    DOCTEST_FUNC_SCOPE_BEGIN {                                                                     \
         doctest::detail::ResultBuilder DOCTEST_RB(doctest::assertType::assert_type, __FILE__,      \
                                                    __LINE__, #__VA_ARGS__);                        \
         DOCTEST_WRAP_IN_TRY(DOCTEST_RB.unary_assert(__VA_ARGS__))                                  \
         DOCTEST_ASSERT_LOG_REACT_RETURN(DOCTEST_RB);                                               \
-    }()
+    } DOCTEST_FUNC_SCOPE_END
 
 #else // DOCTEST_CONFIG_SUPER_FAST_ASSERTS
 
@@ -2442,37 +2451,37 @@ int registerReporter(const char* name, int priority, bool isReporter) {
 
 #ifdef DOCTEST_CONFIG_NO_EXCEPTIONS_BUT_WITH_ALL_ASSERTS
 
-#define DOCTEST_WARN_THROWS(...) [] { return false; }()
-#define DOCTEST_CHECK_THROWS(...) [] { return false; }()
-#define DOCTEST_REQUIRE_THROWS(...) [] { return false; }()
-#define DOCTEST_WARN_THROWS_AS(expr, ...) [] { return false; }()
-#define DOCTEST_CHECK_THROWS_AS(expr, ...) [] { return false; }()
-#define DOCTEST_REQUIRE_THROWS_AS(expr, ...) [] { return false; }()
-#define DOCTEST_WARN_THROWS_WITH(expr, ...) [] { return false; }()
-#define DOCTEST_CHECK_THROWS_WITH(expr, ...) [] { return false; }()
-#define DOCTEST_REQUIRE_THROWS_WITH(expr, ...) [] { return false; }()
-#define DOCTEST_WARN_THROWS_WITH_AS(expr, with, ...) [] { return false; }()
-#define DOCTEST_CHECK_THROWS_WITH_AS(expr, with, ...) [] { return false; }()
-#define DOCTEST_REQUIRE_THROWS_WITH_AS(expr, with, ...) [] { return false; }()
-#define DOCTEST_WARN_NOTHROW(...) [] { return false; }()
-#define DOCTEST_CHECK_NOTHROW(...) [] { return false; }()
-#define DOCTEST_REQUIRE_NOTHROW(...) [] { return false; }()
+#define DOCTEST_WARN_THROWS(...) DOCTEST_FUNC_EMPTY
+#define DOCTEST_CHECK_THROWS(...) DOCTEST_FUNC_EMPTY
+#define DOCTEST_REQUIRE_THROWS(...) DOCTEST_FUNC_EMPTY
+#define DOCTEST_WARN_THROWS_AS(expr, ...) DOCTEST_FUNC_EMPTY
+#define DOCTEST_CHECK_THROWS_AS(expr, ...) DOCTEST_FUNC_EMPTY
+#define DOCTEST_REQUIRE_THROWS_AS(expr, ...) DOCTEST_FUNC_EMPTY
+#define DOCTEST_WARN_THROWS_WITH(expr, ...) DOCTEST_FUNC_EMPTY
+#define DOCTEST_CHECK_THROWS_WITH(expr, ...) DOCTEST_FUNC_EMPTY
+#define DOCTEST_REQUIRE_THROWS_WITH(expr, ...) DOCTEST_FUNC_EMPTY
+#define DOCTEST_WARN_THROWS_WITH_AS(expr, with, ...) DOCTEST_FUNC_EMPTY
+#define DOCTEST_CHECK_THROWS_WITH_AS(expr, with, ...) DOCTEST_FUNC_EMPTY
+#define DOCTEST_REQUIRE_THROWS_WITH_AS(expr, with, ...) DOCTEST_FUNC_EMPTY
+#define DOCTEST_WARN_NOTHROW(...) DOCTEST_FUNC_EMPTY
+#define DOCTEST_CHECK_NOTHROW(...) DOCTEST_FUNC_EMPTY
+#define DOCTEST_REQUIRE_NOTHROW(...) DOCTEST_FUNC_EMPTY
 
-#define DOCTEST_WARN_THROWS_MESSAGE(expr, ...) [] { return false; }()
-#define DOCTEST_CHECK_THROWS_MESSAGE(expr, ...) [] { return false; }()
-#define DOCTEST_REQUIRE_THROWS_MESSAGE(expr, ...) [] { return false; }()
-#define DOCTEST_WARN_THROWS_AS_MESSAGE(expr, ex, ...) [] { return false; }()
-#define DOCTEST_CHECK_THROWS_AS_MESSAGE(expr, ex, ...) [] { return false; }()
-#define DOCTEST_REQUIRE_THROWS_AS_MESSAGE(expr, ex, ...) [] { return false; }()
-#define DOCTEST_WARN_THROWS_WITH_MESSAGE(expr, with, ...) [] { return false; }()
-#define DOCTEST_CHECK_THROWS_WITH_MESSAGE(expr, with, ...) [] { return false; }()
-#define DOCTEST_REQUIRE_THROWS_WITH_MESSAGE(expr, with, ...) [] { return false; }()
-#define DOCTEST_WARN_THROWS_WITH_AS_MESSAGE(expr, with, ex, ...) [] { return false; }()
-#define DOCTEST_CHECK_THROWS_WITH_AS_MESSAGE(expr, with, ex, ...) [] { return false; }()
-#define DOCTEST_REQUIRE_THROWS_WITH_AS_MESSAGE(expr, with, ex, ...) [] { return false; }()
-#define DOCTEST_WARN_NOTHROW_MESSAGE(expr, ...) [] { return false; }()
-#define DOCTEST_CHECK_NOTHROW_MESSAGE(expr, ...) [] { return false; }()
-#define DOCTEST_REQUIRE_NOTHROW_MESSAGE(expr, ...) [] { return false; }()
+#define DOCTEST_WARN_THROWS_MESSAGE(expr, ...) DOCTEST_FUNC_EMPTY
+#define DOCTEST_CHECK_THROWS_MESSAGE(expr, ...) DOCTEST_FUNC_EMPTY
+#define DOCTEST_REQUIRE_THROWS_MESSAGE(expr, ...) DOCTEST_FUNC_EMPTY
+#define DOCTEST_WARN_THROWS_AS_MESSAGE(expr, ex, ...) DOCTEST_FUNC_EMPTY
+#define DOCTEST_CHECK_THROWS_AS_MESSAGE(expr, ex, ...) DOCTEST_FUNC_EMPTY
+#define DOCTEST_REQUIRE_THROWS_AS_MESSAGE(expr, ex, ...) DOCTEST_FUNC_EMPTY
+#define DOCTEST_WARN_THROWS_WITH_MESSAGE(expr, with, ...) DOCTEST_FUNC_EMPTY
+#define DOCTEST_CHECK_THROWS_WITH_MESSAGE(expr, with, ...) DOCTEST_FUNC_EMPTY
+#define DOCTEST_REQUIRE_THROWS_WITH_MESSAGE(expr, with, ...) DOCTEST_FUNC_EMPTY
+#define DOCTEST_WARN_THROWS_WITH_AS_MESSAGE(expr, with, ex, ...) DOCTEST_FUNC_EMPTY
+#define DOCTEST_CHECK_THROWS_WITH_AS_MESSAGE(expr, with, ex, ...) DOCTEST_FUNC_EMPTY
+#define DOCTEST_REQUIRE_THROWS_WITH_AS_MESSAGE(expr, with, ex, ...) DOCTEST_FUNC_EMPTY
+#define DOCTEST_WARN_NOTHROW_MESSAGE(expr, ...) DOCTEST_FUNC_EMPTY
+#define DOCTEST_CHECK_NOTHROW_MESSAGE(expr, ...) DOCTEST_FUNC_EMPTY
+#define DOCTEST_REQUIRE_NOTHROW_MESSAGE(expr, ...) DOCTEST_FUNC_EMPTY
 
 #else // DOCTEST_CONFIG_NO_EXCEPTIONS_BUT_WITH_ALL_ASSERTS
 
@@ -2498,6 +2507,12 @@ int registerReporter(const char* name, int priority, bool isReporter) {
 // == THIS CAN BE ENABLED BY DEFINING DOCTEST_CONFIG_DISABLE GLOBALLY!                            ==
 // =================================================================================================
 #else // DOCTEST_CONFIG_DISABLE
+
+#ifdef DOCTEST_CONFIG_ASSERTS_RETURN_VALUES
+#define DOCTEST_FUNC_EMPTY [] { return false; }()
+#else
+#define DOCTEST_FUNC_EMPTY (void)0
+#endif
 
 #define DOCTEST_IMPLEMENT_FIXTURE(der, base, func, name)                                           \
     namespace {                                                                                    \
@@ -2569,7 +2584,8 @@ int registerReporter(const char* name, int priority, bool isReporter) {
 #define DOCTEST_FAIL_CHECK(...) (static_cast<void>(0))
 #define DOCTEST_FAIL(...) (static_cast<void>(0))
 
-#ifdef DOCTEST_CONFIG_EVALUATE_ASSERTS_EVEN_WHEN_DISABLED
+#if defined(DOCTEST_CONFIG_EVALUATE_ASSERTS_EVEN_WHEN_DISABLED)                                    \
+ && defined(DOCTEST_CONFIG_ASSERTS_RETURN_VALUES)
 
 #define DOCTEST_WARN(...) [&] { return __VA_ARGS__; }()
 #define DOCTEST_CHECK(...) [&] { return __VA_ARGS__; }()
@@ -2625,103 +2641,103 @@ namespace detail {
 #define DOCTEST_CHECK_UNARY_FALSE(...) [&] { return !(__VA_ARGS__); }()
 #define DOCTEST_REQUIRE_UNARY_FALSE(...) [&] { return !(__VA_ARGS__); }()
 
-#define DOCTEST_WARN_THROWS(...) [] { try { __VA_ARGS__; return false; } catch (...) { return true; } }()
-#define DOCTEST_CHECK_THROWS(...) [] { try { __VA_ARGS__; return false; } catch (...) { return true; } }()
-#define DOCTEST_REQUIRE_THROWS(...) [] { try { __VA_ARGS__; return false; } catch (...) { return true; } }()
-#define DOCTEST_WARN_THROWS_AS(expr, ...) [] { try { expr; } catch (__VA_ARGS__) { return true; } catch (...) { } return false; }()
-#define DOCTEST_CHECK_THROWS_AS(expr, ...) [] { try { expr; } catch (__VA_ARGS__) { return true; } catch (...) { } return false; }()
-#define DOCTEST_REQUIRE_THROWS_AS(expr, ...) [] { try { expr; } catch (__VA_ARGS__) { return true; } catch (...) { } return false; }()
-#define DOCTEST_WARN_NOTHROW(...) [] { try { __VA_ARGS__; return true; } catch (...) { return false; } }()
-#define DOCTEST_CHECK_NOTHROW(...) [] { try { __VA_ARGS__; return true; } catch (...) { return false; } }()
-#define DOCTEST_REQUIRE_NOTHROW(...) [] { try { __VA_ARGS__; return true; } catch (...) { return false; } }()
+#define DOCTEST_WARN_THROWS(...) [&] { try { __VA_ARGS__; return false; } catch (...) { return true; } }()
+#define DOCTEST_CHECK_THROWS(...) [&] { try { __VA_ARGS__; return false; } catch (...) { return true; } }()
+#define DOCTEST_REQUIRE_THROWS(...) [&] { try { __VA_ARGS__; return false; } catch (...) { return true; } }()
+#define DOCTEST_WARN_THROWS_AS(expr, ...) [&] { try { expr; } catch (__VA_ARGS__) { return true; } catch (...) { } return false; }()
+#define DOCTEST_CHECK_THROWS_AS(expr, ...) [&] { try { expr; } catch (__VA_ARGS__) { return true; } catch (...) { } return false; }()
+#define DOCTEST_REQUIRE_THROWS_AS(expr, ...) [&] { try { expr; } catch (__VA_ARGS__) { return true; } catch (...) { } return false; }()
+#define DOCTEST_WARN_NOTHROW(...) [&] { try { __VA_ARGS__; return true; } catch (...) { return false; } }()
+#define DOCTEST_CHECK_NOTHROW(...) [&] { try { __VA_ARGS__; return true; } catch (...) { return false; } }()
+#define DOCTEST_REQUIRE_NOTHROW(...) [&] { try { __VA_ARGS__; return true; } catch (...) { return false; } }()
 
-#define DOCTEST_WARN_THROWS_MESSAGE(expr, ...) [] { try { __VA_ARGS__; return false; } catch (...) { return true; } }()
-#define DOCTEST_CHECK_THROWS_MESSAGE(expr, ...) [] { try { __VA_ARGS__; return false; } catch (...) { return true; } }()
-#define DOCTEST_REQUIRE_THROWS_MESSAGE(expr, ...) [] { try { __VA_ARGS__; return false; } catch (...) { return true; } }()
-#define DOCTEST_WARN_THROWS_AS_MESSAGE(expr, ex, ...) [] { try { expr; } catch (__VA_ARGS__) { return true; } catch (...) { } return false; }()
-#define DOCTEST_CHECK_THROWS_AS_MESSAGE(expr, ex, ...) [] { try { expr; } catch (__VA_ARGS__) { return true; } catch (...) { } return false; }()
-#define DOCTEST_REQUIRE_THROWS_AS_MESSAGE(expr, ex, ...) [] { try { expr; } catch (__VA_ARGS__) { return true; } catch (...) { } return false; }()
-#define DOCTEST_WARN_NOTHROW_MESSAGE(expr, ...) [] { try { __VA_ARGS__; return true; } catch (...) { return false; } }()
-#define DOCTEST_CHECK_NOTHROW_MESSAGE(expr, ...) [] { try { __VA_ARGS__; return true; } catch (...) { return false; } }()
-#define DOCTEST_REQUIRE_NOTHROW_MESSAGE(expr, ...) [] { try { __VA_ARGS__; return true; } catch (...) { return false; } }()
+#define DOCTEST_WARN_THROWS_MESSAGE(expr, ...) [&] { try { __VA_ARGS__; return false; } catch (...) { return true; } }()
+#define DOCTEST_CHECK_THROWS_MESSAGE(expr, ...) [&] { try { __VA_ARGS__; return false; } catch (...) { return true; } }()
+#define DOCTEST_REQUIRE_THROWS_MESSAGE(expr, ...) [&] { try { __VA_ARGS__; return false; } catch (...) { return true; } }()
+#define DOCTEST_WARN_THROWS_AS_MESSAGE(expr, ex, ...) [&] { try { expr; } catch (__VA_ARGS__) { return true; } catch (...) { } return false; }()
+#define DOCTEST_CHECK_THROWS_AS_MESSAGE(expr, ex, ...) [&] { try { expr; } catch (__VA_ARGS__) { return true; } catch (...) { } return false; }()
+#define DOCTEST_REQUIRE_THROWS_AS_MESSAGE(expr, ex, ...) [&] { try { expr; } catch (__VA_ARGS__) { return true; } catch (...) { } return false; }()
+#define DOCTEST_WARN_NOTHROW_MESSAGE(expr, ...) [&] { try { __VA_ARGS__; return true; } catch (...) { return false; } }()
+#define DOCTEST_CHECK_NOTHROW_MESSAGE(expr, ...) [&] { try { __VA_ARGS__; return true; } catch (...) { return false; } }()
+#define DOCTEST_REQUIRE_NOTHROW_MESSAGE(expr, ...) [&] { try { __VA_ARGS__; return true; } catch (...) { return false; } }()
 
 #else // DOCTEST_CONFIG_EVALUATE_ASSERTS_EVEN_WHEN_DISABLED
 
-#define DOCTEST_WARN(...) [] { return false; }()
-#define DOCTEST_CHECK(...) [] { return false; }()
-#define DOCTEST_REQUIRE(...) [] { return false; }()
-#define DOCTEST_WARN_FALSE(...) [] { return false; }()
-#define DOCTEST_CHECK_FALSE(...) [] { return false; }()
-#define DOCTEST_REQUIRE_FALSE(...) [] { return false; }()
+#define DOCTEST_WARN(...) DOCTEST_FUNC_EMPTY
+#define DOCTEST_CHECK(...) DOCTEST_FUNC_EMPTY
+#define DOCTEST_REQUIRE(...) DOCTEST_FUNC_EMPTY
+#define DOCTEST_WARN_FALSE(...) DOCTEST_FUNC_EMPTY
+#define DOCTEST_CHECK_FALSE(...) DOCTEST_FUNC_EMPTY
+#define DOCTEST_REQUIRE_FALSE(...) DOCTEST_FUNC_EMPTY
 
-#define DOCTEST_WARN_MESSAGE(cond, ...) [] { return false; }()
-#define DOCTEST_CHECK_MESSAGE(cond, ...) [] { return false; }()
-#define DOCTEST_REQUIRE_MESSAGE(cond, ...) [] { return false; }()
-#define DOCTEST_WARN_FALSE_MESSAGE(cond, ...) [] { return false; }()
-#define DOCTEST_CHECK_FALSE_MESSAGE(cond, ...) [] { return false; }()
-#define DOCTEST_REQUIRE_FALSE_MESSAGE(cond, ...) [] { return false; }()
+#define DOCTEST_WARN_MESSAGE(cond, ...) DOCTEST_FUNC_EMPTY
+#define DOCTEST_CHECK_MESSAGE(cond, ...) DOCTEST_FUNC_EMPTY
+#define DOCTEST_REQUIRE_MESSAGE(cond, ...) DOCTEST_FUNC_EMPTY
+#define DOCTEST_WARN_FALSE_MESSAGE(cond, ...) DOCTEST_FUNC_EMPTY
+#define DOCTEST_CHECK_FALSE_MESSAGE(cond, ...) DOCTEST_FUNC_EMPTY
+#define DOCTEST_REQUIRE_FALSE_MESSAGE(cond, ...) DOCTEST_FUNC_EMPTY
 
-#define DOCTEST_WARN_EQ(...) [] { return false; }()
-#define DOCTEST_CHECK_EQ(...) [] { return false; }()
-#define DOCTEST_REQUIRE_EQ(...) [] { return false; }()
-#define DOCTEST_WARN_NE(...) [] { return false; }()
-#define DOCTEST_CHECK_NE(...) [] { return false; }()
-#define DOCTEST_REQUIRE_NE(...) [] { return false; }()
-#define DOCTEST_WARN_GT(...) [] { return false; }()
-#define DOCTEST_CHECK_GT(...) [] { return false; }()
-#define DOCTEST_REQUIRE_GT(...) [] { return false; }()
-#define DOCTEST_WARN_LT(...) [] { return false; }()
-#define DOCTEST_CHECK_LT(...) [] { return false; }()
-#define DOCTEST_REQUIRE_LT(...) [] { return false; }()
-#define DOCTEST_WARN_GE(...) [] { return false; }()
-#define DOCTEST_CHECK_GE(...) [] { return false; }()
-#define DOCTEST_REQUIRE_GE(...) [] { return false; }()
-#define DOCTEST_WARN_LE(...) [] { return false; }()
-#define DOCTEST_CHECK_LE(...) [] { return false; }()
-#define DOCTEST_REQUIRE_LE(...) [] { return false; }()
+#define DOCTEST_WARN_EQ(...) DOCTEST_FUNC_EMPTY
+#define DOCTEST_CHECK_EQ(...) DOCTEST_FUNC_EMPTY
+#define DOCTEST_REQUIRE_EQ(...) DOCTEST_FUNC_EMPTY
+#define DOCTEST_WARN_NE(...) DOCTEST_FUNC_EMPTY
+#define DOCTEST_CHECK_NE(...) DOCTEST_FUNC_EMPTY
+#define DOCTEST_REQUIRE_NE(...) DOCTEST_FUNC_EMPTY
+#define DOCTEST_WARN_GT(...) DOCTEST_FUNC_EMPTY
+#define DOCTEST_CHECK_GT(...) DOCTEST_FUNC_EMPTY
+#define DOCTEST_REQUIRE_GT(...) DOCTEST_FUNC_EMPTY
+#define DOCTEST_WARN_LT(...) DOCTEST_FUNC_EMPTY
+#define DOCTEST_CHECK_LT(...) DOCTEST_FUNC_EMPTY
+#define DOCTEST_REQUIRE_LT(...) DOCTEST_FUNC_EMPTY
+#define DOCTEST_WARN_GE(...) DOCTEST_FUNC_EMPTY
+#define DOCTEST_CHECK_GE(...) DOCTEST_FUNC_EMPTY
+#define DOCTEST_REQUIRE_GE(...) DOCTEST_FUNC_EMPTY
+#define DOCTEST_WARN_LE(...) DOCTEST_FUNC_EMPTY
+#define DOCTEST_CHECK_LE(...) DOCTEST_FUNC_EMPTY
+#define DOCTEST_REQUIRE_LE(...) DOCTEST_FUNC_EMPTY
 
-#define DOCTEST_WARN_UNARY(...) [] { return false; }()
-#define DOCTEST_CHECK_UNARY(...) [] { return false; }()
-#define DOCTEST_REQUIRE_UNARY(...) [] { return false; }()
-#define DOCTEST_WARN_UNARY_FALSE(...) [] { return false; }()
-#define DOCTEST_CHECK_UNARY_FALSE(...) [] { return false; }()
-#define DOCTEST_REQUIRE_UNARY_FALSE(...) [] { return false; }()
+#define DOCTEST_WARN_UNARY(...) DOCTEST_FUNC_EMPTY
+#define DOCTEST_CHECK_UNARY(...) DOCTEST_FUNC_EMPTY
+#define DOCTEST_REQUIRE_UNARY(...) DOCTEST_FUNC_EMPTY
+#define DOCTEST_WARN_UNARY_FALSE(...) DOCTEST_FUNC_EMPTY
+#define DOCTEST_CHECK_UNARY_FALSE(...) DOCTEST_FUNC_EMPTY
+#define DOCTEST_REQUIRE_UNARY_FALSE(...) DOCTEST_FUNC_EMPTY
 
-#define DOCTEST_WARN_THROWS(...) [] { return false; }()
-#define DOCTEST_CHECK_THROWS(...) [] { return false; }()
-#define DOCTEST_REQUIRE_THROWS(...) [] { return false; }()
-#define DOCTEST_WARN_THROWS_AS(expr, ...) [] { return false; }()
-#define DOCTEST_CHECK_THROWS_AS(expr, ...) [] { return false; }()
-#define DOCTEST_REQUIRE_THROWS_AS(expr, ...) [] { return false; }()
-#define DOCTEST_WARN_NOTHROW(...) [] { return false; }()
-#define DOCTEST_CHECK_NOTHROW(...) [] { return false; }()
-#define DOCTEST_REQUIRE_NOTHROW(...) [] { return false; }()
+#define DOCTEST_WARN_THROWS(...) DOCTEST_FUNC_EMPTY
+#define DOCTEST_CHECK_THROWS(...) DOCTEST_FUNC_EMPTY
+#define DOCTEST_REQUIRE_THROWS(...) DOCTEST_FUNC_EMPTY
+#define DOCTEST_WARN_THROWS_AS(expr, ...) DOCTEST_FUNC_EMPTY
+#define DOCTEST_CHECK_THROWS_AS(expr, ...) DOCTEST_FUNC_EMPTY
+#define DOCTEST_REQUIRE_THROWS_AS(expr, ...) DOCTEST_FUNC_EMPTY
+#define DOCTEST_WARN_NOTHROW(...) DOCTEST_FUNC_EMPTY
+#define DOCTEST_CHECK_NOTHROW(...) DOCTEST_FUNC_EMPTY
+#define DOCTEST_REQUIRE_NOTHROW(...) DOCTEST_FUNC_EMPTY
 
-#define DOCTEST_WARN_THROWS_MESSAGE(expr, ...) [] { return false; }()
-#define DOCTEST_CHECK_THROWS_MESSAGE(expr, ...) [] { return false; }()
-#define DOCTEST_REQUIRE_THROWS_MESSAGE(expr, ...) [] { return false; }()
-#define DOCTEST_WARN_THROWS_AS_MESSAGE(expr, ex, ...) [] { return false; }()
-#define DOCTEST_CHECK_THROWS_AS_MESSAGE(expr, ex, ...) [] { return false; }()
-#define DOCTEST_REQUIRE_THROWS_AS_MESSAGE(expr, ex, ...) [] { return false; }()
-#define DOCTEST_WARN_NOTHROW_MESSAGE(expr, ...) [] { return false; }()
-#define DOCTEST_CHECK_NOTHROW_MESSAGE(expr, ...) [] { return false; }()
-#define DOCTEST_REQUIRE_NOTHROW_MESSAGE(expr, ...) [] { return false; }()
+#define DOCTEST_WARN_THROWS_MESSAGE(expr, ...) DOCTEST_FUNC_EMPTY
+#define DOCTEST_CHECK_THROWS_MESSAGE(expr, ...) DOCTEST_FUNC_EMPTY
+#define DOCTEST_REQUIRE_THROWS_MESSAGE(expr, ...) DOCTEST_FUNC_EMPTY
+#define DOCTEST_WARN_THROWS_AS_MESSAGE(expr, ex, ...) DOCTEST_FUNC_EMPTY
+#define DOCTEST_CHECK_THROWS_AS_MESSAGE(expr, ex, ...) DOCTEST_FUNC_EMPTY
+#define DOCTEST_REQUIRE_THROWS_AS_MESSAGE(expr, ex, ...) DOCTEST_FUNC_EMPTY
+#define DOCTEST_WARN_NOTHROW_MESSAGE(expr, ...) DOCTEST_FUNC_EMPTY
+#define DOCTEST_CHECK_NOTHROW_MESSAGE(expr, ...) DOCTEST_FUNC_EMPTY
+#define DOCTEST_REQUIRE_NOTHROW_MESSAGE(expr, ...) DOCTEST_FUNC_EMPTY
 
 #endif // DOCTEST_CONFIG_EVALUATE_ASSERTS_EVEN_WHEN_DISABLED
 
-#define DOCTEST_WARN_THROWS_WITH(expr, ...) [] { return false; }()
-#define DOCTEST_CHECK_THROWS_WITH(expr, ...) [] { return false; }()
-#define DOCTEST_REQUIRE_THROWS_WITH(expr, ...) [] { return false; }()
-#define DOCTEST_WARN_THROWS_WITH_AS(expr, with, ...) [] { return false; }()
-#define DOCTEST_CHECK_THROWS_WITH_AS(expr, with, ...) [] { return false; }()
-#define DOCTEST_REQUIRE_THROWS_WITH_AS(expr, with, ...) [] { return false; }()
+#define DOCTEST_WARN_THROWS_WITH(expr, ...) DOCTEST_FUNC_EMPTY
+#define DOCTEST_CHECK_THROWS_WITH(expr, ...) DOCTEST_FUNC_EMPTY
+#define DOCTEST_REQUIRE_THROWS_WITH(expr, ...) DOCTEST_FUNC_EMPTY
+#define DOCTEST_WARN_THROWS_WITH_AS(expr, with, ...) DOCTEST_FUNC_EMPTY
+#define DOCTEST_CHECK_THROWS_WITH_AS(expr, with, ...) DOCTEST_FUNC_EMPTY
+#define DOCTEST_REQUIRE_THROWS_WITH_AS(expr, with, ...) DOCTEST_FUNC_EMPTY
 
-#define DOCTEST_WARN_THROWS_WITH_MESSAGE(expr, with, ...) [] { return false; }()
-#define DOCTEST_CHECK_THROWS_WITH_MESSAGE(expr, with, ...) [] { return false; }()
-#define DOCTEST_REQUIRE_THROWS_WITH_MESSAGE(expr, with, ...) [] { return false; }()
-#define DOCTEST_WARN_THROWS_WITH_AS_MESSAGE(expr, with, ex, ...) [] { return false; }()
-#define DOCTEST_CHECK_THROWS_WITH_AS_MESSAGE(expr, with, ex, ...) [] { return false; }()
-#define DOCTEST_REQUIRE_THROWS_WITH_AS_MESSAGE(expr, with, ex, ...) [] { return false; }()
+#define DOCTEST_WARN_THROWS_WITH_MESSAGE(expr, with, ...) DOCTEST_FUNC_EMPTY
+#define DOCTEST_CHECK_THROWS_WITH_MESSAGE(expr, with, ...) DOCTEST_FUNC_EMPTY
+#define DOCTEST_REQUIRE_THROWS_WITH_MESSAGE(expr, with, ...) DOCTEST_FUNC_EMPTY
+#define DOCTEST_WARN_THROWS_WITH_AS_MESSAGE(expr, with, ex, ...) DOCTEST_FUNC_EMPTY
+#define DOCTEST_CHECK_THROWS_WITH_AS_MESSAGE(expr, with, ex, ...) DOCTEST_FUNC_EMPTY
+#define DOCTEST_REQUIRE_THROWS_WITH_AS_MESSAGE(expr, with, ex, ...) DOCTEST_FUNC_EMPTY
 
 #endif // DOCTEST_CONFIG_DISABLE
 
