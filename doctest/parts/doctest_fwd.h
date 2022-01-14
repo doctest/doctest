@@ -1970,6 +1970,12 @@ int registerReporter(const char* name, int priority, bool isReporter) {
 }
 } // namespace doctest
 
+#ifdef DOCTEST_CONFIG_ASSERTS_RETURN_VALUES
+#define DOCTEST_FUNC_EMPTY [] { return false; }()
+#else
+#define DOCTEST_FUNC_EMPTY (void)0
+#endif
+
 // if registering is not disabled
 #ifndef DOCTEST_CONFIG_DISABLE
 
@@ -2507,12 +2513,6 @@ int registerReporter(const char* name, int priority, bool isReporter) {
 // == THIS CAN BE ENABLED BY DEFINING DOCTEST_CONFIG_DISABLE GLOBALLY!                            ==
 // =================================================================================================
 #else // DOCTEST_CONFIG_DISABLE
-
-#ifdef DOCTEST_CONFIG_ASSERTS_RETURN_VALUES
-#define DOCTEST_FUNC_EMPTY [] { return false; }()
-#else
-#define DOCTEST_FUNC_EMPTY (void)0
-#endif
 
 #define DOCTEST_IMPLEMENT_FIXTURE(der, base, func, name)                                           \
     namespace {                                                                                    \
