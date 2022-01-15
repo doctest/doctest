@@ -113,8 +113,6 @@ This is a combination of ```<LEVEL>_THROWS_WITH``` and ```<LEVEL>_THROWS_AS```.
 CHECK_THROWS_WITH_AS(func(), "invalid operation!", std::runtime_error);
 ```
 
-All `THROWS_WITH` macros are unaffected by `DOCTEST_CONFIG_EVALUATE_ASSERTS_EVEN_WHEN_DISABLED`.
-
 - ```<LEVEL>_NOTHROW(expression)```
 
 Expects that no exception is thrown during evaluation of the expression.
