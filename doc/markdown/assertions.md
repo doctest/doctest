@@ -113,8 +113,6 @@ This is a combination of ```<LEVEL>_THROWS_WITH``` and ```<LEVEL>_THROWS_AS```.
 CHECK_THROWS_WITH_AS(func(), "invalid operation!", std::runtime_error);
 ```
 
-All `THROWS_WITH` macros are unaffected by `DOCTEST_CONFIG_EVALUATE_ASSERTS_EVEN_WHEN_DISABLED`.
-
 - ```<LEVEL>_NOTHROW(expression)```
 
 Expects that no exception is thrown during evaluation of the expression.
@@ -134,22 +132,6 @@ The results would be best when using the [**```DOCTEST_CONFIG_SUPER_FAST_ASSERTS
 Checkout the [**example**](../../examples/all_features/asserts_used_outside_of_tests.cpp) showcasing how that is done. For more information see the [**issue for the feature request**](https://github.com/doctest/doctest/issues/114).
 
 Currently [**logging macros**](logging.md) cannot be used for extra context for asserts outside of a test run. That means that the ```_MESSAGE``` variants of asserts are also not usable - since they are just a packed ```INFO()``` with an assert right after it.
-
-## Using asserts as conditions
-
-All assertion macros return a boolean value, reporting whether they succeeded. This can be used, for example, to have `nullptr` checks that don't terminate the test case on failure.
-
-Example:
-```c++
-if (CHECK(somePtr != nullptr))
-    CHECK(somePtr->someMethod() == 42);
-```
-
-When `DOCTEST_CONFIG_DISABLE` is defined, all macros return `false` by default.
-
-However, defining `DOCTEST_CONFIG_EVALUATE_ASSERTS_EVEN_WHEN_DISABLED` with `DOCTEST_CONFIG_DISABLE` causes the macros to evaluate their arguments and return the appropriate boolean value.
-
-Some macros are unaffected by `DOCTEST_CONFIG_EVALUATE_ASSERTS_EVEN_WHEN_DISABLED` because they rely on doctest functionality which is not available when `DOCTEST_CONFIG_DISABLE` is defined. This is stated in their documentation.
 
 ## Floating point comparisons
 

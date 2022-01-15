@@ -1,3 +1,4 @@
+#define DOCTEST_CONFIG_ASSERTS_RETURN_VALUES
 #include <doctest/doctest.h>
 
 #include <cstdio>
@@ -18,10 +19,11 @@ static int test_disabled_var_ = [] {
     if (TEST_FLIP ^ CHECK_UNARY(true)) { TEST_FAIL(); }
     if (TEST_FLIP ^ CHECK_UNARY_FALSE(false)) { TEST_FAIL(); }
 #ifndef DOCTEST_CONFIG_NO_EXCEPTIONS_BUT_WITH_ALL_ASSERTS
-    if (TEST_FLIP ^ CHECK_THROWS([] { throw 2; }())) { TEST_FAIL(); }
-    if (TEST_FLIP ^ CHECK_THROWS_AS([] { throw 2; }(), int)) { TEST_FAIL(); }
-    if (TEST_FLIP ^ CHECK_NOTHROW([]{ }())) { TEST_FAIL(); }
-    if (CHECK_THROWS_WITH([] { throw 2; }(), "2")) { TEST_FAIL(); }
+    int i = 2; (void)i;
+    if (TEST_FLIP ^ CHECK_THROWS([=] { throw i; }())) { TEST_FAIL(); }
+    if (TEST_FLIP ^ CHECK_THROWS_AS([=] { throw i; }(), int)) { TEST_FAIL(); }
+    if (TEST_FLIP ^ CHECK_NOTHROW([=]{ }())) { TEST_FAIL(); }
+    if (CHECK_THROWS_WITH([=] { throw i; }(), "2")) { TEST_FAIL(); }
 #endif
 
     return 0;
