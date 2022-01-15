@@ -1055,10 +1055,6 @@ namespace detail {
         static void convert(std::ostream* s, const T&) {
             writeChars(s, "{?}");
         }
-
-        // always treat char* as a string in this context - no matter
-        // if DOCTEST_CONFIG_TREAT_CHAR_STAR_AS_STRING is defined
-        static void convert(std::ostream* s, const char* in) { *s << in; }
     };
 
     template <>
@@ -1124,12 +1120,6 @@ String toString(const DOCTEST_REF_WRAP(T) value) {
 }
 
 DOCTEST_INTERFACE const ContextOptions* getContextOptions();
-
-#if DOCTEST_MSVC
-#define DOCTEST_INTERFACE_DECL
-#else
-#define DOCTEST_INTERFACE_DECL DOCTEST_INTERFACE
-#endif
 
 template <typename F>
 struct DOCTEST_INTERFACE_DECL IsNaN

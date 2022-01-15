@@ -1118,12 +1118,6 @@ String toString(const DOCTEST_REF_WRAP(T) value) {
 
 DOCTEST_INTERFACE const ContextOptions* getContextOptions();
 
-#if DOCTEST_MSVC
-#define DOCTEST_INTERFACE_DECL
-#else
-#define DOCTEST_INTERFACE_DECL DOCTEST_INTERFACE
-#endif
-
 template <typename F>
 struct DOCTEST_INTERFACE_DECL IsNaN
 {

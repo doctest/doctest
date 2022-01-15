@@ -2,7 +2,7 @@
 
 The latest released version of doctest can be obtained from here: https://raw.githubusercontent.com/doctest/doctest/master/doctest/doctest.h
 
-You can substitute ```master``` with ```dev``` or a tag like ```1.2.9``` for a specific version in the URL above.
+You can substitute ```master``` with ```dev``` or a tag like ```v1.4.8``` for a specific version in the URL above.
 
 ### CMake
 
