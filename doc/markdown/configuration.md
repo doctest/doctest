@@ -31,6 +31,7 @@ Defining something ```globally``` means for every source file of the binary (exe
 - [**```DOCTEST_CONFIG_NO_POSIX_SIGNALS```**](#doctest_config_no_posix_signals)
 - [**```DOCTEST_CONFIG_INCLUDE_TYPE_TRAITS```**](#doctest_config_include_type_traits)
 - [**```DOCTEST_CONFIG_NO_MULTI_LANE_ATOMICS```**](#doctest_config_no_multi_lane_atomics)
+- [**```DOCTEST_CONFIG_ASSERTS_RETURN_VALUES```**](#doctest_config_asserts_return_values)
 - [**```DOCTEST_CONFIG_EVALUATE_ASSERTS_EVEN_WHEN_DISABLED```**](#doctest_config_evaluate_asserts_even_when_disabled)
 
 For most people the only configuration needed is telling **doctest** which source file should host all the implementation code:
@@ -214,7 +215,7 @@ This should be defined only in the source file where the library is implemented 
 
 ### **```DOCTEST_CONFIG_NO_WINDOWS_SEH```**
 
-This can be used to disable **```DOCTEST_CONFIG_WINDOWS_SEH```** when it is auto-selected by the library.
+This can be used to disable [**```DOCTEST_CONFIG_WINDOWS_SEH```**](#doctest_config_windows_seh) when it is auto-selected by the library.
 
 This should be defined only in the source file where the library is implemented (it's relevant only there).
 
@@ -240,9 +241,31 @@ This can be defined both globally and in specific source files only.
 
 This can be used to disable multi lane atomics. Multi lane atomics can speed up highly parallel use of assert statements, but have a small overhead for single threaded applications.
 
+This should be defined only in the source file where the library is implemented (it's relevant only there).
+
+### **```DOCTEST_CONFIG_ASSERTS_RETURN_VALUES```**
+
+Makes all assertion macros return a boolean value, reporting whether the assertion succeeded. This can be used, for example, to have ```nullptr``` checks that don't terminate the test case on failure.
+
+Example:
+```c++
+if (CHECK(somePtr != nullptr))
+    CHECK(somePtr->someMethod() == 42);
+```
+
+This has a slight negative impact on performance as well as disabling some functionality inside assertions (e.g. ```co_return```).
+
+When [**```DOCTEST_CONFIG_DISABLE```**](#doctest_config_disable) is defined, all macros return ```false``` by default.
+
+This can be defined both globally and in specific source files only.
+
 ### **```DOCTEST_CONFIG_EVALUATE_ASSERTS_EVEN_WHEN_DISABLED```**
 
-This can be used to evaluate asserts even when **```DOCTEST_CONFIG_DISABLE```** is used - this is useful when they are used in production code within if statements so that the condition continues to be evaluated.
+When [**```DOCTEST_CONFIG_ASSERTS_RETURN_VALUES```**](#doctest_config_asserts_return_values) and [**```DOCTEST_CONFIG_DISABLE```**](#doctest_config_disable) are defined, this macro will cause conditions from assertions to evaluate properly (instead of returning `false`), although all overhead and functionality from doctest is removed. This is useful when assertions are used in production code within if statements so that the condition continues to be evaluated.
+
+Since all ```THROWS_WITH``` assertions depend on doctest functionality which is not available when [**```DOCTEST_CONFIG_DISABLE```**](#doctest_config_disable) is defined (stringification), they will still unconditionally return ```false```.
+
+This can be defined both globally and in specific source files only.
 
 ---------------
 
