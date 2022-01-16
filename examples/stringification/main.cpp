@@ -103,6 +103,17 @@ inline std::ostream& operator<<(std::ostream& os, StructOss s)
     return os << s.value;
 }
 
+struct StructSpoiledHexOss
+{
+    int value;
+};
+
+inline std::ostream& operator<<(std::ostream& os, StructSpoiledHexOss s)
+{
+    // set ostream mode to hex and not return it back
+    return os << std::hex << s.value;
+}
+
 }
 
 #define ENABLE_BROKEN_TESTS
@@ -432,6 +443,16 @@ TEST_CASE("Ostream_poisoning_regression")
     // Hex result of toString shouldn't leave internal stream mode into hex mode
     CHECK_EQ(toString(StructOss{16}), "16");
     toString(reinterpret_cast<int*>(0xBEEFCACE));
+    CHECK_EQ(toString(StructOss{16}), "16");
+}
+
+TEST_CASE("Ostream_poisoning_regression_2")
+{
+    // Hex result of toString shouldn't leave internal stream mode into hex mode
+    // ideally even if source of the spoiling is in the user code
+    // because such spoiling is not detectable immideatly, but breaks random asserts that are called after
+    CHECK_EQ(toString(StructOss{16}), "16");
+    toString(StructSpoiledHexOss{12345});
     CHECK_EQ(toString(StructOss{16}), "16");
 }
 #endif
