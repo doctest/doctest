@@ -105,7 +105,7 @@ inline std::ostream& operator<<(std::ostream& os, StructOss s)
 
 }
 
-//#define ENABLE_BROKEN_TESTS
+#define ENABLE_BROKEN_TESTS
 
 using namespace doctest;
 
