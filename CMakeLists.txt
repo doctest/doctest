@@ -79,6 +79,7 @@ if(MAIN_PROJECT AND DOCTEST_WITH_TESTS)
     include(scripts/cmake/common.cmake)
 
     add_subdirectory(examples/all_features)
+    add_subdirectory(examples/stringification)
 
     # for code coverage we want exactly one binary to be produced and exercised
     if(NOT DEFINED ENV{CODE_COVERAGE})

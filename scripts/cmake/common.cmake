@@ -72,6 +72,50 @@ function(doctest_add_test)
     doctest_add_test_impl(${ARGN} JUNIT_OUTPUT)
 endfunction()
 
+# Unlike doctest_add_test we need to add doctest as a regular test
+# I mean test which output is not checked, but instead we check retcode
+# TODO: think of a better name
+function(doctest_add_test_2)
+    cmake_parse_arguments(ARG "" "NAME" "COMMAND" ${ARGN})
+    if(NOT "${ARG_UNPARSED_ARGUMENTS}" STREQUAL "" OR "${ARG_NAME}" STREQUAL "" OR "${ARG_COMMAND}" STREQUAL "")
+        message(FATAL_ERROR "doctest_add_stringification_test() called with wrong options!")
+    endif()
+    
+    # construct the command
+    set(the_command "")
+    if(${DOCTEST_TEST_MODE} STREQUAL "VALGRIND")
+        set(the_command "valgrind -v --leak-check=full --track-origins=yes --error-exitcode=1")
+    endif()
+    foreach(cur ${ARG_COMMAND})
+        set(the_command "${the_command} ${cur}")
+    endforeach()
+    
+    string(STRIP ${the_command} the_command)
+    
+    list(APPEND ADDITIONAL_FLAGS -DTEST_MODE=${the_test_mode})
+    
+    add_test(NAME ${ARG_NAME} COMMAND ${CMAKE_COMMAND} -DCOMMAND=${the_command} ${ADDITIONAL_FLAGS} -P ${CURRENT_LIST_DIR_CACHED}/exec_test.cmake)
+endfunction()
+
+# In order not to miss subcases, parse a file with regex to find them
+function(doctest_detect_test_cases FILE_NAME OUTPUT_NAME)
+    file(READ "${FILE_NAME}" file_content)
+    string(REGEX MATCHALL "TEST_CASE\\( *\"([^\"]*)\"" matchall_result "${file_content}")
+    
+    set(result)
+    
+    foreach(m IN LISTS matchall_result)
+        string(FIND "${m}" "\"" begin)
+        string(FIND "${m}" "\"" end REVERSE)
+        math(EXPR begin "${begin} + 1" OUTPUT_FORMAT DECIMAL)
+        math(EXPR length "${end} - ${begin}" OUTPUT_FORMAT DECIMAL)
+        string(SUBSTRING "${m}" ${begin} ${length} name)
+        list(APPEND result "${name}")
+    endforeach()
+    
+    set(${OUTPUT_NAME} "${result}" PARENT_SCOPE)
+endfunction()
+
 macro(add_compiler_flags)
     foreach(flag ${ARGV})
         set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${flag}")
