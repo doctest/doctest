@@ -1044,6 +1044,18 @@ struct DOCTEST_INTERFACE Approx
     double m_value;
 };
 
+template <typename F>
+struct DOCTEST_INTERFACE_DECL IsNaN {
+    F val;
+    IsNaN(F f) : val(f) { }
+    operator bool() const;
+};
+#ifndef __MINGW32__
+extern template struct DOCTEST_INTERFACE_DECL IsNaN<float>;
+extern template struct DOCTEST_INTERFACE_DECL IsNaN<double>;
+extern template struct DOCTEST_INTERFACE_DECL IsNaN<long double>;
+#endif
+
 namespace detail {
     template <bool C>
     struct StringStreamBase
@@ -1090,6 +1102,9 @@ namespace detail {
     DOCTEST_INTERFACE void toStream(std::ostream* s, std::nullptr_t in);
 
     DOCTEST_INTERFACE void toStream(std::ostream* s, const Approx& in);
+    DOCTEST_INTERFACE void toStream(std::ostream* s, const IsNaN<float>& in);
+    DOCTEST_INTERFACE void toStream(std::ostream* s, const IsNaN<double>& in);
+    DOCTEST_INTERFACE void toStream(std::ostream* s, const IsNaN<long double>& in);
 
     template <typename T, typename detail::enable_if<!detail::is_enum<T>::value, bool>::type = true>
     void toStream(std::ostream* s, const DOCTEST_REF_WRAP(T) value) {
@@ -1117,22 +1132,6 @@ String toString(const DOCTEST_REF_WRAP(T) value) {
 }
 
 DOCTEST_INTERFACE const ContextOptions* getContextOptions();
-
-template <typename F>
-struct DOCTEST_INTERFACE_DECL IsNaN
-{
-    F val;
-    IsNaN(F f) : val(f) { }
-    operator bool() const;
-};
-#ifndef __MINGW32__
-extern template struct DOCTEST_INTERFACE_DECL IsNaN<float>;
-extern template struct DOCTEST_INTERFACE_DECL IsNaN<double>;
-extern template struct DOCTEST_INTERFACE_DECL IsNaN<long double>;
-#endif
-DOCTEST_INTERFACE std::ostream& operator<<(std::ostream& out, IsNaN<float> nanCheck);
-DOCTEST_INTERFACE std::ostream& operator<<(std::ostream& out, IsNaN<double> nanCheck);
-DOCTEST_INTERFACE std::ostream& operator<<(std::ostream& out, IsNaN<long double> nanCheck);
 
 #ifndef DOCTEST_CONFIG_DISABLE
 

@@ -169,7 +169,7 @@
           doctest::IsNaN&lt;double>(0.5)
         </Original>
         <Expanded>
-          0.5
+          IsNaN( 0.5 )
         </Expanded>
       </Expression>
       <Expression success="false" type="CHECK" filename="stringification.cpp" line="0">
@@ -177,7 +177,7 @@
           doctest::IsNaN&lt;float>(std::numeric_limits&lt;float>::infinity())
         </Original>
         <Expanded>
-          inf
+          IsNaN( inff )
         </Expanded>
       </Expression>
       <Exception crash="false">

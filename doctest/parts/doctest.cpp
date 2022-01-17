@@ -821,12 +821,6 @@ DOCTEST_MSVC_SUPPRESS_WARNING_POP
 template struct DOCTEST_INTERFACE_DEF IsNaN<float>;
 template struct DOCTEST_INTERFACE_DEF IsNaN<double>;
 template struct DOCTEST_INTERFACE_DEF IsNaN<long double>;
-std::ostream& operator<<(std::ostream& out, IsNaN<float> nanCheck)
-    { out << nanCheck.val; return out; }
-std::ostream& operator<<(std::ostream& out, IsNaN<double> nanCheck)
-    { out << nanCheck.val; return out; }
-std::ostream& operator<<(std::ostream& out, IsNaN<long double> nanCheck)
-    { out << nanCheck.val; return out; }
 
 namespace detail {
     void toStream(std::ostream* s, bool in) { *s << (in ? "true" : "false"); }
@@ -853,7 +847,7 @@ namespace detail {
     void toStream(std::ostream* s, type in) {                                                      \
         char buf[64];                                                                              \
         std::sprintf(buf, fmt, in);                                                                \
-        *s << buf;                                                                                  \
+        *s << buf;                                                                                 \
     }
 
     DOCTEST_TO_STRING_OVERLOAD(char, "%d")
@@ -875,6 +869,16 @@ namespace detail {
         toStream(s, in.m_value);
         *s << " )";
     }
+
+    template <typename F>
+    void toStream(std::ostream* s, const IsNaN<F>& in) {
+        *s << "IsNaN( ";
+        toStream(s, in.val);
+        *s << " )";
+    }
+    void toStream(std::ostream* s, const IsNaN<float>& in) { toStream<float>(s, in); }
+    void toStream(std::ostream* s, const IsNaN<double>& in) { toStream<double>(s, in); }
+    void toStream(std::ostream* s, const IsNaN<long double>& in) { toStream<long double>(s, in); }
 }
 
 } // namespace doctest

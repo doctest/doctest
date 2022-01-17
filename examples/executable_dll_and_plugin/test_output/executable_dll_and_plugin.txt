@@ -5,7 +5,7 @@ dll.cpp(0):
 TEST CASE:  dll
 
 dll.cpp(0): ERROR: CHECK( doctest::IsNaN<long double>(0.1L) ) is NOT correct!
-  values: CHECK( 0.1 )
+  values: CHECK( IsNaN( 0.1L ) )
 
 I am a test from the implementation!
 I am a test from the implementation_2!

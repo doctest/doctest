@@ -68,10 +68,10 @@ stringification.cpp(0): ERROR: CHECK( s1 == s2 ) is NOT correct!
           MyOtherType: 42 is not really MyOtherType: 666
 
 stringification.cpp(0): ERROR: CHECK( doctest::IsNaN<double>(0.5) ) is NOT correct!
-  values: CHECK( 0.5 )
+  values: CHECK( IsNaN( 0.5 ) )
 
 stringification.cpp(0): ERROR: CHECK( doctest::IsNaN<float>(std::numeric_limits<float>::infinity()) ) is NOT correct!
-  values: CHECK( inf )
+  values: CHECK( IsNaN( inff ) )
 
 stringification.cpp(0): ERROR: test case THREW exception: MyTypeInherited<int>(5, 4)
 

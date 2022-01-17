@@ -85,16 +85,16 @@ CHECK( s1 == s2 ) is NOT correct!
           MyOtherType: 42 is not really MyOtherType: 666
 
       </failure>
-      <failure message="0.5" type="CHECK">
+      <failure message="IsNaN( 0.5 )" type="CHECK">
 stringification.cpp(0):
 CHECK( doctest::IsNaN&lt;double>(0.5) ) is NOT correct!
-  values: CHECK( 0.5 )
+  values: CHECK( IsNaN( 0.5 ) )
 
       </failure>
-      <failure message="inf" type="CHECK">
+      <failure message="IsNaN( inff )" type="CHECK">
 stringification.cpp(0):
 CHECK( doctest::IsNaN&lt;float>(std::numeric_limits&lt;float>::infinity()) ) is NOT correct!
-  values: CHECK( inf )
+  values: CHECK( IsNaN( inff ) )
 
       </failure>
       <error message="exception">
