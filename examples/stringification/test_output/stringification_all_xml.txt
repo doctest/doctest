@@ -15,7 +15,7 @@
       <OverallResultsAsserts successes="3" failures="0" test_case_success="true"/>
     </TestCase>
     <TestCase name="Wide_character_types" filename="main.cpp" line="0">
-      <OverallResultsAsserts successes="0" failures="0" test_case_success="true"/>
+      <OverallResultsAsserts successes="3" failures="0" test_case_success="true"/>
     </TestCase>
     <TestCase name="Floating_point_types_zero" filename="main.cpp" line="0">
       <OverallResultsAsserts successes="3" failures="0" test_case_success="true"/>
@@ -27,10 +27,10 @@
       <OverallResultsAsserts successes="28" failures="0" test_case_success="true"/>
     </TestCase>
     <TestCase name="C_arrays" filename="main.cpp" line="0">
-      <OverallResultsAsserts successes="0" failures="0" test_case_success="true"/>
+      <OverallResultsAsserts successes="6" failures="0" test_case_success="true"/>
     </TestCase>
     <TestCase name="Enumerations" filename="main.cpp" line="0">
-      <OverallResultsAsserts successes="2" failures="0" test_case_success="true"/>
+      <OverallResultsAsserts successes="4" failures="0" test_case_success="true"/>
     </TestCase>
     <TestCase name="Structs" filename="main.cpp" line="0">
       <OverallResultsAsserts successes="2" failures="0" test_case_success="true"/>
@@ -38,7 +38,13 @@
     <TestCase name="std_classes" filename="main.cpp" line="0">
       <OverallResultsAsserts successes="26" failures="0" test_case_success="true"/>
     </TestCase>
+    <TestCase name="Ostream_poisoning_regression" filename="main.cpp" line="0">
+      <OverallResultsAsserts successes="2" failures="0" test_case_success="true"/>
+    </TestCase>
+    <TestCase name="Ostream_poisoning_regression_2" filename="main.cpp" line="0">
+      <OverallResultsAsserts successes="2" failures="0" test_case_success="true"/>
+    </TestCase>
   </TestSuite>
-  <OverallResultsAsserts successes="99" failures="0"/>
-  <OverallResultsTestCases successes="12" failures="0"/>
+  <OverallResultsAsserts successes="114" failures="0"/>
+  <OverallResultsTestCases successes="14" failures="0"/>
 </doctest>

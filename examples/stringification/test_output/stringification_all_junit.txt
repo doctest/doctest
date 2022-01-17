@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <testsuites>
-  <testsuite name="stringification" errors="0" failures="0" tests="99">
+  <testsuite name="stringification" errors="0" failures="0" tests="114">
     <testcase classname="main.cpp" name="nullptr_t" status="run"/>
     <testcase classname="main.cpp" name="Integer_types" status="run"/>
     <testcase classname="main.cpp" name="Boolean_type" status="run"/>
@@ -13,5 +13,7 @@
     <testcase classname="main.cpp" name="Enumerations" status="run"/>
     <testcase classname="main.cpp" name="Structs" status="run"/>
     <testcase classname="main.cpp" name="std_classes" status="run"/>
+    <testcase classname="main.cpp" name="Ostream_poisoning_regression" status="run"/>
+    <testcase classname="main.cpp" name="Ostream_poisoning_regression_2" status="run"/>
   </testsuite>
 </testsuites>

@@ -114,6 +114,17 @@ inline std::ostream& operator<<(std::ostream& os, StructSpoiledHexOss s)
     return os << std::hex << s.value;
 }
 
+// See problem description here
+// https://github.com/doctest/doctest/pull/590#issuecomment-1014180309
+// In short, to make reproducible results on CI to pass tests, amount of asserts
+// should be the same unconditionally. But because some asserts are conditionally
+// disabled, we have to add the same amount of fake asserts to keep the amount.
+void add_stub_asserts( const size_t amount )
+{
+    for( size_t i = 0; i < amount; ++i )
+        CHECK(true);
+}
+
 }
 
 //#define ENABLE_BROKEN_TESTS
@@ -173,15 +184,17 @@ TEST_CASE("Standard_character_types")
 TEST_CASE("Wide_character_types")
 {
 #ifdef ENABLE_BROKEN_TESTS
-#if CXX_STANDARD >= 20
+#   if CXX_STANDARD >= 20
     CHECK_EQ(toString(static_cast<wchar_t>(L'A')), "{?}");
     CHECK_EQ(toString(static_cast<char16_t>(L'B')), "{?}");
     CHECK_EQ(toString(static_cast<char32_t>(L'C')), "{?}");
-#else
+#   else
     CHECK_EQ(toString(static_cast<wchar_t>(L'A')), "65");
     CHECK_EQ(toString(static_cast<char16_t>(L'B')), "66");
     CHECK_EQ(toString(static_cast<char32_t>(L'C')), "67");
-#endif
+#   endif
+#else
+    add_stub_asserts(3);
 #endif
 }
 
@@ -281,6 +294,8 @@ TEST_CASE("C_arrays")
     char charArray[] = {'b', 'a', 'r'};                     CHECK_EQ(toString(charArray), "bar");
     const int constIntArray[] = {1, 2, 3};                  CHECK_EQ(toString(constIntArray), "[1, 2, 3]");
     const int intArray[] = {4, 5, 6};                       CHECK_EQ(toString(intArray), "[4, 5, 6]");
+#else
+    add_stub_asserts(6);
 #endif
 }
 
@@ -291,6 +306,8 @@ TEST_CASE("Enumerations")
 #ifdef ENABLE_BROKEN_TESTS
     CHECK_EQ(toString(EnumWithOss::E_VALUE_WITH_OSS), "E_VALUE_WITH_OSS");
     CHECK_EQ(toString(EnumClassWithOss::A), "A");
+#else
+    add_stub_asserts(2);
 #endif
 }
 
@@ -390,6 +407,8 @@ TEST_CASE("std_classes")
         std::multimap<int, std::string> value {{ { 1, "foo" }, { 2, "bar" }, { 1, "baz" } }};
         CHECK_EQ(toString(value), "{?}");
     }
+#else
+    add_stub_asserts(17);
 #endif  // CXX_STANDARD >= 11
 
 #if CXX_STANDARD >= 14
@@ -397,6 +416,8 @@ TEST_CASE("std_classes")
         std::integer_sequence<int, 9, 2, 5, 1, 9, 1, 6> value {};
         CHECK_EQ(toString(value), "{?}");
     }
+#else
+    add_stub_asserts(1);
 #endif  // CXX_STANDARD >= 14
 
 #if CXX_STANDARD >= 17
@@ -424,8 +445,12 @@ TEST_CASE("std_classes")
         value = true;
         CHECK_EQ(toString(value), "{?}");
     }
+#else
+    add_stub_asserts(3);
 #endif
-    
+
+#else
+    add_stub_asserts(7);
 #endif  // CXX_STANDARD >= 17
 
 #if CXX_STANDARD >= 20
@@ -434,25 +459,33 @@ TEST_CASE("std_classes")
         std::span<int> value { ar };
         CHECK_EQ(toString(value), "{?}");
     }
+#else
+    add_stub_asserts(1);
 #endif  // CXX_STANDARD >= 20
 }
 
-#ifdef ENABLE_BROKEN_TESTS
 TEST_CASE("Ostream_poisoning_regression")
 {
+#ifdef ENABLE_BROKEN_TESTS
     // Hex result of toString shouldn't leave internal stream mode into hex mode
     CHECK_EQ(toString(StructOss{16}), "16");
     toString(reinterpret_cast<int*>(0xBEEFCACE));
     CHECK_EQ(toString(StructOss{16}), "16");
+#else
+    add_stub_asserts(2);
+#endif
 }
 
 TEST_CASE("Ostream_poisoning_regression_2")
 {
+#ifdef ENABLE_BROKEN_TESTS
     // Hex result of toString shouldn't leave internal stream mode into hex mode
     // ideally even if source of the spoiling is in the user code
     // because such spoiling is not detectable immideatly, but breaks random asserts that are called after
     CHECK_EQ(toString(StructOss{16}), "16");
     toString(StructSpoiledHexOss{12345});
     CHECK_EQ(toString(StructOss{16}), "16");
-}
+#else
+    add_stub_asserts(2);
 #endif
+}

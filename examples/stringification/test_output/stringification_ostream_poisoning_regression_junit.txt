@@ -1,4 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <testsuites>
-  <testsuite name="stringification" errors="0" failures="0" tests="0"/>
+  <testsuite name="stringification" errors="0" failures="0" tests="2">
+    <testcase classname="main.cpp" name="Ostream_poisoning_regression" status="run"/>
+  </testsuite>
 </testsuites>
