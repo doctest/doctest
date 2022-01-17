@@ -15,7 +15,7 @@ env:
 
 jobs:
   ci:
-    if: github.event_name == "push" || github.event.pull_request.head.repo.full_name != github.repository
+    if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name != github.repository
     runs-on: ${{ matrix.os }}
 
     env:
@@ -204,7 +204,7 @@ jobs:
         run: python3 .github/workflows/build_and_test.py ${{ runner.os }} x86 ${{ matrix.compiler }} ${{ matrix.version }}
 
   ci-min-gw:
-    if: github.event_name == "push" || github.event.pull_request.head.repo.full_name != github.repository
+    if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name != github.repository
     runs-on: windows-latest
 
     strategy:
@@ -228,7 +228,7 @@ jobs:
         run: ctest --test-dir build --no-tests=error
 
   ci-msvs:
-    if: github.event_name == "push" || github.event.pull_request.head.repo.full_name != github.repository
+    if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name != github.repository
     runs-on: ${{ matrix.toolset == 'v143' && 'windows-2022' || 'windows-latest' }}
 
     strategy:
