@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+  <testsuite name="stringification" errors="0" failures="0" tests="99">
+    <testcase classname="main.cpp" name="nullptr_t" status="run"/>
+    <testcase classname="main.cpp" name="Integer_types" status="run"/>
+    <testcase classname="main.cpp" name="Boolean_type" status="run"/>
+    <testcase classname="main.cpp" name="Standard_character_types" status="run"/>
+    <testcase classname="main.cpp" name="Wide_character_types" status="run"/>
+    <testcase classname="main.cpp" name="Floating_point_types_zero" status="run"/>
+    <testcase classname="main.cpp" name="Floating_point_types__non_zero" status="run"/>
+    <testcase classname="main.cpp" name="Pointer_types" status="run"/>
+    <testcase classname="main.cpp" name="C_arrays" status="run"/>
+    <testcase classname="main.cpp" name="Enumerations" status="run"/>
+    <testcase classname="main.cpp" name="Structs" status="run"/>
+    <testcase classname="main.cpp" name="std_classes" status="run"/>
+  </testsuite>
+</testsuites>

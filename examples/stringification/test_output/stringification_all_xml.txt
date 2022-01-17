@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<doctest binary="stringification">
+  <Options order_by="file" rand_seed="0" first="0" last="4294967295" abort_after="0" subcase_filter_levels="2147483647" case_sensitive="false" no_throw="false" no_skip="false"/>
+  <TestSuite>
+    <TestCase name="nullptr_t" filename="main.cpp" line="0">
+      <OverallResultsAsserts successes="1" failures="0" test_case_success="true"/>
+    </TestCase>
+    <TestCase name="Integer_types" filename="main.cpp" line="0">
+      <OverallResultsAsserts successes="20" failures="0" test_case_success="true"/>
+    </TestCase>
+    <TestCase name="Boolean_type" filename="main.cpp" line="0">
+      <OverallResultsAsserts successes="2" failures="0" test_case_success="true"/>
+    </TestCase>
+    <TestCase name="Standard_character_types" filename="main.cpp" line="0">
+      <OverallResultsAsserts successes="3" failures="0" test_case_success="true"/>
+    </TestCase>
+    <TestCase name="Wide_character_types" filename="main.cpp" line="0">
+      <OverallResultsAsserts successes="0" failures="0" test_case_success="true"/>
+    </TestCase>
+    <TestCase name="Floating_point_types_zero" filename="main.cpp" line="0">
+      <OverallResultsAsserts successes="3" failures="0" test_case_success="true"/>
+    </TestCase>
+    <TestCase name="Floating_point_types__non_zero" filename="main.cpp" line="0" may_fail="true">
+      <OverallResultsAsserts successes="12" failures="0" test_case_success="true"/>
+    </TestCase>
+    <TestCase name="Pointer_types" filename="main.cpp" line="0">
+      <OverallResultsAsserts successes="28" failures="0" test_case_success="true"/>
+    </TestCase>
+    <TestCase name="C_arrays" filename="main.cpp" line="0">
+      <OverallResultsAsserts successes="0" failures="0" test_case_success="true"/>
+    </TestCase>
+    <TestCase name="Enumerations" filename="main.cpp" line="0">
+      <OverallResultsAsserts successes="2" failures="0" test_case_success="true"/>
+    </TestCase>
+    <TestCase name="Structs" filename="main.cpp" line="0">
+      <OverallResultsAsserts successes="2" failures="0" test_case_success="true"/>
+    </TestCase>
+    <TestCase name="std_classes" filename="main.cpp" line="0">
+      <OverallResultsAsserts successes="26" failures="0" test_case_success="true"/>
+    </TestCase>
+  </TestSuite>
+  <OverallResultsAsserts successes="99" failures="0"/>
+  <OverallResultsTestCases successes="12" failures="0"/>
+</doctest>

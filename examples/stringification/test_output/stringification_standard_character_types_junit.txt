@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+  <testsuite name="stringification" errors="0" failures="0" tests="3">
+    <testcase classname="main.cpp" name="Standard_character_types" status="run"/>
+  </testsuite>
+</testsuites>

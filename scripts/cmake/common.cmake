@@ -72,31 +72,6 @@ function(doctest_add_test)
     doctest_add_test_impl(${ARGN} JUNIT_OUTPUT)
 endfunction()
 
-# Unlike doctest_add_test we need to add doctest as a regular test
-# I mean test which output is not checked, but instead we check retcode
-# TODO: think of a better name
-function(doctest_add_test_2)
-    cmake_parse_arguments(ARG "" "NAME" "COMMAND" ${ARGN})
-    if(NOT "${ARG_UNPARSED_ARGUMENTS}" STREQUAL "" OR "${ARG_NAME}" STREQUAL "" OR "${ARG_COMMAND}" STREQUAL "")
-        message(FATAL_ERROR "doctest_add_stringification_test() called with wrong options!")
-    endif()
-    
-    # construct the command
-    set(the_command "")
-    if(${DOCTEST_TEST_MODE} STREQUAL "VALGRIND")
-        set(the_command "valgrind -v --leak-check=full --track-origins=yes --error-exitcode=1")
-    endif()
-    foreach(cur ${ARG_COMMAND})
-        set(the_command "${the_command} ${cur}")
-    endforeach()
-    
-    string(STRIP ${the_command} the_command)
-    
-    list(APPEND ADDITIONAL_FLAGS -DTEST_MODE=${the_test_mode})
-    
-    add_test(NAME ${ARG_NAME} COMMAND ${CMAKE_COMMAND} -DCOMMAND=${the_command} ${ADDITIONAL_FLAGS} -P ${CURRENT_LIST_DIR_CACHED}/exec_test.cmake)
-endfunction()
-
 # In order not to miss subcases, parse a file with regex to find them
 function(doctest_detect_test_cases FILE_NAME OUTPUT_NAME)
     file(READ "${FILE_NAME}" file_content)

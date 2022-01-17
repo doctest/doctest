@@ -10,14 +10,17 @@ if(MSVC)
     target_compile_options(stringification PUBLIC "/Zc:__cplusplus")
 endif()
 
-doctest_add_test_2(NAME stringification_all COMMAND $<TARGET_FILE:stringification>)
+# omit the version and the num test cases skipped from the summary - this way the output will change less often
+set(common_args COMMAND $<TARGET_FILE:stringification> --no-skipped-summary --no-version)
+
+doctest_add_test(NAME stringification_all COMMAND ${common_args})
 
 # Unfortunately tests could and actually do affect each other, so rerun each test case separately
 doctest_detect_test_cases(main.cpp stringification_test_cases)
 foreach(test_case IN LISTS stringification_test_cases)
     string(MAKE_C_IDENTIFIER "${test_case}" test_case_identifier)
     string(TOLOWER "${test_case_identifier}" test_case_identifier)
-    doctest_add_test_2(NAME "stringification_${test_case_identifier}" COMMAND $<TARGET_FILE:stringification> --test-case=${test_case})
+    doctest_add_test(NAME "stringification_${test_case_identifier}" COMMAND ${common_args} --test-case=${test_case})
 endforeach()
 
 if(MSVC)
