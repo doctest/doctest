@@ -116,7 +116,7 @@ inline std::ostream& operator<<(std::ostream& os, StructSpoiledHexOss s)
 
 }
 
-#define ENABLE_BROKEN_TESTS
+//#define ENABLE_BROKEN_TESTS
 
 using namespace doctest;
 
