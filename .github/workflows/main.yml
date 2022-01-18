@@ -21,11 +21,11 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       
-      - name: Install Ninja
-        run: sudo apt-get install -y ninja-build
+      - name: Install
+        run: sudo apt-get install -y ninja-build lcov
       
       - name: Generate
-        run: cmake -B build -S . -G Ninja -D CMAKE_CXX_FLAGS="-fprofile-arcs -ftest-coverage -fprofile-dir=lcov/"
+        run: cmake -B build -S . -G Ninja -D CMAKE_CXX_FLAGS="-fprofile-arcs -ftest-coverage"
 
       - name: Build
         run: cmake --build build
@@ -37,5 +37,5 @@ jobs:
         run: tree
         
       - name: LCOV
-        run: lcov –c –d build/lcov/ –o build/LCOV.info
+        run: lcov –c –d build/ –o build/LCOV.info
       
