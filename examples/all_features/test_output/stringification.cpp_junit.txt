@@ -2,16 +2,16 @@
 <testsuites>
   <testsuite name="all_features" errors="2" failures="15" tests="15">
     <testcase classname="stringification.cpp" name="no headers" status="run">
-      <failure message="1as == NULL" type="CHECK">
+      <failure message="1as\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xF0\x01\xA0c\xC3\x01 == NULL" type="CHECK">
 stringification.cpp(0):
 CHECK( chs1 == nullptr ) is NOT correct!
-  values: CHECK( 1as == NULL )
+  values: CHECK( 1as\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xF0\x01\xA0c\xC3\x01 == NULL )
 
       </failure>
-      <failure message="0x31 == NULL" type="CHECK">
+      <failure message="0x00007ff7fd431108 == NULL" type="CHECK">
 stringification.cpp(0):
 CHECK( chs2 == nullptr ) is NOT correct!
-  values: CHECK( 0x31 == NULL )
+  values: CHECK( 0x00007ff7fd431108 == NULL )
 
       </failure>
       <failure message="1as == NULL" type="CHECK">
@@ -20,16 +20,16 @@ CHECK( "1as" == nullptr ) is NOT correct!
   values: CHECK( 1as == NULL )
 
       </failure>
-      <failure message="[0, 1, 1, 2, 3, 5, 8, 13] == NULL" type="CHECK">
+      <failure message="0112358d == NULL" type="CHECK">
 stringification.cpp(0):
 CHECK( ints == nullptr ) is NOT correct!
-  values: CHECK( [0, 1, 1, 2, 3, 5, 8, 13] == NULL )
+  values: CHECK( 0112358d == NULL )
 
       </failure>
-      <failure message="0x03 == NULL" type="CHECK">
+      <failure message="0x0000005cd1b2eaa8 == NULL" type="CHECK">
 stringification.cpp(0):
 CHECK( cptr == nullptr ) is NOT correct!
-  values: CHECK( 0x03 == NULL )
+  values: CHECK( 0x0000005cd1b2eaa8 == NULL )
 
       </failure>
       <failure message="0 == 100" type="CHECK">
@@ -70,31 +70,31 @@ CHECK( lst_1 == lst_2 ) is NOT correct!
   values: CHECK( [1, 42, 3] == [1, 2, 666] )
 
       </failure>
-      <failure message="MyOtherType: 42 == MyOtherType: 666" type="CHECK">
+      <failure message="MyOtherType: 2a == MyOtherType: 29a" type="CHECK">
 stringification.cpp(0):
 CHECK( s1 == s2 ) is NOT correct!
-  values: CHECK( MyOtherType: 42 == MyOtherType: 666 )
+  values: CHECK( MyOtherType: 2a == MyOtherType: 29a )
   logged: s1=MyOtherType: 42 s2=MyOtherType: 666
 
       </failure>
-      <failure message="MyOtherType: 42 == MyOtherType: 666" type="CHECK">
+      <failure message="MyOtherType: 2a == MyOtherType: 29a" type="CHECK">
 stringification.cpp(0):
 CHECK( s1 == s2 ) is NOT correct!
-  values: CHECK( MyOtherType: 42 == MyOtherType: 666 )
+  values: CHECK( MyOtherType: 2a == MyOtherType: 29a )
   logged: s1=MyOtherType: 42 s2=MyOtherType: 666
           MyOtherType: 42 is not really MyOtherType: 666
 
       </failure>
-      <failure message="IsNaN( 0.5 )" type="CHECK">
+      <failure message="0.5" type="CHECK">
 stringification.cpp(0):
 CHECK( doctest::IsNaN&lt;double>(0.5) ) is NOT correct!
-  values: CHECK( IsNaN( 0.5 ) )
+  values: CHECK( 0.5 )
 
       </failure>
-      <failure message="IsNaN( inff )" type="CHECK">
+      <failure message="inf" type="CHECK">
 stringification.cpp(0):
 CHECK( doctest::IsNaN&lt;float>(std::numeric_limits&lt;float>::infinity()) ) is NOT correct!
-  values: CHECK( IsNaN( inff ) )
+  values: CHECK( inf )
 
       </failure>
       <error message="exception">

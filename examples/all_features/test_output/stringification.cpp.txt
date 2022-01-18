@@ -3,28 +3,28 @@
 stringification.cpp(0):
 TEST CASE:  no headers
 
-stringification.cpp(0): MESSAGE: 1as
+stringification.cpp(0): MESSAGE: 1asллллллллллллллллллллллллллллллллл
 
 stringification.cpp(0): ERROR: CHECK( chs1 == nullptr ) is NOT correct!
-  values: CHECK( 1as == NULL )
+  values: CHECK( 1asллллллллллллллллллллллллллллллллл╟ц.▌ == NULL )
 
-stringification.cpp(0): MESSAGE: 0x31
+stringification.cpp(0): MESSAGE: 1as
 
 stringification.cpp(0): ERROR: CHECK( chs2 == nullptr ) is NOT correct!
-  values: CHECK( 0x31 == NULL )
+  values: CHECK( 0x00007ff7fd431108 == NULL )
 
 stringification.cpp(0): MESSAGE: 1as
 
 stringification.cpp(0): ERROR: CHECK( "1as" == nullptr ) is NOT correct!
   values: CHECK( 1as == NULL )
 
-stringification.cpp(0): MESSAGE: [0, 1, 1, 2, 3, 5, 8, 13]
+stringification.cpp(0): MESSAGE: 000000EC4ECFEAA8
 
 stringification.cpp(0): ERROR: CHECK( ints == nullptr ) is NOT correct!
-  values: CHECK( [0, 1, 1, 2, 3, 5, 8, 13] == NULL )
+  values: CHECK( 0112358d == NULL )
 
 stringification.cpp(0): ERROR: CHECK( cptr == nullptr ) is NOT correct!
-  values: CHECK( 0x03 == NULL )
+  values: CHECK( 0x000000ec4ecfeab8 == NULL )
 
 stringification.cpp(0): MESSAGE: 0
 
@@ -59,19 +59,19 @@ stringification.cpp(0): ERROR: CHECK( lst_1 == lst_2 ) is NOT correct!
   values: CHECK( [1, 42, 3] == [1, 2, 666] )
 
 stringification.cpp(0): ERROR: CHECK( s1 == s2 ) is NOT correct!
-  values: CHECK( MyOtherType: 42 == MyOtherType: 666 )
+  values: CHECK( MyOtherType: 2a == MyOtherType: 29a )
   logged: s1=MyOtherType: 42 s2=MyOtherType: 666
 
 stringification.cpp(0): ERROR: CHECK( s1 == s2 ) is NOT correct!
-  values: CHECK( MyOtherType: 42 == MyOtherType: 666 )
+  values: CHECK( MyOtherType: 2a == MyOtherType: 29a )
   logged: s1=MyOtherType: 42 s2=MyOtherType: 666
           MyOtherType: 42 is not really MyOtherType: 666
 
 stringification.cpp(0): ERROR: CHECK( doctest::IsNaN<double>(0.5) ) is NOT correct!
-  values: CHECK( IsNaN( 0.5 ) )
+  values: CHECK( 0.5 )
 
 stringification.cpp(0): ERROR: CHECK( doctest::IsNaN<float>(std::numeric_limits<float>::infinity()) ) is NOT correct!
-  values: CHECK( IsNaN( inff ) )
+  values: CHECK( inf )
 
 stringification.cpp(0): ERROR: test case THREW exception: MyTypeInherited<int>(5, 4)
 

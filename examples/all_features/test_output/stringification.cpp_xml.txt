@@ -5,7 +5,7 @@
     <TestCase name="no headers" filename="stringification.cpp" line="0">
       <Message type="WARNING" filename="stringification.cpp" line="0">
         <Text>
-          1as
+          1as\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC
         </Text>
       </Message>
       <Expression success="false" type="CHECK" filename="stringification.cpp" line="0">
@@ -13,12 +13,12 @@
           chs1 == nullptr
         </Original>
         <Expanded>
-          1as == NULL
+          1as\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC̀\x013B\xF9\x01 == NULL
         </Expanded>
       </Expression>
       <Message type="WARNING" filename="stringification.cpp" line="0">
         <Text>
-          0x31
+          1as
         </Text>
       </Message>
       <Expression success="false" type="CHECK" filename="stringification.cpp" line="0">
@@ -26,7 +26,7 @@
           chs2 == nullptr
         </Original>
         <Expanded>
-          0x31 == NULL
+          0x00007ff7fd431108 == NULL
         </Expanded>
       </Expression>
       <Message type="WARNING" filename="stringification.cpp" line="0">
@@ -44,7 +44,7 @@
       </Expression>
       <Message type="WARNING" filename="stringification.cpp" line="0">
         <Text>
-          [0, 1, 1, 2, 3, 5, 8, 13]
+          000000DD584FEA98
         </Text>
       </Message>
       <Expression success="false" type="CHECK" filename="stringification.cpp" line="0">
@@ -52,7 +52,7 @@
           ints == nullptr
         </Original>
         <Expanded>
-          [0, 1, 1, 2, 3, 5, 8, 13] == NULL
+          0112358d == NULL
         </Expanded>
       </Expression>
       <Expression success="false" type="CHECK" filename="stringification.cpp" line="0">
@@ -60,7 +60,7 @@
           cptr == nullptr
         </Original>
         <Expanded>
-          0x03 == NULL
+          0x000000dd584feaa8 == NULL
         </Expanded>
       </Expression>
       <Message type="WARNING" filename="stringification.cpp" line="0">
@@ -144,7 +144,7 @@
           s1 == s2
         </Original>
         <Expanded>
-          MyOtherType: 42 == MyOtherType: 666
+          MyOtherType: 2a == MyOtherType: 29a
         </Expanded>
         <Info>
           s1=MyOtherType: 42 s2=MyOtherType: 666
@@ -155,7 +155,7 @@
           s1 == s2
         </Original>
         <Expanded>
-          MyOtherType: 42 == MyOtherType: 666
+          MyOtherType: 2a == MyOtherType: 29a
         </Expanded>
         <Info>
           s1=MyOtherType: 42 s2=MyOtherType: 666
@@ -169,7 +169,7 @@
           doctest::IsNaN&lt;double>(0.5)
         </Original>
         <Expanded>
-          IsNaN( 0.5 )
+          0.5
         </Expanded>
       </Expression>
       <Expression success="false" type="CHECK" filename="stringification.cpp" line="0">
@@ -177,7 +177,7 @@
           doctest::IsNaN&lt;float>(std::numeric_limits&lt;float>::infinity())
         </Original>
         <Expanded>
-          IsNaN( inff )
+          inf
         </Expanded>
       </Expression>
       <Exception crash="false">

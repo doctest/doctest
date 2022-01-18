@@ -6,10 +6,10 @@ I am a test from the executable!
 <testsuites>
   <testsuite name="executable_dll_and_plugin" errors="1" failures="2" tests="4">
     <testcase classname="dll.cpp" name="dll" status="run">
-      <failure message="IsNaN( 0.1L )" type="CHECK">
+      <failure message="0.1" type="CHECK">
 dll.cpp(0):
 CHECK( doctest::IsNaN&lt;long double>(0.1L) ) is NOT correct!
-  values: CHECK( IsNaN( 0.1L ) )
+  values: CHECK( 0.1 )
 
       </failure>
     </testcase>
