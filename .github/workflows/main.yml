@@ -17,6 +17,8 @@ jobs:
   coverage:
     if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name != github.repository
     runs-on: ubuntu-latest
+    env:
+      CODE_COVERAGE: 1
       
     steps:
       - uses: actions/checkout@v2
@@ -42,5 +44,3 @@ jobs:
         uses: coverallsapp/github-action@1.1.3
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          base-path: doctest/parts/
-      
