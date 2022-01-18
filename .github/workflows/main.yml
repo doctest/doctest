@@ -25,7 +25,7 @@ jobs:
         run: sudo apt-get install -y ninja-build
       
       - name: Generate
-        run: cmake -B build -S . -G Ninja -D CMAKE_CXX_FLAGS="-fprofile-arcs -ftest-coverage"
+        run: cmake -B build -S . -G Ninja -D CMAKE_CXX_FLAGS="-fprofile-arcs -ftest-coverage -fprofile-dir=lcov/"
 
       - name: Build
         run: cmake --build build
@@ -33,3 +33,9 @@ jobs:
       - name: Test
         run: ctest --test-dir build --no-tests=error
         
+      - name: Tree
+        run: tree
+        
+      - name: LCOV
+        run: lcov –c –d build/lcov/ –o build/LCOV.info
+      
