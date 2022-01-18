@@ -10,7 +10,7 @@
             <a href="https://github.com/doctest/doctest/actions?query=branch%3Amaster"><img src="https://github.com/doctest/doctest/workflows/CI/badge.svg?branch=master"></a>
         </td>
         <td>
-            <a href="https://coveralls.io/github/onqtam/doctest?branch=master"><img src="https://coveralls.io/repos/github/onqtam/doctest/badge.svg?branch=master"></a>
+            <a href="https://codecov.io/gh/doctest/doctest"><img src="https://codecov.io/gh/doctest/doctest/branch/master/graph/badge.svg?token=fAdZl67WN7"/></a>
         </td>
     </tr>
     <tr>
@@ -21,7 +21,7 @@
             <a href="https://github.com/doctest/doctest/actions?query=branch%3Adev"><img src="https://github.com/doctest/doctest/workflows/CI/badge.svg?branch=dev"></a>
         </td>
         <td>
-            <a href="https://coveralls.io/github/onqtam/doctest?branch=dev"><img src="https://coveralls.io/repos/github/onqtam/doctest/badge.svg?branch=dev"></a>
+            <a href="https://codecov.io/gh/doctest/doctest"><img src="https://codecov.io/gh/doctest/doctest/branch/dev/graph/badge.svg?token=fAdZl67WN7"/></a>
         </td>
     </tr>
 </table>
