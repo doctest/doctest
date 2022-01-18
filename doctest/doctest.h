@@ -1108,8 +1108,9 @@ extern template struct DOCTEST_INTERFACE_DECL IsNaN<float>;
 extern template struct DOCTEST_INTERFACE_DECL IsNaN<double>;
 extern template struct DOCTEST_INTERFACE_DECL IsNaN<long double>;
 #endif
-template <typename F>
-DOCTEST_INTERFACE_DECL String toString(IsNaN<F> in);
+DOCTEST_INTERFACE String toString(IsNaN<float> in);
+DOCTEST_INTERFACE String toString(IsNaN<double> in);
+DOCTEST_INTERFACE String toString(IsNaN<double long> in);
 
 #ifndef DOCTEST_CONFIG_DISABLE
 
@@ -3714,7 +3715,6 @@ bool operator>(double lhs, const Approx& rhs) { return lhs > rhs.m_value && lhs 
 bool operator>(const Approx& lhs, double rhs) { return lhs.m_value > rhs && lhs != rhs; }
 
 String toString(const Approx& in) {
-    // NOLINTNEXTLINE(clang-analyzer-cplusplus.NewDeleteLeaks)
     return "Approx( " + doctest::toString(in.m_value) + " )";
 }
 const ContextOptions* getContextOptions() { return DOCTEST_BRANCH_ON_DISABLED(nullptr, g_cs); }
@@ -3728,11 +3728,9 @@ DOCTEST_MSVC_SUPPRESS_WARNING_POP
 template struct DOCTEST_INTERFACE_DEF IsNaN<float>;
 template struct DOCTEST_INTERFACE_DEF IsNaN<double>;
 template struct DOCTEST_INTERFACE_DEF IsNaN<long double>;
-template <typename F>
-String toString(IsNaN<F> nanCheck) { return "IsNaN( " + toString(nanCheck.val) + " )"; }
-template DOCTEST_INTERFACE_DEF String toString<float>(IsNaN<float>);
-template DOCTEST_INTERFACE_DEF String toString<double>(IsNaN<double>);
-template DOCTEST_INTERFACE_DEF String toString<long double>(IsNaN<long double>);
+String toString(IsNaN<float> nanCheck) { return "IsNaN( " + doctest::toString(nanCheck.val) + " )"; }
+String toString(IsNaN<double> nanCheck) { return "IsNaN( " + doctest::toString(nanCheck.val) + " )"; }
+String toString(IsNaN<double long> nanCheck) { return "IsNaN( " + doctest::toString(nanCheck.val) + " )"; }
 
 } // namespace doctest
 

@@ -1105,8 +1105,9 @@ extern template struct DOCTEST_INTERFACE_DECL IsNaN<float>;
 extern template struct DOCTEST_INTERFACE_DECL IsNaN<double>;
 extern template struct DOCTEST_INTERFACE_DECL IsNaN<long double>;
 #endif
-template <typename F>
-DOCTEST_INTERFACE_DECL String toString(IsNaN<F> in);
+DOCTEST_INTERFACE String toString(IsNaN<float> in);
+DOCTEST_INTERFACE String toString(IsNaN<double> in);
+DOCTEST_INTERFACE String toString(IsNaN<double long> in);
 
 #ifndef DOCTEST_CONFIG_DISABLE
 

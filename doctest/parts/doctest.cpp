@@ -847,11 +847,9 @@ DOCTEST_MSVC_SUPPRESS_WARNING_POP
 template struct DOCTEST_INTERFACE_DEF IsNaN<float>;
 template struct DOCTEST_INTERFACE_DEF IsNaN<double>;
 template struct DOCTEST_INTERFACE_DEF IsNaN<long double>;
-template <typename F>
-String toString(IsNaN<F> nanCheck) { return "IsNaN( " + doctest::toString(nanCheck.val) + " )"; }
-template DOCTEST_INTERFACE_DEF String toString<float>(IsNaN<float>);
-template DOCTEST_INTERFACE_DEF String toString<double>(IsNaN<double>);
-template DOCTEST_INTERFACE_DEF String toString<long double>(IsNaN<long double>);
+String toString(IsNaN<float> nanCheck) { return "IsNaN( " + doctest::toString(nanCheck.val) + " )"; }
+String toString(IsNaN<double> nanCheck) { return "IsNaN( " + doctest::toString(nanCheck.val) + " )"; }
+String toString(IsNaN<double long> nanCheck) { return "IsNaN( " + doctest::toString(nanCheck.val) + " )"; }
 
 } // namespace doctest
 
