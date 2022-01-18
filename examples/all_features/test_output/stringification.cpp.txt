@@ -18,6 +18,11 @@ stringification.cpp(0): MESSAGE: [0, 1, 1, 2, 3, 5, 8, 13]
 stringification.cpp(0): ERROR: CHECK( ints == nullptr ) is NOT correct!
   values: CHECK( [0, 1, 1, 2, 3, 5, 8, 13] == nullptr )
 
+stringification.cpp(0): MESSAGE: nullptr
+
+stringification.cpp(0): ERROR: CHECK( cnptr != nullptr ) is NOT correct!
+  values: CHECK( nullptr != nullptr )
+
 stringification.cpp(0): MESSAGE: 0
 
 stringification.cpp(0): ERROR: CHECK( A == C ) is NOT correct!
@@ -75,6 +80,6 @@ stringification.cpp(0): ERROR: test case THREW exception: 5
 
 ===============================================================================
 [doctest] test cases:  3 | 0 passed |  3 failed |
-[doctest] assertions: 17 | 4 passed | 13 failed |
+[doctest] assertions: 18 | 4 passed | 14 failed |
 [doctest] Status: FAILURE!
 Program code.

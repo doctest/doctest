@@ -18,6 +18,9 @@ TEST_CASE("no headers") {
     doctest::String str = doctest::toString(cptr);
     CHECK(str[0] == '0'); CHECK(str[1] == 'x');
 
+    char* cnptr = nullptr;
+    MESSAGE(cnptr); CHECK(cnptr != nullptr);
+
     enum Test {
         A = 0, B, C = 100,
     };

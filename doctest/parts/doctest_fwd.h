@@ -944,6 +944,8 @@ String toString(const DOCTEST_REF_WRAP(T) value) {
 DOCTEST_INTERFACE String toString(const char* in);
 #endif // DOCTEST_CONFIG_TREAT_CHAR_STAR_AS_STRING
 
+DOCTEST_INTERFACE String toString(std::nullptr_t);
+
 DOCTEST_INTERFACE String toString(bool in);
 
 DOCTEST_INTERFACE String toString(float in);

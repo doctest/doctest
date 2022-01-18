@@ -752,6 +752,8 @@ IContextScope::~IContextScope() = default;
 String toString(const char* in) { return String("\"") + (in ? in : "{null string}") + "\""; }
 #endif // DOCTEST_CONFIG_TREAT_CHAR_STAR_AS_STRING
 
+String toString(std::nullptr_t) { return "nullptr"; }
+
 String toString(bool in) { return in ? "true" : "false"; }
 
 namespace detail {
@@ -774,9 +776,9 @@ String toString(float in) { return fpToString(in, 5) + "f"; }
 String toString(double in) { return fpToString(in, 10); }
 String toString(double long in) { return fpToString(in, 15) + "L"; }
 
-String toString(char in) { return toStream((signed)in); }
-String toString(char signed in) { return toStream((signed)in); }
-String toString(char unsigned in) { return toStream((unsigned)in); }
+String toString(char in) { return toStream(static_cast<signed>(in)); }
+String toString(char signed in) { return toStream(static_cast<signed>(in)); }
+String toString(char unsigned in) { return toStream(static_cast<unsigned>(in)); }
 String toString(short in) { return toStream(in); }
 String toString(short unsigned in) { return toStream(in); }
 String toString(signed in) { return toStream(in); }
@@ -788,7 +790,8 @@ String toString(long long unsigned in) { return toStream(in); }
 
 namespace detail {
     void filldata<const void*>::fill(std::ostream* stream, const void* in) {
-        *stream << "0x" << in;
+        if (in) { *stream << "0x" << in; }
+        else { *stream << "nullptr"; }
     }
 }
 

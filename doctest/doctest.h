@@ -906,7 +906,7 @@ namespace detail {
         filldata<T>::fill(stream, in);
     }
 
-    template <typename T, size_t N>
+    template <typename T, unsigned long N>
     void filloss(std::ostream* stream, const T (&in)[N]) {
         // T[N], T(&)[N], T(&&)[N] have same behaviour.
         // Hence remove reference.
@@ -947,6 +947,8 @@ String toString(const DOCTEST_REF_WRAP(T) value) {
 DOCTEST_INTERFACE String toString(const char* in);
 #endif // DOCTEST_CONFIG_TREAT_CHAR_STAR_AS_STRING
 
+DOCTEST_INTERFACE String toString(std::nullptr_t);
+
 DOCTEST_INTERFACE String toString(bool in);
 
 DOCTEST_INTERFACE String toString(float in);
@@ -980,11 +982,11 @@ namespace detail {
         }
     };
 
-    template <typename T, size_t N>
+    template <typename T, unsigned long N>
     struct filldata<T[N]> {
         static void fill(std::ostream* stream, const T(&in)[N]) {
             *stream << "[";
-            for (size_t i = 0; i < N; i++) {
+            for (unsigned long i = 0; i < N; i++) {
                 if (i != 0) { *stream << ", "; }
                 *stream << toString(in[i]);
             }
@@ -993,7 +995,7 @@ namespace detail {
     };
 
     // Specialized since we don't want the terminating null byte!
-    template <size_t N>
+    template <unsigned long N>
     struct filldata<const char[N]> {
         static void fill(std::ostream* stream, const char (&in)[N]) {
             *stream << String(in, in[N - 1] ? N : N - 1);
@@ -3630,6 +3632,8 @@ IContextScope::~IContextScope() = default;
 String toString(const char* in) { return String("\"") + (in ? in : "{null string}") + "\""; }
 #endif // DOCTEST_CONFIG_TREAT_CHAR_STAR_AS_STRING
 
+String toString(std::nullptr_t) { return "nullptr"; }
+
 String toString(bool in) { return in ? "true" : "false"; }
 
 namespace detail {
@@ -3652,9 +3656,9 @@ String toString(float in) { return fpToString(in, 5) + "f"; }
 String toString(double in) { return fpToString(in, 10); }
 String toString(double long in) { return fpToString(in, 15) + "L"; }
 
-String toString(char in) { return toStream((signed)in); }
-String toString(char signed in) { return toStream((signed)in); }
-String toString(char unsigned in) { return toStream((unsigned)in); }
+String toString(char in) { return toStream(static_cast<signed>(in)); }
+String toString(char signed in) { return toStream(static_cast<signed>(in)); }
+String toString(char unsigned in) { return toStream(static_cast<unsigned>(in)); }
 String toString(short in) { return toStream(in); }
 String toString(short unsigned in) { return toStream(in); }
 String toString(signed in) { return toStream(in); }
@@ -3666,7 +3670,8 @@ String toString(long long unsigned in) { return toStream(in); }
 
 namespace detail {
     void filldata<const void*>::fill(std::ostream* stream, const void* in) {
-        *stream << "0x" << in;
+        if (in) { *stream << "0x" << in; }
+        else { *stream << "nullptr"; }
     }
 }
 
