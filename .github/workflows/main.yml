@@ -42,7 +42,9 @@ jobs:
           lcov -c -d build/ -o coverage/lcov.info --include "*doctest/parts*"
           lcov -l coverage/lcov.info
           
-      - name: Coveralls
-        uses: coverallsapp/github-action@1.1.3
+      - name: codecov
+        uses: codecov/codecov-action@v2
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+          fail_ci_if_error: true
+          files: ./coverage/lcov.info
+          verbose: true
