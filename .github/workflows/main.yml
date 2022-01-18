@@ -17,8 +17,6 @@ jobs:
   coverage:
     if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name != github.repository
     runs-on: ubuntu-latest
-    env:
-      CODE_COVERAGE: 1
       
     steps:
       - uses: actions/checkout@v2
@@ -38,7 +36,7 @@ jobs:
       - name: LCOV
         run: |
           mkdir coverage
-          lcov -c -d build/ -o coverage/lcov.info --include "doctest/parts/*"
+          lcov -c -d build/ -o coverage/lcov.info --include "*doctest/parts*"
           
       - name: Coveralls
         uses: coverallsapp/github-action@1.1.3
