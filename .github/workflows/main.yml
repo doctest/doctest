@@ -21,6 +21,9 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       
+      - name: Install Ninja
+        run: sudo apt-get install -y ninja-build
+      
       - name: Generate
         run: cmake -B build -S . -G Ninja -D CMAKE_CXX_FLAGS="-fprofile-arcs -ftest-coverage"
 
