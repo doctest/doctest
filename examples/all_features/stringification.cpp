@@ -15,8 +15,6 @@ TEST_CASE("no headers") {
     void* vptr = reinterpret_cast<void*>(cptr);
     CHECK(doctest::toString(cptr) == doctest::toString(ccptr));
     CHECK(doctest::toString(ccptr) == doctest::toString(vptr));
-    doctest::String str = doctest::toString(cptr);
-    CHECK(str[0] == '0'); CHECK(str[1] == 'x');
 
     char* cnptr = nullptr;
     MESSAGE(cnptr); CHECK(cnptr != nullptr);

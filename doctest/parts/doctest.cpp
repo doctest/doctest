@@ -790,7 +790,7 @@ String toString(long long unsigned in) { return toStream(in); }
 
 namespace detail {
     void filldata<const void*>::fill(std::ostream* stream, const void* in) {
-        if (in) { *stream << "0x" << in; }
+        if (in) { *stream << in; }
         else { *stream << "nullptr"; }
     }
 }

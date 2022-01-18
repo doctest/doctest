@@ -68,7 +68,7 @@
           0 == 100
         </Expanded>
       </Expression>
-      <OverallResultsAsserts successes="4" failures="5" test_case_success="false"/>
+      <OverallResultsAsserts successes="2" failures="5" test_case_success="false"/>
     </TestCase>
     <TestCase name="all asserts should fail and show how the objects get stringified" filename="stringification.cpp" line="0">
       <Message type="WARNING" filename="stringification.cpp" line="0">
@@ -184,7 +184,7 @@
       <OverallResultsAsserts successes="0" failures="0" test_case_success="false"/>
     </TestCase>
   </TestSuite>
-  <OverallResultsAsserts successes="4" failures="14"/>
+  <OverallResultsAsserts successes="2" failures="14"/>
   <OverallResultsTestCases successes="0" failures="3"/>
 </doctest>
 Program code.
