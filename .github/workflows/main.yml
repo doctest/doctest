@@ -25,26 +25,21 @@ jobs:
         run: sudo apt-get install -y ninja-build lcov
       
       - name: Generate
-        run: cmake -B build -S . -G Ninja -D CMAKE_CXX_FLAGS="-fprofile-arcs -ftest-coverage" -D CMAKE_CXX_COMPILER=g++ -D CMAKE_BUILD_TYPE=Debug
+        run: cmake -B build -S . -G Ninja -D CMAKE_CXX_FLAGS="-fprofile-arcs -ftest-coverage"
 
       - name: Build
         run: cmake --build build
 
       - name: Test
-        run: |
-          cd build
-          ctest --no-tests=error
-          cd ..
+        run: ctest --build-dir build --no-tests=error
         
       - name: LCOV
         run: |
           mkdir coverage
           lcov -c -d build/ -o coverage/lcov.info --include "*doctest/parts*"
-          lcov -l coverage/lcov.info
           
-      - name: codecov
+      - name: Codecov
         uses: codecov/codecov-action@v2
         with:
-          fail_ci_if_error: true
           files: ./coverage/lcov.info
-          verbose: true
+          fail_ci_if_error: true
