@@ -201,6 +201,20 @@ namespace {
         }
     }
 
+    template <typename T>
+    String fpToString(T value, int precision) {
+        std::ostringstream oss;
+        oss << std::setprecision(precision) << std::fixed << value;
+        std::string d = oss.str();
+        size_t      i = d.find_last_not_of('0');
+        if(i != std::string::npos && i != d.size() - 1) {
+            if(d[i] == '.')
+                i++;
+            d = d.substr(0, i + 1);
+        }
+        return d.c_str();
+    }
+
     struct Endianness
     {
         enum Arch
@@ -221,14 +235,6 @@ namespace {
 } // namespace
 
 namespace detail {
-    void writeChars(std::ostream* stream, const char* cstr, unsigned long count) {
-        stream->write(cstr, count);
-    }
-
-    void writeChars(std::ostream* stream, const char* cstr) {
-        *stream << cstr;
-    }
-
     String rawMemoryToString(const void* object, unsigned size) {
         // Reverse order for little endian architectures
         int i = 0, end = static_cast<int>(size), inc = 1;
@@ -242,7 +248,6 @@ namespace detail {
         *oss << "0x" << std::setfill('0') << std::hex;
         for(; i != end; i += inc)
             *oss << std::setw(2) << static_cast<unsigned>(bytes[i]);
-        *oss << std::resetiosflags(std::ios::basefield);
         return tlssPop();
     }
 
@@ -772,6 +777,42 @@ bool SubcaseSignature::operator<(const SubcaseSignature& other) const {
 IContextScope::IContextScope()  = default;
 IContextScope::~IContextScope() = default;
 
+#ifdef DOCTEST_CONFIG_TREAT_CHAR_STAR_AS_STRING
+String toString(char* in) { return toString(static_cast<const char*>(in)); }
+// NOLINTNEXTLINE(clang-analyzer-cplusplus.NewDeleteLeaks)
+String toString(const char* in) { return String("\"") + (in ? in : "{null string}") + "\""; }
+#endif // DOCTEST_CONFIG_TREAT_CHAR_STAR_AS_STRING
+String toString(bool in) { return in ? "true" : "false"; }
+String toString(float in) { return fpToString(in, 5) + "f"; }
+String toString(double in) { return fpToString(in, 10); }
+String toString(double long in) { return fpToString(in, 15); }
+
+#define DOCTEST_TO_STRING_OVERLOAD(type, fmt)                                                      \
+    String toString(type in) {                                                                     \
+        char buf[64];                                                                              \
+        std::sprintf(buf, fmt, in);                                                                \
+        return buf;                                                                                \
+    }
+
+DOCTEST_TO_STRING_OVERLOAD(char, "%d")
+DOCTEST_TO_STRING_OVERLOAD(char signed, "%d")
+DOCTEST_TO_STRING_OVERLOAD(char unsigned, "%u")
+DOCTEST_TO_STRING_OVERLOAD(int short, "%d")
+DOCTEST_TO_STRING_OVERLOAD(int short unsigned, "%u")
+DOCTEST_TO_STRING_OVERLOAD(int, "%d")
+DOCTEST_TO_STRING_OVERLOAD(unsigned, "%u")
+DOCTEST_TO_STRING_OVERLOAD(int long, "%ld")
+DOCTEST_TO_STRING_OVERLOAD(int long unsigned, "%lu")
+DOCTEST_TO_STRING_OVERLOAD(int long long, "%lld")
+DOCTEST_TO_STRING_OVERLOAD(int long long unsigned, "%llu")
+
+String toString(std::nullptr_t) { return "NULL"; }
+
+#if DOCTEST_MSVC >= DOCTEST_COMPILER(19, 20, 0)
+// see this issue on why this is needed: https://github.com/doctest/doctest/issues/183
+String toString(const std::string& in) { return in.c_str(); }
+#endif // VS 2019
+
 Approx::Approx(double value)
         : m_epsilon(static_cast<double>(std::numeric_limits<float>::epsilon()) * 100)
         , m_scale(1.0)
@@ -810,6 +851,10 @@ bool operator<(const Approx& lhs, double rhs) { return lhs.m_value < rhs && lhs 
 bool operator>(double lhs, const Approx& rhs) { return lhs > rhs.m_value && lhs != rhs; }
 bool operator>(const Approx& lhs, double rhs) { return lhs.m_value > rhs && lhs != rhs; }
 
+String toString(const Approx& in) {
+    // NOLINTNEXTLINE(clang-analyzer-cplusplus.NewDeleteLeaks)
+    return "Approx( " + doctest::toString(in.m_value) + " )";
+}
 const ContextOptions* getContextOptions() { return DOCTEST_BRANCH_ON_DISABLED(nullptr, g_cs); }
 
 DOCTEST_MSVC_SUPPRESS_WARNING_WITH_PUSH(4738)
@@ -821,65 +866,12 @@ DOCTEST_MSVC_SUPPRESS_WARNING_POP
 template struct DOCTEST_INTERFACE_DEF IsNaN<float>;
 template struct DOCTEST_INTERFACE_DEF IsNaN<double>;
 template struct DOCTEST_INTERFACE_DEF IsNaN<long double>;
-
-namespace detail {
-    void toStream(std::ostream* s, bool in) { *s << (in ? "true" : "false"); }
-
-    template <typename T>
-    void fpToStream(std::ostream* s, T value, int precision) {
-        std::ostringstream oss;
-        oss << std::setprecision(precision) << std::fixed << value;
-        std::string d = oss.str();
-        size_t      i = d.find_last_not_of('0');
-        if (i != std::string::npos && i != d.size() - 1) {
-            if (d[i] == '.')
-                i++;
-            d = d.substr(0, i + 1);
-        }
-        *s << d;
-    }
-
-    void toStream(std::ostream* s, float in) { fpToStream(s, in, 5); *s << "f"; }
-    void toStream(std::ostream* s, double in) { fpToStream(s, in, 10); }
-    void toStream(std::ostream* s, long double in) { fpToStream(s, in, 15); *s << "L"; }
-
-#define DOCTEST_TO_STRING_OVERLOAD(type, fmt)                                                      \
-    void toStream(std::ostream* s, type in) {                                                      \
-        char buf[64];                                                                              \
-        std::sprintf(buf, fmt, in);                                                                \
-        *s << buf;                                                                                 \
-    }
-
-    DOCTEST_TO_STRING_OVERLOAD(char, "%d")
-    DOCTEST_TO_STRING_OVERLOAD(char signed, "%d")
-    DOCTEST_TO_STRING_OVERLOAD(char unsigned, "%u")
-    DOCTEST_TO_STRING_OVERLOAD(short, "%d")
-    DOCTEST_TO_STRING_OVERLOAD(short unsigned, "%u")
-    DOCTEST_TO_STRING_OVERLOAD(signed, "%d")
-    DOCTEST_TO_STRING_OVERLOAD(unsigned, "%u")
-    DOCTEST_TO_STRING_OVERLOAD(long, "%ld")
-    DOCTEST_TO_STRING_OVERLOAD(long unsigned, "%lu")
-    DOCTEST_TO_STRING_OVERLOAD(long long, "%lld")
-    DOCTEST_TO_STRING_OVERLOAD(long long unsigned, "%llu")
-
-    void toStream(std::ostream* s, std::nullptr_t) { *s << "NULL"; }
-
-    void toStream(std::ostream* s, const Approx& in) {
-        *s << "Approx( ";
-        toStream(s, in.m_value);
-        *s << " )";
-    }
-
-    template <typename F>
-    void toStream(std::ostream* s, const IsNaN<F>& in) {
-        *s << "IsNaN( ";
-        toStream(s, in.val);
-        *s << " )";
-    }
-    void toStream(std::ostream* s, const IsNaN<float>& in) { toStream<float>(s, in); }
-    void toStream(std::ostream* s, const IsNaN<double>& in) { toStream<double>(s, in); }
-    void toStream(std::ostream* s, const IsNaN<long double>& in) { toStream<long double>(s, in); }
-}
+std::ostream& operator<<(std::ostream& out, IsNaN<float> nanCheck)
+    { out << nanCheck.val; return out; }
+std::ostream& operator<<(std::ostream& out, IsNaN<double> nanCheck)
+    { out << nanCheck.val; return out; }
+std::ostream& operator<<(std::ostream& out, IsNaN<long double> nanCheck)
+    { out << nanCheck.val; return out; }
 
 } // namespace doctest
 
@@ -1399,6 +1391,27 @@ namespace detail {
            getExceptionTranslators().end())
             getExceptionTranslators().push_back(et);
     }
+
+#ifdef DOCTEST_CONFIG_TREAT_CHAR_STAR_AS_STRING
+    void toStream(std::ostream* s, char* in) { *s << in; }
+    void toStream(std::ostream* s, const char* in) { *s << in; }
+#endif // DOCTEST_CONFIG_TREAT_CHAR_STAR_AS_STRING
+    void toStream(std::ostream* s, bool in) { *s << std::boolalpha << in << std::noboolalpha; }
+    void toStream(std::ostream* s, float in) { *s << in; }
+    void toStream(std::ostream* s, double in) { *s << in; }
+    void toStream(std::ostream* s, double long in) { *s << in; }
+
+    void toStream(std::ostream* s, char in) { *s << in; }
+    void toStream(std::ostream* s, char signed in) { *s << in; }
+    void toStream(std::ostream* s, char unsigned in) { *s << in; }
+    void toStream(std::ostream* s, int short in) { *s << in; }
+    void toStream(std::ostream* s, int short unsigned in) { *s << in; }
+    void toStream(std::ostream* s, int in) { *s << in; }
+    void toStream(std::ostream* s, int unsigned in) { *s << in; }
+    void toStream(std::ostream* s, int long in) { *s << in; }
+    void toStream(std::ostream* s, int long unsigned in) { *s << in; }
+    void toStream(std::ostream* s, int long long in) { *s << in; }
+    void toStream(std::ostream* s, int long long unsigned in) { *s << in; }
 
     DOCTEST_THREAD_LOCAL std::vector<IContextScope*> g_infoContexts; // for logging with INFO()
 
