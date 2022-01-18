@@ -33,9 +33,8 @@ jobs:
       - name: Test
         run: ctest --test-dir build --no-tests=error
         
-      - name: Move to build
-        run: cd build
-        
       - name: LCOV
-        run: lcov –c –d . –o lcov.info
+        run: |
+          mkdir coverage
+          lcov -c -d build/ -o coverage/lcov.info
       
