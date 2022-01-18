@@ -25,7 +25,7 @@ jobs:
         run: sudo apt-get install -y ninja-build lcov
       
       - name: Generate
-        run: cmake -B build -S . -G Ninja -D CMAKE_CXX_FLAGS="-fprofile-arcs -ftest-coverage" -D CMAKE_CXX_COMPILER=g++
+        run: cmake -B build -S . -G Ninja -D CMAKE_CXX_FLAGS="-fprofile-arcs -ftest-coverage" -D CMAKE_CXX_COMPILER=g++ -D CMAKE_BUILD_TYPE=Debug
 
       - name: Build
         run: cmake --build build
