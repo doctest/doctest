@@ -84,7 +84,6 @@ if(MAIN_PROJECT AND DOCTEST_WITH_TESTS)
     add_subdirectory(examples/combining_the_same_tests_built_differently_in_multiple_shared_objects)
     add_subdirectory(scripts/playground)
     add_subdirectory(examples/mpi)
-    endif()
 endif()
 
 ################################################################################
