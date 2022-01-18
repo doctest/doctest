@@ -474,14 +474,6 @@ class basic_istream;
 typedef basic_istream<char, char_traits<char>> istream;
 template <class... Types>
 class tuple;
-#if DOCTEST_MSVC >= DOCTEST_COMPILER(19, 20, 0)
-// see this issue on why this is needed: https://github.com/doctest/doctest/issues/183
-template <class Ty>
-class allocator;
-template <class Elem, class Traits, class Alloc>
-class basic_string;
-using string = basic_string<char, char_traits<char>, allocator<char>>;
-#endif // VS 2019
 } // namespace std
 
 DOCTEST_MSVC_SUPPRESS_WARNING_POP
@@ -840,7 +832,7 @@ namespace detail {
 
     template<typename T> T declval(long); 
 
-    template<typename T> auto declval() DOCTEST_NOEXCEPT -> decltype(declval<T>(0)) ;
+    template<typename T> auto declval() DOCTEST_NOEXCEPT -> decltype(declval<T>(0));
 
     template<class T> struct is_lvalue_reference { const static bool value=false; };
     template<class T> struct is_lvalue_reference<T&> { const static bool value=true; };
@@ -870,111 +862,68 @@ namespace detail {
 #else
     // Use compiler intrinsics
     template<class T> struct is_enum { DOCTEST_CONSTEXPR static bool value = __is_enum(T); };
-    template<class T> struct underlying_type { typedef __underlying_type(T) type; };
+    template<class T> struct underlying_type { using type = __underlying_type(T); };
 #endif
     // clang-format on
 
     template <typename T>
     struct deferred_false
-    // cppcheck-suppress unusedStructMember
-    { static const bool value = false; };
+    { static DOCTEST_CONSTEXPR bool value = false; };
 
-    namespace has_insertion_operator_impl {
-        std::ostream &os();
-        template<class T>
-        DOCTEST_REF_WRAP(T) val();
+    template <typename T>
+    T val();
 
-        template<class, class = void>
-        struct check {
-            static DOCTEST_CONSTEXPR bool value = false;
-        };
+    template <typename T, typename = void>
+    struct has_insertion_operator {
+        static DOCTEST_CONSTEXPR bool value = false;
+    };
 
-        template<class T>
-        struct check<T, decltype(os() << val<T>(), void())> {
-            static DOCTEST_CONSTEXPR bool value = true;
-        };
-    } // namespace has_insertion_operator_impl
-
-    template<class T>
-    using has_insertion_operator = has_insertion_operator_impl::check<const T>;
+    template <typename T>
+    struct has_insertion_operator<T, decltype(val<std::ostream&>() << val<const T&>(), void())> {
+        static DOCTEST_CONSTEXPR bool value = true;
+    };
 
     DOCTEST_INTERFACE std::ostream* tlssPush();
     DOCTEST_INTERFACE String tlssPop();
 
 
     template <bool C>
-    struct StringMakerBase
-    {
+    struct StringMakerBase {
         template <typename T>
         static String convert(const DOCTEST_REF_WRAP(T)) {
             return "{?}";
         }
     };
 
-    // Vector<int> and various type other than pointer or array.
-    template<typename T>
-    struct filldata
-    {
-        static void fill(std::ostream* stream, const T &in) {
-          *stream << in;
-        }
-    };
+    template <typename T>
+    struct filldata;
 
-    template<typename T,unsigned long N>
-    struct filldata<T[N]>
-    {
-        static void fill(std::ostream* stream, const T (&in)[N]) {
-            for (unsigned long i = 0; i < N; i++) {
-                *stream << in[i];
-            }
-        }
-    };
-
-    // Specialized since we don't want the terminating null byte!
-    template<unsigned long N>
-    struct filldata<const char[N]>
-    {
-        static void fill(std::ostream* stream, const char(&in)[N]) {
-            *stream << in;
-        }
-    };
-
-    template<typename T>
+    template <typename T>
     void filloss(std::ostream* stream, const T& in) {
         filldata<T>::fill(stream, in);
     }
 
-    template<typename T,unsigned long N>
+    template <typename T, size_t N>
     void filloss(std::ostream* stream, const T (&in)[N]) {
         // T[N], T(&)[N], T(&&)[N] have same behaviour.
         // Hence remove reference.
-        filldata<typename remove_reference<decltype(in)>::type>::fill(stream, in);
+        filloss<typename remove_reference<decltype(in)>::type>(stream, in);
+    }
+
+    template <typename T>
+    String toStream(const T& in) {
+        std::ostream* stream = tlssPush();
+        filloss(stream, in);
+        return tlssPop();
     }
 
     template <>
-    struct StringMakerBase<true>
-    {
+    struct StringMakerBase<true> {
         template <typename T>
         static String convert(const DOCTEST_REF_WRAP(T) in) {
-            /* When parameter "in" is a null terminated const char* it works.
-             * When parameter "in" is a T arr[N] without '\0' we can fill the
-             * stringstream with N objects (T=char).If in is char pointer *
-             * without '\0' , it would cause segfault
-             * stepping over unaccessible memory.
-             */
-
-            std::ostream* stream = tlssPush();
-            filloss(stream, in);
-            return tlssPop();
+            return toStream(in);
         }
     };
-
-    DOCTEST_INTERFACE String rawMemoryToString(const void* object, unsigned size);
-
-    template <typename T>
-    String rawMemoryToString(const DOCTEST_REF_WRAP(T) object) {
-        return rawMemoryToString(&object, sizeof(object));
-    }
 
     template <typename T>
     const char* type_to_string() {
@@ -986,37 +935,17 @@ template <typename T>
 struct StringMaker : public detail::StringMakerBase<detail::has_insertion_operator<T>::value>
 {};
 
-template <typename T>
-struct StringMaker<T*>
-{
-    template <typename U>
-    static String convert(U* p) {
-        if(p)
-            return detail::rawMemoryToString(p);
-        return "NULL";
-    }
-};
-
-template <typename R, typename C>
-struct StringMaker<R C::*>
-{
-    static String convert(R C::*p) {
-        if(p)
-            return detail::rawMemoryToString(p);
-        return "NULL";
-    }
-};
-
 template <typename T, typename detail::enable_if<!detail::is_enum<T>::value, bool>::type = true>
 String toString(const DOCTEST_REF_WRAP(T) value) {
     return StringMaker<T>::convert(value);
 }
 
 #ifdef DOCTEST_CONFIG_TREAT_CHAR_STAR_AS_STRING
-DOCTEST_INTERFACE String toString(char* in);
 DOCTEST_INTERFACE String toString(const char* in);
 #endif // DOCTEST_CONFIG_TREAT_CHAR_STAR_AS_STRING
+
 DOCTEST_INTERFACE String toString(bool in);
+
 DOCTEST_INTERFACE String toString(float in);
 DOCTEST_INTERFACE String toString(double in);
 DOCTEST_INTERFACE String toString(double long in);
@@ -1024,15 +953,14 @@ DOCTEST_INTERFACE String toString(double long in);
 DOCTEST_INTERFACE String toString(char in);
 DOCTEST_INTERFACE String toString(char signed in);
 DOCTEST_INTERFACE String toString(char unsigned in);
-DOCTEST_INTERFACE String toString(int short in);
-DOCTEST_INTERFACE String toString(int short unsigned in);
-DOCTEST_INTERFACE String toString(int in);
-DOCTEST_INTERFACE String toString(int unsigned in);
-DOCTEST_INTERFACE String toString(int long in);
-DOCTEST_INTERFACE String toString(int long unsigned in);
-DOCTEST_INTERFACE String toString(int long long in);
-DOCTEST_INTERFACE String toString(int long long unsigned in);
-DOCTEST_INTERFACE String toString(std::nullptr_t in);
+DOCTEST_INTERFACE String toString(short in);
+DOCTEST_INTERFACE String toString(short unsigned in);
+DOCTEST_INTERFACE String toString(signed in);
+DOCTEST_INTERFACE String toString(unsigned in);
+DOCTEST_INTERFACE String toString(long in);
+DOCTEST_INTERFACE String toString(long unsigned in);
+DOCTEST_INTERFACE String toString(long long in);
+DOCTEST_INTERFACE String toString(long long unsigned in);
 
 template <typename T, typename detail::enable_if<detail::is_enum<T>::value, bool>::type = true>
 String toString(const DOCTEST_REF_WRAP(T) value) {
@@ -1040,15 +968,51 @@ String toString(const DOCTEST_REF_WRAP(T) value) {
     return toString(static_cast<UT>(value));
 }
 
-#if DOCTEST_MSVC >= DOCTEST_COMPILER(19, 20, 0)
-// see this issue on why this is needed: https://github.com/doctest/doctest/issues/183
-DOCTEST_INTERFACE String toString(const std::string& in);
-#endif // VS 2019
+namespace detail {
+    template <typename T>
+    struct filldata
+    {
+        static void fill(std::ostream* stream, const T& in) {
+            *stream << in;
+        }
+    };
 
-class DOCTEST_INTERFACE Approx
+    template <typename T, size_t N>
+    struct filldata<T[N]> {
+        static void fill(std::ostream* stream, const T(&in)[N]) {
+            *stream << "[";
+            for (size_t i = 0; i < N; i++) {
+                if (i != 0) { *stream << ", "; }
+                *stream << toString(in[i]);
+            }
+            *stream << "]";
+        }
+    };
+
+    // Specialized since we don't want the terminating null byte!
+    template <size_t N>
+    struct filldata<const char[N]> {
+        static void fill(std::ostream* stream, const char (&in)[N]) {
+            *stream << String(in, in[N - 1] ? N : N - 1);
+        }
+    };
+
+    template <>
+    struct filldata<const void*> {
+        static void fill(std::ostream* stream, const void* in);
+    };
+
+    template <typename T>
+    struct filldata<T*> {
+        static void fill(std::ostream* stream, const T* in) {
+            filldata<const void*>::fill(stream, in);
+        }
+    };
+}
+
+struct DOCTEST_INTERFACE Approx
 {
-public:
-    explicit Approx(double value);
+    Approx(double value);
 
     Approx operator()(double value) const;
 
@@ -1097,8 +1061,6 @@ public:
     DOCTEST_INTERFACE friend bool operator> (double lhs, const Approx & rhs);
     DOCTEST_INTERFACE friend bool operator> (const Approx & lhs, double rhs);
 
-    DOCTEST_INTERFACE friend String toString(const Approx& in);
-
 #ifdef DOCTEST_CONFIG_INCLUDE_TYPE_TRAITS
 #define DOCTEST_APPROX_PREFIX \
     template <typename T> friend typename detail::enable_if<std::is_constructible<double, T>::value, bool>::type
@@ -1120,7 +1082,6 @@ public:
 
     // clang-format on
 
-private:
     double m_epsilon;
     double m_scale;
     double m_value;
@@ -1142,9 +1103,8 @@ extern template struct DOCTEST_INTERFACE_DECL IsNaN<float>;
 extern template struct DOCTEST_INTERFACE_DECL IsNaN<double>;
 extern template struct DOCTEST_INTERFACE_DECL IsNaN<long double>;
 #endif
-DOCTEST_INTERFACE std::ostream& operator<<(std::ostream& out, IsNaN<float> nanCheck);
-DOCTEST_INTERFACE std::ostream& operator<<(std::ostream& out, IsNaN<double> nanCheck);
-DOCTEST_INTERFACE std::ostream& operator<<(std::ostream& out, IsNaN<long double> nanCheck);
+template <typename F>
+DOCTEST_INTERFACE_DECL String toString(IsNaN<F> in);
 
 #ifndef DOCTEST_CONFIG_DISABLE
 
@@ -1200,7 +1160,7 @@ DOCTEST_CLANG_SUPPRESS_WARNING_WITH_PUSH("-Wunused-comparison")
 // If not it doesn't find the operator or if the operator at global scope is defined after
 // this template, the template won't be instantiated due to SFINAE. Once the template is not
 // instantiated it can look for global operator using normal conversions.
-#define SFINAE_OP(ret,op) decltype((void)(doctest::detail::declval<L>() op doctest::detail::declval<R>()),ret{})
+#define SFINAE_OP(ret,op) decltype((void)(doctest::detail::val<L&&>() op doctest::detail::val<R&&>()),ret{})
 
 #define DOCTEST_DO_BINARY_EXPRESSION_COMPARISON(op, op_str, op_macro)                              \
     template <typename R>                                                                          \
@@ -1655,58 +1615,6 @@ DOCTEST_CLANG_SUPPRESS_WARNING_POP
 
     DOCTEST_INTERFACE void registerExceptionTranslatorImpl(const IExceptionTranslator* et);
 
-    template <bool C>
-    struct StringStreamBase
-    {
-        template <typename T>
-        static void convert(std::ostream* s, const T& in) {
-            *s << toString(in);
-        }
-
-        // always treat char* as a string in this context - no matter
-        // if DOCTEST_CONFIG_TREAT_CHAR_STAR_AS_STRING is defined
-        static void convert(std::ostream* s, const char* in) { *s << String(in); }
-    };
-
-    template <>
-    struct StringStreamBase<true>
-    {
-        template <typename T>
-        static void convert(std::ostream* s, const T& in) {
-            *s << in;
-        }
-    };
-
-    template <typename T>
-    struct StringStream : public StringStreamBase<has_insertion_operator<T>::value>
-    {};
-
-    template <typename T>
-    void toStream(std::ostream* s, const T& value) {
-        StringStream<T>::convert(s, value);
-    }
-
-#ifdef DOCTEST_CONFIG_TREAT_CHAR_STAR_AS_STRING
-    DOCTEST_INTERFACE void toStream(std::ostream* s, char* in);
-    DOCTEST_INTERFACE void toStream(std::ostream* s, const char* in);
-#endif // DOCTEST_CONFIG_TREAT_CHAR_STAR_AS_STRING
-    DOCTEST_INTERFACE void toStream(std::ostream* s, bool in);
-    DOCTEST_INTERFACE void toStream(std::ostream* s, float in);
-    DOCTEST_INTERFACE void toStream(std::ostream* s, double in);
-    DOCTEST_INTERFACE void toStream(std::ostream* s, double long in);
-
-    DOCTEST_INTERFACE void toStream(std::ostream* s, char in);
-    DOCTEST_INTERFACE void toStream(std::ostream* s, char signed in);
-    DOCTEST_INTERFACE void toStream(std::ostream* s, char unsigned in);
-    DOCTEST_INTERFACE void toStream(std::ostream* s, int short in);
-    DOCTEST_INTERFACE void toStream(std::ostream* s, int short unsigned in);
-    DOCTEST_INTERFACE void toStream(std::ostream* s, int in);
-    DOCTEST_INTERFACE void toStream(std::ostream* s, int unsigned in);
-    DOCTEST_INTERFACE void toStream(std::ostream* s, int long in);
-    DOCTEST_INTERFACE void toStream(std::ostream* s, int long unsigned in);
-    DOCTEST_INTERFACE void toStream(std::ostream* s, int long long in);
-    DOCTEST_INTERFACE void toStream(std::ostream* s, int long long unsigned in);
-
     // ContextScope base class used to allow implementing methods of ContextScope 
     // that don't depend on the template parameter in doctest.cpp.
     class DOCTEST_INTERFACE ContextScopeBase : public IContextScope {
@@ -1748,7 +1656,7 @@ DOCTEST_CLANG_SUPPRESS_WARNING_POP
         // the preferred way of chaining parameters for stringification
         template <typename T>
         MessageBuilder& operator,(const T& in) {
-            toStream(m_stream, in);
+            *m_stream << toString(in);
             return *this;
         }
 

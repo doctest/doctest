@@ -5,28 +5,15 @@
     <TestCase name="no headers" filename="stringification.cpp" line="0">
       <Message type="WARNING" filename="stringification.cpp" line="0">
         <Text>
-          1as\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC
-        </Text>
-      </Message>
-      <Expression success="false" type="CHECK" filename="stringification.cpp" line="0">
-        <Original>
-          chs1 == nullptr
-        </Original>
-        <Expanded>
-          1as\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC̀\x013B\xF9\x01 == NULL
-        </Expanded>
-      </Expression>
-      <Message type="WARNING" filename="stringification.cpp" line="0">
-        <Text>
           1as
         </Text>
       </Message>
       <Expression success="false" type="CHECK" filename="stringification.cpp" line="0">
         <Original>
-          chs2 == nullptr
+          chs == nullptr
         </Original>
         <Expanded>
-          0x00007ff7fd431108 == NULL
+          1as == nullptr
         </Expanded>
       </Expression>
       <Message type="WARNING" filename="stringification.cpp" line="0">
@@ -39,12 +26,12 @@
           "1as" == nullptr
         </Original>
         <Expanded>
-          1as == NULL
+          1as == nullptr
         </Expanded>
       </Expression>
       <Message type="WARNING" filename="stringification.cpp" line="0">
         <Text>
-          000000DD584FEA98
+          [0, 1, 1, 2, 3, 5, 8, 13]
         </Text>
       </Message>
       <Expression success="false" type="CHECK" filename="stringification.cpp" line="0">
@@ -52,15 +39,7 @@
           ints == nullptr
         </Original>
         <Expanded>
-          0112358d == NULL
-        </Expanded>
-      </Expression>
-      <Expression success="false" type="CHECK" filename="stringification.cpp" line="0">
-        <Original>
-          cptr == nullptr
-        </Original>
-        <Expanded>
-          0x000000dd584feaa8 == NULL
+          [0, 1, 1, 2, 3, 5, 8, 13] == nullptr
         </Expanded>
       </Expression>
       <Message type="WARNING" filename="stringification.cpp" line="0">
@@ -76,7 +55,7 @@
           0 == 100
         </Expanded>
       </Expression>
-      <OverallResultsAsserts successes="0" failures="6" test_case_success="false"/>
+      <OverallResultsAsserts successes="4" failures="4" test_case_success="false"/>
     </TestCase>
     <TestCase name="all asserts should fail and show how the objects get stringified" filename="stringification.cpp" line="0">
       <Message type="WARNING" filename="stringification.cpp" line="0">
@@ -144,7 +123,7 @@
           s1 == s2
         </Original>
         <Expanded>
-          MyOtherType: 2a == MyOtherType: 29a
+          MyOtherType: 42 == MyOtherType: 666
         </Expanded>
         <Info>
           s1=MyOtherType: 42 s2=MyOtherType: 666
@@ -155,7 +134,7 @@
           s1 == s2
         </Original>
         <Expanded>
-          MyOtherType: 2a == MyOtherType: 29a
+          MyOtherType: 42 == MyOtherType: 666
         </Expanded>
         <Info>
           s1=MyOtherType: 42 s2=MyOtherType: 666
@@ -169,7 +148,7 @@
           doctest::IsNaN&lt;double>(0.5)
         </Original>
         <Expanded>
-          0.5
+          IsNaN( 0.5 )
         </Expanded>
       </Expression>
       <Expression success="false" type="CHECK" filename="stringification.cpp" line="0">
@@ -177,7 +156,7 @@
           doctest::IsNaN&lt;float>(std::numeric_limits&lt;float>::infinity())
         </Original>
         <Expanded>
-          inf
+          IsNaN( inff )
         </Expanded>
       </Expression>
       <Exception crash="false">
@@ -192,7 +171,7 @@
       <OverallResultsAsserts successes="0" failures="0" test_case_success="false"/>
     </TestCase>
   </TestSuite>
-  <OverallResultsAsserts successes="0" failures="15"/>
+  <OverallResultsAsserts successes="4" failures="13"/>
   <OverallResultsTestCases successes="0" failures="3"/>
 </doctest>
 Program code.

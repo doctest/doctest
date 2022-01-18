@@ -9,7 +9,7 @@ I am a test from the dll!
           doctest::IsNaN&lt;long double>(0.1L)
         </Original>
         <Expanded>
-          0.1
+          IsNaN( 0.1L )
         </Expanded>
       </Expression>
       <OverallResultsAsserts successes="1" failures="1" test_case_success="false"/>

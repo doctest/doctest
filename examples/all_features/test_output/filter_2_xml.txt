@@ -137,6 +137,6 @@
     <TestCase name="will end from an unknown exception" filename="coverage_maxout.cpp" line="0" skipped="true"/>
   </TestSuite>
   <OverallResultsAsserts successes="0" failures="0"/>
-  <OverallResultsTestCases successes="0" failures="0" skipped="96"/>
+  <OverallResultsTestCases successes="0" failures="0" skipped="97"/>
 </doctest>
 Program code.

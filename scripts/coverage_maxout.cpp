@@ -87,8 +87,8 @@ TEST_CASE("exercising tricky code paths of doctest") {
 #endif
     str += oss.str().c_str();
     str += failureString(assertType::is_normal);
-    CHECK(str == "omgomgomgaaaNULLtrue00.5f0.50.1L99991111111"
-                 "omgomgomgaaaNULLtrue00.5f0.50.1L99991111111");
+    CHECK(str == "omgomgomgaaanullptrtrue00.5f0.50.1L99991111111"
+                 "omgomgomgaaanullptrtrue00.5f0.50.1L99991111111");
     // trigger code path for rawMemoryToString
     bool   isThereAnything = str.size() > 0u;
     String unknown         = toString(skip()); // trigger code path for "{?}"

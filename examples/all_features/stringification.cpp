@@ -3,17 +3,20 @@
 #include "header.h"
 
 TEST_CASE("no headers") {
-    char chs1[] = { '1', 'a', 's' };
-    MESSAGE(chs1); CHECK(chs1 == nullptr);
-    const char* chs2{"1as"};
-    MESSAGE(chs2); CHECK(chs2 == nullptr);
+    char chs[] = { '1', 'a', 's' };
+    MESSAGE(chs); CHECK(chs == nullptr);
     MESSAGE("1as"); CHECK("1as" == nullptr);
 
     int ints[] = { 0, 1, 1, 2, 3, 5, 8, 13 };
     MESSAGE(ints); CHECK(ints == nullptr);
 
     char* cptr = reinterpret_cast<char*>(ints + 4);
-    CHECK(cptr == nullptr);
+    const char* ccptr = const_cast<const char*>(cptr);
+    void* vptr = reinterpret_cast<void*>(cptr);
+    CHECK(doctest::toString(cptr) == doctest::toString(ccptr));
+    CHECK(doctest::toString(ccptr) == doctest::toString(vptr));
+    doctest::String str = doctest::toString(cptr);
+    CHECK(str[0] == '0'); CHECK(str[1] == 'x');
 
     enum Test {
         A = 0, B, C = 100,
