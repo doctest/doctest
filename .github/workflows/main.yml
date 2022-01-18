@@ -31,12 +31,16 @@ jobs:
         run: cmake --build build
 
       - name: Test
-        run: ctest --test-dir build --no-tests=error
+        run: |
+          cd build
+          ctest --no-tests=error
+          cd ..
         
       - name: LCOV
         run: |
           mkdir coverage
           lcov -c -d build/ -o coverage/lcov.info --include "*doctest/parts*"
+          lcov -l coverage/lcov.info
           
       - name: Coveralls
         uses: coverallsapp/github-action@1.1.3
