@@ -27,15 +27,15 @@ jobs:
       - name: Generate
         run: cmake -B build -S . -G Ninja -D CMAKE_CXX_FLAGS="-fprofile-arcs -ftest-coverage"
 
+      - name: Move to build
+        run: cd build
+
       - name: Build
-        run: cmake --build build
+        run: cmake --build
 
       - name: Test
-        run: ctest --test-dir build --no-tests=error
-        
-      - name: Tree
-        run: tree
+        run: ctest --no-tests=error
         
       - name: LCOV
-        run: lcov –c –d build/ –o build/LCOV.info
+        run: lcov –c –d . –o lcov.info
       
