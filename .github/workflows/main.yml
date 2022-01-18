@@ -207,7 +207,7 @@ jobs:
           else
             sudo apt-get install -y clang-${{ matrix.version }} g++-multilib
           fi
-          
+
       - name: Install (macOS)
         if: runner.os == 'macOS'
         run: |
@@ -215,6 +215,7 @@ jobs:
             if [ "${{ matrix.compiler }}" = "xcode" ]; then
               sudo xcode-select -switch /Applications/Xcode_${{ matrix.version }}.app
             fi
+
       - name: Configure x64
         uses: ilammy/msvc-dev-cmd@v1
 
