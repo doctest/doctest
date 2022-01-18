@@ -38,7 +38,7 @@ jobs:
       - name: LCOV
         run: |
           mkdir coverage
-          lcov -c -d build/ -o coverage/lcov.info
+          lcov -c -d build/ -o coverage/lcov.info --include "doctest/parts/*"
           
       - name: Coveralls
         uses: coverallsapp/github-action@1.1.3
