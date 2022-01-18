@@ -31,7 +31,7 @@ jobs:
         run: cmake --build build
 
       - name: Test
-        run: ctest --build-dir build --no-tests=error
+        run: ctest --test-dir build --no-tests=error
         
       - name: LCOV
         run: |
