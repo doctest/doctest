@@ -27,11 +27,11 @@ jobs:
       - name: Generate
         run: cmake -B build -S . -G Ninja -D CMAKE_CXX_FLAGS="-fprofile-arcs -ftest-coverage"
 
+      - name: Build
+        run: cmake --build build
+        
       - name: Move to build
         run: cd build
-
-      - name: Build
-        run: cmake --build .
 
       - name: Test
         run: ctest --no-tests=error
