@@ -31,7 +31,7 @@ jobs:
         run: cd build
 
       - name: Build
-        run: cmake --build
+        run: cmake --build .
 
       - name: Test
         run: ctest --no-tests=error
