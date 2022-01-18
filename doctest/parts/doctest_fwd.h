@@ -469,6 +469,8 @@ struct char_traits<char>;
 template <class charT, class traits>
 class basic_ostream;
 typedef basic_ostream<char, char_traits<char>> ostream;
+template<class traits>
+basic_ostream<char, traits>& operator<<(basic_ostream<char, traits>&, const char*);
 template <class charT, class traits>
 class basic_istream;
 typedef basic_istream<char, char_traits<char>> istream;

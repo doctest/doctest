@@ -472,6 +472,8 @@ struct char_traits<char>;
 template <class charT, class traits>
 class basic_ostream;
 typedef basic_ostream<char, char_traits<char>> ostream;
+template<class traits>
+basic_ostream<char, traits>& operator<<(basic_ostream<char, traits>&, const char*);
 template <class charT, class traits>
 class basic_istream;
 typedef basic_istream<char, char_traits<char>> istream;
@@ -3728,9 +3730,11 @@ DOCTEST_MSVC_SUPPRESS_WARNING_POP
 template struct DOCTEST_INTERFACE_DEF IsNaN<float>;
 template struct DOCTEST_INTERFACE_DEF IsNaN<double>;
 template struct DOCTEST_INTERFACE_DEF IsNaN<long double>;
-String toString(IsNaN<float> nanCheck) { return "IsNaN( " + doctest::toString(nanCheck.val) + " )"; }
-String toString(IsNaN<double> nanCheck) { return "IsNaN( " + doctest::toString(nanCheck.val) + " )"; }
-String toString(IsNaN<double long> nanCheck) { return "IsNaN( " + doctest::toString(nanCheck.val) + " )"; }
+template <typename F>
+String toString(IsNaN<F> nanCheck) { return "IsNaN( " + doctest::toString(nanCheck.val) + " )"; }
+String toString(IsNaN<float> nanCheck) { return toString<float>(nanCheck); }
+String toString(IsNaN<double> nanCheck) { return toString<double>(nanCheck); }
+String toString(IsNaN<double long> nanCheck) { return toString<double long>(nanCheck); }
 
 } // namespace doctest
 
