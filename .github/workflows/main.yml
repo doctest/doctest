@@ -17,13 +17,12 @@ jobs:
   coverage:
     if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name != github.repository
     runs-on: ubuntu-latest
-    
-    env:
-      CMAKE_GENERATOR: Ninja
       
     steps:
+      - uses: actions/checkout@v2
+      
       - name: Generate
-        run: cmake -B build -S . -D CMAKE_CXX_FLAGS="-fprofile-arcs -ftest-coverage"
+        run: cmake -B build -S . -G Ninja -D CMAKE_CXX_FLAGS="-fprofile-arcs -ftest-coverage"
 
       - name: Build
         run: cmake --build build
