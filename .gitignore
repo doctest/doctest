@@ -38,3 +38,15 @@ build-mingw/
 .idea/
 cmake-build-*/
 bazel-*
+
+# MacOS/Xcode
+*.DS_Store
+*.xcodeproj/
+XCBuildData/
+
+# CMake generated
+CMakeFiles/
+CMakeScripts/
+generated/
+cmake_install.cmake
+CMakeCache.txt
