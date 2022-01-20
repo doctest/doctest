@@ -44,9 +44,32 @@ bazel-*
 *.xcodeproj/
 XCBuildData/
 
+# Visual Studio
+*.vcxproj
+*.vcxproj.filters
+*.sln
+*.lastbuildstate
+*.recipe
+*.tlog
+*.exp
+*.ilk
+*.pdb
+
+# Ninja
+build.ninja
+.ninja_log
+.ninja_deps
+
 # CMake generated
 CMakeFiles/
 CMakeScripts/
 generated/
 cmake_install.cmake
+CTestTestFile.cmake
 CMakeCache.txt
+*.FileListAbsolute.txt
+CTestCostData.txt
+*.Build.CppClean.log
+LastTest.log
+LastTestsFailed.log
+temp
