@@ -10,7 +10,7 @@
             <a href="https://github.com/doctest/doctest/actions?query=branch%3Amaster"><img src="https://github.com/doctest/doctest/workflows/CI/badge.svg?branch=master"></a>
         </td>
         <td>
-            <a href="https://coveralls.io/github/onqtam/doctest?branch=master"><img src="https://coveralls.io/repos/github/onqtam/doctest/badge.svg?branch=master"></a>
+            <a href="https://codecov.io/gh/doctest/doctest/branch/master"><img src="https://codecov.io/gh/doctest/doctest/branch/master/graph/badge.svg?token=fAdZl67WN7"/></a>
         </td>
     </tr>
     <tr>
@@ -21,7 +21,7 @@
             <a href="https://github.com/doctest/doctest/actions?query=branch%3Adev"><img src="https://github.com/doctest/doctest/workflows/CI/badge.svg?branch=dev"></a>
         </td>
         <td>
-            <a href="https://coveralls.io/github/onqtam/doctest?branch=dev"><img src="https://coveralls.io/repos/github/onqtam/doctest/badge.svg?branch=dev"></a>
+            <a href="https://codecov.io/gh/doctest/doctest/branch/dev"><img src="https://codecov.io/gh/doctest/doctest/branch/dev/graph/badge.svg?token=fAdZl67WN7"/></a>
         </td>
     </tr>
 </table>
@@ -41,11 +41,11 @@
 [![documentation](https://img.shields.io/badge/documentation%20%20-online-blue.svg)](https://github.com/doctest/doctest/blob/master/doc/markdown/readme.md#reference)
 -->
 
-[<img src="https://cloud.githubusercontent.com/assets/8225057/5990484/70413560-a9ab-11e4-8942-1a63607c0b00.png" align="right">](http://www.patreon.com/onqtam)
+[<img src="https://c5.patreon.com/external/logo/become_a_patron_button.png" align="right">](https://www.patreon.com/onqtam)
 
 The framework is and will stay free but needs your support to sustain its development. There are lots of <a href="doc/markdown/roadmap.md"><b>new features</b></a> and maintenance to do. If you work for a company using **doctest** or have the means to do so, please consider financial support. Monthly donations via Patreon and one-offs via PayPal.
 
-[<img src="https://www.paypalobjects.com/en_US/i/btn/btn_donate_LG.gif" align="right">](https://www.paypal.me/onqtam/10)
+[<img src="https://raw.githubusercontent.com/aha999/DonateButtons/master/paypal-donate-icon-7.png" width=100 align="right">](https://www.paypal.me/onqtam/10)
 
 A complete example with a self-registering test that compiles to an executable looks like this:
 
@@ -115,11 +115,11 @@ Usage:
 Contributing
 ------------
 
-[<img src="https://cloud.githubusercontent.com/assets/8225057/5990484/70413560-a9ab-11e4-8942-1a63607c0b00.png" align="right">](http://www.patreon.com/onqtam)
+[<img src="https://c5.patreon.com/external/logo/become_a_patron_button.png" align="right">](https://www.patreon.com/onqtam)
 
 Support the development of the project with donations! There is a list of planned features which are all important and big - see the [**roadmap**](doc/markdown/roadmap.md). I took a break from working in the industry to make open source software so every cent is a big deal.
 
-[<img src="https://www.paypalobjects.com/en_US/i/btn/btn_donate_LG.gif" align="right">](https://www.paypal.me/onqtam/10)
+[<img src="https://raw.githubusercontent.com/aha999/DonateButtons/master/paypal-donate-icon-7.png" width=100 align="right">](https://www.paypal.me/onqtam/10)
 
 If you work for a company using **doctest** or have the means to do so, please consider financial support.
 
