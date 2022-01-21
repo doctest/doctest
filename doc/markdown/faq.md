@@ -38,7 +38,7 @@ Missing stuff:
 - micro benchmarking support - nonius is used in [**Catch**](https://github.com/catchorg/Catch2)
 - other small stuff such as tags - can be easily emulated/migrated from - see below
 
-But these things (and more!) are planned in the [**roadmap**](roadmap.md)!
+But these things (and more!) are planned in the [**roadmap**](https://github.com/doctest/doctest/issues/596)!
 
 **doctest** can be thought of as a very polished, light, stable and clean subset (or reimplementation) of [**Catch**](https://github.com/catchorg/Catch2) but this might change in the future as more features are added.
 
