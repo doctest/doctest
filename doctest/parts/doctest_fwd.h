@@ -893,6 +893,9 @@ namespace detail {
     struct StringMakerBase {
         template <typename T>
         static String convert(const DOCTEST_REF_WRAP(T)) {
+#ifdef DOCTEST_CONFIG_REQUIRE_STRINGIFICATION_FOR_ALL_USED_TYPES
+            static_assert(false, "No stringification detected for type T. See string conversion manual");
+#endif
             return "{?}";
         }
     };
