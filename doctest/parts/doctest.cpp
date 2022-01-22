@@ -439,8 +439,9 @@ typedef timer_large_integer::type ticks_t;
 
         // stuff for subcases
         std::vector<SubcaseSignature>     subcasesStack;
+        std::set<SubcaseSignature>        subcasesTested;
         std::set<decltype(subcasesStack)> subcasesPassed;
-        int                               subcasesCurrentMaxLevel;
+        decltype(subcasesStack)           subcasesCurrentMaxStack;
         bool                              should_reenter;
         std::atomic<bool>                 shouldLogCurrentException;
 
@@ -1030,30 +1031,35 @@ namespace detail {
             : m_signature({name, file, line}) {
         auto* s = g_cs;
 
-        // check subcase filters
-        if(s->subcasesStack.size() < size_t(s->subcase_filter_levels)) {
-            if(!matchesAny(m_signature.m_name.c_str(), s->filters[6], true, s->case_sensitive))
-                return;
-            if(matchesAny(m_signature.m_name.c_str(), s->filters[7], false, s->case_sensitive))
-                return;
-        }
-        
-        // if a Subcase on the same level has already been entered
-        if(s->subcasesStack.size() < size_t(s->subcasesCurrentMaxLevel)) {
-            s->should_reenter = true;
-            return;
-        }
+        auto it = s->subcasesTested.find(m_signature);
+        if (it == s->subcasesTested.end()) {
+            // check subcase filters
+            if(s->subcasesStack.size() < size_t(s->subcase_filter_levels)) {
+                if(!matchesAny(m_signature.m_name.c_str(), s->filters[6], true, s->case_sensitive))
+                    return;
+                if(matchesAny(m_signature.m_name.c_str(), s->filters[7], false, s->case_sensitive))
+                    return;
+            }
 
-        // push the current signature to the stack so we can check if the
-        // current stack + the current new subcase have been traversed
-        s->subcasesStack.push_back(m_signature);
-        if(s->subcasesPassed.count(s->subcasesStack) != 0) {
-            // pop - revert to previous stack since we've already passed this
-            s->subcasesStack.pop_back();
-            return;
-        }
+            // push the current signature to the stack so we can check if the
+            // current stack + the current new subcase have been traversed
+            s->subcasesStack.push_back(m_signature);
+            if (s->subcasesPassed.count(s->subcasesStack) != 0) {
+                // pop - revert to previous stack since we've already passed this
+                s->subcasesStack.pop_back();
+                return;
+            // if a Subcase on the same level has already been entered
+            } else if (s->subcasesStack.size() <= s->subcasesCurrentMaxStack.size()) {
+                s->subcasesStack.pop_back();
+                s->should_reenter = true;
+                return;
+            }
 
-        s->subcasesCurrentMaxLevel = s->subcasesStack.size();
+            s->subcasesCurrentMaxStack = s->subcasesStack;
+            s->subcasesTested.emplace(m_signature);
+        } else {
+            s->subcasesStack.push_back(m_signature);
+        }
         m_entered = true;
 
         DOCTEST_ITERATE_THROUGH_REPORTERS(subcase_start, m_signature);
@@ -3796,7 +3802,8 @@ int Context::run() {
             do {
                 // reset some of the fields for subcases (except for the set of fully passed ones)
                 p->should_reenter          = false;
-                p->subcasesCurrentMaxLevel = 0;
+                p->subcasesCurrentMaxStack.clear();
+                p->subcasesTested.clear();
                 p->subcasesStack.clear();
 
                 p->shouldLogCurrentException = true;
