@@ -7,6 +7,14 @@
 root
       <OverallResultsAsserts successes="0" failures="0" test_case_success="true"/>
     </TestCase>
+    <TestCase name="reentering subcase via regular control flow" filename="subcases.cpp" line="0">
+
+root
+outside of subcase
+outside of subcase
+outside of subcase
+      <OverallResultsAsserts successes="0" failures="0" test_case_success="true"/>
+    </TestCase>
     <TestCase name="subcases can be used in a separate function as well" filename="subcases.cpp" line="0">
       <SubCase name="from function..." filename="subcases.cpp" line="0">
         <Message type="WARNING" filename="subcases.cpp" line="0">
@@ -46,6 +54,6 @@ root
     </TestCase>
   </TestSuite>
   <OverallResultsAsserts successes="0" failures="0"/>
-  <OverallResultsTestCases successes="7" failures="0"/>
+  <OverallResultsTestCases successes="8" failures="0"/>
 </doctest>
 Program code.

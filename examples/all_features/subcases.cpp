@@ -34,6 +34,26 @@ TEST_CASE("lots of nested subcases") {
     }
 }
 
+TEST_CASE("reentering subcase via regular control flow") {
+    cout << endl << "root" << endl;
+    for (int i : { 0, 1, 2 }) {
+        cout << "outside of subcase" << endl;
+        SUBCASE("") { cout << "inside subcase " << i << endl; }
+        SUBCASE("") { cout << "also inside " << i << endl; }
+        SUBCASE("") {
+            if (i != 0) { FAIL(i); }
+            cout << "fail inside " << i << endl;
+        }
+        SUBCASE("") {
+            cout << "inside outside" << endl;
+            for (int j : { 0, 1, 2 }) {
+                SUBCASE("") { cout << "nested twice " << i << ", " << j << endl; }
+                SUBCASE("") { cout << "also twice " << i << ", " << j << endl; }
+            }
+        }
+    }
+}
+
 static void call_func() {
     SUBCASE("from function...") {
         MESSAGE("print me twice");
