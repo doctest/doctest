@@ -43,7 +43,7 @@
 
 [<img src="https://c5.patreon.com/external/logo/become_a_patron_button.png" align="right">](https://www.patreon.com/onqtam)
 
-The framework is and will stay free but needs your support to sustain its development. There are lots of <a href="https://github.com/doctest/doctest/issues/596"><b>new features</b></a> and maintenance to do. If you work for a company using **doctest** or have the means to do so, please consider financial support. Monthly donations via Patreon and one-offs via PayPal.
+The framework is and will stay free but needs your support to sustain its development. There are lots of <a href="https://github.com/doctest/doctest/issues/600"><b>new features</b></a> and maintenance to do. If you work for a company using **doctest** or have the means to do so, please consider financial support. Monthly donations via Patreon and one-offs via PayPal.
 
 [<img src="https://raw.githubusercontent.com/aha999/DonateButtons/master/paypal-donate-icon-7.png" width=100 align="right">](https://www.paypal.me/onqtam/10)
 
@@ -90,7 +90,7 @@ Documentation
 Project:
 
 - [Features and design goals](doc/markdown/features.md) - the complete list of features
-- [Community driven roadmap](https://github.com/doctest/doctest/issues/596) - upcoming features
+- [Community driven roadmap](https://github.com/doctest/doctest/issues/600) - upcoming features
 - [Benchmarks](doc/markdown/benchmarks.md) - compile-time and runtime supremacy
 - [Contributing](CONTRIBUTING.md) - how to make a proper pull request
 - [Changelog](CHANGELOG.md) - generated changelog based on closed issues/PRs
@@ -117,7 +117,7 @@ Contributing
 
 [<img src="https://c5.patreon.com/external/logo/become_a_patron_button.png" align="right">](https://www.patreon.com/onqtam)
 
-Support the development of the project with donations! There is a list of planned features which are all important and big - see the [**roadmap**](https://github.com/doctest/doctest/issues/596). I took a break from working in the industry to make open source software so every cent is a big deal.
+Support the development of the project with donations! There is a list of planned features which are all important and big - see the [**roadmap**](https://github.com/doctest/doctest/issues/600).
 
 [<img src="https://raw.githubusercontent.com/aha999/DonateButtons/master/paypal-donate-icon-7.png" width=100 align="right">](https://www.paypal.me/onqtam/10)
 

@@ -75,7 +75,7 @@
 - ability to query if code is currently being ran in a test -  ```doctest::is_running_in_test```
 - tests can be registered in CTest with the use of [```doctest_discover_tests(<target>)``` from scripts/cmake/doctest.cmake](../../scripts/cmake/doctest.cmake)
 
-There is a list of planned features which are all important and big - see the [**roadmap**](https://github.com/doctest/doctest/issues/596).
+There is a list of planned features which are all important and big - see the [**roadmap**](https://github.com/doctest/doctest/issues/600).
 
 ---------------
 
