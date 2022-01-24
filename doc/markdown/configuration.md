@@ -53,7 +53,7 @@ This should be defined only in the source file where the library is implemented.
 
 ### **```DOCTEST_CONFIG_DISABLE```**
 
-One of the most important configuration option - everything testing-related is removed from the binary - including most of the framework implementation and every test case written anywhere! This is one of the most unique features of **doctest**.
+One of the most important configuration options - everything testing-related is removed from the binary - including most of the framework implementation and every test case written anywhere! This is one of the most unique features of **doctest**.
 
 This should be defined globally.
 
