@@ -38,3 +38,19 @@ build-mingw/
 .idea/
 cmake-build-*/
 bazel-*
+
+# CMake
+CMakeFiles/
+CMakeScripts/
+generated/
+cmake_install.cmake
+
+# MacOS
+.DS_Store
+*.xcodeproj/
+
+# VS
+*.vcxproj
+*.vcxproj.filters
+*.vcxproj.user
+*.sln
