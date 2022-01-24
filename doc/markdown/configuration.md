@@ -12,6 +12,7 @@ Defining something ```globally``` means for every source file of the binary (exe
 - [**```DOCTEST_CONFIG_IMPLEMENTATION_IN_DLL```**](#doctest_config_implementation_in_dll)
 - [**```DOCTEST_CONFIG_NO_SHORT_MACRO_NAMES```**](#doctest_config_no_short_macro_names)
 - [**```DOCTEST_CONFIG_TREAT_CHAR_STAR_AS_STRING```**](#doctest_config_treat_char_star_as_string)
+- [**```DOCTEST_CONFIG_REQUIRE_STRINGIFICATION_FOR_ALL_USED_TYPES```**](#doctest_config_require_stringification_for_all_used_types)
 - [**```DOCTEST_CONFIG_SUPER_FAST_ASSERTS```**](#doctest_config_super_fast_asserts)
 - [**```DOCTEST_CONFIG_USE_STD_HEADERS```**](#doctest_config_use_std_headers)
 - [**```DOCTEST_CONFIG_VOID_CAST_EXPRESSIONS```**](#doctest_config_void_cast_expressions)
@@ -80,6 +81,12 @@ This can be defined both globally and in specific source files only.
 By default ```char*``` is being treated as a pointer. With this option comparing ```char*``` pointers will switch to using ```strcmp()``` for comparisons and when stringified the string will be printed instead of the pointer value. 
 
 This should be defined globally.
+
+### **```DOCTEST_CONFIG_REQUIRE_STRINGIFICATION_FOR_ALL_USED_TYPES```**
+
+By default if stringification is not available for a type, it is simply printed as `{?}`. By enabling this flag, whenever a type is used in an assert that does not provide stringification, the compilation is stopped.
+
+This can be defined both globally and in specific source files only.
 
 ### **```DOCTEST_CONFIG_SUPER_FAST_ASSERTS```**
 
