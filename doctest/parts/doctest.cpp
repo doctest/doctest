@@ -844,23 +844,17 @@ String toString(const Approx& in) {
 }
 const ContextOptions* getContextOptions() { return DOCTEST_BRANCH_ON_DISABLED(nullptr, g_cs); }
 
-template <typename F>
-IsNaN<F> IsNaN<F>::operator!() const {
-    IsNaN<F> ret = *this;
-    ret.flipped = !flipped;
-    return ret;
-}
 DOCTEST_MSVC_SUPPRESS_WARNING_WITH_PUSH(4738)
 template <typename F>
 IsNaN<F>::operator bool() const {
-    return std::isnan(val) ^ flipped;
+    return std::isnan(value) ^ flipped;
 }
 DOCTEST_MSVC_SUPPRESS_WARNING_POP
 template struct DOCTEST_INTERFACE_DEF IsNaN<float>;
 template struct DOCTEST_INTERFACE_DEF IsNaN<double>;
 template struct DOCTEST_INTERFACE_DEF IsNaN<long double>;
 template <typename F>
-String toString(IsNaN<F> nanCheck) { return String(nanCheck.flipped ? "! " : "") + "IsNaN( " + doctest::toString(nanCheck.val) + " )"; }
+String toString(IsNaN<F> nanCheck) { return String(nanCheck.flipped ? "! " : "") + "IsNaN( " + doctest::toString(nanCheck.value) + " )"; }
 String toString(IsNaN<float> nanCheck) { return toString<float>(nanCheck); }
 String toString(IsNaN<double> nanCheck) { return toString<double>(nanCheck); }
 String toString(IsNaN<double long> nanCheck) { return toString<double long>(nanCheck); }
