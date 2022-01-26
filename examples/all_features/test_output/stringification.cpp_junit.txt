@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <testsuites>
-  <testsuite name="all_features" errors="2" failures="14" tests="16">
+  <testsuite name="all_features" errors="2" failures="15" tests="17">
     <testcase classname="stringification.cpp" name="no headers" status="run">
       <failure message="1as == nullptr" type="CHECK">
 stringification.cpp(0):
@@ -89,6 +89,12 @@ CHECK( doctest::IsNaN&lt;double>(0.5) ) is NOT correct!
 stringification.cpp(0):
 CHECK( doctest::IsNaN&lt;float>(std::numeric_limits&lt;float>::infinity()) ) is NOT correct!
   values: CHECK( IsNaN( inff ) )
+
+      </failure>
+      <failure message="! IsNaN( nanL )" type="CHECK">
+stringification.cpp(0):
+CHECK( !doctest::IsNaN&lt;double long>(std::numeric_limits&lt;double long>::quiet_NaN()) ) is NOT correct!
+  values: CHECK( ! IsNaN( nanL ) )
 
       </failure>
       <error message="exception">

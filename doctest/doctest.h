@@ -1104,8 +1104,9 @@ DOCTEST_INTERFACE const ContextOptions* getContextOptions();
 template <typename F>
 struct DOCTEST_INTERFACE_DECL IsNaN
 {
-    F val;
-    IsNaN(F f) : val(f) { }
+    F value; bool flipped;
+    IsNaN(F f, bool flip = false) : value(f), flipped(flip) { }
+    IsNaN<F> operator!() const { return { value, !flipped }; }
     operator bool() const;
 };
 #ifndef __MINGW32__
@@ -3645,6 +3646,12 @@ String toString(bool in) { return in ? "true" : "false"; }
 namespace detail {
     template <typename T>
     String fpToString(T value, int precision) {
+        if (std::isnan(value)) {
+            return "nan";
+        } else if (std::isinf(value)) {
+            return value > 0 ? "inf" : "-inf";
+        }
+
         std::ostringstream oss;
         oss << std::setprecision(precision) << std::fixed << value;
         std::string d = oss.str();
@@ -3727,14 +3734,14 @@ const ContextOptions* getContextOptions() { return DOCTEST_BRANCH_ON_DISABLED(nu
 DOCTEST_MSVC_SUPPRESS_WARNING_WITH_PUSH(4738)
 template <typename F>
 IsNaN<F>::operator bool() const {
-    return std::isnan(val);
+    return std::isnan(value) ^ flipped;
 }
 DOCTEST_MSVC_SUPPRESS_WARNING_POP
 template struct DOCTEST_INTERFACE_DEF IsNaN<float>;
 template struct DOCTEST_INTERFACE_DEF IsNaN<double>;
 template struct DOCTEST_INTERFACE_DEF IsNaN<long double>;
 template <typename F>
-String toString(IsNaN<F> nanCheck) { return "IsNaN( " + doctest::toString(nanCheck.val) + " )"; }
+String toString(IsNaN<F> nanCheck) { return String(nanCheck.flipped ? "! " : "") + "IsNaN( " + doctest::toString(nanCheck.value) + " )"; }
 String toString(IsNaN<float> nanCheck) { return toString<float>(nanCheck); }
 String toString(IsNaN<double> nanCheck) { return toString<double>(nanCheck); }
 String toString(IsNaN<double long> nanCheck) { return toString<double long>(nanCheck); }

@@ -179,7 +179,7 @@ TEST_CASE("all asserts should fail and show how the objects get stringified") {
 
     CHECK(doctest::IsNaN<double>(0.5));
     CHECK(doctest::IsNaN<float>(std::numeric_limits<float>::infinity()));
-    // can't test actual nan because it's implementation defined
+    CHECK(!doctest::IsNaN<double long>(std::numeric_limits<double long>::quiet_NaN()));
 
     // lets see if this exception gets translated
     throw_if(true, bla1);

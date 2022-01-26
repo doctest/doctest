@@ -1101,8 +1101,9 @@ DOCTEST_INTERFACE const ContextOptions* getContextOptions();
 template <typename F>
 struct DOCTEST_INTERFACE_DECL IsNaN
 {
-    F val;
-    IsNaN(F f) : val(f) { }
+    F value; bool flipped;
+    IsNaN(F f, bool flip = false) : value(f), flipped(flip) { }
+    IsNaN<F> operator!() const { return { value, !flipped }; }
     operator bool() const;
 };
 #ifndef __MINGW32__
