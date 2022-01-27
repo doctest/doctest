@@ -512,7 +512,6 @@ DOCTEST_INTERFACE extern bool is_running_in_test;
 // TODO:
 // - optimizations - like not deleting memory unnecessarily in operator= and etc.
 // - resize/reserve/clear
-// - substr
 // - replace
 // - back/front
 // - iterator stuff
@@ -587,6 +586,9 @@ public:
 
     String substr(size_type pos, size_type len = npos) &&;
     String substr(size_type pos, size_type len = npos) const &;
+
+    size_type find(char ch, size_type pos = 0) const;
+    size_type rfind(char ch, size_type pos = npos) const;
 
     int compare(const char* other, bool no_case = false) const;
     int compare(const String& other, bool no_case = false) const;
@@ -949,16 +951,24 @@ namespace detail {
             return toStream(in);
         }
     };
-
-    template <typename T>
-    const char* type_to_string() {
-        return "<>";
-    }
 } // namespace detail
 
 template <typename T>
 struct StringMaker : public detail::StringMakerBase<detail::has_insertion_operator<T>::value>
 {};
+
+template <typename T>
+String toString() {
+#ifdef _MSC_VER
+    String ret = __FUNCSIG__; // class doctest::String __cdecl doctest::toString<TYPE>(void)
+    String::size_type beginPos = ret.find('<');
+    return ret.substr(beginPos + 1, ret.size() - beginPos - sizeof(">(void)") + 1);
+#else
+    String ret = __PRETTY_FUNCTION__; // doctest::String toString() [with T = TYPE]
+    String::size_type begin = ret.find('=') + 2;
+    return ret.substr(begin, ret.size() - begin - sizeof(']'));
+#endif
+}
 
 template <typename T, typename detail::enable_if<!detail::is_enum<T>::value, bool>::type = true>
 String toString(const DOCTEST_REF_WRAP(T) value) {
@@ -1444,12 +1454,12 @@ DOCTEST_CLANG_SUPPRESS_WARNING_POP
     {
         funcType m_test; // a function pointer to the test case
 
-        const char* m_type; // for templated test cases - gets appended to the real name
+        String m_type; // for templated test cases - gets appended to the real name
         int m_template_id; // an ID used to distinguish between the different versions of a templated test case
         String m_full_name; // contains the name (only for templated test cases!) + the template type
 
         TestCase(funcType test, const char* file, unsigned line, const TestSuite& test_suite,
-                 const char* type = "", int template_id = -1);
+                 const String& type = String(), int template_id = -1);
 
         TestCase(const TestCase& other);
 
@@ -2004,17 +2014,16 @@ int registerReporter(const char* name, int priority, bool isReporter) {
                               DOCTEST_ANONYMOUS(DOCTEST_ANON_FUNC_), decorators)
 
 // for converting types to strings without the <typeinfo> header and demangling
-#define DOCTEST_TYPE_TO_STRING_IMPL(...)                                                           \
-    template <>                                                                                    \
-    inline const char* type_to_string<__VA_ARGS__>() {                                             \
-        return "<" #__VA_ARGS__ ">";                                                               \
-    }
-#define DOCTEST_TYPE_TO_STRING(...)                                                                \
-    namespace doctest { namespace detail {                                                         \
-            DOCTEST_TYPE_TO_STRING_IMPL(__VA_ARGS__)                                               \
+#define DOCTEST_TYPE_TO_STRING_AS(str, ...)                                                        \
+    namespace doctest {                                                                            \
+        template <>                                                                                \
+        inline String toString<__VA_ARGS__>() {                                                    \
+            return str;                                                                            \
         }                                                                                          \
     }                                                                                              \
     static_assert(true, "")
+
+#define DOCTEST_TYPE_TO_STRING(...) DOCTEST_TYPE_TO_STRING_AS(#__VA_ARGS__, __VA_ARGS__)
 
 #define DOCTEST_TEST_CASE_TEMPLATE_DEFINE_IMPL(dec, T, iter, func)                                 \
     template <typename T>                                                                          \
@@ -2028,7 +2037,7 @@ int registerReporter(const char* name, int priority, bool isReporter) {
             iter(const char* file, unsigned line, int index) {                                     \
                 doctest::detail::regTest(doctest::detail::TestCase(func<Type>, file, line,         \
                                             doctest_detail_test_suite_ns::getCurrentTestSuite(),   \
-                                            doctest::detail::type_to_string<Type>(),               \
+                                            doctest::toString<Type>(),                             \
                                             int(line) * 1000 + index)                              \
                                          * dec);                                                   \
                 iter<std::tuple<Rest...>>(file, line, index + 1);                                  \
@@ -2478,8 +2487,8 @@ int registerReporter(const char* name, int priority, bool isReporter) {
                               DOCTEST_ANONYMOUS(DOCTEST_ANON_FUNC_), name)
 
 // for converting types to strings without the <typeinfo> header and demangling
+#define DOCTEST_TYPE_TO_STRING_AS(str, ...) static_assert(true, "")
 #define DOCTEST_TYPE_TO_STRING(...) static_assert(true, "")
-#define DOCTEST_TYPE_TO_STRING_IMPL(...)
 
 // for typed tests
 #define DOCTEST_TEST_CASE_TEMPLATE(name, type, ...)                                                \
@@ -2729,6 +2738,7 @@ namespace detail {
 #define TEST_CASE(name) DOCTEST_TEST_CASE(name)
 #define TEST_CASE_CLASS(name) DOCTEST_TEST_CASE_CLASS(name)
 #define TEST_CASE_FIXTURE(x, name) DOCTEST_TEST_CASE_FIXTURE(x, name)
+#define TYPE_TO_STRING_AS(str, ...) DOCTEST_TYPE_TO_STRING_AS(str, __VA_ARGS__)
 #define TYPE_TO_STRING(...) DOCTEST_TYPE_TO_STRING(__VA_ARGS__)
 #define TEST_CASE_TEMPLATE(name, T, ...) DOCTEST_TEST_CASE_TEMPLATE(name, T, __VA_ARGS__)
 #define TEST_CASE_TEMPLATE_DEFINE(name, T, id) DOCTEST_TEST_CASE_TEMPLATE_DEFINE(name, T, id)
@@ -2865,28 +2875,6 @@ namespace detail {
 
 // this is here to clear the 'current test suite' for the current translation unit - at the top
 DOCTEST_TEST_SUITE_END();
-
-// add stringification for primitive/fundamental types
-namespace doctest { namespace detail {
-    DOCTEST_TYPE_TO_STRING_IMPL(bool)
-    DOCTEST_TYPE_TO_STRING_IMPL(float)
-    DOCTEST_TYPE_TO_STRING_IMPL(double)
-    DOCTEST_TYPE_TO_STRING_IMPL(long double)
-    DOCTEST_TYPE_TO_STRING_IMPL(char)
-    DOCTEST_TYPE_TO_STRING_IMPL(signed char)
-    DOCTEST_TYPE_TO_STRING_IMPL(unsigned char)
-#if !DOCTEST_MSVC || defined(_NATIVE_WCHAR_T_DEFINED)
-    DOCTEST_TYPE_TO_STRING_IMPL(wchar_t)
-#endif // not MSVC or wchar_t support enabled
-    DOCTEST_TYPE_TO_STRING_IMPL(short int)
-    DOCTEST_TYPE_TO_STRING_IMPL(unsigned short int)
-    DOCTEST_TYPE_TO_STRING_IMPL(int)
-    DOCTEST_TYPE_TO_STRING_IMPL(unsigned int)
-    DOCTEST_TYPE_TO_STRING_IMPL(long int)
-    DOCTEST_TYPE_TO_STRING_IMPL(unsigned long int)
-    DOCTEST_TYPE_TO_STRING_IMPL(long long int)
-    DOCTEST_TYPE_TO_STRING_IMPL(unsigned long long int)
-}} // namespace doctest::detail
 
 #endif // DOCTEST_CONFIG_DISABLE
 
@@ -3539,7 +3527,7 @@ String::size_type String::capacity() const {
 }
 
 String String::substr(size_type pos, size_type cnt) && {
-    cnt = std::min(cnt, size() - 1);
+    cnt = std::min(cnt, size() - 1 - pos);
     char* cptr = c_str();
     memmove(cptr, cptr + pos, cnt);
     setSize(cnt);
@@ -3547,10 +3535,27 @@ String String::substr(size_type pos, size_type cnt) && {
 }
 
 String String::substr(size_type pos, size_type cnt) const & {
-    cnt = std::min(cnt, size());
+    cnt = std::min(cnt, size() - pos);
     String ret{ c_str() + pos, cnt };
     ret.setSize(cnt - 1);
     return ret;
+}
+
+String::size_type String::find(char ch, size_type pos) const {
+    const char* begin = c_str();
+    const char* end = begin + size();
+    const char* it = begin + pos;
+    for (; it < end && *it != ch; it++);
+    if (it < end) { return static_cast<size_type>(it - begin); }
+    else { return npos; }
+}
+
+String::size_type String::rfind(char ch, size_type pos) const {
+    const char* begin = c_str();
+    const char* it = begin + std::min(pos, size() - 1);
+    for (; it >= begin && *it != ch; it--);
+    if (it >= begin) { return static_cast<size_type>(it - begin); }
+    else { return npos; }
 }
 
 int String::compare(const char* other, bool no_case) const {
@@ -3984,7 +3989,7 @@ namespace detail {
     }
 
     TestCase::TestCase(funcType test, const char* file, unsigned line, const TestSuite& test_suite,
-                       const char* type, int template_id) {
+                       const String& type, int template_id) {
         m_file              = file;
         m_line              = line;
         m_name              = nullptr; // will be later overridden in operator*
@@ -4011,8 +4016,7 @@ namespace detail {
     DOCTEST_MSVC_SUPPRESS_WARNING_WITH_PUSH(26434) // hides a non-virtual function
     DOCTEST_MSVC_SUPPRESS_WARNING(26437)           // Do not slice
     TestCase& TestCase::operator=(const TestCase& other) {
-        static_cast<TestCaseData&>(*this) = static_cast<const TestCaseData&>(other);
-
+        TestCaseData::operator=(other);
         m_test        = other.m_test;
         m_type        = other.m_type;
         m_template_id = other.m_template_id;
@@ -4028,7 +4032,7 @@ namespace detail {
         m_name = in;
         // make a new name with an appended type for templated test case
         if(m_template_id != -1) {
-            m_full_name = String(m_name) + m_type;
+            m_full_name = String(m_name) + "<" + m_type + ">";
             // redirect the name to point to the newly constructed full name
             m_name = m_full_name.c_str();
         }

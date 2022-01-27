@@ -23,6 +23,9 @@ TEST_CASE("no headers") {
         A = 0, B, C = 100,
     };
     MESSAGE(A); CHECK(A == C);
+
+    MESSAGE(doctest::toString<int>());
+    MESSAGE(doctest::toString<void*>());
 }
 
 DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_BEGIN

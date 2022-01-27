@@ -635,7 +635,7 @@ String::size_type String::capacity() const {
 }
 
 String String::substr(size_type pos, size_type cnt) && {
-    cnt = std::min(cnt, size() - 1);
+    cnt = std::min(cnt, size() - 1 - pos);
     char* cptr = c_str();
     memmove(cptr, cptr + pos, cnt);
     setSize(cnt);
@@ -643,10 +643,27 @@ String String::substr(size_type pos, size_type cnt) && {
 }
 
 String String::substr(size_type pos, size_type cnt) const & {
-    cnt = std::min(cnt, size());
+    cnt = std::min(cnt, size() - pos);
     String ret{ c_str() + pos, cnt };
     ret.setSize(cnt - 1);
     return ret;
+}
+
+String::size_type String::find(char ch, size_type pos) const {
+    const char* begin = c_str();
+    const char* end = begin + size();
+    const char* it = begin + pos;
+    for (; it < end && *it != ch; it++);
+    if (it < end) { return static_cast<size_type>(it - begin); }
+    else { return npos; }
+}
+
+String::size_type String::rfind(char ch, size_type pos) const {
+    const char* begin = c_str();
+    const char* it = begin + std::min(pos, size() - 1);
+    for (; it >= begin && *it != ch; it--);
+    if (it >= begin) { return static_cast<size_type>(it - begin); }
+    else { return npos; }
 }
 
 int String::compare(const char* other, bool no_case) const {
@@ -1080,7 +1097,7 @@ namespace detail {
     }
 
     TestCase::TestCase(funcType test, const char* file, unsigned line, const TestSuite& test_suite,
-                       const char* type, int template_id) {
+                       const String& type, int template_id) {
         m_file              = file;
         m_line              = line;
         m_name              = nullptr; // will be later overridden in operator*
@@ -1124,7 +1141,7 @@ namespace detail {
         m_name = in;
         // make a new name with an appended type for templated test case
         if(m_template_id != -1) {
-            m_full_name = String(m_name) + m_type;
+            m_full_name = String(m_name) + "<" + m_type + ">";
             // redirect the name to point to the newly constructed full name
             m_name = m_full_name.c_str();
         }

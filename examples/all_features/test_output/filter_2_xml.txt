@@ -35,7 +35,7 @@
     <TestCase name="default construction&lt;double>" filename="templated_test_cases.cpp" line="0" skipped="true"/>
     <TestCase name="default construction&lt;double>" filename="templated_test_cases.cpp" line="0" skipped="true"/>
     <TestCase name="default construction&lt;int>" filename="templated_test_cases.cpp" line="0" skipped="true"/>
-    <TestCase name="default construction&lt;short int>" filename="templated_test_cases.cpp" line="0" skipped="true"/>
+    <TestCase name="default construction&lt;short>" filename="templated_test_cases.cpp" line="0" skipped="true"/>
     <TestCase name="default construction&lt;signed char>" filename="templated_test_cases.cpp" line="0" skipped="true"/>
     <TestCase name="default construction&lt;unsigned char>" filename="templated_test_cases.cpp" line="0" skipped="true"/>
   </TestSuite>
@@ -77,9 +77,9 @@
   <TestSuite>
     <TestCase name="logging the counter of a loop" filename="logging.cpp" line="0" skipped="true"/>
     <TestCase name="lots of nested subcases" filename="subcases.cpp" line="0" skipped="true"/>
-    <TestCase name="multiple types&lt;>" filename="templated_test_cases.cpp" line="0" skipped="true"/>
-    <TestCase name="multiple types&lt;>" filename="templated_test_cases.cpp" line="0" skipped="true"/>
-    <TestCase name="multiple types&lt;>" filename="templated_test_cases.cpp" line="0" skipped="true"/>
+    <TestCase name="multiple types&lt;Custom name test>" filename="templated_test_cases.cpp" line="0" skipped="true"/>
+    <TestCase name="multiple types&lt;Other custom name>" filename="templated_test_cases.cpp" line="0" skipped="true"/>
+    <TestCase name="multiple types&lt;TypePair&lt;bool, int>>" filename="templated_test_cases.cpp" line="0" skipped="true"/>
     <TestCase name="namespace 1 global operator" filename="namespace1.cpp" line="0" skipped="true"/>
     <TestCase name="namespace 2 friend operator" filename="namespace2.cpp" line="0" skipped="true"/>
     <TestCase name="namespace 3 member operator" filename="namespace3.cpp" line="0" skipped="true"/>
@@ -108,7 +108,7 @@
     <TestCase name="should fail and no output" filename="test_cases_and_suites.cpp" line="0" should_fail="true" skipped="true"/>
     <TestCase name="should fail because of an exception" filename="test_cases_and_suites.cpp" line="0" skipped="true"/>
     <TestCase name="signed integers stuff&lt;int>" filename="templated_test_cases.cpp" line="0" skipped="true"/>
-    <TestCase name="signed integers stuff&lt;short int>" filename="templated_test_cases.cpp" line="0" skipped="true"/>
+    <TestCase name="signed integers stuff&lt;short>" filename="templated_test_cases.cpp" line="0" skipped="true"/>
     <TestCase name="signed integers stuff&lt;signed char>" filename="templated_test_cases.cpp" line="0" skipped="true"/>
     <TestCase name="simple check" filename="no_failures.cpp" line="0" skipped="true"/>
   </TestSuite>

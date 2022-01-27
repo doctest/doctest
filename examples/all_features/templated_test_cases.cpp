@@ -47,6 +47,10 @@ struct TypePair
     typedef second B;
 };
 
+TYPE_TO_STRING_AS("Custom name test", TypePair<int, char>);
+TYPE_TO_STRING_AS("Other custom name", TypePair<char, int>);
+TYPE_TO_STRING(TypePair<bool, int>);
+
 TEST_CASE_TEMPLATE("multiple types", T, TypePair<int, char>, TypePair<char, int>, TypePair<bool, int>) {
     typedef typename T::A T1;
     typedef typename T::B T2;

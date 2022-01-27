@@ -68,6 +68,16 @@
           0 == 100
         </Expanded>
       </Expression>
+      <Message type="WARNING" filename="stringification.cpp" line="0">
+        <Text>
+          int
+        </Text>
+      </Message>
+      <Message type="WARNING" filename="stringification.cpp" line="0">
+        <Text>
+          void*
+        </Text>
+      </Message>
       <OverallResultsAsserts successes="2" failures="5" test_case_success="false"/>
     </TestCase>
     <TestCase name="all asserts should fail and show how the objects get stringified" filename="stringification.cpp" line="0">
