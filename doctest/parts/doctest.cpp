@@ -478,7 +478,7 @@ typedef timer_large_integer::type ticks_t;
 #endif // DOCTEST_CONFIG_DISABLE
 } // namespace detail
 
-char* String::allocate(unsigned sz) {
+char* String::allocate(size_type sz) {
     if (sz <= last) {
         buf[sz] = '\0';
         setLast(last - sz);
@@ -494,7 +494,11 @@ char* String::allocate(unsigned sz) {
 }
 
 void String::setOnHeap() { *reinterpret_cast<unsigned char*>(&buf[last]) = 128; }
-void String::setLast(unsigned in) { buf[last] = char(in); }
+void String::setLast(size_type in) { buf[last] = char(in); }
+void String::setSize(size_type sz) {
+    if (isOnStack()) { buf[sz] = '\0'; setLast(last - sz); }
+    else { data.ptr[sz] = '\0'; data.size = sz; }
+}
 
 void String::copy(const String& other) {
     if(other.isOnStack()) {
@@ -518,11 +522,11 @@ String::~String() {
 String::String(const char* in)
         : String(in, strlen(in)) {}
 
-String::String(const char* in, unsigned in_size) {
+String::String(const char* in, size_type in_size) {
     memcpy(allocate(in_size), in, in_size);
 }
 
-String::String(std::istream& in, unsigned in_size) {
+String::String(std::istream& in, size_type in_size) {
     in.read(allocate(in_size), in_size);
 }
 
@@ -540,9 +544,9 @@ String& String::operator=(const String& other) {
 }
 
 String& String::operator+=(const String& other) {
-    const unsigned my_old_size = size();
-    const unsigned other_size  = other.size();
-    const unsigned total_size  = my_old_size + other_size;
+    const size_type my_old_size = size();
+    const size_type other_size  = other.size();
+    const size_type total_size  = my_old_size + other_size;
     if(isOnStack()) {
         if(total_size < len) {
             // append to the current stack space
@@ -606,28 +610,51 @@ String& String::operator=(String&& other) {
     return *this;
 }
 
-char String::operator[](unsigned i) const {
+char String::operator[](size_type i) const {
     return const_cast<String*>(this)->operator[](i); // NOLINT
 }
 
-char& String::operator[](unsigned i) {
+char& String::operator[](size_type i) {
     if(isOnStack())
         return reinterpret_cast<char*>(buf)[i];
     return data.ptr[i];
 }
 
 DOCTEST_GCC_SUPPRESS_WARNING_WITH_PUSH("-Wmaybe-uninitialized")
-unsigned String::size() const {
+String::size_type String::size() const {
     if(isOnStack())
-        return last - (unsigned(buf[last]) & 31); // using "last" would work only if "len" is 32
+        return last - (size_type(buf[last]) & 31); // using "last" would work only if "len" is 32
     return data.size;
 }
 DOCTEST_GCC_SUPPRESS_WARNING_POP
 
-unsigned String::capacity() const {
+String::size_type String::capacity() const {
     if(isOnStack())
         return len;
     return data.capacity;
+}
+
+String::size_type String::find_last_not_of(char c, size_type pos) const {
+    const char* sptr = c_str();
+    const char* cptr = sptr + std::min(pos, size() - 1);
+    for (; *cptr == c && cptr >= sptr; cptr--);
+    if (cptr >= sptr) { return static_cast<size_type>(cptr - sptr); }
+    else { return npos; }
+}
+
+String String::substr(size_type pos, size_type cnt) && {
+    cnt = std::min(cnt, size() - 1);
+    char* cptr = c_str();
+    memmove(cptr, cptr + pos, cnt);
+    setSize(cnt);
+    return std::move(*this);
+}
+
+String String::substr(size_type pos, size_type cnt) const& {
+    cnt = std::min(cnt, size());
+    String ret{ c_str() + pos, cnt };
+    ret.setSize(cnt - 1);
+    return ret;
 }
 
 int String::compare(const char* other, bool no_case) const {
@@ -765,16 +792,15 @@ namespace detail {
             return value > 0 ? "inf" : "-inf";
         }
 
-        std::ostringstream oss;
-        oss << std::setprecision(precision) << std::fixed << value;
-        std::string d = oss.str();
-        size_t      i = d.find_last_not_of('0');
-        if (i != std::string::npos && i != d.size() - 1) {
-            if (d[i] == '.')
-                i++;
-            d = d.substr(0, i + 1);
+        *tlssPush() << std::setprecision(precision) << std::fixed << value
+            << std::setprecision(6) << std::defaultfloat; // Reset
+        String d = tlssPop();
+        String::size_type i = d.find_last_not_of('0');
+        if (i != String::npos && i != d.size() - 1) {
+            if (d[i] == '.') { i++; }
+            d = std::move(d).substr(0, i + 1);
         }
-        return d.c_str();
+        return d;
     }
 }
 

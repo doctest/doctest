@@ -536,10 +536,13 @@ class DOCTEST_INTERFACE String
     bool isOnStack() const { return (buf[last] & 128) == 0; }
     void setOnHeap();
     void setLast(unsigned in = last);
+    void setSize(unsigned sz);
 
     void copy(const String& other);
 
 public:
+    static DOCTEST_CONSTEXPR unsigned npos = static_cast<unsigned>(-1);
+
     String();
     ~String();
 
@@ -570,6 +573,11 @@ public:
 
     unsigned size() const;
     unsigned capacity() const;
+
+    unsigned find_last_not_of(char c, unsigned pos = npos) const;
+
+    String substr(unsigned pos, unsigned len = npos) &&;
+    String substr(unsigned pos, unsigned len = npos) const &;
 
     int compare(const char* other, bool no_case = false) const;
     int compare(const String& other, bool no_case = false) const;
@@ -3382,6 +3390,10 @@ char* String::allocate(unsigned sz) {
 
 void String::setOnHeap() { *reinterpret_cast<unsigned char*>(&buf[last]) = 128; }
 void String::setLast(unsigned in) { buf[last] = char(in); }
+void String::setSize(unsigned sz) {
+    if (isOnStack()) { buf[sz] = '\0'; setLast(last - sz); }
+    else { data.ptr[sz] = '\0'; data.size = sz; }
+}
 
 void String::copy(const String& other) {
     if(other.isOnStack()) {
@@ -3515,6 +3527,29 @@ unsigned String::capacity() const {
     if(isOnStack())
         return len;
     return data.capacity;
+}
+
+unsigned String::find_last_not_of(char c, unsigned pos) const {
+    const char* sptr = c_str();
+    const char* cptr = sptr + std::min(pos, size() - 1);
+    for (; *cptr == c && cptr >= sptr; cptr--);
+    if (cptr >= sptr) { return static_cast<unsigned>(cptr - sptr); }
+    else { return npos; }
+}
+
+String String::substr(unsigned pos, unsigned cnt) && {
+    cnt = std::min(cnt, size() - 1);
+    char* cptr = c_str();
+    memmove(cptr, cptr + pos, cnt);
+    setSize(cnt);
+    return std::move(*this);
+}
+
+String String::substr(unsigned pos, unsigned cnt) const& {
+    cnt = std::min(cnt, size());
+    String ret{ c_str() + pos, cnt };
+    ret.setSize(cnt - 1);
+    return ret;
 }
 
 int String::compare(const char* other, bool no_case) const {
@@ -3652,16 +3687,15 @@ namespace detail {
             return value > 0 ? "inf" : "-inf";
         }
 
-        std::ostringstream oss;
-        oss << std::setprecision(precision) << std::fixed << value;
-        std::string d = oss.str();
-        size_t      i = d.find_last_not_of('0');
-        if (i != std::string::npos && i != d.size() - 1) {
+        *tlssPush() << std::setprecision(precision) << std::fixed << value;
+        String d = tlssPop();
+        auto i = d.find_last_not_of('0');
+        if (i != String::npos && i != d.size() - 1) {
             if (d[i] == '.')
                 i++;
-            d = d.substr(0, i + 1);
+            d = std::move(d).substr(0, i + 1);
         }
-        return d.c_str();
+        return d;
     }
 }
 
