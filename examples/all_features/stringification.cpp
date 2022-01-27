@@ -123,6 +123,8 @@ REGISTER_EXCEPTION_TRANSLATOR(MyTypeInherited<int>& ex) {
            doctest::toString(ex.two) + ")";
 }
 
+#define CHECK_NOT_DEFAULT_STR(var) CHECK(toString(var) != "{?}")
+
 TEST_CASE("all asserts should fail and show how the objects get stringified") {
     MyTypeInherited<int> bla1;
     bla1.one = 5;
@@ -177,9 +179,9 @@ TEST_CASE("all asserts should fail and show how the objects get stringified") {
         CHECK_MESSAGE(s1 == s2, s1, " is not really ", s2);
     }
 
-    CHECK(doctest::IsNaN<double>(0.5));
-    CHECK(doctest::IsNaN<float>(std::numeric_limits<float>::infinity()));
-    CHECK(!doctest::IsNaN<double long>(std::numeric_limits<double long>::quiet_NaN()));
+    CHECK_NOT_DEFAULT_STR(doctest::IsNaN<double>(0.5));
+    CHECK_NOT_DEFAULT_STR(!doctest::IsNaN<float>(std::numeric_limits<float>::infinity()));
+    CHECK_NOT_DEFAULT_STR(doctest::IsNaN<double long>(std::numeric_limits<double long>::quiet_NaN()));
 
     // lets see if this exception gets translated
     throw_if(true, bla1);

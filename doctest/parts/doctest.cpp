@@ -634,14 +634,6 @@ String::size_type String::capacity() const {
     return data.capacity;
 }
 
-String::size_type String::find_last_not_of(char c, size_type pos) const {
-    const char* sptr = c_str();
-    const char* cptr = sptr + std::min(pos, size() - 1);
-    for (; *cptr == c && cptr >= sptr; cptr--);
-    if (cptr >= sptr) { return static_cast<size_type>(cptr - sptr); }
-    else { return npos; }
-}
-
 String String::substr(size_type pos, size_type cnt) && {
     cnt = std::min(cnt, size() - 1);
     char* cptr = c_str();
@@ -650,7 +642,7 @@ String String::substr(size_type pos, size_type cnt) && {
     return std::move(*this);
 }
 
-String String::substr(size_type pos, size_type cnt) const& {
+String String::substr(size_type pos, size_type cnt) const & {
     cnt = std::min(cnt, size());
     String ret{ c_str() + pos, cnt };
     ret.setSize(cnt - 1);
@@ -783,30 +775,9 @@ String toString(std::nullptr_t) { return "nullptr"; }
 
 String toString(bool in) { return in ? "true" : "false"; }
 
-namespace detail {
-    template <typename T>
-    String fpToString(T value, int precision) {
-        if (std::isnan(value)) {
-            return "nan";
-        } else if (std::isinf(value)) {
-            return value > 0 ? "inf" : "-inf";
-        }
-
-        *tlssPush() << std::setprecision(precision) << std::fixed << value
-            << std::setprecision(6) << std::defaultfloat; // Reset
-        String d = tlssPop();
-        String::size_type i = d.find_last_not_of('0');
-        if (i != String::npos && i != d.size() - 1) {
-            if (d[i] == '.') { i++; }
-            d = std::move(d).substr(0, i + 1);
-        }
-        return d;
-    }
-}
-
-String toString(float in) { return fpToString(in, 5) + "f"; }
-String toString(double in) { return fpToString(in, 10); }
-String toString(double long in) { return fpToString(in, 15) + "L"; }
+String toString(float in) { return toStream(in); }
+String toString(double in) { return toStream(in); }
+String toString(double long in) { return toStream(in); }
 
 String toString(char in) { return toStream(static_cast<signed>(in)); }
 String toString(char signed in) { return toStream(static_cast<signed>(in)); }

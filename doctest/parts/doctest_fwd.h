@@ -462,6 +462,7 @@ DOCTEST_MSVC_SUPPRESS_WARNING_WITH_PUSH(4643)
 
 namespace std { // NOLINT (cert-dcl58-cpp)
 typedef decltype(nullptr) nullptr_t;
+typedef decltype(sizeof(void*)) size_t;
 template <class charT>
 struct char_traits;
 template <>
@@ -487,6 +488,8 @@ DOCTEST_MSVC_SUPPRESS_WARNING_POP
 #endif // DOCTEST_CONFIG_INCLUDE_TYPE_TRAITS
 
 namespace doctest {
+
+using std::size_t;
 
 DOCTEST_INTERFACE extern bool is_running_in_test;
 
@@ -578,8 +581,6 @@ public:
 
     size_type size() const;
     size_type capacity() const;
-
-    size_type find_last_not_of(char c, size_type pos = npos) const;
 
     String substr(size_type pos, size_type len = npos) &&;
     String substr(size_type pos, size_type len = npos) const &;

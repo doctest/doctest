@@ -64,15 +64,6 @@ stringification.cpp(0): ERROR: CHECK( s1 == s2 ) is NOT correct!
   logged: s1=MyOtherType: 42 s2=MyOtherType: 666
           MyOtherType: 42 is not really MyOtherType: 666
 
-stringification.cpp(0): ERROR: CHECK( doctest::IsNaN<double>(0.5) ) is NOT correct!
-  values: CHECK( IsNaN( 0.5 ) )
-
-stringification.cpp(0): ERROR: CHECK( doctest::IsNaN<float>(std::numeric_limits<float>::infinity()) ) is NOT correct!
-  values: CHECK( IsNaN( inff ) )
-
-stringification.cpp(0): ERROR: CHECK( !doctest::IsNaN<double long>(std::numeric_limits<double long>::quiet_NaN()) ) is NOT correct!
-  values: CHECK( ! IsNaN( nanL ) )
-
 stringification.cpp(0): ERROR: test case THREW exception: MyTypeInherited<int>(5, 4)
 
 ===============================================================================
@@ -83,6 +74,6 @@ stringification.cpp(0): ERROR: test case THREW exception: 5
 
 ===============================================================================
 [doctest] test cases:  3 | 0 passed |  3 failed |
-[doctest] assertions: 17 | 2 passed | 15 failed |
+[doctest] assertions: 17 | 5 passed | 12 failed |
 [doctest] Status: FAILURE!
 Program code.

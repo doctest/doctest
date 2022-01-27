@@ -36,55 +36,7 @@
           should fail
         </Info>
       </Expression>
-      <Expression success="false" type="CHECK" filename="coverage_maxout.cpp" line="0">
-        <Original>
-          b == 5
-        </Original>
-        <Expanded>
-          Approx( 7.0 ) == 5
-        </Expanded>
-      </Expression>
-      <Expression success="false" type="CHECK" filename="coverage_maxout.cpp" line="0">
-        <Original>
-          b &lt; 5
-        </Original>
-        <Expanded>
-          Approx( 7.0 ) &lt;  5
-        </Expanded>
-      </Expression>
-      <Expression success="false" type="CHECK" filename="coverage_maxout.cpp" line="0">
-        <Original>
-          b &lt;= 5
-        </Original>
-        <Expanded>
-          Approx( 7.0 ) &lt;= 5
-        </Expanded>
-      </Expression>
-      <Expression success="false" type="CHECK" filename="coverage_maxout.cpp" line="0">
-        <Original>
-          6 == a
-        </Original>
-        <Expanded>
-          6 == Approx( 5.0 )
-        </Expanded>
-      </Expression>
-      <Expression success="false" type="CHECK" filename="coverage_maxout.cpp" line="0">
-        <Original>
-          6 &lt; a
-        </Original>
-        <Expanded>
-          6 &lt;  Approx( 5.0 )
-        </Expanded>
-      </Expression>
-      <Expression success="false" type="CHECK" filename="coverage_maxout.cpp" line="0">
-        <Original>
-          6 &lt;= a
-        </Original>
-        <Expanded>
-          6 &lt;= Approx( 5.0 )
-        </Expanded>
-      </Expression>
-      <OverallResultsAsserts successes="22" failures="9" test_case_success="false"/>
+      <OverallResultsAsserts successes="28" failures="3" test_case_success="false"/>
     </TestCase>
   </TestSuite>
   <TestSuite name="exception related">
@@ -107,7 +59,7 @@
       <OverallResultsAsserts successes="0" failures="0" test_case_success="false"/>
     </TestCase>
   </TestSuite>
-  <OverallResultsAsserts successes="22" failures="9"/>
+  <OverallResultsAsserts successes="28" failures="3"/>
   <OverallResultsTestCases successes="0" failures="4"/>
 </doctest>
 Program code.

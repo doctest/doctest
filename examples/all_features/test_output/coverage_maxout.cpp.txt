@@ -15,24 +15,6 @@ coverage_maxout.cpp(0): ERROR: CHECK_FALSE( isThereAnything ) is NOT correct!
   values: CHECK_FALSE( true )
   logged: should fail
 
-coverage_maxout.cpp(0): ERROR: CHECK( b == 5 ) is NOT correct!
-  values: CHECK( Approx( 7.0 ) == 5 )
-
-coverage_maxout.cpp(0): ERROR: CHECK( b < 5 ) is NOT correct!
-  values: CHECK( Approx( 7.0 ) <  5 )
-
-coverage_maxout.cpp(0): ERROR: CHECK( b <= 5 ) is NOT correct!
-  values: CHECK( Approx( 7.0 ) <= 5 )
-
-coverage_maxout.cpp(0): ERROR: CHECK( 6 == a ) is NOT correct!
-  values: CHECK( 6 == Approx( 5.0 ) )
-
-coverage_maxout.cpp(0): ERROR: CHECK( 6 < a ) is NOT correct!
-  values: CHECK( 6 <  Approx( 5.0 ) )
-
-coverage_maxout.cpp(0): ERROR: CHECK( 6 <= a ) is NOT correct!
-  values: CHECK( 6 <= Approx( 5.0 ) )
-
 ===============================================================================
 coverage_maxout.cpp(0):
 TEST SUITE: exception related
@@ -56,6 +38,6 @@ coverage_maxout.cpp(0): ERROR: test case THREW exception: unknown exception
 
 ===============================================================================
 [doctest] test cases:  4 |  0 passed | 4 failed |
-[doctest] assertions: 31 | 22 passed | 9 failed |
+[doctest] assertions: 31 | 28 passed | 3 failed |
 [doctest] Status: FAILURE!
 Program code.

@@ -465,6 +465,7 @@ DOCTEST_MSVC_SUPPRESS_WARNING_WITH_PUSH(4643)
 
 namespace std { // NOLINT (cert-dcl58-cpp)
 typedef decltype(nullptr) nullptr_t;
+typedef decltype(sizeof(void*)) size_t;
 template <class charT>
 struct char_traits;
 template <>
@@ -491,7 +492,13 @@ DOCTEST_MSVC_SUPPRESS_WARNING_POP
 
 namespace doctest {
 
+using std::size_t;
+
 DOCTEST_INTERFACE extern bool is_running_in_test;
+
+#ifndef DOCTEST_CONFIG_STRING_SIZE_TYPE
+#define DOCTEST_CONFIG_STRING_SIZE_TYPE unsigned
+#endif
 
 // A 24 byte string class (can be as small as 17 for x64 and 13 for x86) that can hold strings with length
 // of up to 23 chars on the stack before going on the heap - the last byte of the buffer is used for:
@@ -515,14 +522,18 @@ DOCTEST_INTERFACE extern bool is_running_in_test;
 // - relational operators as free functions - taking const char* as one of the params
 class DOCTEST_INTERFACE String
 {
-    static const unsigned len  = 24;      //!OCLINT avoid private static members
-    static const unsigned last = len - 1; //!OCLINT avoid private static members
+public:
+    using size_type = DOCTEST_CONFIG_STRING_SIZE_TYPE;
+
+private:
+    static DOCTEST_CONSTEXPR size_type len  = 24;      //!OCLINT avoid private static members
+    static DOCTEST_CONSTEXPR size_type last = len - 1; //!OCLINT avoid private static members
 
     struct view // len should be more than sizeof(view) - because of the final byte for flags
     {
         char*    ptr;
-        unsigned size;
-        unsigned capacity;
+        size_type size;
+        size_type capacity;
     };
 
     union
@@ -531,26 +542,26 @@ class DOCTEST_INTERFACE String
         view data;
     };
 
-    char* allocate(unsigned sz);
+    char* allocate(size_type sz);
 
     bool isOnStack() const { return (buf[last] & 128) == 0; }
     void setOnHeap();
-    void setLast(unsigned in = last);
-    void setSize(unsigned sz);
+    void setLast(size_type in = last);
+    void setSize(size_type sz);
 
     void copy(const String& other);
 
 public:
-    static DOCTEST_CONSTEXPR unsigned npos = static_cast<unsigned>(-1);
+    static DOCTEST_CONSTEXPR size_type npos = static_cast<size_type>(-1);
 
     String();
     ~String();
 
     // cppcheck-suppress noExplicitConstructor
     String(const char* in);
-    String(const char* in, unsigned in_size);
+    String(const char* in, size_type in_size);
 
-    String(std::istream& in, unsigned in_size);
+    String(std::istream& in, size_type in_size);
 
     String(const String& other);
     String& operator=(const String& other);
@@ -560,8 +571,8 @@ public:
     String(String&& other);
     String& operator=(String&& other);
 
-    char  operator[](unsigned i) const;
-    char& operator[](unsigned i);
+    char  operator[](size_type i) const;
+    char& operator[](size_type i);
 
     // the only functions I'm willing to leave in the interface - available for inlining
     const char* c_str() const { return const_cast<String*>(this)->c_str(); } // NOLINT
@@ -571,13 +582,11 @@ public:
         return data.ptr;
     }
 
-    unsigned size() const;
-    unsigned capacity() const;
+    size_type size() const;
+    size_type capacity() const;
 
-    unsigned find_last_not_of(char c, unsigned pos = npos) const;
-
-    String substr(unsigned pos, unsigned len = npos) &&;
-    String substr(unsigned pos, unsigned len = npos) const &;
+    String substr(size_type pos, size_type len = npos) &&;
+    String substr(size_type pos, size_type len = npos) const &;
 
     int compare(const char* other, bool no_case = false) const;
     int compare(const String& other, bool no_case = false) const;
@@ -3373,7 +3382,7 @@ typedef timer_large_integer::type ticks_t;
 #endif // DOCTEST_CONFIG_DISABLE
 } // namespace detail
 
-char* String::allocate(unsigned sz) {
+char* String::allocate(size_type sz) {
     if (sz <= last) {
         buf[sz] = '\0';
         setLast(last - sz);
@@ -3389,8 +3398,8 @@ char* String::allocate(unsigned sz) {
 }
 
 void String::setOnHeap() { *reinterpret_cast<unsigned char*>(&buf[last]) = 128; }
-void String::setLast(unsigned in) { buf[last] = char(in); }
-void String::setSize(unsigned sz) {
+void String::setLast(size_type in) { buf[last] = char(in); }
+void String::setSize(size_type sz) {
     if (isOnStack()) { buf[sz] = '\0'; setLast(last - sz); }
     else { data.ptr[sz] = '\0'; data.size = sz; }
 }
@@ -3417,11 +3426,11 @@ String::~String() {
 String::String(const char* in)
         : String(in, strlen(in)) {}
 
-String::String(const char* in, unsigned in_size) {
+String::String(const char* in, size_type in_size) {
     memcpy(allocate(in_size), in, in_size);
 }
 
-String::String(std::istream& in, unsigned in_size) {
+String::String(std::istream& in, size_type in_size) {
     in.read(allocate(in_size), in_size);
 }
 
@@ -3439,9 +3448,9 @@ String& String::operator=(const String& other) {
 }
 
 String& String::operator+=(const String& other) {
-    const unsigned my_old_size = size();
-    const unsigned other_size  = other.size();
-    const unsigned total_size  = my_old_size + other_size;
+    const size_type my_old_size = size();
+    const size_type other_size  = other.size();
+    const size_type total_size  = my_old_size + other_size;
     if(isOnStack()) {
         if(total_size < len) {
             // append to the current stack space
@@ -3505,39 +3514,31 @@ String& String::operator=(String&& other) {
     return *this;
 }
 
-char String::operator[](unsigned i) const {
+char String::operator[](size_type i) const {
     return const_cast<String*>(this)->operator[](i); // NOLINT
 }
 
-char& String::operator[](unsigned i) {
+char& String::operator[](size_type i) {
     if(isOnStack())
         return reinterpret_cast<char*>(buf)[i];
     return data.ptr[i];
 }
 
 DOCTEST_GCC_SUPPRESS_WARNING_WITH_PUSH("-Wmaybe-uninitialized")
-unsigned String::size() const {
+String::size_type String::size() const {
     if(isOnStack())
-        return last - (unsigned(buf[last]) & 31); // using "last" would work only if "len" is 32
+        return last - (size_type(buf[last]) & 31); // using "last" would work only if "len" is 32
     return data.size;
 }
 DOCTEST_GCC_SUPPRESS_WARNING_POP
 
-unsigned String::capacity() const {
+String::size_type String::capacity() const {
     if(isOnStack())
         return len;
     return data.capacity;
 }
 
-unsigned String::find_last_not_of(char c, unsigned pos) const {
-    const char* sptr = c_str();
-    const char* cptr = sptr + std::min(pos, size() - 1);
-    for (; *cptr == c && cptr >= sptr; cptr--);
-    if (cptr >= sptr) { return static_cast<unsigned>(cptr - sptr); }
-    else { return npos; }
-}
-
-String String::substr(unsigned pos, unsigned cnt) && {
+String String::substr(size_type pos, size_type cnt) && {
     cnt = std::min(cnt, size() - 1);
     char* cptr = c_str();
     memmove(cptr, cptr + pos, cnt);
@@ -3545,7 +3546,7 @@ String String::substr(unsigned pos, unsigned cnt) && {
     return std::move(*this);
 }
 
-String String::substr(unsigned pos, unsigned cnt) const& {
+String String::substr(size_type pos, size_type cnt) const & {
     cnt = std::min(cnt, size());
     String ret{ c_str() + pos, cnt };
     ret.setSize(cnt - 1);
@@ -3678,30 +3679,9 @@ String toString(std::nullptr_t) { return "nullptr"; }
 
 String toString(bool in) { return in ? "true" : "false"; }
 
-namespace detail {
-    template <typename T>
-    String fpToString(T value, int precision) {
-        if (std::isnan(value)) {
-            return "nan";
-        } else if (std::isinf(value)) {
-            return value > 0 ? "inf" : "-inf";
-        }
-
-        *tlssPush() << std::setprecision(precision) << std::fixed << value;
-        String d = tlssPop();
-        auto i = d.find_last_not_of('0');
-        if (i != String::npos && i != d.size() - 1) {
-            if (d[i] == '.')
-                i++;
-            d = std::move(d).substr(0, i + 1);
-        }
-        return d;
-    }
-}
-
-String toString(float in) { return fpToString(in, 5) + "f"; }
-String toString(double in) { return fpToString(in, 10); }
-String toString(double long in) { return fpToString(in, 15) + "L"; }
+String toString(float in) { return toStream(in); }
+String toString(double in) { return toStream(in); }
+String toString(double long in) { return toStream(in); }
 
 String toString(char in) { return toStream(static_cast<signed>(in)); }
 String toString(char signed in) { return toStream(static_cast<signed>(in)); }

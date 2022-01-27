@@ -156,34 +156,10 @@
           MyOtherType: 42 is not really MyOtherType: 666
         </Info>
       </Expression>
-      <Expression success="false" type="CHECK" filename="stringification.cpp" line="0">
-        <Original>
-          doctest::IsNaN&lt;double>(0.5)
-        </Original>
-        <Expanded>
-          IsNaN( 0.5 )
-        </Expanded>
-      </Expression>
-      <Expression success="false" type="CHECK" filename="stringification.cpp" line="0">
-        <Original>
-          doctest::IsNaN&lt;float>(std::numeric_limits&lt;float>::infinity())
-        </Original>
-        <Expanded>
-          IsNaN( inff )
-        </Expanded>
-      </Expression>
-      <Expression success="false" type="CHECK" filename="stringification.cpp" line="0">
-        <Original>
-          !doctest::IsNaN&lt;double long>(std::numeric_limits&lt;double long>::quiet_NaN())
-        </Original>
-        <Expanded>
-          ! IsNaN( nanL )
-        </Expanded>
-      </Expression>
       <Exception crash="false">
         MyTypeInherited&lt;int>(5, 4)
       </Exception>
-      <OverallResultsAsserts successes="0" failures="10" test_case_success="false"/>
+      <OverallResultsAsserts successes="3" failures="7" test_case_success="false"/>
     </TestCase>
     <TestCase name="a test case that registers an exception translator for int and then throws one" filename="stringification.cpp" line="0">
       <Exception crash="false">
@@ -192,7 +168,7 @@
       <OverallResultsAsserts successes="0" failures="0" test_case_success="false"/>
     </TestCase>
   </TestSuite>
-  <OverallResultsAsserts successes="2" failures="15"/>
+  <OverallResultsAsserts successes="5" failures="12"/>
   <OverallResultsTestCases successes="0" failures="3"/>
 </doctest>
 Program code.
