@@ -928,7 +928,7 @@ namespace detail {
         filldata<T>::fill(stream, in);
     }
 
-    template <typename T, unsigned long N>
+    template <typename T, size_t N>
     void filloss(std::ostream* stream, const T (&in)[N]) {
         // T[N], T(&)[N], T(&&)[N] have same behaviour.
         // Hence remove reference.
@@ -1004,11 +1004,11 @@ namespace detail {
         }
     };
 
-    template <typename T, unsigned long N>
+    template <typename T, size_t N>
     struct filldata<T[N]> {
         static void fill(std::ostream* stream, const T(&in)[N]) {
             *stream << "[";
-            for (unsigned long i = 0; i < N; i++) {
+            for (size_t i = 0; i < N; i++) {
                 if (i != 0) { *stream << ", "; }
                 *stream << toString(in[i]);
             }
@@ -1017,7 +1017,7 @@ namespace detail {
     };
 
     // Specialized since we don't want the terminating null byte!
-    template <unsigned long N>
+    template <size_t N>
     struct filldata<const char[N]> {
         static void fill(std::ostream* stream, const char (&in)[N]) {
             *stream << String(in, in[N - 1] ? N : N - 1);
@@ -3890,15 +3890,6 @@ namespace {
         }
         return !*wild;
     }
-
-    //// C string hash function (djb2) - taken from http://www.cse.yorku.ca/~oz/hash.html
-    //unsigned hashStr(unsigned const char* str) {
-    //    unsigned long hash = 5381;
-    //    char          c;
-    //    while((c = *str++))
-    //        hash = ((hash << 5) + hash) + c; // hash * 33 + c
-    //    return hash;
-    //}
 
     // checks if the name matches any of the filters (and can be configured what to do when empty)
     bool matchesAny(const char* name, const std::vector<String>& filters, bool matchEmpty,
