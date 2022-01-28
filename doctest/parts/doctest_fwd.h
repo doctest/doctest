@@ -956,14 +956,14 @@ struct StringMaker : public detail::StringMakerBase<detail::has_insertion_operat
 
 template <typename T>
 String toString() {
-#ifdef _MSC_VER
+#if DOCTEST_MSVC >= 0 && DOCTEST_CLANG == 0 && DOCTEST_GCC == 0
     String ret = __FUNCSIG__; // class doctest::String __cdecl doctest::toString<TYPE>(void)
     String::size_type beginPos = ret.find('<');
-    return ret.substr(beginPos + 1, ret.size() - beginPos - sizeof(">(void)") + 1);
+    return ret.substr(beginPos + 1, ret.size() - beginPos - static_cast<String::size_type>(sizeof(">(void)")));
 #else
     String ret = __PRETTY_FUNCTION__; // doctest::String toString() [with T = TYPE]
     String::size_type begin = ret.find('=') + 2;
-    return ret.substr(begin, ret.size() - begin - sizeof(']'));
+    return ret.substr(begin, ret.size() - begin - 1);
 #endif
 }
 

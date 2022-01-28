@@ -959,14 +959,14 @@ struct StringMaker : public detail::StringMakerBase<detail::has_insertion_operat
 
 template <typename T>
 String toString() {
-#ifdef _MSC_VER
+#if DOCTEST_MSVC >= 0 && DOCTEST_CLANG == 0 && DOCTEST_GCC == 0
     String ret = __FUNCSIG__; // class doctest::String __cdecl doctest::toString<TYPE>(void)
     String::size_type beginPos = ret.find('<');
-    return ret.substr(beginPos + 1, ret.size() - beginPos - sizeof(">(void)") + 1);
+    return ret.substr(beginPos + 1, ret.size() - beginPos - static_cast<String::size_type>(sizeof(">(void)")));
 #else
     String ret = __PRETTY_FUNCTION__; // doctest::String toString() [with T = TYPE]
     String::size_type begin = ret.find('=') + 2;
-    return ret.substr(begin, ret.size() - begin - sizeof(']'));
+    return ret.substr(begin, ret.size() - begin - 1);
 #endif
 }
 
@@ -3535,10 +3535,8 @@ String String::substr(size_type pos, size_type cnt) && {
 }
 
 String String::substr(size_type pos, size_type cnt) const & {
-    cnt = std::min(cnt, size() - pos);
-    String ret{ c_str() + pos, cnt };
-    ret.setSize(cnt - 1);
-    return ret;
+    cnt = std::min(cnt, size() - 1 - pos);
+    return String{ c_str() + pos, cnt };
 }
 
 String::size_type String::find(char ch, size_type pos) const {
@@ -4014,7 +4012,6 @@ namespace detail {
     }
 
     DOCTEST_MSVC_SUPPRESS_WARNING_WITH_PUSH(26434) // hides a non-virtual function
-    DOCTEST_MSVC_SUPPRESS_WARNING(26437)           // Do not slice
     TestCase& TestCase::operator=(const TestCase& other) {
         TestCaseData::operator=(other);
         m_test        = other.m_test;
