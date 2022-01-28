@@ -8,6 +8,8 @@ DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_END
 // NORMAL TEMPLATED TEST CASES
 // =================================================================================================
 
+TYPE_TO_STRING_AS("SHORT!!!", short);
+
 TEST_CASE_TEMPLATE("signed integers stuff", T, signed char, short, int) {
     T var = T();
     --var;

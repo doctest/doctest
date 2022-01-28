@@ -2,7 +2,7 @@
 <testsuites>
   <testsuite name="all_features" errors="0" failures="5" tests="19">
     <testcase classname="templated_test_cases.cpp" name="signed integers stuff&lt;signed char>" status="run"/>
-    <testcase classname="templated_test_cases.cpp" name="signed integers stuff&lt;short>" status="run"/>
+    <testcase classname="templated_test_cases.cpp" name="signed integers stuff&lt;SHORT!!!>" status="run"/>
     <testcase classname="templated_test_cases.cpp" name="signed integers stuff&lt;int>" status="run"/>
     <testcase classname="templated_test_cases.cpp" name="vector stuff&lt;std::vector&lt;int>>" status="run">
       <failure message="10 == 20" type="CHECK">
@@ -13,7 +13,7 @@ CHECK( vec.size() == 20 ) is NOT correct!
       </failure>
     </testcase>
     <testcase classname="templated_test_cases.cpp" name="default construction&lt;signed char>" status="run"/>
-    <testcase classname="templated_test_cases.cpp" name="default construction&lt;short>" status="run"/>
+    <testcase classname="templated_test_cases.cpp" name="default construction&lt;SHORT!!!>" status="run"/>
     <testcase classname="templated_test_cases.cpp" name="default construction&lt;int>" status="run"/>
     <testcase classname="templated_test_cases.cpp" name="default construction&lt;double>" status="run"/>
     <testcase classname="templated_test_cases.cpp" name="default construction&lt;double>" status="run"/>

@@ -5,7 +5,7 @@
     <TestCase name="signed integers stuff&lt;signed char>" filename="templated_test_cases.cpp" line="0">
       <OverallResultsAsserts successes="1" failures="0" test_case_success="true"/>
     </TestCase>
-    <TestCase name="signed integers stuff&lt;short>" filename="templated_test_cases.cpp" line="0">
+    <TestCase name="signed integers stuff&lt;SHORT!!!>" filename="templated_test_cases.cpp" line="0">
       <OverallResultsAsserts successes="1" failures="0" test_case_success="true"/>
     </TestCase>
     <TestCase name="signed integers stuff&lt;int>" filename="templated_test_cases.cpp" line="0">
@@ -25,7 +25,7 @@
     <TestCase name="default construction&lt;signed char>" filename="templated_test_cases.cpp" line="0">
       <OverallResultsAsserts successes="1" failures="0" test_case_success="true"/>
     </TestCase>
-    <TestCase name="default construction&lt;short>" filename="templated_test_cases.cpp" line="0">
+    <TestCase name="default construction&lt;SHORT!!!>" filename="templated_test_cases.cpp" line="0">
       <OverallResultsAsserts successes="1" failures="0" test_case_success="true"/>
     </TestCase>
     <TestCase name="default construction&lt;int>" filename="templated_test_cases.cpp" line="0">

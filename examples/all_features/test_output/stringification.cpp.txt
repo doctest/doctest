@@ -30,8 +30,6 @@ stringification.cpp(0): ERROR: CHECK( A == C ) is NOT correct!
 
 stringification.cpp(0): MESSAGE: int
 
-stringification.cpp(0): MESSAGE: void*
-
 ===============================================================================
 stringification.cpp(0):
 TEST CASE:  all asserts should fail and show how the objects get stringified
