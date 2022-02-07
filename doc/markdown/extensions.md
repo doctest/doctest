@@ -62,7 +62,7 @@ You need to launch the unit tests with an ```mpirun``` or ```mpiexec``` command:
 mpirun -np 2 unit_test_executable.exe
 ```
 
-```doctest::mpi_init_thread()``` should be called before running the unit tests, and ```doctest::mpi_finalize()``` at the end of the program. Also, using the default console reporter will result in each process writing everything in the same place, which is not what we want. Two reporters are provided and can be enabled. A complete ```main()``` would be:
+```doctest::mpi_init_thread()``` must be called before running the unit tests, and ```doctest::mpi_finalize()``` at the end of the program. Also, using the default console reporter will result in each process writing everything in the same place, which is not what we want. Two reporters are provided and can be enabled. A complete ```main()``` would be:
 
 
 ```c++

@@ -18,6 +18,8 @@ std::unordered_map<int,mpi_sub_comm> sub_comms_by_size;
 // because there is not enought procs to execute it
 int nb_test_cases_skipped_insufficient_procs = 0;
 
+int world_size_before_init = -1;
+
 // Can be safely called before MPI_Init()
 //   This is needed for MPI_TEST_CASE because we use doctest::skip()
 //   to prevent execution of tests where there is not enough procs,
@@ -29,10 +31,11 @@ mpi_comm_world_size() {
   #elif defined(I_MPI_VERSION) || defined(MPI_VERSION)
     const char* size_str = std::getenv("PMI_SIZE"); // see https://community.intel.com/t5/Intel-oneAPI-HPC-Toolkit/Environment-variables-defined-by-intel-mpirun/td-p/1096703
   #else
-    #error "Unknown MPI implementation"
+    #error "Unknown MPI implementation: please submit an issue or a PR to doctest. Meanwhile, you can look at the output of e.g. `mpirun -np 3 env` to search for an environnement variable that contains the size of MPI_COMM_WORLD and extend this code accordingly"
   #endif
   if (size_str==nullptr) return 1; // not launched with mpirun/mpiexec, so assume only one process
-  return std::stoi(size_str);
+  world_size_before_init = std::stoi(size_str);
+  return world_size_before_init;
 }
 
 std::string thread_level_to_string(int thread_lvl) {
@@ -47,7 +50,18 @@ std::string thread_level_to_string(int thread_lvl) {
 int mpi_init_thread(int argc, char *argv[], int required_thread_support) {
   int provided_thread_support;
   MPI_Init_thread(&argc, &argv, required_thread_support, &provided_thread_support);
-  if (provided_thread_support!=MPI_THREAD_MULTIPLE) {
+
+  int world_size;
+  MPI_Comm_size(MPI_COMM_WORLD,&world_size);
+  if (world_size_before_init != world_size) {
+    DOCTEST_INTERNAL_ERROR(
+      "doctest found "+std::to_string(world_size_before_init)+" MPI processes before `MPI_Init_thread`,"
+      " but MPI_COMM_WORLD is actually of size "+std::to_string(world_size)+".\n"
+      "This is most likely due to your MPI implementation not being well supported by doctest. Please report this issue on GitHub"
+    );
+  }
+
+  if (provided_thread_support!=required_thread_support) {
     std::cout <<
         "WARNING: " + thread_level_to_string(required_thread_support) + " was asked, "
       + "but only " + thread_level_to_string(provided_thread_support) + " is provided by the MPI library\n";
