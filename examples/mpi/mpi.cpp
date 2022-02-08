@@ -34,3 +34,13 @@ MPI_TEST_CASE("Parallel test on 3 processes (failing)",3) {
   MPI_CHECK( 1,  x==11 ); // CHECK for rank 1, that x==11
   MPI_CHECK( 2,  x==-1 ); // CHECK for rank 2, that x==-1 (which is not the case -> will trigger a failure report)
 }
+
+MPI_TEST_CASE("Parallel tests with subcases",2) {
+
+  SUBCASE("sub_case 0") {
+    CHECK( test_nb_procs == 2 );
+  }
+  SUBCASE("sub_case 1") {
+    CHECK( test_rank == 0 ); // should fail on proc 1
+  }
+}

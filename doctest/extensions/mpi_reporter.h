@@ -11,6 +11,9 @@
 
 namespace doctest {
 
+extern int nb_test_cases_skipped_insufficient_procs;
+int mpi_comm_world_size();
+
 namespace {
 
 // https://stackoverflow.com/a/11826666/1583122
@@ -106,12 +109,25 @@ public:
 
     if(rank == 0) {
       separator_to_stream();
-      s << Color::Cyan << "[doctest] " << Color::None << "glob assertions: " << std::setw(6)
+      s << Color::Cyan << "[doctest] " << Color::None << "assertions on all processes: " << std::setw(6)
         << g_numAsserts << " | "
         << ((g_numAsserts == 0 || anythingFailed) ? Color::None : Color::Green)
         << std::setw(6) << (g_numAsserts - g_numAssertsFailed) << " passed" << Color::None
         << " | " << (g_numAssertsFailed > 0 ? Color::Red : Color::None) << std::setw(6)
         << g_numAssertsFailed << " failed" << Color::None << " |\n";
+      if (nb_test_cases_skipped_insufficient_procs>0) {
+        s << Color::Cyan << "[doctest] " << Color::Yellow << "WARNING: Skipped ";
+        if (nb_test_cases_skipped_insufficient_procs>1) {
+          s << nb_test_cases_skipped_insufficient_procs << " tests requiring more than ";
+        } else {
+          s << nb_test_cases_skipped_insufficient_procs << " test requiring more than ";
+        }
+        if (mpi_comm_world_size()>1) {
+          s << mpi_comm_world_size() << " MPI processes to run\n";
+        } else {
+          s << mpi_comm_world_size() << " MPI process to run\n";
+        }
+      }
 
       separator_to_stream();
       if(g_numAssertsFailed > 0){
@@ -186,7 +202,7 @@ public:
   }
 
   bool is_mpi_test_case() const {
-    return tc->m_description != nullptr 
+    return tc->m_description != nullptr
         && std::string(tc->m_description) == std::string("MPI_TEST_CASE");
   }
 
