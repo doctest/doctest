@@ -18,7 +18,16 @@ std::unordered_map<int,mpi_sub_comm> sub_comms_by_size;
 // because there is not enought procs to execute it
 int nb_test_cases_skipped_insufficient_procs = 0;
 
+// Record size of MPI_COMM_WORLD with mpi_comm_world_size()
+// so that it can be compared to the MPI_Comm_size value
+// once MPI_Init_thread has been called
 int world_size_before_init = -1;
+
+
+std::string thread_level_to_string(int thread_lvl);
+int mpi_init_thread(int argc, char *argv[], int required_thread_support);
+void mpi_finalize();
+
 
 // Can be safely called before MPI_Init()
 //   This is needed for MPI_TEST_CASE because we use doctest::skip()
