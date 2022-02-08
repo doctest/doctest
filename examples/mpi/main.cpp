@@ -3,7 +3,7 @@
 #include <doctest/extensions/doctest_mpi.h>
 
 int main(int argc, char** argv) {
-  MPI_Init(&argc, &argv);
+  doctest::mpi_init_thread(argc,argv,MPI_THREAD_MULTIPLE);
 
   doctest::Context ctx;
   ctx.setOption("reporters", "MpiConsoleReporter");
@@ -13,7 +13,7 @@ int main(int argc, char** argv) {
 
   int test_result = ctx.run();
 
-  MPI_Finalize();
+  doctest::mpi_finalize();
 
   return test_result;
 }

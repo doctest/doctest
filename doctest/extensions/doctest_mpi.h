@@ -24,11 +24,10 @@ int world_size_before_init = -1;
 //   This is needed for MPI_TEST_CASE because we use doctest::skip()
 //   to prevent execution of tests where there is not enough procs,
 //   but doctest::skip() is called during test registration, that is, before main(), and hence before MPI_Init()
-int
-mpi_comm_world_size() {
+int mpi_comm_world_size() {
   #if defined(OPEN_MPI)
     const char* size_str = std::getenv("OMPI_COMM_WORLD_SIZE");
-  #elif defined(I_MPI_VERSION) || defined(MPI_VERSION)
+  #elif defined(I_MPI_VERSION) || defined(MPI_VERSION) // Intel MPI + MPICH (at least)
     const char* size_str = std::getenv("PMI_SIZE"); // see https://community.intel.com/t5/Intel-oneAPI-HPC-Toolkit/Environment-variables-defined-by-intel-mpirun/td-p/1096703
   #else
     #error "Unknown MPI implementation: please submit an issue or a PR to doctest. Meanwhile, you can look at the output of e.g. `mpirun -np 3 env` to search for an environnement variable that contains the size of MPI_COMM_WORLD and extend this code accordingly"
