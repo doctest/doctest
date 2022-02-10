@@ -21,7 +21,7 @@ int nb_test_cases_skipped_insufficient_procs = 0;
 // Record size of MPI_COMM_WORLD with mpi_comm_world_size()
 // so that it can be compared to the MPI_Comm_size value
 // once MPI_Init_thread has been called
-int world_size_before_init = -1;
+int world_size_before_init = 1;
 
 
 std::string thread_level_to_string(int thread_lvl);
