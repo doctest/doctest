@@ -179,7 +179,7 @@ function replace(regex,opt){regex=regex.source;opt=opt||'';return function self(
 function noop(){}
 noop.exec=noop;function merge(obj){var i=1,target,key;for(;i<arguments.length;i++){target=arguments[i];for(key in target){if(Object.prototype.hasOwnProperty.call(target,key)){obj[key]=target[key];}}}
 return obj;}
-function marked(src,opt){try{if(opt)opt=merge({},marked.defaults,opt);return Parser.parse(Lexer.lex(src,opt),opt);}catch(e){e.message+='\nPlease report this to https://github.com/chjj/marked.';if((opt||marked.defaults).silent){return'An error occured:\n'+e.message;}
+function marked(src,opt){try{if(opt)opt=merge({},marked.defaults,opt);return Parser.parse(Lexer.lex(src,opt),opt);}catch(e){e.message+='\nPlease report this to https://github.com/chjj/marked.';if((opt||marked.defaults).silent){return'An error occurred:\n'+e.message;}
 throw e;}}
 marked.options=marked.setOptions=function(opt){merge(marked.defaults,opt);return marked;};marked.defaults={gfm:true,tables:true,breaks:false,pedantic:false,sanitize:false,smartLists:false,silent:false,highlight:null,langPrefix:'lang-'};marked.Parser=Parser;marked.parser=Parser.parse;marked.Lexer=Lexer;marked.lexer=Lexer.lex;marked.InlineLexer=InlineLexer;marked.inlineLexer=InlineLexer.output;marked.parse=marked;if(typeof exports==='object'){module.exports=marked;}else if(typeof define==='function'&&define.amd){define(function(){return marked;});}else{this.marked=marked;}}).call(function(){return this||(typeof window!=='undefined'?window:global);}());
 // Copyright (C) 2006 Google Inc.
@@ -423,7 +423,7 @@ var PR=win['PR']={'createSimpleLexer':createSimpleLexer,'registerLangHandler':re
 	    + '<a title="http://lbo.k.vu/md" href="https://lbesson.bitbucket.org/md/index.html?src=strapdown.js">StrapDown.js</a> v0.4.1 '
 	    + 'with theme <a title="More information on this theme on bootswatch.com !" href="http://bootswatch.com/'+theme+'">'+theme+'</a>, '
 	    + 'hosted on <a href="https://bitbucket.org/">BitBucket</a>)</div> '
-	    + '<div id="headline-squirt" class="brand"> <a title="Check https://lbesson.bitbucket.org/squirt/ for more informations" '
+	    + '<div id="headline-squirt" class="brand"> <a title="Check https://lbesson.bitbucket.org/squirt/ for more information" '
 	    + 'href="javascript:(function(){sq=window.sq;if(sq&&sq.closed){window.sq.closed&&window.document.dispatchEvent(new Event(\'squirt.again\'));}else{sq=window.sq||{};sq.version=\'0.4\';sq.host=\'https://lbesson.bitbucket.org/squirt\';sq.j=document.createElement(\'script\');sq.j.src=sq.host+\'/squirt.js?src=strapdown.js\';document.body.appendChild(sq.j);}})();" '
 	    + '>Use Squirt?</a></div> '
 */
