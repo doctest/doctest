@@ -1,4 +1,30 @@
+#ifdef _MSC_VER
+__pragma(warning(push))
+__pragma(warning(disable : 4668))
+#endif
+#include <iostream>
+#ifdef _MSC_VER
+__pragma(warning(pop))
+#endif
+
+namespace N {
+    struct A { };
+    struct B {
+        friend std::ostream& operator<<(std::ostream& os, const B&) { return os << "B"; }
+    };
+    struct C { };
+    std::ostream& operator<<(std::ostream& os, const C&) { return os << "C"; }
+}
+
+std::ostream& operator<<(std::ostream& os, const N::A&) { return os << "A"; }
+
 #include <doctest/doctest.h>
+
+TEST_CASE("operator<<") {
+    MESSAGE(N::A{ });
+    MESSAGE(N::B{ });
+    MESSAGE(N::C{ });
+}
 
 #include "header.h"
 
@@ -9,6 +35,7 @@ TEST_CASE("no headers") {
 
     int ints[] = { 0, 1, 1, 2, 3, 5, 8, 13 };
     MESSAGE(ints); CHECK(ints == nullptr);
+    MESSAGE(std::move(ints));
 
     char* cptr = reinterpret_cast<char*>(ints + 4);
     const char* ccptr = const_cast<const char*>(cptr);

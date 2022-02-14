@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <testsuites>
   <testsuite name="all_features" errors="2" failures="12" tests="17">
+    <testcase classname="stringification.cpp" name="operator&lt;&lt;" status="run"/>
     <testcase classname="stringification.cpp" name="no headers" status="run">
       <failure message="1as == nullptr" type="CHECK">
 stringification.cpp(0):
