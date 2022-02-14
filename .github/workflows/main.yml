@@ -263,7 +263,7 @@ jobs:
 
   ci-msvs:
     if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name != github.repository
-    runs-on: ${{ matrix.toolset == 'v143' && 'windows-2022' || 'windows-latest' }}
+    runs-on: ${{ matrix.toolset == 'v143' && 'windows-2022' || 'windows-2019' }}
 
     strategy:
       fail-fast: false
