@@ -782,6 +782,11 @@ IContextScope::IContextScope()  = default;
 IContextScope::~IContextScope() = default;
 
 namespace detail {
+    void filldata<const void*>::fill(std::ostream* stream, const void* in) {
+        if (in) { *stream << in; }
+        else { *stream << "nullptr"; }
+    }
+
     template <typename T>
     String toStreamLit(T t) {
         std::ostream* os = tlssPush();
@@ -814,13 +819,6 @@ String toString(long in) { return toStreamLit(in); }
 String toString(long unsigned in) { return toStreamLit(in); }
 String toString(long long in) { return toStreamLit(in); }
 String toString(long long unsigned in) { return toStreamLit(in); }
-
-namespace detail {
-    void filldata<const void*>::fill(std::ostream* stream, const void* in) {
-        if (in) { *stream << in; }
-        else { *stream << "nullptr"; }
-    }
-}
 
 Approx::Approx(double value)
         : m_epsilon(static_cast<double>(std::numeric_limits<float>::epsilon()) * 100)

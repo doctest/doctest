@@ -362,8 +362,10 @@ DOCTEST_MSVC_SUPPRESS_WARNING(4623) // default constructor was implicitly define
 #ifndef DOCTEST_CONSTEXPR
 #if DOCTEST_MSVC && (DOCTEST_MSVC < DOCTEST_COMPILER(19, 0, 0))
 #define DOCTEST_CONSTEXPR const
+#define DOCTEST_CONSTEXPR_FUNC inline
 #else // DOCTEST_MSVC
 #define DOCTEST_CONSTEXPR constexpr
+#define DOCTEST_CONSTEXPR_FUNC constexpr
 #endif // DOCTEST_MSVC
 #endif // DOCTEST_CONSTEXPR
 
@@ -839,89 +841,63 @@ struct ContextOptions //!OCLINT too many fields
 };
 
 namespace detail {
-    template <bool CONDITION, typename TYPE = void>
-    struct enable_if
-    {};
-
-    template <typename TYPE>
-    struct enable_if<true, TYPE>
-    { typedef TYPE type; };
-
-    // clang-format off
-    template<class T> struct remove_reference      { typedef T type; };
-    template<class T> struct remove_reference<T&>  { typedef T type; };
-    template<class T> struct remove_reference<T&&> { typedef T type; };
-
-    template<typename T, typename U = T&&> U declval(int); 
-
-    template<typename T> T declval(long); 
-
-    template<typename T> auto declval() DOCTEST_NOEXCEPT -> decltype(declval<T>(0));
-
-    template<class T> struct is_lvalue_reference { const static bool value=false; };
-    template<class T> struct is_lvalue_reference<T&> { const static bool value=true; };
-
-    template<class T> struct is_rvalue_reference { const static bool value=false; };
-    template<class T> struct is_rvalue_reference<T&&> { const static bool value=true; };
-
-    template <class T>
-    inline T&& forward(typename remove_reference<T>::type& t) DOCTEST_NOEXCEPT
-    {
-        return static_cast<T&&>(t);
-    }
-
-    template <class T>
-    inline T&& forward(typename remove_reference<T>::type&& t) DOCTEST_NOEXCEPT
-    {
-        static_assert(!is_lvalue_reference<T>::value,
-                        "Can not forward an rvalue as an lvalue.");
-        return static_cast<T&&>(t);
-    }
-
-    template<class T> struct remove_const          { typedef T type; };
-    template<class T> struct remove_const<const T> { typedef T type; };
+    namespace types {
 #ifdef DOCTEST_CONFIG_INCLUDE_TYPE_TRAITS
-    template<class T> struct is_enum : public std::is_enum<T> {};
-    template<class T> struct underlying_type : public std::underlying_type<T> {};
+        using namespace std;
 #else
-    // Use compiler intrinsics
-    template<class T> struct is_enum { DOCTEST_CONSTEXPR static bool value = __is_enum(T); };
-    template<class T> struct underlying_type { using type = __underlying_type(T); };
+        template <bool COND, typename T = void>
+        struct enable_if { };
+
+        template <typename T>
+        struct enable_if<true, T> { using type = T; };
+
+        struct true_type { static DOCTEST_CONSTEXPR bool value = true; };
+        struct false_type { static DOCTEST_CONSTEXPR bool value = false; };
+
+        template <typename T> struct remove_reference { using type = T; };
+        template <typename T> struct remove_reference<T&> { using type = T; };
+        template <typename T> struct remove_reference<T&&> { using type = T; };
+
+        template <typename T> struct is_rvalue_reference : false_type { };
+        template <typename T> struct is_rvalue_reference<T&&> : true_type { };
+
+        template<typename T> struct remove_const { using type = T; };
+        template <typename T> struct remove_const<const T> { using type = T; };
+
+        // Compiler intrinsics
+        template <typename T> struct is_enum { DOCTEST_CONSTEXPR static bool value = __is_enum(T); };
+        template <typename T> struct underlying_type { using type = __underlying_type(T); };
+
+        template <typename T> struct is_pointer : false_type { };
+        template <typename T> struct is_pointer<T*> : true_type { };
+
+        template <typename T> struct is_array : false_type { };
+        template <typename T, size_t SIZE> struct is_array<T[SIZE]> : true_type { };
 #endif
-    // clang-format on
+    }
 
+    // <utility>
     template <typename T>
-    struct deferred_false
-    { static DOCTEST_CONSTEXPR bool value = false; };
+    T&& declval();
 
-    template <typename T>
-    T val();
+    template <class T>
+    DOCTEST_CONSTEXPR_FUNC T&& forward(typename types::remove_reference<T>::type& t) DOCTEST_NOEXCEPT {
+        return static_cast<T&&>(t);
+    }
 
-    template <typename T>
-    struct is_ptr { static DOCTEST_CONSTEXPR bool value = false; };
-
-    template <typename T>
-    struct is_ptr<T*> { static DOCTEST_CONSTEXPR bool value = true; };
-
-    template <typename T>
-    struct is_array { static DOCTEST_CONSTEXPR bool value = false; };
-
-    template <typename T, size_t SIZE>
-    struct is_array<T[SIZE]> { static DOCTEST_CONSTEXPR bool value = true; };
+    template <class T>
+    DOCTEST_CONSTEXPR_FUNC T&& forward(typename types::remove_reference<T>::type&& t) DOCTEST_NOEXCEPT {
+        return static_cast<T&&>(t);
+    }
 
     template <typename T, typename = void>
-    struct has_insertion_operator {
-        static DOCTEST_CONSTEXPR bool value = is_ptr<T>::value || is_array<T>::value;
-    };
+    struct has_insertion_operator : types::false_type { };
 
     template <typename T>
-    struct has_insertion_operator<T, decltype(operator<<(val<std::ostream&>(), val<const T&>()), void())> {
-        static DOCTEST_CONSTEXPR bool value = true;
-    };
+    struct has_insertion_operator<T, decltype(operator<<(declval<std::ostream&>(), declval<const T&>()), void())> : types::true_type { };
 
     DOCTEST_INTERFACE std::ostream* tlssPush();
     DOCTEST_INTERFACE String tlssPop();
-
 
     template <bool C>
     struct StringMakerBase {
@@ -946,7 +922,7 @@ namespace detail {
     void filloss(std::ostream* stream, const T (&in)[N]) {
         // T[N], T(&)[N], T(&&)[N] have same behaviour.
         // Hence remove reference.
-        filloss<typename remove_reference<decltype(in)>::type>(stream, in);
+        filloss<typename types::remove_reference<decltype(in)>::type>(stream, in);
     }
 
     template <typename T>
@@ -966,7 +942,8 @@ namespace detail {
 } // namespace detail
 
 template <typename T>
-struct StringMaker : public detail::StringMakerBase<detail::has_insertion_operator<T>::value>
+struct StringMaker : public detail::StringMakerBase<
+    detail::has_insertion_operator<T>::value || detail::types::is_pointer<T>::value || detail::types::is_array<T>::value>
 {};
 
 template <typename T>
@@ -982,7 +959,7 @@ String toString() {
 #endif
 }
 
-template <typename T, typename detail::enable_if<!detail::is_enum<T>::value, bool>::type = true>
+template <typename T, typename detail::types::enable_if<!detail::types::is_enum<T>::value, bool>::type = true>
 String toString(const DOCTEST_REF_WRAP(T) value) {
     return StringMaker<T>::convert(value);
 }
@@ -1011,9 +988,9 @@ DOCTEST_INTERFACE String toString(long unsigned in);
 DOCTEST_INTERFACE String toString(long long in);
 DOCTEST_INTERFACE String toString(long long unsigned in);
 
-template <typename T, typename detail::enable_if<detail::is_enum<T>::value, bool>::type = true>
+template <typename T, typename detail::types::enable_if<detail::types::is_enum<T>::value, bool>::type = true>
 String toString(const DOCTEST_REF_WRAP(T) value) {
-    typedef typename detail::underlying_type<T>::type UT;
+    typedef typename detail::types::underlying_type<T>::type UT;
     return toString(static_cast<UT>(value));
 }
 
@@ -1068,7 +1045,7 @@ struct DOCTEST_INTERFACE Approx
 #ifdef DOCTEST_CONFIG_INCLUDE_TYPE_TRAITS
     template <typename T>
     explicit Approx(const T& value,
-                    typename detail::enable_if<std::is_constructible<double, T>::value>::type* =
+                    typename detail::types::enable_if<std::is_constructible<double, T>::value>::type* =
                             static_cast<T*>(nullptr)) {
         *this = Approx(static_cast<double>(value));
     }
@@ -1078,7 +1055,7 @@ struct DOCTEST_INTERFACE Approx
 
 #ifdef DOCTEST_CONFIG_INCLUDE_TYPE_TRAITS
     template <typename T>
-    typename detail::enable_if<std::is_constructible<double, T>::value, Approx&>::type epsilon(
+    typename std::enable_if<std::is_constructible<double, T>::value, Approx&>::type epsilon(
             const T& newEpsilon) {
         m_epsilon = static_cast<double>(newEpsilon);
         return *this;
@@ -1089,7 +1066,7 @@ struct DOCTEST_INTERFACE Approx
 
 #ifdef DOCTEST_CONFIG_INCLUDE_TYPE_TRAITS
     template <typename T>
-    typename detail::enable_if<std::is_constructible<double, T>::value, Approx&>::type scale(
+    typename std::enable_if<std::is_constructible<double, T>::value, Approx&>::type scale(
             const T& newScale) {
         m_scale = static_cast<double>(newScale);
         return *this;
@@ -1112,7 +1089,7 @@ struct DOCTEST_INTERFACE Approx
 
 #ifdef DOCTEST_CONFIG_INCLUDE_TYPE_TRAITS
 #define DOCTEST_APPROX_PREFIX \
-    template <typename T> friend typename detail::enable_if<std::is_constructible<double, T>::value, bool>::type
+    template <typename T> friend typename std::enable_if<std::is_constructible<double, T>::value, bool>::type
 
     DOCTEST_APPROX_PREFIX operator==(const T& lhs, const Approx& rhs) { return operator==(double(lhs), rhs); }
     DOCTEST_APPROX_PREFIX operator==(const Approx& lhs, const T& rhs) { return operator==(rhs, lhs); }
@@ -1211,7 +1188,7 @@ DOCTEST_CLANG_SUPPRESS_WARNING_WITH_PUSH("-Wunused-comparison")
 // If not it doesn't find the operator or if the operator at global scope is defined after
 // this template, the template won't be instantiated due to SFINAE. Once the template is not
 // instantiated it can look for global operator using normal conversions.
-#define SFINAE_OP(ret,op) decltype((void)(doctest::detail::val<L&&>() op doctest::detail::val<R&&>()),ret{})
+#define SFINAE_OP(ret,op) decltype((void)(doctest::detail::declval<L>() op doctest::detail::declval<R>()),ret{})
 
 #define DOCTEST_DO_BINARY_EXPRESSION_COMPARISON(op, op_str, op_macro)                              \
     template <typename R>                                                                          \
@@ -1223,7 +1200,7 @@ DOCTEST_CLANG_SUPPRESS_WARNING_WITH_PUSH("-Wunused-comparison")
             return Result(res, stringifyBinaryExpr(lhs, op_str, rhs));                             \
         return Result(res);                                                                        \
     }                                                                                              \
-    template <typename R ,typename enable_if<!doctest::detail::is_rvalue_reference<R>::value, void >::type* = nullptr> \
+    template <typename R ,typename types::enable_if<!doctest::detail::types::is_rvalue_reference<R>::value, void >::type* = nullptr> \
     DOCTEST_NOINLINE SFINAE_OP(Result,op) operator op(const R& rhs) {                              \
     bool res = op_macro(doctest::detail::forward<const L>(lhs), rhs);                              \
         if(m_at & assertType::is_false)                                                            \
@@ -1239,7 +1216,7 @@ DOCTEST_CLANG_SUPPRESS_WARNING_WITH_PUSH("-Wunused-comparison")
 #define DOCTEST_FORBIT_EXPRESSION(rt, op)                                                          \
     template <typename R>                                                                          \
     rt& operator op(const R&) {                                                                    \
-        static_assert(deferred_false<R>::value,                                                    \
+        static_assert(false,                                                                       \
                       "Expression Too Complex Please Rewrite As Binary Comparison!");              \
         return *this;                                                                              \
     }
@@ -1306,7 +1283,7 @@ DOCTEST_CLANG_SUPPRESS_WARNING_WITH_PUSH("-Wunused-comparison")
 #ifndef DOCTEST_CONFIG_TREAT_CHAR_STAR_AS_STRING
 #define DOCTEST_COMPARISON_RETURN_TYPE bool
 #else // DOCTEST_CONFIG_TREAT_CHAR_STAR_AS_STRING
-#define DOCTEST_COMPARISON_RETURN_TYPE typename enable_if<can_use_op<L>::value || can_use_op<R>::value, bool>::type
+#define DOCTEST_COMPARISON_RETURN_TYPE typename types::enable_if<can_use_op<L>::value || can_use_op<R>::value, bool>::type
     // NOLINTNEXTLINE(clang-analyzer-cplusplus.NewDeleteLeaks)
     inline bool eq(const char* lhs, const char* rhs) { return String(lhs) == String(rhs); }
     inline bool ne(const char* lhs, const char* rhs) { return String(lhs) != String(rhs); }
@@ -1433,7 +1410,7 @@ DOCTEST_CLANG_SUPPRESS_WARNING_POP
             return Expression_lhs<const L>(doctest::detail::forward<const L>(operand), m_at);
         }
 
-        template <typename L,typename enable_if<!doctest::detail::is_rvalue_reference<L>::value,void >::type* = nullptr>
+        template <typename L,typename types::enable_if<!doctest::detail::types::is_rvalue_reference<L>::value,void >::type* = nullptr>
         Expression_lhs<const L&> operator<<(const L &operand) {
             return Expression_lhs<const L&>(operand, m_at);
         }
@@ -2248,8 +2225,8 @@ int registerReporter(const char* name, int priority, bool isReporter) {
                                                        __LINE__, #expr, #__VA_ARGS__, message);    \
             try {                                                                                  \
                 DOCTEST_CAST_TO_VOID(expr)                                                         \
-            } catch(const typename doctest::detail::remove_const<                                  \
-                    typename doctest::detail::remove_reference<__VA_ARGS__>::type>::type&) {       \
+            } catch(const typename doctest::detail::types::remove_const<                           \
+                    typename doctest::detail::types::remove_reference<__VA_ARGS__>::type>::type&) {\
                 DOCTEST_RB.translateException();                                                   \
                 DOCTEST_RB.m_threw_as = true;                                                      \
             } catch(...) { DOCTEST_RB.translateException(); }                                      \
@@ -3686,6 +3663,11 @@ IContextScope::IContextScope()  = default;
 IContextScope::~IContextScope() = default;
 
 namespace detail {
+    void filldata<const void*>::fill(std::ostream* stream, const void* in) {
+        if (in) { *stream << in; }
+        else { *stream << "nullptr"; }
+    }
+
     template <typename T>
     String toStreamLit(T t) {
         std::ostream* os = tlssPush();
@@ -3718,13 +3700,6 @@ String toString(long in) { return toStreamLit(in); }
 String toString(long unsigned in) { return toStreamLit(in); }
 String toString(long long in) { return toStreamLit(in); }
 String toString(long long unsigned in) { return toStreamLit(in); }
-
-namespace detail {
-    void filldata<const void*>::fill(std::ostream* stream, const void* in) {
-        if (in) { *stream << in; }
-        else { *stream << "nullptr"; }
-    }
-}
 
 Approx::Approx(double value)
         : m_epsilon(static_cast<double>(std::numeric_limits<float>::epsilon()) * 100)
