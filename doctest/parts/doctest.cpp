@@ -3332,8 +3332,8 @@ namespace {
                 char character = *current++;
                 if(seenBackslash) {
                     seenBackslash = false;
-                    if(character == ',') {
-                        s.put(',');
+                    if(character == ',' || character == '\\') {
+                        s.put(character);
                         continue;
                     }
                     s.put('\\');
