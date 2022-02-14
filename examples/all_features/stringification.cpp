@@ -13,10 +13,10 @@ namespace N {
         friend std::ostream& operator<<(std::ostream& os, const B&) { return os << "B"; }
     };
     struct C { };
-    std::ostream& operator<<(std::ostream& os, const C&) { return os << "C"; }
+    static std::ostream& operator<<(std::ostream& os, const C&) { return os << "C"; }
 }
 
-std::ostream& operator<<(std::ostream& os, const N::A&) { return os << "A"; }
+static std::ostream& operator<<(std::ostream& os, const N::A&) { return os << "A"; }
 
 #include <doctest/doctest.h>
 
