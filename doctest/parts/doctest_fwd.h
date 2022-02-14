@@ -589,6 +589,8 @@ public:
 
     int compare(const char* other, bool no_case = false) const;
     int compare(const String& other, bool no_case = false) const;
+
+friend DOCTEST_INTERFACE std::ostream& operator<<(std::ostream& s, const String& in);
 };
 
 DOCTEST_INTERFACE String operator+(const String& lhs, const String& rhs);
@@ -599,8 +601,6 @@ DOCTEST_INTERFACE bool operator<(const String& lhs, const String& rhs);
 DOCTEST_INTERFACE bool operator>(const String& lhs, const String& rhs);
 DOCTEST_INTERFACE bool operator<=(const String& lhs, const String& rhs);
 DOCTEST_INTERFACE bool operator>=(const String& lhs, const String& rhs);
-
-DOCTEST_INTERFACE std::ostream& operator<<(std::ostream& s, const String& in);
 
 namespace Color {
     enum Enum
@@ -894,13 +894,25 @@ namespace detail {
     template <typename T>
     T val();
 
+    template <typename T>
+    struct is_ptr { static DOCTEST_CONSTEXPR bool value = false; };
+
+    template <typename T>
+    struct is_ptr<T*> { static DOCTEST_CONSTEXPR bool value = true; };
+
+    template <typename T>
+    struct is_array { static DOCTEST_CONSTEXPR bool value = false; };
+
+    template <typename T, size_t SIZE>
+    struct is_array<T[SIZE]> { static DOCTEST_CONSTEXPR bool value = true; };
+
     template <typename T, typename = void>
     struct has_insertion_operator {
-        static DOCTEST_CONSTEXPR bool value = false;
+        static DOCTEST_CONSTEXPR bool value = is_ptr<T>::value || is_array<T>::value;
     };
 
     template <typename T>
-    struct has_insertion_operator<T, decltype(val<std::ostream&>() << val<const T&>(), void())> {
+    struct has_insertion_operator<T, decltype(operator<<(val<std::ostream&>(), val<const T&>()), void())> {
         static DOCTEST_CONSTEXPR bool value = true;
     };
 
@@ -1007,7 +1019,7 @@ namespace detail {
     struct filldata
     {
         static void fill(std::ostream* stream, const T& in) {
-            *stream << in;
+            operator<<(*stream, in);
         }
     };
 

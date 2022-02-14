@@ -781,6 +781,15 @@ bool SubcaseSignature::operator<(const SubcaseSignature& other) const {
 IContextScope::IContextScope()  = default;
 IContextScope::~IContextScope() = default;
 
+namespace detail {
+    template <typename T>
+    String toStreamLit(T t) {
+        std::ostream* os = tlssPush();
+        os->operator<<(t);
+        return tlssPop();
+    }
+}
+
 #ifdef DOCTEST_CONFIG_TREAT_CHAR_STAR_AS_STRING
 // NOLINTNEXTLINE(clang-analyzer-cplusplus.NewDeleteLeaks)
 String toString(const char* in) { return String("\"") + (in ? in : "{null string}") + "\""; }
@@ -790,21 +799,21 @@ String toString(std::nullptr_t) { return "nullptr"; }
 
 String toString(bool in) { return in ? "true" : "false"; }
 
-String toString(float in) { return toStream(in); }
-String toString(double in) { return toStream(in); }
-String toString(double long in) { return toStream(in); }
+String toString(float in) { return toStreamLit(in); }
+String toString(double in) { return toStreamLit(in); }
+String toString(double long in) { return toStreamLit(in); }
 
-String toString(char in) { return toStream(static_cast<signed>(in)); }
-String toString(char signed in) { return toStream(static_cast<signed>(in)); }
-String toString(char unsigned in) { return toStream(static_cast<unsigned>(in)); }
-String toString(short in) { return toStream(in); }
-String toString(short unsigned in) { return toStream(in); }
-String toString(signed in) { return toStream(in); }
-String toString(unsigned in) { return toStream(in); }
-String toString(long in) { return toStream(in); }
-String toString(long unsigned in) { return toStream(in); }
-String toString(long long in) { return toStream(in); }
-String toString(long long unsigned in) { return toStream(in); }
+String toString(char in) { return toStreamLit(static_cast<signed>(in)); }
+String toString(char signed in) { return toStreamLit(static_cast<signed>(in)); }
+String toString(char unsigned in) { return toStreamLit(static_cast<unsigned>(in)); }
+String toString(short in) { return toStreamLit(in); }
+String toString(short unsigned in) { return toStreamLit(in); }
+String toString(signed in) { return toStreamLit(in); }
+String toString(unsigned in) { return toStreamLit(in); }
+String toString(long in) { return toStreamLit(in); }
+String toString(long unsigned in) { return toStreamLit(in); }
+String toString(long long in) { return toStreamLit(in); }
+String toString(long long unsigned in) { return toStreamLit(in); }
 
 namespace detail {
     void filldata<const void*>::fill(std::ostream* stream, const void* in) {
