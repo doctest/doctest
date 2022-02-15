@@ -8,12 +8,46 @@ on:
       - 'LICENSE.txt'
       - 'README.md'
   pull_request:
+    paths-ignore:
+      - 'doc/**'
+      - 'scripts/**'
+      - 'LICENSE.txt'
+      - 'README.md'
 
 env:
   CTEST_OUTPUT_ON_FAILURE: ON
   CTEST_PARALLEL_LEVEL: 2
 
 jobs:
+  coverage:
+    runs-on: ubuntu-latest
+      
+    steps:
+      - uses: actions/checkout@v2
+      
+      - name: Install
+        run: sudo apt-get install -y ninja-build lcov
+      
+      - name: Generate
+        run: cmake -B build -S . -G Ninja -D CMAKE_CXX_FLAGS="-fprofile-arcs -ftest-coverage"
+
+      - name: Build
+        run: cmake --build build
+
+      - name: Test
+        run: ctest --test-dir build --no-tests=error
+        
+      - name: LCOV
+        run: |
+          mkdir coverage
+          lcov -c -d build/ -o coverage/lcov.info --include "*doctest/parts*"
+          
+      - name: Codecov
+        uses: codecov/codecov-action@v2
+        with:
+          files: ./coverage/lcov.info
+          fail_ci_if_error: true
+
   ci:
     if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name != github.repository
     runs-on: ${{ matrix.os }}
@@ -229,7 +263,7 @@ jobs:
 
   ci-msvs:
     if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name != github.repository
-    runs-on: ${{ matrix.toolset == 'v143' && 'windows-2022' || 'windows-latest' }}
+    runs-on: ${{ matrix.toolset == 'v143' && 'windows-2022' || 'windows-2019' }}
 
     strategy:
       fail-fast: false

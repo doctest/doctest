@@ -1,6 +1,6 @@
 ## Configuration
 
-**doctest** is designed to "just work" as much as possible. It also allows configuring how it is built with a set of identifiers. 
+**doctest** is designed to "just work" as much as possible. It also allows configuring how it is built with a set of identifiers.
 
 The identifiers should be defined before the inclusion of the framework header.
 
@@ -54,7 +54,7 @@ This should be defined only in the source file where the library is implemented.
 
 ### **```DOCTEST_CONFIG_DISABLE```**
 
-One of the most most important configuration option - everything testing-related is removed from the binary - including most of the framework implementation and every test case written anywhere! This is one of the most unique features of **doctest**.
+One of the most important configuration options - everything testing-related is removed from the binary - including most of the framework implementation and every test case written anywhere! This is one of the most unique features of **doctest**.
 
 This should be defined globally.
 
@@ -78,7 +78,7 @@ This can be defined both globally and in specific source files only.
 
 ### **```DOCTEST_CONFIG_TREAT_CHAR_STAR_AS_STRING```**
 
-By default ```char*``` is being treated as a pointer. With this option comparing ```char*``` pointers will switch to using ```strcmp()``` for comparisons and when stringified the string will be printed instead of the pointer value. 
+By default ```char*``` is being treated as a pointer. With this option comparing ```char*``` pointers will switch to using ```strcmp()``` for comparisons and when stringified the string will be printed instead of the pointer value.
 
 This should be defined globally.
 
@@ -102,7 +102,7 @@ This can be defined both globally and in specific source files only.
 
 The library by default provides a forward declaration of ```std::ostream``` in order to support the ```operator<<``` [**stringification**](stringification.md) mechanism (also ```std::tuple<>``` and ```std::nullptr_t```). This is forbidden by the standard (even though it works everywhere on all tested compilers). However if the user wishes to be 100% standards compliant - then this configuration option can be used to force the inclusion of the relevant standard headers.
 
-Also it is possible that some STL implementation of a compiler with niche usage defines them differently - then there will be compilation errors in STL headers and using this option should fix the problem.  
+Also it is possible that some STL implementation of a compiler with niche usage defines them differently - then there will be compilation errors in STL headers and using this option should fix the problem.
 
 This should be defined globally.
 

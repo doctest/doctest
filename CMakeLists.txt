@@ -79,15 +79,11 @@ if(MAIN_PROJECT AND DOCTEST_WITH_TESTS)
     include(scripts/cmake/common.cmake)
 
     add_subdirectory(examples/all_features)
-
-    # for code coverage we want exactly one binary to be produced and exercised
-    if(NOT DEFINED ENV{CODE_COVERAGE})
-        add_subdirectory(examples/exe_with_static_libs)
-        add_subdirectory(examples/executable_dll_and_plugin)
-        add_subdirectory(examples/combining_the_same_tests_built_differently_in_multiple_shared_objects)
-        add_subdirectory(scripts/playground)
-        add_subdirectory(examples/mpi)
-    endif()
+    add_subdirectory(examples/exe_with_static_libs)
+    add_subdirectory(examples/executable_dll_and_plugin)
+    add_subdirectory(examples/combining_the_same_tests_built_differently_in_multiple_shared_objects)
+    add_subdirectory(scripts/playground)
+    add_subdirectory(examples/mpi)
 endif()
 
 ################################################################################
