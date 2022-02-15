@@ -1,10 +1,16 @@
 #ifdef _MSC_VER
 __pragma(warning(push))
-__pragma(warning(disable : 4668))
-#endif
-#include <iostream>
-#ifdef _MSC_VER
+__pragma(warning(disable : 4643))
+namespace std {
+    template <typename> struct char_traits;
+    template <typename, typename> class basic_ostream;
+    typedef basic_ostream<char, char_traits<char>> ostream;
+    template<class TRAITS>
+    basic_ostream<char, TRAITS>& operator<<(basic_ostream<char, TRAITS>&, const char*);
+}
 __pragma(warning(pop))
+#else
+#include <iostream>
 #endif
 
 namespace N {
@@ -19,6 +25,8 @@ namespace N {
 static std::ostream& operator<<(std::ostream& os, const N::A&) { return os << "A"; }
 
 #include <doctest/doctest.h>
+
+#include <utility>
 
 TEST_CASE("operator<<") {
     MESSAGE(N::A{ });
