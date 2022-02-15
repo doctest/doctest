@@ -37,7 +37,7 @@ TEST_CASE("operator<<") {
 #include "header.h"
 
 // std::move is broken with VS <= 15
-#if !defined(_MSC_VER) || _MSC_VER <= 1900
+#if defined(_MSC_VER) && _MSC_VER <= 1900
 #define MOVE(...) __VA_ARGS__
 #else
 #define MOVE std::move
