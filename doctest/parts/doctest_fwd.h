@@ -887,6 +887,9 @@ namespace detail {
         return static_cast<T&&>(t);
     }
 
+    template <typename T>
+    struct deferred_false : types::false_type { };
+
     template <typename T, typename = void>
     struct has_insertion_operator : types::false_type { };
 
@@ -901,7 +904,7 @@ namespace detail {
         template <typename T>
         static String convert(const DOCTEST_REF_WRAP(T)) {
 #ifdef DOCTEST_CONFIG_REQUIRE_STRINGIFICATION_FOR_ALL_USED_TYPES
-            static_assert(false, "No stringification detected for type T. See string conversion manual");
+            static_assert(deferred_false<T>::value, "No stringification detected for type T. See string conversion manual");
 #endif
             return "{?}";
         }
@@ -1213,7 +1216,7 @@ DOCTEST_CLANG_SUPPRESS_WARNING_WITH_PUSH("-Wunused-comparison")
 #define DOCTEST_FORBIT_EXPRESSION(rt, op)                                                          \
     template <typename R>                                                                          \
     rt& operator op(const R&) {                                                                    \
-        static_assert(false,                                                                       \
+        static_assert(deferred_false<R>::value,                                                    \
                       "Expression Too Complex Please Rewrite As Binary Comparison!");              \
         return *this;                                                                              \
     }
