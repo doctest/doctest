@@ -121,10 +121,6 @@ endif()
 ## VARIATION OF THE BUILD WITH DOCTEST DISABLED - SHOULD STILL COMPILE
 ################################################################################
 
-if(DEFINED ENV{CODE_COVERAGE})
-    return() # do not continue with the disabled example
-endif()
-
 add_executable(disabled ${files_all})
 target_compile_definitions(disabled PRIVATE DOCTEST_CONFIG_DISABLE)
 target_link_libraries(disabled doctest ${CMAKE_THREAD_LIBS_INIT})

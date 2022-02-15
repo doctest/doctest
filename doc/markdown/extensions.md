@@ -33,16 +33,16 @@ int my_function_to_test(MPI_Comm comm) {
 
 MPI_TEST_CASE("test over two processes",2) { // Parallel test on 2 processes
   int x = my_function_to_test(test_comm);
-  
+
   MPI_CHECK( 0,  x==10 ); // CHECK for rank 0, that x==10
   MPI_CHECK( 1,  x==11 ); // CHECK for rank 1, that x==11
 }
 ```
 
-An ```MPI_TEST_CASE``` is like a regular ```TEST_CASE```, except it takes a second argument, which is the number of processes needed to run the test.  If the number of processes is less than 2, the test will fail. If the number of processes is greater than or equal to 2, it will create a sub-communicator over 2 processes, called ```test_comm```, and execute the test over these processes. Three objects are provided by ```MPI_TEST_CASE```: 
+An ```MPI_TEST_CASE``` is like a regular ```TEST_CASE```, except it takes a second argument, which is the number of processes needed to run the test.  If the number of processes is less than 2, the test will fail. If the number of processes is greater than or equal to 2, it will create a sub-communicator over 2 processes, called ```test_comm```, and execute the test over these processes. Three objects are provided by ```MPI_TEST_CASE```:
  * ```test_comm```, of type ```MPI_Comm```: the mpi communicator on which the test is running,
  * ```test_rank``` and ```test_nb_procs```, two ```int``` giving respectively the rank of the current process and the size of the communicator for ```test_comm```. These last two are just here for convenience and could be retrieved from ```test_comm```.
- 
+
 We always have:
 
 ```c++
@@ -57,12 +57,12 @@ It is possible to use regular assertions in an ```MPI_TEST_CASE```. MPI-specific
 
 ## The main entry points and mpi reporters
 
-You need to launch the unit tests with an ```mpirun``` command:
+You need to launch the unit tests with an ```mpirun``` or ```mpiexec``` command:
 ```
 mpirun -np 2 unit_test_executable.exe
 ```
 
-```MPI_Init``` should be called before running the unit tests. Also, using the default console reporter will result in each process writing everything in the same place, which is not what we want. Two reporters are provided and can be enabled. A complete ```main()``` would be:
+```doctest::mpi_init_thread()``` must be called before running the unit tests, and ```doctest::mpi_finalize()``` at the end of the program. Also, using the default console reporter will result in each process writing everything in the same place, which is not what we want. Two reporters are provided and can be enabled. A complete ```main()``` would be:
 
 
 ```c++
@@ -71,7 +71,7 @@ mpirun -np 2 unit_test_executable.exe
 #include "doctest/extensions/doctest_mpi.h"
 
 int main(int argc, char** argv) {
-  MPI_Init(&argc, &argv);
+  doctest::mpi_init_thread(argc,argv,MPI_THREAD_MULTIPLE); // Or any MPI thread level
 
   doctest::Context ctx;
   ctx.setOption("reporters", "MpiConsoleReporter");
@@ -81,7 +81,7 @@ int main(int argc, char** argv) {
 
   int test_result = ctx.run();
 
-  MPI_Finalize();
+  doctest::mpi_finalize();
 
   return test_result;
 }
@@ -103,7 +103,7 @@ std_e_mpi_unit_tests
 [doctest] run with "--help" for options
 ===============================================================================
 path/to/test.cpp:30:
-TEST CASE: my test case 
+TEST CASE: my test case
 
 On rank [2] : path/to/test.cpp:35: CHECK( x==-1 ) is NOT correct!
   values: CHECK( 0 == -1 )
@@ -113,11 +113,35 @@ On rank [2] : path/to/test.cpp:35: CHECK( x==-1 ) is NOT correct!
 [doctest] assertions:      2 |      2 passed |      0 failed |
 [doctest] Status: SUCCESS!
 ===============================================================================
-[doctest] glob assertions:      5 |      4 passed |      1 failed |
+[doctest] assertions on all processes:   5 |   4 passed |      1 failed |
 ===============================================================================
-[doctest] fail on rank:     
+[doctest] fail on rank:
     -> On rank [2] with 1 test failed
 [doctest] Status: FAILURE!
+```
+
+If the test executable is launch with less processes than the number of processes required by one test, the test is skipped and marqued as such in the mpi console reporter:
+
+
+```c++
+MPI_TEST_CASE("my_test",3) {
+  // ...
+}
+```
+
+```
+mpirun -np 2 unit_test_executable.exe
+```
+
+```
+===============================================================================
+[doctest] test cases:      1 |      1 passed |      0 failed |      1 skipped
+[doctest] assertions:      1 |      1 passed |      0 failed |
+[doctest] Status: SUCCESS!
+===============================================================================
+[doctest] assertions on all processes:   1 |   1 passed |      0 failed |
+[doctest] WARNING: Skipped 1 test requiring more than 2 MPI processes to run
+===============================================================================
 ```
 
 ### MpiFileReporter
@@ -135,8 +159,6 @@ This feature is provided to unit-test mpi-distributed code. It is **not** a way 
 
  * Pass ```s``` member variable of ```ConsoleReporter``` as an argument to member functions so we can use them with another object (would help to factorize ```MPIConsoleReporter```)
  * Only MPI_CHECK tested. MPI_REQUIRE, exception handling: nothing tested
- * If the number of processes is not enough, prints the correct message, but then deadlocks (comes from ```MPI_Probe``` in ```MpiConsoleReporter```)
- * [[maybe_unused]] is C++17
  * More testing, automatic testing
  * Packaging: create a new target ```mpi_doctest```? (probably cleaner to depend explicitly on MPI for mpi/doctest.h)
  * Later, maybe: have a general mechanism to represent assertions so we can separate the report format (console, xml, junit...) from the reporting strategy (sequential vs. MPI)
