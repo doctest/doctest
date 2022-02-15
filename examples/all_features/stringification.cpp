@@ -36,6 +36,13 @@ TEST_CASE("operator<<") {
 
 #include "header.h"
 
+// std::move is broken with VS <= 15
+#if !defined(_MSC_VER) || _MSC_VER <= 1900
+#define MOVE(...) __VA_ARGS__
+#else
+#define MOVE std::move
+#endif
+
 TEST_CASE("no headers") {
     char chs[] = { '1', 'a', 's' };
     MESSAGE(chs); CHECK(chs == nullptr);
@@ -43,7 +50,7 @@ TEST_CASE("no headers") {
 
     int ints[] = { 0, 1, 1, 2, 3, 5, 8, 13 };
     MESSAGE(ints); CHECK(ints == nullptr);
-    MESSAGE(std::move(ints));
+    MESSAGE(MOVE(ints));
 
     char* cptr = reinterpret_cast<char*>(ints + 4);
     const char* ccptr = const_cast<const char*>(cptr);
