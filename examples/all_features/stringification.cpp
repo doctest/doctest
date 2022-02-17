@@ -22,7 +22,15 @@ namespace N {
     static std::ostream& operator<<(std::ostream& os, const C&) { return os << "C"; }
 }
 
+#ifdef _MSC_VER
+// Seems like MSVS2015 is too stupid to figure out that this function is actually used
+__pragma(warning(push))
+__pragma(warning(disable : 4505))
+#endif
 static std::ostream& operator<<(std::ostream& os, const N::A&) { return os << "A"; }
+#ifdef _MSC_VER
+__pragma(warning(pop))
+#endif
 
 #include <doctest/doctest.h>
 
