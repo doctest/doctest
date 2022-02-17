@@ -912,11 +912,39 @@ namespace detail {
     template <typename T>
     struct deferred_false : types::false_type { };
 
+// MSVS 2015 :(
+#if defined(_MSC_VER) && _MSC_VER <= 1900
     template <typename T, typename = void>
-    struct has_insertion_operator : types::false_type { };
+    struct has_global_insertion_operator : types::false_type { };
 
     template <typename T>
-    struct has_insertion_operator<T, decltype(operator<<(declval<std::ostream&>(), declval<const T&>()), void())> : types::true_type { };
+    struct has_global_insertion_operator<T, decltype(::operator<<(declval<std::ostream&>(), declval<const T&>()), void())> : types::true_type { };
+
+    template <typename T, typename = void>
+    struct has_insertion_operator { static DOCTEST_CONSTEXPR bool value = has_global_insertion_operator<T>::value; };
+
+    template <typename T, bool global>
+    struct insert_hack;
+
+    template <typename T>
+    struct insert_hack<T, true> {
+        static void insert(std::ostream& os, const T& t) { ::operator<<(os, t); }
+    };
+
+    template <typename T>
+    struct insert_hack<T, false> {
+        static void insert(std::ostream& os, const T& t) { operator<<(os, t); }
+    };
+
+    template <typename T>
+    using insert_hack_t = insert_hack<T, has_global_insertion_operator<T>::value>;
+#else
+    template <typename T, typename = void>
+    struct has_insertion_operator : types::false_type { };
+#endif
+
+template <typename T>
+struct has_insertion_operator<T, decltype(operator<<(declval<std::ostream&>(), declval<const T&>()), void())> : types::true_type { };
 
     DOCTEST_INTERFACE std::ostream* tlssPush();
     DOCTEST_INTERFACE String tlssPop();
@@ -1029,7 +1057,11 @@ namespace detail {
     struct filldata
     {
         static void fill(std::ostream* stream, const T& in) {
-            operator<<(*stream, in);
+#if !defined(_MSC_VER) || _MSC_VER <= 1900
+        insert_hack_t<T>::insert(*stream, in);
+#else
+        operator<<(*stream, in);
+#endif
         }
     };
 
