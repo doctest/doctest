@@ -85,6 +85,13 @@ DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_BEGIN
 #include <cfloat>
 #include <cctype>
 #include <cstdint>
+#if DOCTEST_MSVC >= DOCTEST_COMPILER(19, 20, 0)
+// see this issue on why this is needed: https://github.com/doctest/doctest/issues/183
+#include <string>
+#if DOCTEST_CPLUSPLUS >= 201703
+#include <string_view>
+#endif // C++17
+#endif // VS 2019
 
 #ifdef DOCTEST_PLATFORM_MAC
 #include <sys/types.h>
@@ -799,6 +806,14 @@ namespace detail {
 // NOLINTNEXTLINE(clang-analyzer-cplusplus.NewDeleteLeaks)
 String toString(const char* in) { return String("\"") + (in ? in : "{null string}") + "\""; }
 #endif // DOCTEST_CONFIG_TREAT_CHAR_STAR_AS_STRING
+
+#if DOCTEST_MSVC >= DOCTEST_COMPILER(19, 20, 0)
+// see this issue on why this is needed: https://github.com/doctest/doctest/issues/183
+String toString(const std::string& in) { return in.c_str(); }
+#if DOCTEST_CPLUSPLUS >= 201703
+String toString(const std::string_view& in) { return String(in.data(), in.length()); }
+#endif // C++17
+#endif // VS 2019
 
 String toString(std::nullptr_t) { return "nullptr"; }
 

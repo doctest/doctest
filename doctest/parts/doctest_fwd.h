@@ -65,6 +65,12 @@
 
 // ideas for the version stuff are taken from here: https://github.com/cxxstuff/cxx_detect
 
+#ifdef _MSC_VER
+#define DOCTEST_CPLUSPLUS _MSVC_LANG
+#else
+#define DOCTEST_CPLUSPLUS __cplusplus
+#endif
+
 #define DOCTEST_COMPILER(MAJOR, MINOR, PATCH) ((MAJOR)*10000000 + (MINOR)*100000 + (PATCH))
 
 // GCC/Clang and GCC/MSVC are mutually exclusive, but Clang/MSVC are not because of clang-cl...
@@ -479,6 +485,19 @@ class basic_istream;
 typedef basic_istream<char, char_traits<char>> istream;
 template <class... Types>
 class tuple;
+#if DOCTEST_MSVC >= DOCTEST_COMPILER(19, 20, 0)
+// see this issue on why this is needed: https://github.com/doctest/doctest/issues/183
+template <class Ty>
+class allocator;
+template <class Elem, class Traits, class Alloc>
+class basic_string;
+using string = basic_string<char, char_traits<char>, allocator<char>>;
+#if DOCTEST_CPLUSPLUS >= 201703
+template <class CharT, class Traits>
+class basic_string_view;
+using string_view = basic_string_view<char, char_traits<char>>;
+#endif // C++17
+#endif // VS 2019
 } // namespace std
 
 DOCTEST_MSVC_SUPPRESS_WARNING_POP
@@ -967,6 +986,14 @@ String toString(const DOCTEST_REF_WRAP(T) value) {
 #ifdef DOCTEST_CONFIG_TREAT_CHAR_STAR_AS_STRING
 DOCTEST_INTERFACE String toString(const char* in);
 #endif // DOCTEST_CONFIG_TREAT_CHAR_STAR_AS_STRING
+
+#if DOCTEST_MSVC >= DOCTEST_COMPILER(19, 20, 0)
+// see this issue on why this is needed: https://github.com/doctest/doctest/issues/183
+DOCTEST_INTERFACE String toString(const std::string& in);
+#if DOCTEST_CPLUSPLUS >= 201703
+DOCTEST_INTERFACE String toString(const std::string_view& in);
+#endif // C++17
+#endif // VS 2019
 
 DOCTEST_INTERFACE String toString(std::nullptr_t);
 
@@ -1987,7 +2014,7 @@ int registerReporter(const char* name, int priority, bool isReporter) {
     DOCTEST_CREATE_AND_REGISTER_FUNCTION(DOCTEST_ANONYMOUS(DOCTEST_ANON_FUNC_), decorators)
 
 // for registering tests in classes - requires C++17 for inline variables!
-#if __cplusplus >= 201703L || (DOCTEST_MSVC >= DOCTEST_COMPILER(19, 12, 0) && _MSVC_LANG >= 201703L)
+#if DOCTEST_CPLUSPLUS >= 201703L
 #define DOCTEST_TEST_CASE_CLASS(decorators)                                                        \
     DOCTEST_CREATE_AND_REGISTER_FUNCTION_IN_CLASS(DOCTEST_ANONYMOUS(DOCTEST_ANON_FUNC_),           \
                                                   DOCTEST_ANONYMOUS(DOCTEST_ANON_PROXY_),          \
