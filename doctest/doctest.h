@@ -1057,7 +1057,7 @@ namespace detail {
     struct filldata
     {
         static void fill(std::ostream* stream, const T& in) {
-#if !defined(_MSC_VER) || _MSC_VER <= 1900
+#if defined(_MSC_VER) && _MSC_VER <= 1900
         insert_hack_t<T>::insert(*stream, in);
 #else
         operator<<(*stream, in);
