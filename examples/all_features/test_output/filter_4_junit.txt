@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+  <testsuite name="all_features" errors="0" failures="0" tests="0">
+    <testcase classname="subcases.cpp" name="with a funnier name\:/with the funniest name\," status="run"/>
+    <testcase classname="subcases.cpp" name="with a funnier name\:/with a slightly funny name :" status="run"/>
+  </testsuite>
+</testsuites>
+Program code.

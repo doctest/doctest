@@ -27,7 +27,14 @@ DEEPEST SUBCASE STACK REACHED (DIFFERENT FROM THE CURRENT ONE):
 subcases.cpp(0): MESSAGE: lala
 
 ===============================================================================
-[doctest] test cases: 7 | 7 passed | 0 failed |
+subcases.cpp(0):
+TEST SUITE: with a funny name,
+TEST CASE:  without a funny name:
+
+subcases.cpp(0): MESSAGE: Nooo
+
+===============================================================================
+[doctest] test cases: 9 | 9 passed | 0 failed |
 [doctest] assertions: 0 | 0 passed | 0 failed |
 [doctest] Status: SUCCESS!
 Program code.
