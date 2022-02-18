@@ -89,7 +89,7 @@ doctest_add_test(NAME filter_1    ${common_args} -ts=none) # should filter out a
 # -order-by=name to avoid different output depending on the compiler used. See https://github.com/doctest/doctest/issues/287
 doctest_add_test(NAME filter_2        COMMAND $<TARGET_FILE:all_features>   -tse=* -nv -order-by=name) # should filter out all + print skipped
 doctest_add_test(NAME filter_3        ${common_args} -sc=from*,sc* -sce=sc2 -sf=*subcases*) # enter a specific subcase - sc1
-doctest_add_test(NAME filter_4        ${common_args} -ts=*\\, -tc=*\\: -sc=*\\,,*:) # escape stuff
+doctest_add_test(NAME filter_4        ${common_args} -ts=*\\, -tc=*\\: -sc=*\\\\\\,,*:) # escape stuff
 doctest_add_test(NAME order_1         ${common_args} -ob=suite -ns          -sf=*test_cases_and_suites*)
 doctest_add_test(NAME order_2         ${common_args} -ob=name               -sf=*test_cases_and_suites*)
 doctest_add_test(NAME order_3         ${common_args} -ob=rand               -sfe=*) # exclude everything for no output
