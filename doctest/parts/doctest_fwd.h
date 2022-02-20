@@ -494,6 +494,8 @@ DOCTEST_MSVC_SUPPRESS_WARNING_POP
 
 namespace doctest {
 
+class Contains;
+
 DOCTEST_INTERFACE extern bool is_running_in_test;
 
 // A 24 byte string class (can be as small as 17 for x64 and 13 for x86) that can hold strings with length
@@ -576,12 +578,21 @@ public:
 
     int compare(const char* other, bool no_case = false) const;
     int compare(const String& other, bool no_case = false) const;
+    const char *compare(const Contains& other) const;
+};
+
+class DOCTEST_INTERFACE Contains {
+public:
+    Contains(const char* string);
+
+    String string;
 };
 
 DOCTEST_INTERFACE String operator+(const String& lhs, const String& rhs);
 
 DOCTEST_INTERFACE bool operator==(const String& lhs, const String& rhs);
 DOCTEST_INTERFACE bool operator!=(const String& lhs, const String& rhs);
+DOCTEST_INTERFACE bool operator!=(const String& lhs, const Contains& rhs);
 DOCTEST_INTERFACE bool operator<(const String& lhs, const String& rhs);
 DOCTEST_INTERFACE bool operator>(const String& lhs, const String& rhs);
 DOCTEST_INTERFACE bool operator<=(const String& lhs, const String& rhs);
@@ -743,7 +754,8 @@ struct DOCTEST_INTERFACE AssertData
     // for specific exception-related asserts
     bool        m_threw_as;
     const char* m_exception_type;
-    const char* m_exception_string;
+    String      m_exception_string;
+    bool        m_contains;
 };
 
 struct DOCTEST_INTERFACE MessageData
@@ -1517,6 +1529,9 @@ DOCTEST_CLANG_SUPPRESS_WARNING_POP
     {
         ResultBuilder(assertType::Enum at, const char* file, int line, const char* expr,
                       const char* exception_type = "", const char* exception_string = "");
+
+        ResultBuilder(assertType::Enum at, const char* file, int line, const char* expr,
+                      const char* exception_type, Contains exception_string);
 
         void setResult(const Result& res);
 

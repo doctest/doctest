@@ -497,6 +497,8 @@ DOCTEST_MSVC_SUPPRESS_WARNING_POP
 
 namespace doctest {
 
+class Contains;
+
 DOCTEST_INTERFACE extern bool is_running_in_test;
 
 // A 24 byte string class (can be as small as 17 for x64 and 13 for x86) that can hold strings with length
@@ -579,12 +581,21 @@ public:
 
     int compare(const char* other, bool no_case = false) const;
     int compare(const String& other, bool no_case = false) const;
+    const char *compare(const Contains& other) const;
+};
+
+class DOCTEST_INTERFACE Contains {
+public:
+    Contains(const char* string);
+
+    String string;
 };
 
 DOCTEST_INTERFACE String operator+(const String& lhs, const String& rhs);
 
 DOCTEST_INTERFACE bool operator==(const String& lhs, const String& rhs);
 DOCTEST_INTERFACE bool operator!=(const String& lhs, const String& rhs);
+DOCTEST_INTERFACE bool operator!=(const String& lhs, const Contains& rhs);
 DOCTEST_INTERFACE bool operator<(const String& lhs, const String& rhs);
 DOCTEST_INTERFACE bool operator>(const String& lhs, const String& rhs);
 DOCTEST_INTERFACE bool operator<=(const String& lhs, const String& rhs);
@@ -746,7 +757,8 @@ struct DOCTEST_INTERFACE AssertData
     // for specific exception-related asserts
     bool        m_threw_as;
     const char* m_exception_type;
-    const char* m_exception_string;
+    String      m_exception_string;
+    bool        m_contains;
 };
 
 struct DOCTEST_INTERFACE MessageData
@@ -1520,6 +1532,9 @@ DOCTEST_CLANG_SUPPRESS_WARNING_POP
     {
         ResultBuilder(assertType::Enum at, const char* file, int line, const char* expr,
                       const char* exception_type = "", const char* exception_string = "");
+
+        ResultBuilder(assertType::Enum at, const char* file, int line, const char* expr,
+                      const char* exception_type, Contains exception_string);
 
         void setResult(const Result& res);
 
@@ -3640,12 +3655,21 @@ int String::compare(const String& other, bool no_case) const {
     return compare(other.c_str(), no_case);
 }
 
+const char *String::compare(const Contains& other) const {
+    return strstr(c_str(), other.string.c_str());
+}
+
+Contains::Contains(const char* in){
+    string = String(in);
+}
+
 // NOLINTNEXTLINE(clang-analyzer-cplusplus.NewDeleteLeaks)
 String operator+(const String& lhs, const String& rhs) { return  String(lhs) += rhs; }
 
 // clang-format off
 bool operator==(const String& lhs, const String& rhs) { return lhs.compare(rhs) == 0; }
 bool operator!=(const String& lhs, const String& rhs) { return lhs.compare(rhs) != 0; }
+bool operator!=(const String& lhs, const Contains& rhs) { return lhs.compare(rhs) == nullptr; }
 bool operator< (const String& lhs, const String& rhs) { return lhs.compare(rhs) < 0; }
 bool operator> (const String& lhs, const String& rhs) { return lhs.compare(rhs) > 0; }
 bool operator<=(const String& lhs, const String& rhs) { return (lhs != rhs) ? lhs.compare(rhs) < 0 : true; }
@@ -4718,7 +4742,27 @@ namespace detail {
         m_threw            = false;
         m_threw_as         = false;
         m_exception_type   = exception_type;
-        m_exception_string = exception_string;
+        m_exception_string = String(exception_string);
+        m_contains         = false;
+#if DOCTEST_MSVC
+        if(m_expr[0] == ' ') // this happens when variadic macros are disabled under MSVC
+            ++m_expr;
+#endif // MSVC
+    }
+
+    ResultBuilder::ResultBuilder(assertType::Enum at, const char* file, int line, const char* expr,
+                                 const char* exception_type, Contains exception_string) {
+        m_test_case        = g_cs->currentTest;
+        m_at               = at;
+        m_file             = file;
+        m_line             = line;
+        m_expr             = expr;
+        m_failed           = true;
+        m_threw            = false;
+        m_threw_as         = false;
+        m_exception_type   = exception_type;
+        m_exception_string = exception_string.string;
+        m_contains         = true;
 #if DOCTEST_MSVC
         if(m_expr[0] == ' ') // this happens when variadic macros are disabled under MSVC
             ++m_expr;
@@ -4739,11 +4783,11 @@ namespace detail {
         if(m_at & assertType::is_throws) { //!OCLINT bitwise operator in conditional
             m_failed = !m_threw;
         } else if((m_at & assertType::is_throws_as) && (m_at & assertType::is_throws_with)) { //!OCLINT
-            m_failed = !m_threw_as || (m_exception != m_exception_string);
+            m_failed = !m_threw_as || ( m_contains ? m_exception != Contains(m_exception_string.c_str()) : m_exception != String(m_exception_string));
         } else if(m_at & assertType::is_throws_as) { //!OCLINT bitwise operator in conditional
             m_failed = !m_threw_as;
         } else if(m_at & assertType::is_throws_with) { //!OCLINT bitwise operator in conditional
-            m_failed = m_exception != m_exception_string;
+            m_failed = ( m_contains ? m_exception != Contains(m_exception_string.c_str()) : m_exception != String(m_exception_string));
         } else if(m_at & assertType::is_nothrow) { //!OCLINT bitwise operator in conditional
             m_failed = m_threw;
         }
@@ -5416,7 +5460,7 @@ namespace {
             if(rb.m_at & assertType::is_throws_as)
                 xml.scopedElement("ExpectedException").writeText(rb.m_exception_type);
             if(rb.m_at & assertType::is_throws_with)
-                xml.scopedElement("ExpectedExceptionString").writeText(rb.m_exception_string);
+                xml.scopedElement("ExpectedExceptionString").writeText(rb.m_exception_string.c_str());
             if((rb.m_at & assertType::is_normal) && !rb.m_threw)
                 xml.scopedElement("Expanded").writeText(rb.m_decomp.c_str());
 
