@@ -38,8 +38,11 @@ TEST_CASE("exceptions-related macros") {
     CHECK_THROWS_AS(throw_if(false, 0), int); // fails
 
     CHECK_THROWS_WITH(throw_if(true, "whops!"), "whops! no match!"); // fails
+    CHECK_THROWS_WITH(throw_if(true, "whops! does it match?"), doctest::Contains("whops!"));
+    CHECK_THROWS_WITH(throw_if(true, "whops! does it match?"), doctest::Contains("whops! no match!")); // fails
     CHECK_THROWS_WITH_AS(throw_if(true, "whops!"), "whops! no match!", bool); // fails
     CHECK_THROWS_WITH_AS(throw_if(true, "whops!"), "whops!", int); // fails
+    CHECK_THROWS_WITH_AS(throw_if(true, "whops! does it match?"), doctest::Contains("whops! no match!"), int); // fails
 
     CHECK_NOTHROW(throw_if(true, 0)); // fails
     CHECK_NOTHROW(throw_if(false, 0));

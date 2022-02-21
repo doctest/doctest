@@ -20,9 +20,13 @@ assertion_macros.cpp(0): ERROR: CHECK_THROWS_AS( throw_if(false, 0), int ) did N
 
 assertion_macros.cpp(0): ERROR: CHECK_THROWS_WITH( throw_if(true, "whops!"), "whops! no match!" ) threw a DIFFERENT exception: "whops!"
 
+assertion_macros.cpp(0): ERROR: CHECK_THROWS_WITH( throw_if(true, "whops! does it match?"), "whops! no match!" ) threw a DIFFERENT exception: "whops! does it match?"
+
 assertion_macros.cpp(0): ERROR: CHECK_THROWS_WITH_AS( throw_if(true, "whops!"), "whops! no match!", bool ) threw a DIFFERENT exception! (contents: "whops!")
 
 assertion_macros.cpp(0): ERROR: CHECK_THROWS_WITH_AS( throw_if(true, "whops!"), "whops!", int ) threw a DIFFERENT exception! (contents: "whops!")
+
+assertion_macros.cpp(0): ERROR: CHECK_THROWS_WITH_AS( throw_if(true, "whops! does it match?"), "whops! no match!", int ) threw a DIFFERENT exception! (contents: "whops! does it match?")
 
 assertion_macros.cpp(0): ERROR: CHECK_NOTHROW( throw_if(true, 0) ) THREW exception: "0"
 
@@ -248,6 +252,6 @@ assertion_macros.cpp(0): ERROR: CHECK_THROWS_WITH( throw_if(true, 2), "1" ) thre
 
 ===============================================================================
 [doctest] test cases: 23 |  4 passed | 19 failed |
-[doctest] assertions: 92 | 44 passed | 48 failed |
+[doctest] assertions: 95 | 45 passed | 50 failed |
 [doctest] Status: FAILURE!
 Program code.
