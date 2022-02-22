@@ -670,12 +670,12 @@ int String::compare(const String& other, bool no_case) const {
     return compare(other.c_str(), no_case);
 }
 
-const char *String::compare(const Contains& other) const {
-    return strstr(c_str(), other.string.c_str());
-}
-
 Contains::Contains(const char* in){
     string = String(in);
+}
+
+bool Contains::checkWith(const String& full_string) const {
+    return strstr(full_string.c_str(), string.c_str()) != nullptr;
 }
 
 // NOLINTNEXTLINE(clang-analyzer-cplusplus.NewDeleteLeaks)
@@ -683,8 +683,9 @@ String operator+(const String& lhs, const String& rhs) { return  String(lhs) += 
 
 // clang-format off
 bool operator==(const String& lhs, const String& rhs) { return lhs.compare(rhs) == 0; }
+bool operator==(const String& lhs, const Contains& rhs) { return rhs.checkWith(lhs); }
 bool operator!=(const String& lhs, const String& rhs) { return lhs.compare(rhs) != 0; }
-bool operator!=(const String& lhs, const Contains& rhs) { return lhs.compare(rhs) == nullptr; }
+bool operator!=(const String& lhs, const Contains& rhs) { return !rhs.checkWith(lhs); }
 bool operator< (const String& lhs, const String& rhs) { return lhs.compare(rhs) < 0; }
 bool operator> (const String& lhs, const String& rhs) { return lhs.compare(rhs) > 0; }
 bool operator<=(const String& lhs, const String& rhs) { return (lhs != rhs) ? lhs.compare(rhs) < 0 : true; }
@@ -1747,7 +1748,7 @@ namespace {
 } // namespace
 namespace detail {
     ResultBuilder::ResultBuilder(assertType::Enum at, const char* file, int line, const char* expr,
-                                 const char* exception_type, const char* exception_string) {
+                                 const char* exception_type, const String& exception_string) {
         m_test_case        = g_cs->currentTest;
         m_at               = at;
         m_file             = file;
@@ -1757,7 +1758,7 @@ namespace detail {
         m_threw            = false;
         m_threw_as         = false;
         m_exception_type   = exception_type;
-        m_exception_string = String(exception_string);
+        m_exception_string.string = exception_string;
         m_contains         = false;
 #if DOCTEST_MSVC
         if(m_expr[0] == ' ') // this happens when variadic macros are disabled under MSVC
@@ -1766,7 +1767,7 @@ namespace detail {
     }
 
     ResultBuilder::ResultBuilder(assertType::Enum at, const char* file, int line, const char* expr,
-                                 const char* exception_type, Contains exception_string) {
+                                 const char* exception_type, const Contains& exception_string) {
         m_test_case        = g_cs->currentTest;
         m_at               = at;
         m_file             = file;
@@ -1776,7 +1777,7 @@ namespace detail {
         m_threw            = false;
         m_threw_as         = false;
         m_exception_type   = exception_type;
-        m_exception_string = exception_string.string;
+        m_exception_string.contains = exception_string;
         m_contains         = true;
 #if DOCTEST_MSVC
         if(m_expr[0] == ' ') // this happens when variadic macros are disabled under MSVC
@@ -1798,11 +1799,11 @@ namespace detail {
         if(m_at & assertType::is_throws) { //!OCLINT bitwise operator in conditional
             m_failed = !m_threw;
         } else if((m_at & assertType::is_throws_as) && (m_at & assertType::is_throws_with)) { //!OCLINT
-            m_failed = !m_threw_as || ( m_contains ? m_exception != Contains(m_exception_string.c_str()) : m_exception != String(m_exception_string));
+            m_failed = !m_threw_as || ( m_contains ? m_exception != m_exception_string.contains : m_exception != m_exception_string.string);
         } else if(m_at & assertType::is_throws_as) { //!OCLINT bitwise operator in conditional
             m_failed = !m_threw_as;
         } else if(m_at & assertType::is_throws_with) { //!OCLINT bitwise operator in conditional
-            m_failed = ( m_contains ? m_exception != Contains(m_exception_string.c_str()) : m_exception != String(m_exception_string));
+            m_failed = ( m_contains ? m_exception != m_exception_string.contains : m_exception != m_exception_string.string);
         } else if(m_at & assertType::is_nothrow) { //!OCLINT bitwise operator in conditional
             m_failed = m_threw;
         }
@@ -2475,7 +2476,7 @@ namespace {
             if(rb.m_at & assertType::is_throws_as)
                 xml.scopedElement("ExpectedException").writeText(rb.m_exception_type);
             if(rb.m_at & assertType::is_throws_with)
-                xml.scopedElement("ExpectedExceptionString").writeText(rb.m_exception_string.c_str());
+                xml.scopedElement("ExpectedExceptionString").writeText(rb.m_contains ? rb.m_exception_string.contains.string.c_str() : rb.m_exception_string.string.c_str());
             if((rb.m_at & assertType::is_normal) && !rb.m_threw)
                 xml.scopedElement("Expanded").writeText(rb.m_decomp.c_str());
 
@@ -2521,7 +2522,8 @@ namespace {
         } else if((rb.m_at & assertType::is_throws_as) &&
                     (rb.m_at & assertType::is_throws_with)) { //!OCLINT
             s << Color::Cyan << assertString(rb.m_at) << "( " << rb.m_expr << ", \""
-                << rb.m_exception_string << "\", " << rb.m_exception_type << " ) " << Color::None;
+                << (rb.m_contains ? rb.m_exception_string.contains.string.c_str() : rb.m_exception_string.string.c_str())
+                << "\", " << rb.m_exception_type << " ) " << Color::None;
             if(rb.m_threw) {
                 if(!rb.m_failed) {
                     s << "threw as expected!\n";
@@ -2542,7 +2544,8 @@ namespace {
         } else if(rb.m_at &
                     assertType::is_throws_with) { //!OCLINT bitwise operator in conditional
             s << Color::Cyan << assertString(rb.m_at) << "( " << rb.m_expr << ", \""
-                << rb.m_exception_string << "\" ) " << Color::None
+                << (rb.m_contains ? rb.m_exception_string.contains.string.c_str() : rb.m_exception_string.string.c_str())
+                << "\" ) " << Color::None
                 << (rb.m_threw ? (!rb.m_failed ? "threw as expected!" :
                                                 "threw a DIFFERENT exception: ") :
                                 "did NOT throw at all!")

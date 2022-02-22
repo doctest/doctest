@@ -494,8 +494,6 @@ DOCTEST_MSVC_SUPPRESS_WARNING_POP
 
 namespace doctest {
 
-class Contains;
-
 DOCTEST_INTERFACE extern bool is_running_in_test;
 
 // A 24 byte string class (can be as small as 17 for x64 and 13 for x86) that can hold strings with length
@@ -578,12 +576,13 @@ public:
 
     int compare(const char* other, bool no_case = false) const;
     int compare(const String& other, bool no_case = false) const;
-    const char *compare(const Contains& other) const;
 };
 
 class DOCTEST_INTERFACE Contains {
 public:
-    Contains(const char* string);
+    explicit Contains(const char* string);
+
+    bool checkWith(const String& other) const;
 
     String string;
 };
@@ -591,6 +590,7 @@ public:
 DOCTEST_INTERFACE String operator+(const String& lhs, const String& rhs);
 
 DOCTEST_INTERFACE bool operator==(const String& lhs, const String& rhs);
+DOCTEST_INTERFACE bool operator==(const String& lhs, const Contains& rhs);
 DOCTEST_INTERFACE bool operator!=(const String& lhs, const String& rhs);
 DOCTEST_INTERFACE bool operator!=(const String& lhs, const Contains& rhs);
 DOCTEST_INTERFACE bool operator<(const String& lhs, const String& rhs);
@@ -736,6 +736,15 @@ struct DOCTEST_INTERFACE TestCaseData
 
 struct DOCTEST_INTERFACE AssertData
 {
+    union StringContains {
+        String string;
+        Contains contains;
+
+        StringContains()
+            : string("") {}
+
+        ~StringContains() {}
+    };
     // common - for all asserts
     const TestCaseData* m_test_case;
     assertType::Enum    m_at;
@@ -752,10 +761,18 @@ struct DOCTEST_INTERFACE AssertData
     String m_decomp;
 
     // for specific exception-related asserts
-    bool        m_threw_as;
-    const char* m_exception_type;
-    String      m_exception_string;
-    bool        m_contains;
+    bool           m_threw_as;
+    const char*    m_exception_type;
+    StringContains m_exception_string;
+    bool           m_contains;
+
+    ~AssertData() {
+        if (m_contains) {
+            m_exception_string.contains.~Contains();
+        } else {
+            m_exception_string.string.~String();
+        }
+   }
 };
 
 struct DOCTEST_INTERFACE MessageData
@@ -1528,10 +1545,10 @@ DOCTEST_CLANG_SUPPRESS_WARNING_POP
     struct DOCTEST_INTERFACE ResultBuilder : public AssertData
     {
         ResultBuilder(assertType::Enum at, const char* file, int line, const char* expr,
-                      const char* exception_type = "", const char* exception_string = "");
+                      const char* exception_type = "", const String& exception_string = "");
 
         ResultBuilder(assertType::Enum at, const char* file, int line, const char* expr,
-                      const char* exception_type, Contains exception_string);
+                      const char* exception_type, const Contains& exception_string);
 
         void setResult(const Result& res);
 
