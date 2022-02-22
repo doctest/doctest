@@ -384,7 +384,7 @@
           reached!
         </Text>
       </Message>
-      <OverallResultsAsserts successes="0" failures="11" test_case_success="false"/>
+      <OverallResultsAsserts successes="3" failures="11" test_case_success="false"/>
     </TestCase>
     <TestCase name="REQUIRE level of asserts fail and abort the test case - 1" filename="assertion_macros.cpp" line="0">
       <Expression success="false" type="REQUIRE" filename="assertion_macros.cpp" line="0">
@@ -684,7 +684,7 @@
       <OverallResultsAsserts successes="0" failures="9" test_case_success="false"/>
     </TestCase>
   </TestSuite>
-  <OverallResultsAsserts successes="45" failures="50"/>
+  <OverallResultsAsserts successes="48" failures="50"/>
   <OverallResultsTestCases successes="4" failures="19"/>
 </doctest>
 Program code.

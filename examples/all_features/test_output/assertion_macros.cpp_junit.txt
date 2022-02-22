@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <testsuites>
-  <testsuite name="all_features" errors="0" failures="63" tests="95">
+  <testsuite name="all_features" errors="0" failures="63" tests="98">
     <testcase classname="assertion_macros.cpp" name="normal macros" status="run">
       <failure type="CHECK">
 assertion_macros.cpp(0):
