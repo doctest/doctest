@@ -580,9 +580,14 @@ public:
 
 class DOCTEST_INTERFACE Contains {
 public:
-    explicit Contains(const char* string);\
 
+    Contains();
     ~Contains();
+    
+    explicit Contains(const char* string);
+    
+    explicit Contains(const Contains& other);
+    Contains& operator=(const Contains& other);
 
     bool checkWith(const String& other) const;
 

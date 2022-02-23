@@ -670,12 +670,25 @@ int String::compare(const String& other, bool no_case) const {
     return compare(other.c_str(), no_case);
 }
 
-Contains::Contains(const char* in){
-    string = String(in);
+
+Contains::Contains() {
+    string = "";
 }
 
 Contains::~Contains(){
     string.~String();
+}
+
+Contains::Contains(const char* in){
+    string = String(in);
+}
+
+Contains::Contains(const Contains& other)
+: string(other.string) {}
+
+Contains& Contains::operator=(const Contains& other) {
+    string = other.string;
+    return *this;
 }
 
 bool Contains::checkWith(const String& full_string) const {
