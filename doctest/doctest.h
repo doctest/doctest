@@ -765,6 +765,23 @@ struct DOCTEST_INTERFACE AssertData
         }
     } m_exception_string = { String("") };
     bool           m_contains;
+
+   // AssertData(const AssertData& assert_data) 
+   // : m_contains(assert_data.m_contains) {
+   //     if(assert_data.m_contains) {
+   //         m_exception_string.contains = assert_data.m_exception_string.contains;
+   //     } else {
+   //         m_exception_string.string = assert_data.m_exception_string.string;
+   //     }
+   //}
+
+    ~AssertData() {
+        if (m_contains) {
+            m_exception_string.contains.~Contains();
+        } else {
+            m_exception_string.string.~String();
+        }
+    }
 };
 
 struct DOCTEST_INTERFACE MessageData
