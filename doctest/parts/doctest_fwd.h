@@ -736,15 +736,6 @@ struct DOCTEST_INTERFACE TestCaseData
 
 struct DOCTEST_INTERFACE AssertData
 {
-    union StringContains {
-        String string;
-        Contains contains;
-
-        StringContains()
-            : string("") {}
-
-        ~StringContains() {}
-    };
     // common - for all asserts
     const TestCaseData* m_test_case;
     assertType::Enum    m_at;
@@ -763,16 +754,14 @@ struct DOCTEST_INTERFACE AssertData
     // for specific exception-related asserts
     bool           m_threw_as;
     const char*    m_exception_type;
-    StringContains m_exception_string;
-    bool           m_contains;
+    union StringContains {
+        String string;
+        Contains contains;
 
-    ~AssertData() {
-        if (m_contains) {
-            m_exception_string.contains.~Contains();
-        } else {
-            m_exception_string.string.~String();
+        ~StringContains() {
         }
-   }
+    } m_exception_string = { String("") };
+    bool           m_contains;
 };
 
 struct DOCTEST_INTERFACE MessageData
