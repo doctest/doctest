@@ -674,6 +674,10 @@ Contains::Contains(const char* in){
     string = String(in);
 }
 
+Contains::~Contains(){
+    string.~String();
+}
+
 bool Contains::checkWith(const String& full_string) const {
     return strstr(full_string.c_str(), string.c_str()) != nullptr;
 }

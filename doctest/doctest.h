@@ -583,7 +583,9 @@ public:
 
 class DOCTEST_INTERFACE Contains {
 public:
-    explicit Contains(const char* string);
+    explicit Contains(const char* string);\
+
+    ~Contains();
 
     bool checkWith(const String& other) const;
 
@@ -3680,6 +3682,10 @@ int String::compare(const String& other, bool no_case) const {
 
 Contains::Contains(const char* in){
     string = String(in);
+}
+
+Contains::~Contains(){
+    string.~String();
 }
 
 bool Contains::checkWith(const String& full_string) const {
