@@ -580,14 +580,9 @@ public:
 
 class DOCTEST_INTERFACE Contains {
 public:
-
-    Contains();
-    ~Contains();
-    
     explicit Contains(const char* string);
-    
-    explicit Contains(const Contains& other);
-    Contains& operator=(const Contains& other);
+
+    ~Contains();
 
     bool checkWith(const String& other) const;
 
@@ -761,31 +756,15 @@ struct DOCTEST_INTERFACE AssertData
     // for specific exception-related asserts
     bool           m_threw_as;
     const char*    m_exception_type;
-    union StringContains {
+    struct StringContains {
         String string;
         Contains contains;
 
-        ~StringContains() {
-        }
-    } m_exception_string = { String("") };
+        StringContains()
+            : string(""), contains("") {}
+
+    } m_exception_string;
     bool           m_contains;
-
-   // AssertData(const AssertData& assert_data) 
-   // : m_contains(assert_data.m_contains) {
-   //     if(assert_data.m_contains) {
-   //         m_exception_string.contains = assert_data.m_exception_string.contains;
-   //     } else {
-   //         m_exception_string.string = assert_data.m_exception_string.string;
-   //     }
-   //}
-
-    ~AssertData() {
-        if (m_contains) {
-            m_exception_string.contains.~Contains();
-        } else {
-            m_exception_string.string.~String();
-        }
-    }
 };
 
 struct DOCTEST_INTERFACE MessageData

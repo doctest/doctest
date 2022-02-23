@@ -583,14 +583,9 @@ public:
 
 class DOCTEST_INTERFACE Contains {
 public:
-
-    Contains();
-    ~Contains();
-    
     explicit Contains(const char* string);
-    
-    explicit Contains(const Contains& other);
-    Contains& operator=(const Contains& other);
+
+    ~Contains();
 
     bool checkWith(const String& other) const;
 
@@ -764,31 +759,16 @@ struct DOCTEST_INTERFACE AssertData
     // for specific exception-related asserts
     bool           m_threw_as;
     const char*    m_exception_type;
-    union StringContains {
+    struct StringContains {
         String string;
         Contains contains;
 
-        ~StringContains() {
-        }
-    } m_exception_string = { String("") };
+        StringContains()
+            : string(""), contains("") {}
+
+        //~StringContains() {}
+    } m_exception_string;
     bool           m_contains;
-
-   // AssertData(const AssertData& assert_data) 
-   // : m_contains(assert_data.m_contains) {
-   //     if(assert_data.m_contains) {
-   //         m_exception_string.contains = assert_data.m_exception_string.contains;
-   //     } else {
-   //         m_exception_string.string = assert_data.m_exception_string.string;
-   //     }
-   //}
-
-    ~AssertData() {
-        if (m_contains) {
-            m_exception_string.contains.~Contains();
-        } else {
-            m_exception_string.string.~String();
-        }
-    }
 };
 
 struct DOCTEST_INTERFACE MessageData
@@ -3685,25 +3665,12 @@ int String::compare(const String& other, bool no_case) const {
     return compare(other.c_str(), no_case);
 }
 
-
-Contains::Contains() {
-    string = "";
-}
-
-Contains::~Contains(){
-    string.~String();
-}
-
 Contains::Contains(const char* in){
     string = String(in);
 }
 
-Contains::Contains(const Contains& other)
-: string(other.string) {}
-
-Contains& Contains::operator=(const Contains& other) {
-    string = other.string;
-    return *this;
+Contains::~Contains(){
+    string.~String();
 }
 
 bool Contains::checkWith(const String& full_string) const {
@@ -4789,7 +4756,7 @@ namespace detail {
         m_failed           = true;
         m_threw            = false;
         m_threw_as         = false;
-        m_exception_type   = exception_type;
+        m_exception_type  = exception_type;
         m_exception_string.string = exception_string;
         m_contains         = false;
 #if DOCTEST_MSVC

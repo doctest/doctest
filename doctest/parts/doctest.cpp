@@ -670,25 +670,12 @@ int String::compare(const String& other, bool no_case) const {
     return compare(other.c_str(), no_case);
 }
 
-
-Contains::Contains() {
-    string = "";
-}
-
-Contains::~Contains(){
-    string.~String();
-}
-
 Contains::Contains(const char* in){
     string = String(in);
 }
 
-Contains::Contains(const Contains& other)
-: string(other.string) {}
-
-Contains& Contains::operator=(const Contains& other) {
-    string = other.string;
-    return *this;
+Contains::~Contains(){
+    string.~String();
 }
 
 bool Contains::checkWith(const String& full_string) const {
@@ -1774,7 +1761,7 @@ namespace detail {
         m_failed           = true;
         m_threw            = false;
         m_threw_as         = false;
-        m_exception_type   = exception_type;
+        m_exception_type  = exception_type;
         m_exception_string.string = exception_string;
         m_contains         = false;
 #if DOCTEST_MSVC
