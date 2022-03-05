@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<doctest binary="all_features">
+  <Options order_by="file" rand_seed="324" first="0" last="4294967295" abort_after="0" subcase_filter_levels="2147483647" case_sensitive="false" no_throw="false" no_skip="false"/>
+  <TestSuite name="with a funny name,">
+    <TestCase name="with a funnier name\:" filename="subcases.cpp" line="0">
+      <SubCase name="with the funniest name\," filename="subcases.cpp" line="0">
+        <Message type="WARNING" filename="subcases.cpp" line="0">
+          <Text>
+            Yes!
+          </Text>
+        </Message>
+      </SubCase>
+      <SubCase name="with a slightly funny name :" filename="subcases.cpp" line="0">
+        <Message type="WARNING" filename="subcases.cpp" line="0">
+          <Text>
+            Yep!
+          </Text>
+        </Message>
+      </SubCase>
+      <OverallResultsAsserts successes="0" failures="0" test_case_success="true"/>
+    </TestCase>
+  </TestSuite>
+  <OverallResultsAsserts successes="0" failures="0"/>
+  <OverallResultsTestCases successes="1" failures="0"/>
+</doctest>
+Program code.
