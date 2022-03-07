@@ -194,7 +194,38 @@ TEST CASE:  subcases with changing names
 subcases.cpp(0): MESSAGE: separate msg!
 
 ===============================================================================
-[doctest] test cases:  7 |  3 passed | 4 failed |
+subcases.cpp(0):
+TEST SUITE: with a funny name,
+TEST CASE:  with a funnier name\:
+  with the funniest name\,
+
+subcases.cpp(0): MESSAGE: Yes!
+
+===============================================================================
+subcases.cpp(0):
+TEST SUITE: with a funny name,
+TEST CASE:  with a funnier name\:
+  with a slightly funny name :
+
+subcases.cpp(0): MESSAGE: Yep!
+
+===============================================================================
+subcases.cpp(0):
+TEST SUITE: with a funny name,
+TEST CASE:  with a funnier name\:
+  without a funny name
+
+subcases.cpp(0): MESSAGE: NO!
+
+===============================================================================
+subcases.cpp(0):
+TEST SUITE: with a funny name,
+TEST CASE:  without a funny name:
+
+subcases.cpp(0): MESSAGE: Nooo
+
+===============================================================================
+[doctest] test cases:  9 |  5 passed | 4 failed |
 [doctest] assertions: 25 | 19 passed | 6 failed |
 [doctest] Status: FAILURE!
 Program code.

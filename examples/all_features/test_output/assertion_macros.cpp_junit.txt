@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <testsuites>
-  <testsuite name="all_features" errors="0" failures="61" tests="92">
+  <testsuite name="all_features" errors="0" failures="63" tests="98">
     <testcase classname="assertion_macros.cpp" name="normal macros" status="run">
       <failure type="CHECK">
 assertion_macros.cpp(0):
@@ -36,6 +36,11 @@ assertion_macros.cpp(0):
 CHECK_THROWS_WITH( throw_if(true, "whops!"), "whops! no match!" ) threw a DIFFERENT exception: "whops!"
 
       </failure>
+      <failure type="CHECK_THROWS_WITH">
+assertion_macros.cpp(0):
+CHECK_THROWS_WITH( throw_if(true, "whops! does it match?"), "whops! no match!" ) threw a DIFFERENT exception: "whops! does it match?"
+
+      </failure>
       <failure type="CHECK_THROWS_WITH_AS">
 assertion_macros.cpp(0):
 CHECK_THROWS_WITH_AS( throw_if(true, "whops!"), "whops! no match!", bool ) threw a DIFFERENT exception! (contents: "whops!")
@@ -44,6 +49,11 @@ CHECK_THROWS_WITH_AS( throw_if(true, "whops!"), "whops! no match!", bool ) threw
       <failure type="CHECK_THROWS_WITH_AS">
 assertion_macros.cpp(0):
 CHECK_THROWS_WITH_AS( throw_if(true, "whops!"), "whops!", int ) threw a DIFFERENT exception! (contents: "whops!")
+
+      </failure>
+      <failure type="CHECK_THROWS_WITH_AS">
+assertion_macros.cpp(0):
+CHECK_THROWS_WITH_AS( throw_if(true, "whops! does it match?"), "whops! no match!", int ) threw a DIFFERENT exception! (contents: "whops! does it match?")
 
       </failure>
       <failure type="CHECK_NOTHROW">

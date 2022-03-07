@@ -185,6 +185,8 @@ TEST_CASE("all asserts should fail and show how the objects get stringified") {
     CHECK_NOT_DEFAULT_STR(!doctest::IsNaN<float>(std::numeric_limits<float>::infinity()));
     CHECK_NOT_DEFAULT_STR(doctest::IsNaN<double long>(std::numeric_limits<double long>::quiet_NaN()));
 
+    CHECK("a" == doctest::Contains("aaa"));
+
     // lets see if this exception gets translated
     throw_if(true, bla1);
 }

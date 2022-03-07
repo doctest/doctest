@@ -18,11 +18,6 @@ std::unordered_map<int,mpi_sub_comm> sub_comms_by_size;
 // because there is not enought procs to execute it
 int nb_test_cases_skipped_insufficient_procs = 0;
 
-// Record size of MPI_COMM_WORLD with mpi_comm_world_size()
-// so that it can be compared to the MPI_Comm_size value
-// once MPI_Init_thread has been called
-int world_size_before_init = 1;
-
 
 std::string thread_level_to_string(int thread_lvl);
 int mpi_init_thread(int argc, char *argv[], int required_thread_support);
@@ -42,9 +37,12 @@ int mpi_comm_world_size() {
     #error "Unknown MPI implementation: please submit an issue or a PR to doctest. Meanwhile, you can look at the output of e.g. `mpirun -np 3 env` to search for an environnement variable that contains the size of MPI_COMM_WORLD and extend this code accordingly"
   #endif
   if (size_str==nullptr) return 1; // not launched with mpirun/mpiexec, so assume only one process
-  world_size_before_init = std::stoi(size_str);
-  return world_size_before_init;
+  return std::stoi(size_str);
 }
+
+// Record size of MPI_COMM_WORLD with mpi_comm_world_size()
+int world_size_before_init = mpi_comm_world_size();
+
 
 std::string thread_level_to_string(int thread_lvl) {
   switch (thread_lvl) {
@@ -94,8 +92,8 @@ namespace doctest {
 
 extern std::unordered_map<int,mpi_sub_comm> sub_comms_by_size;
 extern int nb_test_cases_skipped_insufficient_procs;
+extern int world_size_before_init;
 
-int mpi_comm_world_size();
 int mpi_init_thread(int argc, char *argv[], int required_thread_support);
 void mpi_finalize();
 
@@ -115,7 +113,7 @@ void execute_mpi_test_case(F func) {
 
 inline bool
 insufficient_procs(int test_nb_procs) {
-  bool insufficient = test_nb_procs>mpi_comm_world_size();
+  bool insufficient = test_nb_procs>world_size_before_init;
   if (insufficient) {
     ++nb_test_cases_skipped_insufficient_procs;
   }

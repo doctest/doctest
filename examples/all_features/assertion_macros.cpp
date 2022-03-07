@@ -38,8 +38,11 @@ TEST_CASE("exceptions-related macros") {
     CHECK_THROWS_AS(throw_if(false, 0), int); // fails
 
     CHECK_THROWS_WITH(throw_if(true, "whops!"), "whops! no match!"); // fails
+    CHECK_THROWS_WITH(throw_if(true, "whops! does it match?"), doctest::Contains("whops!"));
+    CHECK_THROWS_WITH(throw_if(true, "whops! does it match?"), doctest::Contains("whops! no match!")); // fails
     CHECK_THROWS_WITH_AS(throw_if(true, "whops!"), "whops! no match!", bool); // fails
     CHECK_THROWS_WITH_AS(throw_if(true, "whops!"), "whops!", int); // fails
+    CHECK_THROWS_WITH_AS(throw_if(true, "whops! does it match?"), doctest::Contains("whops! no match!"), int); // fails
 
     CHECK_NOTHROW(throw_if(true, 0)); // fails
     CHECK_NOTHROW(throw_if(false, 0));
@@ -73,6 +76,10 @@ TEST_CASE("WARN level of asserts don't fail the test case") {
     WARN_NOTHROW(throw_if(true, 0));
 
     WARN_EQ(1, 0);
+    doctest::String myStr = doctest::String("Hello world, how are you doing? Well, nice to meet you, Goodbye!");
+    WARN_EQ(myStr, doctest::Contains("Hello"));
+    WARN(myStr == doctest::Contains("Goodbye"));
+    WARN(myStr != doctest::Contains("goodbye"));
     WARN_UNARY(0);
     WARN_UNARY_FALSE(1);
 }
@@ -88,6 +95,10 @@ TEST_CASE("CHECK level of asserts fail the test case but don't abort it") {
     CHECK_NOTHROW(throw_if(true, 0));
 
     CHECK_EQ(1, 0);
+    doctest::String myStr = doctest::String("Hello world, how are you doing? Well, nice to meet you, Goodbye!");
+    CHECK_EQ(myStr, doctest::Contains("Hello"));
+    CHECK(myStr == doctest::Contains("Goodbye"));
+    CHECK(myStr != doctest::Contains("goodbye"));
     CHECK_UNARY(0);
     CHECK_UNARY_FALSE(1);
 
