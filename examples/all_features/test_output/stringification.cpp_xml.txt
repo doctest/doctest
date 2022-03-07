@@ -2,6 +2,24 @@
 <doctest binary="all_features">
   <Options order_by="file" rand_seed="324" first="0" last="4294967295" abort_after="0" subcase_filter_levels="2147483647" case_sensitive="false" no_throw="false" no_skip="false"/>
   <TestSuite>
+    <TestCase name="operator&lt;&lt;" filename="stringification.cpp" line="0">
+      <Message type="WARNING" filename="stringification.cpp" line="0">
+        <Text>
+          A
+        </Text>
+      </Message>
+      <Message type="WARNING" filename="stringification.cpp" line="0">
+        <Text>
+          B
+        </Text>
+      </Message>
+      <Message type="WARNING" filename="stringification.cpp" line="0">
+        <Text>
+          C
+        </Text>
+      </Message>
+      <OverallResultsAsserts successes="0" failures="0" test_case_success="true"/>
+    </TestCase>
     <TestCase name="no headers" filename="stringification.cpp" line="0">
       <Message type="WARNING" filename="stringification.cpp" line="0">
         <Text>
@@ -42,6 +60,11 @@
           [0, 1, 1, 2, 3, 5, 8, 13] == nullptr
         </Expanded>
       </Expression>
+      <Message type="WARNING" filename="stringification.cpp" line="0">
+        <Text>
+          [0, 1, 1, 2, 3, 5, 8, 13]
+        </Text>
+      </Message>
       <Message type="WARNING" filename="stringification.cpp" line="0">
         <Text>
           nullptr
@@ -161,18 +184,10 @@
           MyOtherType: 42 is not really MyOtherType: 666
         </Info>
       </Expression>
-      <Expression success="false" type="CHECK" filename="stringification.cpp" line="0">
-        <Original>
-          "a" == doctest::Contains("aaa")
-        </Original>
-        <Expanded>
-          a == Contains( aaa )
-        </Expanded>
-      </Expression>
       <Exception crash="false">
         MyTypeInherited&lt;int>(5, 4)
       </Exception>
-      <OverallResultsAsserts successes="3" failures="8" test_case_success="false"/>
+      <OverallResultsAsserts successes="3" failures="7" test_case_success="false"/>
     </TestCase>
     <TestCase name="a test case that registers an exception translator for int and then throws one" filename="stringification.cpp" line="0">
       <Exception crash="false">
@@ -181,7 +196,7 @@
       <OverallResultsAsserts successes="0" failures="0" test_case_success="false"/>
     </TestCase>
   </TestSuite>
-  <OverallResultsAsserts successes="5" failures="13"/>
-  <OverallResultsTestCases successes="0" failures="3"/>
+  <OverallResultsAsserts successes="5" failures="12"/>
+  <OverallResultsTestCases successes="1" failures="3"/>
 </doctest>
 Program code.

@@ -85,6 +85,13 @@ DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_BEGIN
 #include <cfloat>
 #include <cctype>
 #include <cstdint>
+#if DOCTEST_MSVC >= DOCTEST_COMPILER(19, 20, 0)
+// see this issue on why this is needed: https://github.com/doctest/doctest/issues/183
+#include <string>
+#if DOCTEST_CPLUSPLUS >= 201703
+#include <string_view>
+#endif // C++17
+#endif // VS 2019
 
 #ifdef DOCTEST_PLATFORM_MAC
 #include <sys/types.h>
@@ -794,37 +801,52 @@ bool SubcaseSignature::operator<(const SubcaseSignature& other) const {
 IContextScope::IContextScope()  = default;
 IContextScope::~IContextScope() = default;
 
-#ifdef DOCTEST_CONFIG_TREAT_CHAR_STAR_AS_STRING
-// NOLINTNEXTLINE(clang-analyzer-cplusplus.NewDeleteLeaks)
-String toString(const char* in) { return String("\"") + (in ? in : "{null string}") + "\""; }
-#endif // DOCTEST_CONFIG_TREAT_CHAR_STAR_AS_STRING
-
-String toString(std::nullptr_t) { return "nullptr"; }
-
-String toString(bool in) { return in ? "true" : "false"; }
-
-String toString(float in) { return toStream(in); }
-String toString(double in) { return toStream(in); }
-String toString(double long in) { return toStream(in); }
-
-String toString(char in) { return toStream(static_cast<signed>(in)); }
-String toString(char signed in) { return toStream(static_cast<signed>(in)); }
-String toString(char unsigned in) { return toStream(static_cast<unsigned>(in)); }
-String toString(short in) { return toStream(in); }
-String toString(short unsigned in) { return toStream(in); }
-String toString(signed in) { return toStream(in); }
-String toString(unsigned in) { return toStream(in); }
-String toString(long in) { return toStream(in); }
-String toString(long unsigned in) { return toStream(in); }
-String toString(long long in) { return toStream(in); }
-String toString(long long unsigned in) { return toStream(in); }
-
 namespace detail {
     void filldata<const void*>::fill(std::ostream* stream, const void* in) {
         if (in) { *stream << in; }
         else { *stream << "nullptr"; }
     }
+
+    template <typename T>
+    String toStreamLit(T t) {
+        std::ostream* os = tlssPush();
+        os->operator<<(t);
+        return tlssPop();
+    }
 }
+
+#ifdef DOCTEST_CONFIG_TREAT_CHAR_STAR_AS_STRING
+// NOLINTNEXTLINE(clang-analyzer-cplusplus.NewDeleteLeaks)
+String toString(const char* in) { return String("\"") + (in ? in : "{null string}") + "\""; }
+#endif // DOCTEST_CONFIG_TREAT_CHAR_STAR_AS_STRING
+
+#if DOCTEST_MSVC >= DOCTEST_COMPILER(19, 20, 0)
+// see this issue on why this is needed: https://github.com/doctest/doctest/issues/183
+String toString(const std::string& in) { return in.c_str(); }
+#if DOCTEST_CPLUSPLUS >= 201703
+String toString(const std::string_view& in) { return String(in.data(), in.length()); }
+#endif // C++17
+#endif // VS 2019
+
+String toString(std::nullptr_t) { return "nullptr"; }
+
+String toString(bool in) { return in ? "true" : "false"; }
+
+String toString(float in) { return toStreamLit(in); }
+String toString(double in) { return toStreamLit(in); }
+String toString(double long in) { return toStreamLit(in); }
+
+String toString(char in) { return toStreamLit(static_cast<signed>(in)); }
+String toString(char signed in) { return toStreamLit(static_cast<signed>(in)); }
+String toString(char unsigned in) { return toStreamLit(static_cast<unsigned>(in)); }
+String toString(short in) { return toStreamLit(in); }
+String toString(short unsigned in) { return toStreamLit(in); }
+String toString(signed in) { return toStreamLit(in); }
+String toString(unsigned in) { return toStreamLit(in); }
+String toString(long in) { return toStreamLit(in); }
+String toString(long unsigned in) { return toStreamLit(in); }
+String toString(long long in) { return toStreamLit(in); }
+String toString(long long unsigned in) { return toStreamLit(in); }
 
 Approx::Approx(double value)
         : m_epsilon(static_cast<double>(std::numeric_limits<float>::epsilon()) * 100)

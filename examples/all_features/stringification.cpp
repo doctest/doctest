@@ -1,6 +1,47 @@
+#ifdef _MSC_VER
+__pragma(warning(push))
+__pragma(warning(disable : 4643))
+namespace std {
+    template <typename> struct char_traits;
+    template <typename, typename> class basic_ostream;
+    typedef basic_ostream<char, char_traits<char>> ostream;
+    template<class TRAITS>
+    basic_ostream<char, TRAITS>& operator<<(basic_ostream<char, TRAITS>&, const char*);
+}
+__pragma(warning(pop))
+#else
+#include <iostream>
+#endif
+
+namespace N {
+    struct A { };
+    struct B {
+        friend std::ostream& operator<<(std::ostream& os, const B&) { return os << "B"; }
+    };
+    struct C { };
+    static std::ostream& operator<<(std::ostream& os, const C&) { return os << "C"; }
+}
+
+static std::ostream& operator<<(std::ostream& os, const N::A&) { return os << "A"; }
+
 #include <doctest/doctest.h>
 
+#include <utility>
+
+TEST_CASE("operator<<") {
+    MESSAGE(N::A{ });
+    MESSAGE(N::B{ });
+    MESSAGE(N::C{ });
+}
+
 #include "header.h"
+
+// std::move is broken with VS <= 15
+#if defined(_MSC_VER) && _MSC_VER <= 1900
+#define MOVE(...) __VA_ARGS__
+#else
+#define MOVE std::move
+#endif
 
 TEST_CASE("no headers") {
     char chs[] = { '1', 'a', 's' };
@@ -9,6 +50,7 @@ TEST_CASE("no headers") {
 
     int ints[] = { 0, 1, 1, 2, 3, 5, 8, 13 };
     MESSAGE(ints); CHECK(ints == nullptr);
+    MESSAGE(MOVE(ints));
 
     char* cptr = reinterpret_cast<char*>(ints + 4);
     const char* ccptr = const_cast<const char*>(cptr);

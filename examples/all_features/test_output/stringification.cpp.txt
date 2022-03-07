@@ -1,6 +1,16 @@
 [doctest] run with "--help" for options
 ===============================================================================
 stringification.cpp(0):
+TEST CASE:  operator<<
+
+stringification.cpp(0): MESSAGE: A
+
+stringification.cpp(0): MESSAGE: B
+
+stringification.cpp(0): MESSAGE: C
+
+===============================================================================
+stringification.cpp(0):
 TEST CASE:  no headers
 
 stringification.cpp(0): MESSAGE: 1as
@@ -17,6 +27,8 @@ stringification.cpp(0): MESSAGE: [0, 1, 1, 2, 3, 5, 8, 13]
 
 stringification.cpp(0): ERROR: CHECK( ints == nullptr ) is NOT correct!
   values: CHECK( [0, 1, 1, 2, 3, 5, 8, 13] == nullptr )
+
+stringification.cpp(0): MESSAGE: [0, 1, 1, 2, 3, 5, 8, 13]
 
 stringification.cpp(0): MESSAGE: nullptr
 
@@ -66,9 +78,6 @@ stringification.cpp(0): ERROR: CHECK( s1 == s2 ) is NOT correct!
   logged: s1=MyOtherType: 42 s2=MyOtherType: 666
           MyOtherType: 42 is not really MyOtherType: 666
 
-stringification.cpp(0): ERROR: CHECK( "a" == doctest::Contains("aaa") ) is NOT correct!
-  values: CHECK( a == Contains( aaa ) )
-
 stringification.cpp(0): ERROR: test case THREW exception: MyTypeInherited<int>(5, 4)
 
 ===============================================================================
@@ -78,7 +87,7 @@ TEST CASE:  a test case that registers an exception translator for int and then 
 stringification.cpp(0): ERROR: test case THREW exception: 5
 
 ===============================================================================
-[doctest] test cases:  3 | 0 passed |  3 failed |
-[doctest] assertions: 18 | 5 passed | 13 failed |
+[doctest] test cases:  4 | 1 passed |  3 failed |
+[doctest] assertions: 17 | 5 passed | 12 failed |
 [doctest] Status: FAILURE!
 Program code.
