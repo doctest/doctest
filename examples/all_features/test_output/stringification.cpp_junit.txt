@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <testsuites>
-  <testsuite name="all_features" errors="2" failures="12" tests="17">
+  <testsuite name="all_features" errors="2" failures="13" tests="18">
     <testcase classname="stringification.cpp" name="no headers" status="run">
       <failure message="1as == nullptr" type="CHECK">
 stringification.cpp(0):
@@ -77,6 +77,12 @@ CHECK( s1 == s2 ) is NOT correct!
   values: CHECK( MyOtherType: 42 == MyOtherType: 666 )
   logged: s1=MyOtherType: 42 s2=MyOtherType: 666
           MyOtherType: 42 is not really MyOtherType: 666
+
+      </failure>
+      <failure message="a == Contains( aaa )" type="CHECK">
+stringification.cpp(0):
+CHECK( "a" == doctest::Contains("aaa") ) is NOT correct!
+  values: CHECK( a == Contains( aaa ) )
 
       </failure>
       <error message="exception">

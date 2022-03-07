@@ -136,7 +136,11 @@
     <TestCase name="will end from a std::string exception" filename="coverage_maxout.cpp" line="0" skipped="true"/>
     <TestCase name="will end from an unknown exception" filename="coverage_maxout.cpp" line="0" skipped="true"/>
   </TestSuite>
+  <TestSuite name="with a funny name,">
+    <TestCase name="with a funnier name\:" filename="subcases.cpp" line="0" skipped="true"/>
+    <TestCase name="without a funny name:" filename="subcases.cpp" line="0" skipped="true"/>
+  </TestSuite>
   <OverallResultsAsserts successes="0" failures="0"/>
-  <OverallResultsTestCases successes="0" failures="0" skipped="97"/>
+  <OverallResultsTestCases successes="0" failures="0" skipped="99"/>
 </doctest>
 Program code.

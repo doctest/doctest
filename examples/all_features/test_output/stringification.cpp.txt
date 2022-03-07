@@ -66,6 +66,9 @@ stringification.cpp(0): ERROR: CHECK( s1 == s2 ) is NOT correct!
   logged: s1=MyOtherType: 42 s2=MyOtherType: 666
           MyOtherType: 42 is not really MyOtherType: 666
 
+stringification.cpp(0): ERROR: CHECK( "a" == doctest::Contains("aaa") ) is NOT correct!
+  values: CHECK( a == Contains( aaa ) )
+
 stringification.cpp(0): ERROR: test case THREW exception: MyTypeInherited<int>(5, 4)
 
 ===============================================================================
@@ -76,6 +79,6 @@ stringification.cpp(0): ERROR: test case THREW exception: 5
 
 ===============================================================================
 [doctest] test cases:  3 | 0 passed |  3 failed |
-[doctest] assertions: 17 | 5 passed | 12 failed |
+[doctest] assertions: 18 | 5 passed | 13 failed |
 [doctest] Status: FAILURE!
 Program code.
