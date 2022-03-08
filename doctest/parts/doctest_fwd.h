@@ -492,11 +492,6 @@ class allocator;
 template <class Elem, class Traits, class Alloc>
 class basic_string;
 using string = basic_string<char, char_traits<char>, allocator<char>>;
-#if DOCTEST_CPLUSPLUS >= 201703
-template <class CharT, class Traits>
-class basic_string_view;
-using string_view = basic_string_view<char, char_traits<char>>;
-#endif // C++17
 #endif // VS 2019
 } // namespace std
 
@@ -1052,9 +1047,6 @@ DOCTEST_INTERFACE String toString(const char* in);
 #if DOCTEST_MSVC >= DOCTEST_COMPILER(19, 20, 0)
 // see this issue on why this is needed: https://github.com/doctest/doctest/issues/183
 DOCTEST_INTERFACE String toString(const std::string& in);
-#if DOCTEST_CPLUSPLUS >= 201703
-DOCTEST_INTERFACE String toString(const std::string_view& in);
-#endif // C++17
 #endif // VS 2019
 
 DOCTEST_INTERFACE String toString(std::nullptr_t);
