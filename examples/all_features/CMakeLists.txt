@@ -119,6 +119,16 @@ elseif(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
 endif()
 
 ################################################################################
+## ATOMICS DISABLED - SHOULD STILL WORK
+################################################################################
+
+add_executable(no_atomics ${files_all})
+target_compile_definitions(no_atomics PRIVATE DOCTEST_CONFIG_NO_ATOMICS)
+target_link_libraries(no_atomics doctest ${CMAKE_THREAD_LIBS_INIT})
+
+doctest_add_test_impl(NAME no_atomics COMMAND $<TARGET_FILE:no_atomics>)
+
+################################################################################
 ## VARIATION OF THE BUILD WITH DOCTEST DISABLED - SHOULD STILL COMPILE
 ################################################################################
 
