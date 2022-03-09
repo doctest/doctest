@@ -3343,12 +3343,12 @@ typedef timer_large_integer::type ticks_t;
 
 #ifdef DOCTEST_CONFIG_NO_ATOMICS
     template <typename T>
-    using atomic = T;
+    using Atomic = T;
     template <typename T>
-    using AtomicOrMultiLaneAtomic = atomic<T>;
+    using AtomicOrMultiLaneAtomic = Atomic<T>;
 #else
     template <typename T>
-    using atomic = std::atomic<T>;
+    using Atomic = std::atomic<T>;
 #ifdef DOCTEST_CONFIG_NO_MULTI_LANE_ATOMICS
     template <typename T>
     using AtomicOrMultiLaneAtomic = atomic<T>;
@@ -3368,8 +3368,8 @@ typedef timer_large_integer::type ticks_t;
     {
         struct CacheLineAlignedAtomic
         {
-            atomic<T> atomic{};
-            char padding[DOCTEST_MULTI_LANE_ATOMICS_CACHE_LINE_SIZE - sizeof(detail::atomic<T>)];
+            Atomic<T> atomic{};
+            char padding[DOCTEST_MULTI_LANE_ATOMICS_CACHE_LINE_SIZE - sizeof(atomic)];
         };
         CacheLineAlignedAtomic m_atomics[DOCTEST_MULTI_LANE_ATOMICS_THREAD_LANES];
 
@@ -3425,8 +3425,8 @@ typedef timer_large_integer::type ticks_t;
         //    assigned in a round-robin fashion.
         // 3. This tlsLaneIdx is stored in the thread local data, so it is directly available with
         //    little overhead.
-        atomic<T>& myAtomic() DOCTEST_NOEXCEPT {
-            static atomic<size_t> laneCounter;
+        Atomic<T>& myAtomic() DOCTEST_NOEXCEPT {
+            static Atomic<size_t> laneCounter;
             DOCTEST_THREAD_LOCAL size_t tlsLaneIdx =
                     laneCounter++ % DOCTEST_MULTI_LANE_ATOMICS_THREAD_LANES;
 
@@ -3460,7 +3460,7 @@ typedef timer_large_integer::type ticks_t;
         std::set<decltype(subcasesStack)> subcasesPassed;
         int                               subcasesCurrentMaxLevel;
         bool                              should_reenter;
-        atomic<bool>                 shouldLogCurrentException;
+        Atomic<bool>                 shouldLogCurrentException;
 
         void resetRunData() {
             numTestCases                = 0;

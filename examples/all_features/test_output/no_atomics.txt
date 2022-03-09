@@ -252,40 +252,6 @@ assertion_macros.cpp(0): ERROR: CHECK_NOTHROW( throw_if(true, 2) ) THREW excepti
 assertion_macros.cpp(0): ERROR: CHECK_THROWS_WITH( throw_if(true, 2), "1" ) threw a DIFFERENT exception: "2"
 
 ===============================================================================
-concurrency.cpp(0):
-TEST CASE:  threads...
-  test runner thread
-
-concurrency.cpp(0): ERROR: CHECK( value == 2 ) is NOT correct!
-  values: CHECK( 1 == 2 )
-  logged: data_1 := 1
-          print me!
-
-===============================================================================
-concurrency.cpp(0):
-TEST CASE:  threads...
-  spawned threads
-
-concurrency.cpp(0): ERROR: CHECK( value == 2 ) is NOT correct!
-  values: CHECK( 1 == 2 )
-  logged: print me!
-
-concurrency.cpp(0): ERROR: CHECK( value == 1 ) is NOT correct!
-  values: CHECK( 2 == 1 )
-  logged: print me!
-
-===============================================================================
-concurrency.cpp(0):
-TEST CASE:  threads...
-  spawned threads with exception propagation
-
-concurrency.cpp(0): FATAL ERROR: REQUIRE( 1 == 2 ) is NOT correct!
-  values: REQUIRE( 1 == 2 )
-
-concurrency.cpp(0): FATAL ERROR: REQUIRE( 1 == 2 ) is NOT correct!
-  values: REQUIRE( 1 == 2 )
-
-===============================================================================
 enums.cpp(0):
 TEST CASE:  enum 2
 
@@ -441,14 +407,6 @@ TEST CASE:  explicit failures 2
 
 logging.cpp(0): FATAL ERROR: fail the test case and also end it
 
-===============================================================================
-no_failures.cpp(0):
-TEST SUITE: some suite
-TEST CASE:  fails - and its allowed
-
-no_failures.cpp(0): FATAL ERROR: 
-
-Allowed to fail so marking it as not failed
 ===============================================================================
 stringification.cpp(0):
 TEST CASE:  all asserts should fail and show how the objects get stringified
@@ -850,62 +808,7 @@ test_cases_and_suites.cpp(0): ERROR:
 
 Didn't fail exactly 1 times so marking it as failed!
 ===============================================================================
-coverage_maxout.cpp(0):
-TEST CASE:  exercising tricky code paths of doctest
-
-coverage_maxout.cpp(0): ERROR: CHECK( str.compare(const_str, true) != 0 ) is NOT correct!
-  values: CHECK( 0 != 0 )
-  logged: should fail
-
-coverage_maxout.cpp(0): ERROR: CHECK( str.compare("omgomgomg", false) != 0 ) is NOT correct!
-  values: CHECK( 0 != 0 )
-  logged: should fail
-
-coverage_maxout.cpp(0): ERROR: CHECK( len_is_zero ) is NOT correct!
-  values: CHECK( false )
-  logged: should fail
-
-coverage_maxout.cpp(0): ERROR: CHECK( b == 5 ) is NOT correct!
-  values: CHECK( Approx( 7.0 ) == 5 )
-
-coverage_maxout.cpp(0): ERROR: CHECK( b < 5 ) is NOT correct!
-  values: CHECK( Approx( 7.0 ) <  5 )
-
-coverage_maxout.cpp(0): ERROR: CHECK( b <= 5 ) is NOT correct!
-  values: CHECK( Approx( 7.0 ) <= 5 )
-
-coverage_maxout.cpp(0): ERROR: CHECK( 6 == a ) is NOT correct!
-  values: CHECK( 6 == Approx( 5.0 ) )
-
-coverage_maxout.cpp(0): ERROR: CHECK( 6 < a ) is NOT correct!
-  values: CHECK( 6 <  Approx( 5.0 ) )
-
-coverage_maxout.cpp(0): ERROR: CHECK( 6 <= a ) is NOT correct!
-  values: CHECK( 6 <= Approx( 5.0 ) )
-
-===============================================================================
-coverage_maxout.cpp(0):
-TEST SUITE: exception related
-TEST CASE:  will end from a std::string exception
-
-coverage_maxout.cpp(0): ERROR: test case THREW exception: std::string!
-
-===============================================================================
-coverage_maxout.cpp(0):
-TEST SUITE: exception related
-TEST CASE:  will end from a const char* exception
-
-coverage_maxout.cpp(0): ERROR: test case THREW exception: const char*!
-
-===============================================================================
-coverage_maxout.cpp(0):
-TEST SUITE: exception related
-TEST CASE:  will end from an unknown exception
-
-coverage_maxout.cpp(0): ERROR: test case THREW exception: unknown exception
-
-===============================================================================
-[doctest] test cases:  96 |  43 passed |  53 failed | 2 skipped
-[doctest] assertions: 272 | 142 passed | 130 failed |
+[doctest] test cases:  78 | 30 passed |  48 failed | 2 skipped
+[doctest] assertions: 213 | 99 passed | 114 failed |
 [doctest] Status: FAILURE!
 Program code.
