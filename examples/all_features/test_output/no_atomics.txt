@@ -451,57 +451,10 @@ no_failures.cpp(0): FATAL ERROR:
 Allowed to fail so marking it as not failed
 ===============================================================================
 stringification.cpp(0):
-TEST CASE:  operator<<
-
-stringification.cpp(0): MESSAGE: A
-
-stringification.cpp(0): MESSAGE: B
-
-stringification.cpp(0): MESSAGE: C
-
-===============================================================================
-stringification.cpp(0):
-TEST CASE:  no headers
-
-stringification.cpp(0): MESSAGE: 1as
-
-stringification.cpp(0): ERROR: CHECK( chs == nullptr ) is NOT correct!
-  values: CHECK( 1as == nullptr )
-
-stringification.cpp(0): MESSAGE: 1as
-
-stringification.cpp(0): ERROR: CHECK( "1as" == nullptr ) is NOT correct!
-  values: CHECK( 1as == nullptr )
-
-stringification.cpp(0): MESSAGE: [0, 1, 1, 2, 3, 5, 8, 13]
-
-stringification.cpp(0): ERROR: CHECK( ints == nullptr ) is NOT correct!
-  values: CHECK( [0, 1, 1, 2, 3, 5, 8, 13] == nullptr )
-
-stringification.cpp(0): MESSAGE: [0, 1, 1, 2, 3, 5, 8, 13]
-
-stringification.cpp(0): MESSAGE: nullptr
-
-stringification.cpp(0): ERROR: CHECK( cnptr != nullptr ) is NOT correct!
-  values: CHECK( nullptr != nullptr )
-
-stringification.cpp(0): MESSAGE: 0
-
-stringification.cpp(0): ERROR: CHECK( A == C ) is NOT correct!
-  values: CHECK( 0 == 100 )
-
-stringification.cpp(0): MESSAGE: int
-
-===============================================================================
-stringification.cpp(0):
 TEST CASE:  all asserts should fail and show how the objects get stringified
-
-stringification.cpp(0): MESSAGE: Foo{}
 
 stringification.cpp(0): ERROR: CHECK( f1 == f2 ) is NOT correct!
   values: CHECK( Foo{} == Foo{} )
-
-stringification.cpp(0): MESSAGE: omg
 
 stringification.cpp(0): ERROR: CHECK( dummy == "tralala" ) is NOT correct!
   values: CHECK( omg == tralala )
@@ -509,15 +462,11 @@ stringification.cpp(0): ERROR: CHECK( dummy == "tralala" ) is NOT correct!
 stringification.cpp(0): ERROR: CHECK( "tralala" == dummy ) is NOT correct!
   values: CHECK( tralala == omg )
 
-stringification.cpp(0): MESSAGE: [1, 2, 3]
-
 stringification.cpp(0): ERROR: CHECK( vec1 == vec2 ) is NOT correct!
   values: CHECK( [1, 2, 3] == [1, 2, 4] )
 
-stringification.cpp(0): MESSAGE: [1, 42, 3]
-
 stringification.cpp(0): ERROR: CHECK( lst_1 == lst_2 ) is NOT correct!
-  values: CHECK( [1, 42, 3] == [1, 2, 666] )
+  values: CHECK( [1, 42, 3, ] == [1, 2, 666, ] )
 
 stringification.cpp(0): ERROR: CHECK( s1 == s2 ) is NOT correct!
   values: CHECK( MyOtherType: 42 == MyOtherType: 666 )
@@ -527,6 +476,12 @@ stringification.cpp(0): ERROR: CHECK( s1 == s2 ) is NOT correct!
   values: CHECK( MyOtherType: 42 == MyOtherType: 666 )
   logged: s1=MyOtherType: 42 s2=MyOtherType: 666
           MyOtherType: 42 is not really MyOtherType: 666
+
+stringification.cpp(0): ERROR: CHECK( doctest::IsNaN<double>(0.5) ) is NOT correct!
+  values: CHECK( 0.5 )
+
+stringification.cpp(0): ERROR: CHECK( doctest::IsNaN<float>(std::numeric_limits<float>::infinity()) ) is NOT correct!
+  values: CHECK( inf )
 
 stringification.cpp(0): ERROR: CHECK( "a" == doctest::Contains("aaa") ) is NOT correct!
   values: CHECK( a == Contains( aaa ) )
@@ -773,21 +728,21 @@ templated_test_cases.cpp(0): ERROR: CHECK( vec.size() == 20 ) is NOT correct!
 
 ===============================================================================
 templated_test_cases.cpp(0):
-TEST CASE:  multiple types<Custom name test>
+TEST CASE:  multiple types<>
 
 templated_test_cases.cpp(0): ERROR: CHECK( t2 != T2() ) is NOT correct!
   values: CHECK( 0 != 0 )
 
 ===============================================================================
 templated_test_cases.cpp(0):
-TEST CASE:  multiple types<Other custom name>
+TEST CASE:  multiple types<>
 
 templated_test_cases.cpp(0): ERROR: CHECK( t2 != T2() ) is NOT correct!
   values: CHECK( 0 != 0 )
 
 ===============================================================================
 templated_test_cases.cpp(0):
-TEST CASE:  multiple types<TypePair<bool, int>>
+TEST CASE:  multiple types<>
 
 templated_test_cases.cpp(0): ERROR: CHECK( t2 != T2() ) is NOT correct!
   values: CHECK( 0 != 0 )
@@ -906,9 +861,27 @@ coverage_maxout.cpp(0): ERROR: CHECK( str.compare("omgomgomg", false) != 0 ) is 
   values: CHECK( 0 != 0 )
   logged: should fail
 
-coverage_maxout.cpp(0): ERROR: CHECK_FALSE( isThereAnything ) is NOT correct!
-  values: CHECK_FALSE( true )
+coverage_maxout.cpp(0): ERROR: CHECK( len_is_zero ) is NOT correct!
+  values: CHECK( false )
   logged: should fail
+
+coverage_maxout.cpp(0): ERROR: CHECK( b == 5 ) is NOT correct!
+  values: CHECK( Approx( 7.0 ) == 5 )
+
+coverage_maxout.cpp(0): ERROR: CHECK( b < 5 ) is NOT correct!
+  values: CHECK( Approx( 7.0 ) <  5 )
+
+coverage_maxout.cpp(0): ERROR: CHECK( b <= 5 ) is NOT correct!
+  values: CHECK( Approx( 7.0 ) <= 5 )
+
+coverage_maxout.cpp(0): ERROR: CHECK( 6 == a ) is NOT correct!
+  values: CHECK( 6 == Approx( 5.0 ) )
+
+coverage_maxout.cpp(0): ERROR: CHECK( 6 < a ) is NOT correct!
+  values: CHECK( 6 <  Approx( 5.0 ) )
+
+coverage_maxout.cpp(0): ERROR: CHECK( 6 <= a ) is NOT correct!
+  values: CHECK( 6 <= Approx( 5.0 ) )
 
 ===============================================================================
 coverage_maxout.cpp(0):
@@ -932,7 +905,7 @@ TEST CASE:  will end from an unknown exception
 coverage_maxout.cpp(0): ERROR: test case THREW exception: unknown exception
 
 ===============================================================================
-[doctest] test cases:  98 |  44 passed |  54 failed | 2 skipped
-[doctest] assertions: 280 | 153 passed | 127 failed |
+[doctest] test cases:  96 |  43 passed |  53 failed | 2 skipped
+[doctest] assertions: 272 | 142 passed | 130 failed |
 [doctest] Status: FAILURE!
 Program code.
