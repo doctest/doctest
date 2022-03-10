@@ -78,9 +78,9 @@ DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_BEGIN
 #ifndef DOCTEST_CONFIG_NO_MULTITHREADING
 #include <atomic>
 #include <mutex>
-#define DOCTEST_DECLARE_MUTEX(name) std::mutex name
+#define DOCTEST_DECLARE_MUTEX(name) std::mutex name;
 #define DOCTEST_DECLARE_STATIC_MUTEX(name) static DOCTEST_DECLARE_MUTEX(name)
-#define DOCTEST_LOCK_MUTEX(name) std::lock_guard<std::mutex> DOCTEST_ANONYMOUS(DOCTEST_ANON_LOCK_)(name)
+#define DOCTEST_LOCK_MUTEX(name) std::lock_guard<std::mutex> DOCTEST_ANONYMOUS(DOCTEST_ANON_LOCK_)(name);
 #else // DOCTEST_CONFIG_NO_MULTITHREADING
 #define DOCTEST_DECLARE_MUTEX(name)
 #define DOCTEST_DECLARE_STATIC_MUTEX(name)
@@ -369,7 +369,7 @@ typedef timer_large_integer::type ticks_t;
         struct CacheLineAlignedAtomic
         {
             Atomic<T> atomic{};
-            char padding[DOCTEST_MULTI_LANE_ATOMICS_CACHE_LINE_SIZE - sizeof(atomic)];
+            char padding[DOCTEST_MULTI_LANE_ATOMICS_CACHE_LINE_SIZE - sizeof(Atomic<T>)];
         };
         CacheLineAlignedAtomic m_atomics[DOCTEST_MULTI_LANE_ATOMICS_THREAD_LANES];
 
@@ -1520,10 +1520,10 @@ namespace {
         static LONG CALLBACK handleException(PEXCEPTION_POINTERS ExceptionInfo) {
             // Multiple threads may enter this filter/handler at once. We want the error message to be printed on the
             // console just once no matter how many threads have crashed.
-            DOCTEST_DECLARE_STATIC_MUTEX(mutex);
+            DOCTEST_DECLARE_STATIC_MUTEX(mutex)
             static bool execute = true;
             {
-                DOCTEST_LOCK_MUTEX(mutex);
+                DOCTEST_LOCK_MUTEX(mutex)
                 if(execute) {
                     bool reported = false;
                     for(size_t i = 0; i < DOCTEST_COUNTOF(signalDefs); ++i) {
@@ -2282,7 +2282,7 @@ namespace {
     struct XmlReporter : public IReporter
     {
         XmlWriter  xml;
-        DOCTEST_DECLARE_MUTEX(mutex);
+        DOCTEST_DECLARE_MUTEX(mutex)
 
         // caching pointers/references to objects of these types - safe to do
         const ContextOptions& opt;
@@ -2442,7 +2442,7 @@ namespace {
         }
 
         void test_case_exception(const TestCaseException& e) override {
-            DOCTEST_LOCK_MUTEX(mutex);
+            DOCTEST_LOCK_MUTEX(mutex)
 
             xml.scopedElement("Exception")
                     .writeAttribute("crash", e.is_crash)
@@ -2463,7 +2463,7 @@ namespace {
             if(!rb.m_failed && !opt.success)
                 return;
 
-            DOCTEST_LOCK_MUTEX(mutex);
+            DOCTEST_LOCK_MUTEX(mutex)
 
             xml.startElement("Expression")
                     .writeAttribute("success", !rb.m_failed)
@@ -2489,7 +2489,7 @@ namespace {
         }
 
         void log_message(const MessageData& mb) override {
-            DOCTEST_LOCK_MUTEX(mutex);
+            DOCTEST_LOCK_MUTEX(mutex)
 
             xml.startElement("Message")
                     .writeAttribute("type", failureString(mb.m_severity))
@@ -2574,7 +2574,7 @@ namespace {
     struct JUnitReporter : public IReporter
     {
         XmlWriter  xml;
-        DOCTEST_DECLARE_MUTEX(mutex);
+        DOCTEST_DECLARE_MUTEX(mutex)
         Timer timer;
         std::vector<String> deepestSubcaseStackNames;
 
@@ -2742,7 +2742,7 @@ namespace {
         }
 
         void test_case_exception(const TestCaseException& e) override {
-            DOCTEST_LOCK_MUTEX(mutex);
+            DOCTEST_LOCK_MUTEX(mutex)
             testCaseData.addError("exception", e.error_string.c_str());
         }
 
@@ -2756,7 +2756,7 @@ namespace {
             if(!rb.m_failed) // report only failures & ignore the `success` option
                 return;
 
-            DOCTEST_LOCK_MUTEX(mutex);
+            DOCTEST_LOCK_MUTEX(mutex)
 
             std::ostringstream os;
             os << skipPathFromFilename(rb.m_file) << (opt.gnu_file_line ? ":" : "(")
@@ -2807,7 +2807,7 @@ namespace {
         bool                          hasLoggedCurrentTestStart;
         std::vector<SubcaseSignature> subcasesStack;
         size_t                        currentSubcaseLevel;
-        DOCTEST_DECLARE_MUTEX(mutex);
+        DOCTEST_DECLARE_MUTEX(mutex)
 
         // caching pointers/references to objects of these types - safe to do
         const ContextOptions& opt;
@@ -3184,7 +3184,7 @@ namespace {
         }
 
         void test_case_exception(const TestCaseException& e) override {
-            DOCTEST_LOCK_MUTEX(mutex);
+            DOCTEST_LOCK_MUTEX(mutex)
             if(tc->m_no_output)
                 return;
 
@@ -3223,7 +3223,7 @@ namespace {
             if((!rb.m_failed && !opt.success) || tc->m_no_output)
                 return;
 
-            DOCTEST_LOCK_MUTEX(mutex);
+            DOCTEST_LOCK_MUTEX(mutex)
 
             logTestStart();
 
@@ -3239,7 +3239,7 @@ namespace {
             if(tc->m_no_output)
                 return;
 
-            DOCTEST_LOCK_MUTEX(mutex);
+            DOCTEST_LOCK_MUTEX(mutex)
 
             logTestStart();
 
