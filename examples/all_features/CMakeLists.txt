@@ -123,7 +123,7 @@ endif()
 ################################################################################
 
 add_executable(no_atomics ${files_with_output})
-target_compile_definitions(no_atomics PRIVATE DOCTEST_CONFIG_NO_ATOMICS)
+target_compile_definitions(no_atomics PRIVATE DOCTEST_CONFIG_NO_MULTITHREADING)
 target_link_libraries(no_atomics doctest ${CMAKE_THREAD_LIBS_INIT})
 
 doctest_add_test_impl(NAME no_atomics COMMAND $<TARGET_FILE:no_atomics>)
