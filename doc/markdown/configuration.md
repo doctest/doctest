@@ -30,7 +30,7 @@ Defining something ```globally``` means for every source file of the binary (exe
 - [**```DOCTEST_CONFIG_POSIX_SIGNALS```**](#doctest_config_posix_signals)
 - [**```DOCTEST_CONFIG_NO_POSIX_SIGNALS```**](#doctest_config_no_posix_signals)
 - [**```DOCTEST_CONFIG_INCLUDE_TYPE_TRAITS```**](#doctest_config_include_type_traits)
-- [**```DOCTEST_CONFIG_NO_MULTITHREADING```**](#doctest_config_no_multi_threading)
+- [**```DOCTEST_CONFIG_NO_MULTITHREADING```**](#doctest_config_no_multithreading)
 - [**```DOCTEST_CONFIG_NO_MULTI_LANE_ATOMICS```**](#doctest_config_no_multi_lane_atomics)
 - [**```DOCTEST_CONFIG_ASSERTS_RETURN_VALUES```**](#doctest_config_asserts_return_values)
 - [**```DOCTEST_CONFIG_EVALUATE_ASSERTS_EVEN_WHEN_DISABLED```**](#doctest_config_evaluate_asserts_even_when_disabled)
