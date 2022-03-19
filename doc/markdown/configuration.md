@@ -244,6 +244,8 @@ This can be used to disable all multithreading support.
 
 Speeds up single threaded applications.
 
+Includes [**```DOCTEST_CONFIG_NO_MULTI_LANE_ATOMICS```**](#doctest_config_no_multi_lane_atomics).
+
 This should be defined only in the source file where the library is implemented (it's relevant only there).
 
 ### **```DOCTEST_CONFIG_NO_MULTI_LANE_ATOMICS```**
