@@ -3358,14 +3358,14 @@ typedef timer_large_integer::type ticks_t;
 #ifdef DOCTEST_CONFIG_NO_MULTITHREADING
     template <typename T>
     using Atomic = T;
-    template <typename T>
-    using AtomicOrMultiLaneAtomic = Atomic<T>;
-#else
+#else // DOCTEST_CONFIG_NO_MULTITHREADING
     template <typename T>
     using Atomic = std::atomic<T>;
-#ifdef DOCTEST_CONFIG_NO_MULTI_LANE_ATOMICS
+#endif // DOCTEST_CONFIG_NO_MULTITHREADING
+
+#if defined(DOCTEST_CONFIG_NO_MULTI_LANE_ATOMICS) || defined(DOCTEST_CONFIG_NO_MULTITHREADING)
     template <typename T>
-    using AtomicOrMultiLaneAtomic = atomic<T>;
+    using MultiLaneAtomic = Atomic<T>;
 #else // DOCTEST_CONFIG_NO_MULTI_LANE_ATOMICS
     // Provides a multilane implementation of an atomic variable that supports add, sub, load,
     // store. Instead of using a single atomic variable, this splits up into multiple ones,
@@ -3447,17 +3447,13 @@ typedef timer_large_integer::type ticks_t;
             return m_atomics[tlsLaneIdx].atomic;
         }
     };
-
-    template <typename T>
-    using AtomicOrMultiLaneAtomic = MultiLaneAtomic<T>;
 #endif // DOCTEST_CONFIG_NO_MULTI_LANE_ATOMICS
-#endif // DOCTEST_CONFIG_NO_MULTITHREADING
 
     // this holds both parameters from the command line and runtime data for tests
     struct ContextState : ContextOptions, TestRunStats, CurrentTestCaseStats
     {
-        AtomicOrMultiLaneAtomic<int> numAssertsCurrentTest_atomic;
-        AtomicOrMultiLaneAtomic<int> numAssertsFailedCurrentTest_atomic;
+        MultiLaneAtomic<int> numAssertsCurrentTest_atomic;
+        MultiLaneAtomic<int> numAssertsFailedCurrentTest_atomic;
 
         std::vector<std::vector<String>> filters = decltype(filters)(9); // 9 different filters
 
