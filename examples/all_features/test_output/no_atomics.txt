@@ -1,84 +1,23 @@
-[doctest] doctest version is "2.4.8"
 [doctest] run with "--help" for options
 ===============================================================================
-assertion_macros.cpp(0):
-TEST CASE:  normal macros
+subcases.cpp(0):
+  Scenario: vectors can be sized and resized
+     Given: A vector with some items
+      When: the size is increased
+      Then: the size and capacity change
 
-assertion_macros.cpp(0): ERROR: CHECK( throw_if(true, std::runtime_error("whops!")) == 42 ) THREW exception: "whops!"
-
-assertion_macros.cpp(0): ERROR: CHECK( doctest::Approx(0.502) == 0.501 ) is NOT correct!
-  values: CHECK( Approx( 0.502 ) == 0.501 )
-
-===============================================================================
-assertion_macros.cpp(0):
-TEST CASE:  exceptions-related macros
-
-assertion_macros.cpp(0): ERROR: CHECK_THROWS( throw_if(false, 0) ) did NOT throw at all!
-
-assertion_macros.cpp(0): ERROR: CHECK_THROWS_AS( throw_if(true, 0), char ) threw a DIFFERENT exception: "0"
-
-assertion_macros.cpp(0): ERROR: CHECK_THROWS_AS( throw_if(false, 0), int ) did NOT throw at all!
-
-assertion_macros.cpp(0): ERROR: CHECK_THROWS_WITH( throw_if(true, "whops!"), "whops! no match!" ) threw a DIFFERENT exception: "whops!"
-
-assertion_macros.cpp(0): ERROR: CHECK_THROWS_WITH( throw_if(true, "whops! does it match?"), "whops! no match!" ) threw a DIFFERENT exception: "whops! does it match?"
-
-assertion_macros.cpp(0): ERROR: CHECK_THROWS_WITH_AS( throw_if(true, "whops!"), "whops! no match!", bool ) threw a DIFFERENT exception! (contents: "whops!")
-
-assertion_macros.cpp(0): ERROR: CHECK_THROWS_WITH_AS( throw_if(true, "whops!"), "whops!", int ) threw a DIFFERENT exception! (contents: "whops!")
-
-assertion_macros.cpp(0): ERROR: CHECK_THROWS_WITH_AS( throw_if(true, "whops! does it match?"), "whops! no match!", int ) threw a DIFFERENT exception! (contents: "whops! does it match?")
-
-assertion_macros.cpp(0): ERROR: CHECK_NOTHROW( throw_if(true, 0) ) THREW exception: "0"
+subcases.cpp(0): ERROR: CHECK( v.size() == 20 ) is NOT correct!
+  values: CHECK( 10 == 20 )
 
 ===============================================================================
-assertion_macros.cpp(0):
-TEST CASE:  exceptions-related macros for std::exception
+subcases.cpp(0):
+  Scenario: vectors can be sized and resized
+     Given: A vector with some items
+      When: less capacity is reserved
+      Then: neither size nor capacity are changed
 
-assertion_macros.cpp(0): ERROR: CHECK_THROWS( throw_if(false, 0) ) did NOT throw at all!
-
-assertion_macros.cpp(0): ERROR: CHECK_THROWS_AS( throw_if(false, std::runtime_error("whops!")), std::exception ) did NOT throw at all!
-
-assertion_macros.cpp(0): ERROR: CHECK_THROWS_AS( throw_if(true, std::runtime_error("whops!")), int ) threw a DIFFERENT exception: "whops!"
-
-assertion_macros.cpp(0): ERROR: CHECK_THROWS_WITH( throw_if(false, ""), "whops!" ) did NOT throw at all!
-
-assertion_macros.cpp(0): FATAL ERROR: REQUIRE_NOTHROW( throw_if(true, std::runtime_error("whops!")) ) THREW exception: "whops!"
-
-===============================================================================
-assertion_macros.cpp(0):
-TEST CASE:  WARN level of asserts don't fail the test case
-
-assertion_macros.cpp(0): WARNING: WARN( 0 ) is NOT correct!
-  values: WARN( 0 )
-
-assertion_macros.cpp(0): WARNING: WARN_FALSE( 1 ) is NOT correct!
-  values: WARN_FALSE( 1 )
-
-assertion_macros.cpp(0): WARNING: WARN_THROWS( throw_if(false, 0) ) did NOT throw at all!
-
-assertion_macros.cpp(0): WARNING: WARN_THROWS_WITH( throw_if(true, ""), "whops!" ) threw a DIFFERENT exception: 
-
-assertion_macros.cpp(0): WARNING: WARN_THROWS_WITH( throw_if(false, ""), "whops!" ) did NOT throw at all!
-
-assertion_macros.cpp(0): WARNING: WARN_THROWS_AS( throw_if(false, 0), bool ) did NOT throw at all!
-
-assertion_macros.cpp(0): WARNING: WARN_THROWS_AS( throw_if(true, 0), bool ) threw a DIFFERENT exception: "0"
-
-assertion_macros.cpp(0): WARNING: WARN_THROWS_WITH_AS( throw_if(false, ""), "whops!", int ) did NOT throw at all!
-
-assertion_macros.cpp(0): WARNING: WARN_THROWS_WITH_AS( throw_if(true, ""), "whops!", int ) threw a DIFFERENT exception! (contents: )
-
-assertion_macros.cpp(0): WARNING: WARN_NOTHROW( throw_if(true, 0) ) THREW exception: "0"
-
-assertion_macros.cpp(0): WARNING: WARN_EQ( 1, 0 ) is NOT correct!
-  values: WARN_EQ( 1, 0 )
-
-assertion_macros.cpp(0): WARNING: WARN_UNARY( 0 ) is NOT correct!
-  values: WARN_UNARY( 0 )
-
-assertion_macros.cpp(0): WARNING: WARN_UNARY_FALSE( 1 ) is NOT correct!
-  values: WARN_UNARY_FALSE( 1 )
+subcases.cpp(0): ERROR: CHECK( v.size() == 10 ) is NOT correct!
+  values: CHECK( 5 == 10 )
 
 ===============================================================================
 assertion_macros.cpp(0):
@@ -119,6 +58,33 @@ TEST CASE:  REQUIRE level of asserts fail and abort the test case - 1
 
 assertion_macros.cpp(0): FATAL ERROR: REQUIRE( 0 ) is NOT correct!
   values: REQUIRE( 0 )
+
+===============================================================================
+assertion_macros.cpp(0):
+TEST CASE:  REQUIRE level of asserts fail and abort the test case - 10
+
+assertion_macros.cpp(0): FATAL ERROR: REQUIRE_NOTHROW( throw_if(true, 0) ) THREW exception: "0"
+
+===============================================================================
+assertion_macros.cpp(0):
+TEST CASE:  REQUIRE level of asserts fail and abort the test case - 11
+
+assertion_macros.cpp(0): FATAL ERROR: REQUIRE_EQ( 1, 0 ) is NOT correct!
+  values: REQUIRE_EQ( 1, 0 )
+
+===============================================================================
+assertion_macros.cpp(0):
+TEST CASE:  REQUIRE level of asserts fail and abort the test case - 12
+
+assertion_macros.cpp(0): FATAL ERROR: REQUIRE_UNARY( 0 ) is NOT correct!
+  values: REQUIRE_UNARY( 0 )
+
+===============================================================================
+assertion_macros.cpp(0):
+TEST CASE:  REQUIRE level of asserts fail and abort the test case - 13
+
+assertion_macros.cpp(0): FATAL ERROR: REQUIRE_UNARY_FALSE( 1 ) is NOT correct!
+  values: REQUIRE_UNARY_FALSE( 1 )
 
 ===============================================================================
 assertion_macros.cpp(0):
@@ -171,36 +137,117 @@ assertion_macros.cpp(0): FATAL ERROR: REQUIRE_THROWS_WITH_AS( throw_if(true, "")
 
 ===============================================================================
 assertion_macros.cpp(0):
-TEST CASE:  REQUIRE level of asserts fail and abort the test case - 10
+TEST CASE:  WARN level of asserts don't fail the test case
 
-assertion_macros.cpp(0): FATAL ERROR: REQUIRE_NOTHROW( throw_if(true, 0) ) THREW exception: "0"
+assertion_macros.cpp(0): WARNING: WARN( 0 ) is NOT correct!
+  values: WARN( 0 )
+
+assertion_macros.cpp(0): WARNING: WARN_FALSE( 1 ) is NOT correct!
+  values: WARN_FALSE( 1 )
+
+assertion_macros.cpp(0): WARNING: WARN_THROWS( throw_if(false, 0) ) did NOT throw at all!
+
+assertion_macros.cpp(0): WARNING: WARN_THROWS_WITH( throw_if(true, ""), "whops!" ) threw a DIFFERENT exception: 
+
+assertion_macros.cpp(0): WARNING: WARN_THROWS_WITH( throw_if(false, ""), "whops!" ) did NOT throw at all!
+
+assertion_macros.cpp(0): WARNING: WARN_THROWS_AS( throw_if(false, 0), bool ) did NOT throw at all!
+
+assertion_macros.cpp(0): WARNING: WARN_THROWS_AS( throw_if(true, 0), bool ) threw a DIFFERENT exception: "0"
+
+assertion_macros.cpp(0): WARNING: WARN_THROWS_WITH_AS( throw_if(false, ""), "whops!", int ) did NOT throw at all!
+
+assertion_macros.cpp(0): WARNING: WARN_THROWS_WITH_AS( throw_if(true, ""), "whops!", int ) threw a DIFFERENT exception! (contents: )
+
+assertion_macros.cpp(0): WARNING: WARN_NOTHROW( throw_if(true, 0) ) THREW exception: "0"
+
+assertion_macros.cpp(0): WARNING: WARN_EQ( 1, 0 ) is NOT correct!
+  values: WARN_EQ( 1, 0 )
+
+assertion_macros.cpp(0): WARNING: WARN_UNARY( 0 ) is NOT correct!
+  values: WARN_UNARY( 0 )
+
+assertion_macros.cpp(0): WARNING: WARN_UNARY_FALSE( 1 ) is NOT correct!
+  values: WARN_UNARY_FALSE( 1 )
 
 ===============================================================================
-assertion_macros.cpp(0):
-TEST CASE:  REQUIRE level of asserts fail and abort the test case - 11
+stringification.cpp(0):
+TEST CASE:  a test case that registers an exception translator for int and then throws one
 
-assertion_macros.cpp(0): FATAL ERROR: REQUIRE_EQ( 1, 0 ) is NOT correct!
-  values: REQUIRE_EQ( 1, 0 )
-
-===============================================================================
-assertion_macros.cpp(0):
-TEST CASE:  REQUIRE level of asserts fail and abort the test case - 12
-
-assertion_macros.cpp(0): FATAL ERROR: REQUIRE_UNARY( 0 ) is NOT correct!
-  values: REQUIRE_UNARY( 0 )
+stringification.cpp(0): ERROR: test case THREW exception: 5
 
 ===============================================================================
-assertion_macros.cpp(0):
-TEST CASE:  REQUIRE level of asserts fail and abort the test case - 13
+logging.cpp(0):
+TEST CASE:  a test case that will end from an exception
 
-assertion_macros.cpp(0): FATAL ERROR: REQUIRE_UNARY_FALSE( 1 ) is NOT correct!
-  values: REQUIRE_UNARY_FALSE( 1 )
+logging.cpp(0): ERROR: forcing the many captures to be stringified
+  logged: lots of captures: 42 42 42;
+          old way of capturing - using the streaming operator: 42 42
+
+logging.cpp(0): ERROR: CHECK( some_var == 666 ) is NOT correct!
+  values: CHECK( 42 == 666 )
+  logged: someTests() returned: 42
+          this should be printed if an exception is thrown even if no assert has failed: 42
+          in a nested scope this should be printed as well: 42
+          why is this not 666 ?!
+
+logging.cpp(0): ERROR: test case THREW exception: 0
+  logged: someTests() returned: 42
+          this should be printed if an exception is thrown even if no assert has failed: 42
+          in a nested scope this should be printed as well: 42
 
 ===============================================================================
-assertion_macros.cpp(0):
-TEST CASE:  some asserts used in a function called by a test case
+logging.cpp(0):
+TEST CASE:  a test case that will end from an exception and should print the unprinted context
 
-assertion_macros.cpp(0): ERROR: CHECK_THROWS_WITH_AS( throw_if(true, false), "unknown exception", int ) threw a DIFFERENT exception! (contents: "unknown exception")
+logging.cpp(0): ERROR: test case THREW exception: 0
+  logged: should be printed even if an exception is thrown and no assert fails before that
+
+===============================================================================
+stringification.cpp(0):
+TEST CASE:  all asserts should fail and show how the objects get stringified
+
+stringification.cpp(0): ERROR: CHECK( f1 == f2 ) is NOT correct!
+  values: CHECK( Foo{} == Foo{} )
+
+stringification.cpp(0): ERROR: CHECK( dummy == "tralala" ) is NOT correct!
+  values: CHECK( omg == tralala )
+
+stringification.cpp(0): ERROR: CHECK( "tralala" == dummy ) is NOT correct!
+  values: CHECK( tralala == omg )
+
+stringification.cpp(0): ERROR: CHECK( vec1 == vec2 ) is NOT correct!
+  values: CHECK( [1, 2, 3] == [1, 2, 4] )
+
+stringification.cpp(0): ERROR: CHECK( lst_1 == lst_2 ) is NOT correct!
+  values: CHECK( [1, 42, 3, ] == [1, 2, 666, ] )
+
+stringification.cpp(0): ERROR: CHECK( s1 == s2 ) is NOT correct!
+  values: CHECK( MyOtherType: 42 == MyOtherType: 666 )
+  logged: s1=MyOtherType: 42 s2=MyOtherType: 666
+
+stringification.cpp(0): ERROR: CHECK( s1 == s2 ) is NOT correct!
+  values: CHECK( MyOtherType: 42 == MyOtherType: 666 )
+  logged: s1=MyOtherType: 42 s2=MyOtherType: 666
+          MyOtherType: 42 is not really MyOtherType: 666
+
+stringification.cpp(0): ERROR: CHECK( doctest::IsNaN<double>(0.5) ) is NOT correct!
+  values: CHECK( 0.5 )
+
+stringification.cpp(0): ERROR: CHECK( doctest::IsNaN<float>(std::numeric_limits<float>::infinity()) ) is NOT correct!
+  values: CHECK( inf )
+
+stringification.cpp(0): ERROR: CHECK( "a" == doctest::Contains("aaa") ) is NOT correct!
+  values: CHECK( a == Contains( aaa ) )
+
+stringification.cpp(0): ERROR: test case THREW exception: MyTypeInherited<int>(5, 4)
+
+===============================================================================
+templated_test_cases.cpp(0):
+TEST CASE:  bad stringification of type pair<int_pair>
+
+templated_test_cases.cpp(0): ERROR: CHECK( t2 != T2() ) is NOT correct!
+  values: CHECK( 0 != 0 )
 
 ===============================================================================
 assertion_macros.cpp(0):
@@ -251,6 +298,13 @@ assertion_macros.cpp(0): ERROR: CHECK_NOTHROW( throw_if(true, 2) ) THREW excepti
 
 assertion_macros.cpp(0): ERROR: CHECK_THROWS_WITH( throw_if(true, 2), "1" ) threw a DIFFERENT exception: "2"
 
+===============================================================================
+test_cases_and_suites.cpp(0):
+DESCRIPTION: regarding failures
+TEST SUITE: test suite with a description
+TEST CASE:  doesn't fail but it should have
+
+Should have failed but didn't! Marking it as failed!
 ===============================================================================
 enums.cpp(0):
 TEST CASE:  enum 2
@@ -311,21 +365,164 @@ enums.cpp(0): ERROR: CHECK_EQ( EnumClassU8::Two, EnumClassU8::Zero ) is NOT corr
 
 Failed as expected so marking it as not failed
 ===============================================================================
+assertion_macros.cpp(0):
+TEST CASE:  exceptions-related macros
+
+assertion_macros.cpp(0): ERROR: CHECK_THROWS( throw_if(false, 0) ) did NOT throw at all!
+
+assertion_macros.cpp(0): ERROR: CHECK_THROWS_AS( throw_if(true, 0), char ) threw a DIFFERENT exception: "0"
+
+assertion_macros.cpp(0): ERROR: CHECK_THROWS_AS( throw_if(false, 0), int ) did NOT throw at all!
+
+assertion_macros.cpp(0): ERROR: CHECK_THROWS_WITH( throw_if(true, "whops!"), "whops! no match!" ) threw a DIFFERENT exception: "whops!"
+
+assertion_macros.cpp(0): ERROR: CHECK_THROWS_WITH( throw_if(true, "whops! does it match?"), "whops! no match!" ) threw a DIFFERENT exception: "whops! does it match?"
+
+assertion_macros.cpp(0): ERROR: CHECK_THROWS_WITH_AS( throw_if(true, "whops!"), "whops! no match!", bool ) threw a DIFFERENT exception! (contents: "whops!")
+
+assertion_macros.cpp(0): ERROR: CHECK_THROWS_WITH_AS( throw_if(true, "whops!"), "whops!", int ) threw a DIFFERENT exception! (contents: "whops!")
+
+assertion_macros.cpp(0): ERROR: CHECK_THROWS_WITH_AS( throw_if(true, "whops! does it match?"), "whops! no match!", int ) threw a DIFFERENT exception! (contents: "whops! does it match?")
+
+assertion_macros.cpp(0): ERROR: CHECK_NOTHROW( throw_if(true, 0) ) THREW exception: "0"
+
+===============================================================================
+assertion_macros.cpp(0):
+TEST CASE:  exceptions-related macros for std::exception
+
+assertion_macros.cpp(0): ERROR: CHECK_THROWS( throw_if(false, 0) ) did NOT throw at all!
+
+assertion_macros.cpp(0): ERROR: CHECK_THROWS_AS( throw_if(false, std::runtime_error("whops!")), std::exception ) did NOT throw at all!
+
+assertion_macros.cpp(0): ERROR: CHECK_THROWS_AS( throw_if(true, std::runtime_error("whops!")), int ) threw a DIFFERENT exception: "whops!"
+
+assertion_macros.cpp(0): ERROR: CHECK_THROWS_WITH( throw_if(false, ""), "whops!" ) did NOT throw at all!
+
+assertion_macros.cpp(0): FATAL ERROR: REQUIRE_NOTHROW( throw_if(true, std::runtime_error("whops!")) ) THREW exception: "whops!"
+
+===============================================================================
+logging.cpp(0):
+TEST CASE:  explicit failures 1
+
+logging.cpp(0): ERROR: this should not end the test case, but mark it as failing
+
+logging.cpp(0): MESSAGE: reached!
+
+===============================================================================
+logging.cpp(0):
+TEST CASE:  explicit failures 2
+
+logging.cpp(0): FATAL ERROR: fail the test case and also end it
+
+===============================================================================
+test_cases_and_suites.cpp(0):
+DESCRIPTION: regarding failures
+TEST SUITE: test suite with a description
+TEST CASE:  fails - and its allowed
+
+test_cases_and_suites.cpp(0): FATAL ERROR: 
+
+Allowed to fail so marking it as not failed
+===============================================================================
+test_cases_and_suites.cpp(0):
+DESCRIPTION: regarding failures
+TEST SUITE: test suite with a description
+TEST CASE:  fails 1 time as it should
+
+test_cases_and_suites.cpp(0): FATAL ERROR: 
+
+Failed exactly 1 times as expected so marking it as not failed!
+===============================================================================
+test_cases_and_suites.cpp(0):
+DESCRIPTION: regarding failures
+TEST SUITE: test suite with a description
+TEST CASE:  fails as it should
+
+test_cases_and_suites.cpp(0): FATAL ERROR: 
+
+Failed as expected so marking it as not failed
+===============================================================================
+subcases.cpp(0):
+TEST CASE:  fails from an exception but gets re-entered to traverse all subcases
+  level zero
+  one
+
+subcases.cpp(0): ERROR: CHECK( false ) is NOT correct!
+  values: CHECK( false )
+
+===============================================================================
+subcases.cpp(0):
+TEST CASE:  fails from an exception but gets re-entered to traverse all subcases
+  level zero
+
+DEEPEST SUBCASE STACK REACHED (DIFFERENT FROM THE CURRENT ONE):
+  level zero
+  one
+
+subcases.cpp(0): ERROR: test case THREW exception: exception thrown in subcase - will translate later when the whole test case has been exited (cannot translate while there is an active exception)
+
+===============================================================================
+subcases.cpp(0):
+TEST CASE:  fails from an exception but gets re-entered to traverse all subcases
+
+DEEPEST SUBCASE STACK REACHED (DIFFERENT FROM THE CURRENT ONE):
+  level zero
+  one
+
+subcases.cpp(0): ERROR: test case THREW exception: failure... but the show must go on!
+
+===============================================================================
+subcases.cpp(0):
+TEST CASE:  fails from an exception but gets re-entered to traverse all subcases
+  level zero
+  two
+
+subcases.cpp(0): ERROR: CHECK( false ) is NOT correct!
+  values: CHECK( false )
+
+===============================================================================
+subcases.cpp(0):
+TEST CASE:  fails from an exception but gets re-entered to traverse all subcases
+  level zero
+
+DEEPEST SUBCASE STACK REACHED (DIFFERENT FROM THE CURRENT ONE):
+  level zero
+  two
+
+subcases.cpp(0): ERROR: test case THREW exception: exception thrown in subcase - will translate later when the whole test case has been exited (cannot translate while there is an active exception)
+
+===============================================================================
+subcases.cpp(0):
+TEST CASE:  fails from an exception but gets re-entered to traverse all subcases
+
+DEEPEST SUBCASE STACK REACHED (DIFFERENT FROM THE CURRENT ONE):
+  level zero
+  two
+
+subcases.cpp(0): ERROR: test case THREW exception: failure... but the show must go on!
+
+===============================================================================
+test_cases_and_suites.cpp(0):
+DESCRIPTION: regarding failures
+TEST SUITE: test suite with a description
+TEST CASE:  fails more times than it should
+
+test_cases_and_suites.cpp(0): ERROR: 
+
+test_cases_and_suites.cpp(0): ERROR: 
+
+Didn't fail exactly 1 times so marking it as failed!
+===============================================================================
+test_cases_and_suites.cpp(0):
+TEST CASE:  fixtured test - not part of a test suite
+
+test_cases_and_suites.cpp(0): ERROR: CHECK( data == 85 ) is NOT correct!
+  values: CHECK( 21 == 85 )
+
+===============================================================================
 header.h(0):
 TEST SUITE: some TS
 TEST CASE:  in TS
-
-header.h(0): FATAL ERROR: 
-
-===============================================================================
-header.h(0):
-TEST CASE:  template 1<char>
-
-header.h(0): FATAL ERROR: 
-
-===============================================================================
-header.h(0):
-TEST CASE:  template 2<doctest::String>
 
 header.h(0): FATAL ERROR: 
 
@@ -358,100 +555,6 @@ logging.cpp(0): ERROR: CHECK( vec[i] != (1 << i) ) is NOT correct!
   logged: current iteration of loop:
           i := 4
 
-===============================================================================
-logging.cpp(0):
-TEST CASE:  a test case that will end from an exception
-
-logging.cpp(0): ERROR: forcing the many captures to be stringified
-  logged: lots of captures: 42 42 42;
-          old way of capturing - using the streaming operator: 42 42
-
-logging.cpp(0): ERROR: CHECK( some_var == 666 ) is NOT correct!
-  values: CHECK( 42 == 666 )
-  logged: someTests() returned: 42
-          this should be printed if an exception is thrown even if no assert has failed: 42
-          in a nested scope this should be printed as well: 42
-          why is this not 666 ?!
-
-logging.cpp(0): ERROR: test case THREW exception: 0
-  logged: someTests() returned: 42
-          this should be printed if an exception is thrown even if no assert has failed: 42
-          in a nested scope this should be printed as well: 42
-
-===============================================================================
-logging.cpp(0):
-TEST CASE:  a test case that will end from an exception and should print the unprinted context
-
-logging.cpp(0): ERROR: test case THREW exception: 0
-  logged: should be printed even if an exception is thrown and no assert fails before that
-
-===============================================================================
-logging.cpp(0):
-TEST CASE:  third party asserts can report failures to doctest
-
-logging.cpp(0): ERROR: MY_ASSERT(false)
-
-logging.cpp(0): FATAL ERROR: MY_ASSERT_FATAL(false)
-
-===============================================================================
-logging.cpp(0):
-TEST CASE:  explicit failures 1
-
-logging.cpp(0): ERROR: this should not end the test case, but mark it as failing
-
-logging.cpp(0): MESSAGE: reached!
-
-===============================================================================
-logging.cpp(0):
-TEST CASE:  explicit failures 2
-
-logging.cpp(0): FATAL ERROR: fail the test case and also end it
-
-===============================================================================
-stringification.cpp(0):
-TEST CASE:  all asserts should fail and show how the objects get stringified
-
-stringification.cpp(0): ERROR: CHECK( f1 == f2 ) is NOT correct!
-  values: CHECK( Foo{} == Foo{} )
-
-stringification.cpp(0): ERROR: CHECK( dummy == "tralala" ) is NOT correct!
-  values: CHECK( omg == tralala )
-
-stringification.cpp(0): ERROR: CHECK( "tralala" == dummy ) is NOT correct!
-  values: CHECK( tralala == omg )
-
-stringification.cpp(0): ERROR: CHECK( vec1 == vec2 ) is NOT correct!
-  values: CHECK( [1, 2, 3] == [1, 2, 4] )
-
-stringification.cpp(0): ERROR: CHECK( lst_1 == lst_2 ) is NOT correct!
-  values: CHECK( [1, 42, 3, ] == [1, 2, 666, ] )
-
-stringification.cpp(0): ERROR: CHECK( s1 == s2 ) is NOT correct!
-  values: CHECK( MyOtherType: 42 == MyOtherType: 666 )
-  logged: s1=MyOtherType: 42 s2=MyOtherType: 666
-
-stringification.cpp(0): ERROR: CHECK( s1 == s2 ) is NOT correct!
-  values: CHECK( MyOtherType: 42 == MyOtherType: 666 )
-  logged: s1=MyOtherType: 42 s2=MyOtherType: 666
-          MyOtherType: 42 is not really MyOtherType: 666
-
-stringification.cpp(0): ERROR: CHECK( doctest::IsNaN<double>(0.5) ) is NOT correct!
-  values: CHECK( 0.5 )
-
-stringification.cpp(0): ERROR: CHECK( doctest::IsNaN<float>(std::numeric_limits<float>::infinity()) ) is NOT correct!
-  values: CHECK( inf )
-
-stringification.cpp(0): ERROR: CHECK( "a" == doctest::Contains("aaa") ) is NOT correct!
-  values: CHECK( a == Contains( aaa ) )
-
-stringification.cpp(0): ERROR: test case THREW exception: MyTypeInherited<int>(5, 4)
-
-===============================================================================
-stringification.cpp(0):
-TEST CASE:  a test case that registers an exception translator for int and then throws one
-
-stringification.cpp(0): ERROR: test case THREW exception: 5
-
 
 root
 1
@@ -468,6 +571,77 @@ subcases.cpp(0):
 TEST CASE:  lots of nested subcases
 
 subcases.cpp(0): FATAL ERROR: 
+
+===============================================================================
+templated_test_cases.cpp(0):
+TEST CASE:  multiple types<>
+
+templated_test_cases.cpp(0): ERROR: CHECK( t2 != T2() ) is NOT correct!
+  values: CHECK( 0 != 0 )
+
+===============================================================================
+templated_test_cases.cpp(0):
+TEST CASE:  multiple types<>
+
+templated_test_cases.cpp(0): ERROR: CHECK( t2 != T2() ) is NOT correct!
+  values: CHECK( 0 != 0 )
+
+===============================================================================
+templated_test_cases.cpp(0):
+TEST CASE:  multiple types<>
+
+templated_test_cases.cpp(0): ERROR: CHECK( t2 != T2() ) is NOT correct!
+  values: CHECK( 0 != 0 )
+
+===============================================================================
+assertion_macros.cpp(0):
+TEST CASE:  normal macros
+
+assertion_macros.cpp(0): ERROR: CHECK( throw_if(true, std::runtime_error("whops!")) == 42 ) THREW exception: "whops!"
+
+assertion_macros.cpp(0): ERROR: CHECK( doctest::Approx(0.502) == 0.501 ) is NOT correct!
+  values: CHECK( Approx( 0.502 ) == 0.501 )
+
+===============================================================================
+test_cases_and_suites.cpp(0):
+TEST SUITE: ts1
+TEST CASE:  normal test in a test suite from a decorator
+
+test_cases_and_suites.cpp(0): MESSAGE: failing because of the timeout decorator!
+
+Test case exceeded time limit of 0.000001!
+===============================================================================
+test_cases_and_suites.cpp(0):
+TEST SUITE: scoped test suite
+TEST CASE:  part of scoped
+
+test_cases_and_suites.cpp(0): FATAL ERROR: 
+
+===============================================================================
+test_cases_and_suites.cpp(0):
+TEST SUITE: scoped test suite
+TEST CASE:  part of scoped 2
+
+test_cases_and_suites.cpp(0): FATAL ERROR: 
+
+===============================================================================
+test_cases_and_suites.cpp(0):
+TEST SUITE: some TS
+TEST CASE:  part of some TS
+
+test_cases_and_suites.cpp(0): FATAL ERROR: 
+
+===============================================================================
+test_cases_and_suites.cpp(0):
+TEST CASE:  should fail because of an exception
+
+test_cases_and_suites.cpp(0): ERROR: test case THREW exception: 0
+
+===============================================================================
+assertion_macros.cpp(0):
+TEST CASE:  some asserts used in a function called by a test case
+
+assertion_macros.cpp(0): ERROR: CHECK_THROWS_WITH_AS( throw_if(true, false), "unknown exception", int ) threw a DIFFERENT exception! (contents: "unknown exception")
 
 ===============================================================================
 subcases.cpp(0):
@@ -521,94 +695,6 @@ subcases.cpp(0): MESSAGE: lala
 
 ===============================================================================
 subcases.cpp(0):
-  Scenario: vectors can be sized and resized
-     Given: A vector with some items
-      When: the size is increased
-      Then: the size and capacity change
-
-subcases.cpp(0): ERROR: CHECK( v.size() == 20 ) is NOT correct!
-  values: CHECK( 10 == 20 )
-
-===============================================================================
-subcases.cpp(0):
-  Scenario: vectors can be sized and resized
-     Given: A vector with some items
-      When: less capacity is reserved
-      Then: neither size nor capacity are changed
-
-subcases.cpp(0): ERROR: CHECK( v.size() == 10 ) is NOT correct!
-  values: CHECK( 5 == 10 )
-
-===============================================================================
-subcases.cpp(0):
-TEST CASE:  test case should fail even though the last subcase passes
-  one
-
-subcases.cpp(0): ERROR: CHECK( false ) is NOT correct!
-  values: CHECK( false )
-
-===============================================================================
-subcases.cpp(0):
-TEST CASE:  fails from an exception but gets re-entered to traverse all subcases
-  level zero
-  one
-
-subcases.cpp(0): ERROR: CHECK( false ) is NOT correct!
-  values: CHECK( false )
-
-===============================================================================
-subcases.cpp(0):
-TEST CASE:  fails from an exception but gets re-entered to traverse all subcases
-  level zero
-
-DEEPEST SUBCASE STACK REACHED (DIFFERENT FROM THE CURRENT ONE):
-  level zero
-  one
-
-subcases.cpp(0): ERROR: test case THREW exception: exception thrown in subcase - will translate later when the whole test case has been exited (cannot translate while there is an active exception)
-
-===============================================================================
-subcases.cpp(0):
-TEST CASE:  fails from an exception but gets re-entered to traverse all subcases
-
-DEEPEST SUBCASE STACK REACHED (DIFFERENT FROM THE CURRENT ONE):
-  level zero
-  one
-
-subcases.cpp(0): ERROR: test case THREW exception: failure... but the show must go on!
-
-===============================================================================
-subcases.cpp(0):
-TEST CASE:  fails from an exception but gets re-entered to traverse all subcases
-  level zero
-  two
-
-subcases.cpp(0): ERROR: CHECK( false ) is NOT correct!
-  values: CHECK( false )
-
-===============================================================================
-subcases.cpp(0):
-TEST CASE:  fails from an exception but gets re-entered to traverse all subcases
-  level zero
-
-DEEPEST SUBCASE STACK REACHED (DIFFERENT FROM THE CURRENT ONE):
-  level zero
-  two
-
-subcases.cpp(0): ERROR: test case THREW exception: exception thrown in subcase - will translate later when the whole test case has been exited (cannot translate while there is an active exception)
-
-===============================================================================
-subcases.cpp(0):
-TEST CASE:  fails from an exception but gets re-entered to traverse all subcases
-
-DEEPEST SUBCASE STACK REACHED (DIFFERENT FROM THE CURRENT ONE):
-  level zero
-  two
-
-subcases.cpp(0): ERROR: test case THREW exception: failure... but the show must go on!
-
-===============================================================================
-subcases.cpp(0):
 TEST CASE:  subcases with changing names
   outer 0
   inner 0
@@ -647,6 +733,49 @@ TEST CASE:  subcases with changing names
 subcases.cpp(0): MESSAGE: separate msg!
 
 ===============================================================================
+header.h(0):
+TEST CASE:  template 1<char>
+
+header.h(0): FATAL ERROR: 
+
+===============================================================================
+header.h(0):
+TEST CASE:  template 2<doctest::String>
+
+header.h(0): FATAL ERROR: 
+
+===============================================================================
+subcases.cpp(0):
+TEST CASE:  test case should fail even though the last subcase passes
+  one
+
+subcases.cpp(0): ERROR: CHECK( false ) is NOT correct!
+  values: CHECK( false )
+
+===============================================================================
+logging.cpp(0):
+TEST CASE:  third party asserts can report failures to doctest
+
+logging.cpp(0): ERROR: MY_ASSERT(false)
+
+logging.cpp(0): FATAL ERROR: MY_ASSERT_FATAL(false)
+
+===============================================================================
+test_cases_and_suites.cpp(0):
+DESCRIPTION: this test has overridden its skip decorator
+TEST SUITE: skipped test cases
+TEST CASE:  unskipped
+
+test_cases_and_suites.cpp(0): FATAL ERROR: 
+
+===============================================================================
+templated_test_cases.cpp(0):
+TEST CASE:  vector stuff<std::vector<int>>
+
+templated_test_cases.cpp(0): ERROR: CHECK( vec.size() == 20 ) is NOT correct!
+  values: CHECK( 10 == 20 )
+
+===============================================================================
 subcases.cpp(0):
 TEST SUITE: with a funny name,
 TEST CASE:  with a funnier name\:
@@ -678,137 +807,7 @@ TEST CASE:  without a funny name:
 subcases.cpp(0): MESSAGE: Nooo
 
 ===============================================================================
-templated_test_cases.cpp(0):
-TEST CASE:  vector stuff<std::vector<int>>
-
-templated_test_cases.cpp(0): ERROR: CHECK( vec.size() == 20 ) is NOT correct!
-  values: CHECK( 10 == 20 )
-
-===============================================================================
-templated_test_cases.cpp(0):
-TEST CASE:  multiple types<>
-
-templated_test_cases.cpp(0): ERROR: CHECK( t2 != T2() ) is NOT correct!
-  values: CHECK( 0 != 0 )
-
-===============================================================================
-templated_test_cases.cpp(0):
-TEST CASE:  multiple types<>
-
-templated_test_cases.cpp(0): ERROR: CHECK( t2 != T2() ) is NOT correct!
-  values: CHECK( 0 != 0 )
-
-===============================================================================
-templated_test_cases.cpp(0):
-TEST CASE:  multiple types<>
-
-templated_test_cases.cpp(0): ERROR: CHECK( t2 != T2() ) is NOT correct!
-  values: CHECK( 0 != 0 )
-
-===============================================================================
-templated_test_cases.cpp(0):
-TEST CASE:  bad stringification of type pair<int_pair>
-
-templated_test_cases.cpp(0): ERROR: CHECK( t2 != T2() ) is NOT correct!
-  values: CHECK( 0 != 0 )
-
-===============================================================================
-test_cases_and_suites.cpp(0):
-TEST CASE:  should fail because of an exception
-
-test_cases_and_suites.cpp(0): ERROR: test case THREW exception: 0
-
-===============================================================================
-test_cases_and_suites.cpp(0):
-TEST SUITE: scoped test suite
-TEST CASE:  part of scoped
-
-test_cases_and_suites.cpp(0): FATAL ERROR: 
-
-===============================================================================
-test_cases_and_suites.cpp(0):
-TEST SUITE: scoped test suite
-TEST CASE:  part of scoped 2
-
-test_cases_and_suites.cpp(0): FATAL ERROR: 
-
-===============================================================================
-test_cases_and_suites.cpp(0):
-TEST SUITE: some TS
-TEST CASE:  part of some TS
-
-test_cases_and_suites.cpp(0): FATAL ERROR: 
-
-===============================================================================
-test_cases_and_suites.cpp(0):
-TEST CASE:  fixtured test - not part of a test suite
-
-test_cases_and_suites.cpp(0): ERROR: CHECK( data == 85 ) is NOT correct!
-  values: CHECK( 21 == 85 )
-
-===============================================================================
-test_cases_and_suites.cpp(0):
-TEST SUITE: ts1
-TEST CASE:  normal test in a test suite from a decorator
-
-test_cases_and_suites.cpp(0): MESSAGE: failing because of the timeout decorator!
-
-Test case exceeded time limit of 0.000001!
-===============================================================================
-test_cases_and_suites.cpp(0):
-DESCRIPTION: this test has overridden its skip decorator
-TEST SUITE: skipped test cases
-TEST CASE:  unskipped
-
-test_cases_and_suites.cpp(0): FATAL ERROR: 
-
-===============================================================================
-test_cases_and_suites.cpp(0):
-DESCRIPTION: regarding failures
-TEST SUITE: test suite with a description
-TEST CASE:  fails - and its allowed
-
-test_cases_and_suites.cpp(0): FATAL ERROR: 
-
-Allowed to fail so marking it as not failed
-===============================================================================
-test_cases_and_suites.cpp(0):
-DESCRIPTION: regarding failures
-TEST SUITE: test suite with a description
-TEST CASE:  fails as it should
-
-test_cases_and_suites.cpp(0): FATAL ERROR: 
-
-Failed as expected so marking it as not failed
-===============================================================================
-test_cases_and_suites.cpp(0):
-DESCRIPTION: regarding failures
-TEST SUITE: test suite with a description
-TEST CASE:  doesn't fail but it should have
-
-Should have failed but didn't! Marking it as failed!
-===============================================================================
-test_cases_and_suites.cpp(0):
-DESCRIPTION: regarding failures
-TEST SUITE: test suite with a description
-TEST CASE:  fails 1 time as it should
-
-test_cases_and_suites.cpp(0): FATAL ERROR: 
-
-Failed exactly 1 times as expected so marking it as not failed!
-===============================================================================
-test_cases_and_suites.cpp(0):
-DESCRIPTION: regarding failures
-TEST SUITE: test suite with a description
-TEST CASE:  fails more times than it should
-
-test_cases_and_suites.cpp(0): ERROR: 
-
-test_cases_and_suites.cpp(0): ERROR: 
-
-Didn't fail exactly 1 times so marking it as failed!
-===============================================================================
-[doctest] test cases:  78 | 30 passed |  48 failed | 2 skipped
+[doctest] test cases:  78 | 30 passed |  48 failed |
 [doctest] assertions: 213 | 99 passed | 114 failed |
 [doctest] Status: FAILURE!
 Program code.
