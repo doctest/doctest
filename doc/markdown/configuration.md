@@ -30,6 +30,7 @@ Defining something ```globally``` means for every source file of the binary (exe
 - [**```DOCTEST_CONFIG_POSIX_SIGNALS```**](#doctest_config_posix_signals)
 - [**```DOCTEST_CONFIG_NO_POSIX_SIGNALS```**](#doctest_config_no_posix_signals)
 - [**```DOCTEST_CONFIG_INCLUDE_TYPE_TRAITS```**](#doctest_config_include_type_traits)
+- [**```DOCTEST_CONFIG_NO_MULTITHREADING```**](#doctest_config_no_multi_threading)
 - [**```DOCTEST_CONFIG_NO_MULTI_LANE_ATOMICS```**](#doctest_config_no_multi_lane_atomics)
 - [**```DOCTEST_CONFIG_ASSERTS_RETURN_VALUES```**](#doctest_config_asserts_return_values)
 - [**```DOCTEST_CONFIG_EVALUATE_ASSERTS_EVEN_WHEN_DISABLED```**](#doctest_config_evaluate_asserts_even_when_disabled)
@@ -236,6 +237,14 @@ This should be defined only in the source file where the library is implemented 
 This can be used to include the ```<type_traits>``` C++11 header. That in turn will enable the ability for the ```Approx``` helper to be used with strong typedefs of ```double``` - check [this](https://github.com/doctest/doctest/issues/62) or [this](https://github.com/doctest/doctest/issues/85) issue for more details on that.
 
 This can be defined both globally and in specific source files only.
+
+### **```DOCTEST_CONFIG_NO_MULTITHREADING```**
+
+This can be used to disable all multithreading support.
+
+Speeds up single threaded applications.
+
+This should be defined only in the source file where the library is implemented (it's relevant only there).
 
 ### **```DOCTEST_CONFIG_NO_MULTI_LANE_ATOMICS```**
 
