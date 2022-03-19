@@ -456,7 +456,7 @@ typedef timer_large_integer::type ticks_t;
         std::set<decltype(subcasesStack)> subcasesPassed;
         int                               subcasesCurrentMaxLevel;
         bool                              should_reenter;
-        Atomic<bool>                 shouldLogCurrentException;
+        Atomic<bool>                      shouldLogCurrentException;
 
         void resetRunData() {
             numTestCases                = 0;
