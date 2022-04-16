@@ -1391,7 +1391,7 @@ DOCTEST_CLANG_SUPPRESS_WARNING_WITH_PUSH("-Wunused-comparison")
         assertType::Enum m_at;
 
         explicit Expression_lhs(L&& in, assertType::Enum at)
-                : lhs(doctest::detail::forward<L>(in))
+                : lhs(static_cast<L&&>(in))
                 , m_at(at) {}
 
         DOCTEST_NOINLINE operator Result() {
@@ -1465,8 +1465,8 @@ DOCTEST_CLANG_SUPPRESS_WARNING_POP
         // https://github.com/catchorg/Catch2/issues/870
         // https://github.com/catchorg/Catch2/issues/565
         template <typename L>
-        Expression_lhs<const L> operator<<(const L &&operand) {
-            return Expression_lhs<const L>(doctest::detail::forward<const L>(operand), m_at);
+        Expression_lhs<L> operator<<(L&& operand) {
+            return Expression_lhs<L>(static_cast<L&&>(operand), m_at);
         }
 
         template <typename L,typename enable_if<!doctest::detail::is_rvalue_reference<L>::value,void >::type* = nullptr>
