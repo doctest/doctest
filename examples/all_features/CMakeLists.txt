@@ -16,6 +16,7 @@ set(files_with_output
     test_cases_and_suites.cpp
     asserts_used_outside_of_tests.cpp
     enums.cpp
+    decomposition.cpp
 )
 
 set(files_all
