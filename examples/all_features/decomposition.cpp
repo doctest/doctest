@@ -2,7 +2,7 @@
 
 class MoveOnly {
     public:
-        MoveOnly(int i) : i(i) { }
+        MoveOnly(int iIn) : i(iIn) { }
         MoveOnly(MoveOnly&&) = default;
         MoveOnly(const MoveOnly&) = delete;
         MoveOnly& operator=(MoveOnly&&) = default;
