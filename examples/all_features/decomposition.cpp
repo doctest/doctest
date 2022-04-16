@@ -15,7 +15,7 @@ class MoveOnly {
         int i;
 };
 
-MoveOnly genType(bool b) {
+static MoveOnly genType(bool b) {
     return MoveOnly(b ? 42 : 0);
 }
 
