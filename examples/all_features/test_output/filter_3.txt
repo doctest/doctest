@@ -1,6 +1,11 @@
 [doctest] run with "--help" for options
 
 root
+
+root
+outside of subcase
+outside of subcase
+outside of subcase
 ===============================================================================
 subcases.cpp(0):
 TEST CASE:  subcases can be used in a separate function as well
@@ -34,7 +39,7 @@ TEST CASE:  without a funny name:
 subcases.cpp(0): MESSAGE: Nooo
 
 ===============================================================================
-[doctest] test cases: 9 | 9 passed | 0 failed |
-[doctest] assertions: 0 | 0 passed | 0 failed |
+[doctest] test cases: 10 | 10 passed | 0 failed |
+[doctest] assertions:  0 |  0 passed | 0 failed |
 [doctest] Status: SUCCESS!
 Program code.

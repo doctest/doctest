@@ -31,6 +31,133 @@ root
       </SubCase>
       <OverallResultsAsserts successes="0" failures="1" test_case_success="false"/>
     </TestCase>
+    <TestCase name="reentering subcase via regular control flow" filename="subcases.cpp" line="0">
+
+root
+outside of subcase
+      <SubCase filename="subcases.cpp" line="0">
+inside subcase 0
+      </SubCase>
+outside of subcase
+      <SubCase filename="subcases.cpp" line="0">
+inside subcase 1
+      </SubCase>
+outside of subcase
+      <SubCase filename="subcases.cpp" line="0">
+inside subcase 2
+      </SubCase>
+
+root
+outside of subcase
+      <SubCase filename="subcases.cpp" line="0">
+also inside 0
+      </SubCase>
+outside of subcase
+      <SubCase filename="subcases.cpp" line="0">
+also inside 1
+      </SubCase>
+outside of subcase
+      <SubCase filename="subcases.cpp" line="0">
+also inside 2
+      </SubCase>
+
+root
+outside of subcase
+      <SubCase filename="subcases.cpp" line="0">
+fail inside 0
+      </SubCase>
+outside of subcase
+      <SubCase filename="subcases.cpp" line="0">
+        <Message type="FATAL ERROR" filename="subcases.cpp" line="0">
+          <Text>
+            1
+          </Text>
+        </Message>
+      </SubCase>
+
+root
+outside of subcase
+      <SubCase filename="subcases.cpp" line="0">
+inside outside
+        <SubCase filename="subcases.cpp" line="0">
+nested twice 0, 0
+        </SubCase>
+        <SubCase filename="subcases.cpp" line="0">
+nested twice 0, 1
+        </SubCase>
+        <SubCase filename="subcases.cpp" line="0">
+nested twice 0, 2
+        </SubCase>
+      </SubCase>
+outside of subcase
+      <SubCase filename="subcases.cpp" line="0">
+inside outside
+        <SubCase filename="subcases.cpp" line="0">
+nested twice 1, 0
+        </SubCase>
+        <SubCase filename="subcases.cpp" line="0">
+nested twice 1, 1
+        </SubCase>
+        <SubCase filename="subcases.cpp" line="0">
+nested twice 1, 2
+        </SubCase>
+      </SubCase>
+outside of subcase
+      <SubCase filename="subcases.cpp" line="0">
+inside outside
+        <SubCase filename="subcases.cpp" line="0">
+nested twice 2, 0
+        </SubCase>
+        <SubCase filename="subcases.cpp" line="0">
+nested twice 2, 1
+        </SubCase>
+        <SubCase filename="subcases.cpp" line="0">
+nested twice 2, 2
+        </SubCase>
+      </SubCase>
+
+root
+outside of subcase
+      <SubCase filename="subcases.cpp" line="0">
+inside outside
+        <SubCase filename="subcases.cpp" line="0">
+also twice 0, 0
+        </SubCase>
+        <SubCase filename="subcases.cpp" line="0">
+also twice 0, 1
+        </SubCase>
+        <SubCase filename="subcases.cpp" line="0">
+also twice 0, 2
+        </SubCase>
+      </SubCase>
+outside of subcase
+      <SubCase filename="subcases.cpp" line="0">
+inside outside
+        <SubCase filename="subcases.cpp" line="0">
+also twice 1, 0
+        </SubCase>
+        <SubCase filename="subcases.cpp" line="0">
+also twice 1, 1
+        </SubCase>
+        <SubCase filename="subcases.cpp" line="0">
+also twice 1, 2
+        </SubCase>
+      </SubCase>
+outside of subcase
+      <SubCase filename="subcases.cpp" line="0">
+inside outside
+        <SubCase filename="subcases.cpp" line="0">
+also twice 2, 0
+        </SubCase>
+        <SubCase filename="subcases.cpp" line="0">
+also twice 2, 1
+        </SubCase>
+        <SubCase filename="subcases.cpp" line="0">
+also twice 2, 2
+        </SubCase>
+      </SubCase>
+      <OverallResultsAsserts successes="0" failures="1" test_case_success="false"/>
+    </TestCase>
     <TestCase name="subcases can be used in a separate function as well" filename="subcases.cpp" line="0">
       <SubCase name="from function..." filename="subcases.cpp" line="0">
         <Message type="WARNING" filename="subcases.cpp" line="0">
@@ -269,7 +396,7 @@ root
       <OverallResultsAsserts successes="0" failures="0" test_case_success="true"/>
     </TestCase>
   </TestSuite>
-  <OverallResultsAsserts successes="19" failures="6"/>
-  <OverallResultsTestCases successes="5" failures="4"/>
+  <OverallResultsAsserts successes="19" failures="7"/>
+  <OverallResultsTestCases successes="5" failures="5"/>
 </doctest>
 Program code.

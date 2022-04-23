@@ -267,7 +267,7 @@ DOCTEST_MSVC_SUPPRESS_WARNING(4623) // default constructor was implicitly define
 #endif // DOCTEST_CONFIG_NO_WINDOWS_SEH
 
 #if !defined(_WIN32) && !defined(__QNX__) && !defined(DOCTEST_CONFIG_POSIX_SIGNALS) &&             \
-        !defined(__EMSCRIPTEN__)
+        !defined(__EMSCRIPTEN__) && !defined(__wasi__)
 #define DOCTEST_CONFIG_POSIX_SIGNALS
 #endif // _WIN32
 #if defined(DOCTEST_CONFIG_NO_POSIX_SIGNALS) && defined(DOCTEST_CONFIG_POSIX_SIGNALS)
@@ -275,7 +275,8 @@ DOCTEST_MSVC_SUPPRESS_WARNING(4623) // default constructor was implicitly define
 #endif // DOCTEST_CONFIG_NO_POSIX_SIGNALS
 
 #ifndef DOCTEST_CONFIG_NO_EXCEPTIONS
-#if !defined(__cpp_exceptions) && !defined(__EXCEPTIONS) && !defined(_CPPUNWIND)
+#if !defined(__cpp_exceptions) && !defined(__EXCEPTIONS) && !defined(_CPPUNWIND)                   \
+        || defined(__wasi__)
 #define DOCTEST_CONFIG_NO_EXCEPTIONS
 #endif // no exceptions
 #endif // DOCTEST_CONFIG_NO_EXCEPTIONS
@@ -289,6 +290,10 @@ DOCTEST_MSVC_SUPPRESS_WARNING(4623) // default constructor was implicitly define
 #if defined(DOCTEST_CONFIG_NO_EXCEPTIONS) && !defined(DOCTEST_CONFIG_NO_TRY_CATCH_IN_ASSERTS)
 #define DOCTEST_CONFIG_NO_TRY_CATCH_IN_ASSERTS
 #endif // DOCTEST_CONFIG_NO_EXCEPTIONS && !DOCTEST_CONFIG_NO_TRY_CATCH_IN_ASSERTS
+
+#ifdef __wasi__
+#define DOCTEST_CONFIG_NO_MULTITHREADING
+#endif
 
 #if defined(DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN) && !defined(DOCTEST_CONFIG_IMPLEMENT)
 #define DOCTEST_CONFIG_IMPLEMENT
@@ -393,6 +398,8 @@ DOCTEST_MSVC_SUPPRESS_WARNING(4623) // default constructor was implicitly define
 #define DOCTEST_PLATFORM_IPHONE
 #elif defined(_WIN32)
 #define DOCTEST_PLATFORM_WINDOWS
+#elif defined(__wasi__)
+#define DOCTEST_PLATFORM_WASI
 #else // DOCTEST_PLATFORM
 #define DOCTEST_PLATFORM_LINUX
 #endif // DOCTEST_PLATFORM
@@ -401,9 +408,9 @@ namespace doctest { namespace detail {
     static DOCTEST_CONSTEXPR int consume(const int*, int) { return 0; }
 }}
 
-#define DOCTEST_GLOBAL_NO_WARNINGS(var, ...)                                                       \
-    DOCTEST_CLANG_SUPPRESS_WARNING_WITH_PUSH("-Wglobal-constructors")                              \
-    static const int var = doctest::detail::consume(&var, __VA_ARGS__);                            \
+#define DOCTEST_GLOBAL_NO_WARNINGS(var, ...)                                                         \
+    DOCTEST_CLANG_SUPPRESS_WARNING_WITH_PUSH("-Wglobal-constructors")                                \
+    static const int var = doctest::detail::consume(&var, __VA_ARGS__); /* NOLINT(cert-err58-cpp) */ \
     DOCTEST_CLANG_SUPPRESS_WARNING_POP
 
 #ifndef DOCTEST_BREAK_INTO_DEBUGGER
@@ -419,6 +426,9 @@ namespace doctest { namespace detail {
 #elif defined(DOCTEST_PLATFORM_MAC)
 #if defined(__x86_64) || defined(__x86_64__) || defined(__amd64__) || defined(__i386)
 #define DOCTEST_BREAK_INTO_DEBUGGER() __asm__("int $3\n" : :) // NOLINT (hicpp-no-assembler)
+#elif defined(__ppc__) || defined(__ppc64__)
+// https://www.cocoawithlove.com/2008/03/break-into-debugger.html
+#define DOCTEST_BREAK_INTO_DEBUGGER() __asm__("li r0, 20\nsc\nnop\nli r0, 37\nli r4, 2\nsc\nnop\n": : : "memory","r0","r3","r4") // NOLINT (hicpp-no-assembler)
 #else
 #define DOCTEST_BREAK_INTO_DEBUGGER() __asm__("brk #0"); // NOLINT (hicpp-no-assembler)
 #endif
@@ -592,6 +602,22 @@ DOCTEST_INTERFACE bool operator>=(const String& lhs, const String& rhs);
 
 DOCTEST_INTERFACE std::ostream& operator<<(std::ostream& s, const String& in);
 
+class DOCTEST_INTERFACE Contains {
+public:
+    explicit Contains(const String& string);
+
+    bool checkWith(const String& other) const;
+
+    String string;
+};
+
+DOCTEST_INTERFACE String toString(const Contains& in);
+
+DOCTEST_INTERFACE bool operator==(const String& lhs, const Contains& rhs);
+DOCTEST_INTERFACE bool operator==(const Contains& lhs, const String& rhs);
+DOCTEST_INTERFACE bool operator!=(const String& lhs, const Contains& rhs);
+DOCTEST_INTERFACE bool operator!=(const Contains& lhs, const String& rhs);
+
 namespace Color {
     enum Enum
     {
@@ -744,9 +770,27 @@ struct DOCTEST_INTERFACE AssertData
     String m_decomp;
 
     // for specific exception-related asserts
-    bool        m_threw_as;
-    const char* m_exception_type;
-    const char* m_exception_string;
+    bool           m_threw_as;
+    const char*    m_exception_type;
+    class DOCTEST_INTERFACE StringContains {
+        private:
+            Contains content;
+            bool isContains;
+
+        public:
+            StringContains() : content(String()), isContains(false) { }
+            StringContains(const String& str) : content(str), isContains(false) { }
+            StringContains(const Contains& cntn) : content(cntn), isContains(true) { }
+
+            bool check(const String& str) { return isContains ? (content == str) : (content.string == str); }
+
+            operator const String&() const { return content.string; }
+
+            const char* c_str() const { return content.string.c_str(); }
+    } m_exception_string;
+
+    AssertData(assertType::Enum at, const char* file, int line, const char* expr,
+        const char* exception_type, const StringContains& exception_string);
 };
 
 struct DOCTEST_INTERFACE MessageData
@@ -1351,7 +1395,7 @@ DOCTEST_CLANG_SUPPRESS_WARNING_WITH_PUSH("-Wunused-comparison")
         assertType::Enum m_at;
 
         explicit Expression_lhs(L&& in, assertType::Enum at)
-                : lhs(doctest::detail::forward<L>(in))
+                : lhs(static_cast<L&&>(in))
                 , m_at(at) {}
 
         DOCTEST_NOINLINE operator Result() {
@@ -1425,8 +1469,8 @@ DOCTEST_CLANG_SUPPRESS_WARNING_POP
         // https://github.com/catchorg/Catch2/issues/870
         // https://github.com/catchorg/Catch2/issues/565
         template <typename L>
-        Expression_lhs<const L> operator<<(const L &&operand) {
-            return Expression_lhs<const L>(doctest::detail::forward<const L>(operand), m_at);
+        Expression_lhs<L> operator<<(L&& operand) {
+            return Expression_lhs<L>(static_cast<L&&>(operand), m_at);
         }
 
         template <typename L,typename enable_if<!doctest::detail::is_rvalue_reference<L>::value,void >::type* = nullptr>
@@ -1523,7 +1567,10 @@ DOCTEST_CLANG_SUPPRESS_WARNING_POP
     struct DOCTEST_INTERFACE ResultBuilder : public AssertData
     {
         ResultBuilder(assertType::Enum at, const char* file, int line, const char* expr,
-                      const char* exception_type = "", const char* exception_string = "");
+                      const char* exception_type = "", const String& exception_string = "");
+
+        ResultBuilder(assertType::Enum at, const char* file, int line, const char* expr,
+                      const char* exception_type, const Contains& exception_string);
 
         void setResult(const Result& res);
 
@@ -3049,8 +3096,17 @@ DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_BEGIN
 #include <algorithm>
 #include <iomanip>
 #include <vector>
+#ifndef DOCTEST_CONFIG_NO_MULTITHREADING
 #include <atomic>
 #include <mutex>
+#define DOCTEST_DECLARE_MUTEX(name) std::mutex name;
+#define DOCTEST_DECLARE_STATIC_MUTEX(name) static DOCTEST_DECLARE_MUTEX(name)
+#define DOCTEST_LOCK_MUTEX(name) std::lock_guard<std::mutex> DOCTEST_ANONYMOUS(DOCTEST_ANON_LOCK_)(name);
+#else // DOCTEST_CONFIG_NO_MULTITHREADING
+#define DOCTEST_DECLARE_MUTEX(name)
+#define DOCTEST_DECLARE_STATIC_MUTEX(name)
+#define DOCTEST_LOCK_MUTEX(name)
+#endif // DOCTEST_CONFIG_NO_MULTITHREADING
 #include <set>
 #include <map>
 #include <unordered_set>
@@ -3114,7 +3170,7 @@ DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_END
 #endif
 
 #ifndef DOCTEST_THREAD_LOCAL
-#if DOCTEST_MSVC && (DOCTEST_MSVC < DOCTEST_COMPILER(19, 0, 0))
+#if defined(DOCTEST_CONFIG_NO_MULTITHREADING) || DOCTEST_MSVC && (DOCTEST_MSVC < DOCTEST_COMPILER(19, 0, 0))
 #define DOCTEST_THREAD_LOCAL
 #else // DOCTEST_MSVC
 #define DOCTEST_THREAD_LOCAL thread_local
@@ -3307,9 +3363,17 @@ typedef timer_large_integer::type ticks_t;
         ticks_t m_ticks = 0;
     };
 
-#ifdef DOCTEST_CONFIG_NO_MULTI_LANE_ATOMICS
+#ifdef DOCTEST_CONFIG_NO_MULTITHREADING
     template <typename T>
-    using AtomicOrMultiLaneAtomic = std::atomic<T>;
+    using Atomic = T;
+#else // DOCTEST_CONFIG_NO_MULTITHREADING
+    template <typename T>
+    using Atomic = std::atomic<T>;
+#endif // DOCTEST_CONFIG_NO_MULTITHREADING
+
+#if defined(DOCTEST_CONFIG_NO_MULTI_LANE_ATOMICS) || defined(DOCTEST_CONFIG_NO_MULTITHREADING)
+    template <typename T>
+    using MultiLaneAtomic = Atomic<T>;
 #else // DOCTEST_CONFIG_NO_MULTI_LANE_ATOMICS
     // Provides a multilane implementation of an atomic variable that supports add, sub, load,
     // store. Instead of using a single atomic variable, this splits up into multiple ones,
@@ -3326,8 +3390,8 @@ typedef timer_large_integer::type ticks_t;
     {
         struct CacheLineAlignedAtomic
         {
-            std::atomic<T> atomic{};
-            char padding[DOCTEST_MULTI_LANE_ATOMICS_CACHE_LINE_SIZE - sizeof(std::atomic<T>)];
+            Atomic<T> atomic{};
+            char padding[DOCTEST_MULTI_LANE_ATOMICS_CACHE_LINE_SIZE - sizeof(Atomic<T>)];
         };
         CacheLineAlignedAtomic m_atomics[DOCTEST_MULTI_LANE_ATOMICS_THREAD_LANES];
 
@@ -3383,24 +3447,21 @@ typedef timer_large_integer::type ticks_t;
         //    assigned in a round-robin fashion.
         // 3. This tlsLaneIdx is stored in the thread local data, so it is directly available with
         //    little overhead.
-        std::atomic<T>& myAtomic() DOCTEST_NOEXCEPT {
-            static std::atomic<size_t> laneCounter;
+        Atomic<T>& myAtomic() DOCTEST_NOEXCEPT {
+            static Atomic<size_t> laneCounter;
             DOCTEST_THREAD_LOCAL size_t tlsLaneIdx =
                     laneCounter++ % DOCTEST_MULTI_LANE_ATOMICS_THREAD_LANES;
 
             return m_atomics[tlsLaneIdx].atomic;
         }
     };
-
-    template <typename T>
-    using AtomicOrMultiLaneAtomic = MultiLaneAtomic<T>;
 #endif // DOCTEST_CONFIG_NO_MULTI_LANE_ATOMICS
 
     // this holds both parameters from the command line and runtime data for tests
     struct ContextState : ContextOptions, TestRunStats, CurrentTestCaseStats
     {
-        AtomicOrMultiLaneAtomic<int> numAssertsCurrentTest_atomic;
-        AtomicOrMultiLaneAtomic<int> numAssertsFailedCurrentTest_atomic;
+        MultiLaneAtomic<int> numAssertsCurrentTest_atomic;
+        MultiLaneAtomic<int> numAssertsFailedCurrentTest_atomic;
 
         std::vector<std::vector<String>> filters = decltype(filters)(9); // 9 different filters
 
@@ -3418,7 +3479,7 @@ typedef timer_large_integer::type ticks_t;
         std::vector<SubcaseSignature> nextSubcaseStack;
         std::unordered_set<unsigned long long> fullyTraversedSubcases;
         size_t currentSubcaseDepth;
-        std::atomic<bool> shouldLogCurrentException;
+        Atomic<bool> shouldLogCurrentException;
 
         void resetRunData() {
             numTestCases                = 0;
@@ -3649,16 +3710,29 @@ int String::compare(const String& other, bool no_case) const {
 // NOLINTNEXTLINE(clang-analyzer-cplusplus.NewDeleteLeaks)
 String operator+(const String& lhs, const String& rhs) { return  String(lhs) += rhs; }
 
-// clang-format off
 bool operator==(const String& lhs, const String& rhs) { return lhs.compare(rhs) == 0; }
 bool operator!=(const String& lhs, const String& rhs) { return lhs.compare(rhs) != 0; }
 bool operator< (const String& lhs, const String& rhs) { return lhs.compare(rhs) < 0; }
 bool operator> (const String& lhs, const String& rhs) { return lhs.compare(rhs) > 0; }
 bool operator<=(const String& lhs, const String& rhs) { return (lhs != rhs) ? lhs.compare(rhs) < 0 : true; }
 bool operator>=(const String& lhs, const String& rhs) { return (lhs != rhs) ? lhs.compare(rhs) > 0 : true; }
-// clang-format on
 
 std::ostream& operator<<(std::ostream& s, const String& in) { return s << in.c_str(); }
+
+Contains::Contains(const String& str) : string(str) { }
+
+bool Contains::checkWith(const String& full_string) const {
+    return strstr(full_string.c_str(), string.c_str()) != nullptr;
+}
+
+String toString(const Contains& in) {
+    return "Contains( " + in.string + " )";
+}
+
+bool operator==(const String& lhs, const Contains& rhs) { return rhs.checkWith(lhs); }
+bool operator==(const Contains& lhs, const String& rhs) { return lhs.checkWith(rhs); }
+bool operator!=(const String& lhs, const Contains& rhs) { return !rhs.checkWith(lhs); }
+bool operator!=(const Contains& lhs, const String& rhs) { return !lhs.checkWith(rhs); }
 
 namespace {
     void color_to_stream(std::ostream&, Color::Enum) DOCTEST_BRANCH_ON_DISABLED({}, ;)
@@ -4512,10 +4586,10 @@ namespace {
         static LONG CALLBACK handleException(PEXCEPTION_POINTERS ExceptionInfo) {
             // Multiple threads may enter this filter/handler at once. We want the error message to be printed on the
             // console just once no matter how many threads have crashed.
-            static std::mutex mutex;
+            DOCTEST_DECLARE_STATIC_MUTEX(mutex)
             static bool execute = true;
             {
-                std::lock_guard<std::mutex> lock(mutex);
+                DOCTEST_LOCK_MUTEX(mutex)
                 if(execute) {
                     bool reported = false;
                     for(size_t i = 0; i < DOCTEST_COUNTOF(signalDefs); ++i) {
@@ -4759,24 +4833,26 @@ namespace {
     }
 #endif // DOCTEST_CONFIG_POSIX_SIGNALS || DOCTEST_CONFIG_WINDOWS_SEH
 } // namespace
+
+AssertData::AssertData(assertType::Enum at, const char* file, int line, const char* expr,
+    const char* exception_type, const StringContains& exception_string)
+    : m_test_case(g_cs->currentTest), m_at(at), m_file(file), m_line(line), m_expr(expr),
+    m_failed(true), m_threw(false), m_threw_as(false), m_exception_type(exception_type),
+    m_exception_string(exception_string) {
+#if DOCTEST_MSVC
+    if (m_expr[0] == ' ') // this happens when variadic macros are disabled under MSVC
+        ++m_expr;
+#endif // MSVC
+}
+
 namespace detail {
     ResultBuilder::ResultBuilder(assertType::Enum at, const char* file, int line, const char* expr,
-                                 const char* exception_type, const char* exception_string) {
-        m_test_case        = g_cs->currentTest;
-        m_at               = at;
-        m_file             = file;
-        m_line             = line;
-        m_expr             = expr;
-        m_failed           = true;
-        m_threw            = false;
-        m_threw_as         = false;
-        m_exception_type   = exception_type;
-        m_exception_string = exception_string;
-#if DOCTEST_MSVC
-        if(m_expr[0] == ' ') // this happens when variadic macros are disabled under MSVC
-            ++m_expr;
-#endif // MSVC
-    }
+                                 const char* exception_type, const String& exception_string)
+        : AssertData(at, file, line, expr, exception_type, exception_string) { }
+
+    ResultBuilder::ResultBuilder(assertType::Enum at, const char* file, int line, const char* expr,
+        const char* exception_type, const Contains& exception_string)
+        : AssertData(at, file, line, expr, exception_type, exception_string) { }
 
     void ResultBuilder::setResult(const Result& res) {
         m_decomp = res.m_decomp;
@@ -4792,11 +4868,11 @@ namespace detail {
         if(m_at & assertType::is_throws) { //!OCLINT bitwise operator in conditional
             m_failed = !m_threw;
         } else if((m_at & assertType::is_throws_as) && (m_at & assertType::is_throws_with)) { //!OCLINT
-            m_failed = !m_threw_as || (m_exception != m_exception_string);
+            m_failed = !m_threw_as || !m_exception_string.check(m_exception);
         } else if(m_at & assertType::is_throws_as) { //!OCLINT bitwise operator in conditional
             m_failed = !m_threw_as;
         } else if(m_at & assertType::is_throws_with) { //!OCLINT bitwise operator in conditional
-            m_failed = m_exception != m_exception_string;
+            m_failed = !m_exception_string.check(m_exception);
         } else if(m_at & assertType::is_nothrow) { //!OCLINT bitwise operator in conditional
             m_failed = m_threw;
         }
@@ -4968,9 +5044,9 @@ namespace {
 
         void ensureTagClosed();
 
-    private:
-
         void writeDeclaration();
+
+    private:
 
         void newlineIfNecessary();
 
@@ -5160,7 +5236,7 @@ namespace {
 
     XmlWriter::XmlWriter( std::ostream& os ) : m_os( os )
     {
-        writeDeclaration();
+        // writeDeclaration(); // called explicitly by the reporters that use the writer class - see issue #627
     }
 
     XmlWriter::~XmlWriter() {
@@ -5271,8 +5347,8 @@ namespace {
 
     struct XmlReporter : public IReporter
     {
-        XmlWriter  xml;
-        std::mutex mutex;
+        XmlWriter xml;
+        DOCTEST_DECLARE_MUTEX(mutex)
 
         // caching pointers/references to objects of these types - safe to do
         const ContextOptions& opt;
@@ -5366,6 +5442,8 @@ namespace {
         }
 
         void test_run_start() override {
+            xml.writeDeclaration();
+
             // remove .exe extension - mainly to have the same output on UNIX and Windows
             std::string binary_name = skipPathFromFilename(opt.binary_name.c_str());
 #ifdef DOCTEST_PLATFORM_WINDOWS
@@ -5432,7 +5510,7 @@ namespace {
         }
 
         void test_case_exception(const TestCaseException& e) override {
-            std::lock_guard<std::mutex> lock(mutex);
+            DOCTEST_LOCK_MUTEX(mutex)
 
             xml.scopedElement("Exception")
                     .writeAttribute("crash", e.is_crash)
@@ -5453,7 +5531,7 @@ namespace {
             if(!rb.m_failed && !opt.success)
                 return;
 
-            std::lock_guard<std::mutex> lock(mutex);
+            DOCTEST_LOCK_MUTEX(mutex)
 
             xml.startElement("Expression")
                     .writeAttribute("success", !rb.m_failed)
@@ -5469,7 +5547,7 @@ namespace {
             if(rb.m_at & assertType::is_throws_as)
                 xml.scopedElement("ExpectedException").writeText(rb.m_exception_type);
             if(rb.m_at & assertType::is_throws_with)
-                xml.scopedElement("ExpectedExceptionString").writeText(rb.m_exception_string);
+                xml.scopedElement("ExpectedExceptionString").writeText(rb.m_exception_string.c_str());
             if((rb.m_at & assertType::is_normal) && !rb.m_threw)
                 xml.scopedElement("Expanded").writeText(rb.m_decomp.c_str());
 
@@ -5479,7 +5557,7 @@ namespace {
         }
 
         void log_message(const MessageData& mb) override {
-            std::lock_guard<std::mutex> lock(mutex);
+            DOCTEST_LOCK_MUTEX(mutex)
 
             xml.startElement("Message")
                     .writeAttribute("type", failureString(mb.m_severity))
@@ -5515,7 +5593,8 @@ namespace {
         } else if((rb.m_at & assertType::is_throws_as) &&
                     (rb.m_at & assertType::is_throws_with)) { //!OCLINT
             s << Color::Cyan << assertString(rb.m_at) << "( " << rb.m_expr << ", \""
-                << rb.m_exception_string << "\", " << rb.m_exception_type << " ) " << Color::None;
+                << rb.m_exception_string.c_str()
+                << "\", " << rb.m_exception_type << " ) " << Color::None;
             if(rb.m_threw) {
                 if(!rb.m_failed) {
                     s << "threw as expected!\n";
@@ -5536,7 +5615,8 @@ namespace {
         } else if(rb.m_at &
                     assertType::is_throws_with) { //!OCLINT bitwise operator in conditional
             s << Color::Cyan << assertString(rb.m_at) << "( " << rb.m_expr << ", \""
-                << rb.m_exception_string << "\" ) " << Color::None
+                << rb.m_exception_string.c_str()
+                << "\" ) " << Color::None
                 << (rb.m_threw ? (!rb.m_failed ? "threw as expected!" :
                                                 "threw a DIFFERENT exception: ") :
                                 "did NOT throw at all!")
@@ -5561,8 +5641,8 @@ namespace {
     // - more attributes in tags
     struct JUnitReporter : public IReporter
     {
-        XmlWriter  xml;
-        std::mutex mutex;
+        XmlWriter xml;
+        DOCTEST_DECLARE_MUTEX(mutex)
         Timer timer;
         std::vector<String> deepestSubcaseStackNames;
 
@@ -5658,9 +5738,13 @@ namespace {
         // WHAT FOLLOWS ARE OVERRIDES OF THE VIRTUAL METHODS OF THE REPORTER INTERFACE
         // =========================================================================================
 
-        void report_query(const QueryData&) override {}
+        void report_query(const QueryData&) override {
+            xml.writeDeclaration();
+        }
 
-        void test_run_start() override {}
+        void test_run_start() override {
+            xml.writeDeclaration();
+        }
 
         void test_run_end(const TestRunStats& p) override {
             // remove .exe extension - mainly to have the same output on UNIX and Windows
@@ -5730,7 +5814,7 @@ namespace {
         }
 
         void test_case_exception(const TestCaseException& e) override {
-            std::lock_guard<std::mutex> lock(mutex);
+            DOCTEST_LOCK_MUTEX(mutex)
             testCaseData.addError("exception", e.error_string.c_str());
         }
 
@@ -5744,7 +5828,7 @@ namespace {
             if(!rb.m_failed) // report only failures & ignore the `success` option
                 return;
 
-            std::lock_guard<std::mutex> lock(mutex);
+            DOCTEST_LOCK_MUTEX(mutex)
 
             std::ostringstream os;
             os << skipPathFromFilename(rb.m_file) << (opt.gnu_file_line ? ":" : "(")
@@ -5795,7 +5879,7 @@ namespace {
         bool                          hasLoggedCurrentTestStart;
         std::vector<SubcaseSignature> subcasesStack;
         size_t                        currentSubcaseLevel;
-        std::mutex                    mutex;
+        DOCTEST_DECLARE_MUTEX(mutex)
 
         // caching pointers/references to objects of these types - safe to do
         const ContextOptions& opt;
@@ -6172,7 +6256,7 @@ namespace {
         }
 
         void test_case_exception(const TestCaseException& e) override {
-            std::lock_guard<std::mutex> lock(mutex);
+            DOCTEST_LOCK_MUTEX(mutex)
             if(tc->m_no_output)
                 return;
 
@@ -6211,7 +6295,7 @@ namespace {
             if((!rb.m_failed && !opt.success) || tc->m_no_output)
                 return;
 
-            std::lock_guard<std::mutex> lock(mutex);
+            DOCTEST_LOCK_MUTEX(mutex)
 
             logTestStart();
 
@@ -6227,7 +6311,7 @@ namespace {
             if(tc->m_no_output)
                 return;
 
-            std::lock_guard<std::mutex> lock(mutex);
+            DOCTEST_LOCK_MUTEX(mutex)
 
             logTestStart();
 
@@ -6355,8 +6439,8 @@ namespace {
                 char character = *current++;
                 if(seenBackslash) {
                     seenBackslash = false;
-                    if(character == ',') {
-                        s.put(',');
+                    if(character == ',' || character == '\\') {
+                        s.put(character);
                         continue;
                     }
                     s.put('\\');
