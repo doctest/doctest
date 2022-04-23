@@ -1088,7 +1088,8 @@ namespace detail {
                 m_entered = true;
                 DOCTEST_ITERATE_THROUGH_REPORTERS(subcase_start, m_signature);
             } else if (g_cs->nextSubcaseStack.size() <= g_cs->currentSubcaseDepth
-                    && !g_cs->fullyTraversedSubcases.contains(hash(hash(g_cs->subcaseStack, g_cs->currentSubcaseDepth), hash(m_signature)))) {
+                    && g_cs->fullyTraversedSubcases.find(hash(hash(g_cs->subcaseStack, g_cs->currentSubcaseDepth), hash(m_signature)))
+                    == g_cs->fullyTraversedSubcases.end()) {
                 if (checkFilters()) { return; }
                 // This subcase is part of the one to be executed next.
                 g_cs->nextSubcaseStack.clear();
