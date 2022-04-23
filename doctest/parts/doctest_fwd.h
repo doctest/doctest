@@ -760,6 +760,7 @@ struct DOCTEST_INTERFACE SubcaseSignature
     const char* m_file;
     int         m_line;
 
+    bool operator==(const SubcaseSignature& other) const;
     bool operator<(const SubcaseSignature& other) const;
 };
 
@@ -1183,6 +1184,9 @@ namespace detail {
         ~Subcase();
 
         operator bool() const;
+
+        private:
+            bool checkFilters();
     };
 
     template <typename L, typename R>
