@@ -4,6 +4,7 @@
   <TestSuite>
     <TestCase name="  Scenario: vectors can be sized and resized" filename="subcases.cpp" line="0" skipped="true"/>
     <TestCase name="CHECK level of asserts fail the test case but don't abort it" filename="assertion_macros.cpp" line="0" skipped="true"/>
+    <TestCase name="Move Only Type" filename="decomposition.cpp" line="0" skipped="true"/>
     <TestCase name="Nested - related to https://github.com/doctest/doctest/issues/282" filename="subcases.cpp" line="0" skipped="true"/>
     <TestCase name="REQUIRE level of asserts fail and abort the test case - 1" filename="assertion_macros.cpp" line="0" skipped="true"/>
     <TestCase name="REQUIRE level of asserts fail and abort the test case - 10" filename="assertion_macros.cpp" line="0" skipped="true"/>
@@ -103,7 +104,6 @@
     <TestCase name="part of some TS" filename="test_cases_and_suites.cpp" line="0" skipped="true"/>
   </TestSuite>
   <TestSuite>
-    <TestCase name="reentering subcase via regular control flow" filename="subcases.cpp" line="0" skipped="true"/>
     <TestCase name="should fail and no output" filename="no_failures.cpp" line="0" should_fail="true" skipped="true"/>
     <TestCase name="should fail and no output" filename="test_cases_and_suites.cpp" line="0" should_fail="true" skipped="true"/>
     <TestCase name="should fail because of an exception" filename="test_cases_and_suites.cpp" line="0" skipped="true"/>
@@ -136,7 +136,11 @@
     <TestCase name="will end from a std::string exception" filename="coverage_maxout.cpp" line="0" skipped="true"/>
     <TestCase name="will end from an unknown exception" filename="coverage_maxout.cpp" line="0" skipped="true"/>
   </TestSuite>
+  <TestSuite name="with a funny name,">
+    <TestCase name="with a funnier name\:" filename="subcases.cpp" line="0" skipped="true"/>
+    <TestCase name="without a funny name:" filename="subcases.cpp" line="0" skipped="true"/>
+  </TestSuite>
   <OverallResultsAsserts successes="0" failures="0"/>
-  <OverallResultsTestCases successes="0" failures="0" skipped="97"/>
+  <OverallResultsTestCases successes="0" failures="0" skipped="99"/>
 </doctest>
 Program code.

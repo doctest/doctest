@@ -133,6 +133,19 @@ Checkout the [**example**](../../examples/all_features/asserts_used_outside_of_t
 
 Currently [**logging macros**](logging.md) cannot be used for extra context for asserts outside of a test run. That means that the ```_MESSAGE``` variants of asserts are also not usable - since they are just a packed ```INFO()``` with an assert right after it.
 
+## String containment
+
+```doctest::Contains``` can be used to check whether the string passed to its constructor is contained within the string it is compared with. Here's a simple example:
+
+```c++
+REQUIRE("foobar" == doctest::Contains("foo"));
+```
+
+It can also be used with the ```THROWS_WITH``` family of assertion macros to check whether the thrown exception [translated to a string](stringification.md#translating-exceptions) contains the provided string. Here's another example:
+```c++
+REQUIRE_THROWS_WITH(func(), doctest::Contains("Oopsie"));
+```
+
 ## Floating point comparisons
 
 When comparing floating point numbers - especially if at least one of them has been computed - great care must be taken to allow for rounding errors and inexact representations.

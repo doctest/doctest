@@ -1,6 +1,6 @@
 ## Contributing
 
-This library is free, and will stay free but needs your support to sustain its development. There are lots of [**new features**](doc/markdown/roadmap.md) and maintenance to do. If you work for a company using **doctest** or have the means to do so, please consider financial support.
+This library is free, and will stay free but needs your support to sustain its development. There are lots of [**new features**](https://github.com/doctest/doctest/issues/600) and maintenance to do. If you work for a company using **doctest** or have the means to do so, please consider financial support.
 
 [<img src="https://c5.patreon.com/external/logo/become_a_patron_button.png" align="top">](https://www.patreon.com/onqtam)
 [<img src="https://user-images.githubusercontent.com/29021710/150090263-50ce0fa7-7813-4648-8273-fec3bbbd171c.jpg" width=175>](https://www.paypal.me/onqtam/10)

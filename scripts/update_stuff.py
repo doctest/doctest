@@ -34,7 +34,7 @@ readme.close()
 meson_contents = ""
 for line in fileinput.input(["../meson.build"]):
     if line.startswith("project('doctest'"):
-        meson_contents += "project('doctest', ['cpp'], version: '" + version + "', meson_version:'>=0.50')\n"
+        meson_contents += "project('doctest', ['cpp'], version: '" + version + "')\n"
     else:
         meson_contents += line
 

@@ -151,6 +151,8 @@ TEST_CASE("all asserts should fail and show how the objects get stringified") {
     CHECK(doctest::IsNaN<float>(std::numeric_limits<float>::infinity()));
     // can't test actual nan because it's implementation defined
 
+    CHECK("a" == doctest::Contains("aaa"));
+
     // lets see if this exception gets translated
     throw_if(true, bla1);
 }

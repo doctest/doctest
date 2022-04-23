@@ -33,6 +33,9 @@ stringification.cpp(0): ERROR: CHECK( doctest::IsNaN<double>(0.5) ) is NOT corre
 stringification.cpp(0): ERROR: CHECK( doctest::IsNaN<float>(std::numeric_limits<float>::infinity()) ) is NOT correct!
   values: CHECK( inf )
 
+stringification.cpp(0): ERROR: CHECK( "a" == doctest::Contains("aaa") ) is NOT correct!
+  values: CHECK( a == Contains( aaa ) )
+
 stringification.cpp(0): ERROR: test case THREW exception: MyTypeInherited<int>(5, 4)
 
 ===============================================================================
@@ -42,7 +45,7 @@ TEST CASE:  a test case that registers an exception translator for int and then 
 stringification.cpp(0): ERROR: test case THREW exception: 5
 
 ===============================================================================
-[doctest] test cases: 2 | 0 passed | 2 failed |
-[doctest] assertions: 9 | 0 passed | 9 failed |
+[doctest] test cases:  2 | 0 passed |  2 failed |
+[doctest] assertions: 10 | 0 passed | 10 failed |
 [doctest] Status: FAILURE!
 Program code.

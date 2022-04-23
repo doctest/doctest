@@ -251,7 +251,7 @@ The development of doctest is supported with donations.
 [6] https://en.wikipedia.org/wiki/List_of_unit_testing_frameworks#C.2B.2B
 [7] https://github.com/doctest/doctest/blob/master/doc/markdown/faq.md#how-is-doctest-different-from-catch
 [8] https://github.com/doctest/doctest/blob/master/doc/markdown/features.md
-[9] https://github.com/doctest/doctest/blob/master/doc/markdown/roadmap.md
+[9] https://github.com/doctest/doctest/issues/600
 [10] https://github.com/doctest/doctest/blob/master/doc/markdown/benchmarks.md
 [11] https://github.com/doctest/doctest/blob/master/doc/markdown/assertions.md#fast-asserts
 [12] http://baptiste-wicht.com/posts/2016/09/blazing-fast-unit-test-compilation-with-doctest-11.html

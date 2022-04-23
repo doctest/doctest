@@ -141,6 +141,10 @@ CHECK( false ) is NOT correct!
     <testcase classname="subcases.cpp" name="subcases with changing names/outer 1/inner 0" status="run"/>
     <testcase classname="subcases.cpp" name="subcases with changing names/outer 1/inner 1" status="run"/>
     <testcase classname="subcases.cpp" name="subcases with changing names/separate" status="run"/>
+    <testcase classname="subcases.cpp" name="with a funnier name\:/with the funniest name\," status="run"/>
+    <testcase classname="subcases.cpp" name="with a funnier name\:/with a slightly funny name :" status="run"/>
+    <testcase classname="subcases.cpp" name="with a funnier name\:/without a funny name" status="run"/>
+    <testcase classname="subcases.cpp" name="without a funny name:" status="run"/>
   </testsuite>
 </testsuites>
 Program code.

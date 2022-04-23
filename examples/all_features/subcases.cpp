@@ -178,3 +178,21 @@ TEST_CASE("subcases with changing names") {
         MESSAGE("separate msg!");
     }
 }
+
+TEST_SUITE("with a funny name,") {
+    TEST_CASE("with a funnier name\\:") {
+        SUBCASE("with the funniest name\\,") {
+            MESSAGE("Yes!");
+        }
+        SUBCASE("with a slightly funny name :") {
+            MESSAGE("Yep!");
+        }
+        SUBCASE("without a funny name") {
+            MESSAGE("NO!");
+        }
+    }
+
+    TEST_CASE("without a funny name:") {
+        MESSAGE("Nooo");
+    }
+}

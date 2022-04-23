@@ -16,6 +16,8 @@ outside of subcase
     <testcase classname="subcases.cpp" name="fails from an exception but gets re-entered to traverse all subcases" status="run"/>
     <testcase classname="subcases.cpp" name="Nested - related to https://github.com/doctest/doctest/issues/282" status="run"/>
     <testcase classname="subcases.cpp" name="subcases with changing names" status="run"/>
+    <testcase classname="subcases.cpp" name="with a funnier name\:" status="run"/>
+    <testcase classname="subcases.cpp" name="without a funny name:" status="run"/>
   </testsuite>
 </testsuites>
 Program code.
