@@ -16,6 +16,69 @@ TEST CASE:  lots of nested subcases
 
 subcases.cpp(0): FATAL ERROR: 
 
+
+root
+outside of subcase
+inside subcase 0
+outside of subcase
+inside subcase 1
+outside of subcase
+inside subcase 2
+
+root
+outside of subcase
+also inside 0
+outside of subcase
+also inside 1
+outside of subcase
+also inside 2
+
+root
+outside of subcase
+fail inside 0
+outside of subcase
+===============================================================================
+subcases.cpp(0):
+TEST CASE:  reentering subcase via regular control flow
+
+DEEPEST SUBCASE STACK REACHED (DIFFERENT FROM THE CURRENT ONE):
+
+subcases.cpp(0): FATAL ERROR: 1
+
+
+root
+outside of subcase
+inside outside
+nested twice 0, 0
+nested twice 0, 1
+nested twice 0, 2
+outside of subcase
+inside outside
+nested twice 1, 0
+nested twice 1, 1
+nested twice 1, 2
+outside of subcase
+inside outside
+nested twice 2, 0
+nested twice 2, 1
+nested twice 2, 2
+
+root
+outside of subcase
+inside outside
+also twice 0, 0
+also twice 0, 1
+also twice 0, 2
+outside of subcase
+inside outside
+also twice 1, 0
+also twice 1, 1
+also twice 1, 2
+outside of subcase
+inside outside
+also twice 2, 0
+also twice 2, 1
+also twice 2, 2
 ===============================================================================
 subcases.cpp(0):
 TEST CASE:  subcases can be used in a separate function as well
@@ -225,7 +288,7 @@ TEST CASE:  without a funny name:
 subcases.cpp(0): MESSAGE: Nooo
 
 ===============================================================================
-[doctest] test cases:  9 |  5 passed | 4 failed |
-[doctest] assertions: 25 | 19 passed | 6 failed |
+[doctest] test cases: 10 |  5 passed | 5 failed |
+[doctest] assertions: 26 | 19 passed | 7 failed |
 [doctest] Status: FAILURE!
 Program code.

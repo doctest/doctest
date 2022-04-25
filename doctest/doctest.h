@@ -807,6 +807,7 @@ struct DOCTEST_INTERFACE SubcaseSignature
     const char* m_file;
     int         m_line;
 
+    bool operator==(const SubcaseSignature& other) const;
     bool operator<(const SubcaseSignature& other) const;
 };
 
@@ -1230,6 +1231,9 @@ namespace detail {
         ~Subcase();
 
         operator bool() const;
+
+        private:
+            bool checkFilters();
     };
 
     template <typename L, typename R>
@@ -3105,6 +3109,7 @@ DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_BEGIN
 #endif // DOCTEST_CONFIG_NO_MULTITHREADING
 #include <set>
 #include <map>
+#include <unordered_set>
 #include <exception>
 #include <stdexcept>
 #include <csignal>
@@ -3469,11 +3474,12 @@ typedef timer_large_integer::type ticks_t;
         std::vector<String> stringifiedContexts; // logging from INFO() due to an exception
 
         // stuff for subcases
-        std::vector<SubcaseSignature>     subcasesStack;
-        std::set<decltype(subcasesStack)> subcasesPassed;
-        int                               subcasesCurrentMaxLevel;
-        bool                              should_reenter;
-        Atomic<bool>                      shouldLogCurrentException;
+        bool reachedLeaf;
+        std::vector<SubcaseSignature> subcaseStack;
+        std::vector<SubcaseSignature> nextSubcaseStack;
+        std::unordered_set<unsigned long long> fullyTraversedSubcases;
+        size_t currentSubcaseDepth;
+        Atomic<bool> shouldLogCurrentException;
 
         void resetRunData() {
             numTestCases                = 0;
@@ -3810,6 +3816,12 @@ const char* skipPathFromFilename(const char* file) {
 DOCTEST_CLANG_SUPPRESS_WARNING_POP
 DOCTEST_GCC_SUPPRESS_WARNING_POP
 
+bool SubcaseSignature::operator==(const SubcaseSignature& other) const {
+    return m_line == other.m_line
+        && std::strcmp(m_file, other.m_file) == 0
+        && m_name == other.m_name;
+}
+
 bool SubcaseSignature::operator<(const SubcaseSignature& other) const {
     if(m_line != other.m_line)
         return m_line < other.m_line;
@@ -4048,59 +4060,92 @@ namespace {
         return !*wild;
     }
 
-    //// C string hash function (djb2) - taken from http://www.cse.yorku.ca/~oz/hash.html
-    //unsigned hashStr(unsigned const char* str) {
-    //    unsigned long hash = 5381;
-    //    char          c;
-    //    while((c = *str++))
-    //        hash = ((hash << 5) + hash) + c; // hash * 33 + c
-    //    return hash;
-    //}
-
     // checks if the name matches any of the filters (and can be configured what to do when empty)
     bool matchesAny(const char* name, const std::vector<String>& filters, bool matchEmpty,
-                    bool caseSensitive) {
-        if(filters.empty() && matchEmpty)
+        bool caseSensitive) {
+        if (filters.empty() && matchEmpty)
             return true;
-        for(auto& curr : filters)
-            if(wildcmp(name, curr.c_str(), caseSensitive))
+        for (auto& curr : filters)
+            if (wildcmp(name, curr.c_str(), caseSensitive))
                 return true;
         return false;
     }
+
+    unsigned long long hash(unsigned long long a, unsigned long long b) {
+        return (a << 5) + b;
+    }
+
+    // C string hash function (djb2) - taken from http://www.cse.yorku.ca/~oz/hash.html
+    unsigned long long hash(const char* str) {
+        unsigned long long hash = 5381;
+        char c;
+        while ((c = *str++))
+            hash = ((hash << 5) + hash) + c; // hash * 33 + c
+        return hash;
+    }
+
+    unsigned long long hash(const SubcaseSignature& sig) {
+        return hash(hash(hash(sig.m_file), hash(sig.m_name.c_str())), sig.m_line);
+    }
+
+    unsigned long long hash(const std::vector<SubcaseSignature>& sigs, size_t count) {
+        unsigned long long running = 0;
+        auto end = sigs.begin() + count;
+        for (auto it = sigs.begin(); it != end; it++) {
+            running = hash(running, hash(*it));
+        }
+        return running;
+    }
+
+    unsigned long long hash(const std::vector<SubcaseSignature>& sigs) {
+        unsigned long long running = 0;
+        for (const SubcaseSignature& sig : sigs) {
+            running = hash(running, hash(sig));
+        }
+        return running;
+    }
 } // namespace
 namespace detail {
+    bool Subcase::checkFilters() {
+        if (g_cs->subcaseStack.size() < size_t(g_cs->subcase_filter_levels)) {
+            if (!matchesAny(m_signature.m_name.c_str(), g_cs->filters[6], true, g_cs->case_sensitive))
+                return true;
+            if (matchesAny(m_signature.m_name.c_str(), g_cs->filters[7], false, g_cs->case_sensitive))
+                return true;
+        }
+        return false;
+    }
 
     Subcase::Subcase(const String& name, const char* file, int line)
             : m_signature({name, file, line}) {
-        auto* s = g_cs;
+        if (!g_cs->reachedLeaf) {
+            if (g_cs->nextSubcaseStack.size() <= g_cs->subcaseStack.size()
+                || g_cs->nextSubcaseStack[g_cs->subcaseStack.size()] == m_signature) {
+                // Going down.
+                if (checkFilters()) { return; }
 
-        // check subcase filters
-        if(s->subcasesStack.size() < size_t(s->subcase_filter_levels)) {
-            if(!matchesAny(m_signature.m_name.c_str(), s->filters[6], true, s->case_sensitive))
-                return;
-            if(matchesAny(m_signature.m_name.c_str(), s->filters[7], false, s->case_sensitive))
-                return;
+                g_cs->subcaseStack.push_back(m_signature);
+                g_cs->currentSubcaseDepth++;
+                m_entered = true;
+                DOCTEST_ITERATE_THROUGH_REPORTERS(subcase_start, m_signature);
+            }
+        } else {
+            if (g_cs->subcaseStack[g_cs->currentSubcaseDepth] == m_signature) {
+                // This subcase is reentered via control flow.
+                g_cs->currentSubcaseDepth++;
+                m_entered = true;
+                DOCTEST_ITERATE_THROUGH_REPORTERS(subcase_start, m_signature);
+            } else if (g_cs->nextSubcaseStack.size() <= g_cs->currentSubcaseDepth
+                    && g_cs->fullyTraversedSubcases.find(hash(hash(g_cs->subcaseStack, g_cs->currentSubcaseDepth), hash(m_signature)))
+                    == g_cs->fullyTraversedSubcases.end()) {
+                if (checkFilters()) { return; }
+                // This subcase is part of the one to be executed next.
+                g_cs->nextSubcaseStack.clear();
+                g_cs->nextSubcaseStack.insert(g_cs->nextSubcaseStack.end(),
+                    g_cs->subcaseStack.begin(), g_cs->subcaseStack.begin() + g_cs->currentSubcaseDepth);
+                g_cs->nextSubcaseStack.push_back(m_signature);
+            }
         }
-        
-        // if a Subcase on the same level has already been entered
-        if(s->subcasesStack.size() < size_t(s->subcasesCurrentMaxLevel)) {
-            s->should_reenter = true;
-            return;
-        }
-
-        // push the current signature to the stack so we can check if the
-        // current stack + the current new subcase have been traversed
-        s->subcasesStack.push_back(m_signature);
-        if(s->subcasesPassed.count(s->subcasesStack) != 0) {
-            // pop - revert to previous stack since we've already passed this
-            s->subcasesStack.pop_back();
-            return;
-        }
-
-        s->subcasesCurrentMaxLevel = s->subcasesStack.size();
-        m_entered = true;
-
-        DOCTEST_ITERATE_THROUGH_REPORTERS(subcase_start, m_signature);
     }
 
     DOCTEST_MSVC_SUPPRESS_WARNING_WITH_PUSH(4996) // std::uncaught_exception is deprecated in C++17
@@ -4108,25 +4153,33 @@ namespace detail {
     DOCTEST_CLANG_SUPPRESS_WARNING_WITH_PUSH("-Wdeprecated-declarations")
 
     Subcase::~Subcase() {
-        if(m_entered) {
-            // only mark the subcase stack as passed if no subcases have been skipped
-            if(g_cs->should_reenter == false)
-                g_cs->subcasesPassed.insert(g_cs->subcasesStack);
-            g_cs->subcasesStack.pop_back();
+        if (m_entered) {
+            g_cs->currentSubcaseDepth--;
+
+            if (!g_cs->reachedLeaf) {
+                // Leaf.
+                g_cs->fullyTraversedSubcases.insert(hash(g_cs->subcaseStack));
+                g_cs->nextSubcaseStack.clear();
+                g_cs->reachedLeaf = true;
+            } else if (g_cs->nextSubcaseStack.empty()) {
+                // All children are finished.
+                g_cs->fullyTraversedSubcases.insert(hash(g_cs->subcaseStack));
+            }
 
 #if defined(__cpp_lib_uncaught_exceptions) && __cpp_lib_uncaught_exceptions >= 201411L && (!defined(__MAC_OS_X_VERSION_MIN_REQUIRED) || __MAC_OS_X_VERSION_MIN_REQUIRED >= 101200)
             if(std::uncaught_exceptions() > 0
 #else
             if(std::uncaught_exception()
 #endif
-            && g_cs->shouldLogCurrentException) {
+                && g_cs->shouldLogCurrentException) {
                 DOCTEST_ITERATE_THROUGH_REPORTERS(
                         test_case_exception, {"exception thrown in subcase - will translate later "
-                                              "when the whole test case has been exited (cannot "
-                                              "translate while there is an active exception)",
-                                              false});
+                                                "when the whole test case has been exited (cannot "
+                                                "translate while there is an active exception)",
+                                                false});
                 g_cs->shouldLogCurrentException = false;
             }
+
             DOCTEST_ITERATE_THROUGH_REPORTERS(subcase_end, DOCTEST_EMPTY);
         }
     }
@@ -4767,8 +4820,8 @@ namespace {
 
         DOCTEST_ITERATE_THROUGH_REPORTERS(test_case_exception, {message.c_str(), true});
 
-        while(g_cs->subcasesStack.size()) {
-            g_cs->subcasesStack.pop_back();
+        while (g_cs->subcaseStack.size()) {
+            g_cs->subcaseStack.pop_back();
             DOCTEST_ITERATE_THROUGH_REPORTERS(subcase_end, DOCTEST_EMPTY);
         }
 
@@ -6839,7 +6892,7 @@ int Context::run() {
             p->numAssertsFailedCurrentTest_atomic = 0;
             p->numAssertsCurrentTest_atomic       = 0;
 
-            p->subcasesPassed.clear();
+            p->fullyTraversedSubcases.clear();
 
             DOCTEST_ITERATE_THROUGH_REPORTERS(test_case_start, tc);
 
@@ -6849,9 +6902,10 @@ int Context::run() {
 
             do {
                 // reset some of the fields for subcases (except for the set of fully passed ones)
-                p->should_reenter          = false;
-                p->subcasesCurrentMaxLevel = 0;
-                p->subcasesStack.clear();
+                p->reachedLeaf = false;
+                // May not be empty if previous subcase exited via exception.
+                p->subcaseStack.clear();
+                p->currentSubcaseDepth = 0;
 
                 p->shouldLogCurrentException = true;
 
@@ -6885,9 +6939,9 @@ DOCTEST_MSVC_SUPPRESS_WARNING_POP
                     p->failure_flags |= TestCaseFailureReason::TooManyFailedAsserts;
                 }
                 
-                if(p->should_reenter && run_test)
+                if(!p->nextSubcaseStack.empty() && run_test)
                     DOCTEST_ITERATE_THROUGH_REPORTERS(test_case_reenter, tc);
-                if(!p->should_reenter)
+                if(p->nextSubcaseStack.empty())
                     run_test = false;
             } while(run_test);
 
