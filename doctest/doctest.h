@@ -540,6 +540,8 @@ class DOCTEST_INTERFACE String
 public:
     using size_type = DOCTEST_CONFIG_STRING_SIZE_TYPE;
 
+    static const String EMPTY;
+
 private:
     static DOCTEST_CONSTEXPR size_type len  = 24;      //!OCLINT avoid private static members
     static DOCTEST_CONSTEXPR size_type last = len - 1; //!OCLINT avoid private static members
@@ -797,7 +799,7 @@ struct DOCTEST_INTERFACE AssertData
             bool isContains;
 
         public:
-            StringContains() : content(String()), isContains(false) { }
+            StringContains() : content(String::EMPTY), isContains(false) { }
             StringContains(const String& str) : content(str), isContains(false) { }
             StringContains(const Contains& cntn) : content(cntn), isContains(true) { }
 
@@ -1315,7 +1317,7 @@ DOCTEST_CLANG_SUPPRESS_WARNING_WITH_PUSH("-Wunused-comparison")
         String m_decomp;
 
         Result() = default;
-        Result(bool passed, const String& decomposition = String());
+        Result(bool passed, const String& decomposition = String::EMPTY);
 
         // forbidding some expressions based on this table: https://en.cppreference.com/w/cpp/language/operator_precedence
         DOCTEST_FORBIT_EXPRESSION(Result, &)
@@ -1536,7 +1538,7 @@ DOCTEST_CLANG_SUPPRESS_WARNING_POP
         String m_full_name; // contains the name (only for templated test cases!) + the template type
 
         TestCase(funcType test, const char* file, unsigned line, const TestSuite& test_suite,
-                 const String& type = String(), int template_id = -1);
+                 const String& type = String::EMPTY, int template_id = -1);
 
         TestCase(const TestCase& other);
 
@@ -1592,7 +1594,7 @@ DOCTEST_CLANG_SUPPRESS_WARNING_POP
     struct DOCTEST_INTERFACE ResultBuilder : public AssertData
     {
         ResultBuilder(assertType::Enum at, const char* file, int line, const char* expr,
-                      const char* exception_type = "", const String& exception_string = "");
+                      const char* exception_type = "", const String& exception_string = String::EMPTY);
 
         ResultBuilder(assertType::Enum at, const char* file, int line, const char* expr,
                       const char* exception_type, const Contains& exception_string);
@@ -3057,10 +3059,7 @@ DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_BEGIN
 #include <cfloat>
 #include <cctype>
 #include <cstdint>
-#if DOCTEST_MSVC >= DOCTEST_COMPILER(19, 20, 0)
-// see this issue on why this is needed: https://github.com/doctest/doctest/issues/183
 #include <string>
-#endif // VS 2019
 
 #ifdef DOCTEST_PLATFORM_MAC
 #include <sys/types.h>
@@ -3453,6 +3452,8 @@ typedef timer_large_integer::type ticks_t;
 
 #endif // DOCTEST_CONFIG_DISABLE
 } // namespace detail
+
+const String String::EMPTY = String();
 
 char* String::allocate(size_type sz) {
     if (sz <= last) {
@@ -4298,7 +4299,7 @@ namespace {
         DOCTEST_GCC_SUPPRESS_WARNING_POP
 // clang-format on
 #else  // DOCTEST_CONFIG_NO_EXCEPTIONS
-        return "";
+        return String::EMPTY;
 #endif // DOCTEST_CONFIG_NO_EXCEPTIONS
     }
 } // namespace
@@ -6265,7 +6266,7 @@ namespace {
 
     // parses an option and returns the string after the '=' character
     bool parseOption(int argc, const char* const* argv, const char* pattern, String* value = nullptr,
-                     const String& defaultVal = String()) {
+                     const String& defaultVal = String::EMPTY) {
         if(value)
             *value = defaultVal;
 #ifndef DOCTEST_CONFIG_NO_UNPREFIXED_OPTIONS

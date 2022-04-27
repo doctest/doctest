@@ -479,6 +479,8 @@ typedef timer_large_integer::type ticks_t;
 #endif // DOCTEST_CONFIG_DISABLE
 } // namespace detail
 
+const String String::EMPTY = String();
+
 char* String::allocate(size_type sz) {
     if (sz <= last) {
         buf[sz] = '\0';
@@ -1323,7 +1325,7 @@ namespace {
         DOCTEST_GCC_SUPPRESS_WARNING_POP
 // clang-format on
 #else  // DOCTEST_CONFIG_NO_EXCEPTIONS
-        return "";
+        return String::EMPTY;
 #endif // DOCTEST_CONFIG_NO_EXCEPTIONS
     }
 } // namespace
@@ -3290,7 +3292,7 @@ namespace {
 
     // parses an option and returns the string after the '=' character
     bool parseOption(int argc, const char* const* argv, const char* pattern, String* value = nullptr,
-                     const String& defaultVal = String()) {
+                     const String& defaultVal = String::EMPTY) {
         if(value)
             *value = defaultVal;
 #ifndef DOCTEST_CONFIG_NO_UNPREFIXED_OPTIONS
