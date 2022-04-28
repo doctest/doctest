@@ -1323,7 +1323,7 @@ namespace {
         DOCTEST_GCC_SUPPRESS_WARNING_POP
 // clang-format on
 #else  // DOCTEST_CONFIG_NO_EXCEPTIONS
-        return EMPTY_STRING;
+        return "";
 #endif // DOCTEST_CONFIG_NO_EXCEPTIONS
     }
 } // namespace
@@ -3290,7 +3290,7 @@ namespace {
 
     // parses an option and returns the string after the '=' character
     bool parseOption(int argc, const char* const* argv, const char* pattern, String* value = nullptr,
-                     const String& defaultVal = EMPTY_STRING) {
+                     const String& defaultVal = String()) {
         if(value)
             *value = defaultVal;
 #ifndef DOCTEST_CONFIG_NO_UNPREFIXED_OPTIONS

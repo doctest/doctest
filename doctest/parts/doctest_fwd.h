@@ -608,7 +608,6 @@ public:
 
 friend DOCTEST_INTERFACE std::ostream& operator<<(std::ostream& s, const String& in);
 };
-static const String EMPTY_STRING;
 
 DOCTEST_INTERFACE String operator+(const String& lhs, const String& rhs);
 
@@ -795,7 +794,7 @@ struct DOCTEST_INTERFACE AssertData
             bool isContains;
 
         public:
-            StringContains() : content(EMPTY_STRING), isContains(false) { }
+            StringContains() : content(String()), isContains(false) { }
             StringContains(const String& str) : content(str), isContains(false) { }
             StringContains(const Contains& cntn) : content(cntn), isContains(true) { }
 
@@ -1313,7 +1312,7 @@ DOCTEST_CLANG_SUPPRESS_WARNING_WITH_PUSH("-Wunused-comparison")
         String m_decomp;
 
         Result() = default;
-        Result(bool passed, const String& decomposition = EMPTY_STRING);
+        Result(bool passed, const String& decomposition = String());
 
         // forbidding some expressions based on this table: https://en.cppreference.com/w/cpp/language/operator_precedence
         DOCTEST_FORBIT_EXPRESSION(Result, &)
@@ -1534,7 +1533,7 @@ DOCTEST_CLANG_SUPPRESS_WARNING_POP
         String m_full_name; // contains the name (only for templated test cases!) + the template type
 
         TestCase(funcType test, const char* file, unsigned line, const TestSuite& test_suite,
-                 const String& type = EMPTY_STRING, int template_id = -1);
+                 const String& type = String(), int template_id = -1);
 
         TestCase(const TestCase& other);
 
@@ -1590,7 +1589,7 @@ DOCTEST_CLANG_SUPPRESS_WARNING_POP
     struct DOCTEST_INTERFACE ResultBuilder : public AssertData
     {
         ResultBuilder(assertType::Enum at, const char* file, int line, const char* expr,
-                      const char* exception_type = "", const String& exception_string = EMPTY_STRING);
+                      const char* exception_type = "", const String& exception_string = "");
 
         ResultBuilder(assertType::Enum at, const char* file, int line, const char* expr,
                       const char* exception_type, const Contains& exception_string);
