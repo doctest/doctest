@@ -32,11 +32,11 @@
     <TestCase name="check return values" filename="assertion_macros.cpp" line="0" skipped="true"/>
     <TestCase name="check return values no print" filename="assertion_macros.cpp" line="0" skipped="true"/>
     <TestCase name="custom macros" filename="alternative_macros.cpp" line="0" skipped="true"/>
+    <TestCase name="default construction&lt;SHORT!!!>" filename="templated_test_cases.cpp" line="0" skipped="true"/>
     <TestCase name="default construction&lt;char>" filename="templated_test_cases.cpp" line="0" skipped="true"/>
     <TestCase name="default construction&lt;double>" filename="templated_test_cases.cpp" line="0" skipped="true"/>
     <TestCase name="default construction&lt;double>" filename="templated_test_cases.cpp" line="0" skipped="true"/>
     <TestCase name="default construction&lt;int>" filename="templated_test_cases.cpp" line="0" skipped="true"/>
-    <TestCase name="default construction&lt;short int>" filename="templated_test_cases.cpp" line="0" skipped="true"/>
     <TestCase name="default construction&lt;signed char>" filename="templated_test_cases.cpp" line="0" skipped="true"/>
     <TestCase name="default construction&lt;unsigned char>" filename="templated_test_cases.cpp" line="0" skipped="true"/>
   </TestSuite>
@@ -78,9 +78,9 @@
   <TestSuite>
     <TestCase name="logging the counter of a loop" filename="logging.cpp" line="0" skipped="true"/>
     <TestCase name="lots of nested subcases" filename="subcases.cpp" line="0" skipped="true"/>
-    <TestCase name="multiple types&lt;>" filename="templated_test_cases.cpp" line="0" skipped="true"/>
-    <TestCase name="multiple types&lt;>" filename="templated_test_cases.cpp" line="0" skipped="true"/>
-    <TestCase name="multiple types&lt;>" filename="templated_test_cases.cpp" line="0" skipped="true"/>
+    <TestCase name="multiple types&lt;Custom name test>" filename="templated_test_cases.cpp" line="0" skipped="true"/>
+    <TestCase name="multiple types&lt;Other custom name>" filename="templated_test_cases.cpp" line="0" skipped="true"/>
+    <TestCase name="multiple types&lt;TypePair&lt;bool, int>>" filename="templated_test_cases.cpp" line="0" skipped="true"/>
     <TestCase name="namespace 1 global operator" filename="namespace1.cpp" line="0" skipped="true"/>
     <TestCase name="namespace 2 friend operator" filename="namespace2.cpp" line="0" skipped="true"/>
     <TestCase name="namespace 3 member operator" filename="namespace3.cpp" line="0" skipped="true"/>
@@ -91,10 +91,14 @@
     <TestCase name="namespace 8 friend vs global" filename="namespace8.cpp" line="0" skipped="true"/>
     <TestCase name="namespace 9 both global" filename="namespace9.cpp" line="0" skipped="true"/>
     <TestCase name="no checks" filename="no_failures.cpp" line="0" skipped="true"/>
+    <TestCase name="no headers" filename="stringification.cpp" line="0" skipped="true"/>
     <TestCase name="normal macros" filename="assertion_macros.cpp" line="0" skipped="true"/>
   </TestSuite>
   <TestSuite name="ts1">
     <TestCase name="normal test in a test suite from a decorator" filename="test_cases_and_suites.cpp" line="0" skipped="true"/>
+  </TestSuite>
+  <TestSuite>
+    <TestCase name="operator&lt;&lt;" filename="stringification.cpp" line="0" skipped="true"/>
   </TestSuite>
   <TestSuite name="scoped test suite">
     <TestCase name="part of scoped" filename="test_cases_and_suites.cpp" line="0" skipped="true"/>
@@ -108,8 +112,8 @@
     <TestCase name="should fail and no output" filename="no_failures.cpp" line="0" should_fail="true" skipped="true"/>
     <TestCase name="should fail and no output" filename="test_cases_and_suites.cpp" line="0" should_fail="true" skipped="true"/>
     <TestCase name="should fail because of an exception" filename="test_cases_and_suites.cpp" line="0" skipped="true"/>
+    <TestCase name="signed integers stuff&lt;SHORT!!!>" filename="templated_test_cases.cpp" line="0" skipped="true"/>
     <TestCase name="signed integers stuff&lt;int>" filename="templated_test_cases.cpp" line="0" skipped="true"/>
-    <TestCase name="signed integers stuff&lt;short int>" filename="templated_test_cases.cpp" line="0" skipped="true"/>
     <TestCase name="signed integers stuff&lt;signed char>" filename="templated_test_cases.cpp" line="0" skipped="true"/>
     <TestCase name="simple check" filename="no_failures.cpp" line="0" skipped="true"/>
   </TestSuite>

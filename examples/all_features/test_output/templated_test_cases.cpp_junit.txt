@@ -2,7 +2,7 @@
 <testsuites>
   <testsuite name="all_features" errors="0" failures="5" tests="19">
     <testcase classname="templated_test_cases.cpp" name="signed integers stuff&lt;signed char>" status="run"/>
-    <testcase classname="templated_test_cases.cpp" name="signed integers stuff&lt;short int>" status="run"/>
+    <testcase classname="templated_test_cases.cpp" name="signed integers stuff&lt;SHORT!!!>" status="run"/>
     <testcase classname="templated_test_cases.cpp" name="signed integers stuff&lt;int>" status="run"/>
     <testcase classname="templated_test_cases.cpp" name="vector stuff&lt;std::vector&lt;int>>" status="run">
       <failure message="10 == 20" type="CHECK">
@@ -13,13 +13,13 @@ CHECK( vec.size() == 20 ) is NOT correct!
       </failure>
     </testcase>
     <testcase classname="templated_test_cases.cpp" name="default construction&lt;signed char>" status="run"/>
-    <testcase classname="templated_test_cases.cpp" name="default construction&lt;short int>" status="run"/>
+    <testcase classname="templated_test_cases.cpp" name="default construction&lt;SHORT!!!>" status="run"/>
     <testcase classname="templated_test_cases.cpp" name="default construction&lt;int>" status="run"/>
     <testcase classname="templated_test_cases.cpp" name="default construction&lt;double>" status="run"/>
     <testcase classname="templated_test_cases.cpp" name="default construction&lt;double>" status="run"/>
     <testcase classname="templated_test_cases.cpp" name="default construction&lt;unsigned char>" status="run"/>
     <testcase classname="templated_test_cases.cpp" name="default construction&lt;char>" status="run"/>
-    <testcase classname="templated_test_cases.cpp" name="multiple types&lt;>" status="run">
+    <testcase classname="templated_test_cases.cpp" name="multiple types&lt;Custom name test>" status="run">
       <failure message="0 != 0" type="CHECK">
 templated_test_cases.cpp(0):
 CHECK( t2 != T2() ) is NOT correct!
@@ -27,7 +27,7 @@ CHECK( t2 != T2() ) is NOT correct!
 
       </failure>
     </testcase>
-    <testcase classname="templated_test_cases.cpp" name="multiple types&lt;>" status="run">
+    <testcase classname="templated_test_cases.cpp" name="multiple types&lt;Other custom name>" status="run">
       <failure message="0 != 0" type="CHECK">
 templated_test_cases.cpp(0):
 CHECK( t2 != T2() ) is NOT correct!
@@ -35,7 +35,7 @@ CHECK( t2 != T2() ) is NOT correct!
 
       </failure>
     </testcase>
-    <testcase classname="templated_test_cases.cpp" name="multiple types&lt;>" status="run">
+    <testcase classname="templated_test_cases.cpp" name="multiple types&lt;TypePair&lt;bool, int>>" status="run">
       <failure message="0 != 0" type="CHECK">
 templated_test_cases.cpp(0):
 CHECK( t2 != T2() ) is NOT correct!

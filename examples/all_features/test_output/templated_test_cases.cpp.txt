@@ -8,21 +8,21 @@ templated_test_cases.cpp(0): ERROR: CHECK( vec.size() == 20 ) is NOT correct!
 
 ===============================================================================
 templated_test_cases.cpp(0):
-TEST CASE:  multiple types<>
+TEST CASE:  multiple types<Custom name test>
 
 templated_test_cases.cpp(0): ERROR: CHECK( t2 != T2() ) is NOT correct!
   values: CHECK( 0 != 0 )
 
 ===============================================================================
 templated_test_cases.cpp(0):
-TEST CASE:  multiple types<>
+TEST CASE:  multiple types<Other custom name>
 
 templated_test_cases.cpp(0): ERROR: CHECK( t2 != T2() ) is NOT correct!
   values: CHECK( 0 != 0 )
 
 ===============================================================================
 templated_test_cases.cpp(0):
-TEST CASE:  multiple types<>
+TEST CASE:  multiple types<TypePair<bool, int>>
 
 templated_test_cases.cpp(0): ERROR: CHECK( t2 != T2() ) is NOT correct!
   values: CHECK( 0 != 0 )

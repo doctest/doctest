@@ -26,6 +26,7 @@ REGISTER_EXCEPTION_TRANSLATOR(int& in) {
     return doctest::toString(in);
 }
 
+// Removes class on MSVC
 TYPE_TO_STRING(doctest::String);
 
 TEST_CASE_TEMPLATE("template 1", T, char) {

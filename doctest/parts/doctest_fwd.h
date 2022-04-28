@@ -65,6 +65,12 @@
 
 // ideas for the version stuff are taken from here: https://github.com/cxxstuff/cxx_detect
 
+#ifdef _MSC_VER
+#define DOCTEST_CPLUSPLUS _MSVC_LANG
+#else
+#define DOCTEST_CPLUSPLUS __cplusplus
+#endif
+
 #define DOCTEST_COMPILER(MAJOR, MINOR, PATCH) ((MAJOR)*10000000 + (MINOR)*100000 + (PATCH))
 
 // GCC/Clang and GCC/MSVC are mutually exclusive, but Clang/MSVC are not because of clang-cl...
@@ -364,8 +370,10 @@ DOCTEST_MSVC_SUPPRESS_WARNING(4623) // default constructor was implicitly define
 #ifndef DOCTEST_CONSTEXPR
 #if DOCTEST_MSVC && (DOCTEST_MSVC < DOCTEST_COMPILER(19, 0, 0))
 #define DOCTEST_CONSTEXPR const
+#define DOCTEST_CONSTEXPR_FUNC inline
 #else // DOCTEST_MSVC
 #define DOCTEST_CONSTEXPR constexpr
+#define DOCTEST_CONSTEXPR_FUNC constexpr
 #endif // DOCTEST_MSVC
 #endif // DOCTEST_CONSTEXPR
 
@@ -472,6 +480,7 @@ DOCTEST_MSVC_SUPPRESS_WARNING_WITH_PUSH(4643)
 
 namespace std { // NOLINT (cert-dcl58-cpp)
 typedef decltype(nullptr) nullptr_t;
+typedef decltype(sizeof(void*)) size_t;
 template <class charT>
 struct char_traits;
 template <>
@@ -479,6 +488,8 @@ struct char_traits<char>;
 template <class charT, class traits>
 class basic_ostream;
 typedef basic_ostream<char, char_traits<char>> ostream;
+template<class traits>
+basic_ostream<char, traits>& operator<<(basic_ostream<char, traits>&, const char*);
 template <class charT, class traits>
 class basic_istream;
 typedef basic_istream<char, char_traits<char>> istream;
@@ -504,7 +515,13 @@ DOCTEST_MSVC_SUPPRESS_WARNING_POP
 
 namespace doctest {
 
+using std::size_t;
+
 DOCTEST_INTERFACE extern bool is_running_in_test;
+
+#ifndef DOCTEST_CONFIG_STRING_SIZE_TYPE
+#define DOCTEST_CONFIG_STRING_SIZE_TYPE unsigned
+#endif
 
 // A 24 byte string class (can be as small as 17 for x64 and 13 for x86) that can hold strings with length
 // of up to 23 chars on the stack before going on the heap - the last byte of the buffer is used for:
@@ -518,7 +535,6 @@ DOCTEST_INTERFACE extern bool is_running_in_test;
 // TODO:
 // - optimizations - like not deleting memory unnecessarily in operator= and etc.
 // - resize/reserve/clear
-// - substr
 // - replace
 // - back/front
 // - iterator stuff
@@ -528,14 +544,18 @@ DOCTEST_INTERFACE extern bool is_running_in_test;
 // - relational operators as free functions - taking const char* as one of the params
 class DOCTEST_INTERFACE String
 {
-    static const unsigned len  = 24;      //!OCLINT avoid private static members
-    static const unsigned last = len - 1; //!OCLINT avoid private static members
+public:
+    using size_type = DOCTEST_CONFIG_STRING_SIZE_TYPE;
+
+private:
+    static DOCTEST_CONSTEXPR size_type len  = 24;      //!OCLINT avoid private static members
+    static DOCTEST_CONSTEXPR size_type last = len - 1; //!OCLINT avoid private static members
 
     struct view // len should be more than sizeof(view) - because of the final byte for flags
     {
         char*    ptr;
-        unsigned size;
-        unsigned capacity;
+        size_type size;
+        size_type capacity;
     };
 
     union
@@ -544,23 +564,26 @@ class DOCTEST_INTERFACE String
         view data;
     };
 
-    char* allocate(unsigned sz);
+    char* allocate(size_type sz);
 
     bool isOnStack() const { return (buf[last] & 128) == 0; }
     void setOnHeap();
-    void setLast(unsigned in = last);
+    void setLast(size_type in = last);
+    void setSize(size_type sz);
 
     void copy(const String& other);
 
 public:
+    static DOCTEST_CONSTEXPR size_type npos = static_cast<size_type>(-1);
+
     String();
     ~String();
 
     // cppcheck-suppress noExplicitConstructor
     String(const char* in);
-    String(const char* in, unsigned in_size);
+    String(const char* in, size_type in_size);
 
-    String(std::istream& in, unsigned in_size);
+    String(std::istream& in, size_type in_size);
 
     String(const String& other);
     String& operator=(const String& other);
@@ -570,8 +593,8 @@ public:
     String(String&& other);
     String& operator=(String&& other);
 
-    char  operator[](unsigned i) const;
-    char& operator[](unsigned i);
+    char  operator[](size_type i) const;
+    char& operator[](size_type i);
 
     // the only functions I'm willing to leave in the interface - available for inlining
     const char* c_str() const { return const_cast<String*>(this)->c_str(); } // NOLINT
@@ -581,11 +604,19 @@ public:
         return data.ptr;
     }
 
-    unsigned size() const;
-    unsigned capacity() const;
+    size_type size() const;
+    size_type capacity() const;
+
+    String substr(size_type pos, size_type len = npos) &&;
+    String substr(size_type pos, size_type len = npos) const &;
+
+    size_type find(char ch, size_type pos = 0) const;
+    size_type rfind(char ch, size_type pos = npos) const;
 
     int compare(const char* other, bool no_case = false) const;
     int compare(const String& other, bool no_case = false) const;
+
+friend DOCTEST_INTERFACE std::ostream& operator<<(std::ostream& s, const String& in);
 };
 
 DOCTEST_INTERFACE String operator+(const String& lhs, const String& rhs);
@@ -596,8 +627,6 @@ DOCTEST_INTERFACE bool operator<(const String& lhs, const String& rhs);
 DOCTEST_INTERFACE bool operator>(const String& lhs, const String& rhs);
 DOCTEST_INTERFACE bool operator<=(const String& lhs, const String& rhs);
 DOCTEST_INTERFACE bool operator>=(const String& lhs, const String& rhs);
-
-DOCTEST_INTERFACE std::ostream& operator<<(std::ostream& s, const String& in);
 
 class DOCTEST_INTERFACE Contains {
 public:
@@ -868,200 +897,173 @@ struct ContextOptions //!OCLINT too many fields
 };
 
 namespace detail {
-    template <bool CONDITION, typename TYPE = void>
-    struct enable_if
-    {};
-
-    template <typename TYPE>
-    struct enable_if<true, TYPE>
-    { typedef TYPE type; };
-
-    // clang-format off
-    template<class T> struct remove_reference      { typedef T type; };
-    template<class T> struct remove_reference<T&>  { typedef T type; };
-    template<class T> struct remove_reference<T&&> { typedef T type; };
-
-    template<typename T, typename U = T&&> U declval(int); 
-
-    template<typename T> T declval(long); 
-
-    template<typename T> auto declval() DOCTEST_NOEXCEPT -> decltype(declval<T>(0)) ;
-
-    template<class T> struct is_lvalue_reference { const static bool value=false; };
-    template<class T> struct is_lvalue_reference<T&> { const static bool value=true; };
-
-    template<class T> struct is_rvalue_reference { const static bool value=false; };
-    template<class T> struct is_rvalue_reference<T&&> { const static bool value=true; };
-
-    template <class T>
-    inline T&& forward(typename remove_reference<T>::type& t) DOCTEST_NOEXCEPT
-    {
-        return static_cast<T&&>(t);
-    }
-
-    template <class T>
-    inline T&& forward(typename remove_reference<T>::type&& t) DOCTEST_NOEXCEPT
-    {
-        static_assert(!is_lvalue_reference<T>::value,
-                        "Can not forward an rvalue as an lvalue.");
-        return static_cast<T&&>(t);
-    }
-
-    template<class T> struct remove_const          { typedef T type; };
-    template<class T> struct remove_const<const T> { typedef T type; };
+    namespace types {
 #ifdef DOCTEST_CONFIG_INCLUDE_TYPE_TRAITS
-    template<class T> struct is_enum : public std::is_enum<T> {};
-    template<class T> struct underlying_type : public std::underlying_type<T> {};
+        using namespace std;
 #else
-    // Use compiler intrinsics
-    template<class T> struct is_enum { DOCTEST_CONSTEXPR static bool value = __is_enum(T); };
-    template<class T> struct underlying_type { typedef __underlying_type(T) type; };
+        template <bool COND, typename T = void>
+        struct enable_if { };
+
+        template <typename T>
+        struct enable_if<true, T> { using type = T; };
+
+        struct true_type { static DOCTEST_CONSTEXPR bool value = true; };
+        struct false_type { static DOCTEST_CONSTEXPR bool value = false; };
+
+        template <typename T> struct remove_reference { using type = T; };
+        template <typename T> struct remove_reference<T&> { using type = T; };
+        template <typename T> struct remove_reference<T&&> { using type = T; };
+
+        template <typename T> struct is_rvalue_reference : false_type { };
+        template <typename T> struct is_rvalue_reference<T&&> : true_type { };
+
+        template<typename T> struct remove_const { using type = T; };
+        template <typename T> struct remove_const<const T> { using type = T; };
+
+        // Compiler intrinsics
+        template <typename T> struct is_enum { DOCTEST_CONSTEXPR static bool value = __is_enum(T); };
+        template <typename T> struct underlying_type { using type = __underlying_type(T); };
+
+        template <typename T> struct is_pointer : false_type { };
+        template <typename T> struct is_pointer<T*> : true_type { };
+
+        template <typename T> struct is_array : false_type { };
+        template <typename T, size_t SIZE> struct is_array<T[SIZE]> : true_type { };
 #endif
-    // clang-format on
+    }
+
+    // <utility>
+    template <typename T>
+    T&& declval();
+
+    template <class T>
+    DOCTEST_CONSTEXPR_FUNC T&& forward(typename types::remove_reference<T>::type& t) DOCTEST_NOEXCEPT {
+        return static_cast<T&&>(t);
+    }
+
+    template <class T>
+    DOCTEST_CONSTEXPR_FUNC T&& forward(typename types::remove_reference<T>::type&& t) DOCTEST_NOEXCEPT {
+        return static_cast<T&&>(t);
+    }
 
     template <typename T>
-    struct deferred_false
-    // cppcheck-suppress unusedStructMember
-    { static const bool value = false; };
+    struct deferred_false : types::false_type { };
 
-    namespace has_insertion_operator_impl {
-        std::ostream &os();
-        template<class T>
-        DOCTEST_REF_WRAP(T) val();
+// MSVS 2015 :(
+#if defined(_MSC_VER) && _MSC_VER <= 1900
+    template <typename T, typename = void>
+    struct has_global_insertion_operator : types::false_type { };
 
-        template<class, class = void>
-        struct check {
-            static DOCTEST_CONSTEXPR bool value = false;
-        };
+    template <typename T>
+    struct has_global_insertion_operator<T, decltype(::operator<<(declval<std::ostream&>(), declval<const T&>()), void())> : types::true_type { };
 
-        template<class T>
-        struct check<T, decltype(os() << val<T>(), void())> {
-            static DOCTEST_CONSTEXPR bool value = true;
-        };
-    } // namespace has_insertion_operator_impl
+    template <typename T, typename = void>
+    struct has_insertion_operator { static DOCTEST_CONSTEXPR bool value = has_global_insertion_operator<T>::value; };
 
-    template<class T>
-    using has_insertion_operator = has_insertion_operator_impl::check<const T>;
+    template <typename T, bool global>
+    struct insert_hack;
+
+    template <typename T>
+    struct insert_hack<T, true> {
+        static void insert(std::ostream& os, const T& t) { ::operator<<(os, t); }
+    };
+
+    template <typename T>
+    struct insert_hack<T, false> {
+        static void insert(std::ostream& os, const T& t) { operator<<(os, t); }
+    };
+
+    template <typename T>
+    using insert_hack_t = insert_hack<T, has_global_insertion_operator<T>::value>;
+#else
+    template <typename T, typename = void>
+    struct has_insertion_operator : types::false_type { };
+#endif
+
+template <typename T>
+struct has_insertion_operator<T, decltype(operator<<(declval<std::ostream&>(), declval<const T&>()), void())> : types::true_type { };
 
     DOCTEST_INTERFACE std::ostream* tlssPush();
     DOCTEST_INTERFACE String tlssPop();
 
-
     template <bool C>
-    struct StringMakerBase
-    {
+    struct StringMakerBase {
         template <typename T>
         static String convert(const DOCTEST_REF_WRAP(T)) {
+#ifdef DOCTEST_CONFIG_REQUIRE_STRINGIFICATION_FOR_ALL_USED_TYPES
+            static_assert(deferred_false<T>::value, "No stringification detected for type T. See string conversion manual");
+#endif
             return "{?}";
         }
     };
 
-    // Vector<int> and various type other than pointer or array.
-    template<typename T>
-    struct filldata
-    {
-        static void fill(std::ostream* stream, const T &in) {
-          *stream << in;
-        }
-    };
+    template <typename T>
+    struct filldata;
 
-    template<typename T,unsigned long N>
-    struct filldata<T[N]>
-    {
-        static void fill(std::ostream* stream, const T (&in)[N]) {
-            for (unsigned long i = 0; i < N; i++) {
-                *stream << in[i];
-            }
-        }
-    };
-
-    // Specialized since we don't want the terminating null byte!
-    template<unsigned long N>
-    struct filldata<const char[N]>
-    {
-        static void fill(std::ostream* stream, const char(&in)[N]) {
-            *stream << in;
-        }
-    };
-
-    template<typename T>
+    template <typename T>
     void filloss(std::ostream* stream, const T& in) {
         filldata<T>::fill(stream, in);
     }
 
-    template<typename T,unsigned long N>
+    template <typename T, size_t N>
     void filloss(std::ostream* stream, const T (&in)[N]) {
         // T[N], T(&)[N], T(&&)[N] have same behaviour.
         // Hence remove reference.
-        filldata<typename remove_reference<decltype(in)>::type>::fill(stream, in);
+        filloss<typename types::remove_reference<decltype(in)>::type>(stream, in);
+    }
+
+    template <typename T>
+    String toStream(const T& in) {
+        std::ostream* stream = tlssPush();
+        filloss(stream, in);
+        return tlssPop();
     }
 
     template <>
-    struct StringMakerBase<true>
-    {
+    struct StringMakerBase<true> {
         template <typename T>
         static String convert(const DOCTEST_REF_WRAP(T) in) {
-            /* When parameter "in" is a null terminated const char* it works.
-             * When parameter "in" is a T arr[N] without '\0' we can fill the
-             * stringstream with N objects (T=char).If in is char pointer *
-             * without '\0' , it would cause segfault
-             * stepping over unaccessible memory.
-             */
-
-            std::ostream* stream = tlssPush();
-            filloss(stream, in);
-            return tlssPop();
+            return toStream(in);
         }
     };
-
-    DOCTEST_INTERFACE String rawMemoryToString(const void* object, unsigned size);
-
-    template <typename T>
-    String rawMemoryToString(const DOCTEST_REF_WRAP(T) object) {
-        return rawMemoryToString(&object, sizeof(object));
-    }
-
-    template <typename T>
-    const char* type_to_string() {
-        return "<>";
-    }
 } // namespace detail
 
 template <typename T>
-struct StringMaker : public detail::StringMakerBase<detail::has_insertion_operator<T>::value>
+struct StringMaker : public detail::StringMakerBase<
+    detail::has_insertion_operator<T>::value || detail::types::is_pointer<T>::value || detail::types::is_array<T>::value>
 {};
 
 template <typename T>
-struct StringMaker<T*>
-{
-    template <typename U>
-    static String convert(U* p) {
-        if(p)
-            return detail::rawMemoryToString(p);
-        return "NULL";
-    }
-};
+String toString() {
+#if DOCTEST_MSVC >= 0 && DOCTEST_CLANG == 0 && DOCTEST_GCC == 0
+    String ret = __FUNCSIG__; // class doctest::String __cdecl doctest::toString<TYPE>(void)
+    String::size_type beginPos = ret.find('<');
+    return ret.substr(beginPos + 1, ret.size() - beginPos - static_cast<String::size_type>(sizeof(">(void)")));
+#else
+    String ret = __PRETTY_FUNCTION__; // doctest::String toString() [with T = TYPE]
+    String::size_type begin = ret.find('=') + 2;
+    return ret.substr(begin, ret.size() - begin - 1);
+#endif
+}
 
-template <typename R, typename C>
-struct StringMaker<R C::*>
-{
-    static String convert(R C::*p) {
-        if(p)
-            return detail::rawMemoryToString(p);
-        return "NULL";
-    }
-};
-
-template <typename T, typename detail::enable_if<!detail::is_enum<T>::value, bool>::type = true>
+template <typename T, typename detail::types::enable_if<!detail::types::is_enum<T>::value, bool>::type = true>
 String toString(const DOCTEST_REF_WRAP(T) value) {
     return StringMaker<T>::convert(value);
 }
 
 #ifdef DOCTEST_CONFIG_TREAT_CHAR_STAR_AS_STRING
-DOCTEST_INTERFACE String toString(char* in);
 DOCTEST_INTERFACE String toString(const char* in);
 #endif // DOCTEST_CONFIG_TREAT_CHAR_STAR_AS_STRING
+
+#if DOCTEST_MSVC >= DOCTEST_COMPILER(19, 20, 0)
+// see this issue on why this is needed: https://github.com/doctest/doctest/issues/183
+DOCTEST_INTERFACE String toString(const std::string& in);
+#endif // VS 2019
+
+DOCTEST_INTERFACE String toString(std::nullptr_t);
+
 DOCTEST_INTERFACE String toString(bool in);
+
 DOCTEST_INTERFACE String toString(float in);
 DOCTEST_INTERFACE String toString(double in);
 DOCTEST_INTERFACE String toString(double long in);
@@ -1069,38 +1071,77 @@ DOCTEST_INTERFACE String toString(double long in);
 DOCTEST_INTERFACE String toString(char in);
 DOCTEST_INTERFACE String toString(char signed in);
 DOCTEST_INTERFACE String toString(char unsigned in);
-DOCTEST_INTERFACE String toString(int short in);
-DOCTEST_INTERFACE String toString(int short unsigned in);
-DOCTEST_INTERFACE String toString(int in);
-DOCTEST_INTERFACE String toString(int unsigned in);
-DOCTEST_INTERFACE String toString(int long in);
-DOCTEST_INTERFACE String toString(int long unsigned in);
-DOCTEST_INTERFACE String toString(int long long in);
-DOCTEST_INTERFACE String toString(int long long unsigned in);
-DOCTEST_INTERFACE String toString(std::nullptr_t in);
+DOCTEST_INTERFACE String toString(short in);
+DOCTEST_INTERFACE String toString(short unsigned in);
+DOCTEST_INTERFACE String toString(signed in);
+DOCTEST_INTERFACE String toString(unsigned in);
+DOCTEST_INTERFACE String toString(long in);
+DOCTEST_INTERFACE String toString(long unsigned in);
+DOCTEST_INTERFACE String toString(long long in);
+DOCTEST_INTERFACE String toString(long long unsigned in);
 
-template <typename T, typename detail::enable_if<detail::is_enum<T>::value, bool>::type = true>
+template <typename T, typename detail::types::enable_if<detail::types::is_enum<T>::value, bool>::type = true>
 String toString(const DOCTEST_REF_WRAP(T) value) {
-    typedef typename detail::underlying_type<T>::type UT;
+    typedef typename detail::types::underlying_type<T>::type UT;
     return toString(static_cast<UT>(value));
 }
 
-#if DOCTEST_MSVC >= DOCTEST_COMPILER(19, 20, 0)
-// see this issue on why this is needed: https://github.com/doctest/doctest/issues/183
-DOCTEST_INTERFACE String toString(const std::string& in);
-#endif // VS 2019
+namespace detail {
+    template <typename T>
+    struct filldata
+    {
+        static void fill(std::ostream* stream, const T& in) {
+#if defined(_MSC_VER) && _MSC_VER <= 1900
+        insert_hack_t<T>::insert(*stream, in);
+#else
+        operator<<(*stream, in);
+#endif
+        }
+    };
 
-class DOCTEST_INTERFACE Approx
+    template <typename T, size_t N>
+    struct filldata<T[N]> {
+        static void fill(std::ostream* stream, const T(&in)[N]) {
+            *stream << "[";
+            for (size_t i = 0; i < N; i++) {
+                if (i != 0) { *stream << ", "; }
+                *stream << toString(in[i]);
+            }
+            *stream << "]";
+        }
+    };
+
+    // Specialized since we don't want the terminating null byte!
+    template <size_t N>
+    struct filldata<const char[N]> {
+        static void fill(std::ostream* stream, const char (&in)[N]) {
+            *stream << String(in, in[N - 1] ? N : N - 1);
+        }
+    };
+
+    template <>
+    struct filldata<const void*> {
+        static void fill(std::ostream* stream, const void* in);
+    };
+
+    template <typename T>
+    struct filldata<T*> {
+        static void fill(std::ostream* stream, const T* in) {
+            filldata<const void*>::fill(stream, in);
+        }
+    };
+}
+
+struct DOCTEST_INTERFACE Approx
 {
-public:
-    explicit Approx(double value);
+    Approx(double value);
 
     Approx operator()(double value) const;
 
 #ifdef DOCTEST_CONFIG_INCLUDE_TYPE_TRAITS
     template <typename T>
     explicit Approx(const T& value,
-                    typename detail::enable_if<std::is_constructible<double, T>::value>::type* =
+                    typename detail::types::enable_if<std::is_constructible<double, T>::value>::type* =
                             static_cast<T*>(nullptr)) {
         *this = Approx(static_cast<double>(value));
     }
@@ -1110,7 +1151,7 @@ public:
 
 #ifdef DOCTEST_CONFIG_INCLUDE_TYPE_TRAITS
     template <typename T>
-    typename detail::enable_if<std::is_constructible<double, T>::value, Approx&>::type epsilon(
+    typename std::enable_if<std::is_constructible<double, T>::value, Approx&>::type epsilon(
             const T& newEpsilon) {
         m_epsilon = static_cast<double>(newEpsilon);
         return *this;
@@ -1121,7 +1162,7 @@ public:
 
 #ifdef DOCTEST_CONFIG_INCLUDE_TYPE_TRAITS
     template <typename T>
-    typename detail::enable_if<std::is_constructible<double, T>::value, Approx&>::type scale(
+    typename std::enable_if<std::is_constructible<double, T>::value, Approx&>::type scale(
             const T& newScale) {
         m_scale = static_cast<double>(newScale);
         return *this;
@@ -1142,11 +1183,9 @@ public:
     DOCTEST_INTERFACE friend bool operator> (double lhs, const Approx & rhs);
     DOCTEST_INTERFACE friend bool operator> (const Approx & lhs, double rhs);
 
-    DOCTEST_INTERFACE friend String toString(const Approx& in);
-
 #ifdef DOCTEST_CONFIG_INCLUDE_TYPE_TRAITS
 #define DOCTEST_APPROX_PREFIX \
-    template <typename T> friend typename detail::enable_if<std::is_constructible<double, T>::value, bool>::type
+    template <typename T> friend typename std::enable_if<std::is_constructible<double, T>::value, bool>::type
 
     DOCTEST_APPROX_PREFIX operator==(const T& lhs, const Approx& rhs) { return operator==(double(lhs), rhs); }
     DOCTEST_APPROX_PREFIX operator==(const Approx& lhs, const T& rhs) { return operator==(rhs, lhs); }
@@ -1165,7 +1204,6 @@ public:
 
     // clang-format on
 
-private:
     double m_epsilon;
     double m_scale;
     double m_value;
@@ -1178,8 +1216,9 @@ DOCTEST_INTERFACE const ContextOptions* getContextOptions();
 template <typename F>
 struct DOCTEST_INTERFACE_DECL IsNaN
 {
-    F val;
-    IsNaN(F f) : val(f) { }
+    F value; bool flipped;
+    IsNaN(F f, bool flip = false) : value(f), flipped(flip) { }
+    IsNaN<F> operator!() const { return { value, !flipped }; }
     operator bool() const;
 };
 #ifndef __MINGW32__
@@ -1187,9 +1226,9 @@ extern template struct DOCTEST_INTERFACE_DECL IsNaN<float>;
 extern template struct DOCTEST_INTERFACE_DECL IsNaN<double>;
 extern template struct DOCTEST_INTERFACE_DECL IsNaN<long double>;
 #endif
-DOCTEST_INTERFACE std::ostream& operator<<(std::ostream& out, IsNaN<float> nanCheck);
-DOCTEST_INTERFACE std::ostream& operator<<(std::ostream& out, IsNaN<double> nanCheck);
-DOCTEST_INTERFACE std::ostream& operator<<(std::ostream& out, IsNaN<long double> nanCheck);
+DOCTEST_INTERFACE String toString(IsNaN<float> in);
+DOCTEST_INTERFACE String toString(IsNaN<double> in);
+DOCTEST_INTERFACE String toString(IsNaN<double long> in);
 
 #ifndef DOCTEST_CONFIG_DISABLE
 
@@ -1260,7 +1299,7 @@ DOCTEST_CLANG_SUPPRESS_WARNING_WITH_PUSH("-Wunused-comparison")
             return Result(res, stringifyBinaryExpr(lhs, op_str, rhs));                             \
         return Result(res);                                                                        \
     }                                                                                              \
-    template <typename R ,typename enable_if<!doctest::detail::is_rvalue_reference<R>::value, void >::type* = nullptr> \
+    template <typename R ,typename types::enable_if<!doctest::detail::types::is_rvalue_reference<R>::value, void >::type* = nullptr> \
     DOCTEST_NOINLINE SFINAE_OP(Result,op) operator op(const R& rhs) {                              \
     bool res = op_macro(doctest::detail::forward<const L>(lhs), rhs);                              \
         if(m_at & assertType::is_false)                                                            \
@@ -1343,7 +1382,7 @@ DOCTEST_CLANG_SUPPRESS_WARNING_WITH_PUSH("-Wunused-comparison")
 #ifndef DOCTEST_CONFIG_TREAT_CHAR_STAR_AS_STRING
 #define DOCTEST_COMPARISON_RETURN_TYPE bool
 #else // DOCTEST_CONFIG_TREAT_CHAR_STAR_AS_STRING
-#define DOCTEST_COMPARISON_RETURN_TYPE typename enable_if<can_use_op<L>::value || can_use_op<R>::value, bool>::type
+#define DOCTEST_COMPARISON_RETURN_TYPE typename types::enable_if<can_use_op<L>::value || can_use_op<R>::value, bool>::type
     // NOLINTNEXTLINE(clang-analyzer-cplusplus.NewDeleteLeaks)
     inline bool eq(const char* lhs, const char* rhs) { return String(lhs) == String(rhs); }
     inline bool ne(const char* lhs, const char* rhs) { return String(lhs) != String(rhs); }
@@ -1470,7 +1509,7 @@ DOCTEST_CLANG_SUPPRESS_WARNING_POP
             return Expression_lhs<L>(static_cast<L&&>(operand), m_at);
         }
 
-        template <typename L,typename enable_if<!doctest::detail::is_rvalue_reference<L>::value,void >::type* = nullptr>
+        template <typename L,typename types::enable_if<!doctest::detail::types::is_rvalue_reference<L>::value,void >::type* = nullptr>
         Expression_lhs<const L&> operator<<(const L &operand) {
             return Expression_lhs<const L&>(operand, m_at);
         }
@@ -1503,12 +1542,12 @@ DOCTEST_CLANG_SUPPRESS_WARNING_POP
     {
         funcType m_test; // a function pointer to the test case
 
-        const char* m_type; // for templated test cases - gets appended to the real name
+        String m_type; // for templated test cases - gets appended to the real name
         int m_template_id; // an ID used to distinguish between the different versions of a templated test case
         String m_full_name; // contains the name (only for templated test cases!) + the template type
 
         TestCase(funcType test, const char* file, unsigned line, const TestSuite& test_suite,
-                 const char* type = "", int template_id = -1);
+                 const String& type = String(), int template_id = -1);
 
         TestCase(const TestCase& other);
 
@@ -1706,58 +1745,6 @@ DOCTEST_CLANG_SUPPRESS_WARNING_POP
 
     DOCTEST_INTERFACE void registerExceptionTranslatorImpl(const IExceptionTranslator* et);
 
-    template <bool C>
-    struct StringStreamBase
-    {
-        template <typename T>
-        static void convert(std::ostream* s, const T& in) {
-            *s << toString(in);
-        }
-
-        // always treat char* as a string in this context - no matter
-        // if DOCTEST_CONFIG_TREAT_CHAR_STAR_AS_STRING is defined
-        static void convert(std::ostream* s, const char* in) { *s << String(in); }
-    };
-
-    template <>
-    struct StringStreamBase<true>
-    {
-        template <typename T>
-        static void convert(std::ostream* s, const T& in) {
-            *s << in;
-        }
-    };
-
-    template <typename T>
-    struct StringStream : public StringStreamBase<has_insertion_operator<T>::value>
-    {};
-
-    template <typename T>
-    void toStream(std::ostream* s, const T& value) {
-        StringStream<T>::convert(s, value);
-    }
-
-#ifdef DOCTEST_CONFIG_TREAT_CHAR_STAR_AS_STRING
-    DOCTEST_INTERFACE void toStream(std::ostream* s, char* in);
-    DOCTEST_INTERFACE void toStream(std::ostream* s, const char* in);
-#endif // DOCTEST_CONFIG_TREAT_CHAR_STAR_AS_STRING
-    DOCTEST_INTERFACE void toStream(std::ostream* s, bool in);
-    DOCTEST_INTERFACE void toStream(std::ostream* s, float in);
-    DOCTEST_INTERFACE void toStream(std::ostream* s, double in);
-    DOCTEST_INTERFACE void toStream(std::ostream* s, double long in);
-
-    DOCTEST_INTERFACE void toStream(std::ostream* s, char in);
-    DOCTEST_INTERFACE void toStream(std::ostream* s, char signed in);
-    DOCTEST_INTERFACE void toStream(std::ostream* s, char unsigned in);
-    DOCTEST_INTERFACE void toStream(std::ostream* s, int short in);
-    DOCTEST_INTERFACE void toStream(std::ostream* s, int short unsigned in);
-    DOCTEST_INTERFACE void toStream(std::ostream* s, int in);
-    DOCTEST_INTERFACE void toStream(std::ostream* s, int unsigned in);
-    DOCTEST_INTERFACE void toStream(std::ostream* s, int long in);
-    DOCTEST_INTERFACE void toStream(std::ostream* s, int long unsigned in);
-    DOCTEST_INTERFACE void toStream(std::ostream* s, int long long in);
-    DOCTEST_INTERFACE void toStream(std::ostream* s, int long long unsigned in);
-
     // ContextScope base class used to allow implementing methods of ContextScope 
     // that don't depend on the template parameter in doctest.cpp.
     class DOCTEST_INTERFACE ContextScopeBase : public IContextScope {
@@ -1799,7 +1786,7 @@ DOCTEST_CLANG_SUPPRESS_WARNING_POP
         // the preferred way of chaining parameters for stringification
         template <typename T>
         MessageBuilder& operator,(const T& in) {
-            toStream(m_stream, in);
+            *m_stream << toString(in);
             return *this;
         }
 
@@ -2102,7 +2089,7 @@ int registerReporter(const char* name, int priority, bool isReporter) {
     DOCTEST_CREATE_AND_REGISTER_FUNCTION(DOCTEST_ANONYMOUS(DOCTEST_ANON_FUNC_), decorators)
 
 // for registering tests in classes - requires C++17 for inline variables!
-#if __cplusplus >= 201703L || (DOCTEST_MSVC >= DOCTEST_COMPILER(19, 12, 0) && _MSVC_LANG >= 201703L)
+#if DOCTEST_CPLUSPLUS >= 201703L
 #define DOCTEST_TEST_CASE_CLASS(decorators)                                                        \
     DOCTEST_CREATE_AND_REGISTER_FUNCTION_IN_CLASS(DOCTEST_ANONYMOUS(DOCTEST_ANON_FUNC_),           \
                                                   DOCTEST_ANONYMOUS(DOCTEST_ANON_PROXY_),          \
@@ -2118,17 +2105,16 @@ int registerReporter(const char* name, int priority, bool isReporter) {
                               DOCTEST_ANONYMOUS(DOCTEST_ANON_FUNC_), decorators)
 
 // for converting types to strings without the <typeinfo> header and demangling
-#define DOCTEST_TYPE_TO_STRING_IMPL(...)                                                           \
-    template <>                                                                                    \
-    inline const char* type_to_string<__VA_ARGS__>() {                                             \
-        return "<" #__VA_ARGS__ ">";                                                               \
-    }
-#define DOCTEST_TYPE_TO_STRING(...)                                                                \
-    namespace doctest { namespace detail {                                                         \
-            DOCTEST_TYPE_TO_STRING_IMPL(__VA_ARGS__)                                               \
+#define DOCTEST_TYPE_TO_STRING_AS(str, ...)                                                        \
+    namespace doctest {                                                                            \
+        template <>                                                                                \
+        inline String toString<__VA_ARGS__>() {                                                    \
+            return str;                                                                            \
         }                                                                                          \
     }                                                                                              \
     static_assert(true, "")
+
+#define DOCTEST_TYPE_TO_STRING(...) DOCTEST_TYPE_TO_STRING_AS(#__VA_ARGS__, __VA_ARGS__)
 
 #define DOCTEST_TEST_CASE_TEMPLATE_DEFINE_IMPL(dec, T, iter, func)                                 \
     template <typename T>                                                                          \
@@ -2142,7 +2128,7 @@ int registerReporter(const char* name, int priority, bool isReporter) {
             iter(const char* file, unsigned line, int index) {                                     \
                 doctest::detail::regTest(doctest::detail::TestCase(func<Type>, file, line,         \
                                             doctest_detail_test_suite_ns::getCurrentTestSuite(),   \
-                                            doctest::detail::type_to_string<Type>(),               \
+                                            doctest::toString<Type>(),                             \
                                             int(line) * 1000 + index)                              \
                                          * dec);                                                   \
                 iter<std::tuple<Rest...>>(file, line, index + 1);                                  \
@@ -2341,8 +2327,8 @@ int registerReporter(const char* name, int priority, bool isReporter) {
                                                        __LINE__, #expr, #__VA_ARGS__, message);    \
             try {                                                                                  \
                 DOCTEST_CAST_TO_VOID(expr)                                                         \
-            } catch(const typename doctest::detail::remove_const<                                  \
-                    typename doctest::detail::remove_reference<__VA_ARGS__>::type>::type&) {       \
+            } catch(const typename doctest::detail::types::remove_const<                           \
+                    typename doctest::detail::types::remove_reference<__VA_ARGS__>::type>::type&) {\
                 DOCTEST_RB.translateException();                                                   \
                 DOCTEST_RB.m_threw_as = true;                                                      \
             } catch(...) { DOCTEST_RB.translateException(); }                                      \
@@ -2592,8 +2578,8 @@ int registerReporter(const char* name, int priority, bool isReporter) {
                               DOCTEST_ANONYMOUS(DOCTEST_ANON_FUNC_), name)
 
 // for converting types to strings without the <typeinfo> header and demangling
+#define DOCTEST_TYPE_TO_STRING_AS(str, ...) static_assert(true, "")
 #define DOCTEST_TYPE_TO_STRING(...) static_assert(true, "")
-#define DOCTEST_TYPE_TO_STRING_IMPL(...)
 
 // for typed tests
 #define DOCTEST_TEST_CASE_TEMPLATE(name, type, ...)                                                \
@@ -2843,6 +2829,7 @@ namespace detail {
 #define TEST_CASE(name) DOCTEST_TEST_CASE(name)
 #define TEST_CASE_CLASS(name) DOCTEST_TEST_CASE_CLASS(name)
 #define TEST_CASE_FIXTURE(x, name) DOCTEST_TEST_CASE_FIXTURE(x, name)
+#define TYPE_TO_STRING_AS(str, ...) DOCTEST_TYPE_TO_STRING_AS(str, __VA_ARGS__)
 #define TYPE_TO_STRING(...) DOCTEST_TYPE_TO_STRING(__VA_ARGS__)
 #define TEST_CASE_TEMPLATE(name, T, ...) DOCTEST_TEST_CASE_TEMPLATE(name, T, __VA_ARGS__)
 #define TEST_CASE_TEMPLATE_DEFINE(name, T, id) DOCTEST_TEST_CASE_TEMPLATE_DEFINE(name, T, id)
@@ -2979,28 +2966,6 @@ namespace detail {
 
 // this is here to clear the 'current test suite' for the current translation unit - at the top
 DOCTEST_TEST_SUITE_END();
-
-// add stringification for primitive/fundamental types
-namespace doctest { namespace detail {
-    DOCTEST_TYPE_TO_STRING_IMPL(bool)
-    DOCTEST_TYPE_TO_STRING_IMPL(float)
-    DOCTEST_TYPE_TO_STRING_IMPL(double)
-    DOCTEST_TYPE_TO_STRING_IMPL(long double)
-    DOCTEST_TYPE_TO_STRING_IMPL(char)
-    DOCTEST_TYPE_TO_STRING_IMPL(signed char)
-    DOCTEST_TYPE_TO_STRING_IMPL(unsigned char)
-#if !DOCTEST_MSVC || defined(_NATIVE_WCHAR_T_DEFINED)
-    DOCTEST_TYPE_TO_STRING_IMPL(wchar_t)
-#endif // not MSVC or wchar_t support enabled
-    DOCTEST_TYPE_TO_STRING_IMPL(short int)
-    DOCTEST_TYPE_TO_STRING_IMPL(unsigned short int)
-    DOCTEST_TYPE_TO_STRING_IMPL(int)
-    DOCTEST_TYPE_TO_STRING_IMPL(unsigned int)
-    DOCTEST_TYPE_TO_STRING_IMPL(long int)
-    DOCTEST_TYPE_TO_STRING_IMPL(unsigned long int)
-    DOCTEST_TYPE_TO_STRING_IMPL(long long int)
-    DOCTEST_TYPE_TO_STRING_IMPL(unsigned long long int)
-}} // namespace doctest::detail
 
 #endif // DOCTEST_CONFIG_DISABLE
 
