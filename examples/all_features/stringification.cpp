@@ -247,7 +247,7 @@ TEST_CASE("a test case that registers an exception translator for int and then t
 
 namespace App {
     struct Foo { };
-    std::string toString(Foo*) { return "Foo"; }
+    static std::string toString(Foo*) { return "Foo"; }
 }
 
 TEST_CASE("toString std::string return") {
