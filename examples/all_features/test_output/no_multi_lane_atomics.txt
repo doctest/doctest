@@ -214,8 +214,12 @@ logging.cpp(0): ERROR: test case THREW exception: 0
 stringification.cpp(0):
 TEST CASE:  all asserts should fail and show how the objects get stringified
 
+stringification.cpp(0): MESSAGE: Foo{}
+
 stringification.cpp(0): ERROR: CHECK( f1 == f2 ) is NOT correct!
   values: CHECK( Foo{} == Foo{} )
+
+stringification.cpp(0): MESSAGE: omg
 
 stringification.cpp(0): ERROR: CHECK( dummy == "tralala" ) is NOT correct!
   values: CHECK( omg == tralala )
@@ -223,11 +227,15 @@ stringification.cpp(0): ERROR: CHECK( dummy == "tralala" ) is NOT correct!
 stringification.cpp(0): ERROR: CHECK( "tralala" == dummy ) is NOT correct!
   values: CHECK( tralala == omg )
 
+stringification.cpp(0): MESSAGE: [1, 2, 3]
+
 stringification.cpp(0): ERROR: CHECK( vec1 == vec2 ) is NOT correct!
   values: CHECK( [1, 2, 3] == [1, 2, 4] )
 
+stringification.cpp(0): MESSAGE: [1, 42, 3]
+
 stringification.cpp(0): ERROR: CHECK( lst_1 == lst_2 ) is NOT correct!
-  values: CHECK( [1, 42, 3, ] == [1, 2, 666, ] )
+  values: CHECK( [1, 42, 3] == [1, 2, 666] )
 
 stringification.cpp(0): ERROR: CHECK( s1 == s2 ) is NOT correct!
   values: CHECK( MyOtherType: 42 == MyOtherType: 666 )
@@ -237,12 +245,6 @@ stringification.cpp(0): ERROR: CHECK( s1 == s2 ) is NOT correct!
   values: CHECK( MyOtherType: 42 == MyOtherType: 666 )
   logged: s1=MyOtherType: 42 s2=MyOtherType: 666
           MyOtherType: 42 is not really MyOtherType: 666
-
-stringification.cpp(0): ERROR: CHECK( doctest::IsNaN<double>(0.5) ) is NOT correct!
-  values: CHECK( 0.5 )
-
-stringification.cpp(0): ERROR: CHECK( doctest::IsNaN<float>(std::numeric_limits<float>::infinity()) ) is NOT correct!
-  values: CHECK( inf )
 
 stringification.cpp(0): ERROR: CHECK( "a" == doctest::Contains("aaa") ) is NOT correct!
   values: CHECK( a == Contains( aaa ) )
@@ -581,24 +583,57 @@ subcases.cpp(0): FATAL ERROR:
 
 ===============================================================================
 templated_test_cases.cpp(0):
-TEST CASE:  multiple types<>
+TEST CASE:  multiple types<Custom name test>
 
 templated_test_cases.cpp(0): ERROR: CHECK( t2 != T2() ) is NOT correct!
   values: CHECK( 0 != 0 )
 
 ===============================================================================
 templated_test_cases.cpp(0):
-TEST CASE:  multiple types<>
+TEST CASE:  multiple types<Other custom name>
 
 templated_test_cases.cpp(0): ERROR: CHECK( t2 != T2() ) is NOT correct!
   values: CHECK( 0 != 0 )
 
 ===============================================================================
 templated_test_cases.cpp(0):
-TEST CASE:  multiple types<>
+TEST CASE:  multiple types<TypePair<bool, int>>
 
 templated_test_cases.cpp(0): ERROR: CHECK( t2 != T2() ) is NOT correct!
   values: CHECK( 0 != 0 )
+
+===============================================================================
+stringification.cpp(0):
+TEST CASE:  no headers
+
+stringification.cpp(0): MESSAGE: 1as
+
+stringification.cpp(0): ERROR: CHECK( chs == nullptr ) is NOT correct!
+  values: CHECK( 1as == nullptr )
+
+stringification.cpp(0): MESSAGE: 1as
+
+stringification.cpp(0): ERROR: CHECK( "1as" == nullptr ) is NOT correct!
+  values: CHECK( 1as == nullptr )
+
+stringification.cpp(0): MESSAGE: [0, 1, 1, 2, 3, 5, 8, 13]
+
+stringification.cpp(0): ERROR: CHECK( ints == nullptr ) is NOT correct!
+  values: CHECK( [0, 1, 1, 2, 3, 5, 8, 13] == nullptr )
+
+stringification.cpp(0): MESSAGE: [0, 1, 1, 2, 3, 5, 8, 13]
+
+stringification.cpp(0): MESSAGE: nullptr
+
+stringification.cpp(0): ERROR: CHECK( cnptr != nullptr ) is NOT correct!
+  values: CHECK( nullptr != nullptr )
+
+stringification.cpp(0): MESSAGE: 0
+
+stringification.cpp(0): ERROR: CHECK( A == C ) is NOT correct!
+  values: CHECK( 0 == 100 )
+
+stringification.cpp(0): MESSAGE: int
 
 ===============================================================================
 assertion_macros.cpp(0):
@@ -617,6 +652,16 @@ TEST CASE:  normal test in a test suite from a decorator
 test_cases_and_suites.cpp(0): MESSAGE: failing because of the timeout decorator!
 
 Test case exceeded time limit of 0.000001!
+===============================================================================
+stringification.cpp(0):
+TEST CASE:  operator<<
+
+stringification.cpp(0): MESSAGE: A
+
+stringification.cpp(0): MESSAGE: B
+
+stringification.cpp(0): MESSAGE: C
+
 ===============================================================================
 test_cases_and_suites.cpp(0):
 TEST SUITE: scoped test suite
@@ -877,7 +922,7 @@ TEST CASE:  without a funny name:
 subcases.cpp(0): MESSAGE: Nooo
 
 ===============================================================================
-[doctest] test cases:  80 |  30 passed |  50 failed |
-[doctest] assertions: 216 | 100 passed | 116 failed |
+[doctest] test cases:  82 |  31 passed |  51 failed |
+[doctest] assertions: 224 | 105 passed | 119 failed |
 [doctest] Status: FAILURE!
 Program code.

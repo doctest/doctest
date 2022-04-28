@@ -146,6 +146,6 @@
     <TestCase name="without a funny name:" filename="subcases.cpp" line="0" skipped="true"/>
   </TestSuite>
   <OverallResultsAsserts successes="0" failures="0"/>
-  <OverallResultsTestCases successes="0" failures="0" skipped="100"/>
+  <OverallResultsTestCases successes="0" failures="0" skipped="102"/>
 </doctest>
 Program code.

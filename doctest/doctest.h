@@ -3081,10 +3081,7 @@ DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_BEGIN
 #include <cfloat>
 #include <cctype>
 #include <cstdint>
-#if DOCTEST_MSVC >= DOCTEST_COMPILER(19, 20, 0)
-// see this issue on why this is needed: https://github.com/doctest/doctest/issues/183
 #include <string>
-#endif // VS 2019
 
 #ifdef DOCTEST_PLATFORM_MAC
 #include <sys/types.h>
