@@ -543,6 +543,9 @@ String::String(const char* in, size_type in_size) {
     memcpy(allocate(in_size), in, in_size);
 }
 
+String::String(const std::string& in)
+    : String(in.c_str(), in.length()) {}
+
 String::String(std::istream& in, size_type in_size) {
     in.read(allocate(in_size), in_size);
 }

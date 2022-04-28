@@ -244,3 +244,15 @@ TEST_CASE("a test case that registers an exception translator for int and then t
 
     throw_if(true, 5);
 }
+
+namespace App {
+    struct Foo { };
+    std::string toString(Foo*) { return "Foo"; }
+}
+
+TEST_CASE("toString std::string return") {
+    App::Foo foo;
+    CHECK(&foo != nullptr);
+    CHECK_NE(&foo, nullptr);
+    CHECK(&foo);
+}
