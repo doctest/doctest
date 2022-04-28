@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <testsuites>
-  <testsuite name="all_features" errors="2" failures="13" tests="18">
+  <testsuite name="all_features" errors="2" failures="13" tests="21">
     <testcase classname="stringification.cpp" name="operator&lt;&lt;" status="run"/>
     <testcase classname="stringification.cpp" name="no headers" status="run">
       <failure message="1as == nullptr" type="CHECK">
@@ -95,6 +95,7 @@ CHECK( "a" == doctest::Contains("aaa") ) is NOT correct!
         5
       </error>
     </testcase>
+    <testcase classname="stringification.cpp" name="toString std::string return" status="run"/>
   </testsuite>
 </testsuites>
 Program code.

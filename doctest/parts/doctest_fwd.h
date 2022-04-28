@@ -583,6 +583,8 @@ public:
     String(const char* in);
     String(const char* in, size_type in_size);
 
+    String(const std::string& in);
+
     String(std::istream& in, size_type in_size);
 
     String(const String& other);

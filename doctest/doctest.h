@@ -586,6 +586,8 @@ public:
     String(const char* in);
     String(const char* in, size_type in_size);
 
+    String(const std::string& in);
+
     String(std::istream& in, size_type in_size);
 
     String(const String& other);
@@ -3081,10 +3083,7 @@ DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_BEGIN
 #include <cfloat>
 #include <cctype>
 #include <cstdint>
-#if DOCTEST_MSVC >= DOCTEST_COMPILER(19, 20, 0)
-// see this issue on why this is needed: https://github.com/doctest/doctest/issues/183
 #include <string>
-#endif // VS 2019
 
 #ifdef DOCTEST_PLATFORM_MAC
 #include <sys/types.h>
@@ -3531,6 +3530,9 @@ String::String(const char* in)
 String::String(const char* in, size_type in_size) {
     memcpy(allocate(in_size), in, in_size);
 }
+
+String::String(const std::string& in)
+    : String(in.c_str(), in.length()) {}
 
 String::String(std::istream& in, size_type in_size) {
     in.read(allocate(in_size), in_size);

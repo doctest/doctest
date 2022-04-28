@@ -203,8 +203,11 @@
       </Exception>
       <OverallResultsAsserts successes="0" failures="0" test_case_success="false"/>
     </TestCase>
+    <TestCase name="toString std::string return" filename="stringification.cpp" line="0">
+      <OverallResultsAsserts successes="3" failures="0" test_case_success="true"/>
+    </TestCase>
   </TestSuite>
-  <OverallResultsAsserts successes="5" failures="13"/>
-  <OverallResultsTestCases successes="1" failures="3"/>
+  <OverallResultsAsserts successes="8" failures="13"/>
+  <OverallResultsTestCases successes="2" failures="3"/>
 </doctest>
 Program code.

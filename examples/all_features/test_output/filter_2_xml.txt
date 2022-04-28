@@ -129,6 +129,7 @@
     <TestCase name="test case should fail even though the last subcase passes" filename="subcases.cpp" line="0" skipped="true"/>
     <TestCase name="third party asserts can report failures to doctest" filename="logging.cpp" line="0" skipped="true"/>
     <TestCase name="threads..." filename="concurrency.cpp" line="0" skipped="true"/>
+    <TestCase name="toString std::string return" filename="stringification.cpp" line="0" skipped="true"/>
   </TestSuite>
   <TestSuite name="skipped test cases">
     <TestCase name="unskipped" filename="test_cases_and_suites.cpp" line="0" description="this test has overridden its skip decorator" skipped="true"/>
@@ -146,6 +147,6 @@
     <TestCase name="without a funny name:" filename="subcases.cpp" line="0" skipped="true"/>
   </TestSuite>
   <OverallResultsAsserts successes="0" failures="0"/>
-  <OverallResultsTestCases successes="0" failures="0" skipped="100"/>
+  <OverallResultsTestCases successes="0" failures="0" skipped="101"/>
 </doctest>
 Program code.
