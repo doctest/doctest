@@ -1,7 +1,9 @@
 #define DOCTEST_CONFIG_DOUBLE_STRINGIFY
 #include <doctest_fwd.h>
 
+DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_BEGIN
 #include <string>
+DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_END
 
 namespace App {
     struct Foo { };
