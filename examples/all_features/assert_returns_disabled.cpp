@@ -23,7 +23,6 @@ static int test_disabled_var_ = [] {
     if (TEST_FLIP ^ CHECK_THROWS([=] { throw i; }())) { TEST_FAIL(); }
     if (TEST_FLIP ^ CHECK_THROWS_AS([=] { throw i; }(), int)) { TEST_FAIL(); }
     if (TEST_FLIP ^ CHECK_NOTHROW([=]{ }())) { TEST_FAIL(); }
-    if (CHECK_THROWS_WITH([=] { throw i; }(), "2")) { TEST_FAIL(); }
 #endif
 
     return 0;
