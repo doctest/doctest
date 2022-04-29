@@ -2,6 +2,9 @@
 <doctest binary="all_features">
   <Options order_by="file" rand_seed="324" first="0" last="4294967295" abort_after="0" subcase_filter_levels="2147483647" case_sensitive="false" no_throw="false" no_skip="false"/>
   <TestSuite>
+    <TestCase name="toString std::string ret type" filename="double_stringification.cpp" line="0">
+      <OverallResultsAsserts successes="3" failures="0" test_case_success="true"/>
+    </TestCase>
     <TestCase name="operator&lt;&lt;" filename="stringification.cpp" line="0">
       <Message type="WARNING" filename="stringification.cpp" line="0">
         <Text>
@@ -204,7 +207,7 @@
       <OverallResultsAsserts successes="0" failures="0" test_case_success="false"/>
     </TestCase>
   </TestSuite>
-  <OverallResultsAsserts successes="5" failures="13"/>
-  <OverallResultsTestCases successes="1" failures="3"/>
+  <OverallResultsAsserts successes="8" failures="13"/>
+  <OverallResultsTestCases successes="2" failures="3"/>
 </doctest>
 Program code.
