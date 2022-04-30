@@ -13,6 +13,7 @@ Defining something ```globally``` means for every source file of the binary (exe
 - [**```DOCTEST_CONFIG_NO_SHORT_MACRO_NAMES```**](#doctest_config_no_short_macro_names)
 - [**```DOCTEST_CONFIG_TREAT_CHAR_STAR_AS_STRING```**](#doctest_config_treat_char_star_as_string)
 - [**```DOCTEST_CONFIG_REQUIRE_STRINGIFICATION_FOR_ALL_USED_TYPES```**](#doctest_config_require_stringification_for_all_used_types)
+- [**```DOCTEST_CONFIG_DOUBLE_STRINGIFY```**](#doctest_config_double_stringify)
 - [**```DOCTEST_CONFIG_SUPER_FAST_ASSERTS```**](#doctest_config_super_fast_asserts)
 - [**```DOCTEST_CONFIG_USE_STD_HEADERS```**](#doctest_config_use_std_headers)
 - [**```DOCTEST_CONFIG_VOID_CAST_EXPRESSIONS```**](#doctest_config_void_cast_expressions)
@@ -86,6 +87,14 @@ This should be defined globally.
 ### **```DOCTEST_CONFIG_REQUIRE_STRINGIFICATION_FOR_ALL_USED_TYPES```**
 
 By default if stringification is not available for a type, it is simply printed as `{?}`. By enabling this flag, whenever a type is used in an assert that does not provide stringification, the compilation is stopped.
+
+This can be defined both globally and in specific source files only.
+
+### **```DOCTEST_CONFIG_DOUBLE_STRINGIFY```**
+
+If you define your own `toString` functions that return something different from `doctest::String`, but still stringifiable, you can enable this configuration option to stringify the result of internal `toString` calls.
+
+You can also define `DOCTEST_STRINGIFY` yourself to override doctest's stringification behavior.
 
 This can be defined both globally and in specific source files only.
 
