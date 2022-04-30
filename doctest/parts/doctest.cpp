@@ -3633,7 +3633,7 @@ void Context::setOption(const char* option, bool value) {
 
 // allows the user to override procedurally the int options from the command line
 void Context::setOption(const char* option, int value) {
-    setOption(option, toString(value).c_str());
+    setOption(option, (DOCTEST_STRINGIFY(value)).c_str());
     // NOLINTNEXTLINE(clang-analyzer-cplusplus.NewDeleteLeaks)
 }
 

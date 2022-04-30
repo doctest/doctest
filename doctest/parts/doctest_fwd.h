@@ -1033,6 +1033,14 @@ struct StringMaker : public detail::StringMakerBase<
     detail::has_insertion_operator<T>::value || detail::types::is_pointer<T>::value || detail::types::is_array<T>::value>
 {};
 
+#ifndef DOCTEST_STRINGIFY
+#ifdef DOCTEST_CONFIG_DOUBLE_STRINGIFY
+#define DOCTEST_STRINGIFY(...) toString(toString(__VA_ARGS__))
+#else
+#define DOCTEST_STRINGIFY(...) toString(__VA_ARGS__)
+#endif
+#endif
+
 template <typename T>
 String toString() {
 #if DOCTEST_MSVC >= 0 && DOCTEST_CLANG == 0 && DOCTEST_GCC == 0
@@ -1083,7 +1091,7 @@ DOCTEST_INTERFACE String toString(long long unsigned in);
 template <typename T, typename detail::types::enable_if<detail::types::is_enum<T>::value, bool>::type = true>
 String toString(const DOCTEST_REF_WRAP(T) value) {
     typedef typename detail::types::underlying_type<T>::type UT;
-    return toString(static_cast<UT>(value));
+    return (DOCTEST_STRINGIFY(static_cast<UT>(value)));
 }
 
 namespace detail {
@@ -1105,7 +1113,7 @@ namespace detail {
             *stream << "[";
             for (size_t i = 0; i < N; i++) {
                 if (i != 0) { *stream << ", "; }
-                *stream << toString(in[i]);
+                *stream << (DOCTEST_STRINGIFY(in[i]));
             }
             *stream << "]";
         }
@@ -1276,7 +1284,7 @@ namespace detail {
     String stringifyBinaryExpr(const DOCTEST_REF_WRAP(L) lhs, const char* op,
                                const DOCTEST_REF_WRAP(R) rhs) {
         // NOLINTNEXTLINE(clang-analyzer-cplusplus.NewDeleteLeaks)
-        return toString(lhs) + op + toString(rhs);
+        return (DOCTEST_STRINGIFY(lhs)) + op + (DOCTEST_STRINGIFY(rhs));
     }
 
 #if DOCTEST_CLANG && DOCTEST_CLANG < DOCTEST_COMPILER(3, 6, 0)
@@ -1443,7 +1451,7 @@ DOCTEST_MSVC_SUPPRESS_WARNING_POP
                 res = !res;
 
             if(!res || getContextOptions()->success)
-                return Result(res, toString(lhs));
+                return Result(res, (DOCTEST_STRINGIFY(lhs)));
             return Result(res);
         }
 
@@ -1627,7 +1635,7 @@ DOCTEST_CLANG_SUPPRESS_WARNING_POP
                 m_failed = !m_failed;
 
             if(m_failed || getContextOptions()->success)
-                m_decomp = toString(val);
+                m_decomp = (DOCTEST_STRINGIFY(val));
 
             return !m_failed;
         }
@@ -1706,8 +1714,8 @@ DOCTEST_CLANG_SUPPRESS_WARNING_POP
         // IF THE DEBUGGER BREAKS HERE - GO 1 LEVEL UP IN THE CALLSTACK FOR THE FAILING ASSERT
         // THIS IS THE EFFECT OF HAVING 'DOCTEST_CONFIG_SUPER_FAST_ASSERTS' DEFINED
         // ###################################################################################
-        DOCTEST_ASSERT_OUT_OF_TESTS(toString(val));
-        DOCTEST_ASSERT_IN_TESTS(toString(val));
+        DOCTEST_ASSERT_OUT_OF_TESTS((DOCTEST_STRINGIFY(val)));
+        DOCTEST_ASSERT_IN_TESTS((DOCTEST_STRINGIFY(val)));
         return !failed;
     }
 
@@ -1786,7 +1794,7 @@ DOCTEST_CLANG_SUPPRESS_WARNING_POP
         // the preferred way of chaining parameters for stringification
         template <typename T>
         MessageBuilder& operator,(const T& in) {
-            *m_stream << toString(in);
+            *m_stream << (DOCTEST_STRINGIFY(in));
             return *this;
         }
 
