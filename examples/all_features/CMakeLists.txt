@@ -131,6 +131,7 @@ endfunction()
 add_test_all_features(no_multithreading DOCTEST_CONFIG_NO_MULTITHREADING)
 add_test_all_features(no_multi_lane_atomics DOCTEST_CONFIG_NO_MULTI_LANE_ATOMICS)
 add_test_all_features(disabled DOCTEST_CONFIG_DISABLE)
+add_test_all_features(std_headers DOCTEST_CONFIG_USE_STD_HEADERS)
 
 # TODO: think about fixing these in a different way! - see issue #61 or commit 6b61e8aa3818c5ea100cedc1bb48a60ea10df6e8
 if(MSVC)
