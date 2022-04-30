@@ -6444,29 +6444,29 @@ namespace {
         if(!parseOption(argc, argv, pattern, &parsedValue))
             return false;
 
-        if(type == 0) {
-            // boolean
-            const char positive[][5] = {"1", "true", "on", "yes"};  // 5 - strlen("true") + 1
-            const char negative[][6] = {"0", "false", "off", "no"}; // 6 - strlen("false") + 1
-
-            // if the value matches any of the positive/negative possibilities
-            for(unsigned i = 0; i < 4; i++) {
-                if(parsedValue.compare(positive[i], true) == 0) {
-                    res = 1; //!OCLINT parameter reassignment
-                    return true;
-                }
-                if(parsedValue.compare(negative[i], true) == 0) {
-                    res = 0; //!OCLINT parameter reassignment
-                    return true;
-                }
-            }
-        } else {
+        if(type) {
             // integer
             // TODO: change this to use std::stoi or something else! currently it uses undefined behavior - assumes '0' on failed parse...
             int theInt = std::atoi(parsedValue.c_str()); // NOLINT
-            if(theInt != 0) {
+            if (theInt != 0) {
                 res = theInt; //!OCLINT parameter reassignment
                 return true;
+            }
+        } else {
+            // boolean
+            const char positive[][5] = { "1", "true", "on", "yes" };  // 5 - strlen("true") + 1
+            const char negative[][6] = { "0", "false", "off", "no" }; // 6 - strlen("false") + 1
+
+            // if the value matches any of the positive/negative possibilities
+            for (unsigned i = 0; i < 4; i++) {
+                if (parsedValue.compare(positive[i], true) == 0) {
+                    res = 1; //!OCLINT parameter reassignment
+                    return true;
+                }
+                if (parsedValue.compare(negative[i], true) == 0) {
+                    res = 0; //!OCLINT parameter reassignment
+                    return true;
+                }
             }
         }
         return false;
