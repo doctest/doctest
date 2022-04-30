@@ -6193,7 +6193,7 @@ namespace {
             // log the preamble of the test case only if there is something
             // else to print - something other than that an assert has failed
             if(opt.duration ||
-               (st.failure_flags && st.failure_flags != (int)TestCaseFailureReason::AssertFailure))
+               (st.failure_flags && st.failure_flags != static_cast<int>(TestCaseFailureReason::AssertFailure)))
                 logTestStart();
 
             if(opt.duration)
