@@ -2,10 +2,15 @@
 
 // GCC < 5 breaks when trying to compare enums to integers.
 #if !defined(DOCTEST_CONFIG_USE_STD_HEADERS) || DOCTEST_GCC == 0 || DOCTEST_GCC >= DOCTEST_COMPILER(5, 0, 0)
-#define CAST_TO_UNDERLYING(x) x
+#define RET_TYPE(x) x
 #else
-#define CAST_TO_UNDERLYING(x) doctest::detail::types::underlying_type<decltype(x)>::type(x)
+#define RET_TYPE(x) doctest::detail::types::underlying_type<x>::type
 #endif
+
+template <typename S>
+static RET_TYPE(S) castToUnderlying(S in) {
+    return in;
+}
 
 #include "header.h"
 
@@ -75,13 +80,13 @@ TEST_CASE("enum 1")
     static_assert(std::is_enum<EnumClassSC>::value, "");
     ostr << printable(EnumClassSC::Zero) << printable(EnumClassSC::One) << printable(EnumClassSC::Two);
 
-    CHECK_EQ(CAST_TO_UNDERLYING(Zero), 0);
-    CHECK_EQ(CAST_TO_UNDERLYING(One), 1);
-    CHECK_EQ(CAST_TO_UNDERLYING(Two), 2);
+    CHECK_EQ(castToUnderlying(Zero), 0);
+    CHECK_EQ(castToUnderlying(One), 1);
+    CHECK_EQ(castToUnderlying(Two), 2);
 
-    CHECK_EQ(CAST_TO_UNDERLYING(TypedZero), 0);
-    CHECK_EQ(CAST_TO_UNDERLYING(TypedOne), 1);
-    CHECK_EQ(CAST_TO_UNDERLYING(TypedTwo), 2);
+    CHECK_EQ(castToUnderlying(TypedZero), 0);
+    CHECK_EQ(castToUnderlying(TypedOne), 1);
+    CHECK_EQ(castToUnderlying(TypedTwo), 2);
 
     CHECK_EQ(EnumClassSC::Zero, EnumClassSC::Zero);
     CHECK_EQ(EnumClassSC::One, EnumClassSC::One);
@@ -90,13 +95,13 @@ TEST_CASE("enum 1")
 
 TEST_CASE("enum 2" * doctest::should_fail())
 {
-    CHECK_EQ(CAST_TO_UNDERLYING(Zero), 1);
-    CHECK_EQ(CAST_TO_UNDERLYING(One), 2);
-    CHECK_EQ(CAST_TO_UNDERLYING(Two), 3);
+    CHECK_EQ(castToUnderlying(Zero), 1);
+    CHECK_EQ(castToUnderlying(One), 2);
+    CHECK_EQ(castToUnderlying(Two), 3);
 
-    CHECK_EQ(CAST_TO_UNDERLYING(TypedZero), 1);
-    CHECK_EQ(CAST_TO_UNDERLYING(TypedOne), 2);
-    CHECK_EQ(CAST_TO_UNDERLYING(TypedTwo), 3);
+    CHECK_EQ(castToUnderlying(TypedZero), 1);
+    CHECK_EQ(castToUnderlying(TypedOne), 2);
+    CHECK_EQ(castToUnderlying(TypedTwo), 3);
 
     CHECK_EQ(EnumClassC::Zero, EnumClassC::One);
     CHECK_EQ(EnumClassC::One, EnumClassC::Two);
