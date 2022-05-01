@@ -92,7 +92,7 @@ This can be defined both globally and in specific source files only.
 
 ### **```DOCTEST_CONFIG_DOUBLE_STRINGIFY```**
 
-If you define your own `toString` functions that return something different from `doctest::String`, but still stringifiable, you can enable this configuration option to stringify the result of internal `toString` calls.
+If you define your own `toString` functions that return something, that's different from `doctest::String`, but still stringifiable, you can enable this flag to stringify the result of internal stringification calls again.
 
 You can also define `DOCTEST_STRINGIFY` yourself to override doctest's stringification behavior.
 
