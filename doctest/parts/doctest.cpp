@@ -841,6 +841,8 @@ String toString(const char* in) { return String("\"") + (in ? in : "{null string
 String toString(const std::string& in) { return in.c_str(); }
 #endif // VS 2019
 
+String toString(String in) { return in; }
+
 String toString(std::nullptr_t) { return "nullptr"; }
 
 String toString(bool in) { return in ? "true" : "false"; }
@@ -3633,7 +3635,7 @@ void Context::setOption(const char* option, bool value) {
 
 // allows the user to override procedurally the int options from the command line
 void Context::setOption(const char* option, int value) {
-    setOption(option, (DOCTEST_STRINGIFY(value)).c_str());
+    setOption(option, toString(value).c_str());
     // NOLINTNEXTLINE(clang-analyzer-cplusplus.NewDeleteLeaks)
 }
 

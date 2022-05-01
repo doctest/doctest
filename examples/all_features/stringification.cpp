@@ -179,6 +179,9 @@ TEST_CASE("all asserts should fail and show how the objects get stringified") {
     Bar::Foo f2;
     CHECK(f1 == f2);
 
+    doctest::String str;
+    CHECK(str == doctest::toString(str));
+
     // std::string already has an operator<< working with std::ostream
     std::string dummy = "omg";
 

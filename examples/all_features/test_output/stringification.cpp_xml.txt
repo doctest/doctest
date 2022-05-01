@@ -198,7 +198,7 @@
       <Exception crash="false">
         MyTypeInherited&lt;int>(5, 4)
       </Exception>
-      <OverallResultsAsserts successes="3" failures="8" test_case_success="false"/>
+      <OverallResultsAsserts successes="4" failures="8" test_case_success="false"/>
     </TestCase>
     <TestCase name="a test case that registers an exception translator for int and then throws one" filename="stringification.cpp" line="0">
       <Exception crash="false">
@@ -207,7 +207,7 @@
       <OverallResultsAsserts successes="0" failures="0" test_case_success="false"/>
     </TestCase>
   </TestSuite>
-  <OverallResultsAsserts successes="8" failures="13"/>
+  <OverallResultsAsserts successes="9" failures="13"/>
   <OverallResultsTestCases successes="2" failures="3"/>
 </doctest>
 Program code.
