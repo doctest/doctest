@@ -4,7 +4,7 @@
 #if !defined(DOCTEST_CONFIG_USE_STD_HEADERS) || DOCTEST_GCC == 0 || DOCTEST_GCC >= DOCTEST_COMPILER(5, 0, 0)
 #define RET_TYPE(x) x
 #else
-#define RET_TYPE(x) doctest::detail::types::underlying_type<x>::type
+#define RET_TYPE(x) typename doctest::detail::types::underlying_type<x>::type
 #endif
 
 template <typename S>
