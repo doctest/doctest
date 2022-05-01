@@ -1074,6 +1074,8 @@ DOCTEST_INTERFACE String toString(const char* in);
 DOCTEST_INTERFACE String toString(const std::string& in);
 #endif // VS 2019
 
+DOCTEST_INTERFACE String toString(String in);
+
 DOCTEST_INTERFACE String toString(std::nullptr_t);
 
 DOCTEST_INTERFACE String toString(bool in);
@@ -1113,6 +1115,7 @@ namespace detail {
         }
     };
 
+DOCTEST_MSVC_SUPPRESS_WARNING_WITH_PUSH(4866)
     template <typename T, size_t N>
     struct filldata<T[N]> {
         static void fill(std::ostream* stream, const T(&in)[N]) {
@@ -1124,6 +1127,7 @@ namespace detail {
             *stream << "]";
         }
     };
+DOCTEST_MSVC_SUPPRESS_WARNING_POP
 
     // Specialized since we don't want the terminating null byte!
     template <size_t N>
@@ -1798,11 +1802,13 @@ DOCTEST_CLANG_SUPPRESS_WARNING_POP
         ~MessageBuilder();
 
         // the preferred way of chaining parameters for stringification
+DOCTEST_MSVC_SUPPRESS_WARNING_WITH_PUSH(4866)
         template <typename T>
         MessageBuilder& operator,(const T& in) {
             *m_stream << (DOCTEST_STRINGIFY(in));
             return *this;
         }
+DOCTEST_MSVC_SUPPRESS_WARNING_POP
 
         // kept here just for backwards-compatibility - the comma operator should be preferred now
         template <typename T>

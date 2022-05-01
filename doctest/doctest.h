@@ -1077,6 +1077,8 @@ DOCTEST_INTERFACE String toString(const char* in);
 DOCTEST_INTERFACE String toString(const std::string& in);
 #endif // VS 2019
 
+DOCTEST_INTERFACE String toString(String in);
+
 DOCTEST_INTERFACE String toString(std::nullptr_t);
 
 DOCTEST_INTERFACE String toString(bool in);
@@ -1116,6 +1118,7 @@ namespace detail {
         }
     };
 
+DOCTEST_MSVC_SUPPRESS_WARNING_WITH_PUSH(4866)
     template <typename T, size_t N>
     struct filldata<T[N]> {
         static void fill(std::ostream* stream, const T(&in)[N]) {
@@ -1127,6 +1130,7 @@ namespace detail {
             *stream << "]";
         }
     };
+DOCTEST_MSVC_SUPPRESS_WARNING_POP
 
     // Specialized since we don't want the terminating null byte!
     template <size_t N>
@@ -1801,11 +1805,13 @@ DOCTEST_CLANG_SUPPRESS_WARNING_POP
         ~MessageBuilder();
 
         // the preferred way of chaining parameters for stringification
+DOCTEST_MSVC_SUPPRESS_WARNING_WITH_PUSH(4866)
         template <typename T>
         MessageBuilder& operator,(const T& in) {
             *m_stream << (DOCTEST_STRINGIFY(in));
             return *this;
         }
+DOCTEST_MSVC_SUPPRESS_WARNING_POP
 
         // kept here just for backwards-compatibility - the comma operator should be preferred now
         template <typename T>
@@ -3841,6 +3847,8 @@ String toString(const char* in) { return String("\"") + (in ? in : "{null string
 // see this issue on why this is needed: https://github.com/doctest/doctest/issues/183
 String toString(const std::string& in) { return in.c_str(); }
 #endif // VS 2019
+
+String toString(String in) { return in; }
 
 String toString(std::nullptr_t) { return "nullptr"; }
 
@@ -6634,7 +6642,7 @@ void Context::setOption(const char* option, bool value) {
 
 // allows the user to override procedurally the int options from the command line
 void Context::setOption(const char* option, int value) {
-    setOption(option, (DOCTEST_STRINGIFY(value)).c_str());
+    setOption(option, toString(value).c_str());
     // NOLINTNEXTLINE(clang-analyzer-cplusplus.NewDeleteLeaks)
 }
 
