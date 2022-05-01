@@ -45,8 +45,6 @@
     <TestCase name="doesn't fail which is fine" filename="test_cases_and_suites.cpp" line="0" description="regarding failures" may_fail="true" skipped="true"/>
   </TestSuite>
   <TestSuite>
-    <TestCase name="enum 1" filename="enums.cpp" line="0" skipped="true"/>
-    <TestCase name="enum 2" filename="enums.cpp" line="0" should_fail="true" skipped="true"/>
     <TestCase name="exceptions-related macros" filename="assertion_macros.cpp" line="0" skipped="true"/>
     <TestCase name="exceptions-related macros for std::exception" filename="assertion_macros.cpp" line="0" skipped="true"/>
     <TestCase name="exercising tricky code paths of doctest" filename="coverage_maxout.cpp" line="0" skipped="true"/>
@@ -147,6 +145,6 @@
     <TestCase name="without a funny name:" filename="subcases.cpp" line="0" skipped="true"/>
   </TestSuite>
   <OverallResultsAsserts successes="0" failures="0"/>
-  <OverallResultsTestCases successes="0" failures="0" skipped="103"/>
+  <OverallResultsTestCases successes="0" failures="0" skipped="101"/>
 </doctest>
 Program code.
