@@ -1,6 +1,6 @@
 #include <doctest/doctest.h>
 
-// GCC < 5 breaks when trying to compare enums to integers.
+// GCC < 5 breaks when trying to compare enums to integers when using std headers.
 #if !defined(DOCTEST_CONFIG_USE_STD_HEADERS) || DOCTEST_GCC == 0 || DOCTEST_GCC >= DOCTEST_COMPILER(5, 0, 0)
 #define RET_TYPE(x) x
 #else
