@@ -454,7 +454,9 @@ DOCTEST_GCC_SUPPRESS_WARNING_POP
 
 // this is kept here for backwards compatibility since the config option was changed
 #ifdef DOCTEST_CONFIG_USE_IOSFWD
+#ifndef DOCTEST_CONFIG_USE_STD_HEADERS
 #define DOCTEST_CONFIG_USE_STD_HEADERS
+#endif
 #endif // DOCTEST_CONFIG_USE_IOSFWD
 
 // for clang - always include ciso646 (which drags some std stuff) because
@@ -465,7 +467,9 @@ DOCTEST_GCC_SUPPRESS_WARNING_POP
 #if DOCTEST_CLANG
 #include <ciso646>
 #ifdef _LIBCPP_VERSION
+#ifndef DOCTEST_CONFIG_USE_STD_HEADERS
 #define DOCTEST_CONFIG_USE_STD_HEADERS
+#endif
 #endif // _LIBCPP_VERSION
 #endif // clang
 
@@ -473,9 +477,11 @@ DOCTEST_GCC_SUPPRESS_WARNING_POP
 #ifndef DOCTEST_CONFIG_INCLUDE_TYPE_TRAITS
 #define DOCTEST_CONFIG_INCLUDE_TYPE_TRAITS
 #endif // DOCTEST_CONFIG_INCLUDE_TYPE_TRAITS
+DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_BEGIN
 #include <cstddef>
 #include <ostream>
 #include <istream>
+DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_END
 #else // DOCTEST_CONFIG_USE_STD_HEADERS
 
 // Forward declaring 'X' in namespace std is not permitted by the C++ Standard.
@@ -6195,7 +6201,7 @@ namespace {
             // log the preamble of the test case only if there is something
             // else to print - something other than that an assert has failed
             if(opt.duration ||
-               (st.failure_flags && st.failure_flags != TestCaseFailureReason::AssertFailure))
+               (st.failure_flags && st.failure_flags != static_cast<int>(TestCaseFailureReason::AssertFailure)))
                 logTestStart();
 
             if(opt.duration)
@@ -6446,29 +6452,29 @@ namespace {
         if(!parseOption(argc, argv, pattern, &parsedValue))
             return false;
 
-        if(type == 0) {
-            // boolean
-            const char positive[][5] = {"1", "true", "on", "yes"};  // 5 - strlen("true") + 1
-            const char negative[][6] = {"0", "false", "off", "no"}; // 6 - strlen("false") + 1
-
-            // if the value matches any of the positive/negative possibilities
-            for(unsigned i = 0; i < 4; i++) {
-                if(parsedValue.compare(positive[i], true) == 0) {
-                    res = 1; //!OCLINT parameter reassignment
-                    return true;
-                }
-                if(parsedValue.compare(negative[i], true) == 0) {
-                    res = 0; //!OCLINT parameter reassignment
-                    return true;
-                }
-            }
-        } else {
+        if(type) {
             // integer
             // TODO: change this to use std::stoi or something else! currently it uses undefined behavior - assumes '0' on failed parse...
             int theInt = std::atoi(parsedValue.c_str()); // NOLINT
-            if(theInt != 0) {
+            if (theInt != 0) {
                 res = theInt; //!OCLINT parameter reassignment
                 return true;
+            }
+        } else {
+            // boolean
+            const char positive[][5] = { "1", "true", "on", "yes" };  // 5 - strlen("true") + 1
+            const char negative[][6] = { "0", "false", "off", "no" }; // 6 - strlen("false") + 1
+
+            // if the value matches any of the positive/negative possibilities
+            for (unsigned i = 0; i < 4; i++) {
+                if (parsedValue.compare(positive[i], true) == 0) {
+                    res = 1; //!OCLINT parameter reassignment
+                    return true;
+                }
+                if (parsedValue.compare(negative[i], true) == 0) {
+                    res = 0; //!OCLINT parameter reassignment
+                    return true;
+                }
             }
         }
         return false;

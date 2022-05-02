@@ -5,37 +5,37 @@
     <testcase classname="enums.cpp" name="enum 2" status="run">
       <failure message="0, 1" type="CHECK_EQ">
 enums.cpp(0):
-CHECK_EQ( Zero, 1 ) is NOT correct!
+CHECK_EQ( castToUnderlying(Zero), 1 ) is NOT correct!
   values: CHECK_EQ( 0, 1 )
 
       </failure>
       <failure message="1, 2" type="CHECK_EQ">
 enums.cpp(0):
-CHECK_EQ( One, 2 ) is NOT correct!
+CHECK_EQ( castToUnderlying(One), 2 ) is NOT correct!
   values: CHECK_EQ( 1, 2 )
 
       </failure>
       <failure message="2, 3" type="CHECK_EQ">
 enums.cpp(0):
-CHECK_EQ( Two, 3 ) is NOT correct!
+CHECK_EQ( castToUnderlying(Two), 3 ) is NOT correct!
   values: CHECK_EQ( 2, 3 )
 
       </failure>
       <failure message="0, 1" type="CHECK_EQ">
 enums.cpp(0):
-CHECK_EQ( TypedZero, 1 ) is NOT correct!
+CHECK_EQ( castToUnderlying(TypedZero), 1 ) is NOT correct!
   values: CHECK_EQ( 0, 1 )
 
       </failure>
       <failure message="1, 2" type="CHECK_EQ">
 enums.cpp(0):
-CHECK_EQ( TypedOne, 2 ) is NOT correct!
+CHECK_EQ( castToUnderlying(TypedOne), 2 ) is NOT correct!
   values: CHECK_EQ( 1, 2 )
 
       </failure>
       <failure message="2, 3" type="CHECK_EQ">
 enums.cpp(0):
-CHECK_EQ( TypedTwo, 3 ) is NOT correct!
+CHECK_EQ( castToUnderlying(TypedTwo), 3 ) is NOT correct!
   values: CHECK_EQ( 2, 3 )
 
       </failure>

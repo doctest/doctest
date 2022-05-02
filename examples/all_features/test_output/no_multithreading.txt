@@ -318,22 +318,22 @@ Should have failed but didn't! Marking it as failed!
 enums.cpp(0):
 TEST CASE:  enum 2
 
-enums.cpp(0): ERROR: CHECK_EQ( Zero, 1 ) is NOT correct!
+enums.cpp(0): ERROR: CHECK_EQ( castToUnderlying(Zero), 1 ) is NOT correct!
   values: CHECK_EQ( 0, 1 )
 
-enums.cpp(0): ERROR: CHECK_EQ( One, 2 ) is NOT correct!
+enums.cpp(0): ERROR: CHECK_EQ( castToUnderlying(One), 2 ) is NOT correct!
   values: CHECK_EQ( 1, 2 )
 
-enums.cpp(0): ERROR: CHECK_EQ( Two, 3 ) is NOT correct!
+enums.cpp(0): ERROR: CHECK_EQ( castToUnderlying(Two), 3 ) is NOT correct!
   values: CHECK_EQ( 2, 3 )
 
-enums.cpp(0): ERROR: CHECK_EQ( TypedZero, 1 ) is NOT correct!
+enums.cpp(0): ERROR: CHECK_EQ( castToUnderlying(TypedZero), 1 ) is NOT correct!
   values: CHECK_EQ( 0, 1 )
 
-enums.cpp(0): ERROR: CHECK_EQ( TypedOne, 2 ) is NOT correct!
+enums.cpp(0): ERROR: CHECK_EQ( castToUnderlying(TypedOne), 2 ) is NOT correct!
   values: CHECK_EQ( 1, 2 )
 
-enums.cpp(0): ERROR: CHECK_EQ( TypedTwo, 3 ) is NOT correct!
+enums.cpp(0): ERROR: CHECK_EQ( castToUnderlying(TypedTwo), 3 ) is NOT correct!
   values: CHECK_EQ( 2, 3 )
 
 enums.cpp(0): ERROR: CHECK_EQ( EnumClassC::Zero, EnumClassC::One ) is NOT correct!
