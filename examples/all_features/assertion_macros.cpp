@@ -4,7 +4,7 @@ namespace A {
     };
 }
 
-bool operator==(const A::Bar& lhs, const A::Bar& rhs) {
+static bool operator==(const A::Bar& lhs, const A::Bar& rhs) {
     return lhs.i == rhs.i;
 }
 
