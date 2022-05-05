@@ -1,5 +1,22 @@
+namespace A {
+    struct Bar {
+        int i;
+    };
+}
+
+bool operator==(const A::Bar& lhs, const A::Bar& rhs) {
+    return lhs.i == rhs.i;
+}
+
 #define DOCTEST_CONFIG_ASSERTS_RETURN_VALUES
 #include <doctest/doctest.h>
+
+TEST_CASE("equality of namespaced type") {
+    const auto b0 = A::Bar{};
+    const auto b1 = A::Bar{};
+    CHECK(b0 == b1);
+    CHECK_EQ(b0, b1);
+}
 
 #include "header.h"
 
@@ -232,20 +249,3 @@ TEST_CASE("check return values no print") {
     if (CHECK_THROWS_WITH(throw_if(true, 2), "1")) { MESSAGE(":D"); }
 }
 DOCTEST_MSVC_SUPPRESS_WARNING_POP
-
-namespace A {
-    struct Bar {
-        int i;
-    };
-}
-
-bool operator==(const A::Bar& lhs, const A::Bar& rhs) {
-    return lhs.i == rhs.i;
-}
-
-TEST_CASE("equality of namespaced type") {
-    const auto b0 = A::Bar{};
-    const auto b1 = A::Bar{};
-    CHECK(b0 == b1);
-    CHECK_EQ(b0, b1);
-}

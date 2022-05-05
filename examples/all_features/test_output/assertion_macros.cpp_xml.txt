@@ -2,6 +2,9 @@
 <doctest binary="all_features">
   <Options order_by="file" rand_seed="324" first="0" last="4294967295" abort_after="0" subcase_filter_levels="2147483647" case_sensitive="false" no_throw="false" no_skip="false"/>
   <TestSuite>
+    <TestCase name="equality of namespaced type" filename="assertion_macros.cpp" line="0">
+      <OverallResultsAsserts successes="2" failures="0" test_case_success="true"/>
+    </TestCase>
     <TestCase name="normal macros" filename="assertion_macros.cpp" line="0">
       <Expression success="false" type="CHECK" filename="assertion_macros.cpp" line="0">
         <Original>
@@ -682,9 +685,6 @@
         </ExpectedExceptionString>
       </Expression>
       <OverallResultsAsserts successes="0" failures="9" test_case_success="false"/>
-    </TestCase>
-    <TestCase name="equality of namespaced type" filename="assertion_macros.cpp" line="0">
-      <OverallResultsAsserts successes="2" failures="0" test_case_success="true"/>
     </TestCase>
   </TestSuite>
   <OverallResultsAsserts successes="50" failures="50"/>

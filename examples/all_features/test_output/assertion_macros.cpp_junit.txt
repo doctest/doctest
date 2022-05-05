@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <testsuites>
   <testsuite name="all_features" errors="0" failures="63" tests="100">
+    <testcase classname="assertion_macros.cpp" name="equality of namespaced type" status="run"/>
     <testcase classname="assertion_macros.cpp" name="normal macros" status="run">
       <failure type="CHECK">
 assertion_macros.cpp(0):
@@ -380,7 +381,6 @@ CHECK_THROWS_WITH( throw_if(true, 2), "1" ) threw a DIFFERENT exception: "2"
 
       </failure>
     </testcase>
-    <testcase classname="assertion_macros.cpp" name="equality of namespaced type" status="run"/>
   </testsuite>
 </testsuites>
 Program code.
