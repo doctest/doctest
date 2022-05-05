@@ -683,8 +683,11 @@
       </Expression>
       <OverallResultsAsserts successes="0" failures="9" test_case_success="false"/>
     </TestCase>
+    <TestCase name="equality of namespaced type" filename="assertion_macros.cpp" line="0">
+      <OverallResultsAsserts successes="2" failures="0" test_case_success="true"/>
+    </TestCase>
   </TestSuite>
-  <OverallResultsAsserts successes="48" failures="50"/>
-  <OverallResultsTestCases successes="4" failures="19"/>
+  <OverallResultsAsserts successes="50" failures="50"/>
+  <OverallResultsTestCases successes="5" failures="19"/>
 </doctest>
 Program code.

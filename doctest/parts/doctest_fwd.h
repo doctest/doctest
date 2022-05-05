@@ -623,16 +623,16 @@ public:
     int compare(const String& other, bool no_case = false) const;
 
 friend DOCTEST_INTERFACE std::ostream& operator<<(std::ostream& s, const String& in);
+
+friend DOCTEST_INTERFACE bool operator==(const String& lhs, const String& rhs);
+friend DOCTEST_INTERFACE bool operator!=(const String& lhs, const String& rhs);
+friend DOCTEST_INTERFACE bool operator<(const String& lhs, const String& rhs);
+friend DOCTEST_INTERFACE bool operator>(const String& lhs, const String& rhs);
+friend DOCTEST_INTERFACE bool operator<=(const String& lhs, const String& rhs);
+friend DOCTEST_INTERFACE bool operator>=(const String& lhs, const String& rhs);
 };
 
 DOCTEST_INTERFACE String operator+(const String& lhs, const String& rhs);
-
-DOCTEST_INTERFACE bool operator==(const String& lhs, const String& rhs);
-DOCTEST_INTERFACE bool operator!=(const String& lhs, const String& rhs);
-DOCTEST_INTERFACE bool operator<(const String& lhs, const String& rhs);
-DOCTEST_INTERFACE bool operator>(const String& lhs, const String& rhs);
-DOCTEST_INTERFACE bool operator<=(const String& lhs, const String& rhs);
-DOCTEST_INTERFACE bool operator>=(const String& lhs, const String& rhs);
 
 class DOCTEST_INTERFACE Contains {
 public:
@@ -641,14 +641,14 @@ public:
     bool checkWith(const String& other) const;
 
     String string;
+
+friend DOCTEST_INTERFACE bool operator==(const String& lhs, const Contains& rhs);
+friend DOCTEST_INTERFACE bool operator==(const Contains& lhs, const String& rhs);
+friend DOCTEST_INTERFACE bool operator!=(const String& lhs, const Contains& rhs);
+friend DOCTEST_INTERFACE bool operator!=(const Contains& lhs, const String& rhs);
 };
 
 DOCTEST_INTERFACE String toString(const Contains& in);
-
-DOCTEST_INTERFACE bool operator==(const String& lhs, const Contains& rhs);
-DOCTEST_INTERFACE bool operator==(const Contains& lhs, const String& rhs);
-DOCTEST_INTERFACE bool operator!=(const String& lhs, const Contains& rhs);
-DOCTEST_INTERFACE bool operator!=(const Contains& lhs, const String& rhs);
 
 namespace Color {
     enum Enum
