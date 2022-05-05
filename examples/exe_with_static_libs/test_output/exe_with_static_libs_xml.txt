@@ -18,7 +18,10 @@ hello from <lib_2_src.cpp>
 hello from <main.cpp>
       <OverallResultsAsserts successes="0" failures="0" test_case_success="true"/>
     </TestCase>
+    <TestCase name="equality of namespaced type" filename="main.cpp" line="0">
+      <OverallResultsAsserts successes="2" failures="0" test_case_success="true"/>
+    </TestCase>
   </TestSuite>
-  <OverallResultsAsserts successes="0" failures="0"/>
-  <OverallResultsTestCases successes="4" failures="0" skipped="0"/>
+  <OverallResultsAsserts successes="2" failures="0"/>
+  <OverallResultsTestCases successes="5" failures="0" skipped="0"/>
 </doctest>
