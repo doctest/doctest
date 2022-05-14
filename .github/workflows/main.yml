@@ -25,6 +25,9 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       
+      - name: Install
+        run: sudo apt-get install -y ninja-build
+
       - name: Generate
         run: cmake -B build -S . -G Ninja -D CMAKE_CXX_COMPILER=clang++ -DCMAKE_EXPORT_COMPILE_COMMANDS=ON \
              -DCMAKE_CXX_CLANG_TIDY="clang-tidy;-checks=*;-warnings-as-errors=*" -S . -B build
