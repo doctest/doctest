@@ -3288,7 +3288,7 @@ typedef timer_large_integer::type ticks_t;
     ticks_t getCurrentTicks() { return DOCTEST_CONFIG_GETCURRENTTICKS(); }
 #elif defined(DOCTEST_PLATFORM_WINDOWS)
     ticks_t getCurrentTicks() {
-        static LARGE_INTEGER hz = {0}, hzo = {0};
+        static LARGE_INTEGER hz = { {0} }, hzo = { {0} };
         if(!hz.QuadPart) {
             QueryPerformanceFrequency(&hz);
             QueryPerformanceCounter(&hzo);
