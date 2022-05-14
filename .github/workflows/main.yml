@@ -29,7 +29,7 @@ jobs:
         run: sudo apt-get install -y ninja-build clang-tidy
 
       - name: Generate
-        run: cmake -B build -S . -G Ninja -D CMAKE_CXX_COMPILER=clang++ -D CMAKE_EXPORT_COMPILE_COMMANDS=ON -D CMAKE_CXX_CLANG_TIDY="clang-tidy;-checks=*;-warnings-as-errors=*"
+        run: cmake -B build -S . -G Ninja -D CMAKE_CXX_COMPILER=clang++ -D CMAKE_EXPORT_COMPILE_COMMANDS=ON -D CMAKE_CXX_CLANG_TIDY="clang-tidy;-warnings-as-errors=*"
 
       - name: Build
         run: cmake --build build
