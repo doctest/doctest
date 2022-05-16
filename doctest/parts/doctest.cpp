@@ -269,13 +269,13 @@ namespace timer_large_integer
 {
     
 #if defined(DOCTEST_PLATFORM_WINDOWS)
-    typedef ULONGLONG type;
+    using type = ULONGLONG;
 #else // DOCTEST_PLATFORM_WINDOWS
-    typedef std::uint64_t type;
+    using type = std::uint64_t;
 #endif // DOCTEST_PLATFORM_WINDOWS
 }
 
-typedef timer_large_integer::type ticks_t;
+using ticks_t = timer_large_integer::type;
 
 #ifdef DOCTEST_CONFIG_GETCURRENTTICKS
     ticks_t getCurrentTicks() { return DOCTEST_CONFIG_GETCURRENTTICKS(); }
@@ -510,9 +510,9 @@ char* String::allocate(size_type sz) {
     }
 }
 
-void String::setOnHeap() { *reinterpret_cast<unsigned char*>(&buf[last]) = 128; }
-void String::setLast(size_type in) { buf[last] = char(in); }
-void String::setSize(size_type sz) {
+void String::setOnHeap() noexcept { *reinterpret_cast<unsigned char*>(&buf[last]) = 128; }
+void String::setLast(size_type in) noexcept { buf[last] = char(in); }
+void String::setSize(size_type sz) noexcept {
     if (isOnStack()) { buf[sz] = '\0'; setLast(last - sz); }
     else { data.ptr[sz] = '\0'; data.size = sz; }
 }
@@ -610,13 +610,13 @@ String& String::operator+=(const String& other) {
     return *this;
 }
 
-String::String(String&& other) {
+String::String(String&& other) noexcept {
     memcpy(buf, other.buf, len);
     other.buf[0] = '\0';
     other.setLast();
 }
 
-String& String::operator=(String&& other) {
+String& String::operator=(String&& other) noexcept {
     if(this != &other) {
         if(!isOnStack())
             delete[] data.ptr;
@@ -814,9 +814,6 @@ bool SubcaseSignature::operator<(const SubcaseSignature& other) const {
     return m_name.compare(other.m_name) < 0;
 }
 
-IContextScope::IContextScope()  = default;
-IContextScope::~IContextScope() = default;
-
 namespace detail {
     void filldata<const void*>::fill(std::ostream* stream, const void* in) {
         if (in) { *stream << in; }
@@ -939,8 +936,6 @@ void Context::setAssertHandler(detail::assert_handler) {}
 void Context::setCout(std::ostream*) {}
 int  Context::run() { return 0; }
 
-IReporter::~IReporter() = default;
-
 int                         IReporter::get_num_active_contexts() { return 0; }
 const IContextScope* const* IReporter::get_active_contexts() { return nullptr; }
 int                         IReporter::get_num_stringified_contexts() { return 0; }
@@ -973,7 +968,7 @@ namespace doctest {
 namespace {
     // the int (priority) is part of the key for automatic sorting - sadly one can register a
     // reporter with a duplicate name and a different priority but hopefully that won't happen often :|
-    typedef std::map<std::pair<int, String>, reporterCreatorFunc> reporterMap;
+    using reporterMap = std::map<std::pair<int, String>, reporterCreatorFunc>;
 
     reporterMap& getReporters() {
         static reporterMap data;
@@ -1485,7 +1480,7 @@ namespace detail {
         g_infoContexts.push_back(this);
     }
 
-    ContextScopeBase::ContextScopeBase(ContextScopeBase&& other) {
+    ContextScopeBase::ContextScopeBase(ContextScopeBase&& other) noexcept {
         if (other.need_to_destroy) {
             other.destroy();
         }
@@ -1876,7 +1871,7 @@ namespace detail {
     }
 
     bool decomp_assert(assertType::Enum at, const char* file, int line, const char* expr,
-                       Result result) {
+                       const Result& result) {
         bool failed = !result.m_passed;
 
         // ###################################################################################
@@ -1900,9 +1895,6 @@ namespace detail {
         if (!logged)
             tlssPop();
     }
-
-    IExceptionTranslator::IExceptionTranslator()  = default;
-    IExceptionTranslator::~IExceptionTranslator() = default;
 
     bool MessageBuilder::log() {
         if (!logged) {
@@ -3938,8 +3930,6 @@ DOCTEST_MSVC_SUPPRESS_WARNING_POP
 
     return cleanup_and_return();
 }
-
-IReporter::~IReporter() = default;
 
 int IReporter::get_num_active_contexts() { return detail::g_infoContexts.size(); }
 const IContextScope* const* IReporter::get_active_contexts() {
