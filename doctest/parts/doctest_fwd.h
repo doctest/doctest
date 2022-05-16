@@ -564,7 +564,7 @@ private:
 
     union
     {
-        char buf[len]; // NOLINT(cppcoreguidelines-avoid-c-arrays)
+        char buf[len]; // NOLINT(*-avoid-c-arrays)
         view data;
     };
 
