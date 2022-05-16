@@ -125,6 +125,11 @@ If you work for a company using **doctest** or have the means to do so, please c
 
 Contributions in the form of issues and pull requests are welcome as well - check out the [**Contributing**](CONTRIBUTING.md) page.
 
+Stargazers over time
+------------
+
+[![Stargazers over time](https://starchart.cc/doctest/doctest.svg)](https://starchart.cc/doctest/doctest)
+
 Logo
 ------------
 
