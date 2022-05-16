@@ -408,7 +408,7 @@ DOCTEST_MSVC_SUPPRESS_WARNING(4623) // default constructor was implicitly define
 #endif // DOCTEST_PLATFORM
 
 namespace doctest { namespace detail {
-    static DOCTEST_CONSTEXPR int consume(const int*, int) { return 0; }
+    static DOCTEST_CONSTEXPR int consume(const int*, int) noexcept { return 0; }
 }}
 
 #define DOCTEST_GLOBAL_NO_WARNINGS(var, ...)                                                         \
@@ -844,7 +844,6 @@ struct DOCTEST_INTERFACE SubcaseSignature
 
 struct DOCTEST_INTERFACE IContextScope
 {
-    IContextScope() = default;
     virtual ~IContextScope() = default;
     virtual void stringify(std::ostream*) const = 0;
 };
@@ -1346,7 +1345,7 @@ DOCTEST_CLANG_SUPPRESS_WARNING_WITH_PUSH("-Wunused-comparison")
         return *this;                                                                              \
     }
 
-    struct DOCTEST_INTERFACE Result // NOLINT(hicpp-member-init)
+    struct DOCTEST_INTERFACE Result // NOLINT(*-member-init)
     {
         bool   m_passed;
         String m_decomp;
@@ -1470,9 +1469,9 @@ DOCTEST_MSVC_SUPPRESS_WARNING_POP
             }
 
             if(!res || getContextOptions()->success) {
-                return Result(res, (DOCTEST_STRINGIFY(lhs)));
+                return { res, (DOCTEST_STRINGIFY(lhs)) };
             }
-            return Result(res);
+            return { res };
         }
 
         /* This is required for user-defined conversions from Expression_lhs to L */
@@ -1585,8 +1584,6 @@ DOCTEST_CLANG_SUPPRESS_WARNING_POP
         DOCTEST_MSVC_SUPPRESS_WARNING_POP
 
         TestCase& operator=(TestCase&&) = delete;
-
-        ~TestCase() = default;
 
         TestCase& operator*(const char* in);
 
@@ -1749,7 +1746,6 @@ DOCTEST_CLANG_SUPPRESS_WARNING_POP
 
     struct DOCTEST_INTERFACE IExceptionTranslator
     {
-        IExceptionTranslator() = default;
         virtual ~IExceptionTranslator() = default;
         virtual bool translate(String&) const = 0;
     };
@@ -1783,14 +1779,17 @@ DOCTEST_CLANG_SUPPRESS_WARNING_POP
 
     // ContextScope base class used to allow implementing methods of ContextScope 
     // that don't depend on the template parameter in doctest.cpp.
-    class DOCTEST_INTERFACE ContextScopeBase : public IContextScope {
-    protected:
-        ContextScopeBase();
+    struct DOCTEST_INTERFACE ContextScopeBase : public IContextScope {
         ContextScopeBase(const ContextScopeBase&) = delete;
-        ContextScopeBase(ContextScopeBase&& other) noexcept;
 
         ContextScopeBase& operator=(const ContextScopeBase&) = delete;
         ContextScopeBase& operator=(ContextScopeBase&&) = delete;
+
+        ~ContextScopeBase() = default;
+
+    protected:
+        ContextScopeBase();
+        ContextScopeBase(ContextScopeBase&& other) noexcept;
 
         void destroy();
         bool need_to_destroy{true};
