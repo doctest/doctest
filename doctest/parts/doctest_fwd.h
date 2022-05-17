@@ -2276,9 +2276,9 @@ int registerReporter(const char* name, int priority, bool isReporter) {
     static_assert(true, "")
 
 // for ending a testsuite block
-#define DOCTEST_TEST_SUITE_END /* NOLINT(cert-err58-cpp) */                                        \
+#define DOCTEST_TEST_SUITE_END                                                                     \
     DOCTEST_GLOBAL_NO_WARNINGS(DOCTEST_ANONYMOUS(DOCTEST_ANON_VAR_),                               \
-            doctest::detail::setTestSuite(doctest::detail::TestSuite() * ""))                      \
+            doctest::detail::setTestSuite(doctest::detail::TestSuite() * "")) /* NOLINT(cert-err58-cpp) */ \
     using DOCTEST_ANONYMOUS(DOCTEST_ANON_FOR_SEMICOLON_) = int
 
 // for registering exception translators
