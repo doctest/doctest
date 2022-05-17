@@ -38,7 +38,7 @@ struct int_pointer {
 };
 
 struct int_holder {
-    int i = 0;
+    int i;
     bool operator==(int_pointer p) const {
         if (!p) return false;
         return i == p.val();
@@ -53,6 +53,5 @@ TEST_CASE("Impl cast from non-const value") {
     // this comparison is safe
     // int_pointer can be implicitly constructed from this int here
     CHECK(h == i);
-    CHECK((h == i));
 }
 DOCTEST_MSVC_SUPPRESS_WARNING_POP

@@ -8,6 +8,6 @@ decomposition.cpp(0): ERROR: CHECK( genType(false) ) is NOT correct!
 
 ===============================================================================
 [doctest] test cases: 2 | 1 passed | 1 failed |
-[doctest] assertions: 4 | 3 passed | 1 failed |
+[doctest] assertions: 3 | 2 passed | 1 failed |
 [doctest] Status: FAILURE!
 Program code.

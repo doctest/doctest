@@ -923,6 +923,6 @@ subcases.cpp(0): MESSAGE: Nooo
 
 ===============================================================================
 [doctest] test cases:  84 |  33 passed |  51 failed |
-[doctest] assertions: 230 | 111 passed | 119 failed |
+[doctest] assertions: 229 | 110 passed | 119 failed |
 [doctest] Status: FAILURE!
 Program code.

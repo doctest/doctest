@@ -14,10 +14,10 @@
       <OverallResultsAsserts successes="1" failures="1" test_case_success="false"/>
     </TestCase>
     <TestCase name="Impl cast from non-const value" filename="decomposition.cpp" line="0">
-      <OverallResultsAsserts successes="2" failures="0" test_case_success="true"/>
+      <OverallResultsAsserts successes="1" failures="0" test_case_success="true"/>
     </TestCase>
   </TestSuite>
-  <OverallResultsAsserts successes="3" failures="1"/>
+  <OverallResultsAsserts successes="2" failures="1"/>
   <OverallResultsTestCases successes="1" failures="1"/>
 </doctest>
 Program code.
