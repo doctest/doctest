@@ -1184,7 +1184,7 @@ namespace detail {
     ExpressionDecomposer::ExpressionDecomposer(assertType::Enum at)
             : m_at(at) {}
 
-    TestSuite& TestSuite::operator*(const char* in) {
+    TestSuite& TestSuite::operator*(const char* in) noexcept {
         m_test_suite = in;
         return *this;
     }

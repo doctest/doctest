@@ -1564,7 +1564,7 @@ DOCTEST_CLANG_SUPPRESS_WARNING_POP
         int         m_expected_failures = 0;
         double      m_timeout = 0;
 
-        TestSuite& operator*(const char* in); // NOLINT(cert-err58-cpp)
+        TestSuite& operator*(const char* in) noexcept; // NOLINT(cert-err58-cpp)
 
         template <typename T>
         TestSuite& operator*(const T& in) {
