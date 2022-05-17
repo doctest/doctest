@@ -382,6 +382,14 @@ DOCTEST_MSVC_SUPPRESS_WARNING(4623) // default constructor was implicitly define
 // == FEATURE DETECTION END ========================================================================
 // =================================================================================================
 
+#define DOCTEST_DECLARE_INTERFACE(name)                                                            \
+    virtual ~name() = default;                                                                     \
+    name() = default;                                                                              \
+    name(const name&) = delete;                                                                    \
+    name(name&&) = delete;                                                                         \
+    name& operator=(const name&) = delete;                                                         \
+    name& operator=(name&&) = delete;
+
 // internal macros for string concatenation and anonymous variable name generation
 #define DOCTEST_CAT_IMPL(s1, s2) s1##s2
 #define DOCTEST_CAT(s1, s2) DOCTEST_CAT_IMPL(s1, s2)
@@ -411,12 +419,13 @@ DOCTEST_MSVC_SUPPRESS_WARNING(4623) // default constructor was implicitly define
 #endif // DOCTEST_PLATFORM
 
 namespace doctest { namespace detail {
-    static DOCTEST_CONSTEXPR int consume(const int*, int) { return 0; }
+    static DOCTEST_CONSTEXPR int consume(const int*, int) noexcept { return 0; }
 }}
 
 #define DOCTEST_GLOBAL_NO_WARNINGS(var, ...)                                                         \
     DOCTEST_CLANG_SUPPRESS_WARNING_WITH_PUSH("-Wglobal-constructors")                                \
-    static const int var = doctest::detail::consume(&var, __VA_ARGS__); /* NOLINT(cert-err58-cpp) */ \
+    static const int var = doctest::detail::consume(&var, __VA_ARGS__);                              \
+    /* NOLINT(cert-err58-cpp, fuchsia-statically-constructed-objects) */                             \
     DOCTEST_CLANG_SUPPRESS_WARNING_POP
 
 #ifndef DOCTEST_BREAK_INTO_DEBUGGER
@@ -567,7 +576,7 @@ private:
 
     union
     {
-        char buf[len]; // NOLINT(cppcoreguidelines-avoid-c-arrays)
+        char buf[len]; // NOLINT(*-avoid-c-arrays)
         view data;
     };
 
@@ -847,7 +856,6 @@ struct DOCTEST_INTERFACE SubcaseSignature
 
 struct DOCTEST_INTERFACE IContextScope
 {
-    IContextScope() = default;
     virtual ~IContextScope() = default;
     virtual void stringify(std::ostream*) const = 0;
 };
@@ -1349,7 +1357,7 @@ DOCTEST_CLANG_SUPPRESS_WARNING_WITH_PUSH("-Wunused-comparison")
         return *this;                                                                              \
     }
 
-    struct DOCTEST_INTERFACE Result // NOLINT(hicpp-member-init)
+    struct DOCTEST_INTERFACE Result // NOLINT(*-member-init)
     {
         bool   m_passed;
         String m_decomp;
@@ -1473,9 +1481,9 @@ DOCTEST_MSVC_SUPPRESS_WARNING_POP
             }
 
             if(!res || getContextOptions()->success) {
-                return Result(res, (DOCTEST_STRINGIFY(lhs)));
+                return { res, (DOCTEST_STRINGIFY(lhs)) };
             }
-            return Result(res);
+            return { res };
         }
 
         /* This is required for user-defined conversions from Expression_lhs to L */
@@ -1578,7 +1586,7 @@ DOCTEST_CLANG_SUPPRESS_WARNING_POP
         String m_full_name; // contains the name (only for templated test cases!) + the template type
 
         TestCase(funcType test, const char* file, unsigned line, const TestSuite& test_suite,
-                 const String& type = String(), int template_id = -1);
+                 const String& type = String(), int template_id = -1) noexcept;
 
         TestCase(const TestCase& other);
         TestCase(TestCase&&) = delete;
@@ -1589,8 +1597,6 @@ DOCTEST_CLANG_SUPPRESS_WARNING_POP
 
         TestCase& operator=(TestCase&&) = delete;
 
-        ~TestCase() = default;
-
         TestCase& operator*(const char* in);
 
         template <typename T>
@@ -1600,11 +1606,13 @@ DOCTEST_CLANG_SUPPRESS_WARNING_POP
         }
 
         bool operator<(const TestCase& other) const;
+
+        ~TestCase() = default;
     };
 
     // forward declarations of functions used by the macros
     DOCTEST_INTERFACE int  regTest(const TestCase& tc);
-    DOCTEST_INTERFACE int  setTestSuite(const TestSuite& ts);
+    DOCTEST_INTERFACE int  setTestSuite(const TestSuite& ts) noexcept;
     DOCTEST_INTERFACE bool isDebuggerActive();
 
     template<typename T>
@@ -1752,8 +1760,7 @@ DOCTEST_CLANG_SUPPRESS_WARNING_POP
 
     struct DOCTEST_INTERFACE IExceptionTranslator
     {
-        IExceptionTranslator() = default;
-        virtual ~IExceptionTranslator() = default;
+        DOCTEST_DECLARE_INTERFACE(IExceptionTranslator)
         virtual bool translate(String&) const = 0;
     };
 
@@ -1786,14 +1793,17 @@ DOCTEST_CLANG_SUPPRESS_WARNING_POP
 
     // ContextScope base class used to allow implementing methods of ContextScope 
     // that don't depend on the template parameter in doctest.cpp.
-    class DOCTEST_INTERFACE ContextScopeBase : public IContextScope {
-    protected:
-        ContextScopeBase();
+    struct DOCTEST_INTERFACE ContextScopeBase : public IContextScope {
         ContextScopeBase(const ContextScopeBase&) = delete;
-        ContextScopeBase(ContextScopeBase&& other) noexcept;
 
         ContextScopeBase& operator=(const ContextScopeBase&) = delete;
         ContextScopeBase& operator=(ContextScopeBase&&) = delete;
+
+        ~ContextScopeBase() override = default;
+
+    protected:
+        ContextScopeBase();
+        ContextScopeBase(ContextScopeBase&& other) noexcept;
 
         void destroy();
         bool need_to_destroy{true};
@@ -1902,7 +1912,7 @@ int registerExceptionTranslator(String (*translateFunction)(T)) {
 // in a separate namespace outside of doctest because the DOCTEST_TEST_SUITE macro
 // introduces an anonymous namespace in which getCurrentTestSuite gets overridden
 namespace doctest_detail_test_suite_ns {
-DOCTEST_INTERFACE doctest::detail::TestSuite& getCurrentTestSuite();
+DOCTEST_INTERFACE doctest::detail::TestSuite& getCurrentTestSuite() noexcept;
 } // namespace doctest_detail_test_suite_ns
 
 namespace doctest {
@@ -2041,8 +2051,7 @@ struct DOCTEST_INTERFACE IReporter
     // or isn't in the execution range (between first and last) (safe to cache a pointer to the input)
     virtual void test_case_skipped(const TestCaseData&) = 0;
 
-    // doctest will not be managing the lifetimes of reporters given to it but this would still be nice to have
-    virtual ~IReporter() = default;
+    DOCTEST_DECLARE_INTERFACE(IReporter)
 
     // can obtain all currently active contexts and stringify them if one wishes to do so
     static int                         get_num_active_contexts();
@@ -2240,7 +2249,7 @@ int registerReporter(const char* name, int priority, bool isReporter) {
 // for grouping tests in test suites by using code blocks
 #define DOCTEST_TEST_SUITE_IMPL(decorators, ns_name)                                               \
     namespace ns_name { namespace doctest_detail_test_suite_ns {                                   \
-            static DOCTEST_NOINLINE doctest::detail::TestSuite& getCurrentTestSuite() {            \
+            static DOCTEST_NOINLINE doctest::detail::TestSuite& getCurrentTestSuite() noexcept {   \
                 DOCTEST_MSVC_SUPPRESS_WARNING_WITH_PUSH(4640)                                      \
                 DOCTEST_CLANG_SUPPRESS_WARNING_WITH_PUSH("-Wexit-time-destructors")                \
                 DOCTEST_GCC_SUPPRESS_WARNING_WITH_PUSH("-Wmissing-field-initializers")             \
@@ -4005,7 +4014,7 @@ int registerReporter(const char*, int, IReporter*) { return 0; }
 
 namespace doctest_detail_test_suite_ns {
 // holds the current test suite
-doctest::detail::TestSuite& getCurrentTestSuite() {
+doctest::detail::TestSuite& getCurrentTestSuite() noexcept {
     static doctest::detail::TestSuite data{};
     return data;
 }
@@ -4237,7 +4246,7 @@ namespace detail {
     }
 
     TestCase::TestCase(funcType test, const char* file, unsigned line, const TestSuite& test_suite,
-                       const String& type, int template_id) {
+                       const String& type, int template_id) noexcept {
         m_file              = file;
         m_line              = line;
         m_name              = nullptr; // will be later overridden in operator*
@@ -4452,7 +4461,7 @@ namespace detail {
     }
 
     // sets the current test suite
-    int setTestSuite(const TestSuite& ts) {
+    int setTestSuite(const TestSuite& ts) noexcept {
         doctest_detail_test_suite_ns::getCurrentTestSuite() = ts;
         return 0;
     }

@@ -8,6 +8,7 @@ Checks: '*,
          -cppcoreguidelines-avoid-magic-numbers,
          -cppcoreguidelines-avoid-non-const-global-variables,
          -cppcoreguidelines-macro-usage,
+         -cppcoreguidelines-non-private-member-variables-in-classes,
          -cppcoreguidelines-owning-memory,
          -cppcoreguidelines-pro-bounds-array-to-pointer-decay,
          -cppcoreguidelines-pro-bounds-constant-array-index,
@@ -51,10 +52,6 @@ Checks: '*,
          -readability-named-parameter,
          -readability-redundant-access-specifiers,
          -readability-uppercase-literal-suffix'
-
-CheckOptions:
-  - key: hicpp-special-member-functions.AllowSoleDefaultDtor
-    value: 1
 
 WarningsAsErrors: '*'
 

@@ -958,7 +958,7 @@ int registerReporter(const char*, int, IReporter*) { return 0; }
 
 namespace doctest_detail_test_suite_ns {
 // holds the current test suite
-doctest::detail::TestSuite& getCurrentTestSuite() {
+doctest::detail::TestSuite& getCurrentTestSuite() noexcept {
     static doctest::detail::TestSuite data{};
     return data;
 }
@@ -1190,7 +1190,7 @@ namespace detail {
     }
 
     TestCase::TestCase(funcType test, const char* file, unsigned line, const TestSuite& test_suite,
-                       const String& type, int template_id) {
+                       const String& type, int template_id) noexcept {
         m_file              = file;
         m_line              = line;
         m_name              = nullptr; // will be later overridden in operator*
@@ -1405,7 +1405,7 @@ namespace detail {
     }
 
     // sets the current test suite
-    int setTestSuite(const TestSuite& ts) {
+    int setTestSuite(const TestSuite& ts) noexcept {
         doctest_detail_test_suite_ns::getCurrentTestSuite() = ts;
         return 0;
     }
