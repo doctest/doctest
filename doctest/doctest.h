@@ -424,8 +424,7 @@ namespace doctest { namespace detail {
 
 #define DOCTEST_GLOBAL_NO_WARNINGS(var, ...)                                                         \
     DOCTEST_CLANG_SUPPRESS_WARNING_WITH_PUSH("-Wglobal-constructors")                                \
-    static const int var = doctest::detail::consume(&var, __VA_ARGS__);                              \
-    /* NOLINT(cert-err58-cpp, fuchsia-statically-constructed-objects) */                             \
+    static const int var = doctest::detail::consume(&var, __VA_ARGS__);   /* NOLINT(cert-err58-cpp, fuchsia-statically-constructed-objects) */    \
     DOCTEST_CLANG_SUPPRESS_WARNING_POP
 
 #ifndef DOCTEST_BREAK_INTO_DEBUGGER
@@ -856,7 +855,7 @@ struct DOCTEST_INTERFACE SubcaseSignature
 
 struct DOCTEST_INTERFACE IContextScope
 {
-    virtual ~IContextScope() = default;
+    DOCTEST_DECLARE_INTERFACE(IContextScope)
     virtual void stringify(std::ostream*) const = 0;
 };
 
@@ -2278,7 +2277,7 @@ int registerReporter(const char* name, int priority, bool isReporter) {
     static_assert(true, "")
 
 // for ending a testsuite block
-#define DOCTEST_TEST_SUITE_END                                                                     \
+#define DOCTEST_TEST_SUITE_END /* NOLINT(cert-err58-cpp) */                                        \
     DOCTEST_GLOBAL_NO_WARNINGS(DOCTEST_ANONYMOUS(DOCTEST_ANON_VAR_),                               \
             doctest::detail::setTestSuite(doctest::detail::TestSuite() * ""))                      \
     using DOCTEST_ANONYMOUS(DOCTEST_ANON_FOR_SEMICOLON_) = int
@@ -2548,7 +2547,7 @@ int registerReporter(const char* name, int priority, bool isReporter) {
     static inline void f()
 
 // for registering tests
-#define DOCTEST_TEST_CASE(name)                                                                    \
+#define DOCTEST_TEST_CASE(name) /* NOLINT(cert-err58-cpp) */                                       \
     DOCTEST_CREATE_AND_REGISTER_FUNCTION(DOCTEST_ANONYMOUS(DOCTEST_ANON_FUNC_), name)
 
 // for registering tests in classes
