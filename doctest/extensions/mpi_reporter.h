@@ -66,6 +66,7 @@ private:
       return nullStream;
     }
   }
+  std::vector<std::pair<std::string, int>> m_failure_str_queue = {};
 public:
   MpiConsoleReporter(const ContextOptions& co)
     : ConsoleReporter(co,replace_by_null_if_not_rank_0(co.cout))
@@ -154,6 +155,21 @@ public:
       int rank;
       MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
+      std::vector<MPI_Request> requests;
+      requests.reserve(m_failure_str_queue.size());  // avoid realloc & copy of MPI_Request
+      for (const std::pair<std::string, int> &failure : m_failure_str_queue)
+      {
+        const std::string & failure_str = failure.first;
+        const int failure_line = failure.second;
+
+        int failure_msg_size = static_cast<int>(failure_str.size());
+
+        requests.push_back(MPI_REQUEST_NULL);
+        MPI_Isend(failure_str.c_str(), failure_msg_size, MPI_BYTE,
+                 0, failure_line, MPI_COMM_WORLD, &requests.back()); // Tag = file line
+      }
+
+
       // Compute the number of assert with fail among all procs
       int nb_fail_asserts_glob = 0;
       MPI_Reduce(&st.numAssertsFailedCurrentTest, &nb_fail_asserts_glob, 1, MPI_INT, MPI_SUM, 0, MPI_COMM_WORLD);
@@ -196,6 +212,9 @@ public:
           s << "\n";
         }
       }
+
+      MPI_Waitall(int(requests.size()), requests.data(), MPI_STATUSES_IGNORE);
+      m_failure_str_queue.clear();
     }
 
     ConsoleReporter::test_case_end(st);
@@ -235,11 +254,7 @@ public:
                     << "( " << rb.m_decomp.c_str() << " )\n";
       }
 
-      std::string failure_str = failure_msg.str();
-      int failure_msg_size = static_cast<int>(failure_str.size());
-
-      MPI_Send(failure_str.c_str(), failure_msg_size, MPI_BYTE,
-               0, rb.m_line, MPI_COMM_WORLD); // Tag = file line
+      m_failure_str_queue.push_back({failure_msg.str(), rb.m_line});
     }
   }
 }; // MpiConsoleReporter
