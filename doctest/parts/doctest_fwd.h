@@ -1816,6 +1816,7 @@ DOCTEST_CLANG_SUPPRESS_WARNING_POP
         ContextScope(const ContextScope&) = delete;
         ContextScope(ContextScope&& other) noexcept
             : ContextScopeBase(static_cast<ContextScopeBase&&>(other)),
+              // NOLINTNEXTLINE(cppcoreguidelines-pro-type-const-cast)
               lambda_(static_cast<L&&>(const_cast<L>(other.lambda_))) { }
 
         ContextScope& operator=(const ContextScope&) = delete;

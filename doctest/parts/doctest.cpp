@@ -504,7 +504,7 @@ char* String::allocate(size_type sz) {
         setOnHeap();
         data.size = sz;
         data.capacity = data.size + 1;
-        data.ptr = new char[data.capacity];
+        data.ptr = new char[data.capacity]; // NOLINT(clang-analyzer-cplusplus.NewDeleteLeaks)
         data.ptr[sz] = '\0';
         return data.ptr;
     }
@@ -1000,7 +1000,7 @@ namespace detail {
 #ifndef DOCTEST_CONFIG_NO_EXCEPTIONS
     DOCTEST_NORETURN void throwException() {
         g_cs->shouldLogCurrentException = false;
-        throw TestFailureException();
+        throw TestFailureException(); // NOLINT(hicpp-exception-baseclass)
     } // NOLINT(cert-err60-cpp)
 #else // DOCTEST_CONFIG_NO_EXCEPTIONS
     void throwException() {}
