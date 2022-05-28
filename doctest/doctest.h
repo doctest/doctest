@@ -1811,10 +1811,11 @@ DOCTEST_CLANG_SUPPRESS_WARNING_POP
 
     template <typename L> class ContextScope : public ContextScopeBase
     {
-        const L lambda_;
+        L lambda_;
 
     public:
         explicit ContextScope(const L &lambda) : lambda_(lambda) {}
+        explicit ContextScope(L&& lambda) : lambda_(static_cast<L&&>(lambda)) { }
 
         ContextScope(const ContextScope&) = delete;
         ContextScope(ContextScope&&) noexcept = default;
