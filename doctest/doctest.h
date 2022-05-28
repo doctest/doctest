@@ -2461,7 +2461,7 @@ int registerReporter(const char* name, int priority, bool isReporter) {
                 DOCTEST_RB.m_threw_as = true;                                                      \
             } catch(...) { DOCTEST_RB.translateException(); }                                      \
             DOCTEST_ASSERT_LOG_REACT_RETURN(DOCTEST_RB);                                           \
-        } else {                                                                                   \
+        } else { /* NOLINT(*-else-after-return) */                                                 \
             DOCTEST_FUNC_SCOPE_RET(false);                                                         \
         }                                                                                          \
     } DOCTEST_FUNC_SCOPE_END
@@ -2475,7 +2475,7 @@ int registerReporter(const char* name, int priority, bool isReporter) {
                 DOCTEST_CAST_TO_VOID(expr)                                                         \
             } catch(...) { DOCTEST_RB.translateException(); }                                      \
             DOCTEST_ASSERT_LOG_REACT_RETURN(DOCTEST_RB);                                           \
-        } else {                                                                                   \
+        } else { /* NOLINT(*-else-after-return) */                                                 \
            DOCTEST_FUNC_SCOPE_RET(false);                                                          \
         }                                                                                          \
     } DOCTEST_FUNC_SCOPE_END
