@@ -422,7 +422,7 @@ namespace doctest { namespace detail {
 #define DOCTEST_GLOBAL_NO_WARNINGS(var, ...)                                                         \
     /* NOLINTBEGIN(cert-err58-cpp, fuchsia-statically-constructed-objects) */                        \
     DOCTEST_CLANG_SUPPRESS_WARNING_WITH_PUSH("-Wglobal-constructors")                                \
-    static const int var = doctest::detail::consume(&var, __VA_ARGS__);                              \
+    static const int var = doctest::detail::consume(&var, __VA_ARGS__); /* NOLINT(cert-err58-cpp) */ \
     DOCTEST_CLANG_SUPPRESS_WARNING_POP                                                               \
     /* NOLINTEND(cert-err58-cpp, fuchsia-statically-constructed-objects) */
 
@@ -2285,8 +2285,8 @@ int registerReporter(const char* name, int priority, bool isReporter) {
 // for registering exception translators
 #define DOCTEST_REGISTER_EXCEPTION_TRANSLATOR_IMPL(translatorName, signature)                      \
     inline doctest::String translatorName(signature);                                              \
-    DOCTEST_GLOBAL_NO_WARNINGS(DOCTEST_ANONYMOUS(DOCTEST_ANON_TRANSLATOR_), /* NOLINT(cert-err58-cpp) */           \
-            doctest::registerExceptionTranslator(translatorName)) /* NOLINT(cert-err58-cpp) */                     \
+    DOCTEST_GLOBAL_NO_WARNINGS(DOCTEST_ANONYMOUS(DOCTEST_ANON_TRANSLATOR_),                        \
+            doctest::registerExceptionTranslator(translatorName))          \
     doctest::String translatorName(signature)
 
 #define DOCTEST_REGISTER_EXCEPTION_TRANSLATOR(signature)                                           \
