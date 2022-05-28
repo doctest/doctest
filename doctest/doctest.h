@@ -2126,12 +2126,12 @@ int registerReporter(const char* name, int priority, bool isReporter) {
 
 // registers the test by initializing a dummy var with a function
 #define DOCTEST_REGISTER_FUNCTION(global_prefix, f, decorators)                                    \
-    global_prefix DOCTEST_GLOBAL_NO_WARNINGS(DOCTEST_ANONYMOUS(DOCTEST_ANON_VAR_),                 \
-            doctest::detail::regTest(                                                              \
-                    doctest::detail::TestCase(                                                     \
-                            f, __FILE__, __LINE__,                                                 \
-                            doctest_detail_test_suite_ns::getCurrentTestSuite()) *                 \
-                    decorators))
+    global_prefix DOCTEST_GLOBAL_NO_WARNINGS(DOCTEST_ANONYMOUS(DOCTEST_ANON_VAR_), /* NOLINT */    \
+            doctest::detail::regTest(        /* NOLINT */                                                      \
+                    doctest::detail::TestCase(         /* NOLINT */                                            \
+                            f, __FILE__, __LINE__,        /* NOLINT */                                         \
+                            doctest_detail_test_suite_ns::getCurrentTestSuite()) *     /* NOLINT */            \
+                    decorators)) /* NOLINT */
 
 #define DOCTEST_IMPLEMENT_FIXTURE(der, base, func, decorators)                                     \
     namespace {                                                                                    \
