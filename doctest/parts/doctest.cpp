@@ -1812,10 +1812,12 @@ AssertData::AssertData(assertType::Enum at, const char* file, int line, const ch
 namespace detail {
     ResultBuilder::ResultBuilder(assertType::Enum at, const char* file, int line, const char* expr,
                                  const char* exception_type, const String& exception_string)
+        // NOLINTNEXTLINE(clang-analyzer-cplusplus.NewDeleteLeaks)
         : AssertData(at, file, line, expr, exception_type, exception_string) { }
 
     ResultBuilder::ResultBuilder(assertType::Enum at, const char* file, int line, const char* expr,
         const char* exception_type, const Contains& exception_string)
+        // NOLINTNEXTLINE(clang-analyzer-cplusplus.NewDeleteLeaks)
         : AssertData(at, file, line, expr, exception_type, exception_string) { }
 
     void ResultBuilder::setResult(const Result& res) {
