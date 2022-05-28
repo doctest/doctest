@@ -2137,13 +2137,13 @@ int registerReporter(const char* name, int priority, bool isReporter) {
         {                                                                                          \
             void f();                                                                              \
         };                                                                                         \
-        static inline void func() {                                                                \
+        static void func() {                                                                       \
             der v;                                                                                 \
             v.f();                                                                                 \
         }                                                                                          \
         DOCTEST_REGISTER_FUNCTION(DOCTEST_EMPTY, func, decorators)                                 \
     }                                                                                              \
-    inline DOCTEST_NOINLINE void der::f()
+    inline DOCTEST_NOINLINE void der::f() // NOLINT(misc-definitions-in-headers)
 
 #define DOCTEST_CREATE_AND_REGISTER_FUNCTION(f, decorators)                                        \
     static void f();                                                                               \
