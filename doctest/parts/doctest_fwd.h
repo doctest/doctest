@@ -501,6 +501,7 @@ template <class charT, class traits>
 class basic_ostream;
 typedef basic_ostream<char, char_traits<char>> ostream; // NOLINT(modernize-use-using)
 template<class traits>
+// NOLINTNEXTLINE(readability-redundant-declaration)
 basic_ostream<char, traits>& operator<<(basic_ostream<char, traits>&, const char*);
 template <class charT, class traits>
 class basic_istream;
@@ -1815,7 +1816,7 @@ DOCTEST_CLANG_SUPPRESS_WARNING_POP
         ContextScope(const ContextScope&) = delete;
         ContextScope(ContextScope&& other) noexcept
             : ContextScopeBase(static_cast<ContextScopeBase&&>(other)),
-              lambda_(static_cast<L&&>(other.lambda_)) { }
+              lambda_(static_cast<L&&>(const_cast<L>(other.lambda_))) { }
 
         ContextScope& operator=(const ContextScope&) = delete;
         ContextScope& operator=(ContextScope&&) = delete;
