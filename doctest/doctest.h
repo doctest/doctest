@@ -2132,12 +2132,12 @@ int registerReporter(const char* name, int priority, bool isReporter) {
                     decorators))
 
 #define DOCTEST_IMPLEMENT_FIXTURE(der, base, func, decorators)                                     \
-    namespace {                                                                                    \
+    namespace { /* NOLINT */                                                                       \
         struct der : public base                                                                   \
         {                                                                                          \
             void f();                                                                              \
         };                                                                                         \
-        static void func() {                                                                       \
+        static inline void func() {                                                                \
             der v;                                                                                 \
             v.f();                                                                                 \
         }                                                                                          \

@@ -47,6 +47,7 @@ DOCTEST_GCC_SUPPRESS_WARNING("-Weffc++")
 DOCTEST_GCC_SUPPRESS_WARNING("-Wstrict-overflow")
 #endif // gcc 5
 
+// NOLINTBEGIN
 struct SomeFixture
 {
     int data;
@@ -59,6 +60,7 @@ struct SomeFixture
         // teardown here
     }
 };
+// NOLINTEND
 
 TEST_CASE_FIXTURE(SomeFixture, "fixtured test") {
     data /= 2;
