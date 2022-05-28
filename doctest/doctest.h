@@ -2137,7 +2137,7 @@ int registerReporter(const char* name, int priority, bool isReporter) {
         {                                                                                          \
             void f();                                                                              \
         };                                                                                         \
-        static void func() { /* NOLINT(misc-definitions-in-headers) */                             \
+        static inline DOCTEST_NOINLINE void func() {                                               \
             der v;                                                                                 \
             v.f();                                                                                 \
         }                                                                                          \
