@@ -590,7 +590,7 @@ private:
 public:
     static DOCTEST_CONSTEXPR size_type npos = static_cast<size_type>(-1);
 
-    String();
+    String() noexcept;
     ~String();
 
     // cppcheck-suppress noExplicitConstructor
@@ -1564,7 +1564,7 @@ DOCTEST_CLANG_SUPPRESS_WARNING_POP
         int         m_expected_failures = 0;
         double      m_timeout = 0;
 
-        TestSuite& operator*(const char* in) noexcept; // NOLINT(cert-err58-cpp)
+        TestSuite& operator*(const char* in); // NOLINT(cert-err58-cpp)
 
         template <typename T>
         TestSuite& operator*(const T& in) {
@@ -2276,12 +2276,13 @@ int registerReporter(const char* name, int priority, bool isReporter) {
     static_assert(true, "")
 
 // for ending a testsuite block
-#define DOCTEST_TEST_SUITE_END                                                                     \
+// NOLINTNEXTLINE(cert-err58-cpp)
+#define DOCTEST_TEST_SUITE_END /* NOLINT */                                        \
     DOCTEST_GLOBAL_NO_WARNINGS(DOCTEST_ANONYMOUS(DOCTEST_ANON_VAR_),                               \
-            /* NOLINTBEGIN(cert-err58-cpp) */                                                      \
-            doctest::detail::setTestSuite(doctest::detail::TestSuite() * ""))                      \
-            /* NOLINTEND(cert-err58-cpp) */                                                        \
-    using DOCTEST_ANONYMOUS(DOCTEST_ANON_FOR_SEMICOLON_) = int
+            /* NOLINTBEGIN */                                                      \
+            doctest::detail::setTestSuite(doctest::detail::TestSuite() * "")) /* NOLINT */         \
+            /* NOLINTEND */                                                        \
+    using DOCTEST_ANONYMOUS(DOCTEST_ANON_FOR_SEMICOLON_) = int // NOLINT
 
 // for registering exception translators
 #define DOCTEST_REGISTER_EXCEPTION_TRANSLATOR_IMPL(translatorName, signature)                      \

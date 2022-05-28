@@ -525,7 +525,7 @@ void String::copy(const String& other) {
     }
 }
 
-String::String() {
+String::String() noexcept {
     buf[0] = '\0';
     setLast();
 }
@@ -1184,7 +1184,7 @@ namespace detail {
     ExpressionDecomposer::ExpressionDecomposer(assertType::Enum at)
             : m_at(at) {}
 
-    TestSuite& TestSuite::operator*(const char* in) noexcept {
+    TestSuite& TestSuite::operator*(const char* in) {
         m_test_suite = in;
         return *this;
     }

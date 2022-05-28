@@ -593,7 +593,7 @@ private:
 public:
     static DOCTEST_CONSTEXPR size_type npos = static_cast<size_type>(-1);
 
-    String();
+    String() noexcept;
     ~String();
 
     // cppcheck-suppress noExplicitConstructor
@@ -2279,12 +2279,13 @@ int registerReporter(const char* name, int priority, bool isReporter) {
     static_assert(true, "")
 
 // for ending a testsuite block
-#define DOCTEST_TEST_SUITE_END                                                                     \
+// NOLINTNEXTLINE(cert-err58-cpp)
+#define DOCTEST_TEST_SUITE_END /* NOLINT */                                        \
     DOCTEST_GLOBAL_NO_WARNINGS(DOCTEST_ANONYMOUS(DOCTEST_ANON_VAR_),                               \
-            /* NOLINTBEGIN(cert-err58-cpp) */                                                      \
-            doctest::detail::setTestSuite(doctest::detail::TestSuite() * ""))                      \
-            /* NOLINTEND(cert-err58-cpp) */                                                        \
-    using DOCTEST_ANONYMOUS(DOCTEST_ANON_FOR_SEMICOLON_) = int
+            /* NOLINTBEGIN */                                                      \
+            doctest::detail::setTestSuite(doctest::detail::TestSuite() * "")) /* NOLINT */         \
+            /* NOLINTEND */                                                        \
+    using DOCTEST_ANONYMOUS(DOCTEST_ANON_FOR_SEMICOLON_) = int // NOLINT
 
 // for registering exception translators
 #define DOCTEST_REGISTER_EXCEPTION_TRANSLATOR_IMPL(translatorName, signature)                      \
@@ -3584,7 +3585,7 @@ void String::copy(const String& other) {
     }
 }
 
-String::String() {
+String::String() noexcept {
     buf[0] = '\0';
     setLast();
 }
