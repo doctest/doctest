@@ -2348,12 +2348,12 @@ int registerReporter(const char* name, int priority, bool isReporter) {
 
 #define DOCTEST_ASSERT_IMPLEMENT_2(assert_type, ...)                                               \
     DOCTEST_CLANG_SUPPRESS_WARNING_WITH_PUSH("-Woverloaded-shift-op-parentheses")                  \
-    doctest::detail::ResultBuilder DOCTEST_RB(doctest::assertType::assert_type, __FILE__, /* NOLINT */ \
+    doctest::detail::ResultBuilder DOCTEST_RB(doctest::assertType::assert_type, __FILE__, /* NOLINT(clang-analyzer-cplusplus.NewDeleteLeaks) */ \
                                                __LINE__, #__VA_ARGS__);                            \
     DOCTEST_WRAP_IN_TRY(DOCTEST_RB.setResult(                                                      \
             doctest::detail::ExpressionDecomposer(doctest::assertType::assert_type)                \
             << __VA_ARGS__))                                                                       \
-    DOCTEST_ASSERT_LOG_REACT_RETURN(DOCTEST_RB)                                                    \
+    DOCTEST_ASSERT_LOG_REACT_RETURN(DOCTEST_RB) /* NOLINT(clang-analyzer-cplusplus.NewDeleteLeaks) */ \
     DOCTEST_CLANG_SUPPRESS_WARNING_POP
 
 #define DOCTEST_ASSERT_IMPLEMENT_1(assert_type, ...)                                               \

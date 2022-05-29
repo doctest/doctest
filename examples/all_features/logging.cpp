@@ -52,7 +52,7 @@ TEST_CASE("a test case that will end from an exception and should print the unpr
 }
 
 static void thirdPartyAssert(bool result, bool is_fatal, const char* file, int line) {
-    if(result == false) {
+    if(!result) {
         if(is_fatal)
             ADD_FAIL_AT(file, line, "MY_ASSERT_FATAL(" << result << ")");
         else
