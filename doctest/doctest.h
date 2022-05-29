@@ -501,10 +501,10 @@ struct char_traits;
 template <>
 struct char_traits<char>;
 template <class charT, class traits>
-class basic_ostream;
+class basic_ostream; // NOLINT(fuchsia-virtual-inheritance)
 typedef basic_ostream<char, char_traits<char>> ostream; // NOLINT(modernize-use-using)
 template<class traits>
-// NOLINTNEXTLINE(readability-redundant-declaration)
+// NOLINTNEXTLINE
 basic_ostream<char, traits>& operator<<(basic_ostream<char, traits>&, const char*);
 template <class charT, class traits>
 class basic_istream;
@@ -624,8 +624,8 @@ public:
     size_type size() const;
     size_type capacity() const;
 
-    String substr(size_type pos, size_type len = npos) &&;
-    String substr(size_type pos, size_type len = npos) const &;
+    String substr(size_type pos, size_type cnt = npos) &&;
+    String substr(size_type pos, size_type cnt = npos) const &;
 
     size_type find(char ch, size_type pos = 0) const;
     size_type rfind(char ch, size_type pos = npos) const;
@@ -1328,8 +1328,8 @@ DOCTEST_CLANG_SUPPRESS_WARNING_WITH_PUSH("-Wunused-comparison")
 
 #define DOCTEST_DO_BINARY_EXPRESSION_COMPARISON(op, op_str, op_macro)                              \
     template <typename R>                                                                          \
-    DOCTEST_NOINLINE SFINAE_OP(Result,op) operator op(const R&& rhs) {                             \
-    bool res = op_macro(doctest::detail::forward<const L>(lhs), doctest::detail::forward<const R>(rhs));                                                             \
+    DOCTEST_NOINLINE SFINAE_OP(Result,op) operator op(const R&& rhs) { /* NOLINT(clang-analyzer-cplusplus.NewDeleteLeaks) */ \
+    bool res = op_macro(doctest::detail::forward<const L>(lhs), doctest::detail::forward<const R>(rhs)); \
         if(m_at & assertType::is_false)                                                            \
             res = !res;                                                                            \
         if(!res || doctest::getContextOptions()->success)                                          \
@@ -1337,7 +1337,7 @@ DOCTEST_CLANG_SUPPRESS_WARNING_WITH_PUSH("-Wunused-comparison")
         return Result(res);                                                                        \
     }                                                                                              \
     template <typename R ,typename types::enable_if<!doctest::detail::types::is_rvalue_reference<R>::value, void >::type* = nullptr> \
-    DOCTEST_NOINLINE SFINAE_OP(Result,op) operator op(const R& rhs) {                              \
+    DOCTEST_NOINLINE SFINAE_OP(Result,op) operator op(const R& rhs) { /* NOLINT(clang-analyzer-cplusplus.NewDeleteLeaks) */ \
     bool res = op_macro(doctest::detail::forward<const L>(lhs), rhs);                              \
         if(m_at & assertType::is_false)                                                            \
             res = !res;                                                                            \
@@ -1646,9 +1646,11 @@ DOCTEST_CLANG_SUPPRESS_WARNING_POP
 
     struct DOCTEST_INTERFACE ResultBuilder : public AssertData
     {
+        // NOLINTNEXTLINE(clang-analyzer-cplusplus.NewDeleteLeaks)
         ResultBuilder(assertType::Enum at, const char* file, int line, const char* expr,
                       const char* exception_type = "", const String& exception_string = "");
 
+        // NOLINTNEXTLINE(clang-analyzer-cplusplus.NewDeleteLeaks)
         ResultBuilder(assertType::Enum at, const char* file, int line, const char* expr,
                       const char* exception_type, const Contains& exception_string);
 
@@ -3761,8 +3763,8 @@ std::ostream& operator<<(std::ostream& s, const String& in) { return s << in.c_s
 
 Contains::Contains(const String& str) : string(str) { }
 
-bool Contains::checkWith(const String& full_string) const {
-    return strstr(full_string.c_str(), string.c_str()) != nullptr;
+bool Contains::checkWith(const String& other) const {
+    return strstr(other.c_str(), string.c_str()) != nullptr;
 }
 
 String toString(const Contains& in) {
@@ -3969,10 +3971,10 @@ template struct DOCTEST_INTERFACE_DEF IsNaN<float>;
 template struct DOCTEST_INTERFACE_DEF IsNaN<double>;
 template struct DOCTEST_INTERFACE_DEF IsNaN<long double>;
 template <typename F>
-String toString(IsNaN<F> nanCheck) { return String(nanCheck.flipped ? "! " : "") + "IsNaN( " + doctest::toString(nanCheck.value) + " )"; }
-String toString(IsNaN<float> nanCheck) { return toString<float>(nanCheck); }
-String toString(IsNaN<double> nanCheck) { return toString<double>(nanCheck); }
-String toString(IsNaN<double long> nanCheck) { return toString<double long>(nanCheck); }
+String toString(IsNaN<F> in) { return String(in.flipped ? "! " : "") + "IsNaN( " + doctest::toString(in.value) + " )"; }
+String toString(IsNaN<float> in) { return toString<float>(in); }
+String toString(IsNaN<double> in) { return toString<double>(in); }
+String toString(IsNaN<double long> in) { return toString<double long>(in); }
 
 } // namespace doctest
 

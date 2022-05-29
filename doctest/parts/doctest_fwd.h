@@ -498,10 +498,10 @@ struct char_traits;
 template <>
 struct char_traits<char>;
 template <class charT, class traits>
-class basic_ostream;
+class basic_ostream; // NOLINT(fuchsia-virtual-inheritance)
 typedef basic_ostream<char, char_traits<char>> ostream; // NOLINT(modernize-use-using)
 template<class traits>
-// NOLINTNEXTLINE(readability-redundant-declaration)
+// NOLINTNEXTLINE
 basic_ostream<char, traits>& operator<<(basic_ostream<char, traits>&, const char*);
 template <class charT, class traits>
 class basic_istream;
@@ -621,8 +621,8 @@ public:
     size_type size() const;
     size_type capacity() const;
 
-    String substr(size_type pos, size_type len = npos) &&;
-    String substr(size_type pos, size_type len = npos) const &;
+    String substr(size_type pos, size_type cnt = npos) &&;
+    String substr(size_type pos, size_type cnt = npos) const &;
 
     size_type find(char ch, size_type pos = 0) const;
     size_type rfind(char ch, size_type pos = npos) const;
@@ -1325,8 +1325,8 @@ DOCTEST_CLANG_SUPPRESS_WARNING_WITH_PUSH("-Wunused-comparison")
 
 #define DOCTEST_DO_BINARY_EXPRESSION_COMPARISON(op, op_str, op_macro)                              \
     template <typename R>                                                                          \
-    DOCTEST_NOINLINE SFINAE_OP(Result,op) operator op(const R&& rhs) {                             \
-    bool res = op_macro(doctest::detail::forward<const L>(lhs), doctest::detail::forward<const R>(rhs));                                                             \
+    DOCTEST_NOINLINE SFINAE_OP(Result,op) operator op(const R&& rhs) { /* NOLINT(clang-analyzer-cplusplus.NewDeleteLeaks) */ \
+    bool res = op_macro(doctest::detail::forward<const L>(lhs), doctest::detail::forward<const R>(rhs)); \
         if(m_at & assertType::is_false)                                                            \
             res = !res;                                                                            \
         if(!res || doctest::getContextOptions()->success)                                          \
@@ -1334,7 +1334,7 @@ DOCTEST_CLANG_SUPPRESS_WARNING_WITH_PUSH("-Wunused-comparison")
         return Result(res);                                                                        \
     }                                                                                              \
     template <typename R ,typename types::enable_if<!doctest::detail::types::is_rvalue_reference<R>::value, void >::type* = nullptr> \
-    DOCTEST_NOINLINE SFINAE_OP(Result,op) operator op(const R& rhs) {                              \
+    DOCTEST_NOINLINE SFINAE_OP(Result,op) operator op(const R& rhs) { /* NOLINT(clang-analyzer-cplusplus.NewDeleteLeaks) */ \
     bool res = op_macro(doctest::detail::forward<const L>(lhs), rhs);                              \
         if(m_at & assertType::is_false)                                                            \
             res = !res;                                                                            \
@@ -1643,9 +1643,11 @@ DOCTEST_CLANG_SUPPRESS_WARNING_POP
 
     struct DOCTEST_INTERFACE ResultBuilder : public AssertData
     {
+        // NOLINTNEXTLINE(clang-analyzer-cplusplus.NewDeleteLeaks)
         ResultBuilder(assertType::Enum at, const char* file, int line, const char* expr,
                       const char* exception_type = "", const String& exception_string = "");
 
+        // NOLINTNEXTLINE(clang-analyzer-cplusplus.NewDeleteLeaks)
         ResultBuilder(assertType::Enum at, const char* file, int line, const char* expr,
                       const char* exception_type, const Contains& exception_string);
 

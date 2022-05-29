@@ -705,8 +705,8 @@ std::ostream& operator<<(std::ostream& s, const String& in) { return s << in.c_s
 
 Contains::Contains(const String& str) : string(str) { }
 
-bool Contains::checkWith(const String& full_string) const {
-    return strstr(full_string.c_str(), string.c_str()) != nullptr;
+bool Contains::checkWith(const String& other) const {
+    return strstr(other.c_str(), string.c_str()) != nullptr;
 }
 
 String toString(const Contains& in) {
@@ -913,10 +913,10 @@ template struct DOCTEST_INTERFACE_DEF IsNaN<float>;
 template struct DOCTEST_INTERFACE_DEF IsNaN<double>;
 template struct DOCTEST_INTERFACE_DEF IsNaN<long double>;
 template <typename F>
-String toString(IsNaN<F> nanCheck) { return String(nanCheck.flipped ? "! " : "") + "IsNaN( " + doctest::toString(nanCheck.value) + " )"; }
-String toString(IsNaN<float> nanCheck) { return toString<float>(nanCheck); }
-String toString(IsNaN<double> nanCheck) { return toString<double>(nanCheck); }
-String toString(IsNaN<double long> nanCheck) { return toString<double long>(nanCheck); }
+String toString(IsNaN<F> in) { return String(in.flipped ? "! " : "") + "IsNaN( " + doctest::toString(in.value) + " )"; }
+String toString(IsNaN<float> in) { return toString<float>(in); }
+String toString(IsNaN<double> in) { return toString<double>(in); }
+String toString(IsNaN<double long> in) { return toString<double long>(in); }
 
 } // namespace doctest
 
