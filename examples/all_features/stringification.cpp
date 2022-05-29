@@ -4,7 +4,7 @@ __pragma(warning(disable : 4643))
 namespace std {
     template <typename> struct char_traits;
     template <typename, typename> class basic_ostream;
-    typedef basic_ostream<char, char_traits<char>> ostream;
+    typedef basic_ostream<char, char_traits<char>> ostream; // NOLINT(modernize-use-using)
     template<class TRAITS>
     basic_ostream<char, TRAITS>& operator<<(basic_ostream<char, TRAITS>&, const char*);
 }
