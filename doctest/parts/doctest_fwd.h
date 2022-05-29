@@ -1325,7 +1325,7 @@ DOCTEST_CLANG_SUPPRESS_WARNING_WITH_PUSH("-Wunused-comparison")
 
 #define DOCTEST_DO_BINARY_EXPRESSION_COMPARISON(op, op_str, op_macro)                              \
     template <typename R>                                                                          \
-    DOCTEST_NOINLINE SFINAE_OP(Result,op) operator op(const R&& rhs) { /* NOLINT(clang-analyzer-cplusplus.NewDeleteLeaks) */ \
+    DOCTEST_NOINLINE SFINAE_OP(Result,op) operator op(const R&& rhs) {                             \
     bool res = op_macro(doctest::detail::forward<const L>(lhs), doctest::detail::forward<const R>(rhs)); \
         if(m_at & assertType::is_false)                                                            \
             res = !res;                                                                            \
@@ -1334,7 +1334,7 @@ DOCTEST_CLANG_SUPPRESS_WARNING_WITH_PUSH("-Wunused-comparison")
         return Result(res);                                                                        \
     }                                                                                              \
     template <typename R ,typename types::enable_if<!doctest::detail::types::is_rvalue_reference<R>::value, void >::type* = nullptr> \
-    DOCTEST_NOINLINE SFINAE_OP(Result,op) operator op(const R& rhs) { /* NOLINT(clang-analyzer-cplusplus.NewDeleteLeaks) */ \
+    DOCTEST_NOINLINE SFINAE_OP(Result,op) operator op(const R& rhs) {                              \
     bool res = op_macro(doctest::detail::forward<const L>(lhs), rhs);                              \
         if(m_at & assertType::is_false)                                                            \
             res = !res;                                                                            \
@@ -2348,7 +2348,7 @@ int registerReporter(const char* name, int priority, bool isReporter) {
 
 #define DOCTEST_ASSERT_IMPLEMENT_2(assert_type, ...)                                               \
     DOCTEST_CLANG_SUPPRESS_WARNING_WITH_PUSH("-Woverloaded-shift-op-parentheses")                  \
-    doctest::detail::ResultBuilder DOCTEST_RB(doctest::assertType::assert_type, __FILE__,          \
+    doctest::detail::ResultBuilder DOCTEST_RB(doctest::assertType::assert_type, __FILE__, /* NOLINT */ \
                                                __LINE__, #__VA_ARGS__);                            \
     DOCTEST_WRAP_IN_TRY(DOCTEST_RB.setResult(                                                      \
             doctest::detail::ExpressionDecomposer(doctest::assertType::assert_type)                \
