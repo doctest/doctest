@@ -2362,7 +2362,7 @@ int registerReporter(const char* name, int priority, bool isReporter) {
 #define DOCTEST_ASSERT_IMPLEMENT_1(assert_type, ...)                                               \
     DOCTEST_FUNC_SCOPE_BEGIN {                                                                     \
         DOCTEST_ASSERT_IMPLEMENT_2(assert_type, __VA_ARGS__);                                      \
-    } DOCTEST_FUNC_SCOPE_END
+    } DOCTEST_FUNC_SCOPE_END // NOLINT(clang-analyzer-cplusplus.NewDeleteLeaks)
 
 #define DOCTEST_BINARY_ASSERT(assert_type, comp, ...)                                              \
     DOCTEST_FUNC_SCOPE_BEGIN {                                                                     \
