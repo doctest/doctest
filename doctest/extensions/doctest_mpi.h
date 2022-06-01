@@ -114,7 +114,8 @@ void execute_mpi_test_case(F func) {
 
 inline bool
 insufficient_procs(int test_nb_procs) {
-  bool insufficient = test_nb_procs>mpi_comm_world_size();
+  static const int world_size = mpi_comm_world_size();
+  bool insufficient = test_nb_procs>world_size;
   if (insufficient) {
     ++nb_test_cases_skipped_insufficient_procs;
   }
