@@ -93,6 +93,7 @@ namespace doctest {
 extern std::unordered_map<int,mpi_sub_comm> sub_comms_by_size;
 extern int nb_test_cases_skipped_insufficient_procs;
 extern int world_size_before_init;
+int mpi_comm_world_size();
 
 int mpi_init_thread(int argc, char *argv[], int required_thread_support);
 void mpi_finalize();
@@ -113,7 +114,7 @@ void execute_mpi_test_case(F func) {
 
 inline bool
 insufficient_procs(int test_nb_procs) {
-  bool insufficient = test_nb_procs>world_size_before_init;
+  bool insufficient = test_nb_procs>mpi_comm_world_size();
   if (insufficient) {
     ++nb_test_cases_skipped_insufficient_procs;
   }
