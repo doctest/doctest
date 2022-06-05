@@ -3560,7 +3560,7 @@ char* String::allocate(size_type sz) {
         setOnHeap();
         data.size = sz;
         data.capacity = data.size + 1;
-        data.ptr = new char[data.capacity]; // NOLINT(clang-analyzer-cplusplus.NewDeleteLeaks)
+        data.ptr = new char[data.capacity];
         data.ptr[sz] = '\0';
         return data.ptr;
     }
@@ -3589,8 +3589,7 @@ String::String() noexcept {
 String::~String() {
     if(!isOnStack())
         delete[] data.ptr;
-    // NOLINTNEXTLINE(clang-analyzer-cplusplus.NewDeleteLeaks)
-}
+} // NOLINT(clang-analyzer-cplusplus.NewDeleteLeaks)
 
 String::String(const char* in)
         : String(in, strlen(in)) {}
@@ -3684,7 +3683,7 @@ String& String::operator=(String&& other) noexcept {
 }
 
 char String::operator[](size_type i) const {
-    return const_cast<String*>(this)->operator[](i); // NOLINT
+    return const_cast<String*>(this)->operator[](i);
 }
 
 char& String::operator[](size_type i) {
@@ -3747,7 +3746,6 @@ int String::compare(const String& other, bool no_case) const {
     return compare(other.c_str(), no_case);
 }
 
-// NOLINTNEXTLINE(clang-analyzer-cplusplus.NewDeleteLeaks)
 String operator+(const String& lhs, const String& rhs) { return  String(lhs) += rhs; }
 
 bool operator==(const String& lhs, const String& rhs) { return lhs.compare(rhs) == 0; }
@@ -3887,7 +3885,6 @@ namespace detail {
 }
 
 #ifdef DOCTEST_CONFIG_TREAT_CHAR_STAR_AS_STRING
-// NOLINTNEXTLINE(clang-analyzer-cplusplus.NewDeleteLeaks)
 String toString(const char* in) { return String("\"") + (in ? in : "{null string}") + "\""; }
 #endif // DOCTEST_CONFIG_TREAT_CHAR_STAR_AS_STRING
 
@@ -4059,7 +4056,7 @@ namespace detail {
     DOCTEST_NORETURN void throwException() {
         g_cs->shouldLogCurrentException = false;
         throw TestFailureException(); // NOLINT(hicpp-exception-baseclass)
-    } // NOLINT(cert-err60-cpp)
+    }
 #else // DOCTEST_CONFIG_NO_EXCEPTIONS
     void throwException() {}
 #endif // DOCTEST_CONFIG_NO_EXCEPTIONS
@@ -4784,7 +4781,7 @@ namespace {
             sigStack.ss_flags = 0;
             sigaltstack(&sigStack, &oldSigStack);
             struct sigaction sa = {};
-            sa.sa_handler       = handleSignal; // NOLINT
+            sa.sa_handler       = handleSignal;
             sa.sa_flags         = SA_ONSTACK;
             for(std::size_t i = 0; i < DOCTEST_COUNTOF(signalDefs); ++i) {
                 sigaction(signalDefs[i].id, &sa, &oldSigActions[i]);
@@ -4823,7 +4820,7 @@ namespace {
 #define DOCTEST_OUTPUT_DEBUG_STRING(text) ::OutputDebugStringA(text)
 #else
     // TODO: integration with XCode and other IDEs
-#define DOCTEST_OUTPUT_DEBUG_STRING(text) // NOLINT(clang-diagnostic-unused-macros)
+#define DOCTEST_OUTPUT_DEBUG_STRING(text)
 #endif // Platform
 
     void addAssert(assertType::Enum at) {
@@ -4870,12 +4867,10 @@ AssertData::AssertData(assertType::Enum at, const char* file, int line, const ch
 namespace detail {
     ResultBuilder::ResultBuilder(assertType::Enum at, const char* file, int line, const char* expr,
                                  const char* exception_type, const String& exception_string)
-        // NOLINTNEXTLINE(clang-analyzer-cplusplus.NewDeleteLeaks)
         : AssertData(at, file, line, expr, exception_type, exception_string) { }
 
     ResultBuilder::ResultBuilder(assertType::Enum at, const char* file, int line, const char* expr,
         const char* exception_type, const Contains& exception_string)
-        // NOLINTNEXTLINE(clang-analyzer-cplusplus.NewDeleteLeaks)
         : AssertData(at, file, line, expr, exception_type, exception_string) { }
 
     void ResultBuilder::setResult(const Result& res) {
@@ -4940,7 +4935,6 @@ namespace detail {
         // ###################################################################################
         DOCTEST_ASSERT_OUT_OF_TESTS(result.m_decomp);
         DOCTEST_ASSERT_IN_TESTS(result.m_decomp);
-        // NOLINTNEXTLINE(clang-analyzer-cplusplus.NewDeleteLeaks)
         return !failed;
     }
 
@@ -6502,7 +6496,7 @@ namespace {
         if(type) {
             // integer
             // TODO: change this to use std::stoi or something else! currently it uses undefined behavior - assumes '0' on failed parse...
-            int theInt = std::atoi(parsedValue.c_str()); // NOLINT
+            int theInt = std::atoi(parsedValue.c_str());
             if (theInt != 0) {
                 res = theInt; //!OCLINT parameter reassignment
                 return true;
@@ -6690,7 +6684,6 @@ void Context::setOption(const char* option, bool value) {
 // allows the user to override procedurally the int options from the command line
 void Context::setOption(const char* option, int value) {
     setOption(option, toString(value).c_str());
-    // NOLINTNEXTLINE(clang-analyzer-cplusplus.NewDeleteLeaks)
 }
 
 // allows the user to override procedurally the string options from the command line
@@ -6828,7 +6821,7 @@ int Context::run() {
             // random_shuffle implementation
             const auto first = &testArray[0];
             for(size_t i = testArray.size() - 1; i > 0; --i) {
-                int idxToSwap = std::rand() % (i + 1); // NOLINT
+                int idxToSwap = std::rand() % (i + 1);
 
                 const auto temp = first[i];
 
