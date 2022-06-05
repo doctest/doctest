@@ -940,7 +940,7 @@ namespace detail {
         template <typename T> struct remove_const<const T> { using type = T; };
 
         // Compiler intrinsics
-        template <typename T> struct is_enum { DOCTEST_CONSTEXPR static bool value = __is_enum(T); };
+        template <typename T> struct is_enum { static DOCTEST_CONSTEXPR bool value = __is_enum(T); };
         template <typename T> struct underlying_type { using type = __underlying_type(T); };
 
         template <typename T> struct is_pointer : false_type { };
@@ -1275,9 +1275,9 @@ namespace detail {
     template<class T, unsigned N>   struct decay_array<T[N]> { using type = T*; };
     template<class T>               struct decay_array<T[]>  { using type = T*; };
 
-    template<class T>   struct not_char_pointer              { enum { value = 1 }; };
-    template<>          struct not_char_pointer<char*>       { enum { value = 0 }; };
-    template<>          struct not_char_pointer<const char*> { enum { value = 0 }; };
+    template<class T>   struct not_char_pointer              { static DOCTEST_CONSTEXPR value = 1; };
+    template<>          struct not_char_pointer<char*>       { static DOCTEST_CONSTEXPR value = 0; };
+    template<>          struct not_char_pointer<const char*> { static DOCTEST_CONSTEXPR value = 0; };
 
     template<class T> struct can_use_op : public not_char_pointer<typename decay_array<T>::type> {};
 #endif // DOCTEST_CONFIG_TREAT_CHAR_STAR_AS_STRING
@@ -1587,7 +1587,7 @@ DOCTEST_CLANG_SUPPRESS_WARNING_POP
         String m_full_name; // contains the name (only for templated test cases!) + the template type
 
         TestCase(funcType test, const char* file, unsigned line, const TestSuite& test_suite,
-                 const String& type = String(), int template_id = -1) noexcept;
+                 const String& type = String(), int template_id = -1);
 
         TestCase(const TestCase& other);
         TestCase(TestCase&&) = delete;
@@ -1613,7 +1613,7 @@ DOCTEST_CLANG_SUPPRESS_WARNING_POP
 
     // forward declarations of functions used by the macros
     DOCTEST_INTERFACE int  regTest(const TestCase& tc);
-    DOCTEST_INTERFACE int  setTestSuite(const TestSuite& ts) noexcept;
+    DOCTEST_INTERFACE int  setTestSuite(const TestSuite& ts);
     DOCTEST_INTERFACE bool isDebuggerActive();
 
     template<typename T>
@@ -1912,7 +1912,7 @@ int registerExceptionTranslator(String (*translateFunction)(T)) {
 // in a separate namespace outside of doctest because the DOCTEST_TEST_SUITE macro
 // introduces an anonymous namespace in which getCurrentTestSuite gets overridden
 namespace doctest_detail_test_suite_ns {
-DOCTEST_INTERFACE doctest::detail::TestSuite& getCurrentTestSuite() noexcept;
+DOCTEST_INTERFACE doctest::detail::TestSuite& getCurrentTestSuite();
 } // namespace doctest_detail_test_suite_ns
 
 namespace doctest {
@@ -2349,12 +2349,13 @@ int registerReporter(const char* name, int priority, bool isReporter) {
 
 #define DOCTEST_ASSERT_IMPLEMENT_2(assert_type, ...)                                               \
     DOCTEST_CLANG_SUPPRESS_WARNING_WITH_PUSH("-Woverloaded-shift-op-parentheses")                  \
-    doctest::detail::ResultBuilder DOCTEST_RB(doctest::assertType::assert_type, __FILE__, /* NOLINT(clang-analyzer-cplusplus.NewDeleteLeaks) */ \
+    /* NOLINTNEXTLINE(clang-analyzer-cplusplus.NewDeleteLeaks) */                                  \
+    doctest::detail::ResultBuilder DOCTEST_RB(doctest::assertType::assert_type, __FILE__,          \
                                                __LINE__, #__VA_ARGS__);                            \
     DOCTEST_WRAP_IN_TRY(DOCTEST_RB.setResult(                                                      \
             doctest::detail::ExpressionDecomposer(doctest::assertType::assert_type)                \
-            << __VA_ARGS__))                                                                       \
-    DOCTEST_ASSERT_LOG_REACT_RETURN(DOCTEST_RB) /* NOLINT(clang-analyzer-cplusplus.NewDeleteLeaks) */ \
+            << __VA_ARGS__)) /* NOLINTNEXTLINE(clang-analyzer-cplusplus.NewDeleteLeaks) */         \
+    DOCTEST_ASSERT_LOG_REACT_RETURN(DOCTEST_RB)                                                    \
     DOCTEST_CLANG_SUPPRESS_WARNING_POP
 
 #define DOCTEST_ASSERT_IMPLEMENT_1(assert_type, ...)                                               \
@@ -4013,7 +4014,7 @@ int registerReporter(const char*, int, IReporter*) { return 0; }
 
 namespace doctest_detail_test_suite_ns {
 // holds the current test suite
-doctest::detail::TestSuite& getCurrentTestSuite() noexcept {
+doctest::detail::TestSuite& getCurrentTestSuite() {
     static doctest::detail::TestSuite data{};
     return data;
 }
@@ -4245,7 +4246,7 @@ namespace detail {
     }
 
     TestCase::TestCase(funcType test, const char* file, unsigned line, const TestSuite& test_suite,
-                       const String& type, int template_id) noexcept {
+                       const String& type, int template_id) {
         m_file              = file;
         m_line              = line;
         m_name              = nullptr; // will be later overridden in operator*
@@ -4460,7 +4461,7 @@ namespace detail {
     }
 
     // sets the current test suite
-    int setTestSuite(const TestSuite& ts) noexcept {
+    int setTestSuite(const TestSuite& ts) {
         doctest_detail_test_suite_ns::getCurrentTestSuite() = ts;
         return 0;
     }
