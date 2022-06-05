@@ -504,7 +504,7 @@ char* String::allocate(size_type sz) {
         setOnHeap();
         data.size = sz;
         data.capacity = data.size + 1;
-        data.ptr = new char[data.capacity]; // NOLINT(clang-analyzer-cplusplus.NewDeleteLeaks)
+        data.ptr = new char[data.capacity];
         data.ptr[sz] = '\0';
         return data.ptr;
     }
