@@ -380,12 +380,15 @@ DOCTEST_MSVC_SUPPRESS_WARNING(4623) // default constructor was implicitly define
 // =================================================================================================
 
 #define DOCTEST_DECLARE_INTERFACE(name)                                                            \
-    virtual ~name() = default;                                                                     \
+    virtual ~name();                                                                               \
     name() = default;                                                                              \
     name(const name&) = delete;                                                                    \
     name(name&&) = delete;                                                                         \
     name& operator=(const name&) = delete;                                                         \
     name& operator=(name&&) = delete;
+
+#define DOCTEST_DEFINE_INTERFACE(name)                                                             \
+    name::~name() = default;
 
 // internal macros for string concatenation and anonymous variable name generation
 #define DOCTEST_CAT_IMPL(s1, s2) s1##s2

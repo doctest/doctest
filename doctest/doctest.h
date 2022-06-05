@@ -383,12 +383,15 @@ DOCTEST_MSVC_SUPPRESS_WARNING(4623) // default constructor was implicitly define
 // =================================================================================================
 
 #define DOCTEST_DECLARE_INTERFACE(name)                                                            \
-    virtual ~name() = default;                                                                     \
+    virtual ~name();                                                                               \
     name() = default;                                                                              \
     name(const name&) = delete;                                                                    \
     name(name&&) = delete;                                                                         \
     name& operator=(const name&) = delete;                                                         \
     name& operator=(name&&) = delete;
+
+#define DOCTEST_DEFINE_INTERFACE(name)                                                             \
+    name::~name() = default;
 
 // internal macros for string concatenation and anonymous variable name generation
 #define DOCTEST_CAT_IMPL(s1, s2) s1##s2
@@ -3867,6 +3870,8 @@ bool SubcaseSignature::operator<(const SubcaseSignature& other) const {
     return m_name.compare(other.m_name) < 0;
 }
 
+DOCTEST_DEFINE_INTERFACE(IContextScope)
+
 namespace detail {
     void filldata<const void*>::fill(std::ostream* stream, const void* in) {
         if (in) { *stream << in; }
@@ -4950,6 +4955,8 @@ namespace detail {
         if (!logged)
             tlssPop();
     }
+
+    DOCTEST_DEFINE_INTERFACE(IExceptionTranslator)
 
     bool MessageBuilder::log() {
         if (!logged) {
@@ -6985,6 +6992,8 @@ DOCTEST_MSVC_SUPPRESS_WARNING_POP
 
     return cleanup_and_return();
 }
+
+DOCTEST_DEFINE_INTERFACE(IReporter)
 
 int IReporter::get_num_active_contexts() { return detail::g_infoContexts.size(); }
 const IContextScope* const* IReporter::get_active_contexts() {

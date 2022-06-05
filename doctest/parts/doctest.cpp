@@ -814,6 +814,8 @@ bool SubcaseSignature::operator<(const SubcaseSignature& other) const {
     return m_name.compare(other.m_name) < 0;
 }
 
+DOCTEST_DEFINE_INTERFACE(IContextScope)
+
 namespace detail {
     void filldata<const void*>::fill(std::ostream* stream, const void* in) {
         if (in) { *stream << in; }
@@ -1897,6 +1899,8 @@ namespace detail {
         if (!logged)
             tlssPop();
     }
+
+    DOCTEST_DEFINE_INTERFACE(IExceptionTranslator)
 
     bool MessageBuilder::log() {
         if (!logged) {
@@ -3932,6 +3936,8 @@ DOCTEST_MSVC_SUPPRESS_WARNING_POP
 
     return cleanup_and_return();
 }
+
+DOCTEST_DEFINE_INTERFACE(IReporter)
 
 int IReporter::get_num_active_contexts() { return detail::g_infoContexts.size(); }
 const IContextScope* const* IReporter::get_active_contexts() {
