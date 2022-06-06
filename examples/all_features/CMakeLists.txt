@@ -23,7 +23,7 @@ set(files_with_output
 set(files_all
     ${files_with_output}
     concurrency.cpp
-    ../../scripts/coverage_maxout.cpp
+    coverage_maxout.cpp
     namespace1.cpp
     namespace2.cpp
     namespace3.cpp

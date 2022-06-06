@@ -7,7 +7,7 @@ template <typename T>
 int throw_if(bool in, const T& ex) {
     if(in)
 #ifndef DOCTEST_CONFIG_NO_EXCEPTIONS
-        throw ex;
+        throw ex; // NOLINT
 #else  // DOCTEST_CONFIG_NO_EXCEPTIONS
         ((void)ex);
 #endif // DOCTEST_CONFIG_NO_EXCEPTIONS
@@ -47,6 +47,7 @@ DOCTEST_GCC_SUPPRESS_WARNING("-Weffc++")
 DOCTEST_GCC_SUPPRESS_WARNING("-Wstrict-overflow")
 #endif // gcc 5
 
+// NOLINTBEGIN
 struct SomeFixture
 {
     int data;
@@ -59,6 +60,7 @@ struct SomeFixture
         // teardown here
     }
 };
+// NOLINTEND
 
 TEST_CASE_FIXTURE(SomeFixture, "fixtured test") {
     data /= 2;

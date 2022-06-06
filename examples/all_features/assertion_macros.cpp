@@ -205,7 +205,8 @@ TEST_CASE("some asserts used in a function called by a test case") {
     someAssertsInFunction();
 }
 
-inline DOCTEST_NOINLINE void comp(int a, int b) {
+// TODO: Remove NOLINT (if (false && (__VA_ARGS__));)?
+inline DOCTEST_NOINLINE void comp(int a, int b) { // NOLINT(misc-unused-parameters)
     if (CHECK(a == b)) { MESSAGE(":D"); }
     if (CHECK_FALSE(a != b)) { MESSAGE(":D"); }
     if (CHECK_EQ(a, b)) { MESSAGE(":D"); }

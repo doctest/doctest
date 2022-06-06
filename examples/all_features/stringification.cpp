@@ -4,7 +4,7 @@ __pragma(warning(disable : 4643))
 namespace std {
     template <typename> struct char_traits;
     template <typename, typename> class basic_ostream;
-    typedef basic_ostream<char, char_traits<char>> ostream;
+    typedef basic_ostream<char, char_traits<char>> ostream; // NOLINT(modernize-use-using)
     template<class TRAITS>
     basic_ostream<char, TRAITS>& operator<<(basic_ostream<char, TRAITS>&, const char*);
 }
@@ -44,16 +44,16 @@ TEST_CASE("operator<<") {
 #endif
 
 TEST_CASE("no headers") {
-    char chs[] = { '1', 'a', 's' };
+    char chs[] = { '1', 'a', 's' }; // NOLINT(*-avoid-c-arrays)
     MESSAGE(chs); CHECK(chs == nullptr);
     MESSAGE("1as"); CHECK("1as" == nullptr);
 
-    int ints[] = { 0, 1, 1, 2, 3, 5, 8, 13 };
+    int ints[] = { 0, 1, 1, 2, 3, 5, 8, 13 }; // NOLINT(*-avoid-c-arrays)
     MESSAGE(ints); CHECK(ints == nullptr);
-    MESSAGE(MOVE(ints));
+    MESSAGE(MOVE(ints)); // NOLINT(*-move-const-arg)
 
-    char* cptr = reinterpret_cast<char*>(ints + 4);
-    const char* ccptr = const_cast<const char*>(cptr);
+    char* cptr = reinterpret_cast<char*>(ints + 4); // NOLINT
+    const char* ccptr = cptr;
     void* vptr = reinterpret_cast<void*>(cptr);
     CHECK(doctest::toString(cptr) == doctest::toString(ccptr));
     CHECK(doctest::toString(ccptr) == doctest::toString(vptr));
@@ -80,7 +80,7 @@ DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_END
 DOCTEST_MSVC_SUPPRESS_WARNING(5045) // Spectre mitigation diagnostics
 
 // the standard forbids writing in the std namespace but it works on all compilers
-namespace std
+namespace std // NOLINT(cert-dcl58-cpp)
 {
 template <typename T>
 ostream& operator<<(ostream& stream, const vector<T>& in) {
@@ -104,6 +104,7 @@ struct StringMaker<std::list<T>>
         std::ostringstream oss;
 
         oss << "[";
+        // NOLINTNEXTLINE(*-use-auto)
         for (typename std::list<T>::const_iterator it = in.begin(); it != in.end();) {
             oss << *it;
             if (++it != in.end()) { oss << ", "; }
