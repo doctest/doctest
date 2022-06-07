@@ -38,6 +38,7 @@ struct int_pointer {
     // we don't want to accidentally construct a dangling pointer from a temporary
     int_pointer(int& i) : p(&i) { }
 
+    // NOLINTNEXTLINE(readability-make-member-function-const)
     explicit operator bool() { return !!p; }
     int val() const { return *p; }
 };
