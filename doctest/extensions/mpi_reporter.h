@@ -213,7 +213,7 @@ public:
         }
       }
 
-      MPI_Waitall(int(requests.size()), requests.data(), MPI_STATUSES_IGNORE);
+      MPI_Waitall(static_cast<int>(requests.size()), requests.data(), MPI_STATUSES_IGNORE);
       m_failure_str_queue.clear();
     }
 
