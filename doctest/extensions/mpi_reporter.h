@@ -171,8 +171,9 @@ public:
 
 
       // Compute the number of assert with fail among all procs
+      const int nb_fail_asserts = static_cast<int>(m_failure_str_queue.size());
       int nb_fail_asserts_glob = 0;
-      MPI_Reduce(&st.numAssertsFailedCurrentTest, &nb_fail_asserts_glob, 1, MPI_INT, MPI_SUM, 0, MPI_COMM_WORLD);
+      MPI_Reduce(&nb_fail_asserts, &nb_fail_asserts_glob, 1, MPI_INT, MPI_SUM, 0, MPI_COMM_WORLD);
 
       if(rank == 0) {
         MPI_Status status;
