@@ -11,7 +11,7 @@ DOCTEST_GCC_SUPPRESS_WARNING("-Wmissing-declarations")
 #define TEST_LABEL "[default] "
 #endif
 
-int bar() {
+inline int bar() {
 #ifdef RETURN_42
     return 42;
 #else

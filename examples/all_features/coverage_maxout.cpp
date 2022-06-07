@@ -1,16 +1,6 @@
 #include <doctest/doctest.h>
 
-// helper for throwing exceptions
-template <typename T>
-int throw_if(bool in, const T& ex) {
-    if(in)
-#ifndef DOCTEST_CONFIG_NO_EXCEPTIONS
-        throw ex;
-#else  // DOCTEST_CONFIG_NO_EXCEPTIONS
-        ((void)ex);
-#endif // DOCTEST_CONFIG_NO_EXCEPTIONS
-    return 42;
-}
+#include "header.h"
 
 DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_BEGIN
 #include <ostream>
@@ -111,10 +101,12 @@ TEST_CASE("exercising tricky code paths of doctest") {
     CHECK(5 <= a);
 
     // trigger another single line of code... lol
+    // NOLINTBEGIN(cppcoreguidelines-pro-type-const-cast)
     auto oldVal = const_cast<ContextOptions*>(getContextOptions())->no_path_in_filenames;
     const_cast<ContextOptions*>(getContextOptions())->no_path_in_filenames = false;
     CHECK(String(skipPathFromFilename("")) == "");
     const_cast<ContextOptions*>(getContextOptions())->no_path_in_filenames = oldVal;
+    // NOLINTEND(cppcoreguidelines-pro-type-const-cast)
 
     // a hack to trigger a bug in doctest: currently a 0 cannot be successfully parsed for an int option!
     Context().setOption("last", 0);

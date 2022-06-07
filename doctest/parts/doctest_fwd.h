@@ -156,7 +156,6 @@
     DOCTEST_CLANG_SUPPRESS_WARNING("-Wweak-vtables")                                               \
     DOCTEST_CLANG_SUPPRESS_WARNING("-Wpadded")                                                     \
     DOCTEST_CLANG_SUPPRESS_WARNING("-Wmissing-prototypes")                                         \
-    DOCTEST_CLANG_SUPPRESS_WARNING("-Wunused-local-typedef")                                       \
     DOCTEST_CLANG_SUPPRESS_WARNING("-Wc++98-compat")                                               \
     DOCTEST_CLANG_SUPPRESS_WARNING("-Wc++98-compat-pedantic")                                      \
                                                                                                    \
@@ -167,7 +166,6 @@
     DOCTEST_GCC_SUPPRESS_WARNING("-Wstrict-overflow")                                              \
     DOCTEST_GCC_SUPPRESS_WARNING("-Wstrict-aliasing")                                              \
     DOCTEST_GCC_SUPPRESS_WARNING("-Wmissing-declarations")                                         \
-    DOCTEST_GCC_SUPPRESS_WARNING("-Wunused-local-typedefs")                                        \
     DOCTEST_GCC_SUPPRESS_WARNING("-Wuseless-cast")                                                 \
     DOCTEST_GCC_SUPPRESS_WARNING("-Wnoexcept")                                                     \
                                                                                                    \
@@ -381,6 +379,17 @@ DOCTEST_MSVC_SUPPRESS_WARNING(4623) // default constructor was implicitly define
 // == FEATURE DETECTION END ========================================================================
 // =================================================================================================
 
+#define DOCTEST_DECLARE_INTERFACE(name)                                                            \
+    virtual ~name();                                                                               \
+    name() = default;                                                                              \
+    name(const name&) = delete;                                                                    \
+    name(name&&) = delete;                                                                         \
+    name& operator=(const name&) = delete;                                                         \
+    name& operator=(name&&) = delete;
+
+#define DOCTEST_DEFINE_INTERFACE(name)                                                             \
+    name::~name() = default;
+
 // internal macros for string concatenation and anonymous variable name generation
 #define DOCTEST_CAT_IMPL(s1, s2) s1##s2
 #define DOCTEST_CAT(s1, s2) DOCTEST_CAT_IMPL(s1, s2)
@@ -410,12 +419,12 @@ DOCTEST_MSVC_SUPPRESS_WARNING(4623) // default constructor was implicitly define
 #endif // DOCTEST_PLATFORM
 
 namespace doctest { namespace detail {
-    static DOCTEST_CONSTEXPR int consume(const int*, int) { return 0; }
+    static DOCTEST_CONSTEXPR int consume(const int*, int) noexcept { return 0; }
 }}
 
 #define DOCTEST_GLOBAL_NO_WARNINGS(var, ...)                                                         \
     DOCTEST_CLANG_SUPPRESS_WARNING_WITH_PUSH("-Wglobal-constructors")                                \
-    static const int var = doctest::detail::consume(&var, __VA_ARGS__); /* NOLINT(cert-err58-cpp) */ \
+    static const int var = doctest::detail::consume(&var, __VA_ARGS__);                              \
     DOCTEST_CLANG_SUPPRESS_WARNING_POP
 
 #ifndef DOCTEST_BREAK_INTO_DEBUGGER
@@ -423,19 +432,19 @@ namespace doctest { namespace detail {
 #ifdef DOCTEST_PLATFORM_LINUX
 #if defined(__GNUC__) && (defined(__i386) || defined(__x86_64))
 // Break at the location of the failing check if possible
-#define DOCTEST_BREAK_INTO_DEBUGGER() __asm__("int $3\n" : :) // NOLINT (hicpp-no-assembler)
+#define DOCTEST_BREAK_INTO_DEBUGGER() __asm__("int $3\n" : :) // NOLINT(hicpp-no-assembler)
 #else
 #include <signal.h>
 #define DOCTEST_BREAK_INTO_DEBUGGER() raise(SIGTRAP)
 #endif
 #elif defined(DOCTEST_PLATFORM_MAC)
 #if defined(__x86_64) || defined(__x86_64__) || defined(__amd64__) || defined(__i386)
-#define DOCTEST_BREAK_INTO_DEBUGGER() __asm__("int $3\n" : :) // NOLINT (hicpp-no-assembler)
+#define DOCTEST_BREAK_INTO_DEBUGGER() __asm__("int $3\n" : :) // NOLINT(hicpp-no-assembler)
 #elif defined(__ppc__) || defined(__ppc64__)
 // https://www.cocoawithlove.com/2008/03/break-into-debugger.html
-#define DOCTEST_BREAK_INTO_DEBUGGER() __asm__("li r0, 20\nsc\nnop\nli r0, 37\nli r4, 2\nsc\nnop\n": : : "memory","r0","r3","r4") // NOLINT (hicpp-no-assembler)
+#define DOCTEST_BREAK_INTO_DEBUGGER() __asm__("li r0, 20\nsc\nnop\nli r0, 37\nli r4, 2\nsc\nnop\n": : : "memory","r0","r3","r4") // NOLINT(hicpp-no-assembler)
 #else
-#define DOCTEST_BREAK_INTO_DEBUGGER() __asm__("brk #0"); // NOLINT (hicpp-no-assembler)
+#define DOCTEST_BREAK_INTO_DEBUGGER() __asm__("brk #0"); // NOLINT(hicpp-no-assembler)
 #endif
 #elif DOCTEST_MSVC
 #define DOCTEST_BREAK_INTO_DEBUGGER() __debugbreak()
@@ -484,21 +493,22 @@ DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_END
 // Forward declaring 'X' in namespace std is not permitted by the C++ Standard.
 DOCTEST_MSVC_SUPPRESS_WARNING_WITH_PUSH(4643)
 
-namespace std { // NOLINT (cert-dcl58-cpp)
-typedef decltype(nullptr) nullptr_t;
-typedef decltype(sizeof(void*)) size_t;
+namespace std { // NOLINT(cert-dcl58-cpp)
+typedef decltype(nullptr) nullptr_t; // NOLINT(modernize-use-using)
+typedef decltype(sizeof(void*)) size_t; // NOLINT(modernize-use-using)
 template <class charT>
 struct char_traits;
 template <>
 struct char_traits<char>;
 template <class charT, class traits>
-class basic_ostream;
-typedef basic_ostream<char, char_traits<char>> ostream;
+class basic_ostream; // NOLINT(fuchsia-virtual-inheritance)
+typedef basic_ostream<char, char_traits<char>> ostream; // NOLINT(modernize-use-using)
 template<class traits>
+// NOLINTNEXTLINE
 basic_ostream<char, traits>& operator<<(basic_ostream<char, traits>&, const char*);
 template <class charT, class traits>
 class basic_istream;
-typedef basic_istream<char, char_traits<char>> istream;
+typedef basic_istream<char, char_traits<char>> istream; // NOLINT(modernize-use-using)
 template <class... Types>
 class tuple;
 #if DOCTEST_MSVC >= DOCTEST_COMPILER(19, 20, 0)
@@ -566,23 +576,23 @@ private:
 
     union
     {
-        char buf[len];
+        char buf[len]; // NOLINT(*-avoid-c-arrays)
         view data;
     };
 
     char* allocate(size_type sz);
 
-    bool isOnStack() const { return (buf[last] & 128) == 0; }
-    void setOnHeap();
-    void setLast(size_type in = last);
-    void setSize(size_type sz);
+    bool isOnStack() const noexcept { return (buf[last] & 128) == 0; }
+    void setOnHeap() noexcept;
+    void setLast(size_type in = last) noexcept;
+    void setSize(size_type sz) noexcept;
 
     void copy(const String& other);
 
 public:
     static DOCTEST_CONSTEXPR size_type npos = static_cast<size_type>(-1);
 
-    String();
+    String() noexcept;
     ~String();
 
     // cppcheck-suppress noExplicitConstructor
@@ -596,8 +606,8 @@ public:
 
     String& operator+=(const String& other);
 
-    String(String&& other);
-    String& operator=(String&& other);
+    String(String&& other) noexcept;
+    String& operator=(String&& other) noexcept;
 
     char  operator[](size_type i) const;
     char& operator[](size_type i);
@@ -605,16 +615,17 @@ public:
     // the only functions I'm willing to leave in the interface - available for inlining
     const char* c_str() const { return const_cast<String*>(this)->c_str(); } // NOLINT
     char*       c_str() {
-        if(isOnStack())
+        if (isOnStack()) {
             return reinterpret_cast<char*>(buf);
+        }
         return data.ptr;
     }
 
     size_type size() const;
     size_type capacity() const;
 
-    String substr(size_type pos, size_type len = npos) &&;
-    String substr(size_type pos, size_type len = npos) const &;
+    String substr(size_type pos, size_type cnt = npos) &&;
+    String substr(size_type pos, size_type cnt = npos) const &;
 
     size_type find(char ch, size_type pos = 0) const;
     size_type rfind(char ch, size_type pos = npos) const;
@@ -804,15 +815,15 @@ struct DOCTEST_INTERFACE AssertData
     // for specific exception-related asserts
     bool           m_threw_as;
     const char*    m_exception_type;
+
     class DOCTEST_INTERFACE StringContains {
         private:
             Contains content;
             bool isContains;
 
         public:
-            StringContains() : content(String()), isContains(false) { }
             StringContains(const String& str) : content(str), isContains(false) { }
-            StringContains(const Contains& cntn) : content(cntn), isContains(true) { }
+            StringContains(Contains cntn) : content(static_cast<Contains&&>(cntn)), isContains(true) { }
 
             bool check(const String& str) { return isContains ? (content == str) : (content.string == str); }
 
@@ -845,8 +856,7 @@ struct DOCTEST_INTERFACE SubcaseSignature
 
 struct DOCTEST_INTERFACE IContextScope
 {
-    IContextScope();
-    virtual ~IContextScope();
+    DOCTEST_DECLARE_INTERFACE(IContextScope)
     virtual void stringify(std::ostream*) const = 0;
 };
 
@@ -927,13 +937,14 @@ namespace detail {
         template <typename T> struct remove_const<const T> { using type = T; };
 
         // Compiler intrinsics
-        template <typename T> struct is_enum { DOCTEST_CONSTEXPR static bool value = __is_enum(T); };
+        template <typename T> struct is_enum { static DOCTEST_CONSTEXPR bool value = __is_enum(T); };
         template <typename T> struct underlying_type { using type = __underlying_type(T); };
 
         template <typename T> struct is_pointer : false_type { };
         template <typename T> struct is_pointer<T*> : true_type { };
 
         template <typename T> struct is_array : false_type { };
+        // NOLINTNEXTLINE(*-avoid-c-arrays)
         template <typename T, size_t SIZE> struct is_array<T[SIZE]> : true_type { };
 #endif
     }
@@ -1012,7 +1023,7 @@ struct has_insertion_operator<T, decltype(operator<<(declval<std::ostream&>(), d
     }
 
     template <typename T, size_t N>
-    void filloss(std::ostream* stream, const T (&in)[N]) {
+    void filloss(std::ostream* stream, const T (&in)[N]) { // NOLINT(*-avoid-c-arrays)
         // T[N], T(&)[N], T(&&)[N] have same behaviour.
         // Hence remove reference.
         filloss<typename types::remove_reference<decltype(in)>::type>(stream, in);
@@ -1098,7 +1109,7 @@ DOCTEST_INTERFACE String toString(long long unsigned in);
 
 template <typename T, typename detail::types::enable_if<detail::types::is_enum<T>::value, bool>::type = true>
 String toString(const DOCTEST_REF_WRAP(T) value) {
-    typedef typename detail::types::underlying_type<T>::type UT;
+    using UT = typename detail::types::underlying_type<T>::type;
     return (DOCTEST_STRINGIFY(static_cast<UT>(value)));
 }
 
@@ -1116,6 +1127,7 @@ namespace detail {
     };
 
 DOCTEST_MSVC_SUPPRESS_WARNING_WITH_PUSH(4866)
+// NOLINTBEGIN(*-avoid-c-arrays)
     template <typename T, size_t N>
     struct filldata<T[N]> {
         static void fill(std::ostream* stream, const T(&in)[N]) {
@@ -1127,15 +1139,18 @@ DOCTEST_MSVC_SUPPRESS_WARNING_WITH_PUSH(4866)
             *stream << "]";
         }
     };
+// NOLINTEND(*-avoid-c-arrays)
 DOCTEST_MSVC_SUPPRESS_WARNING_POP
 
     // Specialized since we don't want the terminating null byte!
+// NOLINTBEGIN(*-avoid-c-arrays)
     template <size_t N>
     struct filldata<const char[N]> {
         static void fill(std::ostream* stream, const char (&in)[N]) {
             *stream << String(in, in[N - 1] ? N : N - 1);
-        }
+        } // NOLINT(clang-analyzer-cplusplus.NewDeleteLeaks)
     };
+// NOLINTEND(*-avoid-c-arrays)
 
     template <>
     struct filldata<const void*> {
@@ -1161,7 +1176,7 @@ struct DOCTEST_INTERFACE Approx
     explicit Approx(const T& value,
                     typename detail::types::enable_if<std::is_constructible<double, T>::value>::type* =
                             static_cast<T*>(nullptr)) {
-        *this = Approx(static_cast<double>(value));
+        *this = static_cast<double>(value);
     }
 #endif // DOCTEST_CONFIG_INCLUDE_TYPE_TRAITS
 
@@ -1205,18 +1220,18 @@ struct DOCTEST_INTERFACE Approx
 #define DOCTEST_APPROX_PREFIX \
     template <typename T> friend typename std::enable_if<std::is_constructible<double, T>::value, bool>::type
 
-    DOCTEST_APPROX_PREFIX operator==(const T& lhs, const Approx& rhs) { return operator==(double(lhs), rhs); }
+    DOCTEST_APPROX_PREFIX operator==(const T& lhs, const Approx& rhs) { return operator==(static_cast<double>(lhs), rhs); }
     DOCTEST_APPROX_PREFIX operator==(const Approx& lhs, const T& rhs) { return operator==(rhs, lhs); }
     DOCTEST_APPROX_PREFIX operator!=(const T& lhs, const Approx& rhs) { return !operator==(lhs, rhs); }
     DOCTEST_APPROX_PREFIX operator!=(const Approx& lhs, const T& rhs) { return !operator==(rhs, lhs); }
-    DOCTEST_APPROX_PREFIX operator<=(const T& lhs, const Approx& rhs) { return double(lhs) < rhs.m_value || lhs == rhs; }
-    DOCTEST_APPROX_PREFIX operator<=(const Approx& lhs, const T& rhs) { return lhs.m_value < double(rhs) || lhs == rhs; }
-    DOCTEST_APPROX_PREFIX operator>=(const T& lhs, const Approx& rhs) { return double(lhs) > rhs.m_value || lhs == rhs; }
-    DOCTEST_APPROX_PREFIX operator>=(const Approx& lhs, const T& rhs) { return lhs.m_value > double(rhs) || lhs == rhs; }
-    DOCTEST_APPROX_PREFIX operator< (const T& lhs, const Approx& rhs) { return double(lhs) < rhs.m_value && lhs != rhs; }
-    DOCTEST_APPROX_PREFIX operator< (const Approx& lhs, const T& rhs) { return lhs.m_value < double(rhs) && lhs != rhs; }
-    DOCTEST_APPROX_PREFIX operator> (const T& lhs, const Approx& rhs) { return double(lhs) > rhs.m_value && lhs != rhs; }
-    DOCTEST_APPROX_PREFIX operator> (const Approx& lhs, const T& rhs) { return lhs.m_value > double(rhs) && lhs != rhs; }
+    DOCTEST_APPROX_PREFIX operator<=(const T& lhs, const Approx& rhs) { return static_cast<double>(lhs) < rhs.m_value || lhs == rhs; }
+    DOCTEST_APPROX_PREFIX operator<=(const Approx& lhs, const T& rhs) { return lhs.m_value < static_cast<double>(rhs) || lhs == rhs; }
+    DOCTEST_APPROX_PREFIX operator>=(const T& lhs, const Approx& rhs) { return static_cast<double>(lhs) > rhs.m_value || lhs == rhs; }
+    DOCTEST_APPROX_PREFIX operator>=(const Approx& lhs, const T& rhs) { return lhs.m_value > static_cast<double>(rhs) || lhs == rhs; }
+    DOCTEST_APPROX_PREFIX operator< (const T& lhs, const Approx& rhs) { return static_cast<double>(lhs) < rhs.m_value && lhs != rhs; }
+    DOCTEST_APPROX_PREFIX operator< (const Approx& lhs, const T& rhs) { return lhs.m_value < static_cast<double>(rhs) && lhs != rhs; }
+    DOCTEST_APPROX_PREFIX operator> (const T& lhs, const Approx& rhs) { return static_cast<double>(lhs) > rhs.m_value && lhs != rhs; }
+    DOCTEST_APPROX_PREFIX operator> (const Approx& lhs, const T& rhs) { return lhs.m_value > static_cast<double>(rhs) && lhs != rhs; }
 #undef DOCTEST_APPROX_PREFIX
 #endif // DOCTEST_CONFIG_INCLUDE_TYPE_TRAITS
 
@@ -1253,13 +1268,13 @@ DOCTEST_INTERFACE String toString(IsNaN<double long> in);
 namespace detail {
     // clang-format off
 #ifdef DOCTEST_CONFIG_TREAT_CHAR_STAR_AS_STRING
-    template<class T>               struct decay_array       { typedef T type; };
-    template<class T, unsigned N>   struct decay_array<T[N]> { typedef T* type; };
-    template<class T>               struct decay_array<T[]>  { typedef T* type; };
+    template<class T>               struct decay_array       { using type = T; };
+    template<class T, unsigned N>   struct decay_array<T[N]> { using type = T*; };
+    template<class T>               struct decay_array<T[]>  { using type = T*; };
 
-    template<class T>   struct not_char_pointer              { enum { value = 1 }; };
-    template<>          struct not_char_pointer<char*>       { enum { value = 0 }; };
-    template<>          struct not_char_pointer<const char*> { enum { value = 0 }; };
+    template<class T>   struct not_char_pointer              { static DOCTEST_CONSTEXPR value = 1; };
+    template<>          struct not_char_pointer<char*>       { static DOCTEST_CONSTEXPR value = 0; };
+    template<>          struct not_char_pointer<const char*> { static DOCTEST_CONSTEXPR value = 0; };
 
     template<class T> struct can_use_op : public not_char_pointer<typename decay_array<T>::type> {};
 #endif // DOCTEST_CONFIG_TREAT_CHAR_STAR_AS_STRING
@@ -1282,6 +1297,10 @@ namespace detail {
         bool             m_entered = false;
 
         Subcase(const String& name, const char* file, int line);
+        Subcase(const Subcase&) = delete;
+        Subcase(Subcase&&) = delete;
+        Subcase& operator=(const Subcase&) = delete;
+        Subcase& operator=(Subcase&&) = delete;
         ~Subcase();
 
         operator bool() const;
@@ -1293,7 +1312,6 @@ namespace detail {
     template <typename L, typename R>
     String stringifyBinaryExpr(const DOCTEST_REF_WRAP(L) lhs, const char* op,
                                const DOCTEST_REF_WRAP(R) rhs) {
-        // NOLINTNEXTLINE(clang-analyzer-cplusplus.NewDeleteLeaks)
         return (DOCTEST_STRINGIFY(lhs)) + op + (DOCTEST_STRINGIFY(rhs));
     }
 
@@ -1329,12 +1347,12 @@ DOCTEST_CLANG_SUPPRESS_WARNING_WITH_PUSH("-Wunused-comparison")
         return *this;                                                                              \
     }
 
-    struct DOCTEST_INTERFACE Result
+    struct DOCTEST_INTERFACE Result // NOLINT(*-member-init)
     {
         bool   m_passed;
         String m_decomp;
 
-        Result() = default;
+        Result() = default; // TODO: Why do we need this? (To remove NOLINT)
         Result(bool passed, const String& decomposition = String());
 
         // forbidding some expressions based on this table: https://en.cppreference.com/w/cpp/language/operator_precedence
@@ -1392,7 +1410,6 @@ DOCTEST_CLANG_SUPPRESS_WARNING_WITH_PUSH("-Wunused-comparison")
 #define DOCTEST_COMPARISON_RETURN_TYPE bool
 #else // DOCTEST_CONFIG_TREAT_CHAR_STAR_AS_STRING
 #define DOCTEST_COMPARISON_RETURN_TYPE typename types::enable_if<can_use_op<L>::value || can_use_op<R>::value, bool>::type
-    // NOLINTNEXTLINE(clang-analyzer-cplusplus.NewDeleteLeaks)
     inline bool eq(const char* lhs, const char* rhs) { return String(lhs) == String(rhs); }
     inline bool ne(const char* lhs, const char* rhs) { return String(lhs) != String(rhs); }
     inline bool lt(const char* lhs, const char* rhs) { return String(lhs) <  String(rhs); }
@@ -1448,12 +1465,14 @@ DOCTEST_CLANG_SUPPRESS_WARNING_WITH_PUSH("-Wunused-comparison")
 DOCTEST_MSVC_SUPPRESS_WARNING_WITH_PUSH(4800) // 'int': forcing value to bool
             bool res = static_cast<bool>(lhs);
 DOCTEST_MSVC_SUPPRESS_WARNING_POP
-            if(m_at & assertType::is_false) //!OCLINT bitwise operator in conditional
+            if(m_at & assertType::is_false) { //!OCLINT bitwise operator in conditional
                 res = !res;
+            }
 
-            if(!res || getContextOptions()->success)
-                return Result(res, (DOCTEST_STRINGIFY(lhs)));
-            return Result(res);
+            if(!res || getContextOptions()->success) {
+                return { res, (DOCTEST_STRINGIFY(lhs)) };
+            }
+            return { res };
         }
 
         /* This is required for user-defined conversions from Expression_lhs to L */
@@ -1545,7 +1564,7 @@ DOCTEST_CLANG_SUPPRESS_WARNING_POP
         }
     };
 
-    typedef void (*funcType)();
+    using funcType = void (*)();
 
     struct DOCTEST_INTERFACE TestCase : public TestCaseData
     {
@@ -1559,10 +1578,13 @@ DOCTEST_CLANG_SUPPRESS_WARNING_POP
                  const String& type = String(), int template_id = -1);
 
         TestCase(const TestCase& other);
+        TestCase(TestCase&&) = delete;
 
         DOCTEST_MSVC_SUPPRESS_WARNING_WITH_PUSH(26434) // hides a non-virtual function
         TestCase& operator=(const TestCase& other);
         DOCTEST_MSVC_SUPPRESS_WARNING_POP
+
+        TestCase& operator=(TestCase&&) = delete;
 
         TestCase& operator*(const char* in);
 
@@ -1573,6 +1595,8 @@ DOCTEST_CLANG_SUPPRESS_WARNING_POP
         }
 
         bool operator<(const TestCase& other) const;
+
+        ~TestCase() = default;
     };
 
     // forward declarations of functions used by the macros
@@ -1623,8 +1647,9 @@ DOCTEST_CLANG_SUPPRESS_WARNING_POP
         DOCTEST_NOINLINE bool binary_assert(const DOCTEST_REF_WRAP(L) lhs,
                                             const DOCTEST_REF_WRAP(R) rhs) {
             m_failed = !RelationalComparator<comparison, L, R>()(lhs, rhs);
-            if(m_failed || getContextOptions()->success)
+            if (m_failed || getContextOptions()->success) {
                 m_decomp = stringifyBinaryExpr(lhs, ", ", rhs);
+            }
             return !m_failed;
         }
 
@@ -1632,11 +1657,13 @@ DOCTEST_CLANG_SUPPRESS_WARNING_POP
         DOCTEST_NOINLINE bool unary_assert(const DOCTEST_REF_WRAP(L) val) {
             m_failed = !val;
 
-            if(m_at & assertType::is_false) //!OCLINT bitwise operator in conditional
+            if (m_at & assertType::is_false) { //!OCLINT bitwise operator in conditional
                 m_failed = !m_failed;
+            }
 
-            if(m_failed || getContextOptions()->success)
+            if (m_failed || getContextOptions()->success) {
                 m_decomp = (DOCTEST_STRINGIFY(val));
+            }
 
             return !m_failed;
         }
@@ -1659,7 +1686,7 @@ DOCTEST_CLANG_SUPPRESS_WARNING_POP
     DOCTEST_INTERFACE void failed_out_of_a_testing_context(const AssertData& ad);
 
     DOCTEST_INTERFACE bool decomp_assert(assertType::Enum at, const char* file, int line,
-                                         const char* expr, Result result);
+                                         const char* expr, const Result& result);
 
 #define DOCTEST_ASSERT_OUT_OF_TESTS(decomp)                                                        \
     do {                                                                                           \
@@ -1722,8 +1749,7 @@ DOCTEST_CLANG_SUPPRESS_WARNING_POP
 
     struct DOCTEST_INTERFACE IExceptionTranslator
     {
-        IExceptionTranslator();
-        virtual ~IExceptionTranslator();
+        DOCTEST_DECLARE_INTERFACE(IExceptionTranslator)
         virtual bool translate(String&) const = 0;
     };
 
@@ -1739,7 +1765,7 @@ DOCTEST_CLANG_SUPPRESS_WARNING_POP
             try {
                 throw; // lgtm [cpp/rethrow-no-exception]
                 // cppcheck-suppress catchExceptionByValue
-            } catch(T ex) {                    // NOLINT
+            } catch(const T& ex) {
                 res = m_translateFunction(ex); //!OCLINT parameter reassignment
                 return true;
             } catch(...) {}         //!OCLINT -  empty catch statement
@@ -1756,10 +1782,17 @@ DOCTEST_CLANG_SUPPRESS_WARNING_POP
 
     // ContextScope base class used to allow implementing methods of ContextScope
     // that don't depend on the template parameter in doctest.cpp.
-    class DOCTEST_INTERFACE ContextScopeBase : public IContextScope {
+    struct DOCTEST_INTERFACE ContextScopeBase : public IContextScope {
+        ContextScopeBase(const ContextScopeBase&) = delete;
+
+        ContextScopeBase& operator=(const ContextScopeBase&) = delete;
+        ContextScopeBase& operator=(ContextScopeBase&&) = delete;
+
+        ~ContextScopeBase() override = default;
+
     protected:
         ContextScopeBase();
-        ContextScopeBase(ContextScopeBase&& other);
+        ContextScopeBase(ContextScopeBase&& other) noexcept;
 
         void destroy();
         bool need_to_destroy{true};
@@ -1767,12 +1800,17 @@ DOCTEST_CLANG_SUPPRESS_WARNING_POP
 
     template <typename L> class ContextScope : public ContextScopeBase
     {
-        const L lambda_;
+        L lambda_;
 
     public:
         explicit ContextScope(const L &lambda) : lambda_(lambda) {}
+        explicit ContextScope(L&& lambda) : lambda_(static_cast<L&&>(lambda)) { }
 
-        ContextScope(ContextScope &&other) : ContextScopeBase(static_cast<ContextScopeBase&&>(other)), lambda_(other.lambda_) {}
+        ContextScope(const ContextScope&) = delete;
+        ContextScope(ContextScope&&) noexcept = default;
+
+        ContextScope& operator=(const ContextScope&) = delete;
+        ContextScope& operator=(ContextScope&&) = delete;
 
         void stringify(std::ostream* s) const override { lambda_(s); }
 
@@ -1789,7 +1827,13 @@ DOCTEST_CLANG_SUPPRESS_WARNING_POP
         bool          logged = false;
 
         MessageBuilder(const char* file, int line, assertType::Enum severity);
-        MessageBuilder() = delete;
+
+        MessageBuilder(const MessageBuilder&) = delete;
+        MessageBuilder(MessageBuilder&&) = delete;
+
+        MessageBuilder& operator=(const MessageBuilder&) = delete;
+        MessageBuilder& operator=(MessageBuilder&&) = delete;
+
         ~MessageBuilder();
 
         // the preferred way of chaining parameters for stringification
@@ -1868,7 +1912,7 @@ int registerExceptionTranslator(String (*)(T)) {
 #endif // DOCTEST_CONFIG_DISABLE
 
 namespace detail {
-    typedef void (*assert_handler)(const AssertData&);
+    using assert_handler = void (*)(const AssertData&);
     struct ContextState;
 } // namespace detail
 
@@ -1881,7 +1925,13 @@ class DOCTEST_INTERFACE Context
 public:
     explicit Context(int argc = 0, const char* const* argv = nullptr);
 
-    ~Context();
+    Context(const Context&) = delete;
+    Context(Context&&) = delete;
+
+    Context& operator=(const Context&) = delete;
+    Context& operator=(Context&&) = delete;
+
+    ~Context(); // NOLINT(performance-trivially-destructible)
 
     void applyCommandLine(int argc, const char* const* argv);
 
@@ -1989,8 +2039,7 @@ struct DOCTEST_INTERFACE IReporter
     // or isn't in the execution range (between first and last) (safe to cache a pointer to the input)
     virtual void test_case_skipped(const TestCaseData&) = 0;
 
-    // doctest will not be managing the lifetimes of reporters given to it but this would still be nice to have
-    virtual ~IReporter();
+    DOCTEST_DECLARE_INTERFACE(IReporter)
 
     // can obtain all currently active contexts and stringify them if one wishes to do so
     static int                         get_num_active_contexts();
@@ -2002,7 +2051,7 @@ struct DOCTEST_INTERFACE IReporter
 };
 
 namespace detail {
-    typedef IReporter* (*reporterCreatorFunc)(const ContextOptions&);
+    using reporterCreatorFunc =  IReporter* (*)(const ContextOptions&);
 
     DOCTEST_INTERFACE void registerReporterImpl(const char* name, int prio, reporterCreatorFunc c, bool isReporter);
 
@@ -2064,7 +2113,7 @@ int registerReporter(const char* name, int priority, bool isReporter) {
 
 // registers the test by initializing a dummy var with a function
 #define DOCTEST_REGISTER_FUNCTION(global_prefix, f, decorators)                                    \
-    global_prefix DOCTEST_GLOBAL_NO_WARNINGS(DOCTEST_ANONYMOUS(DOCTEST_ANON_VAR_),                 \
+    global_prefix DOCTEST_GLOBAL_NO_WARNINGS(DOCTEST_ANONYMOUS(DOCTEST_ANON_VAR_), /* NOLINT */    \
             doctest::detail::regTest(                                                              \
                     doctest::detail::TestCase(                                                     \
                             f, __FILE__, __LINE__,                                                 \
@@ -2072,18 +2121,18 @@ int registerReporter(const char* name, int priority, bool isReporter) {
                     decorators))
 
 #define DOCTEST_IMPLEMENT_FIXTURE(der, base, func, decorators)                                     \
-    namespace {                                                                                    \
+    namespace { /* NOLINT */                                                                       \
         struct der : public base                                                                   \
         {                                                                                          \
             void f();                                                                              \
         };                                                                                         \
-        static void func() {                                                                       \
+        static inline DOCTEST_NOINLINE void func() {                                               \
             der v;                                                                                 \
             v.f();                                                                                 \
         }                                                                                          \
         DOCTEST_REGISTER_FUNCTION(DOCTEST_EMPTY, func, decorators)                                 \
     }                                                                                              \
-    inline DOCTEST_NOINLINE void der::f()
+    inline DOCTEST_NOINLINE void der::f() // NOLINT(misc-definitions-in-headers)
 
 #define DOCTEST_CREATE_AND_REGISTER_FUNCTION(f, decorators)                                        \
     static void f();                                                                               \
@@ -2092,7 +2141,7 @@ int registerReporter(const char* name, int priority, bool isReporter) {
 
 #define DOCTEST_CREATE_AND_REGISTER_FUNCTION_IN_CLASS(f, proxy, decorators)                        \
     static doctest::detail::funcType proxy() { return f; }                                         \
-    DOCTEST_REGISTER_FUNCTION(inline, proxy(), decorators)                                   \
+    DOCTEST_REGISTER_FUNCTION(inline, proxy(), decorators)                                         \
     static void f()
 
 // for registering tests
@@ -2130,7 +2179,7 @@ int registerReporter(const char* name, int priority, bool isReporter) {
 #define DOCTEST_TEST_CASE_TEMPLATE_DEFINE_IMPL(dec, T, iter, func)                                 \
     template <typename T>                                                                          \
     static void func();                                                                            \
-    namespace {                                                                                    \
+    namespace { /* NOLINT */                                                                       \
         template <typename Tuple>                                                                  \
         struct iter;                                                                               \
         template <typename Type, typename... Rest>                                                 \
@@ -2159,7 +2208,7 @@ int registerReporter(const char* name, int priority, bool isReporter) {
                                            DOCTEST_ANONYMOUS(DOCTEST_ANON_TMP_))
 
 #define DOCTEST_TEST_CASE_TEMPLATE_INSTANTIATE_IMPL(id, anon, ...)                                 \
-    DOCTEST_GLOBAL_NO_WARNINGS(DOCTEST_CAT(anon, DUMMY),                                           \
+    DOCTEST_GLOBAL_NO_WARNINGS(DOCTEST_CAT(anon, DUMMY), /* NOLINT(cert-err58-cpp, fuchsia-statically-constructed-objects) */ \
         doctest::detail::instantiationHelper(                                                      \
             DOCTEST_CAT(id, ITERATOR)<__VA_ARGS__>(__FILE__, __LINE__, 0)))
 
@@ -2188,7 +2237,7 @@ int registerReporter(const char* name, int priority, bool isReporter) {
 // for grouping tests in test suites by using code blocks
 #define DOCTEST_TEST_SUITE_IMPL(decorators, ns_name)                                               \
     namespace ns_name { namespace doctest_detail_test_suite_ns {                                   \
-            static DOCTEST_NOINLINE doctest::detail::TestSuite& getCurrentTestSuite() {            \
+            static DOCTEST_NOINLINE doctest::detail::TestSuite& getCurrentTestSuite() noexcept {   \
                 DOCTEST_MSVC_SUPPRESS_WARNING_WITH_PUSH(4640)                                      \
                 DOCTEST_CLANG_SUPPRESS_WARNING_WITH_PUSH("-Wexit-time-destructors")                \
                 DOCTEST_GCC_SUPPRESS_WARNING_WITH_PUSH("-Wmissing-field-initializers")             \
@@ -2212,20 +2261,20 @@ int registerReporter(const char* name, int priority, bool isReporter) {
 
 // for starting a testsuite block
 #define DOCTEST_TEST_SUITE_BEGIN(decorators)                                                       \
-    DOCTEST_GLOBAL_NO_WARNINGS(DOCTEST_ANONYMOUS(DOCTEST_ANON_VAR_),                               \
+    DOCTEST_GLOBAL_NO_WARNINGS(DOCTEST_ANONYMOUS(DOCTEST_ANON_VAR_), /* NOLINT(cert-err58-cpp) */  \
             doctest::detail::setTestSuite(doctest::detail::TestSuite() * decorators))              \
     static_assert(true, "")
 
 // for ending a testsuite block
 #define DOCTEST_TEST_SUITE_END                                                                     \
-    DOCTEST_GLOBAL_NO_WARNINGS(DOCTEST_ANONYMOUS(DOCTEST_ANON_VAR_),                               \
+    DOCTEST_GLOBAL_NO_WARNINGS(DOCTEST_ANONYMOUS(DOCTEST_ANON_VAR_), /* NOLINT(cert-err58-cpp) */  \
             doctest::detail::setTestSuite(doctest::detail::TestSuite() * ""))                      \
-    typedef int DOCTEST_ANONYMOUS(DOCTEST_ANON_FOR_SEMICOLON_)
+    using DOCTEST_ANONYMOUS(DOCTEST_ANON_FOR_SEMICOLON_) = int
 
 // for registering exception translators
 #define DOCTEST_REGISTER_EXCEPTION_TRANSLATOR_IMPL(translatorName, signature)                      \
     inline doctest::String translatorName(signature);                                              \
-    DOCTEST_GLOBAL_NO_WARNINGS(DOCTEST_ANONYMOUS(DOCTEST_ANON_TRANSLATOR_),                        \
+    DOCTEST_GLOBAL_NO_WARNINGS(DOCTEST_ANONYMOUS(DOCTEST_ANON_TRANSLATOR_), /* NOLINT(cert-err58-cpp) */ \
             doctest::registerExceptionTranslator(translatorName))                                  \
     doctest::String translatorName(signature)
 
@@ -2235,13 +2284,13 @@ int registerReporter(const char* name, int priority, bool isReporter) {
 
 // for registering reporters
 #define DOCTEST_REGISTER_REPORTER(name, priority, reporter)                                        \
-    DOCTEST_GLOBAL_NO_WARNINGS(DOCTEST_ANONYMOUS(DOCTEST_ANON_REPORTER_),                          \
+    DOCTEST_GLOBAL_NO_WARNINGS(DOCTEST_ANONYMOUS(DOCTEST_ANON_REPORTER_), /* NOLINT(cert-err58-cpp) */ \
             doctest::registerReporter<reporter>(name, priority, true))                             \
     static_assert(true, "")
 
 // for registering listeners
 #define DOCTEST_REGISTER_LISTENER(name, priority, reporter)                                        \
-    DOCTEST_GLOBAL_NO_WARNINGS(DOCTEST_ANONYMOUS(DOCTEST_ANON_REPORTER_),                          \
+    DOCTEST_GLOBAL_NO_WARNINGS(DOCTEST_ANONYMOUS(DOCTEST_ANON_REPORTER_), /* NOLINT(cert-err58-cpp) */ \
             doctest::registerReporter<reporter>(name, priority, false))                            \
     static_assert(true, "")
 
@@ -2288,18 +2337,19 @@ int registerReporter(const char* name, int priority, bool isReporter) {
 
 #define DOCTEST_ASSERT_IMPLEMENT_2(assert_type, ...)                                               \
     DOCTEST_CLANG_SUPPRESS_WARNING_WITH_PUSH("-Woverloaded-shift-op-parentheses")                  \
+    /* NOLINTNEXTLINE(clang-analyzer-cplusplus.NewDeleteLeaks) */                                  \
     doctest::detail::ResultBuilder DOCTEST_RB(doctest::assertType::assert_type, __FILE__,          \
                                                __LINE__, #__VA_ARGS__);                            \
     DOCTEST_WRAP_IN_TRY(DOCTEST_RB.setResult(                                                      \
             doctest::detail::ExpressionDecomposer(doctest::assertType::assert_type)                \
-            << __VA_ARGS__))                                                                       \
+            << __VA_ARGS__)) /* NOLINTNEXTLINE(clang-analyzer-cplusplus.NewDeleteLeaks) */         \
     DOCTEST_ASSERT_LOG_REACT_RETURN(DOCTEST_RB)                                                    \
     DOCTEST_CLANG_SUPPRESS_WARNING_POP
 
 #define DOCTEST_ASSERT_IMPLEMENT_1(assert_type, ...)                                               \
     DOCTEST_FUNC_SCOPE_BEGIN {                                                                     \
         DOCTEST_ASSERT_IMPLEMENT_2(assert_type, __VA_ARGS__);                                      \
-    } DOCTEST_FUNC_SCOPE_END
+    } DOCTEST_FUNC_SCOPE_END // NOLINT(clang-analyzer-cplusplus.NewDeleteLeaks)
 
 #define DOCTEST_BINARY_ASSERT(assert_type, comp, ...)                                              \
     DOCTEST_FUNC_SCOPE_BEGIN {                                                                     \
@@ -2398,7 +2448,7 @@ int registerReporter(const char* name, int priority, bool isReporter) {
                 DOCTEST_RB.m_threw_as = true;                                                      \
             } catch(...) { DOCTEST_RB.translateException(); }                                      \
             DOCTEST_ASSERT_LOG_REACT_RETURN(DOCTEST_RB);                                           \
-        } else {                                                                                   \
+        } else { /* NOLINT(*-else-after-return) */                                                 \
             DOCTEST_FUNC_SCOPE_RET(false);                                                         \
         }                                                                                          \
     } DOCTEST_FUNC_SCOPE_END
@@ -2412,7 +2462,7 @@ int registerReporter(const char* name, int priority, bool isReporter) {
                 DOCTEST_CAST_TO_VOID(expr)                                                         \
             } catch(...) { DOCTEST_RB.translateException(); }                                      \
             DOCTEST_ASSERT_LOG_REACT_RETURN(DOCTEST_RB);                                           \
-        } else {                                                                                   \
+        } else { /* NOLINT(*-else-after-return) */                                                 \
            DOCTEST_FUNC_SCOPE_RET(false);                                                          \
         }                                                                                          \
     } DOCTEST_FUNC_SCOPE_END
@@ -2474,7 +2524,7 @@ int registerReporter(const char* name, int priority, bool isReporter) {
 #else // DOCTEST_CONFIG_DISABLE
 
 #define DOCTEST_IMPLEMENT_FIXTURE(der, base, func, name)                                           \
-    namespace {                                                                                    \
+    namespace /* NOLINT */ {                                                                       \
         template <typename DOCTEST_UNUSED_TEMPLATE_TYPE>                                           \
         struct der : public base                                                                   \
         { void f(); };                                                                             \
@@ -2519,13 +2569,13 @@ int registerReporter(const char* name, int priority, bool isReporter) {
 #define DOCTEST_SUBCASE(name)
 
 // for a testsuite block
-#define DOCTEST_TEST_SUITE(name) namespace
+#define DOCTEST_TEST_SUITE(name) namespace // NOLINT
 
 // for starting a testsuite block
 #define DOCTEST_TEST_SUITE_BEGIN(name) static_assert(true, "")
 
 // for ending a testsuite block
-#define DOCTEST_TEST_SUITE_END typedef int DOCTEST_ANONYMOUS(DOCTEST_ANON_FOR_SEMICOLON_)
+#define DOCTEST_TEST_SUITE_END using DOCTEST_ANONYMOUS(DOCTEST_ANON_FOR_SEMICOLON_) = int
 
 #define DOCTEST_REGISTER_EXCEPTION_TRANSLATOR(signature)                                           \
     template <typename DOCTEST_UNUSED_TEMPLATE_TYPE>                                               \

@@ -135,7 +135,7 @@ TEST_CASE("fails from an exception but gets re-entered to traverse all subcases"
     }
 }
 
-static void checks(int data)
+static void checks(int data) // NOLINT(misc-unused-parameters)
 {
     DOCTEST_SUBCASE("check data 1") { REQUIRE(data % 2 == 0); }
     DOCTEST_SUBCASE("check data 2") { REQUIRE(data % 4 == 0); }

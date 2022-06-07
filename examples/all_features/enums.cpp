@@ -67,7 +67,7 @@ enum class EnumClassU8 : uint8_t
 template<class E, class T = typename std::underlying_type<E>::type>
 T printable(E val)
 {
-    return T(val);
+    return static_cast<T>(val);
 }
 
 }
