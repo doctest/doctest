@@ -11,13 +11,21 @@
           {?}
         </Expanded>
       </Expression>
-      <OverallResultsAsserts successes="1" failures="1" test_case_success="false"/>
+      <Expression success="false" type="CHECK" filename="decomposition.cpp" line="0">
+        <Original>
+          a
+        </Original>
+        <Expanded>
+          {?}
+        </Expanded>
+      </Expression>
+      <OverallResultsAsserts successes="1" failures="2" test_case_success="false"/>
     </TestCase>
     <TestCase name="Impl cast from non-const value" filename="decomposition.cpp" line="0">
       <OverallResultsAsserts successes="1" failures="0" test_case_success="true"/>
     </TestCase>
   </TestSuite>
-  <OverallResultsAsserts successes="2" failures="1"/>
+  <OverallResultsAsserts successes="2" failures="2"/>
   <OverallResultsTestCases successes="1" failures="1"/>
 </doctest>
 Program code.
