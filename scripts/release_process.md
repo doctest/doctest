@@ -3,9 +3,7 @@
 - regenerate test output (actually only the `version` test's output changes and that was done to maximize code coverage - might remove it to simplify the release process)
     - first run cmake with -DDOCTEST_TEST_MODE=COLLECT
     - then run ctest & git add the changed and/or new .txt files
-- run update_changelog.py to update the changelog based on the closed issues & PRs (uses github changelog generator)
-    - might need credentials/access tokens
-    - might need a tmp folder in the root drive (C or D) if on Windows
+- run changelog generator (WIP)
 - commit in dev
 - rebase dev onto master (linear history instead of merge commits)
 - push all branches (git push --all)
