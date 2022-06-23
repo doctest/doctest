@@ -379,6 +379,14 @@ DOCTEST_MSVC_SUPPRESS_WARNING(4623) // default constructor was implicitly define
 #endif // DOCTEST_MSVC
 #endif // DOCTEST_CONSTEXPR
 
+#ifndef DOCTEST_NO_SANITIZE_INTEGER
+#if DOCTEST_CLANG
+#define DOCTEST_NO_SANITIZE_INTEGER __attribute__((no_sanitize("integer")))
+#else
+#define DOCTEST_NO_SANITIZE_INTEGER
+#endif
+#endif // DOCTEST_NO_SANITIZE_INTEGER
+
 // =================================================================================================
 // == FEATURE DETECTION END ========================================================================
 // =================================================================================================
@@ -4118,12 +4126,12 @@ namespace {
         return false;
     }
 
-    unsigned long long hash(unsigned long long a, unsigned long long b) {
+    DOCTEST_NO_SANITIZE_INTEGER unsigned long long hash(unsigned long long a, unsigned long long b) {
         return (a << 5) + b;
     }
 
     // C string hash function (djb2) - taken from http://www.cse.yorku.ca/~oz/hash.html
-    unsigned long long hash(const char* str) {
+    DOCTEST_NO_SANITIZE_INTEGER unsigned long long hash(const char* str) {
         unsigned long long hash = 5381;
         char c;
         while ((c = *str++))
