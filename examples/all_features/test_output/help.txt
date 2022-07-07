@@ -27,7 +27,7 @@
  -sc,  --subcase=<filters>             filters     subcases by their name
  -sce, --subcase-exclude=<filters>     filters OUT subcases by their name
  -r,   --reporters=<filters>           reporters to use (console is default)
- -o,   --out=<string>                  output filename
+ -o,   --out=<filter>[<string>]...     output filenames for reporters
  -ob,  --order-by=<string>             how the tests should be ordered
                                        <string> - [file/suite/name/rand/none]
  -rs,  --rand-seed=<int>               seed for random ordering

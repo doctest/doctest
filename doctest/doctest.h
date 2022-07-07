@@ -869,13 +869,11 @@ namespace detail {
 
 struct ContextOptions //!OCLINT too many fields
 {
-    std::ostream* cout = nullptr; // stdout stream
     String        binary_name;    // the test binary name
 
     const detail::TestCase* currentTest = nullptr;
 
     // == parameters from the command line
-    String   out;       // output filename
     String   order_by;  // how tests should be ordered
     unsigned rand_seed; // the seed for rand ordering
 
@@ -2054,13 +2052,13 @@ struct DOCTEST_INTERFACE IReporter
 };
 
 namespace detail {
-    using reporterCreatorFunc =  IReporter* (*)(const ContextOptions&);
+    using reporterCreatorFunc =  IReporter* (*)(const ContextOptions&, std::ostream*);
 
     DOCTEST_INTERFACE void registerReporterImpl(const char* name, int prio, reporterCreatorFunc c, bool isReporter);
 
     template <typename Reporter>
-    IReporter* reporterCreator(const ContextOptions& o) {
-        return new Reporter(o);
+    IReporter* reporterCreator(const ContextOptions& o, std::ostream* ostr) {
+        return new Reporter(o, ostr);
     }
 } // namespace detail
 
@@ -3462,6 +3460,7 @@ using ticks_t = timer_large_integer::type;
         MultiLaneAtomic<int> numAssertsFailedCurrentTest_atomic;
 
         std::vector<std::vector<String>> filters = decltype(filters)(9); // 9 different filters
+        std::map<String, String> out;                                    // map of filters to output filenames
 
         std::vector<IReporter*> reporters_currently_used;
 
@@ -4103,6 +4102,16 @@ namespace {
             if (wildcmp(name, curr.c_str(), caseSensitive))
                 return true;
         return false;
+    }
+
+    // checks if the name matches any of the filters, and returns the matching output stream
+    std::fstream* matchesAny(const char* name,
+        std::map<String, std::fstream>& output_filters,
+        bool caseSensitive) {
+        for (auto& curr : output_filters)
+            if (wildcmp(name, curr.first.c_str(), caseSensitive))
+                return &curr.second;
+        return nullptr;
     }
 
     unsigned long long hash(unsigned long long a, unsigned long long b) {
@@ -5363,9 +5372,10 @@ namespace {
         const ContextOptions& opt;
         const TestCaseData*   tc = nullptr;
 
-        XmlReporter(const ContextOptions& co)
-                : xml(*co.cout)
+        XmlReporter(const ContextOptions& co, std::ostream* ostr = nullptr)
+                : xml(ostr ? *ostr : std::cout)
                 , opt(co) {}
+
 
         void log_contexts() {
             int num_contexts = get_num_active_contexts();
@@ -5737,8 +5747,8 @@ namespace {
         const ContextOptions& opt;
         const TestCaseData*   tc = nullptr;
 
-        JUnitReporter(const ContextOptions& co)
-                : xml(*co.cout)
+        JUnitReporter(const ContextOptions& co, std::ostream* ostr = nullptr)
+                : xml(ostr ? *ostr : std::cout)
                 , opt(co) {}
 
         unsigned line(unsigned l) const { return opt.no_line_numbers ? 0 : l; }
@@ -5894,12 +5904,8 @@ namespace {
         const ContextOptions& opt;
         const TestCaseData*   tc;
 
-        ConsoleReporter(const ContextOptions& co)
-                : s(*co.cout)
-                , opt(co) {}
-
-        ConsoleReporter(const ContextOptions& co, std::ostream& ostr)
-                : s(ostr)
+        ConsoleReporter(const ContextOptions& co, std::ostream* ostr = nullptr)
+                : s(ostr ? *ostr : std::cout)
                 , opt(co) {}
 
         // =========================================================================================
@@ -6055,8 +6061,8 @@ namespace {
               << Whitespace(sizePrefixDisplay*1) << "filters OUT subcases by their name\n";
             s << " -" DOCTEST_OPTIONS_PREFIX_DISPLAY "r,   --" DOCTEST_OPTIONS_PREFIX_DISPLAY "reporters=<filters>           "
               << Whitespace(sizePrefixDisplay*1) << "reporters to use (console is default)\n";
-            s << " -" DOCTEST_OPTIONS_PREFIX_DISPLAY "o,   --" DOCTEST_OPTIONS_PREFIX_DISPLAY "out=<string>                  "
-              << Whitespace(sizePrefixDisplay*1) << "output filename\n";
+            s << " -" DOCTEST_OPTIONS_PREFIX_DISPLAY "o,   --" DOCTEST_OPTIONS_PREFIX_DISPLAY "out=<filter>[<string>]...     "
+              << Whitespace(sizePrefixDisplay*1) << "output filenames for reporters\n";
             s << " -" DOCTEST_OPTIONS_PREFIX_DISPLAY "ob,  --" DOCTEST_OPTIONS_PREFIX_DISPLAY "order-by=<string>             "
               << Whitespace(sizePrefixDisplay*1) << "how the tests should be ordered\n";
             s << Whitespace(sizePrefixDisplay*3) << "                                       <string> - [file/suite/name/rand/none]\n";
@@ -6343,7 +6349,7 @@ namespace {
         DOCTEST_THREAD_LOCAL static std::ostringstream oss;
 
         DebugOutputWindowReporter(const ContextOptions& co)
-                : ConsoleReporter(co, oss) {}
+                : ConsoleReporter(co, &oss) {}
 
 #define DOCTEST_DEBUG_OUTPUT_REPORTER_OVERRIDE(func, type, arg)                                    \
     void func(type arg) override {                                                                 \
@@ -6472,6 +6478,42 @@ namespace {
         return false;
     }
 
+    bool parseCommaSepArgsTwoPart(int argc, const char* const* argv,
+                                  const char* pattern,
+                                  std::map<String, String>& res) {
+        std::vector<String> args;
+        if (!parseCommaSepArgs(argc, argv, pattern, args)) {
+            return false;
+        }
+
+        for (auto& str : args) {
+            if (str.size() == 0)
+                return false;
+
+            const auto close = str.rfind(']');
+            if (close == str.size()-1) {
+                const auto open = str.rfind('[', close);
+                if (open != str.npos) {
+                    auto filter = str.substr(0, open);
+                    auto filename = str.substr(open+1, close-open-1);
+                    auto where_inserted = res.emplace(filter, filename);
+                    // already have an output for this filter
+                    if (!where_inserted.second)
+                        return false;
+                } else {
+                    return false;
+                }
+            } else {
+                auto where_inserted = res.emplace("*", str);
+                // already have an output for the '*' filter
+                if (!where_inserted.second)
+                    return false;
+            }
+        }
+
+        return true;
+    }
+
     enum optionType
     {
         option_bool,
@@ -6556,6 +6598,8 @@ void Context::parseArgs(int argc, const char* const* argv, bool withDefaults) {
     parseCommaSepArgs(argc, argv, DOCTEST_CONFIG_OPTIONS_PREFIX "sce=",                p->filters[7]);
     parseCommaSepArgs(argc, argv, DOCTEST_CONFIG_OPTIONS_PREFIX "reporters=",          p->filters[8]);
     parseCommaSepArgs(argc, argv, DOCTEST_CONFIG_OPTIONS_PREFIX "r=",                  p->filters[8]);
+    parseCommaSepArgsTwoPart(argc, argv, DOCTEST_CONFIG_OPTIONS_PREFIX "out=",                p->out);
+    parseCommaSepArgsTwoPart(argc, argv, DOCTEST_CONFIG_OPTIONS_PREFIX "o=",                  p->out);
     // clang-format on
 
     int    intRes = 0;
@@ -6585,7 +6629,6 @@ void Context::parseArgs(int argc, const char* const* argv, bool withDefaults) {
     p->var = strRes
 
     // clang-format off
-    DOCTEST_PARSE_STR_OPTION("out", "o", out, "");
     DOCTEST_PARSE_STR_OPTION("order-by", "ob", order_by, "file");
     DOCTEST_PARSE_INT_OPTION("rand-seed", "rs", rand_seed, 0);
 
@@ -6692,8 +6735,6 @@ void Context::setAsDefaultForAssertsOutOfTestCases() { g_cs = p; }
 
 void Context::setAssertHandler(detail::assert_handler ah) { p->ah = ah; }
 
-void Context::setCout(std::ostream* out) { p->cout = out; }
-
 static class DiscardOStream : public std::ostream
 {
 private:
@@ -6730,18 +6771,11 @@ int Context::run() {
     g_no_colors = p->no_colors;
     p->resetRunData();
 
-    std::fstream fstr;
-    if(p->cout == nullptr) {
-        if(p->quiet) {
-            p->cout = &discardOut;
-        } else if(p->out.size()) {
-            // to a file if specified
-            fstr.open(p->out.c_str(), std::fstream::out);
-            p->cout = &fstr;
-        } else {
-            // stdout by default
-            p->cout = &std::cout;
-        }
+    std::map<String, std::fstream> reporter_streams;
+    for (const auto& filter_output : p->out) {
+        const auto& filter = filter_output.first;
+        const auto& output = filter_output.second;
+        reporter_streams.emplace(filter, std::fstream(output.c_str(), std::fstream::out));
     }
 
     FatalConditionHandler::allocateAltStackMem();
@@ -6749,8 +6783,9 @@ int Context::run() {
     auto cleanup_and_return = [&]() {
         FatalConditionHandler::freeAltStackMem();
 
-        if(fstr.is_open())
-            fstr.close();
+        for (auto& fstr : reporter_streams)
+            if(fstr.second.is_open())
+                fstr.second.close();
 
         // restore context
         g_cs               = old_cs;
@@ -6772,15 +6807,25 @@ int Context::run() {
 
     // check to see if any of the registered reporters has been selected
     for(auto& curr : getReporters()) {
-        if(matchesAny(curr.first.second.c_str(), p->filters[8], false, p->case_sensitive))
-            p->reporters_currently_used.push_back(curr.second(*g_cs));
+        // stdout by default
+        std::ostream* cout = &std::cout;
+        if (p->quiet) {
+            cout = &discardOut;
+        }
+        else if(std::ostream* out = matchesAny(curr.first.second.c_str(), reporter_streams, p->case_sensitive)) {
+            cout = out;
+        }
+
+        if(matchesAny(curr.first.second.c_str(), p->filters[8], false, p->case_sensitive)) {
+            p->reporters_currently_used.push_back(curr.second(*g_cs, cout));
+        }
     }
 
     // TODO: check if there is nothing in reporters_currently_used
 
     // prepend all listeners
     for(auto& curr : getListeners())
-        p->reporters_currently_used.insert(p->reporters_currently_used.begin(), curr.second(*g_cs));
+        p->reporters_currently_used.insert(p->reporters_currently_used.begin(), curr.second(*g_cs, nullptr));
 
 #ifdef DOCTEST_PLATFORM_WINDOWS
     if(isDebuggerActive() && p->no_debug_output == false)

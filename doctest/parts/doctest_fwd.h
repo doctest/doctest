@@ -866,13 +866,11 @@ namespace detail {
 
 struct ContextOptions //!OCLINT too many fields
 {
-    std::ostream* cout = nullptr; // stdout stream
     String        binary_name;    // the test binary name
 
     const detail::TestCase* currentTest = nullptr;
 
     // == parameters from the command line
-    String   out;       // output filename
     String   order_by;  // how tests should be ordered
     unsigned rand_seed; // the seed for rand ordering
 
@@ -2051,13 +2049,13 @@ struct DOCTEST_INTERFACE IReporter
 };
 
 namespace detail {
-    using reporterCreatorFunc =  IReporter* (*)(const ContextOptions&);
+    using reporterCreatorFunc =  IReporter* (*)(const ContextOptions&, std::ostream*);
 
     DOCTEST_INTERFACE void registerReporterImpl(const char* name, int prio, reporterCreatorFunc c, bool isReporter);
 
     template <typename Reporter>
-    IReporter* reporterCreator(const ContextOptions& o) {
-        return new Reporter(o);
+    IReporter* reporterCreator(const ContextOptions& o, std::ostream* ostr) {
+        return new Reporter(o, ostr);
     }
 } // namespace detail
 
