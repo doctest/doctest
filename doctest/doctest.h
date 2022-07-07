@@ -3110,6 +3110,7 @@ DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_BEGIN
 #include <math.h>
 #endif // __BORLANDC__
 #include <new>
+#include <memory>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
@@ -3313,7 +3314,7 @@ namespace detail {
 
 namespace timer_large_integer
 {
-    
+
 #if defined(DOCTEST_PLATFORM_WINDOWS)
     using type = ULONGLONG;
 #else // DOCTEST_PLATFORM_WINDOWS
@@ -4106,11 +4107,11 @@ namespace {
 
     // checks if the name matches any of the filters, and returns the matching output stream
     std::fstream* matchesAny(const char* name,
-        std::map<String, std::fstream>& output_filters,
+        std::map<String, std::unique_ptr<std::fstream>>& output_filters,
         bool caseSensitive) {
         for (auto& curr : output_filters)
             if (wildcmp(name, curr.first.c_str(), caseSensitive))
-                return &curr.second;
+                return curr.second.get();
         return nullptr;
     }
 
@@ -4958,7 +4959,7 @@ namespace detail {
             m_string = tlssPop();
             logged = true;
         }
-        
+
         DOCTEST_ITERATE_THROUGH_REPORTERS(log_message, *this);
 
         const bool isWarn = m_severity & assertType::is_warn;
@@ -5510,7 +5511,7 @@ namespace {
             test_case_start_impl(in);
             xml.ensureTagClosed();
         }
-        
+
         void test_case_reenter(const TestCaseData&) override {}
 
         void test_case_end(const CurrentTestCaseStats& st) override {
@@ -6228,7 +6229,7 @@ namespace {
             subcasesStack.clear();
             currentSubcaseLevel = 0;
         }
-        
+
         void test_case_reenter(const TestCaseData&) override {
             subcasesStack.clear();
         }
@@ -6771,11 +6772,11 @@ int Context::run() {
     g_no_colors = p->no_colors;
     p->resetRunData();
 
-    std::map<String, std::fstream> reporter_streams;
+    std::map<String, std::unique_ptr<std::fstream>> reporter_streams;
     for (const auto& filter_output : p->out) {
         const auto& filter = filter_output.first;
         const auto& output = filter_output.second;
-        reporter_streams.emplace(filter, std::fstream(output.c_str(), std::fstream::out));
+        reporter_streams[filter].reset(new std::fstream(output.c_str(), std::fstream::out));
     }
 
     FatalConditionHandler::allocateAltStackMem();
@@ -6784,8 +6785,8 @@ int Context::run() {
         FatalConditionHandler::freeAltStackMem();
 
         for (auto& fstr : reporter_streams)
-            if(fstr.second.is_open())
-                fstr.second.close();
+            if(fstr.second->is_open())
+                fstr.second->close();
 
         // restore context
         g_cs               = old_cs;
@@ -6950,7 +6951,7 @@ int Context::run() {
             DOCTEST_ITERATE_THROUGH_REPORTERS(test_case_start, tc);
 
             p->timer.start();
-            
+
             bool run_test = true;
 
             do {
@@ -6991,7 +6992,7 @@ DOCTEST_MSVC_SUPPRESS_WARNING_POP
                     run_test = false;
                     p->failure_flags |= TestCaseFailureReason::TooManyFailedAsserts;
                 }
-                
+
                 if(!p->nextSubcaseStack.empty() && run_test)
                     DOCTEST_ITERATE_THROUGH_REPORTERS(test_case_reenter, tc);
                 if(p->nextSubcaseStack.empty())
