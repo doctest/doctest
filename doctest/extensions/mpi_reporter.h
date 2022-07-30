@@ -1,4 +1,5 @@
-#pragma once
+#ifndef DOCTEST_REPORTER_H
+#define DOCTEST_REPORTER_H
 
 // #include <doctest/doctest.h>
 #include <fstream>
@@ -266,3 +267,5 @@ REGISTER_REPORTER("MpiFileReporter", 1, MpiFileReporter);
 
 } // anonymous
 } // doctest
+
+#endif // DOCTEST_REPORTER_H

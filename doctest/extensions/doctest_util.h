@@ -11,7 +11,8 @@
 // https://github.com/doctest/doctest/blob/master/doc/markdown/readme.md
 //
 
-#pragma once
+#ifndef DOCTEST_UTIL_H
+#define DOCTEST_UTIL_H
 
 #ifndef DOCTEST_LIBRARY_INCLUDED
 #include "../doctest.h"
@@ -32,3 +33,5 @@ namespace doctest {
     }
 
 } // namespace doctest
+
+#endif // DOCTEST_UTIL_H
