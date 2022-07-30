@@ -24,13 +24,13 @@
 
 namespace doctest {
 
-    inline void applyCommandLine(doctest::Context& ctx, const std::vector<std::string>& args) {
-        auto doctest_args = std::make_unique<const char*[]>(args.size());
-        for (size_t i = 0; i < args.size(); ++i) {
-            doctest_args[i] = args[i].c_str();
-        }
-        ctx.applyCommandLine(args.size(), doctest_args.get());
+inline void applyCommandLine(doctest::Context& ctx, const std::vector<std::string>& args) {
+    auto doctest_args = std::make_unique<const char*[]>(args.size());
+    for(size_t i = 0; i < args.size(); ++i) {
+        doctest_args[i] = args[i].c_str();
     }
+    ctx.applyCommandLine(args.size(), doctest_args.get());
+}
 
 } // namespace doctest
 
