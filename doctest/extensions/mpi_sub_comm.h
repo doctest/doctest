@@ -1,4 +1,5 @@
-#pragma once
+#ifndef DOCTEST_SUB_COMM_H
+#define DOCTEST_SUB_COMM_H
 
 #include "mpi.h"
 #include "doctest/doctest.h"
@@ -79,3 +80,5 @@ struct mpi_sub_comm {
 };
 
 } // doctest
+
+#endif // DOCTEST_SUB_COMM_H
