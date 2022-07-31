@@ -1,6 +1,10 @@
 #ifndef DOCTEST_MPI_H
 #define DOCTEST_MPI_H
 
+#ifdef DOCTEST_CONFIG_IMPLEMENT_WITH_MPI_MAIN
+#define DOCTEST_CONFIG_IMPLEMENT
+#endif // DOCTEST_CONFIG_IMPLEMENT_WITH_MPI_MAIN
+
 #ifdef DOCTEST_CONFIG_IMPLEMENT
 
 #include "mpi_sub_comm.h"
@@ -164,5 +168,21 @@ void doctest::execute_mpi_test_case(F func) {
 }
 
 #endif // DOCTEST_CONFIG_IMPLEMENT
+
+#ifdef DOCTEST_CONFIG_IMPLEMENT_WITH_MPI_MAIN
+int main(int argc, char* argv[]) {
+    doctest::mpi_init_thread(argc,argv,MPI_THREAD_MULTIPLE);
+
+    doctest::Context ctx;
+    ctx.setOption("reporters", "MpiConsoleReporter");
+    ctx.applyCommandLine(argc, argv);
+
+    int test_result = ctx.run();
+
+    doctest::mpi_finalize();
+
+    return test_result;
+}
+#endif // DOCTEST_CONFIG_IMPLEMENT_WITH_MPI_MAIN
 
 #endif // DOCTEST_MPI_H
