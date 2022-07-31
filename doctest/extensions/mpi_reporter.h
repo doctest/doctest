@@ -1,8 +1,8 @@
 #ifndef DOCTEST_REPORTER_H
 #define DOCTEST_REPORTER_H
 
-// #include <doctest/doctest.h>
 #include <fstream>
+#include <streambuf>
 #include <string>
 #include "mpi.h"
 
@@ -12,7 +12,12 @@
 namespace doctest {
 
 extern int nb_test_cases_skipped_insufficient_procs;
-int        mpi_comm_world_size();
+
+// Can be safely called before MPI_Init()
+//   This is needed for MPI_TEST_CASE because we use doctest::skip()
+//   to prevent execution of tests where there is not enough procs,
+//   but doctest::skip() is called during test registration, that is, before main(), and hence before MPI_Init()
+int mpi_comm_world_size();
 
 namespace {
 

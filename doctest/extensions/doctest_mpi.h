@@ -3,9 +3,10 @@
 
 #ifdef DOCTEST_CONFIG_IMPLEMENT
 
-#include "doctest/extensions/mpi_sub_comm.h"
+#include "mpi_sub_comm.h"
 #include "mpi_reporter.h"
 #include <unordered_map>
+#include <exception>
 
 namespace doctest {
 
@@ -23,107 +24,13 @@ std::string thread_level_to_string(int thread_lvl);
 int         mpi_init_thread(int argc, char* argv[], int required_thread_support);
 void        mpi_finalize();
 
-// Can be safely called before MPI_Init()
-//   This is needed for MPI_TEST_CASE because we use doctest::skip()
-//   to prevent execution of tests where there is not enough procs,
-//   but doctest::skip() is called during test registration, that is, before main(), and hence before MPI_Init()
-int mpi_comm_world_size() {
-#if defined(OPEN_MPI)
-    const char* size_str = std::getenv("OMPI_COMM_WORLD_SIZE");
-#elif defined(I_MPI_VERSION) || defined(MPI_VERSION) // Intel MPI + MPICH (at least)
-    const char* size_str = std::getenv(
-            "PMI_SIZE"); // see https://community.intel.com/t5/Intel-oneAPI-HPC-Toolkit/Environment-variables-defined-by-intel-mpirun/td-p/1096703
-#else
-#error "Unknown MPI implementation: please submit an issue or a PR to doctest. Meanwhile, you can look at the output of e.g. `mpirun -np 3 env` to search for an environnement variable that contains the size of MPI_COMM_WORLD and extend this code accordingly"
-#endif
-    if(size_str == nullptr)
-        return 1; // not launched with mpirun/mpiexec, so assume only one process
-    return std::stoi(size_str);
-}
-
 // Record size of MPI_COMM_WORLD with mpi_comm_world_size()
 int world_size_before_init = mpi_comm_world_size();
 
-std::string thread_level_to_string(int thread_lvl) {
-    switch(thread_lvl) {
-        case MPI_THREAD_SINGLE: return "MPI_THREAD_SINGLE";
-        case MPI_THREAD_FUNNELED: return "MPI_THREAD_FUNNELED";
-        case MPI_THREAD_SERIALIZED: return "MPI_THREAD_SERIALIZED";
-        case MPI_THREAD_MULTIPLE: return "MPI_THREAD_MULTIPLE";
-        default: return "Invalid MPI thread level";
-    }
-}
-int mpi_init_thread(int argc, char* argv[], int required_thread_support) {
-    int provided_thread_support;
-    MPI_Init_thread(&argc, &argv, required_thread_support, &provided_thread_support);
-
-    int world_size;
-    MPI_Comm_size(MPI_COMM_WORLD, &world_size);
-    if(world_size_before_init != world_size) {
-        DOCTEST_INTERNAL_ERROR("doctest found " + std::to_string(world_size_before_init) +
-                               " MPI processes before `MPI_Init_thread`,"
-                               " but MPI_COMM_WORLD is actually of size " +
-                               std::to_string(world_size) +
-                               ".\n"
-                               "This is most likely due to your MPI implementation not being well "
-                               "supported by doctest. Please report this issue on GitHub");
-    }
-
-    if(provided_thread_support != required_thread_support) {
-        std::cout << "WARNING: " + thread_level_to_string(required_thread_support) +
-                             " was asked, " + "but only " +
-                             thread_level_to_string(provided_thread_support) +
-                             " is provided by the MPI library\n";
-    }
-    return provided_thread_support;
-}
-void mpi_finalize() {
-    // We need to destroy all created sub-communicators before calling MPI_Finalize()
-    doctest::sub_comms_by_size.clear();
-    MPI_Finalize();
-}
-
-} // namespace doctest
-
-#else // DOCTEST_CONFIG_IMPLEMENT
-
-#include "doctest/extensions/mpi_sub_comm.h"
-#include <unordered_map>
-#include <exception>
-
-namespace doctest {
-
-extern std::unordered_map<int, mpi_sub_comm> sub_comms_by_size;
-extern int                                   nb_test_cases_skipped_insufficient_procs;
-extern int                                   world_size_before_init;
-int                                          mpi_comm_world_size();
-
-int  mpi_init_thread(int argc, char* argv[], int required_thread_support);
-void mpi_finalize();
+inline bool insufficient_procs(int test_nb_procs);
 
 template <int nb_procs, class F>
-void execute_mpi_test_case(F func) {
-    auto it = sub_comms_by_size.find(nb_procs);
-    if(it == end(sub_comms_by_size)) {
-        bool was_emplaced = false;
-        std::tie(it, was_emplaced) =
-                sub_comms_by_size.emplace(std::make_pair(nb_procs, mpi_sub_comm(nb_procs)));
-        assert(was_emplaced);
-    }
-    const mpi_sub_comm& sub = it->second;
-    if(sub.comm != MPI_COMM_NULL) {
-        func(sub.rank, nb_procs, sub.comm, std::integral_constant<int, nb_procs>{});
-    };
-}
-
-inline bool insufficient_procs(int test_nb_procs) {
-    static const int world_size   = mpi_comm_world_size();
-    bool             insufficient = test_nb_procs > world_size;
-    if(insufficient) {
-        ++nb_test_cases_skipped_insufficient_procs;
-    }
-    return insufficient;
-}
+void execute_mpi_test_case(F func);
 
 } // namespace doctest
 
@@ -176,6 +83,85 @@ inline bool insufficient_procs(int test_nb_procs) {
 
 #define MPI_TEST_CASE DOCTEST_MPI_TEST_CASE
 #endif // DOCTEST_CONFIG_NO_SHORT_MACRO_NAMES
+
+int doctest::mpi_comm_world_size() {
+#if defined(OPEN_MPI)
+    const char* size_str = std::getenv("OMPI_COMM_WORLD_SIZE");
+#elif defined(I_MPI_VERSION) || defined(MPI_VERSION) // Intel MPI + MPICH (at least)
+    const char* size_str = std::getenv(
+            "PMI_SIZE"); // see https://community.intel.com/t5/Intel-oneAPI-HPC-Toolkit/Environment-variables-defined-by-intel-mpirun/td-p/1096703
+#else
+#error "Unknown MPI implementation: please submit an issue or a PR to doctest. Meanwhile, you can look at the output of e.g. `mpirun -np 3 env` to search for an environnement variable that contains the size of MPI_COMM_WORLD and extend this code accordingly"
+#endif
+    if(size_str == nullptr)
+        return 1; // not launched with mpirun/mpiexec, so assume only one process
+    return std::stoi(size_str);
+}
+
+std::string doctest::thread_level_to_string(int thread_lvl) {
+    switch(thread_lvl) {
+        case MPI_THREAD_SINGLE: return "MPI_THREAD_SINGLE";
+        case MPI_THREAD_FUNNELED: return "MPI_THREAD_FUNNELED";
+        case MPI_THREAD_SERIALIZED: return "MPI_THREAD_SERIALIZED";
+        case MPI_THREAD_MULTIPLE: return "MPI_THREAD_MULTIPLE";
+        default: return "Invalid MPI thread level";
+    }
+}
+
+int doctest::mpi_init_thread(int argc, char* argv[], int required_thread_support) {
+    int provided_thread_support;
+    MPI_Init_thread(&argc, &argv, required_thread_support, &provided_thread_support);
+
+    int world_size;
+    MPI_Comm_size(MPI_COMM_WORLD, &world_size);
+    if(world_size_before_init != world_size) {
+        DOCTEST_INTERNAL_ERROR("doctest found " + std::to_string(world_size_before_init) +
+                               " MPI processes before `MPI_Init_thread`,"
+                               " but MPI_COMM_WORLD is actually of size " +
+                               std::to_string(world_size) +
+                               ".\n"
+                               "This is most likely due to your MPI implementation not being well "
+                               "supported by doctest. Please report this issue on GitHub");
+    }
+
+    if(provided_thread_support != required_thread_support) {
+        std::cout << "WARNING: " + thread_level_to_string(required_thread_support) +
+                             " was asked, " + "but only " +
+                             thread_level_to_string(provided_thread_support) +
+                             " is provided by the MPI library\n";
+    }
+    return provided_thread_support;
+}
+
+void doctest::mpi_finalize() {
+    // We need to destroy all created sub-communicators before calling MPI_Finalize()
+    doctest::sub_comms_by_size.clear();
+    MPI_Finalize();
+}
+
+inline bool doctest::insufficient_procs(int test_nb_procs) {
+    static const int world_size   = mpi_comm_world_size();
+    bool             insufficient = test_nb_procs > world_size;
+    if(insufficient) {
+        ++nb_test_cases_skipped_insufficient_procs;
+    }
+    return insufficient;
+}
+
+template <int nb_procs, class F>
+void doctest::execute_mpi_test_case(F func) {
+    auto it = sub_comms_by_size.find(nb_procs);
+    if(it == end(sub_comms_by_size)) {
+        bool was_emplaced = false;
+        std::tie(it, was_emplaced) =
+                sub_comms_by_size.emplace(std::make_pair(nb_procs, mpi_sub_comm(nb_procs)));
+        assert(was_emplaced);
+    }
+    const mpi_sub_comm& sub = it->second;
+    if(sub.comm != MPI_COMM_NULL) {
+        func(sub.rank, nb_procs, sub.comm, std::integral_constant<int, nb_procs>{});
+    };
+}
 
 #endif // DOCTEST_CONFIG_IMPLEMENT
 
