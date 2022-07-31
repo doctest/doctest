@@ -64,6 +64,16 @@ mpirun -np 2 unit_test_executable.exe
 
 ```doctest::mpi_init_thread()``` must be called before running the unit tests, and ```doctest::mpi_finalize()``` at the end of the program. Also, using the default console reporter will result in each process writing everything in the same place, which is not what we want. Two reporters are provided and can be enabled. A complete ```main()``` would be:
 
+### Simple main()
+
+```c++
+#define DOCTEST_CONFIG_IMPLEMENT_WITH_MPI_MAIN
+#include <doctest/extensions/doctest_mpi.h>
+```
+
+This is similar to non-mpi dectest usage.
+
+### Customization
 
 ```c++
 #define DOCTEST_CONFIG_IMPLEMENT
