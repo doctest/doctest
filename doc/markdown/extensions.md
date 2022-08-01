@@ -71,7 +71,7 @@ mpirun -np 2 unit_test_executable.exe
 #include <doctest/extensions/doctest_mpi.h>
 ```
 
-This is similar to non-mpi dectest usage.
+This is similar to non-mpi doctest usage.
 
 ### Customization
 
