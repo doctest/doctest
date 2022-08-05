@@ -1,5 +1,5 @@
-#ifndef DOCTEST_SUB_COMM_H
-#define DOCTEST_SUB_COMM_H
+#ifndef DOCTEST_MPI_SUB_COMM_H
+#define DOCTEST_MPI_SUB_COMM_H
 
 #include "mpi.h"
 #include "doctest/doctest.h"
