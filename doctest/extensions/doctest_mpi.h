@@ -10,7 +10,7 @@
 #include "mpi_sub_comm.h"
 #include "mpi_reporter.h"
 #include <unordered_map>
-#include <exception>
+
 
 namespace doctest {
 
