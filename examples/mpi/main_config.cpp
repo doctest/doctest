@@ -2,6 +2,8 @@
 
 #include <doctest/extensions/doctest_mpi.h>
 
+#include "mpi_test.h"
+
 int main(int argc, char** argv) {
   doctest::mpi_init_thread(argc,argv,MPI_THREAD_MULTIPLE);
 

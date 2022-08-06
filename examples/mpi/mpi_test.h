@@ -1,4 +1,5 @@
-#include <doctest/extensions/doctest_mpi.h>
+#ifndef DOCTEST_MPI_TEST_H
+#define DOCTEST_MPI_TEST_H
 
 int f_for_test(int rank);
 
@@ -44,3 +45,5 @@ MPI_TEST_CASE("Parallel tests with subcases",2) {
     CHECK( test_rank == 0 ); // should fail on proc 1
   }
 }
+
+#endif // DOCTEST_MPI_TEST_H
