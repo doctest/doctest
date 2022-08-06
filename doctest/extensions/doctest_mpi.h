@@ -1,6 +1,12 @@
 #ifndef DOCTEST_MPI_H
 #define DOCTEST_MPI_H
 
+
+#if defined(DOCTEST_CONFIG_IMPLEMENT_WITH_MPI_MAIN) && !defined(DOCTEST_CONFIG_IMPLEMENT)
+#define DOCTEST_CONFIG_IMPLEMENT
+#endif // DOCTEST_CONFIG_IMPLEMENT_WITH_MPI_MAIN
+
+
 #ifdef DOCTEST_CONFIG_IMPLEMENT
 
 #include <unordered_map>
@@ -162,5 +168,23 @@ insufficient_procs(int test_nb_procs) {
 
 
 #endif // DOCTEST_CONFIG_IMPLEMENT
+
+
+#ifdef DOCTEST_CONFIG_IMPLEMENT_WITH_MPI_MAIN
+int main(int argc, char* argv[]) {
+    doctest::mpi_init_thread(argc,argv,MPI_THREAD_MULTIPLE);
+
+    doctest::Context ctx;
+    ctx.setOption("reporters", "MpiConsoleReporter");
+    ctx.applyCommandLine(argc, argv);
+
+    int test_result = ctx.run();
+
+    doctest::mpi_finalize();
+
+    return test_result;
+}
+#endif // DOCTEST_CONFIG_IMPLEMENT_WITH_MPI_MAIN
+
 
 #endif // DOCTEST_MPI_H
