@@ -17,8 +17,8 @@ find_package(doctest REQUIRED)
 
 # Make test executable
 add_executable(tests main.cpp)
-target_compile_features(test PRIVATE cxx_std_17)
-target_link_libraries(test PRIVATE doctest::doctest)
+target_compile_features(tests PRIVATE cxx_std_17)
+target_link_libraries(tests PRIVATE doctest::doctest)
 ```
 
 - You can also use the following CMake snippet to automatically fetch the entire **doctest** repository from github and configure it as an external project:
