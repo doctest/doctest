@@ -2,7 +2,7 @@
 
 **doctest** works quite nicely without any command line options at all - but for more control a bunch are available.
 
-**Query flags** - after the result is printed the program quits without executing any test cases (and if the framework is integrated into a client codebase which [**supplies it's own ```main()``` entry point**](main.md) - the program should check the result of ```shouldExit()``` method after calling ```run()``` on a ```doctest::Context``` object and should exit - this is left up to the user).
+**Query flags** - after the result is printed the program quits without executing any test cases (and if the framework is integrated into a client codebase which [**supplies its own ```main()``` entry point**](main.md) - the program should check the result of ```shouldExit()``` method after calling ```run()``` on a ```doctest::Context``` object and should exit - this is left up to the user).
 
 **Int/String options** - they require a value after the ```=``` sign - without spaces! For example: ```--order-by=rand```.
 
@@ -43,7 +43,7 @@ All the options can also be set with code (defaults/overrides) if the user [**su
 | **Bool Options** | <hr> |
 | ```-s``` &nbsp;&nbsp;&nbsp; ```--success=<bool>``` | To include successful assertions in the output |
 | ```-cs``` &nbsp; ```--case-sensitive=<bool>``` | Filters being treated as case sensitive |
-| ```-e``` &nbsp;&nbsp;&nbsp; ```--exit=<bool>``` | Exits after the tests finish - this is meaningful only when the client has [**provided the ```main()``` entry point**](main.md)  - the program should check the ```shouldExit()``` method after calling ```run()``` on a ```doctest::Context``` object and should exit - this is left up to the user. The idea is to be able to execute just the tests in a client program and to not continue with it's execution |
+| ```-e``` &nbsp;&nbsp;&nbsp; ```--exit=<bool>``` | Exits after the tests finish - this is meaningful only when the client has [**provided the ```main()``` entry point**](main.md)  - the program should check the ```shouldExit()``` method after calling ```run()``` on a ```doctest::Context``` object and should exit - this is left up to the user. The idea is to be able to execute just the tests in a client program and to not continue with its execution |
 | ```-d``` &nbsp; ```--duration=<bool>``` | Prints the time each test case took in seconds |
 | ```-m``` &nbsp; ```--minimal=<bool>``` | Only prints failing tests |
 | ```-q``` &nbsp; ```--quiet=<bool>``` | Does not print any output |
@@ -114,7 +114,7 @@ int program(int argc, const char** argv) {
 }
 ```
 
-When ran like this:
+When run like this:
 
 ```
 program.exe --dt-test-case=math* --my-option -s --dt-no-breaks
