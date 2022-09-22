@@ -31,10 +31,10 @@
     - warnings as errors even on the most aggressive warning levels - see [**here**](../../scripts/cmake/common.cmake#L84)
     - statically analyzed on the CI - [**Cppcheck**](http://cppcheck.sourceforge.net/) / [**Clang-Tidy**](https://clang.llvm.org/extra/clang-tidy/) / [**Coverity Scan**](https://scan.coverity.com/) / [**OCLint**](http://oclint.org/) / [**Visual Studio Analyzer**](https://docs.microsoft.com/en-us/visualstudio/code-quality/analyzing-c-cpp-code-quality-by-using-code-analysis)
     - all tests have their output compared to reference output of a previous known good run
-    - all tests built and ran in **Debug**/**Release** modes
+    - all tests built and run in **Debug**/**Release** modes
     - all tests ran through **valgrind** under **Linux** (sadly [not under OSX](https://github.com/doctest/doctest/issues/11))
     - all tests ran through **address**, **UB** and **thread** sanitizers under **Linux**/**OSX**
-    - tests are ran in more than **300** different configurations on UNIX (Linux + OSX) & Windows
+    - tests are run in more than **300** different configurations on UNIX (Linux + OSX) & Windows
 
 ## Other features:
 
@@ -71,8 +71,8 @@
 - [**extension headers**](extensions.md) for extra functionality which doesn't need to go into the main `doctest.h` header
 - colored output in the console
 - controlling the order of test execution
-- different ```doctest::Context```s can be created and ran many times within a single execution of the program
-- ability to query if code is currently being ran in a test -  ```doctest::is_running_in_test```
+- different ```doctest::Context```s can be created and run many times within a single execution of the program
+- ability to query if code is currently being run in a test -  ```doctest::is_running_in_test```
 - tests can be registered in CTest with the use of [```doctest_discover_tests(<target>)``` from scripts/cmake/doctest.cmake](../../scripts/cmake/doctest.cmake)
 
 There is a list of planned features which are all important and big - see the [**roadmap**](https://github.com/doctest/doctest/issues/600).
