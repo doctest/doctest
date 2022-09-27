@@ -3,6 +3,7 @@
 DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_BEGIN
 #include <vector>
 #include <mutex>
+#include <iostream>
 DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_END
 
 DOCTEST_CLANG_SUPPRESS_WARNING("-Wweak-vtables")
@@ -25,9 +26,8 @@ struct MyXmlReporter : public IReporter
     const TestCaseData*   tc;
     std::mutex            mutex;
 
-    // constructor has to accept the ContextOptions by ref as a single argument
-    MyXmlReporter(const ContextOptions& in)
-            : stdout_stream(*in.cout)
+    MyXmlReporter(const ContextOptions& in, std::ostream* ostr)
+            : stdout_stream(ostr ? *ostr : std::cout)
             , opt(in)
             , tc(nullptr) {}
 
