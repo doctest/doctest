@@ -1160,7 +1160,7 @@ DOCTEST_MSVC_SUPPRESS_WARNING_POP
     template <typename T>
     struct filldata<T*> {
         static void fill(std::ostream* stream, const T* in) {
-            filldata<const void*>::fill(stream, in);
+            filldata<const void*>::fill(stream, reinterpret_cast<const void*>(in));
         }
     };
 }
