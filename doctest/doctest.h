@@ -1168,10 +1168,12 @@ DOCTEST_MSVC_SUPPRESS_WARNING_WITH_PUSH(4180)
 DOCTEST_MSVC_SUPPRESS_WARNING_POP
 DOCTEST_CLANG_SUPPRESS_WARNING_WITH_PUSH("-Wmicrosoft-cast")
             filldata<const void*>::fill(stream,
-#if DOCTEST_GCC
-                __extension__
+#if DOCTEST_GCC == 0 || DOCTEST_GCC >= DOCTEST_COMPILER(4, 9, 0)
+                reinterpret_cast<const void*>(in)
+#else
+                *reinterpret_cast<void* const*>(&in)
 #endif
-                reinterpret_cast<const void*>(in));
+            );
 DOCTEST_CLANG_SUPPRESS_WARNING_POP
         }
     };
