@@ -1167,6 +1167,9 @@ DOCTEST_MSVC_SUPPRESS_WARNING_WITH_PUSH(4180)
         static void fill(std::ostream* stream, const T* in) {
 DOCTEST_MSVC_SUPPRESS_WARNING_POP
 DOCTEST_CLANG_SUPPRESS_WARNING_WITH_PUSH("-Wmicrosoft-cast")
+#if DOCTEST_GCC
+            __extension__
+#endif
             filldata<const void*>::fill(stream, reinterpret_cast<const void*>(in));
 DOCTEST_CLANG_SUPPRESS_WARNING_POP
         }
