@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <testsuites>
-  <testsuite name="all_features" errors="2" failures="13" tests="25">
+  <testsuite name="all_features" errors="2" failures="13" tests="26">
     <testcase classname="double_stringification.cpp" name="toString std::string ret type" status="run"/>
     <testcase classname="stringification.cpp" name="operator&lt;&lt;" status="run"/>
     <testcase classname="stringification.cpp" name="no headers" status="run">

@@ -207,10 +207,10 @@
       <OverallResultsAsserts successes="0" failures="0" test_case_success="false"/>
     </TestCase>
     <TestCase name="pointer comparisons" filename="stringification.cpp" line="0">
-      <OverallResultsAsserts successes="3" failures="0" test_case_success="true"/>
+      <OverallResultsAsserts successes="4" failures="0" test_case_success="true"/>
     </TestCase>
   </TestSuite>
-  <OverallResultsAsserts successes="12" failures="13"/>
+  <OverallResultsAsserts successes="13" failures="13"/>
   <OverallResultsTestCases successes="3" failures="3"/>
 </doctest>
 Program code.
