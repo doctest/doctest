@@ -248,3 +248,15 @@ TEST_CASE("a test case that registers an exception translator for int and then t
 
     throw_if(true, 5);
 }
+
+static void function() { }
+
+TEST_CASE("pointer comparisons") {
+    auto a = new int();
+    auto b = a;
+    CHECK(a == b);
+    CHECK_EQ(a, b);
+
+    void (*functionPointer)() = &function;
+    CHECK(&function == functionPointer);
+}
