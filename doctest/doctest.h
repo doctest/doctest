@@ -1171,7 +1171,7 @@ DOCTEST_CLANG_SUPPRESS_WARNING_WITH_PUSH("-Wmicrosoft-cast")
 #if DOCTEST_GCC == 0 || DOCTEST_GCC >= DOCTEST_COMPILER(4, 9, 0)
                 reinterpret_cast<const void*>(in)
 #else
-                *reinterpret_cast<void* const*>(&in)
+                *reinterpret_cast<const void* const*>(&in)
 #endif
             );
 DOCTEST_CLANG_SUPPRESS_WARNING_POP
