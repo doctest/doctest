@@ -925,7 +925,7 @@ TEST CASE:  without a funny name:
 subcases.cpp(0): MESSAGE: Nooo
 
 ===============================================================================
-[doctest] test cases:  84 |  33 passed |  51 failed |
-[doctest] assertions: 230 | 110 passed | 120 failed |
+[doctest] test cases:  85 |  34 passed |  51 failed |
+[doctest] assertions: 234 | 114 passed | 120 failed |
 [doctest] Status: FAILURE!
 Program code.
