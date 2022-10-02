@@ -109,6 +109,7 @@
     <TestCase name="part of some TS" filename="test_cases_and_suites.cpp" line="0" skipped="true"/>
   </TestSuite>
   <TestSuite>
+    <TestCase name="pointer comparisons" filename="stringification.cpp" line="0" skipped="true"/>
     <TestCase name="reentering subcase via regular control flow" filename="subcases.cpp" line="0" skipped="true"/>
     <TestCase name="should fail and no output" filename="no_failures.cpp" line="0" should_fail="true" skipped="true"/>
     <TestCase name="should fail and no output" filename="test_cases_and_suites.cpp" line="0" should_fail="true" skipped="true"/>
@@ -148,6 +149,6 @@
     <TestCase name="without a funny name:" filename="subcases.cpp" line="0" skipped="true"/>
   </TestSuite>
   <OverallResultsAsserts successes="0" failures="0"/>
-  <OverallResultsTestCases successes="0" failures="0" skipped="104"/>
+  <OverallResultsTestCases successes="0" failures="0" skipped="105"/>
 </doctest>
 Program code.
