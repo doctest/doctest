@@ -139,6 +139,10 @@ jobs:
           - os: ubuntu-latest
             compiler: gcc
             version: "11"
+            
+          - os: ubuntu-latest
+            compiler: gcc
+            version: "12"
 
           - os: ubuntu-18.04
             compiler: clang
@@ -199,6 +203,18 @@ jobs:
           - os: ubuntu-latest
             compiler: clang
             version: "13"
+            
+          - os: ubuntu-latest
+            compiler: clang
+            version: "14"
+            
+          - os: ubuntu-latest
+            compiler: clang
+            version: "15"
+            
+          - os: ubuntu-latest
+            compiler: clang
+            version: "16"
 
           - os: macOS-10.15
             compiler: xcode
@@ -215,6 +231,10 @@ jobs:
           - os: macOS-latest
             compiler: xcode
             version: "13.2.1"
+            
+          - os: macos-12
+            compiler: xcode
+            version: "14.0.1"
 
           - os: macOS-latest
             compiler: gcc
