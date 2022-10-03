@@ -436,12 +436,13 @@ namespace doctest { namespace detail {
     static const int var = doctest::detail::consume(&var, __VA_ARGS__);                              \
     DOCTEST_CLANG_SUPPRESS_WARNING_POP
 
-#define DOCTEST_GLOBAL_NO_WARNINGS_CLASS(var, ...)                                                 \
+#define DOCTEST_GLOBAL_NO_WARNINGS_CLASS_BEGIN(var, ...)                                           \
     DOCTEST_CLANG_SUPPRESS_WARNING_WITH_PUSH("-Wglobal-constructors")                              \
     DOCTEST_CLANG_SUPPRESS_WARNING("-Wunused-variable")                                            \
     /* NOLINT(fuchsia-statically-constructed-objects,cert-err58-cpp) */                            \
-    static const int var DOCTEST_UNUSED                                                            \
-    DOCTEST_CLANG_SUPPRESS_WARNING_POP
+    static const int var DOCTEST_UNUSED
+
+#define DOCTEST_GLOBAL_NO_WARNINGS_CLASS_END DOCTEST_CLANG_SUPPRESS_WARNING_POP
 
 #ifndef DOCTEST_BREAK_INTO_DEBUGGER
 // should probably take a look at https://github.com/scottt/debugbreak
@@ -2168,12 +2169,13 @@ int registerReporter(const char* name, int priority, bool isReporter) {
 #define DOCTEST_CREATE_AND_REGISTER_FUNCTION_IN_CLASS(f, proxy, decorators)                        \
     static doctest::detail::funcType proxy() { return f; }                                         \
         /* NOLINT */                                                                               \
-        inline DOCTEST_GLOBAL_NO_WARNINGS_CLASS(DOCTEST_ANONYMOUS(DOCTEST_ANON_VAR_) =             \
+        inline DOCTEST_GLOBAL_NO_WARNINGS_CLASS_BEGIN(DOCTEST_ANONYMOUS(DOCTEST_ANON_VAR_) =       \
             doctest::detail::regTest(                                                              \
                     doctest::detail::TestCase(                                                     \
                             proxy(), __FILE__, __LINE__,                                           \
                             doctest_detail_test_suite_ns::getCurrentTestSuite()) *                 \
                     decorators);)                                                                  \
+        DOCTEST_GLOBAL_NO_WARNINGS_CLASS_END                                                       \
     static void f()
 
 // for registering tests
