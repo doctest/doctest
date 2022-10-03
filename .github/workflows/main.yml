@@ -33,12 +33,10 @@ jobs:
       
       - name: Install
         run: |
-          wget https://apt.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB
-          APT_KEY_DONT_WARN_ON_DANGEROUS_USAGE=1 apt-key add GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB
-          rm GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB
-          add-apt-repository "deb https://apt.repos.intel.com/oneapi all main"
-          apt-get update
-          apt-get install -y intel-oneapi-compiler-dpcpp-cpp-and-cpp-classic ninja-build
+          wget -O - https://apt.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB | sudo apt-key add -
+          sudo add-apt-repository "deb https://apt.repos.intel.com/oneapi all main"
+          sudo apt-get update
+          sudo apt-get install -y intel-oneapi-compiler-dpcpp-cpp-and-cpp-classic ninja-build
           
       - name: Generate
         run: cmake -B build -S . -G Ninja -D CMAKE_CXX_COMPILER=icc -D CMAKE_C_COMPILER=icc -D CMAKE_CXX_COMPILER=icpc -D CMAKE_BUILD_TYPE=${{ matrix.configuration }}
