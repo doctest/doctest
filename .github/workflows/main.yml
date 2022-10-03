@@ -41,7 +41,7 @@ jobs:
       - name: Generate
         run: |
           . /opt/intel/oneapi/setvars.sh
-          cmake -B build -S . -G Ninja -D CMAKE_CXX_COMPILER=icc -D CMAKE_C_COMPILER=icc -D CMAKE_CXX_COMPILER=icpc -D CMAKE_BUILD_TYPE=${{ matrix.configuration }} -D CMAKE_CXX_FLAGS="-w2 -Wcheck -Werror-all -diag-disable=10441"
+          cmake -B build -S . -G Ninja -D CMAKE_CXX_COMPILER=icc -D CMAKE_C_COMPILER=icc -D CMAKE_CXX_COMPILER=icpc -D CMAKE_BUILD_TYPE=${{ matrix.configuration }} -D CMAKE_CXX_FLAGS="-w2 -Wcheck -Werror-all -diag-disable=10441 -D DOCTEST_CONFIG_NO_CONTRADICTING_INLINE"
         
       - name: Build
         run: |
