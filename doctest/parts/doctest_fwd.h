@@ -436,6 +436,13 @@ namespace doctest { namespace detail {
     static const int var = doctest::detail::consume(&var, __VA_ARGS__);                              \
     DOCTEST_CLANG_SUPPRESS_WARNING_POP
 
+#define DOCTEST_GLOBAL_NO_WARNINGS_CLASS(var, ...)                                                 \
+    DOCTEST_CLANG_SUPPRESS_WARNING_WITH_PUSH("-Wglobal-constructors")                              \
+    DOCTEST_CLANG_SUPPRESS_WARNING("-Wunused-variable")                                            \
+    /* NOLINT(fuchsia-statically-constructed-objects,cert-err58-cpp) */                            \
+    static const int var DOCTEST_UNUSED                                                            \
+    DOCTEST_CLANG_SUPPRESS_WARNING_POP
+
 #ifndef DOCTEST_BREAK_INTO_DEBUGGER
 // should probably take a look at https://github.com/scottt/debugbreak
 #ifdef DOCTEST_PLATFORM_LINUX
@@ -2130,21 +2137,6 @@ int registerReporter(const char* name, int priority, bool isReporter) {
 #define DOCTEST_CAST_TO_VOID(...) __VA_ARGS__;
 #endif // DOCTEST_CONFIG_VOID_CAST_EXPRESSIONS
 
-#define DOCTEST_GLOBAL_NO_WARNINGS_CLASS(var, ...)                                                 \
-    DOCTEST_CLANG_SUPPRESS_WARNING_WITH_PUSH("-Wglobal-constructors")                              \
-    DOCTEST_CLANG_SUPPRESS_WARNING("-Wunused-variable")                                            \
-    /* NOLINT(fuchsia-statically-constructed-objects,cert-err58-cpp) */                            \
-    static const int var DOCTEST_UNUSED                                                            \
-    DOCTEST_CLANG_SUPPRESS_WARNING_POP
-
-#define DOCTEST_REGISTER_FUNCTION_CLASS(global_prefix, f, decorators)                              \
-    global_prefix DOCTEST_GLOBAL_NO_WARNINGS_CLASS(DOCTEST_ANONYMOUS(DOCTEST_ANON_VAR_) = /* NOLINT */ \
-            doctest::detail::regTest(                                                              \
-                    doctest::detail::TestCase(                                                     \
-                            f, __FILE__, __LINE__,                                                 \
-                            doctest_detail_test_suite_ns::getCurrentTestSuite()) *                 \
-                    decorators);)
-
 // registers the test by initializing a dummy var with a function
 #define DOCTEST_REGISTER_FUNCTION(global_prefix, f, decorators)                                    \
     global_prefix DOCTEST_GLOBAL_NO_WARNINGS(DOCTEST_ANONYMOUS(DOCTEST_ANON_VAR_), /* NOLINT */    \
@@ -2175,7 +2167,13 @@ int registerReporter(const char* name, int priority, bool isReporter) {
 
 #define DOCTEST_CREATE_AND_REGISTER_FUNCTION_IN_CLASS(f, proxy, decorators)                        \
     static doctest::detail::funcType proxy() { return f; }                                         \
-    DOCTEST_REGISTER_FUNCTION_CLASS(inline, proxy(), decorators)                                   \
+        /* NOLINT */                                                                               \
+        inline DOCTEST_GLOBAL_NO_WARNINGS_CLASS(DOCTEST_ANONYMOUS(DOCTEST_ANON_VAR_) =             \
+            doctest::detail::regTest(                                                              \
+                    doctest::detail::TestCase(                                                     \
+                            proxy(), __FILE__, __LINE__,                                           \
+                            doctest_detail_test_suite_ns::getCurrentTestSuite()) *                 \
+                    decorators);)                                                                  \
     static void f()
 
 // for registering tests
