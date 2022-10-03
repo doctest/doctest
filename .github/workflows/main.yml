@@ -37,8 +37,7 @@ jobs:
           sudo add-apt-repository "deb https://apt.repos.intel.com/oneapi all main"
           sudo apt-get update
           sudo apt-get install -y intel-oneapi-compiler-dpcpp-cpp-and-cpp-classic ninja-build
-          sudo su -
-          . /opt/intel/oneapi/setvars.sh
+          echo '. /opt/intel/oneapi/setvars.sh' >> ~/.bashrc 
           
       - name: Generate
         run: cmake -B build -S . -G Ninja -D CMAKE_CXX_COMPILER=icc -D CMAKE_C_COMPILER=icc -D CMAKE_CXX_COMPILER=icpc -D CMAKE_BUILD_TYPE=${{ matrix.configuration }}
