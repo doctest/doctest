@@ -4126,12 +4126,14 @@ namespace {
         return false;
     }
 
-    DOCTEST_NO_SANITIZE_INTEGER unsigned long long hash(unsigned long long a, unsigned long long b) {
+    DOCTEST_NO_SANITIZE_INTEGER
+    unsigned long long hash(unsigned long long a, unsigned long long b) {
         return (a << 5) + b;
     }
 
     // C string hash function (djb2) - taken from http://www.cse.yorku.ca/~oz/hash.html
-    DOCTEST_NO_SANITIZE_INTEGER unsigned long long hash(const char* str) {
+    DOCTEST_NO_SANITIZE_INTEGER
+    unsigned long long hash(const char* str) {
         unsigned long long hash = 5381;
         char c;
         while ((c = *str++))
