@@ -85,14 +85,14 @@
     DOCTEST_COMPILER(_MSC_VER / 100, (_MSC_FULL_VER / 100000) % 100, _MSC_FULL_VER % 100000)
 #endif // MSVC
 #endif // MSVC
-#if defined(__clang__) && defined(__clang_minor__)
+#if defined(__clang__) && defined(__clang_minor__) && defined(__clang_patchlevel__)
 #define DOCTEST_CLANG DOCTEST_COMPILER(__clang_major__, __clang_minor__, __clang_patchlevel__)
 #elif defined(__GNUC__) && defined(__GNUC_MINOR__) && defined(__GNUC_PATCHLEVEL__) &&              \
         !defined(__INTEL_COMPILER)
 #define DOCTEST_GCC DOCTEST_COMPILER(__GNUC__, __GNUC_MINOR__, __GNUC_PATCHLEVEL__)
 #endif // GCC
 #if defined(__INTEL_COMPILER)
-#define DOCTEST_ICC DOCTEST_COMPILER(__INTEL_COMPILER / 100, __INTEL_COMPILER % 100, __INTEL_COMPILER % 10000)
+#define DOCTEST_ICC DOCTEST_COMPILER(__INTEL_COMPILER / 100, __INTEL_COMPILER % 100, 0)
 #endif // ICC
 
 #ifndef DOCTEST_MSVC
@@ -357,6 +357,12 @@ DOCTEST_MSVC_SUPPRESS_WARNING(4623) // default constructor was implicitly define
 #define DOCTEST_NOINLINE __attribute__((noinline))
 #define DOCTEST_UNUSED __attribute__((unused))
 #define DOCTEST_ALIGNMENT(x) __attribute__((aligned(x)))
+#endif
+
+#ifdef DOCTEST_CONFIG_NO_CONTRADICTING_INLINE
+#define DOCTEST_INLINE_NOINLINE inline
+#else
+#define DOCTEST_INLINE_NOINLINE inline DOCTEST_NOINLINE
 #endif
 
 #ifndef DOCTEST_NORETURN
@@ -1078,7 +1084,7 @@ struct StringMaker : public detail::StringMakerBase<
 
 template <typename T>
 String toString() {
-#if DOCTEST_MSVC >= 0 && DOCTEST_CLANG == 0 && DOCTEST_GCC == 0 && DOCTEST_ICC == 0
+#if DOCTEST_CLANG == 0 && DOCTEST_GCC == 0 && DOCTEST_ICC == 0
     String ret = __FUNCSIG__; // class doctest::String __cdecl doctest::toString<TYPE>(void)
     String::size_type beginPos = ret.find('<');
     return ret.substr(beginPos + 1, ret.size() - beginPos - static_cast<String::size_type>(sizeof(">(void)")));
@@ -2154,13 +2160,13 @@ int registerReporter(const char* name, int priority, bool isReporter) {
         {                                                                                          \
             void f();                                                                              \
         };                                                                                         \
-        static inline DOCTEST_NOINLINE void func() {                                               \
+        static DOCTEST_INLINE_NOINLINE void func() {                                               \
             der v;                                                                                 \
             v.f();                                                                                 \
         }                                                                                          \
         DOCTEST_REGISTER_FUNCTION(DOCTEST_EMPTY, func, decorators)                                 \
     }                                                                                              \
-    inline DOCTEST_NOINLINE void der::f() // NOLINT(misc-definitions-in-headers)
+    DOCTEST_INLINE_NOINLINE void der::f() // NOLINT(misc-definitions-in-headers)
 
 #define DOCTEST_CREATE_AND_REGISTER_FUNCTION(f, decorators)                                        \
     static void f();                                                                               \
