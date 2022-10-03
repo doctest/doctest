@@ -176,6 +176,8 @@ CHECK(std::isnan(performComputation()); // does not capture the result of the ca
 CHECK(doctest::IsNaN(performComputation()); // captures the result!
 ```
 
+`IsNaN` is able to capture the value, even if negated via `!`.
+
 --------
 
 - Check out the [**example**](../../examples/all_features/assertion_macros.cpp) which shows many of these macros

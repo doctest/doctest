@@ -8,6 +8,8 @@ DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_END
 // NORMAL TEMPLATED TEST CASES
 // =================================================================================================
 
+TYPE_TO_STRING_AS("SHORT!!!", short);
+
 TEST_CASE_TEMPLATE("signed integers stuff", T, signed char, short, int) {
     T var = T();
     --var;
@@ -43,13 +45,17 @@ TEST_CASE_TEMPLATE_APPLY(test_id, std::tuple<unsigned char, char>);
 template <typename first, typename second>
 struct TypePair
 {
-    typedef first  A;
-    typedef second B;
+    using A = first;
+    using B = second;
 };
 
+TYPE_TO_STRING_AS("Custom name test", TypePair<int, char>);
+TYPE_TO_STRING_AS("Other custom name", TypePair<char, int>);
+TYPE_TO_STRING(TypePair<bool, int>);
+
 TEST_CASE_TEMPLATE("multiple types", T, TypePair<int, char>, TypePair<char, int>, TypePair<bool, int>) {
-    typedef typename T::A T1;
-    typedef typename T::B T2;
+    using T1 = typename T::A;
+    using T2 = typename T::B;
     T1 t1 = T1();
     T2 t2 = T2();
     // use T1 and T2 types
@@ -58,12 +64,12 @@ TEST_CASE_TEMPLATE("multiple types", T, TypePair<int, char>, TypePair<char, int>
 }
 
 // currently the string result will be "int_pair" instead of "TypePair<int, int>" because of the way the type stringification works
-typedef TypePair<int, int> int_pair;
+using int_pair = TypePair<int, int>;
 TYPE_TO_STRING(int_pair);
 
 TEST_CASE_TEMPLATE("bad stringification of type pair", T, int_pair) {
-    typedef typename T::A T1;
-    typedef typename T::B T2;
+    using T1 = typename T::A;
+    using T2 = typename T::B;
     T1 t1 = T1();
     T2 t2 = T2();
     // use T1 and T2 types

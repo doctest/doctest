@@ -1,12 +1,5 @@
 [doctest] run with "--help" for options
 I am a test from the dll!
-===============================================================================
-dll.cpp(0):
-TEST CASE:  dll
-
-dll.cpp(0): ERROR: CHECK( doctest::IsNaN<long double>(0.1L) ) is NOT correct!
-  values: CHECK( 0.1 )
-
 I am a test from the implementation!
 I am a test from the implementation_2!
 I am a test from the executable!
@@ -33,6 +26,6 @@ plugin.cpp(0): FATAL ERROR: certain death!
   logged: some info
 
 ===============================================================================
-[doctest] test cases: 5 | 2 passed | 3 failed | 0 skipped
-[doctest] assertions: 4 | 1 passed | 3 failed |
+[doctest] test cases: 5 | 3 passed | 2 failed | 0 skipped
+[doctest] assertions: 3 | 1 passed | 2 failed |
 [doctest] Status: FAILURE!

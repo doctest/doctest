@@ -5,7 +5,7 @@
     <TestCase name="signed integers stuff&lt;signed char>" filename="templated_test_cases.cpp" line="0">
       <OverallResultsAsserts successes="1" failures="0" test_case_success="true"/>
     </TestCase>
-    <TestCase name="signed integers stuff&lt;short int>" filename="templated_test_cases.cpp" line="0">
+    <TestCase name="signed integers stuff&lt;SHORT!!!>" filename="templated_test_cases.cpp" line="0">
       <OverallResultsAsserts successes="1" failures="0" test_case_success="true"/>
     </TestCase>
     <TestCase name="signed integers stuff&lt;int>" filename="templated_test_cases.cpp" line="0">
@@ -25,7 +25,7 @@
     <TestCase name="default construction&lt;signed char>" filename="templated_test_cases.cpp" line="0">
       <OverallResultsAsserts successes="1" failures="0" test_case_success="true"/>
     </TestCase>
-    <TestCase name="default construction&lt;short int>" filename="templated_test_cases.cpp" line="0">
+    <TestCase name="default construction&lt;SHORT!!!>" filename="templated_test_cases.cpp" line="0">
       <OverallResultsAsserts successes="1" failures="0" test_case_success="true"/>
     </TestCase>
     <TestCase name="default construction&lt;int>" filename="templated_test_cases.cpp" line="0">
@@ -43,7 +43,7 @@
     <TestCase name="default construction&lt;char>" filename="templated_test_cases.cpp" line="0">
       <OverallResultsAsserts successes="1" failures="0" test_case_success="true"/>
     </TestCase>
-    <TestCase name="multiple types&lt;>" filename="templated_test_cases.cpp" line="0">
+    <TestCase name="multiple types&lt;Custom name test>" filename="templated_test_cases.cpp" line="0">
       <Expression success="false" type="CHECK" filename="templated_test_cases.cpp" line="0">
         <Original>
           t2 != T2()
@@ -54,7 +54,7 @@
       </Expression>
       <OverallResultsAsserts successes="1" failures="1" test_case_success="false"/>
     </TestCase>
-    <TestCase name="multiple types&lt;>" filename="templated_test_cases.cpp" line="0">
+    <TestCase name="multiple types&lt;Other custom name>" filename="templated_test_cases.cpp" line="0">
       <Expression success="false" type="CHECK" filename="templated_test_cases.cpp" line="0">
         <Original>
           t2 != T2()
@@ -65,7 +65,7 @@
       </Expression>
       <OverallResultsAsserts successes="1" failures="1" test_case_success="false"/>
     </TestCase>
-    <TestCase name="multiple types&lt;>" filename="templated_test_cases.cpp" line="0">
+    <TestCase name="multiple types&lt;TypePair&lt;bool, int>>" filename="templated_test_cases.cpp" line="0">
       <Expression success="false" type="CHECK" filename="templated_test_cases.cpp" line="0">
         <Original>
           t2 != T2()

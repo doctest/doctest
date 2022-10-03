@@ -105,8 +105,8 @@ foreach(line ${output})
     "${prefix}${test}${suffix}"
     PROPERTIES
     WORKING_DIRECTORY "${TEST_WORKING_DIR}"
-    LABELS ${labels}
     ${properties}
+    LABELS ${labels}
   )
   unset(labels)
   list(APPEND tests "${prefix}${test}${suffix}")

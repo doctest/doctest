@@ -1,16 +1,6 @@
 #include <doctest/doctest.h>
 
-// helper for throwing exceptions
-template <typename T>
-int throw_if(bool in, const T& ex) {
-    if(in)
-#ifndef DOCTEST_CONFIG_NO_EXCEPTIONS
-        throw ex;
-#else  // DOCTEST_CONFIG_NO_EXCEPTIONS
-        ((void)ex);
-#endif // DOCTEST_CONFIG_NO_EXCEPTIONS
-    return 42;
-}
+#include "header.h"
 
 DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_BEGIN
 #include <ostream>
@@ -61,36 +51,18 @@ TEST_CASE("exercising tricky code paths of doctest") {
     str += toString("aaa")                            //
            + toString(nullptr)                        //
            + toString(true)                           //
-           + toString(static_cast<unsigned int>(0))   //
-           + toString(0.5f)                           //
-           + toString(0.5)                            //
-           + toString(static_cast<long double>(0.1))  //
+           + toString(0u)                             //
            + toString('c')                            //
            + toString(static_cast<signed char>('c'))  //
            + toString(static_cast<unsigned char>(1))  //
            + toString(static_cast<short>(1))          //
-           + toString(static_cast<long>(1))           //
-           + toString(static_cast<unsigned long>(1))  //
+           + toString(1L)                             //
+           + toString(1UL)                            //
            + toString(static_cast<unsigned short>(1)) //
-           + toString(static_cast<long long>(1))      //
-           + toString(static_cast<unsigned long long>(1));
+           + toString(1LL)                            //
+           + toString(1ULL);
 
     std::ostringstream oss;
-
-    // toStream
-    detail::toStream(&oss, true);
-    detail::toStream(&oss, 0.5f);
-    detail::toStream(&oss, 0.5);
-    detail::toStream(&oss, static_cast<long double>(0.1));
-    detail::toStream(&oss, 'c');
-    detail::toStream(&oss, static_cast<signed char>('c'));
-    detail::toStream(&oss, static_cast<unsigned char>(1));
-    detail::toStream(&oss, static_cast<short>(1));
-    detail::toStream(&oss, static_cast<long>(1));
-    detail::toStream(&oss, static_cast<unsigned long>(1));
-    detail::toStream(&oss, static_cast<unsigned short>(1));
-    detail::toStream(&oss, static_cast<long long>(1));
-    detail::toStream(&oss, static_cast<unsigned long long>(1));
 
     // trigger code path for String to ostream through operator<<
     oss << str;
@@ -102,38 +74,39 @@ TEST_CASE("exercising tricky code paths of doctest") {
 #endif
     str += oss.str().c_str();
     str += failureString(assertType::is_normal);
-    CHECK(str == "omgomgomgaaaNULLtrue00.5f0.50.199991111111true0.50.50.1cc"
-                 "111111omgomgomgaaaNULLtrue00.5f0.50.199991111111");
+    CHECK(str == "omgomgomgaaanullptrtrue099991111111"
+                 "omgomgomgaaanullptrtrue099991111111");
     // trigger code path for rawMemoryToString
     bool   isThereAnything = str.size() > 0u;
-    bool   len_is_zero     = detail::rawMemoryToString(isThereAnything).size() == 0u;
     String unknown         = toString(skip()); // trigger code path for "{?}"
     str                    = unknown;          // trigger code path for deleting memory in operator=
-    CHECK_MESSAGE(len_is_zero, "should fail");
+    CHECK_FALSE_MESSAGE(isThereAnything, "should fail");
 
     Approx a(5);
     a.scale(4);
     Approx b = a(7);
 
-    CHECK(b == 5);
-    CHECK(b != 5);
-    CHECK(b > 5);
-    CHECK(b < 5);
-    CHECK(b >= 5);
-    CHECK(b <= 5);
+    CHECK(b == 7);
+    CHECK(b != 6);
+    CHECK(b > 6);
+    CHECK(b < 8);
+    CHECK(b >= 7);
+    CHECK(b <= 7);
 
-    CHECK(6 == a);
+    CHECK(5 == a);
     CHECK(6 != a);
     CHECK(6 > a);
-    CHECK(6 < a);
-    CHECK(6 >= a);
-    CHECK(6 <= a);
+    CHECK(4 < a);
+    CHECK(5 >= a);
+    CHECK(5 <= a);
 
     // trigger another single line of code... lol
+    // NOLINTBEGIN(cppcoreguidelines-pro-type-const-cast)
     auto oldVal = const_cast<ContextOptions*>(getContextOptions())->no_path_in_filenames;
     const_cast<ContextOptions*>(getContextOptions())->no_path_in_filenames = false;
     CHECK(String(skipPathFromFilename("")) == "");
     const_cast<ContextOptions*>(getContextOptions())->no_path_in_filenames = oldVal;
+    // NOLINTEND(cppcoreguidelines-pro-type-const-cast)
 
     // a hack to trigger a bug in doctest: currently a 0 cannot be successfully parsed for an int option!
     Context().setOption("last", 0);

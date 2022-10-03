@@ -2,7 +2,111 @@
 <doctest binary="all_features">
   <Options order_by="file" rand_seed="324" first="0" last="4294967295" abort_after="0" subcase_filter_levels="2147483647" case_sensitive="false" no_throw="false" no_skip="false"/>
   <TestSuite>
+    <TestCase name="toString std::string ret type" filename="double_stringification.cpp" line="0">
+      <OverallResultsAsserts successes="3" failures="0" test_case_success="true"/>
+    </TestCase>
+    <TestCase name="operator&lt;&lt;" filename="stringification.cpp" line="0">
+      <Message type="WARNING" filename="stringification.cpp" line="0">
+        <Text>
+          A
+        </Text>
+      </Message>
+      <Message type="WARNING" filename="stringification.cpp" line="0">
+        <Text>
+          B
+        </Text>
+      </Message>
+      <Message type="WARNING" filename="stringification.cpp" line="0">
+        <Text>
+          C
+        </Text>
+      </Message>
+      <OverallResultsAsserts successes="0" failures="0" test_case_success="true"/>
+    </TestCase>
+    <TestCase name="no headers" filename="stringification.cpp" line="0">
+      <Message type="WARNING" filename="stringification.cpp" line="0">
+        <Text>
+          1as
+        </Text>
+      </Message>
+      <Expression success="false" type="CHECK" filename="stringification.cpp" line="0">
+        <Original>
+          chs == nullptr
+        </Original>
+        <Expanded>
+          1as == nullptr
+        </Expanded>
+      </Expression>
+      <Message type="WARNING" filename="stringification.cpp" line="0">
+        <Text>
+          1as
+        </Text>
+      </Message>
+      <Expression success="false" type="CHECK" filename="stringification.cpp" line="0">
+        <Original>
+          "1as" == nullptr
+        </Original>
+        <Expanded>
+          1as == nullptr
+        </Expanded>
+      </Expression>
+      <Message type="WARNING" filename="stringification.cpp" line="0">
+        <Text>
+          [0, 1, 1, 2, 3, 5, 8, 13]
+        </Text>
+      </Message>
+      <Expression success="false" type="CHECK" filename="stringification.cpp" line="0">
+        <Original>
+          ints == nullptr
+        </Original>
+        <Expanded>
+          [0, 1, 1, 2, 3, 5, 8, 13] == nullptr
+        </Expanded>
+      </Expression>
+      <Message type="WARNING" filename="stringification.cpp" line="0">
+        <Text>
+          [0, 1, 1, 2, 3, 5, 8, 13]
+        </Text>
+      </Message>
+      <Message type="WARNING" filename="stringification.cpp" line="0">
+        <Text>
+          nullptr
+        </Text>
+      </Message>
+      <Expression success="false" type="CHECK" filename="stringification.cpp" line="0">
+        <Original>
+          cnptr != nullptr
+        </Original>
+        <Expanded>
+          nullptr != nullptr
+        </Expanded>
+      </Expression>
+      <Message type="WARNING" filename="stringification.cpp" line="0">
+        <Text>
+          0
+        </Text>
+      </Message>
+      <Expression success="false" type="CHECK" filename="stringification.cpp" line="0">
+        <Original>
+          A == C
+        </Original>
+        <Expanded>
+          0 == 100
+        </Expanded>
+      </Expression>
+      <Message type="WARNING" filename="stringification.cpp" line="0">
+        <Text>
+          int
+        </Text>
+      </Message>
+      <OverallResultsAsserts successes="2" failures="5" test_case_success="false"/>
+    </TestCase>
     <TestCase name="all asserts should fail and show how the objects get stringified" filename="stringification.cpp" line="0">
+      <Message type="WARNING" filename="stringification.cpp" line="0">
+        <Text>
+          Foo{}
+        </Text>
+      </Message>
       <Expression success="false" type="CHECK" filename="stringification.cpp" line="0">
         <Original>
           f1 == f2
@@ -11,6 +115,11 @@
           Foo{} == Foo{}
         </Expanded>
       </Expression>
+      <Message type="WARNING" filename="stringification.cpp" line="0">
+        <Text>
+          omg
+        </Text>
+      </Message>
       <Expression success="false" type="CHECK" filename="stringification.cpp" line="0">
         <Original>
           dummy == "tralala"
@@ -27,6 +136,11 @@
           tralala == omg
         </Expanded>
       </Expression>
+      <Message type="WARNING" filename="stringification.cpp" line="0">
+        <Text>
+          [1, 2, 3]
+        </Text>
+      </Message>
       <Expression success="false" type="CHECK" filename="stringification.cpp" line="0">
         <Original>
           vec1 == vec2
@@ -35,12 +149,17 @@
           [1, 2, 3] == [1, 2, 4]
         </Expanded>
       </Expression>
+      <Message type="WARNING" filename="stringification.cpp" line="0">
+        <Text>
+          [1, 42, 3]
+        </Text>
+      </Message>
       <Expression success="false" type="CHECK" filename="stringification.cpp" line="0">
         <Original>
           lst_1 == lst_2
         </Original>
         <Expanded>
-          [1, 42, 3, ] == [1, 2, 666, ]
+          [1, 42, 3] == [1, 2, 666]
         </Expanded>
       </Expression>
       <Expression success="false" type="CHECK" filename="stringification.cpp" line="0">
@@ -70,22 +189,6 @@
       </Expression>
       <Expression success="false" type="CHECK" filename="stringification.cpp" line="0">
         <Original>
-          doctest::IsNaN&lt;double>(0.5)
-        </Original>
-        <Expanded>
-          0.5
-        </Expanded>
-      </Expression>
-      <Expression success="false" type="CHECK" filename="stringification.cpp" line="0">
-        <Original>
-          doctest::IsNaN&lt;float>(std::numeric_limits&lt;float>::infinity())
-        </Original>
-        <Expanded>
-          inf
-        </Expanded>
-      </Expression>
-      <Expression success="false" type="CHECK" filename="stringification.cpp" line="0">
-        <Original>
           "a" == doctest::Contains("aaa")
         </Original>
         <Expanded>
@@ -95,7 +198,7 @@
       <Exception crash="false">
         MyTypeInherited&lt;int>(5, 4)
       </Exception>
-      <OverallResultsAsserts successes="0" failures="10" test_case_success="false"/>
+      <OverallResultsAsserts successes="4" failures="8" test_case_success="false"/>
     </TestCase>
     <TestCase name="a test case that registers an exception translator for int and then throws one" filename="stringification.cpp" line="0">
       <Exception crash="false">
@@ -103,8 +206,11 @@
       </Exception>
       <OverallResultsAsserts successes="0" failures="0" test_case_success="false"/>
     </TestCase>
+    <TestCase name="pointer comparisons" filename="stringification.cpp" line="0">
+      <OverallResultsAsserts successes="4" failures="0" test_case_success="true"/>
+    </TestCase>
   </TestSuite>
-  <OverallResultsAsserts successes="0" failures="10"/>
-  <OverallResultsTestCases successes="0" failures="2"/>
+  <OverallResultsAsserts successes="13" failures="13"/>
+  <OverallResultsTestCases successes="3" failures="3"/>
 </doctest>
 Program code.

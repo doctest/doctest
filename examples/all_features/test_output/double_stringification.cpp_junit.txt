@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+  <testsuite name="all_features" errors="0" failures="0" tests="3">
+    <testcase classname="double_stringification.cpp" name="toString std::string ret type" status="run"/>
+  </testsuite>
+</testsuites>
+Program code.

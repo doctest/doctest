@@ -46,6 +46,6 @@ TEST_CASE("[math] basic stuff") {
 }
 
 int program() {
-    printf("Program code.\n");
+    std::cout << "Program code." << std::endl;
     return EXIT_SUCCESS;
 }

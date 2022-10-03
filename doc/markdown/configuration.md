@@ -12,6 +12,8 @@ Defining something ```globally``` means for every source file of the binary (exe
 - [**```DOCTEST_CONFIG_IMPLEMENTATION_IN_DLL```**](#doctest_config_implementation_in_dll)
 - [**```DOCTEST_CONFIG_NO_SHORT_MACRO_NAMES```**](#doctest_config_no_short_macro_names)
 - [**```DOCTEST_CONFIG_TREAT_CHAR_STAR_AS_STRING```**](#doctest_config_treat_char_star_as_string)
+- [**```DOCTEST_CONFIG_REQUIRE_STRINGIFICATION_FOR_ALL_USED_TYPES```**](#doctest_config_require_stringification_for_all_used_types)
+- [**```DOCTEST_CONFIG_DOUBLE_STRINGIFY```**](#doctest_config_double_stringify)
 - [**```DOCTEST_CONFIG_SUPER_FAST_ASSERTS```**](#doctest_config_super_fast_asserts)
 - [**```DOCTEST_CONFIG_USE_STD_HEADERS```**](#doctest_config_use_std_headers)
 - [**```DOCTEST_CONFIG_VOID_CAST_EXPRESSIONS```**](#doctest_config_void_cast_expressions)
@@ -30,6 +32,7 @@ Defining something ```globally``` means for every source file of the binary (exe
 - [**```DOCTEST_CONFIG_POSIX_SIGNALS```**](#doctest_config_posix_signals)
 - [**```DOCTEST_CONFIG_NO_POSIX_SIGNALS```**](#doctest_config_no_posix_signals)
 - [**```DOCTEST_CONFIG_INCLUDE_TYPE_TRAITS```**](#doctest_config_include_type_traits)
+- [**```DOCTEST_CONFIG_NO_MULTITHREADING```**](#doctest_config_no_multithreading)
 - [**```DOCTEST_CONFIG_NO_MULTI_LANE_ATOMICS```**](#doctest_config_no_multi_lane_atomics)
 - [**```DOCTEST_CONFIG_ASSERTS_RETURN_VALUES```**](#doctest_config_asserts_return_values)
 - [**```DOCTEST_CONFIG_EVALUATE_ASSERTS_EVEN_WHEN_DISABLED```**](#doctest_config_evaluate_asserts_even_when_disabled)
@@ -80,6 +83,20 @@ This can be defined both globally and in specific source files only.
 By default ```char*``` is being treated as a pointer. With this option comparing ```char*``` pointers will switch to using ```strcmp()``` for comparisons and when stringified the string will be printed instead of the pointer value.
 
 This should be defined globally.
+
+### **```DOCTEST_CONFIG_REQUIRE_STRINGIFICATION_FOR_ALL_USED_TYPES```**
+
+By default if stringification is not available for a type, it is simply printed as `{?}`. By enabling this flag, whenever a type is used in an assert that does not provide stringification, the compilation is stopped.
+
+This can be defined both globally and in specific source files only.
+
+### **```DOCTEST_CONFIG_DOUBLE_STRINGIFY```**
+
+If you define your own `toString` functions that return something, that's different from `doctest::String`, but still stringifiable, you can enable this flag to stringify the result of internal stringification calls again.
+
+You can also define `DOCTEST_STRINGIFY` yourself to override doctest's stringification behavior.
+
+This can be defined both globally and in specific source files only.
 
 ### **```DOCTEST_CONFIG_SUPER_FAST_ASSERTS```**
 
@@ -236,6 +253,16 @@ This should be defined only in the source file where the library is implemented 
 This can be used to include the ```<type_traits>``` C++11 header. That in turn will enable the ability for the ```Approx``` helper to be used with strong typedefs of ```double``` - check [this](https://github.com/doctest/doctest/issues/62) or [this](https://github.com/doctest/doctest/issues/85) issue for more details on that.
 
 This can be defined both globally and in specific source files only.
+
+### **```DOCTEST_CONFIG_NO_MULTITHREADING```**
+
+This can be used to disable all multithreading support.
+
+Speeds up single threaded applications.
+
+Includes [**```DOCTEST_CONFIG_NO_MULTI_LANE_ATOMICS```**](#doctest_config_no_multi_lane_atomics).
+
+This should be defined only in the source file where the library is implemented (it's relevant only there).
 
 ### **```DOCTEST_CONFIG_NO_MULTI_LANE_ATOMICS```**
 
