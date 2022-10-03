@@ -2141,7 +2141,7 @@ int registerReporter(const char* name, int priority, bool isReporter) {
     DOCTEST_CLANG_SUPPRESS_WARNING_POP
 
 #define DOCTEST_REGISTER_FUNCTION_CLASS(global_prefix, f, decorators)                              \
-    global_prefix DOCTEST_GLOBAL_NO_WARNINGS_CLASS(DOCTEST_ANONYMOUS(DOCTEST_ANON_VAR_), /* NOLINT */ \
+    global_prefix DOCTEST_GLOBAL_NO_WARNINGS_CLASS(DOCTEST_ANONYMOUS(DOCTEST_ANON_VAR_) = /* NOLINT */ \
             doctest::detail::regTest(                                                              \
                     doctest::detail::TestCase(                                                     \
                             f, __FILE__, __LINE__,                                                 \
