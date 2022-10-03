@@ -19,14 +19,14 @@ env:
   CTEST_PARALLEL_LEVEL: 2
 
 jobs:
-  clang-sanitiers:
+  sanitizers:
     if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name != github.repository
     runs-on: ubuntu-22.04
     
     strategy:
       fail-fast: false
       matrix:
-        sanitizers: ["address", "thread", "memory", "undefined", "dataflow", "cfi", "kcfi", "safe-stack", "integer"]
+        sanitizers: ["address", "thread", "memory", "undefined", "integer", "implicit-conversion", "nullability", "dataflow", "cfi -flto", "safe-stack"]
 
     steps:
       - uses: actions/checkout@v2
