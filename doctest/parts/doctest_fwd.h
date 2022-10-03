@@ -376,6 +376,14 @@ DOCTEST_MSVC_SUPPRESS_WARNING(4623) // default constructor was implicitly define
 #endif // DOCTEST_MSVC
 #endif // DOCTEST_CONSTEXPR
 
+#ifndef DOCTEST_NO_SANITIZE_INTEGER
+#if DOCTEST_CLANG >= DOCTEST_COMPILER(3, 7, 0)
+#define DOCTEST_NO_SANITIZE_INTEGER __attribute__((no_sanitize("integer")))
+#else
+#define DOCTEST_NO_SANITIZE_INTEGER
+#endif
+#endif // DOCTEST_NO_SANITIZE_INTEGER
+
 // =================================================================================================
 // == FEATURE DETECTION END ========================================================================
 // =================================================================================================
