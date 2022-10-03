@@ -26,7 +26,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        sanitizers: ["address", "thread", "memory", "undefined", "integer", "implicit-conversion", "nullability", "dataflow", "cfi -flto", "safe-stack"]
+        sanitizers: ["address", "thread", "memory", "undefined", "integer", "implicit-conversion", "nullability", "cfi -flto -fvisibility=hidden", "safe-stack"]
 
     steps:
       - uses: actions/checkout@v2
@@ -35,7 +35,7 @@ jobs:
         run: sudo apt-get install -y ninja-build
 
       - name: Generate
-        run: cmake -B build -S . -G Ninja -D CMAKE_CXX_COMPILER=clang++ -D CMAKE_EXPORT_COMPILE_COMMANDS=ON -D CMAKE_CXX_FLAGS="-fsanitize=${{ matrix.sanitizers }}"
+        run: cmake -B build -S . -G Ninja -D CMAKE_CXX_COMPILER=clang++ -D CMAKE_EXPORT_COMPILE_COMMANDS=ON -D CMAKE_CXX_FLAGS="-fsanitize=${{ matrix.sanitizers }} -stdlib=libc++"
 
       - name: Build
         run: cmake --build build
