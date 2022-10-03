@@ -25,14 +25,11 @@
     <TestCase name="fixtured test" filename="header.h" line="0">
       <OverallResultsAsserts successes="1" failures="0" test_case_success="true"/>
     </TestCase>
-    <TestCase name="all_to_all_v 5" filename="header.h" line="0">
-      <OverallResultsAsserts successes="1" failures="0" test_case_success="true"/>
-    </TestCase>
     <TestCase name="test base" filename="header.h" line="0">
       <OverallResultsAsserts successes="1" failures="0" test_case_success="true"/>
     </TestCase>
   </TestSuite>
-  <OverallResultsAsserts successes="3" failures="3"/>
-  <OverallResultsTestCases successes="3" failures="3"/>
+  <OverallResultsAsserts successes="2" failures="3"/>
+  <OverallResultsTestCases successes="2" failures="3"/>
 </doctest>
 Program code.

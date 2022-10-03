@@ -48,8 +48,7 @@ DOCTEST_GCC_SUPPRESS_WARNING("-Wstrict-overflow")
 #endif // gcc 5
 
 // NOLINTBEGIN
-struct SomeFixture
-{
+struct SomeFixture {
     int data;
     SomeFixture() noexcept
             : data(42) {
