@@ -26,7 +26,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        sanitizers: ["address", "thread", "memory", "undefined", "dataflow", "cfi", "kcfi", "safe-stack"]
+        sanitizers: ["address", "thread", "memory", "undefined", "dataflow", "cfi", "kcfi", "safe-stack", "integer"]
 
     steps:
       - uses: actions/checkout@v2
