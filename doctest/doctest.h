@@ -2191,7 +2191,7 @@ int registerReporter(const char* name, int priority, bool isReporter) {
                                                   decorators)
 #else // DOCTEST_TEST_CASE_CLASS
 #define DOCTEST_TEST_CASE_CLASS(...)                                                               \
-    TEST_CASES_CAN_BE_REGISTERED_IN_CLASSES_ONLY_IN_CPP17_MODE_OR_WITH_VS_2017_OR_NEWER
+    static_assert(false, "Test cases can be registered in classes only in C++ >= 17");
 #endif // DOCTEST_TEST_CASE_CLASS
 
 // for registering tests with a fixture

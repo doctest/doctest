@@ -67,16 +67,6 @@ TEST_CASE_FIXTURE(SomeFixture, "fixtured test") {
     CHECK(data == 21);
 }
 
-class MyFixture {
-    protected:
-        int data = 5;
-
-    TEST_CASE_CLASS("all_to_all_v 5") {
-        MyFixture local;
-        CHECK(local.data == 5);
-    }
-};
-
-DOCTEST_IMPLEMENT_FIXTURE(SomeOtherFixture, MyFixture, myTest, "test base") {
-    CHECK(data == 5);
+DOCTEST_IMPLEMENT_FIXTURE(SomeOtherFixture, SomeFixture, myTest, "test base") {
+    CHECK(data == 42);
 }
