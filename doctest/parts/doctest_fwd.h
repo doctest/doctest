@@ -150,19 +150,6 @@
 #define DOCTEST_MSVC_SUPPRESS_WARNING_WITH_PUSH(w)
 #endif // DOCTEST_MSVC
 
-#if DOCTEST_ICC
-#define DOCTEST_ICC_SUPPRESS_WARNING_PUSH #pragma warning (push)
-#define DOCTEST_ICC_SUPPRESS_WARNING(w) #pragma warning (disable : w)
-#define DOCTEST_ICC_SUPPRESS_WARNING_POP #pragma warning (pop)
-#define DOCTEST_ICC_SUPPRESS_WARNING_WITH_PUSH(w)                                                 \
-    DOCTEST_ICC_SUPPRESS_WARNING_PUSH DOCTEST_ICC_SUPPRESS_WARNING(w)
-#else // DOCTEST_ICC
-#define DOCTEST_ICC_SUPPRESS_WARNING_PUSH
-#define DOCTEST_ICC_SUPPRESS_WARNING(w)
-#define DOCTEST_ICC_SUPPRESS_WARNING_POP
-#define DOCTEST_ICC_SUPPRESS_WARNING_WITH_PUSH(w)
-#endif // DOCTEST_ICC
-
 // =================================================================================================
 // == COMPILER WARNINGS ============================================================================
 // =================================================================================================
@@ -1604,9 +1591,7 @@ DOCTEST_CLANG_SUPPRESS_WARNING_POP
 
     using funcType = void (*)();
 
-    DOCTEST_ICC_SUPPRESS_WARNING_WITH_PUSH(444)
     struct DOCTEST_INTERFACE TestCase : public TestCaseData
-    DOCTEST_ICC_SUPPRESS_WARNING_POP
     {
         funcType m_test; // a function pointer to the test case
 
@@ -1675,10 +1660,8 @@ DOCTEST_CLANG_SUPPRESS_WARNING_POP
 
     struct DOCTEST_INTERFACE ResultBuilder : public AssertData
     {
-        DOCTEST_ICC_SUPPRESS_WARNING_WITH_PUSH(383)
         ResultBuilder(assertType::Enum at, const char* file, int line, const char* expr,
                       const char* exception_type = "", const String& exception_string = "");
-        DOCTEST_ICC_SUPPRESS_WARNING_POP
 
         ResultBuilder(assertType::Enum at, const char* file, int line, const char* expr,
                       const char* exception_type, const Contains& exception_string);
@@ -1863,9 +1846,7 @@ DOCTEST_CLANG_SUPPRESS_WARNING_POP
         }
     };
 
-    DOCTEST_ICC_SUPPRESS_WARNING_WITH_PUSH(444)
     struct DOCTEST_INTERFACE MessageBuilder : public MessageData
-    DOCTEST_ICC_SUPPRESS_WARNING_POP
     {
         std::ostream* m_stream;
         bool          logged = false;
@@ -2170,17 +2151,13 @@ int registerReporter(const char* name, int priority, bool isReporter) {
         {                                                                                          \
             void f();                                                                              \
         };                                                                                         \
-        DOCTEST_ICC_SUPPRESS_WARNING_WITH_PUSH(2196)                                               \
         static inline DOCTEST_NOINLINE void func() {                                               \
-        DOCTEST_ICC_SUPPRESS_WARNING_POP                                                           \
             der v;                                                                                 \
             v.f();                                                                                 \
         }                                                                                          \
         DOCTEST_REGISTER_FUNCTION(DOCTEST_EMPTY, func, decorators)                                 \
     }                                                                                              \
-    DOCTEST_ICC_SUPPRESS_WARNING_WITH_PUSH(2196)                                                   \
-    inline DOCTEST_NOINLINE void der::f() /* NOLINT(misc-definitions-in-headers) */                \
-    DOCTEST_ICC_SUPPRESS_WARNING_POP
+    inline DOCTEST_NOINLINE void der::f() // NOLINT(misc-definitions-in-headers)
 
 #define DOCTEST_CREATE_AND_REGISTER_FUNCTION(f, decorators)                                        \
     static void f();                                                                               \
