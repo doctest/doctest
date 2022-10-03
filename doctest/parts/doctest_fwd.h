@@ -356,12 +356,6 @@ DOCTEST_MSVC_SUPPRESS_WARNING(4623) // default constructor was implicitly define
 #define DOCTEST_ALIGNMENT(x) __attribute__((aligned(x)))
 #endif
 
-// Work-around for the warning: 'routine is both "inline" and "noinline"'
-#if DOCTEST_ICC
-#undef DOCTEST_NOINLINE
-#define DOCTEST_NOINLINE
-#endif // ICC
-
 #ifndef DOCTEST_NORETURN
 #if DOCTEST_MSVC && (DOCTEST_MSVC < DOCTEST_COMPILER(19, 0, 0))
 #define DOCTEST_NORETURN
