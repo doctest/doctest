@@ -28,6 +28,7 @@
     <TestCase name="a test case that will end from an exception and should print the unprinted context" filename="logging.cpp" line="0" skipped="true"/>
     <TestCase name="all asserts should fail and show how the objects get stringified" filename="stringification.cpp" line="0" skipped="true"/>
     <TestCase name="all binary assertions" filename="assertion_macros.cpp" line="0" skipped="true"/>
+    <TestCase name="all_to_all_v 5" filename="header.h" line="0" skipped="true"/>
     <TestCase name="an empty test that will succeed - not part of a test suite" filename="test_cases_and_suites.cpp" line="0" skipped="true"/>
     <TestCase name="bad stringification of type pair&lt;int_pair>" filename="templated_test_cases.cpp" line="0" skipped="true"/>
     <TestCase name="check return values" filename="assertion_macros.cpp" line="0" skipped="true"/>
@@ -128,6 +129,7 @@
     <TestCase name="subcases with changing names" filename="subcases.cpp" line="0" skipped="true"/>
     <TestCase name="template 1&lt;char>" filename="header.h" line="0" skipped="true"/>
     <TestCase name="template 2&lt;doctest::String>" filename="header.h" line="0" skipped="true"/>
+    <TestCase name="test base" filename="header.h" line="0" skipped="true"/>
     <TestCase name="test case should fail even though the last subcase passes" filename="subcases.cpp" line="0" skipped="true"/>
     <TestCase name="third party asserts can report failures to doctest" filename="logging.cpp" line="0" skipped="true"/>
     <TestCase name="threads..." filename="concurrency.cpp" line="0" skipped="true"/>
@@ -149,6 +151,6 @@
     <TestCase name="without a funny name:" filename="subcases.cpp" line="0" skipped="true"/>
   </TestSuite>
   <OverallResultsAsserts successes="0" failures="0"/>
-  <OverallResultsTestCases successes="0" failures="0" skipped="105"/>
+  <OverallResultsTestCases successes="0" failures="0" skipped="107"/>
 </doctest>
 Program code.
