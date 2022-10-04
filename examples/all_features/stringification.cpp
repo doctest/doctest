@@ -46,7 +46,7 @@ TEST_CASE("operator<<") {
 #endif
 
 TEST_CASE("no headers") {
-    DOCTEST_CLANG_SUPPRESS_WARNING_WITH_PUSH("-Wclang-diagnostic-tautological-pointer-compare")
+    DOCTEST_CLANG_SUPPRESS_WARNING_WITH_PUSH("-Wtautological-pointer-compare")
     // NOLINTBEGIN(clang-diagnostic-tautological-pointer-compare)
 
     char chs[] = { '1', 'a', 's' }; // NOLINT(*-avoid-c-arrays)
