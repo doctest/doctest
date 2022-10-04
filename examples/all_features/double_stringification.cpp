@@ -7,6 +7,7 @@ DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_END
 
 namespace App {
     struct Foo { };
+    // NOLINTNEXTLINE(clang-diagnostic-tautological-pointer-compare)
     static std::string toString(Foo*) { return "Foo"; }
 }
 
