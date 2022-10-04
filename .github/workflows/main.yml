@@ -32,10 +32,10 @@ jobs:
       - uses: actions/checkout@v2
 
       - name: Install
-        run: sudo apt-get install -y ninja-build clang-tidy-15
+        run: sudo apt-get install -y ninja-build clang-tidy-14
 
       - name: Generate
-        run: cmake -B build -S . -G Ninja -D CMAKE_CXX_COMPILER=clang++ -D CMAKE_EXPORT_COMPILE_COMMANDS=ON -D CMAKE_CXX_CLANG_TIDY="clang-tidy-14;-warnings-as-errors=*" -D CMAKE_CXX_FLAGS="${{ matrix.flags }}"
+        run: cmake -B build -S . -G Ninja -D CMAKE_CXX_COMPILER=clang++ -D CMAKE_EXPORT_COMPILE_COMMANDS=ON -D CMAKE_CXX_CLANG_TIDY="clang-tidy-14;-warnings-as-errors=*" -D CMAKE_CXX_FLAGS="${{ matrix.flags }} -Wno-unknown-pragmas"
 
       - name: Build
         run: cmake --build build
