@@ -249,9 +249,9 @@ jobs:
           # Required for libc6-dbg:i386 and g++-multilib packages which are
           # needed for x86 builds.
           sudo dpkg --add-architecture i386
-
-          sudo add apt-repository "deb http://deb.debian.org/debian/ stretch main"
-          sudo add apt-repository "deb http://security.debian.org/debian-security stretch/updates main"
+          
+          sudo add-apt-repository "deb http://deb.debian.org/debian/ stretch main"
+          sudo add-apt-repository "deb http://security.debian.org/debian-security stretch/updates main"
 
           # clang->=13 is not currently available by default
           if [ "${{ matrix.compiler }}" = "clang" -a ${{ matrix.version }} -ge 13  ]; then
