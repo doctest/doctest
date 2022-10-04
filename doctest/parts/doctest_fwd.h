@@ -2557,6 +2557,7 @@ int registerReporter(const char* name, int priority, bool isReporter) {
 
 // for registering tests
 #define DOCTEST_TEST_CASE(name)                                                                    \
+    /* NOLINT(clang-diagnostic-unused-template) */                                                 \ 
     DOCTEST_CREATE_AND_REGISTER_FUNCTION(DOCTEST_ANONYMOUS(DOCTEST_ANON_FUNC_), name)
 
 // for registering tests in classes
