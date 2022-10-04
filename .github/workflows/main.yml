@@ -253,7 +253,7 @@ jobs:
           sudo add-apt-repository "deb http://dk.archive.ubuntu.com/ubuntu/ xenial main"
           sudo add-apt-repository "deb http://dk.archive.ubuntu.com/ubuntu/ xenial universe"
           
-          sudo apt-key adv --fetch-keys http://dk.archive.ubuntu.com/ubuntu/dists/xenial/Release.gpg
+          curl -fsSL http://dk.archive.ubuntu.com/ubuntu/dists/xenial/Release.gpg | sudo tee /usr/share/keyrings/ubuntu-xenial.gpg
 
           # clang->=13 is not currently available by default
           if [ "${{ matrix.compiler }}" = "clang" -a ${{ matrix.version }} -ge 13  ]; then
