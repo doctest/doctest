@@ -429,6 +429,8 @@ DOCTEST_MSVC_SUPPRESS_WARNING(4623) // default constructor was implicitly define
 
 namespace doctest { namespace detail {
     static DOCTEST_CONSTEXPR int consume(const int*, int) noexcept { return 0; }
+    template <typename... Args>
+    static DOCTEST_CONSTEXPR int consumeAll(const Args&...) noexcept { return 0; }
 }}
 
 #define DOCTEST_GLOBAL_NO_WARNINGS(var, ...)                                                         \
@@ -2088,9 +2090,9 @@ int registerReporter(const char* name, int priority, bool isReporter) {
 } // namespace doctest
 
 #ifdef DOCTEST_CONFIG_ASSERTS_RETURN_VALUES
-#define DOCTEST_FUNC_EMPTY [] { return false; }()
+#define DOCTEST_FUNC_EMPTY(...) [] { return false; }()
 #else
-#define DOCTEST_FUNC_EMPTY (void)0
+#define DOCTEST_FUNC_EMPTY(...) doctest::detail::consumeAll(__VA_ARGS__)
 #endif
 
 // if registering is not disabled
@@ -2557,11 +2559,19 @@ int registerReporter(const char* name, int priority, bool isReporter) {
 
 // for registering tests
 #define DOCTEST_TEST_CASE(name)                                                                    \
-    DOCTEST_CREATE_AND_REGISTER_FUNCTION(DOCTEST_ANONYMOUS(DOCTEST_ANON_FUNC_), name)
+    /* NOLINTBEGIN(clang-diagnostic-unused-template) */                                            \
+    DOCTEST_CLANG_SUPPRESS_WARNING_WITH_PUSH("-Wunused-template")                                  \
+    DOCTEST_CREATE_AND_REGISTER_FUNCTION(DOCTEST_ANONYMOUS(DOCTEST_ANON_FUNC_), name)              \
+    DOCTEST_CLANG_SUPPRESS_WARNING_POP                                                             \
+    /* NOLINTEND(clang-diagnostic-unused-template) */
 
 // for registering tests in classes
 #define DOCTEST_TEST_CASE_CLASS(name)                                                              \
-    DOCTEST_CREATE_AND_REGISTER_FUNCTION(DOCTEST_ANONYMOUS(DOCTEST_ANON_FUNC_), name)
+    /* NOLINTBEGIN(clang-diagnostic-unused-template) */                                            \
+    DOCTEST_CLANG_SUPPRESS_WARNING_WITH_PUSH("-Wunused-template")                                  \
+    DOCTEST_CREATE_AND_REGISTER_FUNCTION(DOCTEST_ANONYMOUS(DOCTEST_ANON_FUNC_), name)              \
+    DOCTEST_CLANG_SUPPRESS_WARNING_POP                                                             \
+    /* NOLINTEND(clang-diagnostic-unused-template) */
 
 // for registering tests with a fixture
 #define DOCTEST_TEST_CASE_FIXTURE(x, name)                                                         \
@@ -2597,8 +2607,12 @@ int registerReporter(const char* name, int priority, bool isReporter) {
 #define DOCTEST_TEST_SUITE_END using DOCTEST_ANONYMOUS(DOCTEST_ANON_FOR_SEMICOLON_) = int
 
 #define DOCTEST_REGISTER_EXCEPTION_TRANSLATOR(signature)                                           \
+    /* NOLINTBEGIN(clang-diagnostic-unused-template) */                                            \
+    DOCTEST_CLANG_SUPPRESS_WARNING_WITH_PUSH("-Wunused-template")                                  \
     template <typename DOCTEST_UNUSED_TEMPLATE_TYPE>                                               \
     static inline doctest::String DOCTEST_ANONYMOUS(DOCTEST_ANON_TRANSLATOR_)(signature)
+    DOCTEST_CLANG_SUPPRESS_WARNING_POP                                                             \
+    /* NOLINTEND(clang-diagnostic-unused-template) */
 
 #define DOCTEST_REGISTER_REPORTER(name, priority, reporter)
 #define DOCTEST_REGISTER_LISTENER(name, priority, reporter)
@@ -2709,79 +2723,79 @@ namespace detail {
 
 #else // DOCTEST_CONFIG_EVALUATE_ASSERTS_EVEN_WHEN_DISABLED
 
-#define DOCTEST_WARN(...) DOCTEST_FUNC_EMPTY
-#define DOCTEST_CHECK(...) DOCTEST_FUNC_EMPTY
-#define DOCTEST_REQUIRE(...) DOCTEST_FUNC_EMPTY
-#define DOCTEST_WARN_FALSE(...) DOCTEST_FUNC_EMPTY
-#define DOCTEST_CHECK_FALSE(...) DOCTEST_FUNC_EMPTY
-#define DOCTEST_REQUIRE_FALSE(...) DOCTEST_FUNC_EMPTY
+#define DOCTEST_WARN(...) DOCTEST_FUNC_EMPTY(__VA_ARGS__)
+#define DOCTEST_CHECK(...) DOCTEST_FUNC_EMPTY(__VA_ARGS__)
+#define DOCTEST_REQUIRE(...) DOCTEST_FUNC_EMPTY(__VA_ARGS__)
+#define DOCTEST_WARN_FALSE(...) DOCTEST_FUNC_EMPTY(__VA_ARGS__)
+#define DOCTEST_CHECK_FALSE(...) DOCTEST_FUNC_EMPTY(__VA_ARGS__)
+#define DOCTEST_REQUIRE_FALSE(...) DOCTEST_FUNC_EMPTY(__VA_ARGS__)
 
-#define DOCTEST_WARN_MESSAGE(cond, ...) DOCTEST_FUNC_EMPTY
-#define DOCTEST_CHECK_MESSAGE(cond, ...) DOCTEST_FUNC_EMPTY
-#define DOCTEST_REQUIRE_MESSAGE(cond, ...) DOCTEST_FUNC_EMPTY
-#define DOCTEST_WARN_FALSE_MESSAGE(cond, ...) DOCTEST_FUNC_EMPTY
-#define DOCTEST_CHECK_FALSE_MESSAGE(cond, ...) DOCTEST_FUNC_EMPTY
-#define DOCTEST_REQUIRE_FALSE_MESSAGE(cond, ...) DOCTEST_FUNC_EMPTY
+#define DOCTEST_WARN_MESSAGE(cond, ...) DOCTEST_FUNC_EMPTY(cond, __VA_ARGS__)
+#define DOCTEST_CHECK_MESSAGE(cond, ...) DOCTEST_FUNC_EMPTY(cond, __VA_ARGS__)
+#define DOCTEST_REQUIRE_MESSAGE(cond, ...) DOCTEST_FUNC_EMPTY(cond, __VA_ARGS__)
+#define DOCTEST_WARN_FALSE_MESSAGE(cond, ...) DOCTEST_FUNC_EMPTY(cond, __VA_ARGS__)
+#define DOCTEST_CHECK_FALSE_MESSAGE(cond, ...) DOCTEST_FUNC_EMPTY(cond, __VA_ARGS__)
+#define DOCTEST_REQUIRE_FALSE_MESSAGE(cond, ...) DOCTEST_FUNC_EMPTY(cond, __VA_ARGS__)
 
-#define DOCTEST_WARN_EQ(...) DOCTEST_FUNC_EMPTY
-#define DOCTEST_CHECK_EQ(...) DOCTEST_FUNC_EMPTY
-#define DOCTEST_REQUIRE_EQ(...) DOCTEST_FUNC_EMPTY
-#define DOCTEST_WARN_NE(...) DOCTEST_FUNC_EMPTY
-#define DOCTEST_CHECK_NE(...) DOCTEST_FUNC_EMPTY
-#define DOCTEST_REQUIRE_NE(...) DOCTEST_FUNC_EMPTY
-#define DOCTEST_WARN_GT(...) DOCTEST_FUNC_EMPTY
-#define DOCTEST_CHECK_GT(...) DOCTEST_FUNC_EMPTY
-#define DOCTEST_REQUIRE_GT(...) DOCTEST_FUNC_EMPTY
-#define DOCTEST_WARN_LT(...) DOCTEST_FUNC_EMPTY
-#define DOCTEST_CHECK_LT(...) DOCTEST_FUNC_EMPTY
-#define DOCTEST_REQUIRE_LT(...) DOCTEST_FUNC_EMPTY
-#define DOCTEST_WARN_GE(...) DOCTEST_FUNC_EMPTY
-#define DOCTEST_CHECK_GE(...) DOCTEST_FUNC_EMPTY
-#define DOCTEST_REQUIRE_GE(...) DOCTEST_FUNC_EMPTY
-#define DOCTEST_WARN_LE(...) DOCTEST_FUNC_EMPTY
-#define DOCTEST_CHECK_LE(...) DOCTEST_FUNC_EMPTY
-#define DOCTEST_REQUIRE_LE(...) DOCTEST_FUNC_EMPTY
+#define DOCTEST_WARN_EQ(...) DOCTEST_FUNC_EMPTY(__VA_ARGS__)
+#define DOCTEST_CHECK_EQ(...) DOCTEST_FUNC_EMPTY(__VA_ARGS__)
+#define DOCTEST_REQUIRE_EQ(...) DOCTEST_FUNC_EMPTY(__VA_ARGS__)
+#define DOCTEST_WARN_NE(...) DOCTEST_FUNC_EMPTY(__VA_ARGS__)
+#define DOCTEST_CHECK_NE(...) DOCTEST_FUNC_EMPTY(__VA_ARGS__)
+#define DOCTEST_REQUIRE_NE(...) DOCTEST_FUNC_EMPTY(__VA_ARGS__)
+#define DOCTEST_WARN_GT(...) DOCTEST_FUNC_EMPTY(__VA_ARGS__)
+#define DOCTEST_CHECK_GT(...) DOCTEST_FUNC_EMPTY(__VA_ARGS__)
+#define DOCTEST_REQUIRE_GT(...) DOCTEST_FUNC_EMPTY(__VA_ARGS__)
+#define DOCTEST_WARN_LT(...) DOCTEST_FUNC_EMPTY(__VA_ARGS__)
+#define DOCTEST_CHECK_LT(...) DOCTEST_FUNC_EMPTY(__VA_ARGS__)
+#define DOCTEST_REQUIRE_LT(...) DOCTEST_FUNC_EMPTY(__VA_ARGS__)
+#define DOCTEST_WARN_GE(...) DOCTEST_FUNC_EMPTY(__VA_ARGS__)
+#define DOCTEST_CHECK_GE(...) DOCTEST_FUNC_EMPTY(__VA_ARGS__)
+#define DOCTEST_REQUIRE_GE(...) DOCTEST_FUNC_EMPTY(__VA_ARGS__)
+#define DOCTEST_WARN_LE(...) DOCTEST_FUNC_EMPTY(__VA_ARGS__)
+#define DOCTEST_CHECK_LE(...) DOCTEST_FUNC_EMPTY(__VA_ARGS__)
+#define DOCTEST_REQUIRE_LE(...) DOCTEST_FUNC_EMPTY(__VA_ARGS__)
 
-#define DOCTEST_WARN_UNARY(...) DOCTEST_FUNC_EMPTY
-#define DOCTEST_CHECK_UNARY(...) DOCTEST_FUNC_EMPTY
-#define DOCTEST_REQUIRE_UNARY(...) DOCTEST_FUNC_EMPTY
-#define DOCTEST_WARN_UNARY_FALSE(...) DOCTEST_FUNC_EMPTY
-#define DOCTEST_CHECK_UNARY_FALSE(...) DOCTEST_FUNC_EMPTY
-#define DOCTEST_REQUIRE_UNARY_FALSE(...) DOCTEST_FUNC_EMPTY
+#define DOCTEST_WARN_UNARY(...) DOCTEST_FUNC_EMPTY(__VA_ARGS__)
+#define DOCTEST_CHECK_UNARY(...) DOCTEST_FUNC_EMPTY(__VA_ARGS__)
+#define DOCTEST_REQUIRE_UNARY(...) DOCTEST_FUNC_EMPTY(__VA_ARGS__)
+#define DOCTEST_WARN_UNARY_FALSE(...) DOCTEST_FUNC_EMPTY(__VA_ARGS__)
+#define DOCTEST_CHECK_UNARY_FALSE(...) DOCTEST_FUNC_EMPTY(__VA_ARGS__)
+#define DOCTEST_REQUIRE_UNARY_FALSE(...) DOCTEST_FUNC_EMPTY(__VA_ARGS__)
 
 #ifndef DOCTEST_CONFIG_NO_EXCEPTIONS
 
-#define DOCTEST_WARN_THROWS(...) DOCTEST_FUNC_EMPTY
-#define DOCTEST_CHECK_THROWS(...) DOCTEST_FUNC_EMPTY
-#define DOCTEST_REQUIRE_THROWS(...) DOCTEST_FUNC_EMPTY
-#define DOCTEST_WARN_THROWS_AS(expr, ...) DOCTEST_FUNC_EMPTY
-#define DOCTEST_CHECK_THROWS_AS(expr, ...) DOCTEST_FUNC_EMPTY
-#define DOCTEST_REQUIRE_THROWS_AS(expr, ...) DOCTEST_FUNC_EMPTY
-#define DOCTEST_WARN_THROWS_WITH(expr, ...) DOCTEST_FUNC_EMPTY
-#define DOCTEST_CHECK_THROWS_WITH(expr, ...) DOCTEST_FUNC_EMPTY
-#define DOCTEST_REQUIRE_THROWS_WITH(expr, ...) DOCTEST_FUNC_EMPTY
-#define DOCTEST_WARN_THROWS_WITH_AS(expr, with, ...) DOCTEST_FUNC_EMPTY
-#define DOCTEST_CHECK_THROWS_WITH_AS(expr, with, ...) DOCTEST_FUNC_EMPTY
-#define DOCTEST_REQUIRE_THROWS_WITH_AS(expr, with, ...) DOCTEST_FUNC_EMPTY
-#define DOCTEST_WARN_NOTHROW(...) DOCTEST_FUNC_EMPTY
-#define DOCTEST_CHECK_NOTHROW(...) DOCTEST_FUNC_EMPTY
-#define DOCTEST_REQUIRE_NOTHROW(...) DOCTEST_FUNC_EMPTY
+#define DOCTEST_WARN_THROWS(...) DOCTEST_FUNC_EMPTY(__VA_ARGS__)
+#define DOCTEST_CHECK_THROWS(...) DOCTEST_FUNC_EMPTY(__VA_ARGS__)
+#define DOCTEST_REQUIRE_THROWS(...) DOCTEST_FUNC_EMPTY(__VA_ARGS__)
+#define DOCTEST_WARN_THROWS_AS(expr, ...) DOCTEST_FUNC_EMPTY(__VA_ARGS__)
+#define DOCTEST_CHECK_THROWS_AS(expr, ...) DOCTEST_FUNC_EMPTY(__VA_ARGS__)
+#define DOCTEST_REQUIRE_THROWS_AS(expr, ...) DOCTEST_FUNC_EMPTY(__VA_ARGS__)
+#define DOCTEST_WARN_THROWS_WITH(expr, ...) DOCTEST_FUNC_EMPTY(__VA_ARGS__)
+#define DOCTEST_CHECK_THROWS_WITH(expr, ...) DOCTEST_FUNC_EMPTY(__VA_ARGS__)
+#define DOCTEST_REQUIRE_THROWS_WITH(expr, ...) DOCTEST_FUNC_EMPTY(__VA_ARGS__)
+#define DOCTEST_WARN_THROWS_WITH_AS(expr, with, ...) DOCTEST_FUNC_EMPTY(__VA_ARGS__)
+#define DOCTEST_CHECK_THROWS_WITH_AS(expr, with, ...) DOCTEST_FUNC_EMPTY(__VA_ARGS__)
+#define DOCTEST_REQUIRE_THROWS_WITH_AS(expr, with, ...) DOCTEST_FUNC_EMPTY(__VA_ARGS__)
+#define DOCTEST_WARN_NOTHROW(...) DOCTEST_FUNC_EMPTY(__VA_ARGS__)
+#define DOCTEST_CHECK_NOTHROW(...) DOCTEST_FUNC_EMPTY(__VA_ARGS__)
+#define DOCTEST_REQUIRE_NOTHROW(...) DOCTEST_FUNC_EMPTY(__VA_ARGS__)
 
-#define DOCTEST_WARN_THROWS_MESSAGE(expr, ...) DOCTEST_FUNC_EMPTY
-#define DOCTEST_CHECK_THROWS_MESSAGE(expr, ...) DOCTEST_FUNC_EMPTY
-#define DOCTEST_REQUIRE_THROWS_MESSAGE(expr, ...) DOCTEST_FUNC_EMPTY
-#define DOCTEST_WARN_THROWS_AS_MESSAGE(expr, ex, ...) DOCTEST_FUNC_EMPTY
-#define DOCTEST_CHECK_THROWS_AS_MESSAGE(expr, ex, ...) DOCTEST_FUNC_EMPTY
-#define DOCTEST_REQUIRE_THROWS_AS_MESSAGE(expr, ex, ...) DOCTEST_FUNC_EMPTY
-#define DOCTEST_WARN_THROWS_WITH_MESSAGE(expr, with, ...) DOCTEST_FUNC_EMPTY
-#define DOCTEST_CHECK_THROWS_WITH_MESSAGE(expr, with, ...) DOCTEST_FUNC_EMPTY
-#define DOCTEST_REQUIRE_THROWS_WITH_MESSAGE(expr, with, ...) DOCTEST_FUNC_EMPTY
-#define DOCTEST_WARN_THROWS_WITH_AS_MESSAGE(expr, with, ex, ...) DOCTEST_FUNC_EMPTY
-#define DOCTEST_CHECK_THROWS_WITH_AS_MESSAGE(expr, with, ex, ...) DOCTEST_FUNC_EMPTY
-#define DOCTEST_REQUIRE_THROWS_WITH_AS_MESSAGE(expr, with, ex, ...) DOCTEST_FUNC_EMPTY
-#define DOCTEST_WARN_NOTHROW_MESSAGE(expr, ...) DOCTEST_FUNC_EMPTY
-#define DOCTEST_CHECK_NOTHROW_MESSAGE(expr, ...) DOCTEST_FUNC_EMPTY
-#define DOCTEST_REQUIRE_NOTHROW_MESSAGE(expr, ...) DOCTEST_FUNC_EMPTY
+#define DOCTEST_WARN_THROWS_MESSAGE(expr, ...) DOCTEST_FUNC_EMPTY(expr, __VA_ARGS__)
+#define DOCTEST_CHECK_THROWS_MESSAGE(expr, ...) DOCTEST_FUNC_EMPTY(expr, __VA_ARGS__)
+#define DOCTEST_REQUIRE_THROWS_MESSAGE(expr, ...) DOCTEST_FUNC_EMPTY(expr, __VA_ARGS__)
+#define DOCTEST_WARN_THROWS_AS_MESSAGE(expr, ex, ...) DOCTEST_FUNC_EMPTY(expr, ex, __VA_ARGS__)
+#define DOCTEST_CHECK_THROWS_AS_MESSAGE(expr, ex, ...) DOCTEST_FUNC_EMPTY(expr, ex, __VA_ARGS__)
+#define DOCTEST_REQUIRE_THROWS_AS_MESSAGE(expr, ex, ...) DOCTEST_FUNC_EMPTY(expr, ex, __VA_ARGS__)
+#define DOCTEST_WARN_THROWS_WITH_MESSAGE(expr, with, ...) DOCTEST_FUNC_EMPTYexpr, with, __VA_ARGS__)
+#define DOCTEST_CHECK_THROWS_WITH_MESSAGE(expr, with, ...) DOCTEST_FUNC_EMPTY(expr, with, __VA_ARGS__)
+#define DOCTEST_REQUIRE_THROWS_WITH_MESSAGE(expr, with, ...) DOCTEST_FUNC_EMPTY(expr, with, __VA_ARGS__)
+#define DOCTEST_WARN_THROWS_WITH_AS_MESSAGE(expr, with, ex, ...) DOCTEST_FUNC_EMPTY(expr, with, ex, __VA_ARGS__)
+#define DOCTEST_CHECK_THROWS_WITH_AS_MESSAGE(expr, with, ex, ...) DOCTEST_FUNC_EMPTY(expr, with, ex, __VA_ARGS__)
+#define DOCTEST_REQUIRE_THROWS_WITH_AS_MESSAGE(expr, with, ex, ...) DOCTEST_FUNC_EMPTY(expr, with, ex, __VA_ARGS__)
+#define DOCTEST_WARN_NOTHROW_MESSAGE(expr, ...) DOCTEST_FUNC_EMPTY(expr, __VA_ARGS__)
+#define DOCTEST_CHECK_NOTHROW_MESSAGE(expr, ...) DOCTEST_FUNC_EMPTY(expr, __VA_ARGS__)
+#define DOCTEST_REQUIRE_NOTHROW_MESSAGE(expr, ...) DOCTEST_FUNC_EMPTY(expr, __VA_ARGS__)
 
 #endif // DOCTEST_CONFIG_NO_EXCEPTIONS
 

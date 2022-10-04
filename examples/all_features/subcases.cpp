@@ -90,7 +90,7 @@ SCENARIO("vectors can be sized and resized") {
             v.resize(0);
 
             THEN("the size changes but not capacity") {
-                CHECK(v.size() == 0);
+                CHECK(v.empty());
                 CHECK(v.capacity() >= 5);
             }
         }
