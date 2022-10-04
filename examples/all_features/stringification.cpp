@@ -46,14 +46,13 @@ TEST_CASE("operator<<") {
 #endif
 
 TEST_CASE("no headers") {
-    DOCTEST_CLANG_SUPPRESS_WARNING_WITH_PUSH("-Wtautological-pointer-compare")
-    // NOLINTBEGIN(clang-diagnostic-tautological-pointer-compare)
-
     char chs[] = { '1', 'a', 's' }; // NOLINT(*-avoid-c-arrays)
+    // NOLINTNEXTLINE(clang-diagnostic-tautological-pointer-compare)
     MESSAGE(chs); CHECK(chs == nullptr);
     MESSAGE("1as"); CHECK("1as" == nullptr);
 
     int ints[] = { 0, 1, 1, 2, 3, 5, 8, 13 }; // NOLINT(*-avoid-c-arrays)
+    // NOLINTNEXTLINE(clang-diagnostic-tautological-pointer-compare)
     MESSAGE(ints); CHECK(ints == nullptr);
     MESSAGE(MOVE(ints)); // NOLINT(*-move-const-arg)
 
@@ -72,9 +71,6 @@ TEST_CASE("no headers") {
     MESSAGE(A); CHECK(A == C);
 
     MESSAGE(doctest::toString<int>());
-
-    // NOLINTEND(clang-diagnostic-tautological-pointer-compare)
-    DOCTEST_CLANG_SUPPRESS_WARNING_POP
 }
 
 DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_BEGIN
