@@ -2726,12 +2726,12 @@ namespace detail {
 
 #else // DOCTEST_CONFIG_EVALUATE_ASSERTS_EVEN_WHEN_DISABLED
 
-#define DOCTEST_WARN(...) DOCTEST_FUNC_EMPTY(__VA_ARGS__)
-#define DOCTEST_CHECK(...) DOCTEST_FUNC_EMPTY(__VA_ARGS__)
-#define DOCTEST_REQUIRE(...) DOCTEST_FUNC_EMPTY(__VA_ARGS__)
-#define DOCTEST_WARN_FALSE(...) DOCTEST_FUNC_EMPTY(__VA_ARGS__)
-#define DOCTEST_CHECK_FALSE(...) DOCTEST_FUNC_EMPTY(__VA_ARGS__)
-#define DOCTEST_REQUIRE_FALSE(...) DOCTEST_FUNC_EMPTY(__VA_ARGS__)
+#define DOCTEST_WARN(...) doctest::detail::consumeAll(__VA_ARGS__)
+#define DOCTEST_CHECK(...) doctest::detail::consumeAll(__VA_ARGS__)
+#define DOCTEST_REQUIRE(...) doctest::detail::consumeAll(__VA_ARGS__)
+#define DOCTEST_WARN_FALSE(...) doctest::detail::consumeAll(__VA_ARGS__)
+#define DOCTEST_CHECK_FALSE(...) doctest::detail::consumeAll(__VA_ARGS__)
+#define DOCTEST_REQUIRE_FALSE(...) doctest::detail::consumeAll(__VA_ARGS__)
 
 #define DOCTEST_WARN_MESSAGE(cond, ...) DOCTEST_FUNC_EMPTY(cond, __VA_ARGS__)
 #define DOCTEST_CHECK_MESSAGE(cond, ...) DOCTEST_FUNC_EMPTY(cond, __VA_ARGS__)
