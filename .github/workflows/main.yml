@@ -104,27 +104,27 @@ jobs:
         compiler: ["cl", "clang", "clang-cl"]
 
         include:
-          - os: ubuntu-18.04
+          - os: ubuntu-20.04
             compiler: gcc
             version: "4.8"
 
-          - os: ubuntu-18.04
+          - os: ubuntu-20.04
             compiler: gcc
             version: "4.9"
 
-          - os: ubuntu-18.04
+          - os: ubuntu-20.04
             compiler: gcc
             version: "5"
 
-          - os: ubuntu-18.04
+          - os: ubuntu-20.04
             compiler: gcc
             version: "6"
 
-          - os: ubuntu-18.04
+          - os: ubuntu-20.04
             compiler: gcc
             version: "7"
 
-          - os: ubuntu-18.04
+          - os: ubuntu-20.04
             compiler: gcc
             version: "8"
 
@@ -140,47 +140,47 @@ jobs:
             compiler: gcc
             version: "11"
             
-          - os: ubuntu-latest
+          - os: ubuntu-22.04
             compiler: gcc
             version: "12"
 
-          - os: ubuntu-18.04
+          - os: ubuntu-20.04
             compiler: clang
             version: "3.5"
 
-          - os: ubuntu-18.04
+          - os: ubuntu-20.04
             compiler: clang
             version: "3.6"
 
-          - os: ubuntu-18.04
+          - os: ubuntu-20.04
             compiler: clang
             version: "3.7"
 
-          - os: ubuntu-18.04
+          - os: ubuntu-20.04
             compiler: clang
             version: "3.8"
 
-          - os: ubuntu-18.04
+          - os: ubuntu-20.04
             compiler: clang
             version: "3.9"
 
-          - os: ubuntu-18.04
+          - os: ubuntu-20.04
             compiler: clang
             version: "4.0"
 
-          - os: ubuntu-18.04
+          - os: ubuntu-20.04
             compiler: clang
             version: "5.0"
 
-          - os: ubuntu-18.04
+          - os: ubuntu-20.04
             compiler: clang
             version: "6.0"
 
-          - os: ubuntu-18.04
+          - os: ubuntu-20.04
             compiler: clang
             version: "7"
 
-          - os: ubuntu-18.04
+          - os: ubuntu-20.04
             compiler: clang
             version: "8"
 
@@ -212,11 +212,11 @@ jobs:
             compiler: clang
             version: "15"
             
-          - os: ubuntu-latest
+          - os: ubuntu-22.04
             compiler: clang
             version: "16"
 
-          - os: macOS-10.15
+          - os: macos-11
             compiler: xcode
             version: "10.3"
 
