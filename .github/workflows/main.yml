@@ -250,8 +250,10 @@ jobs:
           # needed for x86 builds.
           sudo dpkg --add-architecture i386
           
-          sudo add-apt-repository "deb http://deb.debian.org/debian/ stretch main"
-          sudo add-apt-repository "deb http://security.debian.org/debian-security stretch/updates main"
+          sudo add-apt-repository "deb http://dk.archive.ubuntu.com/ubuntu/ xenial main"
+          sudo add-apt-repository "deb http://dk.archive.ubuntu.com/ubuntu/ xenial universe"
+          
+          sudo apt-key adv --fetch-keys http://dk.archive.ubuntu.com/ubuntu/dists/xenial/Release.gpg
 
           # clang->=13 is not currently available by default
           if [ "${{ matrix.compiler }}" = "clang" -a ${{ matrix.version }} -ge 13  ]; then
