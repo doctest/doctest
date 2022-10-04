@@ -37,12 +37,14 @@ TEST_CASE("exceptions-related macros") {
     CHECK_THROWS_AS(throw_if(true, 0), char); // fails
     CHECK_THROWS_AS(throw_if(false, 0), int); // fails
 
+#ifndef DOCTEST_CONFIG_DISABLE
     CHECK_THROWS_WITH(throw_if(true, "whops!"), "whops! no match!"); // fails
     CHECK_THROWS_WITH(throw_if(true, "whops! does it match?"), doctest::Contains("whops!"));
     CHECK_THROWS_WITH(throw_if(true, "whops! does it match?"), doctest::Contains("whops! no match!")); // fails
     CHECK_THROWS_WITH_AS(throw_if(true, "whops!"), "whops! no match!", bool); // fails
     CHECK_THROWS_WITH_AS(throw_if(true, "whops!"), "whops!", int); // fails
     CHECK_THROWS_WITH_AS(throw_if(true, "whops! does it match?"), doctest::Contains("whops! no match!"), int); // fails
+#endif
 
     CHECK_NOTHROW(throw_if(true, 0)); // fails
     CHECK_NOTHROW(throw_if(false, 0));
@@ -54,7 +56,9 @@ TEST_CASE("exceptions-related macros for std::exception") {
     CHECK_THROWS_AS(throw_if(true, std::runtime_error("whops!")), const std::exception&);
     CHECK_THROWS_AS(throw_if(true, std::runtime_error("whops!")), int);
 
+#ifndef DOCTEST_CONFIG_DISABLE
     CHECK_THROWS_WITH(throw_if(false, ""), "whops!");
+#endif
 
     REQUIRE_NOTHROW(throw_if(true, std::runtime_error("whops!")));
 }
