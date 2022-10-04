@@ -26,7 +26,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        flags: ["", "-D DOCTEST_CONFIG_DISABLE"]
+        flags: ["", "-D DOCTEST_CONFIG_DISABLE -D DOCTEST_CONFIG_EVALUATE_ASSERTS_EVEN_WHEN_DISABLED -D DOCTEST_CONFIG_ASSERTS_RETURN_VALUES"]
 
     steps:
       - uses: actions/checkout@v2
