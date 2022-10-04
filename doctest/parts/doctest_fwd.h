@@ -429,7 +429,7 @@ DOCTEST_MSVC_SUPPRESS_WARNING(4623) // default constructor was implicitly define
 
 namespace doctest { namespace detail {
     static DOCTEST_CONSTEXPR int consume(const int*, int) noexcept { return 0; }
-    static DOCTEST_CONSTEXPR void consume(bool) noexcept {}
+    static DOCTEST_CONSTEXPR void consumeBool(bool) noexcept {}
 }}
 
 #define DOCTEST_GLOBAL_NO_WARNINGS(var, ...)                                                         \
@@ -2558,7 +2558,7 @@ int registerReporter(const char* name, int priority, bool isReporter) {
 
 // for registering tests
 #define DOCTEST_TEST_CASE(name)                                                                    \
-    /* NOLINT(clang-diagnostic-unused-template) */                                                 \ 
+    /* NOLINT(clang-diagnostic-unused-template) */                                                 \
     DOCTEST_CREATE_AND_REGISTER_FUNCTION(DOCTEST_ANONYMOUS(DOCTEST_ANON_FUNC_), name)
 
 // for registering tests in classes
@@ -2711,12 +2711,12 @@ namespace detail {
 
 #else // DOCTEST_CONFIG_EVALUATE_ASSERTS_EVEN_WHEN_DISABLED
 
-#define DOCTEST_WARN(...) doctest::detail::consume(__VA_ARGS__);
-#define DOCTEST_CHECK(...) doctest::detail::consume(__VA_ARGS__);
-#define DOCTEST_REQUIRE(...) doctest::detail::consume(__VA_ARGS__);
-#define DOCTEST_WARN_FALSE(...) doctest::detail::consume(__VA_ARGS__);
-#define DOCTEST_CHECK_FALSE(...) doctest::detail::consume(__VA_ARGS__);
-#define DOCTEST_REQUIRE_FALSE(...) doctest::detail::consume(__VA_ARGS__);
+#define DOCTEST_WARN(...) doctest::detail::consumeBool(__VA_ARGS__);
+#define DOCTEST_CHECK(...) doctest::detail::consumeBool(__VA_ARGS__);
+#define DOCTEST_REQUIRE(...) doctest::detail::consumeBool(__VA_ARGS__);
+#define DOCTEST_WARN_FALSE(...) doctest::detail::consumeBool(__VA_ARGS__);
+#define DOCTEST_CHECK_FALSE(...) doctest::detail::consumeBool(__VA_ARGS__);
+#define DOCTEST_REQUIRE_FALSE(...) doctest::detail::consumeBool(__VA_ARGS__);
 
 #define DOCTEST_WARN_MESSAGE(cond, ...) DOCTEST_FUNC_EMPTY
 #define DOCTEST_CHECK_MESSAGE(cond, ...) DOCTEST_FUNC_EMPTY
