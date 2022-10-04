@@ -19,9 +19,11 @@ namespace N {
         friend std::ostream& operator<<(std::ostream& os, const B&) { return os << "B"; }
     };
     struct C { };
+    // NOLINTNEXTLINE(clang-diagnostic-unused-function)
     static std::ostream& operator<<(std::ostream& os, const C&) { return os << "C"; }
 }
 
+// NOLINTNEXTLINE(clang-diagnostic-unused-function)
 static std::ostream& operator<<(std::ostream& os, const N::A&) { return os << "A"; }
 
 #include <doctest/doctest.h>
@@ -45,11 +47,11 @@ TEST_CASE("operator<<") {
 
 TEST_CASE("no headers") {
     char chs[] = { '1', 'a', 's' }; // NOLINT(*-avoid-c-arrays)
-    MESSAGE(chs); CHECK(chs == nullptr);
+    MESSAGE(chs); CHECK(chs == nullptr); // NOLINT(clang-diagnostic-tautological-pointer-compare)
     MESSAGE("1as"); CHECK("1as" == nullptr);
 
     int ints[] = { 0, 1, 1, 2, 3, 5, 8, 13 }; // NOLINT(*-avoid-c-arrays)
-    MESSAGE(ints); CHECK(ints == nullptr);
+    MESSAGE(ints); CHECK(ints == nullptr); // NOLINT(clang-diagnostic-tautological-pointer-compare)
     MESSAGE(MOVE(ints)); // NOLINT(*-move-const-arg)
 
     char* cptr = reinterpret_cast<char*>(ints + 4); // NOLINT

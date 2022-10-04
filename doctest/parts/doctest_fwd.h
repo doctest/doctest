@@ -2567,7 +2567,11 @@ int registerReporter(const char* name, int priority, bool isReporter) {
 
 // for registering tests in classes
 #define DOCTEST_TEST_CASE_CLASS(name)                                                              \
-    DOCTEST_CREATE_AND_REGISTER_FUNCTION(DOCTEST_ANONYMOUS(DOCTEST_ANON_FUNC_), name)
+    /* NOLINTBEGIN(clang-diagnostic-unused-template) */                                            \
+    DOCTEST_CLANG_SUPPRESS_WARNING_WITH_PUSH("-Wunused-template")                                  \
+    DOCTEST_CREATE_AND_REGISTER_FUNCTION(DOCTEST_ANONYMOUS(DOCTEST_ANON_FUNC_), name)              \
+    DOCTEST_CLANG_SUPPRESS_WARNING_POP                                                             \
+    /* NOLINTEND(clang-diagnostic-unused-template) */
 
 // for registering tests with a fixture
 #define DOCTEST_TEST_CASE_FIXTURE(x, name)                                                         \
@@ -2603,8 +2607,12 @@ int registerReporter(const char* name, int priority, bool isReporter) {
 #define DOCTEST_TEST_SUITE_END using DOCTEST_ANONYMOUS(DOCTEST_ANON_FOR_SEMICOLON_) = int
 
 #define DOCTEST_REGISTER_EXCEPTION_TRANSLATOR(signature)                                           \
+    /* NOLINTBEGIN(clang-diagnostic-unused-template) */                                            \
+    DOCTEST_CLANG_SUPPRESS_WARNING_WITH_PUSH("-Wunused-template")                                  \
     template <typename DOCTEST_UNUSED_TEMPLATE_TYPE>                                               \
     static inline doctest::String DOCTEST_ANONYMOUS(DOCTEST_ANON_TRANSLATOR_)(signature)
+    DOCTEST_CLANG_SUPPRESS_WARNING_POP                                                             \
+    /* NOLINTEND(clang-diagnostic-unused-template) */
 
 #define DOCTEST_REGISTER_REPORTER(name, priority, reporter)
 #define DOCTEST_REGISTER_LISTENER(name, priority, reporter)
