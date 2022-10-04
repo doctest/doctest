@@ -200,7 +200,9 @@
     DOCTEST_MSVC_SUPPRESS_WARNING(26812) /* Prefer 'enum class' over 'enum' */
 
 #define DOCTEST_SUPPRESS_COMMON_WARNINGS_POP                                                       \
+    /* NOLINTBEGIN(clang-diagnostic-unknown-pragmas) */                                            \
     DOCTEST_CLANG_SUPPRESS_WARNING_POP                                                             \
+    /* NOLINTEND(clang-diagnostic-unknown-pragmas) */                                              \
     DOCTEST_GCC_SUPPRESS_WARNING_POP                                                               \
     DOCTEST_MSVC_SUPPRESS_WARNING_POP
 
@@ -3072,9 +3074,7 @@ DOCTEST_MSVC_SUPPRESS_WARNING_POP
 DOCTEST_GCC_SUPPRESS_WARNING_POP
 
 // Known issue https://github.com/clangd/clangd/issues/1167
-// NOLINTBEGIN(clang-diagnostic-unknown-pragmas)
 DOCTEST_SUPPRESS_COMMON_WARNINGS_POP
-// NOLINTEND(clang-diagnostic-unknown-pragmas)
 
 #endif // DOCTEST_LIBRARY_INCLUDED
 
