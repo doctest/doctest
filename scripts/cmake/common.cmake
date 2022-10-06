@@ -81,6 +81,11 @@ endmacro()
 if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
     add_compiler_flags(-Werror)
 
+    message(CMAKE_CXX_COMPILER_ID)
+    message(CMAKE_C_COMPILER_ID)
+    message(CMAKE_CXX_COMPILER)
+    message(CMAKE_C_COMPILER)
+
     # The following options are not valid when clang-cl is used.
     if(NOT MSVC)
         add_compiler_flags(-pedantic)
