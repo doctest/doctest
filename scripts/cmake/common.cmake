@@ -1,5 +1,7 @@
 include(CMakeParseArguments)
 
+set(CMAKE_SHARED_LIBRARY_LINK_C_FLAGS "")
+
 # cache this for use inside of the function
 set(CURRENT_LIST_DIR_CACHED ${CMAKE_CURRENT_LIST_DIR})
 
