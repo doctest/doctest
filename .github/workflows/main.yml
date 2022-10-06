@@ -31,6 +31,7 @@ jobs:
 
       - name: Install CUDA
         uses: Jimver/cuda-toolkit@v0.2.8
+        with: '["nvcc"]'
 
       - name: Generate
         run: cmake -B build -S . -G Ninja -D CMAKE_CXX_COMPILER=nvcc -D CMAKE_EXPORT_COMPILE_COMMANDS=ON
