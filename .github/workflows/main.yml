@@ -32,6 +32,7 @@ jobs:
       - name: Install CUDA
         uses: Jimver/cuda-toolkit@v0.2.8
         with:
+          method: 'network'
           sub-packages: '["nvcc"]'
 
       - name: Generate
