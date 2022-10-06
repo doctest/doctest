@@ -4,13 +4,11 @@ on:
   push:
     paths-ignore:
       - 'doc/**'
-      - 'scripts/**'
       - 'LICENSE.txt'
       - 'README.md'
   pull_request:
     paths-ignore:
       - 'doc/**'
-      - 'scripts/**'
       - 'LICENSE.txt'
       - 'README.md'
 
