@@ -80,7 +80,10 @@ endmacro()
 
 if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
     add_compiler_flags(-Werror)
-    add_compiler_flags(-fstrict-aliasing)
+
+    if (NOT CMAKE_CXX_COMPILER EQUAL "nvcc")
+        add_compiler_flags(-fstrict-aliasing)
+    endif()
 
     # The following options are not valid when clang-cl is used.
     if(NOT MSVC)
