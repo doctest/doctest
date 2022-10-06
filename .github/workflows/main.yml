@@ -36,7 +36,7 @@ jobs:
           sub-packages: '["nvcc"]'
 
       - name: Generate
-        run: cmake -B build -S . -G Ninja -D CMAKE_CXX_COMPILER=nvcc -D CMAKE_SHARED_LIBRARY_LINK_C_FLAGS= -D CMAKE_SHARED_LIBRARY_LINK_CXX_FLAGS=
+        run: cmake -B build -S . -G Ninja -D CMAKE_CXX_COMPILER=nvcc -D CMAKE_SHARED_LIBRARY_LINK_C_FLAGS="" -D CMAKE_SHARED_LIBRARY_LINK_CXX_FLAGS=""
 
       - name: Build
         run: cmake --build build
