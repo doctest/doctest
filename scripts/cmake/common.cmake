@@ -87,7 +87,7 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
     message(CMAKE_C_COMPILER)
 
     # The following options are not valid when clang-cl is used.
-    if(NOT MSVC)
+    if(NOT MSVC AND NOT DEFINED CMAKE_CUDA_HOST_COMPILER)
         add_compiler_flags(-pedantic)
         add_compiler_flags(-pedantic-errors)
         add_compiler_flags(-fvisibility=hidden)
