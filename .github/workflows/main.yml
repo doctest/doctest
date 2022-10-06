@@ -19,18 +19,18 @@ env:
   CTEST_PARALLEL_LEVEL: 2
 
 jobs:
-  sanitizers:
+  nvcc:
     if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name != github.repository
     runs-on: ubuntu-22.04
     
     steps:
       - uses: actions/checkout@v2
 
-      - name: Install
-        run: sudo apt-get install -y ninja-build cuda
+      - name: Install Ninja
+        run: sudo apt-get install -y ninja-build
 
-      - name: Setup Path
-        run: echo "/usr/local/cuda/bin" >> $GITHUB_PATH
+      - name: Install CUDA
+        uses: Jimver/cuda-toolkit@v0.2.8
 
       - name: Generate
         run: cmake -B build -S . -G Ninja -D CMAKE_CXX_COMPILER=nvcc -D CMAKE_EXPORT_COMPILE_COMMANDS=ON
