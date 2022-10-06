@@ -81,7 +81,7 @@ endmacro()
 if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
     add_compiler_flags(-Werror)
 
-    if (NOT CMAKE_CXX_COMPILER EQUAL "nvcc")
+    if (NOT CMAKE_CXX_COMPILER_ID EQUAL "NVIDIA")
         add_compiler_flags(-fstrict-aliasing)
     endif()
 
