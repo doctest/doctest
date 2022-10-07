@@ -104,27 +104,27 @@ jobs:
         compiler: ["cl", "clang", "clang-cl"]
 
         include:
-          - os: ubuntu-20.04
+          - os: ubuntu-18.04
             compiler: gcc
             version: "4.8"
 
-          - os: ubuntu-20.04
+          - os: ubuntu-18.04
             compiler: gcc
             version: "4.9"
 
-          - os: ubuntu-20.04
+          - os: ubuntu-18.04
             compiler: gcc
             version: "5"
 
-          - os: ubuntu-20.04
+          - os: ubuntu-18.04
             compiler: gcc
             version: "6"
 
-          - os: ubuntu-20.04
+          - os: ubuntu-18.04
             compiler: gcc
             version: "7"
 
-          - os: ubuntu-20.04
+          - os: ubuntu-18.04
             compiler: gcc
             version: "8"
 
@@ -139,48 +139,44 @@ jobs:
           - os: ubuntu-latest
             compiler: gcc
             version: "11"
-            
-          - os: ubuntu-22.04
-            compiler: gcc
-            version: "12"
 
-          - os: ubuntu-20.04
+          - os: ubuntu-18.04
             compiler: clang
             version: "3.5"
 
-          - os: ubuntu-20.04
+          - os: ubuntu-18.04
             compiler: clang
             version: "3.6"
 
-          - os: ubuntu-20.04
+          - os: ubuntu-18.04
             compiler: clang
             version: "3.7"
 
-          - os: ubuntu-20.04
+          - os: ubuntu-18.04
             compiler: clang
             version: "3.8"
 
-          - os: ubuntu-20.04
+          - os: ubuntu-18.04
             compiler: clang
             version: "3.9"
 
-          - os: ubuntu-20.04
+          - os: ubuntu-18.04
             compiler: clang
             version: "4.0"
 
-          - os: ubuntu-20.04
+          - os: ubuntu-18.04
             compiler: clang
             version: "5.0"
 
-          - os: ubuntu-20.04
+          - os: ubuntu-18.04
             compiler: clang
             version: "6.0"
 
-          - os: ubuntu-20.04
+          - os: ubuntu-18.04
             compiler: clang
             version: "7"
 
-          - os: ubuntu-20.04
+          - os: ubuntu-18.04
             compiler: clang
             version: "8"
 
@@ -212,11 +208,7 @@ jobs:
             compiler: clang
             version: "15"
             
-          - os: ubuntu-22.04
-            compiler: clang
-            version: "16"
-
-          - os: macos-11
+          - os: macOS-10.15
             compiler: xcode
             version: "10.3"
 
@@ -250,11 +242,11 @@ jobs:
           # needed for x86 builds.
           sudo dpkg --add-architecture i386
           
+          # clang-3.7 and earlier are not available in Bionic anymore so we get
+          # them from the Xenial repositories instead.
           sudo add-apt-repository "deb http://dk.archive.ubuntu.com/ubuntu/ xenial main"
           sudo add-apt-repository "deb http://dk.archive.ubuntu.com/ubuntu/ xenial universe"
           
-          curl -fsSL http://dk.archive.ubuntu.com/ubuntu/dists/xenial/Release.gpg | sudo tee /usr/share/keyrings/ubuntu-xenial.gpg
-
           # clang->=13 is not currently available by default
           if [ "${{ matrix.compiler }}" = "clang" -a ${{ matrix.version }} -ge 13  ]; then
             wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | sudo apt-key add -
