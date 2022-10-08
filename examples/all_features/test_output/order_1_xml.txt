@@ -109,8 +109,11 @@
       </Message>
       <OverallResultsAsserts successes="0" failures="0" test_case_success="false"/>
     </TestCase>
+    <TestCase name="another normal test in a test suite from a decorator" filename="test_cases_and_suites.cpp" line="0" timeout="100">
+      <OverallResultsAsserts successes="1" failures="0" test_case_success="true"/>
+    </TestCase>
   </TestSuite>
-  <OverallResultsAsserts successes="1" failures="12"/>
-  <OverallResultsTestCases successes="6" failures="10"/>
+  <OverallResultsAsserts successes="2" failures="12"/>
+  <OverallResultsTestCases successes="7" failures="10"/>
 </doctest>
 Program code.
