@@ -264,3 +264,13 @@ TEST_CASE("pointer comparisons") {
     CHECK(&function == functionPointer);
     CHECK(&function2 == &function2);
 }
+
+enum class Foo { };
+
+std::ostream& operator<<(std::ostream& os, Foo) {
+    return os << "Foo";
+}
+
+TEST_CASE("enum with operator<<") {
+    CHECK(doctest::toString(Foo()) == "Foo");
+}
