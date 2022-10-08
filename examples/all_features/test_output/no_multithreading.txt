@@ -654,7 +654,7 @@ TEST CASE:  normal test in a test suite from a decorator
 
 test_cases_and_suites.cpp(0): MESSAGE: failing because of the timeout decorator!
 
-Test case exceeded time limit of 0.000001!
+Test case exceeded time limit of 0.000000!
 ===============================================================================
 stringification.cpp(0):
 TEST CASE:  operator<<

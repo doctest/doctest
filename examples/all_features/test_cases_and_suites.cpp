@@ -45,7 +45,7 @@ TEST_CASE_FIXTURE(SomeFixture, "fixtured test - not part of a test suite") {
 }
 
 TEST_CASE("normal test in a test suite from a decorator" * doctest::test_suite("ts1") *
-          doctest::timeout(0.000001)) {
+          doctest::timeout(0.000000000000001)) {
     MESSAGE("failing because of the timeout decorator!");
 }
 
