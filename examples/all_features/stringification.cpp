@@ -267,7 +267,7 @@ TEST_CASE("pointer comparisons") {
 
 enum class Foo { };
 
-std::ostream& operator<<(std::ostream& os, Foo) {
+static std::ostream& operator<<(std::ostream& os, Foo) {
     return os << "Foo";
 }
 
