@@ -51,7 +51,7 @@ DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_END
 
 TEST_CASE("normal test in a test suite from a decorator" * doctest::test_suite("ts1") *
           doctest::timeout(0.000001)) {
-    std::this_thread::sleep_for(std::chrono::nanoseconds(1'000'000));
+    std::this_thread::sleep_for(std::chrono::nanoseconds(1000000));
     MESSAGE("failing because of the timeout decorator!");
 }
 
