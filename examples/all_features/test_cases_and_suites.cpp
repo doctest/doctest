@@ -45,18 +45,20 @@ TEST_CASE_FIXTURE(SomeFixture, "fixtured test - not part of a test suite") {
 }
 
 DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_BEGIN
-DOCTEST_CLANG_SUPPRESS_WARNING_PUSH
-DOCTEST_CLANG_SUPPRESS_WARNING("-Wreserved-id-macro")
-DOCTEST_CLANG_SUPPRESS_WARNING("-Wunused-macros")
-#define __mulodi4(a, b, c) a * b
-DOCTEST_CLANG_SUPPRESS_WARNING_POP
-#include <chrono>
-#include <thread>
+#ifdef _WIN32
+#include <windows.h>
+#else
+#include <unistd.h>
+#endif // _WIN32_CLEAN_FROM_WARNINGS_ON_WALL_END
 DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_END
 
 TEST_CASE("normal test in a test suite from a decorator" * doctest::test_suite("ts1") *
           doctest::timeout(0.000001)) {
-    std::this_thread::sleep_for(std::chrono::nanoseconds(1000000));
+#ifdef _WIN32
+    Sleep(1000);
+#else
+    usleep(1000000);
+#endif // _WIN32
     MESSAGE("failing because of the timeout decorator!");
 }
 
