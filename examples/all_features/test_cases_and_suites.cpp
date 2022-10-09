@@ -45,7 +45,9 @@ TEST_CASE_FIXTURE(SomeFixture, "fixtured test - not part of a test suite") {
 }
 
 DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_BEGIN
+DOCTEST_CLANG_SUPPRESS_WARNING_WITH_PUSH("-Wreserved-id-macro")
 #define __mulodi4(a, b, c) a * b
+DOCTEST_CLANG_SUPPRESS_WARNING_POP
 #include <chrono>
 #include <thread>
 DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_END
