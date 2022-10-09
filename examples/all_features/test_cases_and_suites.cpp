@@ -45,6 +45,7 @@ TEST_CASE_FIXTURE(SomeFixture, "fixtured test - not part of a test suite") {
 }
 
 DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_BEGIN
+#define __mulodi4(a, b, c) a * b
 #include <chrono>
 #include <thread>
 DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_END
