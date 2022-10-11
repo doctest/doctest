@@ -1,10 +1,18 @@
-#pragma once
+#ifndef DOCTEST_MPI_H
+#define DOCTEST_MPI_H
+
+
+#if defined(DOCTEST_CONFIG_IMPLEMENT_WITH_MPI_MAIN) && !defined(DOCTEST_CONFIG_IMPLEMENT)
+#define DOCTEST_CONFIG_IMPLEMENT
+#endif // DOCTEST_CONFIG_IMPLEMENT_WITH_MPI_MAIN
+
 
 #ifdef DOCTEST_CONFIG_IMPLEMENT
 
-#include "doctest/extensions/mpi_sub_comm.h"
-#include "mpi_reporter.h"
 #include <unordered_map>
+#include "doctest/doctest.h"
+#include "mpi_sub_comm.h"
+#include "mpi_reporter.h"
 
 namespace doctest {
 
@@ -24,10 +32,19 @@ int mpi_init_thread(int argc, char *argv[], int required_thread_support);
 void mpi_finalize();
 
 
+template<int nb_procs, class F>
+void execute_mpi_test_case(F func);
+
+
+inline bool
+insufficient_procs(int test_nb_procs);
+
+
 // Can be safely called before MPI_Init()
 //   This is needed for MPI_TEST_CASE because we use doctest::skip()
 //   to prevent execution of tests where there is not enough procs,
-//   but doctest::skip() is called during test registration, that is, before main(), and hence before MPI_Init()
+//   but doctest::skip() is called during test registration, that is, before main(),
+//   and hence before MPI_Init()
 int mpi_comm_world_size() {
   #if defined(OPEN_MPI)
     const char* size_str = std::getenv("OMPI_COMM_WORLD_SIZE");
@@ -53,6 +70,8 @@ std::string thread_level_to_string(int thread_lvl) {
     default: return "Invalid MPI thread level";
   }
 }
+
+
 int mpi_init_thread(int argc, char *argv[], int required_thread_support) {
   int provided_thread_support;
   MPI_Init_thread(&argc, &argv, required_thread_support, &provided_thread_support);
@@ -74,29 +93,14 @@ int mpi_init_thread(int argc, char *argv[], int required_thread_support) {
   }
   return provided_thread_support;
 }
+
+
 void mpi_finalize() {
   // We need to destroy all created sub-communicators before calling MPI_Finalize()
   doctest::sub_comms_by_size.clear();
   MPI_Finalize();
 }
 
-} // doctest
-
-#else // DOCTEST_CONFIG_IMPLEMENT
-
-#include "doctest/extensions/mpi_sub_comm.h"
-#include <unordered_map>
-#include <exception>
-
-namespace doctest {
-
-extern std::unordered_map<int,mpi_sub_comm> sub_comms_by_size;
-extern int nb_test_cases_skipped_insufficient_procs;
-extern int world_size_before_init;
-int mpi_comm_world_size();
-
-int mpi_init_thread(int argc, char *argv[], int required_thread_support);
-void mpi_finalize();
 
 template<int nb_procs, class F>
 void execute_mpi_test_case(F func) {
@@ -164,3 +168,23 @@ insufficient_procs(int test_nb_procs) {
 
 
 #endif // DOCTEST_CONFIG_IMPLEMENT
+
+
+#ifdef DOCTEST_CONFIG_IMPLEMENT_WITH_MPI_MAIN
+int main(int argc, char* argv[]) {
+    doctest::mpi_init_thread(argc,argv,MPI_THREAD_MULTIPLE);
+
+    doctest::Context ctx;
+    ctx.setOption("reporters", "MpiConsoleReporter");
+    ctx.applyCommandLine(argc, argv);
+
+    int test_result = ctx.run();
+
+    doctest::mpi_finalize();
+
+    return test_result;
+}
+#endif // DOCTEST_CONFIG_IMPLEMENT_WITH_MPI_MAIN
+
+
+#endif // DOCTEST_MPI_H

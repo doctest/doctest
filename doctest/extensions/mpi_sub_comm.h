@@ -1,9 +1,9 @@
-#pragma once
+#ifndef DOCTEST_MPI_SUB_COMM_H
+#define DOCTEST_MPI_SUB_COMM_H
 
-#include "mpi.h"
-#include "doctest/doctest.h"
 #include <cassert>
 #include <string>
+#include <mpi.h>
 
 namespace doctest {
 
@@ -79,3 +79,5 @@ struct mpi_sub_comm {
 };
 
 } // doctest
+
+#endif // DOCTEST_SUB_COMM_H
