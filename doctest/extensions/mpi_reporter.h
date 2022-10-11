@@ -1,9 +1,10 @@
-#pragma once
+#ifndef DOCTEST_MPI_REPORTER_H
+#define DOCTEST_MPI_REPORTER_H
 
-// #include <doctest/doctest.h>
 #include <fstream>
+#include <streambuf>
 #include <string>
-#include "mpi.h"
+#include <mpi.h>
 
 
 #include <vector>
@@ -266,3 +267,5 @@ REGISTER_REPORTER("MpiFileReporter", 1, MpiFileReporter);
 
 } // anonymous
 } // doctest
+
+#endif // DOCTEST_REPORTER_H
