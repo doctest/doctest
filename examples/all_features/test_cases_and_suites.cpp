@@ -49,15 +49,15 @@ DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_BEGIN
 #include <windows.h>
 #else
 #include <unistd.h>
-#endif // _WIN32_CLEAN_FROM_WARNINGS_ON_WALL_END
+#endif // _WIN32
 DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_END
 
 TEST_CASE("normal test in a test suite from a decorator" * doctest::test_suite("ts1") *
           doctest::timeout(0.000001)) {
 #ifdef _WIN32
-    Sleep(1000);
+    Sleep(1);
 #else
-    usleep(1000000);
+    usleep(1000);
 #endif // _WIN32
     MESSAGE("failing because of the timeout decorator!");
 }
