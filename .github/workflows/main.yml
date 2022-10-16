@@ -64,6 +64,30 @@ jobs:
       - name: Build
         run: cmake --build build
 
+  sanitizers:
+    if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name != github.repository
+    runs-on: ubuntu-22.04
+    
+    strategy:
+      fail-fast: false
+      matrix:
+        sanitizers: ["address", "thread", "undefined", "integer", "implicit-conversion", "nullability", "safe-stack"]
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Install
+        run: sudo apt-get install -y ninja-build
+
+      - name: Generate
+        run: cmake -B build -S . -G Ninja -D CMAKE_CXX_COMPILER=clang++ -D CMAKE_EXPORT_COMPILE_COMMANDS=ON -D CMAKE_CXX_FLAGS="-fsanitize=${{ matrix.sanitizers }}"
+
+      - name: Build
+        run: cmake --build build
+        
+      - name: Test
+        run: ctest --test-dir build --no-tests=error
+
   ci:
     if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name != github.repository
     runs-on: ${{ matrix.os }}
@@ -175,7 +199,15 @@ jobs:
           - os: ubuntu-latest
             compiler: clang
             version: "13"
-
+            
+          - os: ubuntu-latest
+            compiler: clang
+            version: "14"
+            
+          - os: ubuntu-latest
+            compiler: clang
+            version: "15"
+            
           - os: macOS-10.15
             compiler: xcode
             version: "10.3"
@@ -191,6 +223,10 @@ jobs:
           - os: macOS-latest
             compiler: xcode
             version: "13.2.1"
+            
+          - os: macos-12
+            compiler: xcode
+            version: "14.0.1"
 
           - os: macOS-latest
             compiler: gcc
