@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <testsuites>
-  <testsuite name="all_features" errors="2" failures="13" tests="26">
+  <testsuite name="all_features" errors="2" failures="13" tests="27">
     <testcase classname="double_stringification.cpp" name="toString std::string ret type" status="run"/>
     <testcase classname="stringification.cpp" name="operator&lt;&lt;" status="run"/>
     <testcase classname="stringification.cpp" name="no headers" status="run">
@@ -97,6 +97,7 @@ CHECK( "a" == doctest::Contains("aaa") ) is NOT correct!
       </error>
     </testcase>
     <testcase classname="stringification.cpp" name="pointer comparisons" status="run"/>
+    <testcase classname="stringification.cpp" name="enum with operator&lt;&lt;" status="run"/>
   </testsuite>
 </testsuites>
 Program code.

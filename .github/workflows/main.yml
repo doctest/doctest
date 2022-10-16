@@ -19,6 +19,288 @@ env:
   CTEST_PARALLEL_LEVEL: 2
 
 jobs:
+  coverage:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Install
+        run: sudo apt-get install -y ninja-build lcov
+
+      - name: Generate
+        run: cmake -B build -S . -G Ninja -D CMAKE_CXX_FLAGS="-fprofile-arcs -ftest-coverage"
+
+      - name: Build
+        run: cmake --build build
+
+      - name: Test
+        run: ctest --test-dir build --no-tests=error
+
+      - name: LCOV
+        run: |
+          mkdir coverage
+          lcov -c -d build/ -o coverage/lcov.info --include "*doctest/parts*"
+
+      - name: Codecov
+        uses: codecov/codecov-action@v2
+        with:
+          files: ./coverage/lcov.info
+          fail_ci_if_error: true
+
+  clang-tidy:
+    if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name != github.repository
+    runs-on: ubuntu-22.04
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Install
+        run: sudo apt-get install -y ninja-build clang-tidy-14
+
+      - name: Generate
+        run: cmake -B build -S . -G Ninja -D CMAKE_CXX_COMPILER=clang++ -D CMAKE_EXPORT_COMPILE_COMMANDS=ON -D CMAKE_CXX_CLANG_TIDY="clang-tidy-14;-warnings-as-errors=*"
+
+      - name: Build
+        run: cmake --build build
+
+  ci:
+    if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name != github.repository
+    runs-on: ${{ matrix.os }}
+
+    env:
+      CMAKE_GENERATOR: Ninja
+      ASAN_OPTIONS: strict_string_checks=true:detect_odr_violation=2:detect_stack_use_after_return=true:check_initialization_order=true:strict_init_order=true
+      TSAN_OPTIONS: force_seq_cst_atomics=1
+
+    strategy:
+      fail-fast: false
+      matrix:
+        os: ["windows-2019", "windows-2022"]
+        compiler: ["cl", "clang", "clang-cl"]
+
+        include:
+          - os: ubuntu-18.04
+            compiler: gcc
+            version: "4.8"
+
+          - os: ubuntu-18.04
+            compiler: gcc
+            version: "4.9"
+
+          - os: ubuntu-18.04
+            compiler: gcc
+            version: "5"
+
+          - os: ubuntu-18.04
+            compiler: gcc
+            version: "6"
+
+          - os: ubuntu-18.04
+            compiler: gcc
+            version: "7"
+
+          - os: ubuntu-18.04
+            compiler: gcc
+            version: "8"
+
+          - os: ubuntu-latest
+            compiler: gcc
+            version: "9"
+
+          - os: ubuntu-latest
+            compiler: gcc
+            version: "10"
+
+          - os: ubuntu-latest
+            compiler: gcc
+            version: "11"
+
+          - os: ubuntu-18.04
+            compiler: clang
+            version: "3.5"
+
+          - os: ubuntu-18.04
+            compiler: clang
+            version: "3.6"
+
+          - os: ubuntu-18.04
+            compiler: clang
+            version: "3.7"
+
+          - os: ubuntu-18.04
+            compiler: clang
+            version: "3.8"
+
+          - os: ubuntu-18.04
+            compiler: clang
+            version: "3.9"
+
+          - os: ubuntu-18.04
+            compiler: clang
+            version: "4.0"
+
+          - os: ubuntu-18.04
+            compiler: clang
+            version: "5.0"
+
+          - os: ubuntu-18.04
+            compiler: clang
+            version: "6.0"
+
+          - os: ubuntu-18.04
+            compiler: clang
+            version: "7"
+
+          - os: ubuntu-18.04
+            compiler: clang
+            version: "8"
+
+          - os: ubuntu-latest
+            compiler: clang
+            version: "9"
+
+          - os: ubuntu-latest
+            compiler: clang
+            version: "10"
+
+          - os: ubuntu-latest
+            compiler: clang
+            version: "11"
+
+          - os: ubuntu-latest
+            compiler: clang
+            version: "12"
+
+          - os: ubuntu-latest
+            compiler: clang
+            version: "13"
+
+          - os: macOS-10.15
+            compiler: xcode
+            version: "10.3"
+
+          - os: macOS-latest
+            compiler: xcode
+            version: "11.7"
+
+          - os: macOS-latest
+            compiler: xcode
+            version: "12.5.1"
+
+          - os: macOS-latest
+            compiler: xcode
+            version: "13.2.1"
+
+          - os: macOS-latest
+            compiler: gcc
+            version: "11"
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Install (Linux)
+        if: runner.os == 'Linux'
+        run: |
+          # Required for libc6-dbg:i386 and g++-multilib packages which are
+          # needed for x86 builds.
+          sudo dpkg --add-architecture i386
+
+          # clang-3.7 and earlier are not available in Bionic anymore so we get
+          # them from the Xenial repositories instead.
+          sudo add-apt-repository "deb http://dk.archive.ubuntu.com/ubuntu/ xenial main"
+          sudo add-apt-repository "deb http://dk.archive.ubuntu.com/ubuntu/ xenial universe"
+
+          # clang->=13 is not currently available by default
+          if [ "${{ matrix.compiler }}" = "clang" -a ${{ matrix.version }} -ge 13  ]; then
+            wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | sudo apt-key add -
+            sudo add-apt-repository "deb https://apt.llvm.org/focal/ llvm-toolchain-focal-${{ matrix.version }} main"
+          fi
+
+          sudo apt-get update
+
+          # libc6-dbg:i386 is required for running valgrind on x86.
+          sudo apt-get install -y ninja-build valgrind libc6-dbg:i386
+
+          if [ "${{ matrix.compiler }}" = "gcc" ]; then
+            sudo apt-get install -y g++-${{ matrix.version }} g++-${{ matrix.version }}-multilib
+          else
+            sudo apt-get install -y clang-${{ matrix.version }} g++-multilib
+          fi
+
+      - name: Install (macOS)
+        if: runner.os == 'macOS'
+        run: |
+            brew install ninja
+            if [ "${{ matrix.compiler }}" = "xcode" ]; then
+              sudo xcode-select -switch /Applications/Xcode_${{ matrix.version }}.app
+            fi
+
+      - name: Configure x64
+        uses: ilammy/msvc-dev-cmd@v1
+
+      - name: Build & Test x64
+        run: python3 .github/workflows/build_and_test.py ${{ runner.os }} x64 ${{ matrix.compiler }} ${{ matrix.version }}
+
+      - name: Configure x86
+        uses: ilammy/msvc-dev-cmd@v1
+        with:
+          arch: x86
+
+      # MacOS doesn't support x86 from Xcode 10 onwards.
+
+      - name: Build & Test x86
+        if: runner.os == 'Linux' || runner.os == 'Windows' && matrix.compiler != 'clang-cl'
+        run: python3 .github/workflows/build_and_test.py ${{ runner.os }} x86 ${{ matrix.compiler }} ${{ matrix.version }}
+
+  ci-min-gw:
+    if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name != github.repository
+    runs-on: windows-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        configuration: ["Debug", "Release"]
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Set up MinGW
+        uses: egor-tensin/setup-mingw@v2
+
+      - name: Generate
+        run: cmake -B build -S . -G "MinGW Makefiles" -D CMAKE_BUILD_TYPE=${{ matrix.configuration }}
+
+      - name: Build
+        run: cmake --build build
+
+      - name: Test
+        run: ctest --test-dir build --no-tests=error
+
+  ci-msvs:
+    if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name != github.repository
+    runs-on: ${{ matrix.toolset == 'v143' && 'windows-2022' || 'windows-2019' }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        toolset: ["v140", "v141", "v142", "v143", "ClangCl"]
+        architecture: ["Win32", "x64"]
+        configuration: ["Debug", "Release"]
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Generate
+        run: cmake -B build -S . -G "${{ matrix.toolset == 'v143' && 'Visual Studio 17 2022' || 'Visual Studio 16 2019' }}" \
+            -A ${{ matrix.architecture }} -T ${{ matrix.toolset }}
+
+      - name: Build
+        run: cmake --build build --config ${{ matrix.configuration }}
+
+      - name: Test
+        run: ctest -C ${{ matrix.configuration }} --test-dir build --no-tests=error
+
   ci-icpc:
     if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name != github.repository
     runs-on: ubuntu-latest
@@ -47,7 +329,6 @@ jobs:
         run: |
           . /opt/intel/oneapi/setvars.sh
           cmake --build build --config ${{ matrix.configuration }}
-
       - name: Test
         run: |
           . /opt/intel/oneapi/setvars.sh
