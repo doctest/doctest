@@ -36,6 +36,7 @@ Defining something ```globally``` means for every source file of the binary (exe
 - [**```DOCTEST_CONFIG_NO_MULTI_LANE_ATOMICS```**](#doctest_config_no_multi_lane_atomics)
 - [**```DOCTEST_CONFIG_ASSERTS_RETURN_VALUES```**](#doctest_config_asserts_return_values)
 - [**```DOCTEST_CONFIG_EVALUATE_ASSERTS_EVEN_WHEN_DISABLED```**](#doctest_config_evaluate_asserts_even_when_disabled)
+- [**```DOCTEST_CONFIG_NO_CONTRADICTING_INLINE```**](#doctest_config_no_contradicting_inline)
 
 For most people the only configuration needed is telling **doctest** which source file should host all the implementation code:
 
@@ -293,6 +294,12 @@ When [**```DOCTEST_CONFIG_ASSERTS_RETURN_VALUES```**](#doctest_config_asserts_re
 Since all ```THROWS_WITH``` assertions depend on doctest functionality which is not available when [**```DOCTEST_CONFIG_DISABLE```**](#doctest_config_disable) is defined (stringification), they will still unconditionally return ```false```.
 
 This can be defined both globally and in specific source files only.
+
+### **```DOCTEST_CONFIG_NO_CONTRADICTING_INLINE```**
+
+Some functions in doctest are marked with both `inline` and a compiler specific no-inline attribute. This is done because they need to be weak symbols (inline) so that they can be defined in multiple compilation units, but they should not actually be inlined as a compiler optimization as that would degrade compilation speed.
+
+However, this is known to cause some issues with a few compilers with hard to suppress warnings. This flag disables the use of the no-inline attribute in order to suppress the warning if your build requires that.
 
 ---------------
 
