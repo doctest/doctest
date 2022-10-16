@@ -1,4 +1,5 @@
-#pragma once
+#ifndef DOCTEST_MPI_H
+#define DOCTEST_MPI_H
 
 #ifdef DOCTEST_CONFIG_IMPLEMENT
 
@@ -164,3 +165,5 @@ insufficient_procs(int test_nb_procs) {
 
 
 #endif // DOCTEST_CONFIG_IMPLEMENT
+
+#endif // DOCTEST_MPI_H
