@@ -121,24 +121,6 @@ Note that these asserts also have a ```_MESSAGE``` form - like ```CHECK_THROWS_M
 
 One may use the [**```DOCTEST_CONFIG_VOID_CAST_EXPRESSIONS```**](configuration.md#doctest_config_void_cast_expressions) config identifier to cast the expression in these asserts to void to avoid warnings or other issues - for example nodiscard statements whose result isn't checked. This will however limit the ability to write entire ```{}``` blocks of code as the expression (or multiple statements) but in that case a simple lambda can be used. This should have been the default behavior from day 1 of the framework...
 
-## Tests involving private properties
-
-In C++>=17 tests can be written to the test the private parts of classes using `TEST_CASE_CLASS` simply by writing the test in the class body!
-
-```c++
-class MyTestedType {
-private:
-    int data = 5;
-
-    TEST_CASE_CLASS("test data") {
-        MyTestedType local;
-        CHECK(local.data == 5);
-    }
-};
-```
-
-It is recommended to give the test a visibility of private, as the implementation creates a few additions necessary for functionality that would otherwise be publicly accessible.
-
 ## Using asserts out of a testing context
 
 Asserts can be used outside of a testing context (in code not called from a ```TEST_CASE()```) instead of [```assert()```](https://en.cppreference.com/w/cpp/error/assert).
