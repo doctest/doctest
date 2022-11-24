@@ -1086,14 +1086,6 @@ namespace {
         }
         return running;
     }
-
-    unsigned long long hash(const std::vector<SubcaseSignature>& sigs) {
-        unsigned long long running = 0;
-        for (const SubcaseSignature& sig : sigs) {
-            running = hash(running, hash(sig));
-        }
-        return running;
-    }
 } // namespace
 namespace detail {
     bool Subcase::checkFilters() {
