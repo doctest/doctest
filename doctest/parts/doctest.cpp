@@ -1148,12 +1148,12 @@ namespace detail {
 
             if (!g_cs->reachedLeaf) {
                 // Leaf.
-                g_cs->fullyTraversedSubcases.insert(hash(g_cs->subcaseStack));
+                g_cs->fullyTraversedSubcases.insert(hash(hash(g_cs->subcaseStack, g_cs->currentSubcaseDepth), hash(m_signature)));
                 g_cs->nextSubcaseStack.clear();
                 g_cs->reachedLeaf = true;
             } else if (g_cs->nextSubcaseStack.empty()) {
                 // All children are finished.
-                g_cs->fullyTraversedSubcases.insert(hash(g_cs->subcaseStack));
+                g_cs->fullyTraversedSubcases.insert(hash(hash(g_cs->subcaseStack, g_cs->currentSubcaseDepth), hash(m_signature)));
             }
 
 #if defined(__cpp_lib_uncaught_exceptions) && __cpp_lib_uncaught_exceptions >= 201411L && (!defined(__MAC_OS_X_VERSION_MIN_REQUIRED) || __MAC_OS_X_VERSION_MIN_REQUIRED >= 101200)
