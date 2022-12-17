@@ -496,12 +496,13 @@ DOCTEST_GCC_SUPPRESS_WARNING_POP
 // https://github.com/doctest/doctest/issues/356
 #if DOCTEST_CLANG
 #include <ciso646>
+#endif // clang
+
 #ifdef _LIBCPP_VERSION
 #ifndef DOCTEST_CONFIG_USE_STD_HEADERS
 #define DOCTEST_CONFIG_USE_STD_HEADERS
 #endif
 #endif // _LIBCPP_VERSION
-#endif // clang
 
 #ifdef DOCTEST_CONFIG_USE_STD_HEADERS
 #ifndef DOCTEST_CONFIG_INCLUDE_TYPE_TRAITS
