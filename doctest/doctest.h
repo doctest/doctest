@@ -992,7 +992,7 @@ namespace detail {
     struct deferred_false : types::false_type { };
 
 // MSVS 2015 :(
-#if defined(_MSC_VER) && _MSC_VER <= 1900
+#if !DOCTEST_CLANG && defined(_MSC_VER) && _MSC_VER <= 1900
     template <typename T, typename = void>
     struct has_global_insertion_operator : types::false_type { };
 
