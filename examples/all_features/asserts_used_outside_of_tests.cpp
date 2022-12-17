@@ -24,7 +24,7 @@ static void some_func() {
     CHECK_THROWS(std::cout << "hello! \n");
 }
 
-// std::mutex g_mut;
+//std::mutex g_mut;
 
 static void handler(const doctest::AssertData& ad) {
     using namespace doctest;
