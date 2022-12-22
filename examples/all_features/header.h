@@ -48,8 +48,7 @@ DOCTEST_GCC_SUPPRESS_WARNING("-Wstrict-overflow")
 #endif // gcc 5
 
 // NOLINTBEGIN
-struct SomeFixture
-{
+struct SomeFixture {
     int data;
     SomeFixture() noexcept
             : data(42) {
@@ -65,4 +64,8 @@ struct SomeFixture
 TEST_CASE_FIXTURE(SomeFixture, "fixtured test") {
     data /= 2;
     CHECK(data == 21);
+}
+
+DOCTEST_IMPLEMENT_FIXTURE(SomeOtherFixture, SomeFixture, myTest, "test base") {
+    CHECK(data == 42);
 }

@@ -451,6 +451,13 @@ namespace doctest { namespace detail {
     static const int var = doctest::detail::consume(&var, __VA_ARGS__);                              \
     DOCTEST_CLANG_SUPPRESS_WARNING_POP
 
+#define DOCTEST_GLOBAL_NO_WARNINGS_CLASS(var, ...)                                                 \
+    DOCTEST_CLANG_SUPPRESS_WARNING_WITH_PUSH("-Wglobal-constructors")                              \
+    DOCTEST_CLANG_SUPPRESS_WARNING("-Wunused-variable")                                            \
+    /* NOLINT(fuchsia-statically-constructed-objects,cert-err58-cpp) */                            \
+    static const int var DOCTEST_UNUSED                                                            \
+    DOCTEST_CLANG_SUPPRESS_WARNING_POP
+
 #ifndef DOCTEST_BREAK_INTO_DEBUGGER
 // should probably take a look at https://github.com/scottt/debugbreak
 #ifdef DOCTEST_PLATFORM_LINUX
@@ -2185,7 +2192,13 @@ int registerReporter(const char* name, int priority, bool isReporter) {
 
 #define DOCTEST_CREATE_AND_REGISTER_FUNCTION_IN_CLASS(f, proxy, decorators)                        \
     static doctest::detail::funcType proxy() { return f; }                                         \
-    DOCTEST_REGISTER_FUNCTION(inline, proxy(), decorators)                                         \
+        /* NOLINT */                                                                               \
+        inline DOCTEST_GLOBAL_NO_WARNINGS_CLASS(DOCTEST_ANONYMOUS(DOCTEST_ANON_VAR_) =             \
+            doctest::detail::regTest(                                                              \
+                    doctest::detail::TestCase(                                                     \
+                            proxy(), __FILE__, __LINE__,                                           \
+                            doctest_detail_test_suite_ns::getCurrentTestSuite()) *                 \
+                    decorators);)                                                                  \
     static void f()
 
 // for registering tests
@@ -2200,7 +2213,7 @@ int registerReporter(const char* name, int priority, bool isReporter) {
                                                   decorators)
 #else // DOCTEST_TEST_CASE_CLASS
 #define DOCTEST_TEST_CASE_CLASS(...)                                                               \
-    TEST_CASES_CAN_BE_REGISTERED_IN_CLASSES_ONLY_IN_CPP17_MODE_OR_WITH_VS_2017_OR_NEWER
+    static_assert(false, "Test cases can be registered in classes only in C++ >= 17");
 #endif // DOCTEST_TEST_CASE_CLASS
 
 // for registering tests with a fixture
