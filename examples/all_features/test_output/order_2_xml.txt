@@ -6,6 +6,11 @@
       <OverallResultsAsserts successes="0" failures="0" test_case_success="true"/>
     </TestCase>
   </TestSuite>
+  <TestSuite name="ts1">
+    <TestCase name="another normal test in a test suite from a decorator" filename="test_cases_and_suites.cpp" line="0" timeout="10">
+      <OverallResultsAsserts successes="1" failures="0" test_case_success="true"/>
+    </TestCase>
+  </TestSuite>
   <TestSuite name="test suite with a description">
     <TestCase name="doesn't fail but it should have" filename="test_cases_and_suites.cpp" line="0" description="regarding failures" should_fail="true">
       <OverallResultsAsserts successes="0" failures="0" test_case_success="false"/>
@@ -108,7 +113,7 @@
       <OverallResultsAsserts successes="0" failures="1" test_case_success="false"/>
     </TestCase>
   </TestSuite>
-  <OverallResultsAsserts successes="1" failures="11"/>
-  <OverallResultsTestCases successes="6" failures="9"/>
+  <OverallResultsAsserts successes="2" failures="11"/>
+  <OverallResultsTestCases successes="7" failures="9"/>
 </doctest>
 Program code.

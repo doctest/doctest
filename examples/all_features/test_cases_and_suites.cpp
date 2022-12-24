@@ -44,9 +44,27 @@ TEST_CASE_FIXTURE(SomeFixture, "fixtured test - not part of a test suite") {
     CHECK(data == 85);
 }
 
+DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_BEGIN
+#ifdef _WIN32
+#include <windows.h>
+#else
+#include <unistd.h>
+#endif // _WIN32
+DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_END
+
 TEST_CASE("normal test in a test suite from a decorator" * doctest::test_suite("ts1") *
           doctest::timeout(0.000001)) {
+#ifdef _WIN32
+    Sleep(1);
+#else
+    usleep(1000);
+#endif // _WIN32
     MESSAGE("failing because of the timeout decorator!");
+}
+
+TEST_CASE("another normal test in a test suite from a decorator" * doctest::test_suite("ts1") *
+    doctest::timeout(10)) {
+    CHECK(42 == 42);
 }
 
 static bool shouldSkip() { return false; }

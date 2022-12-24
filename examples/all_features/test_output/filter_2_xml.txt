@@ -29,6 +29,11 @@
     <TestCase name="all asserts should fail and show how the objects get stringified" filename="stringification.cpp" line="0" skipped="true"/>
     <TestCase name="all binary assertions" filename="assertion_macros.cpp" line="0" skipped="true"/>
     <TestCase name="an empty test that will succeed - not part of a test suite" filename="test_cases_and_suites.cpp" line="0" skipped="true"/>
+  </TestSuite>
+  <TestSuite name="ts1">
+    <TestCase name="another normal test in a test suite from a decorator" filename="test_cases_and_suites.cpp" line="0" timeout="10" skipped="true"/>
+  </TestSuite>
+  <TestSuite>
     <TestCase name="bad stringification of type pair&lt;int_pair>" filename="templated_test_cases.cpp" line="0" skipped="true"/>
     <TestCase name="check return values" filename="assertion_macros.cpp" line="0" skipped="true"/>
     <TestCase name="check return values no print" filename="assertion_macros.cpp" line="0" skipped="true"/>

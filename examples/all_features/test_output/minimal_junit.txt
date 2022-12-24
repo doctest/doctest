@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <testsuites>
-  <testsuite name="all_features" errors="1" failures="1" tests="12">
+  <testsuite name="all_features" errors="1" failures="1" tests="13">
     <testcase classname="test_cases_and_suites.cpp" name="an empty test that will succeed - not part of a test suite" status="run"/>
     <testcase classname="test_cases_and_suites.cpp" name="should fail because of an exception" status="run">
       <error message="exception">
@@ -19,6 +19,7 @@ CHECK( data == 85 ) is NOT correct!
       </failure>
     </testcase>
     <testcase classname="test_cases_and_suites.cpp" name="normal test in a test suite from a decorator" status="run"/>
+    <testcase classname="test_cases_and_suites.cpp" name="another normal test in a test suite from a decorator" status="run"/>
     <testcase classname="test_cases_and_suites.cpp" name="unskipped" status="run"/>
     <testcase classname="test_cases_and_suites.cpp" name="fails - and its allowed" status="run"/>
     <testcase classname="test_cases_and_suites.cpp" name="doesn't fail which is fine" status="run"/>
