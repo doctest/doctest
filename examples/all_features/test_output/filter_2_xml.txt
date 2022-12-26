@@ -20,6 +20,7 @@
     <TestCase name="REQUIRE level of asserts fail and abort the test case - 7" filename="assertion_macros.cpp" line="0" skipped="true"/>
     <TestCase name="REQUIRE level of asserts fail and abort the test case - 8" filename="assertion_macros.cpp" line="0" skipped="true"/>
     <TestCase name="REQUIRE level of asserts fail and abort the test case - 9" filename="assertion_macros.cpp" line="0" skipped="true"/>
+    <TestCase name="Treating star char as string?" filename="treat_char_star_as_string.cpp" line="0" skipped="true"/>
     <TestCase name="WARN level of asserts don't fail the test case" filename="assertion_macros.cpp" line="0" skipped="true"/>
     <TestCase name="[math] basic stuff" filename="main.cpp" line="0" skipped="true"/>
     <TestCase name="[string] testing std::string" filename="main.cpp" line="0" skipped="true"/>

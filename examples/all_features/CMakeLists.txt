@@ -18,6 +18,7 @@ set(files_with_output
     asserts_used_outside_of_tests.cpp
     enums.cpp
     decomposition.cpp
+    treat_char_star_as_string.cpp
 )
 
 set(files_all
@@ -128,6 +129,8 @@ function(add_test_all_features test_name flags)
     doctest_add_test_impl(NAME ${test_name} COMMAND $<TARGET_FILE:${test_name}> --no-skipped-summary --no-version -ob=name)
 endfunction()
 
+# TODO
+#add_test_all_features(treat_char_star_as_string DOCTEST_CONFIG_TREAT_CHAR_STAR_AS_STRING)
 add_test_all_features(no_multithreading DOCTEST_CONFIG_NO_MULTITHREADING)
 add_test_all_features(no_multi_lane_atomics DOCTEST_CONFIG_NO_MULTI_LANE_ATOMICS)
 add_test_all_features(disabled DOCTEST_CONFIG_DISABLE)

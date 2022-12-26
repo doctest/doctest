@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+  <testsuite name="all_features" errors="0" failures="0" tests="1">
+    <testcase classname="treat_char_star_as_string.cpp" name="Treating star char as string?" status="run"/>
+  </testsuite>
+</testsuites>
+Program code.

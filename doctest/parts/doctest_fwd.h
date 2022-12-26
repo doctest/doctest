@@ -1309,9 +1309,9 @@ namespace detail {
     template<class T, unsigned N>   struct decay_array<T[N]> { using type = T*; };
     template<class T>               struct decay_array<T[]>  { using type = T*; };
 
-    template<class T>   struct not_char_pointer              { static DOCTEST_CONSTEXPR value = 1; };
-    template<>          struct not_char_pointer<char*>       { static DOCTEST_CONSTEXPR value = 0; };
-    template<>          struct not_char_pointer<const char*> { static DOCTEST_CONSTEXPR value = 0; };
+    template<class T>   struct not_char_pointer              { static DOCTEST_CONSTEXPR bool value = true; };
+    template<>          struct not_char_pointer<char*>       { static DOCTEST_CONSTEXPR bool value = false; };
+    template<>          struct not_char_pointer<const char*> { static DOCTEST_CONSTEXPR bool value = false; };
 
     template<class T> struct can_use_op : public not_char_pointer<typename decay_array<T>::type> {};
 #endif // DOCTEST_CONFIG_TREAT_CHAR_STAR_AS_STRING
