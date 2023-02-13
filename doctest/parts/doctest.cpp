@@ -71,7 +71,9 @@ DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_BEGIN
 #include <utility>
 #include <fstream>
 #include <sstream>
+#ifdef DOCTEST_CONFIG_INCLUDE_IOSTREAM
 #include <iostream>
+#endif
 #include <algorithm>
 #include <iomanip>
 #include <vector>
@@ -193,8 +195,14 @@ namespace {
 #ifndef DOCTEST_CONFIG_NO_EXCEPTIONS
         throw e;
 #else  // DOCTEST_CONFIG_NO_EXCEPTIONS
+#ifdef DOCTEST_CONFIG_HANDLE_EXCEPTION
+        DOCTEST_CONFIG_HANDLE_EXCEPTION(e);
+#else
+#ifdef DOCTEST_CONFIG_INCLUDE_IOSTREAM
         std::cerr << "doctest will terminate because it needed to throw an exception.\n"
                   << "The message was: " << e.what() << '\n';
+#endif // DOCTEST_CONFIG_INCLUDE_IOSTREAM
+#endif // DOCTEST_CONFIG_HANDLE_EXCEPTION
         std::terminate();
 #endif // DOCTEST_CONFIG_NO_EXCEPTIONS
     }
@@ -269,7 +277,7 @@ namespace detail {
 
 namespace timer_large_integer
 {
-    
+
 #if defined(DOCTEST_PLATFORM_WINDOWS)
     using type = ULONGLONG;
 #else // DOCTEST_PLATFORM_WINDOWS
@@ -1905,7 +1913,7 @@ namespace detail {
             m_string = tlssPop();
             logged = true;
         }
-        
+
         DOCTEST_ITERATE_THROUGH_REPORTERS(log_message, *this);
 
         const bool isWarn = m_severity & assertType::is_warn;
@@ -1974,7 +1982,11 @@ namespace {
             mutable XmlWriter* m_writer = nullptr;
         };
 
+#ifdef DOCTEST_CONFIG_INCLUDE_IOSTREAM
         XmlWriter( std::ostream& os = std::cout );
+#else
+        XmlWriter( std::ostream& os );
+#endif
         ~XmlWriter();
 
         XmlWriter( XmlWriter const& ) = delete;
@@ -2456,7 +2468,7 @@ namespace {
             test_case_start_impl(in);
             xml.ensureTagClosed();
         }
-        
+
         void test_case_reenter(const TestCaseData&) override {}
 
         void test_case_end(const CurrentTestCaseStats& st) override {
@@ -3178,7 +3190,7 @@ namespace {
             subcasesStack.clear();
             currentSubcaseLevel = 0;
         }
-        
+
         void test_case_reenter(const TestCaseData&) override {
             subcasesStack.clear();
         }
@@ -3695,8 +3707,12 @@ int Context::run() {
             fstr.open(p->out.c_str(), std::fstream::out);
             p->cout = &fstr;
         } else {
+#ifdef DOCTEST_CONFIG_INCLUDE_IOSTREAM
             // stdout by default
             p->cout = &std::cout;
+#else
+            return EXIT_FAILURE;
+#endif
         }
     }
 
@@ -3861,7 +3877,7 @@ int Context::run() {
             DOCTEST_ITERATE_THROUGH_REPORTERS(test_case_start, tc);
 
             p->timer.start();
-            
+
             bool run_test = true;
 
             do {
@@ -3902,7 +3918,7 @@ DOCTEST_MSVC_SUPPRESS_WARNING_POP
                     run_test = false;
                     p->failure_flags |= TestCaseFailureReason::TooManyFailedAsserts;
                 }
-                
+
                 if(!p->nextSubcaseStack.empty() && run_test)
                     DOCTEST_ITERATE_THROUGH_REPORTERS(test_case_reenter, tc);
                 if(p->nextSubcaseStack.empty())
