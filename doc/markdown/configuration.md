@@ -305,7 +305,7 @@ However, this is known to cause some issues with a few compilers with hard to su
 
 ### **```DOCTEST_CONFIG_NO_IOSTREAM```**
 
-This option disables any inclusion of `<iostream>`, `std::cout` and `std::cerr`. This imply that the `cout` context field must be supplied.  If
+This option disables any inclusion of `<iostream>`, `std::cout` and `std::cerr`. This implies that the `cout` context field must be supplied.  If
 ```DOCTEST_CONFIG_NO_EXCEPTIONS``` is defined, then the unhandled exception is not printed to `std::cerr`.
 [```DOCTEST_CONFIG_HANDLE_EXCEPTION```](#doctest_config_handle_exception) can be defined to handle this case.
 
