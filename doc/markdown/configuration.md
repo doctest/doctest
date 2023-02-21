@@ -38,7 +38,7 @@ Defining something ```globally``` means for every source file of the binary (exe
 - [**```DOCTEST_CONFIG_EVALUATE_ASSERTS_EVEN_WHEN_DISABLED```**](#doctest_config_evaluate_asserts_even_when_disabled)
 - [**```DOCTEST_CONFIG_NO_CONTRADICTING_INLINE```**](#doctest_config_no_contradicting_inline)
 - [**```DOCTEST_CONFIG_NO_IOSTREAM```**](#doctest_config_no_iostream)
-- [**```DOCTEST_CONFIG_NO_CONTRADICTING_INLINE```**](#doctest_config_no_contradicting_inline)
+- [**```DOCTEST_CONFIG_HANDLE_EXCEPTION```**](#doctest_config_handle_exception)
 
 For most people the only configuration needed is telling **doctest** which source file should host all the implementation code:
 
