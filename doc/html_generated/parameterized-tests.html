@@ -31,7 +31,7 @@ There will be proper support for this in the future. For now there are 2 ways of
     This has several drawbacks:
     - in case of an exception (or a ```REQUIRE``` assert failing) the entire test case ends and the checks are not done for the rest of the input data
     - the user has to manually log the data with calls to ```CAPTURE()``` ( or ```INFO()```)
-    - more boilerplate - doctest should supply primitives for generating data but currently doesnt - so the user has to write their own data generation
+    - more boilerplate - doctest should supply primitives for generating data but currently doesn't - so the user has to write their own data generation
 
 - using subcases to initialize data differently:
 
@@ -144,7 +144,7 @@ TYPE_TO_STRING(std::vector<int>);
 
 The ```TYPE_TO_STRING``` macro has an effect only in the current source file and thus needs to be used in some header if the same type will be used in separate source files for templated test cases.
 
-Other testing frameworks use the header ```<typeinfo>``` in addition to demangling to get the string for types automatically but doctest cannot afford to include any header in it's forward declaration part (the public one) of the header - so the user has to teach the framework for each type. This is done to achieve [maximal compile time performance](benchmarks.html).
+Other testing frameworks use the header ```<typeinfo>``` in addition to demangling to get the string for types automatically but doctest cannot afford to include any header in its forward declaration part (the public one) of the header - so the user has to teach the framework for each type. This is done to achieve [maximal compile time performance](benchmarks.html).
 
 Some notes:
 

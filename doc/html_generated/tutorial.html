@@ -37,7 +37,7 @@ TEST_CASE("testing the factorial function") {
 
 This will compile to a complete executable which responds to command line arguments. If you just run it with no arguments it will execute all test cases (in this case - just one), report any failures, report a summary of how many tests passed and failed and returns 0 on success and 1 if anything failed (useful if you just want a yes/no answer to: "did it work").
 
-If you run this as written it will pass. Everything is good. Right? Well there is still a bug here. We missed to check if ```factorial(0) == 1``` so lets add that check as well:
+If you run this as written it will pass. Everything is good. Right? Well there is still a bug here. We missed to check if ```factorial(0) == 1``` so let's add that check as well:
 
 ```
 TEST_CASE("testing the factorial function") {
@@ -96,7 +96,7 @@ TEST_CASE("vectors can be sized and resized") {
     REQUIRE(v.size() == 5);
     REQUIRE(v.capacity() >= 5);
 
-    SUBCASE("adding to the vector increases it's size") {
+    SUBCASE("adding to the vector increases its size") {
         v.push_back(1);
 
         CHECK(v.size() == 6);
@@ -195,7 +195,7 @@ The requirement is that the following block of code ([**or equivalent**](main.ht
 
 appears in _exactly_ one translation unit (source file). Use as many additional source files as you need for your tests - partitioned however makes most sense for your way of working. Each additional file needs only to ```#include "doctest.h"``` - do not repeat the ```#define```!
 
-In fact it is usually a good idea to put the block with the ```#define``` in it's own source file.
+In fact it is usually a good idea to put the block with the ```#define``` in its own source file.
 
 ## Next steps
 
