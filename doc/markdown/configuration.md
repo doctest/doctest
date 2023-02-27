@@ -37,7 +37,7 @@ Defining something ```globally``` means for every source file of the binary (exe
 - [**```DOCTEST_CONFIG_ASSERTS_RETURN_VALUES```**](#doctest_config_asserts_return_values)
 - [**```DOCTEST_CONFIG_EVALUATE_ASSERTS_EVEN_WHEN_DISABLED```**](#doctest_config_evaluate_asserts_even_when_disabled)
 - [**```DOCTEST_CONFIG_NO_CONTRADICTING_INLINE```**](#doctest_config_no_contradicting_inline)
-- [**```DOCTEST_CONFIG_NO_IOSTREAM```**](#doctest_config_no_iostream)
+- [**```DOCTEST_CONFIG_NO_INCLUDE_IOSTREAM```**](#doctest_config_no_include_iostream)
 - [**```DOCTEST_CONFIG_HANDLE_EXCEPTION```**](#doctest_config_handle_exception)
 
 For most people the only configuration needed is telling **doctest** which source file should host all the implementation code:
@@ -303,7 +303,7 @@ Some functions in doctest are marked with both `inline` and a compiler specific 
 
 However, this is known to cause some issues with a few compilers with hard to suppress warnings. This flag disables the use of the no-inline attribute in order to suppress the warning if your build requires that.
 
-### **```DOCTEST_CONFIG_NO_IOSTREAM```**
+### **```DOCTEST_CONFIG_NO_INCLUDE_IOSTREAM```**
 
 This option disables any inclusion of `<iostream>`, `std::cout` and `std::cerr`. This implies that the `cout` context field must be supplied.  If
 ```DOCTEST_CONFIG_NO_EXCEPTIONS``` is defined, then the unhandled exception is not printed to `std::cerr`.
