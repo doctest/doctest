@@ -396,11 +396,6 @@ DOCTEST_MSVC_SUPPRESS_WARNING(4623) // default constructor was implicitly define
 #endif
 #endif // DOCTEST_NO_SANITIZE_INTEGER
 
-// Should std::cout/std::cerr ever be used by doctest?
-#ifndef DOCTEST_CONFIG_NO_INCLUDE_IOSTREAM
-#define DOCTEST_CONFIG_INCLUDE_IOSTREAM
-#endif
-
 // =================================================================================================
 // == FEATURE DETECTION END ========================================================================
 // =================================================================================================

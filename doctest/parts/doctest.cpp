@@ -71,9 +71,9 @@ DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_BEGIN
 #include <utility>
 #include <fstream>
 #include <sstream>
-#ifdef DOCTEST_CONFIG_INCLUDE_IOSTREAM
+#ifndef DOCTEST_CONFIG_NO_INCLUDE_IOSTREAM
 #include <iostream>
-#endif
+#endif // DOCTEST_CONFIG_NO_INCLUDE_IOSTREAM
 #include <algorithm>
 #include <iomanip>
 #include <vector>
@@ -197,11 +197,11 @@ namespace {
 #else  // DOCTEST_CONFIG_NO_EXCEPTIONS
 #ifdef DOCTEST_CONFIG_HANDLE_EXCEPTION
         DOCTEST_CONFIG_HANDLE_EXCEPTION(e);
-#else
-#ifdef DOCTEST_CONFIG_INCLUDE_IOSTREAM
+#else // DOCTEST_CONFIG_HANDLE_EXCEPTION
+#ifndef DOCTEST_CONFIG_NO_INCLUDE_IOSTREAM
         std::cerr << "doctest will terminate because it needed to throw an exception.\n"
                   << "The message was: " << e.what() << '\n';
-#endif // DOCTEST_CONFIG_INCLUDE_IOSTREAM
+#endif // DOCTEST_CONFIG_NO_INCLUDE_IOSTREAM
 #endif // DOCTEST_CONFIG_HANDLE_EXCEPTION
         std::terminate();
 #endif // DOCTEST_CONFIG_NO_EXCEPTIONS
@@ -1982,11 +1982,11 @@ namespace {
             mutable XmlWriter* m_writer = nullptr;
         };
 
-#ifdef DOCTEST_CONFIG_INCLUDE_IOSTREAM
+#ifndef DOCTEST_CONFIG_NO_INCLUDE_IOSTREAM
         XmlWriter( std::ostream& os = std::cout );
-#else
+#else // DOCTEST_CONFIG_NO_INCLUDE_IOSTREAM
         XmlWriter( std::ostream& os );
-#endif
+#endif // DOCTEST_CONFIG_NO_INCLUDE_IOSTREAM
         ~XmlWriter();
 
         XmlWriter( XmlWriter const& ) = delete;
@@ -3707,12 +3707,12 @@ int Context::run() {
             fstr.open(p->out.c_str(), std::fstream::out);
             p->cout = &fstr;
         } else {
-#ifdef DOCTEST_CONFIG_INCLUDE_IOSTREAM
+#ifndef DOCTEST_CONFIG_NO_INCLUDE_IOSTREAM
             // stdout by default
             p->cout = &std::cout;
-#else
+#else // DOCTEST_CONFIG_NO_INCLUDE_IOSTREAM
             return EXIT_FAILURE;
-#endif
+#endif // DOCTEST_CONFIG_NO_INCLUDE_IOSTREAM
         }
     }
 
