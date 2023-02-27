@@ -214,14 +214,6 @@ jobs:
 
           - os: macOS-latest
             compiler: xcode
-            version: "11.7"
-
-          - os: macOS-latest
-            compiler: xcode
-            version: "12.5.1"
-
-          - os: macOS-latest
-            compiler: xcode
             version: "13.2.1"
 
           - os: macos-12
