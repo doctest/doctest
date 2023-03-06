@@ -136,6 +136,11 @@ if(NOT ${DOCTEST_NO_INSTALL})
         FILES "doctest/doctest.h"
         DESTINATION "${include_install_dir}/doctest"
     )
+    install(
+        DIRECTORY "doctest/extensions"
+        DESTINATION "${include_install_dir}/doctest"
+        FILES_MATCHING PATTERN "*.h"
+    )
 
     install(
         FILES "${project_config}" "${version_config}"
