@@ -53,6 +53,10 @@ else()
     target_include_directories(${PROJECT_NAME} INTERFACE $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/>)
 endif()
 
+if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+	set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} "-gdwarf-4")
+endif()
+
 # hack to support building on XCode 6 and 7 - propagate the definition to everything
 if(DEFINED DOCTEST_THREAD_LOCAL)
     target_compile_definitions(${PROJECT_NAME} INTERFACE
