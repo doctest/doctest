@@ -55,7 +55,7 @@ endif()
 
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
 	if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-		set(CMAKE_CXX_FLAGS " -gdwarf-4 ")
+		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -gdwarf-4 ")
 	endif()
 endif()
 
