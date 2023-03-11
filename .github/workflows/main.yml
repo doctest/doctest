@@ -180,15 +180,15 @@ jobs:
             compiler: clang
             version: "8"
 
-          - os: ubuntu-latest
+          - os: ubuntu-20.04
             compiler: clang
             version: "9"
 
-          - os: ubuntu-latest
+          - os: ubuntu-20.04
             compiler: clang
             version: "10"
 
-          - os: ubuntu-latest
+          - os: ubuntu-20.04
             compiler: clang
             version: "11"
 
@@ -256,7 +256,7 @@ jobs:
           if [ "${{ matrix.compiler }}" = "gcc" ]; then
             sudo apt-get install -y g++-${{ matrix.version }} g++-${{ matrix.version }}-multilib
           else
-            sudo apt-get install -y clang-${{ matrix.version }} g++-multilib
+            sudo apt-get install -y clang-${{ matrix.version }} libclang-${{ matrix.version }}-dev llvm-${{ matrix.version }}-dev g++-multilib
           fi
 
       - name: Install (macOS)
