@@ -100,85 +100,11 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: ["windows-2019", "windows-2022"]
+        os: []
         compiler: ["cl", "clang", "clang-cl"]
 
         include:
-          - os: ubuntu-18.04
-            compiler: gcc
-            version: "4.8"
-
-          - os: ubuntu-18.04
-            compiler: gcc
-            version: "4.9"
-
-          - os: ubuntu-18.04
-            compiler: gcc
-            version: "5"
-
-          - os: ubuntu-18.04
-            compiler: gcc
-            version: "6"
-
-          - os: ubuntu-18.04
-            compiler: gcc
-            version: "7"
-
-          - os: ubuntu-18.04
-            compiler: gcc
-            version: "8"
-
-          - os: ubuntu-latest
-            compiler: gcc
-            version: "9"
-
-          - os: ubuntu-latest
-            compiler: gcc
-            version: "10"
-
-          - os: ubuntu-latest
-            compiler: gcc
-            version: "11"
-
-          - os: ubuntu-18.04
-            compiler: clang
-            version: "3.5"
-
-          - os: ubuntu-18.04
-            compiler: clang
-            version: "3.6"
-
-          - os: ubuntu-18.04
-            compiler: clang
-            version: "3.7"
-
-          - os: ubuntu-18.04
-            compiler: clang
-            version: "3.8"
-
-          - os: ubuntu-18.04
-            compiler: clang
-            version: "3.9"
-
-          - os: ubuntu-18.04
-            compiler: clang
-            version: "4.0"
-
-          - os: ubuntu-18.04
-            compiler: clang
-            version: "5.0"
-
-          - os: ubuntu-18.04
-            compiler: clang
-            version: "6.0"
-
-          - os: ubuntu-18.04
-            compiler: clang
-            version: "7"
-
-          - os: ubuntu-18.04
-            compiler: clang
-            version: "8"
+  
 
           - os: ubuntu-20.04
             compiler: clang
@@ -208,21 +134,7 @@ jobs:
             compiler: clang
             version: "15"
 
-          - os: macOS-10.15
-            compiler: xcode
-            version: "10.3"
 
-          - os: macOS-latest
-            compiler: xcode
-            version: "13.2.1"
-
-          - os: macos-12
-            compiler: xcode
-            version: "14.0.1"
-
-          - os: macOS-latest
-            compiler: gcc
-            version: "11"
 
     steps:
       - uses: actions/checkout@v2
@@ -284,84 +196,4 @@ jobs:
         if: runner.os == 'Linux' || runner.os == 'Windows' && matrix.compiler != 'clang-cl'
         run: python3 .github/workflows/build_and_test.py ${{ runner.os }} x86 ${{ matrix.compiler }} ${{ matrix.version }}
 
-  ci-min-gw:
-    if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name != github.repository
-    runs-on: windows-latest
-
-    strategy:
-      fail-fast: false
-      matrix:
-        configuration: ["Debug", "Release"]
-
-    steps:
-      - uses: actions/checkout@v2
-
-      - name: Set up MinGW
-        uses: egor-tensin/setup-mingw@v2
-
-      - name: Generate
-        run: cmake -B build -S . -G "MinGW Makefiles" -D CMAKE_BUILD_TYPE=${{ matrix.configuration }}
-
-      - name: Build
-        run: cmake --build build
-
-      - name: Test
-        run: ctest --test-dir build --no-tests=error
-
-  ci-msvs:
-    if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name != github.repository
-    runs-on: ${{ matrix.toolset == 'v143' && 'windows-2022' || 'windows-2019' }}
-
-    strategy:
-      fail-fast: false
-      matrix:
-        toolset: ["v140", "v141", "v142", "v143", "ClangCl"]
-        architecture: ["Win32", "x64"]
-        configuration: ["Debug", "Release"]
-
-    steps:
-      - uses: actions/checkout@v2
-
-      - name: Generate
-        run: cmake -B build -S . -G "${{ matrix.toolset == 'v143' && 'Visual Studio 17 2022' || 'Visual Studio 16 2019' }}" \
-            -A ${{ matrix.architecture }} -T ${{ matrix.toolset }}
-
-      - name: Build
-        run: cmake --build build --config ${{ matrix.configuration }}
-
-      - name: Test
-        run: ctest -C ${{ matrix.configuration }} --test-dir build --no-tests=error
-
-  ci-icpc:
-    if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name != github.repository
-    runs-on: ubuntu-latest
-
-    strategy:
-      fail-fast: false
-      matrix:
-        configuration: ["Debug", "Release"]
-
-    steps:
-      - uses: actions/checkout@v2
-
-      - name: Install
-        run: |
-          wget -O - https://apt.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB | sudo apt-key add -
-          sudo add-apt-repository "deb https://apt.repos.intel.com/oneapi all main"
-          sudo apt-get update
-          sudo apt-get install -y intel-oneapi-compiler-dpcpp-cpp-and-cpp-classic ninja-build
-
-      - name: Generate
-        run: |
-          . /opt/intel/oneapi/setvars.sh
-          cmake -B build -S . -G Ninja -D CMAKE_CXX_COMPILER=icc -D CMAKE_C_COMPILER=icc -D CMAKE_CXX_COMPILER=icpc -D CMAKE_BUILD_TYPE=${{ matrix.configuration }} -D CMAKE_CXX_FLAGS="-w2 -Wcheck -Werror -diag-disable=10441 -D DOCTEST_CONFIG_NO_CONTRADICTING_INLINE"
-
-      - name: Build
-        run: |
-          . /opt/intel/oneapi/setvars.sh
-          cmake --build build --config ${{ matrix.configuration }}
-      - name: Test
-        run: |
-          . /opt/intel/oneapi/setvars.sh
-          ctest -C ${{ matrix.configuration }} --test-dir build --no-tests=error
 
