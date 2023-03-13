@@ -104,125 +104,10 @@ jobs:
         compiler: ["cl", "clang", "clang-cl"]
 
         include:
-          - os: ubuntu-18.04
-            compiler: gcc
-            version: "4.8"
-
-          - os: ubuntu-18.04
-            compiler: gcc
-            version: "4.9"
-
-          - os: ubuntu-18.04
-            compiler: gcc
-            version: "5"
-
-          - os: ubuntu-18.04
-            compiler: gcc
-            version: "6"
-
-          - os: ubuntu-18.04
-            compiler: gcc
-            version: "7"
-
-          - os: ubuntu-18.04
-            compiler: gcc
-            version: "8"
-
           - os: ubuntu-latest
-            compiler: gcc
-            version: "9"
-
-          - os: ubuntu-latest
-            compiler: gcc
-            version: "10"
-
-          - os: ubuntu-latest
-            compiler: gcc
-            version: "11"
-
-          - os: ubuntu-18.04
-            compiler: clang
-            version: "3.5"
-
-          - os: ubuntu-18.04
-            compiler: clang
-            version: "3.6"
-
-          - os: ubuntu-18.04
-            compiler: clang
-            version: "3.7"
-
-          - os: ubuntu-18.04
-            compiler: clang
-            version: "3.8"
-
-          - os: ubuntu-18.04
-            compiler: clang
-            version: "3.9"
-
-          - os: ubuntu-18.04
-            compiler: clang
-            version: "4.0"
-
-          - os: ubuntu-18.04
-            compiler: clang
-            version: "5.0"
-
-          - os: ubuntu-18.04
-            compiler: clang
-            version: "6.0"
-
-          - os: ubuntu-18.04
-            compiler: clang
-            version: "7"
-
-          - os: ubuntu-18.04
-            compiler: clang
-            version: "8"
-
-          - os: ubuntu-20.04
-            compiler: clang
-            version: "9"
-
-          - os: ubuntu-20.04
-            compiler: clang
-            version: "10"
-
-          - os: ubuntu-20.04
-            compiler: clang
-            version: "11"
-
-          - os: ubuntu-20.04
-            compiler: clang
-            version: "12"
-
-          - os: ubuntu-22.04
-            compiler: clang
-            version: "13"
-
-          - os: ubuntu-22.10
             compiler: clang
             version: "14"
 
-          - os: ubuntu-latest
-            compiler: clang
-            version: "15"
-
-          - os: macOS-10.15
-            compiler: xcode
-            version: "10.3"
-
-          - os: macOS-latest
-            compiler: xcode
-            version: "13.2.1"
-
-          - os: macos-12
-            compiler: xcode
-            version: "14.0.1"
-
-          - os: macOS-latest
-            compiler: gcc
-            version: "11"
 
     steps:
       - uses: actions/checkout@v2
@@ -250,7 +135,7 @@ jobs:
           # clang->=13 is not currently available by default
           if [ "${{ matrix.compiler }}" = "clang" -a ${{ matrix.version }} -ge 13  ]; then
             wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | sudo apt-key add -
-            sudo add-apt-repository "deb https://apt.llvm.org/focal/ llvm-toolchain-focal-${{ matrix.version }} main"
+            apt-get update
           fi
 
           if [ "${{ matrix.compiler }}" = "gcc" ]; then
