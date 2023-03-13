@@ -192,7 +192,7 @@ jobs:
             compiler: clang
             version: "11"
 
-          - os: ubuntu-latest
+          - os: ubuntu-20.04
             compiler: clang
             version: "12"
 
