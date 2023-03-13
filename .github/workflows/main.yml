@@ -237,7 +237,7 @@ jobs:
           sudo apt-get update
 
           # libc6-dbg:i386 is required for running valgrind on x86.
-          sudo apt-get install -y ninja-build valgrind libc6-dbg:i386 wget gpg ca-certificates
+          sudo apt-get install -y ninja-build valgrind libc6-dbg:i386 wget gpg ca-certificates dirmngr
 
           # clang-3.7 and earlier are not available in Bionic anymore so we get
           # them from the Xenial repositories instead.
