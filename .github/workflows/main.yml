@@ -104,10 +104,125 @@ jobs:
         compiler: ["cl", "clang", "clang-cl"]
 
         include:
+          - os: ubuntu-18.04
+            compiler: gcc
+            version: "4.8"
+
+          - os: ubuntu-18.04
+            compiler: gcc
+            version: "4.9"
+
+          - os: ubuntu-18.04
+            compiler: gcc
+            version: "5"
+
+          - os: ubuntu-18.04
+            compiler: gcc
+            version: "6"
+
+          - os: ubuntu-18.04
+            compiler: gcc
+            version: "7"
+
+          - os: ubuntu-18.04
+            compiler: gcc
+            version: "8"
+
+          - os: ubuntu-latest
+            compiler: gcc
+            version: "9"
+
+          - os: ubuntu-latest
+            compiler: gcc
+            version: "10"
+
+          - os: ubuntu-latest
+            compiler: gcc
+            version: "11"
+
+          - os: ubuntu-18.04
+            compiler: clang
+            version: "3.5"
+
+          - os: ubuntu-18.04
+            compiler: clang
+            version: "3.6"
+
+          - os: ubuntu-18.04
+            compiler: clang
+            version: "3.7"
+
+          - os: ubuntu-18.04
+            compiler: clang
+            version: "3.8"
+
+          - os: ubuntu-18.04
+            compiler: clang
+            version: "3.9"
+
+          - os: ubuntu-18.04
+            compiler: clang
+            version: "4.0"
+
+          - os: ubuntu-18.04
+            compiler: clang
+            version: "5.0"
+
+          - os: ubuntu-18.04
+            compiler: clang
+            version: "6.0"
+
+          - os: ubuntu-18.04
+            compiler: clang
+            version: "7"
+
+          - os: ubuntu-18.04
+            compiler: clang
+            version: "8"
+
+          - os: ubuntu-20.04
+            compiler: clang
+            version: "9"
+
+          - os: ubuntu-20.04
+            compiler: clang
+            version: "10"
+
+          - os: ubuntu-20.04
+            compiler: clang
+            version: "11"
+
+          - os: ubuntu-latest
+            compiler: clang
+            version: "12"
+
+          - os: ubuntu-latest
+            compiler: clang
+            version: "13"
+
           - os: ubuntu-latest
             compiler: clang
             version: "14"
 
+          - os: ubuntu-latest
+            compiler: clang
+            version: "15"
+
+          - os: macOS-10.15
+            compiler: xcode
+            version: "10.3"
+
+          - os: macOS-latest
+            compiler: xcode
+            version: "13.2.1"
+
+          - os: macos-12
+            compiler: xcode
+            version: "14.0.1"
+
+          - os: macOS-latest
+            compiler: gcc
+            version: "11"
 
     steps:
       - uses: actions/checkout@v2
@@ -126,11 +241,8 @@ jobs:
 
           # clang-3.7 and earlier are not available in Bionic anymore so we get
           # them from the Xenial repositories instead.
-          #sudo gpg --keyserver keyserver.ubuntu.com --recv-keys 40976EAF437D05B5
-          #sudo gpg --keyserver keyserver.ubuntu.com --recv-keys 3B4FE6ACC0B21F32
           sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 40976EAF437D05B5
           sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 3B4FE6ACC0B21F32
-
           #sudo sh -c 'wget -q -O - "https://keyserver.ubuntu.com/pks/lookup?search=0x40976EAF437D05B5&fingerprint=on&op=get" | gpg -q --dearmor - | tee "/usr/share/keyrings/dk.gpg" > /dev/null'
           sudo add-apt-repository "deb http://dk.archive.ubuntu.com/ubuntu/ xenial main"
           sudo add-apt-repository "deb http://dk.archive.ubuntu.com/ubuntu/ xenial universe"
