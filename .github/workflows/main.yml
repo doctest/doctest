@@ -135,7 +135,7 @@ jobs:
           # clang->=13 is not currently available by default
           if [ "${{ matrix.compiler }}" = "clang" -a ${{ matrix.version }} -ge 13  ]; then
             wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | sudo apt-key add -
-            apt-get update
+            sudo apt-get update
           fi
 
           if [ "${{ matrix.compiler }}" = "gcc" ]; then
