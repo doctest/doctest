@@ -248,6 +248,7 @@ jobs:
           sudo add-apt-repository "deb http://dk.archive.ubuntu.com/ubuntu/ xenial universe"
 
           # clang->=13 is not currently available by default
+          # causing compiler conflict for clang-14 as the below pulls from focal for 22.04 (ubuntu-latest)
           #if [ "${{ matrix.compiler }}" = "clang" -a ${{ matrix.version }} -ge 13  ]; then
             #wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | sudo apt-key add -
             #sudo add-apt-repository "deb https://apt.llvm.org/focal/ llvm-toolchain-focal-${{ matrix.version }} main"
@@ -348,6 +349,7 @@ jobs:
         run: |
           #wget -O - https://apt.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB | sudo apt-key add -
           #sudo add-apt-repository "deb [signed-by=/etc/apt/keyrings/icpc.gpg] https://apt.repos.intel.com/oneapi all main"
+          # apt-key is deprecated replace with below lines
           wget -O - https://apt.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB | sudo gpg --dearmor |sudo tee /etc/apt/keyrings/icpc.gpg > /dev/null
           echo "deb [signed-by=/etc/apt/keyrings/icpc.gpg] https://apt.repos.intel.com/oneapi all main" | sudo tee /etc/apt/sources.list.d/icpc.list
           sudo apt-get update
