@@ -226,8 +226,6 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-      - name: Setup tmate session
-        uses: mxschmitt/action-tmate@v3
 
       - name: Install (Linux)
         if: runner.os == 'Linux'
@@ -262,6 +260,8 @@ jobs:
           else
             sudo apt-get install -y clang-${{ matrix.version }} libclang-${{ matrix.version }}-dev llvm-${{ matrix.version }}-dev g++-multilib
           fi
+
+        uses: mxschmitt/action-tmate@v3
 
       - name: Install (macOS)
         if: runner.os == 'macOS'
