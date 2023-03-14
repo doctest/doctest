@@ -261,7 +261,6 @@ jobs:
             sudo apt-get install -y clang-${{ matrix.version }} libclang-${{ matrix.version }}-dev llvm-${{ matrix.version }}-dev g++-multilib
           fi
 
-      - uses: actions/checkout@v2
       - name: Setup tmate session
         uses: mxschmitt/action-tmate@v3
 
