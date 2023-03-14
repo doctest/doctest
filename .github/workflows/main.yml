@@ -347,8 +347,9 @@ jobs:
       - name: Install
         run: |
           #wget -O - https://apt.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB | sudo apt-key add -
+          #sudo add-apt-repository "deb [signed-by=/etc/apt/keyrings/icpc.gpg] https://apt.repos.intel.com/oneapi all main"
           wget -O - https://apt.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB | sudo gpg --dearmor |sudo tee /etc/apt/keyrings/icpc.gpg > /dev/null
-          sudo add-apt-repository "deb [signed-by=/etc/apt/keyrings/icpc.gpg] https://apt.repos.intel.com/oneapi all main"
+          echo "deb [signed-by=/etc/apt/keyrings/icpc.gpg] https://apt.repos.intel.com/oneapi all main" | sudo tee /etc/apt/sources.list.d/icpc.list
           sudo apt-get update
           sudo apt-get install -y intel-oneapi-compiler-dpcpp-cpp-and-cpp-classic ninja-build
 
