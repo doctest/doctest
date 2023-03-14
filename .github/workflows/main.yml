@@ -226,6 +226,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
+      - name: Setup tmate session
+        uses: mxschmitt/action-tmate@v3
 
       - name: Install (Linux)
         if: runner.os == 'Linux'
@@ -250,9 +252,10 @@ jobs:
           # clang->=13 is not currently available by default
           if [ "${{ matrix.compiler }}" = "clang" -a ${{ matrix.version }} -ge 13  ]; then
             wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | sudo apt-key add -
-            #sudo add-apt-repository "deb https://apt.llvm.org/focal/ llvm-toolchain-focal-${{ matrix.version }} main"
-            sudo add-apt-repository "deb https://apt.llvm.org/jammy/ llvm-toolchain-jammy-${{ matrix.version }} main"
+            sudo add-apt-repository "deb https://apt.llvm.org/focal/ llvm-toolchain-focal-${{ matrix.version }} main"
           fi
+
+          apt-get update
 
           if [ "${{ matrix.compiler }}" = "gcc" ]; then
             sudo apt-get install -y g++-${{ matrix.version }} g++-${{ matrix.version }}-multilib
