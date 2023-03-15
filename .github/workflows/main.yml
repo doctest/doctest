@@ -180,19 +180,19 @@ jobs:
             compiler: clang
             version: "8"
 
-          - os: ubuntu-latest
+          - os: ubuntu-20.04
             compiler: clang
             version: "9"
 
-          - os: ubuntu-latest
+          - os: ubuntu-20.04
             compiler: clang
             version: "10"
 
-          - os: ubuntu-latest
+          - os: ubuntu-20.04
             compiler: clang
             version: "11"
 
-          - os: ubuntu-latest
+          - os: ubuntu-20.04
             compiler: clang
             version: "12"
 
@@ -248,15 +248,16 @@ jobs:
           sudo add-apt-repository "deb http://dk.archive.ubuntu.com/ubuntu/ xenial universe"
 
           # clang->=13 is not currently available by default
-          if [ "${{ matrix.compiler }}" = "clang" -a ${{ matrix.version }} -ge 13  ]; then
-            wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | sudo apt-key add -
-            sudo add-apt-repository "deb https://apt.llvm.org/focal/ llvm-toolchain-focal-${{ matrix.version }} main"
-          fi
+          # causing compiler conflict for clang-14 as the below pulls from focal for 22.04 (ubuntu-latest)
+          #if [ "${{ matrix.compiler }}" = "clang" -a ${{ matrix.version }} -ge 13  ]; then
+            #wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | sudo apt-key add -
+            #sudo add-apt-repository "deb https://apt.llvm.org/focal/ llvm-toolchain-focal-${{ matrix.version }} main"
+          #fi
 
           if [ "${{ matrix.compiler }}" = "gcc" ]; then
             sudo apt-get install -y g++-${{ matrix.version }} g++-${{ matrix.version }}-multilib
           else
-            sudo apt-get install -y clang-${{ matrix.version }} g++-multilib
+            sudo apt-get install -y clang-${{ matrix.version }} libclang-${{ matrix.version }}-dev llvm-${{ matrix.version }}-dev g++-multilib
           fi
 
       - name: Install (macOS)
@@ -346,8 +347,11 @@ jobs:
 
       - name: Install
         run: |
-          wget -O - https://apt.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB | sudo apt-key add -
-          sudo add-apt-repository "deb https://apt.repos.intel.com/oneapi all main"
+          #wget -O - https://apt.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB | sudo apt-key add -
+          #sudo add-apt-repository "deb [signed-by=/etc/apt/keyrings/icpc.gpg] https://apt.repos.intel.com/oneapi all main"
+          # apt-key is deprecated replace with below lines
+          wget -O - https://apt.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB | sudo gpg --dearmor |sudo tee /etc/apt/keyrings/icpc.gpg > /dev/null
+          echo "deb [signed-by=/etc/apt/keyrings/icpc.gpg] https://apt.repos.intel.com/oneapi all main" | sudo tee /etc/apt/sources.list.d/icpc.list
           sudo apt-get update
           sudo apt-get install -y intel-oneapi-compiler-dpcpp-cpp-and-cpp-classic ninja-build
 
@@ -364,3 +368,4 @@ jobs:
         run: |
           . /opt/intel/oneapi/setvars.sh
           ctest -C ${{ matrix.configuration }} --test-dir build --no-tests=error
+
