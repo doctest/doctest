@@ -140,6 +140,10 @@ jobs:
             compiler: gcc
             version: "11"
 
+          - os: ubuntu-latest
+            compiler: gcc
+            version: "12"
+
           - os: ubuntu-18.04
             compiler: clang
             version: "3.5"
