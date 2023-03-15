@@ -5906,7 +5906,22 @@ namespace {
             testCaseData.addFailure(rb.m_decomp.c_str(), assertString(rb.m_at), os.str());
         }
 
-        void log_message(const MessageData&) override {}
+        void log_message(const MessageData& mb) override {
+            if(mb.m_severity & assertType::is_warn) // report only failures
+                return;
+
+            DOCTEST_LOCK_MUTEX(mutex)
+
+            std::ostringstream os;
+            os << skipPathFromFilename(mb.m_file) << (opt.gnu_file_line ? ":" : "(")
+              << line(mb.m_line) << (opt.gnu_file_line ? ":" : "):") << std::endl;
+
+            os << mb.m_string.c_str() << "\n";
+            log_contexts(os);
+
+            testCaseData.addFailure(mb.m_string.c_str(),
+                mb.m_severity & assertType::is_check ? "FAIL_CHECK" : "FAIL", os.str());
+        }
 
         void test_case_skipped(const TestCaseData&) override {}
 

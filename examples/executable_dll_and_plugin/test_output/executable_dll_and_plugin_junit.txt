@@ -4,7 +4,7 @@ I am a test from the implementation!
 I am a test from the implementation_2!
 I am a test from the executable!
 <testsuites>
-  <testsuite name="executable_dll_and_plugin" errors="1" failures="1" tests="3">
+  <testsuite name="executable_dll_and_plugin" errors="1" failures="2" tests="3">
     <testcase classname="dll.cpp" name="dll" status="run"/>
     <testcase classname="implementation.cpp" name="implementation" status="run"/>
     <testcase classname="implementation_2.cpp" name="implementation_2" status="run"/>
@@ -18,6 +18,12 @@ I am a test from the executable!
 plugin.cpp(0):
 CHECK( 1 == 2 ) is NOT correct!
   values: CHECK( 1 == 2 )
+  logged: some info
+
+      </failure>
+      <failure message="certain death!" type="FAIL">
+plugin.cpp(0):
+certain death!
   logged: some info
 
       </failure>

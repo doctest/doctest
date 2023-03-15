@@ -66,13 +66,25 @@ also twice 2, 0
 also twice 2, 1
 also twice 2, 2
 <testsuites>
-  <testsuite name="all_features" errors="4" failures="5" tests="26">
+  <testsuite name="all_features" errors="4" failures="7" tests="26">
     <testcase classname="subcases.cpp" name="lots of nested subcases" status="run"/>
     <testcase classname="subcases.cpp" name="lots of nested subcases" status="run"/>
-    <testcase classname="subcases.cpp" name="lots of nested subcases" status="run"/>
+    <testcase classname="subcases.cpp" name="lots of nested subcases" status="run">
+      <failure type="FAIL">
+subcases.cpp(0):
+
+
+      </failure>
+    </testcase>
     <testcase classname="subcases.cpp" name="reentering subcase via regular control flow" status="run"/>
     <testcase classname="subcases.cpp" name="reentering subcase via regular control flow" status="run"/>
-    <testcase classname="subcases.cpp" name="reentering subcase via regular control flow" status="run"/>
+    <testcase classname="subcases.cpp" name="reentering subcase via regular control flow" status="run">
+      <failure message="1" type="FAIL">
+subcases.cpp(0):
+1
+
+      </failure>
+    </testcase>
     <testcase classname="subcases.cpp" name="reentering subcase via regular control flow" status="run"/>
     <testcase classname="subcases.cpp" name="reentering subcase via regular control flow" status="run"/>
     <testcase classname="subcases.cpp" name="subcases can be used in a separate function as well/from function.../sc1" status="run"/>

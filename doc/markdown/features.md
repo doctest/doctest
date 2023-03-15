@@ -24,8 +24,8 @@
 **SOME OF THIS IS OUTDATED**
 
 - Standards compliant **C++11** code - should work with any **C++11** capable compiler (use tag [**1.2.9**](https://github.com/doctest/doctest/tree/1.2.9) for C++98 and older compilers)
-- tested with **GCC**: **4.8**, **4.9**, **5**, **6**, **7**, **8**, **9**, **10**, **11**
-- tested with **Clang**: **3.5**, **3.6**, **3.7**, **3.8**, **3.9**, **4**, **5**, **6**, **7**, **8**, **9**, **10**, **11**, **12**, **13** (XCode 10+)
+- tested with **GCC**: **4.8**, **4.9**, **5**, **6**, **7**, **8**, **9**, **10**, **11**, **12**
+- tested with **Clang**: **3.5**, **3.6**, **3.7**, **3.8**, **3.9**, **4**, **5**, **6**, **7**, **8**, **9**, **10**, **11**, **12**, **13**, **14**, **15** (XCode 10+)
 - tested with **MSVC**: **2015**, **2017**, **2019**, **2022** (also in 32 bit mode)
 - per-commit tested on [**GitHub Actions**](https://github.com/doctest/doctest/actions)
     - warnings as errors even on the most aggressive warning levels - see [**here**](../../scripts/cmake/common.cmake#L84)
