@@ -31,6 +31,7 @@ readme.write(doctest_contents)
 readme.close()
 
 # update meson file with version
+print("updating the meson file")
 meson_contents = ""
 for line in fileinput.input(["../meson.build"]):
     if line.startswith("project('doctest'"):
@@ -41,7 +42,3 @@ for line in fileinput.input(["../meson.build"]):
 meson = open("../meson.build", "w")
 meson.write(meson_contents)
 meson.close()
-
-# run generate_html.py
-print("generating html documentation from markdown")
-os.system("python generate_html.py")

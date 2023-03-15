@@ -45,7 +45,7 @@
 
 #define DOCTEST_VERSION_MAJOR 2
 #define DOCTEST_VERSION_MINOR 4
-#define DOCTEST_VERSION_PATCH 10
+#define DOCTEST_VERSION_PATCH 11
 
 // util we need here
 #define DOCTEST_TOSTR_IMPL(x) #x
