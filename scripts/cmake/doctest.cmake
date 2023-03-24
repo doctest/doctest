@@ -185,5 +185,7 @@ endfunction()
 ###############################################################################
 
 set(_DOCTEST_DISCOVER_TESTS_SCRIPT
-  ${CMAKE_CURRENT_LIST_DIR}/doctestAddTests.cmake
+    ${CMAKE_CURRENT_LIST_DIR}/doctestAddTests.cmake
+    CACHE INTERNAL "The location of the doctestAddTests script"
 )
+mark_as_advanced(_DOCTEST_DISCOVER_TESTS_SCRIPT)
