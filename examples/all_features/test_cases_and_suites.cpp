@@ -2,6 +2,12 @@
 
 #include "header.h"
 
+DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_BEGIN
+#include <chrono>
+#include <ctime>
+#include <thread>
+DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_END
+
 static int doStuff() {
     int a = 5;
     a += 2;
@@ -46,6 +52,11 @@ TEST_CASE_FIXTURE(SomeFixture, "fixtured test - not part of a test suite") {
 
 TEST_CASE("normal test in a test suite from a decorator" * doctest::test_suite("ts1") *
           doctest::timeout(0.000001)) {
+#ifndef _WIN32
+    struct timespec res{};
+    clock_getres(CLOCK_MONOTONIC, &res);
+    std::this_thread::sleep_for(std::chrono::nanoseconds(res.tv_nsec));
+#endif
     MESSAGE("failing because of the timeout decorator!");
 }
 
