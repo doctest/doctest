@@ -53,6 +53,14 @@ else()
     target_include_directories(${PROJECT_NAME} INTERFACE $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/>)
 endif()
 
+if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+	if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+		if (NOT WIN32)
+			set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -gdwarf-4 ")
+		endif()
+	endif()
+endif()
+
 # hack to support building on XCode 6 and 7 - propagate the definition to everything
 if(DEFINED DOCTEST_THREAD_LOCAL)
     target_compile_definitions(${PROJECT_NAME} INTERFACE
@@ -135,6 +143,11 @@ if(NOT ${DOCTEST_NO_INSTALL})
     install(
         FILES "doctest/doctest.h"
         DESTINATION "${include_install_dir}/doctest"
+    )
+    install(
+        DIRECTORY "doctest/extensions"
+        DESTINATION "${include_install_dir}/doctest"
+        FILES_MATCHING PATTERN "*.h"
     )
 
     install(

@@ -64,6 +64,30 @@ jobs:
       - name: Build
         run: cmake --build build
 
+  sanitizers:
+    if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name != github.repository
+    runs-on: ubuntu-22.04
+
+    strategy:
+      fail-fast: false
+      matrix:
+        sanitizers: ["address", "thread", "undefined", "integer", "implicit-conversion", "nullability", "safe-stack"]
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Install
+        run: sudo apt-get install -y ninja-build
+
+      - name: Generate
+        run: cmake -B build -S . -G Ninja -D CMAKE_CXX_COMPILER=clang++ -D CMAKE_EXPORT_COMPILE_COMMANDS=ON -D CMAKE_CXX_FLAGS="-fsanitize=${{ matrix.sanitizers }}"
+
+      - name: Build
+        run: cmake --build build
+
+      - name: Test
+        run: ctest --test-dir build --no-tests=error
+
   ci:
     if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name != github.repository
     runs-on: ${{ matrix.os }}
@@ -116,6 +140,10 @@ jobs:
             compiler: gcc
             version: "11"
 
+          - os: ubuntu-latest
+            compiler: gcc
+            version: "12"
+
           - os: ubuntu-18.04
             compiler: clang
             version: "3.5"
@@ -156,19 +184,19 @@ jobs:
             compiler: clang
             version: "8"
 
-          - os: ubuntu-latest
+          - os: ubuntu-20.04
             compiler: clang
             version: "9"
 
-          - os: ubuntu-latest
+          - os: ubuntu-20.04
             compiler: clang
             version: "10"
 
-          - os: ubuntu-latest
+          - os: ubuntu-20.04
             compiler: clang
             version: "11"
 
-          - os: ubuntu-latest
+          - os: ubuntu-20.04
             compiler: clang
             version: "12"
 
@@ -176,21 +204,25 @@ jobs:
             compiler: clang
             version: "13"
 
+          - os: ubuntu-latest
+            compiler: clang
+            version: "14"
+
+          - os: ubuntu-latest
+            compiler: clang
+            version: "15"
+
           - os: macOS-10.15
             compiler: xcode
             version: "10.3"
 
           - os: macOS-latest
             compiler: xcode
-            version: "11.7"
-
-          - os: macOS-latest
-            compiler: xcode
-            version: "12.5.1"
-
-          - os: macOS-latest
-            compiler: xcode
             version: "13.2.1"
+
+          - os: macos-12
+            compiler: xcode
+            version: "14.0.1"
 
           - os: macOS-latest
             compiler: gcc
@@ -206,26 +238,30 @@ jobs:
           # needed for x86 builds.
           sudo dpkg --add-architecture i386
 
+          sudo apt-get update
+
+          # libc6-dbg:i386 is required for running valgrind on x86.
+          sudo apt-get install -y ninja-build valgrind libc6-dbg:i386 wget gpg ca-certificates
+
           # clang-3.7 and earlier are not available in Bionic anymore so we get
           # them from the Xenial repositories instead.
+          sudo gpg --keyserver keyserver.ubuntu.com --recv-keys 40976EAF437D05B5
+          sudo gpg --keyserver keyserver.ubuntu.com --recv-keys 3B4FE6ACC0B21F32
+          #sudo sh -c 'wget -q -O - "https://keyserver.ubuntu.com/pks/lookup?search=0x40976EAF437D05B5&fingerprint=on&op=get" | gpg -q --dearmor - | tee "/usr/share/keyrings/dk.gpg" > /dev/null'
           sudo add-apt-repository "deb http://dk.archive.ubuntu.com/ubuntu/ xenial main"
           sudo add-apt-repository "deb http://dk.archive.ubuntu.com/ubuntu/ xenial universe"
 
           # clang->=13 is not currently available by default
-          if [ "${{ matrix.compiler }}" = "clang" -a ${{ matrix.version }} -ge 13  ]; then
-            wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | sudo apt-key add -
-            sudo add-apt-repository "deb https://apt.llvm.org/focal/ llvm-toolchain-focal-${{ matrix.version }} main"
-          fi
-
-          sudo apt-get update
-
-          # libc6-dbg:i386 is required for running valgrind on x86.
-          sudo apt-get install -y ninja-build valgrind libc6-dbg:i386
+          # causing compiler conflict for clang-14 as the below pulls from focal for 22.04 (ubuntu-latest)
+          #if [ "${{ matrix.compiler }}" = "clang" -a ${{ matrix.version }} -ge 13  ]; then
+            #wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | sudo apt-key add -
+            #sudo add-apt-repository "deb https://apt.llvm.org/focal/ llvm-toolchain-focal-${{ matrix.version }} main"
+          #fi
 
           if [ "${{ matrix.compiler }}" = "gcc" ]; then
             sudo apt-get install -y g++-${{ matrix.version }} g++-${{ matrix.version }}-multilib
           else
-            sudo apt-get install -y clang-${{ matrix.version }} g++-multilib
+            sudo apt-get install -y clang-${{ matrix.version }} libclang-${{ matrix.version }}-dev llvm-${{ matrix.version }}-dev g++-multilib
           fi
 
       - name: Install (macOS)
@@ -300,3 +336,40 @@ jobs:
 
       - name: Test
         run: ctest -C ${{ matrix.configuration }} --test-dir build --no-tests=error
+
+  ci-icpc:
+    if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name != github.repository
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        configuration: ["Debug", "Release"]
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Install
+        run: |
+          #wget -O - https://apt.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB | sudo apt-key add -
+          #sudo add-apt-repository "deb [signed-by=/etc/apt/keyrings/icpc.gpg] https://apt.repos.intel.com/oneapi all main"
+          # apt-key is deprecated replace with below lines
+          wget -O - https://apt.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB | sudo gpg --dearmor |sudo tee /etc/apt/keyrings/icpc.gpg > /dev/null
+          echo "deb [signed-by=/etc/apt/keyrings/icpc.gpg] https://apt.repos.intel.com/oneapi all main" | sudo tee /etc/apt/sources.list.d/icpc.list
+          sudo apt-get update
+          sudo apt-get install -y intel-oneapi-compiler-dpcpp-cpp-and-cpp-classic ninja-build
+
+      - name: Generate
+        run: |
+          . /opt/intel/oneapi/setvars.sh
+          cmake -B build -S . -G Ninja -D CMAKE_CXX_COMPILER=icc -D CMAKE_C_COMPILER=icc -D CMAKE_CXX_COMPILER=icpc -D CMAKE_BUILD_TYPE=${{ matrix.configuration }} -D CMAKE_CXX_FLAGS="-w2 -Wcheck -Werror -diag-disable=10441 -D DOCTEST_CONFIG_NO_CONTRADICTING_INLINE"
+
+      - name: Build
+        run: |
+          . /opt/intel/oneapi/setvars.sh
+          cmake --build build --config ${{ matrix.configuration }}
+      - name: Test
+        run: |
+          . /opt/intel/oneapi/setvars.sh
+          ctest -C ${{ matrix.configuration }} --test-dir build --no-tests=error
+

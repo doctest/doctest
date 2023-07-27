@@ -206,8 +206,14 @@
       </Exception>
       <OverallResultsAsserts successes="0" failures="0" test_case_success="false"/>
     </TestCase>
+    <TestCase name="pointer comparisons" filename="stringification.cpp" line="0">
+      <OverallResultsAsserts successes="4" failures="0" test_case_success="true"/>
+    </TestCase>
+    <TestCase name="enum with operator&lt;&lt;" filename="stringification.cpp" line="0">
+      <OverallResultsAsserts successes="1" failures="0" test_case_success="true"/>
+    </TestCase>
   </TestSuite>
-  <OverallResultsAsserts successes="9" failures="13"/>
-  <OverallResultsTestCases successes="2" failures="3"/>
+  <OverallResultsAsserts successes="14" failures="13"/>
+  <OverallResultsTestCases successes="4" failures="3"/>
 </doctest>
 Program code.

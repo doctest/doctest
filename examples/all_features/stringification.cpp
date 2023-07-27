@@ -248,3 +248,29 @@ TEST_CASE("a test case that registers an exception translator for int and then t
 
     throw_if(true, 5);
 }
+
+static void function() { }
+static int*** function2() { return nullptr; }
+
+TEST_CASE("pointer comparisons") {
+    int i = 42;
+    int* a = &i;
+    int* b = a;
+    
+    CHECK(a == b);
+    CHECK_EQ(a, b);
+
+    void (*functionPointer)() = &function;
+    CHECK(&function == functionPointer);
+    CHECK(&function2 == &function2);
+}
+
+enum class Foo { };
+
+static std::ostream& operator<<(std::ostream& os, Foo) {
+    return os << "Foo";
+}
+
+TEST_CASE("enum with operator<<") {
+    CHECK(doctest::toString(Foo()) == "Foo");
+}

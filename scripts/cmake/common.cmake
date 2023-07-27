@@ -195,6 +195,7 @@ if(MSVC)
     add_compiler_flags(
         /wd4514 # unreferenced inline function has been removed
         /wd4571 # SEH related
+        /wd5264 # const variable is not used
         /wd4710 # function not inlined
         /wd4711 # function 'x' selected for automatic inline expansion
 
