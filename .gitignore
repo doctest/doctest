@@ -37,7 +37,6 @@ build-mingw/
 *vscode*
 .idea/
 cmake-build-*/
-bazel-*
 
 # MacOS/Xcode
 *.DS_Store
@@ -73,3 +72,8 @@ CTestCostData.txt
 LastTest.log
 LastTestsFailed.log
 temp
+
+# Bazel
+/bazel-*
+/examples/bazel-*
+/user.bazelrc

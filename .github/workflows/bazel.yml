@@ -1,0 +1,29 @@
+name: bazel
+
+on:
+  push:
+    paths-ignore:
+      - 'doc/**'
+      - 'scripts/**'
+      - 'LICENSE.txt'
+      - 'README.md'
+  pull_request:
+    paths-ignore:
+      - 'doc/**'
+      - 'scripts/**'
+      - 'LICENSE.txt'
+      - 'README.md'
+
+jobs:
+  test:
+    strategy:
+      matrix:
+        os:
+          - ubuntu-latest
+          - windows-latest
+          - macos-latest
+    runs-on: ${{ matrix.os }}
+    steps:
+    - uses: actions/checkout@v3
+    - run: bazelisk test --config=ci ...
+      working-directory: examples

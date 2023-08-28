@@ -1,0 +1,23 @@
+load("@rules_cc//cc:defs.bzl", "cc_library", "cc_test")
+
+cc_library(
+    name = "lib_1",
+    srcs = ["lib_1_src1.cpp", "lib_1_src2.cpp"],
+    deps = ["@doctest"],
+)
+
+cc_library(
+    name = "lib_2",
+    srcs = ["lib_2_src.cpp"],
+    deps = ["@doctest"],
+)
+
+cc_test(
+    name = "exe_with_static_libs",
+    srcs = ["main.cpp"],
+    deps = [
+        ":lib_1",
+        ":lib_2",
+        "@doctest",
+    ],
+)
