@@ -137,7 +137,7 @@ if(NOT ${DOCTEST_NO_INSTALL})
     install(
         TARGETS ${PROJECT_NAME}
         EXPORT "${targets_export_name}"
-        INCLUDES DESTINATION "${include_install_dir}"
+        INCLUDES DESTINATION "${include_install_dir}/doctest"
     )
 
     install(
