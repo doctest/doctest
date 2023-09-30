@@ -27,6 +27,8 @@
 </table>
 </b>
 
+Overview
+-------------
 **doctest** is a new C++ testing framework but is by far the fastest both in compile times (by [**orders of magnitude**](doc/markdown/benchmarks.md)) and runtime compared to other feature-rich alternatives. It brings the ability of compiled languages such as [**D**](https://dlang.org/spec/unittest.html) / [**Rust**](https://doc.rust-lang.org/book/second-edition/ch11-00-testing.html) / [**Nim**](https://nim-lang.org/docs/unittest.html) to have tests written directly in the production code thanks to a fast, transparent and flexible test runner with a clean interface.
 
 [![Standard](https://img.shields.io/badge/c%2B%2B-11/14/17/20-blue.svg)](https://en.wikipedia.org/wiki/C%2B%2B#Standardization)
@@ -40,19 +42,11 @@
 [![documentation](https://img.shields.io/badge/documentation%20%20-online-blue.svg)](https://github.com/doctest/doctest/blob/master/doc/markdown/readme.md#reference)
 -->
 
-[<img src="https://c5.patreon.com/external/logo/become_a_patron_button.png" align="right">](https://www.patreon.com/onqtam)
-
-The framework is and will stay free but needs your support to sustain its development. There are lots of <a href="https://github.com/doctest/doctest/issues/600"><b>new features</b></a> and maintenance to do. If you work for a company using **doctest** or have the means to do so, please consider financial support. Monthly donations via Patreon and one-offs via PayPal.
-
-[<img src="https://raw.githubusercontent.com/aha999/DonateButtons/master/paypal-donate-icon-7.png" width=100 align="right">](https://www.paypal.me/onqtam/10)
-
-A complete example with a self-registering test that compiles to an executable looks like this:
-
-![cover-example](scripts/data/using_doctest_888px_wide.gif)
-
+Distinctive Features
+-------------
 There are many C++ testing frameworks - [Catch](https://github.com/catchorg/Catch2), [Boost.Test](http://www.boost.org/doc/libs/1_64_0/libs/test/doc/html/index.html), [UnitTest++](https://github.com/unittest-cpp/unittest-cpp), [cpputest](https://github.com/cpputest/cpputest), [googletest](https://github.com/google/googletest) and [others](https://en.wikipedia.org/wiki/List_of_unit_testing_frameworks#C.2B.2B).
 
-The **key** differences between it and other testing frameworks are that it is light and unintrusive:
+The **key** differences between **doctest** and other testing frameworks are that it is light and unintrusive:
 - Ultra light on compile times both in terms of [**including the header**](doc/markdown/benchmarks.md#cost-of-including-the-header) and writing [**thousands of asserts**](doc/markdown/benchmarks.md#cost-of-an-assertion-macro)
 - Doesn't produce any warnings even on the [**most aggressive**](scripts/cmake/common.cmake#L84) warning levels for **MSVC**/**GCC**/**Clang**
 - Can remove **everything** testing-related from the binary with the [**```DOCTEST_CONFIG_DISABLE```**](doc/markdown/configuration.md#doctest_config_disable) identifier
@@ -66,6 +60,8 @@ The **key** differences between it and other testing frameworks are that it is l
 
 This allows the framework to be used in more ways than any other - tests can be written directly in the production code!
 
+Impact
+-------------
 *Tests can be a form of documentation and should be able to reside near the production code which they test.*
 
 - This makes the barrier for writing tests **much lower** - you don't have to: **1)** make a separate source file **2)** include a bunch of stuff in it **3)** add it to the build system and **4)** add it to source control - You can just write the tests for a class or a piece of functionality at the bottom of its source file - or even header file!
@@ -73,6 +69,8 @@ This allows the framework to be used in more ways than any other - tests can be 
 - Testing internals that are not exposed through the public API and headers is no longer a mind-bending exercise
 - [**Test-driven development**](https://en.wikipedia.org/wiki/Test-driven_development) in C++ has never been easier!
 
+Framework Details
+-------------
 The framework can be used just like any other without mixing production code and tests - check out the [**features**](doc/markdown/features.md).
 
 **doctest** is modeled after [**Catch**](https://github.com/catchorg/Catch2) and some parts of the code have been taken directly - check out [**the differences**](doc/markdown/faq.md#how-is-doctest-different-from-catch).
@@ -120,7 +118,7 @@ Support the development of the project with donations! There is a list of planne
 
 [<img src="https://raw.githubusercontent.com/aha999/DonateButtons/master/paypal-donate-icon-7.png" width=100 align="right">](https://www.paypal.me/onqtam/10)
 
-If you work for a company using **doctest** or have the means to do so, please consider financial support.
+The framework is and will stay free but needs your support to sustain its development. There are lots of <a href="https://github.com/doctest/doctest/issues/600"><b>new features</b></a> and maintenance to do. If you work for a company using **doctest** or have the means to do so, please consider financial support. Monthly donations via Patreon and one-offs via PayPal.
 
 Contributions in the form of issues and pull requests are welcome as well - check out the [**Contributing**](CONTRIBUTING.md) page.
 
