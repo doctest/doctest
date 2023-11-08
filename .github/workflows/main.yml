@@ -43,7 +43,7 @@ jobs:
           lcov -c -d build/ -o coverage/lcov.info --include "*doctest/parts*"
 
       - name: Codecov
-        uses: codecov/codecov-action@v2
+        uses: codecov/codecov-action@v3
         with:
           files: ./coverage/lcov.info
           fail_ci_if_error: true
