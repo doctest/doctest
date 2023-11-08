@@ -18,4 +18,16 @@ TEST_CASE("packed_struct") {
     CHECK(p.i == 0); // error: cannot bind packed field ‘s.S::i’ to ‘int&’
     //CHECK(int(s.i) == 0); // 'useless cast'
 }
+#else
+#pragma pack(push, 1)
+struct P {
+    int i;
+};
+TEST_CASE("packed_struct") {
+    P p;
+    p.i = 0;
+    CHECK(p.i == 0); // error: cannot bind packed field ‘s.S::i’ to ‘int&’
+    //CHECK(int(s.i) == 0); // 'useless cast'
+}
+#pragma pack(pop)
 #endif
