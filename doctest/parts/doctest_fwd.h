@@ -621,6 +621,8 @@ public:
     // cppcheck-suppress noExplicitConstructor
     String(const char* in);
     String(const char* in, size_type in_size);
+    template <class S>
+    String(const S & str) : String(str.data(), str.size() {}
 
     String(std::istream& in, size_type in_size);
 
