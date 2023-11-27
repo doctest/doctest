@@ -9,7 +9,7 @@ class MoveOnly {
         MoveOnly& operator=(const MoveOnly&) = default;
         ~MoveOnly() = default;
         // NOLINTNEXTLINE(readability-make-member-function-const)
-        operator bool() { // NOT const!
+        operator bool() const { // both non-const and const can call
             return i == 42;
         }
 

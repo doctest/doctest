@@ -30,6 +30,7 @@
     <TestCase name="all binary assertions" filename="assertion_macros.cpp" line="0" skipped="true"/>
     <TestCase name="an empty test that will succeed - not part of a test suite" filename="test_cases_and_suites.cpp" line="0" skipped="true"/>
     <TestCase name="bad stringification of type pair&lt;int_pair>" filename="templated_test_cases.cpp" line="0" skipped="true"/>
+    <TestCase name="bitfield" filename="bitfields.cpp" line="0" skipped="true"/>
     <TestCase name="check return values" filename="assertion_macros.cpp" line="0" skipped="true"/>
     <TestCase name="check return values no print" filename="assertion_macros.cpp" line="0" skipped="true"/>
     <TestCase name="custom macros" filename="alternative_macros.cpp" line="0" skipped="true"/>
@@ -101,6 +102,7 @@
   </TestSuite>
   <TestSuite>
     <TestCase name="operator&lt;&lt;" filename="stringification.cpp" line="0" skipped="true"/>
+    <TestCase name="packed_struct" filename="bitfield_packed_struct.cpp" line="0" skipped="true"/>
   </TestSuite>
   <TestSuite name="scoped test suite">
     <TestCase name="part of scoped" filename="test_cases_and_suites.cpp" line="0" skipped="true"/>
@@ -150,6 +152,6 @@
     <TestCase name="without a funny name:" filename="subcases.cpp" line="0" skipped="true"/>
   </TestSuite>
   <OverallResultsAsserts successes="0" failures="0"/>
-  <OverallResultsTestCases successes="0" failures="0" skipped="106"/>
+  <OverallResultsTestCases successes="0" failures="0" skipped="108"/>
 </doctest>
 Program code.
