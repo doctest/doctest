@@ -1,0 +1,4 @@
+module(
+    name = "doctest",
+    compatibility_level = 1,
+)
