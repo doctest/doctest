@@ -76,12 +76,14 @@ endif()
 ################################################################################
 
 if(${DOCTEST_WITH_MAIN_IN_STATIC_LIB})
-    add_library(${PROJECT_NAME}_with_main STATIC EXCLUDE_FROM_ALL ${doctest_parts_folder}/doctest.cpp)
-    add_library(${PROJECT_NAME}::${PROJECT_NAME}_with_main ALIAS ${PROJECT_NAME}_with_main)
-    target_compile_definitions(${PROJECT_NAME}_with_main PRIVATE
+    set(doctest_with_main_target ${PROJECT_NAME}_with_main)
+    add_library(${doctest_with_main_target} STATIC ${doctest_parts_folder}/doctest.cpp)
+    add_library(${PROJECT_NAME}::${doctest_with_main_target} ALIAS
+        ${doctest_with_main_target})
+    target_compile_definitions(${doctest_with_main_target} PRIVATE
         DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN)
-    set_target_properties(${PROJECT_NAME}_with_main PROPERTIES CXX_STANDARD 11 CXX_STANDARD_REQUIRED ON)
-    target_link_libraries(${PROJECT_NAME}_with_main PUBLIC ${PROJECT_NAME})
+    set_target_properties(${doctest_with_main_target} PROPERTIES CXX_STANDARD 11 CXX_STANDARD_REQUIRED ON)
+    target_link_libraries(${doctest_with_main_target} PUBLIC ${PROJECT_NAME})
 endif()
 
 if(MAIN_PROJECT AND DOCTEST_WITH_TESTS)
@@ -137,7 +139,7 @@ configure_file("scripts/cmake/Config.cmake.in" "${project_config}" @ONLY)
 
 if(NOT ${DOCTEST_NO_INSTALL})
     install(
-        TARGETS ${PROJECT_NAME}
+        TARGETS ${PROJECT_NAME} ${doctest_with_main_target}
         EXPORT "${targets_export_name}"
         INCLUDES DESTINATION "${include_install_dir}"
     )
