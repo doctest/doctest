@@ -129,6 +129,8 @@ DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_BEGIN
 #define DOCTEST_DECLARE_STATIC_MUTEX(name)
 #endif // DOCTEST_CONFIG_NO_MULTITHREADING
 
+#define DOCTEST_OUTPUT_DEBUG_STRING(text) ::OutputDebugStringA(text)
+
 #ifndef DOCTEST_CDECL
 #define DOCTEST_CDECL __cdecl
 #endif
@@ -1775,13 +1777,6 @@ namespace {
 
 namespace {
     using namespace detail;
-
-#ifdef DOCTEST_PLATFORM_WINDOWS
-#define DOCTEST_OUTPUT_DEBUG_STRING(text) ::OutputDebugStringA(text)
-#else
-    // TODO: integration with XCode and other IDEs
-#define DOCTEST_OUTPUT_DEBUG_STRING(text)
-#endif // Platform
 
     void addAssert(assertType::Enum at) {
         if((at & assertType::is_warn) == 0) //!OCLINT bitwise operator in conditional
