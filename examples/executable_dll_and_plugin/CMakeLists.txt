@@ -12,7 +12,7 @@ target_link_libraries(executable_dll_and_plugin dll)
 target_link_libraries(executable_dll_and_plugin implementation)
 
 if(NOT WIN32)
-    target_link_libraries(executable_dll_and_plugin dl)
+    target_link_libraries(executable_dll_and_plugin ${CMAKE_DL_LIBS})
 endif()
 
 # have the executable depend on the plugin so it gets built as well when building/starting only the executable
