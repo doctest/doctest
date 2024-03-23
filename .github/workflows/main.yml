@@ -23,7 +23,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
 
       - name: Install
         run: sudo apt-get install -y ninja-build lcov
@@ -43,7 +43,7 @@ jobs:
           lcov -c -d build/ -o coverage/lcov.info --include "*doctest/parts*"
 
       - name: Codecov
-        uses: codecov/codecov-action@v2
+        uses: codecov/codecov-action@v3
         with:
           files: ./coverage/lcov.info
           fail_ci_if_error: true
@@ -53,7 +53,7 @@ jobs:
     runs-on: ubuntu-22.04
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
 
       - name: Install
         run: sudo apt-get install -y ninja-build clang-tidy-14
@@ -74,7 +74,7 @@ jobs:
         sanitizers: ["address", "thread", "undefined", "integer", "implicit-conversion", "nullability", "safe-stack"]
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
 
       - name: Install
         run: sudo apt-get install -y ninja-build
@@ -229,7 +229,7 @@ jobs:
             version: "11"
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
 
       - name: Install (Linux)
         if: runner.os == 'Linux'
@@ -299,7 +299,7 @@ jobs:
         configuration: ["Debug", "Release"]
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
 
       - name: Set up MinGW
         uses: egor-tensin/setup-mingw@v2
@@ -325,7 +325,7 @@ jobs:
         configuration: ["Debug", "Release"]
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
 
       - name: Generate
         run: cmake -B build -S . -G "${{ matrix.toolset == 'v143' && 'Visual Studio 17 2022' || 'Visual Studio 16 2019' }}" \
@@ -347,7 +347,7 @@ jobs:
         configuration: ["Debug", "Release"]
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
 
       - name: Install
         run: |
