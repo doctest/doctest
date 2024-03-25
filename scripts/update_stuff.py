@@ -42,3 +42,17 @@ for line in fileinput.input(["../meson.build"]):
 meson = open("../meson.build", "w")
 meson.write(meson_contents)
 meson.close()
+
+
+# update MODULE.bazel file with version
+print("updating the MODULE.bazel file")
+bzlmod_contents = ""
+for line in fileinput.input(["../MODULE.bazel"]):
+    if line.startswith("    version = "):
+        bzlmod_contents += "    version = \"" + version + "\",\n"
+    else:
+        bzlmod_contents += line
+
+bzlmod = open("../MODULE.bazel", "w")
+bzlmod.write(bzlmod_contents)
+bzlmod.close()
