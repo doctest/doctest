@@ -24,34 +24,32 @@ target_link_libraries(tests PRIVATE doctest::doctest)
 - You can also use the following CMake snippet to automatically fetch the entire **doctest** repository from github and configure it as an external project:
 
 ```cmake
-include(ExternalProject)
-find_package(Git REQUIRED)
-
-ExternalProject_Add(
-    doctest
-    PREFIX ${CMAKE_BINARY_DIR}/doctest
-    GIT_REPOSITORY https://github.com/doctest/doctest.git
-    TIMEOUT 10
-    UPDATE_COMMAND ${GIT_EXECUTABLE} pull
-    CONFIGURE_COMMAND ""
-    BUILD_COMMAND ""
-    INSTALL_COMMAND ""
-    LOG_DOWNLOAD ON
+include(FetchContent)
+FetchContent_Declare(
+  doctest
+  GIT_REPOSITORY https://github.com/doctest/doctest
+  GIT_TAG master # or any commit SHA, branch name or tag like v2.4.11
 )
+FetchContent_MakeAvailable(doctest)
 
-# Expose required variable (DOCTEST_INCLUDE_DIR) to parent scope
-ExternalProject_Get_Property(doctest source_dir)
-set(DOCTEST_INCLUDE_DIR ${source_dir}/doctest CACHE INTERNAL "Path to include folder for doctest")
+# Include doctest_discover_tests(<target>) function
+include("${doctest_SOURCE_DIR}/scripts/cmake/doctest.cmake")
 ```
 
-And later you'll be able to use the doctest include directory like this:
+The target `doctest::doctest` is now exposed at the global scope and later you'll be able to use the doctest target like this:
 
 ```cmake
-# add it globally
-include_directories(${DOCTEST_INCLUDE_DIR})
+# Link doctest to a target
+target_link_libraries(my_target PUBLIC doctest::doctest)
 
-# or per target
-target_include_directories(my_target PUBLIC ${DOCTEST_INCLUDE_DIR})
+# Or link it globally
+link_libraries(doctest::doctest)
+```
+
+Access the doctest headers with a scoped `#include` directive:
+
+```c++
+#include "doctest/doctest.h"
 ```
 
 - If you have the entire doctest repository available (as a submodule or just as files) you could also include it in your CMake build by using ```add_subdirectory(path/to/doctest)``` and then you could use it like this:
