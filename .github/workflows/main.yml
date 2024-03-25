@@ -212,6 +212,10 @@ jobs:
             compiler: clang
             version: "15"
 
+          - os: ubuntu-latest
+            compiler: clang
+            version: "16"
+
           - os: macOS-10.15
             compiler: xcode
             version: "10.3"
@@ -245,11 +249,13 @@ jobs:
 
           # clang-3.7 and earlier are not available in Bionic anymore so we get
           # them from the Xenial repositories instead.
-          sudo gpg --keyserver keyserver.ubuntu.com --recv-keys 40976EAF437D05B5
-          sudo gpg --keyserver keyserver.ubuntu.com --recv-keys 3B4FE6ACC0B21F32
-          #sudo sh -c 'wget -q -O - "https://keyserver.ubuntu.com/pks/lookup?search=0x40976EAF437D05B5&fingerprint=on&op=get" | gpg -q --dearmor - | tee "/usr/share/keyrings/dk.gpg" > /dev/null'
-          sudo add-apt-repository "deb http://dk.archive.ubuntu.com/ubuntu/ xenial main"
-          sudo add-apt-repository "deb http://dk.archive.ubuntu.com/ubuntu/ xenial universe"
+          if bash -c '[[ "${{ matrix.compiler }}" = "clang" && ${{ matrix.version }} = 3.* ]]'; then
+            sudo gpg --keyserver keyserver.ubuntu.com --recv-keys 40976EAF437D05B5
+            sudo gpg --keyserver keyserver.ubuntu.com --recv-keys 3B4FE6ACC0B21F32
+            #sudo sh -c 'wget -q -O - "https://keyserver.ubuntu.com/pks/lookup?search=0x40976EAF437D05B5&fingerprint=on&op=get" | gpg -q --dearmor - | tee "/usr/share/keyrings/dk.gpg" > /dev/null'
+            sudo add-apt-repository "deb http://dk.archive.ubuntu.com/ubuntu/ xenial main"
+            sudo add-apt-repository "deb http://dk.archive.ubuntu.com/ubuntu/ xenial universe"
+          fi
 
           # clang->=13 is not currently available by default
           # causing compiler conflict for clang-14 as the below pulls from focal for 22.04 (ubuntu-latest)
@@ -257,6 +263,16 @@ jobs:
             #wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | sudo apt-key add -
             #sudo add-apt-repository "deb https://apt.llvm.org/focal/ llvm-toolchain-focal-${{ matrix.version }} main"
           #fi
+
+          # Add Clang repos if we don't have the necessary package by default.
+          if [ "${{ matrix.compiler }}" = "clang" ]; then
+            if ! apt-cache show clang-${{ matrix.version }} >/dev/null 2>/dev/null; then
+              wget https://apt.llvm.org/llvm.sh
+              chmod +x llvm.sh
+              sudo ./llvm.sh ${{ matrix.version }}
+              rm llvm.sh
+            fi
+          fi
 
           if [ "${{ matrix.compiler }}" = "gcc" ]; then
             sudo apt-get install -y g++-${{ matrix.version }} g++-${{ matrix.version }}-multilib
@@ -372,4 +388,3 @@ jobs:
         run: |
           . /opt/intel/oneapi/setvars.sh
           ctest -C ${{ matrix.configuration }} --test-dir build --no-tests=error
-
