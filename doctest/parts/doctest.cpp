@@ -3039,7 +3039,8 @@ namespace {
             s << " -" DOCTEST_OPTIONS_PREFIX_DISPLAY "r,   --" DOCTEST_OPTIONS_PREFIX_DISPLAY "reporters=<filters>           "
               << Whitespace(sizePrefixDisplay*1) << "reporters to use (console is default)\n";
             s << " -" DOCTEST_OPTIONS_PREFIX_DISPLAY "o,   --" DOCTEST_OPTIONS_PREFIX_DISPLAY "out=<string>                  "
-              << Whitespace(sizePrefixDisplay*1) << "output filename\n";
+              << Whitespace(sizePrefixDisplay*1) << "output destination (cout<< is default)\n";
+            s << Whitespace(sizePrefixDisplay*3) << "                                       <string> - [filepath/cout<</cerr<<]\n";
             s << " -" DOCTEST_OPTIONS_PREFIX_DISPLAY "ob,  --" DOCTEST_OPTIONS_PREFIX_DISPLAY "order-by=<string>             "
               << Whitespace(sizePrefixDisplay*1) << "how the tests should be ordered\n";
             s << Whitespace(sizePrefixDisplay*3) << "                                       <string> - [file/suite/name/rand/none]\n";
@@ -3568,7 +3569,7 @@ void Context::parseArgs(int argc, const char* const* argv, bool withDefaults) {
     p->var = strRes
 
     // clang-format off
-    DOCTEST_PARSE_STR_OPTION("out", "o", out, "");
+    DOCTEST_PARSE_STR_OPTION("out", "o", out, "cout<<");
     DOCTEST_PARSE_STR_OPTION("order-by", "ob", order_by, "file");
     DOCTEST_PARSE_INT_OPTION("rand-seed", "rs", rand_seed, 0);
 
@@ -3717,17 +3718,22 @@ int Context::run() {
     if(p->cout == nullptr) {
         if(p->quiet) {
             p->cout = &discardOut;
+        } else if(p->out == "cout<<") {
+#ifndef DOCTEST_CONFIG_NO_INCLUDE_IOSTREAM
+            p->cout = &std::cout;
+#else
+            return EXIT_FAILURE;
+#endif // DOCTEST_CONFIG_NO_INCLUDE_IOSTREAM
+        } else if(p->out == "cerr<<") {
+#ifndef DOCTEST_CONFIG_NO_INCLUDE_IOSTREAM
+            p->cout = &std::cerr;
+#else
+            return EXIT_FAILURE;
+#endif // DOCTEST_CONFIG_NO_INCLUDE_IOSTREAM
         } else if(p->out.size()) {
             // to a file if specified
             fstr.open(p->out.c_str(), std::fstream::out);
             p->cout = &fstr;
-        } else {
-#ifndef DOCTEST_CONFIG_NO_INCLUDE_IOSTREAM
-            // stdout by default
-            p->cout = &std::cout;
-#else // DOCTEST_CONFIG_NO_INCLUDE_IOSTREAM
-            return EXIT_FAILURE;
-#endif // DOCTEST_CONFIG_NO_INCLUDE_IOSTREAM
         }
     }
 
