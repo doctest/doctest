@@ -76,7 +76,7 @@ endif()
 ################################################################################
 
 if(${DOCTEST_WITH_MAIN_IN_STATIC_LIB})
-    add_library(${PROJECT_NAME}_with_main STATIC EXCLUDE_FROM_ALL ${doctest_parts_folder}/doctest.cpp)
+    add_library(${PROJECT_NAME}_with_main STATIC ${doctest_parts_folder}/doctest.cpp)
     add_library(${PROJECT_NAME}::${PROJECT_NAME}_with_main ALIAS ${PROJECT_NAME}_with_main)
     target_compile_definitions(${PROJECT_NAME}_with_main PRIVATE
         DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN)
@@ -139,6 +139,14 @@ if(NOT ${DOCTEST_NO_INSTALL})
         EXPORT "${targets_export_name}"
         INCLUDES DESTINATION "${include_install_dir}"
     )
+
+    if(${DOCTEST_WITH_MAIN_IN_STATIC_LIB})
+    install(TARGETS doctest doctest_with_main
+        EXPORT DoctestWithMainTargets
+        LIBRARY DESTINATION lib
+        ARCHIVE DESTINATION lib
+        RUNTIME DESTINATION bin)
+    endif()
 
     install(
         FILES "doctest/doctest.h"
