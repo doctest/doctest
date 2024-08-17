@@ -34,19 +34,18 @@ FetchContent_Declare(doctest
 FetchContent_MakeAvailable(doctest)
 
 set(DOCTEST_INCLUDE_DIR ${doctest_SOURCE_DIR})
-```
 
-And later you'll be able to use the **doctest** include directory like this:
+...
 
-```cmake
 # add it globally
 include_directories(${DOCTEST_INCLUDE_DIR})
 
 # or per target
 target_include_directories(my_target PUBLIC ${DOCTEST_INCLUDE_DIR})
+
 ```
 
-- Finally, if you want CTest integration, you can fetch and use **doctest** as a CMake sub-project:
+- If you want CTest integration, you can fetch and use **doctest** as a CMake sub-project:
 
 ```cmake
 include(FetchContent)
@@ -66,6 +65,47 @@ target_link_libraries(my_target PUBLIC doctest::doctest)
 # Or use it globally
 link_libraries(doctest::doctest)
 
+```
+
+- An older CMake integration approach is using `ExternalProject_Add`. It is not recommended for new code, but known to work and is kept here for 
+legacy reasons:
+
+```cmake
+include(ExternalProject)
+find_package(Git REQUIRED)
+
+ExternalProject_Add(
+    doctest
+    PREFIX ${CMAKE_BINARY_DIR}/doctest
+    GIT_REPOSITORY https://github.com/doctest/doctest.git
+    TIMEOUT 10
+    UPDATE_COMMAND ${GIT_EXECUTABLE} pull
+    CONFIGURE_COMMAND ""
+    BUILD_COMMAND ""
+    INSTALL_COMMAND ""
+    LOG_DOWNLOAD ON
+)
+
+# Expose required variable (DOCTEST_INCLUDE_DIR) to parent scope
+ExternalProject_Get_Property(doctest source_dir)
+set(DOCTEST_INCLUDE_DIR ${source_dir}/doctest CACHE INTERNAL "Path to include folder for doctest")
+```
+
+And later you'll be able to use the doctest include directory like this:
+
+```cmake
+# add it globally
+include_directories(${DOCTEST_INCLUDE_DIR})
+
+# or per target
+target_include_directories(my_target PUBLIC ${DOCTEST_INCLUDE_DIR})
+```
+
+- If you have the entire doctest repository available (as a submodule or just as files) you could also include it in your CMake build by using ```add_subdirectory(path/to/doctest)``` and then you could use it like this:
+
+```cmake
+add_executable(my_tests src_1.cpp src_2.cpp ...)
+target_link_libraries(my_tests doctest)
 ```
 
 - The ```CMakeLists.txt``` file of the doctest repository has ```install()``` commands so you could also use **doctest** as a package.
