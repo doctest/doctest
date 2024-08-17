@@ -17,34 +17,26 @@ find_package(doctest REQUIRED)
 
 # Make test executable
 add_executable(tests main.cpp)
-target_compile_features(tests PRIVATE cxx_std_17)
+target_compile_features(tests PRIVATE cxx_std_17) # or later version
 target_link_libraries(tests PRIVATE doctest::doctest)
 ```
 
-- You can also use the following CMake snippet to automatically fetch the entire **doctest** repository from github and configure it as an external project:
+- You can also use the following CMake snippet to automatically fetch the header from the GitHub repository and use it in your
+project (set `DOCTEST_VERSION` to the desired tag, branch or even commit SHA):
 
 ```cmake
-include(ExternalProject)
-find_package(Git REQUIRED)
-
-ExternalProject_Add(
-    doctest
-    PREFIX ${CMAKE_BINARY_DIR}/doctest
-    GIT_REPOSITORY https://github.com/doctest/doctest.git
-    TIMEOUT 10
-    UPDATE_COMMAND ${GIT_EXECUTABLE} pull
-    CONFIGURE_COMMAND ""
-    BUILD_COMMAND ""
-    INSTALL_COMMAND ""
-    LOG_DOWNLOAD ON
+set(DOCTEST_VERSION v2.4.11)
+FetchContent_Declare(doctest
+    URL  https://raw.githubusercontent.com/doctest/doctest/${DOCTEST_VERSION}/doctest/doctest.h
+    DOWNLOAD_NO_EXTRACT TRUE
+    DOWNLOAD_EXTRACT_TIMESTAMP TRUE #for CMake 3.24 and higher
 )
+FetchContent_MakeAvailable(doctest)
 
-# Expose required variable (DOCTEST_INCLUDE_DIR) to parent scope
-ExternalProject_Get_Property(doctest source_dir)
-set(DOCTEST_INCLUDE_DIR ${source_dir}/doctest CACHE INTERNAL "Path to include folder for doctest")
+set(DOCTEST_INCLUDE_DIR ${doctest_SOURCE_DIR})
 ```
 
-And later you'll be able to use the doctest include directory like this:
+And later you'll be able to use the **doctest** include directory like this:
 
 ```cmake
 # add it globally
@@ -54,16 +46,31 @@ include_directories(${DOCTEST_INCLUDE_DIR})
 target_include_directories(my_target PUBLIC ${DOCTEST_INCLUDE_DIR})
 ```
 
-- If you have the entire doctest repository available (as a submodule or just as files) you could also include it in your CMake build by using ```add_subdirectory(path/to/doctest)``` and then you could use it like this:
+- Finally, if you want CTest integration, you can fetch and use **doctest** as a CMake sub-project:
 
 ```cmake
-add_executable(my_tests src_1.cpp src_2.cpp ...)
-target_link_libraries(my_tests doctest)
+include(FetchContent)
+FetchContent_Declare(
+  doctest
+  GIT_REPOSITORY https://github.com/doctest/doctest
+  GIT_TAG v2.4.11 # tag, branch or even commit SHA
+)
+FetchContent_MakeAvailable(doctest)
+
+# Include doctest_discover_tests(<target>) function
+include("${doctest_SOURCE_DIR}/scripts/cmake/doctest.cmake")
+
+# Use doctest in a target
+target_link_libraries(my_target PUBLIC doctest::doctest)
+
+# Or use it globally
+link_libraries(doctest::doctest)
+
 ```
 
-- The ```CMakeLists.txt``` file of the doctest repository has ```install()``` commands so you could also use doctest as a package.
+- The ```CMakeLists.txt``` file of the doctest repository has ```install()``` commands so you could also use **doctest** as a package.
 
-- To discover tests from an executable and register them in ctest you could use [```doctest_discover_tests(<target>)``` from scripts/cmake/doctest.cmake](../../scripts/cmake/doctest.cmake) - read the comments in the file on how to use it. It works just like [the same functionality in Catch](https://github.com/catchorg/Catch2/blob/master/docs/cmake-integration.md#automatic-test-registration).
+- To discover tests from an executable and register them in CTest you could use [```doctest_discover_tests(<target>)``` from scripts/cmake/doctest.cmake](../../scripts/cmake/doctest.cmake) - read the comments in the file on how to use it. It works just like [the same functionality in Catch](https://github.com/catchorg/Catch2/blob/master/docs/cmake-integration.md#automatic-test-registration).
 
 ### Package managers
 
