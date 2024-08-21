@@ -106,6 +106,13 @@ Usage:
 - [Build systems](doc/markdown/build-systems.md)
 - [Examples](examples)
 
+Bugs and feature proposals
+------------
+If you find a bug, report it!
+If you have an idea on how to improve the project, be it anything from better documentation to adding new features, consider preparing a **feature proposal**.
+We call it proposal because the word "request" has the wrong intention, no one will auto-magically fix it for you, but the idea can be discussed and accepted or rejected before **you** implement it.
+Please make sure to read through the [**Contributing**](CONTRIBUTING.md) page before submitting any issue, the triaging procedure is documented there.
+
 Contributing
 ------------
 
