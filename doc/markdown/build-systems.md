@@ -29,7 +29,6 @@ set(DOCTEST_VERSION v2.4.11)
 FetchContent_Declare(doctest
     URL  https://raw.githubusercontent.com/doctest/doctest/${DOCTEST_VERSION}/doctest/doctest.h
     DOWNLOAD_NO_EXTRACT TRUE
-    DOWNLOAD_EXTRACT_TIMESTAMP TRUE #for CMake 3.24 and higher
 )
 FetchContent_MakeAvailable(doctest)
 
