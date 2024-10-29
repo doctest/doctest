@@ -1473,15 +1473,16 @@ namespace detail {
         }
         return false;
     }
-#elif defined(DOCTEST_PLATFORM_MAC)
+#elif (defined(DOCTEST_PLATFORM_MAC) || defined(DOCTEST_PLATFORM_IPHONE)) &&                       \
+        defined(__apple_build_version__)
     // The following function is taken directly from the following technical note:
     // https://developer.apple.com/library/archive/qa/qa1361/_index.html
     // Returns true if the current process is being debugged (either
     // running under the debugger or has a debugger attached post facto).
     bool isDebuggerActive() {
-        int        mib[4];
-        kinfo_proc info;
-        size_t     size;
+        int               mib[4];
+        struct kinfo_proc info;
+        std::size_t       size;
         // Initialize the flags so that, if sysctl fails for some bizarre
         // reason, we get a predictable result.
         info.kp_proc.p_flag = 0;
@@ -1493,8 +1494,11 @@ namespace detail {
         mib[3] = getpid();
         // Call sysctl.
         size = sizeof(info);
-        if(sysctl(mib, DOCTEST_COUNTOF(mib), &info, &size, 0, 0) != 0) {
-            std::cerr << "\nCall to sysctl failed - unable to determine if debugger is active **\n";
+        if(sysctl(mib, sizeof(mib) / sizeof(*mib), &info, &size, nullptr, 0) != 0) {
+#ifndef DOCTEST_CONFIG_NO_INCLUDE_IOSTREAM
+            std::cerr << "\nCall to sysctl failed - unable to determine if debugger is "
+                         "active **\n";
+#endif
             return false;
         }
         // We're being debugged if the P_TRACED flag is set.
@@ -2661,11 +2665,15 @@ namespace {
                 auto const timeStampSize = sizeof("2017-01-16T17:06:45Z");
 
                 std::tm timeInfo;
-#ifdef DOCTEST_PLATFORM_WINDOWS
+#if defined(_MSC_VER) || defined(__MINGW32__)
                 gmtime_s(&timeInfo, &rawtime);
-#else // DOCTEST_PLATFORM_WINDOWS
+#elif defined(__ORBIS__) || defined(__PROSPERO__)
+                gmtime_s(&rawtime, &timeInfo);
+#elif defined(__IAR_SYSTEMS_ICC__)
+                timeInfo = *std::gmtime(&rawtime);
+#else
                 gmtime_r(&rawtime, &timeInfo);
-#endif // DOCTEST_PLATFORM_WINDOWS
+#endif
 
                 char timeStamp[timeStampSize];
                 const char* const fmt = "%Y-%m-%dT%H:%M:%SZ";

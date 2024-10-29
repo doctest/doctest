@@ -239,18 +239,30 @@ DOCTEST_MSVC_SUPPRESS_WARNING(4623) // default constructor was implicitly define
 #define DOCTEST_REF_WRAP(x) x
 #endif // DOCTEST_CONFIG_ASSERTION_PARAMETERS_BY_VALUE
 
-// not using __APPLE__ because... this is how Catch does it
-#ifdef __MAC_OS_X_VERSION_MIN_REQUIRED
+// See e.g.:
+// https://opensource.apple.com/source/CarbonHeaders/CarbonHeaders-18.1/TargetConditionals.h.auto.html
+#ifdef __APPLE__
+#ifndef __has_extension
+#define __has_extension(x) 0
+#endif
+#include <TargetConditionals.h>
+#if (defined(TARGET_OS_OSX) && TARGET_OS_OSX == 1) || (defined(TARGET_OS_MAC) && TARGET_OS_MAC == 1)
 #define DOCTEST_PLATFORM_MAC
-#elif defined(__IPHONE_OS_VERSION_MIN_REQUIRED)
+#elif (defined(TARGET_OS_IPHONE) && TARGET_OS_IPHONE == 1)
 #define DOCTEST_PLATFORM_IPHONE
-#elif defined(_WIN32)
-#define DOCTEST_PLATFORM_WINDOWS
-#elif defined(__wasi__)
-#define DOCTEST_PLATFORM_WASI
-#else // DOCTEST_PLATFORM
+#endif
+#elif defined(linux) || defined(__linux) || defined(__linux__)
 #define DOCTEST_PLATFORM_LINUX
-#endif // DOCTEST_PLATFORM
+#elif defined(WIN32) || defined(__WIN32__) || defined(_WIN32) || defined(_MSC_VER) ||              \
+        defined(__MINGW32__)
+#define DOCTEST_PLATFORM_WINDOWS
+
+#if defined(WINAPI_FAMILY) && (WINAPI_FAMILY == WINAPI_FAMILY_APP)
+#define DOCTEST_PLATFORM_WINDOWS_UWP
+#endif
+#elif defined(__ORBIS__) || defined(__PROSPERO__)
+#define DOCTEST_PLATFORM_PLAYSTATION
+#endif
 
 namespace doctest { namespace detail {
     static DOCTEST_CONSTEXPR int consume(const int*, int) noexcept { return 0; }
