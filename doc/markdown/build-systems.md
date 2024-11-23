@@ -86,6 +86,26 @@ target_link_libraries(my_tests doctest)
     - https://github.com/conan-io/conan-center-index/tree/master/recipes/doctest
 - Homebrew (`brew install doctest`)
 
+- [build2](https://build2.org/) and [cppget.org](https://cppget.org/)
+    + You can automatically download and use a specific version of **doctest** from the stable section of the [cppget.org](https://cppget.org/) package repositiory ([cppget.org/doctest](https://cppget.org/doctest)) in each of your [build2](https://build2.org) projects.
+    + For that, make sure to add the stable section of the `cppget.org` repository to your project's `repositories.manifest` file to be able to fetch the package list.
+        ```
+        :
+        role: prerequisite
+        location: https://pkg.cppget.org/1/stable
+        #trust: ...
+        ```
+    + Add the dependency on **doctest** with your optional specific version constraint to your project's `manifest` file to make the package available for import.
+        ```
+        depends: doctest ^ 2.4.10
+        ```
+    + Import **doctest** and add it to the dependencies of your application in your `buildfile`. Please note, it is still a single header-only library and nothing will be linked. Only the path of the header file will be made available to the executable.
+        ```
+        import doctest = doctest%lib{doctest}
+        exe{my-exe}: {hxx cxx}{**} $doctest
+        ```
+    + For further information, please refer to [build2 | Documentation](https://build2.org/doc.xhtml), [cppget.org/doctest](https://cppget.org/doctest), or [GitHub: build2-packaging/doctest](https://github.com/build2-packaging/doctest) for bug reports.
+
 ---
 
 [Home](readme.md#reference)
