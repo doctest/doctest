@@ -9,6 +9,7 @@ set(files_with_output
     alternative_macros.cpp
     assertion_macros.cpp
     stringification.cpp
+    check_doctest_string.cpp
     double_stringification.cpp
     reporters_and_listeners.cpp
     subcases.cpp
