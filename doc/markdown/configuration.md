@@ -20,6 +20,7 @@ Defining something ```globally``` means for every source file of the binary (exe
 - [**```DOCTEST_CONFIG_NO_COMPARISON_WARNING_SUPPRESSION```**](#doctest_config_no_comparison_warning_suppression)
 - [**```DOCTEST_CONFIG_OPTIONS_PREFIX```**](#doctest_config_options_prefix)
 - [**```DOCTEST_CONFIG_NO_UNPREFIXED_OPTIONS```**](#doctest_config_no_unprefixed_options)
+- [**```DOCTEST_CONFIG_OPTIONS_FILE_PREFIX_SEPARATOR```**](#doctest_config_file_prefix_separator)
 - [**```DOCTEST_CONFIG_NO_TRY_CATCH_IN_ASSERTS```**](#doctest_config_no_try_catch_in_asserts)
 - [**```DOCTEST_CONFIG_NO_EXCEPTIONS```**](#doctest_config_no_exceptions)
 - [**```DOCTEST_CONFIG_NO_EXCEPTIONS_BUT_WITH_ALL_ASSERTS```**](#doctest_config_no_exceptions_but_with_all_asserts)
@@ -149,6 +150,11 @@ This should be defined only in the source file where the library is implemented 
 This will disable the short versions of the [**command line**](commandline.md) options and only the versions with ```--dt-``` prefix will be parsed by **doctest** - this is possible for easy interoperability with client command line option handling when the testing framework is integrated within a client codebase - so there are no clashes and so that the user can exclude everything starting with ```--dt-``` from their option parsing.
 
 This should be defined only in the source file where the library is implemented (it's relevant only there).
+
+### **```DOCTEST_CONFIG_OPTIONS_FILE_PREFIX_SEPARATOR```**
+
+Use the [**command line**](commandline.md) option ```-spp``` to strip the longest matching in a list of prefixes from all file names in the output.
+The prefixes are passed as a single string that gets split at this separator character, ```':'``` by default. 
 
 ### **```DOCTEST_CONFIG_NO_TRY_CATCH_IN_ASSERTS```**
 
