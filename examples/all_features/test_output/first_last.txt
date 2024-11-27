@@ -1,24 +1,24 @@
 [doctest] run with "--help" for options
 ===============================================================================
-coverage_maxout.cpp(0):
+examples/all_features/coverage_maxout.cpp(0):
 TEST SUITE: exception related
 TEST CASE:  will end from a std::string exception
 
-coverage_maxout.cpp(0): ERROR: test case THREW exception: std::string!
+examples/all_features/coverage_maxout.cpp(0): ERROR: test case THREW exception: std::string!
 
 ===============================================================================
-coverage_maxout.cpp(0):
+examples/all_features/coverage_maxout.cpp(0):
 TEST SUITE: exception related
 TEST CASE:  will end from a const char* exception
 
-coverage_maxout.cpp(0): ERROR: test case THREW exception: const char*!
+examples/all_features/coverage_maxout.cpp(0): ERROR: test case THREW exception: const char*!
 
 ===============================================================================
-coverage_maxout.cpp(0):
+examples/all_features/coverage_maxout.cpp(0):
 TEST SUITE: exception related
 TEST CASE:  will end from an unknown exception
 
-coverage_maxout.cpp(0): ERROR: test case THREW exception: unknown exception
+examples/all_features/coverage_maxout.cpp(0): ERROR: test case THREW exception: unknown exception
 
 ===============================================================================
 [doctest] test cases: 4 | 1 passed | 3 failed |

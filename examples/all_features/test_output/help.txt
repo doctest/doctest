@@ -57,6 +57,7 @@
  -ns,  --no-skip=<bool>                don't skip test cases marked as skip
  -gfl, --gnu-file-line=<bool>          :n: vs (n): for line numbers in output
  -npf, --no-path-filenames=<bool>      only filenames and no paths in output
+ -spp, --skip-path-prefixes=<p1:p2>    whenever file paths start with this prefix, remove it from the output
  -nln, --no-line-numbers=<bool>        0 instead of real line numbers in output
 
 [doctest] for more information visit the project documentation

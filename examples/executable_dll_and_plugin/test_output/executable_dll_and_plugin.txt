@@ -4,25 +4,25 @@ I am a test from the implementation!
 I am a test from the implementation_2!
 I am a test from the executable!
 ===============================================================================
-main.cpp(0):
+examples/executable_dll_and_plugin/main.cpp(0):
 TEST CASE:  executable
 
-main.cpp(0): ERROR: test case THREW exception: char: 97
+examples/executable_dll_and_plugin/main.cpp(0): ERROR: test case THREW exception: char: 97
 
 ===============================================================================
-plugin.cpp(0):
+examples/executable_dll_and_plugin/plugin.cpp(0):
 TEST SUITE: some test suite
 TEST CASE:  test case in a plugin
   some subcase
 
-plugin.cpp(0): MESSAGE: triggering the INFO above to be printed
+examples/executable_dll_and_plugin/plugin.cpp(0): MESSAGE: triggering the INFO above to be printed
   logged: some info
 
-plugin.cpp(0): ERROR: CHECK( 1 == 2 ) is NOT correct!
+examples/executable_dll_and_plugin/plugin.cpp(0): ERROR: CHECK( 1 == 2 ) is NOT correct!
   values: CHECK( 1 == 2 )
   logged: some info
 
-plugin.cpp(0): FATAL ERROR: certain death!
+examples/executable_dll_and_plugin/plugin.cpp(0): FATAL ERROR: certain death!
   logged: some info
 
 ===============================================================================

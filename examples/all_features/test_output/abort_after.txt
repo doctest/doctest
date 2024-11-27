@@ -1,13 +1,13 @@
 [doctest] run with "--help" for options
 ===============================================================================
-coverage_maxout.cpp(0):
+examples/all_features/coverage_maxout.cpp(0):
 TEST CASE:  exercising tricky code paths of doctest
 
-coverage_maxout.cpp(0): ERROR: CHECK( str.compare(const_str, true) != 0 ) is NOT correct!
+examples/all_features/coverage_maxout.cpp(0): ERROR: CHECK( str.compare(const_str, true) != 0 ) is NOT correct!
   values: CHECK( 0 != 0 )
   logged: should fail
 
-coverage_maxout.cpp(0): ERROR: CHECK( str.compare("omgomgomg", false) != 0 ) is NOT correct!
+examples/all_features/coverage_maxout.cpp(0): ERROR: CHECK( str.compare("omgomgomg", false) != 0 ) is NOT correct!
   values: CHECK( 0 != 0 )
   logged: should fail
 

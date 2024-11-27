@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<doctest binary="all_features">
+<doctest binary="examples/all_features/all_features">
   <Options order_by="file" rand_seed="324" first="0" last="4294967295" abort_after="0" subcase_filter_levels="2147483647" case_sensitive="false" no_throw="false" no_skip="false"/>
   <TestSuite>
-    <TestCase name="custom macros" filename="alternative_macros.cpp" line="0">
-      <SubCase name="bar" filename="alternative_macros.cpp" line="0">
-        <SubCase name="foo" filename="alternative_macros.cpp" line="0">
+    <TestCase name="custom macros" filename="examples/all_features/alternative_macros.cpp" line="0">
+      <SubCase name="bar" filename="examples/all_features/alternative_macros.cpp" line="0">
+        <SubCase name="foo" filename="examples/all_features/alternative_macros.cpp" line="0">
         </SubCase>
       </SubCase>
-      <SubCase name="bar" filename="alternative_macros.cpp" line="0">
-        <SubCase name="baz" filename="alternative_macros.cpp" line="0">
+      <SubCase name="bar" filename="examples/all_features/alternative_macros.cpp" line="0">
+        <SubCase name="baz" filename="examples/all_features/alternative_macros.cpp" line="0">
         </SubCase>
       </SubCase>
       <OverallResultsAsserts successes="6" failures="0" test_case_success="true"/>

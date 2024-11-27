@@ -1,28 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<doctest binary="all_features">
+<doctest binary="examples/all_features/all_features">
   <Options order_by="file" rand_seed="324" first="0" last="4294967295" abort_after="0" subcase_filter_levels="2147483647" case_sensitive="false" no_throw="false" no_skip="false"/>
   <TestSuite name="some TS">
-    <TestCase name="in TS" filename="header.h" line="0">
-      <Message type="FATAL ERROR" filename="header.h" line="0">
+    <TestCase name="in TS" filename="examples/all_features/header.h" line="0">
+      <Message type="FATAL ERROR" filename="examples/all_features/header.h" line="0">
         <Text/>
       </Message>
       <OverallResultsAsserts successes="0" failures="1" test_case_success="false"/>
     </TestCase>
   </TestSuite>
   <TestSuite>
-    <TestCase name="template 1&lt;char>" filename="header.h" line="0">
-      <Message type="FATAL ERROR" filename="header.h" line="0">
+    <TestCase name="template 1&lt;char>" filename="examples/all_features/header.h" line="0">
+      <Message type="FATAL ERROR" filename="examples/all_features/header.h" line="0">
         <Text/>
       </Message>
       <OverallResultsAsserts successes="0" failures="1" test_case_success="false"/>
     </TestCase>
-    <TestCase name="template 2&lt;doctest::String>" filename="header.h" line="0">
-      <Message type="FATAL ERROR" filename="header.h" line="0">
+    <TestCase name="template 2&lt;doctest::String>" filename="examples/all_features/header.h" line="0">
+      <Message type="FATAL ERROR" filename="examples/all_features/header.h" line="0">
         <Text/>
       </Message>
       <OverallResultsAsserts successes="0" failures="1" test_case_success="false"/>
     </TestCase>
-    <TestCase name="fixtured test" filename="header.h" line="0">
+    <TestCase name="fixtured test" filename="examples/all_features/header.h" line="0">
       <OverallResultsAsserts successes="1" failures="0" test_case_success="true"/>
     </TestCase>
   </TestSuite>

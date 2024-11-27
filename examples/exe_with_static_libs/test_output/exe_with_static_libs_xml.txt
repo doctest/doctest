@@ -1,20 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<doctest binary="exe_with_static_libs">
+<doctest binary="examples/exe_with_static_libs/exe_with_static_libs">
   <Options order_by="file" rand_seed="0" first="0" last="4294967295" abort_after="0" subcase_filter_levels="2147483647" case_sensitive="false" no_throw="false" no_skip="false"/>
   <TestSuite>
-    <TestCase name="asd" filename="lib_1_src1.cpp" line="0">
+    <TestCase name="asd" filename="examples/exe_with_static_libs/lib_1_src1.cpp" line="0">
 hello from <lib_1_src1.cpp>
       <OverallResultsAsserts successes="0" failures="0" test_case_success="true"/>
     </TestCase>
-    <TestCase name="asd" filename="lib_1_src2.cpp" line="0">
+    <TestCase name="asd" filename="examples/exe_with_static_libs/lib_1_src2.cpp" line="0">
 hello from <lib_1_src2.cpp>
       <OverallResultsAsserts successes="0" failures="0" test_case_success="true"/>
     </TestCase>
-    <TestCase name="asd" filename="lib_2_src.cpp" line="0">
+    <TestCase name="asd" filename="examples/exe_with_static_libs/lib_2_src.cpp" line="0">
 hello from <lib_2_src.cpp>
       <OverallResultsAsserts successes="0" failures="0" test_case_success="true"/>
     </TestCase>
-    <TestCase name="main" filename="main.cpp" line="0">
+    <TestCase name="main" filename="examples/exe_with_static_libs/main.cpp" line="0">
 hello from <main.cpp>
       <OverallResultsAsserts successes="0" failures="0" test_case_success="true"/>
     </TestCase>

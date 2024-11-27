@@ -1,155 +1,155 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<doctest binary="all_features">
+<doctest binary="examples/all_features/all_features">
   <Options order_by="name" rand_seed="324" first="0" last="4294967295" abort_after="0" subcase_filter_levels="2147483647" case_sensitive="false" no_throw="false" no_skip="false"/>
   <TestSuite>
-    <TestCase name="  Scenario: vectors can be sized and resized" filename="subcases.cpp" line="0" skipped="true"/>
-    <TestCase name="CHECK level of asserts fail the test case but don't abort it" filename="assertion_macros.cpp" line="0" skipped="true"/>
-    <TestCase name="Impl cast from non-const value" filename="decomposition.cpp" line="0" skipped="true"/>
-    <TestCase name="Move Only Type" filename="decomposition.cpp" line="0" skipped="true"/>
-    <TestCase name="Nested - related to https://github.com/doctest/doctest/issues/282" filename="subcases.cpp" line="0" skipped="true"/>
-    <TestCase name="REQUIRE level of asserts fail and abort the test case - 1" filename="assertion_macros.cpp" line="0" skipped="true"/>
-    <TestCase name="REQUIRE level of asserts fail and abort the test case - 10" filename="assertion_macros.cpp" line="0" skipped="true"/>
-    <TestCase name="REQUIRE level of asserts fail and abort the test case - 11" filename="assertion_macros.cpp" line="0" skipped="true"/>
-    <TestCase name="REQUIRE level of asserts fail and abort the test case - 12" filename="assertion_macros.cpp" line="0" skipped="true"/>
-    <TestCase name="REQUIRE level of asserts fail and abort the test case - 13" filename="assertion_macros.cpp" line="0" skipped="true"/>
-    <TestCase name="REQUIRE level of asserts fail and abort the test case - 2" filename="assertion_macros.cpp" line="0" skipped="true"/>
-    <TestCase name="REQUIRE level of asserts fail and abort the test case - 3" filename="assertion_macros.cpp" line="0" skipped="true"/>
-    <TestCase name="REQUIRE level of asserts fail and abort the test case - 4" filename="assertion_macros.cpp" line="0" skipped="true"/>
-    <TestCase name="REQUIRE level of asserts fail and abort the test case - 5" filename="assertion_macros.cpp" line="0" skipped="true"/>
-    <TestCase name="REQUIRE level of asserts fail and abort the test case - 6" filename="assertion_macros.cpp" line="0" skipped="true"/>
-    <TestCase name="REQUIRE level of asserts fail and abort the test case - 7" filename="assertion_macros.cpp" line="0" skipped="true"/>
-    <TestCase name="REQUIRE level of asserts fail and abort the test case - 8" filename="assertion_macros.cpp" line="0" skipped="true"/>
-    <TestCase name="REQUIRE level of asserts fail and abort the test case - 9" filename="assertion_macros.cpp" line="0" skipped="true"/>
-    <TestCase name="WARN level of asserts don't fail the test case" filename="assertion_macros.cpp" line="0" skipped="true"/>
-    <TestCase name="[math] basic stuff" filename="main.cpp" line="0" skipped="true"/>
-    <TestCase name="[string] testing std::string" filename="main.cpp" line="0" skipped="true"/>
-    <TestCase name="a test case that registers an exception translator for int and then throws one" filename="stringification.cpp" line="0" skipped="true"/>
-    <TestCase name="a test case that will end from an exception" filename="logging.cpp" line="0" skipped="true"/>
-    <TestCase name="a test case that will end from an exception and should print the unprinted context" filename="logging.cpp" line="0" skipped="true"/>
-    <TestCase name="all asserts should fail and show how the objects get stringified" filename="stringification.cpp" line="0" skipped="true"/>
-    <TestCase name="all binary assertions" filename="assertion_macros.cpp" line="0" skipped="true"/>
-    <TestCase name="an empty test that will succeed - not part of a test suite" filename="test_cases_and_suites.cpp" line="0" skipped="true"/>
-    <TestCase name="bad stringification of type pair&lt;int_pair>" filename="templated_test_cases.cpp" line="0" skipped="true"/>
-    <TestCase name="bitfield" filename="bitfields.cpp" line="0" skipped="true"/>
-    <TestCase name="check return values" filename="assertion_macros.cpp" line="0" skipped="true"/>
-    <TestCase name="check return values no print" filename="assertion_macros.cpp" line="0" skipped="true"/>
-    <TestCase name="custom macros" filename="alternative_macros.cpp" line="0" skipped="true"/>
-    <TestCase name="default construction&lt;SHORT!!!>" filename="templated_test_cases.cpp" line="0" skipped="true"/>
-    <TestCase name="default construction&lt;char>" filename="templated_test_cases.cpp" line="0" skipped="true"/>
-    <TestCase name="default construction&lt;double>" filename="templated_test_cases.cpp" line="0" skipped="true"/>
-    <TestCase name="default construction&lt;double>" filename="templated_test_cases.cpp" line="0" skipped="true"/>
-    <TestCase name="default construction&lt;int>" filename="templated_test_cases.cpp" line="0" skipped="true"/>
-    <TestCase name="default construction&lt;signed char>" filename="templated_test_cases.cpp" line="0" skipped="true"/>
-    <TestCase name="default construction&lt;unsigned char>" filename="templated_test_cases.cpp" line="0" skipped="true"/>
+    <TestCase name="  Scenario: vectors can be sized and resized" filename="examples/all_features/subcases.cpp" line="0" skipped="true"/>
+    <TestCase name="CHECK level of asserts fail the test case but don't abort it" filename="examples/all_features/assertion_macros.cpp" line="0" skipped="true"/>
+    <TestCase name="Impl cast from non-const value" filename="examples/all_features/decomposition.cpp" line="0" skipped="true"/>
+    <TestCase name="Move Only Type" filename="examples/all_features/decomposition.cpp" line="0" skipped="true"/>
+    <TestCase name="Nested - related to https://github.com/doctest/doctest/issues/282" filename="examples/all_features/subcases.cpp" line="0" skipped="true"/>
+    <TestCase name="REQUIRE level of asserts fail and abort the test case - 1" filename="examples/all_features/assertion_macros.cpp" line="0" skipped="true"/>
+    <TestCase name="REQUIRE level of asserts fail and abort the test case - 10" filename="examples/all_features/assertion_macros.cpp" line="0" skipped="true"/>
+    <TestCase name="REQUIRE level of asserts fail and abort the test case - 11" filename="examples/all_features/assertion_macros.cpp" line="0" skipped="true"/>
+    <TestCase name="REQUIRE level of asserts fail and abort the test case - 12" filename="examples/all_features/assertion_macros.cpp" line="0" skipped="true"/>
+    <TestCase name="REQUIRE level of asserts fail and abort the test case - 13" filename="examples/all_features/assertion_macros.cpp" line="0" skipped="true"/>
+    <TestCase name="REQUIRE level of asserts fail and abort the test case - 2" filename="examples/all_features/assertion_macros.cpp" line="0" skipped="true"/>
+    <TestCase name="REQUIRE level of asserts fail and abort the test case - 3" filename="examples/all_features/assertion_macros.cpp" line="0" skipped="true"/>
+    <TestCase name="REQUIRE level of asserts fail and abort the test case - 4" filename="examples/all_features/assertion_macros.cpp" line="0" skipped="true"/>
+    <TestCase name="REQUIRE level of asserts fail and abort the test case - 5" filename="examples/all_features/assertion_macros.cpp" line="0" skipped="true"/>
+    <TestCase name="REQUIRE level of asserts fail and abort the test case - 6" filename="examples/all_features/assertion_macros.cpp" line="0" skipped="true"/>
+    <TestCase name="REQUIRE level of asserts fail and abort the test case - 7" filename="examples/all_features/assertion_macros.cpp" line="0" skipped="true"/>
+    <TestCase name="REQUIRE level of asserts fail and abort the test case - 8" filename="examples/all_features/assertion_macros.cpp" line="0" skipped="true"/>
+    <TestCase name="REQUIRE level of asserts fail and abort the test case - 9" filename="examples/all_features/assertion_macros.cpp" line="0" skipped="true"/>
+    <TestCase name="WARN level of asserts don't fail the test case" filename="examples/all_features/assertion_macros.cpp" line="0" skipped="true"/>
+    <TestCase name="[math] basic stuff" filename="examples/all_features/main.cpp" line="0" skipped="true"/>
+    <TestCase name="[string] testing std::string" filename="examples/all_features/main.cpp" line="0" skipped="true"/>
+    <TestCase name="a test case that registers an exception translator for int and then throws one" filename="examples/all_features/stringification.cpp" line="0" skipped="true"/>
+    <TestCase name="a test case that will end from an exception" filename="examples/all_features/logging.cpp" line="0" skipped="true"/>
+    <TestCase name="a test case that will end from an exception and should print the unprinted context" filename="examples/all_features/logging.cpp" line="0" skipped="true"/>
+    <TestCase name="all asserts should fail and show how the objects get stringified" filename="examples/all_features/stringification.cpp" line="0" skipped="true"/>
+    <TestCase name="all binary assertions" filename="examples/all_features/assertion_macros.cpp" line="0" skipped="true"/>
+    <TestCase name="an empty test that will succeed - not part of a test suite" filename="examples/all_features/test_cases_and_suites.cpp" line="0" skipped="true"/>
+    <TestCase name="bad stringification of type pair&lt;int_pair>" filename="examples/all_features/templated_test_cases.cpp" line="0" skipped="true"/>
+    <TestCase name="bitfield" filename="examples/all_features/bitfields.cpp" line="0" skipped="true"/>
+    <TestCase name="check return values" filename="examples/all_features/assertion_macros.cpp" line="0" skipped="true"/>
+    <TestCase name="check return values no print" filename="examples/all_features/assertion_macros.cpp" line="0" skipped="true"/>
+    <TestCase name="custom macros" filename="examples/all_features/alternative_macros.cpp" line="0" skipped="true"/>
+    <TestCase name="default construction&lt;SHORT!!!>" filename="examples/all_features/templated_test_cases.cpp" line="0" skipped="true"/>
+    <TestCase name="default construction&lt;char>" filename="examples/all_features/templated_test_cases.cpp" line="0" skipped="true"/>
+    <TestCase name="default construction&lt;double>" filename="examples/all_features/templated_test_cases.cpp" line="0" skipped="true"/>
+    <TestCase name="default construction&lt;double>" filename="examples/all_features/templated_test_cases.cpp" line="0" skipped="true"/>
+    <TestCase name="default construction&lt;int>" filename="examples/all_features/templated_test_cases.cpp" line="0" skipped="true"/>
+    <TestCase name="default construction&lt;signed char>" filename="examples/all_features/templated_test_cases.cpp" line="0" skipped="true"/>
+    <TestCase name="default construction&lt;unsigned char>" filename="examples/all_features/templated_test_cases.cpp" line="0" skipped="true"/>
   </TestSuite>
   <TestSuite name="test suite with a description">
-    <TestCase name="doesn't fail but it should have" filename="test_cases_and_suites.cpp" line="0" description="regarding failures" should_fail="true" skipped="true"/>
-    <TestCase name="doesn't fail which is fine" filename="test_cases_and_suites.cpp" line="0" description="regarding failures" may_fail="true" skipped="true"/>
+    <TestCase name="doesn't fail but it should have" filename="examples/all_features/test_cases_and_suites.cpp" line="0" description="regarding failures" should_fail="true" skipped="true"/>
+    <TestCase name="doesn't fail which is fine" filename="examples/all_features/test_cases_and_suites.cpp" line="0" description="regarding failures" may_fail="true" skipped="true"/>
   </TestSuite>
   <TestSuite>
-    <TestCase name="enum 1" filename="enums.cpp" line="0" skipped="true"/>
-    <TestCase name="enum 2" filename="enums.cpp" line="0" should_fail="true" skipped="true"/>
-    <TestCase name="enum with operator&lt;&lt;" filename="stringification.cpp" line="0" skipped="true"/>
-    <TestCase name="exceptions-related macros" filename="assertion_macros.cpp" line="0" skipped="true"/>
-    <TestCase name="exceptions-related macros for std::exception" filename="assertion_macros.cpp" line="0" skipped="true"/>
-    <TestCase name="exercising tricky code paths of doctest" filename="coverage_maxout.cpp" line="0" skipped="true"/>
-    <TestCase name="explicit failures 1" filename="logging.cpp" line="0" skipped="true"/>
-    <TestCase name="explicit failures 2" filename="logging.cpp" line="0" skipped="true"/>
-    <TestCase name="expressions should be evaluated only once" filename="assertion_macros.cpp" line="0" skipped="true"/>
+    <TestCase name="enum 1" filename="examples/all_features/enums.cpp" line="0" skipped="true"/>
+    <TestCase name="enum 2" filename="examples/all_features/enums.cpp" line="0" should_fail="true" skipped="true"/>
+    <TestCase name="enum with operator&lt;&lt;" filename="examples/all_features/stringification.cpp" line="0" skipped="true"/>
+    <TestCase name="exceptions-related macros" filename="examples/all_features/assertion_macros.cpp" line="0" skipped="true"/>
+    <TestCase name="exceptions-related macros for std::exception" filename="examples/all_features/assertion_macros.cpp" line="0" skipped="true"/>
+    <TestCase name="exercising tricky code paths of doctest" filename="examples/all_features/coverage_maxout.cpp" line="0" skipped="true"/>
+    <TestCase name="explicit failures 1" filename="examples/all_features/logging.cpp" line="0" skipped="true"/>
+    <TestCase name="explicit failures 2" filename="examples/all_features/logging.cpp" line="0" skipped="true"/>
+    <TestCase name="expressions should be evaluated only once" filename="examples/all_features/assertion_macros.cpp" line="0" skipped="true"/>
   </TestSuite>
   <TestSuite name="some suite">
-    <TestCase name="fails - and its allowed" filename="no_failures.cpp" line="0" may_fail="true" skipped="true"/>
+    <TestCase name="fails - and its allowed" filename="examples/all_features/no_failures.cpp" line="0" may_fail="true" skipped="true"/>
   </TestSuite>
   <TestSuite name="test suite with a description">
-    <TestCase name="fails - and its allowed" filename="test_cases_and_suites.cpp" line="0" description="regarding failures" may_fail="true" skipped="true"/>
-    <TestCase name="fails 1 time as it should" filename="test_cases_and_suites.cpp" line="0" description="regarding failures" skipped="true"/>
-    <TestCase name="fails as it should" filename="test_cases_and_suites.cpp" line="0" description="regarding failures" should_fail="true" skipped="true"/>
+    <TestCase name="fails - and its allowed" filename="examples/all_features/test_cases_and_suites.cpp" line="0" description="regarding failures" may_fail="true" skipped="true"/>
+    <TestCase name="fails 1 time as it should" filename="examples/all_features/test_cases_and_suites.cpp" line="0" description="regarding failures" skipped="true"/>
+    <TestCase name="fails as it should" filename="examples/all_features/test_cases_and_suites.cpp" line="0" description="regarding failures" should_fail="true" skipped="true"/>
   </TestSuite>
   <TestSuite>
-    <TestCase name="fails from an exception but gets re-entered to traverse all subcases" filename="subcases.cpp" line="0" skipped="true"/>
+    <TestCase name="fails from an exception but gets re-entered to traverse all subcases" filename="examples/all_features/subcases.cpp" line="0" skipped="true"/>
   </TestSuite>
   <TestSuite name="test suite with a description">
-    <TestCase name="fails more times than it should" filename="test_cases_and_suites.cpp" line="0" description="regarding failures" skipped="true"/>
+    <TestCase name="fails more times than it should" filename="examples/all_features/test_cases_and_suites.cpp" line="0" description="regarding failures" skipped="true"/>
   </TestSuite>
   <TestSuite>
-    <TestCase name="fixtured test" filename="header.h" line="0" skipped="true"/>
-    <TestCase name="fixtured test - not part of a test suite" filename="test_cases_and_suites.cpp" line="0" skipped="true"/>
+    <TestCase name="fixtured test" filename="examples/all_features/header.h" line="0" skipped="true"/>
+    <TestCase name="fixtured test - not part of a test suite" filename="examples/all_features/test_cases_and_suites.cpp" line="0" skipped="true"/>
   </TestSuite>
   <TestSuite name="some TS">
-    <TestCase name="in TS" filename="header.h" line="0" skipped="true"/>
+    <TestCase name="in TS" filename="examples/all_features/header.h" line="0" skipped="true"/>
   </TestSuite>
   <TestSuite>
-    <TestCase name="logging the counter of a loop" filename="logging.cpp" line="0" skipped="true"/>
-    <TestCase name="lots of nested subcases" filename="subcases.cpp" line="0" skipped="true"/>
-    <TestCase name="multiple types&lt;Custom name test>" filename="templated_test_cases.cpp" line="0" skipped="true"/>
-    <TestCase name="multiple types&lt;Other custom name>" filename="templated_test_cases.cpp" line="0" skipped="true"/>
-    <TestCase name="multiple types&lt;TypePair&lt;bool, int>>" filename="templated_test_cases.cpp" line="0" skipped="true"/>
-    <TestCase name="namespace 1 global operator" filename="namespace1.cpp" line="0" skipped="true"/>
-    <TestCase name="namespace 2 friend operator" filename="namespace2.cpp" line="0" skipped="true"/>
-    <TestCase name="namespace 3 member operator" filename="namespace3.cpp" line="0" skipped="true"/>
-    <TestCase name="namespace 4 member vs member" filename="namespace4.cpp" line="0" skipped="true"/>
-    <TestCase name="namespace 5 member vs friend" filename="namespace5.cpp" line="0" skipped="true"/>
-    <TestCase name="namespace 6 friend vs friend" filename="namespace6.cpp" line="0" skipped="true"/>
-    <TestCase name="namespace 7 member vs global" filename="namespace7.cpp" line="0" skipped="true"/>
-    <TestCase name="namespace 8 friend vs global" filename="namespace8.cpp" line="0" skipped="true"/>
-    <TestCase name="namespace 9 both global" filename="namespace9.cpp" line="0" skipped="true"/>
-    <TestCase name="no checks" filename="no_failures.cpp" line="0" skipped="true"/>
-    <TestCase name="no headers" filename="stringification.cpp" line="0" skipped="true"/>
-    <TestCase name="normal macros" filename="assertion_macros.cpp" line="0" skipped="true"/>
+    <TestCase name="logging the counter of a loop" filename="examples/all_features/logging.cpp" line="0" skipped="true"/>
+    <TestCase name="lots of nested subcases" filename="examples/all_features/subcases.cpp" line="0" skipped="true"/>
+    <TestCase name="multiple types&lt;Custom name test>" filename="examples/all_features/templated_test_cases.cpp" line="0" skipped="true"/>
+    <TestCase name="multiple types&lt;Other custom name>" filename="examples/all_features/templated_test_cases.cpp" line="0" skipped="true"/>
+    <TestCase name="multiple types&lt;TypePair&lt;bool, int>>" filename="examples/all_features/templated_test_cases.cpp" line="0" skipped="true"/>
+    <TestCase name="namespace 1 global operator" filename="examples/all_features/namespace1.cpp" line="0" skipped="true"/>
+    <TestCase name="namespace 2 friend operator" filename="examples/all_features/namespace2.cpp" line="0" skipped="true"/>
+    <TestCase name="namespace 3 member operator" filename="examples/all_features/namespace3.cpp" line="0" skipped="true"/>
+    <TestCase name="namespace 4 member vs member" filename="examples/all_features/namespace4.cpp" line="0" skipped="true"/>
+    <TestCase name="namespace 5 member vs friend" filename="examples/all_features/namespace5.cpp" line="0" skipped="true"/>
+    <TestCase name="namespace 6 friend vs friend" filename="examples/all_features/namespace6.cpp" line="0" skipped="true"/>
+    <TestCase name="namespace 7 member vs global" filename="examples/all_features/namespace7.cpp" line="0" skipped="true"/>
+    <TestCase name="namespace 8 friend vs global" filename="examples/all_features/namespace8.cpp" line="0" skipped="true"/>
+    <TestCase name="namespace 9 both global" filename="examples/all_features/namespace9.cpp" line="0" skipped="true"/>
+    <TestCase name="no checks" filename="examples/all_features/no_failures.cpp" line="0" skipped="true"/>
+    <TestCase name="no headers" filename="examples/all_features/stringification.cpp" line="0" skipped="true"/>
+    <TestCase name="normal macros" filename="examples/all_features/assertion_macros.cpp" line="0" skipped="true"/>
   </TestSuite>
   <TestSuite name="ts1">
-    <TestCase name="normal test in a test suite from a decorator" filename="test_cases_and_suites.cpp" line="0" skipped="true"/>
+    <TestCase name="normal test in a test suite from a decorator" filename="examples/all_features/test_cases_and_suites.cpp" line="0" skipped="true"/>
   </TestSuite>
   <TestSuite>
-    <TestCase name="operator&lt;&lt;" filename="stringification.cpp" line="0" skipped="true"/>
-    <TestCase name="packed_struct" filename="bitfield_packed_struct.cpp" line="0" skipped="true"/>
+    <TestCase name="operator&lt;&lt;" filename="examples/all_features/stringification.cpp" line="0" skipped="true"/>
+    <TestCase name="packed_struct" filename="examples/all_features/bitfield_packed_struct.cpp" line="0" skipped="true"/>
   </TestSuite>
   <TestSuite name="scoped test suite">
-    <TestCase name="part of scoped" filename="test_cases_and_suites.cpp" line="0" skipped="true"/>
-    <TestCase name="part of scoped 2" filename="test_cases_and_suites.cpp" line="0" skipped="true"/>
+    <TestCase name="part of scoped" filename="examples/all_features/test_cases_and_suites.cpp" line="0" skipped="true"/>
+    <TestCase name="part of scoped 2" filename="examples/all_features/test_cases_and_suites.cpp" line="0" skipped="true"/>
   </TestSuite>
   <TestSuite name="some TS">
-    <TestCase name="part of some TS" filename="test_cases_and_suites.cpp" line="0" skipped="true"/>
+    <TestCase name="part of some TS" filename="examples/all_features/test_cases_and_suites.cpp" line="0" skipped="true"/>
   </TestSuite>
   <TestSuite>
-    <TestCase name="pointer comparisons" filename="stringification.cpp" line="0" skipped="true"/>
-    <TestCase name="reentering subcase via regular control flow" filename="subcases.cpp" line="0" skipped="true"/>
-    <TestCase name="should fail and no output" filename="no_failures.cpp" line="0" should_fail="true" skipped="true"/>
-    <TestCase name="should fail and no output" filename="test_cases_and_suites.cpp" line="0" should_fail="true" skipped="true"/>
-    <TestCase name="should fail because of an exception" filename="test_cases_and_suites.cpp" line="0" skipped="true"/>
-    <TestCase name="signed integers stuff&lt;SHORT!!!>" filename="templated_test_cases.cpp" line="0" skipped="true"/>
-    <TestCase name="signed integers stuff&lt;int>" filename="templated_test_cases.cpp" line="0" skipped="true"/>
-    <TestCase name="signed integers stuff&lt;signed char>" filename="templated_test_cases.cpp" line="0" skipped="true"/>
-    <TestCase name="simple check" filename="no_failures.cpp" line="0" skipped="true"/>
+    <TestCase name="pointer comparisons" filename="examples/all_features/stringification.cpp" line="0" skipped="true"/>
+    <TestCase name="reentering subcase via regular control flow" filename="examples/all_features/subcases.cpp" line="0" skipped="true"/>
+    <TestCase name="should fail and no output" filename="examples/all_features/no_failures.cpp" line="0" should_fail="true" skipped="true"/>
+    <TestCase name="should fail and no output" filename="examples/all_features/test_cases_and_suites.cpp" line="0" should_fail="true" skipped="true"/>
+    <TestCase name="should fail because of an exception" filename="examples/all_features/test_cases_and_suites.cpp" line="0" skipped="true"/>
+    <TestCase name="signed integers stuff&lt;SHORT!!!>" filename="examples/all_features/templated_test_cases.cpp" line="0" skipped="true"/>
+    <TestCase name="signed integers stuff&lt;int>" filename="examples/all_features/templated_test_cases.cpp" line="0" skipped="true"/>
+    <TestCase name="signed integers stuff&lt;signed char>" filename="examples/all_features/templated_test_cases.cpp" line="0" skipped="true"/>
+    <TestCase name="simple check" filename="examples/all_features/no_failures.cpp" line="0" skipped="true"/>
   </TestSuite>
   <TestSuite name="skipped test cases">
-    <TestCase name="skipped - inherited from the test suite" filename="test_cases_and_suites.cpp" line="0" skipped="true"/>
+    <TestCase name="skipped - inherited from the test suite" filename="examples/all_features/test_cases_and_suites.cpp" line="0" skipped="true"/>
   </TestSuite>
   <TestSuite>
-    <TestCase name="some asserts used in a function called by a test case" filename="assertion_macros.cpp" line="0" skipped="true"/>
-    <TestCase name="subcases can be used in a separate function as well" filename="subcases.cpp" line="0" skipped="true"/>
-    <TestCase name="subcases with changing names" filename="subcases.cpp" line="0" skipped="true"/>
-    <TestCase name="template 1&lt;char>" filename="header.h" line="0" skipped="true"/>
-    <TestCase name="template 2&lt;doctest::String>" filename="header.h" line="0" skipped="true"/>
-    <TestCase name="test case should fail even though the last subcase passes" filename="subcases.cpp" line="0" skipped="true"/>
-    <TestCase name="third party asserts can report failures to doctest" filename="logging.cpp" line="0" skipped="true"/>
-    <TestCase name="threads..." filename="concurrency.cpp" line="0" skipped="true"/>
-    <TestCase name="toString std::string ret type" filename="double_stringification.cpp" line="0" skipped="true"/>
+    <TestCase name="some asserts used in a function called by a test case" filename="examples/all_features/assertion_macros.cpp" line="0" skipped="true"/>
+    <TestCase name="subcases can be used in a separate function as well" filename="examples/all_features/subcases.cpp" line="0" skipped="true"/>
+    <TestCase name="subcases with changing names" filename="examples/all_features/subcases.cpp" line="0" skipped="true"/>
+    <TestCase name="template 1&lt;char>" filename="examples/all_features/header.h" line="0" skipped="true"/>
+    <TestCase name="template 2&lt;doctest::String>" filename="examples/all_features/header.h" line="0" skipped="true"/>
+    <TestCase name="test case should fail even though the last subcase passes" filename="examples/all_features/subcases.cpp" line="0" skipped="true"/>
+    <TestCase name="third party asserts can report failures to doctest" filename="examples/all_features/logging.cpp" line="0" skipped="true"/>
+    <TestCase name="threads..." filename="examples/all_features/concurrency.cpp" line="0" skipped="true"/>
+    <TestCase name="toString std::string ret type" filename="examples/all_features/double_stringification.cpp" line="0" skipped="true"/>
   </TestSuite>
   <TestSuite name="skipped test cases">
-    <TestCase name="unskipped" filename="test_cases_and_suites.cpp" line="0" description="this test has overridden its skip decorator" skipped="true"/>
+    <TestCase name="unskipped" filename="examples/all_features/test_cases_and_suites.cpp" line="0" description="this test has overridden its skip decorator" skipped="true"/>
   </TestSuite>
   <TestSuite>
-    <TestCase name="vector stuff&lt;std::vector&lt;int>>" filename="templated_test_cases.cpp" line="0" skipped="true"/>
+    <TestCase name="vector stuff&lt;std::vector&lt;int>>" filename="examples/all_features/templated_test_cases.cpp" line="0" skipped="true"/>
   </TestSuite>
   <TestSuite name="exception related">
-    <TestCase name="will end from a const char* exception" filename="coverage_maxout.cpp" line="0" skipped="true"/>
-    <TestCase name="will end from a std::string exception" filename="coverage_maxout.cpp" line="0" skipped="true"/>
-    <TestCase name="will end from an unknown exception" filename="coverage_maxout.cpp" line="0" skipped="true"/>
+    <TestCase name="will end from a const char* exception" filename="examples/all_features/coverage_maxout.cpp" line="0" skipped="true"/>
+    <TestCase name="will end from a std::string exception" filename="examples/all_features/coverage_maxout.cpp" line="0" skipped="true"/>
+    <TestCase name="will end from an unknown exception" filename="examples/all_features/coverage_maxout.cpp" line="0" skipped="true"/>
   </TestSuite>
   <TestSuite name="with a funny name,">
-    <TestCase name="with a funnier name\:" filename="subcases.cpp" line="0" skipped="true"/>
-    <TestCase name="without a funny name:" filename="subcases.cpp" line="0" skipped="true"/>
+    <TestCase name="with a funnier name\:" filename="examples/all_features/subcases.cpp" line="0" skipped="true"/>
+    <TestCase name="without a funny name:" filename="examples/all_features/subcases.cpp" line="0" skipped="true"/>
   </TestSuite>
   <OverallResultsAsserts successes="0" failures="0"/>
   <OverallResultsTestCases successes="0" failures="0" skipped="108"/>

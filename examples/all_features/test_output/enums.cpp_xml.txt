@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<doctest binary="all_features">
+<doctest binary="examples/all_features/all_features">
   <Options order_by="file" rand_seed="324" first="0" last="4294967295" abort_after="0" subcase_filter_levels="2147483647" case_sensitive="false" no_throw="false" no_skip="false"/>
   <TestSuite>
-    <TestCase name="enum 1" filename="enums.cpp" line="0">
+    <TestCase name="enum 1" filename="examples/all_features/enums.cpp" line="0">
       <OverallResultsAsserts successes="9" failures="0" test_case_success="true"/>
     </TestCase>
-    <TestCase name="enum 2" filename="enums.cpp" line="0" should_fail="true">
-      <Expression success="false" type="CHECK_EQ" filename="enums.cpp" line="0">
+    <TestCase name="enum 2" filename="examples/all_features/enums.cpp" line="0" should_fail="true">
+      <Expression success="false" type="CHECK_EQ" filename="examples/all_features/enums.cpp" line="0">
         <Original>
           castToUnderlying(Zero), 1
         </Original>
@@ -14,7 +14,7 @@
           0, 1
         </Expanded>
       </Expression>
-      <Expression success="false" type="CHECK_EQ" filename="enums.cpp" line="0">
+      <Expression success="false" type="CHECK_EQ" filename="examples/all_features/enums.cpp" line="0">
         <Original>
           castToUnderlying(One), 2
         </Original>
@@ -22,7 +22,7 @@
           1, 2
         </Expanded>
       </Expression>
-      <Expression success="false" type="CHECK_EQ" filename="enums.cpp" line="0">
+      <Expression success="false" type="CHECK_EQ" filename="examples/all_features/enums.cpp" line="0">
         <Original>
           castToUnderlying(Two), 3
         </Original>
@@ -30,7 +30,7 @@
           2, 3
         </Expanded>
       </Expression>
-      <Expression success="false" type="CHECK_EQ" filename="enums.cpp" line="0">
+      <Expression success="false" type="CHECK_EQ" filename="examples/all_features/enums.cpp" line="0">
         <Original>
           castToUnderlying(TypedZero), 1
         </Original>
@@ -38,7 +38,7 @@
           0, 1
         </Expanded>
       </Expression>
-      <Expression success="false" type="CHECK_EQ" filename="enums.cpp" line="0">
+      <Expression success="false" type="CHECK_EQ" filename="examples/all_features/enums.cpp" line="0">
         <Original>
           castToUnderlying(TypedOne), 2
         </Original>
@@ -46,7 +46,7 @@
           1, 2
         </Expanded>
       </Expression>
-      <Expression success="false" type="CHECK_EQ" filename="enums.cpp" line="0">
+      <Expression success="false" type="CHECK_EQ" filename="examples/all_features/enums.cpp" line="0">
         <Original>
           castToUnderlying(TypedTwo), 3
         </Original>
@@ -54,7 +54,7 @@
           2, 3
         </Expanded>
       </Expression>
-      <Expression success="false" type="CHECK_EQ" filename="enums.cpp" line="0">
+      <Expression success="false" type="CHECK_EQ" filename="examples/all_features/enums.cpp" line="0">
         <Original>
           EnumClassC::Zero, EnumClassC::One
         </Original>
@@ -62,7 +62,7 @@
           48, 49
         </Expanded>
       </Expression>
-      <Expression success="false" type="CHECK_EQ" filename="enums.cpp" line="0">
+      <Expression success="false" type="CHECK_EQ" filename="examples/all_features/enums.cpp" line="0">
         <Original>
           EnumClassC::One, EnumClassC::Two
         </Original>
@@ -70,7 +70,7 @@
           49, 50
         </Expanded>
       </Expression>
-      <Expression success="false" type="CHECK_EQ" filename="enums.cpp" line="0">
+      <Expression success="false" type="CHECK_EQ" filename="examples/all_features/enums.cpp" line="0">
         <Original>
           EnumClassC::Two, EnumClassC::Zero
         </Original>
@@ -78,7 +78,7 @@
           50, 48
         </Expanded>
       </Expression>
-      <Expression success="false" type="CHECK_EQ" filename="enums.cpp" line="0">
+      <Expression success="false" type="CHECK_EQ" filename="examples/all_features/enums.cpp" line="0">
         <Original>
           EnumClassSC::Zero, EnumClassSC::One
         </Original>
@@ -86,7 +86,7 @@
           48, 49
         </Expanded>
       </Expression>
-      <Expression success="false" type="CHECK_EQ" filename="enums.cpp" line="0">
+      <Expression success="false" type="CHECK_EQ" filename="examples/all_features/enums.cpp" line="0">
         <Original>
           EnumClassSC::One, EnumClassSC::Two
         </Original>
@@ -94,7 +94,7 @@
           49, 50
         </Expanded>
       </Expression>
-      <Expression success="false" type="CHECK_EQ" filename="enums.cpp" line="0">
+      <Expression success="false" type="CHECK_EQ" filename="examples/all_features/enums.cpp" line="0">
         <Original>
           EnumClassSC::Two, EnumClassSC::Zero
         </Original>
@@ -102,7 +102,7 @@
           50, 48
         </Expanded>
       </Expression>
-      <Expression success="false" type="CHECK_EQ" filename="enums.cpp" line="0">
+      <Expression success="false" type="CHECK_EQ" filename="examples/all_features/enums.cpp" line="0">
         <Original>
           EnumClassUC::Zero, EnumClassUC::One
         </Original>
@@ -110,7 +110,7 @@
           48, 49
         </Expanded>
       </Expression>
-      <Expression success="false" type="CHECK_EQ" filename="enums.cpp" line="0">
+      <Expression success="false" type="CHECK_EQ" filename="examples/all_features/enums.cpp" line="0">
         <Original>
           EnumClassUC::One, EnumClassUC::Two
         </Original>
@@ -118,7 +118,7 @@
           49, 50
         </Expanded>
       </Expression>
-      <Expression success="false" type="CHECK_EQ" filename="enums.cpp" line="0">
+      <Expression success="false" type="CHECK_EQ" filename="examples/all_features/enums.cpp" line="0">
         <Original>
           EnumClassUC::Two, EnumClassUC::Zero
         </Original>
@@ -126,7 +126,7 @@
           50, 48
         </Expanded>
       </Expression>
-      <Expression success="false" type="CHECK_EQ" filename="enums.cpp" line="0">
+      <Expression success="false" type="CHECK_EQ" filename="examples/all_features/enums.cpp" line="0">
         <Original>
           EnumClassU8::Zero, EnumClassU8::One
         </Original>
@@ -134,7 +134,7 @@
           0, 1
         </Expanded>
       </Expression>
-      <Expression success="false" type="CHECK_EQ" filename="enums.cpp" line="0">
+      <Expression success="false" type="CHECK_EQ" filename="examples/all_features/enums.cpp" line="0">
         <Original>
           EnumClassU8::One, EnumClassU8::Two
         </Original>
@@ -142,7 +142,7 @@
           1, 2
         </Expanded>
       </Expression>
-      <Expression success="false" type="CHECK_EQ" filename="enums.cpp" line="0">
+      <Expression success="false" type="CHECK_EQ" filename="examples/all_features/enums.cpp" line="0">
         <Original>
           EnumClassU8::Two, EnumClassU8::Zero
         </Original>
