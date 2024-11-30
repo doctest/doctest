@@ -43,7 +43,7 @@
     <TestCase name="default construction&lt;unsigned char>" filename="examples/all_features/templated_test_cases.cpp" line="0" skipped="true"/>
   </TestSuite>
   <TestSuite name="doctest unit tests">
-    <TestCase name="doctest::String::substr()" filename="check_doctest_string.cpp" line="0" skipped="true"/>
+    <TestCase name="doctest::String::substr()" filename="examples/all_features/check_doctest_string.cpp" line="0" skipped="true"/>
   </TestSuite>
   <TestSuite name="test suite with a description">
     <TestCase name="doesn't fail but it should have" filename="examples/all_features/test_cases_and_suites.cpp" line="0" description="regarding failures" should_fail="true" skipped="true"/>

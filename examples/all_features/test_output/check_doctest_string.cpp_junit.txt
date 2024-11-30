@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <testsuites>
-  <testsuite name="all_features" errors="0" failures="0" tests="3">
-    <testcase classname="check_doctest_string.cpp" name="doctest::String::substr()" status="run"/>
+  <testsuite name="examples/all_features/all_features" errors="0" failures="0" tests="3">
+    <testcase classname="examples/all_features/check_doctest_string.cpp" name="doctest::String::substr()" status="run"/>
   </testsuite>
 </testsuites>
 Program code.
