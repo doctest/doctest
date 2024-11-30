@@ -42,6 +42,9 @@
     <TestCase name="default construction&lt;signed char>" filename="templated_test_cases.cpp" line="0" skipped="true"/>
     <TestCase name="default construction&lt;unsigned char>" filename="templated_test_cases.cpp" line="0" skipped="true"/>
   </TestSuite>
+  <TestSuite name="doctest unit tests">
+    <TestCase name="doctest::String::substr()" filename="check_doctest_string.cpp" line="0" skipped="true"/>
+  </TestSuite>
   <TestSuite name="test suite with a description">
     <TestCase name="doesn't fail but it should have" filename="test_cases_and_suites.cpp" line="0" description="regarding failures" should_fail="true" skipped="true"/>
     <TestCase name="doesn't fail which is fine" filename="test_cases_and_suites.cpp" line="0" description="regarding failures" may_fail="true" skipped="true"/>
@@ -152,6 +155,6 @@
     <TestCase name="without a funny name:" filename="subcases.cpp" line="0" skipped="true"/>
   </TestSuite>
   <OverallResultsAsserts successes="0" failures="0"/>
-  <OverallResultsTestCases successes="0" failures="0" skipped="108"/>
+  <OverallResultsTestCases successes="0" failures="0" skipped="109"/>
 </doctest>
 Program code.
