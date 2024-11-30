@@ -63,7 +63,7 @@ if(NOT MINGW AND NOT DEFINED DOCTEST_THREAD_LOCAL)
     doctest_add_test(NO_OUTPUT NAME concurrency.cpp ${common_args} -sf=*concurrency.cpp -d) # duration: there is no output anyway
 endif()
 
-doctest_add_test(NO_OUTPUT NAME bitfield_packed_struct.cpp ${common_args} -sf=*bitfield_packed_struct.cpp.cpp )
+doctest_add_test(NO_OUTPUT NAME bitfield_packed_struct.cpp ${common_args} -sf=*bitfield_packed_struct.cpp )
 doctest_add_test(NO_OUTPUT NAME bitfields.cpp ${common_args} -sf=*bitfields.cpp )
 doctest_add_test(NO_OUTPUT NAME namespace1.cpp ${common_args} -sf=*namespace1.cpp )
 doctest_add_test(NO_OUTPUT NAME namespace2.cpp ${common_args} -sf=*namespace2.cpp )
