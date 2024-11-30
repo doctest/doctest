@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<doctest binary="all_features">
+<doctest binary="examples/all_features/all_features">
   <Options order_by="file" rand_seed="324" first="0" last="4294967295" abort_after="0" subcase_filter_levels="2147483647" case_sensitive="false" no_throw="false" no_skip="false"/>
   <TestSuite>
-    <TestCase name="normal macros" filename="assertion_macros.cpp" line="0">
-      <Expression success="false" type="CHECK" filename="assertion_macros.cpp" line="0">
+    <TestCase name="normal macros" filename="examples/all_features/assertion_macros.cpp" line="0">
+      <Expression success="false" type="CHECK" filename="examples/all_features/assertion_macros.cpp" line="0">
         <Original>
           throw_if(true, std::runtime_error("whops!")) == 42
         </Original>
@@ -11,7 +11,7 @@
           "whops!"
         </Exception>
       </Expression>
-      <Expression success="false" type="CHECK" filename="assertion_macros.cpp" line="0">
+      <Expression success="false" type="CHECK" filename="examples/all_features/assertion_macros.cpp" line="0">
         <Original>
           doctest::Approx(0.502) == 0.501
         </Original>
@@ -21,16 +21,16 @@
       </Expression>
       <OverallResultsAsserts successes="4" failures="2" test_case_success="false"/>
     </TestCase>
-    <TestCase name="expressions should be evaluated only once" filename="assertion_macros.cpp" line="0">
+    <TestCase name="expressions should be evaluated only once" filename="examples/all_features/assertion_macros.cpp" line="0">
       <OverallResultsAsserts successes="2" failures="0" test_case_success="true"/>
     </TestCase>
-    <TestCase name="exceptions-related macros" filename="assertion_macros.cpp" line="0">
-      <Expression success="false" type="CHECK_THROWS" filename="assertion_macros.cpp" line="0">
+    <TestCase name="exceptions-related macros" filename="examples/all_features/assertion_macros.cpp" line="0">
+      <Expression success="false" type="CHECK_THROWS" filename="examples/all_features/assertion_macros.cpp" line="0">
         <Original>
           throw_if(false, 0)
         </Original>
       </Expression>
-      <Expression success="false" type="CHECK_THROWS_AS" filename="assertion_macros.cpp" line="0">
+      <Expression success="false" type="CHECK_THROWS_AS" filename="examples/all_features/assertion_macros.cpp" line="0">
         <Original>
           throw_if(true, 0)
         </Original>
@@ -41,7 +41,7 @@
           char
         </ExpectedException>
       </Expression>
-      <Expression success="false" type="CHECK_THROWS_AS" filename="assertion_macros.cpp" line="0">
+      <Expression success="false" type="CHECK_THROWS_AS" filename="examples/all_features/assertion_macros.cpp" line="0">
         <Original>
           throw_if(false, 0)
         </Original>
@@ -49,7 +49,7 @@
           int
         </ExpectedException>
       </Expression>
-      <Expression success="false" type="CHECK_THROWS_WITH" filename="assertion_macros.cpp" line="0">
+      <Expression success="false" type="CHECK_THROWS_WITH" filename="examples/all_features/assertion_macros.cpp" line="0">
         <Original>
           throw_if(true, "whops!")
         </Original>
@@ -60,7 +60,7 @@
           whops! no match!
         </ExpectedExceptionString>
       </Expression>
-      <Expression success="false" type="CHECK_THROWS_WITH" filename="assertion_macros.cpp" line="0">
+      <Expression success="false" type="CHECK_THROWS_WITH" filename="examples/all_features/assertion_macros.cpp" line="0">
         <Original>
           throw_if(true, "whops! does it match?")
         </Original>
@@ -71,7 +71,7 @@
           whops! no match!
         </ExpectedExceptionString>
       </Expression>
-      <Expression success="false" type="CHECK_THROWS_WITH_AS" filename="assertion_macros.cpp" line="0">
+      <Expression success="false" type="CHECK_THROWS_WITH_AS" filename="examples/all_features/assertion_macros.cpp" line="0">
         <Original>
           throw_if(true, "whops!")
         </Original>
@@ -85,7 +85,7 @@
           whops! no match!
         </ExpectedExceptionString>
       </Expression>
-      <Expression success="false" type="CHECK_THROWS_WITH_AS" filename="assertion_macros.cpp" line="0">
+      <Expression success="false" type="CHECK_THROWS_WITH_AS" filename="examples/all_features/assertion_macros.cpp" line="0">
         <Original>
           throw_if(true, "whops!")
         </Original>
@@ -99,7 +99,7 @@
           whops!
         </ExpectedExceptionString>
       </Expression>
-      <Expression success="false" type="CHECK_THROWS_WITH_AS" filename="assertion_macros.cpp" line="0">
+      <Expression success="false" type="CHECK_THROWS_WITH_AS" filename="examples/all_features/assertion_macros.cpp" line="0">
         <Original>
           throw_if(true, "whops! does it match?")
         </Original>
@@ -113,7 +113,7 @@
           whops! no match!
         </ExpectedExceptionString>
       </Expression>
-      <Expression success="false" type="CHECK_NOTHROW" filename="assertion_macros.cpp" line="0">
+      <Expression success="false" type="CHECK_NOTHROW" filename="examples/all_features/assertion_macros.cpp" line="0">
         <Original>
           throw_if(true, 0)
         </Original>
@@ -123,13 +123,13 @@
       </Expression>
       <OverallResultsAsserts successes="4" failures="9" test_case_success="false"/>
     </TestCase>
-    <TestCase name="exceptions-related macros for std::exception" filename="assertion_macros.cpp" line="0">
-      <Expression success="false" type="CHECK_THROWS" filename="assertion_macros.cpp" line="0">
+    <TestCase name="exceptions-related macros for std::exception" filename="examples/all_features/assertion_macros.cpp" line="0">
+      <Expression success="false" type="CHECK_THROWS" filename="examples/all_features/assertion_macros.cpp" line="0">
         <Original>
           throw_if(false, 0)
         </Original>
       </Expression>
-      <Expression success="false" type="CHECK_THROWS_AS" filename="assertion_macros.cpp" line="0">
+      <Expression success="false" type="CHECK_THROWS_AS" filename="examples/all_features/assertion_macros.cpp" line="0">
         <Original>
           throw_if(false, std::runtime_error("whops!"))
         </Original>
@@ -137,7 +137,7 @@
           std::exception
         </ExpectedException>
       </Expression>
-      <Expression success="false" type="CHECK_THROWS_AS" filename="assertion_macros.cpp" line="0">
+      <Expression success="false" type="CHECK_THROWS_AS" filename="examples/all_features/assertion_macros.cpp" line="0">
         <Original>
           throw_if(true, std::runtime_error("whops!"))
         </Original>
@@ -148,7 +148,7 @@
           int
         </ExpectedException>
       </Expression>
-      <Expression success="false" type="CHECK_THROWS_WITH" filename="assertion_macros.cpp" line="0">
+      <Expression success="false" type="CHECK_THROWS_WITH" filename="examples/all_features/assertion_macros.cpp" line="0">
         <Original>
           throw_if(false, "")
         </Original>
@@ -156,7 +156,7 @@
           whops!
         </ExpectedExceptionString>
       </Expression>
-      <Expression success="false" type="REQUIRE_NOTHROW" filename="assertion_macros.cpp" line="0">
+      <Expression success="false" type="REQUIRE_NOTHROW" filename="examples/all_features/assertion_macros.cpp" line="0">
         <Original>
           throw_if(true, std::runtime_error("whops!"))
         </Original>
@@ -166,8 +166,8 @@
       </Expression>
       <OverallResultsAsserts successes="1" failures="5" test_case_success="false"/>
     </TestCase>
-    <TestCase name="WARN level of asserts don't fail the test case" filename="assertion_macros.cpp" line="0">
-      <Expression success="false" type="WARN" filename="assertion_macros.cpp" line="0">
+    <TestCase name="WARN level of asserts don't fail the test case" filename="examples/all_features/assertion_macros.cpp" line="0">
+      <Expression success="false" type="WARN" filename="examples/all_features/assertion_macros.cpp" line="0">
         <Original>
           0
         </Original>
@@ -175,7 +175,7 @@
           0
         </Expanded>
       </Expression>
-      <Expression success="false" type="WARN_FALSE" filename="assertion_macros.cpp" line="0">
+      <Expression success="false" type="WARN_FALSE" filename="examples/all_features/assertion_macros.cpp" line="0">
         <Original>
           1
         </Original>
@@ -183,12 +183,12 @@
           1
         </Expanded>
       </Expression>
-      <Expression success="false" type="WARN_THROWS" filename="assertion_macros.cpp" line="0">
+      <Expression success="false" type="WARN_THROWS" filename="examples/all_features/assertion_macros.cpp" line="0">
         <Original>
           throw_if(false, 0)
         </Original>
       </Expression>
-      <Expression success="false" type="WARN_THROWS_WITH" filename="assertion_macros.cpp" line="0">
+      <Expression success="false" type="WARN_THROWS_WITH" filename="examples/all_features/assertion_macros.cpp" line="0">
         <Original>
           throw_if(true, "")
         </Original>
@@ -197,7 +197,7 @@
           whops!
         </ExpectedExceptionString>
       </Expression>
-      <Expression success="false" type="WARN_THROWS_WITH" filename="assertion_macros.cpp" line="0">
+      <Expression success="false" type="WARN_THROWS_WITH" filename="examples/all_features/assertion_macros.cpp" line="0">
         <Original>
           throw_if(false, "")
         </Original>
@@ -205,7 +205,7 @@
           whops!
         </ExpectedExceptionString>
       </Expression>
-      <Expression success="false" type="WARN_THROWS_AS" filename="assertion_macros.cpp" line="0">
+      <Expression success="false" type="WARN_THROWS_AS" filename="examples/all_features/assertion_macros.cpp" line="0">
         <Original>
           throw_if(false, 0)
         </Original>
@@ -213,7 +213,7 @@
           bool
         </ExpectedException>
       </Expression>
-      <Expression success="false" type="WARN_THROWS_AS" filename="assertion_macros.cpp" line="0">
+      <Expression success="false" type="WARN_THROWS_AS" filename="examples/all_features/assertion_macros.cpp" line="0">
         <Original>
           throw_if(true, 0)
         </Original>
@@ -224,7 +224,7 @@
           bool
         </ExpectedException>
       </Expression>
-      <Expression success="false" type="WARN_THROWS_WITH_AS" filename="assertion_macros.cpp" line="0">
+      <Expression success="false" type="WARN_THROWS_WITH_AS" filename="examples/all_features/assertion_macros.cpp" line="0">
         <Original>
           throw_if(false, "")
         </Original>
@@ -235,7 +235,7 @@
           whops!
         </ExpectedExceptionString>
       </Expression>
-      <Expression success="false" type="WARN_THROWS_WITH_AS" filename="assertion_macros.cpp" line="0">
+      <Expression success="false" type="WARN_THROWS_WITH_AS" filename="examples/all_features/assertion_macros.cpp" line="0">
         <Original>
           throw_if(true, "")
         </Original>
@@ -247,7 +247,7 @@
           whops!
         </ExpectedExceptionString>
       </Expression>
-      <Expression success="false" type="WARN_NOTHROW" filename="assertion_macros.cpp" line="0">
+      <Expression success="false" type="WARN_NOTHROW" filename="examples/all_features/assertion_macros.cpp" line="0">
         <Original>
           throw_if(true, 0)
         </Original>
@@ -255,7 +255,7 @@
           "0"
         </Exception>
       </Expression>
-      <Expression success="false" type="WARN_EQ" filename="assertion_macros.cpp" line="0">
+      <Expression success="false" type="WARN_EQ" filename="examples/all_features/assertion_macros.cpp" line="0">
         <Original>
           1, 0
         </Original>
@@ -263,7 +263,7 @@
           1, 0
         </Expanded>
       </Expression>
-      <Expression success="false" type="WARN_UNARY" filename="assertion_macros.cpp" line="0">
+      <Expression success="false" type="WARN_UNARY" filename="examples/all_features/assertion_macros.cpp" line="0">
         <Original>
           0
         </Original>
@@ -271,7 +271,7 @@
           0
         </Expanded>
       </Expression>
-      <Expression success="false" type="WARN_UNARY_FALSE" filename="assertion_macros.cpp" line="0">
+      <Expression success="false" type="WARN_UNARY_FALSE" filename="examples/all_features/assertion_macros.cpp" line="0">
         <Original>
           1
         </Original>
@@ -281,8 +281,8 @@
       </Expression>
       <OverallResultsAsserts successes="0" failures="0" test_case_success="true"/>
     </TestCase>
-    <TestCase name="CHECK level of asserts fail the test case but don't abort it" filename="assertion_macros.cpp" line="0">
-      <Expression success="false" type="CHECK" filename="assertion_macros.cpp" line="0">
+    <TestCase name="CHECK level of asserts fail the test case but don't abort it" filename="examples/all_features/assertion_macros.cpp" line="0">
+      <Expression success="false" type="CHECK" filename="examples/all_features/assertion_macros.cpp" line="0">
         <Original>
           0
         </Original>
@@ -290,7 +290,7 @@
           0
         </Expanded>
       </Expression>
-      <Expression success="false" type="CHECK_FALSE" filename="assertion_macros.cpp" line="0">
+      <Expression success="false" type="CHECK_FALSE" filename="examples/all_features/assertion_macros.cpp" line="0">
         <Original>
           1
         </Original>
@@ -298,12 +298,12 @@
           1
         </Expanded>
       </Expression>
-      <Expression success="false" type="CHECK_THROWS" filename="assertion_macros.cpp" line="0">
+      <Expression success="false" type="CHECK_THROWS" filename="examples/all_features/assertion_macros.cpp" line="0">
         <Original>
           throw_if(false, 0)
         </Original>
       </Expression>
-      <Expression success="false" type="CHECK_THROWS_AS" filename="assertion_macros.cpp" line="0">
+      <Expression success="false" type="CHECK_THROWS_AS" filename="examples/all_features/assertion_macros.cpp" line="0">
         <Original>
           throw_if(false, 0)
         </Original>
@@ -311,7 +311,7 @@
           bool
         </ExpectedException>
       </Expression>
-      <Expression success="false" type="CHECK_THROWS_AS" filename="assertion_macros.cpp" line="0">
+      <Expression success="false" type="CHECK_THROWS_AS" filename="examples/all_features/assertion_macros.cpp" line="0">
         <Original>
           throw_if(true, 0)
         </Original>
@@ -322,7 +322,7 @@
           bool
         </ExpectedException>
       </Expression>
-      <Expression success="false" type="CHECK_THROWS_WITH" filename="assertion_macros.cpp" line="0">
+      <Expression success="false" type="CHECK_THROWS_WITH" filename="examples/all_features/assertion_macros.cpp" line="0">
         <Original>
           throw_if(true, 0)
         </Original>
@@ -333,7 +333,7 @@
           unrecognized
         </ExpectedExceptionString>
       </Expression>
-      <Expression success="false" type="CHECK_THROWS_WITH_AS" filename="assertion_macros.cpp" line="0">
+      <Expression success="false" type="CHECK_THROWS_WITH_AS" filename="examples/all_features/assertion_macros.cpp" line="0">
         <Original>
           throw_if(true, 0)
         </Original>
@@ -347,7 +347,7 @@
           unrecognized
         </ExpectedExceptionString>
       </Expression>
-      <Expression success="false" type="CHECK_NOTHROW" filename="assertion_macros.cpp" line="0">
+      <Expression success="false" type="CHECK_NOTHROW" filename="examples/all_features/assertion_macros.cpp" line="0">
         <Original>
           throw_if(true, 0)
         </Original>
@@ -355,7 +355,7 @@
           "0"
         </Exception>
       </Expression>
-      <Expression success="false" type="CHECK_EQ" filename="assertion_macros.cpp" line="0">
+      <Expression success="false" type="CHECK_EQ" filename="examples/all_features/assertion_macros.cpp" line="0">
         <Original>
           1, 0
         </Original>
@@ -363,7 +363,7 @@
           1, 0
         </Expanded>
       </Expression>
-      <Expression success="false" type="CHECK_UNARY" filename="assertion_macros.cpp" line="0">
+      <Expression success="false" type="CHECK_UNARY" filename="examples/all_features/assertion_macros.cpp" line="0">
         <Original>
           0
         </Original>
@@ -371,7 +371,7 @@
           0
         </Expanded>
       </Expression>
-      <Expression success="false" type="CHECK_UNARY_FALSE" filename="assertion_macros.cpp" line="0">
+      <Expression success="false" type="CHECK_UNARY_FALSE" filename="examples/all_features/assertion_macros.cpp" line="0">
         <Original>
           1
         </Original>
@@ -379,15 +379,15 @@
           1
         </Expanded>
       </Expression>
-      <Message type="WARNING" filename="assertion_macros.cpp" line="0">
+      <Message type="WARNING" filename="examples/all_features/assertion_macros.cpp" line="0">
         <Text>
           reached!
         </Text>
       </Message>
       <OverallResultsAsserts successes="3" failures="11" test_case_success="false"/>
     </TestCase>
-    <TestCase name="REQUIRE level of asserts fail and abort the test case - 1" filename="assertion_macros.cpp" line="0">
-      <Expression success="false" type="REQUIRE" filename="assertion_macros.cpp" line="0">
+    <TestCase name="REQUIRE level of asserts fail and abort the test case - 1" filename="examples/all_features/assertion_macros.cpp" line="0">
+      <Expression success="false" type="REQUIRE" filename="examples/all_features/assertion_macros.cpp" line="0">
         <Original>
           0
         </Original>
@@ -397,8 +397,8 @@
       </Expression>
       <OverallResultsAsserts successes="0" failures="1" test_case_success="false"/>
     </TestCase>
-    <TestCase name="REQUIRE level of asserts fail and abort the test case - 2" filename="assertion_macros.cpp" line="0">
-      <Expression success="false" type="REQUIRE_FALSE" filename="assertion_macros.cpp" line="0">
+    <TestCase name="REQUIRE level of asserts fail and abort the test case - 2" filename="examples/all_features/assertion_macros.cpp" line="0">
+      <Expression success="false" type="REQUIRE_FALSE" filename="examples/all_features/assertion_macros.cpp" line="0">
         <Original>
           1
         </Original>
@@ -408,16 +408,16 @@
       </Expression>
       <OverallResultsAsserts successes="0" failures="1" test_case_success="false"/>
     </TestCase>
-    <TestCase name="REQUIRE level of asserts fail and abort the test case - 3" filename="assertion_macros.cpp" line="0">
-      <Expression success="false" type="REQUIRE_THROWS" filename="assertion_macros.cpp" line="0">
+    <TestCase name="REQUIRE level of asserts fail and abort the test case - 3" filename="examples/all_features/assertion_macros.cpp" line="0">
+      <Expression success="false" type="REQUIRE_THROWS" filename="examples/all_features/assertion_macros.cpp" line="0">
         <Original>
           throw_if(false, 0)
         </Original>
       </Expression>
       <OverallResultsAsserts successes="0" failures="1" test_case_success="false"/>
     </TestCase>
-    <TestCase name="REQUIRE level of asserts fail and abort the test case - 4" filename="assertion_macros.cpp" line="0">
-      <Expression success="false" type="REQUIRE_THROWS_AS" filename="assertion_macros.cpp" line="0">
+    <TestCase name="REQUIRE level of asserts fail and abort the test case - 4" filename="examples/all_features/assertion_macros.cpp" line="0">
+      <Expression success="false" type="REQUIRE_THROWS_AS" filename="examples/all_features/assertion_macros.cpp" line="0">
         <Original>
           throw_if(false, 0)
         </Original>
@@ -427,8 +427,8 @@
       </Expression>
       <OverallResultsAsserts successes="0" failures="1" test_case_success="false"/>
     </TestCase>
-    <TestCase name="REQUIRE level of asserts fail and abort the test case - 5" filename="assertion_macros.cpp" line="0">
-      <Expression success="false" type="REQUIRE_THROWS_AS" filename="assertion_macros.cpp" line="0">
+    <TestCase name="REQUIRE level of asserts fail and abort the test case - 5" filename="examples/all_features/assertion_macros.cpp" line="0">
+      <Expression success="false" type="REQUIRE_THROWS_AS" filename="examples/all_features/assertion_macros.cpp" line="0">
         <Original>
           throw_if(true, 0)
         </Original>
@@ -441,8 +441,8 @@
       </Expression>
       <OverallResultsAsserts successes="0" failures="1" test_case_success="false"/>
     </TestCase>
-    <TestCase name="REQUIRE level of asserts fail and abort the test case - 6" filename="assertion_macros.cpp" line="0">
-      <Expression success="false" type="REQUIRE_THROWS_WITH" filename="assertion_macros.cpp" line="0">
+    <TestCase name="REQUIRE level of asserts fail and abort the test case - 6" filename="examples/all_features/assertion_macros.cpp" line="0">
+      <Expression success="false" type="REQUIRE_THROWS_WITH" filename="examples/all_features/assertion_macros.cpp" line="0">
         <Original>
           throw_if(false, "")
         </Original>
@@ -452,8 +452,8 @@
       </Expression>
       <OverallResultsAsserts successes="0" failures="1" test_case_success="false"/>
     </TestCase>
-    <TestCase name="REQUIRE level of asserts fail and abort the test case - 7" filename="assertion_macros.cpp" line="0">
-      <Expression success="false" type="REQUIRE_THROWS_WITH" filename="assertion_macros.cpp" line="0">
+    <TestCase name="REQUIRE level of asserts fail and abort the test case - 7" filename="examples/all_features/assertion_macros.cpp" line="0">
+      <Expression success="false" type="REQUIRE_THROWS_WITH" filename="examples/all_features/assertion_macros.cpp" line="0">
         <Original>
           throw_if(true, "")
         </Original>
@@ -464,8 +464,8 @@
       </Expression>
       <OverallResultsAsserts successes="0" failures="1" test_case_success="false"/>
     </TestCase>
-    <TestCase name="REQUIRE level of asserts fail and abort the test case - 8" filename="assertion_macros.cpp" line="0">
-      <Expression success="false" type="REQUIRE_THROWS_WITH_AS" filename="assertion_macros.cpp" line="0">
+    <TestCase name="REQUIRE level of asserts fail and abort the test case - 8" filename="examples/all_features/assertion_macros.cpp" line="0">
+      <Expression success="false" type="REQUIRE_THROWS_WITH_AS" filename="examples/all_features/assertion_macros.cpp" line="0">
         <Original>
           throw_if(false, "")
         </Original>
@@ -478,8 +478,8 @@
       </Expression>
       <OverallResultsAsserts successes="0" failures="1" test_case_success="false"/>
     </TestCase>
-    <TestCase name="REQUIRE level of asserts fail and abort the test case - 9" filename="assertion_macros.cpp" line="0">
-      <Expression success="false" type="REQUIRE_THROWS_WITH_AS" filename="assertion_macros.cpp" line="0">
+    <TestCase name="REQUIRE level of asserts fail and abort the test case - 9" filename="examples/all_features/assertion_macros.cpp" line="0">
+      <Expression success="false" type="REQUIRE_THROWS_WITH_AS" filename="examples/all_features/assertion_macros.cpp" line="0">
         <Original>
           throw_if(true, "")
         </Original>
@@ -493,8 +493,8 @@
       </Expression>
       <OverallResultsAsserts successes="0" failures="1" test_case_success="false"/>
     </TestCase>
-    <TestCase name="REQUIRE level of asserts fail and abort the test case - 10" filename="assertion_macros.cpp" line="0">
-      <Expression success="false" type="REQUIRE_NOTHROW" filename="assertion_macros.cpp" line="0">
+    <TestCase name="REQUIRE level of asserts fail and abort the test case - 10" filename="examples/all_features/assertion_macros.cpp" line="0">
+      <Expression success="false" type="REQUIRE_NOTHROW" filename="examples/all_features/assertion_macros.cpp" line="0">
         <Original>
           throw_if(true, 0)
         </Original>
@@ -504,8 +504,8 @@
       </Expression>
       <OverallResultsAsserts successes="0" failures="1" test_case_success="false"/>
     </TestCase>
-    <TestCase name="REQUIRE level of asserts fail and abort the test case - 11" filename="assertion_macros.cpp" line="0">
-      <Expression success="false" type="REQUIRE_EQ" filename="assertion_macros.cpp" line="0">
+    <TestCase name="REQUIRE level of asserts fail and abort the test case - 11" filename="examples/all_features/assertion_macros.cpp" line="0">
+      <Expression success="false" type="REQUIRE_EQ" filename="examples/all_features/assertion_macros.cpp" line="0">
         <Original>
           1, 0
         </Original>
@@ -515,8 +515,8 @@
       </Expression>
       <OverallResultsAsserts successes="0" failures="1" test_case_success="false"/>
     </TestCase>
-    <TestCase name="REQUIRE level of asserts fail and abort the test case - 12" filename="assertion_macros.cpp" line="0">
-      <Expression success="false" type="REQUIRE_UNARY" filename="assertion_macros.cpp" line="0">
+    <TestCase name="REQUIRE level of asserts fail and abort the test case - 12" filename="examples/all_features/assertion_macros.cpp" line="0">
+      <Expression success="false" type="REQUIRE_UNARY" filename="examples/all_features/assertion_macros.cpp" line="0">
         <Original>
           0
         </Original>
@@ -526,8 +526,8 @@
       </Expression>
       <OverallResultsAsserts successes="0" failures="1" test_case_success="false"/>
     </TestCase>
-    <TestCase name="REQUIRE level of asserts fail and abort the test case - 13" filename="assertion_macros.cpp" line="0">
-      <Expression success="false" type="REQUIRE_UNARY_FALSE" filename="assertion_macros.cpp" line="0">
+    <TestCase name="REQUIRE level of asserts fail and abort the test case - 13" filename="examples/all_features/assertion_macros.cpp" line="0">
+      <Expression success="false" type="REQUIRE_UNARY_FALSE" filename="examples/all_features/assertion_macros.cpp" line="0">
         <Original>
           1
         </Original>
@@ -537,11 +537,11 @@
       </Expression>
       <OverallResultsAsserts successes="0" failures="1" test_case_success="false"/>
     </TestCase>
-    <TestCase name="all binary assertions" filename="assertion_macros.cpp" line="0">
+    <TestCase name="all binary assertions" filename="examples/all_features/assertion_macros.cpp" line="0">
       <OverallResultsAsserts successes="16" failures="0" test_case_success="true"/>
     </TestCase>
-    <TestCase name="some asserts used in a function called by a test case" filename="assertion_macros.cpp" line="0">
-      <Expression success="false" type="CHECK_THROWS_WITH_AS" filename="assertion_macros.cpp" line="0">
+    <TestCase name="some asserts used in a function called by a test case" filename="examples/all_features/assertion_macros.cpp" line="0">
+      <Expression success="false" type="CHECK_THROWS_WITH_AS" filename="examples/all_features/assertion_macros.cpp" line="0">
         <Original>
           throw_if(true, false)
         </Original>
@@ -557,56 +557,56 @@
       </Expression>
       <OverallResultsAsserts successes="9" failures="1" test_case_success="false"/>
     </TestCase>
-    <TestCase name="check return values" filename="assertion_macros.cpp" line="0">
-      <Message type="WARNING" filename="assertion_macros.cpp" line="0">
+    <TestCase name="check return values" filename="examples/all_features/assertion_macros.cpp" line="0">
+      <Message type="WARNING" filename="examples/all_features/assertion_macros.cpp" line="0">
         <Text>
           :D
         </Text>
       </Message>
-      <Message type="WARNING" filename="assertion_macros.cpp" line="0">
+      <Message type="WARNING" filename="examples/all_features/assertion_macros.cpp" line="0">
         <Text>
           :D
         </Text>
       </Message>
-      <Message type="WARNING" filename="assertion_macros.cpp" line="0">
+      <Message type="WARNING" filename="examples/all_features/assertion_macros.cpp" line="0">
         <Text>
           :D
         </Text>
       </Message>
-      <Message type="WARNING" filename="assertion_macros.cpp" line="0">
+      <Message type="WARNING" filename="examples/all_features/assertion_macros.cpp" line="0">
         <Text>
           :D
         </Text>
       </Message>
-      <Message type="WARNING" filename="assertion_macros.cpp" line="0">
+      <Message type="WARNING" filename="examples/all_features/assertion_macros.cpp" line="0">
         <Text>
           :D
         </Text>
       </Message>
-      <Message type="WARNING" filename="assertion_macros.cpp" line="0">
+      <Message type="WARNING" filename="examples/all_features/assertion_macros.cpp" line="0">
         <Text>
           :D
         </Text>
       </Message>
-      <Message type="WARNING" filename="assertion_macros.cpp" line="0">
+      <Message type="WARNING" filename="examples/all_features/assertion_macros.cpp" line="0">
         <Text>
           :D
         </Text>
       </Message>
-      <Message type="WARNING" filename="assertion_macros.cpp" line="0">
+      <Message type="WARNING" filename="examples/all_features/assertion_macros.cpp" line="0">
         <Text>
           :D
         </Text>
       </Message>
-      <Message type="WARNING" filename="assertion_macros.cpp" line="0">
+      <Message type="WARNING" filename="examples/all_features/assertion_macros.cpp" line="0">
         <Text>
           :D
         </Text>
       </Message>
       <OverallResultsAsserts successes="9" failures="0" test_case_success="true"/>
     </TestCase>
-    <TestCase name="check return values no print" filename="assertion_macros.cpp" line="0">
-      <Expression success="false" type="CHECK" filename="assertion_macros.cpp" line="0">
+    <TestCase name="check return values no print" filename="examples/all_features/assertion_macros.cpp" line="0">
+      <Expression success="false" type="CHECK" filename="examples/all_features/assertion_macros.cpp" line="0">
         <Original>
           a == b
         </Original>
@@ -614,7 +614,7 @@
           4 == 2
         </Expanded>
       </Expression>
-      <Expression success="false" type="CHECK_FALSE" filename="assertion_macros.cpp" line="0">
+      <Expression success="false" type="CHECK_FALSE" filename="examples/all_features/assertion_macros.cpp" line="0">
         <Original>
           a != b
         </Original>
@@ -622,7 +622,7 @@
           4 != 2
         </Expanded>
       </Expression>
-      <Expression success="false" type="CHECK_EQ" filename="assertion_macros.cpp" line="0">
+      <Expression success="false" type="CHECK_EQ" filename="examples/all_features/assertion_macros.cpp" line="0">
         <Original>
           a, b
         </Original>
@@ -630,7 +630,7 @@
           4, 2
         </Expanded>
       </Expression>
-      <Expression success="false" type="CHECK_UNARY" filename="assertion_macros.cpp" line="0">
+      <Expression success="false" type="CHECK_UNARY" filename="examples/all_features/assertion_macros.cpp" line="0">
         <Original>
           a == b
         </Original>
@@ -638,7 +638,7 @@
           false
         </Expanded>
       </Expression>
-      <Expression success="false" type="CHECK_UNARY_FALSE" filename="assertion_macros.cpp" line="0">
+      <Expression success="false" type="CHECK_UNARY_FALSE" filename="examples/all_features/assertion_macros.cpp" line="0">
         <Original>
           a != b
         </Original>
@@ -646,12 +646,12 @@
           true
         </Expanded>
       </Expression>
-      <Expression success="false" type="CHECK_THROWS" filename="assertion_macros.cpp" line="0">
+      <Expression success="false" type="CHECK_THROWS" filename="examples/all_features/assertion_macros.cpp" line="0">
         <Original>
           throw_if(false, false)
         </Original>
       </Expression>
-      <Expression success="false" type="CHECK_THROWS_AS" filename="assertion_macros.cpp" line="0">
+      <Expression success="false" type="CHECK_THROWS_AS" filename="examples/all_features/assertion_macros.cpp" line="0">
         <Original>
           throw_if(true, 2)
         </Original>
@@ -662,7 +662,7 @@
           doctest::Approx
         </ExpectedException>
       </Expression>
-      <Expression success="false" type="CHECK_NOTHROW" filename="assertion_macros.cpp" line="0">
+      <Expression success="false" type="CHECK_NOTHROW" filename="examples/all_features/assertion_macros.cpp" line="0">
         <Original>
           throw_if(true, 2)
         </Original>
@@ -670,7 +670,7 @@
           "2"
         </Exception>
       </Expression>
-      <Expression success="false" type="CHECK_THROWS_WITH" filename="assertion_macros.cpp" line="0">
+      <Expression success="false" type="CHECK_THROWS_WITH" filename="examples/all_features/assertion_macros.cpp" line="0">
         <Original>
           throw_if(true, 2)
         </Original>

@@ -1,19 +1,19 @@
 [doctest] run with "--help" for options
 ===============================================================================
-subcases.cpp(0):
+examples/all_features/subcases.cpp(0):
 TEST SUITE: with a funny name,
 TEST CASE:  with a funnier name\:
   with the funniest name\,
 
-subcases.cpp(0): MESSAGE: Yes!
+examples/all_features/subcases.cpp(0): MESSAGE: Yes!
 
 ===============================================================================
-subcases.cpp(0):
+examples/all_features/subcases.cpp(0):
 TEST SUITE: with a funny name,
 TEST CASE:  with a funnier name\:
   with a slightly funny name :
 
-subcases.cpp(0): MESSAGE: Yep!
+examples/all_features/subcases.cpp(0): MESSAGE: Yep!
 
 ===============================================================================
 [doctest] test cases: 1 | 1 passed | 0 failed |

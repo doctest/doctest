@@ -1,20 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<doctest binary="all_features">
+<doctest binary="examples/all_features/all_features">
   <Options order_by="file" rand_seed="324" first="2" last="4" abort_after="0" subcase_filter_levels="2147483647" case_sensitive="false" no_throw="false" no_skip="false"/>
   <TestSuite name="exception related">
-    <TestCase name="will end from a std::string exception" filename="coverage_maxout.cpp" line="0">
+    <TestCase name="will end from a std::string exception" filename="examples/all_features/coverage_maxout.cpp" line="0">
       <Exception crash="false">
         std::string!
       </Exception>
       <OverallResultsAsserts successes="0" failures="0" test_case_success="false"/>
     </TestCase>
-    <TestCase name="will end from a const char* exception" filename="coverage_maxout.cpp" line="0">
+    <TestCase name="will end from a const char* exception" filename="examples/all_features/coverage_maxout.cpp" line="0">
       <Exception crash="false">
         const char*!
       </Exception>
       <OverallResultsAsserts successes="0" failures="0" test_case_success="false"/>
     </TestCase>
-    <TestCase name="will end from an unknown exception" filename="coverage_maxout.cpp" line="0">
+    <TestCase name="will end from an unknown exception" filename="examples/all_features/coverage_maxout.cpp" line="0">
       <Exception crash="false">
         unknown exception
       </Exception>

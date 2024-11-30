@@ -1,12 +1,12 @@
 [doctest] run with "--help" for options
 ===============================================================================
-decomposition.cpp(0):
+examples/all_features/decomposition.cpp(0):
 TEST CASE:  Move Only Type
 
-decomposition.cpp(0): ERROR: CHECK( genType(false) ) is NOT correct!
+examples/all_features/decomposition.cpp(0): ERROR: CHECK( genType(false) ) is NOT correct!
   values: CHECK( {?} )
 
-decomposition.cpp(0): ERROR: CHECK( a ) is NOT correct!
+examples/all_features/decomposition.cpp(0): ERROR: CHECK( a ) is NOT correct!
   values: CHECK( {?} )
 
 ===============================================================================

@@ -1,93 +1,93 @@
 [doctest] run with "--help" for options
 ===============================================================================
-stringification.cpp(0):
+examples/all_features/stringification.cpp(0):
 TEST CASE:  operator<<
 
-stringification.cpp(0): MESSAGE: A
+examples/all_features/stringification.cpp(0): MESSAGE: A
 
-stringification.cpp(0): MESSAGE: B
+examples/all_features/stringification.cpp(0): MESSAGE: B
 
-stringification.cpp(0): MESSAGE: C
+examples/all_features/stringification.cpp(0): MESSAGE: C
 
 ===============================================================================
-stringification.cpp(0):
+examples/all_features/stringification.cpp(0):
 TEST CASE:  no headers
 
-stringification.cpp(0): MESSAGE: 1as
+examples/all_features/stringification.cpp(0): MESSAGE: 1as
 
-stringification.cpp(0): ERROR: CHECK( chs == nullptr ) is NOT correct!
+examples/all_features/stringification.cpp(0): ERROR: CHECK( chs == nullptr ) is NOT correct!
   values: CHECK( 1as == nullptr )
 
-stringification.cpp(0): MESSAGE: 1as
+examples/all_features/stringification.cpp(0): MESSAGE: 1as
 
-stringification.cpp(0): ERROR: CHECK( "1as" == nullptr ) is NOT correct!
+examples/all_features/stringification.cpp(0): ERROR: CHECK( "1as" == nullptr ) is NOT correct!
   values: CHECK( 1as == nullptr )
 
-stringification.cpp(0): MESSAGE: [0, 1, 1, 2, 3, 5, 8, 13]
+examples/all_features/stringification.cpp(0): MESSAGE: [0, 1, 1, 2, 3, 5, 8, 13]
 
-stringification.cpp(0): ERROR: CHECK( ints == nullptr ) is NOT correct!
+examples/all_features/stringification.cpp(0): ERROR: CHECK( ints == nullptr ) is NOT correct!
   values: CHECK( [0, 1, 1, 2, 3, 5, 8, 13] == nullptr )
 
-stringification.cpp(0): MESSAGE: [0, 1, 1, 2, 3, 5, 8, 13]
+examples/all_features/stringification.cpp(0): MESSAGE: [0, 1, 1, 2, 3, 5, 8, 13]
 
-stringification.cpp(0): MESSAGE: nullptr
+examples/all_features/stringification.cpp(0): MESSAGE: nullptr
 
-stringification.cpp(0): ERROR: CHECK( cnptr != nullptr ) is NOT correct!
+examples/all_features/stringification.cpp(0): ERROR: CHECK( cnptr != nullptr ) is NOT correct!
   values: CHECK( nullptr != nullptr )
 
-stringification.cpp(0): MESSAGE: 0
+examples/all_features/stringification.cpp(0): MESSAGE: 0
 
-stringification.cpp(0): ERROR: CHECK( A == C ) is NOT correct!
+examples/all_features/stringification.cpp(0): ERROR: CHECK( A == C ) is NOT correct!
   values: CHECK( 0 == 100 )
 
-stringification.cpp(0): MESSAGE: int
+examples/all_features/stringification.cpp(0): MESSAGE: int
 
 ===============================================================================
-stringification.cpp(0):
+examples/all_features/stringification.cpp(0):
 TEST CASE:  all asserts should fail and show how the objects get stringified
 
-stringification.cpp(0): MESSAGE: Foo{}
+examples/all_features/stringification.cpp(0): MESSAGE: Foo{}
 
-stringification.cpp(0): ERROR: CHECK( f1 == f2 ) is NOT correct!
+examples/all_features/stringification.cpp(0): ERROR: CHECK( f1 == f2 ) is NOT correct!
   values: CHECK( Foo{} == Foo{} )
 
-stringification.cpp(0): MESSAGE: omg
+examples/all_features/stringification.cpp(0): MESSAGE: omg
 
-stringification.cpp(0): ERROR: CHECK( dummy == "tralala" ) is NOT correct!
+examples/all_features/stringification.cpp(0): ERROR: CHECK( dummy == "tralala" ) is NOT correct!
   values: CHECK( omg == tralala )
 
-stringification.cpp(0): ERROR: CHECK( "tralala" == dummy ) is NOT correct!
+examples/all_features/stringification.cpp(0): ERROR: CHECK( "tralala" == dummy ) is NOT correct!
   values: CHECK( tralala == omg )
 
-stringification.cpp(0): MESSAGE: [1, 2, 3]
+examples/all_features/stringification.cpp(0): MESSAGE: [1, 2, 3]
 
-stringification.cpp(0): ERROR: CHECK( vec1 == vec2 ) is NOT correct!
+examples/all_features/stringification.cpp(0): ERROR: CHECK( vec1 == vec2 ) is NOT correct!
   values: CHECK( [1, 2, 3] == [1, 2, 4] )
 
-stringification.cpp(0): MESSAGE: [1, 42, 3]
+examples/all_features/stringification.cpp(0): MESSAGE: [1, 42, 3]
 
-stringification.cpp(0): ERROR: CHECK( lst_1 == lst_2 ) is NOT correct!
+examples/all_features/stringification.cpp(0): ERROR: CHECK( lst_1 == lst_2 ) is NOT correct!
   values: CHECK( [1, 42, 3] == [1, 2, 666] )
 
-stringification.cpp(0): ERROR: CHECK( s1 == s2 ) is NOT correct!
+examples/all_features/stringification.cpp(0): ERROR: CHECK( s1 == s2 ) is NOT correct!
   values: CHECK( MyOtherType: 42 == MyOtherType: 666 )
   logged: s1=MyOtherType: 42 s2=MyOtherType: 666
 
-stringification.cpp(0): ERROR: CHECK( s1 == s2 ) is NOT correct!
+examples/all_features/stringification.cpp(0): ERROR: CHECK( s1 == s2 ) is NOT correct!
   values: CHECK( MyOtherType: 42 == MyOtherType: 666 )
   logged: s1=MyOtherType: 42 s2=MyOtherType: 666
           MyOtherType: 42 is not really MyOtherType: 666
 
-stringification.cpp(0): ERROR: CHECK( "a" == doctest::Contains("aaa") ) is NOT correct!
+examples/all_features/stringification.cpp(0): ERROR: CHECK( "a" == doctest::Contains("aaa") ) is NOT correct!
   values: CHECK( a == Contains( aaa ) )
 
-stringification.cpp(0): ERROR: test case THREW exception: MyTypeInherited<int>(5, 4)
+examples/all_features/stringification.cpp(0): ERROR: test case THREW exception: MyTypeInherited<int>(5, 4)
 
 ===============================================================================
-stringification.cpp(0):
+examples/all_features/stringification.cpp(0):
 TEST CASE:  a test case that registers an exception translator for int and then throws one
 
-stringification.cpp(0): ERROR: test case THREW exception: 5
+examples/all_features/stringification.cpp(0): ERROR: test case THREW exception: 5
 
 ===============================================================================
 [doctest] test cases:  7 |  4 passed |  3 failed |

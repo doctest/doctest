@@ -1,20 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<doctest binary="executable_dll_and_plugin">
+<doctest binary="examples/executable_dll_and_plugin/executable_dll_and_plugin">
   <Options order_by="file" rand_seed="0" first="0" last="4294967295" abort_after="0" subcase_filter_levels="2147483647" case_sensitive="false" no_throw="false" no_skip="false"/>
   <TestSuite>
-    <TestCase name="dll" filename="dll.cpp" line="0">
+    <TestCase name="dll" filename="examples/executable_dll_and_plugin/dll.cpp" line="0">
 I am a test from the dll!
       <OverallResultsAsserts successes="1" failures="0" test_case_success="true"/>
     </TestCase>
-    <TestCase name="implementation" filename="implementation.cpp" line="0">
+    <TestCase name="implementation" filename="examples/executable_dll_and_plugin/implementation.cpp" line="0">
 I am a test from the implementation!
       <OverallResultsAsserts successes="0" failures="0" test_case_success="true"/>
     </TestCase>
-    <TestCase name="implementation_2" filename="implementation_2.cpp" line="0">
+    <TestCase name="implementation_2" filename="examples/executable_dll_and_plugin/implementation_2.cpp" line="0">
 I am a test from the implementation_2!
       <OverallResultsAsserts successes="0" failures="0" test_case_success="true"/>
     </TestCase>
-    <TestCase name="executable" filename="main.cpp" line="0">
+    <TestCase name="executable" filename="examples/executable_dll_and_plugin/main.cpp" line="0">
 I am a test from the executable!
       <Exception crash="false">
         char: 97
@@ -23,9 +23,9 @@ I am a test from the executable!
     </TestCase>
   </TestSuite>
   <TestSuite name="some test suite">
-    <TestCase name="test case in a plugin" filename="plugin.cpp" line="0">
-      <SubCase name="some subcase" filename="plugin.cpp" line="0">
-        <Message type="WARNING" filename="plugin.cpp" line="0">
+    <TestCase name="test case in a plugin" filename="examples/executable_dll_and_plugin/plugin.cpp" line="0">
+      <SubCase name="some subcase" filename="examples/executable_dll_and_plugin/plugin.cpp" line="0">
+        <Message type="WARNING" filename="examples/executable_dll_and_plugin/plugin.cpp" line="0">
           <Text>
             triggering the INFO above to be printed
           </Text>
@@ -33,7 +33,7 @@ I am a test from the executable!
             some info
           </Info>
         </Message>
-        <Expression success="false" type="CHECK" filename="plugin.cpp" line="0">
+        <Expression success="false" type="CHECK" filename="examples/executable_dll_and_plugin/plugin.cpp" line="0">
           <Original>
             1 == 2
           </Original>
@@ -44,7 +44,7 @@ I am a test from the executable!
             some info
           </Info>
         </Expression>
-        <Message type="FATAL ERROR" filename="plugin.cpp" line="0">
+        <Message type="FATAL ERROR" filename="examples/executable_dll_and_plugin/plugin.cpp" line="0">
           <Text>
             certain death!
           </Text>

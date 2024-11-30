@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <testsuites>
-  <testsuite name="all_features" errors="0" failures="2" tests="7">
-    <testcase classname="coverage_maxout.cpp" name="exercising tricky code paths of doctest" status="run">
+  <testsuite name="examples/all_features/all_features" errors="0" failures="2" tests="7">
+    <testcase classname="examples/all_features/coverage_maxout.cpp" name="exercising tricky code paths of doctest" status="run">
       <failure message="0 != 0" type="CHECK">
-coverage_maxout.cpp(0):
+examples/all_features/coverage_maxout.cpp(0):
 CHECK( str.compare(const_str, true) != 0 ) is NOT correct!
   values: CHECK( 0 != 0 )
   logged: should fail
 
       </failure>
       <failure message="0 != 0" type="CHECK">
-coverage_maxout.cpp(0):
+examples/all_features/coverage_maxout.cpp(0):
 CHECK( str.compare("omgomgomg", false) != 0 ) is NOT correct!
   values: CHECK( 0 != 0 )
   logged: should fail

@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <testsuites>
-  <testsuite name="all_features" errors="0" failures="2" tests="3">
-    <testcase classname="no_failures.cpp" name="no checks" status="run"/>
-    <testcase classname="no_failures.cpp" name="simple check" status="run"/>
-    <testcase classname="no_failures.cpp" name="fails - and its allowed" status="run">
+  <testsuite name="examples/all_features/all_features" errors="0" failures="2" tests="3">
+    <testcase classname="examples/all_features/no_failures.cpp" name="no checks" status="run"/>
+    <testcase classname="examples/all_features/no_failures.cpp" name="simple check" status="run"/>
+    <testcase classname="examples/all_features/no_failures.cpp" name="fails - and its allowed" status="run">
       <failure type="FAIL">
-no_failures.cpp(0):
+examples/all_features/no_failures.cpp(0):
 
 
       </failure>
     </testcase>
-    <testcase classname="no_failures.cpp" name="should fail and no output" status="run">
+    <testcase classname="examples/all_features/no_failures.cpp" name="should fail and no output" status="run">
       <failure type="FAIL">
-no_failures.cpp(0):
+examples/all_features/no_failures.cpp(0):
 
 
       </failure>

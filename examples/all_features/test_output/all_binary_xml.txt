@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<doctest binary="all_features">
+<doctest binary="examples/all_features/all_features">
   <Options order_by="file" rand_seed="324" first="0" last="4294967295" abort_after="0" subcase_filter_levels="2147483647" case_sensitive="false" no_throw="false" no_skip="false"/>
   <TestSuite>
-    <TestCase name="all binary assertions" filename="assertion_macros.cpp" line="0">
-      <Expression success="true" type="WARN_EQ" filename="assertion_macros.cpp" line="0">
+    <TestCase name="all binary assertions" filename="examples/all_features/assertion_macros.cpp" line="0">
+      <Expression success="true" type="WARN_EQ" filename="examples/all_features/assertion_macros.cpp" line="0">
         <Original>
           1, 1
         </Original>
@@ -11,7 +11,7 @@
           1, 1
         </Expanded>
       </Expression>
-      <Expression success="true" type="CHECK_EQ" filename="assertion_macros.cpp" line="0">
+      <Expression success="true" type="CHECK_EQ" filename="examples/all_features/assertion_macros.cpp" line="0">
         <Original>
           1, 1
         </Original>
@@ -19,7 +19,7 @@
           1, 1
         </Expanded>
       </Expression>
-      <Expression success="true" type="REQUIRE_EQ" filename="assertion_macros.cpp" line="0">
+      <Expression success="true" type="REQUIRE_EQ" filename="examples/all_features/assertion_macros.cpp" line="0">
         <Original>
           1, 1
         </Original>
@@ -27,7 +27,7 @@
           1, 1
         </Expanded>
       </Expression>
-      <Expression success="true" type="WARN_NE" filename="assertion_macros.cpp" line="0">
+      <Expression success="true" type="WARN_NE" filename="examples/all_features/assertion_macros.cpp" line="0">
         <Original>
           1, 0
         </Original>
@@ -35,7 +35,7 @@
           1, 0
         </Expanded>
       </Expression>
-      <Expression success="true" type="CHECK_NE" filename="assertion_macros.cpp" line="0">
+      <Expression success="true" type="CHECK_NE" filename="examples/all_features/assertion_macros.cpp" line="0">
         <Original>
           1, 0
         </Original>
@@ -43,7 +43,7 @@
           1, 0
         </Expanded>
       </Expression>
-      <Expression success="true" type="REQUIRE_NE" filename="assertion_macros.cpp" line="0">
+      <Expression success="true" type="REQUIRE_NE" filename="examples/all_features/assertion_macros.cpp" line="0">
         <Original>
           1, 0
         </Original>
@@ -51,7 +51,7 @@
           1, 0
         </Expanded>
       </Expression>
-      <Expression success="true" type="WARN_GT" filename="assertion_macros.cpp" line="0">
+      <Expression success="true" type="WARN_GT" filename="examples/all_features/assertion_macros.cpp" line="0">
         <Original>
           1, 0
         </Original>
@@ -59,7 +59,7 @@
           1, 0
         </Expanded>
       </Expression>
-      <Expression success="true" type="CHECK_GT" filename="assertion_macros.cpp" line="0">
+      <Expression success="true" type="CHECK_GT" filename="examples/all_features/assertion_macros.cpp" line="0">
         <Original>
           1, 0
         </Original>
@@ -67,7 +67,7 @@
           1, 0
         </Expanded>
       </Expression>
-      <Expression success="true" type="REQUIRE_GT" filename="assertion_macros.cpp" line="0">
+      <Expression success="true" type="REQUIRE_GT" filename="examples/all_features/assertion_macros.cpp" line="0">
         <Original>
           1, 0
         </Original>
@@ -75,7 +75,7 @@
           1, 0
         </Expanded>
       </Expression>
-      <Expression success="true" type="WARN_LT" filename="assertion_macros.cpp" line="0">
+      <Expression success="true" type="WARN_LT" filename="examples/all_features/assertion_macros.cpp" line="0">
         <Original>
           0, 1
         </Original>
@@ -83,7 +83,7 @@
           0, 1
         </Expanded>
       </Expression>
-      <Expression success="true" type="CHECK_LT" filename="assertion_macros.cpp" line="0">
+      <Expression success="true" type="CHECK_LT" filename="examples/all_features/assertion_macros.cpp" line="0">
         <Original>
           0, 1
         </Original>
@@ -91,7 +91,7 @@
           0, 1
         </Expanded>
       </Expression>
-      <Expression success="true" type="REQUIRE_LT" filename="assertion_macros.cpp" line="0">
+      <Expression success="true" type="REQUIRE_LT" filename="examples/all_features/assertion_macros.cpp" line="0">
         <Original>
           0, 1
         </Original>
@@ -99,7 +99,7 @@
           0, 1
         </Expanded>
       </Expression>
-      <Expression success="true" type="WARN_GE" filename="assertion_macros.cpp" line="0">
+      <Expression success="true" type="WARN_GE" filename="examples/all_features/assertion_macros.cpp" line="0">
         <Original>
           1, 1
         </Original>
@@ -107,7 +107,7 @@
           1, 1
         </Expanded>
       </Expression>
-      <Expression success="true" type="CHECK_GE" filename="assertion_macros.cpp" line="0">
+      <Expression success="true" type="CHECK_GE" filename="examples/all_features/assertion_macros.cpp" line="0">
         <Original>
           1, 1
         </Original>
@@ -115,7 +115,7 @@
           1, 1
         </Expanded>
       </Expression>
-      <Expression success="true" type="REQUIRE_GE" filename="assertion_macros.cpp" line="0">
+      <Expression success="true" type="REQUIRE_GE" filename="examples/all_features/assertion_macros.cpp" line="0">
         <Original>
           1, 1
         </Original>
@@ -123,7 +123,7 @@
           1, 1
         </Expanded>
       </Expression>
-      <Expression success="true" type="WARN_LE" filename="assertion_macros.cpp" line="0">
+      <Expression success="true" type="WARN_LE" filename="examples/all_features/assertion_macros.cpp" line="0">
         <Original>
           1, 1
         </Original>
@@ -131,7 +131,7 @@
           1, 1
         </Expanded>
       </Expression>
-      <Expression success="true" type="CHECK_LE" filename="assertion_macros.cpp" line="0">
+      <Expression success="true" type="CHECK_LE" filename="examples/all_features/assertion_macros.cpp" line="0">
         <Original>
           1, 1
         </Original>
@@ -139,7 +139,7 @@
           1, 1
         </Expanded>
       </Expression>
-      <Expression success="true" type="REQUIRE_LE" filename="assertion_macros.cpp" line="0">
+      <Expression success="true" type="REQUIRE_LE" filename="examples/all_features/assertion_macros.cpp" line="0">
         <Original>
           1, 1
         </Original>
@@ -147,15 +147,7 @@
           1, 1
         </Expanded>
       </Expression>
-      <Expression success="true" type="WARN_UNARY" filename="assertion_macros.cpp" line="0">
-        <Original>
-          1
-        </Original>
-        <Expanded>
-          1
-        </Expanded>
-      </Expression>
-      <Expression success="true" type="CHECK_UNARY" filename="assertion_macros.cpp" line="0">
+      <Expression success="true" type="WARN_UNARY" filename="examples/all_features/assertion_macros.cpp" line="0">
         <Original>
           1
         </Original>
@@ -163,7 +155,7 @@
           1
         </Expanded>
       </Expression>
-      <Expression success="true" type="REQUIRE_UNARY" filename="assertion_macros.cpp" line="0">
+      <Expression success="true" type="CHECK_UNARY" filename="examples/all_features/assertion_macros.cpp" line="0">
         <Original>
           1
         </Original>
@@ -171,7 +163,15 @@
           1
         </Expanded>
       </Expression>
-      <Expression success="true" type="WARN_UNARY_FALSE" filename="assertion_macros.cpp" line="0">
+      <Expression success="true" type="REQUIRE_UNARY" filename="examples/all_features/assertion_macros.cpp" line="0">
+        <Original>
+          1
+        </Original>
+        <Expanded>
+          1
+        </Expanded>
+      </Expression>
+      <Expression success="true" type="WARN_UNARY_FALSE" filename="examples/all_features/assertion_macros.cpp" line="0">
         <Original>
           0
         </Original>
@@ -179,7 +179,7 @@
           0
         </Expanded>
       </Expression>
-      <Expression success="true" type="CHECK_UNARY_FALSE" filename="assertion_macros.cpp" line="0">
+      <Expression success="true" type="CHECK_UNARY_FALSE" filename="examples/all_features/assertion_macros.cpp" line="0">
         <Original>
           0
         </Original>
@@ -187,7 +187,7 @@
           0
         </Expanded>
       </Expression>
-      <Expression success="true" type="REQUIRE_UNARY_FALSE" filename="assertion_macros.cpp" line="0">
+      <Expression success="true" type="REQUIRE_UNARY_FALSE" filename="examples/all_features/assertion_macros.cpp" line="0">
         <Original>
           0
         </Original>
