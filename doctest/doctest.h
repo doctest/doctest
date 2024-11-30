@@ -1578,8 +1578,8 @@ DOCTEST_CLANG_SUPPRESS_WARNING_POP
         // https://github.com/catchorg/Catch2/issues/870
         // https://github.com/catchorg/Catch2/issues/565
         template <typename L>
-        Expression_lhs<L> operator<<(L&& operand) {
-            return Expression_lhs<L>(static_cast<L&&>(operand), m_at);
+        Expression_lhs<const L&&> operator<<(const L&& operand) { //bitfields bind to universal ref but not const rvalue ref
+            return Expression_lhs<const L&&>(static_cast<const L&&>(operand), m_at);
         }
 
         template <typename L,typename types::enable_if<!doctest::detail::types::is_rvalue_reference<L>::value,void >::type* = nullptr>
