@@ -1,254 +1,254 @@
 [doctest] run with "--help" for options
 ===============================================================================
-examples/all_features/assertion_macros.cpp(0):
+assertion_macros.cpp(0):
 TEST CASE:  normal macros
 
-examples/all_features/assertion_macros.cpp(0): ERROR: CHECK( throw_if(true, std::runtime_error("whops!")) == 42 ) THREW exception: "whops!"
+assertion_macros.cpp(0): ERROR: CHECK( throw_if(true, std::runtime_error("whops!")) == 42 ) THREW exception: "whops!"
 
-examples/all_features/assertion_macros.cpp(0): ERROR: CHECK( doctest::Approx(0.502) == 0.501 ) is NOT correct!
+assertion_macros.cpp(0): ERROR: CHECK( doctest::Approx(0.502) == 0.501 ) is NOT correct!
   values: CHECK( Approx( 0.502 ) == 0.501 )
 
 ===============================================================================
-examples/all_features/assertion_macros.cpp(0):
+assertion_macros.cpp(0):
 TEST CASE:  exceptions-related macros
 
-examples/all_features/assertion_macros.cpp(0): ERROR: CHECK_THROWS( throw_if(false, 0) ) did NOT throw at all!
+assertion_macros.cpp(0): ERROR: CHECK_THROWS( throw_if(false, 0) ) did NOT throw at all!
 
-examples/all_features/assertion_macros.cpp(0): ERROR: CHECK_THROWS_AS( throw_if(true, 0), char ) threw a DIFFERENT exception: "0"
+assertion_macros.cpp(0): ERROR: CHECK_THROWS_AS( throw_if(true, 0), char ) threw a DIFFERENT exception: "0"
 
-examples/all_features/assertion_macros.cpp(0): ERROR: CHECK_THROWS_AS( throw_if(false, 0), int ) did NOT throw at all!
+assertion_macros.cpp(0): ERROR: CHECK_THROWS_AS( throw_if(false, 0), int ) did NOT throw at all!
 
-examples/all_features/assertion_macros.cpp(0): ERROR: CHECK_THROWS_WITH( throw_if(true, "whops!"), "whops! no match!" ) threw a DIFFERENT exception: "whops!"
+assertion_macros.cpp(0): ERROR: CHECK_THROWS_WITH( throw_if(true, "whops!"), "whops! no match!" ) threw a DIFFERENT exception: "whops!"
 
-examples/all_features/assertion_macros.cpp(0): ERROR: CHECK_THROWS_WITH( throw_if(true, "whops! does it match?"), "whops! no match!" ) threw a DIFFERENT exception: "whops! does it match?"
+assertion_macros.cpp(0): ERROR: CHECK_THROWS_WITH( throw_if(true, "whops! does it match?"), "whops! no match!" ) threw a DIFFERENT exception: "whops! does it match?"
 
-examples/all_features/assertion_macros.cpp(0): ERROR: CHECK_THROWS_WITH_AS( throw_if(true, "whops!"), "whops! no match!", bool ) threw a DIFFERENT exception! (contents: "whops!")
+assertion_macros.cpp(0): ERROR: CHECK_THROWS_WITH_AS( throw_if(true, "whops!"), "whops! no match!", bool ) threw a DIFFERENT exception! (contents: "whops!")
 
-examples/all_features/assertion_macros.cpp(0): ERROR: CHECK_THROWS_WITH_AS( throw_if(true, "whops!"), "whops!", int ) threw a DIFFERENT exception! (contents: "whops!")
+assertion_macros.cpp(0): ERROR: CHECK_THROWS_WITH_AS( throw_if(true, "whops!"), "whops!", int ) threw a DIFFERENT exception! (contents: "whops!")
 
-examples/all_features/assertion_macros.cpp(0): ERROR: CHECK_THROWS_WITH_AS( throw_if(true, "whops! does it match?"), "whops! no match!", int ) threw a DIFFERENT exception! (contents: "whops! does it match?")
+assertion_macros.cpp(0): ERROR: CHECK_THROWS_WITH_AS( throw_if(true, "whops! does it match?"), "whops! no match!", int ) threw a DIFFERENT exception! (contents: "whops! does it match?")
 
-examples/all_features/assertion_macros.cpp(0): ERROR: CHECK_NOTHROW( throw_if(true, 0) ) THREW exception: "0"
+assertion_macros.cpp(0): ERROR: CHECK_NOTHROW( throw_if(true, 0) ) THREW exception: "0"
 
 ===============================================================================
-examples/all_features/assertion_macros.cpp(0):
+assertion_macros.cpp(0):
 TEST CASE:  exceptions-related macros for std::exception
 
-examples/all_features/assertion_macros.cpp(0): ERROR: CHECK_THROWS( throw_if(false, 0) ) did NOT throw at all!
+assertion_macros.cpp(0): ERROR: CHECK_THROWS( throw_if(false, 0) ) did NOT throw at all!
 
-examples/all_features/assertion_macros.cpp(0): ERROR: CHECK_THROWS_AS( throw_if(false, std::runtime_error("whops!")), std::exception ) did NOT throw at all!
+assertion_macros.cpp(0): ERROR: CHECK_THROWS_AS( throw_if(false, std::runtime_error("whops!")), std::exception ) did NOT throw at all!
 
-examples/all_features/assertion_macros.cpp(0): ERROR: CHECK_THROWS_AS( throw_if(true, std::runtime_error("whops!")), int ) threw a DIFFERENT exception: "whops!"
+assertion_macros.cpp(0): ERROR: CHECK_THROWS_AS( throw_if(true, std::runtime_error("whops!")), int ) threw a DIFFERENT exception: "whops!"
 
-examples/all_features/assertion_macros.cpp(0): ERROR: CHECK_THROWS_WITH( throw_if(false, ""), "whops!" ) did NOT throw at all!
+assertion_macros.cpp(0): ERROR: CHECK_THROWS_WITH( throw_if(false, ""), "whops!" ) did NOT throw at all!
 
-examples/all_features/assertion_macros.cpp(0): FATAL ERROR: REQUIRE_NOTHROW( throw_if(true, std::runtime_error("whops!")) ) THREW exception: "whops!"
+assertion_macros.cpp(0): FATAL ERROR: REQUIRE_NOTHROW( throw_if(true, std::runtime_error("whops!")) ) THREW exception: "whops!"
 
 ===============================================================================
-examples/all_features/assertion_macros.cpp(0):
+assertion_macros.cpp(0):
 TEST CASE:  WARN level of asserts don't fail the test case
 
-examples/all_features/assertion_macros.cpp(0): WARNING: WARN( 0 ) is NOT correct!
+assertion_macros.cpp(0): WARNING: WARN( 0 ) is NOT correct!
   values: WARN( 0 )
 
-examples/all_features/assertion_macros.cpp(0): WARNING: WARN_FALSE( 1 ) is NOT correct!
+assertion_macros.cpp(0): WARNING: WARN_FALSE( 1 ) is NOT correct!
   values: WARN_FALSE( 1 )
 
-examples/all_features/assertion_macros.cpp(0): WARNING: WARN_THROWS( throw_if(false, 0) ) did NOT throw at all!
+assertion_macros.cpp(0): WARNING: WARN_THROWS( throw_if(false, 0) ) did NOT throw at all!
 
-examples/all_features/assertion_macros.cpp(0): WARNING: WARN_THROWS_WITH( throw_if(true, ""), "whops!" ) threw a DIFFERENT exception: 
+assertion_macros.cpp(0): WARNING: WARN_THROWS_WITH( throw_if(true, ""), "whops!" ) threw a DIFFERENT exception: 
 
-examples/all_features/assertion_macros.cpp(0): WARNING: WARN_THROWS_WITH( throw_if(false, ""), "whops!" ) did NOT throw at all!
+assertion_macros.cpp(0): WARNING: WARN_THROWS_WITH( throw_if(false, ""), "whops!" ) did NOT throw at all!
 
-examples/all_features/assertion_macros.cpp(0): WARNING: WARN_THROWS_AS( throw_if(false, 0), bool ) did NOT throw at all!
+assertion_macros.cpp(0): WARNING: WARN_THROWS_AS( throw_if(false, 0), bool ) did NOT throw at all!
 
-examples/all_features/assertion_macros.cpp(0): WARNING: WARN_THROWS_AS( throw_if(true, 0), bool ) threw a DIFFERENT exception: "0"
+assertion_macros.cpp(0): WARNING: WARN_THROWS_AS( throw_if(true, 0), bool ) threw a DIFFERENT exception: "0"
 
-examples/all_features/assertion_macros.cpp(0): WARNING: WARN_THROWS_WITH_AS( throw_if(false, ""), "whops!", int ) did NOT throw at all!
+assertion_macros.cpp(0): WARNING: WARN_THROWS_WITH_AS( throw_if(false, ""), "whops!", int ) did NOT throw at all!
 
-examples/all_features/assertion_macros.cpp(0): WARNING: WARN_THROWS_WITH_AS( throw_if(true, ""), "whops!", int ) threw a DIFFERENT exception! (contents: )
+assertion_macros.cpp(0): WARNING: WARN_THROWS_WITH_AS( throw_if(true, ""), "whops!", int ) threw a DIFFERENT exception! (contents: )
 
-examples/all_features/assertion_macros.cpp(0): WARNING: WARN_NOTHROW( throw_if(true, 0) ) THREW exception: "0"
+assertion_macros.cpp(0): WARNING: WARN_NOTHROW( throw_if(true, 0) ) THREW exception: "0"
 
-examples/all_features/assertion_macros.cpp(0): WARNING: WARN_EQ( 1, 0 ) is NOT correct!
+assertion_macros.cpp(0): WARNING: WARN_EQ( 1, 0 ) is NOT correct!
   values: WARN_EQ( 1, 0 )
 
-examples/all_features/assertion_macros.cpp(0): WARNING: WARN_UNARY( 0 ) is NOT correct!
+assertion_macros.cpp(0): WARNING: WARN_UNARY( 0 ) is NOT correct!
   values: WARN_UNARY( 0 )
 
-examples/all_features/assertion_macros.cpp(0): WARNING: WARN_UNARY_FALSE( 1 ) is NOT correct!
+assertion_macros.cpp(0): WARNING: WARN_UNARY_FALSE( 1 ) is NOT correct!
   values: WARN_UNARY_FALSE( 1 )
 
 ===============================================================================
-examples/all_features/assertion_macros.cpp(0):
+assertion_macros.cpp(0):
 TEST CASE:  CHECK level of asserts fail the test case but don't abort it
 
-examples/all_features/assertion_macros.cpp(0): ERROR: CHECK( 0 ) is NOT correct!
+assertion_macros.cpp(0): ERROR: CHECK( 0 ) is NOT correct!
   values: CHECK( 0 )
 
-examples/all_features/assertion_macros.cpp(0): ERROR: CHECK_FALSE( 1 ) is NOT correct!
+assertion_macros.cpp(0): ERROR: CHECK_FALSE( 1 ) is NOT correct!
   values: CHECK_FALSE( 1 )
 
-examples/all_features/assertion_macros.cpp(0): ERROR: CHECK_THROWS( throw_if(false, 0) ) did NOT throw at all!
+assertion_macros.cpp(0): ERROR: CHECK_THROWS( throw_if(false, 0) ) did NOT throw at all!
 
-examples/all_features/assertion_macros.cpp(0): ERROR: CHECK_THROWS_AS( throw_if(false, 0), bool ) did NOT throw at all!
+assertion_macros.cpp(0): ERROR: CHECK_THROWS_AS( throw_if(false, 0), bool ) did NOT throw at all!
 
-examples/all_features/assertion_macros.cpp(0): ERROR: CHECK_THROWS_AS( throw_if(true, 0), bool ) threw a DIFFERENT exception: "0"
+assertion_macros.cpp(0): ERROR: CHECK_THROWS_AS( throw_if(true, 0), bool ) threw a DIFFERENT exception: "0"
 
-examples/all_features/assertion_macros.cpp(0): ERROR: CHECK_THROWS_WITH( throw_if(true, 0), "unrecognized" ) threw a DIFFERENT exception: "0"
+assertion_macros.cpp(0): ERROR: CHECK_THROWS_WITH( throw_if(true, 0), "unrecognized" ) threw a DIFFERENT exception: "0"
 
-examples/all_features/assertion_macros.cpp(0): ERROR: CHECK_THROWS_WITH_AS( throw_if(true, 0), "unrecognized", int ) threw a DIFFERENT exception! (contents: "0")
+assertion_macros.cpp(0): ERROR: CHECK_THROWS_WITH_AS( throw_if(true, 0), "unrecognized", int ) threw a DIFFERENT exception! (contents: "0")
 
-examples/all_features/assertion_macros.cpp(0): ERROR: CHECK_NOTHROW( throw_if(true, 0) ) THREW exception: "0"
+assertion_macros.cpp(0): ERROR: CHECK_NOTHROW( throw_if(true, 0) ) THREW exception: "0"
 
-examples/all_features/assertion_macros.cpp(0): ERROR: CHECK_EQ( 1, 0 ) is NOT correct!
+assertion_macros.cpp(0): ERROR: CHECK_EQ( 1, 0 ) is NOT correct!
   values: CHECK_EQ( 1, 0 )
 
-examples/all_features/assertion_macros.cpp(0): ERROR: CHECK_UNARY( 0 ) is NOT correct!
+assertion_macros.cpp(0): ERROR: CHECK_UNARY( 0 ) is NOT correct!
   values: CHECK_UNARY( 0 )
 
-examples/all_features/assertion_macros.cpp(0): ERROR: CHECK_UNARY_FALSE( 1 ) is NOT correct!
+assertion_macros.cpp(0): ERROR: CHECK_UNARY_FALSE( 1 ) is NOT correct!
   values: CHECK_UNARY_FALSE( 1 )
 
-examples/all_features/assertion_macros.cpp(0): MESSAGE: reached!
+assertion_macros.cpp(0): MESSAGE: reached!
 
 ===============================================================================
-examples/all_features/assertion_macros.cpp(0):
+assertion_macros.cpp(0):
 TEST CASE:  REQUIRE level of asserts fail and abort the test case - 1
 
-examples/all_features/assertion_macros.cpp(0): FATAL ERROR: REQUIRE( 0 ) is NOT correct!
+assertion_macros.cpp(0): FATAL ERROR: REQUIRE( 0 ) is NOT correct!
   values: REQUIRE( 0 )
 
 ===============================================================================
-examples/all_features/assertion_macros.cpp(0):
+assertion_macros.cpp(0):
 TEST CASE:  REQUIRE level of asserts fail and abort the test case - 2
 
-examples/all_features/assertion_macros.cpp(0): FATAL ERROR: REQUIRE_FALSE( 1 ) is NOT correct!
+assertion_macros.cpp(0): FATAL ERROR: REQUIRE_FALSE( 1 ) is NOT correct!
   values: REQUIRE_FALSE( 1 )
 
 ===============================================================================
-examples/all_features/assertion_macros.cpp(0):
+assertion_macros.cpp(0):
 TEST CASE:  REQUIRE level of asserts fail and abort the test case - 3
 
-examples/all_features/assertion_macros.cpp(0): FATAL ERROR: REQUIRE_THROWS( throw_if(false, 0) ) did NOT throw at all!
+assertion_macros.cpp(0): FATAL ERROR: REQUIRE_THROWS( throw_if(false, 0) ) did NOT throw at all!
 
 ===============================================================================
-examples/all_features/assertion_macros.cpp(0):
+assertion_macros.cpp(0):
 TEST CASE:  REQUIRE level of asserts fail and abort the test case - 4
 
-examples/all_features/assertion_macros.cpp(0): FATAL ERROR: REQUIRE_THROWS_AS( throw_if(false, 0), bool ) did NOT throw at all!
+assertion_macros.cpp(0): FATAL ERROR: REQUIRE_THROWS_AS( throw_if(false, 0), bool ) did NOT throw at all!
 
 ===============================================================================
-examples/all_features/assertion_macros.cpp(0):
+assertion_macros.cpp(0):
 TEST CASE:  REQUIRE level of asserts fail and abort the test case - 5
 
-examples/all_features/assertion_macros.cpp(0): FATAL ERROR: REQUIRE_THROWS_AS( throw_if(true, 0), bool ) threw a DIFFERENT exception: "0"
+assertion_macros.cpp(0): FATAL ERROR: REQUIRE_THROWS_AS( throw_if(true, 0), bool ) threw a DIFFERENT exception: "0"
 
 ===============================================================================
-examples/all_features/assertion_macros.cpp(0):
+assertion_macros.cpp(0):
 TEST CASE:  REQUIRE level of asserts fail and abort the test case - 6
 
-examples/all_features/assertion_macros.cpp(0): FATAL ERROR: REQUIRE_THROWS_WITH( throw_if(false, ""), "whops!" ) did NOT throw at all!
+assertion_macros.cpp(0): FATAL ERROR: REQUIRE_THROWS_WITH( throw_if(false, ""), "whops!" ) did NOT throw at all!
 
 ===============================================================================
-examples/all_features/assertion_macros.cpp(0):
+assertion_macros.cpp(0):
 TEST CASE:  REQUIRE level of asserts fail and abort the test case - 7
 
-examples/all_features/assertion_macros.cpp(0): FATAL ERROR: REQUIRE_THROWS_WITH( throw_if(true, ""), "whops!" ) threw a DIFFERENT exception: 
+assertion_macros.cpp(0): FATAL ERROR: REQUIRE_THROWS_WITH( throw_if(true, ""), "whops!" ) threw a DIFFERENT exception: 
 
 ===============================================================================
-examples/all_features/assertion_macros.cpp(0):
+assertion_macros.cpp(0):
 TEST CASE:  REQUIRE level of asserts fail and abort the test case - 8
 
-examples/all_features/assertion_macros.cpp(0): FATAL ERROR: REQUIRE_THROWS_WITH_AS( throw_if(false, ""), "whops!", bool ) did NOT throw at all!
+assertion_macros.cpp(0): FATAL ERROR: REQUIRE_THROWS_WITH_AS( throw_if(false, ""), "whops!", bool ) did NOT throw at all!
 
 ===============================================================================
-examples/all_features/assertion_macros.cpp(0):
+assertion_macros.cpp(0):
 TEST CASE:  REQUIRE level of asserts fail and abort the test case - 9
 
-examples/all_features/assertion_macros.cpp(0): FATAL ERROR: REQUIRE_THROWS_WITH_AS( throw_if(true, ""), "whops!", bool ) threw a DIFFERENT exception! (contents: )
+assertion_macros.cpp(0): FATAL ERROR: REQUIRE_THROWS_WITH_AS( throw_if(true, ""), "whops!", bool ) threw a DIFFERENT exception! (contents: )
 
 ===============================================================================
-examples/all_features/assertion_macros.cpp(0):
+assertion_macros.cpp(0):
 TEST CASE:  REQUIRE level of asserts fail and abort the test case - 10
 
-examples/all_features/assertion_macros.cpp(0): FATAL ERROR: REQUIRE_NOTHROW( throw_if(true, 0) ) THREW exception: "0"
+assertion_macros.cpp(0): FATAL ERROR: REQUIRE_NOTHROW( throw_if(true, 0) ) THREW exception: "0"
 
 ===============================================================================
-examples/all_features/assertion_macros.cpp(0):
+assertion_macros.cpp(0):
 TEST CASE:  REQUIRE level of asserts fail and abort the test case - 11
 
-examples/all_features/assertion_macros.cpp(0): FATAL ERROR: REQUIRE_EQ( 1, 0 ) is NOT correct!
+assertion_macros.cpp(0): FATAL ERROR: REQUIRE_EQ( 1, 0 ) is NOT correct!
   values: REQUIRE_EQ( 1, 0 )
 
 ===============================================================================
-examples/all_features/assertion_macros.cpp(0):
+assertion_macros.cpp(0):
 TEST CASE:  REQUIRE level of asserts fail and abort the test case - 12
 
-examples/all_features/assertion_macros.cpp(0): FATAL ERROR: REQUIRE_UNARY( 0 ) is NOT correct!
+assertion_macros.cpp(0): FATAL ERROR: REQUIRE_UNARY( 0 ) is NOT correct!
   values: REQUIRE_UNARY( 0 )
 
 ===============================================================================
-examples/all_features/assertion_macros.cpp(0):
+assertion_macros.cpp(0):
 TEST CASE:  REQUIRE level of asserts fail and abort the test case - 13
 
-examples/all_features/assertion_macros.cpp(0): FATAL ERROR: REQUIRE_UNARY_FALSE( 1 ) is NOT correct!
+assertion_macros.cpp(0): FATAL ERROR: REQUIRE_UNARY_FALSE( 1 ) is NOT correct!
   values: REQUIRE_UNARY_FALSE( 1 )
 
 ===============================================================================
-examples/all_features/assertion_macros.cpp(0):
+assertion_macros.cpp(0):
 TEST CASE:  some asserts used in a function called by a test case
 
-examples/all_features/assertion_macros.cpp(0): ERROR: CHECK_THROWS_WITH_AS( throw_if(true, false), "unknown exception", int ) threw a DIFFERENT exception! (contents: "unknown exception")
+assertion_macros.cpp(0): ERROR: CHECK_THROWS_WITH_AS( throw_if(true, false), "unknown exception", int ) threw a DIFFERENT exception! (contents: "unknown exception")
 
 ===============================================================================
-examples/all_features/assertion_macros.cpp(0):
+assertion_macros.cpp(0):
 TEST CASE:  check return values
 
-examples/all_features/assertion_macros.cpp(0): MESSAGE: :D
+assertion_macros.cpp(0): MESSAGE: :D
 
-examples/all_features/assertion_macros.cpp(0): MESSAGE: :D
+assertion_macros.cpp(0): MESSAGE: :D
 
-examples/all_features/assertion_macros.cpp(0): MESSAGE: :D
+assertion_macros.cpp(0): MESSAGE: :D
 
-examples/all_features/assertion_macros.cpp(0): MESSAGE: :D
+assertion_macros.cpp(0): MESSAGE: :D
 
-examples/all_features/assertion_macros.cpp(0): MESSAGE: :D
+assertion_macros.cpp(0): MESSAGE: :D
 
-examples/all_features/assertion_macros.cpp(0): MESSAGE: :D
+assertion_macros.cpp(0): MESSAGE: :D
 
-examples/all_features/assertion_macros.cpp(0): MESSAGE: :D
+assertion_macros.cpp(0): MESSAGE: :D
 
-examples/all_features/assertion_macros.cpp(0): MESSAGE: :D
+assertion_macros.cpp(0): MESSAGE: :D
 
-examples/all_features/assertion_macros.cpp(0): MESSAGE: :D
+assertion_macros.cpp(0): MESSAGE: :D
 
 ===============================================================================
-examples/all_features/assertion_macros.cpp(0):
+assertion_macros.cpp(0):
 TEST CASE:  check return values no print
 
-examples/all_features/assertion_macros.cpp(0): ERROR: CHECK( a == b ) is NOT correct!
+assertion_macros.cpp(0): ERROR: CHECK( a == b ) is NOT correct!
   values: CHECK( 4 == 2 )
 
-examples/all_features/assertion_macros.cpp(0): ERROR: CHECK_FALSE( a != b ) is NOT correct!
+assertion_macros.cpp(0): ERROR: CHECK_FALSE( a != b ) is NOT correct!
   values: CHECK_FALSE( 4 != 2 )
 
-examples/all_features/assertion_macros.cpp(0): ERROR: CHECK_EQ( a, b ) is NOT correct!
+assertion_macros.cpp(0): ERROR: CHECK_EQ( a, b ) is NOT correct!
   values: CHECK_EQ( 4, 2 )
 
-examples/all_features/assertion_macros.cpp(0): ERROR: CHECK_UNARY( a == b ) is NOT correct!
+assertion_macros.cpp(0): ERROR: CHECK_UNARY( a == b ) is NOT correct!
   values: CHECK_UNARY( false )
 
-examples/all_features/assertion_macros.cpp(0): ERROR: CHECK_UNARY_FALSE( a != b ) is NOT correct!
+assertion_macros.cpp(0): ERROR: CHECK_UNARY_FALSE( a != b ) is NOT correct!
   values: CHECK_UNARY_FALSE( true )
 
-examples/all_features/assertion_macros.cpp(0): ERROR: CHECK_THROWS( throw_if(false, false) ) did NOT throw at all!
+assertion_macros.cpp(0): ERROR: CHECK_THROWS( throw_if(false, false) ) did NOT throw at all!
 
-examples/all_features/assertion_macros.cpp(0): ERROR: CHECK_THROWS_AS( throw_if(true, 2), doctest::Approx ) threw a DIFFERENT exception: "2"
+assertion_macros.cpp(0): ERROR: CHECK_THROWS_AS( throw_if(true, 2), doctest::Approx ) threw a DIFFERENT exception: "2"
 
-examples/all_features/assertion_macros.cpp(0): ERROR: CHECK_NOTHROW( throw_if(true, 2) ) THREW exception: "2"
+assertion_macros.cpp(0): ERROR: CHECK_NOTHROW( throw_if(true, 2) ) THREW exception: "2"
 
-examples/all_features/assertion_macros.cpp(0): ERROR: CHECK_THROWS_WITH( throw_if(true, 2), "1" ) threw a DIFFERENT exception: "2"
+assertion_macros.cpp(0): ERROR: CHECK_THROWS_WITH( throw_if(true, 2), "1" ) threw a DIFFERENT exception: "2"
 
 ===============================================================================
 [doctest] test cases: 23 |  4 passed | 19 failed |

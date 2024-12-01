@@ -1,40 +1,40 @@
 [doctest] run with "--help" for options
 ===============================================================================
-examples/all_features/coverage_maxout.cpp(0):
+coverage_maxout.cpp(0):
 TEST CASE:  exercising tricky code paths of doctest
 
-examples/all_features/coverage_maxout.cpp(0): ERROR: CHECK( str.compare(const_str, true) != 0 ) is NOT correct!
+coverage_maxout.cpp(0): ERROR: CHECK( str.compare(const_str, true) != 0 ) is NOT correct!
   values: CHECK( 0 != 0 )
   logged: should fail
 
-examples/all_features/coverage_maxout.cpp(0): ERROR: CHECK( str.compare("omgomgomg", false) != 0 ) is NOT correct!
+coverage_maxout.cpp(0): ERROR: CHECK( str.compare("omgomgomg", false) != 0 ) is NOT correct!
   values: CHECK( 0 != 0 )
   logged: should fail
 
-examples/all_features/coverage_maxout.cpp(0): ERROR: CHECK_FALSE( isThereAnything ) is NOT correct!
+coverage_maxout.cpp(0): ERROR: CHECK_FALSE( isThereAnything ) is NOT correct!
   values: CHECK_FALSE( true )
   logged: should fail
 
 ===============================================================================
-examples/all_features/coverage_maxout.cpp(0):
+coverage_maxout.cpp(0):
 TEST SUITE: exception related
 TEST CASE:  will end from a std::string exception
 
-examples/all_features/coverage_maxout.cpp(0): ERROR: test case THREW exception: std::string!
+coverage_maxout.cpp(0): ERROR: test case THREW exception: std::string!
 
 ===============================================================================
-examples/all_features/coverage_maxout.cpp(0):
+coverage_maxout.cpp(0):
 TEST SUITE: exception related
 TEST CASE:  will end from a const char* exception
 
-examples/all_features/coverage_maxout.cpp(0): ERROR: test case THREW exception: const char*!
+coverage_maxout.cpp(0): ERROR: test case THREW exception: const char*!
 
 ===============================================================================
-examples/all_features/coverage_maxout.cpp(0):
+coverage_maxout.cpp(0):
 TEST SUITE: exception related
 TEST CASE:  will end from an unknown exception
 
-examples/all_features/coverage_maxout.cpp(0): ERROR: test case THREW exception: unknown exception
+coverage_maxout.cpp(0): ERROR: test case THREW exception: unknown exception
 
 ===============================================================================
 [doctest] test cases:  4 |  0 passed | 4 failed |

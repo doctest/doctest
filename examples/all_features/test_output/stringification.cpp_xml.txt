@@ -1,35 +1,35 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<doctest binary="examples/all_features/all_features">
+<doctest binary="all_features">
   <Options order_by="file" rand_seed="324" first="0" last="4294967295" abort_after="0" subcase_filter_levels="2147483647" case_sensitive="false" no_throw="false" no_skip="false"/>
   <TestSuite>
-    <TestCase name="toString std::string ret type" filename="examples/all_features/double_stringification.cpp" line="0">
+    <TestCase name="toString std::string ret type" filename="double_stringification.cpp" line="0">
       <OverallResultsAsserts successes="3" failures="0" test_case_success="true"/>
     </TestCase>
-    <TestCase name="operator&lt;&lt;" filename="examples/all_features/stringification.cpp" line="0">
-      <Message type="WARNING" filename="examples/all_features/stringification.cpp" line="0">
+    <TestCase name="operator&lt;&lt;" filename="stringification.cpp" line="0">
+      <Message type="WARNING" filename="stringification.cpp" line="0">
         <Text>
           A
         </Text>
       </Message>
-      <Message type="WARNING" filename="examples/all_features/stringification.cpp" line="0">
+      <Message type="WARNING" filename="stringification.cpp" line="0">
         <Text>
           B
         </Text>
       </Message>
-      <Message type="WARNING" filename="examples/all_features/stringification.cpp" line="0">
+      <Message type="WARNING" filename="stringification.cpp" line="0">
         <Text>
           C
         </Text>
       </Message>
       <OverallResultsAsserts successes="0" failures="0" test_case_success="true"/>
     </TestCase>
-    <TestCase name="no headers" filename="examples/all_features/stringification.cpp" line="0">
-      <Message type="WARNING" filename="examples/all_features/stringification.cpp" line="0">
+    <TestCase name="no headers" filename="stringification.cpp" line="0">
+      <Message type="WARNING" filename="stringification.cpp" line="0">
         <Text>
           1as
         </Text>
       </Message>
-      <Expression success="false" type="CHECK" filename="examples/all_features/stringification.cpp" line="0">
+      <Expression success="false" type="CHECK" filename="stringification.cpp" line="0">
         <Original>
           chs == nullptr
         </Original>
@@ -37,12 +37,12 @@
           1as == nullptr
         </Expanded>
       </Expression>
-      <Message type="WARNING" filename="examples/all_features/stringification.cpp" line="0">
+      <Message type="WARNING" filename="stringification.cpp" line="0">
         <Text>
           1as
         </Text>
       </Message>
-      <Expression success="false" type="CHECK" filename="examples/all_features/stringification.cpp" line="0">
+      <Expression success="false" type="CHECK" filename="stringification.cpp" line="0">
         <Original>
           "1as" == nullptr
         </Original>
@@ -50,12 +50,12 @@
           1as == nullptr
         </Expanded>
       </Expression>
-      <Message type="WARNING" filename="examples/all_features/stringification.cpp" line="0">
+      <Message type="WARNING" filename="stringification.cpp" line="0">
         <Text>
           [0, 1, 1, 2, 3, 5, 8, 13]
         </Text>
       </Message>
-      <Expression success="false" type="CHECK" filename="examples/all_features/stringification.cpp" line="0">
+      <Expression success="false" type="CHECK" filename="stringification.cpp" line="0">
         <Original>
           ints == nullptr
         </Original>
@@ -63,17 +63,17 @@
           [0, 1, 1, 2, 3, 5, 8, 13] == nullptr
         </Expanded>
       </Expression>
-      <Message type="WARNING" filename="examples/all_features/stringification.cpp" line="0">
+      <Message type="WARNING" filename="stringification.cpp" line="0">
         <Text>
           [0, 1, 1, 2, 3, 5, 8, 13]
         </Text>
       </Message>
-      <Message type="WARNING" filename="examples/all_features/stringification.cpp" line="0">
+      <Message type="WARNING" filename="stringification.cpp" line="0">
         <Text>
           nullptr
         </Text>
       </Message>
-      <Expression success="false" type="CHECK" filename="examples/all_features/stringification.cpp" line="0">
+      <Expression success="false" type="CHECK" filename="stringification.cpp" line="0">
         <Original>
           cnptr != nullptr
         </Original>
@@ -81,12 +81,12 @@
           nullptr != nullptr
         </Expanded>
       </Expression>
-      <Message type="WARNING" filename="examples/all_features/stringification.cpp" line="0">
+      <Message type="WARNING" filename="stringification.cpp" line="0">
         <Text>
           0
         </Text>
       </Message>
-      <Expression success="false" type="CHECK" filename="examples/all_features/stringification.cpp" line="0">
+      <Expression success="false" type="CHECK" filename="stringification.cpp" line="0">
         <Original>
           A == C
         </Original>
@@ -94,20 +94,20 @@
           0 == 100
         </Expanded>
       </Expression>
-      <Message type="WARNING" filename="examples/all_features/stringification.cpp" line="0">
+      <Message type="WARNING" filename="stringification.cpp" line="0">
         <Text>
           int
         </Text>
       </Message>
       <OverallResultsAsserts successes="2" failures="5" test_case_success="false"/>
     </TestCase>
-    <TestCase name="all asserts should fail and show how the objects get stringified" filename="examples/all_features/stringification.cpp" line="0">
-      <Message type="WARNING" filename="examples/all_features/stringification.cpp" line="0">
+    <TestCase name="all asserts should fail and show how the objects get stringified" filename="stringification.cpp" line="0">
+      <Message type="WARNING" filename="stringification.cpp" line="0">
         <Text>
           Foo{}
         </Text>
       </Message>
-      <Expression success="false" type="CHECK" filename="examples/all_features/stringification.cpp" line="0">
+      <Expression success="false" type="CHECK" filename="stringification.cpp" line="0">
         <Original>
           f1 == f2
         </Original>
@@ -115,12 +115,12 @@
           Foo{} == Foo{}
         </Expanded>
       </Expression>
-      <Message type="WARNING" filename="examples/all_features/stringification.cpp" line="0">
+      <Message type="WARNING" filename="stringification.cpp" line="0">
         <Text>
           omg
         </Text>
       </Message>
-      <Expression success="false" type="CHECK" filename="examples/all_features/stringification.cpp" line="0">
+      <Expression success="false" type="CHECK" filename="stringification.cpp" line="0">
         <Original>
           dummy == "tralala"
         </Original>
@@ -128,7 +128,7 @@
           omg == tralala
         </Expanded>
       </Expression>
-      <Expression success="false" type="CHECK" filename="examples/all_features/stringification.cpp" line="0">
+      <Expression success="false" type="CHECK" filename="stringification.cpp" line="0">
         <Original>
           "tralala" == dummy
         </Original>
@@ -136,12 +136,12 @@
           tralala == omg
         </Expanded>
       </Expression>
-      <Message type="WARNING" filename="examples/all_features/stringification.cpp" line="0">
+      <Message type="WARNING" filename="stringification.cpp" line="0">
         <Text>
           [1, 2, 3]
         </Text>
       </Message>
-      <Expression success="false" type="CHECK" filename="examples/all_features/stringification.cpp" line="0">
+      <Expression success="false" type="CHECK" filename="stringification.cpp" line="0">
         <Original>
           vec1 == vec2
         </Original>
@@ -149,12 +149,12 @@
           [1, 2, 3] == [1, 2, 4]
         </Expanded>
       </Expression>
-      <Message type="WARNING" filename="examples/all_features/stringification.cpp" line="0">
+      <Message type="WARNING" filename="stringification.cpp" line="0">
         <Text>
           [1, 42, 3]
         </Text>
       </Message>
-      <Expression success="false" type="CHECK" filename="examples/all_features/stringification.cpp" line="0">
+      <Expression success="false" type="CHECK" filename="stringification.cpp" line="0">
         <Original>
           lst_1 == lst_2
         </Original>
@@ -162,7 +162,7 @@
           [1, 42, 3] == [1, 2, 666]
         </Expanded>
       </Expression>
-      <Expression success="false" type="CHECK" filename="examples/all_features/stringification.cpp" line="0">
+      <Expression success="false" type="CHECK" filename="stringification.cpp" line="0">
         <Original>
           s1 == s2
         </Original>
@@ -173,7 +173,7 @@
           s1=MyOtherType: 42 s2=MyOtherType: 666
         </Info>
       </Expression>
-      <Expression success="false" type="CHECK" filename="examples/all_features/stringification.cpp" line="0">
+      <Expression success="false" type="CHECK" filename="stringification.cpp" line="0">
         <Original>
           s1 == s2
         </Original>
@@ -187,7 +187,7 @@
           MyOtherType: 42 is not really MyOtherType: 666
         </Info>
       </Expression>
-      <Expression success="false" type="CHECK" filename="examples/all_features/stringification.cpp" line="0">
+      <Expression success="false" type="CHECK" filename="stringification.cpp" line="0">
         <Original>
           "a" == doctest::Contains("aaa")
         </Original>
@@ -200,16 +200,16 @@
       </Exception>
       <OverallResultsAsserts successes="4" failures="8" test_case_success="false"/>
     </TestCase>
-    <TestCase name="a test case that registers an exception translator for int and then throws one" filename="examples/all_features/stringification.cpp" line="0">
+    <TestCase name="a test case that registers an exception translator for int and then throws one" filename="stringification.cpp" line="0">
       <Exception crash="false">
         5
       </Exception>
       <OverallResultsAsserts successes="0" failures="0" test_case_success="false"/>
     </TestCase>
-    <TestCase name="pointer comparisons" filename="examples/all_features/stringification.cpp" line="0">
+    <TestCase name="pointer comparisons" filename="stringification.cpp" line="0">
       <OverallResultsAsserts successes="4" failures="0" test_case_success="true"/>
     </TestCase>
-    <TestCase name="enum with operator&lt;&lt;" filename="examples/all_features/stringification.cpp" line="0">
+    <TestCase name="enum with operator&lt;&lt;" filename="stringification.cpp" line="0">
       <OverallResultsAsserts successes="1" failures="0" test_case_success="true"/>
     </TestCase>
   </TestSuite>

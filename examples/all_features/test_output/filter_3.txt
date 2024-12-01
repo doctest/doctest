@@ -7,36 +7,36 @@ outside of subcase
 outside of subcase
 outside of subcase
 ===============================================================================
-examples/all_features/subcases.cpp(0):
+subcases.cpp(0):
 TEST CASE:  subcases can be used in a separate function as well
   from function...
 
-examples/all_features/subcases.cpp(0): MESSAGE: print me twice
+subcases.cpp(0): MESSAGE: print me twice
 
 ===============================================================================
-examples/all_features/subcases.cpp(0):
+subcases.cpp(0):
 TEST CASE:  subcases can be used in a separate function as well
   from function...
   sc1
 
-examples/all_features/subcases.cpp(0): MESSAGE: hello! from sc1
+subcases.cpp(0): MESSAGE: hello! from sc1
 
 ===============================================================================
-examples/all_features/subcases.cpp(0):
+subcases.cpp(0):
 TEST CASE:  subcases can be used in a separate function as well
 
 DEEPEST SUBCASE STACK REACHED (DIFFERENT FROM THE CURRENT ONE):
   from function...
   sc1
 
-examples/all_features/subcases.cpp(0): MESSAGE: lala
+subcases.cpp(0): MESSAGE: lala
 
 ===============================================================================
-examples/all_features/subcases.cpp(0):
+subcases.cpp(0):
 TEST SUITE: with a funny name,
 TEST CASE:  without a funny name:
 
-examples/all_features/subcases.cpp(0): MESSAGE: Nooo
+subcases.cpp(0): MESSAGE: Nooo
 
 ===============================================================================
 [doctest] test cases: 10 | 10 passed | 0 failed |

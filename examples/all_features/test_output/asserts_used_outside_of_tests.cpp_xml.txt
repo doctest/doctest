@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<doctest binary="examples/all_features/all_features">
+<doctest binary="all_features">
   <Options order_by="file" rand_seed="324" first="0" last="4294967295" abort_after="0" subcase_filter_levels="2147483647" case_sensitive="false" no_throw="false" no_skip="false"/>
   <OverallResultsAsserts successes="0" failures="0"/>
   <OverallResultsTestCases successes="0" failures="0"/>
 </doctest>
 Program code.
-examples/all_features/asserts_used_outside_of_tests.cpp(19): ERROR: CHECK_EQ( true, false ) is NOT correct!
+asserts_used_outside_of_tests.cpp(19): ERROR: CHECK_EQ( true, false ) is NOT correct!
   values: CHECK_EQ( true, false )
-examples/all_features/asserts_used_outside_of_tests.cpp(20): ERROR: CHECK_UNARY( false ) is NOT correct!
+asserts_used_outside_of_tests.cpp(20): ERROR: CHECK_UNARY( false ) is NOT correct!
   values: CHECK_UNARY( false )
-examples/all_features/asserts_used_outside_of_tests.cpp(21): ERROR: CHECK_UNARY_FALSE( true ) is NOT correct!
+asserts_used_outside_of_tests.cpp(21): ERROR: CHECK_UNARY_FALSE( true ) is NOT correct!
   values: CHECK_UNARY_FALSE( true )
-examples/all_features/asserts_used_outside_of_tests.cpp(23): ERROR: CHECK( false ) is NOT correct!
+asserts_used_outside_of_tests.cpp(23): ERROR: CHECK( false ) is NOT correct!
   values: CHECK( false )
 hello! 
-examples/all_features/asserts_used_outside_of_tests.cpp(24): ERROR: an assert dealing with exceptions has failed!
+asserts_used_outside_of_tests.cpp(24): ERROR: an assert dealing with exceptions has failed!

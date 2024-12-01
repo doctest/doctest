@@ -11,10 +11,10 @@ root
 root
 2
 ===============================================================================
-examples/all_features/subcases.cpp(0):
+subcases.cpp(0):
 TEST CASE:  lots of nested subcases
 
-examples/all_features/subcases.cpp(0): FATAL ERROR: 
+subcases.cpp(0): FATAL ERROR: 
 
 
 root
@@ -38,12 +38,12 @@ outside of subcase
 fail inside 0
 outside of subcase
 ===============================================================================
-examples/all_features/subcases.cpp(0):
+subcases.cpp(0):
 TEST CASE:  reentering subcase via regular control flow
 
 DEEPEST SUBCASE STACK REACHED (DIFFERENT FROM THE CURRENT ONE):
 
-examples/all_features/subcases.cpp(0): FATAL ERROR: 1
+subcases.cpp(0): FATAL ERROR: 1
 
 
 root
@@ -80,124 +80,124 @@ also twice 2, 0
 also twice 2, 1
 also twice 2, 2
 ===============================================================================
-examples/all_features/subcases.cpp(0):
+subcases.cpp(0):
 TEST CASE:  subcases can be used in a separate function as well
   from function...
 
-examples/all_features/subcases.cpp(0): MESSAGE: print me twice
+subcases.cpp(0): MESSAGE: print me twice
 
 ===============================================================================
-examples/all_features/subcases.cpp(0):
+subcases.cpp(0):
 TEST CASE:  subcases can be used in a separate function as well
   from function...
   sc1
 
-examples/all_features/subcases.cpp(0): MESSAGE: hello! from sc1
+subcases.cpp(0): MESSAGE: hello! from sc1
 
 ===============================================================================
-examples/all_features/subcases.cpp(0):
+subcases.cpp(0):
 TEST CASE:  subcases can be used in a separate function as well
 
 DEEPEST SUBCASE STACK REACHED (DIFFERENT FROM THE CURRENT ONE):
   from function...
   sc1
 
-examples/all_features/subcases.cpp(0): MESSAGE: lala
+subcases.cpp(0): MESSAGE: lala
 
 ===============================================================================
-examples/all_features/subcases.cpp(0):
+subcases.cpp(0):
 TEST CASE:  subcases can be used in a separate function as well
   from function...
 
-examples/all_features/subcases.cpp(0): MESSAGE: print me twice
+subcases.cpp(0): MESSAGE: print me twice
 
 ===============================================================================
-examples/all_features/subcases.cpp(0):
+subcases.cpp(0):
 TEST CASE:  subcases can be used in a separate function as well
   from function...
   sc2
 
-examples/all_features/subcases.cpp(0): MESSAGE: hello! from sc2
+subcases.cpp(0): MESSAGE: hello! from sc2
 
 ===============================================================================
-examples/all_features/subcases.cpp(0):
+subcases.cpp(0):
 TEST CASE:  subcases can be used in a separate function as well
 
 DEEPEST SUBCASE STACK REACHED (DIFFERENT FROM THE CURRENT ONE):
   from function...
   sc2
 
-examples/all_features/subcases.cpp(0): MESSAGE: lala
+subcases.cpp(0): MESSAGE: lala
 
 ===============================================================================
-examples/all_features/subcases.cpp(0):
+subcases.cpp(0):
   Scenario: vectors can be sized and resized
      Given: A vector with some items
       When: the size is increased
       Then: the size and capacity change
 
-examples/all_features/subcases.cpp(0): ERROR: CHECK( v.size() == 20 ) is NOT correct!
+subcases.cpp(0): ERROR: CHECK( v.size() == 20 ) is NOT correct!
   values: CHECK( 10 == 20 )
 
 ===============================================================================
-examples/all_features/subcases.cpp(0):
+subcases.cpp(0):
   Scenario: vectors can be sized and resized
      Given: A vector with some items
       When: less capacity is reserved
       Then: neither size nor capacity are changed
 
-examples/all_features/subcases.cpp(0): ERROR: CHECK( v.size() == 10 ) is NOT correct!
+subcases.cpp(0): ERROR: CHECK( v.size() == 10 ) is NOT correct!
   values: CHECK( 5 == 10 )
 
 ===============================================================================
-examples/all_features/subcases.cpp(0):
+subcases.cpp(0):
 TEST CASE:  test case should fail even though the last subcase passes
   one
 
-examples/all_features/subcases.cpp(0): ERROR: CHECK( false ) is NOT correct!
+subcases.cpp(0): ERROR: CHECK( false ) is NOT correct!
   values: CHECK( false )
 
 ===============================================================================
-examples/all_features/subcases.cpp(0):
+subcases.cpp(0):
 TEST CASE:  fails from an exception but gets re-entered to traverse all subcases
   level zero
   one
 
-examples/all_features/subcases.cpp(0): ERROR: CHECK( false ) is NOT correct!
+subcases.cpp(0): ERROR: CHECK( false ) is NOT correct!
   values: CHECK( false )
 
 ===============================================================================
-examples/all_features/subcases.cpp(0):
+subcases.cpp(0):
 TEST CASE:  fails from an exception but gets re-entered to traverse all subcases
   level zero
-
-DEEPEST SUBCASE STACK REACHED (DIFFERENT FROM THE CURRENT ONE):
-  level zero
-  one
-
-examples/all_features/subcases.cpp(0): ERROR: test case THREW exception: exception thrown in subcase - will translate later when the whole test case has been exited (cannot translate while there is an active exception)
-
-===============================================================================
-examples/all_features/subcases.cpp(0):
-TEST CASE:  fails from an exception but gets re-entered to traverse all subcases
 
 DEEPEST SUBCASE STACK REACHED (DIFFERENT FROM THE CURRENT ONE):
   level zero
   one
 
-examples/all_features/subcases.cpp(0): ERROR: test case THREW exception: failure... but the show must go on!
+subcases.cpp(0): ERROR: test case THREW exception: exception thrown in subcase - will translate later when the whole test case has been exited (cannot translate while there is an active exception)
 
 ===============================================================================
-examples/all_features/subcases.cpp(0):
+subcases.cpp(0):
+TEST CASE:  fails from an exception but gets re-entered to traverse all subcases
+
+DEEPEST SUBCASE STACK REACHED (DIFFERENT FROM THE CURRENT ONE):
+  level zero
+  one
+
+subcases.cpp(0): ERROR: test case THREW exception: failure... but the show must go on!
+
+===============================================================================
+subcases.cpp(0):
 TEST CASE:  fails from an exception but gets re-entered to traverse all subcases
   level zero
   two
 
-examples/all_features/subcases.cpp(0): ERROR: CHECK( false ) is NOT correct!
+subcases.cpp(0): ERROR: CHECK( false ) is NOT correct!
   values: CHECK( false )
 
 ===============================================================================
-examples/all_features/subcases.cpp(0):
+subcases.cpp(0):
 TEST CASE:  fails from an exception but gets re-entered to traverse all subcases
   level zero
 
@@ -205,87 +205,87 @@ DEEPEST SUBCASE STACK REACHED (DIFFERENT FROM THE CURRENT ONE):
   level zero
   two
 
-examples/all_features/subcases.cpp(0): ERROR: test case THREW exception: exception thrown in subcase - will translate later when the whole test case has been exited (cannot translate while there is an active exception)
+subcases.cpp(0): ERROR: test case THREW exception: exception thrown in subcase - will translate later when the whole test case has been exited (cannot translate while there is an active exception)
 
 ===============================================================================
-examples/all_features/subcases.cpp(0):
+subcases.cpp(0):
 TEST CASE:  fails from an exception but gets re-entered to traverse all subcases
 
 DEEPEST SUBCASE STACK REACHED (DIFFERENT FROM THE CURRENT ONE):
   level zero
   two
 
-examples/all_features/subcases.cpp(0): ERROR: test case THREW exception: failure... but the show must go on!
+subcases.cpp(0): ERROR: test case THREW exception: failure... but the show must go on!
 
 ===============================================================================
-examples/all_features/subcases.cpp(0):
+subcases.cpp(0):
 TEST CASE:  subcases with changing names
   outer 0
   inner 0
 
-examples/all_features/subcases.cpp(0): MESSAGE: msg!
+subcases.cpp(0): MESSAGE: msg!
 
 ===============================================================================
-examples/all_features/subcases.cpp(0):
+subcases.cpp(0):
 TEST CASE:  subcases with changing names
   outer 0
   inner 1
 
-examples/all_features/subcases.cpp(0): MESSAGE: msg!
+subcases.cpp(0): MESSAGE: msg!
 
 ===============================================================================
-examples/all_features/subcases.cpp(0):
+subcases.cpp(0):
 TEST CASE:  subcases with changing names
   outer 1
   inner 0
 
-examples/all_features/subcases.cpp(0): MESSAGE: msg!
+subcases.cpp(0): MESSAGE: msg!
 
 ===============================================================================
-examples/all_features/subcases.cpp(0):
+subcases.cpp(0):
 TEST CASE:  subcases with changing names
   outer 1
   inner 1
 
-examples/all_features/subcases.cpp(0): MESSAGE: msg!
+subcases.cpp(0): MESSAGE: msg!
 
 ===============================================================================
-examples/all_features/subcases.cpp(0):
+subcases.cpp(0):
 TEST CASE:  subcases with changing names
   separate
 
-examples/all_features/subcases.cpp(0): MESSAGE: separate msg!
+subcases.cpp(0): MESSAGE: separate msg!
 
 ===============================================================================
-examples/all_features/subcases.cpp(0):
+subcases.cpp(0):
 TEST SUITE: with a funny name,
 TEST CASE:  with a funnier name\:
   with the funniest name\,
 
-examples/all_features/subcases.cpp(0): MESSAGE: Yes!
+subcases.cpp(0): MESSAGE: Yes!
 
 ===============================================================================
-examples/all_features/subcases.cpp(0):
+subcases.cpp(0):
 TEST SUITE: with a funny name,
 TEST CASE:  with a funnier name\:
   with a slightly funny name :
 
-examples/all_features/subcases.cpp(0): MESSAGE: Yep!
+subcases.cpp(0): MESSAGE: Yep!
 
 ===============================================================================
-examples/all_features/subcases.cpp(0):
+subcases.cpp(0):
 TEST SUITE: with a funny name,
 TEST CASE:  with a funnier name\:
   without a funny name
 
-examples/all_features/subcases.cpp(0): MESSAGE: NO!
+subcases.cpp(0): MESSAGE: NO!
 
 ===============================================================================
-examples/all_features/subcases.cpp(0):
+subcases.cpp(0):
 TEST SUITE: with a funny name,
 TEST CASE:  without a funny name:
 
-examples/all_features/subcases.cpp(0): MESSAGE: Nooo
+subcases.cpp(0): MESSAGE: Nooo
 
 ===============================================================================
 [doctest] test cases: 10 |  5 passed | 5 failed |

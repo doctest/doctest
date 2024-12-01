@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <testsuites>
-  <testsuite name="examples/all_features/all_features" errors="2" failures="11" tests="11">
-    <testcase classname="examples/all_features/logging.cpp" name="logging the counter of a loop" status="run">
+  <testsuite name="all_features" errors="2" failures="11" tests="11">
+    <testcase classname="logging.cpp" name="logging the counter of a loop" status="run">
       <failure message="1 != 1" type="CHECK">
-examples/all_features/logging.cpp(0):
+logging.cpp(0):
 CHECK( vec[i] != (1 &lt;&lt; i) ) is NOT correct!
   values: CHECK( 1 != 1 )
   logged: current iteration of loop:
@@ -11,7 +11,7 @@ CHECK( vec[i] != (1 &lt;&lt; i) ) is NOT correct!
 
       </failure>
       <failure message="2 != 2" type="CHECK">
-examples/all_features/logging.cpp(0):
+logging.cpp(0):
 CHECK( vec[i] != (1 &lt;&lt; i) ) is NOT correct!
   values: CHECK( 2 != 2 )
   logged: current iteration of loop:
@@ -19,7 +19,7 @@ CHECK( vec[i] != (1 &lt;&lt; i) ) is NOT correct!
 
       </failure>
       <failure message="4 != 4" type="CHECK">
-examples/all_features/logging.cpp(0):
+logging.cpp(0):
 CHECK( vec[i] != (1 &lt;&lt; i) ) is NOT correct!
   values: CHECK( 4 != 4 )
   logged: current iteration of loop:
@@ -27,7 +27,7 @@ CHECK( vec[i] != (1 &lt;&lt; i) ) is NOT correct!
 
       </failure>
       <failure message="8 != 8" type="CHECK">
-examples/all_features/logging.cpp(0):
+logging.cpp(0):
 CHECK( vec[i] != (1 &lt;&lt; i) ) is NOT correct!
   values: CHECK( 8 != 8 )
   logged: current iteration of loop:
@@ -35,7 +35,7 @@ CHECK( vec[i] != (1 &lt;&lt; i) ) is NOT correct!
 
       </failure>
       <failure message="16 != 16" type="CHECK">
-examples/all_features/logging.cpp(0):
+logging.cpp(0):
 CHECK( vec[i] != (1 &lt;&lt; i) ) is NOT correct!
   values: CHECK( 16 != 16 )
   logged: current iteration of loop:
@@ -43,16 +43,16 @@ CHECK( vec[i] != (1 &lt;&lt; i) ) is NOT correct!
 
       </failure>
     </testcase>
-    <testcase classname="examples/all_features/logging.cpp" name="a test case that will end from an exception" status="run">
+    <testcase classname="logging.cpp" name="a test case that will end from an exception" status="run">
       <failure message="forcing the many captures to be stringified" type="FAIL_CHECK">
-examples/all_features/logging.cpp(0):
+logging.cpp(0):
 forcing the many captures to be stringified
   logged: lots of captures: 42 42 42;
           old way of capturing - using the streaming operator: 42 42
 
       </failure>
       <failure message="42 == 666" type="CHECK">
-examples/all_features/logging.cpp(0):
+logging.cpp(0):
 CHECK( some_var == 666 ) is NOT correct!
   values: CHECK( 42 == 666 )
   logged: someTests() returned: 42
@@ -65,33 +65,33 @@ CHECK( some_var == 666 ) is NOT correct!
         0
       </error>
     </testcase>
-    <testcase classname="examples/all_features/logging.cpp" name="a test case that will end from an exception and should print the unprinted context" status="run">
+    <testcase classname="logging.cpp" name="a test case that will end from an exception and should print the unprinted context" status="run">
       <error message="exception">
         0
       </error>
     </testcase>
-    <testcase classname="examples/all_features/logging.cpp" name="third party asserts can report failures to doctest" status="run">
+    <testcase classname="logging.cpp" name="third party asserts can report failures to doctest" status="run">
       <failure message="MY_ASSERT(false)" type="FAIL_CHECK">
-examples/all_features/logging.cpp(0):
+logging.cpp(0):
 MY_ASSERT(false)
 
       </failure>
       <failure message="MY_ASSERT_FATAL(false)" type="FAIL">
-examples/all_features/logging.cpp(0):
+logging.cpp(0):
 MY_ASSERT_FATAL(false)
 
       </failure>
     </testcase>
-    <testcase classname="examples/all_features/logging.cpp" name="explicit failures 1" status="run">
+    <testcase classname="logging.cpp" name="explicit failures 1" status="run">
       <failure message="this should not end the test case, but mark it as failing" type="FAIL_CHECK">
-examples/all_features/logging.cpp(0):
+logging.cpp(0):
 this should not end the test case, but mark it as failing
 
       </failure>
     </testcase>
-    <testcase classname="examples/all_features/logging.cpp" name="explicit failures 2" status="run">
+    <testcase classname="logging.cpp" name="explicit failures 2" status="run">
       <failure message="fail the test case and also end it" type="FAIL">
-examples/all_features/logging.cpp(0):
+logging.cpp(0):
 fail the test case and also end it
 
       </failure>

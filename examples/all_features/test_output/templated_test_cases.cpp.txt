@@ -1,37 +1,37 @@
 [doctest] run with "--help" for options
 ===============================================================================
-examples/all_features/templated_test_cases.cpp(0):
+templated_test_cases.cpp(0):
 TEST CASE:  vector stuff<std::vector<int>>
 
-examples/all_features/templated_test_cases.cpp(0): ERROR: CHECK( vec.size() == 20 ) is NOT correct!
+templated_test_cases.cpp(0): ERROR: CHECK( vec.size() == 20 ) is NOT correct!
   values: CHECK( 10 == 20 )
 
 ===============================================================================
-examples/all_features/templated_test_cases.cpp(0):
+templated_test_cases.cpp(0):
 TEST CASE:  multiple types<Custom name test>
 
-examples/all_features/templated_test_cases.cpp(0): ERROR: CHECK( t2 != T2() ) is NOT correct!
+templated_test_cases.cpp(0): ERROR: CHECK( t2 != T2() ) is NOT correct!
   values: CHECK( 0 != 0 )
 
 ===============================================================================
-examples/all_features/templated_test_cases.cpp(0):
+templated_test_cases.cpp(0):
 TEST CASE:  multiple types<Other custom name>
 
-examples/all_features/templated_test_cases.cpp(0): ERROR: CHECK( t2 != T2() ) is NOT correct!
+templated_test_cases.cpp(0): ERROR: CHECK( t2 != T2() ) is NOT correct!
   values: CHECK( 0 != 0 )
 
 ===============================================================================
-examples/all_features/templated_test_cases.cpp(0):
+templated_test_cases.cpp(0):
 TEST CASE:  multiple types<TypePair<bool, int>>
 
-examples/all_features/templated_test_cases.cpp(0): ERROR: CHECK( t2 != T2() ) is NOT correct!
+templated_test_cases.cpp(0): ERROR: CHECK( t2 != T2() ) is NOT correct!
   values: CHECK( 0 != 0 )
 
 ===============================================================================
-examples/all_features/templated_test_cases.cpp(0):
+templated_test_cases.cpp(0):
 TEST CASE:  bad stringification of type pair<int_pair>
 
-examples/all_features/templated_test_cases.cpp(0): ERROR: CHECK( t2 != T2() ) is NOT correct!
+templated_test_cases.cpp(0): ERROR: CHECK( t2 != T2() ) is NOT correct!
   values: CHECK( 0 != 0 )
 
 ===============================================================================

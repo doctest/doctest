@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<doctest binary="examples/all_features/all_features">
+<doctest binary="all_features">
   <Options order_by="file" rand_seed="324" first="0" last="4294967295" abort_after="0" subcase_filter_levels="2147483647" case_sensitive="false" no_throw="false" no_skip="false"/>
   <TestSuite>
-    <TestCase name="logging the counter of a loop" filename="examples/all_features/logging.cpp" line="0">
-      <Expression success="false" type="CHECK" filename="examples/all_features/logging.cpp" line="0">
+    <TestCase name="logging the counter of a loop" filename="logging.cpp" line="0">
+      <Expression success="false" type="CHECK" filename="logging.cpp" line="0">
         <Original>
           vec[i] != (1 &lt;&lt; i)
         </Original>
@@ -17,7 +17,7 @@
           i := 0
         </Info>
       </Expression>
-      <Expression success="false" type="CHECK" filename="examples/all_features/logging.cpp" line="0">
+      <Expression success="false" type="CHECK" filename="logging.cpp" line="0">
         <Original>
           vec[i] != (1 &lt;&lt; i)
         </Original>
@@ -31,7 +31,7 @@
           i := 1
         </Info>
       </Expression>
-      <Expression success="false" type="CHECK" filename="examples/all_features/logging.cpp" line="0">
+      <Expression success="false" type="CHECK" filename="logging.cpp" line="0">
         <Original>
           vec[i] != (1 &lt;&lt; i)
         </Original>
@@ -45,7 +45,7 @@
           i := 2
         </Info>
       </Expression>
-      <Expression success="false" type="CHECK" filename="examples/all_features/logging.cpp" line="0">
+      <Expression success="false" type="CHECK" filename="logging.cpp" line="0">
         <Original>
           vec[i] != (1 &lt;&lt; i)
         </Original>
@@ -59,7 +59,7 @@
           i := 3
         </Info>
       </Expression>
-      <Expression success="false" type="CHECK" filename="examples/all_features/logging.cpp" line="0">
+      <Expression success="false" type="CHECK" filename="logging.cpp" line="0">
         <Original>
           vec[i] != (1 &lt;&lt; i)
         </Original>
@@ -75,8 +75,8 @@
       </Expression>
       <OverallResultsAsserts successes="0" failures="5" test_case_success="false"/>
     </TestCase>
-    <TestCase name="a test case that will end from an exception" filename="examples/all_features/logging.cpp" line="0">
-      <Message type="ERROR" filename="examples/all_features/logging.cpp" line="0">
+    <TestCase name="a test case that will end from an exception" filename="logging.cpp" line="0">
+      <Message type="ERROR" filename="logging.cpp" line="0">
         <Text>
           forcing the many captures to be stringified
         </Text>
@@ -87,7 +87,7 @@
           old way of capturing - using the streaming operator: 42 42
         </Info>
       </Message>
-      <Expression success="false" type="CHECK" filename="examples/all_features/logging.cpp" line="0">
+      <Expression success="false" type="CHECK" filename="logging.cpp" line="0">
         <Original>
           some_var == 666
         </Original>
@@ -112,40 +112,40 @@
       </Exception>
       <OverallResultsAsserts successes="0" failures="2" test_case_success="false"/>
     </TestCase>
-    <TestCase name="a test case that will end from an exception and should print the unprinted context" filename="examples/all_features/logging.cpp" line="0">
+    <TestCase name="a test case that will end from an exception and should print the unprinted context" filename="logging.cpp" line="0">
       <Exception crash="false">
         0
       </Exception>
       <OverallResultsAsserts successes="0" failures="0" test_case_success="false"/>
     </TestCase>
-    <TestCase name="third party asserts can report failures to doctest" filename="examples/all_features/logging.cpp" line="0">
-      <Message type="ERROR" filename="examples/all_features/logging.cpp" line="0">
+    <TestCase name="third party asserts can report failures to doctest" filename="logging.cpp" line="0">
+      <Message type="ERROR" filename="logging.cpp" line="0">
         <Text>
           MY_ASSERT(false)
         </Text>
       </Message>
-      <Message type="FATAL ERROR" filename="examples/all_features/logging.cpp" line="0">
+      <Message type="FATAL ERROR" filename="logging.cpp" line="0">
         <Text>
           MY_ASSERT_FATAL(false)
         </Text>
       </Message>
       <OverallResultsAsserts successes="0" failures="2" test_case_success="false"/>
     </TestCase>
-    <TestCase name="explicit failures 1" filename="examples/all_features/logging.cpp" line="0">
-      <Message type="ERROR" filename="examples/all_features/logging.cpp" line="0">
+    <TestCase name="explicit failures 1" filename="logging.cpp" line="0">
+      <Message type="ERROR" filename="logging.cpp" line="0">
         <Text>
           this should not end the test case, but mark it as failing
         </Text>
       </Message>
-      <Message type="WARNING" filename="examples/all_features/logging.cpp" line="0">
+      <Message type="WARNING" filename="logging.cpp" line="0">
         <Text>
           reached!
         </Text>
       </Message>
       <OverallResultsAsserts successes="0" failures="1" test_case_success="false"/>
     </TestCase>
-    <TestCase name="explicit failures 2" filename="examples/all_features/logging.cpp" line="0">
-      <Message type="FATAL ERROR" filename="examples/all_features/logging.cpp" line="0">
+    <TestCase name="explicit failures 2" filename="logging.cpp" line="0">
+      <Message type="FATAL ERROR" filename="logging.cpp" line="0">
         <Text>
           fail the test case and also end it
         </Text>

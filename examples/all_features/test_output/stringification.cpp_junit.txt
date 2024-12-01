@@ -1,80 +1,80 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <testsuites>
-  <testsuite name="examples/all_features/all_features" errors="2" failures="13" tests="27">
-    <testcase classname="examples/all_features/double_stringification.cpp" name="toString std::string ret type" status="run"/>
-    <testcase classname="examples/all_features/stringification.cpp" name="operator&lt;&lt;" status="run"/>
-    <testcase classname="examples/all_features/stringification.cpp" name="no headers" status="run">
+  <testsuite name="all_features" errors="2" failures="13" tests="27">
+    <testcase classname="double_stringification.cpp" name="toString std::string ret type" status="run"/>
+    <testcase classname="stringification.cpp" name="operator&lt;&lt;" status="run"/>
+    <testcase classname="stringification.cpp" name="no headers" status="run">
       <failure message="1as == nullptr" type="CHECK">
-examples/all_features/stringification.cpp(0):
+stringification.cpp(0):
 CHECK( chs == nullptr ) is NOT correct!
   values: CHECK( 1as == nullptr )
 
       </failure>
       <failure message="1as == nullptr" type="CHECK">
-examples/all_features/stringification.cpp(0):
+stringification.cpp(0):
 CHECK( "1as" == nullptr ) is NOT correct!
   values: CHECK( 1as == nullptr )
 
       </failure>
       <failure message="[0, 1, 1, 2, 3, 5, 8, 13] == nullptr" type="CHECK">
-examples/all_features/stringification.cpp(0):
+stringification.cpp(0):
 CHECK( ints == nullptr ) is NOT correct!
   values: CHECK( [0, 1, 1, 2, 3, 5, 8, 13] == nullptr )
 
       </failure>
       <failure message="nullptr != nullptr" type="CHECK">
-examples/all_features/stringification.cpp(0):
+stringification.cpp(0):
 CHECK( cnptr != nullptr ) is NOT correct!
   values: CHECK( nullptr != nullptr )
 
       </failure>
       <failure message="0 == 100" type="CHECK">
-examples/all_features/stringification.cpp(0):
+stringification.cpp(0):
 CHECK( A == C ) is NOT correct!
   values: CHECK( 0 == 100 )
 
       </failure>
     </testcase>
-    <testcase classname="examples/all_features/stringification.cpp" name="all asserts should fail and show how the objects get stringified" status="run">
+    <testcase classname="stringification.cpp" name="all asserts should fail and show how the objects get stringified" status="run">
       <failure message="Foo{} == Foo{}" type="CHECK">
-examples/all_features/stringification.cpp(0):
+stringification.cpp(0):
 CHECK( f1 == f2 ) is NOT correct!
   values: CHECK( Foo{} == Foo{} )
 
       </failure>
       <failure message="omg == tralala" type="CHECK">
-examples/all_features/stringification.cpp(0):
+stringification.cpp(0):
 CHECK( dummy == "tralala" ) is NOT correct!
   values: CHECK( omg == tralala )
 
       </failure>
       <failure message="tralala == omg" type="CHECK">
-examples/all_features/stringification.cpp(0):
+stringification.cpp(0):
 CHECK( "tralala" == dummy ) is NOT correct!
   values: CHECK( tralala == omg )
 
       </failure>
       <failure message="[1, 2, 3] == [1, 2, 4]" type="CHECK">
-examples/all_features/stringification.cpp(0):
+stringification.cpp(0):
 CHECK( vec1 == vec2 ) is NOT correct!
   values: CHECK( [1, 2, 3] == [1, 2, 4] )
 
       </failure>
       <failure message="[1, 42, 3] == [1, 2, 666]" type="CHECK">
-examples/all_features/stringification.cpp(0):
+stringification.cpp(0):
 CHECK( lst_1 == lst_2 ) is NOT correct!
   values: CHECK( [1, 42, 3] == [1, 2, 666] )
 
       </failure>
       <failure message="MyOtherType: 42 == MyOtherType: 666" type="CHECK">
-examples/all_features/stringification.cpp(0):
+stringification.cpp(0):
 CHECK( s1 == s2 ) is NOT correct!
   values: CHECK( MyOtherType: 42 == MyOtherType: 666 )
   logged: s1=MyOtherType: 42 s2=MyOtherType: 666
 
       </failure>
       <failure message="MyOtherType: 42 == MyOtherType: 666" type="CHECK">
-examples/all_features/stringification.cpp(0):
+stringification.cpp(0):
 CHECK( s1 == s2 ) is NOT correct!
   values: CHECK( MyOtherType: 42 == MyOtherType: 666 )
   logged: s1=MyOtherType: 42 s2=MyOtherType: 666
@@ -82,7 +82,7 @@ CHECK( s1 == s2 ) is NOT correct!
 
       </failure>
       <failure message="a == Contains( aaa )" type="CHECK">
-examples/all_features/stringification.cpp(0):
+stringification.cpp(0):
 CHECK( "a" == doctest::Contains("aaa") ) is NOT correct!
   values: CHECK( a == Contains( aaa ) )
 
@@ -91,13 +91,13 @@ CHECK( "a" == doctest::Contains("aaa") ) is NOT correct!
         MyTypeInherited&lt;int>(5, 4)
       </error>
     </testcase>
-    <testcase classname="examples/all_features/stringification.cpp" name="a test case that registers an exception translator for int and then throws one" status="run">
+    <testcase classname="stringification.cpp" name="a test case that registers an exception translator for int and then throws one" status="run">
       <error message="exception">
         5
       </error>
     </testcase>
-    <testcase classname="examples/all_features/stringification.cpp" name="pointer comparisons" status="run"/>
-    <testcase classname="examples/all_features/stringification.cpp" name="enum with operator&lt;&lt;" status="run"/>
+    <testcase classname="stringification.cpp" name="pointer comparisons" status="run"/>
+    <testcase classname="stringification.cpp" name="enum with operator&lt;&lt;" status="run"/>
   </testsuite>
 </testsuites>
 Program code.

@@ -1,22 +1,22 @@
 [doctest] run with "--help" for options
 ===============================================================================
-examples/all_features/header.h(0):
+header.h(0):
 TEST SUITE: some TS
 TEST CASE:  in TS
 
-examples/all_features/header.h(0): FATAL ERROR: 
+header.h(0): FATAL ERROR: 
 
 ===============================================================================
-examples/all_features/header.h(0):
+header.h(0):
 TEST CASE:  template 1<char>
 
-examples/all_features/header.h(0): FATAL ERROR: 
+header.h(0): FATAL ERROR: 
 
 ===============================================================================
-examples/all_features/header.h(0):
+header.h(0):
 TEST CASE:  template 2<doctest::String>
 
-examples/all_features/header.h(0): FATAL ERROR: 
+header.h(0): FATAL ERROR: 
 
 ===============================================================================
 [doctest] test cases: 4 | 1 passed | 3 failed |

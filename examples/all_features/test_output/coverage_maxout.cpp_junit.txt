@@ -1,40 +1,40 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <testsuites>
-  <testsuite name="examples/all_features/all_features" errors="3" failures="3" tests="31">
-    <testcase classname="examples/all_features/coverage_maxout.cpp" name="exercising tricky code paths of doctest" status="run">
+  <testsuite name="all_features" errors="3" failures="3" tests="31">
+    <testcase classname="coverage_maxout.cpp" name="exercising tricky code paths of doctest" status="run">
       <failure message="0 != 0" type="CHECK">
-examples/all_features/coverage_maxout.cpp(0):
+coverage_maxout.cpp(0):
 CHECK( str.compare(const_str, true) != 0 ) is NOT correct!
   values: CHECK( 0 != 0 )
   logged: should fail
 
       </failure>
       <failure message="0 != 0" type="CHECK">
-examples/all_features/coverage_maxout.cpp(0):
+coverage_maxout.cpp(0):
 CHECK( str.compare("omgomgomg", false) != 0 ) is NOT correct!
   values: CHECK( 0 != 0 )
   logged: should fail
 
       </failure>
       <failure message="true" type="CHECK_FALSE">
-examples/all_features/coverage_maxout.cpp(0):
+coverage_maxout.cpp(0):
 CHECK_FALSE( isThereAnything ) is NOT correct!
   values: CHECK_FALSE( true )
   logged: should fail
 
       </failure>
     </testcase>
-    <testcase classname="examples/all_features/coverage_maxout.cpp" name="will end from a std::string exception" status="run">
+    <testcase classname="coverage_maxout.cpp" name="will end from a std::string exception" status="run">
       <error message="exception">
         std::string!
       </error>
     </testcase>
-    <testcase classname="examples/all_features/coverage_maxout.cpp" name="will end from a const char* exception" status="run">
+    <testcase classname="coverage_maxout.cpp" name="will end from a const char* exception" status="run">
       <error message="exception">
         const char*!
       </error>
     </testcase>
-    <testcase classname="examples/all_features/coverage_maxout.cpp" name="will end from an unknown exception" status="run">
+    <testcase classname="coverage_maxout.cpp" name="will end from an unknown exception" status="run">
       <error message="exception">
         unknown exception
       </error>

@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<doctest binary="examples/all_features/all_features">
+<doctest binary="all_features">
   <Options order_by="file" rand_seed="324" first="0" last="4294967295" abort_after="0" subcase_filter_levels="2147483647" case_sensitive="false" no_throw="false" no_skip="false"/>
   <TestSuite>
-    <TestCase name="signed integers stuff&lt;signed char>" filename="examples/all_features/templated_test_cases.cpp" line="0">
+    <TestCase name="signed integers stuff&lt;signed char>" filename="templated_test_cases.cpp" line="0">
       <OverallResultsAsserts successes="1" failures="0" test_case_success="true"/>
     </TestCase>
-    <TestCase name="signed integers stuff&lt;SHORT!!!>" filename="examples/all_features/templated_test_cases.cpp" line="0">
+    <TestCase name="signed integers stuff&lt;SHORT!!!>" filename="templated_test_cases.cpp" line="0">
       <OverallResultsAsserts successes="1" failures="0" test_case_success="true"/>
     </TestCase>
-    <TestCase name="signed integers stuff&lt;int>" filename="examples/all_features/templated_test_cases.cpp" line="0">
+    <TestCase name="signed integers stuff&lt;int>" filename="templated_test_cases.cpp" line="0">
       <OverallResultsAsserts successes="1" failures="0" test_case_success="true"/>
     </TestCase>
-    <TestCase name="vector stuff&lt;std::vector&lt;int>>" filename="examples/all_features/templated_test_cases.cpp" line="0">
-      <Expression success="false" type="CHECK" filename="examples/all_features/templated_test_cases.cpp" line="0">
+    <TestCase name="vector stuff&lt;std::vector&lt;int>>" filename="templated_test_cases.cpp" line="0">
+      <Expression success="false" type="CHECK" filename="templated_test_cases.cpp" line="0">
         <Original>
           vec.size() == 20
         </Original>
@@ -22,29 +22,29 @@
       </Expression>
       <OverallResultsAsserts successes="0" failures="1" test_case_success="false"/>
     </TestCase>
-    <TestCase name="default construction&lt;signed char>" filename="examples/all_features/templated_test_cases.cpp" line="0">
+    <TestCase name="default construction&lt;signed char>" filename="templated_test_cases.cpp" line="0">
       <OverallResultsAsserts successes="1" failures="0" test_case_success="true"/>
     </TestCase>
-    <TestCase name="default construction&lt;SHORT!!!>" filename="examples/all_features/templated_test_cases.cpp" line="0">
+    <TestCase name="default construction&lt;SHORT!!!>" filename="templated_test_cases.cpp" line="0">
       <OverallResultsAsserts successes="1" failures="0" test_case_success="true"/>
     </TestCase>
-    <TestCase name="default construction&lt;int>" filename="examples/all_features/templated_test_cases.cpp" line="0">
+    <TestCase name="default construction&lt;int>" filename="templated_test_cases.cpp" line="0">
       <OverallResultsAsserts successes="1" failures="0" test_case_success="true"/>
     </TestCase>
-    <TestCase name="default construction&lt;double>" filename="examples/all_features/templated_test_cases.cpp" line="0">
+    <TestCase name="default construction&lt;double>" filename="templated_test_cases.cpp" line="0">
       <OverallResultsAsserts successes="1" failures="0" test_case_success="true"/>
     </TestCase>
-    <TestCase name="default construction&lt;double>" filename="examples/all_features/templated_test_cases.cpp" line="0">
+    <TestCase name="default construction&lt;double>" filename="templated_test_cases.cpp" line="0">
       <OverallResultsAsserts successes="1" failures="0" test_case_success="true"/>
     </TestCase>
-    <TestCase name="default construction&lt;unsigned char>" filename="examples/all_features/templated_test_cases.cpp" line="0">
+    <TestCase name="default construction&lt;unsigned char>" filename="templated_test_cases.cpp" line="0">
       <OverallResultsAsserts successes="1" failures="0" test_case_success="true"/>
     </TestCase>
-    <TestCase name="default construction&lt;char>" filename="examples/all_features/templated_test_cases.cpp" line="0">
+    <TestCase name="default construction&lt;char>" filename="templated_test_cases.cpp" line="0">
       <OverallResultsAsserts successes="1" failures="0" test_case_success="true"/>
     </TestCase>
-    <TestCase name="multiple types&lt;Custom name test>" filename="examples/all_features/templated_test_cases.cpp" line="0">
-      <Expression success="false" type="CHECK" filename="examples/all_features/templated_test_cases.cpp" line="0">
+    <TestCase name="multiple types&lt;Custom name test>" filename="templated_test_cases.cpp" line="0">
+      <Expression success="false" type="CHECK" filename="templated_test_cases.cpp" line="0">
         <Original>
           t2 != T2()
         </Original>
@@ -54,8 +54,8 @@
       </Expression>
       <OverallResultsAsserts successes="1" failures="1" test_case_success="false"/>
     </TestCase>
-    <TestCase name="multiple types&lt;Other custom name>" filename="examples/all_features/templated_test_cases.cpp" line="0">
-      <Expression success="false" type="CHECK" filename="examples/all_features/templated_test_cases.cpp" line="0">
+    <TestCase name="multiple types&lt;Other custom name>" filename="templated_test_cases.cpp" line="0">
+      <Expression success="false" type="CHECK" filename="templated_test_cases.cpp" line="0">
         <Original>
           t2 != T2()
         </Original>
@@ -65,8 +65,8 @@
       </Expression>
       <OverallResultsAsserts successes="1" failures="1" test_case_success="false"/>
     </TestCase>
-    <TestCase name="multiple types&lt;TypePair&lt;bool, int>>" filename="examples/all_features/templated_test_cases.cpp" line="0">
-      <Expression success="false" type="CHECK" filename="examples/all_features/templated_test_cases.cpp" line="0">
+    <TestCase name="multiple types&lt;TypePair&lt;bool, int>>" filename="templated_test_cases.cpp" line="0">
+      <Expression success="false" type="CHECK" filename="templated_test_cases.cpp" line="0">
         <Original>
           t2 != T2()
         </Original>
@@ -76,8 +76,8 @@
       </Expression>
       <OverallResultsAsserts successes="1" failures="1" test_case_success="false"/>
     </TestCase>
-    <TestCase name="bad stringification of type pair&lt;int_pair>" filename="examples/all_features/templated_test_cases.cpp" line="0">
-      <Expression success="false" type="CHECK" filename="examples/all_features/templated_test_cases.cpp" line="0">
+    <TestCase name="bad stringification of type pair&lt;int_pair>" filename="templated_test_cases.cpp" line="0">
+      <Expression success="false" type="CHECK" filename="templated_test_cases.cpp" line="0">
         <Original>
           t2 != T2()
         </Original>

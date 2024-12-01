@@ -1,78 +1,78 @@
 [doctest] run with "--help" for options
 ===============================================================================
-examples/all_features/assertion_macros.cpp(0):
+assertion_macros.cpp(0):
 TEST CASE:  all binary assertions
 
-examples/all_features/assertion_macros.cpp(0): SUCCESS: WARN_EQ( 1, 1 ) is correct!
+assertion_macros.cpp(0): SUCCESS: WARN_EQ( 1, 1 ) is correct!
   values: WARN_EQ( 1, 1 )
 
-examples/all_features/assertion_macros.cpp(0): SUCCESS: CHECK_EQ( 1, 1 ) is correct!
+assertion_macros.cpp(0): SUCCESS: CHECK_EQ( 1, 1 ) is correct!
   values: CHECK_EQ( 1, 1 )
 
-examples/all_features/assertion_macros.cpp(0): SUCCESS: REQUIRE_EQ( 1, 1 ) is correct!
+assertion_macros.cpp(0): SUCCESS: REQUIRE_EQ( 1, 1 ) is correct!
   values: REQUIRE_EQ( 1, 1 )
 
-examples/all_features/assertion_macros.cpp(0): SUCCESS: WARN_NE( 1, 0 ) is correct!
+assertion_macros.cpp(0): SUCCESS: WARN_NE( 1, 0 ) is correct!
   values: WARN_NE( 1, 0 )
 
-examples/all_features/assertion_macros.cpp(0): SUCCESS: CHECK_NE( 1, 0 ) is correct!
+assertion_macros.cpp(0): SUCCESS: CHECK_NE( 1, 0 ) is correct!
   values: CHECK_NE( 1, 0 )
 
-examples/all_features/assertion_macros.cpp(0): SUCCESS: REQUIRE_NE( 1, 0 ) is correct!
+assertion_macros.cpp(0): SUCCESS: REQUIRE_NE( 1, 0 ) is correct!
   values: REQUIRE_NE( 1, 0 )
 
-examples/all_features/assertion_macros.cpp(0): SUCCESS: WARN_GT( 1, 0 ) is correct!
+assertion_macros.cpp(0): SUCCESS: WARN_GT( 1, 0 ) is correct!
   values: WARN_GT( 1, 0 )
 
-examples/all_features/assertion_macros.cpp(0): SUCCESS: CHECK_GT( 1, 0 ) is correct!
+assertion_macros.cpp(0): SUCCESS: CHECK_GT( 1, 0 ) is correct!
   values: CHECK_GT( 1, 0 )
 
-examples/all_features/assertion_macros.cpp(0): SUCCESS: REQUIRE_GT( 1, 0 ) is correct!
+assertion_macros.cpp(0): SUCCESS: REQUIRE_GT( 1, 0 ) is correct!
   values: REQUIRE_GT( 1, 0 )
 
-examples/all_features/assertion_macros.cpp(0): SUCCESS: WARN_LT( 0, 1 ) is correct!
+assertion_macros.cpp(0): SUCCESS: WARN_LT( 0, 1 ) is correct!
   values: WARN_LT( 0, 1 )
 
-examples/all_features/assertion_macros.cpp(0): SUCCESS: CHECK_LT( 0, 1 ) is correct!
+assertion_macros.cpp(0): SUCCESS: CHECK_LT( 0, 1 ) is correct!
   values: CHECK_LT( 0, 1 )
 
-examples/all_features/assertion_macros.cpp(0): SUCCESS: REQUIRE_LT( 0, 1 ) is correct!
+assertion_macros.cpp(0): SUCCESS: REQUIRE_LT( 0, 1 ) is correct!
   values: REQUIRE_LT( 0, 1 )
 
-examples/all_features/assertion_macros.cpp(0): SUCCESS: WARN_GE( 1, 1 ) is correct!
+assertion_macros.cpp(0): SUCCESS: WARN_GE( 1, 1 ) is correct!
   values: WARN_GE( 1, 1 )
 
-examples/all_features/assertion_macros.cpp(0): SUCCESS: CHECK_GE( 1, 1 ) is correct!
+assertion_macros.cpp(0): SUCCESS: CHECK_GE( 1, 1 ) is correct!
   values: CHECK_GE( 1, 1 )
 
-examples/all_features/assertion_macros.cpp(0): SUCCESS: REQUIRE_GE( 1, 1 ) is correct!
+assertion_macros.cpp(0): SUCCESS: REQUIRE_GE( 1, 1 ) is correct!
   values: REQUIRE_GE( 1, 1 )
 
-examples/all_features/assertion_macros.cpp(0): SUCCESS: WARN_LE( 1, 1 ) is correct!
+assertion_macros.cpp(0): SUCCESS: WARN_LE( 1, 1 ) is correct!
   values: WARN_LE( 1, 1 )
 
-examples/all_features/assertion_macros.cpp(0): SUCCESS: CHECK_LE( 1, 1 ) is correct!
+assertion_macros.cpp(0): SUCCESS: CHECK_LE( 1, 1 ) is correct!
   values: CHECK_LE( 1, 1 )
 
-examples/all_features/assertion_macros.cpp(0): SUCCESS: REQUIRE_LE( 1, 1 ) is correct!
+assertion_macros.cpp(0): SUCCESS: REQUIRE_LE( 1, 1 ) is correct!
   values: REQUIRE_LE( 1, 1 )
 
-examples/all_features/assertion_macros.cpp(0): SUCCESS: WARN_UNARY( 1 ) is correct!
+assertion_macros.cpp(0): SUCCESS: WARN_UNARY( 1 ) is correct!
   values: WARN_UNARY( 1 )
 
-examples/all_features/assertion_macros.cpp(0): SUCCESS: CHECK_UNARY( 1 ) is correct!
+assertion_macros.cpp(0): SUCCESS: CHECK_UNARY( 1 ) is correct!
   values: CHECK_UNARY( 1 )
 
-examples/all_features/assertion_macros.cpp(0): SUCCESS: REQUIRE_UNARY( 1 ) is correct!
+assertion_macros.cpp(0): SUCCESS: REQUIRE_UNARY( 1 ) is correct!
   values: REQUIRE_UNARY( 1 )
 
-examples/all_features/assertion_macros.cpp(0): SUCCESS: WARN_UNARY_FALSE( 0 ) is correct!
+assertion_macros.cpp(0): SUCCESS: WARN_UNARY_FALSE( 0 ) is correct!
   values: WARN_UNARY_FALSE( 0 )
 
-examples/all_features/assertion_macros.cpp(0): SUCCESS: CHECK_UNARY_FALSE( 0 ) is correct!
+assertion_macros.cpp(0): SUCCESS: CHECK_UNARY_FALSE( 0 ) is correct!
   values: CHECK_UNARY_FALSE( 0 )
 
-examples/all_features/assertion_macros.cpp(0): SUCCESS: REQUIRE_UNARY_FALSE( 0 ) is correct!
+assertion_macros.cpp(0): SUCCESS: REQUIRE_UNARY_FALSE( 0 ) is correct!
   values: REQUIRE_UNARY_FALSE( 0 )
 
 ===============================================================================
