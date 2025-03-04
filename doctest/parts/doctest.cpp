@@ -927,6 +927,46 @@ String toString(IsNaN<float> in) { return toString<float>(in); }
 String toString(IsNaN<double> in) { return toString<double>(in); }
 String toString(IsNaN<double long> in) { return toString<double long>(in); }
 
+    template<typename T>
+    void check_vector_eq(const std::vector<T>& a, const std::vector<T>& b) {
+        REQUIRE_MESSAGE(a.size() == b.size(), 
+            "Vector size mismatch: " << a.size() << " != " << b.size());
+        
+        for (size_t i = 0; i < a.size(); ++i) {
+            CAPTURE(i);
+            INFO("Comparing vectors at index " << i);
+            const T& a_val = a[i];
+            const T& b_val = b[i];
+            CHECK_MESSAGE(a_val == b_val,
+                "Vector elements differ at index " << i << 
+                "\n   Left:  " << a_val <<
+                "\n   Right: " << b_val);
+        }
+    }
+
+    // Specialization for floating point types
+    template<>
+    void check_vector_eq<double>(const std::vector<double>& a, const std::vector<double>& b) {
+        REQUIRE_MESSAGE(a.size() == b.size(), 
+            "Vector size mismatch: " << a.size() << " != " << b.size());
+        
+        const double tolerance = 1e-9;
+        for (size_t i = 0; i < a.size(); ++i) {
+            CAPTURE(i);
+            INFO("Comparing vectors at index " << i);
+            const double& a_val = a[i];
+            const double& b_val = b[i];
+            CHECK_MESSAGE(std::abs(a_val - b_val) < tolerance,
+                "Vector elements differ at index " << i << 
+                "\n   Left:  " << a_val <<
+                "\n   Right: " << b_val);
+        }
+    }
+
+    // Explicit instantiations for common types
+    template void check_vector_eq<int>(const std::vector<int>&, const std::vector<int>&);
+    template void check_vector_eq<std::string>(const std::vector<std::string>&, const std::vector<std::string>&);
+
 } // namespace doctest
 
 #ifdef DOCTEST_CONFIG_DISABLE

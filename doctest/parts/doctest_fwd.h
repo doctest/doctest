@@ -1937,6 +1937,9 @@ int registerExceptionTranslator(String (*translateFunction)(T)) {
     return 0;
 }
 
+template<typename T>
+void check_vector_eq(const std::vector<T>& a, const std::vector<T>& b);
+
 } // namespace doctest
 
 // in a separate namespace outside of doctest because the DOCTEST_TEST_SUITE macro
