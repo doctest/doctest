@@ -1,5 +1,9 @@
 # Change Log
 
+## [v2.4.12](https://github.com/doctest/doctest/tree/v2.4.12) (2025-04-28)
+
+[Full Changelog](https://github.com/doctest/doctest/compare/v2.4.11...v2.4.12)
+
 ## [v2.4.11](https://github.com/doctest/doctest/tree/v2.4.11) (2023-03-15)
 
 [Full Changelog](https://github.com/doctest/doctest/compare/v2.4.10...v2.4.11)
