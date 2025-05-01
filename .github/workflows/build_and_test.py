@@ -30,7 +30,7 @@ def log_and_call(command):
     return os.system(command)
 
 
-def run_test(build_type, test_mode, flags, test = True):
+def run_test(build_type, test_mode, flags, test=True):
     print("Running: " + "; ".join([build_type, test_mode, flags, str(test)]))
     if log_and_call("cmake -E remove_directory build"):
         exit(1)
@@ -39,8 +39,8 @@ def run_test(build_type, test_mode, flags, test = True):
         f"-B build "
         f"-D CMAKE_BUILD_TYPE={build_type} "
         f"-D DOCTEST_TEST_MODE={test_mode} "
-        + (flags and f'-D CMAKE_CXX_FLAGS="{flags}" ') +
-        f"-D CMAKE_CXX_COMPILER={used_cxx}"
+        + (flags and f'-D CMAKE_CXX_FLAGS="{flags}" ')
+        + f"-D CMAKE_CXX_COMPILER={used_cxx}"
     ):
         exit(2)
     if log_and_call("cmake --build build"):
@@ -58,7 +58,10 @@ if _os == "Windows":
     flags = ""
 elif _os == "Linux":
     if _compiler == "clang":
-        if version_tuple(_version) <= version_tuple("6.0"):
+        if version_tuple(_version) <= version_tuple("6.0") or (
+            version_tuple(_version) >= version_tuple("11")
+            and version_tuple(_version) < version_tuple("13")
+        ):
             flags = ""
     elif _compiler == "gcc":
         if version_tuple(_version) <= version_tuple("5.0"):
@@ -72,7 +75,9 @@ if _os == "Windows":
     tsan_flags = ""
 elif _os == "Linux":
     if _compiler == "clang":
-        if version_tuple(_version) <= version_tuple("3.9"):
+        if version_tuple(_version) <= version_tuple("3.9") or version_tuple(
+            _version
+        ) == version_tuple("11"):
             tsan_flags = ""
     elif _compiler == "gcc":
         if version_tuple(_version) <= version_tuple("6.0"):
@@ -92,7 +97,7 @@ for configuration in ["Debug", "Release"]:
             configuration,
             "COMPARE",
             "-fno-exceptions -D DOCTEST_CONFIG_NO_EXCEPTIONS_BUT_WITH_ALL_ASSERTS",
-            test = False,
+            test=False,
         )
         run_test(configuration, "COMPARE", "-fno-rtti")
     if _os == "Linux":
