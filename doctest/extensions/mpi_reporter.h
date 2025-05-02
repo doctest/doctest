@@ -1,10 +1,10 @@
 #ifndef DOCTEST_MPI_REPORTER_H
 #define DOCTEST_MPI_REPORTER_H
 
-// #include <doctest/doctest.h>
 #include <fstream>
+#include <streambuf>
 #include <string>
-#include "mpi.h"
+#include <mpi.h>
 
 
 #include <vector>
