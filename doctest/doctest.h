@@ -430,18 +430,25 @@ DOCTEST_MSVC_SUPPRESS_WARNING(4623) // default constructor was implicitly define
 #define DOCTEST_REF_WRAP(x) x
 #endif // DOCTEST_CONFIG_ASSERTION_PARAMETERS_BY_VALUE
 
-// not using __APPLE__ because... this is how Catch does it
-#ifdef __MAC_OS_X_VERSION_MIN_REQUIRED
-#define DOCTEST_PLATFORM_MAC
-#elif defined(__IPHONE_OS_VERSION_MIN_REQUIRED)
-#define DOCTEST_PLATFORM_IPHONE
-#elif defined(_WIN32)
-#define DOCTEST_PLATFORM_WINDOWS
+// Platform checks adapted from Catch2 v3
+#ifdef __APPLE__
+#include <TargetConditionals.h>
+#if (defined(TARGET_OS_MAC) && TARGET_OS_MAC == 1)
+#define DOCTEST_PLATFORM_MAC  // any Apple platform; also iOS, tvOS, watchOS...
+#endif
+
 #elif defined(__wasi__)
 #define DOCTEST_PLATFORM_WASI
-#else // DOCTEST_PLATFORM
+
+#elif defined(linux) || defined(__linux) || defined(__linux__)
 #define DOCTEST_PLATFORM_LINUX
-#endif // DOCTEST_PLATFORM
+
+#elif defined(WIN32) || defined(__WIN32__) || defined(_WIN32) || defined(_MSC_VER) || defined(__MINGW32__)
+#define DOCTEST_PLATFORM_WINDOWS
+#if defined( WINAPI_FAMILY ) && ( WINAPI_FAMILY == WINAPI_FAMILY_APP )
+#define DOCTEST_PLATFORM_WINDOWS_UWP
+#endif
+#endif
 
 namespace doctest { namespace detail {
     static DOCTEST_CONSTEXPR int consume(const int*, int) noexcept { return 0; }
@@ -465,6 +472,8 @@ namespace doctest { namespace detail {
 #elif defined(DOCTEST_PLATFORM_MAC)
 #if defined(__x86_64) || defined(__x86_64__) || defined(__amd64__) || defined(__i386)
 #define DOCTEST_BREAK_INTO_DEBUGGER() __asm__("int $3\n" : :) // NOLINT(hicpp-no-assembler)
+#elif defined(__aarch64__)
+#define DOCTEST_BREAK_INTO_DEBUGGER() __asm__(".inst 0xd43e0000") // NOLINT(hicpp-no-assembler)
 #elif defined(__ppc__) || defined(__ppc64__)
 // https://www.cocoawithlove.com/2008/03/break-into-debugger.html
 #define DOCTEST_BREAK_INTO_DEBUGGER() __asm__("li r0, 20\nsc\nnop\nli r0, 37\nli r4, 2\nsc\nnop\n": : : "memory","r0","r3","r4") // NOLINT(hicpp-no-assembler)
@@ -4584,7 +4593,7 @@ namespace detail {
         mib[3] = getpid();
         // Call sysctl.
         size = sizeof(info);
-        if(sysctl(mib, DOCTEST_COUNTOF(mib), &info, &size, 0, 0) != 0) {
+        if(sysctl(mib, DOCTEST_COUNTOF(mib), &info, &size, nullptr, 0) != 0) {
             std::cerr << "\nCall to sysctl failed - unable to determine if debugger is active **\n";
             return false;
         }

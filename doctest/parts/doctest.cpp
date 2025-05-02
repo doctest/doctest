@@ -1489,7 +1489,7 @@ namespace detail {
         mib[3] = getpid();
         // Call sysctl.
         size = sizeof(info);
-        if(sysctl(mib, DOCTEST_COUNTOF(mib), &info, &size, 0, 0) != 0) {
+        if(sysctl(mib, DOCTEST_COUNTOF(mib), &info, &size, nullptr, 0) != 0) {
             std::cerr << "\nCall to sysctl failed - unable to determine if debugger is active **\n";
             return false;
         }
