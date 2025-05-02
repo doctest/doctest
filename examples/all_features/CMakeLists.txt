@@ -42,6 +42,12 @@ set(files_all
 # add the executable
 add_executable(all_features ${files_all})
 target_link_libraries(all_features doctest ${CMAKE_THREAD_LIBS_INIT})
+if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+    target_link_options(all_features PRIVATE "-rtlib=compiler-rt")
+    if(LINUX)
+        target_link_libraries(all_features "-lgcc_s")
+    endif()
+endif()
 
 # easy way to fix test coverage - disable colors and crash handling
 target_compile_definitions(all_features PRIVATE
@@ -129,6 +135,12 @@ function(add_test_all_features test_name flags)
     add_executable(${test_name} ${files_with_output})
     target_compile_definitions(${test_name} PRIVATE ${flags})
     target_link_libraries(${test_name} doctest ${CMAKE_THREAD_LIBS_INIT})
+    if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+        target_link_options(${test_name} PRIVATE "-rtlib=compiler-rt")
+        if(LINUX)
+            target_link_libraries(${test_name} "-lgcc_s")
+        endif()
+    endif()
 
     doctest_add_test_impl(NAME ${test_name} COMMAND $<TARGET_FILE:${test_name}> --no-skipped-summary --no-version -ob=name)
 endfunction()
