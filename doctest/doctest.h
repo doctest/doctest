@@ -167,6 +167,7 @@
     DOCTEST_CLANG_SUPPRESS_WARNING("-Wmissing-prototypes")                                         \
     DOCTEST_CLANG_SUPPRESS_WARNING("-Wc++98-compat")                                               \
     DOCTEST_CLANG_SUPPRESS_WARNING("-Wc++98-compat-pedantic")                                      \
+    DOCTEST_SUPPRESS_COMMON_WARNINGS_GROUP_CLANG16                                                 \
                                                                                                    \
     DOCTEST_GCC_SUPPRESS_WARNING_PUSH                                                              \
     DOCTEST_GCC_SUPPRESS_WARNING("-Wunknown-pragmas")                                              \
@@ -205,6 +206,13 @@
     DOCTEST_MSVC_SUPPRESS_WARNING(26451) /* Arithmetic overflow ... */                             \
     DOCTEST_MSVC_SUPPRESS_WARNING(26444) /* Avoid unnamed objects with custom ctor and dtor... */  \
     DOCTEST_MSVC_SUPPRESS_WARNING(26812) /* Prefer 'enum class' over 'enum' */
+
+#if DOCTEST_CLANG >= DOCTEST_COMPILER(16, 0, 0)
+#define DOCTEST_SUPPRESS_COMMON_WARNINGS_GROUP_CLANG16 \
+    DOCTEST_CLANG_SUPPRESS_WARNING("-Wunsafe-buffer-usage")
+#else
+#define DOCTEST_SUPPRESS_COMMON_WARNINGS_GROUP_CLANG16
+#endif
 
 #define DOCTEST_SUPPRESS_COMMON_WARNINGS_POP                                                       \
     DOCTEST_CLANG_SUPPRESS_WARNING_POP                                                             \

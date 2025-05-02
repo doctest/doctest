@@ -187,6 +187,9 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
     add_compiler_flags(-Wno-c++98-compat-bind-to-temporary-copy)
     add_compiler_flags(-Wno-c++98-compat-local-type-template-args)
     add_compiler_flags(-Qunused-arguments -fcolor-diagnostics) # needed for ccache integration
+    if(NOT CMAKE_CXX_COMPILER_VERSION VERSION_LESS 16.0)
+        add_compiler_flags(-Wno-unsafe-buffer-usage)
+    endif()
 endif()
 
 if(MSVC)
