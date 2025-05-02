@@ -537,7 +537,7 @@ void String::copy(const String& other) {
     } else {
         memcpy(allocate(other.data.size), other.data.ptr, other.data.size);
     }
-}
+} // NOLINT(clang-analyzer-cplusplus.NewDeleteLeaks)
 
 String::String() noexcept {
     buf[0] = '\0';
