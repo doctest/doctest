@@ -9,7 +9,7 @@ You can substitute ```master``` with ```dev``` or a tag like ```v1.4.8``` for a 
 - **doctest** is easiest to use as a single file inside your own repository. Then the following minimal example will work:
 
 ```cmake
-cmake_minimum_required(VERSION 3.0)
+cmake_minimum_required(VERSION 3.25)
 project(cmake_test VERSION 0.0.1 LANGUAGES CXX)
 
 # Prepare doctest for other targets to use
