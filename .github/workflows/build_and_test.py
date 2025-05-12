@@ -59,8 +59,7 @@ if _os == "Windows":
 elif _os == "Linux":
     if _compiler == "clang":
         if version_tuple(_version) <= version_tuple("6.0") or (
-            version_tuple(_version) >= version_tuple("11")
-            and version_tuple(_version) < version_tuple("13")
+            version_tuple("11") <= version_tuple(_version) < version_tuple("13")
         ):
             flags = ""
     elif _compiler == "gcc":
@@ -75,9 +74,8 @@ if _os == "Windows":
     tsan_flags = ""
 elif _os == "Linux":
     if _compiler == "clang":
-        if version_tuple(_version) <= version_tuple("3.9") or version_tuple(
-            _version
-        ) == version_tuple("11"):
+        if (version_tuple(_version) <= version_tuple("3.9") or
+            version_tuple(_version) == version_tuple("11")):
             tsan_flags = ""
     elif _compiler == "gcc":
         if version_tuple(_version) <= version_tuple("6.0"):
