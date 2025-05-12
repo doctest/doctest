@@ -3,16 +3,16 @@ name: CI
 on:
   push:
     paths-ignore:
-      - 'doc/**'
-      - 'scripts/**'
-      - 'LICENSE.txt'
-      - 'README.md'
+      - "doc/**"
+      - "scripts/**"
+      - "LICENSE.txt"
+      - "README.md"
   pull_request:
     paths-ignore:
-      - 'doc/**'
-      - 'scripts/**'
-      - 'LICENSE.txt'
-      - 'README.md'
+      - "doc/**"
+      - "scripts/**"
+      - "LICENSE.txt"
+      - "README.md"
 
 env:
   CTEST_OUTPUT_ON_FAILURE: ON
@@ -20,7 +20,7 @@ env:
 
 jobs:
   coverage:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
 
     steps:
       - uses: actions/checkout@v2
@@ -104,113 +104,126 @@ jobs:
         compiler: ["cl", "clang", "clang-cl"]
 
         include:
-          - os: ubuntu-18.04
+          - container: ubuntu:18.04
             compiler: gcc
             version: "4.8"
+            os: ubuntu-24.04
 
-          - os: ubuntu-18.04
-            compiler: gcc
-            version: "4.9"
-
-          - os: ubuntu-18.04
+          - container: ubuntu:18.04
             compiler: gcc
             version: "5"
+            os: ubuntu-24.04
 
-          - os: ubuntu-18.04
+          - container: ubuntu:18.04
             compiler: gcc
             version: "6"
+            os: ubuntu-24.04
 
-          - os: ubuntu-18.04
+          - container: ubuntu:18.04
             compiler: gcc
             version: "7"
+            os: ubuntu-24.04
 
-          - os: ubuntu-18.04
+          - container: ubuntu:18.04
             compiler: gcc
             version: "8"
+            os: ubuntu-24.04
 
-          - os: ubuntu-latest
+          - os: ubuntu-22.04
             compiler: gcc
             version: "9"
 
-          - os: ubuntu-latest
+          - os: ubuntu-24.04
             compiler: gcc
             version: "10"
 
-          - os: ubuntu-latest
+          - os: ubuntu-24.04
             compiler: gcc
             version: "11"
 
-          - os: ubuntu-latest
+          - os: ubuntu-24.04
             compiler: gcc
             version: "12"
 
-          - os: ubuntu-18.04
-            compiler: clang
-            version: "3.5"
+          - os: ubuntu-24.04
+            compiler: gcc
+            version: "13"
 
-          - os: ubuntu-18.04
-            compiler: clang
-            version: "3.6"
+          - os: ubuntu-24.04
+            compiler: gcc
+            version: "14"
 
-          - os: ubuntu-18.04
-            compiler: clang
-            version: "3.7"
-
-          - os: ubuntu-18.04
-            compiler: clang
-            version: "3.8"
-
-          - os: ubuntu-18.04
+          - container: ubuntu:18.04
             compiler: clang
             version: "3.9"
+            os: ubuntu-24.04
 
-          - os: ubuntu-18.04
+          - container: ubuntu:18.04
             compiler: clang
             version: "4.0"
+            os: ubuntu-24.04
 
-          - os: ubuntu-18.04
+          - container: ubuntu:18.04
             compiler: clang
             version: "5.0"
+            os: ubuntu-24.04
 
-          - os: ubuntu-18.04
+          - container: ubuntu:20.04
             compiler: clang
             version: "6.0"
+            os: ubuntu-24.04
 
-          - os: ubuntu-18.04
+          - container: ubuntu:20.04
             compiler: clang
             version: "7"
+            os: ubuntu-24.04
 
-          - os: ubuntu-18.04
+          - container: ubuntu:20.04
             compiler: clang
             version: "8"
+            os: ubuntu-24.04
 
-          - os: ubuntu-20.04
+          - container: ubuntu:20.04
             compiler: clang
             version: "9"
+            os: ubuntu-24.04
 
-          - os: ubuntu-20.04
+          - container: ubuntu:20.04
             compiler: clang
             version: "10"
+            os: ubuntu-24.04
 
-          - os: ubuntu-20.04
+          - os: ubuntu-22.04
             compiler: clang
             version: "11"
 
-          - os: ubuntu-20.04
+          - os: ubuntu-22.04
             compiler: clang
             version: "12"
 
-          - os: ubuntu-latest
+          - os: ubuntu-22.04
             compiler: clang
             version: "13"
 
-          - os: ubuntu-latest
+          - os: ubuntu-24.04
             compiler: clang
             version: "14"
 
-          - os: ubuntu-latest
+          - os: ubuntu-24.04
             compiler: clang
             version: "15"
+
+          - os: ubuntu-24.04
+            compiler: clang
+            version: "16"
+
+          - os: ubuntu-24.04
+            compiler: clang
+            version: "17"
+
+          - os: ubuntu-24.04
+            compiler: clang
+            version: "18"
 
           - os: macOS-10.15
             compiler: xcode
@@ -231,52 +244,83 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
+      # Ref: https://github.com/actions/checkout/issues/1590#issuecomment-2567109195
+      - name: Prepare container (Linux, containerized)
+        if: runner.os == 'Linux' && matrix.container != ''
+        run: |
+          docker pull ${{ matrix.container }}
+          docker run --name build-container -d -v ${{ github.workspace }}:/workspace ${{ matrix.container }} tail -f /dev/null
+
+          cat <<'EOF' > container-env.sh
+          export CTEST_OUTPUT_ON_FAILURE="${{ env.CTEST_OUTPUT_ON_FAILURE }}"
+          export CTEST_PARALLEL_LEVEL="${{ env.CTEST_PARALLEL_LEVEL }}"
+          export CMAKE_GENERATOR="${{ env.CMAKE_GENERATOR }}"
+          export ASAN_OPTIONS="${{ env.ASAN_OPTIONS }}"
+          export TSAN_OPTIONS="${{ env.TSAN_OPTIONS }}"
+          EOF
+
       - name: Install (Linux)
-        if: runner.os == 'Linux'
+        if: runner.os == 'Linux' && matrix.container == ''
         run: |
           # Required for libc6-dbg:i386 and g++-multilib packages which are
           # needed for x86 builds.
           sudo dpkg --add-architecture i386
 
           sudo apt-get update
-
-          # libc6-dbg:i386 is required for running valgrind on x86.
-          sudo apt-get install -y ninja-build valgrind libc6-dbg:i386 wget gpg ca-certificates
-
-          # clang-3.7 and earlier are not available in Bionic anymore so we get
-          # them from the Xenial repositories instead.
-          sudo gpg --keyserver keyserver.ubuntu.com --recv-keys 40976EAF437D05B5
-          sudo gpg --keyserver keyserver.ubuntu.com --recv-keys 3B4FE6ACC0B21F32
-          #sudo sh -c 'wget -q -O - "https://keyserver.ubuntu.com/pks/lookup?search=0x40976EAF437D05B5&fingerprint=on&op=get" | gpg -q --dearmor - | tee "/usr/share/keyrings/dk.gpg" > /dev/null'
-          sudo add-apt-repository "deb http://dk.archive.ubuntu.com/ubuntu/ xenial main"
-          sudo add-apt-repository "deb http://dk.archive.ubuntu.com/ubuntu/ xenial universe"
-
-          # clang->=13 is not currently available by default
-          # causing compiler conflict for clang-14 as the below pulls from focal for 22.04 (ubuntu-latest)
-          #if [ "${{ matrix.compiler }}" = "clang" -a ${{ matrix.version }} -ge 13  ]; then
-            #wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | sudo apt-key add -
-            #sudo add-apt-repository "deb https://apt.llvm.org/focal/ llvm-toolchain-focal-${{ matrix.version }} main"
-          #fi
+          sudo apt-get install -y cmake ninja-build valgrind libc6-dbg:i386
 
           if [ "${{ matrix.compiler }}" = "gcc" ]; then
             sudo apt-get install -y g++-${{ matrix.version }} g++-${{ matrix.version }}-multilib
-          else
+          elif [ "${{ matrix.compiler }}" = "clang" ]; then
             sudo apt-get install -y clang-${{ matrix.version }} libclang-${{ matrix.version }}-dev llvm-${{ matrix.version }}-dev g++-multilib
           fi
+
+      - name: Install (Linux, containerized)
+        if: runner.os == 'Linux' && matrix.container != ''
+        env:
+          CMD: |
+            dpkg --add-architecture i386
+
+            # Configure Kitware repo for newer version of CMake.
+            if [ "${{ matrix.container }}" = "ubuntu:18.04" ]; then
+              apt-get update && apt-get install -y wget gpg
+              wget -O - https://apt.kitware.com/keys/kitware-archive-latest.asc 2>/dev/null | gpg --dearmor - | tee /usr/share/keyrings/kitware-archive-keyring.gpg >/dev/null
+              echo 'deb [signed-by=/usr/share/keyrings/kitware-archive-keyring.gpg] https://apt.kitware.com/ubuntu/ bionic main' | tee /etc/apt/sources.list.d/kitware.list >/dev/null
+            fi
+
+            apt-get update
+            apt-get install -y cmake ninja-build valgrind libc6-dbg:i386 python3
+
+            if [ "${{ matrix.compiler }}" = "gcc" ]; then
+              apt-get install -y g++-${{ matrix.version }} g++-${{ matrix.version }}-multilib
+            elif [ "${{ matrix.compiler }}" = "clang" ]; then
+              apt-get install -y clang-${{ matrix.version }} libclang-${{ matrix.version }}-dev llvm-${{ matrix.version }}-dev g++-multilib
+            fi
+        run: docker exec build-container bash -c "$CMD"
 
       - name: Install (macOS)
         if: runner.os == 'macOS'
         run: |
-            brew install ninja
-            if [ "${{ matrix.compiler }}" = "xcode" ]; then
-              sudo xcode-select -switch /Applications/Xcode_${{ matrix.version }}.app
-            fi
+          brew install ninja
+          if [ "${{ matrix.compiler }}" = "xcode" ]; then
+            sudo xcode-select -switch /Applications/Xcode_${{ matrix.version }}.app
+          fi
 
       - name: Configure x64
         uses: ilammy/msvc-dev-cmd@v1
 
       - name: Build & Test x64
+        if: matrix.container == ''
         run: python3 .github/workflows/build_and_test.py ${{ runner.os }} x64 ${{ matrix.compiler }} ${{ matrix.version }}
+
+      - name: Build & Test x64 (Linux, containerized)
+        if: runner.os == 'Linux' && matrix.container != ''
+        env:
+          CMD: |
+            cd /workspace
+            source container-env.sh
+            python3 .github/workflows/build_and_test.py ${{ runner.os }} x64 ${{ matrix.compiler }} ${{ matrix.version }}
+        run: docker exec build-container bash -c "$CMD"
 
       - name: Configure x86
         uses: ilammy/msvc-dev-cmd@v1
@@ -284,10 +328,18 @@ jobs:
           arch: x86
 
       # MacOS doesn't support x86 from Xcode 10 onwards.
-
       - name: Build & Test x86
-        if: runner.os == 'Linux' || runner.os == 'Windows' && matrix.compiler != 'clang-cl'
+        if: (runner.os == 'Linux' && matrix.container == '') || (runner.os == 'Windows' && matrix.compiler != 'clang-cl')
         run: python3 .github/workflows/build_and_test.py ${{ runner.os }} x86 ${{ matrix.compiler }} ${{ matrix.version }}
+
+      - name: Build & Test x86 (Linux, containerized)
+        if: runner.os == 'Linux' && matrix.container != ''
+        env:
+          CMD: |
+            cd /workspace
+            source container-env.sh
+            python3 .github/workflows/build_and_test.py ${{ runner.os }} x86 ${{ matrix.compiler }} ${{ matrix.version }}
+        run: docker exec build-container bash -c "$CMD"
 
   ci-min-gw:
     if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name != github.repository
@@ -339,7 +391,7 @@ jobs:
 
   ci-icpc:
     if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name != github.repository
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
 
     strategy:
       fail-fast: false
@@ -372,4 +424,3 @@ jobs:
         run: |
           . /opt/intel/oneapi/setvars.sh
           ctest -C ${{ matrix.configuration }} --test-dir build --no-tests=error
-
