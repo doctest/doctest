@@ -213,18 +213,17 @@ jobs:
             compiler: clang
             version: "15"
 
-          # disabled due to pre-existing build failures
-          # - os: ubuntu-24.04
-          #   compiler: clang
-          #   version: "16"
+          - os: ubuntu-24.04
+            compiler: clang
+            version: "16"
 
-          # - os: ubuntu-24.04
-          #   compiler: clang
-          #   version: "17"
+          - os: ubuntu-24.04
+            compiler: clang
+            version: "17"
 
-          # - os: ubuntu-24.04
-          #   compiler: clang
-          #   version: "18"
+          - os: ubuntu-24.04
+            compiler: clang
+            version: "18"
 
           - os: macOS-10.15
             compiler: xcode
