@@ -4,8 +4,8 @@ import sys
 _os = sys.argv[1]
 assert _os in ["Linux", "macOS", "Windows"]
 
-_arch = sys.argv[2]
-assert _arch in ["x86", "x64"]
+_arch = sys.argv[2].lower()
+assert _arch in ["x86", "x64", "arm64"]
 
 _compiler = sys.argv[3]
 assert _compiler in ["cl", "clang-cl", "clang", "gcc", "xcode"]
@@ -21,7 +21,7 @@ elif _compiler == "clang" or _compiler == "xcode":
 else:
     used_cxx = _compiler
 
-if _os == "Linux":
+if _os == "Linux" or (_os == "macOS" and _compiler == "gcc"):
     used_cxx += "-" + _version
 
 
@@ -65,6 +65,8 @@ elif _os == "Linux":
     elif _compiler == "gcc":
         if version_tuple(_version) <= version_tuple("5.0"):
             flags = ""
+elif _os == "macOS" and _compiler == "gcc":
+    flags = ""
 
 if _os == "Linux" and _compiler == "gcc":
     flags += " -static-libasan"
@@ -80,6 +82,8 @@ elif _os == "Linux":
     elif _compiler == "gcc":
         if version_tuple(_version) <= version_tuple("6.0"):
             tsan_flags = ""
+elif _os == "macOS" and _compiler == "gcc":
+    tsan_flags = ""
 
 if _os == "Linux" and _compiler == "gcc":
     tsan_flags += " -static-libtsan"
