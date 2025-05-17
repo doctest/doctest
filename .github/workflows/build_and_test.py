@@ -1,6 +1,8 @@
 import os
 import sys
 
+from packaging.version import Version, InvalidVersion
+
 _os = sys.argv[1]
 assert _os in ["Linux", "macOS", "Windows"]
 
@@ -49,21 +51,17 @@ def run_test(build_type, test_mode, flags, test=True):
         exit(4)
 
 
-def version_tuple(v):
-    return tuple(map(int, (v.split("."))))
-
-
 flags = "-fsanitize=address,undefined -fno-omit-frame-pointer"
 if _os == "Windows":
     flags = ""
 elif _os == "Linux":
     if _compiler == "clang":
-        if version_tuple(_version) <= version_tuple("6.0") or (
-            version_tuple("11") <= version_tuple(_version) < version_tuple("13")
+        if Version(_version) <= Version("6.0") or (
+            Version("11") <= Version(_version) < Version("13")
         ):
             flags = ""
     elif _compiler == "gcc":
-        if version_tuple(_version) <= version_tuple("5.0"):
+        if Version(_version) <= Version("5.0"):
             flags = ""
 elif _os == "macOS" and _compiler == "gcc":
     flags = ""
@@ -76,11 +74,11 @@ if _os == "Windows":
     tsan_flags = ""
 elif _os == "Linux":
     if _compiler == "clang":
-        if (version_tuple(_version) <= version_tuple("3.9") or
-            version_tuple(_version) == version_tuple("11")):
+        if (Version(_version) <= Version("3.9") or
+            Version(_version) == Version("11")):
             tsan_flags = ""
     elif _compiler == "gcc":
-        if version_tuple(_version) <= version_tuple("6.0"):
+        if Version(_version) <= Version("6.0"):
             tsan_flags = ""
 elif _os == "macOS" and _compiler == "gcc":
     tsan_flags = ""
