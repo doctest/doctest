@@ -28,6 +28,9 @@ jobs:
       - name: Install
         run: sudo apt-get install -y ninja-build lcov
 
+      - name: Install Python Dependencies
+        run: pip install packaging==25.0
+
       - name: Generate
         run: cmake -B build -S . -G Ninja -D CMAKE_CXX_FLAGS="-fprofile-arcs -ftest-coverage"
 
