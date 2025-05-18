@@ -247,6 +247,20 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
+      # Add Python packaging installation for all non-containerized runs
+      - name: Install Python Dependencies (non-containerized)
+        if: matrix.container == ''
+        run: |
+          # Different package managers depending on OS
+          if [ "${{ runner.os }}" == "Linux" ]; then
+            pip3 install packaging==25.0
+          elif [ "${{ runner.os }}" == "macOS" ]; then
+            pip3 install packaging==25.0
+          else
+            pip install packaging==25.0  # Windows
+          fi
+        shell: bash
+
       # Ref: https://github.com/actions/checkout/issues/1590#issuecomment-2567109195
       - name: Prepare container (Linux, containerized)
         if: runner.os == 'Linux' && matrix.container != ''
@@ -292,7 +306,10 @@ jobs:
             fi
 
             apt-get update
-            apt-get install -y cmake ninja-build valgrind libc6-dbg:i386 python3
+            apt-get install -y cmake ninja-build valgrind libc6-dbg:i386 python3 python3-pip
+
+            pip3 install packaging==25.0
+
 
             if [ "${{ matrix.compiler }}" = "gcc" ]; then
               apt-get install -y g++-${{ matrix.version }} g++-${{ matrix.version }}-multilib
@@ -311,6 +328,16 @@ jobs:
 
       - name: Configure x64
         uses: ilammy/msvc-dev-cmd@v1
+
+      # For x64 builds
+      - name: Verify Python Dependencies (x64, non-containerized)
+        if: matrix.container == ''
+        run: python3 -c "from packaging.version import Version; print('packaging module is installed')"
+
+      # For x64 containerized builds
+      - name: Verify Python Dependencies (x64, containerized)
+        if: runner.os == 'Linux' && matrix.container != ''
+        run: docker exec build-container bash -c "python3 -c \"from packaging.version import Version; print('packaging module is installed')\""
 
       - name: Build & Test x64
         if: matrix.container == ''
