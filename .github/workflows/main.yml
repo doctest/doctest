@@ -29,7 +29,7 @@ jobs:
         run: sudo apt-get install -y ninja-build lcov
 
       - name: Install Python Dependencies
-        run: pip install packaging==25.0
+        run: pip install packaging
 
       - name: Generate
         run: cmake -B build -S . -G Ninja -D CMAKE_CXX_FLAGS="-fprofile-arcs -ftest-coverage"
@@ -253,11 +253,11 @@ jobs:
         run: |
           # Different package managers depending on OS
           if [ "${{ runner.os }}" == "Linux" ]; then
-            pip3 install packaging==25.0
+            pip3 install packaging
           elif [ "${{ runner.os }}" == "macOS" ]; then
-            pip3 install packaging==25.0
+            pip3 install packaging
           else
-            pip install packaging==25.0  # Windows
+            pip install packaging  # Windows
           fi
         shell: bash
 
@@ -308,7 +308,7 @@ jobs:
             apt-get update
             apt-get install -y cmake ninja-build valgrind libc6-dbg:i386 python3 python3-pip
 
-            pip3 install packaging==25.0
+            pip3 install packaging
 
 
             if [ "${{ matrix.compiler }}" = "gcc" ]; then
