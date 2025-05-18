@@ -28,6 +28,9 @@ jobs:
       - name: Install
         run: sudo apt-get install -y ninja-build lcov
 
+      - name: Install Python Dependencies
+        run: pip install packaging==25.0
+
       - name: Generate
         run: cmake -B build -S . -G Ninja -D CMAKE_CXX_FLAGS="-fprofile-arcs -ftest-coverage"
 
@@ -381,7 +384,7 @@ jobs:
 
       - name: Generate
         run: cmake -B build -S . -G "${{ matrix.toolset == 'v143' && 'Visual Studio 17 2022' || 'Visual Studio 16 2019' }}" \
-            -A ${{ matrix.architecture }} -T ${{ matrix.toolset }}
+          -A ${{ matrix.architecture }} -T ${{ matrix.toolset }}
 
       - name: Build
         run: cmake --build build --config ${{ matrix.configuration }}

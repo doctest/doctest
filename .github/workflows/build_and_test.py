@@ -23,8 +23,10 @@ elif _compiler == "clang" or _compiler == "xcode":
 else:
     used_cxx = _compiler
 
-if _os == "Linux" and _version:
-    used_cxx += "-" + _version
+_version = Version(sys.argv[4])
+# ...
+if _os == "Linux":
+    used_cxx += "-" + str(_version)
 
 
 def log_and_call(command):
@@ -51,22 +53,17 @@ def run_test(build_type, test_mode, flags, test = True):
         exit(4)
 
 
-def version_tuple(v):
-    try:
-        return Version(v)
-    except InvalidVersion:
-        raise ValueError(f"Invalid version string: {v}")
-
-
 flags = "-fsanitize=address,undefined -fno-omit-frame-pointer"
 if _os == "Windows":
     flags = ""
 elif _os == "Linux":
     if _compiler == "clang":
-        if _version and version_tuple(_version) <= version_tuple("6.0"):
+        if Version(_version) <= Version("6.0") or (
+            Version("11") <= Version(_version) < Version("13")
+        ):
             flags = ""
     elif _compiler == "gcc":
-        if _version and version_tuple(_version) <= version_tuple("5.0"):
+        if Version(_version) <= Version("5.0"):
             flags = ""
 
 if _os == "Linux" and _compiler == "gcc":
@@ -77,10 +74,11 @@ if _os == "Windows":
     tsan_flags = ""
 elif _os == "Linux":
     if _compiler == "clang":
-        if _version and version_tuple(_version) <= version_tuple("3.9"):
+        if (Version(_version) <= Version("3.9") or
+            Version(_version) == Version("11")):
             tsan_flags = ""
     elif _compiler == "gcc":
-        if _version and version_tuple(_version) <= version_tuple("6.0"):
+        if Version(_version) <= Version("6.0"):
             tsan_flags = ""
 
 if _os == "Linux" and _compiler == "gcc":
