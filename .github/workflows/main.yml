@@ -305,7 +305,7 @@ jobs:
             apt-get update
             apt-get install -y cmake ninja-build valgrind libc6-dbg:i386 python3 python3-pip
 
-            pip3 install packaging
+            pip3 install packaging==25.0
 
 
             if [ "${{ matrix.compiler }}" = "gcc" ]; then

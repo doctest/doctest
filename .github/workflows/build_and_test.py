@@ -23,7 +23,7 @@ elif _compiler == "clang" or _compiler == "xcode":
 else:
     used_cxx = _compiler
 
-_version = Version(sys.argv[4]) if len(sys.argv) >= 5 else ""
+_version = Version(sys.argv[4]) if len(sys.argv) >= 5 else None
 
 if _os == "Linux":
     used_cxx += "-" + str(_version)
