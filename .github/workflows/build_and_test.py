@@ -12,7 +12,7 @@ assert _arch in ["x86", "x64", "arm64"]
 _compiler = sys.argv[3]
 assert _compiler in ["cl", "clang-cl", "clang", "gcc", "xcode"]
 
-_version = Version(sys.argv[4]) if len(sys.argv) >= 5 else ""
+_version = Version(sys.argv[4]) if len(sys.argv) >= 5 else None
 
 print("Env: " + "; ".join([_os, _arch, _compiler, _version]))
 
