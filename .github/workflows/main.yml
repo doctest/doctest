@@ -254,7 +254,6 @@ jobs:
             pip3 install packaging==25.0
           else
             pip install packaging==25.0  # Windows
-          fi
         shell: bash
 
       # Ref: https://github.com/actions/checkout/issues/1590#issuecomment-2567109195
