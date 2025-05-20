@@ -1,7 +1,7 @@
 import os
 import sys
 
-from packaging.version import Version, InvalidVersion
+from packaging.version import Version
 
 _os = sys.argv[1]
 assert _os in ["Linux", "macOS", "Windows"]
@@ -23,10 +23,10 @@ elif _compiler == "clang" or _compiler == "xcode":
 else:
     used_cxx = _compiler
 
-_version = Version(sys.argv[4])
+_version = str(Version(sys.argv[4]))
 # ...
 if _os == "Linux":
-    used_cxx += "-" + str(_version)
+    used_cxx += "-" + _version
 
 
 def log_and_call(command):
@@ -34,7 +34,7 @@ def log_and_call(command):
     return os.system(command)
 
 
-def run_test(build_type, test_mode, flags, test = True):
+def run_test(build_type, test_mode, flags, test=True):
     print("Running: " + "; ".join([build_type, test_mode, flags, str(test)]))
     if log_and_call("cmake -E remove_directory build"):
         exit(1)
@@ -43,8 +43,8 @@ def run_test(build_type, test_mode, flags, test = True):
         f"-B build "
         f"-D CMAKE_BUILD_TYPE={build_type} "
         f"-D DOCTEST_TEST_MODE={test_mode} "
-        + (flags and f'-D CMAKE_CXX_FLAGS="{flags}" ') +
-        f"-D CMAKE_CXX_COMPILER={used_cxx}"
+        + (flags and f'-D CMAKE_CXX_FLAGS="{flags}" ')
+        + f"-D CMAKE_CXX_COMPILER={used_cxx}"
     ):
         exit(2)
     if log_and_call("cmake --build build"):
@@ -58,12 +58,12 @@ if _os == "Windows":
     flags = ""
 elif _os == "Linux":
     if _compiler == "clang":
-        if Version(str(_version)) <= Version("6.0") or (
-            Version("11") <= Version(str(_version)) < Version("13")
+        if Version(_version) <= Version("6.0") or (
+            Version("11") <= Version(_version) < Version("13")
         ):
             flags = ""
     elif _compiler == "gcc":
-        if Version(str(_version)) <= Version("5.0"):
+        if Version(_version) <= Version("5.0"):
             flags = ""
 
 if _os == "Linux" and _compiler == "gcc":
@@ -74,11 +74,11 @@ if _os == "Windows":
     tsan_flags = ""
 elif _os == "Linux":
     if _compiler == "clang":
-        if (Version(str(_version)) <= Version("3.9") or
-            Version(str(_version)) == Version("11")):
+        if (Version(_version) <= Version("3.9") or
+            Version(_version) == Version("11")):
             tsan_flags = ""
     elif _compiler == "gcc":
-        if Version(str(_version)) <= Version("6.0"):
+        if Version(_version) <= Version("6.0"):
             tsan_flags = ""
 
 if _os == "Linux" and _compiler == "gcc":
