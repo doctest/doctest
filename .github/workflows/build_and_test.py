@@ -23,10 +23,10 @@ elif _compiler == "clang" or _compiler == "xcode":
 else:
     used_cxx = _compiler
 
-_version = str(Version(sys.argv[4]))
-# ...
+_version = Version(sys.argv[4]) if len(sys.argv) >= 5 else ""
+
 if _os == "Linux":
-    used_cxx += "-" + _version
+    used_cxx += "-" + str(_version)
 
 
 def log_and_call(command):
@@ -58,12 +58,12 @@ if _os == "Windows":
     flags = ""
 elif _os == "Linux":
     if _compiler == "clang":
-        if Version(_version) <= Version("6.0") or (
-            Version("11") <= Version(_version) < Version("13")
+        if _version <= Version("6.0") or (
+            Version("11") <= _version < Version("13")
         ):
             flags = ""
     elif _compiler == "gcc":
-        if Version(_version) <= Version("5.0"):
+        if _version <= Version("5.0"):
             flags = ""
 
 if _os == "Linux" and _compiler == "gcc":
@@ -74,11 +74,11 @@ if _os == "Windows":
     tsan_flags = ""
 elif _os == "Linux":
     if _compiler == "clang":
-        if (Version(_version) <= Version("3.9") or
-            Version(_version) == Version("11")):
+        if (_version <= Version("3.9") or
+            _version == Version("11")):
             tsan_flags = ""
     elif _compiler == "gcc":
-        if Version(_version) <= Version("6.0"):
+        if _version <= Version("6.0"):
             tsan_flags = ""
 
 if _os == "Linux" and _compiler == "gcc":

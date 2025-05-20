@@ -28,9 +28,6 @@ jobs:
       - name: Install
         run: sudo apt-get install -y ninja-build lcov
 
-      - name: Install Python Dependencies
-        run: pip install packaging
-
       - name: Generate
         run: cmake -B build -S . -G Ninja -D CMAKE_CXX_FLAGS="-fprofile-arcs -ftest-coverage"
 
@@ -253,11 +250,11 @@ jobs:
         run: |
           # Different package managers depending on OS
           if [ "${{ runner.os }}" == "Linux" ]; then
-            pip3 install packaging
+            pip3 install packaging==25.0
           elif [ "${{ runner.os }}" == "macOS" ]; then
-            pip3 install packaging
+            pip3 install packaging==25.0
           else
-            pip install packaging  # Windows
+            pip install packaging==25.0  # Windows
           fi
         shell: bash
 
@@ -328,16 +325,6 @@ jobs:
 
       - name: Configure x64
         uses: ilammy/msvc-dev-cmd@v1
-
-      # For x64 builds
-      - name: Verify Python Dependencies (x64, non-containerized)
-        if: matrix.container == ''
-        run: python3 -c "from packaging.version import Version; print('packaging module is installed')"
-
-      # For x64 containerized builds
-      - name: Verify Python Dependencies (x64, containerized)
-        if: runner.os == 'Linux' && matrix.container != ''
-        run: docker exec build-container bash -c "python3 -c \"from packaging.version import Version; print('packaging module is installed')\""
 
       - name: Build & Test x64
         if: matrix.container == ''
