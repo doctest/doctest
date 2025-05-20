@@ -12,7 +12,7 @@ assert _arch in ["x86", "x64", "arm64"]
 _compiler = sys.argv[3]
 assert _compiler in ["cl", "clang-cl", "clang", "gcc", "xcode"]
 
-_version = sys.argv[4] if len(sys.argv) >= 5 else ""
+_version = Version(sys.argv[4]) if len(sys.argv) >= 5 else ""
 
 print("Env: " + "; ".join([_os, _arch, _compiler, _version]))
 
@@ -24,7 +24,7 @@ else:
     used_cxx = _compiler
 
 if _os == "Linux" or (_os == "macOS" and _compiler == "gcc"):
-    used_cxx += "-" + _version
+    used_cxx += "-" + str(_version)
 
 
 def log_and_call(command):
@@ -56,12 +56,12 @@ if _os == "Windows":
     flags = ""
 elif _os == "Linux":
     if _compiler == "clang":
-        if Version(_version) <= Version("6.0") or (
-            Version("11") <= Version(_version) < Version("13")
+        if _version <= Version("6.0") or (
+            Version("11") <= _version < Version("13")
         ):
             flags = ""
     elif _compiler == "gcc":
-        if Version(_version) <= Version("5.0"):
+        if _version <= Version("5.0"):
             flags = ""
 elif _os == "macOS" and _compiler == "gcc":
     flags = ""
@@ -74,11 +74,11 @@ if _os == "Windows":
     tsan_flags = ""
 elif _os == "Linux":
     if _compiler == "clang":
-        if (Version(_version) <= Version("3.9") or
-            Version(_version) == Version("11")):
+        if (_version <= Version("3.9") or
+            _version == Version("11")):
             tsan_flags = ""
     elif _compiler == "gcc":
-        if Version(_version) <= Version("6.0"):
+        if _version <= Version("6.0"):
             tsan_flags = ""
 elif _os == "macOS" and _compiler == "gcc":
     tsan_flags = ""

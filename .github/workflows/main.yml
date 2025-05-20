@@ -28,9 +28,6 @@ jobs:
       - name: Install
         run: sudo apt-get install -y ninja-build lcov
 
-      - name: Install Python Dependencies
-        run: pip install packaging
-
       - name: Generate
         run: cmake -B build -S . -G Ninja -D CMAKE_CXX_FLAGS="-fprofile-arcs -ftest-coverage"
 
@@ -275,11 +272,11 @@ jobs:
         run: |
           # Different package managers depending on OS
           if [ "${{ runner.os }}" == "Linux" ]; then
-            pip3 install packaging
+            pip3 install packaging==25.0
           elif [ "${{ runner.os }}" == "macOS" ]; then
-            pip3 install packaging
+            pip3 install packaging==25.0
           else
-            pip install packaging  # Windows
+            pip install packaging==25.0  # Windows
           fi
         shell: bash
 
