@@ -244,9 +244,8 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      # Add Python packaging installation for all non-containerized runs
-      - name: Install Python Dependencies (non-containerized)
-        if: matrix.container == ''
+      # Add Python packaging installation for all runs
+      - name: Install Python Dependencies
         run: |
           # Different package managers depending on OS
           if [ "${{ runner.os }}" == "Linux" ]; then
