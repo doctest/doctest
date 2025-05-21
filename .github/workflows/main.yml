@@ -289,7 +289,10 @@ jobs:
             fi
 
             apt-get update
-            apt-get install -y cmake ninja-build valgrind libc6-dbg:i386 python3
+            apt-get install -y cmake ninja-build valgrind libc6-dbg:i386 python3 python3-pip
+
+            pip3 install packaging==25.0
+
 
             if [ "${{ matrix.compiler }}" = "gcc" ]; then
               apt-get install -y g++-${{ matrix.version }} g++-${{ matrix.version }}-multilib
@@ -308,6 +311,19 @@ jobs:
 
       - name: Configure x64
         uses: ilammy/msvc-dev-cmd@v1
+
+      # Add Python packaging installation for all runs
+      - name: Install Python Dependencies
+        run: |
+          # Different package managers depending on OS
+          if [ "${{ runner.os }}" == "Linux" ]; then
+            pip3 install packaging==25.0
+          elif [ "${{ runner.os }}" == "macOS" ]; then
+            pip3 install packaging==25.0
+          else
+            pip install packaging==25.0  # Windows
+          fi
+        shell: bash
 
       - name: Build & Test x64
         if: matrix.container == ''
@@ -381,7 +397,7 @@ jobs:
 
       - name: Generate
         run: cmake -B build -S . -G "${{ matrix.toolset == 'v143' && 'Visual Studio 17 2022' || 'Visual Studio 16 2019' }}" \
-            -A ${{ matrix.architecture }} -T ${{ matrix.toolset }}
+          -A ${{ matrix.architecture }} -T ${{ matrix.toolset }}
 
       - name: Build
         run: cmake --build build --config ${{ matrix.configuration }}
