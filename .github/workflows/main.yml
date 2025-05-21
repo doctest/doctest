@@ -244,19 +244,6 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      # Add Python packaging installation for all runs
-      - name: Install Python Dependencies
-        run: |
-          # Different package managers depending on OS
-          if [ "${{ runner.os }}" == "Linux" ]; then
-            pip3 install packaging==25.0
-          elif [ "${{ runner.os }}" == "macOS" ]; then
-            pip3 install packaging==25.0
-          else
-            pip install packaging==25.0  # Windows
-          fi
-        shell: bash
-
       # Ref: https://github.com/actions/checkout/issues/1590#issuecomment-2567109195
       - name: Prepare container (Linux, containerized)
         if: runner.os == 'Linux' && matrix.container != ''
@@ -324,6 +311,19 @@ jobs:
 
       - name: Configure x64
         uses: ilammy/msvc-dev-cmd@v1
+
+      # Add Python packaging installation for all runs
+      - name: Install Python Dependencies
+        run: |
+          # Different package managers depending on OS
+          if [ "${{ runner.os }}" == "Linux" ]; then
+            pip3 install packaging==25.0
+          elif [ "${{ runner.os }}" == "macOS" ]; then
+            pip3 install packaging==25.0
+          else
+            pip install packaging==25.0  # Windows
+          fi
+        shell: bash
 
       - name: Build & Test x64
         if: matrix.container == ''
