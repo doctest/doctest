@@ -21,6 +21,21 @@ target_compile_features(tests PRIVATE cxx_std_17)
 target_link_libraries(tests PRIVATE doctest::doctest)
 ```
 
+- **doctest** can also be imported directly avoiding the usage of external packages
+
+```cmake
+cmake_minimum_required(VERSION 3.0)
+project(cmake_test VERSION 0.0.1 LANGUAGES CXX)
+
+# Create the test target, with minimal configuration
+add_executable(tests
+        path/to/local/doctest.h
+        test_main.cpp
+)
+target_compile_features(tests PRIVATE cxx_std_17)
+set_target_properties(tests PROPERTIES LINKER_LANGUAGE CXX)
+```
+
 - You can also use the following CMake snippet to automatically fetch the entire **doctest** repository from github and configure it as an external project:
 
 ```cmake
