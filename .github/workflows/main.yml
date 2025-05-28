@@ -225,21 +225,43 @@ jobs:
             compiler: clang
             version: "18"
 
-          - os: macOS-10.15
+          # macOS Intel
+          - os: macos-13
             compiler: xcode
-            version: "10.3"
+            version: "14.1" # Apple Clang 14.0.0
 
-          - os: macOS-latest
+          - os: macos-13
             compiler: xcode
-            version: "13.2.1"
+            version: "14.3.1" # Apple Clang 14.0.3
 
-          - os: macos-12
+          - os: macos-13
             compiler: xcode
-            version: "14.0.1"
+            version: "15.2" # Apple Clang 15.0.0
 
-          - os: macOS-latest
+          - os: macos-13
             compiler: gcc
-            version: "11"
+            version: "12"
+
+          # macOS arm64
+          - os: macos-14
+            compiler: xcode
+            version: "15.0.1" # Apple Clang 15.0.0
+
+          - os: macos-14
+            compiler: xcode
+            version: "15.4" # Apple Clang 15.0.0
+
+          - os: macos-14
+            compiler: xcode
+            version: "16.2" # Apple Clang 16.0.0
+
+          - os: macos-15
+            compiler: xcode
+            version: "16.3" # Apple Clang 17.0.0
+
+          - os: macos-15
+            compiler: gcc
+            version: "12"
 
     steps:
       - uses: actions/checkout@v2
@@ -301,38 +323,43 @@ jobs:
       - name: Install (macOS)
         if: runner.os == 'macOS'
         run: |
-          brew install ninja
           if [ "${{ matrix.compiler }}" = "xcode" ]; then
-            sudo xcode-select -switch /Applications/Xcode_${{ matrix.version }}.app
+            sudo xcode-select --switch /Applications/Xcode_${{ matrix.version }}.app
           fi
 
-      - name: Configure x64
+          if [ "${{ matrix.os}}" = "macos-15" -a "${{ matrix.compiler }}" = "gcc" ]; then
+            sudo xcode-select --switch /Applications/Xcode_15.4.app
+          fi
+
+      - name: Configure MSVC for X64
+        if: runner.os == 'Windows'
         uses: ilammy/msvc-dev-cmd@v1
 
-      - name: Build & Test x64
+      - name: Build & Test ${{ runner.arch }}
         if: matrix.container == ''
-        run: python3 .github/workflows/build_and_test.py ${{ runner.os }} x64 ${{ matrix.compiler }} ${{ matrix.version }}
+        run: python3 .github/workflows/build_and_test.py ${{ runner.os }} ${{ runner.arch }} ${{ matrix.compiler }} ${{ matrix.version }}
 
-      - name: Build & Test x64 (Linux, containerized)
+      - name: Build & Test ${{ runner.arch }} (Linux, containerized)
         if: runner.os == 'Linux' && matrix.container != ''
         env:
           CMD: |
             cd /workspace
             source container-env.sh
-            python3 .github/workflows/build_and_test.py ${{ runner.os }} x64 ${{ matrix.compiler }} ${{ matrix.version }}
+            python3 .github/workflows/build_and_test.py ${{ runner.os }} ${{ runner.arch }} ${{ matrix.compiler }} ${{ matrix.version }}
         run: docker exec build-container bash -c "$CMD"
 
-      - name: Configure x86
+      - name: Configure MSVC for X86
+        if: runner.os == 'Windows'
         uses: ilammy/msvc-dev-cmd@v1
         with:
           arch: x86
 
       # MacOS doesn't support x86 from Xcode 10 onwards.
-      - name: Build & Test x86
+      - name: Build & Test X86
         if: (runner.os == 'Linux' && matrix.container == '') || (runner.os == 'Windows' && matrix.compiler != 'clang-cl')
         run: python3 .github/workflows/build_and_test.py ${{ runner.os }} x86 ${{ matrix.compiler }} ${{ matrix.version }}
 
-      - name: Build & Test x86 (Linux, containerized)
+      - name: Build & Test X86 (Linux, containerized)
         if: runner.os == 'Linux' && matrix.container != ''
         env:
           CMD: |
@@ -380,8 +407,9 @@ jobs:
       - uses: actions/checkout@v2
 
       - name: Generate
-        run: cmake -B build -S . -G "${{ matrix.toolset == 'v143' && 'Visual Studio 17 2022' || 'Visual Studio 16 2019' }}" \
-            -A ${{ matrix.architecture }} -T ${{ matrix.toolset }}
+        run:
+          cmake -B build -S . -G "${{ matrix.toolset == 'v143' && 'Visual Studio 17 2022' || 'Visual Studio 16 2019' }}" \
+          -A ${{ matrix.architecture }} -T ${{ matrix.toolset }}
 
       - name: Build
         run: cmake --build build --config ${{ matrix.configuration }}
