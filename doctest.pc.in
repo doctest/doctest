@@ -1,0 +1,10 @@
+prefix="@CMAKE_INSTALL_PREFIX@"
+exec_prefix="${prefix}"
+libdir="${prefix}/lib"
+includedir="${prefix}/include"
+
+Name: @PROJECT_NAME@
+Description: The fastest feature-rich C++11/14/17/20/23 single-header testing framework
+Version: @PROJECT_VERSION@
+Libs: -L${libdir} -ldoctest
+Cflags: -I${includedir}
