@@ -417,32 +417,34 @@ jobs:
       - name: Test
         run: ctest -C ${{ matrix.configuration }} --test-dir build --no-tests=error
 
-  ci-icpc:
+  ci-oneapi:
     if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name != github.repository
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-22.04
 
     strategy:
       fail-fast: false
       matrix:
         configuration: ["Debug", "Release"]
+        compiler: ["icpc", "icx"]
 
     steps:
       - uses: actions/checkout@v2
 
       - name: Install
         run: |
-          #wget -O - https://apt.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB | sudo apt-key add -
-          #sudo add-apt-repository "deb [signed-by=/etc/apt/keyrings/icpc.gpg] https://apt.repos.intel.com/oneapi all main"
-          # apt-key is deprecated replace with below lines
-          wget -O - https://apt.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB | sudo gpg --dearmor |sudo tee /etc/apt/keyrings/icpc.gpg > /dev/null
-          echo "deb [signed-by=/etc/apt/keyrings/icpc.gpg] https://apt.repos.intel.com/oneapi all main" | sudo tee /etc/apt/sources.list.d/icpc.list
+          wget -O - https://apt.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB 2>/dev/null | gpg --dearmor - | sudo tee /usr/share/keyrings/oneapi-archive-keyring.gpg >/dev/null
+          echo "deb [signed-by=/usr/share/keyrings/oneapi-archive-keyring.gpg] https://apt.repos.intel.com/oneapi all main" | sudo tee /etc/apt/sources.list.d/oneapi.list >/dev/null
           sudo apt-get update
           sudo apt-get install -y intel-oneapi-compiler-dpcpp-cpp-and-cpp-classic ninja-build
 
       - name: Generate
         run: |
           . /opt/intel/oneapi/setvars.sh
-          cmake -B build -S . -G Ninja -D CMAKE_CXX_COMPILER=icc -D CMAKE_C_COMPILER=icc -D CMAKE_CXX_COMPILER=icpc -D CMAKE_BUILD_TYPE=${{ matrix.configuration }} -D CMAKE_CXX_FLAGS="-w2 -Wcheck -Werror -diag-disable=10441 -D DOCTEST_CONFIG_NO_CONTRADICTING_INLINE"
+          if [ "${{ matrix.compiler }}" = "icpc" ]; then
+            cmake -B build -S . -G Ninja -D CMAKE_C_COMPILER=icc -D CMAKE_CXX_COMPILER=icpc -D CMAKE_BUILD_TYPE=${{ matrix.configuration }} -D CMAKE_CXX_FLAGS="-w2 -Wcheck -Werror -diag-disable=10441 -D DOCTEST_CONFIG_NO_CONTRADICTING_INLINE"
+          else
+            cmake -B build -S . -G Ninja -D CMAKE_C_COMPILER=icx -D CMAKE_CXX_COMPILER=icpx -D CMAKE_BUILD_TYPE=${{ matrix.configuration }} -D CMAKE_CXX_FLAGS="-Werror -fp-model=precise"
+          fi
 
       - name: Build
         run: |
