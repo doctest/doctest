@@ -813,7 +813,7 @@ const char* skipPathFromFilename(const char* file) {
         {
             const auto prefix_start = pos;
             pos = std::min(prefixes.find(separator, prefix_start), prefixes.size());
-            
+
             const auto prefix_size = pos - prefix_start;
             if(prefix_size > longest_match)
             {
@@ -2975,7 +2975,8 @@ namespace {
                 s << Color::Yellow << "TEST CASE:  ";
             s << Color::None << tc->m_name << "\n";
 
-            for(size_t i = 0; i < currentSubcaseLevel; ++i) {
+            size_t maxSubcaseLevel = std::min(currentSubcaseLevel, subcasesStack.size());
+            for(size_t i = 0; i < maxSubcaseLevel; ++i) {
                 if(subcasesStack[i].m_name[0] != '\0')
                     s << "  " << subcasesStack[i].m_name << "\n";
             }
