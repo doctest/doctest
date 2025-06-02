@@ -29,7 +29,8 @@ jobs:
         run: sudo apt-get install -y ninja-build lcov
 
       - name: Generate
-        run: cmake -B build -S . -G Ninja -D CMAKE_CXX_FLAGS="-fprofile-arcs -ftest-coverage"
+        run:
+          cmake -B build -S . -G Ninja -D CMAKE_CXX_FLAGS="-fprofile-arcs -ftest-coverage"
 
       - name: Build
         run: cmake --build build
@@ -328,9 +329,9 @@ jobs:
           CMD: |
             cd /workspace
             source container-env.sh
+            python3 -m pip install packaging==25.0
             python3 .github/workflows/build_and_test.py ${{ runner.os }} x64 ${{ matrix.compiler }} ${{ matrix.version }}
         run:
-          python3 -m pip install packaging==25.0
           docker exec build-container bash -c "$CMD"
 
       - name: Configure x86
