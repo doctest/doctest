@@ -291,6 +291,8 @@ jobs:
             apt-get update
             apt-get install -y cmake ninja-build valgrind libc6-dbg:i386 python3 python3-pip
 
+            python3 -m pip install packaging==25.0
+
             if [ "${{ matrix.compiler }}" = "gcc" ]; then
               apt-get install -y g++-${{ matrix.version }} g++-${{ matrix.version }}-multilib
             elif [ "${{ matrix.compiler }}" = "clang" ]; then
@@ -309,10 +311,15 @@ jobs:
       - name: Configure x64
         uses: ilammy/msvc-dev-cmd@v1
 
+      # Add Python packaging installation for all runs (except containerized)
+      - name: Install Python Dependencies
+        run: |
+          python3 -m pip install packaging==25.0
+        shell: bash
+
       - name: Build & Test x64
         if: matrix.container == ''
         run:
-          python3 -m pip install packaging==25.0
           python3 .github/workflows/build_and_test.py ${{ runner.os }} x64 ${{ matrix.compiler }} ${{ matrix.version }}
 
       - name: Build & Test x64 (Linux, containerized)
@@ -335,7 +342,6 @@ jobs:
       - name: Build & Test x86
         if: (runner.os == 'Linux' && matrix.container == '') || (runner.os == 'Windows' && matrix.compiler != 'clang-cl')
         run:
-          python3 -m pip install packaging==25.0
           python3 .github/workflows/build_and_test.py ${{ runner.os }} x86 ${{ matrix.compiler }} ${{ matrix.version }}
 
       - name: Build & Test x86 (Linux, containerized)
@@ -344,9 +350,9 @@ jobs:
           CMD: |
             cd /workspace
             source container-env.sh
+            python3 -m pip install packaging==25.0
             python3 .github/workflows/build_and_test.py ${{ runner.os }} x86 ${{ matrix.compiler }} ${{ matrix.version }}
         run:
-          python3 -m pip install packaging==25.0
           docker exec build-container bash -c "$CMD"
 
   ci-min-gw:
