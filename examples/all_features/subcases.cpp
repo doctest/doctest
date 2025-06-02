@@ -146,14 +146,14 @@ TEST_CASE("Nested - related to https://github.com/doctest/doctest/issues/282")
     DOCTEST_SUBCASE("generate data variant 1")
     {
         int data(44);
-        
+
         // checks
         checks(data);
     }
     DOCTEST_SUBCASE("generate data variant 1")
     {
         int data(80);
-        
+
         // checks (identical in both variants)
         checks(data);
     }
@@ -194,5 +194,65 @@ TEST_SUITE("with a funny name,") {
 
     TEST_CASE("without a funny name:") {
         MESSAGE("Nooo");
+    }
+}
+
+TEST_CASE("currentSubcaseLevel equal subcasesStack.size()") {
+    SUBCASE("Level 1") {
+        SUBCASE("Level 2") {
+            CHECK(true); // simulation
+        }
+    }
+}
+
+TEST_CASE("currentSubcaseLevel less than subcasesStack.size()") {
+    SUBCASE("Level 1") {
+        SUBCASE("Level 2") {
+            // Simulate an early exit to reduce currentSubcaseLevel
+            return;
+        }
+    }
+    CHECK(true); // simulation
+}
+
+TEST_SUITE("Force currentSubcaseLevel > subcasesStack.size() (overflow scenario)") {
+    TEST_CASE("Test 2") {
+        // Open exactly one subcase. After exiting it, currentSubcaseLevel will be 0.
+        SUBCASE("inner") {
+            CHECK(true);
+        }
+
+        // Spawn a background thread that fails a REQUIRE.  That FAILURE will
+        // invoke reportFatal() → subcase_end() again, decrementing currentSubcaseLevel
+        // below zero (underflowing an unsigned size_t).
+        // When logTestStart() finally runs, currentSubcaseLevel is huge.
+        auto e = std::jthread([]{
+            REQUIRE(false);
+        });
+
+        // to keep compiler happy
+        CHECK(true);
+    }
+
+    // copied from issue #915
+    TEST_CASE("Test 2")
+    {
+        std::thread t;
+        DOCTEST_SUBCASE("1")
+        {
+            t = std::thread([]() {
+              std::this_thread::sleep_for(1s);
+              throw 42;
+            });
+        }
+
+        t.join();
+    }
+
+}
+
+TEST_CASE("Subcases with empty names") {
+    SUBCASE("") {
+        CHECK(true); // simulation
     }
 }
