@@ -9,6 +9,7 @@ DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_BEGIN
 #include <chrono>
 #include <thread>
 using namespace std;
+using namespace std::literals;
 DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_END
 
 TEST_CASE("lots of nested subcases") {
