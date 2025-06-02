@@ -6,10 +6,8 @@ DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_BEGIN
 #include <iostream>
 #include <string>
 #include <vector>
-#include <chrono>
 #include <thread>
 using namespace std;
-using namespace std::literals;
 DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_END
 
 TEST_CASE("lots of nested subcases") {
@@ -218,40 +216,25 @@ TEST_CASE("currentSubcaseLevel less than subcasesStack.size()") {
     CHECK(true); // simulation
 }
 
-TEST_SUITE("Force currentSubcaseLevel > subcasesStack.size() (overflow scenario)") {
-    TEST_CASE("Test 2") {
-        // Open exactly one subcase. After exiting it, currentSubcaseLevel will be 0.
-        SUBCASE("inner") {
-            CHECK(true);
-        }
-
-        // Spawn a background thread that fails a REQUIRE.  That FAILURE will
-        // invoke reportFatal() → subcase_end() again, decrementing currentSubcaseLevel
-        // below zero (underflowing an unsigned size_t).
-        // When logTestStart() finally runs, currentSubcaseLevel is huge.
-        auto e = std::jthread([]{
-            REQUIRE(false);
-        });
-
-        // to keep compiler happy
+// related to https://github.com/doctest/doctest/issues/915
+TEST_CASE("Force currentSubcaseLevel > subcasesStack.size() (overflow scenario)") {
+    // Open exactly one subcase. After exiting it, currentSubcaseLevel will be 0.
+    SUBCASE("inner") {
         CHECK(true);
     }
 
-    // copied from issue #915
-    TEST_CASE("Test 2")
-    {
-        std::thread t;
-        DOCTEST_SUBCASE("1")
-        {
-            t = std::thread([]() {
-              std::this_thread::sleep_for(1s);
-              throw 42;
-            });
-        }
+    // Spawn a background thread that fails a REQUIRE.  That FAILURE will
+    // invoke reportFatal() → subcase_end() again, decrementing currentSubcaseLevel
+    // below zero (underflowing an unsigned size_t).
+    // When logTestStart() finally runs, currentSubcaseLevel is huge.
+    auto e = std::thread([]{
+        REQUIRE(false);
+    });
 
-        t.join();
-    }
+    e.join();
 
+    // to keep compiler happy
+    CHECK(true);
 }
 
 TEST_CASE("Subcases with empty names") {
