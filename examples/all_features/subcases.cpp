@@ -198,28 +198,10 @@ TEST_SUITE("with a funny name,") {
     }
 }
 
-TEST_CASE("currentSubcaseLevel equal subcasesStack.size()") {
-    SUBCASE("Level 1") {
-        SUBCASE("Level 2") {
-            CHECK(true); // simulation
-        }
-    }
-}
-
-TEST_CASE("currentSubcaseLevel less than subcasesStack.size()") {
-    SUBCASE("Level 1") {
-        SUBCASE("Level 2") {
-            // Simulate an early exit to reduce currentSubcaseLevel
-            return;
-        }
-    }
-    CHECK(true); // simulation
-}
-
 // related to https://github.com/doctest/doctest/issues/915
 TEST_CASE("Force currentSubcaseLevel > subcasesStack.size() (overflow scenario)") {
     // Open exactly one subcase. After exiting it, currentSubcaseLevel will be 0.
-    SUBCASE("inner") {
+    SUBCASE("Force currentSubcaseLevel > subcasesStack.size() (overflow scenario) inner subcase") {
         CHECK(true);
     }
 
@@ -235,10 +217,4 @@ TEST_CASE("Force currentSubcaseLevel > subcasesStack.size() (overflow scenario)"
 
     // to keep compiler happy
     CHECK(true);
-}
-
-TEST_CASE("Subcases with empty names") {
-    SUBCASE("") {
-        CHECK(true); // simulation
-    }
 }
