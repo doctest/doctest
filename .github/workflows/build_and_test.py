@@ -14,7 +14,7 @@ assert _compiler in ["cl", "clang-cl", "clang", "gcc", "xcode"]
 
 _version = Version(sys.argv[4]) if len(sys.argv) >= 5 else None
 
-print("Env: " + "; ".join([_os, _arch, _compiler, _version]))
+print("Env: " + "; ".join([_os, _arch, _compiler, str(_version)]))
 
 if _compiler == "gcc":
     used_cxx = "g++"
