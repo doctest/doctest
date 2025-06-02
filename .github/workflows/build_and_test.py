@@ -6,8 +6,8 @@ from packaging.version import Version
 _os = sys.argv[1]
 assert _os in ["Linux", "macOS", "Windows"]
 
-_arch = sys.argv[2]
-assert _arch in ["x86", "x64"]
+_arch = sys.argv[2].lower()
+assert _arch in ["x86", "x64", "arm64"]
 
 _compiler = sys.argv[3]
 assert _compiler in ["cl", "clang-cl", "clang", "gcc", "xcode"]
@@ -63,6 +63,8 @@ elif _os == "Linux":
     elif _compiler == "gcc":
         if _version <= Version("5.0"):
             flags = ""
+elif _os == "macOS" and _compiler == "gcc":
+    flags = ""
 
 if _os == "Linux" and _compiler == "gcc":
     flags += " -static-libasan"
@@ -78,6 +80,8 @@ elif _os == "Linux":
     elif _compiler == "gcc":
         if _version <= Version("6.0"):
             tsan_flags = ""
+elif _os == "macOS" and _compiler == "gcc":
+    tsan_flags = ""
 
 if _os == "Linux" and _compiler == "gcc":
     tsan_flags += " -static-libtsan"
@@ -93,7 +97,7 @@ for configuration in ["Debug", "Release"]:
             configuration,
             "COMPARE",
             "-fno-exceptions -D DOCTEST_CONFIG_NO_EXCEPTIONS_BUT_WITH_ALL_ASSERTS",
-            test = False,
+            test=False,
         )
         run_test(configuration, "COMPARE", "-fno-rtti")
     if _os == "Linux":

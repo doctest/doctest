@@ -29,8 +29,7 @@ jobs:
         run: sudo apt-get install -y ninja-build lcov
 
       - name: Generate
-        run:
-          cmake -B build -S . -G Ninja -D CMAKE_CXX_FLAGS="-fprofile-arcs -ftest-coverage"
+        run: cmake -B build -S . -G Ninja -D CMAKE_CXX_FLAGS="-fprofile-arcs -ftest-coverage"
 
       - name: Build
         run: cmake --build build
@@ -226,21 +225,43 @@ jobs:
             compiler: clang
             version: "18"
 
-          - os: macOS-10.15
+          # macOS Intel
+          - os: macos-13
             compiler: xcode
-            version: "10.3"
+            version: "14.1" # Apple Clang 14.0.0
 
-          - os: macOS-latest
+          - os: macos-13
             compiler: xcode
-            version: "13.2.1"
+            version: "14.3.1" # Apple Clang 14.0.3
 
-          - os: macos-12
+          - os: macos-13
             compiler: xcode
-            version: "14.0.1"
+            version: "15.2" # Apple Clang 15.0.0
 
-          - os: macOS-latest
+          - os: macos-13
             compiler: gcc
-            version: "11"
+            version: "12"
+
+          # macOS arm64
+          - os: macos-14
+            compiler: xcode
+            version: "15.0.1" # Apple Clang 15.0.0
+
+          - os: macos-14
+            compiler: xcode
+            version: "15.4" # Apple Clang 15.0.0
+
+          - os: macos-14
+            compiler: xcode
+            version: "16.2" # Apple Clang 16.0.0
+
+          - os: macos-15
+            compiler: xcode
+            version: "16.3" # Apple Clang 17.0.0
+
+          - os: macos-15
+            compiler: gcc
+            version: "12"
 
     steps:
       - uses: actions/checkout@v2
@@ -304,12 +325,16 @@ jobs:
       - name: Install (macOS)
         if: runner.os == 'macOS'
         run: |
-          brew install ninja
           if [ "${{ matrix.compiler }}" = "xcode" ]; then
-            sudo xcode-select -switch /Applications/Xcode_${{ matrix.version }}.app
+            sudo xcode-select --switch /Applications/Xcode_${{ matrix.version }}.app
           fi
 
-      - name: Configure x64
+          if [ "${{ matrix.os}}" = "macos-15" -a "${{ matrix.compiler }}" = "gcc" ]; then
+            sudo xcode-select --switch /Applications/Xcode_15.4.app
+          fi
+
+      - name: Configure MSVC for X64
+        if: runner.os == 'Windows'
         uses: ilammy/msvc-dev-cmd@v1
 
       # Add Python packaging installation for all runs (except containerized)
@@ -318,34 +343,32 @@ jobs:
           python3 -m pip install packaging==25.0
         shell: bash
 
-      - name: Build & Test x64
+      - name: Build & Test ${{ runner.arch }}
         if: matrix.container == ''
-        run:
-          python3 .github/workflows/build_and_test.py ${{ runner.os }} x64 ${{ matrix.compiler }} ${{ matrix.version }}
+        run: python3 .github/workflows/build_and_test.py ${{ runner.os }} ${{ runner.arch }} ${{ matrix.compiler }} ${{ matrix.version }}
 
-      - name: Build & Test x64 (Linux, containerized)
+      - name: Build & Test ${{ runner.arch }} (Linux, containerized)
         if: runner.os == 'Linux' && matrix.container != ''
         env:
           CMD: |
             cd /workspace
             source container-env.sh
             python3 -m pip install packaging==25.0
-            python3 .github/workflows/build_and_test.py ${{ runner.os }} x64 ${{ matrix.compiler }} ${{ matrix.version }}
-        run:
-          docker exec build-container bash -c "$CMD"
+            python3 .github/workflows/build_and_test.py ${{ runner.os }} ${{ runner.arch }} ${{ matrix.compiler }} ${{ matrix.version }}
+        run: docker exec build-container bash -c "$CMD"
 
-      - name: Configure x86
+      - name: Configure MSVC for X86
+        if: runner.os == 'Windows'
         uses: ilammy/msvc-dev-cmd@v1
         with:
           arch: x86
 
       # MacOS doesn't support x86 from Xcode 10 onwards.
-      - name: Build & Test x86
+      - name: Build & Test X86
         if: (runner.os == 'Linux' && matrix.container == '') || (runner.os == 'Windows' && matrix.compiler != 'clang-cl')
-        run:
-          python3 .github/workflows/build_and_test.py ${{ runner.os }} x86 ${{ matrix.compiler }} ${{ matrix.version }}
+        run: python3 .github/workflows/build_and_test.py ${{ runner.os }} x86 ${{ matrix.compiler }} ${{ matrix.version }}
 
-      - name: Build & Test x86 (Linux, containerized)
+      - name: Build & Test X86 (Linux, containerized)
         if: runner.os == 'Linux' && matrix.container != ''
         env:
           CMD: |
@@ -353,8 +376,7 @@ jobs:
             source container-env.sh
             python3 -m pip install packaging==25.0
             python3 .github/workflows/build_and_test.py ${{ runner.os }} x86 ${{ matrix.compiler }} ${{ matrix.version }}
-        run:
-          docker exec build-container bash -c "$CMD"
+        run: docker exec build-container bash -c "$CMD"
 
   ci-min-gw:
     if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name != github.repository
@@ -395,7 +417,8 @@ jobs:
       - uses: actions/checkout@v2
 
       - name: Generate
-        run: cmake -B build -S . -G "${{ matrix.toolset == 'v143' && 'Visual Studio 17 2022' || 'Visual Studio 16 2019' }}" \
+        run:
+          cmake -B build -S . -G "${{ matrix.toolset == 'v143' && 'Visual Studio 17 2022' || 'Visual Studio 16 2019' }}" \
           -A ${{ matrix.architecture }} -T ${{ matrix.toolset }}
 
       - name: Build
@@ -404,32 +427,34 @@ jobs:
       - name: Test
         run: ctest -C ${{ matrix.configuration }} --test-dir build --no-tests=error
 
-  ci-icpc:
+  ci-oneapi:
     if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name != github.repository
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-22.04
 
     strategy:
       fail-fast: false
       matrix:
         configuration: ["Debug", "Release"]
+        compiler: ["icpc", "icx"]
 
     steps:
       - uses: actions/checkout@v2
 
       - name: Install
         run: |
-          #wget -O - https://apt.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB | sudo apt-key add -
-          #sudo add-apt-repository "deb [signed-by=/etc/apt/keyrings/icpc.gpg] https://apt.repos.intel.com/oneapi all main"
-          # apt-key is deprecated replace with below lines
-          wget -O - https://apt.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB | sudo gpg --dearmor |sudo tee /etc/apt/keyrings/icpc.gpg > /dev/null
-          echo "deb [signed-by=/etc/apt/keyrings/icpc.gpg] https://apt.repos.intel.com/oneapi all main" | sudo tee /etc/apt/sources.list.d/icpc.list
+          wget -O - https://apt.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB 2>/dev/null | gpg --dearmor - | sudo tee /usr/share/keyrings/oneapi-archive-keyring.gpg >/dev/null
+          echo "deb [signed-by=/usr/share/keyrings/oneapi-archive-keyring.gpg] https://apt.repos.intel.com/oneapi all main" | sudo tee /etc/apt/sources.list.d/oneapi.list >/dev/null
           sudo apt-get update
           sudo apt-get install -y intel-oneapi-compiler-dpcpp-cpp-and-cpp-classic ninja-build
 
       - name: Generate
         run: |
           . /opt/intel/oneapi/setvars.sh
-          cmake -B build -S . -G Ninja -D CMAKE_CXX_COMPILER=icc -D CMAKE_C_COMPILER=icc -D CMAKE_CXX_COMPILER=icpc -D CMAKE_BUILD_TYPE=${{ matrix.configuration }} -D CMAKE_CXX_FLAGS="-w2 -Wcheck -Werror -diag-disable=10441 -D DOCTEST_CONFIG_NO_CONTRADICTING_INLINE"
+          if [ "${{ matrix.compiler }}" = "icpc" ]; then
+            cmake -B build -S . -G Ninja -D CMAKE_C_COMPILER=icc -D CMAKE_CXX_COMPILER=icpc -D CMAKE_BUILD_TYPE=${{ matrix.configuration }} -D CMAKE_CXX_FLAGS="-w2 -Wcheck -Werror -diag-disable=10441 -D DOCTEST_CONFIG_NO_CONTRADICTING_INLINE"
+          else
+            cmake -B build -S . -G Ninja -D CMAKE_C_COMPILER=icx -D CMAKE_CXX_COMPILER=icpx -D CMAKE_BUILD_TYPE=${{ matrix.configuration }} -D CMAKE_CXX_FLAGS="-Werror -fp-model=precise"
+          fi
 
       - name: Build
         run: |
