@@ -355,10 +355,9 @@ jobs:
           CMD: |
             cd /workspace
             source container-env.sh
+            python3 -m pip install packaging==25.0
             python3 .github/workflows/build_and_test.py ${{ runner.os }} ${{ runner.arch }} ${{ matrix.compiler }} ${{ matrix.version }}
-        run:
-          python3 -m pip install packaging==25.0
-          docker exec build-container bash -c "$CMD"
+        run: docker exec build-container bash -c "$CMD"
 
       - name: Configure MSVC for X86
         if: runner.os == 'Windows'
@@ -369,8 +368,7 @@ jobs:
       # MacOS doesn't support x86 from Xcode 10 onwards.
       - name: Build & Test X86
         if: (runner.os == 'Linux' && matrix.container == '') || (runner.os == 'Windows' && matrix.compiler != 'clang-cl')
-        run:
-          python3 .github/workflows/build_and_test.py ${{ runner.os }} x86 ${{ matrix.compiler }} ${{ matrix.version }}
+        run: python3 .github/workflows/build_and_test.py ${{ runner.os }} x86 ${{ matrix.compiler }} ${{ matrix.version }}
 
       - name: Build & Test X86 (Linux, containerized)
         if: runner.os == 'Linux' && matrix.container != ''
@@ -380,8 +378,7 @@ jobs:
             source container-env.sh
             python3 -m pip install packaging==25.0
             python3 .github/workflows/build_and_test.py ${{ runner.os }} x86 ${{ matrix.compiler }} ${{ matrix.version }}
-        run:
-          docker exec build-container bash -c "$CMD"
+        run: docker exec build-container bash -c "$CMD"
 
   ci-min-gw:
     if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name != github.repository
