@@ -291,9 +291,6 @@ jobs:
             apt-get update
             apt-get install -y cmake ninja-build valgrind libc6-dbg:i386 python3 python3-pip
 
-            pip3 install packaging==25.0
-
-
             if [ "${{ matrix.compiler }}" = "gcc" ]; then
               apt-get install -y g++-${{ matrix.version }} g++-${{ matrix.version }}-multilib
             elif [ "${{ matrix.compiler }}" = "clang" ]; then
@@ -312,22 +309,11 @@ jobs:
       - name: Configure x64
         uses: ilammy/msvc-dev-cmd@v1
 
-      # Add Python packaging installation for all runs
-      - name: Install Python Dependencies
-        run: |
-          # Different package managers depending on OS
-          if [ "${{ runner.os }}" == "Linux" ]; then
-            pip3 install packaging==25.0
-          elif [ "${{ runner.os }}" == "macOS" ]; then
-            pip3 install packaging==25.0
-          else
-            pip install packaging==25.0  # Windows
-          fi
-        shell: bash
-
       - name: Build & Test x64
         if: matrix.container == ''
-        run: python3 .github/workflows/build_and_test.py ${{ runner.os }} x64 ${{ matrix.compiler }} ${{ matrix.version }}
+        run:
+          python3 -m pip install packaging==25.0
+          python3 .github/workflows/build_and_test.py ${{ runner.os }} x64 ${{ matrix.compiler }} ${{ matrix.version }}
 
       - name: Build & Test x64 (Linux, containerized)
         if: runner.os == 'Linux' && matrix.container != ''
@@ -336,7 +322,9 @@ jobs:
             cd /workspace
             source container-env.sh
             python3 .github/workflows/build_and_test.py ${{ runner.os }} x64 ${{ matrix.compiler }} ${{ matrix.version }}
-        run: docker exec build-container bash -c "$CMD"
+        run:
+          python3 -m pip install packaging==25.0
+          docker exec build-container bash -c "$CMD"
 
       - name: Configure x86
         uses: ilammy/msvc-dev-cmd@v1
@@ -346,7 +334,9 @@ jobs:
       # MacOS doesn't support x86 from Xcode 10 onwards.
       - name: Build & Test x86
         if: (runner.os == 'Linux' && matrix.container == '') || (runner.os == 'Windows' && matrix.compiler != 'clang-cl')
-        run: python3 .github/workflows/build_and_test.py ${{ runner.os }} x86 ${{ matrix.compiler }} ${{ matrix.version }}
+        run:
+          python3 -m pip install packaging==25.0
+          python3 .github/workflows/build_and_test.py ${{ runner.os }} x86 ${{ matrix.compiler }} ${{ matrix.version }}
 
       - name: Build & Test x86 (Linux, containerized)
         if: runner.os == 'Linux' && matrix.container != ''
@@ -355,7 +345,9 @@ jobs:
             cd /workspace
             source container-env.sh
             python3 .github/workflows/build_and_test.py ${{ runner.os }} x86 ${{ matrix.compiler }} ${{ matrix.version }}
-        run: docker exec build-container bash -c "$CMD"
+        run:
+          python3 -m pip install packaging==25.0
+          docker exec build-container bash -c "$CMD"
 
   ci-min-gw:
     if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name != github.repository
