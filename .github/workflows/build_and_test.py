@@ -1,6 +1,8 @@
 import os
 import sys
 
+from packaging.version import Version
+
 _os = sys.argv[1]
 assert _os in ["Linux", "macOS", "Windows"]
 
@@ -10,9 +12,9 @@ assert _arch in ["x86", "x64", "arm64"]
 _compiler = sys.argv[3]
 assert _compiler in ["cl", "clang-cl", "clang", "gcc", "xcode"]
 
-_version = sys.argv[4] if len(sys.argv) >= 5 else ""
+_version = Version(sys.argv[4]) if len(sys.argv) >= 5 else None
 
-print("Env: " + "; ".join([_os, _arch, _compiler, _version]))
+print("Env: " + "; ".join([_os, _arch, _compiler, str(_version)]))
 
 if _compiler == "gcc":
     used_cxx = "g++"
@@ -22,7 +24,7 @@ else:
     used_cxx = _compiler
 
 if _os == "Linux" or (_os == "macOS" and _compiler == "gcc"):
-    used_cxx += "-" + _version
+    used_cxx += "-" + str(_version)
 
 
 def log_and_call(command):
@@ -49,21 +51,17 @@ def run_test(build_type, test_mode, flags, test=True):
         exit(4)
 
 
-def version_tuple(v):
-    return tuple(map(int, (v.split("."))))
-
-
 flags = "-fsanitize=address,undefined -fno-omit-frame-pointer"
 if _os == "Windows":
     flags = ""
 elif _os == "Linux":
     if _compiler == "clang":
-        if version_tuple(_version) <= version_tuple("6.0") or (
-            version_tuple("11") <= version_tuple(_version) < version_tuple("13")
+        if _version <= Version("6.0") or (
+            Version("11") <= _version < Version("13")
         ):
             flags = ""
     elif _compiler == "gcc":
-        if version_tuple(_version) <= version_tuple("5.0"):
+        if _version <= Version("5.0"):
             flags = ""
 elif _os == "macOS" and _compiler == "gcc":
     flags = ""
@@ -76,11 +74,11 @@ if _os == "Windows":
     tsan_flags = ""
 elif _os == "Linux":
     if _compiler == "clang":
-        if (version_tuple(_version) <= version_tuple("3.9") or
-            version_tuple(_version) == version_tuple("11")):
+        if (_version <= Version("3.9") or
+            _version == Version("11")):
             tsan_flags = ""
     elif _compiler == "gcc":
-        if version_tuple(_version) <= version_tuple("6.0"):
+        if _version <= Version("6.0"):
             tsan_flags = ""
 elif _os == "macOS" and _compiler == "gcc":
     tsan_flags = ""
