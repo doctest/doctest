@@ -6,6 +6,7 @@ DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_BEGIN
 #include <iostream>
 #include <string>
 #include <vector>
+#include <thread>
 using namespace std;
 DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_END
 
@@ -146,14 +147,14 @@ TEST_CASE("Nested - related to https://github.com/doctest/doctest/issues/282")
     DOCTEST_SUBCASE("generate data variant 1")
     {
         int data(44);
-        
+
         // checks
         checks(data);
     }
     DOCTEST_SUBCASE("generate data variant 1")
     {
         int data(80);
-        
+
         // checks (identical in both variants)
         checks(data);
     }
@@ -195,4 +196,25 @@ TEST_SUITE("with a funny name,") {
     TEST_CASE("without a funny name:") {
         MESSAGE("Nooo");
     }
+}
+
+// related to https://github.com/doctest/doctest/issues/915
+TEST_CASE("Force currentSubcaseLevel > subcasesStack.size() (overflow scenario)") {
+    // Open exactly one subcase. After exiting it, currentSubcaseLevel will be 0.
+    SUBCASE("Force currentSubcaseLevel > subcasesStack.size() (overflow scenario) inner subcase") {
+        CHECK(true);
+    }
+
+    // Spawn a background thread that fails a REQUIRE.  That FAILURE will
+    // invoke reportFatal() → subcase_end() again, decrementing currentSubcaseLevel
+    // below zero (underflowing an unsigned size_t).
+    // When logTestStart() finally runs, currentSubcaseLevel is huge.
+    auto e = std::thread([]{
+        REQUIRE(false);
+    });
+
+    e.join();
+
+    // to keep compiler happy
+    CHECK(true);
 }
