@@ -302,6 +302,7 @@ jobs:
         env:
           CMD: |
             dpkg --add-architecture i386
+            export TZ=Etc/UTC # set timezone to UTC to automate tzdata package configuration
 
             # Configure Kitware repo for newer version of CMake.
             if [ "${{ matrix.container }}" = "ubuntu:18.04" ]; then
