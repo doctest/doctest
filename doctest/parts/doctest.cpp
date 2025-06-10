@@ -81,11 +81,9 @@ DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_BEGIN
 #include <atomic>
 #include <mutex>
 #define DOCTEST_DECLARE_MUTEX(name) std::mutex name;
-#define DOCTEST_DECLARE_STATIC_MUTEX(name) static DOCTEST_DECLARE_MUTEX(name)
 #define DOCTEST_LOCK_MUTEX(name) std::lock_guard<std::mutex> DOCTEST_ANONYMOUS(DOCTEST_ANON_LOCK_)(name);
 #else // DOCTEST_CONFIG_NO_MULTITHREADING
 #define DOCTEST_DECLARE_MUTEX(name)
-#define DOCTEST_DECLARE_STATIC_MUTEX(name)
 #define DOCTEST_LOCK_MUTEX(name)
 #endif // DOCTEST_CONFIG_NO_MULTITHREADING
 #include <set>
@@ -124,6 +122,18 @@ DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_BEGIN
 #include <windows.h>
 #endif
 #include <io.h>
+
+#ifdef DOCTEST_CONFIG_NO_MULTITHREADING
+#define DOCTEST_DECLARE_STATIC_MUTEX(name) static DOCTEST_DECLARE_MUTEX(name)
+#else // DOCTEST_CONFIG_NO_MULTITHREADING
+#define DOCTEST_DECLARE_STATIC_MUTEX(name)
+#endif // DOCTEST_CONFIG_NO_MULTITHREADING
+
+#define DOCTEST_OUTPUT_DEBUG_STRING(text) ::OutputDebugStringA(text)
+
+#ifndef DOCTEST_CDECL
+#define DOCTEST_CDECL __cdecl
+#endif
 
 #else // DOCTEST_PLATFORM_WINDOWS
 
@@ -181,10 +191,6 @@ DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_END
 
 #if defined(WINAPI_FAMILY) && (WINAPI_FAMILY == WINAPI_FAMILY_APP)
 #define DOCTEST_CONFIG_NO_MULTI_LANE_ATOMICS
-#endif
-
-#ifndef DOCTEST_CDECL
-#define DOCTEST_CDECL __cdecl
 #endif
 
 namespace doctest {
@@ -1795,13 +1801,6 @@ namespace {
 
 namespace {
     using namespace detail;
-
-#ifdef DOCTEST_PLATFORM_WINDOWS
-#define DOCTEST_OUTPUT_DEBUG_STRING(text) ::OutputDebugStringA(text)
-#else
-    // TODO: integration with XCode and other IDEs
-#define DOCTEST_OUTPUT_DEBUG_STRING(text)
-#endif // Platform
 
     void addAssert(assertType::Enum at) {
         if((at & assertType::is_warn) == 0) //!OCLINT bitwise operator in conditional
