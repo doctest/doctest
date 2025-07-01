@@ -871,7 +871,7 @@ String toString(const char* in) { return String("\"") + (in ? in : "{null string
 String toString(const std::string& in) { return in.c_str(); }
 #endif // VS 2019
 
-String toString(String in) { return in; }
+String toString(const String& in) { return in; }
 
 String toString(std::nullptr_t) { return "nullptr"; }
 

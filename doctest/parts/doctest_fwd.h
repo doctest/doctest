@@ -1105,6 +1105,8 @@ String toString(const DOCTEST_REF_WRAP(T) value) {
     return StringMaker<T>::convert(value);
 }
 
+inline String&& toString(String&& in) { return static_cast<String&&>(in); }
+
 #ifdef DOCTEST_CONFIG_TREAT_CHAR_STAR_AS_STRING
 DOCTEST_INTERFACE String toString(const char* in);
 #endif // DOCTEST_CONFIG_TREAT_CHAR_STAR_AS_STRING
@@ -1114,7 +1116,7 @@ DOCTEST_INTERFACE String toString(const char* in);
 DOCTEST_INTERFACE String toString(const std::string& in);
 #endif // VS 2019
 
-DOCTEST_INTERFACE String toString(String in);
+DOCTEST_INTERFACE String toString(const String& in);
 
 DOCTEST_INTERFACE String toString(std::nullptr_t);
 
