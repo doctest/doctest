@@ -1410,7 +1410,7 @@ namespace {
         auto&  translators = getExceptionTranslators();
         for(auto& curr : translators)
             if(curr->translate(res))
-                return res;
+                return String(res);
         // clang-format off
         DOCTEST_GCC_SUPPRESS_WARNING_WITH_PUSH("-Wcatch-value")
         try {
