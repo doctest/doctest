@@ -11,20 +11,10 @@ This script attempts to be a bit more future-proof, by automatically
 scanning for any .h and .cpp files that could be included,
 (topologically) sorting them by #include order, then creating
 the final header file.
-
-We have to be cautious with our handling of .cpp files though,
-since in order to avoid littering source files with clauses like:
-
-  ```cpp
-  #if defined(DOCTEST_CONFIG_IMPLEMENT) || !defined(DOCTEST_SINGLE_HEADER)
-  ```
-
-...we instead want to insert this exactly once, around all inserted sources
-in the output header.
 """
 
 # /// script
-# requires-python = ">=3.8"
+# requires-python = ">=3.6"
 # ///
 
 
@@ -100,7 +90,8 @@ def main(args: list[str]) -> NoReturn:
       content = fd.read()
 
     for line in content.splitlines(keepends=False):
-      if (header := extract_header(line)):
+      header = extract_header(line)
+      if header is not None:
         if (incdir / header) in headers:
           yield from process_file(incdir / header, visited=visited)
         else:
