@@ -1195,6 +1195,11 @@ DOCTEST_MSVC_SUPPRESS_WARNING_POP
         static void fill(std::ostream* stream, const void* in);
     };
 
+    template <>
+    struct filldata<const volatile void*> {
+        static void fill(std::ostream* stream, const volatile void* in);
+    };
+
     template <typename T>
     struct filldata<T*> {
 DOCTEST_MSVC_SUPPRESS_WARNING_WITH_PUSH(4180)
@@ -1206,6 +1211,23 @@ DOCTEST_CLANG_SUPPRESS_WARNING_WITH_PUSH("-Wmicrosoft-cast")
                 reinterpret_cast<const void*>(in)
 #else
                 *reinterpret_cast<const void* const*>(&in)
+#endif
+            );
+DOCTEST_CLANG_SUPPRESS_WARNING_POP
+        }
+    };
+
+    template <typename T>
+    struct filldata<volatile T*> {
+DOCTEST_MSVC_SUPPRESS_WARNING_WITH_PUSH(4180)
+        static void fill(std::ostream* stream, const volatile T* in) {
+DOCTEST_MSVC_SUPPRESS_WARNING_POP
+DOCTEST_CLANG_SUPPRESS_WARNING_WITH_PUSH("-Wmicrosoft-cast")
+            filldata<const volatile void*>::fill(stream,
+#if DOCTEST_GCC == 0 || DOCTEST_GCC >= DOCTEST_COMPILER(4, 9, 0)
+                reinterpret_cast<const volatile void*>(in)
+#else
+                *reinterpret_cast<const volatile void* const*>(&in)
 #endif
             );
 DOCTEST_CLANG_SUPPRESS_WARNING_POP
@@ -3947,6 +3969,11 @@ DOCTEST_DEFINE_INTERFACE(IContextScope)
 
 namespace detail {
     void filldata<const void*>::fill(std::ostream* stream, const void* in) {
+        if (in) { *stream << in; }
+        else { *stream << "nullptr"; }
+    }
+
+    void filldata<const volatile void*>::fill(std::ostream* stream, const volatile void* in) {
         if (in) { *stream << in; }
         else { *stream << "nullptr"; }
     }
