@@ -88,8 +88,7 @@ def main(args: list[str]) -> NoReturn:
       return
 
     visited.add(file)
-    with file.open("r") as fd:
-      content = fd.read()
+    content = file.read_text(encoding="utf-8")
 
     for line in content.splitlines(keepends=False):
       header = extract_header(line)
