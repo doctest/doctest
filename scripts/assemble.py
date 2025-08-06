@@ -35,11 +35,13 @@ def main(args: list[str]) -> NoReturn:
 
   script = Path(__file__).resolve()
   root   = script.parent.parent
-  incdir = root / "doctest" / "parts"
-  output = root / "doctest" / "doctest.h"
 
-  headers = set(incdir.rglob("*.h"))
-  sources = set(incdir.rglob("*.cpp"))
+  header_dir = root / "doctest" / "parts"
+  source_dir = root / "doctest" / "parts"
+  output     = root / "doctest" / "doctest.h"
+
+  headers = set(header_dir.rglob("*.h"))
+  sources = set(source_dir.rglob("*.cpp"))
 
   def extract_header(line: str) -> str | None:
     """
@@ -92,8 +94,8 @@ def main(args: list[str]) -> NoReturn:
     for line in content.splitlines(keepends=False):
       header = extract_header(line)
       if header is not None:
-        if (incdir / header) in headers:
-          yield from process_file(incdir / header, visited=visited)
+        if (header_dir / header) in headers:
+          yield from process_file(header_dir / header, visited=visited)
         else:
           yield line
       else:
