@@ -82,7 +82,7 @@ def main(args: list[str]) -> NoReturn:
     raise RuntimeError(reason)
 
 
-  def process_file(file: Path, /, visited: set[Path]) -> Generator[str, None, None]:
+  def process_file(file: Path, visited: set[Path]) -> Generator[str, None, None]:
     """
     Process a file, yielding lines of code with #include's scrubbed.
 
