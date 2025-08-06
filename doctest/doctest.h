@@ -162,11 +162,13 @@
 #define DOCTEST_SUPPRESS_COMMON_WARNINGS_PUSH                                                      \
     DOCTEST_CLANG_SUPPRESS_WARNING_PUSH                                                            \
     DOCTEST_CLANG_SUPPRESS_WARNING("-Wunknown-pragmas")                                            \
+    DOCTEST_CLANG_SUPPRESS_WARNING("-Wunknown-warning-option")                                     \
     DOCTEST_CLANG_SUPPRESS_WARNING("-Wweak-vtables")                                               \
     DOCTEST_CLANG_SUPPRESS_WARNING("-Wpadded")                                                     \
     DOCTEST_CLANG_SUPPRESS_WARNING("-Wmissing-prototypes")                                         \
     DOCTEST_CLANG_SUPPRESS_WARNING("-Wc++98-compat")                                               \
     DOCTEST_CLANG_SUPPRESS_WARNING("-Wc++98-compat-pedantic")                                      \
+    DOCTEST_CLANG_SUPPRESS_WARNING("-Wunsafe-buffer-usage")                                        \
                                                                                                    \
     DOCTEST_GCC_SUPPRESS_WARNING_PUSH                                                              \
     DOCTEST_GCC_SUPPRESS_WARNING("-Wunknown-pragmas")                                              \
