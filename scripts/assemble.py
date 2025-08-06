@@ -3,14 +3,9 @@
 """
 Generate the monolithic doctest.h header file.
 
-Our original script, scripts/cmake/assemble_single_header.cmake,
-simply read doctest_fwd.h and doctest.cpp and pasted them in-order,
-with some defines sandwiched inbetween.
-
-This script attempts to be a bit more future-proof, by automatically
-scanning for any .h and .cpp files that could be included,
-(topologically) sorting them by #include order, then creating
-the final header file.
+This script scans for any .h and .cpp files in the parts/ directory,
+(topologically) sorts them by #include order, then emits them into
+the final doctest.h header.
 """
 
 # /// script
