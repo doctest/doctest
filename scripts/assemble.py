@@ -21,9 +21,24 @@ the final header file.
 from __future__ import annotations
 
 import re
+import string
 import sys
+from itertools import chain
 from pathlib import Path
+from textwrap import dedent
 from typing import Generator, NoReturn
+
+
+TEMPLATE = string.Template(dedent("""\
+  // ============================================================= lgtm [cpp/missing-header-guard]
+  // == DO NOT MODIFY THIS FILE BY HAND - IT IS AUTO GENERATED! ==
+  // =============================================================
+  $headers
+  #ifndef DOCTEST_SINGLE_HEADER
+  #define DOCTEST_SINGLE_HEADER
+  #endif // DOCTEST_SINGLE_HEADER
+  $sources
+"""))
 
 
 def main(args: list[str]) -> NoReturn:
@@ -98,34 +113,13 @@ def main(args: list[str]) -> NoReturn:
         yield line
 
 
-  # Would be a lot nicer with t-strings (Python 3.14)
-  # or jinja2, but it's best to avoid unnecessary dependencies,
-  # even for dev tooling
   visited: set[Path] = set()
-  content = [
-    '// ============================================================= lgtm [cpp/missing-header-guard]',
-    '// == DO NOT MODIFY THIS FILE BY HAND - IT IS AUTO GENERATED! ==',
-    '// =============================================================',
-    *(process_file(file, visited=visited) for file in headers),
-    '#ifndef DOCTEST_SINGLE_HEADER',
-    '#define DOCTEST_SINGLE_HEADER',
-    '#endif // DOCTEST_SINGLE_HEADER',
-    *(process_file(file, visited=visited) for file in sources),
-  ]
+  result  = TEMPLATE.substitute(
+    headers="\n".join(chain.from_iterable(process_file(file, visited=visited) for file in headers)),
+    sources="\n".join(chain.from_iterable(process_file(file, visited=visited) for file in sources)),
+  )
 
-
-  def flatten(iterable):
-    for item in iterable:
-      if isinstance(item, str):
-        yield item
-      else:
-        yield from flatten(item)
-
-
-  with output.open("w") as sink:
-    for line in flatten(content):
-      print(line, file=sink)
-
+  output.write_text(result)
   sys.exit(0)
 
 if __name__ == "__main__":
