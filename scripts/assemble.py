@@ -92,11 +92,8 @@ def main(args: list[str]) -> NoReturn:
 
     for line in content.splitlines(keepends=False):
       header = extract_header(line)
-      if header is not None:
-        if (header_dir / header) in headers:
-          yield from process_file(header_dir / header, visited=visited)
-        else:
-          yield line
+      if (header is not None) and ((header_dir / header) in headers):
+        yield from process_file(header_dir / header, visited=visited)
       else:
         yield line
 
