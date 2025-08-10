@@ -13,15 +13,12 @@ the final doctest.h header.
 # ///
 
 
-from __future__ import annotations
-
 import re
 import string
 import sys
 from itertools import chain
 from pathlib import Path
 from textwrap import dedent
-from typing import Generator, NoReturn
 
 
 TEMPLATE = string.Template(
@@ -40,7 +37,7 @@ TEMPLATE = string.Template(
 )
 
 
-def main(args: list[str]) -> NoReturn:
+def main(args):
     """Script entry-point."""
 
     if len(args) != 1:
@@ -57,7 +54,7 @@ def main(args: list[str]) -> NoReturn:
     headers = set(header_dir.rglob("*.h"))
     sources = set(source_dir.rglob("*.cpp"))
 
-    def extract_header(line: str) -> str | None:
+    def extract_header(line):
         """
         Extract a header file name from a line of C code.
 
@@ -80,7 +77,7 @@ def main(args: list[str]) -> NoReturn:
         reason = f"'{line}' has multiple includes"
         raise RuntimeError(reason)
 
-    def process_file(file: Path, visited: set[Path]) -> Generator[str, None, None]:
+    def process_file(file, visited):
         """
         Process a file, yielding lines of code with #include's scrubbed.
 
@@ -110,7 +107,7 @@ def main(args: list[str]) -> NoReturn:
             else:
                 yield line
 
-    visited: set[Path] = set()
+    visited = set()
     result = TEMPLATE.substitute(
         headers="\n".join(
             chain.from_iterable(process_file(file, visited=visited) for file in headers)
