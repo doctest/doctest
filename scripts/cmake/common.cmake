@@ -1,4 +1,5 @@
 include(CMakeParseArguments)
+include(CheckCXXCompilerFlag)
 
 # cache this for use inside of the function
 set(CURRENT_LIST_DIR_CACHED ${CMAKE_CURRENT_LIST_DIR})
@@ -187,6 +188,11 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
     add_compiler_flags(-Wno-c++98-compat-bind-to-temporary-copy)
     add_compiler_flags(-Wno-c++98-compat-local-type-template-args)
     add_compiler_flags(-Qunused-arguments -fcolor-diagnostics) # needed for ccache integration
+endif()
+
+check_cxx_compiler_flag(-Wunsafe-buffer-usage HAVE_UNSAFE_BUFFER_USAGE)
+if(HAVE_UNSAFE_BUFFER_USAGE)
+    add_compiler_flags(-Wno-unsafe-buffer-usage)
 endif()
 
 if(MSVC)
