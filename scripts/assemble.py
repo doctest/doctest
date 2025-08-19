@@ -110,7 +110,7 @@ def main(args):
     visited = set()
     result = TEMPLATE.substitute(
         headers="\n".join(
-            chain.from_iterable(process_file(file, visited=visited) for file in headers)
+            chain.from_iterable(process_file(file, visited=visited) for file in sorted(headers))
         ),
         sources="\n".join(
             chain.from_iterable(process_file(file, visited=visited) for file in sources)
