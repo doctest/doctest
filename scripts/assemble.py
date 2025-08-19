@@ -109,10 +109,11 @@ def main(args):
             else:
                 yield line
 
-    visited = set()
+    visited     = set()
+    doctest_fwd = header_dir / "doctest_fwd.h"
     result = TEMPLATE.substitute(
         headers="\n".join(
-            chain.from_iterable(process_file(file, visited=visited) for file in sorted(headers))
+            process_file(doctest_fwd, visited=visited)
         ),
         sources="\n".join(
             chain.from_iterable(process_file(file, visited=visited) for file in sources)
