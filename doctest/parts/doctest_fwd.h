@@ -39,13 +39,7 @@
 #ifndef DOCTEST_LIBRARY_INCLUDED
 #define DOCTEST_LIBRARY_INCLUDED
 
-// =================================================================================================
-// == VERSION ======================================================================================
-// =================================================================================================
-
-#define DOCTEST_VERSION_MAJOR 2
-#define DOCTEST_VERSION_MINOR 4
-#define DOCTEST_VERSION_PATCH 12
+#include <doctest/parts/version.h>
 
 // util we need here
 #define DOCTEST_TOSTR_IMPL(x) #x

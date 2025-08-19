@@ -16,7 +16,7 @@ version_patch = str(getVersionTuple(version)[2])
 # update version in the header file
 print("updating the version in the header file")
 doctest_contents = ""
-for line in fileinput.input(["../doctest/parts/doctest_fwd.h"]):
+for line in fileinput.input(["../doctest/parts/version.h"]):
     if line.startswith("#define DOCTEST_VERSION_MAJOR "):
         doctest_contents += "#define DOCTEST_VERSION_MAJOR " + version_major + "\n"
     elif line.startswith("#define DOCTEST_VERSION_MINOR "):
@@ -26,7 +26,7 @@ for line in fileinput.input(["../doctest/parts/doctest_fwd.h"]):
     else:
         doctest_contents += line
 
-readme = open("../doctest/parts/doctest_fwd.h", "w")
+readme = open("../doctest/parts/version.h", "w")
 readme.write(doctest_contents)
 readme.close()
 
