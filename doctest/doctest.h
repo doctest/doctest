@@ -106,7 +106,6 @@
 #ifndef DOCTEST_ICC
 #define DOCTEST_ICC 0
 #endif // DOCTEST_ICC
-
 // =================================================================================================
 // == COMPILER WARNINGS HELPERS ====================================================================
 // =================================================================================================
@@ -212,20 +211,6 @@
     DOCTEST_GCC_SUPPRESS_WARNING_POP                                                               \
     DOCTEST_MSVC_SUPPRESS_WARNING_POP
 
-DOCTEST_SUPPRESS_COMMON_WARNINGS_PUSH
-
-DOCTEST_CLANG_SUPPRESS_WARNING_PUSH
-DOCTEST_CLANG_SUPPRESS_WARNING("-Wnon-virtual-dtor")
-DOCTEST_CLANG_SUPPRESS_WARNING("-Wdeprecated")
-
-DOCTEST_GCC_SUPPRESS_WARNING_PUSH
-DOCTEST_GCC_SUPPRESS_WARNING("-Wctor-dtor-privacy")
-DOCTEST_GCC_SUPPRESS_WARNING("-Wnon-virtual-dtor")
-DOCTEST_GCC_SUPPRESS_WARNING("-Wsign-promo")
-
-DOCTEST_MSVC_SUPPRESS_WARNING_PUSH
-DOCTEST_MSVC_SUPPRESS_WARNING(4623) // default constructor was implicitly defined as deleted
-
 #define DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_BEGIN                                 \
     DOCTEST_MSVC_SUPPRESS_WARNING_PUSH                                                             \
     DOCTEST_MSVC_SUPPRESS_WARNING(4548) /* before comma no effect; expected side - effect */       \
@@ -248,6 +233,20 @@ DOCTEST_MSVC_SUPPRESS_WARNING(4623) // default constructor was implicitly define
     DOCTEST_MSVC_SUPPRESS_WARNING(5262) /* implicit fall-through */
 
 #define DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_END DOCTEST_MSVC_SUPPRESS_WARNING_POP
+
+DOCTEST_SUPPRESS_COMMON_WARNINGS_PUSH
+
+DOCTEST_CLANG_SUPPRESS_WARNING_PUSH
+DOCTEST_CLANG_SUPPRESS_WARNING("-Wnon-virtual-dtor")
+DOCTEST_CLANG_SUPPRESS_WARNING("-Wdeprecated")
+
+DOCTEST_GCC_SUPPRESS_WARNING_PUSH
+DOCTEST_GCC_SUPPRESS_WARNING("-Wctor-dtor-privacy")
+DOCTEST_GCC_SUPPRESS_WARNING("-Wnon-virtual-dtor")
+DOCTEST_GCC_SUPPRESS_WARNING("-Wsign-promo")
+
+DOCTEST_MSVC_SUPPRESS_WARNING_PUSH
+DOCTEST_MSVC_SUPPRESS_WARNING(4623) // default constructor was implicitly defined as deleted
 
 // =================================================================================================
 // == FEATURE DETECTION ============================================================================
