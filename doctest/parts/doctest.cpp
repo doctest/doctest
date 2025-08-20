@@ -850,6 +850,10 @@ DOCTEST_DEFINE_INTERFACE(IContextScope)
 
 namespace detail {
     void filldata<const void*>::fill(std::ostream* stream, const void* in) {
+        filldata<const volatile void*>::fill(stream, in);
+    }
+
+    void filldata<const volatile void*>::fill(std::ostream* stream, const volatile void* in) {
         if (in) { *stream << in; }
         else { *stream << "nullptr"; }
     }

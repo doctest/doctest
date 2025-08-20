@@ -256,13 +256,20 @@ TEST_CASE("pointer comparisons") {
     int i = 42;
     int* a = &i;
     int* b = a;
-    
+
     CHECK(a == b);
     CHECK_EQ(a, b);
 
     void (*functionPointer)() = &function;
     CHECK(&function == functionPointer);
     CHECK(&function2 == &function2);
+
+    volatile int  i_2 = 30;
+    volatile int* a_2 = &i_2;
+    volatile int* b_2 = a_2;
+
+    CHECK(a_2 == b_2);
+    CHECK_EQ(a_2, b_2);
 }
 
 enum class Foo { };
