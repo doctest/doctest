@@ -129,7 +129,9 @@ DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_BEGIN
 
 #include <sys/time.h>
 #include <unistd.h>
-
+#ifdef DOCTEST_PLATFORM_LINUX
+#include <fcntl.h>
+#endif // DOCTEST_PLATFORM_LINUX
 #endif // DOCTEST_PLATFORM_WINDOWS
 
 // this is a fix for https://github.com/doctest/doctest/issues/348
@@ -1453,25 +1455,30 @@ namespace detail {
     bool isDebuggerActive() { return DOCTEST_IS_DEBUGGER_ACTIVE(); }
 #else // DOCTEST_IS_DEBUGGER_ACTIVE
 #ifdef DOCTEST_PLATFORM_LINUX
-    class ErrnoGuard {
-    public:
-        ErrnoGuard() : m_oldErrno(errno) {}
-        ~ErrnoGuard() { errno = m_oldErrno; }
-    private:
-        int m_oldErrno;
-    };
-    // See the comments in Catch2 for the reasoning behind this implementation:
-    // https://github.com/catchorg/Catch2/blob/v2.13.1/include/internal/catch_debugger.cpp#L79-L102
     bool isDebuggerActive() {
-        ErrnoGuard guard;
-        std::ifstream in("/proc/self/status");
-        for(std::string line; std::getline(in, line);) {
-            static const int PREFIX_LEN = 11;
-            if(line.compare(0, PREFIX_LEN, "TracerPid:\t") == 0) {
-                return line.length() > PREFIX_LEN && line[PREFIX_LEN] != '0';
-            }
+        // 171 bytes would enough to include TracerPid on Linux 6.11 with hypothetical 64bit pids
+        alignas(unsigned long long) char buffer[256 + 1];
+
+        int buf_read = ::open("/proc/self/status", O_RDONLY | O_CLOEXEC);
+        if(buf_read >= 0) {
+            auto result = ::read(buf_read, buffer, sizeof(buffer) - 1);
+            ::close(buf_read);
+            buf_read = static_cast<int>(result);
         }
-        return false;
+        if(buf_read < 80) {
+#ifndef DOCTEST_CONFIG_NO_INCLUDE_IOSTREAM
+            std::cerr << "\nFailed to read /proc/self/status - unable to determine if debugger is "
+                         "active **\n";
+#endif
+            return false;
+        }
+
+        buffer[buf_read] = '\0';
+
+        // Using memmem would be better, but its not easy to detect reliably.
+        // Instead skip some bytes including the Name field which might contain unexpected characters
+        auto* pos = std::strstr(const_cast<const char*>(&buffer[64]), "\nTracerPid:\t");
+        return pos != nullptr && pos[sizeof("\nTracerPid:\t") - 1] != '0';
     }
 #elif defined(DOCTEST_PLATFORM_MAC)
     // The following function is taken directly from the following technical note:
