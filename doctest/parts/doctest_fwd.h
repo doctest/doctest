@@ -59,19 +59,7 @@ DOCTEST_MSVC_SUPPRESS_WARNING(4623) // default constructor was implicitly define
 
 #include <doctest/parts/public/config.h>
 #include <doctest/parts/public/utility.h>
-
-// not using __APPLE__ because... this is how Catch does it
-#ifdef __MAC_OS_X_VERSION_MIN_REQUIRED
-#define DOCTEST_PLATFORM_MAC
-#elif defined(__IPHONE_OS_VERSION_MIN_REQUIRED)
-#define DOCTEST_PLATFORM_IPHONE
-#elif defined(_WIN32)
-#define DOCTEST_PLATFORM_WINDOWS
-#elif defined(__wasi__)
-#define DOCTEST_PLATFORM_WASI
-#else // DOCTEST_PLATFORM
-#define DOCTEST_PLATFORM_LINUX
-#endif // DOCTEST_PLATFORM
+#include <doctest/parts/public/platform.h>
 
 #ifndef DOCTEST_BREAK_INTO_DEBUGGER
 // should probably take a look at https://github.com/scottt/debugbreak

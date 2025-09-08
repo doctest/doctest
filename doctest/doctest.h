@@ -469,7 +469,6 @@ namespace doctest { namespace detail {
     DOCTEST_CLANG_SUPPRESS_WARNING_WITH_PUSH("-Wglobal-constructors")                                \
     static const int var = doctest::detail::consume(&var, __VA_ARGS__);                              \
     DOCTEST_CLANG_SUPPRESS_WARNING_POP
-
 // not using __APPLE__ because... this is how Catch does it
 #ifdef __MAC_OS_X_VERSION_MIN_REQUIRED
 #define DOCTEST_PLATFORM_MAC
