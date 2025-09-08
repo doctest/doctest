@@ -435,7 +435,6 @@ DOCTEST_MSVC_SUPPRESS_WARNING(4623) // default constructor was implicitly define
 // =================================================================================================
 // == FEATURE DETECTION END ========================================================================
 // =================================================================================================
-
 #define DOCTEST_DECLARE_INTERFACE(name)                                                            \
     virtual ~name();                                                                               \
     name() = default;                                                                              \
@@ -462,6 +461,15 @@ DOCTEST_MSVC_SUPPRESS_WARNING(4623) // default constructor was implicitly define
 #define DOCTEST_REF_WRAP(x) x
 #endif // DOCTEST_CONFIG_ASSERTION_PARAMETERS_BY_VALUE
 
+namespace doctest { namespace detail {
+    static DOCTEST_CONSTEXPR int consume(const int*, int) noexcept { return 0; }
+}}
+
+#define DOCTEST_GLOBAL_NO_WARNINGS(var, ...)                                                         \
+    DOCTEST_CLANG_SUPPRESS_WARNING_WITH_PUSH("-Wglobal-constructors")                                \
+    static const int var = doctest::detail::consume(&var, __VA_ARGS__);                              \
+    DOCTEST_CLANG_SUPPRESS_WARNING_POP
+
 // not using __APPLE__ because... this is how Catch does it
 #ifdef __MAC_OS_X_VERSION_MIN_REQUIRED
 #define DOCTEST_PLATFORM_MAC
@@ -474,15 +482,6 @@ DOCTEST_MSVC_SUPPRESS_WARNING(4623) // default constructor was implicitly define
 #else // DOCTEST_PLATFORM
 #define DOCTEST_PLATFORM_LINUX
 #endif // DOCTEST_PLATFORM
-
-namespace doctest { namespace detail {
-    static DOCTEST_CONSTEXPR int consume(const int*, int) noexcept { return 0; }
-}}
-
-#define DOCTEST_GLOBAL_NO_WARNINGS(var, ...)                                                         \
-    DOCTEST_CLANG_SUPPRESS_WARNING_WITH_PUSH("-Wglobal-constructors")                                \
-    static const int var = doctest::detail::consume(&var, __VA_ARGS__);                              \
-    DOCTEST_CLANG_SUPPRESS_WARNING_POP
 
 #ifndef DOCTEST_BREAK_INTO_DEBUGGER
 // should probably take a look at https://github.com/scottt/debugbreak
