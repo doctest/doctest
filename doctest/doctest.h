@@ -400,6 +400,38 @@ DOCTEST_MSVC_SUPPRESS_WARNING(4623) // default constructor was implicitly define
 #endif
 #endif // DOCTEST_NO_SANITIZE_INTEGER
 
+// this is kept here for backwards compatibility since the config option was changed
+#ifdef DOCTEST_CONFIG_USE_IOSFWD
+#ifndef DOCTEST_CONFIG_USE_STD_HEADERS
+#define DOCTEST_CONFIG_USE_STD_HEADERS
+#endif
+#endif // DOCTEST_CONFIG_USE_IOSFWD
+
+// for clang - always include <version> or <ciso646> (which drags some std stuff)
+// because we want to check if we are using libc++ with the _LIBCPP_VERSION macro in
+// which case we don't want to forward declare stuff from std - for reference:
+// https://github.com/doctest/doctest/issues/126
+// https://github.com/doctest/doctest/issues/356
+#if DOCTEST_CLANG
+#if DOCTEST_CPLUSPLUS >= 201703L && __has_include(<version>)
+#include <version>
+#else
+#include <ciso646>
+#endif
+#endif // clang
+
+#ifdef _LIBCPP_VERSION
+#ifndef DOCTEST_CONFIG_USE_STD_HEADERS
+#define DOCTEST_CONFIG_USE_STD_HEADERS
+#endif
+#endif // _LIBCPP_VERSION
+
+#ifdef DOCTEST_CONFIG_USE_STD_HEADERS
+#ifndef DOCTEST_CONFIG_INCLUDE_TYPE_TRAITS
+#define DOCTEST_CONFIG_INCLUDE_TYPE_TRAITS
+#endif // DOCTEST_CONFIG_INCLUDE_TYPE_TRAITS
+#endif // DOCTEST_CONFIG_USE_STD_HEADERS
+
 // =================================================================================================
 // == FEATURE DETECTION END ========================================================================
 // =================================================================================================
@@ -483,36 +515,7 @@ DOCTEST_GCC_SUPPRESS_WARNING_POP
 #endif // linux
 #endif // DOCTEST_BREAK_INTO_DEBUGGER
 
-// this is kept here for backwards compatibility since the config option was changed
-#ifdef DOCTEST_CONFIG_USE_IOSFWD
-#ifndef DOCTEST_CONFIG_USE_STD_HEADERS
-#define DOCTEST_CONFIG_USE_STD_HEADERS
-#endif
-#endif // DOCTEST_CONFIG_USE_IOSFWD
-
-// for clang - always include <version> or <ciso646> (which drags some std stuff)
-// because we want to check if we are using libc++ with the _LIBCPP_VERSION macro in
-// which case we don't want to forward declare stuff from std - for reference:
-// https://github.com/doctest/doctest/issues/126
-// https://github.com/doctest/doctest/issues/356
-#if DOCTEST_CLANG
-#if DOCTEST_CPLUSPLUS >= 201703L && __has_include(<version>)
-#include <version>
-#else
-#include <ciso646>
-#endif
-#endif // clang
-
-#ifdef _LIBCPP_VERSION
-#ifndef DOCTEST_CONFIG_USE_STD_HEADERS
-#define DOCTEST_CONFIG_USE_STD_HEADERS
-#endif
-#endif // _LIBCPP_VERSION
-
 #ifdef DOCTEST_CONFIG_USE_STD_HEADERS
-#ifndef DOCTEST_CONFIG_INCLUDE_TYPE_TRAITS
-#define DOCTEST_CONFIG_INCLUDE_TYPE_TRAITS
-#endif // DOCTEST_CONFIG_INCLUDE_TYPE_TRAITS
 DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_BEGIN
 #include <cstddef>
 #include <ostream>
