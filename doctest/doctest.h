@@ -521,7 +521,6 @@ namespace detail {
 } // doctest
 
 #endif
-
 #ifdef DOCTEST_CONFIG_USE_STD_HEADERS
 DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_BEGIN
 #include <cstddef>
@@ -565,13 +564,15 @@ DOCTEST_MSVC_SUPPRESS_WARNING_POP
 
 #endif // DOCTEST_CONFIG_USE_STD_HEADERS
 
+namespace doctest {
+  using std::size_t;
+}
+
 #ifdef DOCTEST_CONFIG_INCLUDE_TYPE_TRAITS
 #include <type_traits>
 #endif // DOCTEST_CONFIG_INCLUDE_TYPE_TRAITS
 
 namespace doctest {
-
-using std::size_t;
 
 DOCTEST_INTERFACE extern bool is_running_in_test;
 
