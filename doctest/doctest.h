@@ -978,10 +978,7 @@ namespace detail {
 } //namespace detail
 
 } // namespace doctest
-
 namespace doctest {
-
-DOCTEST_INTERFACE extern bool is_running_in_test;
 
 class DOCTEST_INTERFACE Contains {
 public:
@@ -998,6 +995,12 @@ DOCTEST_INTERFACE bool operator==(const String& lhs, const Contains& rhs);
 DOCTEST_INTERFACE bool operator==(const Contains& lhs, const String& rhs);
 DOCTEST_INTERFACE bool operator!=(const String& lhs, const Contains& rhs);
 DOCTEST_INTERFACE bool operator!=(const Contains& lhs, const String& rhs);
+
+} // namespace doctest
+
+namespace doctest {
+
+DOCTEST_INTERFACE extern bool is_running_in_test;
 
 namespace Color {
     enum Enum
@@ -3673,21 +3676,6 @@ using ticks_t = timer_large_integer::type;
 
 #endif // DOCTEST_CONFIG_DISABLE
 } // namespace detail
-
-Contains::Contains(const String& str) : string(str) { }
-
-bool Contains::checkWith(const String& other) const {
-    return strstr(other.c_str(), string.c_str()) != nullptr;
-}
-
-String toString(const Contains& in) {
-    return "Contains( " + in.string + " )";
-}
-
-bool operator==(const String& lhs, const Contains& rhs) { return rhs.checkWith(lhs); }
-bool operator==(const Contains& lhs, const String& rhs) { return lhs.checkWith(rhs); }
-bool operator!=(const String& lhs, const Contains& rhs) { return !rhs.checkWith(lhs); }
-bool operator!=(const Contains& lhs, const String& rhs) { return !lhs.checkWith(rhs); }
 
 namespace {
     void color_to_stream(std::ostream&, Color::Enum) DOCTEST_BRANCH_ON_DISABLED({}, ;)
@@ -6878,6 +6866,25 @@ DOCTEST_MSVC_SUPPRESS_WARNING_WITH_PUSH(4007) // 'function' : must be 'attribute
 int main(int argc, char** argv) { return doctest::Context(argc, argv).run(); }
 DOCTEST_MSVC_SUPPRESS_WARNING_POP
 #endif // DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
+
+namespace doctest {
+
+Contains::Contains(const String& str) : string(str) { }
+
+bool Contains::checkWith(const String& other) const {
+    return strstr(other.c_str(), string.c_str()) != nullptr;
+}
+
+String toString(const Contains& in) {
+    return "Contains( " + in.string + " )";
+}
+
+bool operator==(const String& lhs, const Contains& rhs) { return rhs.checkWith(lhs); }
+bool operator==(const Contains& lhs, const String& rhs) { return lhs.checkWith(rhs); }
+bool operator!=(const String& lhs, const Contains& rhs) { return !rhs.checkWith(lhs); }
+bool operator!=(const Contains& lhs, const String& rhs) { return !lhs.checkWith(rhs); }
+
+} // namespace doctest
 
 namespace doctest {
 

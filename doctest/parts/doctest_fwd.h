@@ -65,26 +65,11 @@ DOCTEST_MSVC_SUPPRESS_WARNING(4623) // default constructor was implicitly define
 #include <doctest/parts/public/std/type_traits.h>
 #include <doctest/parts/public/std/utility.h>
 #include <doctest/parts/public/string.h>
+#include <doctest/parts/public/matchers/contains.h>
 
 namespace doctest {
 
 DOCTEST_INTERFACE extern bool is_running_in_test;
-
-class DOCTEST_INTERFACE Contains {
-public:
-    explicit Contains(const String& string);
-
-    bool checkWith(const String& other) const;
-
-    String string;
-};
-
-DOCTEST_INTERFACE String toString(const Contains& in);
-
-DOCTEST_INTERFACE bool operator==(const String& lhs, const Contains& rhs);
-DOCTEST_INTERFACE bool operator==(const Contains& lhs, const String& rhs);
-DOCTEST_INTERFACE bool operator!=(const String& lhs, const Contains& rhs);
-DOCTEST_INTERFACE bool operator!=(const Contains& lhs, const String& rhs);
 
 namespace Color {
     enum Enum
