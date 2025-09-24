@@ -1,8 +1,4 @@
-cmake_minimum_required(VERSION 3.5)
-
-if(POLICY CMP0077)
-    cmake_policy(SET CMP0077 NEW)
-endif()
+cmake_minimum_required(VERSION 3.14)
 
 ################################################################################
 ## DOCTEST
@@ -28,9 +24,7 @@ option(DOCTEST_INTERNAL_COVERAGE "Set for running coverage" OFF)
 add_library(${PROJECT_NAME} INTERFACE)
 add_library(${PROJECT_NAME}::${PROJECT_NAME} ALIAS ${PROJECT_NAME})
 
-if(NOT CMAKE_VERSION VERSION_LESS 3.8)
-    target_compile_features(${PROJECT_NAME} INTERFACE cxx_std_11)
-endif()
+target_compile_features(${PROJECT_NAME} INTERFACE cxx_std_11)
 
 set(doctest_parts_folder "${CMAKE_CURRENT_SOURCE_DIR}/doctest/parts")
 set(doctest_folder "${CMAKE_CURRENT_SOURCE_DIR}/") # in order to have the mpi extension files, not included into the doctest.h single header
@@ -138,18 +132,9 @@ set(namespace "${PROJECT_NAME}::")
 
 include(CMakePackageConfigHelpers)
 
-# CMake automatically adds an architecture compatibility check to make sure
-# 32 and 64 bit code is not accidentally mixed. For a header-only library this
-# is not required. The check can be disabled by temporarily unsetting
-# CMAKE_SIZEOF_VOID_P. In CMake 3.14 and later this can be achieved more cleanly
-# with write_basic_package_version_file(ARCH_INDEPENDENT).
-# TODO: Use this once a newer CMake can be required.
-set(DOCTEST_SIZEOF_VOID_P ${CMAKE_SIZEOF_VOID_P})
-unset(CMAKE_SIZEOF_VOID_P)
 write_basic_package_version_file(
-    "${version_config}" VERSION ${PROJECT_VERSION} COMPATIBILITY SameMajorVersion
+    "${version_config}" VERSION ${PROJECT_VERSION} COMPATIBILITY SameMajorVersion ARCH_INDEPENDENT
 )
-set(CMAKE_SIZEOF_VOID_P ${DOCTEST_SIZEOF_VOID_P})
 
 configure_file("scripts/cmake/Config.cmake.in" "${project_config}" @ONLY)
 
