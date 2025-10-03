@@ -1893,7 +1893,7 @@ struct Expression_lhs {
 
     /* This is required for user-defined conversions from Expression_lhs to L */
     operator L() const {
-        return lhs;
+        return static_cast<L &&>(lhs);
     }
 
     // clang-format off
