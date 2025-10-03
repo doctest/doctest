@@ -1342,7 +1342,7 @@ DOCTEST_MSVC_SUPPRESS_WARNING_POP
         }
 
         /* This is required for user-defined conversions from Expression_lhs to L */
-        operator L() const { return lhs; }
+        operator L() const { return static_cast<L&&>(lhs); }
 
         // clang-format off
         DOCTEST_DO_BINARY_EXPRESSION_COMPARISON(==, " == ", DOCTEST_CMP_EQ) //!OCLINT bitwise operator in conditional
