@@ -30,18 +30,21 @@ def log_and_call(command):
     return os.system(command)
 
 
-def run_test(build_type, test_mode, flags, test=True):
-    print("Running: " + "; ".join([build_type, test_mode, flags, str(test)]))
+def run_test(build_type, test_mode, flags, test=True, cxx_standard=""):
+    standard_desc = f" (C++{cxx_standard})" if cxx_standard else ""
+    print("Running: " + "; ".join([build_type, test_mode, flags, str(test)]) + standard_desc)
     if log_and_call("cmake -E remove_directory build"):
         exit(1)
-    if log_and_call(
+    cmake_cmd = (
         f"cmake -S . "
         f"-B build "
         f"-D CMAKE_BUILD_TYPE={build_type} "
         f"-D DOCTEST_TEST_MODE={test_mode} "
         + (flags and f'-D CMAKE_CXX_FLAGS="{flags}" ')
+        + (cxx_standard and f'-D CMAKE_CXX_STANDARD={cxx_standard} ')
         + f"-D CMAKE_CXX_COMPILER={used_cxx}"
-    ):
+    )
+    if log_and_call(cmake_cmd):
         exit(2)
     if log_and_call("cmake --build build"):
         exit(3)
@@ -90,17 +93,42 @@ if _os == "Linux" and _compiler == "gcc":
 
 x86_flag = " -m32" if _arch == "x86" and _compiler != "cl" else ""
 
+# Determine supported C++ standards based on compiler and version
+def get_supported_cpp_standards():
+    standards = ["11"]  # Default standard (C++11)
+    
+    if _version and _compiler in ["gcc", "clang"]:
+        version_nums = version_tuple(_version)
+        
+        # Add C++20 support for GCC >= 12 and Clang >= 12
+        if ((_compiler == "gcc" and version_nums >= version_tuple("12.0")) or
+            (_compiler == "clang" and version_nums >= version_tuple("12.0"))):
+            standards.append("20")
+            
+            # Add C++23 support for GCC >= 12 and Clang >= 12
+            # Note: C++23 support may be experimental in earlier versions
+            standards.append("23")
+    
+    return standards
+
+supported_standards = get_supported_cpp_standards()
+
 for configuration in ["Debug", "Release"]:
-    run_test(configuration, "COMPARE", flags + x86_flag)
-    if tsan_flags != "":
-        run_test(configuration, "COMPARE", tsan_flags)
-    if _os != "Windows":
-        run_test(
-            configuration,
-            "COMPARE",
-            "-fno-exceptions -D DOCTEST_CONFIG_NO_EXCEPTIONS_BUT_WITH_ALL_ASSERTS",
-            test=False,
-        )
-        run_test(configuration, "COMPARE", "-fno-rtti")
-    if _os == "Linux":
-        run_test(configuration, "VALGRIND", x86_flag)
+    for std in supported_standards:
+        std_desc = f" with C++{std}" if std else ""
+        print(f"\n=== Running {configuration} configuration{std_desc} ===")
+        
+        run_test(configuration, "COMPARE", flags + x86_flag, cxx_standard=std)
+        if tsan_flags != "":
+            run_test(configuration, "COMPARE", tsan_flags, cxx_standard=std)
+        if _os != "Windows":
+            run_test(
+                configuration,
+                "COMPARE",
+                "-fno-exceptions -D DOCTEST_CONFIG_NO_EXCEPTIONS_BUT_WITH_ALL_ASSERTS",
+                test=False,
+                cxx_standard=std,
+            )
+            run_test(configuration, "COMPARE", "-fno-rtti", cxx_standard=std)
+        if _os == "Linux":
+            run_test(configuration, "VALGRIND", x86_flag, cxx_standard=std)
