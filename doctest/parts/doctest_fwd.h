@@ -1001,12 +1001,12 @@ DOCTEST_MSVC_SUPPRESS_WARNING_POP
 
     template <>
     struct filldata<const void*> {
-        static void fill(std::ostream* stream, const void* in);
+        DOCTEST_INTERFACE static void fill(std::ostream* stream, const void* in);
     };
 
     template <>
     struct filldata<const volatile void*> {
-        static void fill(std::ostream* stream, const volatile void* in);
+        DOCTEST_INTERFACE static void fill(std::ostream* stream, const volatile void* in);
     };
 
     template <typename T>
