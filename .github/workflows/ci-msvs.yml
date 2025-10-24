@@ -1,0 +1,45 @@
+name: CI MSVS
+
+on:
+  push:
+    paths-ignore:
+      - "doc/**"
+      - "scripts/**"
+      - "LICENSE.txt"
+      - "README.md"
+  pull_request:
+    paths-ignore:
+      - "doc/**"
+      - "scripts/**"
+      - "LICENSE.txt"
+      - "README.md"
+
+env:
+  CTEST_OUTPUT_ON_FAILURE: ON
+  CTEST_PARALLEL_LEVEL: 2
+
+jobs:
+  ci-msvs:
+    if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name != github.repository
+    runs-on:  "windows-2025"
+
+    strategy:
+      fail-fast: false
+      matrix:
+        toolset: ["v142", "v143"]
+        architecture: ["Win32", "x64"]
+        configuration: ["Debug", "Release"]
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Generate
+        run:
+          cmake -B build -S . -G "Visual Studio 17 2022" \
+          -A ${{ matrix.architecture }} -T ${{ matrix.toolset }}
+
+      - name: Build
+        run: cmake --build build --config ${{ matrix.configuration }}
+
+      - name: Test
+        run: ctest -C ${{ matrix.configuration }} --test-dir build --no-tests=error
