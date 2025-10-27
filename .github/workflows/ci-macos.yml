@@ -1,0 +1,87 @@
+name: CI macOS
+
+on:
+  push:
+    paths-ignore:
+      - "doc/**"
+      - "scripts/**"
+      - "LICENSE.txt"
+      - "README.md"
+  pull_request:
+    paths-ignore:
+      - "doc/**"
+      - "scripts/**"
+      - "LICENSE.txt"
+      - "README.md"
+
+env:
+  CTEST_OUTPUT_ON_FAILURE: ON
+  CTEST_PARALLEL_LEVEL: 2
+
+jobs:
+  ci-macos:
+    if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name != github.repository
+    runs-on: ${{ matrix.os }}
+
+    env:
+      CMAKE_GENERATOR: Ninja
+      ASAN_OPTIONS: strict_string_checks=true:detect_odr_violation=2:detect_stack_use_after_return=true:check_initialization_order=true:strict_init_order=true
+      TSAN_OPTIONS: force_seq_cst_atomics=1
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # macOS Intel
+          - os: macos-13
+            compiler: xcode
+            version: "14.1" # Apple Clang 14.0.0
+
+          - os: macos-13
+            compiler: xcode
+            version: "14.3.1" # Apple Clang 14.0.3
+
+          - os: macos-13
+            compiler: xcode
+            version: "15.2" # Apple Clang 15.0.0
+
+          - os: macos-13
+            compiler: gcc
+            version: "12"
+
+          # macOS arm64
+          - os: macos-14
+            compiler: xcode
+            version: "15.0.1" # Apple Clang 15.0.0
+
+          - os: macos-14
+            compiler: xcode
+            version: "15.4" # Apple Clang 15.0.0
+
+          - os: macos-14
+            compiler: xcode
+            version: "16.2" # Apple Clang 16.0.0
+
+          - os: macos-15
+            compiler: xcode
+            version: "16.3" # Apple Clang 17.0.0
+
+          - os: macos-14
+            compiler: gcc
+            version: "12"
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Install (macOS)
+        run: |
+          if [ "${{ matrix.compiler }}" = "xcode" ]; then
+            sudo xcode-select --switch /Applications/Xcode_${{ matrix.version }}.app
+          fi
+
+          if [ "${{ matrix.os}}" = "macos-14" -a "${{ matrix.compiler }}" = "gcc" ]; then
+            sudo xcode-select --switch /Applications/Xcode_15.4.app
+          fi
+
+      - name: Build & Test ${{ runner.arch }}
+        run: python3 .github/workflows/build_and_test.py macOS ${{ runner.arch }} ${{ matrix.compiler }} ${{ matrix.version }}

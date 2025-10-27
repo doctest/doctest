@@ -1,0 +1,52 @@
+name: CI Windows
+
+on:
+  push:
+    paths-ignore:
+      - "doc/**"
+      - "scripts/**"
+      - "LICENSE.txt"
+      - "README.md"
+  pull_request:
+    paths-ignore:
+      - "doc/**"
+      - "scripts/**"
+      - "LICENSE.txt"
+      - "README.md"
+
+env:
+  CTEST_OUTPUT_ON_FAILURE: ON
+  CTEST_PARALLEL_LEVEL: 2
+
+jobs:
+  ci-windows:
+    if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name != github.repository
+    runs-on: windows-2025
+
+    env:
+      CMAKE_GENERATOR: Ninja
+      ASAN_OPTIONS: strict_string_checks=true:detect_odr_violation=2:detect_stack_use_after_return=true:check_initialization_order=true:strict_init_order=true
+      TSAN_OPTIONS: force_seq_cst_atomics=1
+
+    strategy:
+      fail-fast: false
+      matrix:
+        compiler: ["cl", "clang", "clang-cl"]
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Configure MSVC for X64
+        uses: ilammy/msvc-dev-cmd@v1
+
+      - name: Build & Test ${{ runner.arch }}
+        run: python3 .github/workflows/build_and_test.py Windows ${{ runner.arch }} ${{ matrix.compiler }} ${{ matrix.version }}
+
+      - name: Configure MSVC for X86
+        uses: ilammy/msvc-dev-cmd@v1
+        with:
+          arch: x86
+
+      - name: Build & Test X86
+        if: matrix.compiler != 'clang-cl'
+        run: python3 .github/workflows/build_and_test.py Windows x86 ${{ matrix.compiler }} ${{ matrix.version }}

@@ -1,4 +1,4 @@
-name: CI
+name: CI Linux
 
 on:
   push:
@@ -19,7 +19,7 @@ env:
   CTEST_PARALLEL_LEVEL: 2
 
 jobs:
-  ci:
+  ci-linux:
     if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name != github.repository
     runs-on: ${{ matrix.os }}
 
@@ -31,9 +31,6 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: ["windows-2025"]
-        compiler: ["cl", "clang", "clang-cl"]
-
         include:
           - container: ubuntu:18.04
             compiler: gcc
@@ -156,50 +153,12 @@ jobs:
             compiler: clang
             version: "18"
 
-          # macOS Intel
-          - os: macos-13
-            compiler: xcode
-            version: "14.1" # Apple Clang 14.0.0
-
-          - os: macos-13
-            compiler: xcode
-            version: "14.3.1" # Apple Clang 14.0.3
-
-          - os: macos-13
-            compiler: xcode
-            version: "15.2" # Apple Clang 15.0.0
-
-          - os: macos-13
-            compiler: gcc
-            version: "12"
-
-          # macOS arm64
-          - os: macos-14
-            compiler: xcode
-            version: "15.0.1" # Apple Clang 15.0.0
-
-          - os: macos-14
-            compiler: xcode
-            version: "15.4" # Apple Clang 15.0.0
-
-          - os: macos-14
-            compiler: xcode
-            version: "16.2" # Apple Clang 16.0.0
-
-          - os: macos-15
-            compiler: xcode
-            version: "16.3" # Apple Clang 17.0.0
-
-          - os: macos-14
-            compiler: gcc
-            version: "12"
-
     steps:
       - uses: actions/checkout@v2
 
       # Ref: https://github.com/actions/checkout/issues/1590#issuecomment-2567109195
       - name: Prepare container (Linux, containerized)
-        if: runner.os == 'Linux' && matrix.container != ''
+        if: matrix.container != ''
         run: |
           docker pull ${{ matrix.container }}
           docker run --name build-container -d -v ${{ github.workspace }}:/workspace ${{ matrix.container }} tail -f /dev/null
@@ -213,7 +172,7 @@ jobs:
           EOF
 
       - name: Install (Linux)
-        if: runner.os == 'Linux' && matrix.container == ''
+        if: matrix.container == ''
         run: |
           # Required for libc6-dbg:i386 and g++-multilib packages which are
           # needed for x86 builds.
@@ -235,7 +194,7 @@ jobs:
           fi
 
       - name: Install (Linux, containerized)
-        if: runner.os == 'Linux' && matrix.container != ''
+        if: matrix.container != ''
         env:
           CMD: |
             dpkg --add-architecture i386
@@ -257,50 +216,28 @@ jobs:
             fi
         run: docker exec build-container bash -c "$CMD"
 
-      - name: Install (macOS)
-        if: runner.os == 'macOS'
-        run: |
-          if [ "${{ matrix.compiler }}" = "xcode" ]; then
-            sudo xcode-select --switch /Applications/Xcode_${{ matrix.version }}.app
-          fi
-
-          if [ "${{ matrix.os}}" = "macos-14" -a "${{ matrix.compiler }}" = "gcc" ]; then
-            sudo xcode-select --switch /Applications/Xcode_15.4.app
-          fi
-
-      - name: Configure MSVC for X64
-        if: runner.os == 'Windows'
-        uses: ilammy/msvc-dev-cmd@v1
-
       - name: Build & Test ${{ runner.arch }}
         if: matrix.container == ''
-        run: python3 .github/workflows/build_and_test.py ${{ runner.os }} ${{ runner.arch }} ${{ matrix.compiler }} ${{ matrix.version }}
+        run: python3 .github/workflows/build_and_test.py Linux ${{ runner.arch }} ${{ matrix.compiler }} ${{ matrix.version }}
 
       - name: Build & Test ${{ runner.arch }} (Linux, containerized)
-        if: runner.os == 'Linux' && matrix.container != ''
+        if: matrix.container != ''
         env:
           CMD: |
             cd /workspace
             source container-env.sh
-            python3 .github/workflows/build_and_test.py ${{ runner.os }} ${{ runner.arch }} ${{ matrix.compiler }} ${{ matrix.version }}
+            python3 .github/workflows/build_and_test.py Linux ${{ runner.arch }} ${{ matrix.compiler }} ${{ matrix.version }}
         run: docker exec build-container bash -c "$CMD"
 
-      - name: Configure MSVC for X86
-        if: runner.os == 'Windows'
-        uses: ilammy/msvc-dev-cmd@v1
-        with:
-          arch: x86
-
-      # MacOS doesn't support x86 from Xcode 10 onwards.
       - name: Build & Test X86
-        if: (runner.os == 'Linux' && matrix.container == '') || (runner.os == 'Windows' && matrix.compiler != 'clang-cl')
-        run: python3 .github/workflows/build_and_test.py ${{ runner.os }} x86 ${{ matrix.compiler }} ${{ matrix.version }}
+        if: matrix.container == ''
+        run: python3 .github/workflows/build_and_test.py Linux x86 ${{ matrix.compiler }} ${{ matrix.version }}
 
       - name: Build & Test X86 (Linux, containerized)
-        if: runner.os == 'Linux' && matrix.container != ''
+        if: matrix.container != ''
         env:
           CMD: |
             cd /workspace
             source container-env.sh
-            python3 .github/workflows/build_and_test.py ${{ runner.os }} x86 ${{ matrix.compiler }} ${{ matrix.version }}
+            python3 .github/workflows/build_and_test.py Linux x86 ${{ matrix.compiler }} ${{ matrix.version }}
         run: docker exec build-container bash -c "$CMD"
