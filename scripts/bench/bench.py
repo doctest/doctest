@@ -113,7 +113,7 @@ if args.catch:
 
 # make the source files
 for i in range(0, args.files):
-    f = open(str(i) + '.cpp', 'w')
+    f = open(str(i) + '.cpp', 'w', encoding="utf-8", newline="\n")
     if args.runtime or args.header:
         f.write(defines)
         f.write(include)
@@ -136,7 +136,7 @@ for i in range(0, args.files):
     f.close()
 
 # the main file
-f = open('main.cpp', 'w')
+f = open('main.cpp', 'w', encoding="utf-8", newline="\n")
 if args.runtime or args.implement or args.header:
     f.write(defines)
     f.write(define_implement)
@@ -153,7 +153,7 @@ f.write('    return res;\n}\n')
 f.close()
 
 # the cmake file
-f = open('CMakeLists.txt', 'w')
+f = open('CMakeLists.txt', 'w', encoding="utf-8", newline="\n")
 f.write('cmake_minimum_required(VERSION 2.8)\n\n')
 f.write('project(bench)\n\n')
 f.write('if(NOT MSVC)\n')

@@ -26,7 +26,7 @@ for line in fileinput.input(["../doctest/parts/version.h"]):
     else:
         doctest_contents += line
 
-readme = open("../doctest/parts/version.h", "w")
+readme = open("../doctest/parts/version.h", "w", encoding="utf-8", newline="\n")
 readme.write(doctest_contents)
 readme.close()
 
@@ -39,6 +39,6 @@ for line in fileinput.input(["../meson.build"]):
     else:
         meson_contents += line
 
-meson = open("../meson.build", "w")
+meson = open("../meson.build", "w", encoding="utf-8", newline="\n")
 meson.write(meson_contents)
 meson.close()

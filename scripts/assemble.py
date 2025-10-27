@@ -120,7 +120,8 @@ def main(args):
         ),
     )
 
-    output.write_text(result)
+    with open(output, "w", encoding="utf-8", newline="\n") as out:
+        out.write(result)
     sys.exit(0)
 
 
