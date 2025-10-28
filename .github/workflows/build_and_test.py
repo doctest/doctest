@@ -71,6 +71,10 @@ elif _os == "macOS" and _compiler == "gcc":
 if _os == "Linux" and _compiler == "gcc":
     flags += " -static-libasan"
 
+warnings = ""
+if _os == "macOS" and _compiler == "xcode":
+    warnings = " -Wno-poison-system-directories"
+
 tsan_flags = "-fsanitize=thread -pie -fPIE"
 if _os == "Windows":
     tsan_flags = ""
@@ -91,16 +95,16 @@ if _os == "Linux" and _compiler == "gcc":
 x86_flag = " -m32" if _arch == "x86" and _compiler != "cl" else ""
 
 for configuration in ["Debug", "Release"]:
-    run_test(configuration, "COMPARE", flags + x86_flag)
+    run_test(configuration, "COMPARE", flags + x86_flag + warnings)
     if tsan_flags != "":
-        run_test(configuration, "COMPARE", tsan_flags)
+        run_test(configuration, "COMPARE", tsan_flags + warnings)
     if _os != "Windows":
         run_test(
             configuration,
             "COMPARE",
-            "-fno-exceptions -D DOCTEST_CONFIG_NO_EXCEPTIONS_BUT_WITH_ALL_ASSERTS",
+            "-fno-exceptions -D DOCTEST_CONFIG_NO_EXCEPTIONS_BUT_WITH_ALL_ASSERTS " + warnings,
             test=False,
         )
-        run_test(configuration, "COMPARE", "-fno-rtti")
+        run_test(configuration, "COMPARE", "-fno-rtti" + warnings)
     if _os == "Linux":
-        run_test(configuration, "VALGRIND", x86_flag)
+        run_test(configuration, "VALGRIND", x86_flag + warnings)
