@@ -29,7 +29,7 @@ jobs:
         sanitizers: ["address", "thread", "undefined", "integer", "implicit-conversion", "nullability", "safe-stack"]
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v5
 
       - name: Install
         run: sudo apt-get install -y ninja-build

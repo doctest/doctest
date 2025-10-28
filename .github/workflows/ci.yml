@@ -195,7 +195,7 @@ jobs:
             version: "12"
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v5
 
       # Ref: https://github.com/actions/checkout/issues/1590#issuecomment-2567109195
       - name: Prepare container (Linux, containerized)
