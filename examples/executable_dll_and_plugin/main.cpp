@@ -36,6 +36,8 @@ DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_END
 #include <dlfcn.h>
 #ifdef __APPLE__
 #define LoadDynamicLib(lib) dlopen("lib" lib ".dylib", RTLD_NOW)
+#elif defined(__CYGWIN__)
+#define LoadDynamicLib(lib) dlopen("cyg" lib ".dll", RTLD_NOW)
 #else // __APPLE__
 #define LoadDynamicLib(lib) dlopen("lib" lib ".so", RTLD_NOW)
 #endif // __APPLE__
