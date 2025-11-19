@@ -1604,7 +1604,7 @@ namespace {
                     }
                     if(reported == false)
                         reportFatal("Unhandled SEH exception caught");
-                    if(isDebuggerActive() && !g_cs->no_breaks)
+                    if(!g_cs->no_breaks && isDebuggerActive())
                         DOCTEST_BREAK_INTO_DEBUGGER();
                 }
                 execute = false;
@@ -1634,7 +1634,7 @@ namespace {
             original_terminate_handler = std::get_terminate();
             std::set_terminate([]() DOCTEST_NOEXCEPT {
                 reportFatal("Terminate handler called");
-                if(isDebuggerActive() && !g_cs->no_breaks)
+                if(!g_cs->no_breaks && isDebuggerActive())
                     DOCTEST_BREAK_INTO_DEBUGGER();
                 std::exit(EXIT_FAILURE); // explicitly exit - otherwise the SIGABRT handler may be called as well
             });
@@ -1646,7 +1646,7 @@ namespace {
             prev_sigabrt_handler = std::signal(SIGABRT, [](int signal) DOCTEST_NOEXCEPT {
                 if(signal == SIGABRT) {
                     reportFatal("SIGABRT - Abort (abnormal termination) signal");
-                    if(isDebuggerActive() && !g_cs->no_breaks)
+                    if(!g_cs->no_breaks && isDebuggerActive())
                         DOCTEST_BREAK_INTO_DEBUGGER();
                     std::exit(EXIT_FAILURE);
                 }
@@ -1893,8 +1893,8 @@ namespace detail {
             failed_out_of_a_testing_context(*this);
         }
 
-        return m_failed && isDebuggerActive() && !getContextOptions()->no_breaks &&
-            (g_cs->currentTest == nullptr || !g_cs->currentTest->m_no_breaks); // break into debugger
+        return m_failed && (g_cs->currentTest == nullptr || !g_cs->currentTest->m_no_breaks) &&
+               !getContextOptions()->no_breaks && isDebuggerActive(); // break into debugger
     }
 
     void ResultBuilder::react() const {
@@ -1952,8 +1952,8 @@ namespace detail {
             addFailedAssert(m_severity);
         }
 
-        return isDebuggerActive() && !getContextOptions()->no_breaks && !isWarn &&
-            (g_cs->currentTest == nullptr || !g_cs->currentTest->m_no_breaks); // break into debugger
+        return !isWarn && (g_cs->currentTest == nullptr || !g_cs->currentTest->m_no_breaks) &&
+               !getContextOptions()->no_breaks && isDebuggerActive(); // break into debugger
     }
 
     void MessageBuilder::react() {
@@ -3801,7 +3801,7 @@ int Context::run() {
         p->reporters_currently_used.insert(p->reporters_currently_used.begin(), curr.second(*g_cs));
 
 #ifdef DOCTEST_PLATFORM_WINDOWS
-    if(isDebuggerActive() && p->no_debug_output == false)
+    if(p->no_debug_output == false && isDebuggerActive())
         p->reporters_currently_used.push_back(new DebugOutputWindowReporter(*g_cs));
 #endif // DOCTEST_PLATFORM_WINDOWS
 
