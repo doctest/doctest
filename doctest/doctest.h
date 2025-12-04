@@ -3089,6 +3089,7 @@ DOCTEST_SUPPRESS_COMMON_WARNINGS_POP
 #ifndef DOCTEST_SINGLE_HEADER
 #define DOCTEST_SINGLE_HEADER
 #endif // DOCTEST_SINGLE_HEADER
+
 #if defined(DOCTEST_CONFIG_IMPLEMENT) || !defined(DOCTEST_SINGLE_HEADER)
 
 #ifndef DOCTEST_SINGLE_HEADER
@@ -3096,10 +3097,8 @@ DOCTEST_SUPPRESS_COMMON_WARNINGS_POP
 #endif // DOCTEST_SINGLE_HEADER
 
 DOCTEST_CLANG_SUPPRESS_WARNING_WITH_PUSH("-Wunused-macros")
-
 #ifndef DOCTEST_LIBRARY_IMPLEMENTATION
 #define DOCTEST_LIBRARY_IMPLEMENTATION
-
 DOCTEST_CLANG_SUPPRESS_WARNING_POP
 
 DOCTEST_SUPPRESS_COMMON_WARNINGS_PUSH
@@ -3887,7 +3886,7 @@ const char* skipPathFromFilename(const char* file) {
         {
             const auto prefix_start = pos;
             pos = std::min(prefixes.find(separator, prefix_start), prefixes.size());
-            
+
             const auto prefix_size = pos - prefix_start;
             if(prefix_size > longest_match)
             {
