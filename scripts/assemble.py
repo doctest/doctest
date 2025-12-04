@@ -47,12 +47,13 @@ def main(args):
     script = Path(__file__).resolve()
     root = script.parent.parent
 
-    header_dir = root / "doctest" / "parts"
-    source_dir = root / "doctest" / "parts"
-    output = root / "doctest" / "doctest.h"
+    public_dir  = root / "doctest" / "parts" / "public"
+    private_dir = root / "doctest" / "parts" / "private"
+    output      = root / "doctest" / "doctest.h"
 
-    headers = set(header_dir.rglob("*.h"))
-    sources = set(source_dir.rglob("*.cpp"))
+    public_headers  = sorted(set(public_dir.rglob("*.h")))
+    private_headers = sorted(set(private_dir.rglob("*.h")))
+    private_sources = sorted(set(private_dir.rglob("*.cpp")))
 
     def extract_header(line):
         """
@@ -77,7 +78,7 @@ def main(args):
         reason = f"'{line}' has multiple includes"
         raise RuntimeError(reason)
 
-    def process_file(file, visited):
+    def process_file(file, visited, headers):
         """
         Process a file, yielding lines of code with #include's scrubbed.
 
@@ -103,20 +104,23 @@ def main(args):
         for line in content.splitlines(keepends=False):
             header = extract_header(line)
             if (header is not None) and ((root / header) in headers):
-                yield from process_file(root / header, visited=visited)
-            elif (header is not None) and ((header_dir / header) in headers):
-                yield from process_file(header_dir / header, visited=visited)
+                yield from process_file(root / header, visited=visited, headers=headers)
             else:
                 yield line
 
     visited     = set()
-    doctest_fwd = header_dir / "doctest_fwd.h"
+    doctest_fwd = root / "doctest" / "parts" / "doctest_fwd.h"
     result = TEMPLATE.substitute(
         headers="\n".join(
-            process_file(doctest_fwd, visited=visited)
+            process_file(doctest_fwd, visited=visited, headers=public_headers)
         ),
         sources="\n".join(
-            chain.from_iterable(process_file(file, visited=visited) for file in sources)
+            chain.from_iterable(
+                process_file(
+                    file, visited=visited, headers=public_headers + private_headers
+                )
+                for file in private_sources
+            )
         ),
     )
 

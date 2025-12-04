@@ -39,9 +39,9 @@
 #ifndef DOCTEST_LIBRARY_INCLUDED
 #define DOCTEST_LIBRARY_INCLUDED
 
-#include <doctest/parts/version.h>
-#include <doctest/parts/compiler.h>
-#include <doctest/parts/warnings.h>
+#include <doctest/parts/public/version.h>
+#include <doctest/parts/public/compiler.h>
+#include <doctest/parts/public/warnings.h>
 
 DOCTEST_SUPPRESS_COMMON_WARNINGS_PUSH
 
