@@ -75,6 +75,7 @@ DOCTEST_MSVC_SUPPRESS_WARNING(4623) // default constructor was implicitly define
 #include <doctest/parts/public/assert/result.h>
 #include <doctest/parts/public/assert/expression.h>
 #include <doctest/parts/public/color.h>
+#include <doctest/parts/public/subcase.h>
 
 namespace doctest {
 
@@ -106,16 +107,6 @@ struct DOCTEST_INTERFACE MessageData
     assertType::Enum m_severity;
 };
 
-struct DOCTEST_INTERFACE SubcaseSignature
-{
-    String      m_name;
-    const char* m_file;
-    int         m_line;
-
-    bool operator==(const SubcaseSignature& other) const;
-    bool operator<(const SubcaseSignature& other) const;
-};
-
 struct DOCTEST_INTERFACE IContextScope
 {
     DOCTEST_DECLARE_INTERFACE(IContextScope)
@@ -130,24 +121,6 @@ struct DOCTEST_INTERFACE IContextScope
 namespace doctest {
 #ifndef DOCTEST_CONFIG_DISABLE
 namespace detail {
-
-    struct DOCTEST_INTERFACE Subcase
-    {
-        SubcaseSignature m_signature;
-        bool             m_entered = false;
-
-        Subcase(const String& name, const char* file, int line);
-        Subcase(const Subcase&) = delete;
-        Subcase(Subcase&&) = delete;
-        Subcase& operator=(const Subcase&) = delete;
-        Subcase& operator=(Subcase&&) = delete;
-        ~Subcase();
-
-        operator bool() const;
-
-        private:
-            bool checkFilters();
-    };
 
     struct DOCTEST_INTERFACE TestSuite
     {
