@@ -1739,28 +1739,75 @@ DOCTEST_INTERFACE doctest::detail::TestSuite& getCurrentTestSuite();
 } // namespace doctest_detail_test_suite_ns
 
 #endif // DOCTEST_CONFIG_DISABLE
+namespace doctest {
+
+    struct DOCTEST_INTERFACE TestCaseData
+    {
+        String      m_file;       // the file in which the test was registered (using String - see #350)
+        unsigned    m_line;       // the line where the test was registered
+        const char* m_name;       // name of the test case
+        const char* m_test_suite; // the test suite in which the test was added
+        const char* m_description;
+        bool        m_skip;
+        bool        m_no_breaks;
+        bool        m_no_output;
+        bool        m_may_fail;
+        bool        m_should_fail;
+        int         m_expected_failures;
+        double      m_timeout;
+    };
+
+#ifndef DOCTEST_CONFIG_DISABLE
+namespace detail {
+
+    using funcType = void (*)();
+
+    struct DOCTEST_INTERFACE TestCase : public TestCaseData
+    {
+        funcType m_test; // a function pointer to the test case
+
+        String m_type; // for templated test cases - gets appended to the real name
+        int m_template_id; // an ID used to distinguish between the different versions of a templated test case
+        String m_full_name; // contains the name (only for templated test cases!) + the template type
+
+        TestCase(funcType test, const char* file, unsigned line, const TestSuite& test_suite,
+                  const String& type = String(), int template_id = -1);
+
+        TestCase(const TestCase& other);
+        TestCase(TestCase&&) = delete;
+
+        DOCTEST_MSVC_SUPPRESS_WARNING_WITH_PUSH(26434) // hides a non-virtual function
+        TestCase& operator=(const TestCase& other);
+        DOCTEST_MSVC_SUPPRESS_WARNING_POP
+
+        TestCase& operator=(TestCase&&) = delete;
+
+        TestCase& operator*(const char* in);
+
+        template <typename T>
+        TestCase& operator*(const T& in) {
+            in.fill(*this);
+            return *this;
+        }
+
+        bool operator<(const TestCase& other) const;
+
+        ~TestCase() = default;
+    };
+
+    // forward declarations of functions used by the macros
+    DOCTEST_INTERFACE int regTest(const TestCase& tc);
+
+} // namespace detail
+#endif // DOCTEST_CONFIG_DISABLE
+
+} // namespace doctest
 
 namespace doctest {
 
 DOCTEST_INTERFACE extern bool is_running_in_test;
 
 DOCTEST_INTERFACE const char* skipPathFromFilename(const char* file);
-
-struct DOCTEST_INTERFACE TestCaseData
-{
-    String      m_file;       // the file in which the test was registered (using String - see #350)
-    unsigned    m_line;       // the line where the test was registered
-    const char* m_name;       // name of the test case
-    const char* m_test_suite; // the test suite in which the test was added
-    const char* m_description;
-    bool        m_skip;
-    bool        m_no_breaks;
-    bool        m_no_output;
-    bool        m_may_fail;
-    bool        m_should_fail;
-    int         m_expected_failures;
-    double      m_timeout;
-};
 
 struct DOCTEST_INTERFACE MessageData
 {
@@ -1875,45 +1922,6 @@ namespace detail {
 namespace doctest {
 #ifndef DOCTEST_CONFIG_DISABLE
 namespace detail {
-
-    using funcType = void (*)();
-
-    struct DOCTEST_INTERFACE TestCase : public TestCaseData
-    {
-        funcType m_test; // a function pointer to the test case
-
-        String m_type; // for templated test cases - gets appended to the real name
-        int m_template_id; // an ID used to distinguish between the different versions of a templated test case
-        String m_full_name; // contains the name (only for templated test cases!) + the template type
-
-        TestCase(funcType test, const char* file, unsigned line, const TestSuite& test_suite,
-                 const String& type = String(), int template_id = -1);
-
-        TestCase(const TestCase& other);
-        TestCase(TestCase&&) = delete;
-
-        DOCTEST_MSVC_SUPPRESS_WARNING_WITH_PUSH(26434) // hides a non-virtual function
-        TestCase& operator=(const TestCase& other);
-        DOCTEST_MSVC_SUPPRESS_WARNING_POP
-
-        TestCase& operator=(TestCase&&) = delete;
-
-        TestCase& operator*(const char* in);
-
-        template <typename T>
-        TestCase& operator*(const T& in) {
-            in.fill(*this);
-            return *this;
-        }
-
-        bool operator<(const TestCase& other) const;
-
-        ~TestCase() = default;
-    };
-
-    // forward declarations of functions used by the macros
-    DOCTEST_INTERFACE int  regTest(const TestCase& tc);
-
     template<typename T>
     int instantiationHelper(const T&) { return 0; }
 
@@ -4031,6 +4039,22 @@ namespace detail {
 #endif
 
 
+#ifndef DOCTEST_CONFIG_DISABLE
+
+namespace doctest {
+namespace detail {
+
+    // all the registered tests
+    std::set<TestCase>& getRegisteredTests() {
+        static std::set<TestCase> data;
+        return data;
+    }
+
+} // namespace detail
+} // namespace doctest
+
+#endif // DOCTEST_CONFIG_DISABLE
+
 namespace doctest {
 
 bool is_running_in_test = false;
@@ -4213,77 +4237,6 @@ namespace {
         return running;
     }
 } // namespace
-namespace detail {
-
-    TestCase::TestCase(funcType test, const char* file, unsigned line, const TestSuite& test_suite,
-                       const String& type, int template_id) {
-        m_file              = file;
-        m_line              = line;
-        m_name              = nullptr; // will be later overridden in operator*
-        m_test_suite        = test_suite.m_test_suite;
-        m_description       = test_suite.m_description;
-        m_skip              = test_suite.m_skip;
-        m_no_breaks         = test_suite.m_no_breaks;
-        m_no_output         = test_suite.m_no_output;
-        m_may_fail          = test_suite.m_may_fail;
-        m_should_fail       = test_suite.m_should_fail;
-        m_expected_failures = test_suite.m_expected_failures;
-        m_timeout           = test_suite.m_timeout;
-
-        m_test        = test;
-        m_type        = type;
-        m_template_id = template_id;
-    }
-
-    TestCase::TestCase(const TestCase& other)
-            : TestCaseData() {
-        *this = other;
-    }
-
-    DOCTEST_MSVC_SUPPRESS_WARNING_WITH_PUSH(26434) // hides a non-virtual function
-    TestCase& TestCase::operator=(const TestCase& other) {
-        TestCaseData::operator=(other);
-        m_test        = other.m_test;
-        m_type        = other.m_type;
-        m_template_id = other.m_template_id;
-        m_full_name   = other.m_full_name;
-
-        if(m_template_id != -1)
-            m_name = m_full_name.c_str();
-        return *this;
-    }
-    DOCTEST_MSVC_SUPPRESS_WARNING_POP
-
-    TestCase& TestCase::operator*(const char* in) {
-        m_name = in;
-        // make a new name with an appended type for templated test case
-        if(m_template_id != -1) {
-            m_full_name = String(m_name) + "<" + m_type + ">";
-            // redirect the name to point to the newly constructed full name
-            m_name = m_full_name.c_str();
-        }
-        return *this;
-    }
-
-    bool TestCase::operator<(const TestCase& other) const {
-        // this will be used only to differentiate between test cases - not relevant for sorting
-        if(m_line != other.m_line)
-            return m_line < other.m_line;
-        const int name_cmp = strcmp(m_name, other.m_name);
-        if(name_cmp != 0)
-            return name_cmp < 0;
-        const int file_cmp = m_file.compare(other.m_file);
-        if(file_cmp != 0)
-            return file_cmp < 0;
-        return m_template_id < other.m_template_id;
-    }
-
-    // all the registered tests
-    std::set<TestCase>& getRegisteredTests() {
-        static std::set<TestCase> data;
-        return data;
-    }
-} // namespace detail
 namespace {
     using namespace detail;
     // for sorting tests by file/line
@@ -4348,12 +4301,6 @@ namespace {
 } // namespace
 
 namespace detail {
-    // used by the macros for registering tests
-    int regTest(const TestCase& tc) {
-        getRegisteredTests().insert(tc);
-        return 0;
-    }
-
     void registerExceptionTranslatorImpl(const IExceptionTranslator* et) {
         if(std::find(getExceptionTranslators().begin(), getExceptionTranslators().end(), et) ==
            getExceptionTranslators().end())
@@ -7353,6 +7300,85 @@ namespace detail {
 #endif // DOCTEST_CONFIG_DISABLE
 
 } // namespace doctest
+
+#ifndef DOCTEST_CONFIG_DISABLE
+
+namespace doctest {
+namespace detail {
+
+TestCase::TestCase(funcType test, const char* file, unsigned line, const TestSuite& test_suite,
+                    const String& type, int template_id) {
+    m_file              = file;
+    m_line              = line;
+    m_name              = nullptr; // will be later overridden in operator*
+    m_test_suite        = test_suite.m_test_suite;
+    m_description       = test_suite.m_description;
+    m_skip              = test_suite.m_skip;
+    m_no_breaks         = test_suite.m_no_breaks;
+    m_no_output         = test_suite.m_no_output;
+    m_may_fail          = test_suite.m_may_fail;
+    m_should_fail       = test_suite.m_should_fail;
+    m_expected_failures = test_suite.m_expected_failures;
+    m_timeout           = test_suite.m_timeout;
+
+    m_test        = test;
+    m_type        = type;
+    m_template_id = template_id;
+}
+
+TestCase::TestCase(const TestCase& other)
+        : TestCaseData() {
+    *this = other;
+}
+
+DOCTEST_MSVC_SUPPRESS_WARNING_WITH_PUSH(26434) // hides a non-virtual function
+TestCase& TestCase::operator=(const TestCase& other) {
+    TestCaseData::operator=(other);
+    m_test        = other.m_test;
+    m_type        = other.m_type;
+    m_template_id = other.m_template_id;
+    m_full_name   = other.m_full_name;
+
+    if(m_template_id != -1)
+        m_name = m_full_name.c_str();
+    return *this;
+}
+DOCTEST_MSVC_SUPPRESS_WARNING_POP
+
+TestCase& TestCase::operator*(const char* in) {
+    m_name = in;
+    // make a new name with an appended type for templated test case
+    if(m_template_id != -1) {
+        m_full_name = String(m_name) + "<" + m_type + ">";
+        // redirect the name to point to the newly constructed full name
+        m_name = m_full_name.c_str();
+    }
+    return *this;
+}
+
+bool TestCase::operator<(const TestCase& other) const {
+    // this will be used only to differentiate between test cases - not relevant for sorting
+    if(m_line != other.m_line)
+        return m_line < other.m_line;
+    const int name_cmp = strcmp(m_name, other.m_name);
+    if(name_cmp != 0)
+        return name_cmp < 0;
+    const int file_cmp = m_file.compare(other.m_file);
+    if(file_cmp != 0)
+        return file_cmp < 0;
+    return m_template_id < other.m_template_id;
+}
+
+// used by the macros for registering tests
+int regTest(const TestCase& tc) {
+    getRegisteredTests().insert(tc);
+    return 0;
+}
+
+} // namespace detail
+} // namespace doctest
+
+#endif // DOCTEST_CONFIG_DISABLE
 
 #ifndef DOCTEST_CONFIG_DISABLE
 
