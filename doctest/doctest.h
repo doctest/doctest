@@ -1254,6 +1254,52 @@ DOCTEST_INTERFACE const char* assertString(assertType::Enum at);
 DOCTEST_INTERFACE const char* failureString(assertType::Enum at);
 
 }
+namespace doctest {
+
+    struct DOCTEST_INTERFACE TestCaseData;
+
+    struct DOCTEST_INTERFACE AssertData
+    {
+        // common - for all asserts
+        const TestCaseData* m_test_case;
+        assertType::Enum    m_at;
+        const char*         m_file;
+        int                 m_line;
+        const char*         m_expr;
+        bool                m_failed;
+
+        // exception-related - for all asserts
+        bool   m_threw;
+        String m_exception;
+
+        // for normal asserts
+        String m_decomp;
+
+        // for specific exception-related asserts
+        bool           m_threw_as;
+        const char*    m_exception_type;
+
+        class DOCTEST_INTERFACE StringContains {
+            private:
+                Contains content;
+                bool isContains;
+
+            public:
+                StringContains(const String& str) : content(str), isContains(false) { }
+                StringContains(Contains cntn) : content(static_cast<Contains&&>(cntn)), isContains(true) { }
+
+                bool check(const String& str) { return isContains ? (content == str) : (content.string == str); }
+
+                operator const String&() const { return content.string; }
+
+                const char* c_str() const { return content.string.c_str(); }
+        } m_exception_string;
+
+        AssertData(assertType::Enum at, const char* file, int line, const char* expr,
+            const char* exception_type, const StringContains& exception_string);
+    };
+
+} // namespace doctest
 
 namespace doctest {
 
@@ -1298,47 +1344,6 @@ struct DOCTEST_INTERFACE TestCaseData
     bool        m_should_fail;
     int         m_expected_failures;
     double      m_timeout;
-};
-
-struct DOCTEST_INTERFACE AssertData
-{
-    // common - for all asserts
-    const TestCaseData* m_test_case;
-    assertType::Enum    m_at;
-    const char*         m_file;
-    int                 m_line;
-    const char*         m_expr;
-    bool                m_failed;
-
-    // exception-related - for all asserts
-    bool   m_threw;
-    String m_exception;
-
-    // for normal asserts
-    String m_decomp;
-
-    // for specific exception-related asserts
-    bool           m_threw_as;
-    const char*    m_exception_type;
-
-    class DOCTEST_INTERFACE StringContains {
-        private:
-            Contains content;
-            bool isContains;
-
-        public:
-            StringContains(const String& str) : content(str), isContains(false) { }
-            StringContains(Contains cntn) : content(static_cast<Contains&&>(cntn)), isContains(true) { }
-
-            bool check(const String& str) { return isContains ? (content == str) : (content.string == str); }
-
-            operator const String&() const { return content.string; }
-
-            const char* c_str() const { return content.string.c_str(); }
-    } m_exception_string;
-
-    AssertData(assertType::Enum at, const char* file, int line, const char* expr,
-        const char* exception_type, const StringContains& exception_string);
 };
 
 struct DOCTEST_INTERFACE MessageData
@@ -3314,97 +3319,6 @@ DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_END
 #define DOCTEST_CDECL __cdecl
 #endif
 
-namespace doctest {
-namespace {
-    using namespace detail;
-
-    template <typename Ex>
-    DOCTEST_NORETURN void throw_exception(Ex const& e) {
-#ifndef DOCTEST_CONFIG_NO_EXCEPTIONS
-        throw e;
-#else  // DOCTEST_CONFIG_NO_EXCEPTIONS
-#ifdef DOCTEST_CONFIG_HANDLE_EXCEPTION
-        DOCTEST_CONFIG_HANDLE_EXCEPTION(e);
-#else // DOCTEST_CONFIG_HANDLE_EXCEPTION
-#ifndef DOCTEST_CONFIG_NO_INCLUDE_IOSTREAM
-        std::cerr << "doctest will terminate because it needed to throw an exception.\n"
-                  << "The message was: " << e.what() << '\n';
-#endif // DOCTEST_CONFIG_NO_INCLUDE_IOSTREAM
-#endif // DOCTEST_CONFIG_HANDLE_EXCEPTION
-        std::terminate();
-#endif // DOCTEST_CONFIG_NO_EXCEPTIONS
-    }
-
-#ifndef DOCTEST_INTERNAL_ERROR
-#define DOCTEST_INTERNAL_ERROR(msg)                                                                \
-    throw_exception(std::logic_error(                                                              \
-            __FILE__ ":" DOCTEST_TOSTR(__LINE__) ": Internal doctest error: " msg))
-#endif // DOCTEST_INTERNAL_ERROR
-} // namespace
-
-} // namespace doctest
-
-namespace doctest {
-
-// clang-format off
-const char* assertString(assertType::Enum at) {
-    DOCTEST_MSVC_SUPPRESS_WARNING_WITH_PUSH(4061) // enum 'x' in switch of enum 'y' is not explicitly handled
-    #define DOCTEST_GENERATE_ASSERT_TYPE_CASE(assert_type) case assertType::DT_ ## assert_type: return #assert_type
-    #define DOCTEST_GENERATE_ASSERT_TYPE_CASES(assert_type) \
-        DOCTEST_GENERATE_ASSERT_TYPE_CASE(WARN_ ## assert_type); \
-        DOCTEST_GENERATE_ASSERT_TYPE_CASE(CHECK_ ## assert_type); \
-        DOCTEST_GENERATE_ASSERT_TYPE_CASE(REQUIRE_ ## assert_type)
-    DOCTEST_CLANG_SUPPRESS_WARNING_PUSH
-    DOCTEST_CLANG_SUPPRESS_WARNING("-Wswitch-enum")
-    DOCTEST_GCC_SUPPRESS_WARNING_PUSH
-    DOCTEST_GCC_SUPPRESS_WARNING("-Wswitch-enum")
-    switch(at) {
-        DOCTEST_GENERATE_ASSERT_TYPE_CASE(WARN);
-        DOCTEST_GENERATE_ASSERT_TYPE_CASE(CHECK);
-        DOCTEST_GENERATE_ASSERT_TYPE_CASE(REQUIRE);
-
-        DOCTEST_GENERATE_ASSERT_TYPE_CASES(FALSE);
-
-        DOCTEST_GENERATE_ASSERT_TYPE_CASES(THROWS);
-
-        DOCTEST_GENERATE_ASSERT_TYPE_CASES(THROWS_AS);
-
-        DOCTEST_GENERATE_ASSERT_TYPE_CASES(THROWS_WITH);
-
-        DOCTEST_GENERATE_ASSERT_TYPE_CASES(THROWS_WITH_AS);
-
-        DOCTEST_GENERATE_ASSERT_TYPE_CASES(NOTHROW);
-
-        DOCTEST_GENERATE_ASSERT_TYPE_CASES(EQ);
-        DOCTEST_GENERATE_ASSERT_TYPE_CASES(NE);
-        DOCTEST_GENERATE_ASSERT_TYPE_CASES(GT);
-        DOCTEST_GENERATE_ASSERT_TYPE_CASES(LT);
-        DOCTEST_GENERATE_ASSERT_TYPE_CASES(GE);
-        DOCTEST_GENERATE_ASSERT_TYPE_CASES(LE);
-
-        DOCTEST_GENERATE_ASSERT_TYPE_CASES(UNARY);
-        DOCTEST_GENERATE_ASSERT_TYPE_CASES(UNARY_FALSE);
-
-        default: DOCTEST_INTERNAL_ERROR("Tried stringifying invalid assert type!");
-    }
-    DOCTEST_CLANG_SUPPRESS_WARNING_POP
-    DOCTEST_GCC_SUPPRESS_WARNING_POP
-    DOCTEST_MSVC_SUPPRESS_WARNING_POP
-}
-// clang-format on
-
-const char* failureString(assertType::Enum at) {
-    if(at & assertType::is_warn) //!OCLINT bitwise operator in conditional
-        return "WARNING";
-    if(at & assertType::is_check) //!OCLINT bitwise operator in conditional
-        return "ERROR";
-    if(at & assertType::is_require) //!OCLINT bitwise operator in conditional
-        return "FATAL ERROR";
-    return "";
-}
-
-} // namespace doctest
-
 #ifndef DOCTEST_CONFIG_DISABLE
 
 namespace doctest {
@@ -3662,6 +3576,118 @@ namespace detail {
 } // namespace doctest
 
 #endif // DOCTEST_CONFIG_DISABLE
+
+#ifndef DOCTEST_CONFIG_DISABLE
+
+namespace doctest {
+
+    using detail::g_cs;
+
+    AssertData::AssertData(assertType::Enum at, const char* file, int line, const char* expr,
+        const char* exception_type, const StringContains& exception_string)
+        : m_test_case(g_cs->currentTest), m_at(at), m_file(file), m_line(line), m_expr(expr),
+        m_failed(true), m_threw(false), m_threw_as(false), m_exception_type(exception_type),
+        m_exception_string(exception_string) {
+    #if DOCTEST_MSVC
+        if (m_expr[0] == ' ') // this happens when variadic macros are disabled under MSVC
+            ++m_expr;
+    #endif // MSVC
+    }
+
+} // namespace doctest
+
+#endif // DOCTEST_CONFIG_DISABLE
+
+namespace doctest {
+namespace {
+    using namespace detail;
+
+    template <typename Ex>
+    DOCTEST_NORETURN void throw_exception(Ex const& e) {
+#ifndef DOCTEST_CONFIG_NO_EXCEPTIONS
+        throw e;
+#else  // DOCTEST_CONFIG_NO_EXCEPTIONS
+#ifdef DOCTEST_CONFIG_HANDLE_EXCEPTION
+        DOCTEST_CONFIG_HANDLE_EXCEPTION(e);
+#else // DOCTEST_CONFIG_HANDLE_EXCEPTION
+#ifndef DOCTEST_CONFIG_NO_INCLUDE_IOSTREAM
+        std::cerr << "doctest will terminate because it needed to throw an exception.\n"
+                  << "The message was: " << e.what() << '\n';
+#endif // DOCTEST_CONFIG_NO_INCLUDE_IOSTREAM
+#endif // DOCTEST_CONFIG_HANDLE_EXCEPTION
+        std::terminate();
+#endif // DOCTEST_CONFIG_NO_EXCEPTIONS
+    }
+
+#ifndef DOCTEST_INTERNAL_ERROR
+#define DOCTEST_INTERNAL_ERROR(msg)                                                                \
+    throw_exception(std::logic_error(                                                              \
+            __FILE__ ":" DOCTEST_TOSTR(__LINE__) ": Internal doctest error: " msg))
+#endif // DOCTEST_INTERNAL_ERROR
+} // namespace
+
+} // namespace doctest
+
+namespace doctest {
+
+// clang-format off
+const char* assertString(assertType::Enum at) {
+    DOCTEST_MSVC_SUPPRESS_WARNING_WITH_PUSH(4061) // enum 'x' in switch of enum 'y' is not explicitly handled
+    #define DOCTEST_GENERATE_ASSERT_TYPE_CASE(assert_type) case assertType::DT_ ## assert_type: return #assert_type
+    #define DOCTEST_GENERATE_ASSERT_TYPE_CASES(assert_type) \
+        DOCTEST_GENERATE_ASSERT_TYPE_CASE(WARN_ ## assert_type); \
+        DOCTEST_GENERATE_ASSERT_TYPE_CASE(CHECK_ ## assert_type); \
+        DOCTEST_GENERATE_ASSERT_TYPE_CASE(REQUIRE_ ## assert_type)
+    DOCTEST_CLANG_SUPPRESS_WARNING_PUSH
+    DOCTEST_CLANG_SUPPRESS_WARNING("-Wswitch-enum")
+    DOCTEST_GCC_SUPPRESS_WARNING_PUSH
+    DOCTEST_GCC_SUPPRESS_WARNING("-Wswitch-enum")
+    switch(at) {
+        DOCTEST_GENERATE_ASSERT_TYPE_CASE(WARN);
+        DOCTEST_GENERATE_ASSERT_TYPE_CASE(CHECK);
+        DOCTEST_GENERATE_ASSERT_TYPE_CASE(REQUIRE);
+
+        DOCTEST_GENERATE_ASSERT_TYPE_CASES(FALSE);
+
+        DOCTEST_GENERATE_ASSERT_TYPE_CASES(THROWS);
+
+        DOCTEST_GENERATE_ASSERT_TYPE_CASES(THROWS_AS);
+
+        DOCTEST_GENERATE_ASSERT_TYPE_CASES(THROWS_WITH);
+
+        DOCTEST_GENERATE_ASSERT_TYPE_CASES(THROWS_WITH_AS);
+
+        DOCTEST_GENERATE_ASSERT_TYPE_CASES(NOTHROW);
+
+        DOCTEST_GENERATE_ASSERT_TYPE_CASES(EQ);
+        DOCTEST_GENERATE_ASSERT_TYPE_CASES(NE);
+        DOCTEST_GENERATE_ASSERT_TYPE_CASES(GT);
+        DOCTEST_GENERATE_ASSERT_TYPE_CASES(LT);
+        DOCTEST_GENERATE_ASSERT_TYPE_CASES(GE);
+        DOCTEST_GENERATE_ASSERT_TYPE_CASES(LE);
+
+        DOCTEST_GENERATE_ASSERT_TYPE_CASES(UNARY);
+        DOCTEST_GENERATE_ASSERT_TYPE_CASES(UNARY_FALSE);
+
+        default: DOCTEST_INTERNAL_ERROR("Tried stringifying invalid assert type!");
+    }
+    DOCTEST_CLANG_SUPPRESS_WARNING_POP
+    DOCTEST_GCC_SUPPRESS_WARNING_POP
+    DOCTEST_MSVC_SUPPRESS_WARNING_POP
+}
+// clang-format on
+
+const char* failureString(assertType::Enum at) {
+    if(at & assertType::is_warn) //!OCLINT bitwise operator in conditional
+        return "WARNING";
+    if(at & assertType::is_check) //!OCLINT bitwise operator in conditional
+        return "ERROR";
+    if(at & assertType::is_require) //!OCLINT bitwise operator in conditional
+        return "FATAL ERROR";
+    return "";
+}
+
+} // namespace doctest
 
 namespace doctest {
 
@@ -4644,17 +4670,6 @@ namespace {
     }
 #endif // DOCTEST_CONFIG_POSIX_SIGNALS || DOCTEST_CONFIG_WINDOWS_SEH
 } // namespace
-
-AssertData::AssertData(assertType::Enum at, const char* file, int line, const char* expr,
-    const char* exception_type, const StringContains& exception_string)
-    : m_test_case(g_cs->currentTest), m_at(at), m_file(file), m_line(line), m_expr(expr),
-    m_failed(true), m_threw(false), m_threw_as(false), m_exception_type(exception_type),
-    m_exception_string(exception_string) {
-#if DOCTEST_MSVC
-    if (m_expr[0] == ' ') // this happens when variadic macros are disabled under MSVC
-        ++m_expr;
-#endif // MSVC
-}
 
 namespace detail {
     ResultBuilder::ResultBuilder(assertType::Enum at, const char* file, int line, const char* expr,
