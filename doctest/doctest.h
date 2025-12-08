@@ -1892,6 +1892,67 @@ int registerExceptionTranslator(String (*)(T)) {
 #endif // DOCTEST_CONFIG_DISABLE
 
 } // namespace doctest
+namespace doctest {
+
+struct DOCTEST_INTERFACE IContextScope
+{
+    DOCTEST_DECLARE_INTERFACE(IContextScope)
+    virtual void stringify(std::ostream*) const = 0;
+};
+
+#ifndef DOCTEST_CONFIG_DISABLE
+namespace detail {
+
+  // ContextScope base class used to allow implementing methods of ContextScope
+  // that don't depend on the template parameter in doctest.cpp.
+  struct DOCTEST_INTERFACE ContextScopeBase : public IContextScope {
+      ContextScopeBase(const ContextScopeBase&) = delete;
+
+      ContextScopeBase& operator=(const ContextScopeBase&) = delete;
+      ContextScopeBase& operator=(ContextScopeBase&&) = delete;
+
+      ~ContextScopeBase() override = default;
+
+  protected:
+      ContextScopeBase();
+      ContextScopeBase(ContextScopeBase&& other) noexcept;
+
+      void destroy();
+      bool need_to_destroy{true};
+  };
+
+  template <typename L> class ContextScope : public ContextScopeBase
+  {
+      L lambda_;
+
+  public:
+      explicit ContextScope(const L &lambda) : lambda_(lambda) {}
+      explicit ContextScope(L&& lambda) : lambda_(static_cast<L&&>(lambda)) { }
+
+      ContextScope(const ContextScope&) = delete;
+      ContextScope(ContextScope&&) noexcept = default;
+
+      ContextScope& operator=(const ContextScope&) = delete;
+      ContextScope& operator=(ContextScope&&) = delete;
+
+      void stringify(std::ostream* s) const override { lambda_(s); }
+
+      ~ContextScope() override {
+          if (need_to_destroy) {
+              destroy();
+          }
+      }
+  };
+
+  template <typename L>
+  ContextScope<L> MakeContextScope(const L &lambda) {
+      return ContextScope<L>(lambda);
+  }
+
+} // namespace detail
+#endif // DOCTEST_CONFIG_DISABLE
+
+} // namespace doctest
 
 namespace doctest {
 
@@ -1905,12 +1966,6 @@ struct DOCTEST_INTERFACE MessageData
     const char*      m_file;
     int              m_line;
     assertType::Enum m_severity;
-};
-
-struct DOCTEST_INTERFACE IContextScope
-{
-    DOCTEST_DECLARE_INTERFACE(IContextScope)
-    virtual void stringify(std::ostream*) const = 0;
 };
 
 } // namespace doctest
@@ -2015,47 +2070,6 @@ namespace detail {
     template<typename T>
     int instantiationHelper(const T&) { return 0; }
 
-    // ContextScope base class used to allow implementing methods of ContextScope
-    // that don't depend on the template parameter in doctest.cpp.
-    struct DOCTEST_INTERFACE ContextScopeBase : public IContextScope {
-        ContextScopeBase(const ContextScopeBase&) = delete;
-
-        ContextScopeBase& operator=(const ContextScopeBase&) = delete;
-        ContextScopeBase& operator=(ContextScopeBase&&) = delete;
-
-        ~ContextScopeBase() override = default;
-
-    protected:
-        ContextScopeBase();
-        ContextScopeBase(ContextScopeBase&& other) noexcept;
-
-        void destroy();
-        bool need_to_destroy{true};
-    };
-
-    template <typename L> class ContextScope : public ContextScopeBase
-    {
-        L lambda_;
-
-    public:
-        explicit ContextScope(const L &lambda) : lambda_(lambda) {}
-        explicit ContextScope(L&& lambda) : lambda_(static_cast<L&&>(lambda)) { }
-
-        ContextScope(const ContextScope&) = delete;
-        ContextScope(ContextScope&&) noexcept = default;
-
-        ContextScope& operator=(const ContextScope&) = delete;
-        ContextScope& operator=(ContextScope&&) = delete;
-
-        void stringify(std::ostream* s) const override { lambda_(s); }
-
-        ~ContextScope() override {
-            if (need_to_destroy) {
-                destroy();
-            }
-        }
-    };
-
     struct DOCTEST_INTERFACE MessageBuilder : public MessageData
     {
         std::ostream* m_stream;
@@ -2094,11 +2108,6 @@ DOCTEST_MSVC_SUPPRESS_WARNING_POP
         bool log();
         void react();
     };
-
-    template <typename L>
-    ContextScope<L> MakeContextScope(const L &lambda) {
-        return ContextScope<L>(lambda);
-    }
 } // namespace detail
 
 } // namespace doctest
@@ -3985,6 +3994,62 @@ namespace doctest {
 
 namespace doctest {
 namespace detail {
+    extern DOCTEST_THREAD_LOCAL std::vector<IContextScope*> g_infoContexts; // for logging with INFO()
+}
+} // namespace doctest
+
+#endif // DOCTEST_CONFIG_DISABLE
+
+namespace doctest {
+
+DOCTEST_DEFINE_INTERFACE(IContextScope)
+
+#ifndef DOCTEST_CONFIG_DISABLE
+namespace detail {
+    DOCTEST_THREAD_LOCAL std::vector<IContextScope*> g_infoContexts; // for logging with INFO()
+
+    ContextScopeBase::ContextScopeBase() {
+        g_infoContexts.push_back(this);
+    }
+
+    ContextScopeBase::ContextScopeBase(ContextScopeBase&& other) noexcept {
+        if (other.need_to_destroy) {
+            other.destroy();
+        }
+        other.need_to_destroy = false;
+        g_infoContexts.push_back(this);
+    }
+
+    DOCTEST_MSVC_SUPPRESS_WARNING_WITH_PUSH(4996) // std::uncaught_exception is deprecated in C++17
+    DOCTEST_GCC_SUPPRESS_WARNING_WITH_PUSH("-Wdeprecated-declarations")
+    DOCTEST_CLANG_SUPPRESS_WARNING_WITH_PUSH("-Wdeprecated-declarations")
+    // destroy cannot be inlined into the destructor because that would mean calling stringify after
+    // ContextScope has been destroyed (base class destructors run after derived class destructors).
+    // Instead, ContextScope calls this method directly from its destructor.
+    void ContextScopeBase::destroy() {
+    #if defined(__cpp_lib_uncaught_exceptions) && __cpp_lib_uncaught_exceptions >= 201411L && (!defined(__MAC_OS_X_VERSION_MIN_REQUIRED) || __MAC_OS_X_VERSION_MIN_REQUIRED >= 101200)
+        if(std::uncaught_exceptions() > 0) {
+    #else
+        if(std::uncaught_exception()) {
+    #endif
+            std::ostringstream s;
+            this->stringify(&s);
+            g_cs->stringifiedContexts.push_back(s.str().c_str());
+        }
+        g_infoContexts.pop_back();
+    }
+    DOCTEST_CLANG_SUPPRESS_WARNING_POP
+    DOCTEST_GCC_SUPPRESS_WARNING_POP
+    DOCTEST_MSVC_SUPPRESS_WARNING_POP
+} // namespace detail
+#endif // DOCTEST_CONFIG_DISABLE
+
+} // namespace doctest
+
+#ifndef DOCTEST_CONFIG_DISABLE
+
+namespace doctest {
+namespace detail {
 #ifdef DOCTEST_IS_DEBUGGER_ACTIVE
     bool isDebuggerActive() { return DOCTEST_IS_DEBUGGER_ACTIVE(); }
 #else // DOCTEST_IS_DEBUGGER_ACTIVE
@@ -4133,8 +4198,6 @@ const char* skipPathFromFilename(const char* file) {
 }
 DOCTEST_CLANG_SUPPRESS_WARNING_POP
 DOCTEST_GCC_SUPPRESS_WARNING_POP
-
-DOCTEST_DEFINE_INTERFACE(IContextScope)
 
 } // namespace doctest
 
@@ -4306,43 +4369,7 @@ namespace {
 
 namespace detail {
 
-    DOCTEST_THREAD_LOCAL std::vector<IContextScope*> g_infoContexts; // for logging with INFO()
 
-    ContextScopeBase::ContextScopeBase() {
-        g_infoContexts.push_back(this);
-    }
-
-    ContextScopeBase::ContextScopeBase(ContextScopeBase&& other) noexcept {
-        if (other.need_to_destroy) {
-            other.destroy();
-        }
-        other.need_to_destroy = false;
-        g_infoContexts.push_back(this);
-    }
-
-    DOCTEST_MSVC_SUPPRESS_WARNING_WITH_PUSH(4996) // std::uncaught_exception is deprecated in C++17
-    DOCTEST_GCC_SUPPRESS_WARNING_WITH_PUSH("-Wdeprecated-declarations")
-    DOCTEST_CLANG_SUPPRESS_WARNING_WITH_PUSH("-Wdeprecated-declarations")
-
-    // destroy cannot be inlined into the destructor because that would mean calling stringify after
-    // ContextScope has been destroyed (base class destructors run after derived class destructors).
-    // Instead, ContextScope calls this method directly from its destructor.
-    void ContextScopeBase::destroy() {
-#if defined(__cpp_lib_uncaught_exceptions) && __cpp_lib_uncaught_exceptions >= 201411L && (!defined(__MAC_OS_X_VERSION_MIN_REQUIRED) || __MAC_OS_X_VERSION_MIN_REQUIRED >= 101200)
-        if(std::uncaught_exceptions() > 0) {
-#else
-        if(std::uncaught_exception()) {
-#endif
-            std::ostringstream s;
-            this->stringify(&s);
-            g_cs->stringifiedContexts.push_back(s.str().c_str());
-        }
-        g_infoContexts.pop_back();
-    }
-
-    DOCTEST_CLANG_SUPPRESS_WARNING_POP
-    DOCTEST_GCC_SUPPRESS_WARNING_POP
-    DOCTEST_MSVC_SUPPRESS_WARNING_POP
 } // namespace detail
 namespace {
     using namespace detail;
