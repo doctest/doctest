@@ -3420,13 +3420,10 @@ namespace {
 
 } // namespace doctest
 
-namespace doctest {
-
-bool is_running_in_test = false;
-
-namespace detail {
-
 #ifndef DOCTEST_CONFIG_DISABLE
+
+namespace doctest {
+namespace detail {
 
 namespace timer_large_integer
 {
@@ -3475,6 +3472,19 @@ using ticks_t = timer_large_integer::type;
     private:
         ticks_t m_ticks = 0;
     };
+
+} // namespace detail
+} // namespace doctest
+
+#endif // DOCTEST_CONFIG_DISABLE
+
+namespace doctest {
+
+bool is_running_in_test = false;
+
+namespace detail {
+
+#ifndef DOCTEST_CONFIG_DISABLE
 
 #ifdef DOCTEST_CONFIG_NO_MULTITHREADING
     template <typename T>
