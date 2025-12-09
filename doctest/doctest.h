@@ -3583,13 +3583,10 @@ namespace detail {
 
 #endif // DOCTEST_CONFIG_DISABLE
 
-namespace doctest {
-
-bool is_running_in_test = false;
-
-namespace detail {
-
 #ifndef DOCTEST_CONFIG_DISABLE
+
+namespace doctest {
+namespace detail {
 
     // this holds both parameters from the command line and runtime data for tests
     struct ContextState : ContextOptions, TestRunStats, CurrentTestCaseStats
@@ -3676,8 +3673,14 @@ namespace detail {
     // could be a race or that there wouldn't be a race even if using the context directly
     DOCTEST_THREAD_LOCAL bool g_no_colors;
 
-#endif // DOCTEST_CONFIG_DISABLE
 } // namespace detail
+} // namespace doctest
+
+#endif // DOCTEST_CONFIG_DISABLE
+
+namespace doctest {
+
+bool is_running_in_test = false;
 
 namespace {
     void color_to_stream(std::ostream&, Color::Enum) DOCTEST_BRANCH_ON_DISABLED({}, ;)
