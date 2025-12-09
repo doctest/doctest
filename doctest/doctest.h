@@ -3478,13 +3478,10 @@ using ticks_t = timer_large_integer::type;
 
 #endif // DOCTEST_CONFIG_DISABLE
 
-namespace doctest {
-
-bool is_running_in_test = false;
-
-namespace detail {
-
 #ifndef DOCTEST_CONFIG_DISABLE
+
+namespace doctest {
+namespace detail {
 
 #ifdef DOCTEST_CONFIG_NO_MULTITHREADING
     template <typename T>
@@ -3579,6 +3576,20 @@ namespace detail {
         }
     };
 #endif // DOCTEST_CONFIG_NO_MULTI_LANE_ATOMICS
+
+
+} // namespace detail
+} // namespace doctest
+
+#endif // DOCTEST_CONFIG_DISABLE
+
+namespace doctest {
+
+bool is_running_in_test = false;
+
+namespace detail {
+
+#ifndef DOCTEST_CONFIG_DISABLE
 
     // this holds both parameters from the command line and runtime data for tests
     struct ContextState : ContextOptions, TestRunStats, CurrentTestCaseStats
