@@ -144,24 +144,9 @@ struct DOCTEST_INTERFACE IContextScope
     virtual void stringify(std::ostream*) const = 0;
 };
 
-#ifndef DOCTEST_CONFIG_DISABLE
-
-namespace detail {
-
-    struct DOCTEST_INTERFACE TestFailureException
-    {
-    };
-
-    DOCTEST_INTERFACE bool checkIfShouldThrow(assertType::Enum at);
-
-#ifndef DOCTEST_CONFIG_NO_EXCEPTIONS
-    DOCTEST_NORETURN
-#endif // DOCTEST_CONFIG_NO_EXCEPTIONS
-    DOCTEST_INTERFACE void throwException();
-} // namespace detail
-#endif // DOCTEST_CONFIG_DISABLE
 } // namespace doctest
 
+#include <doctest/parts/public/exceptions.h>
 #include <doctest/parts/public/assert/handler.h>
 
 namespace doctest {

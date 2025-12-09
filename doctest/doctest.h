@@ -1710,24 +1710,28 @@ struct DOCTEST_INTERFACE IContextScope
     virtual void stringify(std::ostream*) const = 0;
 };
 
-#ifndef DOCTEST_CONFIG_DISABLE
-
-namespace detail {
-
-    struct DOCTEST_INTERFACE TestFailureException
-    {
-    };
-
-    DOCTEST_INTERFACE bool checkIfShouldThrow(assertType::Enum at);
-
-#ifndef DOCTEST_CONFIG_NO_EXCEPTIONS
-    DOCTEST_NORETURN
-#endif // DOCTEST_CONFIG_NO_EXCEPTIONS
-    DOCTEST_INTERFACE void throwException();
-} // namespace detail
-#endif // DOCTEST_CONFIG_DISABLE
 } // namespace doctest
 
+#ifndef DOCTEST_CONFIG_DISABLE
+
+namespace doctest {
+namespace detail {
+
+  struct DOCTEST_INTERFACE TestFailureException
+  {
+  };
+
+  DOCTEST_INTERFACE bool checkIfShouldThrow(assertType::Enum at);
+
+#ifndef DOCTEST_CONFIG_NO_EXCEPTIONS
+  DOCTEST_NORETURN
+#endif // DOCTEST_CONFIG_NO_EXCEPTIONS
+  DOCTEST_INTERFACE void throwException();
+
+} // namespace detail
+} // namespace doctest
+
+#endif // DOCTEST_CONFIG_DISABLE
 #ifndef DOCTEST_CONFIG_DISABLE
 
 namespace doctest {
@@ -4035,28 +4039,6 @@ namespace detail {
 #define DOCTEST_ITERATE_THROUGH_REPORTERS(function, ...)                                           \
     for(auto& curr_rep : g_cs->reporters_currently_used)                                           \
     curr_rep->function(__VA_ARGS__)
-
-    bool checkIfShouldThrow(assertType::Enum at) {
-        if(at & assertType::is_require) //!OCLINT bitwise operator in conditional
-            return true;
-
-        if((at & assertType::is_check) //!OCLINT bitwise operator in conditional
-           && getContextOptions()->abort_after > 0 &&
-           (g_cs->numAssertsFailed + g_cs->numAssertsFailedCurrentTest_atomic) >=
-                   getContextOptions()->abort_after)
-            return true;
-
-        return false;
-    }
-
-#ifndef DOCTEST_CONFIG_NO_EXCEPTIONS
-    DOCTEST_NORETURN void throwException() {
-        g_cs->shouldLogCurrentException = false;
-        throw TestFailureException(); // NOLINT(hicpp-exception-baseclass)
-    }
-#else // DOCTEST_CONFIG_NO_EXCEPTIONS
-    void throwException() {}
-#endif // DOCTEST_CONFIG_NO_EXCEPTIONS
 } // namespace detail
 
 namespace {
@@ -6928,6 +6910,38 @@ DOCTEST_MSVC_SUPPRESS_WARNING_WITH_PUSH(4007) // 'function' : must be 'attribute
 int main(int argc, char** argv) { return doctest::Context(argc, argv).run(); }
 DOCTEST_MSVC_SUPPRESS_WARNING_POP
 #endif // DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
+
+#ifndef DOCTEST_CONFIG_DISABLE
+
+namespace doctest {
+namespace detail {
+
+    bool checkIfShouldThrow(assertType::Enum at) {
+        if(at & assertType::is_require) //!OCLINT bitwise operator in conditional
+            return true;
+
+        if((at & assertType::is_check) //!OCLINT bitwise operator in conditional
+           && getContextOptions()->abort_after > 0 &&
+           (g_cs->numAssertsFailed + g_cs->numAssertsFailedCurrentTest_atomic) >=
+                   getContextOptions()->abort_after)
+            return true;
+
+        return false;
+    }
+
+#ifndef DOCTEST_CONFIG_NO_EXCEPTIONS
+    DOCTEST_NORETURN void throwException() {
+        g_cs->shouldLogCurrentException = false;
+        throw TestFailureException(); // NOLINT(hicpp-exception-baseclass)
+    }
+#else // DOCTEST_CONFIG_NO_EXCEPTIONS
+    void throwException() {}
+#endif // DOCTEST_CONFIG_NO_EXCEPTIONS
+
+} // namespace detail
+} // namespace doctest
+
+#endif // DOCTEST_CONFIG_DISABLE
 
 namespace doctest {
 
