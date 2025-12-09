@@ -3389,10 +3389,8 @@ namespace detail {
 #define DOCTEST_OPTIONS_PREFIX_DISPLAY ""
 #endif
 
+
 namespace doctest {
-
-bool is_running_in_test = false;
-
 namespace {
     using namespace detail;
 
@@ -3418,8 +3416,13 @@ namespace {
     throw_exception(std::logic_error(                                                              \
             __FILE__ ":" DOCTEST_TOSTR(__LINE__) ": Internal doctest error: " msg))
 #endif // DOCTEST_INTERNAL_ERROR
-
 } // namespace
+
+} // namespace doctest
+
+namespace doctest {
+
+bool is_running_in_test = false;
 
 namespace detail {
     DOCTEST_THREAD_LOCAL class
