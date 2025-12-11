@@ -141,8 +141,6 @@ bool SubcaseSignature::operator<(const SubcaseSignature& other) const {
 
 DOCTEST_DEFINE_INTERFACE(IContextScope)
 
-const ContextOptions* getContextOptions() { return DOCTEST_BRANCH_ON_DISABLED(nullptr, g_cs); }
-
 } // namespace doctest
 
 #ifdef DOCTEST_CONFIG_DISABLE

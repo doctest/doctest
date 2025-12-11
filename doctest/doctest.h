@@ -1101,6 +1101,63 @@ DOCTEST_INTERFACE String toString(IsNaN<double> in);
 DOCTEST_INTERFACE String toString(IsNaN<double long> in);
 
 } // namespace doctest
+namespace doctest {
+namespace detail {
+    struct DOCTEST_INTERFACE TestCase;
+} // namespace detail
+
+    struct ContextOptions //!OCLINT too many fields
+    {
+        std::ostream* cout = nullptr; // stdout stream
+        String        binary_name;    // the test binary name
+
+        const detail::TestCase* currentTest = nullptr;
+
+        // == parameters from the command line
+        String   out;       // output filename
+        String   order_by;  // how tests should be ordered
+        unsigned rand_seed; // the seed for rand ordering
+
+        unsigned first; // the first (matching) test to be executed
+        unsigned last;  // the last (matching) test to be executed
+
+        int abort_after;           // stop tests after this many failed assertions
+        int subcase_filter_levels; // apply the subcase filters for the first N levels
+
+        bool success;              // include successful assertions in output
+        bool case_sensitive;       // if filtering should be case sensitive
+        bool exit;                 // if the program should be exited after the tests are ran/whatever
+        bool duration;             // print the time duration of each test case
+        bool minimal;              // minimal console output (only test failures)
+        bool quiet;                // no console output
+        bool no_throw;             // to skip exceptions-related assertion macros
+        bool no_exitcode;          // if the framework should return 0 as the exitcode
+        bool no_run;               // to not run the tests at all (can be done with an "*" exclude)
+        bool no_intro;             // to not print the intro of the framework
+        bool no_version;           // to not print the version of the framework
+        bool no_colors;            // if output to the console should be colorized
+        bool force_colors;         // forces the use of colors even when a tty cannot be detected
+        bool no_breaks;            // to not break into the debugger
+        bool no_skip;              // don't skip test cases which are marked to be skipped
+        bool gnu_file_line;        // if line numbers should be surrounded with :x: and not (x):
+        bool no_path_in_filenames; // if the path to files should be removed from the output
+        String strip_file_prefixes;// remove the longest matching one of these prefixes from any file paths in the output
+        bool no_line_numbers;      // if source code line numbers should be omitted from the output
+        bool no_debug_output;      // no output in the debug console when a debugger is attached
+        bool no_skipped_summary;   // don't print "skipped" in the summary !!! UNDOCUMENTED !!!
+        bool no_time_in_output;    // omit any time/timestamps from output !!! UNDOCUMENTED !!!
+
+        bool help;             // to print the help
+        bool version;          // to print the version
+        bool count;            // if only the count of matching tests is to be retrieved
+        bool list_test_cases;  // to list all tests matching the filters
+        bool list_test_suites; // to list all suites matching the filters
+        bool list_reporters;   // lists all registered reporters
+    };
+
+    DOCTEST_INTERFACE const ContextOptions* getContextOptions();
+
+} // namespace doctest
 
 namespace doctest {
 
@@ -1304,61 +1361,6 @@ struct DOCTEST_INTERFACE IContextScope
     DOCTEST_DECLARE_INTERFACE(IContextScope)
     virtual void stringify(std::ostream*) const = 0;
 };
-
-namespace detail {
-    struct DOCTEST_INTERFACE TestCase;
-} // namespace detail
-
-struct ContextOptions //!OCLINT too many fields
-{
-    std::ostream* cout = nullptr; // stdout stream
-    String        binary_name;    // the test binary name
-
-    const detail::TestCase* currentTest = nullptr;
-
-    // == parameters from the command line
-    String   out;       // output filename
-    String   order_by;  // how tests should be ordered
-    unsigned rand_seed; // the seed for rand ordering
-
-    unsigned first; // the first (matching) test to be executed
-    unsigned last;  // the last (matching) test to be executed
-
-    int abort_after;           // stop tests after this many failed assertions
-    int subcase_filter_levels; // apply the subcase filters for the first N levels
-
-    bool success;              // include successful assertions in output
-    bool case_sensitive;       // if filtering should be case sensitive
-    bool exit;                 // if the program should be exited after the tests are ran/whatever
-    bool duration;             // print the time duration of each test case
-    bool minimal;              // minimal console output (only test failures)
-    bool quiet;                // no console output
-    bool no_throw;             // to skip exceptions-related assertion macros
-    bool no_exitcode;          // if the framework should return 0 as the exitcode
-    bool no_run;               // to not run the tests at all (can be done with an "*" exclude)
-    bool no_intro;             // to not print the intro of the framework
-    bool no_version;           // to not print the version of the framework
-    bool no_colors;            // if output to the console should be colorized
-    bool force_colors;         // forces the use of colors even when a tty cannot be detected
-    bool no_breaks;            // to not break into the debugger
-    bool no_skip;              // don't skip test cases which are marked to be skipped
-    bool gnu_file_line;        // if line numbers should be surrounded with :x: and not (x):
-    bool no_path_in_filenames; // if the path to files should be removed from the output
-    String strip_file_prefixes;// remove the longest matching one of these prefixes from any file paths in the output
-    bool no_line_numbers;      // if source code line numbers should be omitted from the output
-    bool no_debug_output;      // no output in the debug console when a debugger is attached
-    bool no_skipped_summary;   // don't print "skipped" in the summary !!! UNDOCUMENTED !!!
-    bool no_time_in_output;    // omit any time/timestamps from output !!! UNDOCUMENTED !!!
-
-    bool help;             // to print the help
-    bool version;          // to print the version
-    bool count;            // if only the count of matching tests is to be retrieved
-    bool list_test_cases;  // to list all tests matching the filters
-    bool list_test_suites; // to list all suites matching the filters
-    bool list_reporters;   // lists all registered reporters
-};
-
-DOCTEST_INTERFACE const ContextOptions* getContextOptions();
 
 #ifndef DOCTEST_CONFIG_DISABLE
 
@@ -3313,117 +3315,6 @@ DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_END
 
 namespace doctest {
 namespace detail {
-#ifdef DOCTEST_IS_DEBUGGER_ACTIVE
-    bool isDebuggerActive() { return DOCTEST_IS_DEBUGGER_ACTIVE(); }
-#else // DOCTEST_IS_DEBUGGER_ACTIVE
-#ifdef DOCTEST_PLATFORM_LINUX
-    class ErrnoGuard {
-    public:
-        ErrnoGuard() : m_oldErrno(errno) {}
-        ~ErrnoGuard() { errno = m_oldErrno; }
-    private:
-        int m_oldErrno;
-    };
-    // See the comments in Catch2 for the reasoning behind this implementation:
-    // https://github.com/catchorg/Catch2/blob/v2.13.1/include/internal/catch_debugger.cpp#L79-L102
-    bool isDebuggerActive() {
-        ErrnoGuard guard;
-        std::ifstream in("/proc/self/status");
-        for(std::string line; std::getline(in, line);) {
-            static const int PREFIX_LEN = 11;
-            if(line.compare(0, PREFIX_LEN, "TracerPid:\t") == 0) {
-                return line.length() > PREFIX_LEN && line[PREFIX_LEN] != '0';
-            }
-        }
-        return false;
-    }
-#elif defined(DOCTEST_PLATFORM_MAC)
-    // The following function is taken directly from the following technical note:
-    // https://developer.apple.com/library/archive/qa/qa1361/_index.html
-    // Returns true if the current process is being debugged (either
-    // running under the debugger or has a debugger attached post facto).
-    bool isDebuggerActive() {
-        int        mib[4];
-        kinfo_proc info;
-        size_t     size;
-        // Initialize the flags so that, if sysctl fails for some bizarre
-        // reason, we get a predictable result.
-        info.kp_proc.p_flag = 0;
-        // Initialize mib, which tells sysctl the info we want, in this case
-        // we're looking for information about a specific process ID.
-        mib[0] = CTL_KERN;
-        mib[1] = KERN_PROC;
-        mib[2] = KERN_PROC_PID;
-        mib[3] = getpid();
-        // Call sysctl.
-        size = sizeof(info);
-        if(sysctl(mib, DOCTEST_COUNTOF(mib), &info, &size, 0, 0) != 0) {
-            std::cerr << "\nCall to sysctl failed - unable to determine if debugger is active **\n";
-            return false;
-        }
-        // We're being debugged if the P_TRACED flag is set.
-        return ((info.kp_proc.p_flag & P_TRACED) != 0);
-    }
-#elif DOCTEST_MSVC || defined(__MINGW32__) || defined(__MINGW64__)
-    bool isDebuggerActive() { return ::IsDebuggerPresent() != 0; }
-#else
-    bool isDebuggerActive() { return false; }
-#endif // Platform
-#endif // DOCTEST_IS_DEBUGGER_ACTIVE
-} // detail
-} // doctest
-
-#endif // DOCTEST_CONFIG_DISABLE
-
-#ifndef DOCTEST_CONFIG_OPTIONS_PREFIX
-#define DOCTEST_CONFIG_OPTIONS_PREFIX "dt-"
-#endif
-
-#ifndef DOCTEST_CONFIG_OPTIONS_FILE_PREFIX_SEPARATOR
-#define DOCTEST_CONFIG_OPTIONS_FILE_PREFIX_SEPARATOR ':'
-#endif
-
-#ifdef DOCTEST_CONFIG_NO_UNPREFIXED_OPTIONS
-#define DOCTEST_OPTIONS_PREFIX_DISPLAY DOCTEST_CONFIG_OPTIONS_PREFIX
-#else
-#define DOCTEST_OPTIONS_PREFIX_DISPLAY ""
-#endif
-
-
-namespace doctest {
-namespace {
-    using namespace detail;
-
-    template <typename Ex>
-    DOCTEST_NORETURN void throw_exception(Ex const& e) {
-#ifndef DOCTEST_CONFIG_NO_EXCEPTIONS
-        throw e;
-#else  // DOCTEST_CONFIG_NO_EXCEPTIONS
-#ifdef DOCTEST_CONFIG_HANDLE_EXCEPTION
-        DOCTEST_CONFIG_HANDLE_EXCEPTION(e);
-#else // DOCTEST_CONFIG_HANDLE_EXCEPTION
-#ifndef DOCTEST_CONFIG_NO_INCLUDE_IOSTREAM
-        std::cerr << "doctest will terminate because it needed to throw an exception.\n"
-                  << "The message was: " << e.what() << '\n';
-#endif // DOCTEST_CONFIG_NO_INCLUDE_IOSTREAM
-#endif // DOCTEST_CONFIG_HANDLE_EXCEPTION
-        std::terminate();
-#endif // DOCTEST_CONFIG_NO_EXCEPTIONS
-    }
-
-#ifndef DOCTEST_INTERNAL_ERROR
-#define DOCTEST_INTERNAL_ERROR(msg)                                                                \
-    throw_exception(std::logic_error(                                                              \
-            __FILE__ ":" DOCTEST_TOSTR(__LINE__) ": Internal doctest error: " msg))
-#endif // DOCTEST_INTERNAL_ERROR
-} // namespace
-
-} // namespace doctest
-
-#ifndef DOCTEST_CONFIG_DISABLE
-
-namespace doctest {
-namespace detail {
 
 namespace timer_large_integer
 {
@@ -3680,6 +3571,123 @@ namespace detail {
 
 namespace doctest {
 
+    const ContextOptions* getContextOptions() { return DOCTEST_BRANCH_ON_DISABLED(nullptr, detail::g_cs); }
+
+} // namespace doctest
+
+#ifndef DOCTEST_CONFIG_DISABLE
+
+namespace doctest {
+namespace detail {
+#ifdef DOCTEST_IS_DEBUGGER_ACTIVE
+    bool isDebuggerActive() { return DOCTEST_IS_DEBUGGER_ACTIVE(); }
+#else // DOCTEST_IS_DEBUGGER_ACTIVE
+#ifdef DOCTEST_PLATFORM_LINUX
+    class ErrnoGuard {
+    public:
+        ErrnoGuard() : m_oldErrno(errno) {}
+        ~ErrnoGuard() { errno = m_oldErrno; }
+    private:
+        int m_oldErrno;
+    };
+    // See the comments in Catch2 for the reasoning behind this implementation:
+    // https://github.com/catchorg/Catch2/blob/v2.13.1/include/internal/catch_debugger.cpp#L79-L102
+    bool isDebuggerActive() {
+        ErrnoGuard guard;
+        std::ifstream in("/proc/self/status");
+        for(std::string line; std::getline(in, line);) {
+            static const int PREFIX_LEN = 11;
+            if(line.compare(0, PREFIX_LEN, "TracerPid:\t") == 0) {
+                return line.length() > PREFIX_LEN && line[PREFIX_LEN] != '0';
+            }
+        }
+        return false;
+    }
+#elif defined(DOCTEST_PLATFORM_MAC)
+    // The following function is taken directly from the following technical note:
+    // https://developer.apple.com/library/archive/qa/qa1361/_index.html
+    // Returns true if the current process is being debugged (either
+    // running under the debugger or has a debugger attached post facto).
+    bool isDebuggerActive() {
+        int        mib[4];
+        kinfo_proc info;
+        size_t     size;
+        // Initialize the flags so that, if sysctl fails for some bizarre
+        // reason, we get a predictable result.
+        info.kp_proc.p_flag = 0;
+        // Initialize mib, which tells sysctl the info we want, in this case
+        // we're looking for information about a specific process ID.
+        mib[0] = CTL_KERN;
+        mib[1] = KERN_PROC;
+        mib[2] = KERN_PROC_PID;
+        mib[3] = getpid();
+        // Call sysctl.
+        size = sizeof(info);
+        if(sysctl(mib, DOCTEST_COUNTOF(mib), &info, &size, 0, 0) != 0) {
+            std::cerr << "\nCall to sysctl failed - unable to determine if debugger is active **\n";
+            return false;
+        }
+        // We're being debugged if the P_TRACED flag is set.
+        return ((info.kp_proc.p_flag & P_TRACED) != 0);
+    }
+#elif DOCTEST_MSVC || defined(__MINGW32__) || defined(__MINGW64__)
+    bool isDebuggerActive() { return ::IsDebuggerPresent() != 0; }
+#else
+    bool isDebuggerActive() { return false; }
+#endif // Platform
+#endif // DOCTEST_IS_DEBUGGER_ACTIVE
+} // detail
+} // doctest
+
+#endif // DOCTEST_CONFIG_DISABLE
+
+#ifndef DOCTEST_CONFIG_OPTIONS_PREFIX
+#define DOCTEST_CONFIG_OPTIONS_PREFIX "dt-"
+#endif
+
+#ifndef DOCTEST_CONFIG_OPTIONS_FILE_PREFIX_SEPARATOR
+#define DOCTEST_CONFIG_OPTIONS_FILE_PREFIX_SEPARATOR ':'
+#endif
+
+#ifdef DOCTEST_CONFIG_NO_UNPREFIXED_OPTIONS
+#define DOCTEST_OPTIONS_PREFIX_DISPLAY DOCTEST_CONFIG_OPTIONS_PREFIX
+#else
+#define DOCTEST_OPTIONS_PREFIX_DISPLAY ""
+#endif
+
+
+namespace doctest {
+namespace {
+    using namespace detail;
+
+    template <typename Ex>
+    DOCTEST_NORETURN void throw_exception(Ex const& e) {
+#ifndef DOCTEST_CONFIG_NO_EXCEPTIONS
+        throw e;
+#else  // DOCTEST_CONFIG_NO_EXCEPTIONS
+#ifdef DOCTEST_CONFIG_HANDLE_EXCEPTION
+        DOCTEST_CONFIG_HANDLE_EXCEPTION(e);
+#else // DOCTEST_CONFIG_HANDLE_EXCEPTION
+#ifndef DOCTEST_CONFIG_NO_INCLUDE_IOSTREAM
+        std::cerr << "doctest will terminate because it needed to throw an exception.\n"
+                  << "The message was: " << e.what() << '\n';
+#endif // DOCTEST_CONFIG_NO_INCLUDE_IOSTREAM
+#endif // DOCTEST_CONFIG_HANDLE_EXCEPTION
+        std::terminate();
+#endif // DOCTEST_CONFIG_NO_EXCEPTIONS
+    }
+
+#ifndef DOCTEST_INTERNAL_ERROR
+#define DOCTEST_INTERNAL_ERROR(msg)                                                                \
+    throw_exception(std::logic_error(                                                              \
+            __FILE__ ":" DOCTEST_TOSTR(__LINE__) ": Internal doctest error: " msg))
+#endif // DOCTEST_INTERNAL_ERROR
+} // namespace
+
+} // namespace doctest
+
+namespace doctest {
+
 bool is_running_in_test = false;
 
 namespace {
@@ -3799,8 +3807,6 @@ bool SubcaseSignature::operator<(const SubcaseSignature& other) const {
 }
 
 DOCTEST_DEFINE_INTERFACE(IContextScope)
-
-const ContextOptions* getContextOptions() { return DOCTEST_BRANCH_ON_DISABLED(nullptr, g_cs); }
 
 } // namespace doctest
 
