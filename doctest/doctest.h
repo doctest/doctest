@@ -1079,6 +1079,28 @@ struct DOCTEST_INTERFACE Approx
 DOCTEST_INTERFACE String toString(const Approx& in);
 
 } // namespace doctest
+namespace doctest {
+
+template <typename F>
+struct DOCTEST_INTERFACE_DECL IsNaN
+{
+    F value; bool flipped;
+    IsNaN(F f, bool flip = false) : value(f), flipped(flip) { }
+    IsNaN<F> operator!() const { return { value, !flipped }; }
+    operator bool() const;
+};
+
+#ifndef __MINGW32__
+extern template struct DOCTEST_INTERFACE_DECL IsNaN<float>;
+extern template struct DOCTEST_INTERFACE_DECL IsNaN<double>;
+extern template struct DOCTEST_INTERFACE_DECL IsNaN<long double>;
+#endif
+
+DOCTEST_INTERFACE String toString(IsNaN<float> in);
+DOCTEST_INTERFACE String toString(IsNaN<double> in);
+DOCTEST_INTERFACE String toString(IsNaN<double long> in);
+
+} // namespace doctest
 
 namespace doctest {
 
@@ -1337,23 +1359,6 @@ struct ContextOptions //!OCLINT too many fields
 };
 
 DOCTEST_INTERFACE const ContextOptions* getContextOptions();
-
-template <typename F>
-struct DOCTEST_INTERFACE_DECL IsNaN
-{
-    F value; bool flipped;
-    IsNaN(F f, bool flip = false) : value(f), flipped(flip) { }
-    IsNaN<F> operator!() const { return { value, !flipped }; }
-    operator bool() const;
-};
-#ifndef __MINGW32__
-extern template struct DOCTEST_INTERFACE_DECL IsNaN<float>;
-extern template struct DOCTEST_INTERFACE_DECL IsNaN<double>;
-extern template struct DOCTEST_INTERFACE_DECL IsNaN<long double>;
-#endif
-DOCTEST_INTERFACE String toString(IsNaN<float> in);
-DOCTEST_INTERFACE String toString(IsNaN<double> in);
-DOCTEST_INTERFACE String toString(IsNaN<double long> in);
 
 #ifndef DOCTEST_CONFIG_DISABLE
 
@@ -3799,21 +3804,6 @@ bool SubcaseSignature::operator<(const SubcaseSignature& other) const {
 DOCTEST_DEFINE_INTERFACE(IContextScope)
 
 const ContextOptions* getContextOptions() { return DOCTEST_BRANCH_ON_DISABLED(nullptr, g_cs); }
-
-DOCTEST_MSVC_SUPPRESS_WARNING_WITH_PUSH(4738)
-template <typename F>
-IsNaN<F>::operator bool() const {
-    return std::isnan(value) ^ flipped;
-}
-DOCTEST_MSVC_SUPPRESS_WARNING_POP
-template struct DOCTEST_INTERFACE_DEF IsNaN<float>;
-template struct DOCTEST_INTERFACE_DEF IsNaN<double>;
-template struct DOCTEST_INTERFACE_DEF IsNaN<long double>;
-template <typename F>
-String toString(IsNaN<F> in) { return String(in.flipped ? "! " : "") + "IsNaN( " + doctest::toString(in.value) + " )"; }
-String toString(IsNaN<float> in) { return toString<float>(in); }
-String toString(IsNaN<double> in) { return toString<double>(in); }
-String toString(IsNaN<double long> in) { return toString<double long>(in); }
 
 } // namespace doctest
 
@@ -6891,6 +6881,26 @@ bool operator==(const String& lhs, const Contains& rhs) { return rhs.checkWith(l
 bool operator==(const Contains& lhs, const String& rhs) { return lhs.checkWith(rhs); }
 bool operator!=(const String& lhs, const Contains& rhs) { return !rhs.checkWith(lhs); }
 bool operator!=(const Contains& lhs, const String& rhs) { return !lhs.checkWith(rhs); }
+
+} // namespace doctest
+
+namespace doctest {
+
+DOCTEST_MSVC_SUPPRESS_WARNING_WITH_PUSH(4738)
+template <typename F>
+IsNaN<F>::operator bool() const {
+    return std::isnan(value) ^ flipped;
+}
+DOCTEST_MSVC_SUPPRESS_WARNING_POP
+template struct DOCTEST_INTERFACE_DEF IsNaN<float>;
+template struct DOCTEST_INTERFACE_DEF IsNaN<double>;
+template struct DOCTEST_INTERFACE_DEF IsNaN<long double>;
+
+template <typename F>
+String toString(IsNaN<F> in) { return String(in.flipped ? "! " : "") + "IsNaN( " + doctest::toString(in.value) + " )"; }
+String toString(IsNaN<float> in) { return toString<float>(in); }
+String toString(IsNaN<double> in) { return toString<double>(in); }
+String toString(IsNaN<double long> in) { return toString<double long>(in); }
 
 } // namespace doctest
 
