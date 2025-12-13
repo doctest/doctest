@@ -79,6 +79,7 @@ if(${DOCTEST_WITH_MAIN_IN_STATIC_LIB})
         ${doctest_parts_folder}/private/matchers/is_nan.cpp
         ${doctest_parts_folder}/private/string.cpp
         ${doctest_parts_folder}/private/subcase.cpp
+        ${doctest_parts_folder}/private/test_suite.cpp
     )
     add_library(${PROJECT_NAME}::${PROJECT_NAME}_with_main ALIAS ${PROJECT_NAME}_with_main)
     target_compile_definitions(${PROJECT_NAME}_with_main PRIVATE

@@ -76,6 +76,7 @@ DOCTEST_MSVC_SUPPRESS_WARNING(4623) // default constructor was implicitly define
 #include <doctest/parts/public/assert/expression.h>
 #include <doctest/parts/public/color.h>
 #include <doctest/parts/public/subcase.h>
+#include <doctest/parts/public/test_suite.h>
 
 namespace doctest {
 
@@ -122,27 +123,6 @@ namespace doctest {
 #ifndef DOCTEST_CONFIG_DISABLE
 namespace detail {
 
-    struct DOCTEST_INTERFACE TestSuite
-    {
-        const char* m_test_suite = nullptr;
-        const char* m_description = nullptr;
-        bool        m_skip = false;
-        bool        m_no_breaks = false;
-        bool        m_no_output = false;
-        bool        m_may_fail = false;
-        bool        m_should_fail = false;
-        int         m_expected_failures = 0;
-        double      m_timeout = 0;
-
-        TestSuite& operator*(const char* in);
-
-        template <typename T>
-        TestSuite& operator*(const T& in) {
-            in.fill(*this);
-            return *this;
-        }
-    };
-
     using funcType = void (*)();
 
     struct DOCTEST_INTERFACE TestCase : public TestCaseData
@@ -180,7 +160,6 @@ namespace detail {
 
     // forward declarations of functions used by the macros
     DOCTEST_INTERFACE int  regTest(const TestCase& tc);
-    DOCTEST_INTERFACE int  setTestSuite(const TestSuite& ts);
 
     template<typename T>
     int instantiationHelper(const T&) { return 0; }
@@ -334,12 +313,6 @@ int registerExceptionTranslator(String (*translateFunction)(T)) {
 }
 
 } // namespace doctest
-
-// in a separate namespace outside of doctest because the DOCTEST_TEST_SUITE macro
-// introduces an anonymous namespace in which getCurrentTestSuite gets overridden
-namespace doctest_detail_test_suite_ns {
-DOCTEST_INTERFACE doctest::detail::TestSuite& getCurrentTestSuite();
-} // namespace doctest_detail_test_suite_ns
 
 namespace doctest {
 #else  // DOCTEST_CONFIG_DISABLE

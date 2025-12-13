@@ -93,14 +93,6 @@ int registerReporter(const char*, int, IReporter*) { return 0; }
 } // namespace doctest
 #else // DOCTEST_CONFIG_DISABLE
 
-namespace doctest_detail_test_suite_ns {
-// holds the current test suite
-doctest::detail::TestSuite& getCurrentTestSuite() {
-    static doctest::detail::TestSuite data{};
-    return data;
-}
-} // namespace doctest_detail_test_suite_ns
-
 namespace doctest {
 namespace {
     // the int (priority) is part of the key for automatic sorting - sadly one can register a
@@ -210,11 +202,6 @@ namespace {
     }
 } // namespace
 namespace detail {
-
-    TestSuite& TestSuite::operator*(const char* in) {
-        m_test_suite = in;
-        return *this;
-    }
 
     TestCase::TestCase(funcType test, const char* file, unsigned line, const TestSuite& test_suite,
                        const String& type, int template_id) {
@@ -352,12 +339,6 @@ namespace detail {
     // used by the macros for registering tests
     int regTest(const TestCase& tc) {
         getRegisteredTests().insert(tc);
-        return 0;
-    }
-
-    // sets the current test suite
-    int setTestSuite(const TestSuite& ts) {
-        doctest_detail_test_suite_ns::getCurrentTestSuite() = ts;
         return 0;
     }
 

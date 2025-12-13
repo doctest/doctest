@@ -1699,6 +1699,46 @@ struct DOCTEST_INTERFACE Subcase
 #endif // DOCTEST_CONFIG_DISABLE
 
 } // namespace doctest
+#ifndef DOCTEST_CONFIG_DISABLE
+
+namespace doctest {
+namespace detail {
+
+struct DOCTEST_INTERFACE TestSuite
+{
+    const char* m_test_suite = nullptr;
+    const char* m_description = nullptr;
+    bool        m_skip = false;
+    bool        m_no_breaks = false;
+    bool        m_no_output = false;
+    bool        m_may_fail = false;
+    bool        m_should_fail = false;
+    int         m_expected_failures = 0;
+    double      m_timeout = 0;
+
+    TestSuite& operator*(const char* in);
+
+    template <typename T>
+    TestSuite& operator*(const T& in) {
+        in.fill(*this);
+        return *this;
+    }
+};
+
+// forward declarations of functions used by the macros
+DOCTEST_INTERFACE int setTestSuite(const TestSuite& ts);
+
+} // namespace detail
+
+} // namespace doctest
+
+// in a separate namespace outside of doctest because the DOCTEST_TEST_SUITE macro
+// introduces an anonymous namespace in which getCurrentTestSuite gets overridden
+namespace doctest_detail_test_suite_ns {
+DOCTEST_INTERFACE doctest::detail::TestSuite& getCurrentTestSuite();
+} // namespace doctest_detail_test_suite_ns
+
+#endif // DOCTEST_CONFIG_DISABLE
 
 namespace doctest {
 
@@ -1836,27 +1876,6 @@ namespace doctest {
 #ifndef DOCTEST_CONFIG_DISABLE
 namespace detail {
 
-    struct DOCTEST_INTERFACE TestSuite
-    {
-        const char* m_test_suite = nullptr;
-        const char* m_description = nullptr;
-        bool        m_skip = false;
-        bool        m_no_breaks = false;
-        bool        m_no_output = false;
-        bool        m_may_fail = false;
-        bool        m_should_fail = false;
-        int         m_expected_failures = 0;
-        double      m_timeout = 0;
-
-        TestSuite& operator*(const char* in);
-
-        template <typename T>
-        TestSuite& operator*(const T& in) {
-            in.fill(*this);
-            return *this;
-        }
-    };
-
     using funcType = void (*)();
 
     struct DOCTEST_INTERFACE TestCase : public TestCaseData
@@ -1894,7 +1913,6 @@ namespace detail {
 
     // forward declarations of functions used by the macros
     DOCTEST_INTERFACE int  regTest(const TestCase& tc);
-    DOCTEST_INTERFACE int  setTestSuite(const TestSuite& ts);
 
     template<typename T>
     int instantiationHelper(const T&) { return 0; }
@@ -2048,12 +2066,6 @@ int registerExceptionTranslator(String (*translateFunction)(T)) {
 }
 
 } // namespace doctest
-
-// in a separate namespace outside of doctest because the DOCTEST_TEST_SUITE macro
-// introduces an anonymous namespace in which getCurrentTestSuite gets overridden
-namespace doctest_detail_test_suite_ns {
-DOCTEST_INTERFACE doctest::detail::TestSuite& getCurrentTestSuite();
-} // namespace doctest_detail_test_suite_ns
 
 namespace doctest {
 #else  // DOCTEST_CONFIG_DISABLE
@@ -4093,14 +4105,6 @@ int registerReporter(const char*, int, IReporter*) { return 0; }
 } // namespace doctest
 #else // DOCTEST_CONFIG_DISABLE
 
-namespace doctest_detail_test_suite_ns {
-// holds the current test suite
-doctest::detail::TestSuite& getCurrentTestSuite() {
-    static doctest::detail::TestSuite data{};
-    return data;
-}
-} // namespace doctest_detail_test_suite_ns
-
 namespace doctest {
 namespace {
     // the int (priority) is part of the key for automatic sorting - sadly one can register a
@@ -4210,11 +4214,6 @@ namespace {
     }
 } // namespace
 namespace detail {
-
-    TestSuite& TestSuite::operator*(const char* in) {
-        m_test_suite = in;
-        return *this;
-    }
 
     TestCase::TestCase(funcType test, const char* file, unsigned line, const TestSuite& test_suite,
                        const String& type, int template_id) {
@@ -4352,12 +4351,6 @@ namespace detail {
     // used by the macros for registering tests
     int regTest(const TestCase& tc) {
         getRegisteredTests().insert(tc);
-        return 0;
-    }
-
-    // sets the current test suite
-    int setTestSuite(const TestSuite& ts) {
-        doctest_detail_test_suite_ns::getCurrentTestSuite() = ts;
         return 0;
     }
 
@@ -7360,6 +7353,35 @@ namespace detail {
 #endif // DOCTEST_CONFIG_DISABLE
 
 } // namespace doctest
+
+#ifndef DOCTEST_CONFIG_DISABLE
+
+namespace doctest {
+namespace detail {
+
+TestSuite& TestSuite::operator*(const char* in) {
+    m_test_suite = in;
+    return *this;
+}
+
+// sets the current test suite
+int setTestSuite(const TestSuite& ts) {
+    doctest_detail_test_suite_ns::getCurrentTestSuite() = ts;
+    return 0;
+}
+
+} // namespace detail
+} // namespace doctest
+
+namespace doctest_detail_test_suite_ns {
+// holds the current test suite
+doctest::detail::TestSuite& getCurrentTestSuite() {
+    static doctest::detail::TestSuite data{};
+    return data;
+}
+} // namespace doctest_detail_test_suite_ns
+
+#endif // DOCTEST_CONFIG_DISABLE
 
 DOCTEST_CLANG_SUPPRESS_WARNING_POP
 DOCTEST_MSVC_SUPPRESS_WARNING_POP
