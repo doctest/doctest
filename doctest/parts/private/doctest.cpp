@@ -351,10 +351,6 @@ namespace detail {
 
     Subcase::operator bool() const { return m_entered; }
 
-    Result::Result(bool passed, const String& decomposition)
-            : m_passed(passed)
-            , m_decomp(decomposition) {}
-
     ExpressionDecomposer::ExpressionDecomposer(assertType::Enum at)
             : m_at(at) {}
 
@@ -915,18 +911,6 @@ namespace {
 } // namespace
 
 namespace detail {
-    ResultBuilder::ResultBuilder(assertType::Enum at, const char* file, int line, const char* expr,
-                                 const char* exception_type, const String& exception_string)
-        : AssertData(at, file, line, expr, exception_type, exception_string) { }
-
-    ResultBuilder::ResultBuilder(assertType::Enum at, const char* file, int line, const char* expr,
-        const char* exception_type, const Contains& exception_string)
-        : AssertData(at, file, line, expr, exception_type, exception_string) { }
-
-    void ResultBuilder::setResult(const Result& res) {
-        m_decomp = res.m_decomp;
-        m_failed = !res.m_passed;
-    }
 
     void ResultBuilder::translateException() {
         m_threw     = true;
@@ -961,11 +945,6 @@ namespace detail {
 
         return m_failed && isDebuggerActive() && !getContextOptions()->no_breaks &&
             (g_cs->currentTest == nullptr || !g_cs->currentTest->m_no_breaks); // break into debugger
-    }
-
-    void ResultBuilder::react() const {
-        if(m_failed && checkIfShouldThrow(m_at))
-            throwException();
     }
 
     void failed_out_of_a_testing_context(const AssertData& ad) {

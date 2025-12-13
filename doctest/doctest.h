@@ -1393,6 +1393,100 @@ namespace detail  {
 } // namespace doctest
 
 #endif // DOCTEST_CONFIG_DISABLE
+#ifndef DOCTEST_CONFIG_DISABLE
+
+namespace doctest {
+namespace detail {
+
+// more checks could be added - like in Catch:
+// https://github.com/catchorg/Catch2/pull/1480/files
+// https://github.com/catchorg/Catch2/pull/1481/files
+#define DOCTEST_FORBIT_EXPRESSION(rt, op)                                                          \
+    template <typename R>                                                                          \
+    rt& operator op(const R&) {                                                                    \
+        static_assert(deferred_false<R>::value,                                                    \
+                      "Expression Too Complex Please Rewrite As Binary Comparison!");              \
+        return *this;                                                                              \
+    }
+
+    struct DOCTEST_INTERFACE Result // NOLINT(*-member-init)
+    {
+        bool   m_passed;
+        String m_decomp;
+
+        Result() = default; // TODO: Why do we need this? (To remove NOLINT)
+        Result(bool passed, const String& decomposition = String());
+
+        // forbidding some expressions based on this table: https://en.cppreference.com/w/cpp/language/operator_precedence
+        DOCTEST_FORBIT_EXPRESSION(Result, &)
+        DOCTEST_FORBIT_EXPRESSION(Result, ^)
+        DOCTEST_FORBIT_EXPRESSION(Result, |)
+        DOCTEST_FORBIT_EXPRESSION(Result, &&)
+        DOCTEST_FORBIT_EXPRESSION(Result, ||)
+        DOCTEST_FORBIT_EXPRESSION(Result, ==)
+        DOCTEST_FORBIT_EXPRESSION(Result, !=)
+        DOCTEST_FORBIT_EXPRESSION(Result, <)
+        DOCTEST_FORBIT_EXPRESSION(Result, >)
+        DOCTEST_FORBIT_EXPRESSION(Result, <=)
+        DOCTEST_FORBIT_EXPRESSION(Result, >=)
+        DOCTEST_FORBIT_EXPRESSION(Result, =)
+        DOCTEST_FORBIT_EXPRESSION(Result, +=)
+        DOCTEST_FORBIT_EXPRESSION(Result, -=)
+        DOCTEST_FORBIT_EXPRESSION(Result, *=)
+        DOCTEST_FORBIT_EXPRESSION(Result, /=)
+        DOCTEST_FORBIT_EXPRESSION(Result, %=)
+        DOCTEST_FORBIT_EXPRESSION(Result, <<=)
+        DOCTEST_FORBIT_EXPRESSION(Result, >>=)
+        DOCTEST_FORBIT_EXPRESSION(Result, &=)
+        DOCTEST_FORBIT_EXPRESSION(Result, ^=)
+        DOCTEST_FORBIT_EXPRESSION(Result, |=)
+    };
+
+    struct DOCTEST_INTERFACE ResultBuilder : public AssertData
+    {
+        ResultBuilder(assertType::Enum at, const char* file, int line, const char* expr,
+                      const char* exception_type = "", const String& exception_string = "");
+
+        ResultBuilder(assertType::Enum at, const char* file, int line, const char* expr,
+                      const char* exception_type, const Contains& exception_string);
+
+        void setResult(const Result& res);
+
+        template <int comparison, typename L, typename R>
+        DOCTEST_NOINLINE bool binary_assert(const DOCTEST_REF_WRAP(L) lhs,
+                                            const DOCTEST_REF_WRAP(R) rhs) {
+            m_failed = !RelationalComparator<comparison, L, R>()(lhs, rhs);
+            if (m_failed || getContextOptions()->success) {
+                m_decomp = stringifyBinaryExpr(lhs, ", ", rhs);
+            }
+            return !m_failed;
+        }
+
+        template <typename L>
+        DOCTEST_NOINLINE bool unary_assert(const DOCTEST_REF_WRAP(L) val) {
+            m_failed = !val;
+
+            if (m_at & assertType::is_false) { //!OCLINT bitwise operator in conditional
+                m_failed = !m_failed;
+            }
+
+            if (m_failed || getContextOptions()->success) {
+                m_decomp = (DOCTEST_STRINGIFY(val));
+            }
+
+            return !m_failed;
+        }
+
+        void translateException();
+
+        bool log();
+        void react() const;
+    };
+
+} // namespace detail
+} // namespace doctest
+
+#endif // DOCTEST_CONFIG_DISABLE
 
 namespace doctest {
 
@@ -1520,50 +1614,6 @@ DOCTEST_CLANG_SUPPRESS_WARNING_WITH_PUSH("-Wunused-comparison")
             return Result(res, stringifyBinaryExpr(lhs, op_str, rhs));                             \
         return Result(res);                                                                        \
     }
-
-    // more checks could be added - like in Catch:
-    // https://github.com/catchorg/Catch2/pull/1480/files
-    // https://github.com/catchorg/Catch2/pull/1481/files
-#define DOCTEST_FORBIT_EXPRESSION(rt, op)                                                          \
-    template <typename R>                                                                          \
-    rt& operator op(const R&) {                                                                    \
-        static_assert(deferred_false<R>::value,                                                    \
-                      "Expression Too Complex Please Rewrite As Binary Comparison!");              \
-        return *this;                                                                              \
-    }
-
-    struct DOCTEST_INTERFACE Result // NOLINT(*-member-init)
-    {
-        bool   m_passed;
-        String m_decomp;
-
-        Result() = default; // TODO: Why do we need this? (To remove NOLINT)
-        Result(bool passed, const String& decomposition = String());
-
-        // forbidding some expressions based on this table: https://en.cppreference.com/w/cpp/language/operator_precedence
-        DOCTEST_FORBIT_EXPRESSION(Result, &)
-        DOCTEST_FORBIT_EXPRESSION(Result, ^)
-        DOCTEST_FORBIT_EXPRESSION(Result, |)
-        DOCTEST_FORBIT_EXPRESSION(Result, &&)
-        DOCTEST_FORBIT_EXPRESSION(Result, ||)
-        DOCTEST_FORBIT_EXPRESSION(Result, ==)
-        DOCTEST_FORBIT_EXPRESSION(Result, !=)
-        DOCTEST_FORBIT_EXPRESSION(Result, <)
-        DOCTEST_FORBIT_EXPRESSION(Result, >)
-        DOCTEST_FORBIT_EXPRESSION(Result, <=)
-        DOCTEST_FORBIT_EXPRESSION(Result, >=)
-        DOCTEST_FORBIT_EXPRESSION(Result, =)
-        DOCTEST_FORBIT_EXPRESSION(Result, +=)
-        DOCTEST_FORBIT_EXPRESSION(Result, -=)
-        DOCTEST_FORBIT_EXPRESSION(Result, *=)
-        DOCTEST_FORBIT_EXPRESSION(Result, /=)
-        DOCTEST_FORBIT_EXPRESSION(Result, %=)
-        DOCTEST_FORBIT_EXPRESSION(Result, <<=)
-        DOCTEST_FORBIT_EXPRESSION(Result, >>=)
-        DOCTEST_FORBIT_EXPRESSION(Result, &=)
-        DOCTEST_FORBIT_EXPRESSION(Result, ^=)
-        DOCTEST_FORBIT_EXPRESSION(Result, |=)
-    };
 
 #ifndef DOCTEST_CONFIG_NO_COMPARISON_WARNING_SUPPRESSION
 
@@ -1746,47 +1796,6 @@ DOCTEST_CLANG_SUPPRESS_WARNING_POP
 
     template<typename T>
     int instantiationHelper(const T&) { return 0; }
-
-    struct DOCTEST_INTERFACE ResultBuilder : public AssertData
-    {
-        ResultBuilder(assertType::Enum at, const char* file, int line, const char* expr,
-                      const char* exception_type = "", const String& exception_string = "");
-
-        ResultBuilder(assertType::Enum at, const char* file, int line, const char* expr,
-                      const char* exception_type, const Contains& exception_string);
-
-        void setResult(const Result& res);
-
-        template <int comparison, typename L, typename R>
-        DOCTEST_NOINLINE bool binary_assert(const DOCTEST_REF_WRAP(L) lhs,
-                                            const DOCTEST_REF_WRAP(R) rhs) {
-            m_failed = !RelationalComparator<comparison, L, R>()(lhs, rhs);
-            if (m_failed || getContextOptions()->success) {
-                m_decomp = stringifyBinaryExpr(lhs, ", ", rhs);
-            }
-            return !m_failed;
-        }
-
-        template <typename L>
-        DOCTEST_NOINLINE bool unary_assert(const DOCTEST_REF_WRAP(L) val) {
-            m_failed = !val;
-
-            if (m_at & assertType::is_false) { //!OCLINT bitwise operator in conditional
-                m_failed = !m_failed;
-            }
-
-            if (m_failed || getContextOptions()->success) {
-                m_decomp = (DOCTEST_STRINGIFY(val));
-            }
-
-            return !m_failed;
-        }
-
-        void translateException();
-
-        bool log();
-        void react() const;
-    };
 
     DOCTEST_INTERFACE void failed_out_of_a_testing_context(const AssertData& ad);
 
@@ -3608,6 +3617,41 @@ namespace doctest {
 
 #endif // DOCTEST_CONFIG_DISABLE
 
+#ifndef DOCTEST_CONFIG_DISABLE
+
+namespace doctest {
+namespace detail {
+
+    Result::Result(bool passed, const String& decomposition)
+            : m_passed(passed)
+            , m_decomp(decomposition) {}
+
+    ResultBuilder::ResultBuilder(assertType::Enum at, const char* file, int line, const char* expr,
+                                 const char* exception_type, const String& exception_string)
+        : AssertData(at, file, line, expr, exception_type, exception_string) { }
+
+    ResultBuilder::ResultBuilder(assertType::Enum at, const char* file, int line, const char* expr,
+        const char* exception_type, const Contains& exception_string)
+        : AssertData(at, file, line, expr, exception_type, exception_string) { }
+
+    void ResultBuilder::setResult(const Result& res) {
+        m_decomp = res.m_decomp;
+        m_failed = !res.m_passed;
+    }
+
+    /* TODO: ResultBuilder::translateException */
+    /* TODO: ResultBuilder::log */
+
+    void ResultBuilder::react() const {
+        if(m_failed && checkIfShouldThrow(m_at))
+            throwException();
+    }
+
+} // namespace detail
+} // namespace doctest
+
+#endif // DOCTEST_CONFIG_DISABLE
+
 namespace doctest {
 namespace {
     using namespace detail;
@@ -4117,10 +4161,6 @@ namespace detail {
     DOCTEST_MSVC_SUPPRESS_WARNING_POP
 
     Subcase::operator bool() const { return m_entered; }
-
-    Result::Result(bool passed, const String& decomposition)
-            : m_passed(passed)
-            , m_decomp(decomposition) {}
 
     ExpressionDecomposer::ExpressionDecomposer(assertType::Enum at)
             : m_at(at) {}
@@ -4682,18 +4722,6 @@ namespace {
 } // namespace
 
 namespace detail {
-    ResultBuilder::ResultBuilder(assertType::Enum at, const char* file, int line, const char* expr,
-                                 const char* exception_type, const String& exception_string)
-        : AssertData(at, file, line, expr, exception_type, exception_string) { }
-
-    ResultBuilder::ResultBuilder(assertType::Enum at, const char* file, int line, const char* expr,
-        const char* exception_type, const Contains& exception_string)
-        : AssertData(at, file, line, expr, exception_type, exception_string) { }
-
-    void ResultBuilder::setResult(const Result& res) {
-        m_decomp = res.m_decomp;
-        m_failed = !res.m_passed;
-    }
 
     void ResultBuilder::translateException() {
         m_threw     = true;
@@ -4728,11 +4756,6 @@ namespace detail {
 
         return m_failed && isDebuggerActive() && !getContextOptions()->no_breaks &&
             (g_cs->currentTest == nullptr || !g_cs->currentTest->m_no_breaks); // break into debugger
-    }
-
-    void ResultBuilder::react() const {
-        if(m_failed && checkIfShouldThrow(m_at))
-            throwException();
     }
 
     void failed_out_of_a_testing_context(const AssertData& ad) {
