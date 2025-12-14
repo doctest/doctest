@@ -226,23 +226,6 @@ namespace {
         }
     }
 
-    struct Endianness
-    {
-        enum Arch
-        {
-            Big,
-            Little
-        };
-
-        static Arch which() {
-            int x = 1;
-            // casting any data pointer to char* is allowed
-            auto ptr = reinterpret_cast<char*>(&x);
-            if(*ptr)
-                return Little;
-            return Big;
-        }
-    };
 } // namespace
 
 namespace detail {
