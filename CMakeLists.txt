@@ -73,6 +73,7 @@ if(${DOCTEST_WITH_MAIN_IN_STATIC_LIB})
         ${doctest_parts_folder}/private/assert/type.cpp
         ${doctest_parts_folder}/private/color.cpp
         ${doctest_parts_folder}/private/debugger.cpp
+        ${doctest_parts_folder}/private/exception_translator.cpp
         ${doctest_parts_folder}/private/exceptions.cpp
         ${doctest_parts_folder}/private/matchers/approx.cpp
         ${doctest_parts_folder}/private/matchers/contains.cpp

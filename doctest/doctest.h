@@ -1829,6 +1829,69 @@ DOCTEST_DEFINE_DECORATOR(expected_failures, int, 0);
 } // namespace
 
 #endif // DOCTEST_CONFIG_DISABLE
+namespace doctest {
+namespace detail {
+
+#ifndef DOCTEST_CONFIG_DISABLE
+
+    struct DOCTEST_INTERFACE IExceptionTranslator
+    {
+        DOCTEST_DECLARE_INTERFACE(IExceptionTranslator)
+        virtual bool translate(String&) const = 0;
+    };
+
+    template <typename T>
+    class ExceptionTranslator : public IExceptionTranslator //!OCLINT destructor of virtual class
+    {
+    public:
+        explicit ExceptionTranslator(String (*translateFunction)(T))
+                : m_translateFunction(translateFunction) {}
+
+        bool translate(String& res) const override {
+#ifndef DOCTEST_CONFIG_NO_EXCEPTIONS
+            try {
+                throw; // lgtm [cpp/rethrow-no-exception]
+                // cppcheck-suppress catchExceptionByValue
+            } catch(const T& ex) {
+                res = m_translateFunction(ex); //!OCLINT parameter reassignment
+                return true;
+            } catch(...) {}         //!OCLINT -  empty catch statement
+#endif                              // DOCTEST_CONFIG_NO_EXCEPTIONS
+            static_cast<void>(res); // to silence -Wunused-parameter
+            return false;
+        }
+
+    private:
+        String (*m_translateFunction)(T);
+    };
+
+    DOCTEST_INTERFACE void registerExceptionTranslatorImpl(const IExceptionTranslator* et);
+
+#endif // DOCTEST_CONFIG_DISABLE
+
+} // namespace detail
+
+#ifndef DOCTEST_CONFIG_DISABLE
+
+template <typename T>
+int registerExceptionTranslator(String (*translateFunction)(T)) {
+    DOCTEST_CLANG_SUPPRESS_WARNING_WITH_PUSH("-Wexit-time-destructors")
+    static detail::ExceptionTranslator<T> exceptionTranslator(translateFunction);
+    DOCTEST_CLANG_SUPPRESS_WARNING_POP
+    detail::registerExceptionTranslatorImpl(&exceptionTranslator);
+    return 0;
+}
+
+#else // DOCTEST_CONFIG_DISABLE
+
+template <typename T>
+int registerExceptionTranslator(String (*)(T)) {
+    return 0;
+}
+
+#endif // DOCTEST_CONFIG_DISABLE
+
+} // namespace doctest
 
 namespace doctest {
 
@@ -1952,39 +2015,6 @@ namespace detail {
     template<typename T>
     int instantiationHelper(const T&) { return 0; }
 
-    struct DOCTEST_INTERFACE IExceptionTranslator
-    {
-        DOCTEST_DECLARE_INTERFACE(IExceptionTranslator)
-        virtual bool translate(String&) const = 0;
-    };
-
-    template <typename T>
-    class ExceptionTranslator : public IExceptionTranslator //!OCLINT destructor of virtual class
-    {
-    public:
-        explicit ExceptionTranslator(String (*translateFunction)(T))
-                : m_translateFunction(translateFunction) {}
-
-        bool translate(String& res) const override {
-#ifndef DOCTEST_CONFIG_NO_EXCEPTIONS
-            try {
-                throw; // lgtm [cpp/rethrow-no-exception]
-                // cppcheck-suppress catchExceptionByValue
-            } catch(const T& ex) {
-                res = m_translateFunction(ex); //!OCLINT parameter reassignment
-                return true;
-            } catch(...) {}         //!OCLINT -  empty catch statement
-#endif                              // DOCTEST_CONFIG_NO_EXCEPTIONS
-            static_cast<void>(res); // to silence -Wunused-parameter
-            return false;
-        }
-
-    private:
-        String (*m_translateFunction)(T);
-    };
-
-    DOCTEST_INTERFACE void registerExceptionTranslatorImpl(const IExceptionTranslator* et);
-
     // ContextScope base class used to allow implementing methods of ContextScope
     // that don't depend on the template parameter in doctest.cpp.
     struct DOCTEST_INTERFACE ContextScopeBase : public IContextScope {
@@ -2071,23 +2101,9 @@ DOCTEST_MSVC_SUPPRESS_WARNING_POP
     }
 } // namespace detail
 
-template <typename T>
-int registerExceptionTranslator(String (*translateFunction)(T)) {
-    DOCTEST_CLANG_SUPPRESS_WARNING_WITH_PUSH("-Wexit-time-destructors")
-    static detail::ExceptionTranslator<T> exceptionTranslator(translateFunction);
-    DOCTEST_CLANG_SUPPRESS_WARNING_POP
-    detail::registerExceptionTranslatorImpl(&exceptionTranslator);
-    return 0;
-}
-
 } // namespace doctest
 
 namespace doctest {
-#else  // DOCTEST_CONFIG_DISABLE
-template <typename T>
-int registerExceptionTranslator(String (*)(T)) {
-    return 0;
-}
 #endif // DOCTEST_CONFIG_DISABLE
 
 namespace detail {
@@ -4061,6 +4077,18 @@ namespace detail {
 } // namespace doctest
 
 #endif // DOCTEST_CONFIG_DISABLE
+#ifndef DOCTEST_CONFIG_DISABLE
+
+namespace doctest {
+namespace detail {
+
+    std::vector<const IExceptionTranslator*>& getExceptionTranslators();
+    String translateActiveException();
+
+} // namespace detail
+} // namespace doctest
+
+#endif // DOCTEST_CONFIG_DISABLE
 
 namespace doctest {
 
@@ -4274,45 +4302,9 @@ namespace {
         return suiteOrderComparator(lhs, rhs);
     }
 
-    std::vector<const IExceptionTranslator*>& getExceptionTranslators() {
-        static std::vector<const IExceptionTranslator*> data;
-        return data;
-    }
-
-    String translateActiveException() {
-#ifndef DOCTEST_CONFIG_NO_EXCEPTIONS
-        String res;
-        auto&  translators = getExceptionTranslators();
-        for(auto& curr : translators)
-            if(curr->translate(res))
-                return res;
-        // clang-format off
-        DOCTEST_GCC_SUPPRESS_WARNING_WITH_PUSH("-Wcatch-value")
-        try {
-            throw;
-        } catch(std::exception& ex) {
-            return ex.what();
-        } catch(std::string& msg) {
-            return msg.c_str();
-        } catch(const char* msg) {
-            return msg;
-        } catch(...) {
-            return "unknown exception";
-        }
-        DOCTEST_GCC_SUPPRESS_WARNING_POP
-// clang-format on
-#else  // DOCTEST_CONFIG_NO_EXCEPTIONS
-        return "";
-#endif // DOCTEST_CONFIG_NO_EXCEPTIONS
-    }
 } // namespace
 
 namespace detail {
-    void registerExceptionTranslatorImpl(const IExceptionTranslator* et) {
-        if(std::find(getExceptionTranslators().begin(), getExceptionTranslators().end(), et) ==
-           getExceptionTranslators().end())
-            getExceptionTranslators().push_back(et);
-    }
 
     DOCTEST_THREAD_LOCAL std::vector<IContextScope*> g_infoContexts; // for logging with INFO()
 
@@ -4686,8 +4678,6 @@ namespace detail {
         if (!logged)
             tlssPop();
     }
-
-    DOCTEST_DEFINE_INTERFACE(IExceptionTranslator)
 
     bool MessageBuilder::log() {
         if (!logged) {
@@ -6779,6 +6769,56 @@ DOCTEST_MSVC_SUPPRESS_WARNING_WITH_PUSH(4007) // 'function' : must be 'attribute
 int main(int argc, char** argv) { return doctest::Context(argc, argv).run(); }
 DOCTEST_MSVC_SUPPRESS_WARNING_POP
 #endif // DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
+
+#ifndef DOCTEST_CONFIG_DISABLE
+
+namespace doctest {
+namespace detail {
+
+    DOCTEST_DEFINE_INTERFACE(IExceptionTranslator)
+
+    void registerExceptionTranslatorImpl(const IExceptionTranslator* et) {
+        if(std::find(getExceptionTranslators().begin(), getExceptionTranslators().end(), et) ==
+           getExceptionTranslators().end())
+            getExceptionTranslators().push_back(et);
+    }
+
+    std::vector<const IExceptionTranslator*>& getExceptionTranslators() {
+        static std::vector<const IExceptionTranslator*> data;
+        return data;
+    }
+
+    String translateActiveException() {
+#ifndef DOCTEST_CONFIG_NO_EXCEPTIONS
+        String res;
+        auto&  translators = getExceptionTranslators();
+        for(auto& curr : translators)
+            if(curr->translate(res))
+                return res;
+        // clang-format off
+        DOCTEST_GCC_SUPPRESS_WARNING_WITH_PUSH("-Wcatch-value")
+        try {
+            throw;
+        } catch(std::exception& ex) {
+            return ex.what();
+        } catch(std::string& msg) {
+            return msg.c_str();
+        } catch(const char* msg) {
+            return msg;
+        } catch(...) {
+            return "unknown exception";
+        }
+        DOCTEST_GCC_SUPPRESS_WARNING_POP
+// clang-format on
+#else  // DOCTEST_CONFIG_NO_EXCEPTIONS
+        return "";
+#endif // DOCTEST_CONFIG_NO_EXCEPTIONS
+    }
+
+} // namespace detail
+} // namespace doctest
+
+#endif // DOCTEST_CONFIG_DISABLE
 
 #ifndef DOCTEST_CONFIG_DISABLE
 
