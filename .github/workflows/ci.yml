@@ -156,23 +156,6 @@ jobs:
             compiler: clang
             version: "18"
 
-          # macOS Intel
-          - os: macos-13
-            compiler: xcode
-            version: "14.1" # Apple Clang 14.0.0
-
-          - os: macos-13
-            compiler: xcode
-            version: "14.3.1" # Apple Clang 14.0.3
-
-          - os: macos-13
-            compiler: xcode
-            version: "15.2" # Apple Clang 15.0.0
-
-          - os: macos-13
-            compiler: gcc
-            version: "12"
-
           # macOS arm64
           - os: macos-14
             compiler: xcode
