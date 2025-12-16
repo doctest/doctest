@@ -2,11 +2,13 @@ name: Coverage
 
 on:
   push:
+    branches: [dev, master]
     paths-ignore:
       - "doc/**"
       - "scripts/**"
       - "LICENSE.txt"
       - "README.md"
+
   pull_request:
     paths-ignore:
       - "doc/**"

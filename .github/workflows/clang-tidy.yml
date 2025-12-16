@@ -2,11 +2,13 @@ name: Clang-Tidy
 
 on:
   push:
+    branches: [dev, master]
     paths-ignore:
       - "doc/**"
       - "scripts/**"
       - "LICENSE.txt"
       - "README.md"
+
   pull_request:
     paths-ignore:
       - "doc/**"
@@ -20,7 +22,6 @@ env:
 
 jobs:
   clang-tidy:
-    if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name != github.repository
     runs-on: ubuntu-22.04
 
     steps:
