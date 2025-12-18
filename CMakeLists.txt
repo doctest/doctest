@@ -33,9 +33,7 @@ set(doctest_parts_folder "${CMAKE_CURRENT_SOURCE_DIR}/doctest/parts")
 set(doctest_folder "${CMAKE_CURRENT_SOURCE_DIR}/") # in order to have the mpi extension files, not included into the doctest.h single header
 
 if(MAIN_PROJECT)
-    # use a special hidden version of the header which directly includes the 2 parts - proper reporting of file/line locations during dev
     target_include_directories(${PROJECT_NAME} INTERFACE
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/scripts/development_only/>
         $<BUILD_INTERFACE:${doctest_parts_folder}>
         $<BUILD_INTERFACE:${doctest_folder}>)
 else()
