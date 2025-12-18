@@ -38,19 +38,6 @@ if(MAIN_PROJECT)
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/scripts/development_only/>
         $<BUILD_INTERFACE:${doctest_parts_folder}>
         $<BUILD_INTERFACE:${doctest_folder}>)
-
-    # add a custom target that assembles the single header when any of the parts are touched
-    find_package(Python3 COMPONENTS Interpreter REQUIRED)
-
-    add_custom_command(
-        OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/doctest/doctest.h
-        DEPENDS
-            ${doctest_parts_folder}/doctest_fwd.h
-            ${doctest_parts_folder}/doctest.cpp
-        COMMAND ${Python3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/scripts/assemble.py
-        COMMENT "assembling the single header")
-
-    add_custom_target(assemble_single_header ALL DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/doctest/doctest.h)
 else()
     target_include_directories(${PROJECT_NAME} INTERFACE $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/>)
 endif()
