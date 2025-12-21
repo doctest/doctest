@@ -634,120 +634,354 @@ namespace detail {
 
 } // namespace detail
 } // namespace doctest
-
 namespace doctest {
-
-DOCTEST_INTERFACE extern bool is_running_in_test;
-
 #ifndef DOCTEST_CONFIG_STRING_SIZE_TYPE
 #define DOCTEST_CONFIG_STRING_SIZE_TYPE unsigned
 #endif
 
-// A 24 byte string class (can be as small as 17 for x64 and 13 for x86) that can hold strings with length
-// of up to 23 chars on the stack before going on the heap - the last byte of the buffer is used for:
-// - "is small" bit - the highest bit - if "0" then it is small - otherwise its "1" (128)
-// - if small - capacity left before going on the heap - using the lowest 5 bits
-// - if small - 2 bits are left unused - the second and third highest ones
-// - if small - acts as a null terminator if strlen() is 23 (24 including the null terminator)
-//              and the "is small" bit remains "0" ("as well as the capacity left") so its OK
-// Idea taken from this lecture about the string implementation of facebook/folly - fbstring
-// https://www.youtube.com/watch?v=kPR8h4-qZdk
-// TODO:
-// - optimizations - like not deleting memory unnecessarily in operator= and etc.
-// - resize/reserve/clear
-// - replace
-// - back/front
-// - iterator stuff
-// - find & friends
-// - push_back/pop_back
-// - assign/insert/erase
-// - relational operators as free functions - taking const char* as one of the params
-class DOCTEST_INTERFACE String
-{
-public:
-    using size_type = DOCTEST_CONFIG_STRING_SIZE_TYPE;
-
-private:
-    static DOCTEST_CONSTEXPR size_type len  = 24;      //!OCLINT avoid private static members
-    static DOCTEST_CONSTEXPR size_type last = len - 1; //!OCLINT avoid private static members
-
-    struct view // len should be more than sizeof(view) - because of the final byte for flags
+    // A 24 byte string class (can be as small as 17 for x64 and 13 for x86) that can hold strings with length
+    // of up to 23 chars on the stack before going on the heap - the last byte of the buffer is used for:
+    // - "is small" bit - the highest bit - if "0" then it is small - otherwise its "1" (128)
+    // - if small - capacity left before going on the heap - using the lowest 5 bits
+    // - if small - 2 bits are left unused - the second and third highest ones
+    // - if small - acts as a null terminator if strlen() is 23 (24 including the null terminator)
+    //              and the "is small" bit remains "0" ("as well as the capacity left") so its OK
+    // Idea taken from this lecture about the string implementation of facebook/folly - fbstring
+    // https://www.youtube.com/watch?v=kPR8h4-qZdk
+    // TODO:
+    // - optimizations - like not deleting memory unnecessarily in operator= and etc.
+    // - resize/reserve/clear
+    // - replace
+    // - back/front
+    // - iterator stuff
+    // - find & friends
+    // - push_back/pop_back
+    // - assign/insert/erase
+    // - relational operators as free functions - taking const char* as one of the params
+    class DOCTEST_INTERFACE String
     {
-        char*    ptr;
-        size_type size;
-        size_type capacity;
-    };
+    public:
+        using size_type = DOCTEST_CONFIG_STRING_SIZE_TYPE;
 
-    union
-    {
-        char buf[len]; // NOLINT(*-avoid-c-arrays)
-        view data;
-    };
+    private:
+        static DOCTEST_CONSTEXPR size_type len  = 24;      //!OCLINT avoid private static members
+        static DOCTEST_CONSTEXPR size_type last = len - 1; //!OCLINT avoid private static members
 
-    char* allocate(size_type sz);
+        struct view // len should be more than sizeof(view) - because of the final byte for flags
+        {
+            char*    ptr;
+            size_type size;
+            size_type capacity;
+        };
 
-    bool isOnStack() const noexcept { return (buf[last] & 128) == 0; }
-    void setOnHeap() noexcept;
-    void setLast(size_type in = last) noexcept;
-    void setSize(size_type sz) noexcept;
+        union
+        {
+            char buf[len]; // NOLINT(*-avoid-c-arrays)
+            view data;
+        };
 
-    void copy(const String& other);
+        char* allocate(size_type sz);
 
-public:
-    static DOCTEST_CONSTEXPR size_type npos = static_cast<size_type>(-1);
+        bool isOnStack() const noexcept { return (buf[last] & 128) == 0; }
+        void setOnHeap() noexcept;
+        void setLast(size_type in = last) noexcept;
+        void setSize(size_type sz) noexcept;
 
-    String() noexcept;
-    ~String();
+        void copy(const String& other);
 
-    // cppcheck-suppress noExplicitConstructor
-    String(const char* in);
-    String(const char* in, size_type in_size);
+    public:
+        static DOCTEST_CONSTEXPR size_type npos = static_cast<size_type>(-1);
 
-    String(std::istream& in, size_type in_size);
+        String() noexcept;
+        ~String();
 
-    String(const String& other);
-    String& operator=(const String& other);
+        // cppcheck-suppress noExplicitConstructor
+        String(const char* in);
+        String(const char* in, size_type in_size);
 
-    String& operator+=(const String& other);
+        String(std::istream& in, size_type in_size);
 
-    String(String&& other) noexcept;
-    String& operator=(String&& other) noexcept;
+        String(const String& other);
+        String& operator=(const String& other);
 
-    char  operator[](size_type i) const;
-    char& operator[](size_type i);
+        String& operator+=(const String& other);
 
-    // the only functions I'm willing to leave in the interface - available for inlining
-    const char* c_str() const { return const_cast<String*>(this)->c_str(); } // NOLINT
-    char*       c_str() {
-        if (isOnStack()) {
-            return reinterpret_cast<char*>(buf);
+        String(String&& other) noexcept;
+        String& operator=(String&& other) noexcept;
+
+        char  operator[](size_type i) const;
+        char& operator[](size_type i);
+
+        // the only functions I'm willing to leave in the interface - available for inlining
+        const char* c_str() const { return const_cast<String*>(this)->c_str(); } // NOLINT
+        char*       c_str() {
+            if (isOnStack()) {
+                return reinterpret_cast<char*>(buf);
+            }
+            return data.ptr;
         }
-        return data.ptr;
+
+        size_type size() const;
+        size_type capacity() const;
+
+        String substr(size_type pos, size_type cnt = npos) &&;
+        String substr(size_type pos, size_type cnt = npos) const &;
+
+        size_type find(char ch, size_type pos = 0) const;
+        size_type rfind(char ch, size_type pos = npos) const;
+
+        int compare(const char* other, bool no_case = false) const;
+        int compare(const String& other, bool no_case = false) const;
+
+        friend DOCTEST_INTERFACE std::ostream& operator<<(std::ostream& s, const String& in);
+    };
+
+    DOCTEST_INTERFACE String operator+(const String& lhs, const String& rhs);
+
+    DOCTEST_INTERFACE bool operator==(const String& lhs, const String& rhs);
+    DOCTEST_INTERFACE bool operator!=(const String& lhs, const String& rhs);
+    DOCTEST_INTERFACE bool operator<(const String& lhs, const String& rhs);
+    DOCTEST_INTERFACE bool operator>(const String& lhs, const String& rhs);
+    DOCTEST_INTERFACE bool operator<=(const String& lhs, const String& rhs);
+    DOCTEST_INTERFACE bool operator>=(const String& lhs, const String& rhs);
+
+namespace detail {
+
+// MSVS 2015 :(
+#if !DOCTEST_CLANG && defined(_MSC_VER) && _MSC_VER <= 1900
+    template <typename T, typename = void>
+    struct has_global_insertion_operator : types::false_type { };
+
+    template <typename T>
+    struct has_global_insertion_operator<T, decltype(::operator<<(declval<std::ostream&>(), declval<const T&>()), void())> : types::true_type { };
+
+    template <typename T, typename = void>
+    struct has_insertion_operator { static DOCTEST_CONSTEXPR bool value = has_global_insertion_operator<T>::value; };
+
+    template <typename T, bool global>
+    struct insert_hack;
+
+    template <typename T>
+    struct insert_hack<T, true> {
+        static void insert(std::ostream& os, const T& t) { ::operator<<(os, t); }
+    };
+
+    template <typename T>
+    struct insert_hack<T, false> {
+        static void insert(std::ostream& os, const T& t) { operator<<(os, t); }
+    };
+
+    template <typename T>
+    using insert_hack_t = insert_hack<T, has_global_insertion_operator<T>::value>;
+#else
+    template <typename T, typename = void>
+    struct has_insertion_operator : types::false_type { };
+#endif
+
+    template <typename T>
+    struct has_insertion_operator<T, decltype(operator<<(declval<std::ostream&>(), declval<const T&>()), void())> : types::true_type { };
+
+    template <typename T>
+    struct should_stringify_as_underlying_type {
+        static DOCTEST_CONSTEXPR bool value = detail::types::is_enum<T>::value && !doctest::detail::has_insertion_operator<T>::value;
+    };
+
+    DOCTEST_INTERFACE std::ostream* tlssPush();
+    DOCTEST_INTERFACE String tlssPop();
+
+    template <bool C>
+    struct StringMakerBase {
+        template <typename T>
+        static String convert(const DOCTEST_REF_WRAP(T)) {
+#ifdef DOCTEST_CONFIG_REQUIRE_STRINGIFICATION_FOR_ALL_USED_TYPES
+            static_assert(deferred_false<T>::value, "No stringification detected for type T. See string conversion manual");
+#endif
+            return "{?}";
+        }
+    };
+
+    template <typename T>
+    struct filldata;
+
+    template <typename T>
+    void filloss(std::ostream* stream, const T& in) {
+        filldata<T>::fill(stream, in);
     }
 
-    size_type size() const;
-    size_type capacity() const;
+    template <typename T, size_t N>
+    void filloss(std::ostream* stream, const T (&in)[N]) { // NOLINT(*-avoid-c-arrays)
+        // T[N], T(&)[N], T(&&)[N] have same behaviour.
+        // Hence remove reference.
+        filloss<typename types::remove_reference<decltype(in)>::type>(stream, in);
+    }
 
-    String substr(size_type pos, size_type cnt = npos) &&;
-    String substr(size_type pos, size_type cnt = npos) const &;
+    template <typename T>
+    String toStream(const T& in) {
+        std::ostream* stream = tlssPush();
+        filloss(stream, in);
+        return tlssPop();
+    }
 
-    size_type find(char ch, size_type pos = 0) const;
-    size_type rfind(char ch, size_type pos = npos) const;
+    template <>
+    struct StringMakerBase<true> {
+        template <typename T>
+        static String convert(const DOCTEST_REF_WRAP(T) in) {
+            return toStream(in);
+        }
+    };
 
-    int compare(const char* other, bool no_case = false) const;
-    int compare(const String& other, bool no_case = false) const;
+} // namespace detail
 
-friend DOCTEST_INTERFACE std::ostream& operator<<(std::ostream& s, const String& in);
-};
+    template <typename T>
+    struct StringMaker : public detail::StringMakerBase<
+        detail::has_insertion_operator<T>::value || detail::types::is_pointer<T>::value || detail::types::is_array<T>::value>
+    {};
 
-DOCTEST_INTERFACE String operator+(const String& lhs, const String& rhs);
+#ifndef DOCTEST_STRINGIFY
+#ifdef DOCTEST_CONFIG_DOUBLE_STRINGIFY
+#define DOCTEST_STRINGIFY(...) toString(toString(__VA_ARGS__))
+#else
+#define DOCTEST_STRINGIFY(...) toString(__VA_ARGS__)
+#endif
+#endif
 
-DOCTEST_INTERFACE bool operator==(const String& lhs, const String& rhs);
-DOCTEST_INTERFACE bool operator!=(const String& lhs, const String& rhs);
-DOCTEST_INTERFACE bool operator<(const String& lhs, const String& rhs);
-DOCTEST_INTERFACE bool operator>(const String& lhs, const String& rhs);
-DOCTEST_INTERFACE bool operator<=(const String& lhs, const String& rhs);
-DOCTEST_INTERFACE bool operator>=(const String& lhs, const String& rhs);
+    template <typename T>
+    String toString() {
+    #if DOCTEST_CLANG == 0 && DOCTEST_GCC == 0 && DOCTEST_ICC == 0
+        String ret = __FUNCSIG__; // class doctest::String __cdecl doctest::toString<TYPE>(void)
+        String::size_type beginPos = ret.find('<');
+        return ret.substr(beginPos + 1, ret.size() - beginPos - static_cast<String::size_type>(sizeof(">(void)")));
+    #else
+        String ret = __PRETTY_FUNCTION__; // doctest::String toString() [with T = TYPE]
+        String::size_type begin = ret.find('=') + 2;
+        return ret.substr(begin, ret.size() - begin - 1);
+    #endif // Compiler
+    }
+
+    template <typename T, typename detail::types::enable_if<!detail::should_stringify_as_underlying_type<T>::value, bool>::type = true>
+    String toString(const DOCTEST_REF_WRAP(T) value) {
+        return StringMaker<T>::convert(value);
+    }
+
+    inline String&& toString(String&& in) { return static_cast<String&&>(in); }
+
+#ifdef DOCTEST_CONFIG_TREAT_CHAR_STAR_AS_STRING
+    DOCTEST_INTERFACE String toString(const char* in);
+#endif // DOCTEST_CONFIG_TREAT_CHAR_STAR_AS_STRING
+
+#if DOCTEST_MSVC >= DOCTEST_COMPILER(19, 20, 0)
+    // see this issue on why this is needed: https://github.com/doctest/doctest/issues/183
+    DOCTEST_INTERFACE String toString(const std::string& in);
+#endif // VS 2019
+
+    DOCTEST_INTERFACE String toString(const String& in);
+
+    DOCTEST_INTERFACE String toString(std::nullptr_t);
+
+    DOCTEST_INTERFACE String toString(bool in);
+
+    DOCTEST_INTERFACE String toString(float in);
+    DOCTEST_INTERFACE String toString(double in);
+    DOCTEST_INTERFACE String toString(double long in);
+
+    DOCTEST_INTERFACE String toString(char in);
+    DOCTEST_INTERFACE String toString(char signed in);
+    DOCTEST_INTERFACE String toString(char unsigned in);
+    DOCTEST_INTERFACE String toString(short in);
+    DOCTEST_INTERFACE String toString(short unsigned in);
+    DOCTEST_INTERFACE String toString(signed in);
+    DOCTEST_INTERFACE String toString(unsigned in);
+    DOCTEST_INTERFACE String toString(long in);
+    DOCTEST_INTERFACE String toString(long unsigned in);
+    DOCTEST_INTERFACE String toString(long long in);
+    DOCTEST_INTERFACE String toString(long long unsigned in);
+
+    template <typename T, typename detail::types::enable_if<detail::should_stringify_as_underlying_type<T>::value, bool>::type = true>
+    String toString(const DOCTEST_REF_WRAP(T) value) {
+        using UT = typename detail::types::underlying_type<T>::type;
+        return (DOCTEST_STRINGIFY(static_cast<UT>(value)));
+    }
+
+namespace detail {
+    template <typename T>
+    struct filldata
+    {
+        static void fill(std::ostream* stream, const T& in) {
+    #if defined(_MSC_VER) && _MSC_VER <= 1900
+        insert_hack_t<T>::insert(*stream, in);
+    #else
+        operator<<(*stream, in);
+    #endif // _MSV_VER
+        }
+    };
+
+    DOCTEST_MSVC_SUPPRESS_WARNING_WITH_PUSH(4866)
+    // NOLINTBEGIN(*-avoid-c-arrays)
+    template <typename T, size_t N>
+    struct filldata<T[N]> {
+        static void fill(std::ostream* stream, const T(&in)[N]) {
+            *stream << "[";
+            for (size_t i = 0; i < N; i++) {
+                if (i != 0) { *stream << ", "; }
+                *stream << (DOCTEST_STRINGIFY(in[i]));
+            }
+            *stream << "]";
+        }
+    };
+    // NOLINTEND(*-avoid-c-arrays)
+    DOCTEST_MSVC_SUPPRESS_WARNING_POP
+
+    // Specialized since we don't want the terminating null byte!
+    // NOLINTBEGIN(*-avoid-c-arrays)
+    template <size_t N>
+    struct filldata<const char[N]> {
+        static void fill(std::ostream* stream, const char (&in)[N]) {
+            *stream << String(in, in[N - 1] ? N : N - 1);
+        } // NOLINT(clang-analyzer-cplusplus.NewDeleteLeaks)
+    };
+    // NOLINTEND(*-avoid-c-arrays)
+
+    template <>
+    struct filldata<const void*> {
+        DOCTEST_INTERFACE static void fill(std::ostream* stream, const void* in);
+    };
+
+    template <>
+    struct filldata<const volatile void*> {
+        DOCTEST_INTERFACE static void fill(std::ostream* stream, const volatile void* in);
+    };
+
+    template <typename T>
+    struct filldata<T*> {
+        DOCTEST_MSVC_SUPPRESS_WARNING_WITH_PUSH(4180)
+        static void fill(std::ostream* stream, const T* in) {
+        DOCTEST_MSVC_SUPPRESS_WARNING_POP
+        DOCTEST_CLANG_SUPPRESS_WARNING_WITH_PUSH("-Wmicrosoft-cast")
+            filldata<const volatile void*>::fill(stream,
+        #if DOCTEST_GCC == 0 || DOCTEST_GCC >= DOCTEST_COMPILER(4, 9, 0)
+                reinterpret_cast<const volatile void*>(in)
+        #else
+                *reinterpret_cast<const volatile void* const*>(&in)
+        #endif // DOCTEST_GCC
+            );
+        DOCTEST_CLANG_SUPPRESS_WARNING_POP
+        }
+    };
+
+    #ifndef DOCTEST_CONFIG_DISABLE
+    template <typename L, typename R>
+    String stringifyBinaryExpr(const DOCTEST_REF_WRAP(L) lhs, const char* op,
+                               const DOCTEST_REF_WRAP(R) rhs) {
+        return (DOCTEST_STRINGIFY(lhs)) + op + (DOCTEST_STRINGIFY(rhs));
+    }
+    #endif // DOCTEST_CONFIG_DISABLE
+} //namespace detail
+
+} // namespace doctest
+
+namespace doctest {
+
+DOCTEST_INTERFACE extern bool is_running_in_test;
 
 class DOCTEST_INTERFACE Contains {
 public:
@@ -1017,228 +1251,6 @@ struct ContextOptions //!OCLINT too many fields
     bool list_reporters;   // lists all registered reporters
 };
 
-namespace detail {
-// MSVS 2015 :(
-#if !DOCTEST_CLANG && defined(_MSC_VER) && _MSC_VER <= 1900
-    template <typename T, typename = void>
-    struct has_global_insertion_operator : types::false_type { };
-
-    template <typename T>
-    struct has_global_insertion_operator<T, decltype(::operator<<(declval<std::ostream&>(), declval<const T&>()), void())> : types::true_type { };
-
-    template <typename T, typename = void>
-    struct has_insertion_operator { static DOCTEST_CONSTEXPR bool value = has_global_insertion_operator<T>::value; };
-
-    template <typename T, bool global>
-    struct insert_hack;
-
-    template <typename T>
-    struct insert_hack<T, true> {
-        static void insert(std::ostream& os, const T& t) { ::operator<<(os, t); }
-    };
-
-    template <typename T>
-    struct insert_hack<T, false> {
-        static void insert(std::ostream& os, const T& t) { operator<<(os, t); }
-    };
-
-    template <typename T>
-    using insert_hack_t = insert_hack<T, has_global_insertion_operator<T>::value>;
-#else
-    template <typename T, typename = void>
-    struct has_insertion_operator : types::false_type { };
-#endif
-
-    template <typename T>
-    struct has_insertion_operator<T, decltype(operator<<(declval<std::ostream&>(), declval<const T&>()), void())> : types::true_type { };
-
-    template <typename T>
-    struct should_stringify_as_underlying_type {
-        static DOCTEST_CONSTEXPR bool value = detail::types::is_enum<T>::value && !doctest::detail::has_insertion_operator<T>::value;
-    };
-
-    DOCTEST_INTERFACE std::ostream* tlssPush();
-    DOCTEST_INTERFACE String tlssPop();
-
-    template <bool C>
-    struct StringMakerBase {
-        template <typename T>
-        static String convert(const DOCTEST_REF_WRAP(T)) {
-#ifdef DOCTEST_CONFIG_REQUIRE_STRINGIFICATION_FOR_ALL_USED_TYPES
-            static_assert(deferred_false<T>::value, "No stringification detected for type T. See string conversion manual");
-#endif
-            return "{?}";
-        }
-    };
-
-    template <typename T>
-    struct filldata;
-
-    template <typename T>
-    void filloss(std::ostream* stream, const T& in) {
-        filldata<T>::fill(stream, in);
-    }
-
-    template <typename T, size_t N>
-    void filloss(std::ostream* stream, const T (&in)[N]) { // NOLINT(*-avoid-c-arrays)
-        // T[N], T(&)[N], T(&&)[N] have same behaviour.
-        // Hence remove reference.
-        filloss<typename types::remove_reference<decltype(in)>::type>(stream, in);
-    }
-
-    template <typename T>
-    String toStream(const T& in) {
-        std::ostream* stream = tlssPush();
-        filloss(stream, in);
-        return tlssPop();
-    }
-
-    template <>
-    struct StringMakerBase<true> {
-        template <typename T>
-        static String convert(const DOCTEST_REF_WRAP(T) in) {
-            return toStream(in);
-        }
-    };
-} // namespace detail
-
-template <typename T>
-struct StringMaker : public detail::StringMakerBase<
-    detail::has_insertion_operator<T>::value || detail::types::is_pointer<T>::value || detail::types::is_array<T>::value>
-{};
-
-#ifndef DOCTEST_STRINGIFY
-#ifdef DOCTEST_CONFIG_DOUBLE_STRINGIFY
-#define DOCTEST_STRINGIFY(...) toString(toString(__VA_ARGS__))
-#else
-#define DOCTEST_STRINGIFY(...) toString(__VA_ARGS__)
-#endif
-#endif
-
-template <typename T>
-String toString() {
-#if DOCTEST_CLANG == 0 && DOCTEST_GCC == 0 && DOCTEST_ICC == 0
-    String ret = __FUNCSIG__; // class doctest::String __cdecl doctest::toString<TYPE>(void)
-    String::size_type beginPos = ret.find('<');
-    return ret.substr(beginPos + 1, ret.size() - beginPos - static_cast<String::size_type>(sizeof(">(void)")));
-#else
-    String ret = __PRETTY_FUNCTION__; // doctest::String toString() [with T = TYPE]
-    String::size_type begin = ret.find('=') + 2;
-    return ret.substr(begin, ret.size() - begin - 1);
-#endif
-}
-
-template <typename T, typename detail::types::enable_if<!detail::should_stringify_as_underlying_type<T>::value, bool>::type = true>
-String toString(const DOCTEST_REF_WRAP(T) value) {
-    return StringMaker<T>::convert(value);
-}
-
-inline String&& toString(String&& in) { return static_cast<String&&>(in); }
-
-#ifdef DOCTEST_CONFIG_TREAT_CHAR_STAR_AS_STRING
-DOCTEST_INTERFACE String toString(const char* in);
-#endif // DOCTEST_CONFIG_TREAT_CHAR_STAR_AS_STRING
-
-#if DOCTEST_MSVC >= DOCTEST_COMPILER(19, 20, 0)
-// see this issue on why this is needed: https://github.com/doctest/doctest/issues/183
-DOCTEST_INTERFACE String toString(const std::string& in);
-#endif // VS 2019
-
-DOCTEST_INTERFACE String toString(const String& in);
-
-DOCTEST_INTERFACE String toString(std::nullptr_t);
-
-DOCTEST_INTERFACE String toString(bool in);
-
-DOCTEST_INTERFACE String toString(float in);
-DOCTEST_INTERFACE String toString(double in);
-DOCTEST_INTERFACE String toString(double long in);
-
-DOCTEST_INTERFACE String toString(char in);
-DOCTEST_INTERFACE String toString(char signed in);
-DOCTEST_INTERFACE String toString(char unsigned in);
-DOCTEST_INTERFACE String toString(short in);
-DOCTEST_INTERFACE String toString(short unsigned in);
-DOCTEST_INTERFACE String toString(signed in);
-DOCTEST_INTERFACE String toString(unsigned in);
-DOCTEST_INTERFACE String toString(long in);
-DOCTEST_INTERFACE String toString(long unsigned in);
-DOCTEST_INTERFACE String toString(long long in);
-DOCTEST_INTERFACE String toString(long long unsigned in);
-
-template <typename T, typename detail::types::enable_if<detail::should_stringify_as_underlying_type<T>::value, bool>::type = true>
-String toString(const DOCTEST_REF_WRAP(T) value) {
-    using UT = typename detail::types::underlying_type<T>::type;
-    return (DOCTEST_STRINGIFY(static_cast<UT>(value)));
-}
-
-namespace detail {
-    template <typename T>
-    struct filldata
-    {
-        static void fill(std::ostream* stream, const T& in) {
-#if defined(_MSC_VER) && _MSC_VER <= 1900
-        insert_hack_t<T>::insert(*stream, in);
-#else
-        operator<<(*stream, in);
-#endif
-        }
-    };
-
-DOCTEST_MSVC_SUPPRESS_WARNING_WITH_PUSH(4866)
-// NOLINTBEGIN(*-avoid-c-arrays)
-    template <typename T, size_t N>
-    struct filldata<T[N]> {
-        static void fill(std::ostream* stream, const T(&in)[N]) {
-            *stream << "[";
-            for (size_t i = 0; i < N; i++) {
-                if (i != 0) { *stream << ", "; }
-                *stream << (DOCTEST_STRINGIFY(in[i]));
-            }
-            *stream << "]";
-        }
-    };
-// NOLINTEND(*-avoid-c-arrays)
-DOCTEST_MSVC_SUPPRESS_WARNING_POP
-
-    // Specialized since we don't want the terminating null byte!
-// NOLINTBEGIN(*-avoid-c-arrays)
-    template <size_t N>
-    struct filldata<const char[N]> {
-        static void fill(std::ostream* stream, const char (&in)[N]) {
-            *stream << String(in, in[N - 1] ? N : N - 1);
-        } // NOLINT(clang-analyzer-cplusplus.NewDeleteLeaks)
-    };
-// NOLINTEND(*-avoid-c-arrays)
-
-    template <>
-    struct filldata<const void*> {
-        DOCTEST_INTERFACE static void fill(std::ostream* stream, const void* in);
-    };
-
-    template <>
-    struct filldata<const volatile void*> {
-        DOCTEST_INTERFACE static void fill(std::ostream* stream, const volatile void* in);
-    };
-
-    template <typename T>
-    struct filldata<T*> {
-DOCTEST_MSVC_SUPPRESS_WARNING_WITH_PUSH(4180)
-        static void fill(std::ostream* stream, const T* in) {
-DOCTEST_MSVC_SUPPRESS_WARNING_POP
-DOCTEST_CLANG_SUPPRESS_WARNING_WITH_PUSH("-Wmicrosoft-cast")
-            filldata<const volatile void*>::fill(stream,
-#if DOCTEST_GCC == 0 || DOCTEST_GCC >= DOCTEST_COMPILER(4, 9, 0)
-                reinterpret_cast<const volatile void*>(in)
-#else
-                *reinterpret_cast<const volatile void* const*>(&in)
-#endif
-            );
-DOCTEST_CLANG_SUPPRESS_WARNING_POP
-        }
-    };
-}
-
 struct DOCTEST_INTERFACE Approx
 {
     Approx(double value);
@@ -1382,12 +1394,6 @@ namespace detail {
         private:
             bool checkFilters();
     };
-
-    template <typename L, typename R>
-    String stringifyBinaryExpr(const DOCTEST_REF_WRAP(L) lhs, const char* op,
-                               const DOCTEST_REF_WRAP(R) rhs) {
-        return (DOCTEST_STRINGIFY(lhs)) + op + (DOCTEST_STRINGIFY(rhs));
-    }
 
 #if DOCTEST_CLANG && DOCTEST_CLANG < DOCTEST_COMPILER(3, 6, 0)
 DOCTEST_CLANG_SUPPRESS_WARNING_WITH_PUSH("-Wunused-comparison")
@@ -3402,15 +3408,6 @@ namespace {
             __FILE__ ":" DOCTEST_TOSTR(__LINE__) ": Internal doctest error: " msg))
 #endif // DOCTEST_INTERNAL_ERROR
 
-    // case insensitive strcmp
-    int stricmp(const char* a, const char* b) {
-        for(;; a++, b++) {
-            const int d = tolower(*a) - tolower(*b);
-            if(d != 0 || !*a)
-                return d;
-        }
-    }
-
 } // namespace
 
 namespace detail {
@@ -3677,212 +3674,6 @@ using ticks_t = timer_large_integer::type;
 #endif // DOCTEST_CONFIG_DISABLE
 } // namespace detail
 
-char* String::allocate(size_type sz) {
-    if (sz <= last) {
-        buf[sz] = '\0';
-        setLast(last - sz);
-        return buf;
-    } else {
-        setOnHeap();
-        data.size = sz;
-        data.capacity = data.size + 1;
-        data.ptr = new char[data.capacity];
-        data.ptr[sz] = '\0';
-        return data.ptr;
-    }
-}
-
-void String::setOnHeap() noexcept { *reinterpret_cast<unsigned char*>(&buf[last]) = 128; }
-void String::setLast(size_type in) noexcept { buf[last] = char(in); }
-void String::setSize(size_type sz) noexcept {
-    if (isOnStack()) { buf[sz] = '\0'; setLast(last - sz); }
-    else { data.ptr[sz] = '\0'; data.size = sz; }
-}
-
-void String::copy(const String& other) {
-    if(other.isOnStack()) {
-        memcpy(buf, other.buf, len);
-    } else {
-        memcpy(allocate(other.data.size), other.data.ptr, other.data.size);
-    }
-}
-
-String::String() noexcept {
-    buf[0] = '\0';
-    setLast();
-}
-
-String::~String() {
-    if(!isOnStack())
-        delete[] data.ptr;
-} // NOLINT(clang-analyzer-cplusplus.NewDeleteLeaks)
-
-String::String(const char* in)
-        : String(in, strlen(in)) {}
-
-String::String(const char* in, size_type in_size) {
-    memcpy(allocate(in_size), in, in_size);
-}
-
-String::String(std::istream& in, size_type in_size) {
-    in.read(allocate(in_size), in_size);
-}
-
-String::String(const String& other) { copy(other); }
-
-String& String::operator=(const String& other) {
-    if(this != &other) {
-        if(!isOnStack())
-            delete[] data.ptr;
-
-        copy(other);
-    }
-
-    return *this;
-}
-
-String& String::operator+=(const String& other) {
-    const size_type my_old_size = size();
-    const size_type other_size  = other.size();
-    const size_type total_size  = my_old_size + other_size;
-    if(isOnStack()) {
-        if(total_size < len) {
-            // append to the current stack space
-            memcpy(buf + my_old_size, other.c_str(), other_size + 1);
-            // NOLINTNEXTLINE(clang-analyzer-cplusplus.NewDeleteLeaks)
-            setLast(last - total_size);
-        } else {
-            // alloc new chunk
-            char* temp = new char[total_size + 1];
-            // copy current data to new location before writing in the union
-            memcpy(temp, buf, my_old_size); // skip the +1 ('\0') for speed
-            // update data in union
-            setOnHeap();
-            data.size     = total_size;
-            data.capacity = data.size + 1;
-            data.ptr      = temp;
-            // transfer the rest of the data
-            memcpy(data.ptr + my_old_size, other.c_str(), other_size + 1);
-        }
-    } else {
-        if(data.capacity > total_size) {
-            // append to the current heap block
-            data.size = total_size;
-            memcpy(data.ptr + my_old_size, other.c_str(), other_size + 1);
-        } else {
-            // resize
-            data.capacity *= 2;
-            if(data.capacity <= total_size)
-                data.capacity = total_size + 1;
-            // alloc new chunk
-            char* temp = new char[data.capacity];
-            // copy current data to new location before releasing it
-            memcpy(temp, data.ptr, my_old_size); // skip the +1 ('\0') for speed
-            // release old chunk
-            delete[] data.ptr;
-            // update the rest of the union members
-            data.size = total_size;
-            data.ptr  = temp;
-            // transfer the rest of the data
-            memcpy(data.ptr + my_old_size, other.c_str(), other_size + 1);
-        }
-    }
-
-    return *this;
-}
-
-String::String(String&& other) noexcept {
-    memcpy(buf, other.buf, len);
-    other.buf[0] = '\0';
-    other.setLast();
-}
-
-String& String::operator=(String&& other) noexcept {
-    if(this != &other) {
-        if(!isOnStack())
-            delete[] data.ptr;
-        memcpy(buf, other.buf, len);
-        other.buf[0] = '\0';
-        other.setLast();
-    }
-    return *this;
-}
-
-char String::operator[](size_type i) const {
-    return const_cast<String*>(this)->operator[](i);
-}
-
-char& String::operator[](size_type i) {
-    if(isOnStack())
-        return reinterpret_cast<char*>(buf)[i];
-    return data.ptr[i];
-}
-
-DOCTEST_GCC_SUPPRESS_WARNING_WITH_PUSH("-Wmaybe-uninitialized")
-String::size_type String::size() const {
-    if(isOnStack())
-        return last - (size_type(buf[last]) & 31); // using "last" would work only if "len" is 32
-    return data.size;
-}
-DOCTEST_GCC_SUPPRESS_WARNING_POP
-
-String::size_type String::capacity() const {
-    if(isOnStack())
-        return len;
-    return data.capacity;
-}
-
-String String::substr(size_type pos, size_type cnt) && {
-    cnt = std::min(cnt, size() - pos);
-    char* cptr = c_str();
-    memmove(cptr, cptr + pos, cnt);
-    setSize(cnt);
-    return std::move(*this);
-}
-
-String String::substr(size_type pos, size_type cnt) const & {
-    cnt = std::min(cnt, size() - pos);
-    return String{ c_str() + pos, cnt };
-}
-
-String::size_type String::find(char ch, size_type pos) const {
-    const char* begin = c_str();
-    const char* end = begin + size();
-    const char* it = begin + pos;
-    for (; it < end && *it != ch; it++);
-    if (it < end) { return static_cast<size_type>(it - begin); }
-    else { return npos; }
-}
-
-String::size_type String::rfind(char ch, size_type pos) const {
-    const char* begin = c_str();
-    const char* it = begin + std::min(pos, size() - 1);
-    for (; it >= begin && *it != ch; it--);
-    if (it >= begin) { return static_cast<size_type>(it - begin); }
-    else { return npos; }
-}
-
-int String::compare(const char* other, bool no_case) const {
-    if(no_case)
-        return doctest::stricmp(c_str(), other);
-    return std::strcmp(c_str(), other);
-}
-
-int String::compare(const String& other, bool no_case) const {
-    return compare(other.c_str(), no_case);
-}
-
-String operator+(const String& lhs, const String& rhs) { return  String(lhs) += rhs; }
-
-bool operator==(const String& lhs, const String& rhs) { return lhs.compare(rhs) == 0; }
-bool operator!=(const String& lhs, const String& rhs) { return lhs.compare(rhs) != 0; }
-bool operator< (const String& lhs, const String& rhs) { return lhs.compare(rhs) < 0; }
-bool operator> (const String& lhs, const String& rhs) { return lhs.compare(rhs) > 0; }
-bool operator<=(const String& lhs, const String& rhs) { return (lhs != rhs) ? lhs.compare(rhs) < 0 : true; }
-bool operator>=(const String& lhs, const String& rhs) { return (lhs != rhs) ? lhs.compare(rhs) > 0 : true; }
-
-std::ostream& operator<<(std::ostream& s, const String& in) { return s << in.c_str(); }
-
 Contains::Contains(const String& str) : string(str) { }
 
 bool Contains::checkWith(const String& other) const {
@@ -4015,55 +3806,6 @@ bool SubcaseSignature::operator<(const SubcaseSignature& other) const {
 }
 
 DOCTEST_DEFINE_INTERFACE(IContextScope)
-
-namespace detail {
-    void filldata<const void*>::fill(std::ostream* stream, const void* in) {
-        filldata<const volatile void*>::fill(stream, in);
-    }
-
-    void filldata<const volatile void*>::fill(std::ostream* stream, const volatile void* in) {
-        if (in) { *stream << in; }
-        else { *stream << "nullptr"; }
-    }
-
-    template <typename T>
-    String toStreamLit(T t) {
-        std::ostream* os = tlssPush();
-        os->operator<<(t);
-        return tlssPop();
-    }
-}
-
-#ifdef DOCTEST_CONFIG_TREAT_CHAR_STAR_AS_STRING
-String toString(const char* in) { return String("\"") + (in ? in : "{null string}") + "\""; }
-#endif // DOCTEST_CONFIG_TREAT_CHAR_STAR_AS_STRING
-
-#if DOCTEST_MSVC >= DOCTEST_COMPILER(19, 20, 0)
-// see this issue on why this is needed: https://github.com/doctest/doctest/issues/183
-String toString(const std::string& in) { return in.c_str(); }
-#endif // VS 2019
-
-String toString(const String& in) { return in; }
-
-String toString(std::nullptr_t) { return "nullptr"; }
-
-String toString(bool in) { return in ? "true" : "false"; }
-
-String toString(float in) { return toStreamLit(in); }
-String toString(double in) { return toStreamLit(in); }
-String toString(double long in) { return toStreamLit(in); }
-
-String toString(char in) { return toStreamLit(static_cast<signed>(in)); }
-String toString(char signed in) { return toStreamLit(static_cast<signed>(in)); }
-String toString(char unsigned in) { return toStreamLit(static_cast<unsigned>(in)); }
-String toString(short in) { return toStreamLit(in); }
-String toString(short unsigned in) { return toStreamLit(in); }
-String toString(signed in) { return toStreamLit(in); }
-String toString(unsigned in) { return toStreamLit(in); }
-String toString(long in) { return toStreamLit(in); }
-String toString(long unsigned in) { return toStreamLit(in); }
-String toString(long long in) { return toStreamLit(in); }
-String toString(long long unsigned in) { return toStreamLit(in); }
 
 Approx::Approx(double value)
         : m_epsilon(static_cast<double>(std::numeric_limits<float>::epsilon()) * 100)
@@ -7136,6 +6878,275 @@ DOCTEST_MSVC_SUPPRESS_WARNING_WITH_PUSH(4007) // 'function' : must be 'attribute
 int main(int argc, char** argv) { return doctest::Context(argc, argv).run(); }
 DOCTEST_MSVC_SUPPRESS_WARNING_POP
 #endif // DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
+
+namespace doctest {
+
+    // case insensitive strcmp
+    static int stricmp(const char* a, const char* b) {
+        for(;; a++, b++) {
+            const int d = tolower(*a) - tolower(*b);
+            if(d != 0 || !*a)
+                return d;
+        }
+    }
+
+    char* String::allocate(size_type sz) {
+        if (sz <= last) {
+            buf[sz] = '\0';
+            setLast(last - sz);
+            return buf;
+        } else {
+            setOnHeap();
+            data.size = sz;
+            data.capacity = data.size + 1;
+            data.ptr = new char[data.capacity];
+            data.ptr[sz] = '\0';
+            return data.ptr;
+        }
+    }
+
+    void String::setOnHeap() noexcept { *reinterpret_cast<unsigned char*>(&buf[last]) = 128; }
+    void String::setLast(size_type in) noexcept { buf[last] = char(in); }
+    void String::setSize(size_type sz) noexcept {
+        if (isOnStack()) { buf[sz] = '\0'; setLast(last - sz); }
+        else { data.ptr[sz] = '\0'; data.size = sz; }
+    }
+
+    void String::copy(const String& other) {
+        if(other.isOnStack()) {
+            memcpy(buf, other.buf, len);
+        } else {
+            memcpy(allocate(other.data.size), other.data.ptr, other.data.size);
+        }
+    }
+
+    String::String() noexcept {
+        buf[0] = '\0';
+        setLast();
+    }
+
+    String::~String() {
+        if(!isOnStack())
+            delete[] data.ptr;
+    } // NOLINT(clang-analyzer-cplusplus.NewDeleteLeaks)
+
+    String::String(const char* in)
+            : String(in, strlen(in)) {}
+
+    String::String(const char* in, size_type in_size) {
+        memcpy(allocate(in_size), in, in_size);
+    }
+
+    String::String(std::istream& in, size_type in_size) {
+        in.read(allocate(in_size), in_size);
+    }
+
+    String::String(const String& other) { copy(other); }
+
+    String& String::operator=(const String& other) {
+        if(this != &other) {
+            if(!isOnStack())
+                delete[] data.ptr;
+
+            copy(other);
+        }
+
+        return *this;
+    }
+
+    String& String::operator+=(const String& other) {
+        const size_type my_old_size = size();
+        const size_type other_size  = other.size();
+        const size_type total_size  = my_old_size + other_size;
+        if(isOnStack()) {
+            if(total_size < len) {
+                // append to the current stack space
+                memcpy(buf + my_old_size, other.c_str(), other_size + 1);
+                // NOLINTNEXTLINE(clang-analyzer-cplusplus.NewDeleteLeaks)
+                setLast(last - total_size);
+            } else {
+                // alloc new chunk
+                char* temp = new char[total_size + 1];
+                // copy current data to new location before writing in the union
+                memcpy(temp, buf, my_old_size); // skip the +1 ('\0') for speed
+                // update data in union
+                setOnHeap();
+                data.size     = total_size;
+                data.capacity = data.size + 1;
+                data.ptr      = temp;
+                // transfer the rest of the data
+                memcpy(data.ptr + my_old_size, other.c_str(), other_size + 1);
+            }
+        } else {
+            if(data.capacity > total_size) {
+                // append to the current heap block
+                data.size = total_size;
+                memcpy(data.ptr + my_old_size, other.c_str(), other_size + 1);
+            } else {
+                // resize
+                data.capacity *= 2;
+                if(data.capacity <= total_size)
+                    data.capacity = total_size + 1;
+                // alloc new chunk
+                char* temp = new char[data.capacity];
+                // copy current data to new location before releasing it
+                memcpy(temp, data.ptr, my_old_size); // skip the +1 ('\0') for speed
+                // release old chunk
+                delete[] data.ptr;
+                // update the rest of the union members
+                data.size = total_size;
+                data.ptr  = temp;
+                // transfer the rest of the data
+                memcpy(data.ptr + my_old_size, other.c_str(), other_size + 1);
+            }
+        }
+
+        return *this;
+    }
+
+    String::String(String&& other) noexcept {
+        memcpy(buf, other.buf, len);
+        other.buf[0] = '\0';
+        other.setLast();
+    }
+
+    String& String::operator=(String&& other) noexcept {
+        if(this != &other) {
+            if(!isOnStack())
+                delete[] data.ptr;
+            memcpy(buf, other.buf, len);
+            other.buf[0] = '\0';
+            other.setLast();
+        }
+        return *this;
+    }
+
+    char String::operator[](size_type i) const {
+        return const_cast<String*>(this)->operator[](i);
+    }
+
+    char& String::operator[](size_type i) {
+        if(isOnStack())
+            return reinterpret_cast<char*>(buf)[i];
+        return data.ptr[i];
+    }
+
+    DOCTEST_GCC_SUPPRESS_WARNING_WITH_PUSH("-Wmaybe-uninitialized")
+    String::size_type String::size() const {
+        if(isOnStack())
+            return last - (size_type(buf[last]) & 31); // using "last" would work only if "len" is 32
+        return data.size;
+    }
+    DOCTEST_GCC_SUPPRESS_WARNING_POP
+
+    String::size_type String::capacity() const {
+        if(isOnStack())
+            return len;
+        return data.capacity;
+    }
+
+    String String::substr(size_type pos, size_type cnt) && {
+        cnt = std::min(cnt, size() - pos);
+        char* cptr = c_str();
+        memmove(cptr, cptr + pos, cnt);
+        setSize(cnt);
+        return std::move(*this);
+    }
+
+    String String::substr(size_type pos, size_type cnt) const & {
+        cnt = std::min(cnt, size() - pos);
+        return String{ c_str() + pos, cnt };
+    }
+
+    String::size_type String::find(char ch, size_type pos) const {
+        const char* begin = c_str();
+        const char* end = begin + size();
+        const char* it = begin + pos;
+        for (; it < end && *it != ch; it++) { }
+        if (it < end) { return static_cast<size_type>(it - begin); }
+        else { return npos; }
+    }
+
+    String::size_type String::rfind(char ch, size_type pos) const {
+        const char* begin = c_str();
+        const char* it = begin + std::min(pos, size() - 1);
+        for (; it >= begin && *it != ch; it--) { }
+        if (it >= begin) { return static_cast<size_type>(it - begin); }
+        else { return npos; }
+    }
+
+    int String::compare(const char* other, bool no_case) const {
+        if(no_case)
+            return doctest::stricmp(c_str(), other);
+        return std::strcmp(c_str(), other);
+    }
+
+    int String::compare(const String& other, bool no_case) const {
+        return compare(other.c_str(), no_case);
+    }
+
+    String operator+(const String& lhs, const String& rhs) { return  String(lhs) += rhs; }
+
+    bool operator==(const String& lhs, const String& rhs) { return lhs.compare(rhs) == 0; }
+    bool operator!=(const String& lhs, const String& rhs) { return lhs.compare(rhs) != 0; }
+    bool operator< (const String& lhs, const String& rhs) { return lhs.compare(rhs) < 0; }
+    bool operator> (const String& lhs, const String& rhs) { return lhs.compare(rhs) > 0; }
+    bool operator<=(const String& lhs, const String& rhs) { return (lhs != rhs) ? lhs.compare(rhs) < 0 : true; }
+    bool operator>=(const String& lhs, const String& rhs) { return (lhs != rhs) ? lhs.compare(rhs) > 0 : true; }
+
+    std::ostream& operator<<(std::ostream& s, const String& in) { return s << in.c_str(); }
+
+namespace detail {
+
+    void filldata<const void*>::fill(std::ostream* stream, const void* in) {
+        filldata<const volatile void*>::fill(stream, in);
+    }
+
+    void filldata<const volatile void*>::fill(std::ostream* stream, const volatile void* in) {
+        if (in) { *stream << in; }
+        else { *stream << "nullptr"; }
+    }
+
+    template <typename T>
+    String toStreamLit(T t) {
+        std::ostream* os = tlssPush();
+        os->operator<<(t);
+        return tlssPop();
+    }
+} // namespace detail
+
+#ifdef DOCTEST_CONFIG_TREAT_CHAR_STAR_AS_STRING
+String toString(const char* in) { return String("\"") + (in ? in : "{null string}") + "\""; }
+#endif // DOCTEST_CONFIG_TREAT_CHAR_STAR_AS_STRING
+
+#if DOCTEST_MSVC >= DOCTEST_COMPILER(19, 20, 0)
+// see this issue on why this is needed: https://github.com/doctest/doctest/issues/183
+String toString(const std::string& in) { return in.c_str(); }
+#endif // VS 2019
+
+String toString(const String& in) { return in; }
+
+String toString(std::nullptr_t) { return "nullptr"; }
+
+String toString(bool in) { return in ? "true" : "false"; }
+
+String toString(float in) { return toStreamLit(in); }
+String toString(double in) { return toStreamLit(in); }
+String toString(double long in) { return toStreamLit(in); }
+
+String toString(char in) { return toStreamLit(static_cast<signed>(in)); }
+String toString(char signed in) { return toStreamLit(static_cast<signed>(in)); }
+String toString(char unsigned in) { return toStreamLit(static_cast<unsigned>(in)); }
+String toString(short in) { return toStreamLit(in); }
+String toString(short unsigned in) { return toStreamLit(in); }
+String toString(signed in) { return toStreamLit(in); }
+String toString(unsigned in) { return toStreamLit(in); }
+String toString(long in) { return toStreamLit(in); }
+String toString(long unsigned in) { return toStreamLit(in); }
+String toString(long long in) { return toStreamLit(in); }
+String toString(long long unsigned in) { return toStreamLit(in); }
+
+} // namespace doctest
 
 DOCTEST_CLANG_SUPPRESS_WARNING_POP
 DOCTEST_MSVC_SUPPRESS_WARNING_POP
