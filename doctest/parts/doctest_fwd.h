@@ -74,33 +74,11 @@ DOCTEST_MSVC_SUPPRESS_WARNING(4623) // default constructor was implicitly define
 #include <doctest/parts/public/assert/comparator.h>
 #include <doctest/parts/public/assert/result.h>
 #include <doctest/parts/public/assert/expression.h>
+#include <doctest/parts/public/color.h>
 
 namespace doctest {
 
 DOCTEST_INTERFACE extern bool is_running_in_test;
-
-namespace Color {
-    enum Enum
-    {
-        None = 0,
-        White,
-        Red,
-        Green,
-        Blue,
-        Cyan,
-        Yellow,
-        Grey,
-
-        Bright = 0x10,
-
-        BrightRed   = Bright | Red,
-        BrightGreen = Bright | Green,
-        LightGrey   = Bright | Grey,
-        BrightWhite = Bright | White
-    };
-
-    DOCTEST_INTERFACE std::ostream& operator<<(std::ostream& s, Color::Enum code);
-} // namespace Color
 
 DOCTEST_INTERFACE const char* skipPathFromFilename(const char* file);
 
