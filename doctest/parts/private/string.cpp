@@ -1,6 +1,40 @@
 #include "doctest/parts/private/prelude.h"
 
 namespace doctest {
+namespace detail {
+
+    DOCTEST_THREAD_LOCAL class
+    {
+        std::vector<std::streampos> stack;
+        std::stringstream           ss;
+
+    public:
+        std::ostream* push() {
+            stack.push_back(ss.tellp());
+            return &ss;
+        }
+
+        String pop() {
+            if (stack.empty())
+                DOCTEST_INTERNAL_ERROR("TLSS was empty when trying to pop!");
+
+            std::streampos pos = stack.back();
+            stack.pop_back();
+            unsigned sz = static_cast<unsigned>(ss.tellp() - pos);
+            ss.rdbuf()->pubseekpos(pos, std::ios::in | std::ios::out);
+            return String(ss, sz);
+        }
+    } g_oss;
+
+    std::ostream* tlssPush() {
+        return g_oss.push();
+    }
+
+    String tlssPop() {
+        return g_oss.pop();
+    }
+
+} // namespace detail
 
     // case insensitive strcmp
     static int stricmp(const char* a, const char* b) {
