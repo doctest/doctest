@@ -1,5 +1,6 @@
 #include "doctest/parts/private/prelude.h"
 #include "doctest/parts/private/xml.h"
+#include "doctest/parts/private/reporters/common.h"
 
 namespace doctest {
 
