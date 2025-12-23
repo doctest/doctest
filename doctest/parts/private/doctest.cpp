@@ -454,13 +454,6 @@ namespace {
 namespace {
     using namespace detail;
 
-#ifdef DOCTEST_PLATFORM_WINDOWS
-#define DOCTEST_OUTPUT_DEBUG_STRING(text) ::OutputDebugStringA(text)
-#else
-    // TODO: integration with XCode and other IDEs
-#define DOCTEST_OUTPUT_DEBUG_STRING(text)
-#endif // Platform
-
     void addAssert(assertType::Enum at) {
         if((at & assertType::is_warn) == 0) //!OCLINT bitwise operator in conditional
             g_cs->numAssertsCurrentTest_atomic++;
@@ -571,46 +564,11 @@ namespace detail {
 #include "doctest/parts/private/reporters/xml.h"
 #include "doctest/parts/private/reporters/junit.h"
 #include "doctest/parts/private/reporters/console.h"
+#include "doctest/parts/private/reporters/debug_output_window.h"
 
 namespace doctest {
 namespace {
     using namespace detail;
-
-#ifdef DOCTEST_PLATFORM_WINDOWS
-    struct DebugOutputWindowReporter : public ConsoleReporter
-    {
-        DOCTEST_THREAD_LOCAL static std::ostringstream oss;
-
-        DebugOutputWindowReporter(const ContextOptions& co)
-                : ConsoleReporter(co, oss) {}
-
-#define DOCTEST_DEBUG_OUTPUT_REPORTER_OVERRIDE(func, type, arg)                                    \
-    void func(type arg) override {                                                                 \
-        bool with_col = g_no_colors;                                                               \
-        g_no_colors   = false;                                                                     \
-        ConsoleReporter::func(arg);                                                                \
-        if(oss.tellp() != std::streampos{}) {                                                      \
-            DOCTEST_OUTPUT_DEBUG_STRING(oss.str().c_str());                                        \
-            oss.str("");                                                                           \
-        }                                                                                          \
-        g_no_colors = with_col;                                                                    \
-    }
-
-        DOCTEST_DEBUG_OUTPUT_REPORTER_OVERRIDE(test_run_start, DOCTEST_EMPTY, DOCTEST_EMPTY)
-        DOCTEST_DEBUG_OUTPUT_REPORTER_OVERRIDE(test_run_end, const TestRunStats&, in)
-        DOCTEST_DEBUG_OUTPUT_REPORTER_OVERRIDE(test_case_start, const TestCaseData&, in)
-        DOCTEST_DEBUG_OUTPUT_REPORTER_OVERRIDE(test_case_reenter, const TestCaseData&, in)
-        DOCTEST_DEBUG_OUTPUT_REPORTER_OVERRIDE(test_case_end, const CurrentTestCaseStats&, in)
-        DOCTEST_DEBUG_OUTPUT_REPORTER_OVERRIDE(test_case_exception, const TestCaseException&, in)
-        DOCTEST_DEBUG_OUTPUT_REPORTER_OVERRIDE(subcase_start, const SubcaseSignature&, in)
-        DOCTEST_DEBUG_OUTPUT_REPORTER_OVERRIDE(subcase_end, DOCTEST_EMPTY, DOCTEST_EMPTY)
-        DOCTEST_DEBUG_OUTPUT_REPORTER_OVERRIDE(log_assert, const AssertData&, in)
-        DOCTEST_DEBUG_OUTPUT_REPORTER_OVERRIDE(log_message, const MessageData&, in)
-        DOCTEST_DEBUG_OUTPUT_REPORTER_OVERRIDE(test_case_skipped, const TestCaseData&, in)
-    };
-
-    DOCTEST_THREAD_LOCAL std::ostringstream DebugOutputWindowReporter::oss;
-#endif // DOCTEST_PLATFORM_WINDOWS
 
     // the implementation of parseOption()
     bool parseOptionImpl(int argc, const char* const* argv, const char* pattern, String* value) {
