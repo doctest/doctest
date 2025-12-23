@@ -4121,12 +4121,6 @@ namespace detail {
 #define DOCTEST_CONFIG_OPTIONS_FILE_PREFIX_SEPARATOR ':'
 #endif
 
-#ifdef DOCTEST_CONFIG_NO_UNPREFIXED_OPTIONS
-#define DOCTEST_OPTIONS_PREFIX_DISPLAY DOCTEST_CONFIG_OPTIONS_PREFIX
-#else
-#define DOCTEST_OPTIONS_PREFIX_DISPLAY ""
-#endif
-
 
 #ifndef DOCTEST_CONFIG_DISABLE
 
@@ -4843,9 +4837,9 @@ namespace detail {
 
 #endif // DOCTEST_CONFIG_DISABLE
 
+#ifndef DOCTEST_CONFIG_DISABLE
+
 namespace doctest {
-namespace {
-    using namespace detail;
 
     struct XmlReporter : public IReporter
     {
@@ -5083,6 +5077,12 @@ namespace {
     };
 
     DOCTEST_REGISTER_REPORTER("xml", 0, XmlReporter);
+
+} // namespace doctest
+
+#endif // DOCTEST_CONFIG_DISABLE
+
+namespace doctest {
 
     // TODO:
     // - log_message()
@@ -5324,6 +5324,12 @@ namespace {
     };
 
     DOCTEST_REGISTER_REPORTER("junit", 0, JUnitReporter);
+
+} // namespace doctest
+
+namespace doctest {
+namespace {
+    using namespace detail;
 
     struct Whitespace
     {
