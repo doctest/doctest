@@ -21,6 +21,7 @@
 #include "doctest/parts/private/test_case.h"
 #include "doctest/parts/private/exception_translator.h"
 #include "doctest/parts/private/context_scope.h"
+#include "doctest/parts/private/reporter.h"
 
 namespace doctest {
 
@@ -83,38 +84,10 @@ void Context::setAsDefaultForAssertsOutOfTestCases() {}
 void Context::setAssertHandler(detail::assert_handler) {}
 void Context::setCout(std::ostream*) {}
 int  Context::run() { return 0; }
-
-int                         IReporter::get_num_active_contexts() { return 0; }
-const IContextScope* const* IReporter::get_active_contexts() { return nullptr; }
-int                         IReporter::get_num_stringified_contexts() { return 0; }
-const String*               IReporter::get_stringified_contexts() { return nullptr; }
-
-int registerReporter(const char*, int, IReporter*) { return 0; }
-
 } // namespace doctest
 #else // DOCTEST_CONFIG_DISABLE
 
 namespace doctest {
-namespace {
-    // the int (priority) is part of the key for automatic sorting - sadly one can register a
-    // reporter with a duplicate name and a different priority but hopefully that won't happen often :|
-    using reporterMap = std::map<std::pair<int, String>, reporterCreatorFunc>;
-
-    reporterMap& getReporters() {
-        static reporterMap data;
-        return data;
-    }
-    reporterMap& getListeners() {
-        static reporterMap data;
-        return data;
-    }
-} // namespace
-namespace detail {
-#define DOCTEST_ITERATE_THROUGH_REPORTERS(function, ...)                                           \
-    for(auto& curr_rep : g_cs->reporters_currently_used)                                           \
-    curr_rep->function(__VA_ARGS__)
-} // namespace detail
-
 namespace {
     using namespace detail;
     // matching of a string against a wildcard mask (case sensitivity configurable) taken from
@@ -2632,28 +2605,6 @@ DOCTEST_MSVC_SUPPRESS_WARNING_POP
 
     return cleanup_and_return();
 }
-
-DOCTEST_DEFINE_INTERFACE(IReporter)
-
-int IReporter::get_num_active_contexts() { return detail::g_infoContexts.size(); }
-const IContextScope* const* IReporter::get_active_contexts() {
-    return get_num_active_contexts() ? &detail::g_infoContexts[0] : nullptr;
-}
-
-int IReporter::get_num_stringified_contexts() { return detail::g_cs->stringifiedContexts.size(); }
-const String* IReporter::get_stringified_contexts() {
-    return get_num_stringified_contexts() ? &detail::g_cs->stringifiedContexts[0] : nullptr;
-}
-
-namespace detail {
-    void registerReporterImpl(const char* name, int priority, reporterCreatorFunc c, bool isReporter) {
-        if(isReporter)
-            getReporters().insert(reporterMap::value_type(reporterMap::key_type(priority, name), c));
-        else
-            getListeners().insert(reporterMap::value_type(reporterMap::key_type(priority, name), c));
-    }
-} // namespace detail
-
 } // namespace doctest
 
 #endif // DOCTEST_CONFIG_DISABLE
