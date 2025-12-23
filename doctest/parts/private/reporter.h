@@ -7,7 +7,7 @@ namespace doctest {
 namespace {
     // the int (priority) is part of the key for automatic sorting - sadly one can register a
     // reporter with a duplicate name and a different priority but hopefully that won't happen often :|
-    using reporterMap = std::map<std::pair<int, String>, reporterCreatorFunc>;
+    using reporterMap = std::map<std::pair<int, String>, detail::reporterCreatorFunc>;
 
     reporterMap& getReporters() {
         static reporterMap data;
