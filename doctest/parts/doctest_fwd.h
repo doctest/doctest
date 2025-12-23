@@ -85,14 +85,12 @@ DOCTEST_MSVC_SUPPRESS_WARNING(4623) // default constructor was implicitly define
 
 namespace doctest {
 
-DOCTEST_INTERFACE extern bool is_running_in_test;
-
 DOCTEST_INTERFACE const char* skipPathFromFilename(const char* file);
-
 
 } // namespace doctest
 
 #include <doctest/parts/public/exceptions.h>
+#include <doctest/parts/public/context.h>
 #include <doctest/parts/public/assert/handler.h>
 #include <doctest/parts/public/reporter.h>
 
@@ -103,51 +101,7 @@ namespace detail {
     int instantiationHelper(const T&) { return 0; }
 
 } // namespace detail
-} // namespace doctest
-
-namespace doctest {
 #endif // DOCTEST_CONFIG_DISABLE
-
-namespace detail {
-    using assert_handler = void (*)(const AssertData&);
-    struct ContextState;
-} // namespace detail
-
-class DOCTEST_INTERFACE Context
-{
-    detail::ContextState* p;
-
-    void parseArgs(int argc, const char* const* argv, bool withDefaults = false);
-
-public:
-    explicit Context(int argc = 0, const char* const* argv = nullptr);
-
-    Context(const Context&) = delete;
-    Context(Context&&) = delete;
-
-    Context& operator=(const Context&) = delete;
-    Context& operator=(Context&&) = delete;
-
-    ~Context(); // NOLINT(performance-trivially-destructible)
-
-    void applyCommandLine(int argc, const char* const* argv);
-
-    void addFilter(const char* filter, const char* value);
-    void clearFilters();
-    void setOption(const char* option, bool value);
-    void setOption(const char* option, int value);
-    void setOption(const char* option, const char* value);
-
-    bool shouldExit();
-
-    void setAsDefaultForAssertsOutOfTestCases();
-
-    void setAssertHandler(detail::assert_handler ah);
-
-    void setCout(std::ostream* out);
-
-    int run();
-};
 } // namespace doctest
 
 #ifdef DOCTEST_CONFIG_ASSERTS_RETURN_VALUES

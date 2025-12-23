@@ -1,5 +1,9 @@
 #include "doctest/parts/private/prelude.h"
 
+#ifndef DOCTEST_CONFIG_OPTIONS_PREFIX
+#define DOCTEST_CONFIG_OPTIONS_PREFIX "dt-"
+#endif
+
 #ifndef DOCTEST_CONFIG_DISABLE
 
 namespace doctest {
