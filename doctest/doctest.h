@@ -2271,16 +2271,15 @@ namespace detail {
         return 0;
     }
 } // namespace doctest
-
-namespace doctest {
 #ifndef DOCTEST_CONFIG_DISABLE
+namespace doctest {
 namespace detail {
     template<typename T>
     int instantiationHelper(const T&) { return 0; }
 
 } // namespace detail
-#endif // DOCTEST_CONFIG_DISABLE
 } // namespace doctest
+#endif // DOCTEST_CONFIG_DISABLE
 
 #ifdef DOCTEST_CONFIG_ASSERTS_RETURN_VALUES
 #define DOCTEST_FUNC_EMPTY [] { return false; }()
