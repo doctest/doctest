@@ -20,6 +20,10 @@ env:
   CTEST_OUTPUT_ON_FAILURE: ON
   CTEST_PARALLEL_LEVEL: 2
 
+concurrency:
+  group: ${{ github.workflow }}|${{ github.ref_name }}|sanitizers
+  cancel-in-progress: true
+
 jobs:
   sanitizers:
     runs-on: ubuntu-22.04
