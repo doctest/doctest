@@ -2,6 +2,9 @@
 // == VERSION ======================================================================================
 // =================================================================================================
 
+#ifndef DOCTEST_PARTS_PUBLIC_VERSION
+#define DOCTEST_PARTS_PUBLIC_VERSION
+
 #define DOCTEST_VERSION_MAJOR 2
 #define DOCTEST_VERSION_MINOR 4
 #define DOCTEST_VERSION_PATCH 12
@@ -17,3 +20,5 @@
 
 #define DOCTEST_VERSION                                                                            \
     (DOCTEST_VERSION_MAJOR * 10000 + DOCTEST_VERSION_MINOR * 100 + DOCTEST_VERSION_PATCH)
+
+#endif // DOCTEST_PARTS_PUBLIC_VERSION

@@ -1,3 +1,11 @@
+#ifndef DOCTEST_PARTS_PUBLIC_ASSERT_DATA
+#define DOCTEST_PARTS_PUBLIC_ASSERT_DATA
+
+#include "doctest/parts/public/assert/type.h"
+#include "doctest/parts/public/matchers/contains.h"
+
+DOCTEST_SUPPRESS_PUBLIC_WARNINGS_PUSH
+
 namespace doctest {
 
     struct DOCTEST_INTERFACE TestCaseData;
@@ -44,3 +52,7 @@ namespace doctest {
     };
 
 } // namespace doctest
+
+DOCTEST_SUPPRESS_PUBLIC_WARNINGS_POP
+
+#endif // DOCTEST_PARTS_PUBLIC_ASSERT_DATA

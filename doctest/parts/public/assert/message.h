@@ -1,3 +1,11 @@
+#ifndef DOCTEST_PARTS_PUBLIC_ASSERT_MESSAGE
+#define DOCTEST_PARTS_PUBLIC_ASSERT_MESSAGE
+
+#include "doctest/parts/public/assert/type.h"
+#include "doctest/parts/public/string.h"
+
+DOCTEST_SUPPRESS_PUBLIC_WARNINGS_PUSH
+
 namespace doctest {
 
     struct DOCTEST_INTERFACE MessageData
@@ -54,3 +62,7 @@ DOCTEST_MSVC_SUPPRESS_WARNING_POP
 #endif // DOCTEST_CONFIG_DISABLE
 
 } // namespace doctest
+
+DOCTEST_SUPPRESS_PUBLIC_WARNINGS_POP
+
+#endif // DOCTEST_PARTS_PUBLIC_ASSERT_MESSAGE

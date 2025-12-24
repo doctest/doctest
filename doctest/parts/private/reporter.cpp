@@ -3,6 +3,8 @@
 #include "doctest/parts/private/context_state.h"
 #include "doctest/parts/private/context_scope.h"
 
+DOCTEST_SUPPRESS_PRIVATE_WARNINGS_PUSH
+
 namespace doctest {
 #ifdef DOCTEST_CONFIG_DISABLE
 
@@ -38,3 +40,5 @@ namespace doctest {
 
 #endif // DOCTEST_CONFIG_DISABLE
 } // namespace doctest
+
+DOCTEST_SUPPRESS_PRIVATE_WARNINGS_POP

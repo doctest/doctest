@@ -46,6 +46,9 @@
 // == VERSION ======================================================================================
 // =================================================================================================
 
+#ifndef DOCTEST_PARTS_PUBLIC_VERSION
+#define DOCTEST_PARTS_PUBLIC_VERSION
+
 #define DOCTEST_VERSION_MAJOR 2
 #define DOCTEST_VERSION_MINOR 4
 #define DOCTEST_VERSION_PATCH 12
@@ -61,9 +64,15 @@
 
 #define DOCTEST_VERSION                                                                            \
     (DOCTEST_VERSION_MAJOR * 10000 + DOCTEST_VERSION_MINOR * 100 + DOCTEST_VERSION_PATCH)
+
+#endif // DOCTEST_PARTS_PUBLIC_VERSION
 // =================================================================================================
 // == COMPILER VERSION =============================================================================
 // =================================================================================================
+
+#ifndef DOCTEST_PARTS_PUBLIC_COMPILER
+#define DOCTEST_PARTS_PUBLIC_COMPILER
+
 
 // ideas for the version stuff are taken from here: https://github.com/cxxstuff/cxx_detect
 
@@ -106,9 +115,15 @@
 #ifndef DOCTEST_ICC
 #define DOCTEST_ICC 0
 #endif // DOCTEST_ICC
+
+#endif // DOCTEST_PARTS_PUBLIC_COMPILER
 // =================================================================================================
 // == COMPILER WARNINGS HELPERS ====================================================================
 // =================================================================================================
+
+#ifndef DOCTEST_PARTS_PUBLIC_WARNINGS
+#define DOCTEST_PARTS_PUBLIC_WARNINGS
+
 
 #if DOCTEST_CLANG && !DOCTEST_ICC
 #define DOCTEST_PRAGMA_TO_STR(x) _Pragma(#x)
@@ -211,6 +226,62 @@
     DOCTEST_GCC_SUPPRESS_WARNING_POP                                                               \
     DOCTEST_MSVC_SUPPRESS_WARNING_POP
 
+#define DOCTEST_SUPPRESS_PUBLIC_WARNINGS_PUSH                                                      \
+    DOCTEST_SUPPRESS_COMMON_WARNINGS_PUSH                                                          \
+                                                                                                   \
+    DOCTEST_CLANG_SUPPRESS_WARNING("-Wnon-virtual-dtor")                                           \
+    DOCTEST_CLANG_SUPPRESS_WARNING("-Wdeprecated")                                                 \
+                                                                                                   \
+    DOCTEST_GCC_SUPPRESS_WARNING("-Wctor-dtor-privacy")                                            \
+    DOCTEST_GCC_SUPPRESS_WARNING("-Wnon-virtual-dtor")                                             \
+    DOCTEST_GCC_SUPPRESS_WARNING("-Wsign-promo")                                                   \
+                                                                                                   \
+    DOCTEST_MSVC_SUPPRESS_WARNING(4623) /* default constructor was implicitly deleted */
+
+#define DOCTEST_SUPPRESS_PUBLIC_WARNINGS_POP DOCTEST_SUPPRESS_COMMON_WARNINGS_POP
+
+#define DOCTEST_SUPPRESS_PRIVATE_WARNINGS_PUSH                                                     \
+    DOCTEST_SUPPRESS_COMMON_WARNINGS_PUSH                                                          \
+                                                                                                   \
+    DOCTEST_CLANG_SUPPRESS_WARNING("-Wglobal-constructors")                                        \
+    DOCTEST_CLANG_SUPPRESS_WARNING("-Wexit-time-destructors")                                      \
+    DOCTEST_CLANG_SUPPRESS_WARNING("-Wsign-conversion")                                            \
+    DOCTEST_CLANG_SUPPRESS_WARNING("-Wshorten-64-to-32")                                           \
+    DOCTEST_CLANG_SUPPRESS_WARNING("-Wmissing-variable-declarations")                              \
+    DOCTEST_CLANG_SUPPRESS_WARNING("-Wswitch")                                                     \
+    DOCTEST_CLANG_SUPPRESS_WARNING("-Wswitch-enum")                                                \
+    DOCTEST_CLANG_SUPPRESS_WARNING("-Wcovered-switch-default")                                     \
+    DOCTEST_CLANG_SUPPRESS_WARNING("-Wmissing-noreturn")                                           \
+    DOCTEST_CLANG_SUPPRESS_WARNING("-Wdisabled-macro-expansion")                                   \
+    DOCTEST_CLANG_SUPPRESS_WARNING("-Wmissing-braces")                                             \
+    DOCTEST_CLANG_SUPPRESS_WARNING("-Wmissing-field-initializers")                                 \
+    DOCTEST_CLANG_SUPPRESS_WARNING("-Wunused-member-function")                                     \
+    DOCTEST_CLANG_SUPPRESS_WARNING("-Wnonportable-system-include-path")                            \
+                                                                                                   \
+    DOCTEST_GCC_SUPPRESS_WARNING("-Wconversion")                                                   \
+    DOCTEST_GCC_SUPPRESS_WARNING("-Wsign-conversion")                                              \
+    DOCTEST_GCC_SUPPRESS_WARNING("-Wmissing-field-initializers")                                   \
+    DOCTEST_GCC_SUPPRESS_WARNING("-Wmissing-braces")                                               \
+    DOCTEST_GCC_SUPPRESS_WARNING("-Wswitch")                                                       \
+    DOCTEST_GCC_SUPPRESS_WARNING("-Wswitch-enum")                                                  \
+    DOCTEST_GCC_SUPPRESS_WARNING("-Wswitch-default")                                               \
+    DOCTEST_GCC_SUPPRESS_WARNING("-Wunsafe-loop-optimizations")                                    \
+    DOCTEST_GCC_SUPPRESS_WARNING("-Wold-style-cast")                                               \
+    DOCTEST_GCC_SUPPRESS_WARNING("-Wunused-function")                                              \
+    DOCTEST_GCC_SUPPRESS_WARNING("-Wmultiple-inheritance")                                         \
+    DOCTEST_GCC_SUPPRESS_WARNING("-Wsuggest-attribute")                                            \
+                                                                                                   \
+    DOCTEST_MSVC_SUPPRESS_WARNING(4267) /* conversion from 'x' to 'y', possible loss of data */    \
+    DOCTEST_MSVC_SUPPRESS_WARNING(4530) /* exception handler, but unwind semantics not enabled */  \
+    DOCTEST_MSVC_SUPPRESS_WARNING(4577) /* 'noexcept' with no exception handling mode specified */ \
+    DOCTEST_MSVC_SUPPRESS_WARNING(4774) /* format string in argument is not a string literal */    \
+    DOCTEST_MSVC_SUPPRESS_WARNING(4365) /* signed/unsigned mismatch */                             \
+    DOCTEST_MSVC_SUPPRESS_WARNING(5039) /* pointer to pot. throwing function passed to extern C */ \
+    DOCTEST_MSVC_SUPPRESS_WARNING(4800) /* forcing value to bool (performance warning) */          \
+    DOCTEST_MSVC_SUPPRESS_WARNING(5245) /* unreferenced function with internal linkage removed */
+
+#define DOCTEST_SUPPRESS_PRIVATE_WARNINGS_POP DOCTEST_SUPPRESS_COMMON_WARNINGS_POP
+
 #define DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_BEGIN                                 \
     DOCTEST_MSVC_SUPPRESS_WARNING_PUSH                                                             \
     DOCTEST_MSVC_SUPPRESS_WARNING(4548) /* before comma no effect; expected side - effect */       \
@@ -234,23 +305,17 @@
 
 #define DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_END DOCTEST_MSVC_SUPPRESS_WARNING_POP
 
-DOCTEST_SUPPRESS_COMMON_WARNINGS_PUSH
+#endif // DOCTEST_PARTS_PUBLIC_WARNINGS
 
-DOCTEST_CLANG_SUPPRESS_WARNING_PUSH
-DOCTEST_CLANG_SUPPRESS_WARNING("-Wnon-virtual-dtor")
-DOCTEST_CLANG_SUPPRESS_WARNING("-Wdeprecated")
-
-DOCTEST_GCC_SUPPRESS_WARNING_PUSH
-DOCTEST_GCC_SUPPRESS_WARNING("-Wctor-dtor-privacy")
-DOCTEST_GCC_SUPPRESS_WARNING("-Wnon-virtual-dtor")
-DOCTEST_GCC_SUPPRESS_WARNING("-Wsign-promo")
-
-DOCTEST_MSVC_SUPPRESS_WARNING_PUSH
-DOCTEST_MSVC_SUPPRESS_WARNING(4623) // default constructor was implicitly defined as deleted
+DOCTEST_SUPPRESS_PUBLIC_WARNINGS_PUSH
 
 // =================================================================================================
 // == FEATURE DETECTION ============================================================================
 // =================================================================================================
+
+#ifndef DOCTEST_PARTS_PUBLIC_CONFIG
+#define DOCTEST_PARTS_PUBLIC_CONFIG
+
 
 // general compiler feature support table: https://en.cppreference.com/w/cpp/compiler_support
 // MSVC C++11 feature support table: https://msdn.microsoft.com/en-us/library/hh567368.aspx
@@ -432,9 +497,21 @@ DOCTEST_MSVC_SUPPRESS_WARNING(4623) // default constructor was implicitly define
 #endif // DOCTEST_CONFIG_INCLUDE_TYPE_TRAITS
 #endif // DOCTEST_CONFIG_USE_STD_HEADERS
 
+#endif // DOCTEST_PARTS_PUBLIC_CONFIG
+
 // =================================================================================================
 // == FEATURE DETECTION END ========================================================================
 // =================================================================================================
+#ifndef DOCTEST_PARTS_PUBLIC_UTILITY
+#define DOCTEST_PARTS_PUBLIC_UTILITY
+
+
+DOCTEST_SUPPRESS_PUBLIC_WARNINGS_PUSH
+
+DOCTEST_CLANG_SUPPRESS_WARNING_PUSH
+DOCTEST_CLANG_SUPPRESS_WARNING("-Wunused-function")
+DOCTEST_CLANG_SUPPRESS_WARNING("-Wunused-macros")
+
 #define DOCTEST_DECLARE_INTERFACE(name)                                                            \
     virtual ~name();                                                                               \
     name() = default;                                                                              \
@@ -469,6 +546,16 @@ namespace doctest { namespace detail {
     DOCTEST_CLANG_SUPPRESS_WARNING_WITH_PUSH("-Wglobal-constructors")                                \
     static const int var = doctest::detail::consume(&var, __VA_ARGS__);                              \
     DOCTEST_CLANG_SUPPRESS_WARNING_POP
+
+DOCTEST_CLANG_SUPPRESS_WARNING_POP
+
+DOCTEST_SUPPRESS_PUBLIC_WARNINGS_POP
+
+#endif // DOCTEST_PARTS_PUBLIC_UTILITY
+
+#ifndef DOCTEST_PARTS_PUBLIC_PLATFORM
+#define DOCTEST_PARTS_PUBLIC_PLATFORM
+
 // not using __APPLE__ because... this is how Catch does it
 #ifdef __MAC_OS_X_VERSION_MIN_REQUIRED
 #define DOCTEST_PLATFORM_MAC
@@ -481,6 +568,12 @@ namespace doctest { namespace detail {
 #else // DOCTEST_PLATFORM
 #define DOCTEST_PLATFORM_LINUX
 #endif // DOCTEST_PLATFORM
+
+#endif // DOCTEST_PARTS_PUBLIC_PLATFORM
+#ifndef DOCTEST_PARTS_PUBLIC_DEBUGGER
+#define DOCTEST_PARTS_PUBLIC_DEBUGGER
+
+
 #ifndef DOCTEST_BREAK_INTO_DEBUGGER
 // should probably take a look at https://github.com/scottt/debugbreak
 #ifdef DOCTEST_PLATFORM_LINUX
@@ -521,6 +614,14 @@ namespace detail {
 } // doctest
 
 #endif
+
+#endif // DOCTEST_PARTS_PUBLIC_DEBUGGER
+#ifndef DOCTEST_PARTS_PUBLIC_STD_FWD
+#define DOCTEST_PARTS_PUBLIC_STD_FWD
+
+
+DOCTEST_SUPPRESS_PUBLIC_WARNINGS_PUSH
+
 #ifdef DOCTEST_CONFIG_USE_STD_HEADERS
 DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_BEGIN
 #include <cstddef>
@@ -567,6 +668,16 @@ DOCTEST_MSVC_SUPPRESS_WARNING_POP
 namespace doctest {
   using std::size_t;
 }
+
+DOCTEST_SUPPRESS_PUBLIC_WARNINGS_POP
+
+#endif // DOCTEST_PARTS_PUBLIC_STD_FWD
+#ifndef DOCTEST_PARTS_PUBLIC_STD_TYPE_TRAITS
+#define DOCTEST_PARTS_PUBLIC_STD_TYPE_TRAITS
+
+
+DOCTEST_SUPPRESS_PUBLIC_WARNINGS_PUSH
+
 #ifdef DOCTEST_CONFIG_INCLUDE_TYPE_TRAITS
 #include <type_traits>
 #endif // DOCTEST_CONFIG_INCLUDE_TYPE_TRAITS
@@ -612,6 +723,16 @@ namespace types {
 } // namespace types
 } // namespace detail
 } // namespace doctest
+
+DOCTEST_SUPPRESS_PUBLIC_WARNINGS_POP
+
+#endif // DOCTEST_PARTS_PUBLIC_STD_TYPE_TRAITS
+#ifndef DOCTEST_PARTS_PUBLIC_STD_UTILITY
+#define DOCTEST_PARTS_PUBLIC_STD_UTILITY
+
+
+DOCTEST_SUPPRESS_PUBLIC_WARNINGS_PUSH
+
 namespace doctest {
 namespace detail {
 
@@ -634,6 +755,16 @@ namespace detail {
 
 } // namespace detail
 } // namespace doctest
+
+DOCTEST_SUPPRESS_PUBLIC_WARNINGS_POP
+
+#endif // DOCTEST_PARTS_PUBLIC_STD_UTILITY
+#ifndef DOCTEST_PARTS_PUBLIC_STRING
+#define DOCTEST_PARTS_PUBLIC_STRING
+
+
+DOCTEST_SUPPRESS_PUBLIC_WARNINGS_PUSH
+
 namespace doctest {
 #ifndef DOCTEST_CONFIG_STRING_SIZE_TYPE
 #define DOCTEST_CONFIG_STRING_SIZE_TYPE unsigned
@@ -978,6 +1109,16 @@ namespace detail {
 } //namespace detail
 
 } // namespace doctest
+
+DOCTEST_SUPPRESS_PUBLIC_WARNINGS_POP
+
+#endif // DOCTEST_PARTS_PUBLIC_STRING
+#ifndef DOCTEST_PARTS_PUBLIC_MATCHERS_CONTAINS
+#define DOCTEST_PARTS_PUBLIC_MATCHERS_CONTAINS
+
+
+DOCTEST_SUPPRESS_PUBLIC_WARNINGS_PUSH
+
 namespace doctest {
 
 class DOCTEST_INTERFACE Contains {
@@ -997,6 +1138,16 @@ DOCTEST_INTERFACE bool operator!=(const String& lhs, const Contains& rhs);
 DOCTEST_INTERFACE bool operator!=(const Contains& lhs, const String& rhs);
 
 } // namespace doctest
+
+DOCTEST_SUPPRESS_PUBLIC_WARNINGS_POP
+
+#endif // DOCTEST_PARTS_PUBLIC_MATCHERS_CONTAINS
+#ifndef DOCTEST_PARTS_PUBLIC_MATCHERS_APPROX
+#define DOCTEST_PARTS_PUBLIC_MATCHERS_APPROX
+
+
+DOCTEST_SUPPRESS_PUBLIC_WARNINGS_PUSH
+
 namespace doctest {
 
 struct DOCTEST_INTERFACE Approx
@@ -1079,6 +1230,16 @@ struct DOCTEST_INTERFACE Approx
 DOCTEST_INTERFACE String toString(const Approx& in);
 
 } // namespace doctest
+
+DOCTEST_SUPPRESS_PUBLIC_WARNINGS_POP
+
+#endif // DOCTEST_PARTS_PUBLIC_MATCHERS_APPROX
+#ifndef DOCTEST_PARTS_PUBLIC_MATCHERS_IS_NAN
+#define DOCTEST_PARTS_PUBLIC_MATCHERS_IS_NAN
+
+
+DOCTEST_SUPPRESS_PUBLIC_WARNINGS_PUSH
+
 namespace doctest {
 
 template <typename F>
@@ -1101,6 +1262,16 @@ DOCTEST_INTERFACE String toString(IsNaN<double> in);
 DOCTEST_INTERFACE String toString(IsNaN<double long> in);
 
 } // namespace doctest
+
+DOCTEST_SUPPRESS_PUBLIC_WARNINGS_POP
+
+#endif // DOCTEST_PARTS_PUBLIC_MATCHERS_IS_NAN
+#ifndef DOCTEST_PARTS_PUBLIC_CONTEXT_OPTIONS
+#define DOCTEST_PARTS_PUBLIC_CONTEXT_OPTIONS
+
+
+DOCTEST_SUPPRESS_PUBLIC_WARNINGS_PUSH
+
 namespace doctest {
 namespace detail {
     struct DOCTEST_INTERFACE TestCase;
@@ -1158,6 +1329,16 @@ namespace detail {
     DOCTEST_INTERFACE const ContextOptions* getContextOptions();
 
 } // namespace doctest
+
+DOCTEST_SUPPRESS_PUBLIC_WARNINGS_POP
+
+#endif // DOCTEST_PARTS_PUBLIC_CONTEXT_OPTIONS
+#ifndef DOCTEST_PARTS_PUBLIC_ASSERT_TYPE
+#define DOCTEST_PARTS_PUBLIC_ASSERT_TYPE
+
+
+DOCTEST_SUPPRESS_PUBLIC_WARNINGS_PUSH
+
 namespace doctest {
 namespace assertType {
     enum Enum
@@ -1254,6 +1435,16 @@ DOCTEST_INTERFACE const char* assertString(assertType::Enum at);
 DOCTEST_INTERFACE const char* failureString(assertType::Enum at);
 
 }
+
+DOCTEST_SUPPRESS_PUBLIC_WARNINGS_POP
+
+#endif // DOCTEST_PARTS_PUBLIC_ASSERT_TYPE
+#ifndef DOCTEST_PARTS_PUBLIC_ASSERT_DATA
+#define DOCTEST_PARTS_PUBLIC_ASSERT_DATA
+
+
+DOCTEST_SUPPRESS_PUBLIC_WARNINGS_PUSH
+
 namespace doctest {
 
     struct DOCTEST_INTERFACE TestCaseData;
@@ -1300,6 +1491,16 @@ namespace doctest {
     };
 
 } // namespace doctest
+
+DOCTEST_SUPPRESS_PUBLIC_WARNINGS_POP
+
+#endif // DOCTEST_PARTS_PUBLIC_ASSERT_DATA
+#ifndef DOCTEST_PARTS_PUBLIC_ASSERT_COMPARATOR
+#define DOCTEST_PARTS_PUBLIC_ASSERT_COMPARATOR
+
+
+DOCTEST_SUPPRESS_PUBLIC_WARNINGS_PUSH
+
 #ifndef DOCTEST_CONFIG_DISABLE
 
 namespace doctest {
@@ -1393,6 +1594,16 @@ namespace detail  {
 } // namespace doctest
 
 #endif // DOCTEST_CONFIG_DISABLE
+
+DOCTEST_SUPPRESS_PUBLIC_WARNINGS_POP
+
+#endif // DOCTEST_PARTS_PUBLIC_ASSERT_COMPARATOR
+#ifndef DOCTEST_PARTS_PUBLIC_ASSERT_RESULT
+#define DOCTEST_PARTS_PUBLIC_ASSERT_RESULT
+
+
+DOCTEST_SUPPRESS_PUBLIC_WARNINGS_PUSH
+
 #ifndef DOCTEST_CONFIG_DISABLE
 
 namespace doctest {
@@ -1487,6 +1698,16 @@ namespace detail {
 } // namespace doctest
 
 #endif // DOCTEST_CONFIG_DISABLE
+
+DOCTEST_SUPPRESS_PUBLIC_WARNINGS_POP
+
+#endif // DOCTEST_PARTS_PUBLIC_ASSERT_RESULT
+#ifndef DOCTEST_PARTS_PUBLIC_ASSERT_EXPRESSION
+#define DOCTEST_PARTS_PUBLIC_ASSERT_EXPRESSION
+
+
+DOCTEST_SUPPRESS_PUBLIC_WARNINGS_PUSH
+
 #ifndef DOCTEST_CONFIG_DISABLE
 
 namespace doctest {
@@ -1640,6 +1861,16 @@ struct DOCTEST_INTERFACE ExpressionDecomposer
 } // namespace doctest
 
 #endif // DOCTEST_CONFIG_DISABLE
+
+DOCTEST_SUPPRESS_PUBLIC_WARNINGS_POP
+
+#endif // DOCTEST_PARTS_PUBLIC_ASSERT_EXPRESSION
+#ifndef DOCTEST_PARTS_PUBLIC_COLOR
+#define DOCTEST_PARTS_PUBLIC_COLOR
+
+
+DOCTEST_SUPPRESS_PUBLIC_WARNINGS_PUSH
+
 namespace doctest {
 namespace Color {
     enum Enum
@@ -1664,6 +1895,16 @@ namespace Color {
     DOCTEST_INTERFACE std::ostream& operator<<(std::ostream& s, Color::Enum code);
 } // namespace Color
 }
+
+DOCTEST_SUPPRESS_PUBLIC_WARNINGS_POP
+
+#endif // DOCTEST_PARTS_PUBLIC_COLOR
+#ifndef DOCTEST_PARTS_PUBLIC_SUBCASE
+#define DOCTEST_PARTS_PUBLIC_SUBCASE
+
+
+DOCTEST_SUPPRESS_PUBLIC_WARNINGS_PUSH
+
 namespace doctest {
 
 struct DOCTEST_INTERFACE SubcaseSignature
@@ -1699,6 +1940,16 @@ struct DOCTEST_INTERFACE Subcase
 #endif // DOCTEST_CONFIG_DISABLE
 
 } // namespace doctest
+
+DOCTEST_SUPPRESS_PUBLIC_WARNINGS_POP
+
+#endif // DOCTEST_PARTS_PUBLIC_SUBCASE
+#ifndef DOCTEST_PARTS_PUBLIC_TEST_SUITE
+#define DOCTEST_PARTS_PUBLIC_TEST_SUITE
+
+
+DOCTEST_SUPPRESS_PUBLIC_WARNINGS_PUSH
+
 #ifndef DOCTEST_CONFIG_DISABLE
 
 namespace doctest {
@@ -1746,6 +1997,16 @@ DOCTEST_GLOBAL_NO_WARNINGS( /* NOLINT(cert-err58-cpp) */
 } // namespace doctest_detail_test_suite_ns
 
 #endif // DOCTEST_CONFIG_DISABLE
+
+DOCTEST_SUPPRESS_PUBLIC_WARNINGS_POP
+
+#endif // DOCTEST_PARTS_PUBLIC_TEST_SUITE
+#ifndef DOCTEST_PARTS_PUBLIC_TEST_CASE
+#define DOCTEST_PARTS_PUBLIC_TEST_CASE
+
+
+DOCTEST_SUPPRESS_PUBLIC_WARNINGS_PUSH
+
 namespace doctest {
 
     struct DOCTEST_INTERFACE TestCaseData
@@ -1809,6 +2070,14 @@ namespace detail {
 #endif // DOCTEST_CONFIG_DISABLE
 
 } // namespace doctest
+
+DOCTEST_SUPPRESS_PUBLIC_WARNINGS_POP
+
+#endif // DOCTEST_PARTS_PUBLIC_TEST_CASE
+#ifndef DOCTEST_PARTS_PUBLIC_DECORATORS
+#define DOCTEST_PARTS_PUBLIC_DECORATORS
+
+
 #ifndef DOCTEST_CONFIG_DISABLE
 
 namespace doctest {
@@ -1836,6 +2105,14 @@ DOCTEST_DEFINE_DECORATOR(expected_failures, int, 0);
 } // namespace
 
 #endif // DOCTEST_CONFIG_DISABLE
+
+#endif // DOCTEST_PARTS_PUBLIC_DECORATORS
+#ifndef DOCTEST_PARTS_PUBLIC_EXCEPTION_TRANSLATOR
+#define DOCTEST_PARTS_PUBLIC_EXCEPTION_TRANSLATOR
+
+
+DOCTEST_SUPPRESS_PUBLIC_WARNINGS_PUSH
+
 namespace doctest {
 namespace detail {
 
@@ -1899,6 +2176,16 @@ int registerExceptionTranslator(String (*)(T)) {
 #endif // DOCTEST_CONFIG_DISABLE
 
 } // namespace doctest
+
+DOCTEST_SUPPRESS_PUBLIC_WARNINGS_POP
+
+#endif // DOCTEST_PARTS_PUBLIC_EXCEPTION_TRANSLATOR
+#ifndef DOCTEST_PARTS_PUBLIC_CONTEXT_SCOPE
+#define DOCTEST_PARTS_PUBLIC_CONTEXT_SCOPE
+
+
+DOCTEST_SUPPRESS_PUBLIC_WARNINGS_PUSH
+
 namespace doctest {
 
 struct DOCTEST_INTERFACE IContextScope
@@ -1960,6 +2247,16 @@ namespace detail {
 #endif // DOCTEST_CONFIG_DISABLE
 
 } // namespace doctest
+
+DOCTEST_SUPPRESS_PUBLIC_WARNINGS_POP
+
+#endif // DOCTEST_PARTS_PUBLIC_CONTEXT_SCOPE
+#ifndef DOCTEST_PARTS_PUBLIC_ASSERT_MESSAGE
+#define DOCTEST_PARTS_PUBLIC_ASSERT_MESSAGE
+
+
+DOCTEST_SUPPRESS_PUBLIC_WARNINGS_PUSH
+
 namespace doctest {
 
     struct DOCTEST_INTERFACE MessageData
@@ -2016,11 +2313,31 @@ DOCTEST_MSVC_SUPPRESS_WARNING_POP
 #endif // DOCTEST_CONFIG_DISABLE
 
 } // namespace doctest
+
+DOCTEST_SUPPRESS_PUBLIC_WARNINGS_POP
+
+#endif // DOCTEST_PARTS_PUBLIC_ASSERT_MESSAGE
+#ifndef DOCTEST_PARTS_PUBLIC_PATH
+#define DOCTEST_PARTS_PUBLIC_PATH
+
+
+DOCTEST_SUPPRESS_PUBLIC_WARNINGS_PUSH
+
 namespace doctest {
 
 DOCTEST_INTERFACE const char* skipPathFromFilename(const char* file);
 
 } // namespace doctest
+
+DOCTEST_SUPPRESS_PUBLIC_WARNINGS_POP
+
+#endif // DOCTEST_PARTS_PUBLIC_PATH
+#ifndef DOCTEST_PARTS_PUBLIC_EXCEPTIONS
+#define DOCTEST_PARTS_PUBLIC_EXCEPTIONS
+
+
+DOCTEST_SUPPRESS_PUBLIC_WARNINGS_PUSH
+
 #ifndef DOCTEST_CONFIG_DISABLE
 
 namespace doctest {
@@ -2041,6 +2358,16 @@ namespace detail {
 } // namespace doctest
 
 #endif // DOCTEST_CONFIG_DISABLE
+
+DOCTEST_SUPPRESS_PUBLIC_WARNINGS_POP
+
+#endif // DOCTEST_PARTS_PUBLIC_EXCEPTIONS
+#ifndef DOCTEST_PARTS_PUBLIC_CONTEXT
+#define DOCTEST_PARTS_PUBLIC_CONTEXT
+
+
+DOCTEST_SUPPRESS_PUBLIC_WARNINGS_PUSH
+
 namespace doctest {
 
     DOCTEST_INTERFACE extern bool is_running_in_test;
@@ -2086,6 +2413,16 @@ public:
     int run();
 };
 } // namespace doctest
+
+DOCTEST_SUPPRESS_PUBLIC_WARNINGS_POP
+
+#endif // DOCTEST_PARTS_PUBLIC_CONTEXT
+#ifndef DOCTEST_PARTS_PUBLIC_ASSERT_HANDLER
+#define DOCTEST_PARTS_PUBLIC_ASSERT_HANDLER
+
+
+DOCTEST_SUPPRESS_PUBLIC_WARNINGS_PUSH
+
 #ifndef DOCTEST_CONFIG_DISABLE
 
 namespace doctest {
@@ -2159,6 +2496,16 @@ namespace detail {
 } // namespace doctest
 
 #endif // DOCTEST_CONFIG_DISABLE
+
+DOCTEST_SUPPRESS_PUBLIC_WARNINGS_POP
+
+#endif // DOCTEST_PARTS_PUBLIC_ASSERT_HANDLER
+#ifndef DOCTEST_PARTS_PUBLIC_REPORTER
+#define DOCTEST_PARTS_PUBLIC_REPORTER
+
+
+DOCTEST_SUPPRESS_PUBLIC_WARNINGS_PUSH
+
 namespace doctest {
 
 namespace TestCaseFailureReason {
@@ -2276,6 +2623,18 @@ namespace detail {
         return 0;
     }
 } // namespace doctest
+
+DOCTEST_SUPPRESS_PUBLIC_WARNINGS_POP
+
+#endif // DOCTEST_PARTS_PUBLIC_REPORTER
+#ifndef DOCTEST_PARTS_PUBLIC_MACROS
+#define DOCTEST_PARTS_PUBLIC_MACROS
+
+
+DOCTEST_SUPPRESS_PUBLIC_WARNINGS_PUSH
+
+DOCTEST_CLANG_SUPPRESS_WARNING_WITH_PUSH("-Wunused-macros")
+
 #ifndef DOCTEST_CONFIG_DISABLE
 namespace doctest {
 namespace detail {
@@ -3243,68 +3602,28 @@ namespace detail {
 #endif // DOCTEST_CONFIG_NO_SHORT_MACRO_NAMES
 
 DOCTEST_CLANG_SUPPRESS_WARNING_POP
-DOCTEST_MSVC_SUPPRESS_WARNING_POP
-DOCTEST_GCC_SUPPRESS_WARNING_POP
 
-DOCTEST_SUPPRESS_COMMON_WARNINGS_POP
+DOCTEST_SUPPRESS_PUBLIC_WARNINGS_POP
+
+#endif // DOCTEST_PARTS_PUBLIC_MACROS
+
+DOCTEST_SUPPRESS_PUBLIC_WARNINGS_POP
 
 #endif // DOCTEST_LIBRARY_INCLUDED
-#ifndef DOCTEST_SINGLE_HEADER
-#define DOCTEST_SINGLE_HEADER
-#endif // DOCTEST_SINGLE_HEADER
 
-#if defined(DOCTEST_CONFIG_IMPLEMENT) || !defined(DOCTEST_SINGLE_HEADER)
-
-#ifndef DOCTEST_SINGLE_HEADER
-#include "doctest_fwd.h"
-#endif // DOCTEST_SINGLE_HEADER
+#if defined(DOCTEST_CONFIG_IMPLEMENT) && !defined(DOCTEST_LIBRARY_IMPLEMENTATION)
 
 DOCTEST_CLANG_SUPPRESS_WARNING_WITH_PUSH("-Wunused-macros")
-#ifndef DOCTEST_LIBRARY_IMPLEMENTATION
 #define DOCTEST_LIBRARY_IMPLEMENTATION
 DOCTEST_CLANG_SUPPRESS_WARNING_POP
 
-DOCTEST_SUPPRESS_COMMON_WARNINGS_PUSH
+DOCTEST_SUPPRESS_PRIVATE_WARNINGS_PUSH
 
-DOCTEST_CLANG_SUPPRESS_WARNING_PUSH
-DOCTEST_CLANG_SUPPRESS_WARNING("-Wglobal-constructors")
-DOCTEST_CLANG_SUPPRESS_WARNING("-Wexit-time-destructors")
-DOCTEST_CLANG_SUPPRESS_WARNING("-Wsign-conversion")
-DOCTEST_CLANG_SUPPRESS_WARNING("-Wshorten-64-to-32")
-DOCTEST_CLANG_SUPPRESS_WARNING("-Wmissing-variable-declarations")
-DOCTEST_CLANG_SUPPRESS_WARNING("-Wswitch")
-DOCTEST_CLANG_SUPPRESS_WARNING("-Wswitch-enum")
-DOCTEST_CLANG_SUPPRESS_WARNING("-Wcovered-switch-default")
-DOCTEST_CLANG_SUPPRESS_WARNING("-Wmissing-noreturn")
-DOCTEST_CLANG_SUPPRESS_WARNING("-Wdisabled-macro-expansion")
-DOCTEST_CLANG_SUPPRESS_WARNING("-Wmissing-braces")
-DOCTEST_CLANG_SUPPRESS_WARNING("-Wmissing-field-initializers")
-DOCTEST_CLANG_SUPPRESS_WARNING("-Wunused-member-function")
-DOCTEST_CLANG_SUPPRESS_WARNING("-Wnonportable-system-include-path")
+#ifndef DOCTEST_PARTS_PRIVATE_PRELUDE
+#define DOCTEST_PARTS_PRIVATE_PRELUDE
 
-DOCTEST_GCC_SUPPRESS_WARNING_PUSH
-DOCTEST_GCC_SUPPRESS_WARNING("-Wconversion")
-DOCTEST_GCC_SUPPRESS_WARNING("-Wsign-conversion")
-DOCTEST_GCC_SUPPRESS_WARNING("-Wmissing-field-initializers")
-DOCTEST_GCC_SUPPRESS_WARNING("-Wmissing-braces")
-DOCTEST_GCC_SUPPRESS_WARNING("-Wswitch")
-DOCTEST_GCC_SUPPRESS_WARNING("-Wswitch-enum")
-DOCTEST_GCC_SUPPRESS_WARNING("-Wswitch-default")
-DOCTEST_GCC_SUPPRESS_WARNING("-Wunsafe-loop-optimizations")
-DOCTEST_GCC_SUPPRESS_WARNING("-Wold-style-cast")
-DOCTEST_GCC_SUPPRESS_WARNING("-Wunused-function")
-DOCTEST_GCC_SUPPRESS_WARNING("-Wmultiple-inheritance")
-DOCTEST_GCC_SUPPRESS_WARNING("-Wsuggest-attribute")
 
-DOCTEST_MSVC_SUPPRESS_WARNING_PUSH
-DOCTEST_MSVC_SUPPRESS_WARNING(4267) // 'var' : conversion from 'x' to 'y', possible loss of data
-DOCTEST_MSVC_SUPPRESS_WARNING(4530) // C++ exception handler used, but unwind semantics not enabled
-DOCTEST_MSVC_SUPPRESS_WARNING(4577) // 'noexcept' used with no exception handling mode specified
-DOCTEST_MSVC_SUPPRESS_WARNING(4774) // format string expected in argument is not a string literal
-DOCTEST_MSVC_SUPPRESS_WARNING(4365) // conversion from 'int' to 'unsigned', signed/unsigned mismatch
-DOCTEST_MSVC_SUPPRESS_WARNING(5039) // pointer to potentially throwing function passed to extern C
-DOCTEST_MSVC_SUPPRESS_WARNING(4800) // forcing value to bool 'true' or 'false' (performance warning)
-DOCTEST_MSVC_SUPPRESS_WARNING(5245) // unreferenced function with internal linkage has been removed
+DOCTEST_SUPPRESS_PRIVATE_WARNINGS_PUSH
 
 DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_BEGIN
 
@@ -3435,6 +3754,18 @@ DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_END
 #define DOCTEST_CDECL __cdecl
 #endif
 
+DOCTEST_SUPPRESS_PRIVATE_WARNINGS_POP
+
+#endif // DOCTEST_PARTS_PRIVATE_PRELUDE
+#ifndef DOCTEST_PARTS_PRIVATE_CONTEXT_STATE
+#define DOCTEST_PARTS_PRIVATE_CONTEXT_STATE
+
+#ifndef DOCTEST_PARTS_PRIVATE_TIMER
+#define DOCTEST_PARTS_PRIVATE_TIMER
+
+
+DOCTEST_SUPPRESS_PRIVATE_WARNINGS_PUSH
+
 #ifndef DOCTEST_CONFIG_DISABLE
 
 namespace doctest {
@@ -3492,6 +3823,15 @@ using ticks_t = timer_large_integer::type;
 } // namespace doctest
 
 #endif // DOCTEST_CONFIG_DISABLE
+
+DOCTEST_SUPPRESS_PRIVATE_WARNINGS_POP
+
+#endif // DOCTEST_PARTS_PRIVATE_TIMER
+#ifndef DOCTEST_PARTS_PRIVATE_ATOMIC
+#define DOCTEST_PARTS_PRIVATE_ATOMIC
+
+
+DOCTEST_SUPPRESS_PRIVATE_WARNINGS_PUSH
 
 #ifndef DOCTEST_CONFIG_DISABLE
 
@@ -3598,6 +3938,12 @@ namespace detail {
 
 #endif // DOCTEST_CONFIG_DISABLE
 
+DOCTEST_SUPPRESS_PRIVATE_WARNINGS_POP
+
+#endif // DOCTEST_PARTS_PRIVATE_ATOMIC
+
+DOCTEST_SUPPRESS_PRIVATE_WARNINGS_PUSH
+
 #ifndef DOCTEST_CONFIG_DISABLE
 
 namespace doctest {
@@ -3693,6 +4039,12 @@ namespace detail {
 
 #endif // DOCTEST_CONFIG_DISABLE
 
+DOCTEST_SUPPRESS_PRIVATE_WARNINGS_POP
+
+#endif // DOCTEST_PARTS_PRIVATE_CONTEXT_STATE
+
+DOCTEST_SUPPRESS_PRIVATE_WARNINGS_PUSH
+
 #ifndef DOCTEST_CONFIG_DISABLE
 
 namespace doctest {
@@ -3714,6 +4066,10 @@ namespace doctest {
 
 #endif // DOCTEST_CONFIG_DISABLE
 
+DOCTEST_SUPPRESS_PRIVATE_WARNINGS_POP
+
+DOCTEST_SUPPRESS_PRIVATE_WARNINGS_PUSH
+
 #ifndef DOCTEST_CONFIG_DISABLE
 
 namespace doctest {
@@ -3726,6 +4082,10 @@ ExpressionDecomposer::ExpressionDecomposer(assertType::Enum at)
 } // namespace doctest
 
 #endif // DOCTEST_CONFIG_DISABLE
+
+DOCTEST_SUPPRESS_PRIVATE_WARNINGS_POP
+
+DOCTEST_SUPPRESS_PRIVATE_WARNINGS_PUSH
 
 #ifndef DOCTEST_CONFIG_DISABLE
 
@@ -3757,6 +4117,16 @@ namespace detail {
 
 #endif // DOCTEST_CONFIG_DISABLE
 
+DOCTEST_SUPPRESS_PRIVATE_WARNINGS_POP
+#ifndef DOCTEST_PARTS_PRIVATE_ASSERT_HANDLER
+#define DOCTEST_PARTS_PRIVATE_ASSERT_HANDLER
+
+#ifndef DOCTEST_PARTS_PRIVATE_REPORTER
+#define DOCTEST_PARTS_PRIVATE_REPORTER
+
+
+DOCTEST_SUPPRESS_PRIVATE_WARNINGS_PUSH
+
 #ifndef DOCTEST_CONFIG_DISABLE
 
 namespace doctest {
@@ -3782,6 +4152,12 @@ namespace {
 } // namespace doctest
 
 #endif // DOCTEST_CONFIG_DISABLE
+
+DOCTEST_SUPPRESS_PRIVATE_WARNINGS_POP
+
+#endif // DOCTEST_PARTS_PRIVATE_REPORTER
+
+DOCTEST_SUPPRESS_PRIVATE_WARNINGS_PUSH
 
 #ifndef DOCTEST_CONFIG_DISABLE
 
@@ -3823,6 +4199,12 @@ namespace {
 } // namespace doctest
 
 #endif // DOCTEST_CONFIG_DISABLE
+
+DOCTEST_SUPPRESS_PRIVATE_WARNINGS_POP
+
+#endif // DOCTEST_PARTS_PRIVATE_ASSERT_HANDLER
+
+DOCTEST_SUPPRESS_PRIVATE_WARNINGS_PUSH
 
 #ifndef DOCTEST_CONFIG_DISABLE
 
@@ -3870,6 +4252,14 @@ namespace detail {
 } // namespace doctest
 
 #endif // DOCTEST_CONFIG_DISABLE
+
+DOCTEST_SUPPRESS_PRIVATE_WARNINGS_POP
+#ifndef DOCTEST_PARTS_PRIVATE_EXCEPTION_TRANSLATOR
+#define DOCTEST_PARTS_PRIVATE_EXCEPTION_TRANSLATOR
+
+
+DOCTEST_SUPPRESS_PRIVATE_WARNINGS_PUSH
+
 #ifndef DOCTEST_CONFIG_DISABLE
 
 namespace doctest {
@@ -3882,6 +4272,12 @@ namespace detail {
 } // namespace doctest
 
 #endif // DOCTEST_CONFIG_DISABLE
+
+DOCTEST_SUPPRESS_PRIVATE_WARNINGS_POP
+
+#endif // DOCTEST_PARTS_PRIVATE_EXCEPTION_TRANSLATOR
+
+DOCTEST_SUPPRESS_PRIVATE_WARNINGS_PUSH
 
 #ifndef DOCTEST_CONFIG_DISABLE
 
@@ -3950,6 +4346,13 @@ namespace detail {
 
 #endif // DOCTEST_CONFIG_DISABLE
 
+DOCTEST_SUPPRESS_PRIVATE_WARNINGS_POP
+#ifndef DOCTEST_PARTS_PRIVATE_EXCEPTIONS
+#define DOCTEST_PARTS_PRIVATE_EXCEPTIONS
+
+
+DOCTEST_SUPPRESS_PRIVATE_WARNINGS_PUSH
+
 namespace doctest {
 namespace {
     using namespace detail;
@@ -3979,6 +4382,12 @@ namespace {
 } // namespace
 
 } // namespace doctest
+
+DOCTEST_SUPPRESS_PRIVATE_WARNINGS_POP
+
+#endif // DOCTEST_PARTS_PRIVATE_EXCEPTIONS
+
+DOCTEST_SUPPRESS_PRIVATE_WARNINGS_PUSH
 
 namespace doctest {
 
@@ -4040,6 +4449,10 @@ const char* failureString(assertType::Enum at) {
 }
 
 } // namespace doctest
+
+DOCTEST_SUPPRESS_PRIVATE_WARNINGS_POP
+
+DOCTEST_SUPPRESS_PRIVATE_WARNINGS_PUSH
 
 #if !defined(DOCTEST_CONFIG_COLORS_NONE)
 #if !defined(DOCTEST_CONFIG_COLORS_WINDOWS) && !defined(DOCTEST_CONFIG_COLORS_ANSI)
@@ -4149,11 +4562,22 @@ namespace {
 #endif // DOCTEST_CONFIG_DISABLED
 }
 
+DOCTEST_SUPPRESS_PRIVATE_WARNINGS_POP
+
+DOCTEST_SUPPRESS_PRIVATE_WARNINGS_PUSH
+
 namespace doctest {
 
     const ContextOptions* getContextOptions() { return DOCTEST_BRANCH_ON_DISABLED(nullptr, detail::g_cs); }
 
 } // namespace doctest
+
+DOCTEST_SUPPRESS_PRIVATE_WARNINGS_POP
+#ifndef DOCTEST_PARTS_PRIVATE_REPORTERS_COMMON
+#define DOCTEST_PARTS_PRIVATE_REPORTERS_COMMON
+
+
+DOCTEST_SUPPRESS_PRIVATE_WARNINGS_PUSH
 
 #ifndef DOCTEST_CONFIG_OPTIONS_PREFIX
 #define DOCTEST_CONFIG_OPTIONS_PREFIX "dt-"
@@ -4218,6 +4642,18 @@ namespace doctest {
 } // namespace doctest
 
 #endif // DOCTEST_CONFIG_DISABLE
+
+DOCTEST_SUPPRESS_PRIVATE_WARNINGS_POP
+
+#endif // DOCTEST_PARTS_PRIVATE_REPORTERS_COMMON
+#ifndef DOCTEST_PARTS_PRIVATE_REPORTERS_DEBUG_OUTPUT_WINDOW
+#define DOCTEST_PARTS_PRIVATE_REPORTERS_DEBUG_OUTPUT_WINDOW
+
+#ifndef DOCTEST_PARTS_PRIVATE_REPORTERS_CONSOLE
+#define DOCTEST_PARTS_PRIVATE_REPORTERS_CONSOLE
+
+
+DOCTEST_SUPPRESS_PRIVATE_WARNINGS_PUSH
 
 #ifdef DOCTEST_CONFIG_NO_UNPREFIXED_OPTIONS
 #define DOCTEST_OPTIONS_PREFIX_DISPLAY DOCTEST_CONFIG_OPTIONS_PREFIX
@@ -4703,6 +5139,12 @@ namespace doctest {
 
 #endif // DOCTEST_CONFIG_DISABLE
 
+DOCTEST_SUPPRESS_PRIVATE_WARNINGS_POP
+
+#endif // DOCTEST_PARTS_PRIVATE_REPORTERS_CONSOLE
+
+DOCTEST_SUPPRESS_PRIVATE_WARNINGS_PUSH
+
 #ifndef DOCTEST_CONFIG_DISABLE
 
 namespace doctest {
@@ -4756,6 +5198,15 @@ namespace {
 
 #endif // DOCTEST_CONFIG_DISABLE
 
+DOCTEST_SUPPRESS_PRIVATE_WARNINGS_POP
+
+#endif // DOCTEST_PARTS_PRIVATE_REPORTERS_DEBUG_OUTPUT_WINDOW
+#ifndef DOCTEST_PARTS_PRIVATE_TEST_CASE
+#define DOCTEST_PARTS_PRIVATE_TEST_CASE
+
+
+DOCTEST_SUPPRESS_PRIVATE_WARNINGS_PUSH
+
 #ifndef DOCTEST_CONFIG_DISABLE
 
 namespace doctest {
@@ -4771,6 +5222,15 @@ namespace detail {
 } // namespace doctest
 
 #endif // DOCTEST_CONFIG_DISABLE
+
+DOCTEST_SUPPRESS_PRIVATE_WARNINGS_POP
+
+#endif // DOCTEST_PARTS_PRIVATE_TEST_CASE
+#ifndef DOCTEST_PARTS_PRIVATE_FILTERS
+#define DOCTEST_PARTS_PRIVATE_FILTERS
+
+
+DOCTEST_SUPPRESS_PRIVATE_WARNINGS_PUSH
 
 #ifndef DOCTEST_CONFIG_DISABLE
 
@@ -4830,6 +5290,15 @@ namespace {
 } // namespace doctest
 
 #endif // DOCTEST_CONFIG_DISABLE
+
+DOCTEST_SUPPRESS_PRIVATE_WARNINGS_POP
+
+#endif // DOCTEST_PARTS_PRIVATE_FILTERS
+#ifndef DOCTEST_PARTS_PRIVATE_SIGNALS
+#define DOCTEST_PARTS_PRIVATE_SIGNALS
+
+
+DOCTEST_SUPPRESS_PRIVATE_WARNINGS_PUSH
 
 #ifndef DOCTEST_CONFIG_DISABLE
 
@@ -5083,6 +5552,12 @@ namespace {
 } // namespace doctest
 
 #endif // DOCTEST_CONFIG_DISABLE
+
+DOCTEST_SUPPRESS_PRIVATE_WARNINGS_POP
+
+#endif // DOCTEST_PARTS_PRIVATE_SIGNALS
+
+DOCTEST_SUPPRESS_PRIVATE_WARNINGS_PUSH
 
 namespace doctest {
 
@@ -5751,6 +6226,13 @@ namespace {
 
 } // namespace doctest
 
+DOCTEST_SUPPRESS_PRIVATE_WARNINGS_POP
+#ifndef DOCTEST_PARTS_PRIVATE_CONTEXT_SCOPE
+#define DOCTEST_PARTS_PRIVATE_CONTEXT_SCOPE
+
+
+DOCTEST_SUPPRESS_PRIVATE_WARNINGS_PUSH
+
 #ifndef DOCTEST_CONFIG_DISABLE
 
 namespace doctest {
@@ -5760,6 +6242,12 @@ namespace detail {
 } // namespace doctest
 
 #endif // DOCTEST_CONFIG_DISABLE
+
+DOCTEST_SUPPRESS_PRIVATE_WARNINGS_POP
+
+#endif // DOCTEST_PARTS_PRIVATE_CONTEXT_SCOPE
+
+DOCTEST_SUPPRESS_PRIVATE_WARNINGS_PUSH
 
 namespace doctest {
 
@@ -5806,6 +6294,10 @@ namespace detail {
 #endif // DOCTEST_CONFIG_DISABLE
 
 } // namespace doctest
+
+DOCTEST_SUPPRESS_PRIVATE_WARNINGS_POP
+
+DOCTEST_SUPPRESS_PRIVATE_WARNINGS_PUSH
 
 #ifndef DOCTEST_CONFIG_DISABLE
 
@@ -5873,6 +6365,10 @@ namespace detail {
 
 #endif // DOCTEST_CONFIG_DISABLE
 
+DOCTEST_SUPPRESS_PRIVATE_WARNINGS_POP
+
+DOCTEST_SUPPRESS_PRIVATE_WARNINGS_PUSH
+
 #ifndef DOCTEST_CONFIG_DISABLE
 
 namespace doctest {
@@ -5923,6 +6419,10 @@ namespace detail {
 
 #endif // DOCTEST_CONFIG_DISABLE
 
+DOCTEST_SUPPRESS_PRIVATE_WARNINGS_POP
+
+DOCTEST_SUPPRESS_PRIVATE_WARNINGS_PUSH
+
 #ifndef DOCTEST_CONFIG_DISABLE
 
 namespace doctest {
@@ -5955,11 +6455,19 @@ namespace detail {
 
 #endif // DOCTEST_CONFIG_DISABLE
 
+DOCTEST_SUPPRESS_PRIVATE_WARNINGS_POP
+
+DOCTEST_SUPPRESS_PRIVATE_WARNINGS_PUSH
+
 #ifdef DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 DOCTEST_MSVC_SUPPRESS_WARNING_WITH_PUSH(4007) // 'function' : must be 'attribute' - see issue #182
 int main(int argc, char** argv) { return doctest::Context(argc, argv).run(); }
 DOCTEST_MSVC_SUPPRESS_WARNING_POP
 #endif // DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
+
+DOCTEST_SUPPRESS_PRIVATE_WARNINGS_POP
+
+DOCTEST_SUPPRESS_PRIVATE_WARNINGS_PUSH
 
 namespace doctest {
 
@@ -6007,6 +6515,10 @@ String toString(const Approx& in) {
 
 } // namespace doctest
 
+DOCTEST_SUPPRESS_PRIVATE_WARNINGS_POP
+
+DOCTEST_SUPPRESS_PRIVATE_WARNINGS_PUSH
+
 namespace doctest {
 
 Contains::Contains(const String& str) : string(str) { }
@@ -6025,6 +6537,10 @@ bool operator!=(const String& lhs, const Contains& rhs) { return !rhs.checkWith(
 bool operator!=(const Contains& lhs, const String& rhs) { return !lhs.checkWith(rhs); }
 
 } // namespace doctest
+
+DOCTEST_SUPPRESS_PRIVATE_WARNINGS_POP
+
+DOCTEST_SUPPRESS_PRIVATE_WARNINGS_PUSH
 
 namespace doctest {
 
@@ -6045,6 +6561,10 @@ String toString(IsNaN<double> in) { return toString<double>(in); }
 String toString(IsNaN<double long> in) { return toString<double long>(in); }
 
 } // namespace doctest
+
+DOCTEST_SUPPRESS_PRIVATE_WARNINGS_POP
+
+DOCTEST_SUPPRESS_PRIVATE_WARNINGS_PUSH
 
 #ifndef DOCTEST_CONFIG_OPTIONS_FILE_PREFIX_SEPARATOR
 #define DOCTEST_CONFIG_OPTIONS_FILE_PREFIX_SEPARATOR ':'
@@ -6094,6 +6614,9 @@ DOCTEST_GCC_SUPPRESS_WARNING_POP
 
 } // namespace doctest
 
+DOCTEST_SUPPRESS_PRIVATE_WARNINGS_POP
+
+DOCTEST_SUPPRESS_PRIVATE_WARNINGS_PUSH
 
 namespace doctest {
 #ifdef DOCTEST_CONFIG_DISABLE
@@ -6130,6 +6653,16 @@ namespace doctest {
 
 #endif // DOCTEST_CONFIG_DISABLE
 } // namespace doctest
+
+DOCTEST_SUPPRESS_PRIVATE_WARNINGS_POP
+#ifndef DOCTEST_PARTS_PRIVATE_REPORTERS_XML
+#define DOCTEST_PARTS_PRIVATE_REPORTERS_XML
+
+#ifndef DOCTEST_PARTS_PRIVATE_XML
+#define DOCTEST_PARTS_PRIVATE_XML
+
+
+DOCTEST_SUPPRESS_PRIVATE_WARNINGS_PUSH
 
 #ifndef DOCTEST_CONFIG_DISABLE
 
@@ -6240,6 +6773,12 @@ namespace detail {
 } // namespace doctest
 
 #endif // DOCTEST_CONFIG_DISABLE
+
+DOCTEST_SUPPRESS_PRIVATE_WARNINGS_POP
+
+#endif // DOCTEST_PARTS_PRIVATE_XML
+
+DOCTEST_SUPPRESS_PRIVATE_WARNINGS_PUSH
 
 #ifndef DOCTEST_CONFIG_DISABLE
 
@@ -6485,6 +7024,15 @@ namespace doctest {
 } // namespace doctest
 
 #endif // DOCTEST_CONFIG_DISABLE
+
+DOCTEST_SUPPRESS_PRIVATE_WARNINGS_POP
+
+#endif // DOCTEST_PARTS_PRIVATE_REPORTERS_XML
+#ifndef DOCTEST_PARTS_PRIVATE_REPORTERS_JUNIT
+#define DOCTEST_PARTS_PRIVATE_REPORTERS_JUNIT
+
+
+DOCTEST_SUPPRESS_PRIVATE_WARNINGS_PUSH
 
 #ifndef DOCTEST_CONFIG_DISABLE
 
@@ -6734,6 +7282,12 @@ namespace doctest {
 } // namespace doctest
 
 #endif // DOCTEST_CONFIG_DISABLE
+
+DOCTEST_SUPPRESS_PRIVATE_WARNINGS_POP
+
+#endif // DOCTEST_PARTS_PRIVATE_REPORTERS_JUNIT
+
+DOCTEST_SUPPRESS_PRIVATE_WARNINGS_PUSH
 
 namespace doctest {
 namespace detail {
@@ -7038,6 +7592,10 @@ String toString(long long unsigned in) { return toStreamLit(in); }
 
 } // namespace doctest
 
+DOCTEST_SUPPRESS_PRIVATE_WARNINGS_POP
+
+DOCTEST_SUPPRESS_PRIVATE_WARNINGS_PUSH
+
 namespace doctest {
 
 #ifndef DOCTEST_CONFIG_DISABLE
@@ -7188,6 +7746,10 @@ namespace detail {
 
 } // namespace doctest
 
+DOCTEST_SUPPRESS_PRIVATE_WARNINGS_POP
+
+DOCTEST_SUPPRESS_PRIVATE_WARNINGS_PUSH
+
 #ifndef DOCTEST_CONFIG_DISABLE
 
 namespace doctest {
@@ -7267,6 +7829,10 @@ int regTest(const TestCase& tc) {
 
 #endif // DOCTEST_CONFIG_DISABLE
 
+DOCTEST_SUPPRESS_PRIVATE_WARNINGS_POP
+
+DOCTEST_SUPPRESS_PRIVATE_WARNINGS_PUSH
+
 #ifndef DOCTEST_CONFIG_DISABLE
 
 namespace doctest {
@@ -7295,6 +7861,10 @@ doctest::detail::TestSuite& getCurrentTestSuite() {
 } // namespace doctest_detail_test_suite_ns
 
 #endif // DOCTEST_CONFIG_DISABLE
+
+DOCTEST_SUPPRESS_PRIVATE_WARNINGS_POP
+
+DOCTEST_SUPPRESS_PRIVATE_WARNINGS_PUSH
 
 #ifndef DOCTEST_CONFIG_DISABLE
 
@@ -7596,12 +8166,8 @@ namespace {
 
 #endif // DOCTEST_CONFIG_DISABLE
 
-DOCTEST_CLANG_SUPPRESS_WARNING_POP
-DOCTEST_MSVC_SUPPRESS_WARNING_POP
-DOCTEST_GCC_SUPPRESS_WARNING_POP
+DOCTEST_SUPPRESS_PRIVATE_WARNINGS_POP
 
-DOCTEST_SUPPRESS_COMMON_WARNINGS_POP
+DOCTEST_SUPPRESS_PRIVATE_WARNINGS_POP
 
-#endif // DOCTEST_LIBRARY_IMPLEMENTATION
-
-#endif // defined(DOCTEST_CONFIG_IMPLEMENT) || !defined(DOCTEST_SINGLE_HEADER)
+#endif // defined(DOCTEST_CONFIG_IMPLEMENT) && !defined(DOCTEST_LIBRARY_IMPLEMENTATION)

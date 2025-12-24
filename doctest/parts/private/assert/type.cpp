@@ -1,6 +1,8 @@
 #include "doctest/parts/private/prelude.h"
 #include "doctest/parts/private/exceptions.h"
 
+DOCTEST_SUPPRESS_PRIVATE_WARNINGS_PUSH
+
 namespace doctest {
 
 // clang-format off
@@ -61,3 +63,5 @@ const char* failureString(assertType::Enum at) {
 }
 
 } // namespace doctest
+
+DOCTEST_SUPPRESS_PRIVATE_WARNINGS_POP

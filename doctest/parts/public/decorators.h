@@ -1,3 +1,8 @@
+#ifndef DOCTEST_PARTS_PUBLIC_DECORATORS
+#define DOCTEST_PARTS_PUBLIC_DECORATORS
+
+#include "doctest/parts/public/test_case.h"
+
 #ifndef DOCTEST_CONFIG_DISABLE
 
 namespace doctest {
@@ -25,3 +30,5 @@ DOCTEST_DEFINE_DECORATOR(expected_failures, int, 0);
 } // namespace
 
 #endif // DOCTEST_CONFIG_DISABLE
+
+#endif // DOCTEST_PARTS_PUBLIC_DECORATORS

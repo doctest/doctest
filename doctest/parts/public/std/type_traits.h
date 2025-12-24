@@ -1,3 +1,11 @@
+#ifndef DOCTEST_PARTS_PUBLIC_STD_TYPE_TRAITS
+#define DOCTEST_PARTS_PUBLIC_STD_TYPE_TRAITS
+
+#include "doctest/parts/public/config.h"
+#include "doctest/parts/public/warnings.h"
+
+DOCTEST_SUPPRESS_PUBLIC_WARNINGS_PUSH
+
 #ifdef DOCTEST_CONFIG_INCLUDE_TYPE_TRAITS
 #include <type_traits>
 #endif // DOCTEST_CONFIG_INCLUDE_TYPE_TRAITS
@@ -43,3 +51,7 @@ namespace types {
 } // namespace types
 } // namespace detail
 } // namespace doctest
+
+DOCTEST_SUPPRESS_PUBLIC_WARNINGS_POP
+
+#endif // DOCTEST_PARTS_PUBLIC_STD_TYPE_TRAITS

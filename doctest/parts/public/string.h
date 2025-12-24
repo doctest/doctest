@@ -1,3 +1,13 @@
+#ifndef DOCTEST_PARTS_PUBLIC_STRING
+#define DOCTEST_PARTS_PUBLIC_STRING
+
+#include "doctest/parts/public/utility.h"
+#include "doctest/parts/public/std/fwd.h"
+#include "doctest/parts/public/std/type_traits.h"
+#include "doctest/parts/public/std/utility.h"
+
+DOCTEST_SUPPRESS_PUBLIC_WARNINGS_PUSH
+
 namespace doctest {
 #ifndef DOCTEST_CONFIG_STRING_SIZE_TYPE
 #define DOCTEST_CONFIG_STRING_SIZE_TYPE unsigned
@@ -342,3 +352,7 @@ namespace detail {
 } //namespace detail
 
 } // namespace doctest
+
+DOCTEST_SUPPRESS_PUBLIC_WARNINGS_POP
+
+#endif // DOCTEST_PARTS_PUBLIC_STRING

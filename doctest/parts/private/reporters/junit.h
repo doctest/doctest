@@ -1,7 +1,12 @@
+#ifndef DOCTEST_PARTS_PRIVATE_REPORTERS_JUNIT
+#define DOCTEST_PARTS_PRIVATE_REPORTERS_JUNIT
+
 #include "doctest/parts/private/prelude.h"
 #include "doctest/parts/private/xml.h"
 #include "doctest/parts/private/timer.h"
 #include "doctest/parts/private/reporters/common.h"
+
+DOCTEST_SUPPRESS_PRIVATE_WARNINGS_PUSH
 
 #ifndef DOCTEST_CONFIG_DISABLE
 
@@ -251,3 +256,7 @@ namespace doctest {
 } // namespace doctest
 
 #endif // DOCTEST_CONFIG_DISABLE
+
+DOCTEST_SUPPRESS_PRIVATE_WARNINGS_POP
+
+#endif // DOCTEST_PARTS_PRIVATE_REPORTERS_JUNIT

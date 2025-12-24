@@ -1,3 +1,16 @@
+#ifndef DOCTEST_PARTS_PUBLIC_REPORTER
+#define DOCTEST_PARTS_PUBLIC_REPORTER
+
+#include "doctest/parts/public/assert/data.h"
+#include "doctest/parts/public/assert/message.h"
+#include "doctest/parts/public/context_scope.h"
+#include "doctest/parts/public/context/options.h"
+#include "doctest/parts/public/string.h"
+#include "doctest/parts/public/subcase.h"
+#include "doctest/parts/public/test_case.h"
+
+DOCTEST_SUPPRESS_PUBLIC_WARNINGS_PUSH
+
 namespace doctest {
 
 namespace TestCaseFailureReason {
@@ -115,3 +128,7 @@ namespace detail {
         return 0;
     }
 } // namespace doctest
+
+DOCTEST_SUPPRESS_PUBLIC_WARNINGS_POP
+
+#endif // DOCTEST_PARTS_PUBLIC_REPORTER

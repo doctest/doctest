@@ -2,6 +2,11 @@
 // == FEATURE DETECTION ============================================================================
 // =================================================================================================
 
+#ifndef DOCTEST_PARTS_PUBLIC_CONFIG
+#define DOCTEST_PARTS_PUBLIC_CONFIG
+
+#include "doctest/parts/public/compiler.h"
+
 // general compiler feature support table: https://en.cppreference.com/w/cpp/compiler_support
 // MSVC C++11 feature support table: https://msdn.microsoft.com/en-us/library/hh567368.aspx
 // GCC C++11 feature support table: https://gcc.gnu.org/projects/cxx-status.html
@@ -181,6 +186,8 @@
 #define DOCTEST_CONFIG_INCLUDE_TYPE_TRAITS
 #endif // DOCTEST_CONFIG_INCLUDE_TYPE_TRAITS
 #endif // DOCTEST_CONFIG_USE_STD_HEADERS
+
+#endif // DOCTEST_PARTS_PUBLIC_CONFIG
 
 // =================================================================================================
 // == FEATURE DETECTION END ========================================================================

@@ -1,3 +1,10 @@
+#ifndef DOCTEST_PARTS_PUBLIC_ASSERT_COMPARATOR
+#define DOCTEST_PARTS_PUBLIC_ASSERT_COMPARATOR
+
+#include "doctest/parts/public/string.h"
+
+DOCTEST_SUPPRESS_PUBLIC_WARNINGS_PUSH
+
 #ifndef DOCTEST_CONFIG_DISABLE
 
 namespace doctest {
@@ -91,3 +98,7 @@ namespace detail  {
 } // namespace doctest
 
 #endif // DOCTEST_CONFIG_DISABLE
+
+DOCTEST_SUPPRESS_PUBLIC_WARNINGS_POP
+
+#endif // DOCTEST_PARTS_PUBLIC_ASSERT_COMPARATOR

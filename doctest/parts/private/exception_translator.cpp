@@ -1,6 +1,8 @@
 #include "doctest/parts/private/prelude.h"
 #include "doctest/parts/private/exception_translator.h"
 
+DOCTEST_SUPPRESS_PRIVATE_WARNINGS_PUSH
+
 #ifndef DOCTEST_CONFIG_DISABLE
 
 namespace doctest {
@@ -50,3 +52,5 @@ namespace detail {
 } // namespace doctest
 
 #endif // DOCTEST_CONFIG_DISABLE
+
+DOCTEST_SUPPRESS_PRIVATE_WARNINGS_POP

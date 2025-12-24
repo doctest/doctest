@@ -1,3 +1,10 @@
+#ifndef DOCTEST_PARTS_PUBLIC_CONTEXT
+#define DOCTEST_PARTS_PUBLIC_CONTEXT
+
+#include "doctest/parts/public/assert/data.h"
+
+DOCTEST_SUPPRESS_PUBLIC_WARNINGS_PUSH
+
 namespace doctest {
 
     DOCTEST_INTERFACE extern bool is_running_in_test;
@@ -43,3 +50,7 @@ public:
     int run();
 };
 } // namespace doctest
+
+DOCTEST_SUPPRESS_PUBLIC_WARNINGS_POP
+
+#endif // DOCTEST_PARTS_PUBLIC_CONTEXT

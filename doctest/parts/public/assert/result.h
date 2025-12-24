@@ -1,3 +1,14 @@
+#ifndef DOCTEST_PARTS_PUBLIC_ASSERT_RESULT
+#define DOCTEST_PARTS_PUBLIC_ASSERT_RESULT
+
+#include "doctest/parts/public/assert/type.h"
+#include "doctest/parts/public/assert/comparator.h"
+#include "doctest/parts/public/assert/data.h"
+#include "doctest/parts/public/matchers/contains.h"
+#include "doctest/parts/public/string.h"
+
+DOCTEST_SUPPRESS_PUBLIC_WARNINGS_PUSH
+
 #ifndef DOCTEST_CONFIG_DISABLE
 
 namespace doctest {
@@ -92,3 +103,7 @@ namespace detail {
 } // namespace doctest
 
 #endif // DOCTEST_CONFIG_DISABLE
+
+DOCTEST_SUPPRESS_PUBLIC_WARNINGS_POP
+
+#endif // DOCTEST_PARTS_PUBLIC_ASSERT_RESULT

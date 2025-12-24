@@ -1,6 +1,11 @@
+#ifndef DOCTEST_PARTS_PRIVATE_CONTEXT_STATE
+#define DOCTEST_PARTS_PRIVATE_CONTEXT_STATE
+
 #include "doctest/parts/private/prelude.h"
 #include "doctest/parts/private/timer.h"
 #include "doctest/parts/private/atomic.h"
+
+DOCTEST_SUPPRESS_PRIVATE_WARNINGS_PUSH
 
 #ifndef DOCTEST_CONFIG_DISABLE
 
@@ -96,3 +101,7 @@ namespace detail {
 } // namespace doctest
 
 #endif // DOCTEST_CONFIG_DISABLE
+
+DOCTEST_SUPPRESS_PRIVATE_WARNINGS_POP
+
+#endif // DOCTEST_PARTS_PRIVATE_CONTEXT_STATE

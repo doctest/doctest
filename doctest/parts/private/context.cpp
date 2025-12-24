@@ -8,6 +8,8 @@
 #include "doctest/parts/private/filters.h"
 #include "doctest/parts/private/signals.h"
 
+DOCTEST_SUPPRESS_PRIVATE_WARNINGS_PUSH
+
 namespace doctest {
 
     bool is_running_in_test = false;
@@ -674,3 +676,5 @@ namespace {
 #endif // DOCTEST_CONFIG_DISABLE
 
 } // namespace doctest
+
+DOCTEST_SUPPRESS_PRIVATE_WARNINGS_POP

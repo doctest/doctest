@@ -1,3 +1,11 @@
+#ifndef DOCTEST_PARTS_PUBLIC_ASSERT_TYPE
+#define DOCTEST_PARTS_PUBLIC_ASSERT_TYPE
+
+#include "doctest/parts/public/config.h"
+#include "doctest/parts/public/warnings.h"
+
+DOCTEST_SUPPRESS_PUBLIC_WARNINGS_PUSH
+
 namespace doctest {
 namespace assertType {
     enum Enum
@@ -94,3 +102,7 @@ DOCTEST_INTERFACE const char* assertString(assertType::Enum at);
 DOCTEST_INTERFACE const char* failureString(assertType::Enum at);
 
 }
+
+DOCTEST_SUPPRESS_PUBLIC_WARNINGS_POP
+
+#endif // DOCTEST_PARTS_PUBLIC_ASSERT_TYPE

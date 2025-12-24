@@ -1,3 +1,10 @@
+#ifndef DOCTEST_PARTS_PUBLIC_SUBCASE
+#define DOCTEST_PARTS_PUBLIC_SUBCASE
+
+#include "doctest/parts/public/string.h"
+
+DOCTEST_SUPPRESS_PUBLIC_WARNINGS_PUSH
+
 namespace doctest {
 
 struct DOCTEST_INTERFACE SubcaseSignature
@@ -33,3 +40,7 @@ struct DOCTEST_INTERFACE Subcase
 #endif // DOCTEST_CONFIG_DISABLE
 
 } // namespace doctest
+
+DOCTEST_SUPPRESS_PUBLIC_WARNINGS_POP
+
+#endif // DOCTEST_PARTS_PUBLIC_SUBCASE

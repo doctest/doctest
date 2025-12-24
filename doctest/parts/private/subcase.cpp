@@ -1,5 +1,8 @@
 #include "doctest/parts/private/prelude.h"
 #include "doctest/parts/private/context_state.h"
+#include "doctest/parts/private/filters.h"
+
+DOCTEST_SUPPRESS_PRIVATE_WARNINGS_PUSH
 
 namespace doctest {
 
@@ -150,3 +153,5 @@ namespace detail {
 #endif // DOCTEST_CONFIG_DISABLE
 
 } // namespace doctest
+
+DOCTEST_SUPPRESS_PRIVATE_WARNINGS_POP

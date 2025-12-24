@@ -1,4 +1,7 @@
 #include "doctest/parts/private/prelude.h"
+#include "doctest/parts/private/exceptions.h"
+
+DOCTEST_SUPPRESS_PRIVATE_WARNINGS_PUSH
 
 namespace doctest {
 namespace detail {
@@ -302,3 +305,5 @@ String toString(long long in) { return toStreamLit(in); }
 String toString(long long unsigned in) { return toStreamLit(in); }
 
 } // namespace doctest
+
+DOCTEST_SUPPRESS_PRIVATE_WARNINGS_POP

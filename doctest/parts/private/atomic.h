@@ -1,4 +1,9 @@
+#ifndef DOCTEST_PARTS_PRIVATE_ATOMIC
+#define DOCTEST_PARTS_PRIVATE_ATOMIC
+
 #include "doctest/parts/private/prelude.h"
+
+DOCTEST_SUPPRESS_PRIVATE_WARNINGS_PUSH
 
 #ifndef DOCTEST_CONFIG_DISABLE
 
@@ -104,3 +109,7 @@ namespace detail {
 } // namespace doctest
 
 #endif // DOCTEST_CONFIG_DISABLE
+
+DOCTEST_SUPPRESS_PRIVATE_WARNINGS_POP
+
+#endif // DOCTEST_PARTS_PRIVATE_ATOMIC

@@ -1,5 +1,10 @@
+#ifndef DOCTEST_PARTS_PRIVATE_REPORTERS_XML
+#define DOCTEST_PARTS_PRIVATE_REPORTERS_XML
+
 #include "doctest/parts/private/prelude.h"
 #include "doctest/parts/private/xml.h"
+
+DOCTEST_SUPPRESS_PRIVATE_WARNINGS_PUSH
 
 #ifndef DOCTEST_CONFIG_DISABLE
 
@@ -245,3 +250,7 @@ namespace doctest {
 } // namespace doctest
 
 #endif // DOCTEST_CONFIG_DISABLE
+
+DOCTEST_SUPPRESS_PRIVATE_WARNINGS_POP
+
+#endif // DOCTEST_PARTS_PRIVATE_REPORTERS_XML

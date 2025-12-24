@@ -1,5 +1,7 @@
 #include "doctest/parts/private/prelude.h"
 
+DOCTEST_SUPPRESS_PRIVATE_WARNINGS_PUSH
+
 #ifndef DOCTEST_CONFIG_DISABLE
 
 namespace doctest {
@@ -28,3 +30,5 @@ doctest::detail::TestSuite& getCurrentTestSuite() {
 } // namespace doctest_detail_test_suite_ns
 
 #endif // DOCTEST_CONFIG_DISABLE
+
+DOCTEST_SUPPRESS_PRIVATE_WARNINGS_POP

@@ -1,3 +1,10 @@
+#ifndef DOCTEST_PARTS_PUBLIC_EXCEPTION_TRANSLATOR
+#define DOCTEST_PARTS_PUBLIC_EXCEPTION_TRANSLATOR
+
+#include "doctest/parts/public/string.h"
+
+DOCTEST_SUPPRESS_PUBLIC_WARNINGS_PUSH
+
 namespace doctest {
 namespace detail {
 
@@ -61,3 +68,7 @@ int registerExceptionTranslator(String (*)(T)) {
 #endif // DOCTEST_CONFIG_DISABLE
 
 } // namespace doctest
+
+DOCTEST_SUPPRESS_PUBLIC_WARNINGS_POP
+
+#endif // DOCTEST_PARTS_PUBLIC_EXCEPTION_TRANSLATOR

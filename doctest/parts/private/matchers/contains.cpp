@@ -1,5 +1,7 @@
 #include "doctest/parts/private/prelude.h"
 
+DOCTEST_SUPPRESS_PRIVATE_WARNINGS_PUSH
+
 namespace doctest {
 
 Contains::Contains(const String& str) : string(str) { }
@@ -18,3 +20,5 @@ bool operator!=(const String& lhs, const Contains& rhs) { return !rhs.checkWith(
 bool operator!=(const Contains& lhs, const String& rhs) { return !lhs.checkWith(rhs); }
 
 } // namespace doctest
+
+DOCTEST_SUPPRESS_PRIVATE_WARNINGS_POP

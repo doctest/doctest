@@ -1,3 +1,11 @@
+#ifndef DOCTEST_PARTS_PUBLIC_STD_FWD
+#define DOCTEST_PARTS_PUBLIC_STD_FWD
+
+#include "doctest/parts/public/config.h"
+#include "doctest/parts/public/warnings.h"
+
+DOCTEST_SUPPRESS_PUBLIC_WARNINGS_PUSH
+
 #ifdef DOCTEST_CONFIG_USE_STD_HEADERS
 DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_BEGIN
 #include <cstddef>
@@ -44,3 +52,7 @@ DOCTEST_MSVC_SUPPRESS_WARNING_POP
 namespace doctest {
   using std::size_t;
 }
+
+DOCTEST_SUPPRESS_PUBLIC_WARNINGS_POP
+
+#endif // DOCTEST_PARTS_PUBLIC_STD_FWD

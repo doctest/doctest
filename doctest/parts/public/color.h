@@ -1,3 +1,11 @@
+#ifndef DOCTEST_PARTS_PUBLIC_COLOR
+#define DOCTEST_PARTS_PUBLIC_COLOR
+
+#include "doctest/parts/public/config.h"
+#include "doctest/parts/public/std/fwd.h"
+
+DOCTEST_SUPPRESS_PUBLIC_WARNINGS_PUSH
+
 namespace doctest {
 namespace Color {
     enum Enum
@@ -22,3 +30,7 @@ namespace Color {
     DOCTEST_INTERFACE std::ostream& operator<<(std::ostream& s, Color::Enum code);
 } // namespace Color
 }
+
+DOCTEST_SUPPRESS_PUBLIC_WARNINGS_POP
+
+#endif // DOCTEST_PARTS_PUBLIC_COLOR

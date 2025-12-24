@@ -1,3 +1,11 @@
+#ifndef DOCTEST_PARTS_PUBLIC_CONTEXT_SCOPE
+#define DOCTEST_PARTS_PUBLIC_CONTEXT_SCOPE
+
+#include "doctest/parts/public/utility.h"
+#include "doctest/parts/public/std/fwd.h"
+
+DOCTEST_SUPPRESS_PUBLIC_WARNINGS_PUSH
+
 namespace doctest {
 
 struct DOCTEST_INTERFACE IContextScope
@@ -59,3 +67,7 @@ namespace detail {
 #endif // DOCTEST_CONFIG_DISABLE
 
 } // namespace doctest
+
+DOCTEST_SUPPRESS_PUBLIC_WARNINGS_POP
+
+#endif // DOCTEST_PARTS_PUBLIC_CONTEXT_SCOPE

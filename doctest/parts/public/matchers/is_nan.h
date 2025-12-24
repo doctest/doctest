@@ -1,3 +1,10 @@
+#ifndef DOCTEST_PARTS_PUBLIC_MATCHERS_IS_NAN
+#define DOCTEST_PARTS_PUBLIC_MATCHERS_IS_NAN
+
+#include "doctest/parts/public/string.h"
+
+DOCTEST_SUPPRESS_PUBLIC_WARNINGS_PUSH
+
 namespace doctest {
 
 template <typename F>
@@ -20,3 +27,7 @@ DOCTEST_INTERFACE String toString(IsNaN<double> in);
 DOCTEST_INTERFACE String toString(IsNaN<double long> in);
 
 } // namespace doctest
+
+DOCTEST_SUPPRESS_PUBLIC_WARNINGS_POP
+
+#endif // DOCTEST_PARTS_PUBLIC_MATCHERS_IS_NAN

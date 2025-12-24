@@ -1,3 +1,11 @@
+#ifndef DOCTEST_PARTS_PUBLIC_TEST_CASE
+#define DOCTEST_PARTS_PUBLIC_TEST_CASE
+
+#include "doctest/parts/public/string.h"
+#include "doctest/parts/public/test_suite.h"
+
+DOCTEST_SUPPRESS_PUBLIC_WARNINGS_PUSH
+
 namespace doctest {
 
     struct DOCTEST_INTERFACE TestCaseData
@@ -61,3 +69,7 @@ namespace detail {
 #endif // DOCTEST_CONFIG_DISABLE
 
 } // namespace doctest
+
+DOCTEST_SUPPRESS_PUBLIC_WARNINGS_POP
+
+#endif // DOCTEST_PARTS_PUBLIC_TEST_CASE

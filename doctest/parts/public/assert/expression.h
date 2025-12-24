@@ -1,3 +1,13 @@
+#ifndef DOCTEST_PARTS_PUBLIC_ASSERT_EXPRESSION
+#define DOCTEST_PARTS_PUBLIC_ASSERT_EXPRESSION
+
+#include "doctest/parts/public/assert/result.h"
+#include "doctest/parts/public/assert/type.h"
+#include "doctest/parts/public/context/options.h"
+#include "doctest/parts/public/string.h"
+
+DOCTEST_SUPPRESS_PUBLIC_WARNINGS_PUSH
+
 #ifndef DOCTEST_CONFIG_DISABLE
 
 namespace doctest {
@@ -151,3 +161,7 @@ struct DOCTEST_INTERFACE ExpressionDecomposer
 } // namespace doctest
 
 #endif // DOCTEST_CONFIG_DISABLE
+
+DOCTEST_SUPPRESS_PUBLIC_WARNINGS_POP
+
+#endif // DOCTEST_PARTS_PUBLIC_ASSERT_EXPRESSION

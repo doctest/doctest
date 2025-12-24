@@ -1,3 +1,7 @@
+
+#ifndef DOCTEST_PARTS_PUBLIC_PLATFORM
+#define DOCTEST_PARTS_PUBLIC_PLATFORM
+
 // not using __APPLE__ because... this is how Catch does it
 #ifdef __MAC_OS_X_VERSION_MIN_REQUIRED
 #define DOCTEST_PLATFORM_MAC
@@ -10,3 +14,5 @@
 #else // DOCTEST_PLATFORM
 #define DOCTEST_PLATFORM_LINUX
 #endif // DOCTEST_PLATFORM
+
+#endif // DOCTEST_PARTS_PUBLIC_PLATFORM

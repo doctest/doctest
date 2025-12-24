@@ -1,5 +1,7 @@
 #include "doctest/parts/private/prelude.h"
 
+DOCTEST_SUPPRESS_PRIVATE_WARNINGS_PUSH
+
 namespace doctest {
 
 DOCTEST_MSVC_SUPPRESS_WARNING_WITH_PUSH(4738)
@@ -19,3 +21,5 @@ String toString(IsNaN<double> in) { return toString<double>(in); }
 String toString(IsNaN<double long> in) { return toString<double long>(in); }
 
 } // namespace doctest
+
+DOCTEST_SUPPRESS_PRIVATE_WARNINGS_POP

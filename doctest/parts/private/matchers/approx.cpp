@@ -1,5 +1,7 @@
 #include "doctest/parts/private/prelude.h"
 
+DOCTEST_SUPPRESS_PRIVATE_WARNINGS_PUSH
+
 namespace doctest {
 
 Approx::Approx(double value)
@@ -45,3 +47,5 @@ String toString(const Approx& in) {
 }
 
 } // namespace doctest
+
+DOCTEST_SUPPRESS_PRIVATE_WARNINGS_POP

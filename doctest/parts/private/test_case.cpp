@@ -1,6 +1,8 @@
 #include "doctest/parts/private/prelude.h"
 #include "doctest/parts/private/test_case.h"
 
+DOCTEST_SUPPRESS_PRIVATE_WARNINGS_PUSH
+
 #ifndef DOCTEST_CONFIG_DISABLE
 
 namespace doctest {
@@ -79,3 +81,5 @@ int regTest(const TestCase& tc) {
 } // namespace doctest
 
 #endif // DOCTEST_CONFIG_DISABLE
+
+DOCTEST_SUPPRESS_PRIVATE_WARNINGS_POP

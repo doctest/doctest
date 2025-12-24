@@ -1,3 +1,11 @@
+#ifndef DOCTEST_PARTS_PUBLIC_TEST_SUITE
+#define DOCTEST_PARTS_PUBLIC_TEST_SUITE
+
+#include "doctest/parts/public/config.h"
+#include "doctest/parts/public/warnings.h"
+
+DOCTEST_SUPPRESS_PUBLIC_WARNINGS_PUSH
+
 #ifndef DOCTEST_CONFIG_DISABLE
 
 namespace doctest {
@@ -45,3 +53,7 @@ DOCTEST_GLOBAL_NO_WARNINGS( /* NOLINT(cert-err58-cpp) */
 } // namespace doctest_detail_test_suite_ns
 
 #endif // DOCTEST_CONFIG_DISABLE
+
+DOCTEST_SUPPRESS_PUBLIC_WARNINGS_POP
+
+#endif // DOCTEST_PARTS_PUBLIC_TEST_SUITE

@@ -1,4 +1,9 @@
+#ifndef DOCTEST_PARTS_PRIVATE_EXCEPTIONS
+#define DOCTEST_PARTS_PRIVATE_EXCEPTIONS
+
 #include "doctest/parts/private/prelude.h"
+
+DOCTEST_SUPPRESS_PRIVATE_WARNINGS_PUSH
 
 namespace doctest {
 namespace {
@@ -29,3 +34,7 @@ namespace {
 } // namespace
 
 } // namespace doctest
+
+DOCTEST_SUPPRESS_PRIVATE_WARNINGS_POP
+
+#endif // DOCTEST_PARTS_PRIVATE_EXCEPTIONS

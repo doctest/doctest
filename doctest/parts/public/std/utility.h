@@ -1,3 +1,10 @@
+#ifndef DOCTEST_PARTS_PUBLIC_STD_UTILITY
+#define DOCTEST_PARTS_PUBLIC_STD_UTILITY
+
+#include "doctest/parts/public/std/type_traits.h"
+
+DOCTEST_SUPPRESS_PUBLIC_WARNINGS_PUSH
+
 namespace doctest {
 namespace detail {
 
@@ -20,3 +27,7 @@ namespace detail {
 
 } // namespace detail
 } // namespace doctest
+
+DOCTEST_SUPPRESS_PUBLIC_WARNINGS_POP
+
+#endif // DOCTEST_PARTS_PUBLIC_STD_UTILITY

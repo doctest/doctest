@@ -1,3 +1,10 @@
+#ifndef DOCTEST_PARTS_PUBLIC_CONTEXT_OPTIONS
+#define DOCTEST_PARTS_PUBLIC_CONTEXT_OPTIONS
+
+#include "doctest/parts/public/string.h"
+
+DOCTEST_SUPPRESS_PUBLIC_WARNINGS_PUSH
+
 namespace doctest {
 namespace detail {
     struct DOCTEST_INTERFACE TestCase;
@@ -55,3 +62,7 @@ namespace detail {
     DOCTEST_INTERFACE const ContextOptions* getContextOptions();
 
 } // namespace doctest
+
+DOCTEST_SUPPRESS_PUBLIC_WARNINGS_POP
+
+#endif // DOCTEST_PARTS_PUBLIC_CONTEXT_OPTIONS

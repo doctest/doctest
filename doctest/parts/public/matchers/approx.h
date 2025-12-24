@@ -1,3 +1,10 @@
+#ifndef DOCTEST_PARTS_PUBLIC_MATCHERS_APPROX
+#define DOCTEST_PARTS_PUBLIC_MATCHERS_APPROX
+
+#include "doctest/parts/public/string.h"
+
+DOCTEST_SUPPRESS_PUBLIC_WARNINGS_PUSH
+
 namespace doctest {
 
 struct DOCTEST_INTERFACE Approx
@@ -80,3 +87,7 @@ struct DOCTEST_INTERFACE Approx
 DOCTEST_INTERFACE String toString(const Approx& in);
 
 } // namespace doctest
+
+DOCTEST_SUPPRESS_PUBLIC_WARNINGS_POP
+
+#endif // DOCTEST_PARTS_PUBLIC_MATCHERS_APPROX

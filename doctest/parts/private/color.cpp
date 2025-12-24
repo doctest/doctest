@@ -1,6 +1,8 @@
 #include "doctest/parts/private/prelude.h"
 #include "doctest/parts/private/context_state.h"
 
+DOCTEST_SUPPRESS_PRIVATE_WARNINGS_PUSH
+
 #if !defined(DOCTEST_CONFIG_COLORS_NONE)
 #if !defined(DOCTEST_CONFIG_COLORS_WINDOWS) && !defined(DOCTEST_CONFIG_COLORS_ANSI)
 #ifdef DOCTEST_PLATFORM_WINDOWS
@@ -108,3 +110,5 @@ namespace {
 }
 #endif // DOCTEST_CONFIG_DISABLED
 }
+
+DOCTEST_SUPPRESS_PRIVATE_WARNINGS_POP

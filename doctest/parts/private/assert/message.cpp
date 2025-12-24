@@ -3,6 +3,8 @@
 #include "doctest/parts/private/assert/handler.h"
 #include "doctest/parts/private/reporter.h"
 
+DOCTEST_SUPPRESS_PRIVATE_WARNINGS_PUSH
+
 #ifndef DOCTEST_CONFIG_DISABLE
 
 namespace doctest {
@@ -49,3 +51,5 @@ namespace detail {
 } // namespace doctest
 
 #endif // DOCTEST_CONFIG_DISABLE
+
+DOCTEST_SUPPRESS_PRIVATE_WARNINGS_POP
