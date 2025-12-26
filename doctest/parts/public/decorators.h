@@ -22,6 +22,6 @@ DOCTEST_DEFINE_DECORATOR(may_fail, bool, true);
 DOCTEST_DEFINE_DECORATOR(should_fail, bool, true);
 DOCTEST_DEFINE_DECORATOR(expected_failures, int, 0);
 
-} // namespace
+} // namespace doctest
 
 #endif // DOCTEST_CONFIG_DISABLE

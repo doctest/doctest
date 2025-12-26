@@ -27,7 +27,8 @@ DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_BEGIN
 #include <mutex>
 #define DOCTEST_DECLARE_MUTEX(name) std::mutex name;
 #define DOCTEST_DECLARE_STATIC_MUTEX(name) static DOCTEST_DECLARE_MUTEX(name)
-#define DOCTEST_LOCK_MUTEX(name) std::lock_guard<std::mutex> DOCTEST_ANONYMOUS(DOCTEST_ANON_LOCK_)(name);
+#define DOCTEST_LOCK_MUTEX(name)                                                                   \
+    std::lock_guard<std::mutex> DOCTEST_ANONYMOUS(DOCTEST_ANON_LOCK_)(name);
 #else // DOCTEST_CONFIG_NO_MULTITHREADING
 #define DOCTEST_DECLARE_MUTEX(name)
 #define DOCTEST_DECLARE_STATIC_MUTEX(name)
@@ -104,7 +105,8 @@ DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_END
 #endif // DOCTEST_CONFIG_DISABLE
 
 #ifndef DOCTEST_THREAD_LOCAL
-#if defined(DOCTEST_CONFIG_NO_MULTITHREADING) || DOCTEST_MSVC && (DOCTEST_MSVC < DOCTEST_COMPILER(19, 0, 0))
+#if defined(DOCTEST_CONFIG_NO_MULTITHREADING) ||                                                   \
+        DOCTEST_MSVC && (DOCTEST_MSVC < DOCTEST_COMPILER(19, 0, 0))
 #define DOCTEST_THREAD_LOCAL
 #else // DOCTEST_MSVC
 #define DOCTEST_THREAD_LOCAL thread_local

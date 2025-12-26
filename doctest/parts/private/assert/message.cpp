@@ -5,8 +5,7 @@
 
 #ifndef DOCTEST_CONFIG_DISABLE
 
-namespace doctest {
-namespace detail {
+namespace doctest { namespace detail {
 
     MessageBuilder::MessageBuilder(const char* file, int line, assertType::Enum severity) {
         m_stream   = tlssPush();
@@ -16,14 +15,14 @@ namespace detail {
     }
 
     MessageBuilder::~MessageBuilder() {
-        if (!logged)
+        if(!logged)
             tlssPop();
     }
 
     bool MessageBuilder::log() {
-        if (!logged) {
+        if(!logged) {
             m_string = tlssPop();
-            logged = true;
+            logged   = true;
         }
 
         DOCTEST_ITERATE_THROUGH_REPORTERS(log_message, *this);
@@ -37,7 +36,8 @@ namespace detail {
         }
 
         return isDebuggerActive() && !getContextOptions()->no_breaks && !isWarn &&
-            (g_cs->currentTest == nullptr || !g_cs->currentTest->m_no_breaks); // break into debugger
+               (g_cs->currentTest == nullptr ||
+                !g_cs->currentTest->m_no_breaks); // break into debugger
     }
 
     void MessageBuilder::react() {
@@ -45,7 +45,6 @@ namespace detail {
             throwException();
     }
 
-} // namespace detail
-} // namespace doctest
+}} // namespace doctest::detail
 
 #endif // DOCTEST_CONFIG_DISABLE

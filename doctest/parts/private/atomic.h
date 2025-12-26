@@ -2,13 +2,12 @@
 
 #ifndef DOCTEST_CONFIG_DISABLE
 
-namespace doctest {
-namespace detail {
+namespace doctest { namespace detail {
 
 #ifdef DOCTEST_CONFIG_NO_MULTITHREADING
     template <typename T>
     using Atomic = T;
-#else // DOCTEST_CONFIG_NO_MULTITHREADING
+#else  // DOCTEST_CONFIG_NO_MULTITHREADING
     template <typename T>
     using Atomic = std::atomic<T>;
 #endif // DOCTEST_CONFIG_NO_MULTITHREADING
@@ -16,7 +15,7 @@ namespace detail {
 #if defined(DOCTEST_CONFIG_NO_MULTI_LANE_ATOMICS) || defined(DOCTEST_CONFIG_NO_MULTITHREADING)
     template <typename T>
     using MultiLaneAtomic = Atomic<T>;
-#else // DOCTEST_CONFIG_NO_MULTI_LANE_ATOMICS
+#else  // DOCTEST_CONFIG_NO_MULTI_LANE_ATOMICS
     // Provides a multilane implementation of an atomic variable that supports add, sub, load,
     // store. Instead of using a single atomic variable, this splits up into multiple ones,
     // each sitting on a separate cache line. The goal is to provide a speedup when most
@@ -33,7 +32,7 @@ namespace detail {
         struct CacheLineAlignedAtomic
         {
             Atomic<T> atomic{};
-            char padding[DOCTEST_MULTI_LANE_ATOMICS_CACHE_LINE_SIZE - sizeof(Atomic<T>)];
+            char      padding[DOCTEST_MULTI_LANE_ATOMICS_CACHE_LINE_SIZE - sizeof(Atomic<T>)];
         };
         CacheLineAlignedAtomic m_atomics[DOCTEST_MULTI_LANE_ATOMICS_THREAD_LANES];
 
@@ -68,7 +67,8 @@ namespace detail {
             return desired;
         }
 
-        void store(T desired, std::memory_order order = std::memory_order_seq_cst) DOCTEST_NOEXCEPT {
+        void store(T                 desired,
+                   std::memory_order order = std::memory_order_seq_cst) DOCTEST_NOEXCEPT {
             // first value becomes desired", all others become 0.
             for(auto& c : m_atomics) {
                 c.atomic.store(desired, order);
@@ -90,7 +90,7 @@ namespace detail {
         // 3. This tlsLaneIdx is stored in the thread local data, so it is directly available with
         //    little overhead.
         Atomic<T>& myAtomic() DOCTEST_NOEXCEPT {
-            static Atomic<size_t> laneCounter;
+            static Atomic<size_t>       laneCounter;
             DOCTEST_THREAD_LOCAL size_t tlsLaneIdx =
                     laneCounter++ % DOCTEST_MULTI_LANE_ATOMICS_THREAD_LANES;
 
@@ -99,8 +99,6 @@ namespace detail {
     };
 #endif // DOCTEST_CONFIG_NO_MULTI_LANE_ATOMICS
 
-
-} // namespace detail
-} // namespace doctest
+}} // namespace doctest::detail
 
 #endif // DOCTEST_CONFIG_DISABLE

@@ -40,8 +40,6 @@ bool operator<(const Approx& lhs, double rhs) { return lhs.m_value < rhs && lhs 
 bool operator>(double lhs, const Approx& rhs) { return lhs > rhs.m_value && lhs != rhs; }
 bool operator>(const Approx& lhs, double rhs) { return lhs.m_value > rhs && lhs != rhs; }
 
-String toString(const Approx& in) {
-    return "Approx( " + doctest::toString(in.m_value) + " )";
-}
+String toString(const Approx& in) { return "Approx( " + doctest::toString(in.m_value) + " )"; }
 
 } // namespace doctest

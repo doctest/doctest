@@ -29,20 +29,17 @@ const char* skipPathFromFilename(const char* file) {
             return forward + 1;
         }
     } else {
-        const auto prefixes = getContextOptions()->strip_file_prefixes;
-        const char separator = DOCTEST_CONFIG_OPTIONS_FILE_PREFIX_SEPARATOR;
+        const auto        prefixes      = getContextOptions()->strip_file_prefixes;
+        const char        separator     = DOCTEST_CONFIG_OPTIONS_FILE_PREFIX_SEPARATOR;
         String::size_type longest_match = 0U;
-        for(String::size_type pos = 0U; pos < prefixes.size(); ++pos)
-        {
+        for(String::size_type pos = 0U; pos < prefixes.size(); ++pos) {
             const auto prefix_start = pos;
             pos = std::min(prefixes.find(separator, prefix_start), prefixes.size());
 
             const auto prefix_size = pos - prefix_start;
-            if(prefix_size > longest_match)
-            {
+            if(prefix_size > longest_match) {
                 // TODO under DOCTEST_MSVC: does the comparison need strnicmp() to work with drive letter capitalization?
-                if(0 == std::strncmp(prefixes.c_str() + prefix_start, file, prefix_size))
-                {
+                if(0 == std::strncmp(prefixes.c_str() + prefix_start, file, prefix_size)) {
                     longest_match = prefix_size;
                 }
             }
@@ -64,16 +61,14 @@ namespace {
     using namespace detail;
 
     DOCTEST_NO_SANITIZE_INTEGER
-    unsigned long long hash(unsigned long long a, unsigned long long b) {
-        return (a << 5) + b;
-    }
+    unsigned long long hash(unsigned long long a, unsigned long long b) { return (a << 5) + b; }
 
     // C string hash function (djb2) - taken from http://www.cse.yorku.ca/~oz/hash.html
     DOCTEST_NO_SANITIZE_INTEGER
     unsigned long long hash(const char* str) {
         unsigned long long hash = 5381;
-        char c;
-        while ((c = *str++))
+        char               c;
+        while((c = *str++))
             hash = ((hash << 5) + hash) + c; // hash * 33 + c
         return hash;
     }
@@ -84,8 +79,8 @@ namespace {
 
     unsigned long long hash(const std::vector<SubcaseSignature>& sigs, size_t count) {
         unsigned long long running = 0;
-        auto end = sigs.begin() + count;
-        for (auto it = sigs.begin(); it != end; it++) {
+        auto               end     = sigs.begin() + count;
+        for(auto it = sigs.begin(); it != end; it++) {
             running = hash(running, hash(*it));
         }
         return running;
@@ -93,13 +88,12 @@ namespace {
 
     unsigned long long hash(const std::vector<SubcaseSignature>& sigs) {
         unsigned long long running = 0;
-        for (const SubcaseSignature& sig : sigs) {
+        for(const SubcaseSignature& sig : sigs) {
             running = hash(running, hash(sig));
         }
         return running;
     }
 } // namespace
-
 
 namespace detail {
 
@@ -111,7 +105,8 @@ namespace detail {
     bool ResultBuilder::log() {
         if(m_at & assertType::is_throws) { //!OCLINT bitwise operator in conditional
             m_failed = !m_threw;
-        } else if((m_at & assertType::is_throws_as) && (m_at & assertType::is_throws_with)) { //!OCLINT
+        } else if((m_at & assertType::is_throws_as) &&
+                  (m_at & assertType::is_throws_with)) { //!OCLINT
             m_failed = !m_threw_as || !m_exception_string.check(m_exception);
         } else if(m_at & assertType::is_throws_as) { //!OCLINT bitwise operator in conditional
             m_failed = !m_threw_as;
@@ -135,7 +130,8 @@ namespace detail {
         }
 
         return m_failed && isDebuggerActive() && !getContextOptions()->no_breaks &&
-            (g_cs->currentTest == nullptr || !g_cs->currentTest->m_no_breaks); // break into debugger
+               (g_cs->currentTest == nullptr ||
+                !g_cs->currentTest->m_no_breaks); // break into debugger
     }
 
 } // namespace detail

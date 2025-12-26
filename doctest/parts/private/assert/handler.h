@@ -4,8 +4,7 @@
 
 #ifndef DOCTEST_CONFIG_DISABLE
 
-namespace doctest {
-namespace {
+namespace doctest { namespace {
 
     using detail::g_cs;
 
@@ -25,7 +24,7 @@ namespace {
 
         DOCTEST_ITERATE_THROUGH_REPORTERS(test_case_exception, {message.c_str(), true});
 
-        while (g_cs->subcaseStack.size()) {
+        while(g_cs->subcaseStack.size()) {
             g_cs->subcaseStack.pop_back();
             DOCTEST_ITERATE_THROUGH_REPORTERS(subcase_end, DOCTEST_EMPTY);
         }
@@ -38,7 +37,6 @@ namespace {
     }
 #endif // DOCTEST_CONFIG_POSIX_SIGNALS || DOCTEST_CONFIG_WINDOWS_SEH
 
-} // namespace
-} // namespace doctest
+}} // namespace doctest
 
 #endif // DOCTEST_CONFIG_DISABLE

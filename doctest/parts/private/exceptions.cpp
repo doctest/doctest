@@ -3,8 +3,7 @@
 
 #ifndef DOCTEST_CONFIG_DISABLE
 
-namespace doctest {
-namespace detail {
+namespace doctest { namespace detail {
 
     bool checkIfShouldThrow(assertType::Enum at) {
         if(at & assertType::is_require) //!OCLINT bitwise operator in conditional
@@ -24,11 +23,10 @@ namespace detail {
         g_cs->shouldLogCurrentException = false;
         throw TestFailureException(); // NOLINT(hicpp-exception-baseclass)
     }
-#else // DOCTEST_CONFIG_NO_EXCEPTIONS
+#else  // DOCTEST_CONFIG_NO_EXCEPTIONS
     void throwException() {}
 #endif // DOCTEST_CONFIG_NO_EXCEPTIONS
 
-} // namespace detail
-} // namespace doctest
+}} // namespace doctest::detail
 
 #endif // DOCTEST_CONFIG_DISABLE

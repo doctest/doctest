@@ -1,7 +1,6 @@
 #ifndef DOCTEST_CONFIG_DISABLE
 
-namespace doctest {
-namespace detail {
+namespace doctest { namespace detail {
 
 // more checks could be added - like in Catch:
 // https://github.com/catchorg/Catch2/pull/1480/files
@@ -61,7 +60,7 @@ namespace detail {
         DOCTEST_NOINLINE bool binary_assert(const DOCTEST_REF_WRAP(L) lhs,
                                             const DOCTEST_REF_WRAP(R) rhs) {
             m_failed = !RelationalComparator<comparison, L, R>()(lhs, rhs);
-            if (m_failed || getContextOptions()->success) {
+            if(m_failed || getContextOptions()->success) {
                 m_decomp = stringifyBinaryExpr(lhs, ", ", rhs);
             }
             return !m_failed;
@@ -71,11 +70,11 @@ namespace detail {
         DOCTEST_NOINLINE bool unary_assert(const DOCTEST_REF_WRAP(L) val) {
             m_failed = !val;
 
-            if (m_at & assertType::is_false) { //!OCLINT bitwise operator in conditional
+            if(m_at & assertType::is_false) { //!OCLINT bitwise operator in conditional
                 m_failed = !m_failed;
             }
 
-            if (m_failed || getContextOptions()->success) {
+            if(m_failed || getContextOptions()->success) {
                 m_decomp = (DOCTEST_STRINGIFY(val));
             }
 
@@ -88,7 +87,6 @@ namespace detail {
         void react() const;
     };
 
-} // namespace detail
-} // namespace doctest
+}} // namespace doctest::detail
 
 #endif // DOCTEST_CONFIG_DISABLE

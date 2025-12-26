@@ -1,13 +1,12 @@
 #define DOCTEST_DECLARE_INTERFACE(name)                                                            \
     virtual ~name();                                                                               \
-    name() = default;                                                                              \
-    name(const name&) = delete;                                                                    \
-    name(name&&) = delete;                                                                         \
+    name()                       = default;                                                        \
+    name(const name&)            = delete;                                                         \
+    name(name&&)                 = delete;                                                         \
     name& operator=(const name&) = delete;                                                         \
-    name& operator=(name&&) = delete;
+    name& operator=(name&&)      = delete;
 
-#define DOCTEST_DEFINE_INTERFACE(name)                                                             \
-    name::~name() = default;
+#define DOCTEST_DEFINE_INTERFACE(name) name::~name() = default;
 
 // internal macros for string concatenation and anonymous variable name generation
 #define DOCTEST_CAT_IMPL(s1, s2) s1##s2
@@ -26,9 +25,9 @@
 
 namespace doctest { namespace detail {
     static DOCTEST_CONSTEXPR int consume(const int*, int) noexcept { return 0; }
-}}
+}} // namespace doctest::detail
 
-#define DOCTEST_GLOBAL_NO_WARNINGS(var, ...)                                                         \
-    DOCTEST_CLANG_SUPPRESS_WARNING_WITH_PUSH("-Wglobal-constructors")                                \
-    static const int var = doctest::detail::consume(&var, __VA_ARGS__);                              \
+#define DOCTEST_GLOBAL_NO_WARNINGS(var, ...)                                                       \
+    DOCTEST_CLANG_SUPPRESS_WARNING_WITH_PUSH("-Wglobal-constructors")                              \
+    static const int var = doctest::detail::consume(&var, __VA_ARGS__);                            \
     DOCTEST_CLANG_SUPPRESS_WARNING_POP

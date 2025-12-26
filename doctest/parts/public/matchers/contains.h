@@ -1,6 +1,7 @@
 namespace doctest {
 
-class DOCTEST_INTERFACE Contains {
+class DOCTEST_INTERFACE Contains
+{
 public:
     explicit Contains(const String& string);
 

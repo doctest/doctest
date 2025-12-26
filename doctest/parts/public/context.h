@@ -1,6 +1,6 @@
 namespace doctest {
 
-    DOCTEST_INTERFACE extern bool is_running_in_test;
+DOCTEST_INTERFACE extern bool is_running_in_test;
 
 namespace detail {
     using assert_handler = void (*)(const AssertData&);
@@ -17,10 +17,10 @@ public:
     explicit Context(int argc = 0, const char* const* argv = nullptr);
 
     Context(const Context&) = delete;
-    Context(Context&&) = delete;
+    Context(Context&&)      = delete;
 
     Context& operator=(const Context&) = delete;
-    Context& operator=(Context&&) = delete;
+    Context& operator=(Context&&)      = delete;
 
     ~Context(); // NOLINT(performance-trivially-destructible)
 

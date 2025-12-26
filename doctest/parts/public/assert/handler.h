@@ -1,7 +1,6 @@
 #ifndef DOCTEST_CONFIG_DISABLE
 
-namespace doctest {
-namespace detail {
+namespace doctest { namespace detail {
 
     DOCTEST_INTERFACE void failed_out_of_a_testing_context(const AssertData& ad);
 
@@ -22,8 +21,7 @@ namespace detail {
                     throwException();                                                              \
             }                                                                                      \
             return !failed;                                                                        \
-        }                                                                                          \
-    } while(false)
+    }} while(false)
 
 #define DOCTEST_ASSERT_IN_TESTS(decomp)                                                            \
     ResultBuilder rb(at, file, line, expr);                                                        \
@@ -67,7 +65,6 @@ namespace detail {
         return !failed;
     }
 
-} // namespace detail
-} // namespace doctest
+}} // namespace doctest::detail
 
 #endif // DOCTEST_CONFIG_DISABLE

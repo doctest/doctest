@@ -1,20 +1,18 @@
 #ifndef DOCTEST_CONFIG_DISABLE
 
-namespace doctest {
-namespace detail {
+namespace doctest { namespace detail {
 
-  struct DOCTEST_INTERFACE TestFailureException
-  {
-  };
+    struct DOCTEST_INTERFACE TestFailureException
+    {
+    };
 
-  DOCTEST_INTERFACE bool checkIfShouldThrow(assertType::Enum at);
+    DOCTEST_INTERFACE bool checkIfShouldThrow(assertType::Enum at);
 
 #ifndef DOCTEST_CONFIG_NO_EXCEPTIONS
-  DOCTEST_NORETURN
+    DOCTEST_NORETURN
 #endif // DOCTEST_CONFIG_NO_EXCEPTIONS
-  DOCTEST_INTERFACE void throwException();
+    DOCTEST_INTERFACE void throwException();
 
-} // namespace detail
-} // namespace doctest
+}} // namespace doctest::detail
 
 #endif // DOCTEST_CONFIG_DISABLE

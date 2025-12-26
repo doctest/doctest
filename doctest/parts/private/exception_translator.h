@@ -1,12 +1,10 @@
 #ifndef DOCTEST_CONFIG_DISABLE
 
-namespace doctest {
-namespace detail {
+namespace doctest { namespace detail {
 
     std::vector<const IExceptionTranslator*>& getExceptionTranslators();
-    String translateActiveException();
+    String                                    translateActiveException();
 
-} // namespace detail
-} // namespace doctest
+}} // namespace doctest::detail
 
 #endif // DOCTEST_CONFIG_DISABLE

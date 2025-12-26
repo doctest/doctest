@@ -4,8 +4,7 @@
 
 #ifndef DOCTEST_CONFIG_DISABLE
 
-namespace doctest {
-namespace detail {
+namespace doctest { namespace detail {
 
     // this holds both parameters from the command line and runtime data for tests
     struct ContextState : ContextOptions, TestRunStats, CurrentTestCaseStats
@@ -24,12 +23,12 @@ namespace detail {
         std::vector<String> stringifiedContexts; // logging from INFO() due to an exception
 
         // stuff for subcases
-        bool reachedLeaf;
-        std::vector<SubcaseSignature> subcaseStack;
-        std::vector<SubcaseSignature> nextSubcaseStack;
+        bool                                   reachedLeaf;
+        std::vector<SubcaseSignature>          subcaseStack;
+        std::vector<SubcaseSignature>          nextSubcaseStack;
         std::unordered_set<unsigned long long> fullyTraversedSubcases;
-        size_t currentSubcaseDepth;
-        Atomic<bool> shouldLogCurrentException;
+        size_t                                 currentSubcaseDepth;
+        Atomic<bool>                           shouldLogCurrentException;
 
         void resetRunData() {
             numTestCases                = 0;
@@ -92,7 +91,6 @@ namespace detail {
     // could be a race or that there wouldn't be a race even if using the context directly
     DOCTEST_THREAD_LOCAL bool g_no_colors;
 
-} // namespace detail
-} // namespace doctest
+}} // namespace doctest::detail
 
 #endif // DOCTEST_CONFIG_DISABLE

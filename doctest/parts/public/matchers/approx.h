@@ -8,9 +8,10 @@ struct DOCTEST_INTERFACE Approx
 
 #ifdef DOCTEST_CONFIG_INCLUDE_TYPE_TRAITS
     template <typename T>
-    explicit Approx(const T& value,
-                    typename detail::types::enable_if<std::is_constructible<double, T>::value>::type* =
-                            static_cast<T*>(nullptr)) {
+    explicit Approx(
+            const T& value,
+            typename detail::types::enable_if<std::is_constructible<double, T>::value>::type* =
+                    static_cast<T*>(nullptr)) {
         *this = static_cast<double>(value);
     }
 #endif // DOCTEST_CONFIG_INCLUDE_TYPE_TRAITS

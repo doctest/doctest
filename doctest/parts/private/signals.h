@@ -2,9 +2,7 @@
 
 #ifndef DOCTEST_CONFIG_DISABLE
 
-namespace doctest {
-namespace detail {
-namespace {
+namespace doctest { namespace detail { namespace {
 
     using namespace detail;
 
@@ -21,7 +19,7 @@ namespace {
 
     struct SignalDefs
     {
-        DWORD id;
+        DWORD       id;
         const char* name;
     };
     // There is no 1-1 mapping between signals and windows exceptions.
@@ -88,7 +86,8 @@ namespace {
                 reportFatal("Terminate handler called");
                 if(isDebuggerActive() && !g_cs->no_breaks)
                     DOCTEST_BREAK_INTO_DEBUGGER();
-                std::exit(EXIT_FAILURE); // explicitly exit - otherwise the SIGABRT handler may be called as well
+                std::exit(
+                        EXIT_FAILURE); // explicitly exit - otherwise the SIGABRT handler may be called as well
             });
 
             // SIGABRT is raised when:
@@ -119,7 +118,8 @@ namespace {
             // input (e.g. passing an invalid file descriptor). The default handling
             // for these assertions is to pop up a dialog and wait for user input.
             // Instead ask the CRT to dump such assertions to stderr non-interactively.
-            prev_report_mode = _CrtSetReportMode(_CRT_ASSERT, _CRTDBG_MODE_FILE | _CRTDBG_MODE_DEBUG);
+            prev_report_mode =
+                    _CrtSetReportMode(_CRT_ASSERT, _CRTDBG_MODE_FILE | _CRTDBG_MODE_DEBUG);
             prev_report_file = _CrtSetReportFile(_CRT_ASSERT, _CRTDBG_FILE_STDERR);
         }
 
@@ -147,10 +147,10 @@ namespace {
         static unsigned int prev_abort_behavior;
         static int          prev_report_mode;
         static _HFILE       prev_report_file;
-        static void (DOCTEST_CDECL *prev_sigabrt_handler)(int);
-        static std::terminate_handler original_terminate_handler;
-        static bool isSet;
-        static ULONG guaranteeSize;
+        static void(DOCTEST_CDECL* prev_sigabrt_handler)(int);
+        static std::terminate_handler       original_terminate_handler;
+        static bool                         isSet;
+        static ULONG                        guaranteeSize;
         static LPTOP_LEVEL_EXCEPTION_FILTER previousTop;
     };
 
@@ -159,11 +159,11 @@ namespace {
     unsigned int FatalConditionHandler::prev_abort_behavior;
     int          FatalConditionHandler::prev_report_mode;
     _HFILE       FatalConditionHandler::prev_report_file;
-    void (DOCTEST_CDECL *FatalConditionHandler::prev_sigabrt_handler)(int);
-    std::terminate_handler FatalConditionHandler::original_terminate_handler;
-    bool FatalConditionHandler::isSet = false;
-    ULONG FatalConditionHandler::guaranteeSize = 0;
-    LPTOP_LEVEL_EXCEPTION_FILTER FatalConditionHandler::previousTop = nullptr;
+    void(DOCTEST_CDECL* FatalConditionHandler::prev_sigabrt_handler)(int);
+    std::terminate_handler       FatalConditionHandler::original_terminate_handler;
+    bool                         FatalConditionHandler::isSet         = false;
+    ULONG                        FatalConditionHandler::guaranteeSize = 0;
+    LPTOP_LEVEL_EXCEPTION_FILTER FatalConditionHandler::previousTop   = nullptr;
 
 #else // DOCTEST_PLATFORM_WINDOWS
 
@@ -201,13 +201,9 @@ namespace {
             raise(sig);
         }
 
-        static void allocateAltStackMem() {
-            altStackMem = new char[altStackSize];
-        }
+        static void allocateAltStackMem() { altStackMem = new char[altStackSize]; }
 
-        static void freeAltStackMem() {
-            delete[] altStackMem;
-        }
+        static void freeAltStackMem() { delete[] altStackMem; }
 
         FatalConditionHandler() {
             isSet = true;
@@ -238,17 +234,15 @@ namespace {
         }
     };
 
-    bool             FatalConditionHandler::isSet = false;
+    bool             FatalConditionHandler::isSet                                      = false;
     struct sigaction FatalConditionHandler::oldSigActions[DOCTEST_COUNTOF(signalDefs)] = {};
-    stack_t          FatalConditionHandler::oldSigStack = {};
+    stack_t          FatalConditionHandler::oldSigStack                                = {};
     size_t           FatalConditionHandler::altStackSize = 4 * SIGSTKSZ;
-    char*            FatalConditionHandler::altStackMem = nullptr;
+    char*            FatalConditionHandler::altStackMem  = nullptr;
 
 #endif // DOCTEST_PLATFORM_WINDOWS
 #endif // DOCTEST_CONFIG_POSIX_SIGNALS || DOCTEST_CONFIG_WINDOWS_SEH
 
-} // namespace
-} // namespace detail
-} // namespace doctest
+}}} // namespace doctest::detail
 
 #endif // DOCTEST_CONFIG_DISABLE

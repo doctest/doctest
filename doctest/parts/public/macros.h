@@ -1,11 +1,11 @@
 #ifndef DOCTEST_CONFIG_DISABLE
-namespace doctest {
-namespace detail {
-    template<typename T>
-    int instantiationHelper(const T&) { return 0; }
+namespace doctest { namespace detail {
+    template <typename T>
+    int instantiationHelper(const T&) {
+        return 0;
+    }
 
-} // namespace detail
-} // namespace doctest
+}} // namespace doctest::detail
 #endif // DOCTEST_CONFIG_DISABLE
 
 #ifdef DOCTEST_CONFIG_ASSERTS_RETURN_VALUES
@@ -29,7 +29,8 @@ namespace detail {
 
 // common code in asserts - for convenience
 #define DOCTEST_ASSERT_LOG_REACT_RETURN(b)                                                         \
-    if(b.log()) DOCTEST_BREAK_INTO_DEBUGGER();                                                     \
+    if(b.log())                                                                                    \
+        DOCTEST_BREAK_INTO_DEBUGGER();                                                             \
     b.react();                                                                                     \
     DOCTEST_FUNC_SCOPE_RET(!b.m_failed)
 
@@ -53,7 +54,8 @@ namespace detail {
 
 // registers the test by initializing a dummy var with a function
 #define DOCTEST_REGISTER_FUNCTION(global_prefix, f, decorators)                                    \
-    global_prefix DOCTEST_GLOBAL_NO_WARNINGS(DOCTEST_ANONYMOUS(DOCTEST_ANON_VAR_), /* NOLINT */    \
+    global_prefix DOCTEST_GLOBAL_NO_WARNINGS(                                                      \
+            DOCTEST_ANONYMOUS(DOCTEST_ANON_VAR_), /* NOLINT */                                     \
             doctest::detail::regTest(                                                              \
                     doctest::detail::TestCase(                                                     \
                             f, __FILE__, __LINE__,                                                 \
@@ -126,11 +128,12 @@ namespace detail {
         struct iter<std::tuple<Type, Rest...>>                                                     \
         {                                                                                          \
             iter(const char* file, unsigned line, int index) {                                     \
-                doctest::detail::regTest(doctest::detail::TestCase(func<Type>, file, line,         \
-                                            doctest_detail_test_suite_ns::getCurrentTestSuite(),   \
-                                            doctest::toString<Type>(),                             \
-                                            int(line) * 1000 + index)                              \
-                                         * dec);                                                   \
+                doctest::detail::regTest(                                                          \
+                        doctest::detail::TestCase(                                                 \
+                                func<Type>, file, line,                                            \
+                                doctest_detail_test_suite_ns::getCurrentTestSuite(),               \
+                                doctest::toString<Type>(), int(line) * 1000 + index) *             \
+                        dec);                                                                      \
                 iter<std::tuple<Rest...>>(file, line, index + 1);                                  \
             }                                                                                      \
         };                                                                                         \
@@ -148,16 +151,21 @@ namespace detail {
                                            DOCTEST_ANONYMOUS(DOCTEST_ANON_TMP_))
 
 #define DOCTEST_TEST_CASE_TEMPLATE_INSTANTIATE_IMPL(id, anon, ...)                                 \
-    DOCTEST_GLOBAL_NO_WARNINGS(DOCTEST_CAT(anon, DUMMY), /* NOLINT(cert-err58-cpp, fuchsia-statically-constructed-objects) */ \
-        doctest::detail::instantiationHelper(                                                      \
-            DOCTEST_CAT(id, ITERATOR)<__VA_ARGS__>(__FILE__, __LINE__, 0)))
+    DOCTEST_GLOBAL_NO_WARNINGS(                                                                    \
+            DOCTEST_CAT(                                                                           \
+                    anon,                                                                          \
+                    DUMMY), /* NOLINT(cert-err58-cpp, fuchsia-statically-constructed-objects) */   \
+            doctest::detail::instantiationHelper(DOCTEST_CAT(id, ITERATOR) < __VA_ARGS__ >         \
+                                                 (__FILE__, __LINE__, 0)))
 
 #define DOCTEST_TEST_CASE_TEMPLATE_INVOKE(id, ...)                                                 \
-    DOCTEST_TEST_CASE_TEMPLATE_INSTANTIATE_IMPL(id, DOCTEST_ANONYMOUS(DOCTEST_ANON_TMP_), std::tuple<__VA_ARGS__>) \
+    DOCTEST_TEST_CASE_TEMPLATE_INSTANTIATE_IMPL(id, DOCTEST_ANONYMOUS(DOCTEST_ANON_TMP_),          \
+                                                std::tuple<__VA_ARGS__>)                           \
     static_assert(true, "")
 
 #define DOCTEST_TEST_CASE_TEMPLATE_APPLY(id, ...)                                                  \
-    DOCTEST_TEST_CASE_TEMPLATE_INSTANTIATE_IMPL(id, DOCTEST_ANONYMOUS(DOCTEST_ANON_TMP_), __VA_ARGS__) \
+    DOCTEST_TEST_CASE_TEMPLATE_INSTANTIATE_IMPL(id, DOCTEST_ANONYMOUS(DOCTEST_ANON_TMP_),          \
+                                                __VA_ARGS__)                                       \
     static_assert(true, "")
 
 #define DOCTEST_TEST_CASE_TEMPLATE_IMPL(dec, T, anon, ...)                                         \
@@ -171,7 +179,7 @@ namespace detail {
 
 // for subcases
 #define DOCTEST_SUBCASE(name)                                                                      \
-    if(const doctest::detail::Subcase & DOCTEST_ANONYMOUS(DOCTEST_ANON_SUBCASE_) DOCTEST_UNUSED =  \
+    if(const doctest::detail::Subcase& DOCTEST_ANONYMOUS(DOCTEST_ANON_SUBCASE_) DOCTEST_UNUSED =   \
                doctest::detail::Subcase(name, __FILE__, __LINE__))
 
 // for grouping tests in test suites by using code blocks
@@ -201,20 +209,22 @@ namespace detail {
 
 // for starting a testsuite block
 #define DOCTEST_TEST_SUITE_BEGIN(decorators)                                                       \
-    DOCTEST_GLOBAL_NO_WARNINGS(DOCTEST_ANONYMOUS(DOCTEST_ANON_VAR_), /* NOLINT(cert-err58-cpp) */  \
+    DOCTEST_GLOBAL_NO_WARNINGS(                                                                    \
+            DOCTEST_ANONYMOUS(DOCTEST_ANON_VAR_), /* NOLINT(cert-err58-cpp) */                     \
             doctest::detail::setTestSuite(doctest::detail::TestSuite() * decorators))              \
     static_assert(true, "")
 
 // for ending a testsuite block
 #define DOCTEST_TEST_SUITE_END                                                                     \
     DOCTEST_GLOBAL_NO_WARNINGS(DOCTEST_ANONYMOUS(DOCTEST_ANON_VAR_), /* NOLINT(cert-err58-cpp) */  \
-            doctest::detail::setTestSuite(doctest::detail::TestSuite() * ""))                      \
+                               doctest::detail::setTestSuite(doctest::detail::TestSuite() * ""))   \
     using DOCTEST_ANONYMOUS(DOCTEST_ANON_FOR_SEMICOLON_) = int
 
 // for registering exception translators
 #define DOCTEST_REGISTER_EXCEPTION_TRANSLATOR_IMPL(translatorName, signature)                      \
     inline doctest::String translatorName(signature);                                              \
-    DOCTEST_GLOBAL_NO_WARNINGS(DOCTEST_ANONYMOUS(DOCTEST_ANON_TRANSLATOR_), /* NOLINT(cert-err58-cpp) */ \
+    DOCTEST_GLOBAL_NO_WARNINGS(                                                                    \
+            DOCTEST_ANONYMOUS(DOCTEST_ANON_TRANSLATOR_), /* NOLINT(cert-err58-cpp) */              \
             doctest::registerExceptionTranslator(translatorName))                                  \
     doctest::String translatorName(signature)
 
@@ -224,13 +234,15 @@ namespace detail {
 
 // for registering reporters
 #define DOCTEST_REGISTER_REPORTER(name, priority, reporter)                                        \
-    DOCTEST_GLOBAL_NO_WARNINGS(DOCTEST_ANONYMOUS(DOCTEST_ANON_REPORTER_), /* NOLINT(cert-err58-cpp) */ \
+    DOCTEST_GLOBAL_NO_WARNINGS(                                                                    \
+            DOCTEST_ANONYMOUS(DOCTEST_ANON_REPORTER_), /* NOLINT(cert-err58-cpp) */                \
             doctest::registerReporter<reporter>(name, priority, true))                             \
     static_assert(true, "")
 
 // for registering listeners
 #define DOCTEST_REGISTER_LISTENER(name, priority, reporter)                                        \
-    DOCTEST_GLOBAL_NO_WARNINGS(DOCTEST_ANONYMOUS(DOCTEST_ANON_REPORTER_), /* NOLINT(cert-err58-cpp) */ \
+    DOCTEST_GLOBAL_NO_WARNINGS(                                                                    \
+            DOCTEST_ANONYMOUS(DOCTEST_ANON_REPORTER_), /* NOLINT(cert-err58-cpp) */                \
             doctest::registerReporter<reporter>(name, priority, false))                            \
     static_assert(true, "")
 
@@ -242,12 +254,12 @@ namespace detail {
                       __VA_ARGS__)
 // clang-format on
 
-#define DOCTEST_INFO_IMPL(mb_name, s_name, ...)                                       \
-    auto DOCTEST_ANONYMOUS(DOCTEST_CAPTURE_) = doctest::detail::MakeContextScope(                  \
-        [&](std::ostream* s_name) {                                                                \
+#define DOCTEST_INFO_IMPL(mb_name, s_name, ...)                                                    \
+    auto DOCTEST_ANONYMOUS(                                                                        \
+            DOCTEST_CAPTURE_) = doctest::detail::MakeContextScope([&](std::ostream* s_name) {      \
         doctest::detail::MessageBuilder mb_name(__FILE__, __LINE__, doctest::assertType::is_warn); \
         mb_name.m_stream = s_name;                                                                 \
-        mb_name * __VA_ARGS__;                                                                     \
+        mb_name* __VA_ARGS__;                                                                      \
     })
 
 #define DOCTEST_CAPTURE(x) DOCTEST_INFO(#x " := ", x)
@@ -255,11 +267,12 @@ namespace detail {
 #define DOCTEST_ADD_AT_IMPL(type, file, line, mb, ...)                                             \
     DOCTEST_FUNC_SCOPE_BEGIN {                                                                     \
         doctest::detail::MessageBuilder mb(file, line, doctest::assertType::type);                 \
-        mb * __VA_ARGS__;                                                                          \
+        mb*                             __VA_ARGS__;                                               \
         if(mb.log())                                                                               \
             DOCTEST_BREAK_INTO_DEBUGGER();                                                         \
         mb.react();                                                                                \
-    } DOCTEST_FUNC_SCOPE_END
+    }                                                                                              \
+    DOCTEST_FUNC_SCOPE_END
 
 // clang-format off
 #define DOCTEST_ADD_MESSAGE_AT(file, line, ...) DOCTEST_ADD_AT_IMPL(is_warn, file, line, DOCTEST_ANONYMOUS(DOCTEST_MESSAGE_), __VA_ARGS__)
@@ -279,7 +292,7 @@ namespace detail {
     DOCTEST_CLANG_SUPPRESS_WARNING_WITH_PUSH("-Woverloaded-shift-op-parentheses")                  \
     /* NOLINTNEXTLINE(clang-analyzer-cplusplus.NewDeleteLeaks) */                                  \
     doctest::detail::ResultBuilder DOCTEST_RB(doctest::assertType::assert_type, __FILE__,          \
-                                               __LINE__, #__VA_ARGS__);                            \
+                                              __LINE__, #__VA_ARGS__);                             \
     DOCTEST_WRAP_IN_TRY(DOCTEST_RB.setResult(                                                      \
             doctest::detail::ExpressionDecomposer(doctest::assertType::assert_type)                \
             << __VA_ARGS__)) /* NOLINTNEXTLINE(clang-analyzer-cplusplus.NewDeleteLeaks) */         \
@@ -287,27 +300,28 @@ namespace detail {
     DOCTEST_CLANG_SUPPRESS_WARNING_POP
 
 #define DOCTEST_ASSERT_IMPLEMENT_1(assert_type, ...)                                               \
-    DOCTEST_FUNC_SCOPE_BEGIN {                                                                     \
-        DOCTEST_ASSERT_IMPLEMENT_2(assert_type, __VA_ARGS__);                                      \
-    } DOCTEST_FUNC_SCOPE_END // NOLINT(clang-analyzer-cplusplus.NewDeleteLeaks)
+    DOCTEST_FUNC_SCOPE_BEGIN { DOCTEST_ASSERT_IMPLEMENT_2(assert_type, __VA_ARGS__); }             \
+    DOCTEST_FUNC_SCOPE_END // NOLINT(clang-analyzer-cplusplus.NewDeleteLeaks)
 
 #define DOCTEST_BINARY_ASSERT(assert_type, comp, ...)                                              \
     DOCTEST_FUNC_SCOPE_BEGIN {                                                                     \
         doctest::detail::ResultBuilder DOCTEST_RB(doctest::assertType::assert_type, __FILE__,      \
-                                                   __LINE__, #__VA_ARGS__);                        \
+                                                  __LINE__, #__VA_ARGS__);                         \
         DOCTEST_WRAP_IN_TRY(                                                                       \
                 DOCTEST_RB.binary_assert<doctest::detail::binaryAssertComparison::comp>(           \
                         __VA_ARGS__))                                                              \
         DOCTEST_ASSERT_LOG_REACT_RETURN(DOCTEST_RB);                                               \
-    } DOCTEST_FUNC_SCOPE_END
+    }                                                                                              \
+    DOCTEST_FUNC_SCOPE_END
 
 #define DOCTEST_UNARY_ASSERT(assert_type, ...)                                                     \
     DOCTEST_FUNC_SCOPE_BEGIN {                                                                     \
         doctest::detail::ResultBuilder DOCTEST_RB(doctest::assertType::assert_type, __FILE__,      \
-                                                   __LINE__, #__VA_ARGS__);                        \
+                                                  __LINE__, #__VA_ARGS__);                         \
         DOCTEST_WRAP_IN_TRY(DOCTEST_RB.unary_assert(__VA_ARGS__))                                  \
         DOCTEST_ASSERT_LOG_REACT_RETURN(DOCTEST_RB);                                               \
-    } DOCTEST_FUNC_SCOPE_END
+    }                                                                                              \
+    DOCTEST_FUNC_SCOPE_END
 
 #else // DOCTEST_CONFIG_SUPER_FAST_ASSERTS
 
@@ -379,11 +393,12 @@ namespace detail {
     DOCTEST_FUNC_SCOPE_BEGIN {                                                                     \
         if(!doctest::getContextOptions()->no_throw) {                                              \
             doctest::detail::ResultBuilder DOCTEST_RB(doctest::assertType::assert_type, __FILE__,  \
-                                                       __LINE__, #expr, #__VA_ARGS__, message);    \
+                                                      __LINE__, #expr, #__VA_ARGS__, message);     \
             try {                                                                                  \
                 DOCTEST_CAST_TO_VOID(expr)                                                         \
             } catch(const typename doctest::detail::types::remove_const<                           \
-                    typename doctest::detail::types::remove_reference<__VA_ARGS__>::type>::type&) {\
+                    typename doctest::detail::types::remove_reference<__VA_ARGS__>::type>::        \
+                            type&) {                                                               \
                 DOCTEST_RB.translateException();                                                   \
                 DOCTEST_RB.m_threw_as = true;                                                      \
             } catch(...) { DOCTEST_RB.translateException(); }                                      \
@@ -391,31 +406,34 @@ namespace detail {
         } else { /* NOLINT(*-else-after-return) */                                                 \
             DOCTEST_FUNC_SCOPE_RET(false);                                                         \
         }                                                                                          \
-    } DOCTEST_FUNC_SCOPE_END
+    }                                                                                              \
+    DOCTEST_FUNC_SCOPE_END
 
 #define DOCTEST_ASSERT_THROWS_WITH(expr, expr_str, assert_type, ...)                               \
     DOCTEST_FUNC_SCOPE_BEGIN {                                                                     \
         if(!doctest::getContextOptions()->no_throw) {                                              \
             doctest::detail::ResultBuilder DOCTEST_RB(doctest::assertType::assert_type, __FILE__,  \
-                                                       __LINE__, expr_str, "", __VA_ARGS__);       \
+                                                      __LINE__, expr_str, "", __VA_ARGS__);        \
             try {                                                                                  \
                 DOCTEST_CAST_TO_VOID(expr)                                                         \
             } catch(...) { DOCTEST_RB.translateException(); }                                      \
             DOCTEST_ASSERT_LOG_REACT_RETURN(DOCTEST_RB);                                           \
         } else { /* NOLINT(*-else-after-return) */                                                 \
-           DOCTEST_FUNC_SCOPE_RET(false);                                                          \
+            DOCTEST_FUNC_SCOPE_RET(false);                                                         \
         }                                                                                          \
-    } DOCTEST_FUNC_SCOPE_END
+    }                                                                                              \
+    DOCTEST_FUNC_SCOPE_END
 
 #define DOCTEST_ASSERT_NOTHROW(assert_type, ...)                                                   \
     DOCTEST_FUNC_SCOPE_BEGIN {                                                                     \
         doctest::detail::ResultBuilder DOCTEST_RB(doctest::assertType::assert_type, __FILE__,      \
-                                                   __LINE__, #__VA_ARGS__);                        \
+                                                  __LINE__, #__VA_ARGS__);                         \
         try {                                                                                      \
             DOCTEST_CAST_TO_VOID(__VA_ARGS__)                                                      \
         } catch(...) { DOCTEST_RB.translateException(); }                                          \
         DOCTEST_ASSERT_LOG_REACT_RETURN(DOCTEST_RB);                                               \
-    } DOCTEST_FUNC_SCOPE_END
+    }                                                                                              \
+    DOCTEST_FUNC_SCOPE_END
 
 // clang-format off
 #define DOCTEST_WARN_THROWS(...) DOCTEST_ASSERT_THROWS_WITH((__VA_ARGS__), #__VA_ARGS__, DT_WARN_THROWS, "")
@@ -467,7 +485,9 @@ namespace detail {
     namespace /* NOLINT */ {                                                                       \
         template <typename DOCTEST_UNUSED_TEMPLATE_TYPE>                                           \
         struct der : public base                                                                   \
-        { void f(); };                                                                             \
+        {                                                                                          \
+            void f();                                                                              \
+        };                                                                                         \
     }                                                                                              \
     template <typename DOCTEST_UNUSED_TEMPLATE_TYPE>                                               \
     inline void der<DOCTEST_UNUSED_TEMPLATE_TYPE>::f()
@@ -533,8 +553,8 @@ namespace detail {
 #define DOCTEST_FAIL_CHECK(...) (static_cast<void>(0))
 #define DOCTEST_FAIL(...) (static_cast<void>(0))
 
-#if defined(DOCTEST_CONFIG_EVALUATE_ASSERTS_EVEN_WHEN_DISABLED)                                    \
- && defined(DOCTEST_CONFIG_ASSERTS_RETURN_VALUES)
+#if defined(DOCTEST_CONFIG_EVALUATE_ASSERTS_EVEN_WHEN_DISABLED) &&                                 \
+        defined(DOCTEST_CONFIG_ASSERTS_RETURN_VALUES)
 
 #define DOCTEST_WARN(...) [&] { return __VA_ARGS__; }()
 #define DOCTEST_CHECK(...) [&] { return __VA_ARGS__; }()
@@ -550,11 +570,12 @@ namespace detail {
 #define DOCTEST_CHECK_FALSE_MESSAGE(cond, ...) [&] { return !(cond); }()
 #define DOCTEST_REQUIRE_FALSE_MESSAGE(cond, ...) [&] { return !(cond); }()
 
-namespace doctest {
-namespace detail {
+namespace doctest { namespace detail {
 #define DOCTEST_RELATIONAL_OP(name, op)                                                            \
     template <typename L, typename R>                                                              \
-    bool name(const DOCTEST_REF_WRAP(L) lhs, const DOCTEST_REF_WRAP(R) rhs) { return lhs op rhs; }
+    bool name(const DOCTEST_REF_WRAP(L) lhs, const DOCTEST_REF_WRAP(R) rhs) {                      \
+        return lhs op rhs;                                                                         \
+    }
 
     DOCTEST_RELATIONAL_OP(eq, ==)
     DOCTEST_RELATIONAL_OP(ne, !=)
@@ -562,8 +583,7 @@ namespace detail {
     DOCTEST_RELATIONAL_OP(gt, >)
     DOCTEST_RELATIONAL_OP(le, <=)
     DOCTEST_RELATIONAL_OP(ge, >=)
-} // namespace detail
-} // namespace doctest
+}} // namespace doctest::detail
 
 #define DOCTEST_WARN_EQ(...) [&] { return doctest::detail::eq(__VA_ARGS__); }()
 #define DOCTEST_CHECK_EQ(...) [&] { return doctest::detail::eq(__VA_ARGS__); }()
@@ -592,39 +612,157 @@ namespace detail {
 
 #ifndef DOCTEST_CONFIG_NO_EXCEPTIONS
 
-#define DOCTEST_WARN_THROWS_WITH(expr, with, ...) [] { static_assert(false, "Exception translation is not available when doctest is disabled."); return false; }()
-#define DOCTEST_CHECK_THROWS_WITH(expr, with, ...) DOCTEST_WARN_THROWS_WITH(,,)
-#define DOCTEST_REQUIRE_THROWS_WITH(expr, with, ...) DOCTEST_WARN_THROWS_WITH(,,)
-#define DOCTEST_WARN_THROWS_WITH_AS(expr, with, ex, ...) DOCTEST_WARN_THROWS_WITH(,,)
-#define DOCTEST_CHECK_THROWS_WITH_AS(expr, with, ex, ...) DOCTEST_WARN_THROWS_WITH(,,)
-#define DOCTEST_REQUIRE_THROWS_WITH_AS(expr, with, ex, ...) DOCTEST_WARN_THROWS_WITH(,,)
+#define DOCTEST_WARN_THROWS_WITH(expr, with, ...)                                                  \
+    [] {                                                                                           \
+        static_assert(false, "Exception translation is not available when doctest is disabled.");  \
+        return false;                                                                              \
+    }()
+#define DOCTEST_CHECK_THROWS_WITH(expr, with, ...) DOCTEST_WARN_THROWS_WITH(, , )
+#define DOCTEST_REQUIRE_THROWS_WITH(expr, with, ...) DOCTEST_WARN_THROWS_WITH(, , )
+#define DOCTEST_WARN_THROWS_WITH_AS(expr, with, ex, ...) DOCTEST_WARN_THROWS_WITH(, , )
+#define DOCTEST_CHECK_THROWS_WITH_AS(expr, with, ex, ...) DOCTEST_WARN_THROWS_WITH(, , )
+#define DOCTEST_REQUIRE_THROWS_WITH_AS(expr, with, ex, ...) DOCTEST_WARN_THROWS_WITH(, , )
 
-#define DOCTEST_WARN_THROWS_WITH_MESSAGE(expr, with, ...) DOCTEST_WARN_THROWS_WITH(,,)
-#define DOCTEST_CHECK_THROWS_WITH_MESSAGE(expr, with, ...) DOCTEST_WARN_THROWS_WITH(,,)
-#define DOCTEST_REQUIRE_THROWS_WITH_MESSAGE(expr, with, ...) DOCTEST_WARN_THROWS_WITH(,,)
-#define DOCTEST_WARN_THROWS_WITH_AS_MESSAGE(expr, with, ex, ...) DOCTEST_WARN_THROWS_WITH(,,)
-#define DOCTEST_CHECK_THROWS_WITH_AS_MESSAGE(expr, with, ex, ...) DOCTEST_WARN_THROWS_WITH(,,)
-#define DOCTEST_REQUIRE_THROWS_WITH_AS_MESSAGE(expr, with, ex, ...) DOCTEST_WARN_THROWS_WITH(,,)
+#define DOCTEST_WARN_THROWS_WITH_MESSAGE(expr, with, ...) DOCTEST_WARN_THROWS_WITH(, , )
+#define DOCTEST_CHECK_THROWS_WITH_MESSAGE(expr, with, ...) DOCTEST_WARN_THROWS_WITH(, , )
+#define DOCTEST_REQUIRE_THROWS_WITH_MESSAGE(expr, with, ...) DOCTEST_WARN_THROWS_WITH(, , )
+#define DOCTEST_WARN_THROWS_WITH_AS_MESSAGE(expr, with, ex, ...) DOCTEST_WARN_THROWS_WITH(, , )
+#define DOCTEST_CHECK_THROWS_WITH_AS_MESSAGE(expr, with, ex, ...) DOCTEST_WARN_THROWS_WITH(, , )
+#define DOCTEST_REQUIRE_THROWS_WITH_AS_MESSAGE(expr, with, ex, ...) DOCTEST_WARN_THROWS_WITH(, , )
 
-#define DOCTEST_WARN_THROWS(...) [&] { try { __VA_ARGS__; return false; } catch (...) { return true; } }()
-#define DOCTEST_CHECK_THROWS(...) [&] { try { __VA_ARGS__; return false; } catch (...) { return true; } }()
-#define DOCTEST_REQUIRE_THROWS(...) [&] { try { __VA_ARGS__; return false; } catch (...) { return true; } }()
-#define DOCTEST_WARN_THROWS_AS(expr, ...) [&] { try { expr; } catch (__VA_ARGS__) { return true; } catch (...) { } return false; }()
-#define DOCTEST_CHECK_THROWS_AS(expr, ...) [&] { try { expr; } catch (__VA_ARGS__) { return true; } catch (...) { } return false; }()
-#define DOCTEST_REQUIRE_THROWS_AS(expr, ...) [&] { try { expr; } catch (__VA_ARGS__) { return true; } catch (...) { } return false; }()
-#define DOCTEST_WARN_NOTHROW(...) [&] { try { __VA_ARGS__; return true; } catch (...) { return false; } }()
-#define DOCTEST_CHECK_NOTHROW(...) [&] { try { __VA_ARGS__; return true; } catch (...) { return false; } }()
-#define DOCTEST_REQUIRE_NOTHROW(...) [&] { try { __VA_ARGS__; return true; } catch (...) { return false; } }()
+#define DOCTEST_WARN_THROWS(...)                                                                   \
+    [&] {                                                                                          \
+        try {                                                                                      \
+            __VA_ARGS__;                                                                           \
+            return false;                                                                          \
+        } catch(...) { return true; }                                                              \
+    }()
+#define DOCTEST_CHECK_THROWS(...)                                                                  \
+    [&] {                                                                                          \
+        try {                                                                                      \
+            __VA_ARGS__;                                                                           \
+            return false;                                                                          \
+        } catch(...) { return true; }                                                              \
+    }()
+#define DOCTEST_REQUIRE_THROWS(...)                                                                \
+    [&] {                                                                                          \
+        try {                                                                                      \
+            __VA_ARGS__;                                                                           \
+            return false;                                                                          \
+        } catch(...) { return true; }                                                              \
+    }()
+#define DOCTEST_WARN_THROWS_AS(expr, ...)                                                          \
+    [&] {                                                                                          \
+        try {                                                                                      \
+            expr;                                                                                  \
+        } catch(__VA_ARGS__) { return true; } catch(...) {                                         \
+        }                                                                                          \
+        return false;                                                                              \
+    }()
+#define DOCTEST_CHECK_THROWS_AS(expr, ...)                                                         \
+    [&] {                                                                                          \
+        try {                                                                                      \
+            expr;                                                                                  \
+        } catch(__VA_ARGS__) { return true; } catch(...) {                                         \
+        }                                                                                          \
+        return false;                                                                              \
+    }()
+#define DOCTEST_REQUIRE_THROWS_AS(expr, ...)                                                       \
+    [&] {                                                                                          \
+        try {                                                                                      \
+            expr;                                                                                  \
+        } catch(__VA_ARGS__) { return true; } catch(...) {                                         \
+        }                                                                                          \
+        return false;                                                                              \
+    }()
+#define DOCTEST_WARN_NOTHROW(...)                                                                  \
+    [&] {                                                                                          \
+        try {                                                                                      \
+            __VA_ARGS__;                                                                           \
+            return true;                                                                           \
+        } catch(...) { return false; }                                                             \
+    }()
+#define DOCTEST_CHECK_NOTHROW(...)                                                                 \
+    [&] {                                                                                          \
+        try {                                                                                      \
+            __VA_ARGS__;                                                                           \
+            return true;                                                                           \
+        } catch(...) { return false; }                                                             \
+    }()
+#define DOCTEST_REQUIRE_NOTHROW(...)                                                               \
+    [&] {                                                                                          \
+        try {                                                                                      \
+            __VA_ARGS__;                                                                           \
+            return true;                                                                           \
+        } catch(...) { return false; }                                                             \
+    }()
 
-#define DOCTEST_WARN_THROWS_MESSAGE(expr, ...) [&] { try { __VA_ARGS__; return false; } catch (...) { return true; } }()
-#define DOCTEST_CHECK_THROWS_MESSAGE(expr, ...) [&] { try { __VA_ARGS__; return false; } catch (...) { return true; } }()
-#define DOCTEST_REQUIRE_THROWS_MESSAGE(expr, ...) [&] { try { __VA_ARGS__; return false; } catch (...) { return true; } }()
-#define DOCTEST_WARN_THROWS_AS_MESSAGE(expr, ex, ...) [&] { try { expr; } catch (__VA_ARGS__) { return true; } catch (...) { } return false; }()
-#define DOCTEST_CHECK_THROWS_AS_MESSAGE(expr, ex, ...) [&] { try { expr; } catch (__VA_ARGS__) { return true; } catch (...) { } return false; }()
-#define DOCTEST_REQUIRE_THROWS_AS_MESSAGE(expr, ex, ...) [&] { try { expr; } catch (__VA_ARGS__) { return true; } catch (...) { } return false; }()
-#define DOCTEST_WARN_NOTHROW_MESSAGE(expr, ...) [&] { try { __VA_ARGS__; return true; } catch (...) { return false; } }()
-#define DOCTEST_CHECK_NOTHROW_MESSAGE(expr, ...) [&] { try { __VA_ARGS__; return true; } catch (...) { return false; } }()
-#define DOCTEST_REQUIRE_NOTHROW_MESSAGE(expr, ...) [&] { try { __VA_ARGS__; return true; } catch (...) { return false; } }()
+#define DOCTEST_WARN_THROWS_MESSAGE(expr, ...)                                                     \
+    [&] {                                                                                          \
+        try {                                                                                      \
+            __VA_ARGS__;                                                                           \
+            return false;                                                                          \
+        } catch(...) { return true; }                                                              \
+    }()
+#define DOCTEST_CHECK_THROWS_MESSAGE(expr, ...)                                                    \
+    [&] {                                                                                          \
+        try {                                                                                      \
+            __VA_ARGS__;                                                                           \
+            return false;                                                                          \
+        } catch(...) { return true; }                                                              \
+    }()
+#define DOCTEST_REQUIRE_THROWS_MESSAGE(expr, ...)                                                  \
+    [&] {                                                                                          \
+        try {                                                                                      \
+            __VA_ARGS__;                                                                           \
+            return false;                                                                          \
+        } catch(...) { return true; }                                                              \
+    }()
+#define DOCTEST_WARN_THROWS_AS_MESSAGE(expr, ex, ...)                                              \
+    [&] {                                                                                          \
+        try {                                                                                      \
+            expr;                                                                                  \
+        } catch(__VA_ARGS__) { return true; } catch(...) {                                         \
+        }                                                                                          \
+        return false;                                                                              \
+    }()
+#define DOCTEST_CHECK_THROWS_AS_MESSAGE(expr, ex, ...)                                             \
+    [&] {                                                                                          \
+        try {                                                                                      \
+            expr;                                                                                  \
+        } catch(__VA_ARGS__) { return true; } catch(...) {                                         \
+        }                                                                                          \
+        return false;                                                                              \
+    }()
+#define DOCTEST_REQUIRE_THROWS_AS_MESSAGE(expr, ex, ...)                                           \
+    [&] {                                                                                          \
+        try {                                                                                      \
+            expr;                                                                                  \
+        } catch(__VA_ARGS__) { return true; } catch(...) {                                         \
+        }                                                                                          \
+        return false;                                                                              \
+    }()
+#define DOCTEST_WARN_NOTHROW_MESSAGE(expr, ...)                                                    \
+    [&] {                                                                                          \
+        try {                                                                                      \
+            __VA_ARGS__;                                                                           \
+            return true;                                                                           \
+        } catch(...) { return false; }                                                             \
+    }()
+#define DOCTEST_CHECK_NOTHROW_MESSAGE(expr, ...)                                                   \
+    [&] {                                                                                          \
+        try {                                                                                      \
+            __VA_ARGS__;                                                                           \
+            return true;                                                                           \
+        } catch(...) { return false; }                                                             \
+    }()
+#define DOCTEST_REQUIRE_NOTHROW_MESSAGE(expr, ...)                                                 \
+    [&] {                                                                                          \
+        try {                                                                                      \
+            __VA_ARGS__;                                                                           \
+            return true;                                                                           \
+        } catch(...) { return false; }                                                             \
+    }()
 
 #endif // DOCTEST_CONFIG_NO_EXCEPTIONS
 
@@ -715,8 +853,13 @@ namespace detail {
 #ifdef DOCTEST_CONFIG_NO_EXCEPTIONS_BUT_WITH_ALL_ASSERTS
 #define DOCTEST_EXCEPTION_EMPTY_FUNC DOCTEST_FUNC_EMPTY
 #else // DOCTEST_CONFIG_NO_EXCEPTIONS_BUT_WITH_ALL_ASSERTS
-#define DOCTEST_EXCEPTION_EMPTY_FUNC [] { static_assert(false, "Exceptions are disabled! " \
-    "Use DOCTEST_CONFIG_NO_EXCEPTIONS_BUT_WITH_ALL_ASSERTS if you want to compile with exceptions disabled."); return false; }()
+#define DOCTEST_EXCEPTION_EMPTY_FUNC                                                               \
+    [] {                                                                                           \
+        static_assert(false, "Exceptions are disabled! "                                           \
+                             "Use DOCTEST_CONFIG_NO_EXCEPTIONS_BUT_WITH_ALL_ASSERTS if you want "  \
+                             "to compile with exceptions disabled.");                              \
+        return false;                                                                              \
+    }()
 
 #undef DOCTEST_REQUIRE
 #undef DOCTEST_REQUIRE_FALSE
@@ -842,8 +985,10 @@ namespace detail {
 #define TEST_SUITE_BEGIN(name) DOCTEST_TEST_SUITE_BEGIN(name)
 #define TEST_SUITE_END DOCTEST_TEST_SUITE_END
 #define REGISTER_EXCEPTION_TRANSLATOR(signature) DOCTEST_REGISTER_EXCEPTION_TRANSLATOR(signature)
-#define REGISTER_REPORTER(name, priority, reporter) DOCTEST_REGISTER_REPORTER(name, priority, reporter)
-#define REGISTER_LISTENER(name, priority, reporter) DOCTEST_REGISTER_LISTENER(name, priority, reporter)
+#define REGISTER_REPORTER(name, priority, reporter)                                                \
+    DOCTEST_REGISTER_REPORTER(name, priority, reporter)
+#define REGISTER_LISTENER(name, priority, reporter)                                                \
+    DOCTEST_REGISTER_LISTENER(name, priority, reporter)
 #define INFO(...) DOCTEST_INFO(__VA_ARGS__)
 #define CAPTURE(x) DOCTEST_CAPTURE(x)
 #define ADD_MESSAGE_AT(file, line, ...) DOCTEST_ADD_MESSAGE_AT(file, line, __VA_ARGS__)
@@ -873,29 +1018,38 @@ namespace detail {
 #define REQUIRE_THROWS(...) DOCTEST_REQUIRE_THROWS(__VA_ARGS__)
 #define REQUIRE_THROWS_AS(expr, ...) DOCTEST_REQUIRE_THROWS_AS(expr, __VA_ARGS__)
 #define REQUIRE_THROWS_WITH(expr, ...) DOCTEST_REQUIRE_THROWS_WITH(expr, __VA_ARGS__)
-#define REQUIRE_THROWS_WITH_AS(expr, with, ...) DOCTEST_REQUIRE_THROWS_WITH_AS(expr, with, __VA_ARGS__)
+#define REQUIRE_THROWS_WITH_AS(expr, with, ...)                                                    \
+    DOCTEST_REQUIRE_THROWS_WITH_AS(expr, with, __VA_ARGS__)
 #define REQUIRE_NOTHROW(...) DOCTEST_REQUIRE_NOTHROW(__VA_ARGS__)
 
 #define WARN_MESSAGE(cond, ...) DOCTEST_WARN_MESSAGE(cond, __VA_ARGS__)
 #define WARN_FALSE_MESSAGE(cond, ...) DOCTEST_WARN_FALSE_MESSAGE(cond, __VA_ARGS__)
 #define WARN_THROWS_MESSAGE(expr, ...) DOCTEST_WARN_THROWS_MESSAGE(expr, __VA_ARGS__)
 #define WARN_THROWS_AS_MESSAGE(expr, ex, ...) DOCTEST_WARN_THROWS_AS_MESSAGE(expr, ex, __VA_ARGS__)
-#define WARN_THROWS_WITH_MESSAGE(expr, with, ...) DOCTEST_WARN_THROWS_WITH_MESSAGE(expr, with, __VA_ARGS__)
-#define WARN_THROWS_WITH_AS_MESSAGE(expr, with, ex, ...) DOCTEST_WARN_THROWS_WITH_AS_MESSAGE(expr, with, ex, __VA_ARGS__)
+#define WARN_THROWS_WITH_MESSAGE(expr, with, ...)                                                  \
+    DOCTEST_WARN_THROWS_WITH_MESSAGE(expr, with, __VA_ARGS__)
+#define WARN_THROWS_WITH_AS_MESSAGE(expr, with, ex, ...)                                           \
+    DOCTEST_WARN_THROWS_WITH_AS_MESSAGE(expr, with, ex, __VA_ARGS__)
 #define WARN_NOTHROW_MESSAGE(expr, ...) DOCTEST_WARN_NOTHROW_MESSAGE(expr, __VA_ARGS__)
 #define CHECK_MESSAGE(cond, ...) DOCTEST_CHECK_MESSAGE(cond, __VA_ARGS__)
 #define CHECK_FALSE_MESSAGE(cond, ...) DOCTEST_CHECK_FALSE_MESSAGE(cond, __VA_ARGS__)
 #define CHECK_THROWS_MESSAGE(expr, ...) DOCTEST_CHECK_THROWS_MESSAGE(expr, __VA_ARGS__)
-#define CHECK_THROWS_AS_MESSAGE(expr, ex, ...) DOCTEST_CHECK_THROWS_AS_MESSAGE(expr, ex, __VA_ARGS__)
-#define CHECK_THROWS_WITH_MESSAGE(expr, with, ...) DOCTEST_CHECK_THROWS_WITH_MESSAGE(expr, with, __VA_ARGS__)
-#define CHECK_THROWS_WITH_AS_MESSAGE(expr, with, ex, ...) DOCTEST_CHECK_THROWS_WITH_AS_MESSAGE(expr, with, ex, __VA_ARGS__)
+#define CHECK_THROWS_AS_MESSAGE(expr, ex, ...)                                                     \
+    DOCTEST_CHECK_THROWS_AS_MESSAGE(expr, ex, __VA_ARGS__)
+#define CHECK_THROWS_WITH_MESSAGE(expr, with, ...)                                                 \
+    DOCTEST_CHECK_THROWS_WITH_MESSAGE(expr, with, __VA_ARGS__)
+#define CHECK_THROWS_WITH_AS_MESSAGE(expr, with, ex, ...)                                          \
+    DOCTEST_CHECK_THROWS_WITH_AS_MESSAGE(expr, with, ex, __VA_ARGS__)
 #define CHECK_NOTHROW_MESSAGE(expr, ...) DOCTEST_CHECK_NOTHROW_MESSAGE(expr, __VA_ARGS__)
 #define REQUIRE_MESSAGE(cond, ...) DOCTEST_REQUIRE_MESSAGE(cond, __VA_ARGS__)
 #define REQUIRE_FALSE_MESSAGE(cond, ...) DOCTEST_REQUIRE_FALSE_MESSAGE(cond, __VA_ARGS__)
 #define REQUIRE_THROWS_MESSAGE(expr, ...) DOCTEST_REQUIRE_THROWS_MESSAGE(expr, __VA_ARGS__)
-#define REQUIRE_THROWS_AS_MESSAGE(expr, ex, ...) DOCTEST_REQUIRE_THROWS_AS_MESSAGE(expr, ex, __VA_ARGS__)
-#define REQUIRE_THROWS_WITH_MESSAGE(expr, with, ...) DOCTEST_REQUIRE_THROWS_WITH_MESSAGE(expr, with, __VA_ARGS__)
-#define REQUIRE_THROWS_WITH_AS_MESSAGE(expr, with, ex, ...) DOCTEST_REQUIRE_THROWS_WITH_AS_MESSAGE(expr, with, ex, __VA_ARGS__)
+#define REQUIRE_THROWS_AS_MESSAGE(expr, ex, ...)                                                   \
+    DOCTEST_REQUIRE_THROWS_AS_MESSAGE(expr, ex, __VA_ARGS__)
+#define REQUIRE_THROWS_WITH_MESSAGE(expr, with, ...)                                               \
+    DOCTEST_REQUIRE_THROWS_WITH_MESSAGE(expr, with, __VA_ARGS__)
+#define REQUIRE_THROWS_WITH_AS_MESSAGE(expr, with, ex, ...)                                        \
+    DOCTEST_REQUIRE_THROWS_WITH_AS_MESSAGE(expr, with, ex, __VA_ARGS__)
 #define REQUIRE_NOTHROW_MESSAGE(expr, ...) DOCTEST_REQUIRE_NOTHROW_MESSAGE(expr, __VA_ARGS__)
 
 #define SCENARIO(name) DOCTEST_SCENARIO(name)
@@ -960,6 +1114,7 @@ namespace detail {
 #define FAST_CHECK_UNARY_FALSE(...) DOCTEST_FAST_CHECK_UNARY_FALSE(__VA_ARGS__)
 #define FAST_REQUIRE_UNARY_FALSE(...) DOCTEST_FAST_REQUIRE_UNARY_FALSE(__VA_ARGS__)
 
-#define TEST_CASE_TEMPLATE_INSTANTIATE(id, ...) DOCTEST_TEST_CASE_TEMPLATE_INSTANTIATE(id, __VA_ARGS__)
+#define TEST_CASE_TEMPLATE_INSTANTIATE(id, ...)                                                    \
+    DOCTEST_TEST_CASE_TEMPLATE_INSTANTIATE(id, __VA_ARGS__)
 
 #endif // DOCTEST_CONFIG_NO_SHORT_MACRO_NAMES

@@ -2,23 +2,25 @@
 
 #ifndef DOCTEST_CONFIG_DISABLE
 
-namespace doctest {
-namespace detail {
+namespace doctest { namespace detail {
 #ifdef DOCTEST_IS_DEBUGGER_ACTIVE
     bool isDebuggerActive() { return DOCTEST_IS_DEBUGGER_ACTIVE(); }
 #else // DOCTEST_IS_DEBUGGER_ACTIVE
 #ifdef DOCTEST_PLATFORM_LINUX
-    class ErrnoGuard {
+    class ErrnoGuard
+    {
     public:
-        ErrnoGuard() : m_oldErrno(errno) {}
+        ErrnoGuard()
+                : m_oldErrno(errno) {}
         ~ErrnoGuard() { errno = m_oldErrno; }
+
     private:
         int m_oldErrno;
     };
     // See the comments in Catch2 for the reasoning behind this implementation:
     // https://github.com/catchorg/Catch2/blob/v2.13.1/include/internal/catch_debugger.cpp#L79-L102
     bool isDebuggerActive() {
-        ErrnoGuard guard;
+        ErrnoGuard    guard;
         std::ifstream in("/proc/self/status");
         for(std::string line; std::getline(in, line);) {
             static const int PREFIX_LEN = 11;
@@ -61,7 +63,6 @@ namespace detail {
     bool isDebuggerActive() { return false; }
 #endif // Platform
 #endif // DOCTEST_IS_DEBUGGER_ACTIVE
-} // detail
-} // doctest
+}} // namespace doctest::detail
 
 #endif // DOCTEST_CONFIG_DISABLE

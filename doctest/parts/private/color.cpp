@@ -31,9 +31,9 @@ namespace {
         using namespace detail;
         static_cast<void>(s);    // for DOCTEST_CONFIG_COLORS_NONE or DOCTEST_CONFIG_COLORS_WINDOWS
         static_cast<void>(code); // for DOCTEST_CONFIG_COLORS_NONE
-    #ifdef DOCTEST_CONFIG_COLORS_ANSI
+#ifdef DOCTEST_CONFIG_COLORS_ANSI
         if(g_no_colors ||
-            (isatty(STDOUT_FILENO) == false && getContextOptions()->force_colors == false))
+           (isatty(STDOUT_FILENO) == false && getContextOptions()->force_colors == false))
             return;
 
         auto col = "";
@@ -59,14 +59,15 @@ namespace {
             DOCTEST_CLANG_SUPPRESS_WARNING_POP
         // clang-format on
         s << "\033" << col;
-    #endif // DOCTEST_CONFIG_COLORS_ANSI
+#endif // DOCTEST_CONFIG_COLORS_ANSI
 
-    #ifdef DOCTEST_CONFIG_COLORS_WINDOWS
+#ifdef DOCTEST_CONFIG_COLORS_WINDOWS
         if(g_no_colors ||
-            (_isatty(_fileno(stdout)) == false && getContextOptions()->force_colors == false))
+           (_isatty(_fileno(stdout)) == false && getContextOptions()->force_colors == false))
             return;
 
-        static struct ConsoleHelper {
+        static struct ConsoleHelper
+        {
             HANDLE stdoutHandle;
             WORD   origFgAttrs;
             WORD   origBgAttrs;
@@ -76,13 +77,13 @@ namespace {
                 CONSOLE_SCREEN_BUFFER_INFO csbiInfo;
                 GetConsoleScreenBufferInfo(stdoutHandle, &csbiInfo);
                 origFgAttrs = csbiInfo.wAttributes & ~(BACKGROUND_GREEN | BACKGROUND_RED |
-                    BACKGROUND_BLUE | BACKGROUND_INTENSITY);
+                                                       BACKGROUND_BLUE | BACKGROUND_INTENSITY);
                 origBgAttrs = csbiInfo.wAttributes & ~(FOREGROUND_GREEN | FOREGROUND_RED |
-                    FOREGROUND_BLUE | FOREGROUND_INTENSITY);
+                                                       FOREGROUND_BLUE | FOREGROUND_INTENSITY);
             }
         } ch;
 
-    #define DOCTEST_SET_ATTR(x) SetConsoleTextAttribute(ch.stdoutHandle, x | ch.origBgAttrs)
+#define DOCTEST_SET_ATTR(x) SetConsoleTextAttribute(ch.stdoutHandle, x | ch.origBgAttrs)
 
         // clang-format off
         switch (code) {
@@ -102,9 +103,9 @@ namespace {
             default:                 DOCTEST_SET_ATTR(ch.origFgAttrs);
         }
             // clang-format on
-    #endif // DOCTEST_CONFIG_COLORS_WINDOWS
+#endif // DOCTEST_CONFIG_COLORS_WINDOWS
     }
     DOCTEST_CLANG_SUPPRESS_WARNING_POP
-}
+} // namespace
 #endif // DOCTEST_CONFIG_DISABLED
-}
+} // namespace doctest

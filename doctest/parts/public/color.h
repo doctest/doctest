@@ -1,5 +1,4 @@
-namespace doctest {
-namespace Color {
+namespace doctest { namespace Color {
     enum Enum
     {
         None = 0,
@@ -20,5 +19,4 @@ namespace Color {
     };
 
     DOCTEST_INTERFACE std::ostream& operator<<(std::ostream& s, Color::Enum code);
-} // namespace Color
-}
+}} // namespace doctest::Color

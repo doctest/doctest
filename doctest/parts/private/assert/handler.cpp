@@ -3,8 +3,7 @@
 
 #ifndef DOCTEST_CONFIG_DISABLE
 
-namespace doctest {
-namespace detail {
+namespace doctest { namespace detail {
 
     void failed_out_of_a_testing_context(const AssertData& ad) {
         if(g_cs->ah)
@@ -26,7 +25,6 @@ namespace detail {
         return !failed;
     }
 
-} // namespace detail
-} // namespace doctest
+}} // namespace doctest::detail
 
 #endif // DOCTEST_CONFIG_DISABLE

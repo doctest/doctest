@@ -1,14 +1,13 @@
 #include "doctest/parts/private/prelude.h"
 
-namespace doctest {
-namespace {
+namespace doctest { namespace {
     using namespace detail;
 
     template <typename Ex>
     DOCTEST_NORETURN void throw_exception(Ex const& e) {
 #ifndef DOCTEST_CONFIG_NO_EXCEPTIONS
         throw e;
-#else  // DOCTEST_CONFIG_NO_EXCEPTIONS
+#else // DOCTEST_CONFIG_NO_EXCEPTIONS
 #ifdef DOCTEST_CONFIG_HANDLE_EXCEPTION
         DOCTEST_CONFIG_HANDLE_EXCEPTION(e);
 #else // DOCTEST_CONFIG_HANDLE_EXCEPTION
@@ -26,6 +25,4 @@ namespace {
     throw_exception(std::logic_error(                                                              \
             __FILE__ ":" DOCTEST_TOSTR(__LINE__) ": Internal doctest error: " msg))
 #endif // DOCTEST_INTERNAL_ERROR
-} // namespace
-
-} // namespace doctest
+}} // namespace doctest

@@ -2,10 +2,9 @@
 
 #ifndef DOCTEST_CONFIG_DISABLE
 
-namespace doctest {
-namespace detail {
-    extern DOCTEST_THREAD_LOCAL std::vector<IContextScope*> g_infoContexts; // for logging with INFO()
-}
-} // namespace doctest
+namespace doctest { namespace detail {
+    extern DOCTEST_THREAD_LOCAL std::vector<IContextScope*>
+                                g_infoContexts; // for logging with INFO()
+}} // namespace doctest::detail
 
 #endif // DOCTEST_CONFIG_DISABLE

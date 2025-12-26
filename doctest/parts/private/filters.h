@@ -2,8 +2,7 @@
 
 #ifndef DOCTEST_CONFIG_DISABLE
 
-namespace doctest {
-namespace {
+namespace doctest { namespace {
 
     // matching of a string against a wildcard mask (case sensitivity configurable) taken from
     // https://www.codeproject.com/Articles/1088/Wildcard-string-compare-globbing
@@ -45,16 +44,15 @@ namespace {
 
     // checks if the name matches any of the filters (and can be configured what to do when empty)
     bool matchesAny(const char* name, const std::vector<String>& filters, bool matchEmpty,
-        bool caseSensitive) {
-        if (filters.empty() && matchEmpty)
+                    bool caseSensitive) {
+        if(filters.empty() && matchEmpty)
             return true;
-        for (auto& curr : filters)
-            if (wildcmp(name, curr.c_str(), caseSensitive))
+        for(auto& curr : filters)
+            if(wildcmp(name, curr.c_str(), caseSensitive))
                 return true;
         return false;
     }
 
-} // namespace
-} // namespace doctest
+}} // namespace doctest
 
 #endif // DOCTEST_CONFIG_DISABLE

@@ -3,8 +3,7 @@
 
 #ifndef DOCTEST_CONFIG_DISABLE
 
-namespace doctest {
-namespace {
+namespace doctest { namespace {
 
 #ifdef DOCTEST_PLATFORM_WINDOWS
 #define DOCTEST_OUTPUT_DEBUG_STRING(text) ::OutputDebugStringA(text)
@@ -49,7 +48,6 @@ namespace {
     DOCTEST_THREAD_LOCAL std::ostringstream DebugOutputWindowReporter::oss;
 #endif // DOCTEST_PLATFORM_WINDOWS
 
-} // namespace
-} // namespace doctest
+}} // namespace doctest
 
 #endif // DOCTEST_CONFIG_DISABLE

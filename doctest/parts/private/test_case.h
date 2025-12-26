@@ -2,8 +2,7 @@
 
 #ifndef DOCTEST_CONFIG_DISABLE
 
-namespace doctest {
-namespace detail {
+namespace doctest { namespace detail {
 
     // all the registered tests
     std::set<TestCase>& getRegisteredTests() {
@@ -11,7 +10,6 @@ namespace detail {
         return data;
     }
 
-} // namespace detail
-} // namespace doctest
+}} // namespace doctest::detail
 
 #endif // DOCTEST_CONFIG_DISABLE

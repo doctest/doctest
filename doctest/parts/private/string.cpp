@@ -15,7 +15,7 @@ namespace detail {
         }
 
         String pop() {
-            if (stack.empty())
+            if(stack.empty())
                 DOCTEST_INTERNAL_ERROR("TLSS was empty when trying to pop!");
 
             std::streampos pos = stack.back();
@@ -26,230 +26,235 @@ namespace detail {
         }
     } g_oss;
 
-    std::ostream* tlssPush() {
-        return g_oss.push();
-    }
+    std::ostream* tlssPush() { return g_oss.push(); }
 
-    String tlssPop() {
-        return g_oss.pop();
-    }
+    String tlssPop() { return g_oss.pop(); }
 
 } // namespace detail
 
-    // case insensitive strcmp
-    static int stricmp(const char* a, const char* b) {
-        for(;; a++, b++) {
-            const int d = tolower(*a) - tolower(*b);
-            if(d != 0 || !*a)
-                return d;
-        }
+// case insensitive strcmp
+static int stricmp(const char* a, const char* b) {
+    for(;; a++, b++) {
+        const int d = tolower(*a) - tolower(*b);
+        if(d != 0 || !*a)
+            return d;
     }
+}
 
-    char* String::allocate(size_type sz) {
-        if (sz <= last) {
-            buf[sz] = '\0';
-            setLast(last - sz);
-            return buf;
-        } else {
-            setOnHeap();
-            data.size = sz;
-            data.capacity = data.size + 1;
-            data.ptr = new char[data.capacity];
-            data.ptr[sz] = '\0';
-            return data.ptr;
-        }
+char* String::allocate(size_type sz) {
+    if(sz <= last) {
+        buf[sz] = '\0';
+        setLast(last - sz);
+        return buf;
+    } else {
+        setOnHeap();
+        data.size     = sz;
+        data.capacity = data.size + 1;
+        data.ptr      = new char[data.capacity];
+        data.ptr[sz]  = '\0';
+        return data.ptr;
     }
+}
 
-    void String::setOnHeap() noexcept { *reinterpret_cast<unsigned char*>(&buf[last]) = 128; }
-    void String::setLast(size_type in) noexcept { buf[last] = char(in); }
-    void String::setSize(size_type sz) noexcept {
-        if (isOnStack()) { buf[sz] = '\0'; setLast(last - sz); }
-        else { data.ptr[sz] = '\0'; data.size = sz; }
+void String::setOnHeap() noexcept { *reinterpret_cast<unsigned char*>(&buf[last]) = 128; }
+void String::setLast(size_type in) noexcept { buf[last] = char(in); }
+void String::setSize(size_type sz) noexcept {
+    if(isOnStack()) {
+        buf[sz] = '\0';
+        setLast(last - sz);
+    } else {
+        data.ptr[sz] = '\0';
+        data.size    = sz;
     }
+}
 
-    void String::copy(const String& other) {
-        if(other.isOnStack()) {
-            memcpy(buf, other.buf, len);
-        } else {
-            memcpy(allocate(other.data.size), other.data.ptr, other.data.size);
-        }
+void String::copy(const String& other) {
+    if(other.isOnStack()) {
+        memcpy(buf, other.buf, len);
+    } else {
+        memcpy(allocate(other.data.size), other.data.ptr, other.data.size);
     }
+}
 
-    String::String() noexcept {
-        buf[0] = '\0';
-        setLast();
-    }
+String::String() noexcept {
+    buf[0] = '\0';
+    setLast();
+}
 
-    String::~String() {
+String::~String() {
+    if(!isOnStack())
+        delete[] data.ptr;
+} // NOLINT(clang-analyzer-cplusplus.NewDeleteLeaks)
+
+String::String(const char* in)
+        : String(in, strlen(in)) {}
+
+String::String(const char* in, size_type in_size) { memcpy(allocate(in_size), in, in_size); }
+
+String::String(std::istream& in, size_type in_size) { in.read(allocate(in_size), in_size); }
+
+String::String(const String& other) { copy(other); }
+
+String& String::operator=(const String& other) {
+    if(this != &other) {
         if(!isOnStack())
             delete[] data.ptr;
-    } // NOLINT(clang-analyzer-cplusplus.NewDeleteLeaks)
 
-    String::String(const char* in)
-            : String(in, strlen(in)) {}
-
-    String::String(const char* in, size_type in_size) {
-        memcpy(allocate(in_size), in, in_size);
+        copy(other);
     }
 
-    String::String(std::istream& in, size_type in_size) {
-        in.read(allocate(in_size), in_size);
-    }
+    return *this;
+}
 
-    String::String(const String& other) { copy(other); }
-
-    String& String::operator=(const String& other) {
-        if(this != &other) {
-            if(!isOnStack())
-                delete[] data.ptr;
-
-            copy(other);
-        }
-
-        return *this;
-    }
-
-    String& String::operator+=(const String& other) {
-        const size_type my_old_size = size();
-        const size_type other_size  = other.size();
-        const size_type total_size  = my_old_size + other_size;
-        if(isOnStack()) {
-            if(total_size < len) {
-                // append to the current stack space
-                memcpy(buf + my_old_size, other.c_str(), other_size + 1);
-                // NOLINTNEXTLINE(clang-analyzer-cplusplus.NewDeleteLeaks)
-                setLast(last - total_size);
-            } else {
-                // alloc new chunk
-                char* temp = new char[total_size + 1];
-                // copy current data to new location before writing in the union
-                memcpy(temp, buf, my_old_size); // skip the +1 ('\0') for speed
-                // update data in union
-                setOnHeap();
-                data.size     = total_size;
-                data.capacity = data.size + 1;
-                data.ptr      = temp;
-                // transfer the rest of the data
-                memcpy(data.ptr + my_old_size, other.c_str(), other_size + 1);
-            }
+String& String::operator+=(const String& other) {
+    const size_type my_old_size = size();
+    const size_type other_size  = other.size();
+    const size_type total_size  = my_old_size + other_size;
+    if(isOnStack()) {
+        if(total_size < len) {
+            // append to the current stack space
+            memcpy(buf + my_old_size, other.c_str(), other_size + 1);
+            // NOLINTNEXTLINE(clang-analyzer-cplusplus.NewDeleteLeaks)
+            setLast(last - total_size);
         } else {
-            if(data.capacity > total_size) {
-                // append to the current heap block
-                data.size = total_size;
-                memcpy(data.ptr + my_old_size, other.c_str(), other_size + 1);
-            } else {
-                // resize
-                data.capacity *= 2;
-                if(data.capacity <= total_size)
-                    data.capacity = total_size + 1;
-                // alloc new chunk
-                char* temp = new char[data.capacity];
-                // copy current data to new location before releasing it
-                memcpy(temp, data.ptr, my_old_size); // skip the +1 ('\0') for speed
-                // release old chunk
-                delete[] data.ptr;
-                // update the rest of the union members
-                data.size = total_size;
-                data.ptr  = temp;
-                // transfer the rest of the data
-                memcpy(data.ptr + my_old_size, other.c_str(), other_size + 1);
-            }
+            // alloc new chunk
+            char* temp = new char[total_size + 1];
+            // copy current data to new location before writing in the union
+            memcpy(temp, buf, my_old_size); // skip the +1 ('\0') for speed
+            // update data in union
+            setOnHeap();
+            data.size     = total_size;
+            data.capacity = data.size + 1;
+            data.ptr      = temp;
+            // transfer the rest of the data
+            memcpy(data.ptr + my_old_size, other.c_str(), other_size + 1);
         }
-
-        return *this;
+    } else {
+        if(data.capacity > total_size) {
+            // append to the current heap block
+            data.size = total_size;
+            memcpy(data.ptr + my_old_size, other.c_str(), other_size + 1);
+        } else {
+            // resize
+            data.capacity *= 2;
+            if(data.capacity <= total_size)
+                data.capacity = total_size + 1;
+            // alloc new chunk
+            char* temp = new char[data.capacity];
+            // copy current data to new location before releasing it
+            memcpy(temp, data.ptr, my_old_size); // skip the +1 ('\0') for speed
+            // release old chunk
+            delete[] data.ptr;
+            // update the rest of the union members
+            data.size = total_size;
+            data.ptr  = temp;
+            // transfer the rest of the data
+            memcpy(data.ptr + my_old_size, other.c_str(), other_size + 1);
+        }
     }
 
-    String::String(String&& other) noexcept {
+    return *this;
+}
+
+String::String(String&& other) noexcept {
+    memcpy(buf, other.buf, len);
+    other.buf[0] = '\0';
+    other.setLast();
+}
+
+String& String::operator=(String&& other) noexcept {
+    if(this != &other) {
+        if(!isOnStack())
+            delete[] data.ptr;
         memcpy(buf, other.buf, len);
         other.buf[0] = '\0';
         other.setLast();
     }
+    return *this;
+}
 
-    String& String::operator=(String&& other) noexcept {
-        if(this != &other) {
-            if(!isOnStack())
-                delete[] data.ptr;
-            memcpy(buf, other.buf, len);
-            other.buf[0] = '\0';
-            other.setLast();
-        }
-        return *this;
+char String::operator[](size_type i) const { return const_cast<String*>(this)->operator[](i); }
+
+char& String::operator[](size_type i) {
+    if(isOnStack())
+        return reinterpret_cast<char*>(buf)[i];
+    return data.ptr[i];
+}
+
+DOCTEST_GCC_SUPPRESS_WARNING_WITH_PUSH("-Wmaybe-uninitialized")
+String::size_type String::size() const {
+    if(isOnStack())
+        return last - (size_type(buf[last]) & 31); // using "last" would work only if "len" is 32
+    return data.size;
+}
+DOCTEST_GCC_SUPPRESS_WARNING_POP
+
+String::size_type String::capacity() const {
+    if(isOnStack())
+        return len;
+    return data.capacity;
+}
+
+String String::substr(size_type pos, size_type cnt) && {
+    cnt        = std::min(cnt, size() - pos);
+    char* cptr = c_str();
+    memmove(cptr, cptr + pos, cnt);
+    setSize(cnt);
+    return std::move(*this);
+}
+
+String String::substr(size_type pos, size_type cnt) const& {
+    cnt = std::min(cnt, size() - pos);
+    return String{c_str() + pos, cnt};
+}
+
+String::size_type String::find(char ch, size_type pos) const {
+    const char* begin = c_str();
+    const char* end   = begin + size();
+    const char* it    = begin + pos;
+    for(; it < end && *it != ch; it++) {}
+    if(it < end) {
+        return static_cast<size_type>(it - begin);
+    } else {
+        return npos;
     }
+}
 
-    char String::operator[](size_type i) const {
-        return const_cast<String*>(this)->operator[](i);
+String::size_type String::rfind(char ch, size_type pos) const {
+    const char* begin = c_str();
+    const char* it    = begin + std::min(pos, size() - 1);
+    for(; it >= begin && *it != ch; it--) {}
+    if(it >= begin) {
+        return static_cast<size_type>(it - begin);
+    } else {
+        return npos;
     }
+}
 
-    char& String::operator[](size_type i) {
-        if(isOnStack())
-            return reinterpret_cast<char*>(buf)[i];
-        return data.ptr[i];
-    }
+int String::compare(const char* other, bool no_case) const {
+    if(no_case)
+        return doctest::stricmp(c_str(), other);
+    return std::strcmp(c_str(), other);
+}
 
-    DOCTEST_GCC_SUPPRESS_WARNING_WITH_PUSH("-Wmaybe-uninitialized")
-    String::size_type String::size() const {
-        if(isOnStack())
-            return last - (size_type(buf[last]) & 31); // using "last" would work only if "len" is 32
-        return data.size;
-    }
-    DOCTEST_GCC_SUPPRESS_WARNING_POP
+int String::compare(const String& other, bool no_case) const {
+    return compare(other.c_str(), no_case);
+}
 
-    String::size_type String::capacity() const {
-        if(isOnStack())
-            return len;
-        return data.capacity;
-    }
+String operator+(const String& lhs, const String& rhs) { return String(lhs) += rhs; }
 
-    String String::substr(size_type pos, size_type cnt) && {
-        cnt = std::min(cnt, size() - pos);
-        char* cptr = c_str();
-        memmove(cptr, cptr + pos, cnt);
-        setSize(cnt);
-        return std::move(*this);
-    }
+bool operator==(const String& lhs, const String& rhs) { return lhs.compare(rhs) == 0; }
+bool operator!=(const String& lhs, const String& rhs) { return lhs.compare(rhs) != 0; }
+bool operator<(const String& lhs, const String& rhs) { return lhs.compare(rhs) < 0; }
+bool operator>(const String& lhs, const String& rhs) { return lhs.compare(rhs) > 0; }
+bool operator<=(const String& lhs, const String& rhs) {
+    return (lhs != rhs) ? lhs.compare(rhs) < 0 : true;
+}
+bool operator>=(const String& lhs, const String& rhs) {
+    return (lhs != rhs) ? lhs.compare(rhs) > 0 : true;
+}
 
-    String String::substr(size_type pos, size_type cnt) const & {
-        cnt = std::min(cnt, size() - pos);
-        return String{ c_str() + pos, cnt };
-    }
-
-    String::size_type String::find(char ch, size_type pos) const {
-        const char* begin = c_str();
-        const char* end = begin + size();
-        const char* it = begin + pos;
-        for (; it < end && *it != ch; it++) { }
-        if (it < end) { return static_cast<size_type>(it - begin); }
-        else { return npos; }
-    }
-
-    String::size_type String::rfind(char ch, size_type pos) const {
-        const char* begin = c_str();
-        const char* it = begin + std::min(pos, size() - 1);
-        for (; it >= begin && *it != ch; it--) { }
-        if (it >= begin) { return static_cast<size_type>(it - begin); }
-        else { return npos; }
-    }
-
-    int String::compare(const char* other, bool no_case) const {
-        if(no_case)
-            return doctest::stricmp(c_str(), other);
-        return std::strcmp(c_str(), other);
-    }
-
-    int String::compare(const String& other, bool no_case) const {
-        return compare(other.c_str(), no_case);
-    }
-
-    String operator+(const String& lhs, const String& rhs) { return  String(lhs) += rhs; }
-
-    bool operator==(const String& lhs, const String& rhs) { return lhs.compare(rhs) == 0; }
-    bool operator!=(const String& lhs, const String& rhs) { return lhs.compare(rhs) != 0; }
-    bool operator< (const String& lhs, const String& rhs) { return lhs.compare(rhs) < 0; }
-    bool operator> (const String& lhs, const String& rhs) { return lhs.compare(rhs) > 0; }
-    bool operator<=(const String& lhs, const String& rhs) { return (lhs != rhs) ? lhs.compare(rhs) < 0 : true; }
-    bool operator>=(const String& lhs, const String& rhs) { return (lhs != rhs) ? lhs.compare(rhs) > 0 : true; }
-
-    std::ostream& operator<<(std::ostream& s, const String& in) { return s << in.c_str(); }
+std::ostream& operator<<(std::ostream& s, const String& in) { return s << in.c_str(); }
 
 namespace detail {
 
@@ -258,8 +263,11 @@ namespace detail {
     }
 
     void filldata<const volatile void*>::fill(std::ostream* stream, const volatile void* in) {
-        if (in) { *stream << in; }
-        else { *stream << "nullptr"; }
+        if(in) {
+            *stream << in;
+        } else {
+            *stream << "nullptr";
+        }
     }
 
     template <typename T>

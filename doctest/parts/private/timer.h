@@ -2,26 +2,24 @@
 
 #ifndef DOCTEST_CONFIG_DISABLE
 
-namespace doctest {
-namespace detail {
+namespace doctest { namespace detail {
 
-namespace timer_large_integer
-{
+    namespace timer_large_integer {
 
 #if defined(DOCTEST_PLATFORM_WINDOWS)
-    using type = ULONGLONG;
-#else // DOCTEST_PLATFORM_WINDOWS
-    using type = std::uint64_t;
+        using type = ULONGLONG;
+#else  // DOCTEST_PLATFORM_WINDOWS
+        using type = std::uint64_t;
 #endif // DOCTEST_PLATFORM_WINDOWS
-}
+    } // namespace timer_large_integer
 
-using ticks_t = timer_large_integer::type;
+    using ticks_t = timer_large_integer::type;
 
 #ifdef DOCTEST_CONFIG_GETCURRENTTICKS
     ticks_t getCurrentTicks() { return DOCTEST_CONFIG_GETCURRENTTICKS(); }
 #elif defined(DOCTEST_PLATFORM_WINDOWS)
     ticks_t getCurrentTicks() {
-        static LARGE_INTEGER hz = { {0} }, hzo = { {0} };
+        static LARGE_INTEGER hz = {{0}}, hzo = {{0}};
         if(!hz.QuadPart) {
             QueryPerformanceFrequency(&hz);
             QueryPerformanceCounter(&hzo);
@@ -47,13 +45,14 @@ using ticks_t = timer_large_integer::type;
         //unsigned int getElapsedMilliseconds() const {
         //    return static_cast<unsigned int>(getElapsedMicroseconds() / 1000);
         //}
-        double getElapsedSeconds() const { return static_cast<double>(getCurrentTicks() - m_ticks) / 1000000.0; }
+        double getElapsedSeconds() const {
+            return static_cast<double>(getCurrentTicks() - m_ticks) / 1000000.0;
+        }
 
     private:
         ticks_t m_ticks = 0;
     };
 
-} // namespace detail
-} // namespace doctest
+}} // namespace doctest::detail
 
 #endif // DOCTEST_CONFIG_DISABLE

@@ -9,17 +9,17 @@ DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_END
 // Forward declaring 'X' in namespace std is not permitted by the C++ Standard.
 DOCTEST_MSVC_SUPPRESS_WARNING_WITH_PUSH(4643)
 
-namespace std { // NOLINT(cert-dcl58-cpp)
-typedef decltype(nullptr) nullptr_t; // NOLINT(modernize-use-using)
-typedef decltype(sizeof(void*)) size_t; // NOLINT(modernize-use-using)
+namespace std {                            // NOLINT(cert-dcl58-cpp)
+typedef decltype(nullptr)       nullptr_t; // NOLINT(modernize-use-using)
+typedef decltype(sizeof(void*)) size_t;    // NOLINT(modernize-use-using)
 template <class charT>
 struct char_traits;
 template <>
 struct char_traits<char>;
 template <class charT, class traits>
-class basic_ostream; // NOLINT(fuchsia-virtual-inheritance)
+class basic_ostream;                                    // NOLINT(fuchsia-virtual-inheritance)
 typedef basic_ostream<char, char_traits<char>> ostream; // NOLINT(modernize-use-using)
-template<class traits>
+template <class traits>
 // NOLINTNEXTLINE
 basic_ostream<char, traits>& operator<<(basic_ostream<char, traits>&, const char*);
 template <class charT, class traits>
@@ -42,5 +42,5 @@ DOCTEST_MSVC_SUPPRESS_WARNING_POP
 #endif // DOCTEST_CONFIG_USE_STD_HEADERS
 
 namespace doctest {
-  using std::size_t;
+using std::size_t;
 }

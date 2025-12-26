@@ -3,28 +3,29 @@
 
 namespace doctest {
 
-    bool SubcaseSignature::operator==(const SubcaseSignature& other) const {
-        return m_line == other.m_line
-            && std::strcmp(m_file, other.m_file) == 0
-            && m_name == other.m_name;
-    }
+bool SubcaseSignature::operator==(const SubcaseSignature& other) const {
+    return m_line == other.m_line && std::strcmp(m_file, other.m_file) == 0 &&
+           m_name == other.m_name;
+}
 
-    bool SubcaseSignature::operator<(const SubcaseSignature& other) const {
-        if(m_line != other.m_line)
-            return m_line < other.m_line;
-        if(std::strcmp(m_file, other.m_file) != 0)
-            return std::strcmp(m_file, other.m_file) < 0;
-        return m_name.compare(other.m_name) < 0;
-    }
+bool SubcaseSignature::operator<(const SubcaseSignature& other) const {
+    if(m_line != other.m_line)
+        return m_line < other.m_line;
+    if(std::strcmp(m_file, other.m_file) != 0)
+        return std::strcmp(m_file, other.m_file) < 0;
+    return m_name.compare(other.m_name) < 0;
+}
 
 #ifndef DOCTEST_CONFIG_DISABLE
 namespace detail {
 
     bool Subcase::checkFilters() {
-        if (g_cs->subcaseStack.size() < size_t(g_cs->subcase_filter_levels)) {
-            if (!matchesAny(m_signature.m_name.c_str(), g_cs->filters[6], true, g_cs->case_sensitive))
+        if(g_cs->subcaseStack.size() < size_t(g_cs->subcase_filter_levels)) {
+            if(!matchesAny(m_signature.m_name.c_str(), g_cs->filters[6], true,
+                           g_cs->case_sensitive))
                 return true;
-            if (matchesAny(m_signature.m_name.c_str(), g_cs->filters[7], false, g_cs->case_sensitive))
+            if(matchesAny(m_signature.m_name.c_str(), g_cs->filters[7], false,
+                          g_cs->case_sensitive))
                 return true;
         }
         return false;
@@ -32,11 +33,13 @@ namespace detail {
 
     Subcase::Subcase(const String& name, const char* file, int line)
             : m_signature({name, file, line}) {
-        if (!g_cs->reachedLeaf) {
-            if (g_cs->nextSubcaseStack.size() <= g_cs->subcaseStack.size()
-                || g_cs->nextSubcaseStack[g_cs->subcaseStack.size()] == m_signature) {
+        if(!g_cs->reachedLeaf) {
+            if(g_cs->nextSubcaseStack.size() <= g_cs->subcaseStack.size() ||
+               g_cs->nextSubcaseStack[g_cs->subcaseStack.size()] == m_signature) {
                 // Going down.
-                if (checkFilters()) { return; }
+                if(checkFilters()) {
+                    return;
+                }
 
                 g_cs->subcaseStack.push_back(m_signature);
                 g_cs->currentSubcaseDepth++;
@@ -44,19 +47,23 @@ namespace detail {
                 DOCTEST_ITERATE_THROUGH_REPORTERS(subcase_start, m_signature);
             }
         } else {
-            if (g_cs->subcaseStack[g_cs->currentSubcaseDepth] == m_signature) {
+            if(g_cs->subcaseStack[g_cs->currentSubcaseDepth] == m_signature) {
                 // This subcase is reentered via control flow.
                 g_cs->currentSubcaseDepth++;
                 m_entered = true;
                 DOCTEST_ITERATE_THROUGH_REPORTERS(subcase_start, m_signature);
-            } else if (g_cs->nextSubcaseStack.size() <= g_cs->currentSubcaseDepth
-                    && g_cs->fullyTraversedSubcases.find(hash(hash(g_cs->subcaseStack, g_cs->currentSubcaseDepth), hash(m_signature)))
-                    == g_cs->fullyTraversedSubcases.end()) {
-                if (checkFilters()) { return; }
+            } else if(g_cs->nextSubcaseStack.size() <= g_cs->currentSubcaseDepth &&
+                      g_cs->fullyTraversedSubcases.find(
+                              hash(hash(g_cs->subcaseStack, g_cs->currentSubcaseDepth),
+                                   hash(m_signature))) == g_cs->fullyTraversedSubcases.end()) {
+                if(checkFilters()) {
+                    return;
+                }
                 // This subcase is part of the one to be executed next.
                 g_cs->nextSubcaseStack.clear();
-                g_cs->nextSubcaseStack.insert(g_cs->nextSubcaseStack.end(),
-                    g_cs->subcaseStack.begin(), g_cs->subcaseStack.begin() + g_cs->currentSubcaseDepth);
+                g_cs->nextSubcaseStack.insert(
+                        g_cs->nextSubcaseStack.end(), g_cs->subcaseStack.begin(),
+                        g_cs->subcaseStack.begin() + g_cs->currentSubcaseDepth);
                 g_cs->nextSubcaseStack.push_back(m_signature);
             }
         }
@@ -67,30 +74,31 @@ namespace detail {
     DOCTEST_CLANG_SUPPRESS_WARNING_WITH_PUSH("-Wdeprecated-declarations")
 
     Subcase::~Subcase() {
-        if (m_entered) {
+        if(m_entered) {
             g_cs->currentSubcaseDepth--;
 
-            if (!g_cs->reachedLeaf) {
+            if(!g_cs->reachedLeaf) {
                 // Leaf.
                 g_cs->fullyTraversedSubcases.insert(hash(g_cs->subcaseStack));
                 g_cs->nextSubcaseStack.clear();
                 g_cs->reachedLeaf = true;
-            } else if (g_cs->nextSubcaseStack.empty()) {
+            } else if(g_cs->nextSubcaseStack.empty()) {
                 // All children are finished.
                 g_cs->fullyTraversedSubcases.insert(hash(g_cs->subcaseStack));
             }
 
-    #if defined(__cpp_lib_uncaught_exceptions) && __cpp_lib_uncaught_exceptions >= 201411L && (!defined(__MAC_OS_X_VERSION_MIN_REQUIRED) || __MAC_OS_X_VERSION_MIN_REQUIRED >= 101200)
+#if defined(__cpp_lib_uncaught_exceptions) && __cpp_lib_uncaught_exceptions >= 201411L &&          \
+        (!defined(__MAC_OS_X_VERSION_MIN_REQUIRED) || __MAC_OS_X_VERSION_MIN_REQUIRED >= 101200)
             if(std::uncaught_exceptions() > 0
-    #else
+#else
             if(std::uncaught_exception()
-    #endif
-                && g_cs->shouldLogCurrentException) {
+#endif
+               && g_cs->shouldLogCurrentException) {
                 DOCTEST_ITERATE_THROUGH_REPORTERS(
                         test_case_exception, {"exception thrown in subcase - will translate later "
-                                                "when the whole test case has been exited (cannot "
-                                                "translate while there is an active exception)",
-                                                false});
+                                              "when the whole test case has been exited (cannot "
+                                              "translate while there is an active exception)",
+                                              false});
                 g_cs->shouldLogCurrentException = false;
             }
 

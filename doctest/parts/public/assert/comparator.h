@@ -1,7 +1,6 @@
 #ifndef DOCTEST_CONFIG_DISABLE
 
-namespace doctest {
-namespace detail  {
+namespace doctest { namespace detail {
 
     // clang-format off
 #ifdef DOCTEST_CONFIG_TREAT_CHAR_STAR_AS_STRING
@@ -87,7 +86,6 @@ namespace detail  {
     DOCTEST_BINARY_RELATIONAL_OP(4, doctest::detail::ge)
     DOCTEST_BINARY_RELATIONAL_OP(5, doctest::detail::le)
 
-} // namespace detail
-} // namespace doctest
+}} // namespace doctest::detail
 
 #endif // DOCTEST_CONFIG_DISABLE

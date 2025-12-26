@@ -10,7 +10,7 @@
 #define DOCTEST_CPLUSPLUS __cplusplus
 #endif
 
-#define DOCTEST_COMPILER(MAJOR, MINOR, PATCH) ((MAJOR)*10000000 + (MINOR)*100000 + (PATCH))
+#define DOCTEST_COMPILER(MAJOR, MINOR, PATCH) ((MAJOR) * 10000000 + (MINOR) * 100000 + (PATCH))
 
 // GCC/Clang and GCC/MSVC are mutually exclusive, but Clang/MSVC are not because of clang-cl...
 #if defined(_MSC_VER) && defined(_MSC_FULL_VER)
