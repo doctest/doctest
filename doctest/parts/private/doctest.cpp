@@ -1,9 +1,5 @@
 #include "doctest/parts/private/prelude.h"
 
-#ifndef DOCTEST_CONFIG_OPTIONS_FILE_PREFIX_SEPARATOR
-#define DOCTEST_CONFIG_OPTIONS_FILE_PREFIX_SEPARATOR ':'
-#endif
-
 #include "doctest/parts/private/exceptions.h"
 #include "doctest/parts/private/timer.h"
 #include "doctest/parts/private/atomic.h"
@@ -104,9 +100,3 @@ namespace detail {
 #include "doctest/parts/private/reporters/debug_output_window.h"
 
 #endif // DOCTEST_CONFIG_DISABLE
-
-#ifdef DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
-DOCTEST_MSVC_SUPPRESS_WARNING_WITH_PUSH(4007) // 'function' : must be 'attribute' - see issue #182
-int main(int argc, char** argv) { return doctest::Context(argc, argv).run(); }
-DOCTEST_MSVC_SUPPRESS_WARNING_POP
-#endif // DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
