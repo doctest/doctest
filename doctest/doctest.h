@@ -5873,7 +5873,6 @@ namespace detail {
 
 #endif // DOCTEST_CONFIG_DISABLE
 
-
 #ifndef DOCTEST_CONFIG_DISABLE
 
 namespace doctest {
