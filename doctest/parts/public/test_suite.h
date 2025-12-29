@@ -35,6 +35,13 @@ DOCTEST_INTERFACE int setTestSuite(const TestSuite& ts);
 // introduces an anonymous namespace in which getCurrentTestSuite gets overridden
 namespace doctest_detail_test_suite_ns {
 DOCTEST_INTERFACE doctest::detail::TestSuite& getCurrentTestSuite();
+
+// this is here to clear the 'current test suite' for the current translation unit - at the top
+DOCTEST_GLOBAL_NO_WARNINGS( /* NOLINT(cert-err58-cpp) */
+    DOCTEST_ANONYMOUS(DOCTEST_ANON_VAR_),
+    doctest::detail::setTestSuite(doctest::detail::TestSuite() * "")
+)
+
 } // namespace doctest_detail_test_suite_ns
 
 #endif // DOCTEST_CONFIG_DISABLE

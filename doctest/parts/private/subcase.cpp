@@ -3,6 +3,48 @@
 
 namespace doctest {
 
+#ifndef DOCTEST_CONFIG_DISABLE
+namespace {
+    using namespace detail;
+
+    DOCTEST_NO_SANITIZE_INTEGER
+    unsigned long long hash(unsigned long long a, unsigned long long b) {
+        return (a << 5) + b;
+    }
+
+    // C string hash function (djb2) - taken from http://www.cse.yorku.ca/~oz/hash.html
+    DOCTEST_NO_SANITIZE_INTEGER
+    unsigned long long hash(const char* str) {
+        unsigned long long hash = 5381;
+        char c;
+        while ((c = *str++))
+            hash = ((hash << 5) + hash) + c; // hash * 33 + c
+        return hash;
+    }
+
+    unsigned long long hash(const SubcaseSignature& sig) {
+        return hash(hash(hash(sig.m_file), hash(sig.m_name.c_str())), sig.m_line);
+    }
+
+    unsigned long long hash(const std::vector<SubcaseSignature>& sigs, size_t count) {
+        unsigned long long running = 0;
+        auto end = sigs.begin() + count;
+        for (auto it = sigs.begin(); it != end; it++) {
+            running = hash(running, hash(*it));
+        }
+        return running;
+    }
+
+    unsigned long long hash(const std::vector<SubcaseSignature>& sigs) {
+        unsigned long long running = 0;
+        for (const SubcaseSignature& sig : sigs) {
+            running = hash(running, hash(sig));
+        }
+        return running;
+    }
+} // namespace
+#endif // DOCTEST_CONFIG_DISABLE
+
     bool SubcaseSignature::operator==(const SubcaseSignature& other) const {
         return m_line == other.m_line
             && std::strcmp(m_file, other.m_file) == 0

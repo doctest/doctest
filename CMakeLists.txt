@@ -82,6 +82,7 @@ if(${DOCTEST_WITH_MAIN_IN_STATIC_LIB})
         ${doctest_parts_folder}/private/path.cpp
         ${doctest_parts_folder}/private/string.cpp
         ${doctest_parts_folder}/private/subcase.cpp
+        ${doctest_parts_folder}/private/reporters.cpp
         ${doctest_parts_folder}/private/test_case.cpp
         ${doctest_parts_folder}/private/test_suite.cpp
     )

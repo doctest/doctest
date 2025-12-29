@@ -89,13 +89,6 @@ DOCTEST_MSVC_SUPPRESS_WARNING(4623) // default constructor was implicitly define
 #include <doctest/parts/public/reporter.h>
 #include <doctest/parts/public/macros.h>
 
-#ifndef DOCTEST_CONFIG_DISABLE
-
-// this is here to clear the 'current test suite' for the current translation unit - at the top
-DOCTEST_TEST_SUITE_END();
-
-#endif // DOCTEST_CONFIG_DISABLE
-
 DOCTEST_CLANG_SUPPRESS_WARNING_POP
 DOCTEST_MSVC_SUPPRESS_WARNING_POP
 DOCTEST_GCC_SUPPRESS_WARNING_POP

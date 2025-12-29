@@ -1,4 +1,6 @@
 #include "doctest/parts/private/prelude.h"
+#include "doctest/parts/private/reporter.h"
+#include "doctest/parts/private/exception_translator.h"
 
 #ifndef DOCTEST_CONFIG_DISABLE
 
@@ -22,8 +24,40 @@ namespace detail {
         m_failed = !res.m_passed;
     }
 
-    /* TODO: ResultBuilder::translateException */
-    /* TODO: ResultBuilder::log */
+    void ResultBuilder::translateException() {
+        m_threw     = true;
+        m_exception = translateActiveException();
+    }
+
+    bool ResultBuilder::log() {
+        if(m_at & assertType::is_throws) { //!OCLINT bitwise operator in conditional
+            m_failed = !m_threw;
+        } else if((m_at & assertType::is_throws_as) && (m_at & assertType::is_throws_with)) { //!OCLINT
+            m_failed = !m_threw_as || !m_exception_string.check(m_exception);
+        } else if(m_at & assertType::is_throws_as) { //!OCLINT bitwise operator in conditional
+            m_failed = !m_threw_as;
+        } else if(m_at & assertType::is_throws_with) { //!OCLINT bitwise operator in conditional
+            m_failed = !m_exception_string.check(m_exception);
+        } else if(m_at & assertType::is_nothrow) { //!OCLINT bitwise operator in conditional
+            m_failed = m_threw;
+        }
+
+        if(m_exception.size())
+            m_exception = "\"" + m_exception + "\"";
+
+        if(is_running_in_test) {
+            addAssert(m_at);
+            DOCTEST_ITERATE_THROUGH_REPORTERS(log_assert, *this);
+
+            if(m_failed)
+                addFailedAssert(m_at);
+        } else if(m_failed) {
+            failed_out_of_a_testing_context(*this);
+        }
+
+        return m_failed && isDebuggerActive() && !getContextOptions()->no_breaks &&
+            (g_cs->currentTest == nullptr || !g_cs->currentTest->m_no_breaks); // break into debugger
+    }
 
     void ResultBuilder::react() const {
         if(m_failed && checkIfShouldThrow(m_at))

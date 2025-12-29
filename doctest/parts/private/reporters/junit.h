@@ -1,6 +1,9 @@
 #include "doctest/parts/private/prelude.h"
 #include "doctest/parts/private/xml.h"
+#include "doctest/parts/private/timer.h"
 #include "doctest/parts/private/reporters/common.h"
+
+#ifndef DOCTEST_CONFIG_DISABLE
 
 namespace doctest {
 
@@ -246,3 +249,5 @@ namespace doctest {
     DOCTEST_REGISTER_REPORTER("junit", 0, JUnitReporter);
 
 } // namespace doctest
+
+#endif // DOCTEST_CONFIG_DISABLE
