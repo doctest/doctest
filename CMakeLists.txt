@@ -68,9 +68,13 @@ if(${DOCTEST_WITH_MAIN_IN_STATIC_LIB})
         ${doctest_parts_folder}/private/assert/data.cpp
         ${doctest_parts_folder}/private/assert/expression.cpp
         ${doctest_parts_folder}/private/assert/handler.cpp
+        ${doctest_parts_folder}/private/assert/message.cpp
         ${doctest_parts_folder}/private/assert/result.cpp
         ${doctest_parts_folder}/private/assert/type.cpp
         ${doctest_parts_folder}/private/color.cpp
+        ${doctest_parts_folder}/private/context.cpp
+        ${doctest_parts_folder}/private/context/options.cpp
+        ${doctest_parts_folder}/private/context_scope.cpp
         ${doctest_parts_folder}/private/debugger.cpp
         ${doctest_parts_folder}/private/exception_translator.cpp
         ${doctest_parts_folder}/private/exceptions.cpp
@@ -79,11 +83,13 @@ if(${DOCTEST_WITH_MAIN_IN_STATIC_LIB})
         ${doctest_parts_folder}/private/matchers/contains.cpp
         ${doctest_parts_folder}/private/matchers/is_nan.cpp
         ${doctest_parts_folder}/private/path.cpp
+        ${doctest_parts_folder}/private/reporter.cpp
+        ${doctest_parts_folder}/private/reporters.cpp
         ${doctest_parts_folder}/private/string.cpp
         ${doctest_parts_folder}/private/subcase.cpp
-        ${doctest_parts_folder}/private/reporters.cpp
         ${doctest_parts_folder}/private/test_case.cpp
         ${doctest_parts_folder}/private/test_suite.cpp
+        ${doctest_parts_folder}/private/xml.cpp
     )
     add_library(${PROJECT_NAME}::${PROJECT_NAME}_with_main ALIAS ${PROJECT_NAME}_with_main)
     target_compile_definitions(${PROJECT_NAME}_with_main PRIVATE

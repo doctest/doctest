@@ -32,8 +32,7 @@ jobs:
         run: |
           if ! git diff --exit-code doctest/doctest.h; then
             echo "::error file=doctest/doctest.h title=doctest.h out-of-date::doctest.h differs when regenerated"
-            echo "Ensure you have only changed files in the doctest/parts/* directory"
-            echo "and either build via CMake, or run the scripts/assemble.py script directly"
-            echo "to assemble the single-header include form of doctest"
+            echo "Ensure you have only changed files in the doctest/parts/* directory,"
+            echo "then run scripts/assemble.py to assemble the single-header file for doctest"
             exit 1
           fi
