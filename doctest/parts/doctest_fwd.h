@@ -82,13 +82,7 @@ DOCTEST_MSVC_SUPPRESS_WARNING(4623) // default constructor was implicitly define
 #include <doctest/parts/public/exception_translator.h>
 #include <doctest/parts/public/context_scope.h>
 #include <doctest/parts/public/assert/message.h>
-
-namespace doctest {
-
-DOCTEST_INTERFACE const char* skipPathFromFilename(const char* file);
-
-} // namespace doctest
-
+#include <doctest/parts/public/path.h>
 #include <doctest/parts/public/exceptions.h>
 #include <doctest/parts/public/context.h>
 #include <doctest/parts/public/assert/handler.h>
