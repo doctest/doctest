@@ -64,7 +64,7 @@ endif()
 
 if(${DOCTEST_WITH_MAIN_IN_STATIC_LIB})
     add_library(
-        ${PROJECT_NAME}_with_main STATIC EXCLUDE_FROM_ALL
+        ${PROJECT_NAME}_with_main STATIC
         ${doctest_parts_folder}/private/assert/data.cpp
         ${doctest_parts_folder}/private/assert/expression.cpp
         ${doctest_parts_folder}/private/assert/handler.cpp
