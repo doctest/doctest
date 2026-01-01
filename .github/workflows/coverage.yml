@@ -46,11 +46,13 @@ jobs:
       - name: LCOV
         run: |
           mkdir coverage
-          lcov -c -d build/ -o coverage/lcov.info --include "*doctest/parts*"
+          lcov -c -d build/ -o coverage/lcov.info --include "*/doctest/doctest.h"
 
       - name: Codecov
         uses: codecov/codecov-action@v5
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           files: ./coverage/lcov.info
+          disable_search: true
+          plugins: noop
           fail_ci_if_error: true

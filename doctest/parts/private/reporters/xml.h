@@ -3,6 +3,7 @@
 
 #include "doctest/parts/private/prelude.h"
 #include "doctest/parts/private/xml.h"
+#include "doctest/parts/private/reporter.h"
 
 DOCTEST_SUPPRESS_PRIVATE_WARNINGS_PUSH
 
@@ -12,7 +13,7 @@ namespace doctest {
 
     struct XmlReporter : public IReporter
     {
-        XmlWriter xml;
+        detail::XmlWriter xml;
         DOCTEST_DECLARE_MUTEX(mutex)
 
         // caching pointers/references to objects of these types - safe to do

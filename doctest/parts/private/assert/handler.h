@@ -10,7 +10,7 @@ DOCTEST_SUPPRESS_PRIVATE_WARNINGS_PUSH
 #ifndef DOCTEST_CONFIG_DISABLE
 
 namespace doctest {
-namespace {
+inline namespace _ {
 
     using detail::g_cs;
 

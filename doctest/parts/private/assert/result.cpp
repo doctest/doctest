@@ -1,6 +1,7 @@
 #include "doctest/parts/private/prelude.h"
 #include "doctest/parts/private/reporter.h"
 #include "doctest/parts/private/exception_translator.h"
+#include "doctest/parts/private/assert/handler.h"
 
 DOCTEST_SUPPRESS_PRIVATE_WARNINGS_PUSH
 

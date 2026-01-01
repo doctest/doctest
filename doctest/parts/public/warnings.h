@@ -138,6 +138,7 @@
     DOCTEST_CLANG_SUPPRESS_WARNING("-Wmissing-braces")                                             \
     DOCTEST_CLANG_SUPPRESS_WARNING("-Wmissing-field-initializers")                                 \
     DOCTEST_CLANG_SUPPRESS_WARNING("-Wunused-member-function")                                     \
+    DOCTEST_CLANG_SUPPRESS_WARNING("-Wunused-function")                                            \
     DOCTEST_CLANG_SUPPRESS_WARNING("-Wnonportable-system-include-path")                            \
                                                                                                    \
     DOCTEST_GCC_SUPPRESS_WARNING("-Wconversion")                                                   \

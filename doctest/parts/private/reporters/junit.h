@@ -19,9 +19,9 @@ namespace doctest {
     // - more attributes in tags
     struct JUnitReporter : public IReporter
     {
-        XmlWriter xml;
+        detail::XmlWriter xml;
         DOCTEST_DECLARE_MUTEX(mutex)
-        Timer timer;
+        detail::Timer timer;
         std::vector<String> deepestSubcaseStackNames;
 
         struct JUnitTestCaseData

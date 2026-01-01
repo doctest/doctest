@@ -3,6 +3,7 @@
 
 #include "doctest/parts/private/prelude.h"
 #include "doctest/parts/private/reporters/console.h"
+#include "doctest/parts/private/context_state.h"
 
 DOCTEST_SUPPRESS_PRIVATE_WARNINGS_PUSH
 
@@ -28,6 +29,7 @@ namespace {
 
 #define DOCTEST_DEBUG_OUTPUT_REPORTER_OVERRIDE(func, type, arg)                                    \
     void func(type arg) override {                                                                 \
+        using detail::g_no_colors;                                                                 \
         bool with_col = g_no_colors;                                                               \
         g_no_colors   = false;                                                                     \
         ConsoleReporter::func(arg);                                                                \

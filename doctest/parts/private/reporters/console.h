@@ -16,6 +16,8 @@ DOCTEST_SUPPRESS_PRIVATE_WARNINGS_PUSH
 
 namespace doctest {
 
+    using detail::g_cs;
+
     struct Whitespace
     {
         int nrSpaces;

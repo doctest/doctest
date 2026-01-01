@@ -9,7 +9,7 @@ DOCTEST_SUPPRESS_PRIVATE_WARNINGS_PUSH
 #ifndef DOCTEST_CONFIG_DISABLE
 
 namespace doctest {
-namespace {
+inline namespace _ {
     // the int (priority) is part of the key for automatic sorting - sadly one can register a
     // reporter with a duplicate name and a different priority but hopefully that won't happen often :|
     using reporterMap = std::map<std::pair<int, String>, detail::reporterCreatorFunc>;
