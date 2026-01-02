@@ -52,6 +52,7 @@ jobs:
           - { compiler: gcc,   version: "12",  os: ubuntu-24.04                          }
           - { compiler: gcc,   version: "13",  os: ubuntu-24.04                          }
           - { compiler: gcc,   version: "14",  os: ubuntu-24.04                          }
+          - { compiler: gcc,   version: "15",  os: ubuntu-24.04, container: ubuntu:26.04 }
 
           # Linux clang
           - { compiler: clang, version: "3.9", os: ubuntu-24.04, container: ubuntu:18.04 }
@@ -70,6 +71,9 @@ jobs:
           - { compiler: clang, version: "16",  os: ubuntu-24.04                          }
           - { compiler: clang, version: "17",  os: ubuntu-24.04                          }
           - { compiler: clang, version: "18",  os: ubuntu-24.04                          }
+          - { compiler: clang, version: "19",  os: ubuntu-24.04, container: ubuntu:26.04 }
+          - { compiler: clang, version: "20",  os: ubuntu-24.04, container: ubuntu:26.04 }
+          - { compiler: clang, version: "21",  os: ubuntu-24.04, container: ubuntu:26.04 }
 
           # macOS arm64
           - { os: macos-14, compiler: xcode, version: "15.0.1" } # Apple Clang 15.0.0
