@@ -139,6 +139,7 @@
     DOCTEST_CLANG_SUPPRESS_WARNING("-Wmissing-field-initializers")                                 \
     DOCTEST_CLANG_SUPPRESS_WARNING("-Wunused-member-function")                                     \
     DOCTEST_CLANG_SUPPRESS_WARNING("-Wnonportable-system-include-path")                            \
+    DOCTEST_CLANG_SUPPRESS_WARNING("-Wnrvo")                                                       \
                                                                                                    \
     DOCTEST_GCC_SUPPRESS_WARNING("-Wconversion")                                                   \
     DOCTEST_GCC_SUPPRESS_WARNING("-Wsign-conversion")                                              \
@@ -152,6 +153,7 @@
     DOCTEST_GCC_SUPPRESS_WARNING("-Wunused-function")                                              \
     DOCTEST_GCC_SUPPRESS_WARNING("-Wmultiple-inheritance")                                         \
     DOCTEST_GCC_SUPPRESS_WARNING("-Wsuggest-attribute")                                            \
+    DOCTEST_GCC_SUPPRESS_WARNING("-Wnrvo")                                                         \
                                                                                                    \
     DOCTEST_MSVC_SUPPRESS_WARNING(4267) /* conversion from 'x' to 'y', possible loss of data */    \
     DOCTEST_MSVC_SUPPRESS_WARNING(4530) /* exception handler, but unwind semantics not enabled */  \
