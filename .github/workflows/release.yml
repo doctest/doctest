@@ -5,9 +5,10 @@ on:
     types: [published]
 
 jobs:
-  # A release archive is required for bzlmod
+  # Release archives are not stable on GitHub. A stable release archive is
+  # recommended for bzlmod consumers.
   # See: https://blog.bazel.build/2023/02/15/github-archive-checksum.html
-  bazel-release-archive:
+  release-archive:
     runs-on: ubuntu-latest
     permissions:
       contents: write
