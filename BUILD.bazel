@@ -2,6 +2,9 @@ load("@rules_cc//cc:defs.bzl", "cc_library")
 
 cc_library(
     name = "doctest",
-    textual_hdrs = glob(["doctest/**/*.h"]),
+    textual_hdrs = glob(
+        ["doctest/**/*.h"],
+        exclude = ["doctest/parts/**/*"],
+    ),
     visibility = ["//visibility:public"],
 )
