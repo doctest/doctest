@@ -4,6 +4,17 @@ package(default_visibility = ["//visibility:public"])
 
 cc_library(
     name = "doctest",
-    includes = ["."],
+    copts = select({
+        "@rules_cc//cc/compiler:msvc-cl": [],
+        "@rules_cc//cc/compiler:clang-cl": [],
+
+        # includes = ["."] isn't allowed, but doctest externally uses angle
+        # bracket includes. In order for bazel consumers to have the same
+        # includes as other build systems we must workaround this.
+        "//conditions:default": [
+            "-I",
+            ".",
+        ],
+    }),
     textual_hdrs = glob(["doctest/**/*.h"]),
 )
