@@ -2,6 +2,7 @@ name: bazel
 
 on:
   push:
+    branches: [dev, master]
     paths-ignore:
       - 'doc/**'
       - 'scripts/**'
@@ -13,6 +14,10 @@ on:
       - 'scripts/**'
       - 'LICENSE.txt'
       - 'README.md'
+
+concurrency:
+  group: ${{ github.workflow }}|${{ github.ref_name }}|bazel
+  cancel-in-progress: true
 
 jobs:
   test:
