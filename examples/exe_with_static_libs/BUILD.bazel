@@ -1,23 +1,45 @@
+load("@bazel_skylib//rules:expand_template.bzl", "expand_template")
 load("@rules_cc//cc:defs.bzl", "cc_library", "cc_test")
+
+_srcs = [
+    "lib_1_src1.cpp",
+    "lib_1_src2.cpp",
+    "lib_2_src.cpp",
+    "main.cpp",
+]
+
+[expand_template(
+    name = src.replace(".", "_"),
+    out = "_" + src,
+    # doctest is at the root and is generally consumed with angle bracket
+    # includes, but with bazel we cannot do includes = ["."] as that is not
+    # allowed. To workaround this we replace the includes to use quote includes
+    # just for bazels sake.
+    # SEE: https://github.com/bazelbuild/bazel/issues/18913#issuecomment-1688357985
+    substitutions = {
+        "<doctest/doctest.h>": "\"doctest/doctest.h\"",
+    },
+    template = src,
+) for src in _srcs]
 
 cc_library(
     name = "lib_1",
     srcs = [
-        "lib_1_src1.cpp",
-        "lib_1_src2.cpp",
+        ":lib_1_src1_cpp",
+        ":lib_1_src2_cpp",
     ],
     deps = ["@doctest"],
 )
 
 cc_library(
     name = "lib_2",
-    srcs = ["lib_2_src.cpp"],
+    srcs = [":lib_2_src_cpp"],
     deps = ["@doctest"],
 )
 
 cc_test(
     name = "exe_with_static_libs",
-    srcs = ["main.cpp"],
+    srcs = [":main_cpp"],
     deps = [
         ":lib_1",
         ":lib_2",
