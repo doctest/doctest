@@ -17,33 +17,33 @@ namespace detail {
 
 DOCTEST_THREAD_LOCAL std::ostringstream DebugOutputWindowReporter::oss;
 
-DebugOutputWindowReporter::DebugOutputWindowReporter(const ContextOptions& co)
-        : ConsoleReporter(co, oss) {}
+DebugOutputWindowReporter::DebugOutputWindowReporter(const ContextOptions &co)
+    : ConsoleReporter(co, oss) {}
 
-#define DOCTEST_DEBUG_OUTPUT_REPORTER_OVERRIDE(func, type, arg)                                    \
-    void DebugOutputWindowReporter::func(type arg) {                                                                 \
-        using detail::g_no_colors;                                                                 \
-        bool with_col = g_no_colors;                                                               \
-        g_no_colors   = false;                                                                     \
-        ConsoleReporter::func(arg);                                                                \
-        if(oss.tellp() != std::streampos{}) {                                                      \
-            DOCTEST_OUTPUT_DEBUG_STRING(oss.str().c_str());                                        \
-            oss.str("");                                                                           \
-        }                                                                                          \
-        g_no_colors = with_col;                                                                    \
+#define DOCTEST_DEBUG_OUTPUT_REPORTER_OVERRIDE(func, type, arg)                                                        \
+    void DebugOutputWindowReporter::func(type arg) {                                                                   \
+        using detail::g_no_colors;                                                                                     \
+        bool with_col = g_no_colors;                                                                                   \
+        g_no_colors = false;                                                                                           \
+        ConsoleReporter::func(arg);                                                                                    \
+        if (oss.tellp() != std::streampos{}) {                                                                         \
+            DOCTEST_OUTPUT_DEBUG_STRING(oss.str().c_str());                                                            \
+            oss.str("");                                                                                               \
+        }                                                                                                              \
+        g_no_colors = with_col;                                                                                        \
     }
 
 DOCTEST_DEBUG_OUTPUT_REPORTER_OVERRIDE(test_run_start, DOCTEST_EMPTY, DOCTEST_EMPTY)
-DOCTEST_DEBUG_OUTPUT_REPORTER_OVERRIDE(test_run_end, const TestRunStats&, in)
-DOCTEST_DEBUG_OUTPUT_REPORTER_OVERRIDE(test_case_start, const TestCaseData&, in)
-DOCTEST_DEBUG_OUTPUT_REPORTER_OVERRIDE(test_case_reenter, const TestCaseData&, in)
-DOCTEST_DEBUG_OUTPUT_REPORTER_OVERRIDE(test_case_end, const CurrentTestCaseStats&, in)
-DOCTEST_DEBUG_OUTPUT_REPORTER_OVERRIDE(test_case_exception, const TestCaseException&, in)
-DOCTEST_DEBUG_OUTPUT_REPORTER_OVERRIDE(subcase_start, const SubcaseSignature&, in)
+DOCTEST_DEBUG_OUTPUT_REPORTER_OVERRIDE(test_run_end, const TestRunStats &, in)
+DOCTEST_DEBUG_OUTPUT_REPORTER_OVERRIDE(test_case_start, const TestCaseData &, in)
+DOCTEST_DEBUG_OUTPUT_REPORTER_OVERRIDE(test_case_reenter, const TestCaseData &, in)
+DOCTEST_DEBUG_OUTPUT_REPORTER_OVERRIDE(test_case_end, const CurrentTestCaseStats &, in)
+DOCTEST_DEBUG_OUTPUT_REPORTER_OVERRIDE(test_case_exception, const TestCaseException &, in)
+DOCTEST_DEBUG_OUTPUT_REPORTER_OVERRIDE(subcase_start, const SubcaseSignature &, in)
 DOCTEST_DEBUG_OUTPUT_REPORTER_OVERRIDE(subcase_end, DOCTEST_EMPTY, DOCTEST_EMPTY)
-DOCTEST_DEBUG_OUTPUT_REPORTER_OVERRIDE(log_assert, const AssertData&, in)
-DOCTEST_DEBUG_OUTPUT_REPORTER_OVERRIDE(log_message, const MessageData&, in)
-DOCTEST_DEBUG_OUTPUT_REPORTER_OVERRIDE(test_case_skipped, const TestCaseData&, in)
+DOCTEST_DEBUG_OUTPUT_REPORTER_OVERRIDE(log_assert, const AssertData &, in)
+DOCTEST_DEBUG_OUTPUT_REPORTER_OVERRIDE(log_message, const MessageData &, in)
+DOCTEST_DEBUG_OUTPUT_REPORTER_OVERRIDE(test_case_skipped, const TestCaseData &, in)
 
 #endif // DOCTEST_PLATFORM_WINDOWS
 

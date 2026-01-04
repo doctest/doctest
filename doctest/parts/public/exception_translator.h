@@ -10,37 +10,35 @@ namespace detail {
 
 #ifndef DOCTEST_CONFIG_DISABLE
 
-    struct DOCTEST_INTERFACE IExceptionTranslator
-    {
-        DOCTEST_DECLARE_INTERFACE(IExceptionTranslator)
-        virtual bool translate(String&) const = 0;
-    };
+struct DOCTEST_INTERFACE IExceptionTranslator {
+    DOCTEST_DECLARE_INTERFACE(IExceptionTranslator)
+    virtual bool translate(String &) const = 0;
+};
 
-    template <typename T>
-    class ExceptionTranslator : public IExceptionTranslator
-    {
-    public:
-        explicit ExceptionTranslator(String (*translateFunction)(T))
-                : m_translateFunction(translateFunction) {}
+template <typename T>
+class ExceptionTranslator : public IExceptionTranslator {
+public:
+    explicit ExceptionTranslator(String (*translateFunction)(T))
+        : m_translateFunction(translateFunction) {}
 
-        bool translate(String& res) const override {
+    bool translate(String &res) const override {
 #ifndef DOCTEST_CONFIG_NO_EXCEPTIONS
-            try {
-                throw;
-            } catch(const T& ex) {
-                res = m_translateFunction(ex);
-                return true;
-            } catch(...) {}
-#endif                              // DOCTEST_CONFIG_NO_EXCEPTIONS
-            static_cast<void>(res); // to silence -Wunused-parameter
-            return false;
-        }
+        try {
+            throw;
+        } catch (const T &ex) {
+            res = m_translateFunction(ex);
+            return true;
+        } catch (...) {}
+#endif                          // DOCTEST_CONFIG_NO_EXCEPTIONS
+        static_cast<void>(res); // to silence -Wunused-parameter
+        return false;
+    }
 
-    private:
-        String (*m_translateFunction)(T);
-    };
+private:
+    String (*m_translateFunction)(T);
+};
 
-    DOCTEST_INTERFACE void registerExceptionTranslatorImpl(const IExceptionTranslator* et);
+DOCTEST_INTERFACE void registerExceptionTranslatorImpl(const IExceptionTranslator *et);
 
 #endif // DOCTEST_CONFIG_DISABLE
 

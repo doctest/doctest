@@ -8,11 +8,16 @@ DOCTEST_SUPPRESS_PUBLIC_WARNINGS_PUSH
 namespace doctest {
 
 template <typename F>
-struct DOCTEST_INTERFACE_DECL IsNaN
-{
-    F value; bool flipped;
-    IsNaN(F f, bool flip = false) : value(f), flipped(flip) { }
-    IsNaN<F> operator!() const { return { value, !flipped }; }
+struct DOCTEST_INTERFACE_DECL IsNaN {
+    F value;
+    bool flipped;
+    IsNaN(F f, bool flip = false)
+        : value(f), flipped(flip) {}
+
+    IsNaN<F> operator!() const {
+        return {value, !flipped};
+    }
+
     operator bool() const;
 };
 

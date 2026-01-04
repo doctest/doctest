@@ -10,12 +10,11 @@ DOCTEST_SUPPRESS_PRIVATE_WARNINGS_PUSH
 namespace doctest {
 namespace detail {
 
-    // clang-format off
-
 // =================================================================================================
-// The following code has been taken verbatim from Catch2/include/internal/catch_xmlwriter.h/cpp
+// The following code has been taken verbatim from Catch2/include/internal/catch_xmlwriter.h
 // This is done so cherry-picking bug fixes is trivial - even the style/formatting is untouched.
 // =================================================================================================
+/* clang-format off */ /* NOLINTBEGIN */
 
     class XmlEncode {
     public:
@@ -108,7 +107,10 @@ namespace detail {
         std::ostream& m_os;
     };
 
-    // clang-format on
+/* clang-format on */ /* NOLINTEND */
+// =================================================================================================
+// End of copy-pasted code from Catch
+// =================================================================================================
 
 } // namespace detail
 } // namespace doctest

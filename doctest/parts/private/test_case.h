@@ -10,8 +10,8 @@ DOCTEST_SUPPRESS_PRIVATE_WARNINGS_PUSH
 namespace doctest {
 namespace detail {
 
-    // all the registered tests
-    std::set<TestCase>& getRegisteredTests();
+// all the registered tests
+std::set<TestCase> &getRegisteredTests();
 
 } // namespace detail
 } // namespace doctest

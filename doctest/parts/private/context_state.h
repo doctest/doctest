@@ -12,41 +12,40 @@ DOCTEST_SUPPRESS_PRIVATE_WARNINGS_PUSH
 namespace doctest {
 namespace detail {
 
-    // this holds both parameters from the command line and runtime data for tests
-    struct ContextState : ContextOptions, TestRunStats, CurrentTestCaseStats
-    {
-        MultiLaneAtomic<int> numAssertsCurrentTest_atomic;
-        MultiLaneAtomic<int> numAssertsFailedCurrentTest_atomic;
+// this holds both parameters from the command line and runtime data for tests
+struct ContextState : ContextOptions, TestRunStats, CurrentTestCaseStats {
+    MultiLaneAtomic<int> numAssertsCurrentTest_atomic;
+    MultiLaneAtomic<int> numAssertsFailedCurrentTest_atomic;
 
-        std::vector<std::vector<String>> filters = decltype(filters)(9); // 9 different filters
+    std::vector<std::vector<String>> filters = decltype(filters)(9); // 9 different filters
 
-        std::vector<IReporter*> reporters_currently_used;
+    std::vector<IReporter *> reporters_currently_used;
 
-        assert_handler ah = nullptr;
+    assert_handler ah = nullptr;
 
-        Timer timer;
+    Timer timer;
 
-        std::vector<String> stringifiedContexts; // logging from INFO() due to an exception
+    std::vector<String> stringifiedContexts; // logging from INFO() due to an exception
 
-        // stuff for subcases
-        bool reachedLeaf;
-        std::vector<SubcaseSignature> subcaseStack;
-        std::vector<SubcaseSignature> nextSubcaseStack;
-        std::unordered_set<unsigned long long> fullyTraversedSubcases;
-        size_t currentSubcaseDepth;
-        Atomic<bool> shouldLogCurrentException;
+    // stuff for subcases
+    bool reachedLeaf;
+    std::vector<SubcaseSignature> subcaseStack;
+    std::vector<SubcaseSignature> nextSubcaseStack;
+    std::unordered_set<unsigned long long> fullyTraversedSubcases;
+    size_t currentSubcaseDepth;
+    Atomic<bool> shouldLogCurrentException;
 
-        void resetRunData();
+    void resetRunData();
 
-        void finalizeTestCaseData();
-    };
+    void finalizeTestCaseData();
+};
 
-    extern ContextState* g_cs;
+extern ContextState *g_cs;
 
-    // used to avoid locks for the debug output
-    // TODO: figure out if this is indeed necessary/correct - seems like either there still
-    // could be a race or that there wouldn't be a race even if using the context directly
-    extern DOCTEST_THREAD_LOCAL bool g_no_colors;
+// used to avoid locks for the debug output
+// TODO: figure out if this is indeed necessary/correct - seems like either there still
+// could be a race or that there wouldn't be a race even if using the context directly
+extern DOCTEST_THREAD_LOCAL bool g_no_colors;
 
 } // namespace detail
 } // namespace doctest
