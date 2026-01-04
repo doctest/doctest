@@ -22,6 +22,8 @@ option(DOCTEST_WITH_MAIN_IN_STATIC_LIB  "Build a static lib (cmake target) with 
 option(DOCTEST_NO_INSTALL  "Skip the installation process" OFF)
 option(DOCTEST_USE_STD_HEADERS  "Use std headers" OFF)
 
+option(DOCTEST_INTERNAL_WERROR "Enables -Werror" OFF)
+
 add_library(${PROJECT_NAME} INTERFACE)
 add_library(${PROJECT_NAME}::${PROJECT_NAME} ALIAS ${PROJECT_NAME})
 
