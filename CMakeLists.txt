@@ -39,7 +39,7 @@ if(MAIN_PROJECT)
         $<BUILD_INTERFACE:${doctest_parts_folder}>
         $<BUILD_INTERFACE:${doctest_folder}>)
 else()
-    target_include_directories(${PROJECT_NAME} INTERFACE $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/>)
+    target_include_directories(${PROJECT_NAME} SYSTEM INTERFACE $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/>)
 endif()
 
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
