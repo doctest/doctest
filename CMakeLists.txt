@@ -109,6 +109,7 @@ if(MAIN_PROJECT AND DOCTEST_WITH_TESTS)
     add_subdirectory(examples/combining_the_same_tests_built_differently_in_multiple_shared_objects)
     add_subdirectory(scripts/playground)
     add_subdirectory(examples/mpi)
+    add_subdirectory(tests)
 endif()
 
 set(DOCTEST_CMAKE_HELPER "${CMAKE_CURRENT_SOURCE_DIR}/scripts/cmake/doctest.cmake" CACHE PATH "Absolute path to to doctest helper file. `include(${DOCTEST_CMAKE_HELPER})`")
