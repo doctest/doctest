@@ -23,6 +23,7 @@ option(DOCTEST_NO_INSTALL  "Skip the installation process" OFF)
 option(DOCTEST_USE_STD_HEADERS  "Use std headers" OFF)
 
 option(DOCTEST_INTERNAL_WERROR "Enables -Werror" OFF)
+option(DOCTEST_INTERNAL_COVERAGE "Set for running coverage" OFF)
 
 add_library(${PROJECT_NAME} INTERFACE)
 add_library(${PROJECT_NAME}::${PROJECT_NAME} ALIAS ${PROJECT_NAME})
