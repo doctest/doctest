@@ -332,13 +332,12 @@ TEST_SUITE("String searching") {
     }
 
     TEST_CASE("Reverse-searching") {
-        // See #1018 for why this is disabled
-        // SUBCASE("Empty source string") {
-        //     auto string = String("");
-        //     CHECK(string.rfind('x') == npos);
-        //     CHECK(string.rfind('y') == npos);
-        //     CHECK(string.rfind('z') == npos);
-        // }
+        SUBCASE("Empty source string") {
+            auto string = String("");
+            CHECK(string.rfind('x') == npos);
+            CHECK(string.rfind('y') == npos);
+            CHECK(string.rfind('z') == npos);
+        }
 
         SUBCASE("Non-empty source string") {
             auto string = String("doctest");

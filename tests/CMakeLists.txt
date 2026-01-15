@@ -17,7 +17,7 @@ target_link_libraries(unit_tests doctest)
 
 # While our unit-tests compile, there's sufficient errors that we can't really enable globally.
 # For now, we're going to run the tests, and hopefully try to smooth over these errors later.
-if(CMAKE_INTERNAL_COVERAGE)
+if(DOCTEST_INTERNAL_COVERAGE)
     add_test(NAME unit_tests COMMAND unit_tests)
 endif()
 

@@ -35,7 +35,7 @@ jobs:
         run: sudo apt-get install -y ninja-build lcov
 
       - name: Generate
-        run: cmake -B build -S . -G Ninja -D CMAKE_CXX_FLAGS="-fprofile-arcs -ftest-coverage" -D CMAKE_INTERNAL_COVERAGE=ON
+        run: cmake -B build -S . -G Ninja -D CMAKE_CXX_FLAGS="-fprofile-arcs -ftest-coverage" -D DOCTEST_INTERNAL_COVERAGE=ON
 
       - name: Build
         run: cmake --build build

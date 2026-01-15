@@ -7518,6 +7518,8 @@ namespace detail {
     }
 
     String::size_type String::rfind(char ch, size_type pos) const {
+        if (size() == 0) { return npos; }
+
         const char* begin = c_str();
         const char* it = begin + std::min(pos, size() - 1);
         for (; it >= begin && *it != ch; it--) { }
