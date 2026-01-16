@@ -32,10 +32,8 @@ if("${TEST_MODE}" STREQUAL "COMPARE")
         execute_process(COMMAND dos2unix ${TEST_TEMP_FILE})
     endif()
 
-    if(CMAKE_VERSION VERSION_GREATER_EQUAL "3.14.0")
-        set(IGNORE_EOL --ignore-eol)
-    endif()
-        
+    set(IGNORE_EOL --ignore-eol)
+
     execute_process(COMMAND ${CMAKE_COMMAND} -E compare_files ${IGNORE_EOL} ${TEST_OUTPUT_FILE} ${TEST_TEMP_FILE} RESULT_VARIABLE cmp_result)
 
     if(cmp_result)
