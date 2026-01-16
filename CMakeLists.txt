@@ -1,26 +1,31 @@
 cmake_minimum_required(VERSION 3.14)
 
 if(POLICY CMP0077)
-    cmake_policy(SET CMP0077 NEW)
+  cmake_policy(SET CMP0077 NEW)
 endif()
 
-################################################################################
-## DOCTEST
-################################################################################
+# ##############################################################################
+# DOCTEST
+# ##############################################################################
 
 file(READ ${CMAKE_CURRENT_SOURCE_DIR}/scripts/version.txt ver)
-project(doctest VERSION ${ver} LANGUAGES CXX)
+project(
+  doctest
+  VERSION ${ver}
+  LANGUAGES CXX)
 
-# Determine if doctest is built as a subproject (using add_subdirectory) or if it is the main project.
+# Determine if doctest is built as a subproject (using add_subdirectory) or if
+# it is the main project.
 set(MAIN_PROJECT OFF)
 if(CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
-    set(MAIN_PROJECT ON)
+  set(MAIN_PROJECT ON)
 endif()
 
-option(DOCTEST_WITH_TESTS               "Build tests/examples" ${MAIN_PROJECT})
-option(DOCTEST_WITH_MAIN_IN_STATIC_LIB  "Build a static lib (cmake target) with a default main entry point" ON)
-option(DOCTEST_NO_INSTALL  "Skip the installation process" OFF)
-option(DOCTEST_USE_STD_HEADERS  "Use std headers" OFF)
+option(DOCTEST_WITH_TESTS "Build tests/examples" ${MAIN_PROJECT})
+option(DOCTEST_WITH_MAIN_IN_STATIC_LIB
+       "Build a static lib (cmake target) with a default main entry point" ON)
+option(DOCTEST_NO_INSTALL "Skip the installation process" OFF)
+option(DOCTEST_USE_STD_HEADERS "Use std headers" OFF)
 
 option(DOCTEST_INTERNAL_WERROR "Enables -Werror" OFF)
 option(DOCTEST_INTERNAL_COVERAGE "Set for running coverage" OFF)
@@ -31,103 +36,116 @@ add_library(${PROJECT_NAME}::${PROJECT_NAME} ALIAS ${PROJECT_NAME})
 target_compile_features(${PROJECT_NAME} INTERFACE cxx_std_11)
 
 set(doctest_parts_folder "${CMAKE_CURRENT_SOURCE_DIR}/doctest/parts")
-set(doctest_folder "${CMAKE_CURRENT_SOURCE_DIR}/") # in order to have the mpi extension files, not included into the doctest.h single header
+set(doctest_folder "${CMAKE_CURRENT_SOURCE_DIR}/") # in order to have the mpi
+                                                   # extension files, not
+                                                   # included into the doctest.h
+                                                   # single header
 
 if(MAIN_PROJECT)
-    target_include_directories(${PROJECT_NAME} INTERFACE
-        $<BUILD_INTERFACE:${doctest_parts_folder}>
-        $<BUILD_INTERFACE:${doctest_folder}>)
+  target_include_directories(
+    ${PROJECT_NAME} INTERFACE $<BUILD_INTERFACE:${doctest_parts_folder}>
+                              $<BUILD_INTERFACE:${doctest_folder}>)
 else()
-    target_include_directories(${PROJECT_NAME} INTERFACE $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/>)
+  target_include_directories(
+    ${PROJECT_NAME} INTERFACE $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/>)
 endif()
 
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-	if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-		if (NOT WIN32)
-			set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -gdwarf-4 ")
-		endif()
-	endif()
+  if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+    if(NOT WIN32)
+      set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -gdwarf-4 ")
+    endif()
+  endif()
 endif()
 
-# hack to support building on XCode 6 and 7 - propagate the definition to everything
+# hack to support building on XCode 6 and 7 - propagate the definition to
+# everything
 if(DEFINED DOCTEST_THREAD_LOCAL)
-    target_compile_definitions(${PROJECT_NAME} INTERFACE
-        DOCTEST_THREAD_LOCAL=${DOCTEST_THREAD_LOCAL})
+  target_compile_definitions(
+    ${PROJECT_NAME} INTERFACE DOCTEST_THREAD_LOCAL=${DOCTEST_THREAD_LOCAL})
 endif()
 
 if(DOCTEST_USE_STD_HEADERS)
-    target_compile_definitions(${PROJECT_NAME} INTERFACE DOCTEST_CONFIG_USE_STD_HEADERS)
+  target_compile_definitions(${PROJECT_NAME}
+                             INTERFACE DOCTEST_CONFIG_USE_STD_HEADERS)
 endif()
 
-################################################################################
-## TESTS/EXAMPLES/HELPERS
-################################################################################
+# ##############################################################################
+# TESTS/EXAMPLES/HELPERS
+# ##############################################################################
 
 if(${DOCTEST_WITH_MAIN_IN_STATIC_LIB})
-    add_library(
-        ${PROJECT_NAME}_with_main STATIC
-        ${doctest_parts_folder}/private/assert/data.cpp
-        ${doctest_parts_folder}/private/assert/expression.cpp
-        ${doctest_parts_folder}/private/assert/handler.cpp
-        ${doctest_parts_folder}/private/assert/message.cpp
-        ${doctest_parts_folder}/private/assert/result.cpp
-        ${doctest_parts_folder}/private/assert/type.cpp
-        ${doctest_parts_folder}/private/color.cpp
-        ${doctest_parts_folder}/private/context.cpp
-        ${doctest_parts_folder}/private/context/options.cpp
-        ${doctest_parts_folder}/private/context_scope.cpp
-        ${doctest_parts_folder}/private/debugger.cpp
-        ${doctest_parts_folder}/private/exception_translator.cpp
-        ${doctest_parts_folder}/private/exceptions.cpp
-        ${doctest_parts_folder}/private/main.cpp
-        ${doctest_parts_folder}/private/matchers/approx.cpp
-        ${doctest_parts_folder}/private/matchers/contains.cpp
-        ${doctest_parts_folder}/private/matchers/is_nan.cpp
-        ${doctest_parts_folder}/private/path.cpp
-        ${doctest_parts_folder}/private/reporter.cpp
-        ${doctest_parts_folder}/private/reporters.cpp
-        ${doctest_parts_folder}/private/string.cpp
-        ${doctest_parts_folder}/private/subcase.cpp
-        ${doctest_parts_folder}/private/test_case.cpp
-        ${doctest_parts_folder}/private/test_suite.cpp
-        ${doctest_parts_folder}/private/xml.cpp
-    )
-    add_library(${PROJECT_NAME}::${PROJECT_NAME}_with_main ALIAS ${PROJECT_NAME}_with_main)
-    target_compile_definitions(${PROJECT_NAME}_with_main PRIVATE
-        DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN)
-    set_target_properties(${PROJECT_NAME}_with_main PROPERTIES CXX_STANDARD 11 CXX_STANDARD_REQUIRED ON)
-    target_link_libraries(${PROJECT_NAME}_with_main PUBLIC ${PROJECT_NAME})
+  add_library(
+    ${PROJECT_NAME}_with_main STATIC
+    ${doctest_parts_folder}/private/assert/data.cpp
+    ${doctest_parts_folder}/private/assert/expression.cpp
+    ${doctest_parts_folder}/private/assert/handler.cpp
+    ${doctest_parts_folder}/private/assert/message.cpp
+    ${doctest_parts_folder}/private/assert/result.cpp
+    ${doctest_parts_folder}/private/assert/type.cpp
+    ${doctest_parts_folder}/private/color.cpp
+    ${doctest_parts_folder}/private/context.cpp
+    ${doctest_parts_folder}/private/context/options.cpp
+    ${doctest_parts_folder}/private/context_scope.cpp
+    ${doctest_parts_folder}/private/debugger.cpp
+    ${doctest_parts_folder}/private/exception_translator.cpp
+    ${doctest_parts_folder}/private/exceptions.cpp
+    ${doctest_parts_folder}/private/main.cpp
+    ${doctest_parts_folder}/private/matchers/approx.cpp
+    ${doctest_parts_folder}/private/matchers/contains.cpp
+    ${doctest_parts_folder}/private/matchers/is_nan.cpp
+    ${doctest_parts_folder}/private/path.cpp
+    ${doctest_parts_folder}/private/reporter.cpp
+    ${doctest_parts_folder}/private/reporters.cpp
+    ${doctest_parts_folder}/private/string.cpp
+    ${doctest_parts_folder}/private/subcase.cpp
+    ${doctest_parts_folder}/private/test_case.cpp
+    ${doctest_parts_folder}/private/test_suite.cpp
+    ${doctest_parts_folder}/private/xml.cpp)
+  add_library(${PROJECT_NAME}::${PROJECT_NAME}_with_main ALIAS
+              ${PROJECT_NAME}_with_main)
+  target_compile_definitions(${PROJECT_NAME}_with_main
+                             PRIVATE DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN)
+  set_target_properties(${PROJECT_NAME}_with_main
+                        PROPERTIES CXX_STANDARD 11 CXX_STANDARD_REQUIRED ON)
+  target_link_libraries(${PROJECT_NAME}_with_main PUBLIC ${PROJECT_NAME})
 endif()
 
 if(MAIN_PROJECT AND DOCTEST_WITH_TESTS)
-    include(scripts/cmake/common.cmake)
+  include(scripts/cmake/common.cmake)
 
-    add_subdirectory(examples/all_features)
-    add_subdirectory(examples/exe_with_static_libs)
-    add_subdirectory(examples/executable_dll_and_plugin)
-    add_subdirectory(examples/combining_the_same_tests_built_differently_in_multiple_shared_objects)
-    add_subdirectory(scripts/playground)
-    add_subdirectory(examples/mpi)
-    add_subdirectory(tests)
+  add_subdirectory(examples/all_features)
+  add_subdirectory(examples/exe_with_static_libs)
+  add_subdirectory(examples/executable_dll_and_plugin)
+  add_subdirectory(
+    examples/combining_the_same_tests_built_differently_in_multiple_shared_objects
+  )
+  add_subdirectory(scripts/playground)
+  add_subdirectory(examples/mpi)
+  add_subdirectory(tests)
 endif()
 
-set(DOCTEST_CMAKE_HELPER "${CMAKE_CURRENT_SOURCE_DIR}/scripts/cmake/doctest.cmake" CACHE PATH "Absolute path to to doctest helper file. `include(${DOCTEST_CMAKE_HELPER})`")
+set(DOCTEST_CMAKE_HELPER
+    "${CMAKE_CURRENT_SOURCE_DIR}/scripts/cmake/doctest.cmake"
+    CACHE
+      PATH
+      "Absolute path to to doctest helper file. `include(${DOCTEST_CMAKE_HELPER})`"
+)
 
-################################################################################
-## PACKAGE SUPPORT
-################################################################################
+# ##############################################################################
+# PACKAGE SUPPORT
+# ##############################################################################
 
 set(generated_dir "${CMAKE_CURRENT_BINARY_DIR}/generated")
 
 if(CMAKE_SYSTEM_NAME STREQUAL Linux)
-    include(GNUInstallDirs)
-    set(include_install_dir ${CMAKE_INSTALL_INCLUDEDIR})
-    set(config_install_dir "${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}")
+  include(GNUInstallDirs)
+  set(include_install_dir ${CMAKE_INSTALL_INCLUDEDIR})
+  set(config_install_dir "${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}")
 else()
-    set(include_install_dir "include")
-    set(config_install_dir "lib/cmake/${PROJECT_NAME}")
+  set(include_install_dir "include")
+  set(config_install_dir "lib/cmake/${PROJECT_NAME}")
 endif()
-
 
 set(version_config "${generated_dir}/${PROJECT_NAME}ConfigVersion.cmake")
 set(project_config "${generated_dir}/${PROJECT_NAME}Config.cmake")
@@ -137,41 +155,36 @@ set(namespace "${PROJECT_NAME}::")
 include(CMakePackageConfigHelpers)
 
 write_basic_package_version_file(
-    "${version_config}" VERSION ${PROJECT_VERSION} COMPATIBILITY SameMajorVersion
-)
+  "${version_config}"
+  VERSION ${PROJECT_VERSION}
+  COMPATIBILITY SameMajorVersion)
 
 configure_file("scripts/cmake/Config.cmake.in" "${project_config}" @ONLY)
 
 if(NOT ${DOCTEST_NO_INSTALL})
-    install(
-        TARGETS ${PROJECT_NAME}
-        EXPORT "${targets_export_name}"
-        INCLUDES DESTINATION "${include_install_dir}"
-    )
+  install(
+    TARGETS ${PROJECT_NAME}
+    EXPORT "${targets_export_name}"
+    INCLUDES
+    DESTINATION "${include_install_dir}")
 
-    install(
-        FILES "doctest/doctest.h"
-        DESTINATION "${include_install_dir}/doctest"
-    )
-    install(
-        DIRECTORY "doctest/extensions"
-        DESTINATION "${include_install_dir}/doctest"
-        FILES_MATCHING PATTERN "*.h"
-    )
+  install(FILES "doctest/doctest.h"
+          DESTINATION "${include_install_dir}/doctest")
+  install(
+    DIRECTORY "doctest/extensions"
+    DESTINATION "${include_install_dir}/doctest"
+    FILES_MATCHING
+    PATTERN "*.h")
 
-    install(
-        FILES "${project_config}" "${version_config}"
-        DESTINATION "${config_install_dir}"
-    )
+  install(FILES "${project_config}" "${version_config}"
+          DESTINATION "${config_install_dir}")
 
-    install(
-        FILES "scripts/cmake/doctest.cmake" "scripts/cmake/doctestAddTests.cmake"
-        DESTINATION "${config_install_dir}"
-    )
+  install(FILES "scripts/cmake/doctest.cmake"
+                "scripts/cmake/doctestAddTests.cmake"
+          DESTINATION "${config_install_dir}")
 
-    install(
-        EXPORT "${targets_export_name}"
-        NAMESPACE "${namespace}"
-        DESTINATION "${config_install_dir}"
-    )
+  install(
+    EXPORT "${targets_export_name}"
+    NAMESPACE "${namespace}"
+    DESTINATION "${config_install_dir}")
 endif()
