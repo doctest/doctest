@@ -53,6 +53,7 @@ XCBuildData/
 *.exp
 *.ilk
 *.pdb
+.vs/
 
 # Ninja
 build.ninja
