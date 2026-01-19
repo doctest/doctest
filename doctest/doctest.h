@@ -5984,6 +5984,12 @@ namespace {
                 // to a file if specified
                 fstr.open(p->out.c_str(), std::fstream::out);
                 p->cout = &fstr;
+                if (!fstr.is_open()) {
+                    std::cerr << Color::Cyan << "[doctest] " << Color::None << "Could not open " << p->out << " for writing!" << std::endl;
+                    std::cerr << Color::Cyan << "[doctest] " << Color::None << "Defaulting to std::cout instead" << std::endl;
+                    p->cout = &std::cout;
+                }
+
             } else {
     #ifndef DOCTEST_CONFIG_NO_INCLUDE_IOSTREAM
                 // stdout by default
