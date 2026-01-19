@@ -18,8 +18,6 @@ namespace detail {
 
 using uchar = unsigned char;
 
-namespace {
-
     size_t trailingBytes(unsigned char c) {
         if ((c & 0xE0) == 0xC0) {
             return 2;
@@ -53,8 +51,6 @@ namespace {
             << static_cast<int>(c);
         os.flags(f);
     }
-
-} // anonymous namespace
 
     XmlEncode::XmlEncode( std::string const& str, ForWhat forWhat )
     :   m_str( str ),

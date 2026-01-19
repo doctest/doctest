@@ -8,7 +8,7 @@ DOCTEST_SUPPRESS_PRIVATE_WARNINGS_PUSH
 #ifndef DOCTEST_CONFIG_DISABLE
 
 namespace doctest {
-namespace {
+namespace detail {
 
     // matching of a string against a wildcard mask (case sensitivity configurable) taken from
     // https://www.codeproject.com/Articles/1088/Wildcard-string-compare-globbing

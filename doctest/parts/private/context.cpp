@@ -32,8 +32,7 @@ namespace doctest {
 
 #else
 
-namespace {
-    using namespace detail;
+namespace detail {
     // for sorting tests by file/line
     bool fileOrderComparator(const TestCase* lhs, const TestCase* rhs) {
         // this is needed because MSVC gives different case for drive letters
@@ -202,7 +201,7 @@ namespace {
         return false;
     }
 
-} // namespace
+} // namespace detail
 
     Context::Context(int argc, const char* const* argv)
             : p(new detail::ContextState) {

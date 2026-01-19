@@ -10,7 +10,7 @@ DOCTEST_SUPPRESS_PRIVATE_WARNINGS_PUSH
 #ifndef DOCTEST_CONFIG_DISABLE
 
 namespace doctest {
-namespace {
+namespace detail {
 
 #ifdef DOCTEST_PLATFORM_WINDOWS
 #define DOCTEST_OUTPUT_DEBUG_STRING(text) ::OutputDebugStringA(text)
@@ -56,7 +56,7 @@ namespace {
     DOCTEST_THREAD_LOCAL std::ostringstream DebugOutputWindowReporter::oss;
 #endif // DOCTEST_PLATFORM_WINDOWS
 
-} // namespace
+} // namespace detail
 } // namespace doctest
 
 #endif // DOCTEST_CONFIG_DISABLE

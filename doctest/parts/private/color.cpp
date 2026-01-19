@@ -15,22 +15,21 @@ DOCTEST_SUPPRESS_PRIVATE_WARNINGS_PUSH
 
 namespace doctest {
 
-namespace {
+namespace detail {
     void color_to_stream(std::ostream&, Color::Enum) DOCTEST_BRANCH_ON_DISABLED({}, ;)
-} // namespace
+} // namespace detail
 
 namespace Color {
     std::ostream& operator<<(std::ostream& s, Color::Enum code) {
-        color_to_stream(s, code);
+        detail::color_to_stream(s, code);
         return s;
     }
 } // namespace Color
 
 #ifndef DOCTEST_CONFIG_DISABLE
-namespace {
+namespace detail {
     DOCTEST_CLANG_SUPPRESS_WARNING_WITH_PUSH("-Wdeprecated-declarations")
     void color_to_stream(std::ostream& s, Color::Enum code) {
-        using namespace detail;
         static_cast<void>(s);    // for DOCTEST_CONFIG_COLORS_NONE or DOCTEST_CONFIG_COLORS_WINDOWS
         static_cast<void>(code); // for DOCTEST_CONFIG_COLORS_NONE
     #ifdef DOCTEST_CONFIG_COLORS_ANSI
@@ -107,8 +106,8 @@ namespace {
     #endif // DOCTEST_CONFIG_COLORS_WINDOWS
     }
     DOCTEST_CLANG_SUPPRESS_WARNING_POP
-}
+} // namespace detail
 #endif // DOCTEST_CONFIG_DISABLED
-}
+} // namespace doctest
 
 DOCTEST_SUPPRESS_PRIVATE_WARNINGS_POP

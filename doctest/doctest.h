@@ -4357,8 +4357,7 @@ DOCTEST_SUPPRESS_PRIVATE_WARNINGS_POP
 DOCTEST_SUPPRESS_PRIVATE_WARNINGS_PUSH
 
 namespace doctest {
-namespace {
-    using namespace detail;
+namespace detail {
 
     template <typename Ex>
     DOCTEST_NORETURN void throw_exception(Ex const& e) {
@@ -4379,10 +4378,10 @@ namespace {
 
 #ifndef DOCTEST_INTERNAL_ERROR
 #define DOCTEST_INTERNAL_ERROR(msg)                                                                \
-    throw_exception(std::logic_error(                                                              \
+    detail::throw_exception(std::logic_error(                                                              \
             __FILE__ ":" DOCTEST_TOSTR(__LINE__) ": Internal doctest error: " msg))
 #endif // DOCTEST_INTERNAL_ERROR
-} // namespace
+} // namespace detail
 
 } // namespace doctest
 
@@ -4469,22 +4468,21 @@ DOCTEST_SUPPRESS_PRIVATE_WARNINGS_PUSH
 
 namespace doctest {
 
-namespace {
+namespace detail {
     void color_to_stream(std::ostream&, Color::Enum) DOCTEST_BRANCH_ON_DISABLED({}, ;)
-} // namespace
+} // namespace detail
 
 namespace Color {
     std::ostream& operator<<(std::ostream& s, Color::Enum code) {
-        color_to_stream(s, code);
+        detail::color_to_stream(s, code);
         return s;
     }
 } // namespace Color
 
 #ifndef DOCTEST_CONFIG_DISABLE
-namespace {
+namespace detail {
     DOCTEST_CLANG_SUPPRESS_WARNING_WITH_PUSH("-Wdeprecated-declarations")
     void color_to_stream(std::ostream& s, Color::Enum code) {
-        using namespace detail;
         static_cast<void>(s);    // for DOCTEST_CONFIG_COLORS_NONE or DOCTEST_CONFIG_COLORS_WINDOWS
         static_cast<void>(code); // for DOCTEST_CONFIG_COLORS_NONE
     #ifdef DOCTEST_CONFIG_COLORS_ANSI
@@ -4561,9 +4559,9 @@ namespace {
     #endif // DOCTEST_CONFIG_COLORS_WINDOWS
     }
     DOCTEST_CLANG_SUPPRESS_WARNING_POP
-}
+} // namespace detail
 #endif // DOCTEST_CONFIG_DISABLED
-}
+} // namespace doctest
 
 DOCTEST_SUPPRESS_PRIVATE_WARNINGS_POP
 
@@ -5153,7 +5151,7 @@ DOCTEST_SUPPRESS_PRIVATE_WARNINGS_PUSH
 #ifndef DOCTEST_CONFIG_DISABLE
 
 namespace doctest {
-namespace {
+namespace detail {
 
 #ifdef DOCTEST_PLATFORM_WINDOWS
 #define DOCTEST_OUTPUT_DEBUG_STRING(text) ::OutputDebugStringA(text)
@@ -5199,7 +5197,7 @@ namespace {
     DOCTEST_THREAD_LOCAL std::ostringstream DebugOutputWindowReporter::oss;
 #endif // DOCTEST_PLATFORM_WINDOWS
 
-} // namespace
+} // namespace detail
 } // namespace doctest
 
 #endif // DOCTEST_CONFIG_DISABLE
@@ -5241,7 +5239,7 @@ DOCTEST_SUPPRESS_PRIVATE_WARNINGS_PUSH
 #ifndef DOCTEST_CONFIG_DISABLE
 
 namespace doctest {
-namespace {
+namespace detail {
 
     // matching of a string against a wildcard mask (case sensitivity configurable) taken from
     // https://www.codeproject.com/Articles/1088/Wildcard-string-compare-globbing
@@ -5310,9 +5308,6 @@ DOCTEST_SUPPRESS_PRIVATE_WARNINGS_PUSH
 
 namespace doctest {
 namespace detail {
-namespace {
-
-    using namespace detail;
 
 #if !defined(DOCTEST_CONFIG_POSIX_SIGNALS) && !defined(DOCTEST_CONFIG_WINDOWS_SEH)
     struct FatalConditionHandler
@@ -5553,7 +5548,6 @@ namespace {
 #endif // DOCTEST_PLATFORM_WINDOWS
 #endif // DOCTEST_CONFIG_POSIX_SIGNALS || DOCTEST_CONFIG_WINDOWS_SEH
 
-} // namespace
 } // namespace detail
 } // namespace doctest
 
@@ -5587,8 +5581,7 @@ namespace doctest {
 
 #else
 
-namespace {
-    using namespace detail;
+namespace detail {
     // for sorting tests by file/line
     bool fileOrderComparator(const TestCase* lhs, const TestCase* rhs) {
         // this is needed because MSVC gives different case for drive letters
@@ -5757,7 +5750,7 @@ namespace {
         return false;
     }
 
-} // namespace
+} // namespace detail
 
     Context::Context(int argc, const char* const* argv)
             : p(new detail::ContextState) {
@@ -7588,21 +7581,21 @@ String toString(std::nullptr_t) { return "nullptr"; }
 
 String toString(bool in) { return in ? "true" : "false"; }
 
-String toString(float in) { return toStreamLit(in); }
-String toString(double in) { return toStreamLit(in); }
-String toString(double long in) { return toStreamLit(in); }
+String toString(float in) { return detail::toStreamLit(in); }
+String toString(double in) { return detail::toStreamLit(in); }
+String toString(double long in) { return detail::toStreamLit(in); }
 
-String toString(char in) { return toStreamLit(static_cast<signed>(in)); }
-String toString(char signed in) { return toStreamLit(static_cast<signed>(in)); }
-String toString(char unsigned in) { return toStreamLit(static_cast<unsigned>(in)); }
-String toString(short in) { return toStreamLit(in); }
-String toString(short unsigned in) { return toStreamLit(in); }
-String toString(signed in) { return toStreamLit(in); }
-String toString(unsigned in) { return toStreamLit(in); }
-String toString(long in) { return toStreamLit(in); }
-String toString(long unsigned in) { return toStreamLit(in); }
-String toString(long long in) { return toStreamLit(in); }
-String toString(long long unsigned in) { return toStreamLit(in); }
+String toString(char in) { return detail::toStreamLit(static_cast<signed>(in)); }
+String toString(char signed in) { return detail::toStreamLit(static_cast<signed>(in)); }
+String toString(char unsigned in) { return detail::toStreamLit(static_cast<unsigned>(in)); }
+String toString(short in) { return detail::toStreamLit(in); }
+String toString(short unsigned in) { return detail::toStreamLit(in); }
+String toString(signed in) { return detail::toStreamLit(in); }
+String toString(unsigned in) { return detail::toStreamLit(in); }
+String toString(long in) { return detail::toStreamLit(in); }
+String toString(long unsigned in) { return detail::toStreamLit(in); }
+String toString(long long in) { return detail::toStreamLit(in); }
+String toString(long long unsigned in) { return detail::toStreamLit(in); }
 
 } // namespace doctest
 
@@ -7613,8 +7606,7 @@ DOCTEST_SUPPRESS_PRIVATE_WARNINGS_PUSH
 namespace doctest {
 
 #ifndef DOCTEST_CONFIG_DISABLE
-namespace {
-    using namespace detail;
+namespace detail {
 
     DOCTEST_NO_SANITIZE_INTEGER
     unsigned long long hash(unsigned long long a, unsigned long long b) {
@@ -7651,7 +7643,7 @@ namespace {
         }
         return running;
     }
-} // namespace
+} // namespace detail
 #endif // DOCTEST_CONFIG_DISABLE
 
     bool SubcaseSignature::operator==(const SubcaseSignature& other) const {
@@ -7894,8 +7886,6 @@ namespace detail {
 
 using uchar = unsigned char;
 
-namespace {
-
     size_t trailingBytes(unsigned char c) {
         if ((c & 0xE0) == 0xC0) {
             return 2;
@@ -7929,8 +7919,6 @@ namespace {
             << static_cast<int>(c);
         os.flags(f);
     }
-
-} // anonymous namespace
 
     XmlEncode::XmlEncode( std::string const& str, ForWhat forWhat )
     :   m_str( str ),
