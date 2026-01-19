@@ -1,0 +1,213 @@
+#include "doctest/parts/private/prelude.h"
+#include "doctest/parts/private/reporters/junit.h"
+#include "doctest/parts/private/reporters/common.h"
+
+DOCTEST_SUPPRESS_PRIVATE_WARNINGS_PUSH
+
+#ifndef DOCTEST_CONFIG_DISABLE
+
+namespace doctest {
+
+std::string JUnitReporter::JUnitTestCaseData::getCurrentTimestamp() {
+    // Beware, this is not reentrant because of backward compatibility issues
+    // Also, UTC only, again because of backward compatibility (%z is C++11)
+    time_t rawtime;
+    std::time(&rawtime);
+    auto const timeStampSize = sizeof("2017-01-16T17:06:45Z");
+
+    std::tm timeInfo;
+#ifdef DOCTEST_PLATFORM_WINDOWS
+    gmtime_s(&timeInfo, &rawtime);
+#else // DOCTEST_PLATFORM_WINDOWS
+    gmtime_r(&rawtime, &timeInfo);
+#endif // DOCTEST_PLATFORM_WINDOWS
+
+    char timeStamp[timeStampSize];
+    const char* const fmt = "%Y-%m-%dT%H:%M:%SZ";
+
+    std::strftime(timeStamp, timeStampSize, fmt, &timeInfo);
+    return std::string(timeStamp);
+}
+
+JUnitReporter::JUnitTestCaseData::JUnitTestMessage::JUnitTestMessage(const std::string& _message, const std::string& _type, const std::string& _details)
+    : message(_message), type(_type), details(_details) {}
+
+JUnitReporter::JUnitTestCaseData::JUnitTestMessage::JUnitTestMessage(const std::string& _message, const std::string& _details)
+    : message(_message), type(), details(_details) {}
+
+JUnitReporter::JUnitTestCaseData::JUnitTestCase::JUnitTestCase(const std::string& _classname, const std::string& _name)
+    : classname(_classname), name(_name), time(0), failures() {}
+
+
+void JUnitReporter::JUnitTestCaseData::add(const std::string& classname, const std::string& name) {
+    testcases.emplace_back(classname, name);
+}
+
+void JUnitReporter::JUnitTestCaseData::appendSubcaseNamesToLastTestcase(std::vector<String> nameStack) {
+    for(auto& curr: nameStack)
+        if(curr.size())
+            testcases.back().name += std::string("/") + curr.c_str();
+}
+
+void JUnitReporter::JUnitTestCaseData::addTime(double time) {
+    if(time < 1e-4)
+        time = 0;
+    testcases.back().time = time;
+    totalSeconds += time;
+}
+
+void JUnitReporter::JUnitTestCaseData::addFailure(const std::string& message, const std::string& type, const std::string& details) {
+    testcases.back().failures.emplace_back(message, type, details);
+    ++totalFailures;
+}
+
+void JUnitReporter::JUnitTestCaseData::addError(const std::string& message, const std::string& details) {
+    testcases.back().errors.emplace_back(message, details);
+    ++totalErrors;
+}
+
+JUnitReporter::JUnitReporter(const ContextOptions& co)
+        : xml(*co.cout)
+        , opt(co) {}
+
+unsigned JUnitReporter::line(unsigned l) const { return opt.no_line_numbers ? 0 : l; }
+
+void JUnitReporter::report_query(const QueryData&) {
+    xml.writeDeclaration();
+}
+
+void JUnitReporter::test_run_start() {
+    xml.writeDeclaration();
+}
+
+void JUnitReporter::test_run_end(const TestRunStats& p) {
+    // remove .exe extension - mainly to have the same output on UNIX and Windows
+    std::string binary_name = skipPathFromFilename(opt.binary_name.c_str());
+#ifdef DOCTEST_PLATFORM_WINDOWS
+    if(binary_name.rfind(".exe") != std::string::npos)
+        binary_name = binary_name.substr(0, binary_name.length() - 4);
+#endif // DOCTEST_PLATFORM_WINDOWS
+    xml.startElement("testsuites");
+    xml.startElement("testsuite").writeAttribute("name", binary_name)
+            .writeAttribute("errors", testCaseData.totalErrors)
+            .writeAttribute("failures", testCaseData.totalFailures)
+            .writeAttribute("tests", p.numAsserts);
+    if(opt.no_time_in_output == false) {
+        xml.writeAttribute("time", testCaseData.totalSeconds);
+        xml.writeAttribute("timestamp", JUnitTestCaseData::getCurrentTimestamp());
+    }
+    if(opt.no_version == false)
+        xml.writeAttribute("doctest_version", DOCTEST_VERSION_STR);
+
+    for(const auto& testCase : testCaseData.testcases) {
+        xml.startElement("testcase")
+            .writeAttribute("classname", testCase.classname)
+            .writeAttribute("name", testCase.name);
+        if(opt.no_time_in_output == false)
+            xml.writeAttribute("time", testCase.time);
+        // This is not ideal, but it should be enough to mimic gtest's junit output.
+        xml.writeAttribute("status", "run");
+
+        for(const auto& failure : testCase.failures) {
+            xml.scopedElement("failure")
+                .writeAttribute("message", failure.message)
+                .writeAttribute("type", failure.type)
+                .writeText(failure.details, false);
+        }
+
+        for(const auto& error : testCase.errors) {
+            xml.scopedElement("error")
+                .writeAttribute("message", error.message)
+                .writeText(error.details);
+        }
+
+        xml.endElement();
+    }
+    xml.endElement();
+    xml.endElement();
+}
+
+void JUnitReporter::test_case_start(const TestCaseData& in) {
+    testCaseData.add(skipPathFromFilename(in.m_file.c_str()), in.m_name);
+    timer.start();
+}
+
+void JUnitReporter::test_case_reenter(const TestCaseData& in) {
+    testCaseData.addTime(timer.getElapsedSeconds());
+    testCaseData.appendSubcaseNamesToLastTestcase(deepestSubcaseStackNames);
+    deepestSubcaseStackNames.clear();
+
+    timer.start();
+    testCaseData.add(skipPathFromFilename(in.m_file.c_str()), in.m_name);
+}
+
+void JUnitReporter::test_case_end(const CurrentTestCaseStats&) {
+    testCaseData.addTime(timer.getElapsedSeconds());
+    testCaseData.appendSubcaseNamesToLastTestcase(deepestSubcaseStackNames);
+    deepestSubcaseStackNames.clear();
+}
+
+void JUnitReporter::test_case_exception(const TestCaseException& e) {
+    DOCTEST_LOCK_MUTEX(mutex)
+    testCaseData.addError("exception", e.error_string.c_str());
+}
+
+void JUnitReporter::subcase_start(const SubcaseSignature& in) {
+    deepestSubcaseStackNames.push_back(in.m_name);
+}
+
+void JUnitReporter::subcase_end() {}
+
+void JUnitReporter::log_assert(const AssertData& rb) {
+    if(!rb.m_failed) // report only failures & ignore the `success` option
+        return;
+
+    DOCTEST_LOCK_MUTEX(mutex)
+
+    std::ostringstream os;
+    os << skipPathFromFilename(rb.m_file) << (opt.gnu_file_line ? ":" : "(")
+      << line(rb.m_line) << (opt.gnu_file_line ? ":" : "):") << std::endl;
+
+    fulltext_log_assert_to_stream(os, rb);
+    log_contexts(os);
+    testCaseData.addFailure(rb.m_decomp.c_str(), assertString(rb.m_at), os.str());
+}
+
+void JUnitReporter::log_message(const MessageData& mb) {
+    if(mb.m_severity & assertType::is_warn) // report only failures
+        return;
+
+    DOCTEST_LOCK_MUTEX(mutex)
+
+    std::ostringstream os;
+    os << skipPathFromFilename(mb.m_file) << (opt.gnu_file_line ? ":" : "(")
+      << line(mb.m_line) << (opt.gnu_file_line ? ":" : "):") << std::endl;
+
+    os << mb.m_string.c_str() << "\n";
+    log_contexts(os);
+
+    testCaseData.addFailure(mb.m_string.c_str(),
+        mb.m_severity & assertType::is_check ? "FAIL_CHECK" : "FAIL", os.str());
+}
+
+void JUnitReporter::test_case_skipped(const TestCaseData&) {}
+
+void JUnitReporter::log_contexts(std::ostringstream& s) {
+    int num_contexts = get_num_active_contexts();
+    if(num_contexts) {
+        auto contexts = get_active_contexts();
+
+        s << "  logged: ";
+        for(int i = 0; i < num_contexts; ++i) {
+            s << (i == 0 ? "" : "          ");
+            contexts[i]->stringify(&s);
+            s << std::endl;
+        }
+    }
+}
+
+} // namespace doctest
+
+#endif // DOCTEST_CONFIG_DISABLE
+
+DOCTEST_SUPPRESS_PRIVATE_WARNINGS_POP

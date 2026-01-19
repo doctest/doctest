@@ -17,6 +17,19 @@ namespace doctest {
 
 #else
 
+namespace detail {
+    reporterMap& getReporters() {
+        static reporterMap data;
+        return data;
+    }
+
+    reporterMap& getListeners() {
+        static reporterMap data;
+        return data;
+    }
+} // namespace detail
+
+
     DOCTEST_DEFINE_INTERFACE(IReporter)
 
     int IReporter::get_num_active_contexts() { return detail::g_infoContexts.size(); }

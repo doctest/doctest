@@ -3786,37 +3786,13 @@ namespace timer_large_integer
 
 using ticks_t = timer_large_integer::type;
 
-#ifdef DOCTEST_CONFIG_GETCURRENTTICKS
-    ticks_t getCurrentTicks() { return DOCTEST_CONFIG_GETCURRENTTICKS(); }
-#elif defined(DOCTEST_PLATFORM_WINDOWS)
-    ticks_t getCurrentTicks() {
-        static LARGE_INTEGER hz = { {0} }, hzo = { {0} };
-        if(!hz.QuadPart) {
-            QueryPerformanceFrequency(&hz);
-            QueryPerformanceCounter(&hzo);
-        }
-        LARGE_INTEGER t;
-        QueryPerformanceCounter(&t);
-        return ((t.QuadPart - hzo.QuadPart) * LONGLONG(1000000)) / hz.QuadPart;
-    }
-#else  // DOCTEST_PLATFORM_WINDOWS
-    ticks_t getCurrentTicks() {
-        timeval t;
-        gettimeofday(&t, nullptr);
-        return static_cast<ticks_t>(t.tv_sec) * 1000000 + static_cast<ticks_t>(t.tv_usec);
-    }
-#endif // DOCTEST_PLATFORM_WINDOWS
+    ticks_t getCurrentTicks();
 
     struct Timer
     {
-        void         start() { m_ticks = getCurrentTicks(); }
-        unsigned int getElapsedMicroseconds() const {
-            return static_cast<unsigned int>(getCurrentTicks() - m_ticks);
-        }
-        //unsigned int getElapsedMilliseconds() const {
-        //    return static_cast<unsigned int>(getElapsedMicroseconds() / 1000);
-        //}
-        double getElapsedSeconds() const { return static_cast<double>(getCurrentTicks() - m_ticks) / 1000000.0; }
+        void         start();
+        unsigned int getElapsedMicroseconds() const;
+        double getElapsedSeconds() const;
 
     private:
         ticks_t m_ticks = 0;
@@ -3976,66 +3952,17 @@ namespace detail {
         size_t currentSubcaseDepth;
         Atomic<bool> shouldLogCurrentException;
 
-        void resetRunData() {
-            numTestCases                = 0;
-            numTestCasesPassingFilters  = 0;
-            numTestSuitesPassingFilters = 0;
-            numTestCasesFailed          = 0;
-            numAsserts                  = 0;
-            numAssertsFailed            = 0;
-            numAssertsCurrentTest       = 0;
-            numAssertsFailedCurrentTest = 0;
-        }
+        void resetRunData();
 
-        void finalizeTestCaseData() {
-            seconds = timer.getElapsedSeconds();
-
-            // update the non-atomic counters
-            numAsserts += numAssertsCurrentTest_atomic;
-            numAssertsFailed += numAssertsFailedCurrentTest_atomic;
-            numAssertsCurrentTest       = numAssertsCurrentTest_atomic;
-            numAssertsFailedCurrentTest = numAssertsFailedCurrentTest_atomic;
-
-            if(numAssertsFailedCurrentTest)
-                failure_flags |= TestCaseFailureReason::AssertFailure;
-
-            if(Approx(currentTest->m_timeout).epsilon(DBL_EPSILON) != 0 &&
-               Approx(seconds).epsilon(DBL_EPSILON) > currentTest->m_timeout)
-                failure_flags |= TestCaseFailureReason::Timeout;
-
-            if(currentTest->m_should_fail) {
-                if(failure_flags) {
-                    failure_flags |= TestCaseFailureReason::ShouldHaveFailedAndDid;
-                } else {
-                    failure_flags |= TestCaseFailureReason::ShouldHaveFailedButDidnt;
-                }
-            } else if(failure_flags && currentTest->m_may_fail) {
-                failure_flags |= TestCaseFailureReason::CouldHaveFailedAndDid;
-            } else if(currentTest->m_expected_failures > 0) {
-                if(numAssertsFailedCurrentTest == currentTest->m_expected_failures) {
-                    failure_flags |= TestCaseFailureReason::FailedExactlyNumTimes;
-                } else {
-                    failure_flags |= TestCaseFailureReason::DidntFailExactlyNumTimes;
-                }
-            }
-
-            bool ok_to_fail = (TestCaseFailureReason::ShouldHaveFailedAndDid & failure_flags) ||
-                              (TestCaseFailureReason::CouldHaveFailedAndDid & failure_flags) ||
-                              (TestCaseFailureReason::FailedExactlyNumTimes & failure_flags);
-
-            // if any subcase has failed - the whole test case has failed
-            testCaseSuccess = !(failure_flags && !ok_to_fail);
-            if(!testCaseSuccess)
-                numTestCasesFailed++;
-        }
+        void finalizeTestCaseData();
     };
 
-    ContextState* g_cs = nullptr;
+    extern ContextState* g_cs;
 
     // used to avoid locks for the debug output
     // TODO: figure out if this is indeed necessary/correct - seems like either there still
     // could be a race or that there wouldn't be a race even if using the context directly
-    DOCTEST_THREAD_LOCAL bool g_no_colors;
+    extern DOCTEST_THREAD_LOCAL bool g_no_colors;
 
 } // namespace detail
 } // namespace doctest
@@ -4087,43 +4014,6 @@ ExpressionDecomposer::ExpressionDecomposer(assertType::Enum at)
 #endif // DOCTEST_CONFIG_DISABLE
 
 DOCTEST_SUPPRESS_PRIVATE_WARNINGS_POP
-
-DOCTEST_SUPPRESS_PRIVATE_WARNINGS_PUSH
-
-#ifndef DOCTEST_CONFIG_DISABLE
-
-namespace doctest {
-namespace detail {
-
-    void failed_out_of_a_testing_context(const AssertData& ad) {
-        if(g_cs->ah)
-            g_cs->ah(ad);
-        else
-            std::abort();
-    }
-
-    bool decomp_assert(assertType::Enum at, const char* file, int line, const char* expr,
-                       const Result& result) {
-        bool failed = !result.m_passed;
-
-        // ###################################################################################
-        // IF THE DEBUGGER BREAKS HERE - GO 1 LEVEL UP IN THE CALLSTACK FOR THE FAILING ASSERT
-        // THIS IS THE EFFECT OF HAVING 'DOCTEST_CONFIG_SUPER_FAST_ASSERTS' DEFINED
-        // ###################################################################################
-        DOCTEST_ASSERT_OUT_OF_TESTS(result.m_decomp);
-        DOCTEST_ASSERT_IN_TESTS(result.m_decomp);
-        return !failed;
-    }
-
-} // namespace detail
-} // namespace doctest
-
-#endif // DOCTEST_CONFIG_DISABLE
-
-DOCTEST_SUPPRESS_PRIVATE_WARNINGS_POP
-#ifndef DOCTEST_PARTS_PRIVATE_ASSERT_HANDLER
-#define DOCTEST_PARTS_PRIVATE_ASSERT_HANDLER
-
 #ifndef DOCTEST_PARTS_PRIVATE_REPORTER
 #define DOCTEST_PARTS_PRIVATE_REPORTER
 
@@ -4133,20 +4023,14 @@ DOCTEST_SUPPRESS_PRIVATE_WARNINGS_PUSH
 #ifndef DOCTEST_CONFIG_DISABLE
 
 namespace doctest {
-inline namespace _ {
+namespace detail {
     // the int (priority) is part of the key for automatic sorting - sadly one can register a
     // reporter with a duplicate name and a different priority but hopefully that won't happen often :|
     using reporterMap = std::map<std::pair<int, String>, detail::reporterCreatorFunc>;
 
-    reporterMap& getReporters() {
-        static reporterMap data;
-        return data;
-    }
-    reporterMap& getListeners() {
-        static reporterMap data;
-        return data;
-    }
-} // namespace
+    reporterMap& getReporters();
+    reporterMap& getListeners();
+} // namespace detail
 
 #define DOCTEST_ITERATE_THROUGH_REPORTERS(function, ...)                                           \
     for(auto& curr_rep : g_cs->reporters_currently_used)                                           \
@@ -4159,15 +4043,40 @@ inline namespace _ {
 DOCTEST_SUPPRESS_PRIVATE_WARNINGS_POP
 
 #endif // DOCTEST_PARTS_PRIVATE_REPORTER
+#ifndef DOCTEST_PARTS_PRIVATE_ASSERT_HANDLER
+#define DOCTEST_PARTS_PRIVATE_ASSERT_HANDLER
+
 
 DOCTEST_SUPPRESS_PRIVATE_WARNINGS_PUSH
 
 #ifndef DOCTEST_CONFIG_DISABLE
 
 namespace doctest {
-inline namespace _ {
+namespace detail {
 
-    using detail::g_cs;
+    void addAssert(assertType::Enum at);
+
+    void addFailedAssert(assertType::Enum at);
+
+#if defined(DOCTEST_CONFIG_POSIX_SIGNALS) || defined(DOCTEST_CONFIG_WINDOWS_SEH)
+    void reportFatal(const std::string& message);
+#endif // DOCTEST_CONFIG_POSIX_SIGNALS || DOCTEST_CONFIG_WINDOWS_SEH
+
+} // namespace detail
+} // namespace doctest
+
+#endif // DOCTEST_CONFIG_DISABLE
+
+DOCTEST_SUPPRESS_PRIVATE_WARNINGS_POP
+
+#endif // DOCTEST_PARTS_PRIVATE_ASSERT_HANDLER
+
+DOCTEST_SUPPRESS_PRIVATE_WARNINGS_PUSH
+
+#ifndef DOCTEST_CONFIG_DISABLE
+
+namespace doctest {
+namespace detail {
 
     void addAssert(assertType::Enum at) {
         if((at & assertType::is_warn) == 0) //!OCLINT bitwise operator in conditional
@@ -4198,14 +4107,33 @@ inline namespace _ {
     }
 #endif // DOCTEST_CONFIG_POSIX_SIGNALS || DOCTEST_CONFIG_WINDOWS_SEH
 
-} // namespace
+
+    void failed_out_of_a_testing_context(const AssertData& ad) {
+        if(g_cs->ah)
+            g_cs->ah(ad);
+        else
+            std::abort();
+    }
+
+    bool decomp_assert(assertType::Enum at, const char* file, int line, const char* expr,
+                       const Result& result) {
+        bool failed = !result.m_passed;
+
+        // ###################################################################################
+        // IF THE DEBUGGER BREAKS HERE - GO 1 LEVEL UP IN THE CALLSTACK FOR THE FAILING ASSERT
+        // THIS IS THE EFFECT OF HAVING 'DOCTEST_CONFIG_SUPER_FAST_ASSERTS' DEFINED
+        // ###################################################################################
+        DOCTEST_ASSERT_OUT_OF_TESTS(result.m_decomp);
+        DOCTEST_ASSERT_IN_TESTS(result.m_decomp);
+        return !failed;
+    }
+
+} // namespace detail
 } // namespace doctest
 
 #endif // DOCTEST_CONFIG_DISABLE
 
 DOCTEST_SUPPRESS_PRIVATE_WARNINGS_POP
-
-#endif // DOCTEST_PARTS_PRIVATE_ASSERT_HANDLER
 
 DOCTEST_SUPPRESS_PRIVATE_WARNINGS_PUSH
 
@@ -4588,57 +4516,7 @@ DOCTEST_SUPPRESS_PRIVATE_WARNINGS_PUSH
 
 namespace doctest {
 
-    void fulltext_log_assert_to_stream(std::ostream& s, const AssertData& rb) {
-        if((rb.m_at & (assertType::is_throws_as | assertType::is_throws_with)) ==
-            0) //!OCLINT bitwise operator in conditional
-            s << Color::Cyan << assertString(rb.m_at) << "( " << rb.m_expr << " ) "
-                << Color::None;
-
-        if(rb.m_at & assertType::is_throws) { //!OCLINT bitwise operator in conditional
-            s << (rb.m_threw ? "threw as expected!" : "did NOT throw at all!") << "\n";
-        } else if((rb.m_at & assertType::is_throws_as) &&
-                    (rb.m_at & assertType::is_throws_with)) { //!OCLINT
-            s << Color::Cyan << assertString(rb.m_at) << "( " << rb.m_expr << ", \""
-                << rb.m_exception_string.c_str()
-                << "\", " << rb.m_exception_type << " ) " << Color::None;
-            if(rb.m_threw) {
-                if(!rb.m_failed) {
-                    s << "threw as expected!\n";
-                } else {
-                    s << "threw a DIFFERENT exception! (contents: " << rb.m_exception << ")\n";
-                }
-            } else {
-                s << "did NOT throw at all!\n";
-            }
-        } else if(rb.m_at &
-                    assertType::is_throws_as) { //!OCLINT bitwise operator in conditional
-            s << Color::Cyan << assertString(rb.m_at) << "( " << rb.m_expr << ", "
-                << rb.m_exception_type << " ) " << Color::None
-                << (rb.m_threw ? (rb.m_threw_as ? "threw as expected!" :
-                                                "threw a DIFFERENT exception: ") :
-                                "did NOT throw at all!")
-                << Color::Cyan << rb.m_exception << "\n";
-        } else if(rb.m_at &
-                    assertType::is_throws_with) { //!OCLINT bitwise operator in conditional
-            s << Color::Cyan << assertString(rb.m_at) << "( " << rb.m_expr << ", \""
-                << rb.m_exception_string.c_str()
-                << "\" ) " << Color::None
-                << (rb.m_threw ? (!rb.m_failed ? "threw as expected!" :
-                                                "threw a DIFFERENT exception: ") :
-                                "did NOT throw at all!")
-                << Color::Cyan << rb.m_exception << "\n";
-        } else if(rb.m_at & assertType::is_nothrow) { //!OCLINT bitwise operator in conditional
-            s << (rb.m_threw ? "THREW exception: " : "didn't throw!") << Color::Cyan
-                << rb.m_exception << "\n";
-        } else {
-            s << (rb.m_threw ? "THREW exception: " :
-                                (!rb.m_failed ? "is correct!\n" : "is NOT correct!\n"));
-            if(rb.m_threw)
-                s << rb.m_exception << "\n";
-            else
-                s << "  values: " << assertString(rb.m_at) << "( " << rb.m_decomp << " )\n";
-        }
-    }
+    void fulltext_log_assert_to_stream(std::ostream& s, const AssertData& rb);
 
 } // namespace doctest
 
@@ -4666,477 +4544,87 @@ DOCTEST_SUPPRESS_PRIVATE_WARNINGS_PUSH
 
 namespace doctest {
 
-    using detail::g_cs;
-
-    struct Whitespace
-    {
-        int nrSpaces;
-        explicit Whitespace(int nr)
-                : nrSpaces(nr) {}
-    };
-
-    std::ostream& operator<<(std::ostream& out, const Whitespace& ws) {
-        if(ws.nrSpaces != 0)
-            out << std::setw(ws.nrSpaces) << ' ';
-        return out;
-    }
-
-    struct ConsoleReporter : public IReporter
-    {
-        std::ostream&                 s;
-        bool                          hasLoggedCurrentTestStart;
-        std::vector<SubcaseSignature> subcasesStack;
-        size_t                        currentSubcaseLevel;
-        DOCTEST_DECLARE_MUTEX(mutex)
-
-        // caching pointers/references to objects of these types - safe to do
-        const ContextOptions& opt;
-        const TestCaseData*   tc;
-
-        ConsoleReporter(const ContextOptions& co)
-                : s(*co.cout)
-                , opt(co) {}
-
-        ConsoleReporter(const ContextOptions& co, std::ostream& ostr)
-                : s(ostr)
-                , opt(co) {}
-
-        // =========================================================================================
-        // WHAT FOLLOWS ARE HELPERS USED BY THE OVERRIDES OF THE VIRTUAL METHODS OF THE INTERFACE
-        // =========================================================================================
-
-        void separator_to_stream() {
-            s << Color::Yellow
-              << "==============================================================================="
-                 "\n";
-        }
-
-        const char* getSuccessOrFailString(bool success, assertType::Enum at,
-                                           const char* success_str) {
-            if(success)
-                return success_str;
-            return failureString(at);
-        }
-
-        Color::Enum getSuccessOrFailColor(bool success, assertType::Enum at) {
-            return success ? Color::BrightGreen :
-                             (at & assertType::is_warn) ? Color::Yellow : Color::Red;
-        }
-
-        void successOrFailColoredStringToStream(bool success, assertType::Enum at,
-                                                const char* success_str = "SUCCESS") {
-            s << getSuccessOrFailColor(success, at)
-              << getSuccessOrFailString(success, at, success_str) << ": ";
-        }
-
-        void log_contexts() {
-            int num_contexts = get_num_active_contexts();
-            if(num_contexts) {
-                auto contexts = get_active_contexts();
-
-                s << Color::None << "  logged: ";
-                for(int i = 0; i < num_contexts; ++i) {
-                    s << (i == 0 ? "" : "          ");
-                    contexts[i]->stringify(&s);
-                    s << "\n";
-                }
-            }
-
-            s << "\n";
-        }
-
-        // this was requested to be made virtual so users could override it
-        virtual void file_line_to_stream(const char* file, int line,
-                                        const char* tail = "") {
-            s << Color::LightGrey << skipPathFromFilename(file) << (opt.gnu_file_line ? ":" : "(")
-            << (opt.no_line_numbers ? 0 : line) // 0 or the real num depending on the option
-            << (opt.gnu_file_line ? ":" : "):") << tail;
-        }
-
-        void logTestStart() {
-            if(hasLoggedCurrentTestStart)
-                return;
-
-            separator_to_stream();
-            file_line_to_stream(tc->m_file.c_str(), tc->m_line, "\n");
-            if(tc->m_description)
-                s << Color::Yellow << "DESCRIPTION: " << Color::None << tc->m_description << "\n";
-            if(tc->m_test_suite && tc->m_test_suite[0] != '\0')
-                s << Color::Yellow << "TEST SUITE: " << Color::None << tc->m_test_suite << "\n";
-            if(strncmp(tc->m_name, "  Scenario:", 11) != 0)
-                s << Color::Yellow << "TEST CASE:  ";
-            s << Color::None << tc->m_name << "\n";
-
-            for(size_t i = 0; i < currentSubcaseLevel; ++i) {
-                if(subcasesStack[i].m_name[0] != '\0')
-                    s << "  " << subcasesStack[i].m_name << "\n";
-            }
-
-            if(currentSubcaseLevel != subcasesStack.size()) {
-                s << Color::Yellow << "\nDEEPEST SUBCASE STACK REACHED (DIFFERENT FROM THE CURRENT ONE):\n" << Color::None;
-                for(size_t i = 0; i < subcasesStack.size(); ++i) {
-                    if(subcasesStack[i].m_name[0] != '\0')
-                        s << "  " << subcasesStack[i].m_name << "\n";
-                }
-            }
-
-            s << "\n";
-
-            hasLoggedCurrentTestStart = true;
-        }
-
-        void printVersion() {
-            if(opt.no_version == false)
-                s << Color::Cyan << "[doctest] " << Color::None << "doctest version is \""
-                  << DOCTEST_VERSION_STR << "\"\n";
-        }
-
-        void printIntro() {
-            if(opt.no_intro == false) {
-                printVersion();
-                s << Color::Cyan << "[doctest] " << Color::None
-                  << "run with \"--" DOCTEST_OPTIONS_PREFIX_DISPLAY "help\" for options\n";
-            }
-        }
-
-        void printHelp() {
-            int sizePrefixDisplay = static_cast<int>(strlen(DOCTEST_OPTIONS_PREFIX_DISPLAY));
-            printVersion();
-            // clang-format off
-            s << Color::Cyan << "[doctest]\n" << Color::None;
-            s << Color::Cyan << "[doctest] " << Color::None;
-            s << "boolean values: \"1/on/yes/true\" or \"0/off/no/false\"\n";
-            s << Color::Cyan << "[doctest] " << Color::None;
-            s << "filter  values: \"str1,str2,str3\" (comma separated strings)\n";
-            s << Color::Cyan << "[doctest]\n" << Color::None;
-            s << Color::Cyan << "[doctest] " << Color::None;
-            s << "filters use wildcards for matching strings\n";
-            s << Color::Cyan << "[doctest] " << Color::None;
-            s << "something passes a filter if any of the strings in a filter matches\n";
-#ifndef DOCTEST_CONFIG_NO_UNPREFIXED_OPTIONS
-            s << Color::Cyan << "[doctest]\n" << Color::None;
-            s << Color::Cyan << "[doctest] " << Color::None;
-            s << "ALL FLAGS, OPTIONS AND FILTERS ALSO AVAILABLE WITH A \"" DOCTEST_CONFIG_OPTIONS_PREFIX "\" PREFIX!!!\n";
-#endif
-            s << Color::Cyan << "[doctest]\n" << Color::None;
-            s << Color::Cyan << "[doctest] " << Color::None;
-            s << "Query flags - the program quits after them. Available:\n\n";
-            s << " -" DOCTEST_OPTIONS_PREFIX_DISPLAY "?,   --" DOCTEST_OPTIONS_PREFIX_DISPLAY "help, -" DOCTEST_OPTIONS_PREFIX_DISPLAY "h                      "
-              << Whitespace(sizePrefixDisplay*0) <<  "prints this message\n";
-            s << " -" DOCTEST_OPTIONS_PREFIX_DISPLAY "v,   --" DOCTEST_OPTIONS_PREFIX_DISPLAY "version                       "
-              << Whitespace(sizePrefixDisplay*1) << "prints the version\n";
-            s << " -" DOCTEST_OPTIONS_PREFIX_DISPLAY "c,   --" DOCTEST_OPTIONS_PREFIX_DISPLAY "count                         "
-              << Whitespace(sizePrefixDisplay*1) << "prints the number of matching tests\n";
-            s << " -" DOCTEST_OPTIONS_PREFIX_DISPLAY "ltc, --" DOCTEST_OPTIONS_PREFIX_DISPLAY "list-test-cases               "
-              << Whitespace(sizePrefixDisplay*1) << "lists all matching tests by name\n";
-            s << " -" DOCTEST_OPTIONS_PREFIX_DISPLAY "lts, --" DOCTEST_OPTIONS_PREFIX_DISPLAY "list-test-suites              "
-              << Whitespace(sizePrefixDisplay*1) << "lists all matching test suites\n";
-            s << " -" DOCTEST_OPTIONS_PREFIX_DISPLAY "lr,  --" DOCTEST_OPTIONS_PREFIX_DISPLAY "list-reporters                "
-              << Whitespace(sizePrefixDisplay*1) << "lists all registered reporters\n\n";
-            // ================================================================================== << 79
-            s << Color::Cyan << "[doctest] " << Color::None;
-            s << "The available <int>/<string> options/filters are:\n\n";
-            s << " -" DOCTEST_OPTIONS_PREFIX_DISPLAY "tc,  --" DOCTEST_OPTIONS_PREFIX_DISPLAY "test-case=<filters>           "
-              << Whitespace(sizePrefixDisplay*1) << "filters     tests by their name\n";
-            s << " -" DOCTEST_OPTIONS_PREFIX_DISPLAY "tce, --" DOCTEST_OPTIONS_PREFIX_DISPLAY "test-case-exclude=<filters>   "
-              << Whitespace(sizePrefixDisplay*1) << "filters OUT tests by their name\n";
-            s << " -" DOCTEST_OPTIONS_PREFIX_DISPLAY "sf,  --" DOCTEST_OPTIONS_PREFIX_DISPLAY "source-file=<filters>         "
-              << Whitespace(sizePrefixDisplay*1) << "filters     tests by their file\n";
-            s << " -" DOCTEST_OPTIONS_PREFIX_DISPLAY "sfe, --" DOCTEST_OPTIONS_PREFIX_DISPLAY "source-file-exclude=<filters> "
-              << Whitespace(sizePrefixDisplay*1) << "filters OUT tests by their file\n";
-            s << " -" DOCTEST_OPTIONS_PREFIX_DISPLAY "ts,  --" DOCTEST_OPTIONS_PREFIX_DISPLAY "test-suite=<filters>          "
-              << Whitespace(sizePrefixDisplay*1) << "filters     tests by their test suite\n";
-            s << " -" DOCTEST_OPTIONS_PREFIX_DISPLAY "tse, --" DOCTEST_OPTIONS_PREFIX_DISPLAY "test-suite-exclude=<filters>  "
-              << Whitespace(sizePrefixDisplay*1) << "filters OUT tests by their test suite\n";
-            s << " -" DOCTEST_OPTIONS_PREFIX_DISPLAY "sc,  --" DOCTEST_OPTIONS_PREFIX_DISPLAY "subcase=<filters>             "
-              << Whitespace(sizePrefixDisplay*1) << "filters     subcases by their name\n";
-            s << " -" DOCTEST_OPTIONS_PREFIX_DISPLAY "sce, --" DOCTEST_OPTIONS_PREFIX_DISPLAY "subcase-exclude=<filters>     "
-              << Whitespace(sizePrefixDisplay*1) << "filters OUT subcases by their name\n";
-            s << " -" DOCTEST_OPTIONS_PREFIX_DISPLAY "r,   --" DOCTEST_OPTIONS_PREFIX_DISPLAY "reporters=<filters>           "
-              << Whitespace(sizePrefixDisplay*1) << "reporters to use (console is default)\n";
-            s << " -" DOCTEST_OPTIONS_PREFIX_DISPLAY "o,   --" DOCTEST_OPTIONS_PREFIX_DISPLAY "out=<string>                  "
-              << Whitespace(sizePrefixDisplay*1) << "output filename\n";
-            s << " -" DOCTEST_OPTIONS_PREFIX_DISPLAY "ob,  --" DOCTEST_OPTIONS_PREFIX_DISPLAY "order-by=<string>             "
-              << Whitespace(sizePrefixDisplay*1) << "how the tests should be ordered\n";
-            s << Whitespace(sizePrefixDisplay*3) << "                                       <string> - [file/suite/name/rand/none]\n";
-            s << " -" DOCTEST_OPTIONS_PREFIX_DISPLAY "rs,  --" DOCTEST_OPTIONS_PREFIX_DISPLAY "rand-seed=<int>               "
-              << Whitespace(sizePrefixDisplay*1) << "seed for random ordering\n";
-            s << " -" DOCTEST_OPTIONS_PREFIX_DISPLAY "f,   --" DOCTEST_OPTIONS_PREFIX_DISPLAY "first=<int>                   "
-              << Whitespace(sizePrefixDisplay*1) << "the first test passing the filters to\n";
-            s << Whitespace(sizePrefixDisplay*3) << "                                       execute - for range-based execution\n";
-            s << " -" DOCTEST_OPTIONS_PREFIX_DISPLAY "l,   --" DOCTEST_OPTIONS_PREFIX_DISPLAY "last=<int>                    "
-              << Whitespace(sizePrefixDisplay*1) << "the last test passing the filters to\n";
-            s << Whitespace(sizePrefixDisplay*3) << "                                       execute - for range-based execution\n";
-            s << " -" DOCTEST_OPTIONS_PREFIX_DISPLAY "aa,  --" DOCTEST_OPTIONS_PREFIX_DISPLAY "abort-after=<int>             "
-              << Whitespace(sizePrefixDisplay*1) << "stop after <int> failed assertions\n";
-            s << " -" DOCTEST_OPTIONS_PREFIX_DISPLAY "scfl,--" DOCTEST_OPTIONS_PREFIX_DISPLAY "subcase-filter-levels=<int>   "
-              << Whitespace(sizePrefixDisplay*1) << "apply filters for the first <int> levels\n";
-            s << Color::Cyan << "\n[doctest] " << Color::None;
-            s << "Bool options - can be used like flags and true is assumed. Available:\n\n";
-            s << " -" DOCTEST_OPTIONS_PREFIX_DISPLAY "s,   --" DOCTEST_OPTIONS_PREFIX_DISPLAY "success=<bool>                "
-              << Whitespace(sizePrefixDisplay*1) << "include successful assertions in output\n";
-            s << " -" DOCTEST_OPTIONS_PREFIX_DISPLAY "cs,  --" DOCTEST_OPTIONS_PREFIX_DISPLAY "case-sensitive=<bool>         "
-              << Whitespace(sizePrefixDisplay*1) << "filters being treated as case sensitive\n";
-            s << " -" DOCTEST_OPTIONS_PREFIX_DISPLAY "e,   --" DOCTEST_OPTIONS_PREFIX_DISPLAY "exit=<bool>                   "
-              << Whitespace(sizePrefixDisplay*1) << "exits after the tests finish\n";
-            s << " -" DOCTEST_OPTIONS_PREFIX_DISPLAY "d,   --" DOCTEST_OPTIONS_PREFIX_DISPLAY "duration=<bool>               "
-              << Whitespace(sizePrefixDisplay*1) << "prints the time duration of each test\n";
-            s << " -" DOCTEST_OPTIONS_PREFIX_DISPLAY "m,   --" DOCTEST_OPTIONS_PREFIX_DISPLAY "minimal=<bool>                "
-              << Whitespace(sizePrefixDisplay*1) << "minimal console output (only failures)\n";
-            s << " -" DOCTEST_OPTIONS_PREFIX_DISPLAY "q,   --" DOCTEST_OPTIONS_PREFIX_DISPLAY "quiet=<bool>                  "
-              << Whitespace(sizePrefixDisplay*1) << "no console output\n";
-            s << " -" DOCTEST_OPTIONS_PREFIX_DISPLAY "nt,  --" DOCTEST_OPTIONS_PREFIX_DISPLAY "no-throw=<bool>               "
-              << Whitespace(sizePrefixDisplay*1) << "skips exceptions-related assert checks\n";
-            s << " -" DOCTEST_OPTIONS_PREFIX_DISPLAY "ne,  --" DOCTEST_OPTIONS_PREFIX_DISPLAY "no-exitcode=<bool>            "
-              << Whitespace(sizePrefixDisplay*1) << "returns (or exits) always with success\n";
-            s << " -" DOCTEST_OPTIONS_PREFIX_DISPLAY "nr,  --" DOCTEST_OPTIONS_PREFIX_DISPLAY "no-run=<bool>                 "
-              << Whitespace(sizePrefixDisplay*1) << "skips all runtime doctest operations\n";
-            s << " -" DOCTEST_OPTIONS_PREFIX_DISPLAY "ni,  --" DOCTEST_OPTIONS_PREFIX_DISPLAY "no-intro=<bool>               "
-              << Whitespace(sizePrefixDisplay*1) << "omit the framework intro in the output\n";
-            s << " -" DOCTEST_OPTIONS_PREFIX_DISPLAY "nv,  --" DOCTEST_OPTIONS_PREFIX_DISPLAY "no-version=<bool>             "
-              << Whitespace(sizePrefixDisplay*1) << "omit the framework version in the output\n";
-            s << " -" DOCTEST_OPTIONS_PREFIX_DISPLAY "nc,  --" DOCTEST_OPTIONS_PREFIX_DISPLAY "no-colors=<bool>              "
-              << Whitespace(sizePrefixDisplay*1) << "disables colors in output\n";
-            s << " -" DOCTEST_OPTIONS_PREFIX_DISPLAY "fc,  --" DOCTEST_OPTIONS_PREFIX_DISPLAY "force-colors=<bool>           "
-              << Whitespace(sizePrefixDisplay*1) << "use colors even when not in a tty\n";
-            s << " -" DOCTEST_OPTIONS_PREFIX_DISPLAY "nb,  --" DOCTEST_OPTIONS_PREFIX_DISPLAY "no-breaks=<bool>              "
-              << Whitespace(sizePrefixDisplay*1) << "disables breakpoints in debuggers\n";
-            s << " -" DOCTEST_OPTIONS_PREFIX_DISPLAY "ns,  --" DOCTEST_OPTIONS_PREFIX_DISPLAY "no-skip=<bool>                "
-              << Whitespace(sizePrefixDisplay*1) << "don't skip test cases marked as skip\n";
-            s << " -" DOCTEST_OPTIONS_PREFIX_DISPLAY "gfl, --" DOCTEST_OPTIONS_PREFIX_DISPLAY "gnu-file-line=<bool>          "
-              << Whitespace(sizePrefixDisplay*1) << ":n: vs (n): for line numbers in output\n";
-            s << " -" DOCTEST_OPTIONS_PREFIX_DISPLAY "npf, --" DOCTEST_OPTIONS_PREFIX_DISPLAY "no-path-filenames=<bool>      "
-              << Whitespace(sizePrefixDisplay*1) << "only filenames and no paths in output\n";
-            s << " -" DOCTEST_OPTIONS_PREFIX_DISPLAY "spp, --" DOCTEST_OPTIONS_PREFIX_DISPLAY "skip-path-prefixes=<p1:p2>    "
-              << Whitespace(sizePrefixDisplay*1) << "whenever file paths start with this prefix, remove it from the output\n";
-            s << " -" DOCTEST_OPTIONS_PREFIX_DISPLAY "nln, --" DOCTEST_OPTIONS_PREFIX_DISPLAY "no-line-numbers=<bool>        "
-              << Whitespace(sizePrefixDisplay*1) << "0 instead of real line numbers in output\n";
-            // ================================================================================== << 79
-            // clang-format on
-
-            s << Color::Cyan << "\n[doctest] " << Color::None;
-            s << "for more information visit the project documentation\n\n";
-        }
-
-        void printRegisteredReporters() {
-            printVersion();
-            auto printReporters = [this] (const reporterMap& reporters, const char* type) {
-                if(reporters.size()) {
-                    s << Color::Cyan << "[doctest] " << Color::None << "listing all registered " << type << "\n";
-                    for(auto& curr : reporters)
-                        s << "priority: " << std::setw(5) << curr.first.first
-                          << " name: " << curr.first.second << "\n";
-                }
-            };
-            printReporters(getListeners(), "listeners");
-            printReporters(getReporters(), "reporters");
-        }
-
-        // =========================================================================================
-        // WHAT FOLLOWS ARE OVERRIDES OF THE VIRTUAL METHODS OF THE REPORTER INTERFACE
-        // =========================================================================================
-
-        void report_query(const QueryData& in) override {
-            if(opt.version) {
-                printVersion();
-            } else if(opt.help) {
-                printHelp();
-            } else if(opt.list_reporters) {
-                printRegisteredReporters();
-            } else if(opt.count || opt.list_test_cases) {
-                if(opt.list_test_cases) {
-                    s << Color::Cyan << "[doctest] " << Color::None
-                      << "listing all test case names\n";
-                    separator_to_stream();
-                }
-
-                for(unsigned i = 0; i < in.num_data; ++i)
-                    s << Color::None << in.data[i]->m_name << "\n";
-
-                separator_to_stream();
-
-                s << Color::Cyan << "[doctest] " << Color::None
-                  << "unskipped test cases passing the current filters: "
-                  << g_cs->numTestCasesPassingFilters << "\n";
-
-            } else if(opt.list_test_suites) {
-                s << Color::Cyan << "[doctest] " << Color::None << "listing all test suites\n";
-                separator_to_stream();
-
-                for(unsigned i = 0; i < in.num_data; ++i)
-                    s << Color::None << in.data[i]->m_test_suite << "\n";
-
-                separator_to_stream();
-
-                s << Color::Cyan << "[doctest] " << Color::None
-                  << "unskipped test cases passing the current filters: "
-                  << g_cs->numTestCasesPassingFilters << "\n";
-                s << Color::Cyan << "[doctest] " << Color::None
-                  << "test suites with unskipped test cases passing the current filters: "
-                  << g_cs->numTestSuitesPassingFilters << "\n";
-            }
-        }
-
-        void test_run_start() override {
-            if(!opt.minimal)
-                printIntro();
-        }
-
-        void test_run_end(const TestRunStats& p) override {
-            if(opt.minimal && p.numTestCasesFailed == 0)
-                return;
-
-            separator_to_stream();
-            s << std::dec;
-
-            auto totwidth = int(std::ceil(log10(static_cast<double>(std::max(p.numTestCasesPassingFilters, static_cast<unsigned>(p.numAsserts))) + 1)));
-            auto passwidth = int(std::ceil(log10(static_cast<double>(std::max(p.numTestCasesPassingFilters - p.numTestCasesFailed, static_cast<unsigned>(p.numAsserts - p.numAssertsFailed))) + 1)));
-            auto failwidth = int(std::ceil(log10(static_cast<double>(std::max(p.numTestCasesFailed, static_cast<unsigned>(p.numAssertsFailed))) + 1)));
-            const bool anythingFailed = p.numTestCasesFailed > 0 || p.numAssertsFailed > 0;
-            s << Color::Cyan << "[doctest] " << Color::None << "test cases: " << std::setw(totwidth)
-              << p.numTestCasesPassingFilters << " | "
-              << ((p.numTestCasesPassingFilters == 0 || anythingFailed) ? Color::None :
-                                                                          Color::Green)
-              << std::setw(passwidth) << p.numTestCasesPassingFilters - p.numTestCasesFailed << " passed"
-              << Color::None << " | " << (p.numTestCasesFailed > 0 ? Color::Red : Color::None)
-              << std::setw(failwidth) << p.numTestCasesFailed << " failed" << Color::None << " |";
-            if(opt.no_skipped_summary == false) {
-                const int numSkipped = p.numTestCases - p.numTestCasesPassingFilters;
-                s << " " << (numSkipped == 0 ? Color::None : Color::Yellow) << numSkipped
-                  << " skipped" << Color::None;
-            }
-            s << "\n";
-            s << Color::Cyan << "[doctest] " << Color::None << "assertions: " << std::setw(totwidth)
-              << p.numAsserts << " | "
-              << ((p.numAsserts == 0 || anythingFailed) ? Color::None : Color::Green)
-              << std::setw(passwidth) << (p.numAsserts - p.numAssertsFailed) << " passed" << Color::None
-              << " | " << (p.numAssertsFailed > 0 ? Color::Red : Color::None) << std::setw(failwidth)
-              << p.numAssertsFailed << " failed" << Color::None << " |\n";
-            s << Color::Cyan << "[doctest] " << Color::None
-              << "Status: " << (p.numTestCasesFailed > 0 ? Color::Red : Color::Green)
-              << ((p.numTestCasesFailed > 0) ? "FAILURE!" : "SUCCESS!") << Color::None << std::endl;
-        }
-
-        void test_case_start(const TestCaseData& in) override {
-            hasLoggedCurrentTestStart = false;
-            tc                        = &in;
-            subcasesStack.clear();
-            currentSubcaseLevel = 0;
-        }
-
-        void test_case_reenter(const TestCaseData&) override {
-            subcasesStack.clear();
-        }
-
-        void test_case_end(const CurrentTestCaseStats& st) override {
-            if(tc->m_no_output)
-                return;
-
-            // log the preamble of the test case only if there is something
-            // else to print - something other than that an assert has failed
-            if(opt.duration ||
-               (st.failure_flags && st.failure_flags != static_cast<int>(TestCaseFailureReason::AssertFailure)))
-                logTestStart();
-
-            if(opt.duration)
-                s << Color::None << std::setprecision(6) << std::fixed << st.seconds
-                  << " s: " << tc->m_name << "\n";
-
-            if(st.failure_flags & TestCaseFailureReason::Timeout)
-                s << Color::Red << "Test case exceeded time limit of " << std::setprecision(6)
-                  << std::fixed << tc->m_timeout << "!\n";
-
-            if(st.failure_flags & TestCaseFailureReason::ShouldHaveFailedButDidnt) {
-                s << Color::Red << "Should have failed but didn't! Marking it as failed!\n";
-            } else if(st.failure_flags & TestCaseFailureReason::ShouldHaveFailedAndDid) {
-                s << Color::Yellow << "Failed as expected so marking it as not failed\n";
-            } else if(st.failure_flags & TestCaseFailureReason::CouldHaveFailedAndDid) {
-                s << Color::Yellow << "Allowed to fail so marking it as not failed\n";
-            } else if(st.failure_flags & TestCaseFailureReason::DidntFailExactlyNumTimes) {
-                s << Color::Red << "Didn't fail exactly " << tc->m_expected_failures
-                  << " times so marking it as failed!\n";
-            } else if(st.failure_flags & TestCaseFailureReason::FailedExactlyNumTimes) {
-                s << Color::Yellow << "Failed exactly " << tc->m_expected_failures
-                  << " times as expected so marking it as not failed!\n";
-            }
-            if(st.failure_flags & TestCaseFailureReason::TooManyFailedAsserts) {
-                s << Color::Red << "Aborting - too many failed asserts!\n";
-            }
-            s << Color::None; // lgtm [cpp/useless-expression]
-        }
-
-        void test_case_exception(const TestCaseException& e) override {
-            DOCTEST_LOCK_MUTEX(mutex)
-            if(tc->m_no_output)
-                return;
-
-            logTestStart();
-
-            file_line_to_stream(tc->m_file.c_str(), tc->m_line, " ");
-            successOrFailColoredStringToStream(false, e.is_crash ? assertType::is_require :
-                                                                   assertType::is_check);
-            s << Color::Red << (e.is_crash ? "test case CRASHED: " : "test case THREW exception: ")
-              << Color::Cyan << e.error_string << "\n";
-
-            int num_stringified_contexts = get_num_stringified_contexts();
-            if(num_stringified_contexts) {
-                auto stringified_contexts = get_stringified_contexts();
-                s << Color::None << "  logged: ";
-                for(int i = num_stringified_contexts; i > 0; --i) {
-                    s << (i == num_stringified_contexts ? "" : "          ")
-                      << stringified_contexts[i - 1] << "\n";
-                }
-            }
-            s << "\n" << Color::None;
-        }
-
-        void subcase_start(const SubcaseSignature& subc) override {
-            subcasesStack.push_back(subc);
-            ++currentSubcaseLevel;
-            hasLoggedCurrentTestStart = false;
-        }
-
-        void subcase_end() override {
-            --currentSubcaseLevel;
-            hasLoggedCurrentTestStart = false;
-        }
-
-        void log_assert(const AssertData& rb) override {
-            if((!rb.m_failed && !opt.success) || tc->m_no_output)
-                return;
-
-            DOCTEST_LOCK_MUTEX(mutex)
-
-            logTestStart();
-
-            file_line_to_stream(rb.m_file, rb.m_line, " ");
-            successOrFailColoredStringToStream(!rb.m_failed, rb.m_at);
-
-            fulltext_log_assert_to_stream(s, rb);
-
-            log_contexts();
-        }
-
-        void log_message(const MessageData& mb) override {
-            if(tc->m_no_output)
-                return;
-
-            DOCTEST_LOCK_MUTEX(mutex)
-
-            logTestStart();
-
-            file_line_to_stream(mb.m_file, mb.m_line, " ");
-            s << getSuccessOrFailColor(false, mb.m_severity)
-              << getSuccessOrFailString(mb.m_severity & assertType::is_warn, mb.m_severity,
-                                        "MESSAGE") << ": ";
-            s << Color::None << mb.m_string << "\n";
-            log_contexts();
-        }
-
-        void test_case_skipped(const TestCaseData&) override {}
-    };
-
-    DOCTEST_REGISTER_REPORTER("console", 0, ConsoleReporter);
+struct Whitespace
+{
+    int nrSpaces;
+    explicit Whitespace(int nr);
+};
+
+std::ostream& operator<<(std::ostream& out, const Whitespace& ws);
+
+struct ConsoleReporter : public IReporter
+{
+    std::ostream&                 s;
+    bool                          hasLoggedCurrentTestStart;
+    std::vector<SubcaseSignature> subcasesStack;
+    size_t                        currentSubcaseLevel;
+    DOCTEST_DECLARE_MUTEX(mutex)
+
+    // caching pointers/references to objects of these types - safe to do
+    const ContextOptions& opt;
+    const TestCaseData*   tc;
+
+    ConsoleReporter(const ContextOptions& co);
+
+    ConsoleReporter(const ContextOptions& co, std::ostream& ostr);
+
+    // =========================================================================================
+    // WHAT FOLLOWS ARE HELPERS USED BY THE OVERRIDES OF THE VIRTUAL METHODS OF THE INTERFACE
+    // =========================================================================================
+
+    void separator_to_stream();
+
+    const char* getSuccessOrFailString(bool success, assertType::Enum at, const char* success_str);
+
+    Color::Enum getSuccessOrFailColor(bool success, assertType::Enum at);
+
+    void successOrFailColoredStringToStream(bool success, assertType::Enum at, const char* success_str = "SUCCESS");
+
+    void log_contexts();
+
+    // this was requested to be made virtual so users could override it
+    virtual void file_line_to_stream(const char* file, int line, const char* tail = "");
+
+    void logTestStart();
+
+    void printVersion();
+
+    void printIntro();
+
+    void printHelp();
+
+    void printRegisteredReporters();
+
+    // =========================================================================================
+    // WHAT FOLLOWS ARE OVERRIDES OF THE VIRTUAL METHODS OF THE REPORTER INTERFACE
+    // =========================================================================================
+
+    void report_query(const QueryData& in) override;
+
+    void test_run_start() override;
+
+    void test_run_end(const TestRunStats& p) override;
+
+    void test_case_start(const TestCaseData& in) override;
+
+    void test_case_reenter(const TestCaseData&) override;
+
+    void test_case_end(const CurrentTestCaseStats& st) override;
+
+    void test_case_exception(const TestCaseException& e) override;
+
+    void subcase_start(const SubcaseSignature& subc) override;
+
+    void subcase_end() override;
+
+    void log_assert(const AssertData& rb) override;
+
+    void log_message(const MessageData& mb) override;
+
+    void test_case_skipped(const TestCaseData&) override;
+};
+
+DOCTEST_REGISTER_REPORTER("console", 0, ConsoleReporter);
 
 } // namespace doctest
 
@@ -5154,47 +4642,24 @@ namespace doctest {
 namespace detail {
 
 #ifdef DOCTEST_PLATFORM_WINDOWS
-#define DOCTEST_OUTPUT_DEBUG_STRING(text) ::OutputDebugStringA(text)
-#else
-    // TODO: integration with XCode and other IDEs
-#define DOCTEST_OUTPUT_DEBUG_STRING(text)
-#endif // Platform
-
-#ifdef DOCTEST_PLATFORM_WINDOWS
     struct DebugOutputWindowReporter : public ConsoleReporter
     {
         DOCTEST_THREAD_LOCAL static std::ostringstream oss;
 
-        DebugOutputWindowReporter(const ContextOptions& co)
-                : ConsoleReporter(co, oss) {}
+        DebugOutputWindowReporter(const ContextOptions& co);
 
-#define DOCTEST_DEBUG_OUTPUT_REPORTER_OVERRIDE(func, type, arg)                                    \
-    void func(type arg) override {                                                                 \
-        using detail::g_no_colors;                                                                 \
-        bool with_col = g_no_colors;                                                               \
-        g_no_colors   = false;                                                                     \
-        ConsoleReporter::func(arg);                                                                \
-        if(oss.tellp() != std::streampos{}) {                                                      \
-            DOCTEST_OUTPUT_DEBUG_STRING(oss.str().c_str());                                        \
-            oss.str("");                                                                           \
-        }                                                                                          \
-        g_no_colors = with_col;                                                                    \
-    }
-
-        DOCTEST_DEBUG_OUTPUT_REPORTER_OVERRIDE(test_run_start, DOCTEST_EMPTY, DOCTEST_EMPTY)
-        DOCTEST_DEBUG_OUTPUT_REPORTER_OVERRIDE(test_run_end, const TestRunStats&, in)
-        DOCTEST_DEBUG_OUTPUT_REPORTER_OVERRIDE(test_case_start, const TestCaseData&, in)
-        DOCTEST_DEBUG_OUTPUT_REPORTER_OVERRIDE(test_case_reenter, const TestCaseData&, in)
-        DOCTEST_DEBUG_OUTPUT_REPORTER_OVERRIDE(test_case_end, const CurrentTestCaseStats&, in)
-        DOCTEST_DEBUG_OUTPUT_REPORTER_OVERRIDE(test_case_exception, const TestCaseException&, in)
-        DOCTEST_DEBUG_OUTPUT_REPORTER_OVERRIDE(subcase_start, const SubcaseSignature&, in)
-        DOCTEST_DEBUG_OUTPUT_REPORTER_OVERRIDE(subcase_end, DOCTEST_EMPTY, DOCTEST_EMPTY)
-        DOCTEST_DEBUG_OUTPUT_REPORTER_OVERRIDE(log_assert, const AssertData&, in)
-        DOCTEST_DEBUG_OUTPUT_REPORTER_OVERRIDE(log_message, const MessageData&, in)
-        DOCTEST_DEBUG_OUTPUT_REPORTER_OVERRIDE(test_case_skipped, const TestCaseData&, in)
+        void test_run_start() override;
+        void test_run_end(const TestRunStats& in) override;
+        void test_case_start(const TestCaseData& in) override;
+        void test_case_reenter(const TestCaseData& in) override;
+        void test_case_end(const CurrentTestCaseStats& in) override;
+        void test_case_exception(const TestCaseException& in) override;
+        void subcase_start(const SubcaseSignature& in) override;
+        void subcase_end(DOCTEST_EMPTY DOCTEST_EMPTY) override;
+        void log_assert(const AssertData& in) override;
+        void log_message(const MessageData& in) override;
+        void test_case_skipped(const TestCaseData& in) override;
     };
-
-    DOCTEST_THREAD_LOCAL std::ostringstream DebugOutputWindowReporter::oss;
 #endif // DOCTEST_PLATFORM_WINDOWS
 
 } // namespace detail
@@ -5217,10 +4682,7 @@ namespace doctest {
 namespace detail {
 
     // all the registered tests
-    std::set<TestCase>& getRegisteredTests() {
-        static std::set<TestCase> data;
-        return data;
-    }
+    std::set<TestCase>& getRegisteredTests();
 
 } // namespace detail
 } // namespace doctest
@@ -5243,52 +4705,10 @@ namespace detail {
 
     // matching of a string against a wildcard mask (case sensitivity configurable) taken from
     // https://www.codeproject.com/Articles/1088/Wildcard-string-compare-globbing
-    int wildcmp(const char* str, const char* wild, bool caseSensitive) {
-        const char* cp = str;
-        const char* mp = wild;
-
-        while((*str) && (*wild != '*')) {
-            if((caseSensitive ? (*wild != *str) : (tolower(*wild) != tolower(*str))) &&
-               (*wild != '?')) {
-                return 0;
-            }
-            wild++;
-            str++;
-        }
-
-        while(*str) {
-            if(*wild == '*') {
-                if(!*++wild) {
-                    return 1;
-                }
-                mp = wild;
-                cp = str + 1;
-            } else if((caseSensitive ? (*wild == *str) : (tolower(*wild) == tolower(*str))) ||
-                      (*wild == '?')) {
-                wild++;
-                str++;
-            } else {
-                wild = mp;   //!OCLINT parameter reassignment
-                str  = cp++; //!OCLINT parameter reassignment
-            }
-        }
-
-        while(*wild == '*') {
-            wild++;
-        }
-        return !*wild;
-    }
+    int wildcmp(const char* str, const char* wild, bool caseSensitive);
 
     // checks if the name matches any of the filters (and can be configured what to do when empty)
-    bool matchesAny(const char* name, const std::vector<String>& filters, bool matchEmpty,
-        bool caseSensitive) {
-        if (filters.empty() && matchEmpty)
-            return true;
-        for (auto& curr : filters)
-            if (wildcmp(name, curr.c_str(), caseSensitive))
-                return true;
-        return false;
-    }
+    bool matchesAny(const char* name, const std::vector<String>& filters, bool matchEmpty, bool caseSensitive);
 
 } // namespace
 } // namespace doctest
@@ -5312,9 +4732,9 @@ namespace detail {
 #if !defined(DOCTEST_CONFIG_POSIX_SIGNALS) && !defined(DOCTEST_CONFIG_WINDOWS_SEH)
     struct FatalConditionHandler
     {
-        static void reset() {}
-        static void allocateAltStackMem() {}
-        static void freeAltStackMem() {}
+        static void reset();
+        static void allocateAltStackMem();
+        static void freeAltStackMem();
     };
 #else // DOCTEST_CONFIG_POSIX_SIGNALS || DOCTEST_CONFIG_WINDOWS_SEH
 
@@ -5325,122 +4745,18 @@ namespace detail {
         DWORD id;
         const char* name;
     };
-    // There is no 1-1 mapping between signals and windows exceptions.
-    // Windows can easily distinguish between SO and SigSegV,
-    // but SigInt, SigTerm, etc are handled differently.
-    SignalDefs signalDefs[] = {
-            {static_cast<DWORD>(EXCEPTION_ILLEGAL_INSTRUCTION),
-             "SIGILL - Illegal instruction signal"},
-            {static_cast<DWORD>(EXCEPTION_STACK_OVERFLOW), "SIGSEGV - Stack overflow"},
-            {static_cast<DWORD>(EXCEPTION_ACCESS_VIOLATION),
-             "SIGSEGV - Segmentation violation signal"},
-            {static_cast<DWORD>(EXCEPTION_INT_DIVIDE_BY_ZERO), "Divide by zero error"},
-    };
 
     struct FatalConditionHandler
     {
-        static LONG CALLBACK handleException(PEXCEPTION_POINTERS ExceptionInfo) {
-            // Multiple threads may enter this filter/handler at once. We want the error message to be printed on the
-            // console just once no matter how many threads have crashed.
-            DOCTEST_DECLARE_STATIC_MUTEX(mutex)
-            static bool execute = true;
-            {
-                DOCTEST_LOCK_MUTEX(mutex)
-                if(execute) {
-                    bool reported = false;
-                    for(size_t i = 0; i < DOCTEST_COUNTOF(signalDefs); ++i) {
-                        if(ExceptionInfo->ExceptionRecord->ExceptionCode == signalDefs[i].id) {
-                            reportFatal(signalDefs[i].name);
-                            reported = true;
-                            break;
-                        }
-                    }
-                    if(reported == false)
-                        reportFatal("Unhandled SEH exception caught");
-                    if(isDebuggerActive() && !g_cs->no_breaks)
-                        DOCTEST_BREAK_INTO_DEBUGGER();
-                }
-                execute = false;
-            }
-            std::exit(EXIT_FAILURE);
-        }
+        static LONG CALLBACK handleException(PEXCEPTION_POINTERS ExceptionInfo);
+        static void allocateAltStackMem();
+        static void freeAltStackMem();
 
-        static void allocateAltStackMem() {}
-        static void freeAltStackMem() {}
+        FatalConditionHandler();
 
-        FatalConditionHandler() {
-            isSet = true;
-            // 32k seems enough for doctest to handle stack overflow,
-            // but the value was found experimentally, so there is no strong guarantee
-            guaranteeSize = 32 * 1024;
-            // Register an unhandled exception filter
-            previousTop = SetUnhandledExceptionFilter(handleException);
-            // Pass in guarantee size to be filled
-            SetThreadStackGuarantee(&guaranteeSize);
+        static void reset();
 
-            // On Windows uncaught exceptions from another thread, exceptions from
-            // destructors, or calls to std::terminate are not a SEH exception
-
-            // The terminal handler gets called when:
-            // - std::terminate is called FROM THE TEST RUNNER THREAD
-            // - an exception is thrown from a destructor FROM THE TEST RUNNER THREAD
-            original_terminate_handler = std::get_terminate();
-            std::set_terminate([]() DOCTEST_NOEXCEPT {
-                reportFatal("Terminate handler called");
-                if(isDebuggerActive() && !g_cs->no_breaks)
-                    DOCTEST_BREAK_INTO_DEBUGGER();
-                std::exit(EXIT_FAILURE); // explicitly exit - otherwise the SIGABRT handler may be called as well
-            });
-
-            // SIGABRT is raised when:
-            // - std::terminate is called FROM A DIFFERENT THREAD
-            // - an exception is thrown from a destructor FROM A DIFFERENT THREAD
-            // - an uncaught exception is thrown FROM A DIFFERENT THREAD
-            prev_sigabrt_handler = std::signal(SIGABRT, [](int signal) DOCTEST_NOEXCEPT {
-                if(signal == SIGABRT) {
-                    reportFatal("SIGABRT - Abort (abnormal termination) signal");
-                    if(isDebuggerActive() && !g_cs->no_breaks)
-                        DOCTEST_BREAK_INTO_DEBUGGER();
-                    std::exit(EXIT_FAILURE);
-                }
-            });
-
-            // The following settings are taken from google test, and more
-            // specifically from UnitTest::Run() inside of gtest.cc
-
-            // the user does not want to see pop-up dialogs about crashes
-            prev_error_mode_1 = SetErrorMode(SEM_FAILCRITICALERRORS | SEM_NOALIGNMENTFAULTEXCEPT |
-                                             SEM_NOGPFAULTERRORBOX | SEM_NOOPENFILEERRORBOX);
-            // This forces the abort message to go to stderr in all circumstances.
-            prev_error_mode_2 = _set_error_mode(_OUT_TO_STDERR);
-            // In the debug version, Visual Studio pops up a separate dialog
-            // offering a choice to debug the aborted program - we want to disable that.
-            prev_abort_behavior = _set_abort_behavior(0x0, _WRITE_ABORT_MSG | _CALL_REPORTFAULT);
-            // In debug mode, the Windows CRT can crash with an assertion over invalid
-            // input (e.g. passing an invalid file descriptor). The default handling
-            // for these assertions is to pop up a dialog and wait for user input.
-            // Instead ask the CRT to dump such assertions to stderr non-interactively.
-            prev_report_mode = _CrtSetReportMode(_CRT_ASSERT, _CRTDBG_MODE_FILE | _CRTDBG_MODE_DEBUG);
-            prev_report_file = _CrtSetReportFile(_CRT_ASSERT, _CRTDBG_FILE_STDERR);
-        }
-
-        static void reset() {
-            if(isSet) {
-                // Unregister handler and restore the old guarantee
-                SetUnhandledExceptionFilter(previousTop);
-                SetThreadStackGuarantee(&guaranteeSize);
-                std::set_terminate(original_terminate_handler);
-                std::signal(SIGABRT, prev_sigabrt_handler);
-                SetErrorMode(prev_error_mode_1);
-                _set_error_mode(prev_error_mode_2);
-                _set_abort_behavior(prev_abort_behavior, _WRITE_ABORT_MSG | _CALL_REPORTFAULT);
-                static_cast<void>(_CrtSetReportMode(_CRT_ASSERT, prev_report_mode));
-                static_cast<void>(_CrtSetReportFile(_CRT_ASSERT, prev_report_file));
-                isSet = false;
-            }
-        }
-
-        ~FatalConditionHandler() { reset(); }
+        ~FatalConditionHandler();
 
     private:
         static UINT         prev_error_mode_1;
@@ -5455,17 +4771,6 @@ namespace detail {
         static LPTOP_LEVEL_EXCEPTION_FILTER previousTop;
     };
 
-    UINT         FatalConditionHandler::prev_error_mode_1;
-    int          FatalConditionHandler::prev_error_mode_2;
-    unsigned int FatalConditionHandler::prev_abort_behavior;
-    int          FatalConditionHandler::prev_report_mode;
-    _HFILE       FatalConditionHandler::prev_report_file;
-    void (DOCTEST_CDECL *FatalConditionHandler::prev_sigabrt_handler)(int);
-    std::terminate_handler FatalConditionHandler::original_terminate_handler;
-    bool FatalConditionHandler::isSet = false;
-    ULONG FatalConditionHandler::guaranteeSize = 0;
-    LPTOP_LEVEL_EXCEPTION_FILTER FatalConditionHandler::previousTop = nullptr;
-
 #else // DOCTEST_PLATFORM_WINDOWS
 
     struct SignalDefs
@@ -5473,77 +4778,26 @@ namespace detail {
         int         id;
         const char* name;
     };
-    SignalDefs signalDefs[] = {{SIGINT, "SIGINT - Terminal interrupt signal"},
-                               {SIGILL, "SIGILL - Illegal instruction signal"},
-                               {SIGFPE, "SIGFPE - Floating point error signal"},
-                               {SIGSEGV, "SIGSEGV - Segmentation violation signal"},
-                               {SIGTERM, "SIGTERM - Termination request signal"},
-                               {SIGABRT, "SIGABRT - Abort (abnormal termination) signal"}};
 
     struct FatalConditionHandler
     {
         static bool             isSet;
-        static struct sigaction oldSigActions[DOCTEST_COUNTOF(signalDefs)];
+        static struct sigaction oldSigActions[6];
         static stack_t          oldSigStack;
         static size_t           altStackSize;
         static char*            altStackMem;
 
-        static void handleSignal(int sig) {
-            const char* name = "<unknown signal>";
-            for(std::size_t i = 0; i < DOCTEST_COUNTOF(signalDefs); ++i) {
-                SignalDefs& def = signalDefs[i];
-                if(sig == def.id) {
-                    name = def.name;
-                    break;
-                }
-            }
-            reset();
-            reportFatal(name);
-            raise(sig);
-        }
+        static void handleSignal(int sig);
 
-        static void allocateAltStackMem() {
-            altStackMem = new char[altStackSize];
-        }
+        static void allocateAltStackMem();
 
-        static void freeAltStackMem() {
-            delete[] altStackMem;
-        }
+        static void freeAltStackMem();
 
-        FatalConditionHandler() {
-            isSet = true;
-            stack_t sigStack;
-            sigStack.ss_sp    = altStackMem;
-            sigStack.ss_size  = altStackSize;
-            sigStack.ss_flags = 0;
-            sigaltstack(&sigStack, &oldSigStack);
-            struct sigaction sa = {};
-            sa.sa_handler       = handleSignal;
-            sa.sa_flags         = SA_ONSTACK;
-            for(std::size_t i = 0; i < DOCTEST_COUNTOF(signalDefs); ++i) {
-                sigaction(signalDefs[i].id, &sa, &oldSigActions[i]);
-            }
-        }
+        FatalConditionHandler();
 
-        ~FatalConditionHandler() { reset(); }
-        static void reset() {
-            if(isSet) {
-                // Set signals back to previous values -- hopefully nobody overwrote them in the meantime
-                for(std::size_t i = 0; i < DOCTEST_COUNTOF(signalDefs); ++i) {
-                    sigaction(signalDefs[i].id, &oldSigActions[i], nullptr);
-                }
-                // Return the old stack
-                sigaltstack(&oldSigStack, nullptr);
-                isSet = false;
-            }
-        }
+        ~FatalConditionHandler();
+        static void reset();
     };
-
-    bool             FatalConditionHandler::isSet = false;
-    struct sigaction FatalConditionHandler::oldSigActions[DOCTEST_COUNTOF(signalDefs)] = {};
-    stack_t          FatalConditionHandler::oldSigStack = {};
-    size_t           FatalConditionHandler::altStackSize = 4 * SIGSTKSZ;
-    char*            FatalConditionHandler::altStackMem = nullptr;
 
 #endif // DOCTEST_PLATFORM_WINDOWS
 #endif // DOCTEST_CONFIG_POSIX_SIGNALS || DOCTEST_CONFIG_WINDOWS_SEH
@@ -5760,8 +5014,8 @@ namespace detail {
     }
 
     Context::~Context() {
-        if(g_cs == p)
-            g_cs = nullptr;
+        if(detail::g_cs == p)
+            detail::g_cs = nullptr;
         delete p;
     }
 
@@ -5927,7 +5181,7 @@ namespace detail {
     // users should query this in their main() and exit the program if true
     bool Context::shouldExit() { return p->exit; }
 
-    void Context::setAsDefaultForAssertsOutOfTestCases() { g_cs = p; }
+    void Context::setAsDefaultForAssertsOutOfTestCases() { detail::g_cs = p; }
 
     void Context::setAssertHandler(detail::assert_handler ah) { p->ah = ah; }
 
@@ -6308,6 +5562,77 @@ DOCTEST_SUPPRESS_PRIVATE_WARNINGS_PUSH
 
 namespace doctest {
 namespace detail {
+
+ContextState* g_cs = nullptr;
+DOCTEST_THREAD_LOCAL bool g_no_colors;
+
+void ContextState::resetRunData() {
+    numTestCases                = 0;
+    numTestCasesPassingFilters  = 0;
+    numTestSuitesPassingFilters = 0;
+    numTestCasesFailed          = 0;
+    numAsserts                  = 0;
+    numAssertsFailed            = 0;
+    numAssertsCurrentTest       = 0;
+    numAssertsFailedCurrentTest = 0;
+}
+
+void ContextState::finalizeTestCaseData() {
+    seconds = timer.getElapsedSeconds();
+
+    // update the non-atomic counters
+    numAsserts += numAssertsCurrentTest_atomic;
+    numAssertsFailed += numAssertsFailedCurrentTest_atomic;
+    numAssertsCurrentTest       = numAssertsCurrentTest_atomic;
+    numAssertsFailedCurrentTest = numAssertsFailedCurrentTest_atomic;
+
+    if(numAssertsFailedCurrentTest)
+        failure_flags |= TestCaseFailureReason::AssertFailure;
+
+    if(Approx(currentTest->m_timeout).epsilon(DBL_EPSILON) != 0 &&
+        Approx(seconds).epsilon(DBL_EPSILON) > currentTest->m_timeout)
+        failure_flags |= TestCaseFailureReason::Timeout;
+
+    if(currentTest->m_should_fail) {
+        if(failure_flags) {
+            failure_flags |= TestCaseFailureReason::ShouldHaveFailedAndDid;
+        } else {
+            failure_flags |= TestCaseFailureReason::ShouldHaveFailedButDidnt;
+        }
+    } else if(failure_flags && currentTest->m_may_fail) {
+        failure_flags |= TestCaseFailureReason::CouldHaveFailedAndDid;
+    } else if(currentTest->m_expected_failures > 0) {
+        if(numAssertsFailedCurrentTest == currentTest->m_expected_failures) {
+            failure_flags |= TestCaseFailureReason::FailedExactlyNumTimes;
+        } else {
+            failure_flags |= TestCaseFailureReason::DidntFailExactlyNumTimes;
+        }
+    }
+
+    bool ok_to_fail = (TestCaseFailureReason::ShouldHaveFailedAndDid & failure_flags) ||
+                      (TestCaseFailureReason::CouldHaveFailedAndDid & failure_flags) ||
+                      (TestCaseFailureReason::FailedExactlyNumTimes & failure_flags);
+
+    // if any subcase has failed - the whole test case has failed
+    testCaseSuccess = !(failure_flags && !ok_to_fail);
+    if(!testCaseSuccess)
+        numTestCasesFailed++;
+}
+
+
+} // namespace detail
+} // namespace doctest
+
+#endif // DOCTEST_CONFIG_DISABLE
+
+DOCTEST_SUPPRESS_PRIVATE_WARNINGS_POP
+
+DOCTEST_SUPPRESS_PRIVATE_WARNINGS_PUSH
+
+#ifndef DOCTEST_CONFIG_DISABLE
+
+namespace doctest {
+namespace detail {
 #ifdef DOCTEST_IS_DEBUGGER_ACTIVE
     bool isDebuggerActive() { return DOCTEST_IS_DEBUGGER_ACTIVE(); }
 #else // DOCTEST_IS_DEBUGGER_ACTIVE
@@ -6459,6 +5784,62 @@ namespace detail {
 } // namespace doctest
 
 #endif // DOCTEST_CONFIG_DISABLE
+
+DOCTEST_SUPPRESS_PRIVATE_WARNINGS_POP
+
+DOCTEST_SUPPRESS_PRIVATE_WARNINGS_PUSH
+
+namespace doctest {
+namespace detail {
+
+    int wildcmp(const char* str, const char* wild, bool caseSensitive) {
+        const char* cp = str;
+        const char* mp = wild;
+
+        while((*str) && (*wild != '*')) {
+            if((caseSensitive ? (*wild != *str) : (tolower(*wild) != tolower(*str))) &&
+               (*wild != '?')) {
+                return 0;
+            }
+            wild++;
+            str++;
+        }
+
+        while(*str) {
+            if(*wild == '*') {
+                if(!*++wild) {
+                    return 1;
+                }
+                mp = wild;
+                cp = str + 1;
+            } else if((caseSensitive ? (*wild == *str) : (tolower(*wild) == tolower(*str))) ||
+                      (*wild == '?')) {
+                wild++;
+                str++;
+            } else {
+                wild = mp;   //!OCLINT parameter reassignment
+                str  = cp++; //!OCLINT parameter reassignment
+            }
+        }
+
+        while(*wild == '*') {
+            wild++;
+        }
+        return !*wild;
+    }
+
+    bool matchesAny(const char* name, const std::vector<String>& filters, bool matchEmpty,
+        bool caseSensitive) {
+        if (filters.empty() && matchEmpty)
+            return true;
+        for (auto& curr : filters)
+            if (wildcmp(name, curr.c_str(), caseSensitive))
+                return true;
+        return false;
+    }
+
+} // namespace detail
+} // namespace doctest
 
 DOCTEST_SUPPRESS_PRIVATE_WARNINGS_POP
 
@@ -6635,6 +6016,19 @@ namespace doctest {
 
 #else
 
+namespace detail {
+    reporterMap& getReporters() {
+        static reporterMap data;
+        return data;
+    }
+
+    reporterMap& getListeners() {
+        static reporterMap data;
+        return data;
+    }
+} // namespace detail
+
+
     DOCTEST_DEFINE_INTERFACE(IReporter)
 
     int IReporter::get_num_active_contexts() { return detail::g_infoContexts.size(); }
@@ -6660,8 +6054,577 @@ namespace doctest {
 } // namespace doctest
 
 DOCTEST_SUPPRESS_PRIVATE_WARNINGS_POP
-#ifndef DOCTEST_PARTS_PRIVATE_REPORTERS_XML
-#define DOCTEST_PARTS_PRIVATE_REPORTERS_XML
+
+DOCTEST_SUPPRESS_PRIVATE_WARNINGS_PUSH
+
+#ifndef DOCTEST_CONFIG_DISABLE
+
+namespace doctest {
+
+void fulltext_log_assert_to_stream(std::ostream& s, const AssertData& rb) {
+    if((rb.m_at & (assertType::is_throws_as | assertType::is_throws_with)) ==
+        0) //!OCLINT bitwise operator in conditional
+        s << Color::Cyan << assertString(rb.m_at) << "( " << rb.m_expr << " ) "
+            << Color::None;
+
+    if(rb.m_at & assertType::is_throws) { //!OCLINT bitwise operator in conditional
+        s << (rb.m_threw ? "threw as expected!" : "did NOT throw at all!") << "\n";
+    } else if((rb.m_at & assertType::is_throws_as) &&
+                (rb.m_at & assertType::is_throws_with)) { //!OCLINT
+        s << Color::Cyan << assertString(rb.m_at) << "( " << rb.m_expr << ", \""
+            << rb.m_exception_string.c_str()
+            << "\", " << rb.m_exception_type << " ) " << Color::None;
+        if(rb.m_threw) {
+            if(!rb.m_failed) {
+                s << "threw as expected!\n";
+            } else {
+                s << "threw a DIFFERENT exception! (contents: " << rb.m_exception << ")\n";
+            }
+        } else {
+            s << "did NOT throw at all!\n";
+        }
+    } else if(rb.m_at &
+                assertType::is_throws_as) { //!OCLINT bitwise operator in conditional
+        s << Color::Cyan << assertString(rb.m_at) << "( " << rb.m_expr << ", "
+            << rb.m_exception_type << " ) " << Color::None
+            << (rb.m_threw ? (rb.m_threw_as ? "threw as expected!" :
+                                            "threw a DIFFERENT exception: ") :
+                            "did NOT throw at all!")
+            << Color::Cyan << rb.m_exception << "\n";
+    } else if(rb.m_at &
+                assertType::is_throws_with) { //!OCLINT bitwise operator in conditional
+        s << Color::Cyan << assertString(rb.m_at) << "( " << rb.m_expr << ", \""
+            << rb.m_exception_string.c_str()
+            << "\" ) " << Color::None
+            << (rb.m_threw ? (!rb.m_failed ? "threw as expected!" :
+                                            "threw a DIFFERENT exception: ") :
+                            "did NOT throw at all!")
+            << Color::Cyan << rb.m_exception << "\n";
+    } else if(rb.m_at & assertType::is_nothrow) { //!OCLINT bitwise operator in conditional
+        s << (rb.m_threw ? "THREW exception: " : "didn't throw!") << Color::Cyan
+            << rb.m_exception << "\n";
+    } else {
+        s << (rb.m_threw ? "THREW exception: " :
+                            (!rb.m_failed ? "is correct!\n" : "is NOT correct!\n"));
+        if(rb.m_threw)
+            s << rb.m_exception << "\n";
+        else
+            s << "  values: " << assertString(rb.m_at) << "( " << rb.m_decomp << " )\n";
+    }
+}
+
+} // namespace doctest
+
+#endif // DOCTEST_CONFIG_DISABLE
+
+DOCTEST_SUPPRESS_PRIVATE_WARNINGS_POP
+
+DOCTEST_SUPPRESS_PRIVATE_WARNINGS_PUSH
+
+#ifndef DOCTEST_CONFIG_DISABLE
+
+namespace doctest {
+
+using detail::g_cs;
+
+Whitespace::Whitespace(int nr)
+        : nrSpaces(nr) {}
+
+std::ostream& operator<<(std::ostream& out, const Whitespace& ws) {
+    if(ws.nrSpaces != 0)
+        out << std::setw(ws.nrSpaces) << ' ';
+    return out;
+}
+
+ConsoleReporter::ConsoleReporter(const ContextOptions& co)
+        : s(*co.cout)
+        , opt(co) {}
+
+ConsoleReporter::ConsoleReporter(const ContextOptions& co, std::ostream& ostr)
+        : s(ostr)
+        , opt(co) {}
+
+void ConsoleReporter::separator_to_stream() {
+    s << Color::Yellow
+      << "==============================================================================="
+          "\n";
+}
+
+const char* ConsoleReporter::getSuccessOrFailString(bool success, assertType::Enum at, const char* success_str) {
+    if(success)
+        return success_str;
+    return failureString(at);
+}
+
+Color::Enum ConsoleReporter::getSuccessOrFailColor(bool success, assertType::Enum at) {
+    return success ? Color::BrightGreen :
+                      (at & assertType::is_warn) ? Color::Yellow : Color::Red;
+}
+
+void ConsoleReporter::successOrFailColoredStringToStream(bool success, assertType::Enum at, const char* success_str) {
+    s << getSuccessOrFailColor(success, at)
+      << getSuccessOrFailString(success, at, success_str) << ": ";
+}
+
+void ConsoleReporter::log_contexts() {
+    int num_contexts = get_num_active_contexts();
+    if(num_contexts) {
+        auto contexts = get_active_contexts();
+
+        s << Color::None << "  logged: ";
+        for(int i = 0; i < num_contexts; ++i) {
+            s << (i == 0 ? "" : "          ");
+            contexts[i]->stringify(&s);
+            s << "\n";
+        }
+    }
+
+    s << "\n";
+}
+
+// this was requested to be made virtual so users could override it
+void ConsoleReporter::file_line_to_stream(const char* file, int line, const char* tail) {
+    s << Color::LightGrey << skipPathFromFilename(file) << (opt.gnu_file_line ? ":" : "(")
+    << (opt.no_line_numbers ? 0 : line) // 0 or the real num depending on the option
+    << (opt.gnu_file_line ? ":" : "):") << tail;
+}
+
+void ConsoleReporter::logTestStart() {
+    if(hasLoggedCurrentTestStart)
+        return;
+
+    separator_to_stream();
+    file_line_to_stream(tc->m_file.c_str(), tc->m_line, "\n");
+    if(tc->m_description)
+        s << Color::Yellow << "DESCRIPTION: " << Color::None << tc->m_description << "\n";
+    if(tc->m_test_suite && tc->m_test_suite[0] != '\0')
+        s << Color::Yellow << "TEST SUITE: " << Color::None << tc->m_test_suite << "\n";
+    if(strncmp(tc->m_name, "  Scenario:", 11) != 0)
+        s << Color::Yellow << "TEST CASE:  ";
+    s << Color::None << tc->m_name << "\n";
+
+    for(size_t i = 0; i < currentSubcaseLevel; ++i) {
+        if(subcasesStack[i].m_name[0] != '\0')
+            s << "  " << subcasesStack[i].m_name << "\n";
+    }
+
+    if(currentSubcaseLevel != subcasesStack.size()) {
+        s << Color::Yellow << "\nDEEPEST SUBCASE STACK REACHED (DIFFERENT FROM THE CURRENT ONE):\n" << Color::None;
+        for(size_t i = 0; i < subcasesStack.size(); ++i) {
+            if(subcasesStack[i].m_name[0] != '\0')
+                s << "  " << subcasesStack[i].m_name << "\n";
+        }
+    }
+
+    s << "\n";
+
+    hasLoggedCurrentTestStart = true;
+}
+
+void ConsoleReporter::printVersion() {
+    if(opt.no_version == false)
+        s << Color::Cyan << "[doctest] " << Color::None << "doctest version is \""
+          << DOCTEST_VERSION_STR << "\"\n";
+}
+
+void ConsoleReporter::printIntro() {
+    if(opt.no_intro == false) {
+        printVersion();
+        s << Color::Cyan << "[doctest] " << Color::None
+          << "run with \"--" DOCTEST_OPTIONS_PREFIX_DISPLAY "help\" for options\n";
+    }
+}
+
+void ConsoleReporter::printHelp() {
+    int sizePrefixDisplay = static_cast<int>(strlen(DOCTEST_OPTIONS_PREFIX_DISPLAY));
+    printVersion();
+    // clang-format off
+    s << Color::Cyan << "[doctest]\n" << Color::None;
+    s << Color::Cyan << "[doctest] " << Color::None;
+    s << "boolean values: \"1/on/yes/true\" or \"0/off/no/false\"\n";
+    s << Color::Cyan << "[doctest] " << Color::None;
+    s << "filter  values: \"str1,str2,str3\" (comma separated strings)\n";
+    s << Color::Cyan << "[doctest]\n" << Color::None;
+    s << Color::Cyan << "[doctest] " << Color::None;
+    s << "filters use wildcards for matching strings\n";
+    s << Color::Cyan << "[doctest] " << Color::None;
+    s << "something passes a filter if any of the strings in a filter matches\n";
+#ifndef DOCTEST_CONFIG_NO_UNPREFIXED_OPTIONS
+    s << Color::Cyan << "[doctest]\n" << Color::None;
+    s << Color::Cyan << "[doctest] " << Color::None;
+    s << "ALL FLAGS, OPTIONS AND FILTERS ALSO AVAILABLE WITH A \"" DOCTEST_CONFIG_OPTIONS_PREFIX "\" PREFIX!!!\n";
+#endif
+    s << Color::Cyan << "[doctest]\n" << Color::None;
+    s << Color::Cyan << "[doctest] " << Color::None;
+    s << "Query flags - the program quits after them. Available:\n\n";
+    s << " -" DOCTEST_OPTIONS_PREFIX_DISPLAY "?,   --" DOCTEST_OPTIONS_PREFIX_DISPLAY "help, -" DOCTEST_OPTIONS_PREFIX_DISPLAY "h                      "
+      << Whitespace(sizePrefixDisplay*0) <<  "prints this message\n";
+    s << " -" DOCTEST_OPTIONS_PREFIX_DISPLAY "v,   --" DOCTEST_OPTIONS_PREFIX_DISPLAY "version                       "
+      << Whitespace(sizePrefixDisplay*1) << "prints the version\n";
+    s << " -" DOCTEST_OPTIONS_PREFIX_DISPLAY "c,   --" DOCTEST_OPTIONS_PREFIX_DISPLAY "count                         "
+      << Whitespace(sizePrefixDisplay*1) << "prints the number of matching tests\n";
+    s << " -" DOCTEST_OPTIONS_PREFIX_DISPLAY "ltc, --" DOCTEST_OPTIONS_PREFIX_DISPLAY "list-test-cases               "
+      << Whitespace(sizePrefixDisplay*1) << "lists all matching tests by name\n";
+    s << " -" DOCTEST_OPTIONS_PREFIX_DISPLAY "lts, --" DOCTEST_OPTIONS_PREFIX_DISPLAY "list-test-suites              "
+      << Whitespace(sizePrefixDisplay*1) << "lists all matching test suites\n";
+    s << " -" DOCTEST_OPTIONS_PREFIX_DISPLAY "lr,  --" DOCTEST_OPTIONS_PREFIX_DISPLAY "list-reporters                "
+      << Whitespace(sizePrefixDisplay*1) << "lists all registered reporters\n\n";
+    // ================================================================================== << 79
+    s << Color::Cyan << "[doctest] " << Color::None;
+    s << "The available <int>/<string> options/filters are:\n\n";
+    s << " -" DOCTEST_OPTIONS_PREFIX_DISPLAY "tc,  --" DOCTEST_OPTIONS_PREFIX_DISPLAY "test-case=<filters>           "
+      << Whitespace(sizePrefixDisplay*1) << "filters     tests by their name\n";
+    s << " -" DOCTEST_OPTIONS_PREFIX_DISPLAY "tce, --" DOCTEST_OPTIONS_PREFIX_DISPLAY "test-case-exclude=<filters>   "
+      << Whitespace(sizePrefixDisplay*1) << "filters OUT tests by their name\n";
+    s << " -" DOCTEST_OPTIONS_PREFIX_DISPLAY "sf,  --" DOCTEST_OPTIONS_PREFIX_DISPLAY "source-file=<filters>         "
+      << Whitespace(sizePrefixDisplay*1) << "filters     tests by their file\n";
+    s << " -" DOCTEST_OPTIONS_PREFIX_DISPLAY "sfe, --" DOCTEST_OPTIONS_PREFIX_DISPLAY "source-file-exclude=<filters> "
+      << Whitespace(sizePrefixDisplay*1) << "filters OUT tests by their file\n";
+    s << " -" DOCTEST_OPTIONS_PREFIX_DISPLAY "ts,  --" DOCTEST_OPTIONS_PREFIX_DISPLAY "test-suite=<filters>          "
+      << Whitespace(sizePrefixDisplay*1) << "filters     tests by their test suite\n";
+    s << " -" DOCTEST_OPTIONS_PREFIX_DISPLAY "tse, --" DOCTEST_OPTIONS_PREFIX_DISPLAY "test-suite-exclude=<filters>  "
+      << Whitespace(sizePrefixDisplay*1) << "filters OUT tests by their test suite\n";
+    s << " -" DOCTEST_OPTIONS_PREFIX_DISPLAY "sc,  --" DOCTEST_OPTIONS_PREFIX_DISPLAY "subcase=<filters>             "
+      << Whitespace(sizePrefixDisplay*1) << "filters     subcases by their name\n";
+    s << " -" DOCTEST_OPTIONS_PREFIX_DISPLAY "sce, --" DOCTEST_OPTIONS_PREFIX_DISPLAY "subcase-exclude=<filters>     "
+      << Whitespace(sizePrefixDisplay*1) << "filters OUT subcases by their name\n";
+    s << " -" DOCTEST_OPTIONS_PREFIX_DISPLAY "r,   --" DOCTEST_OPTIONS_PREFIX_DISPLAY "reporters=<filters>           "
+      << Whitespace(sizePrefixDisplay*1) << "reporters to use (console is default)\n";
+    s << " -" DOCTEST_OPTIONS_PREFIX_DISPLAY "o,   --" DOCTEST_OPTIONS_PREFIX_DISPLAY "out=<string>                  "
+      << Whitespace(sizePrefixDisplay*1) << "output filename\n";
+    s << " -" DOCTEST_OPTIONS_PREFIX_DISPLAY "ob,  --" DOCTEST_OPTIONS_PREFIX_DISPLAY "order-by=<string>             "
+      << Whitespace(sizePrefixDisplay*1) << "how the tests should be ordered\n";
+    s << Whitespace(sizePrefixDisplay*3) << "                                       <string> - [file/suite/name/rand/none]\n";
+    s << " -" DOCTEST_OPTIONS_PREFIX_DISPLAY "rs,  --" DOCTEST_OPTIONS_PREFIX_DISPLAY "rand-seed=<int>               "
+      << Whitespace(sizePrefixDisplay*1) << "seed for random ordering\n";
+    s << " -" DOCTEST_OPTIONS_PREFIX_DISPLAY "f,   --" DOCTEST_OPTIONS_PREFIX_DISPLAY "first=<int>                   "
+      << Whitespace(sizePrefixDisplay*1) << "the first test passing the filters to\n";
+    s << Whitespace(sizePrefixDisplay*3) << "                                       execute - for range-based execution\n";
+    s << " -" DOCTEST_OPTIONS_PREFIX_DISPLAY "l,   --" DOCTEST_OPTIONS_PREFIX_DISPLAY "last=<int>                    "
+      << Whitespace(sizePrefixDisplay*1) << "the last test passing the filters to\n";
+    s << Whitespace(sizePrefixDisplay*3) << "                                       execute - for range-based execution\n";
+    s << " -" DOCTEST_OPTIONS_PREFIX_DISPLAY "aa,  --" DOCTEST_OPTIONS_PREFIX_DISPLAY "abort-after=<int>             "
+      << Whitespace(sizePrefixDisplay*1) << "stop after <int> failed assertions\n";
+    s << " -" DOCTEST_OPTIONS_PREFIX_DISPLAY "scfl,--" DOCTEST_OPTIONS_PREFIX_DISPLAY "subcase-filter-levels=<int>   "
+      << Whitespace(sizePrefixDisplay*1) << "apply filters for the first <int> levels\n";
+    s << Color::Cyan << "\n[doctest] " << Color::None;
+    s << "Bool options - can be used like flags and true is assumed. Available:\n\n";
+    s << " -" DOCTEST_OPTIONS_PREFIX_DISPLAY "s,   --" DOCTEST_OPTIONS_PREFIX_DISPLAY "success=<bool>                "
+      << Whitespace(sizePrefixDisplay*1) << "include successful assertions in output\n";
+    s << " -" DOCTEST_OPTIONS_PREFIX_DISPLAY "cs,  --" DOCTEST_OPTIONS_PREFIX_DISPLAY "case-sensitive=<bool>         "
+      << Whitespace(sizePrefixDisplay*1) << "filters being treated as case sensitive\n";
+    s << " -" DOCTEST_OPTIONS_PREFIX_DISPLAY "e,   --" DOCTEST_OPTIONS_PREFIX_DISPLAY "exit=<bool>                   "
+      << Whitespace(sizePrefixDisplay*1) << "exits after the tests finish\n";
+    s << " -" DOCTEST_OPTIONS_PREFIX_DISPLAY "d,   --" DOCTEST_OPTIONS_PREFIX_DISPLAY "duration=<bool>               "
+      << Whitespace(sizePrefixDisplay*1) << "prints the time duration of each test\n";
+    s << " -" DOCTEST_OPTIONS_PREFIX_DISPLAY "m,   --" DOCTEST_OPTIONS_PREFIX_DISPLAY "minimal=<bool>                "
+      << Whitespace(sizePrefixDisplay*1) << "minimal console output (only failures)\n";
+    s << " -" DOCTEST_OPTIONS_PREFIX_DISPLAY "q,   --" DOCTEST_OPTIONS_PREFIX_DISPLAY "quiet=<bool>                  "
+      << Whitespace(sizePrefixDisplay*1) << "no console output\n";
+    s << " -" DOCTEST_OPTIONS_PREFIX_DISPLAY "nt,  --" DOCTEST_OPTIONS_PREFIX_DISPLAY "no-throw=<bool>               "
+      << Whitespace(sizePrefixDisplay*1) << "skips exceptions-related assert checks\n";
+    s << " -" DOCTEST_OPTIONS_PREFIX_DISPLAY "ne,  --" DOCTEST_OPTIONS_PREFIX_DISPLAY "no-exitcode=<bool>            "
+      << Whitespace(sizePrefixDisplay*1) << "returns (or exits) always with success\n";
+    s << " -" DOCTEST_OPTIONS_PREFIX_DISPLAY "nr,  --" DOCTEST_OPTIONS_PREFIX_DISPLAY "no-run=<bool>                 "
+      << Whitespace(sizePrefixDisplay*1) << "skips all runtime doctest operations\n";
+    s << " -" DOCTEST_OPTIONS_PREFIX_DISPLAY "ni,  --" DOCTEST_OPTIONS_PREFIX_DISPLAY "no-intro=<bool>               "
+      << Whitespace(sizePrefixDisplay*1) << "omit the framework intro in the output\n";
+    s << " -" DOCTEST_OPTIONS_PREFIX_DISPLAY "nv,  --" DOCTEST_OPTIONS_PREFIX_DISPLAY "no-version=<bool>             "
+      << Whitespace(sizePrefixDisplay*1) << "omit the framework version in the output\n";
+    s << " -" DOCTEST_OPTIONS_PREFIX_DISPLAY "nc,  --" DOCTEST_OPTIONS_PREFIX_DISPLAY "no-colors=<bool>              "
+      << Whitespace(sizePrefixDisplay*1) << "disables colors in output\n";
+    s << " -" DOCTEST_OPTIONS_PREFIX_DISPLAY "fc,  --" DOCTEST_OPTIONS_PREFIX_DISPLAY "force-colors=<bool>           "
+      << Whitespace(sizePrefixDisplay*1) << "use colors even when not in a tty\n";
+    s << " -" DOCTEST_OPTIONS_PREFIX_DISPLAY "nb,  --" DOCTEST_OPTIONS_PREFIX_DISPLAY "no-breaks=<bool>              "
+      << Whitespace(sizePrefixDisplay*1) << "disables breakpoints in debuggers\n";
+    s << " -" DOCTEST_OPTIONS_PREFIX_DISPLAY "ns,  --" DOCTEST_OPTIONS_PREFIX_DISPLAY "no-skip=<bool>                "
+      << Whitespace(sizePrefixDisplay*1) << "don't skip test cases marked as skip\n";
+    s << " -" DOCTEST_OPTIONS_PREFIX_DISPLAY "gfl, --" DOCTEST_OPTIONS_PREFIX_DISPLAY "gnu-file-line=<bool>          "
+      << Whitespace(sizePrefixDisplay*1) << ":n: vs (n): for line numbers in output\n";
+    s << " -" DOCTEST_OPTIONS_PREFIX_DISPLAY "npf, --" DOCTEST_OPTIONS_PREFIX_DISPLAY "no-path-filenames=<bool>      "
+      << Whitespace(sizePrefixDisplay*1) << "only filenames and no paths in output\n";
+    s << " -" DOCTEST_OPTIONS_PREFIX_DISPLAY "spp, --" DOCTEST_OPTIONS_PREFIX_DISPLAY "skip-path-prefixes=<p1:p2>    "
+      << Whitespace(sizePrefixDisplay*1) << "whenever file paths start with this prefix, remove it from the output\n";
+    s << " -" DOCTEST_OPTIONS_PREFIX_DISPLAY "nln, --" DOCTEST_OPTIONS_PREFIX_DISPLAY "no-line-numbers=<bool>        "
+      << Whitespace(sizePrefixDisplay*1) << "0 instead of real line numbers in output\n";
+    // ================================================================================== << 79
+    // clang-format on
+
+    s << Color::Cyan << "\n[doctest] " << Color::None;
+    s << "for more information visit the project documentation\n\n";
+}
+
+void ConsoleReporter::printRegisteredReporters() {
+    printVersion();
+    auto printReporters = [this] (const detail::reporterMap& reporters, const char* type) {
+        if(reporters.size()) {
+            s << Color::Cyan << "[doctest] " << Color::None << "listing all registered " << type << "\n";
+            for(auto& curr : reporters)
+                s << "priority: " << std::setw(5) << curr.first.first
+                  << " name: " << curr.first.second << "\n";
+        }
+    };
+    printReporters(detail::getListeners(), "listeners");
+    printReporters(detail::getReporters(), "reporters");
+}
+
+void ConsoleReporter::report_query(const QueryData& in) {
+    if(opt.version) {
+        printVersion();
+    } else if(opt.help) {
+        printHelp();
+    } else if(opt.list_reporters) {
+        printRegisteredReporters();
+    } else if(opt.count || opt.list_test_cases) {
+        if(opt.list_test_cases) {
+            s << Color::Cyan << "[doctest] " << Color::None
+              << "listing all test case names\n";
+            separator_to_stream();
+        }
+
+        for(unsigned i = 0; i < in.num_data; ++i)
+            s << Color::None << in.data[i]->m_name << "\n";
+
+        separator_to_stream();
+
+        s << Color::Cyan << "[doctest] " << Color::None
+          << "unskipped test cases passing the current filters: "
+          << g_cs->numTestCasesPassingFilters << "\n";
+
+    } else if(opt.list_test_suites) {
+        s << Color::Cyan << "[doctest] " << Color::None << "listing all test suites\n";
+        separator_to_stream();
+
+        for(unsigned i = 0; i < in.num_data; ++i)
+            s << Color::None << in.data[i]->m_test_suite << "\n";
+
+        separator_to_stream();
+
+        s << Color::Cyan << "[doctest] " << Color::None
+          << "unskipped test cases passing the current filters: "
+          << g_cs->numTestCasesPassingFilters << "\n";
+        s << Color::Cyan << "[doctest] " << Color::None
+          << "test suites with unskipped test cases passing the current filters: "
+          << g_cs->numTestSuitesPassingFilters << "\n";
+    }
+}
+
+void ConsoleReporter::test_run_start() {
+    if(!opt.minimal)
+        printIntro();
+}
+
+void ConsoleReporter::test_run_end(const TestRunStats& p) {
+    if(opt.minimal && p.numTestCasesFailed == 0)
+        return;
+
+    separator_to_stream();
+    s << std::dec;
+
+    auto totwidth = int(std::ceil(log10(static_cast<double>(std::max(p.numTestCasesPassingFilters, static_cast<unsigned>(p.numAsserts))) + 1)));
+    auto passwidth = int(std::ceil(log10(static_cast<double>(std::max(p.numTestCasesPassingFilters - p.numTestCasesFailed, static_cast<unsigned>(p.numAsserts - p.numAssertsFailed))) + 1)));
+    auto failwidth = int(std::ceil(log10(static_cast<double>(std::max(p.numTestCasesFailed, static_cast<unsigned>(p.numAssertsFailed))) + 1)));
+    const bool anythingFailed = p.numTestCasesFailed > 0 || p.numAssertsFailed > 0;
+    s << Color::Cyan << "[doctest] " << Color::None << "test cases: " << std::setw(totwidth)
+      << p.numTestCasesPassingFilters << " | "
+      << ((p.numTestCasesPassingFilters == 0 || anythingFailed) ? Color::None :
+                                                                  Color::Green)
+      << std::setw(passwidth) << p.numTestCasesPassingFilters - p.numTestCasesFailed << " passed"
+      << Color::None << " | " << (p.numTestCasesFailed > 0 ? Color::Red : Color::None)
+      << std::setw(failwidth) << p.numTestCasesFailed << " failed" << Color::None << " |";
+    if(opt.no_skipped_summary == false) {
+        const int numSkipped = p.numTestCases - p.numTestCasesPassingFilters;
+        s << " " << (numSkipped == 0 ? Color::None : Color::Yellow) << numSkipped
+          << " skipped" << Color::None;
+    }
+    s << "\n";
+    s << Color::Cyan << "[doctest] " << Color::None << "assertions: " << std::setw(totwidth)
+      << p.numAsserts << " | "
+      << ((p.numAsserts == 0 || anythingFailed) ? Color::None : Color::Green)
+      << std::setw(passwidth) << (p.numAsserts - p.numAssertsFailed) << " passed" << Color::None
+      << " | " << (p.numAssertsFailed > 0 ? Color::Red : Color::None) << std::setw(failwidth)
+      << p.numAssertsFailed << " failed" << Color::None << " |\n";
+    s << Color::Cyan << "[doctest] " << Color::None
+      << "Status: " << (p.numTestCasesFailed > 0 ? Color::Red : Color::Green)
+      << ((p.numTestCasesFailed > 0) ? "FAILURE!" : "SUCCESS!") << Color::None << std::endl;
+}
+
+void ConsoleReporter::test_case_start(const TestCaseData& in) {
+    hasLoggedCurrentTestStart = false;
+    tc                        = &in;
+    subcasesStack.clear();
+    currentSubcaseLevel = 0;
+}
+
+void ConsoleReporter::test_case_reenter(const TestCaseData&) {
+    subcasesStack.clear();
+}
+
+void ConsoleReporter::test_case_end(const CurrentTestCaseStats& st) {
+    if(tc->m_no_output)
+        return;
+
+    // log the preamble of the test case only if there is something
+    // else to print - something other than that an assert has failed
+    if(opt.duration ||
+        (st.failure_flags && st.failure_flags != static_cast<int>(TestCaseFailureReason::AssertFailure)))
+        logTestStart();
+
+    if(opt.duration)
+        s << Color::None << std::setprecision(6) << std::fixed << st.seconds
+          << " s: " << tc->m_name << "\n";
+
+    if(st.failure_flags & TestCaseFailureReason::Timeout)
+        s << Color::Red << "Test case exceeded time limit of " << std::setprecision(6)
+          << std::fixed << tc->m_timeout << "!\n";
+
+    if(st.failure_flags & TestCaseFailureReason::ShouldHaveFailedButDidnt) {
+        s << Color::Red << "Should have failed but didn't! Marking it as failed!\n";
+    } else if(st.failure_flags & TestCaseFailureReason::ShouldHaveFailedAndDid) {
+        s << Color::Yellow << "Failed as expected so marking it as not failed\n";
+    } else if(st.failure_flags & TestCaseFailureReason::CouldHaveFailedAndDid) {
+        s << Color::Yellow << "Allowed to fail so marking it as not failed\n";
+    } else if(st.failure_flags & TestCaseFailureReason::DidntFailExactlyNumTimes) {
+        s << Color::Red << "Didn't fail exactly " << tc->m_expected_failures
+          << " times so marking it as failed!\n";
+    } else if(st.failure_flags & TestCaseFailureReason::FailedExactlyNumTimes) {
+        s << Color::Yellow << "Failed exactly " << tc->m_expected_failures
+          << " times as expected so marking it as not failed!\n";
+    }
+    if(st.failure_flags & TestCaseFailureReason::TooManyFailedAsserts) {
+        s << Color::Red << "Aborting - too many failed asserts!\n";
+    }
+    s << Color::None; // lgtm [cpp/useless-expression]
+}
+
+void ConsoleReporter::test_case_exception(const TestCaseException& e) {
+    DOCTEST_LOCK_MUTEX(mutex)
+    if(tc->m_no_output)
+        return;
+
+    logTestStart();
+
+    file_line_to_stream(tc->m_file.c_str(), tc->m_line, " ");
+    successOrFailColoredStringToStream(false, e.is_crash ? assertType::is_require : assertType::is_check);
+    s << Color::Red << (e.is_crash ? "test case CRASHED: " : "test case THREW exception: ")
+      << Color::Cyan << e.error_string << "\n";
+
+    int num_stringified_contexts = get_num_stringified_contexts();
+    if(num_stringified_contexts) {
+        auto stringified_contexts = get_stringified_contexts();
+        s << Color::None << "  logged: ";
+        for(int i = num_stringified_contexts; i > 0; --i) {
+            s << (i == num_stringified_contexts ? "" : "          ")
+              << stringified_contexts[i - 1] << "\n";
+        }
+    }
+    s << "\n" << Color::None;
+}
+
+void ConsoleReporter::subcase_start(const SubcaseSignature& subc) {
+    subcasesStack.push_back(subc);
+    ++currentSubcaseLevel;
+    hasLoggedCurrentTestStart = false;
+}
+
+void ConsoleReporter::subcase_end() {
+    --currentSubcaseLevel;
+    hasLoggedCurrentTestStart = false;
+}
+
+void ConsoleReporter::log_assert(const AssertData& rb) {
+    if((!rb.m_failed && !opt.success) || tc->m_no_output)
+        return;
+
+    DOCTEST_LOCK_MUTEX(mutex)
+
+    logTestStart();
+
+    file_line_to_stream(rb.m_file, rb.m_line, " ");
+    successOrFailColoredStringToStream(!rb.m_failed, rb.m_at);
+
+    fulltext_log_assert_to_stream(s, rb);
+
+    log_contexts();
+}
+
+void ConsoleReporter::log_message(const MessageData& mb) {
+    if(tc->m_no_output)
+        return;
+
+    DOCTEST_LOCK_MUTEX(mutex)
+
+    logTestStart();
+
+    file_line_to_stream(mb.m_file, mb.m_line, " ");
+    s << getSuccessOrFailColor(false, mb.m_severity)
+      << getSuccessOrFailString(mb.m_severity & assertType::is_warn, mb.m_severity,
+                                "MESSAGE") << ": ";
+    s << Color::None << mb.m_string << "\n";
+    log_contexts();
+}
+
+void ConsoleReporter::test_case_skipped(const TestCaseData&) {}
+
+} // namespace doctest
+
+#endif // DOCTEST_CONFIG_DISABLE
+
+DOCTEST_SUPPRESS_PRIVATE_WARNINGS_POP
+
+DOCTEST_SUPPRESS_PRIVATE_WARNINGS_PUSH
+
+#ifndef DOCTEST_CONFIG_DISABLE
+
+namespace doctest {
+namespace detail {
+
+#ifdef DOCTEST_PLATFORM_WINDOWS
+#define DOCTEST_OUTPUT_DEBUG_STRING(text) ::OutputDebugStringA(text)
+#endif // Platform
+
+#ifdef DOCTEST_PLATFORM_WINDOWS
+
+DOCTEST_THREAD_LOCAL std::ostringstream DebugOutputWindowReporter::oss;
+
+DebugOutputWindowReporter::DebugOutputWindowReporter(const ContextOptions& co)
+        : ConsoleReporter(co, oss) {}
+
+#define DOCTEST_DEBUG_OUTPUT_REPORTER_OVERRIDE(func, type, arg)                                    \
+    void DebugOutputWindowReporter::func(type arg) {                                                                 \
+        using detail::g_no_colors;                                                                 \
+        bool with_col = g_no_colors;                                                               \
+        g_no_colors   = false;                                                                     \
+        ConsoleReporter::func(arg);                                                                \
+        if(oss.tellp() != std::streampos{}) {                                                      \
+            DOCTEST_OUTPUT_DEBUG_STRING(oss.str().c_str());                                        \
+            oss.str("");                                                                           \
+        }                                                                                          \
+        g_no_colors = with_col;                                                                    \
+    }
+
+DOCTEST_DEBUG_OUTPUT_REPORTER_OVERRIDE(test_run_start, DOCTEST_EMPTY, DOCTEST_EMPTY)
+DOCTEST_DEBUG_OUTPUT_REPORTER_OVERRIDE(test_run_end, const TestRunStats&, in)
+DOCTEST_DEBUG_OUTPUT_REPORTER_OVERRIDE(test_case_start, const TestCaseData&, in)
+DOCTEST_DEBUG_OUTPUT_REPORTER_OVERRIDE(test_case_reenter, const TestCaseData&, in)
+DOCTEST_DEBUG_OUTPUT_REPORTER_OVERRIDE(test_case_end, const CurrentTestCaseStats&, in)
+DOCTEST_DEBUG_OUTPUT_REPORTER_OVERRIDE(test_case_exception, const TestCaseException&, in)
+DOCTEST_DEBUG_OUTPUT_REPORTER_OVERRIDE(subcase_start, const SubcaseSignature&, in)
+DOCTEST_DEBUG_OUTPUT_REPORTER_OVERRIDE(subcase_end, DOCTEST_EMPTY, DOCTEST_EMPTY)
+DOCTEST_DEBUG_OUTPUT_REPORTER_OVERRIDE(log_assert, const AssertData&, in)
+DOCTEST_DEBUG_OUTPUT_REPORTER_OVERRIDE(log_message, const MessageData&, in)
+DOCTEST_DEBUG_OUTPUT_REPORTER_OVERRIDE(test_case_skipped, const TestCaseData&, in)
+
+#endif // DOCTEST_PLATFORM_WINDOWS
+
+} // namespace detail
+} // namespace doctest
+
+#endif // DOCTEST_CONFIG_DISABLE
+
+DOCTEST_SUPPRESS_PRIVATE_WARNINGS_POP
+#ifndef DOCTEST_PARTS_PRIVATE_REPORTERS_JUNIT
+#define DOCTEST_PARTS_PRIVATE_REPORTERS_JUNIT
 
 #ifndef DOCTEST_PARTS_PRIVATE_XML
 #define DOCTEST_PARTS_PRIVATE_XML
@@ -6789,260 +6752,6 @@ DOCTEST_SUPPRESS_PRIVATE_WARNINGS_PUSH
 
 namespace doctest {
 
-    struct XmlReporter : public IReporter
-    {
-        detail::XmlWriter xml;
-        DOCTEST_DECLARE_MUTEX(mutex)
-
-        // caching pointers/references to objects of these types - safe to do
-        const ContextOptions& opt;
-        const TestCaseData*   tc = nullptr;
-
-        XmlReporter(const ContextOptions& co)
-                : xml(*co.cout)
-                , opt(co) {}
-
-        void log_contexts() {
-            int num_contexts = get_num_active_contexts();
-            if(num_contexts) {
-                auto              contexts = get_active_contexts();
-                std::stringstream ss;
-                for(int i = 0; i < num_contexts; ++i) {
-                    contexts[i]->stringify(&ss);
-                    xml.scopedElement("Info").writeText(ss.str());
-                    ss.str("");
-                }
-            }
-        }
-
-        unsigned line(unsigned l) const { return opt.no_line_numbers ? 0 : l; }
-
-        void test_case_start_impl(const TestCaseData& in) {
-            bool open_ts_tag = false;
-            if(tc != nullptr) { // we have already opened a test suite
-                if(std::strcmp(tc->m_test_suite, in.m_test_suite) != 0) {
-                    xml.endElement();
-                    open_ts_tag = true;
-                }
-            }
-            else {
-                open_ts_tag = true; // first test case ==> first test suite
-            }
-
-            if(open_ts_tag) {
-                xml.startElement("TestSuite");
-                xml.writeAttribute("name", in.m_test_suite);
-            }
-
-            tc = &in;
-            xml.startElement("TestCase")
-                    .writeAttribute("name", in.m_name)
-                    .writeAttribute("filename", skipPathFromFilename(in.m_file.c_str()))
-                    .writeAttribute("line", line(in.m_line))
-                    .writeAttribute("description", in.m_description);
-
-            if(Approx(in.m_timeout) != 0)
-                xml.writeAttribute("timeout", in.m_timeout);
-            if(in.m_may_fail)
-                xml.writeAttribute("may_fail", true);
-            if(in.m_should_fail)
-                xml.writeAttribute("should_fail", true);
-        }
-
-        // =========================================================================================
-        // WHAT FOLLOWS ARE OVERRIDES OF THE VIRTUAL METHODS OF THE REPORTER INTERFACE
-        // =========================================================================================
-
-        void report_query(const QueryData& in) override {
-            test_run_start();
-            if(opt.list_reporters) {
-                for(auto& curr : getListeners())
-                    xml.scopedElement("Listener")
-                            .writeAttribute("priority", curr.first.first)
-                            .writeAttribute("name", curr.first.second);
-                for(auto& curr : getReporters())
-                    xml.scopedElement("Reporter")
-                            .writeAttribute("priority", curr.first.first)
-                            .writeAttribute("name", curr.first.second);
-            } else if(opt.count || opt.list_test_cases) {
-                for(unsigned i = 0; i < in.num_data; ++i) {
-                    xml.scopedElement("TestCase").writeAttribute("name", in.data[i]->m_name)
-                        .writeAttribute("testsuite", in.data[i]->m_test_suite)
-                        .writeAttribute("filename", skipPathFromFilename(in.data[i]->m_file.c_str()))
-                        .writeAttribute("line", line(in.data[i]->m_line))
-                        .writeAttribute("skipped", in.data[i]->m_skip);
-                }
-                xml.scopedElement("OverallResultsTestCases")
-                        .writeAttribute("unskipped", in.run_stats->numTestCasesPassingFilters);
-            } else if(opt.list_test_suites) {
-                for(unsigned i = 0; i < in.num_data; ++i)
-                    xml.scopedElement("TestSuite").writeAttribute("name", in.data[i]->m_test_suite);
-                xml.scopedElement("OverallResultsTestCases")
-                        .writeAttribute("unskipped", in.run_stats->numTestCasesPassingFilters);
-                xml.scopedElement("OverallResultsTestSuites")
-                        .writeAttribute("unskipped", in.run_stats->numTestSuitesPassingFilters);
-            }
-            xml.endElement();
-        }
-
-        void test_run_start() override {
-            xml.writeDeclaration();
-
-            // remove .exe extension - mainly to have the same output on UNIX and Windows
-            std::string binary_name = skipPathFromFilename(opt.binary_name.c_str());
-#ifdef DOCTEST_PLATFORM_WINDOWS
-            if(binary_name.rfind(".exe") != std::string::npos)
-                binary_name = binary_name.substr(0, binary_name.length() - 4);
-#endif // DOCTEST_PLATFORM_WINDOWS
-
-            xml.startElement("doctest").writeAttribute("binary", binary_name);
-            if(opt.no_version == false)
-                xml.writeAttribute("version", DOCTEST_VERSION_STR);
-
-            // only the consequential ones (TODO: filters)
-            xml.scopedElement("Options")
-                    .writeAttribute("order_by", opt.order_by.c_str())
-                    .writeAttribute("rand_seed", opt.rand_seed)
-                    .writeAttribute("first", opt.first)
-                    .writeAttribute("last", opt.last)
-                    .writeAttribute("abort_after", opt.abort_after)
-                    .writeAttribute("subcase_filter_levels", opt.subcase_filter_levels)
-                    .writeAttribute("case_sensitive", opt.case_sensitive)
-                    .writeAttribute("no_throw", opt.no_throw)
-                    .writeAttribute("no_skip", opt.no_skip);
-        }
-
-        void test_run_end(const TestRunStats& p) override {
-            if(tc) // the TestSuite tag - only if there has been at least 1 test case
-                xml.endElement();
-
-            xml.scopedElement("OverallResultsAsserts")
-                    .writeAttribute("successes", p.numAsserts - p.numAssertsFailed)
-                    .writeAttribute("failures", p.numAssertsFailed);
-
-            xml.startElement("OverallResultsTestCases")
-                    .writeAttribute("successes",
-                                    p.numTestCasesPassingFilters - p.numTestCasesFailed)
-                    .writeAttribute("failures", p.numTestCasesFailed);
-            if(opt.no_skipped_summary == false)
-                xml.writeAttribute("skipped", p.numTestCases - p.numTestCasesPassingFilters);
-            xml.endElement();
-
-            xml.endElement();
-        }
-
-        void test_case_start(const TestCaseData& in) override {
-            test_case_start_impl(in);
-            xml.ensureTagClosed();
-        }
-
-        void test_case_reenter(const TestCaseData&) override {}
-
-        void test_case_end(const CurrentTestCaseStats& st) override {
-            xml.startElement("OverallResultsAsserts")
-                    .writeAttribute("successes",
-                                    st.numAssertsCurrentTest - st.numAssertsFailedCurrentTest)
-                    .writeAttribute("failures", st.numAssertsFailedCurrentTest)
-                    .writeAttribute("test_case_success", st.testCaseSuccess);
-            if(opt.duration)
-                xml.writeAttribute("duration", st.seconds);
-            if(tc->m_expected_failures)
-                xml.writeAttribute("expected_failures", tc->m_expected_failures);
-            xml.endElement();
-
-            xml.endElement();
-        }
-
-        void test_case_exception(const TestCaseException& e) override {
-            DOCTEST_LOCK_MUTEX(mutex)
-
-            xml.scopedElement("Exception")
-                    .writeAttribute("crash", e.is_crash)
-                    .writeText(e.error_string.c_str());
-        }
-
-        void subcase_start(const SubcaseSignature& in) override {
-            xml.startElement("SubCase")
-                    .writeAttribute("name", in.m_name)
-                    .writeAttribute("filename", skipPathFromFilename(in.m_file))
-                    .writeAttribute("line", line(in.m_line));
-            xml.ensureTagClosed();
-        }
-
-        void subcase_end() override { xml.endElement(); }
-
-        void log_assert(const AssertData& rb) override {
-            if(!rb.m_failed && !opt.success)
-                return;
-
-            DOCTEST_LOCK_MUTEX(mutex)
-
-            xml.startElement("Expression")
-                    .writeAttribute("success", !rb.m_failed)
-                    .writeAttribute("type", assertString(rb.m_at))
-                    .writeAttribute("filename", skipPathFromFilename(rb.m_file))
-                    .writeAttribute("line", line(rb.m_line));
-
-            xml.scopedElement("Original").writeText(rb.m_expr);
-
-            if(rb.m_threw)
-                xml.scopedElement("Exception").writeText(rb.m_exception.c_str());
-
-            if(rb.m_at & assertType::is_throws_as)
-                xml.scopedElement("ExpectedException").writeText(rb.m_exception_type);
-            if(rb.m_at & assertType::is_throws_with)
-                xml.scopedElement("ExpectedExceptionString").writeText(rb.m_exception_string.c_str());
-            if((rb.m_at & assertType::is_normal) && !rb.m_threw)
-                xml.scopedElement("Expanded").writeText(rb.m_decomp.c_str());
-
-            log_contexts();
-
-            xml.endElement();
-        }
-
-        void log_message(const MessageData& mb) override {
-            DOCTEST_LOCK_MUTEX(mutex)
-
-            xml.startElement("Message")
-                    .writeAttribute("type", failureString(mb.m_severity))
-                    .writeAttribute("filename", skipPathFromFilename(mb.m_file))
-                    .writeAttribute("line", line(mb.m_line));
-
-            xml.scopedElement("Text").writeText(mb.m_string.c_str());
-
-            log_contexts();
-
-            xml.endElement();
-        }
-
-        void test_case_skipped(const TestCaseData& in) override {
-            if(opt.no_skipped_summary == false) {
-                test_case_start_impl(in);
-                xml.writeAttribute("skipped", "true");
-                xml.endElement();
-            }
-        }
-    };
-
-    DOCTEST_REGISTER_REPORTER("xml", 0, XmlReporter);
-
-} // namespace doctest
-
-#endif // DOCTEST_CONFIG_DISABLE
-
-DOCTEST_SUPPRESS_PRIVATE_WARNINGS_POP
-
-#endif // DOCTEST_PARTS_PRIVATE_REPORTERS_XML
-#ifndef DOCTEST_PARTS_PRIVATE_REPORTERS_JUNIT
-#define DOCTEST_PARTS_PRIVATE_REPORTERS_JUNIT
-
-
-DOCTEST_SUPPRESS_PRIVATE_WARNINGS_PUSH
-
-#ifndef DOCTEST_CONFIG_DISABLE
-
-namespace doctest {
-
     // TODO:
     // - log_message()
     // - respond to queries
@@ -7057,74 +6766,35 @@ namespace doctest {
 
         struct JUnitTestCaseData
         {
-            static std::string getCurrentTimestamp() {
-                // Beware, this is not reentrant because of backward compatibility issues
-                // Also, UTC only, again because of backward compatibility (%z is C++11)
-                time_t rawtime;
-                std::time(&rawtime);
-                auto const timeStampSize = sizeof("2017-01-16T17:06:45Z");
-
-                std::tm timeInfo;
-#ifdef DOCTEST_PLATFORM_WINDOWS
-                gmtime_s(&timeInfo, &rawtime);
-#else // DOCTEST_PLATFORM_WINDOWS
-                gmtime_r(&rawtime, &timeInfo);
-#endif // DOCTEST_PLATFORM_WINDOWS
-
-                char timeStamp[timeStampSize];
-                const char* const fmt = "%Y-%m-%dT%H:%M:%SZ";
-
-                std::strftime(timeStamp, timeStampSize, fmt, &timeInfo);
-                return std::string(timeStamp);
-            }
+            static std::string getCurrentTimestamp();
 
             struct JUnitTestMessage
             {
-                JUnitTestMessage(const std::string& _message, const std::string& _type, const std::string& _details)
-                    : message(_message), type(_type), details(_details) {}
+                JUnitTestMessage(const std::string& _message, const std::string& _type, const std::string& _details);
 
-                JUnitTestMessage(const std::string& _message, const std::string& _details)
-                    : message(_message), type(), details(_details) {}
+                JUnitTestMessage(const std::string& _message, const std::string& _details);
 
                 std::string message, type, details;
             };
 
             struct JUnitTestCase
             {
-                JUnitTestCase(const std::string& _classname, const std::string& _name)
-                    : classname(_classname), name(_name), time(0), failures() {}
+                JUnitTestCase(const std::string& _classname, const std::string& _name);
 
                 std::string classname, name;
                 double time;
                 std::vector<JUnitTestMessage> failures, errors;
             };
 
-            void add(const std::string& classname, const std::string& name) {
-                testcases.emplace_back(classname, name);
-            }
+            void add(const std::string& classname, const std::string& name);
 
-            void appendSubcaseNamesToLastTestcase(std::vector<String> nameStack) {
-                for(auto& curr: nameStack)
-                    if(curr.size())
-                        testcases.back().name += std::string("/") + curr.c_str();
-            }
+            void appendSubcaseNamesToLastTestcase(std::vector<String> nameStack);
 
-            void addTime(double time) {
-                if(time < 1e-4)
-                    time = 0;
-                testcases.back().time = time;
-                totalSeconds += time;
-            }
+            void addTime(double time);
 
-            void addFailure(const std::string& message, const std::string& type, const std::string& details) {
-                testcases.back().failures.emplace_back(message, type, details);
-                ++totalFailures;
-            }
+            void addFailure(const std::string& message, const std::string& type, const std::string& details);
 
-            void addError(const std::string& message, const std::string& details) {
-                testcases.back().errors.emplace_back(message, details);
-                ++totalErrors;
-            }
+            void addError(const std::string& message, const std::string& details);
 
             std::vector<JUnitTestCase> testcases;
             double totalSeconds = 0;
@@ -7137,149 +6807,39 @@ namespace doctest {
         const ContextOptions& opt;
         const TestCaseData*   tc = nullptr;
 
-        JUnitReporter(const ContextOptions& co)
-                : xml(*co.cout)
-                , opt(co) {}
+        JUnitReporter(const ContextOptions& co);
 
-        unsigned line(unsigned l) const { return opt.no_line_numbers ? 0 : l; }
+        unsigned line(unsigned l) const;
 
         // =========================================================================================
         // WHAT FOLLOWS ARE OVERRIDES OF THE VIRTUAL METHODS OF THE REPORTER INTERFACE
         // =========================================================================================
 
-        void report_query(const QueryData&) override {
-            xml.writeDeclaration();
-        }
+        void report_query(const QueryData&) override;
 
-        void test_run_start() override {
-            xml.writeDeclaration();
-        }
+        void test_run_start() override;
 
-        void test_run_end(const TestRunStats& p) override {
-            // remove .exe extension - mainly to have the same output on UNIX and Windows
-            std::string binary_name = skipPathFromFilename(opt.binary_name.c_str());
-#ifdef DOCTEST_PLATFORM_WINDOWS
-            if(binary_name.rfind(".exe") != std::string::npos)
-                binary_name = binary_name.substr(0, binary_name.length() - 4);
-#endif // DOCTEST_PLATFORM_WINDOWS
-            xml.startElement("testsuites");
-            xml.startElement("testsuite").writeAttribute("name", binary_name)
-                    .writeAttribute("errors", testCaseData.totalErrors)
-                    .writeAttribute("failures", testCaseData.totalFailures)
-                    .writeAttribute("tests", p.numAsserts);
-            if(opt.no_time_in_output == false) {
-                xml.writeAttribute("time", testCaseData.totalSeconds);
-                xml.writeAttribute("timestamp", JUnitTestCaseData::getCurrentTimestamp());
-            }
-            if(opt.no_version == false)
-                xml.writeAttribute("doctest_version", DOCTEST_VERSION_STR);
+        void test_run_end(const TestRunStats& p) override;
 
-            for(const auto& testCase : testCaseData.testcases) {
-                xml.startElement("testcase")
-                    .writeAttribute("classname", testCase.classname)
-                    .writeAttribute("name", testCase.name);
-                if(opt.no_time_in_output == false)
-                    xml.writeAttribute("time", testCase.time);
-                // This is not ideal, but it should be enough to mimic gtest's junit output.
-                xml.writeAttribute("status", "run");
+        void test_case_start(const TestCaseData& in) override;
 
-                for(const auto& failure : testCase.failures) {
-                    xml.scopedElement("failure")
-                        .writeAttribute("message", failure.message)
-                        .writeAttribute("type", failure.type)
-                        .writeText(failure.details, false);
-                }
+        void test_case_reenter(const TestCaseData& in) override;
 
-                for(const auto& error : testCase.errors) {
-                    xml.scopedElement("error")
-                        .writeAttribute("message", error.message)
-                        .writeText(error.details);
-                }
+        void test_case_end(const CurrentTestCaseStats&) override;
 
-                xml.endElement();
-            }
-            xml.endElement();
-            xml.endElement();
-        }
+        void test_case_exception(const TestCaseException& e) override;
 
-        void test_case_start(const TestCaseData& in) override {
-            testCaseData.add(skipPathFromFilename(in.m_file.c_str()), in.m_name);
-            timer.start();
-        }
+        void subcase_start(const SubcaseSignature& in) override;
 
-        void test_case_reenter(const TestCaseData& in) override {
-            testCaseData.addTime(timer.getElapsedSeconds());
-            testCaseData.appendSubcaseNamesToLastTestcase(deepestSubcaseStackNames);
-            deepestSubcaseStackNames.clear();
+        void subcase_end() override;
 
-            timer.start();
-            testCaseData.add(skipPathFromFilename(in.m_file.c_str()), in.m_name);
-        }
+        void log_assert(const AssertData& rb) override;
 
-        void test_case_end(const CurrentTestCaseStats&) override {
-            testCaseData.addTime(timer.getElapsedSeconds());
-            testCaseData.appendSubcaseNamesToLastTestcase(deepestSubcaseStackNames);
-            deepestSubcaseStackNames.clear();
-        }
+        void log_message(const MessageData& mb) override;
 
-        void test_case_exception(const TestCaseException& e) override {
-            DOCTEST_LOCK_MUTEX(mutex)
-            testCaseData.addError("exception", e.error_string.c_str());
-        }
+        void test_case_skipped(const TestCaseData&) override;
 
-        void subcase_start(const SubcaseSignature& in) override {
-            deepestSubcaseStackNames.push_back(in.m_name);
-        }
-
-        void subcase_end() override {}
-
-        void log_assert(const AssertData& rb) override {
-            if(!rb.m_failed) // report only failures & ignore the `success` option
-                return;
-
-            DOCTEST_LOCK_MUTEX(mutex)
-
-            std::ostringstream os;
-            os << skipPathFromFilename(rb.m_file) << (opt.gnu_file_line ? ":" : "(")
-              << line(rb.m_line) << (opt.gnu_file_line ? ":" : "):") << std::endl;
-
-            fulltext_log_assert_to_stream(os, rb);
-            log_contexts(os);
-            testCaseData.addFailure(rb.m_decomp.c_str(), assertString(rb.m_at), os.str());
-        }
-
-        void log_message(const MessageData& mb) override {
-            if(mb.m_severity & assertType::is_warn) // report only failures
-                return;
-
-            DOCTEST_LOCK_MUTEX(mutex)
-
-            std::ostringstream os;
-            os << skipPathFromFilename(mb.m_file) << (opt.gnu_file_line ? ":" : "(")
-              << line(mb.m_line) << (opt.gnu_file_line ? ":" : "):") << std::endl;
-
-            os << mb.m_string.c_str() << "\n";
-            log_contexts(os);
-
-            testCaseData.addFailure(mb.m_string.c_str(),
-                mb.m_severity & assertType::is_check ? "FAIL_CHECK" : "FAIL", os.str());
-        }
-
-        void test_case_skipped(const TestCaseData&) override {}
-
-        void log_contexts(std::ostringstream& s) {
-            int num_contexts = get_num_active_contexts();
-            if(num_contexts) {
-                auto contexts = get_active_contexts();
-
-                s << "  logged: ";
-                for(int i = 0; i < num_contexts; ++i) {
-                    s << (i == 0 ? "" : "          ");
-                    contexts[i]->stringify(&s);
-                    s << std::endl;
-                }
-            }
-        }
+        void log_contexts(std::ostringstream& s);
     };
 
     DOCTEST_REGISTER_REPORTER("junit", 0, JUnitReporter);
@@ -7291,6 +6851,735 @@ namespace doctest {
 DOCTEST_SUPPRESS_PRIVATE_WARNINGS_POP
 
 #endif // DOCTEST_PARTS_PRIVATE_REPORTERS_JUNIT
+
+DOCTEST_SUPPRESS_PRIVATE_WARNINGS_PUSH
+
+#ifndef DOCTEST_CONFIG_DISABLE
+
+namespace doctest {
+
+std::string JUnitReporter::JUnitTestCaseData::getCurrentTimestamp() {
+    // Beware, this is not reentrant because of backward compatibility issues
+    // Also, UTC only, again because of backward compatibility (%z is C++11)
+    time_t rawtime;
+    std::time(&rawtime);
+    auto const timeStampSize = sizeof("2017-01-16T17:06:45Z");
+
+    std::tm timeInfo;
+#ifdef DOCTEST_PLATFORM_WINDOWS
+    gmtime_s(&timeInfo, &rawtime);
+#else // DOCTEST_PLATFORM_WINDOWS
+    gmtime_r(&rawtime, &timeInfo);
+#endif // DOCTEST_PLATFORM_WINDOWS
+
+    char timeStamp[timeStampSize];
+    const char* const fmt = "%Y-%m-%dT%H:%M:%SZ";
+
+    std::strftime(timeStamp, timeStampSize, fmt, &timeInfo);
+    return std::string(timeStamp);
+}
+
+JUnitReporter::JUnitTestCaseData::JUnitTestMessage::JUnitTestMessage(const std::string& _message, const std::string& _type, const std::string& _details)
+    : message(_message), type(_type), details(_details) {}
+
+JUnitReporter::JUnitTestCaseData::JUnitTestMessage::JUnitTestMessage(const std::string& _message, const std::string& _details)
+    : message(_message), type(), details(_details) {}
+
+JUnitReporter::JUnitTestCaseData::JUnitTestCase::JUnitTestCase(const std::string& _classname, const std::string& _name)
+    : classname(_classname), name(_name), time(0), failures() {}
+
+
+void JUnitReporter::JUnitTestCaseData::add(const std::string& classname, const std::string& name) {
+    testcases.emplace_back(classname, name);
+}
+
+void JUnitReporter::JUnitTestCaseData::appendSubcaseNamesToLastTestcase(std::vector<String> nameStack) {
+    for(auto& curr: nameStack)
+        if(curr.size())
+            testcases.back().name += std::string("/") + curr.c_str();
+}
+
+void JUnitReporter::JUnitTestCaseData::addTime(double time) {
+    if(time < 1e-4)
+        time = 0;
+    testcases.back().time = time;
+    totalSeconds += time;
+}
+
+void JUnitReporter::JUnitTestCaseData::addFailure(const std::string& message, const std::string& type, const std::string& details) {
+    testcases.back().failures.emplace_back(message, type, details);
+    ++totalFailures;
+}
+
+void JUnitReporter::JUnitTestCaseData::addError(const std::string& message, const std::string& details) {
+    testcases.back().errors.emplace_back(message, details);
+    ++totalErrors;
+}
+
+JUnitReporter::JUnitReporter(const ContextOptions& co)
+        : xml(*co.cout)
+        , opt(co) {}
+
+unsigned JUnitReporter::line(unsigned l) const { return opt.no_line_numbers ? 0 : l; }
+
+void JUnitReporter::report_query(const QueryData&) {
+    xml.writeDeclaration();
+}
+
+void JUnitReporter::test_run_start() {
+    xml.writeDeclaration();
+}
+
+void JUnitReporter::test_run_end(const TestRunStats& p) {
+    // remove .exe extension - mainly to have the same output on UNIX and Windows
+    std::string binary_name = skipPathFromFilename(opt.binary_name.c_str());
+#ifdef DOCTEST_PLATFORM_WINDOWS
+    if(binary_name.rfind(".exe") != std::string::npos)
+        binary_name = binary_name.substr(0, binary_name.length() - 4);
+#endif // DOCTEST_PLATFORM_WINDOWS
+    xml.startElement("testsuites");
+    xml.startElement("testsuite").writeAttribute("name", binary_name)
+            .writeAttribute("errors", testCaseData.totalErrors)
+            .writeAttribute("failures", testCaseData.totalFailures)
+            .writeAttribute("tests", p.numAsserts);
+    if(opt.no_time_in_output == false) {
+        xml.writeAttribute("time", testCaseData.totalSeconds);
+        xml.writeAttribute("timestamp", JUnitTestCaseData::getCurrentTimestamp());
+    }
+    if(opt.no_version == false)
+        xml.writeAttribute("doctest_version", DOCTEST_VERSION_STR);
+
+    for(const auto& testCase : testCaseData.testcases) {
+        xml.startElement("testcase")
+            .writeAttribute("classname", testCase.classname)
+            .writeAttribute("name", testCase.name);
+        if(opt.no_time_in_output == false)
+            xml.writeAttribute("time", testCase.time);
+        // This is not ideal, but it should be enough to mimic gtest's junit output.
+        xml.writeAttribute("status", "run");
+
+        for(const auto& failure : testCase.failures) {
+            xml.scopedElement("failure")
+                .writeAttribute("message", failure.message)
+                .writeAttribute("type", failure.type)
+                .writeText(failure.details, false);
+        }
+
+        for(const auto& error : testCase.errors) {
+            xml.scopedElement("error")
+                .writeAttribute("message", error.message)
+                .writeText(error.details);
+        }
+
+        xml.endElement();
+    }
+    xml.endElement();
+    xml.endElement();
+}
+
+void JUnitReporter::test_case_start(const TestCaseData& in) {
+    testCaseData.add(skipPathFromFilename(in.m_file.c_str()), in.m_name);
+    timer.start();
+}
+
+void JUnitReporter::test_case_reenter(const TestCaseData& in) {
+    testCaseData.addTime(timer.getElapsedSeconds());
+    testCaseData.appendSubcaseNamesToLastTestcase(deepestSubcaseStackNames);
+    deepestSubcaseStackNames.clear();
+
+    timer.start();
+    testCaseData.add(skipPathFromFilename(in.m_file.c_str()), in.m_name);
+}
+
+void JUnitReporter::test_case_end(const CurrentTestCaseStats&) {
+    testCaseData.addTime(timer.getElapsedSeconds());
+    testCaseData.appendSubcaseNamesToLastTestcase(deepestSubcaseStackNames);
+    deepestSubcaseStackNames.clear();
+}
+
+void JUnitReporter::test_case_exception(const TestCaseException& e) {
+    DOCTEST_LOCK_MUTEX(mutex)
+    testCaseData.addError("exception", e.error_string.c_str());
+}
+
+void JUnitReporter::subcase_start(const SubcaseSignature& in) {
+    deepestSubcaseStackNames.push_back(in.m_name);
+}
+
+void JUnitReporter::subcase_end() {}
+
+void JUnitReporter::log_assert(const AssertData& rb) {
+    if(!rb.m_failed) // report only failures & ignore the `success` option
+        return;
+
+    DOCTEST_LOCK_MUTEX(mutex)
+
+    std::ostringstream os;
+    os << skipPathFromFilename(rb.m_file) << (opt.gnu_file_line ? ":" : "(")
+      << line(rb.m_line) << (opt.gnu_file_line ? ":" : "):") << std::endl;
+
+    fulltext_log_assert_to_stream(os, rb);
+    log_contexts(os);
+    testCaseData.addFailure(rb.m_decomp.c_str(), assertString(rb.m_at), os.str());
+}
+
+void JUnitReporter::log_message(const MessageData& mb) {
+    if(mb.m_severity & assertType::is_warn) // report only failures
+        return;
+
+    DOCTEST_LOCK_MUTEX(mutex)
+
+    std::ostringstream os;
+    os << skipPathFromFilename(mb.m_file) << (opt.gnu_file_line ? ":" : "(")
+      << line(mb.m_line) << (opt.gnu_file_line ? ":" : "):") << std::endl;
+
+    os << mb.m_string.c_str() << "\n";
+    log_contexts(os);
+
+    testCaseData.addFailure(mb.m_string.c_str(),
+        mb.m_severity & assertType::is_check ? "FAIL_CHECK" : "FAIL", os.str());
+}
+
+void JUnitReporter::test_case_skipped(const TestCaseData&) {}
+
+void JUnitReporter::log_contexts(std::ostringstream& s) {
+    int num_contexts = get_num_active_contexts();
+    if(num_contexts) {
+        auto contexts = get_active_contexts();
+
+        s << "  logged: ";
+        for(int i = 0; i < num_contexts; ++i) {
+            s << (i == 0 ? "" : "          ");
+            contexts[i]->stringify(&s);
+            s << std::endl;
+        }
+    }
+}
+
+} // namespace doctest
+
+#endif // DOCTEST_CONFIG_DISABLE
+
+DOCTEST_SUPPRESS_PRIVATE_WARNINGS_POP
+#ifndef DOCTEST_PARTS_PRIVATE_REPORTERS_XML
+#define DOCTEST_PARTS_PRIVATE_REPORTERS_XML
+
+
+DOCTEST_SUPPRESS_PRIVATE_WARNINGS_PUSH
+
+#ifndef DOCTEST_CONFIG_DISABLE
+
+namespace doctest {
+
+struct XmlReporter : public IReporter
+{
+    detail::XmlWriter xml;
+    DOCTEST_DECLARE_MUTEX(mutex)
+
+    // caching pointers/references to objects of these types - safe to do
+    const ContextOptions& opt;
+    const TestCaseData*   tc = nullptr;
+
+    XmlReporter(const ContextOptions& co);
+
+    void log_contexts();
+
+    unsigned line(unsigned l) const;
+
+    void test_case_start_impl(const TestCaseData& in);
+
+    // =========================================================================================
+    // WHAT FOLLOWS ARE OVERRIDES OF THE VIRTUAL METHODS OF THE REPORTER INTERFACE
+    // =========================================================================================
+
+    void report_query(const QueryData& in) override;
+
+    void test_run_start() override;
+
+    void test_run_end(const TestRunStats& p) override;
+
+    void test_case_start(const TestCaseData& in) override;
+
+    void test_case_reenter(const TestCaseData&) override;
+
+    void test_case_end(const CurrentTestCaseStats& st) override;
+
+    void test_case_exception(const TestCaseException& e) override;
+
+    void subcase_start(const SubcaseSignature& in) override;
+
+    void subcase_end() override;
+
+    void log_assert(const AssertData& rb) override;
+
+    void log_message(const MessageData& mb) override;
+
+    void test_case_skipped(const TestCaseData& in) override;
+};
+
+DOCTEST_REGISTER_REPORTER("xml", 0, XmlReporter);
+
+} // namespace doctest
+
+#endif // DOCTEST_CONFIG_DISABLE
+
+DOCTEST_SUPPRESS_PRIVATE_WARNINGS_POP
+
+#endif // DOCTEST_PARTS_PRIVATE_REPORTERS_XML
+
+DOCTEST_SUPPRESS_PRIVATE_WARNINGS_PUSH
+
+#ifndef DOCTEST_CONFIG_DISABLE
+
+namespace doctest {
+
+XmlReporter::XmlReporter(const ContextOptions& co)
+        : xml(*co.cout)
+        , opt(co) {}
+
+void XmlReporter::log_contexts() {
+    int num_contexts = get_num_active_contexts();
+    if(num_contexts) {
+        auto              contexts = get_active_contexts();
+        std::stringstream ss;
+        for(int i = 0; i < num_contexts; ++i) {
+            contexts[i]->stringify(&ss);
+            xml.scopedElement("Info").writeText(ss.str());
+            ss.str("");
+        }
+    }
+}
+
+unsigned XmlReporter::line(unsigned l) const { return opt.no_line_numbers ? 0 : l; }
+
+void XmlReporter::test_case_start_impl(const TestCaseData& in) {
+    bool open_ts_tag = false;
+    if(tc != nullptr) { // we have already opened a test suite
+        if(std::strcmp(tc->m_test_suite, in.m_test_suite) != 0) {
+            xml.endElement();
+            open_ts_tag = true;
+        }
+    }
+    else {
+        open_ts_tag = true; // first test case ==> first test suite
+    }
+
+    if(open_ts_tag) {
+        xml.startElement("TestSuite");
+        xml.writeAttribute("name", in.m_test_suite);
+    }
+
+    tc = &in;
+    xml.startElement("TestCase")
+            .writeAttribute("name", in.m_name)
+            .writeAttribute("filename", skipPathFromFilename(in.m_file.c_str()))
+            .writeAttribute("line", line(in.m_line))
+            .writeAttribute("description", in.m_description);
+
+    if(Approx(in.m_timeout) != 0)
+        xml.writeAttribute("timeout", in.m_timeout);
+    if(in.m_may_fail)
+        xml.writeAttribute("may_fail", true);
+    if(in.m_should_fail)
+        xml.writeAttribute("should_fail", true);
+}
+
+void XmlReporter::report_query(const QueryData& in) {
+    test_run_start();
+    if(opt.list_reporters) {
+        for(auto& curr : detail::getListeners())
+            xml.scopedElement("Listener")
+                    .writeAttribute("priority", curr.first.first)
+                    .writeAttribute("name", curr.first.second);
+        for(auto& curr : detail::getReporters())
+            xml.scopedElement("Reporter")
+                    .writeAttribute("priority", curr.first.first)
+                    .writeAttribute("name", curr.first.second);
+    } else if(opt.count || opt.list_test_cases) {
+        for(unsigned i = 0; i < in.num_data; ++i) {
+            xml.scopedElement("TestCase").writeAttribute("name", in.data[i]->m_name)
+                .writeAttribute("testsuite", in.data[i]->m_test_suite)
+                .writeAttribute("filename", skipPathFromFilename(in.data[i]->m_file.c_str()))
+                .writeAttribute("line", line(in.data[i]->m_line))
+                .writeAttribute("skipped", in.data[i]->m_skip);
+        }
+        xml.scopedElement("OverallResultsTestCases")
+                .writeAttribute("unskipped", in.run_stats->numTestCasesPassingFilters);
+    } else if(opt.list_test_suites) {
+        for(unsigned i = 0; i < in.num_data; ++i)
+            xml.scopedElement("TestSuite").writeAttribute("name", in.data[i]->m_test_suite);
+        xml.scopedElement("OverallResultsTestCases")
+                .writeAttribute("unskipped", in.run_stats->numTestCasesPassingFilters);
+        xml.scopedElement("OverallResultsTestSuites")
+                .writeAttribute("unskipped", in.run_stats->numTestSuitesPassingFilters);
+    }
+    xml.endElement();
+}
+
+void XmlReporter::test_run_start() {
+    xml.writeDeclaration();
+
+    // remove .exe extension - mainly to have the same output on UNIX and Windows
+    std::string binary_name = skipPathFromFilename(opt.binary_name.c_str());
+#ifdef DOCTEST_PLATFORM_WINDOWS
+    if(binary_name.rfind(".exe") != std::string::npos)
+        binary_name = binary_name.substr(0, binary_name.length() - 4);
+#endif // DOCTEST_PLATFORM_WINDOWS
+
+    xml.startElement("doctest").writeAttribute("binary", binary_name);
+    if(opt.no_version == false)
+        xml.writeAttribute("version", DOCTEST_VERSION_STR);
+
+    // only the consequential ones (TODO: filters)
+    xml.scopedElement("Options")
+            .writeAttribute("order_by", opt.order_by.c_str())
+            .writeAttribute("rand_seed", opt.rand_seed)
+            .writeAttribute("first", opt.first)
+            .writeAttribute("last", opt.last)
+            .writeAttribute("abort_after", opt.abort_after)
+            .writeAttribute("subcase_filter_levels", opt.subcase_filter_levels)
+            .writeAttribute("case_sensitive", opt.case_sensitive)
+            .writeAttribute("no_throw", opt.no_throw)
+            .writeAttribute("no_skip", opt.no_skip);
+}
+
+void XmlReporter::test_run_end(const TestRunStats& p) {
+    if(tc) // the TestSuite tag - only if there has been at least 1 test case
+        xml.endElement();
+
+    xml.scopedElement("OverallResultsAsserts")
+            .writeAttribute("successes", p.numAsserts - p.numAssertsFailed)
+            .writeAttribute("failures", p.numAssertsFailed);
+
+    xml.startElement("OverallResultsTestCases")
+            .writeAttribute("successes",
+                            p.numTestCasesPassingFilters - p.numTestCasesFailed)
+            .writeAttribute("failures", p.numTestCasesFailed);
+    if(opt.no_skipped_summary == false)
+        xml.writeAttribute("skipped", p.numTestCases - p.numTestCasesPassingFilters);
+    xml.endElement();
+
+    xml.endElement();
+}
+
+void XmlReporter::test_case_start(const TestCaseData& in) {
+    test_case_start_impl(in);
+    xml.ensureTagClosed();
+}
+
+void XmlReporter::test_case_reenter(const TestCaseData&) {}
+
+void XmlReporter::test_case_end(const CurrentTestCaseStats& st) {
+    xml.startElement("OverallResultsAsserts")
+            .writeAttribute("successes",
+                            st.numAssertsCurrentTest - st.numAssertsFailedCurrentTest)
+            .writeAttribute("failures", st.numAssertsFailedCurrentTest)
+            .writeAttribute("test_case_success", st.testCaseSuccess);
+    if(opt.duration)
+        xml.writeAttribute("duration", st.seconds);
+    if(tc->m_expected_failures)
+        xml.writeAttribute("expected_failures", tc->m_expected_failures);
+    xml.endElement();
+
+    xml.endElement();
+}
+
+void XmlReporter::test_case_exception(const TestCaseException& e) {
+    DOCTEST_LOCK_MUTEX(mutex)
+
+    xml.scopedElement("Exception")
+            .writeAttribute("crash", e.is_crash)
+            .writeText(e.error_string.c_str());
+}
+
+void XmlReporter::subcase_start(const SubcaseSignature& in) {
+    xml.startElement("SubCase")
+            .writeAttribute("name", in.m_name)
+            .writeAttribute("filename", skipPathFromFilename(in.m_file))
+            .writeAttribute("line", line(in.m_line));
+    xml.ensureTagClosed();
+}
+
+void XmlReporter::subcase_end() { xml.endElement(); }
+
+void XmlReporter::log_assert(const AssertData& rb) {
+    if(!rb.m_failed && !opt.success)
+        return;
+
+    DOCTEST_LOCK_MUTEX(mutex)
+
+    xml.startElement("Expression")
+            .writeAttribute("success", !rb.m_failed)
+            .writeAttribute("type", assertString(rb.m_at))
+            .writeAttribute("filename", skipPathFromFilename(rb.m_file))
+            .writeAttribute("line", line(rb.m_line));
+
+    xml.scopedElement("Original").writeText(rb.m_expr);
+
+    if(rb.m_threw)
+        xml.scopedElement("Exception").writeText(rb.m_exception.c_str());
+
+    if(rb.m_at & assertType::is_throws_as)
+        xml.scopedElement("ExpectedException").writeText(rb.m_exception_type);
+    if(rb.m_at & assertType::is_throws_with)
+        xml.scopedElement("ExpectedExceptionString").writeText(rb.m_exception_string.c_str());
+    if((rb.m_at & assertType::is_normal) && !rb.m_threw)
+        xml.scopedElement("Expanded").writeText(rb.m_decomp.c_str());
+
+    log_contexts();
+
+    xml.endElement();
+}
+
+void XmlReporter::log_message(const MessageData& mb) {
+    DOCTEST_LOCK_MUTEX(mutex)
+
+    xml.startElement("Message")
+            .writeAttribute("type", failureString(mb.m_severity))
+            .writeAttribute("filename", skipPathFromFilename(mb.m_file))
+            .writeAttribute("line", line(mb.m_line));
+
+    xml.scopedElement("Text").writeText(mb.m_string.c_str());
+
+    log_contexts();
+
+    xml.endElement();
+}
+
+void XmlReporter::test_case_skipped(const TestCaseData& in) {
+    if(opt.no_skipped_summary == false) {
+        test_case_start_impl(in);
+        xml.writeAttribute("skipped", "true");
+        xml.endElement();
+    }
+}
+
+} // namespace doctest
+
+#endif // DOCTEST_CONFIG_DISABLE
+
+DOCTEST_SUPPRESS_PRIVATE_WARNINGS_POP
+
+DOCTEST_SUPPRESS_PRIVATE_WARNINGS_PUSH
+
+#ifndef DOCTEST_CONFIG_DISABLE
+
+namespace doctest {
+namespace detail {
+
+#if !defined(DOCTEST_CONFIG_POSIX_SIGNALS) && !defined(DOCTEST_CONFIG_WINDOWS_SEH)
+void FatalConditionHandler::reset() {}
+void FatalConditionHandler::allocateAltStackMem() {}
+void FatalConditionHandler::freeAltStackMem() {}
+#else // DOCTEST_CONFIG_POSIX_SIGNALS || DOCTEST_CONFIG_WINDOWS_SEH
+
+#ifdef DOCTEST_PLATFORM_WINDOWS
+
+// There is no 1-1 mapping between signals and windows exceptions.
+// Windows can easily distinguish between SO and SigSegV,
+// but SigInt, SigTerm, etc are handled differently.
+SignalDefs signalDefs[] = {
+        {static_cast<DWORD>(EXCEPTION_ILLEGAL_INSTRUCTION),
+          "SIGILL - Illegal instruction signal"},
+        {static_cast<DWORD>(EXCEPTION_STACK_OVERFLOW), "SIGSEGV - Stack overflow"},
+        {static_cast<DWORD>(EXCEPTION_ACCESS_VIOLATION),
+          "SIGSEGV - Segmentation violation signal"},
+        {static_cast<DWORD>(EXCEPTION_INT_DIVIDE_BY_ZERO), "Divide by zero error"},
+};
+
+LONG CALLBACK FatalConditionHandler::handleException(PEXCEPTION_POINTERS ExceptionInfo) {
+    // Multiple threads may enter this filter/handler at once. We want the error message to be printed on the
+    // console just once no matter how many threads have crashed.
+    DOCTEST_DECLARE_STATIC_MUTEX(mutex)
+    static bool execute = true;
+    {
+        DOCTEST_LOCK_MUTEX(mutex)
+        if(execute) {
+            bool reported = false;
+            for(size_t i = 0; i < DOCTEST_COUNTOF(signalDefs); ++i) {
+                if(ExceptionInfo->ExceptionRecord->ExceptionCode == signalDefs[i].id) {
+                    reportFatal(signalDefs[i].name);
+                    reported = true;
+                    break;
+                }
+            }
+            if(reported == false)
+                reportFatal("Unhandled SEH exception caught");
+            if(isDebuggerActive() && !g_cs->no_breaks)
+                DOCTEST_BREAK_INTO_DEBUGGER();
+        }
+        execute = false;
+    }
+    std::exit(EXIT_FAILURE);
+}
+
+void FatalConditionHandler::allocateAltStackMem() {}
+void FatalConditionHandler::freeAltStackMem() {}
+
+FatalConditionHandler::FatalConditionHandler() {
+    isSet = true;
+    // 32k seems enough for doctest to handle stack overflow,
+    // but the value was found experimentally, so there is no strong guarantee
+    guaranteeSize = 32 * 1024;
+    // Register an unhandled exception filter
+    previousTop = SetUnhandledExceptionFilter(handleException);
+    // Pass in guarantee size to be filled
+    SetThreadStackGuarantee(&guaranteeSize);
+
+    // On Windows uncaught exceptions from another thread, exceptions from
+    // destructors, or calls to std::terminate are not a SEH exception
+
+    // The terminal handler gets called when:
+    // - std::terminate is called FROM THE TEST RUNNER THREAD
+    // - an exception is thrown from a destructor FROM THE TEST RUNNER THREAD
+    original_terminate_handler = std::get_terminate();
+    std::set_terminate([]() DOCTEST_NOEXCEPT {
+        reportFatal("Terminate handler called");
+        if(isDebuggerActive() && !g_cs->no_breaks)
+            DOCTEST_BREAK_INTO_DEBUGGER();
+        std::exit(EXIT_FAILURE); // explicitly exit - otherwise the SIGABRT handler may be called as well
+    });
+
+    // SIGABRT is raised when:
+    // - std::terminate is called FROM A DIFFERENT THREAD
+    // - an exception is thrown from a destructor FROM A DIFFERENT THREAD
+    // - an uncaught exception is thrown FROM A DIFFERENT THREAD
+    prev_sigabrt_handler = std::signal(SIGABRT, [](int signal) DOCTEST_NOEXCEPT {
+        if(signal == SIGABRT) {
+            reportFatal("SIGABRT - Abort (abnormal termination) signal");
+            if(isDebuggerActive() && !g_cs->no_breaks)
+                DOCTEST_BREAK_INTO_DEBUGGER();
+            std::exit(EXIT_FAILURE);
+        }
+    });
+
+    // The following settings are taken from google test, and more
+    // specifically from UnitTest::Run() inside of gtest.cc
+
+    // the user does not want to see pop-up dialogs about crashes
+    prev_error_mode_1 = SetErrorMode(SEM_FAILCRITICALERRORS | SEM_NOALIGNMENTFAULTEXCEPT |
+                                      SEM_NOGPFAULTERRORBOX | SEM_NOOPENFILEERRORBOX);
+    // This forces the abort message to go to stderr in all circumstances.
+    prev_error_mode_2 = _set_error_mode(_OUT_TO_STDERR);
+    // In the debug version, Visual Studio pops up a separate dialog
+    // offering a choice to debug the aborted program - we want to disable that.
+    prev_abort_behavior = _set_abort_behavior(0x0, _WRITE_ABORT_MSG | _CALL_REPORTFAULT);
+    // In debug mode, the Windows CRT can crash with an assertion over invalid
+    // input (e.g. passing an invalid file descriptor). The default handling
+    // for these assertions is to pop up a dialog and wait for user input.
+    // Instead ask the CRT to dump such assertions to stderr non-interactively.
+    prev_report_mode = _CrtSetReportMode(_CRT_ASSERT, _CRTDBG_MODE_FILE | _CRTDBG_MODE_DEBUG);
+    prev_report_file = _CrtSetReportFile(_CRT_ASSERT, _CRTDBG_FILE_STDERR);
+}
+
+void FatalConditionHandler::reset() {
+    if(isSet) {
+        // Unregister handler and restore the old guarantee
+        SetUnhandledExceptionFilter(previousTop);
+        SetThreadStackGuarantee(&guaranteeSize);
+        std::set_terminate(original_terminate_handler);
+        std::signal(SIGABRT, prev_sigabrt_handler);
+        SetErrorMode(prev_error_mode_1);
+        _set_error_mode(prev_error_mode_2);
+        _set_abort_behavior(prev_abort_behavior, _WRITE_ABORT_MSG | _CALL_REPORTFAULT);
+        static_cast<void>(_CrtSetReportMode(_CRT_ASSERT, prev_report_mode));
+        static_cast<void>(_CrtSetReportFile(_CRT_ASSERT, prev_report_file));
+        isSet = false;
+    }
+}
+
+FatalConditionHandler::~FatalConditionHandler() { reset(); }
+
+UINT         FatalConditionHandler::prev_error_mode_1;
+int          FatalConditionHandler::prev_error_mode_2;
+unsigned int FatalConditionHandler::prev_abort_behavior;
+int          FatalConditionHandler::prev_report_mode;
+_HFILE       FatalConditionHandler::prev_report_file;
+void (DOCTEST_CDECL *FatalConditionHandler::prev_sigabrt_handler)(int);
+std::terminate_handler FatalConditionHandler::original_terminate_handler;
+bool FatalConditionHandler::isSet = false;
+ULONG FatalConditionHandler::guaranteeSize = 0;
+LPTOP_LEVEL_EXCEPTION_FILTER FatalConditionHandler::previousTop = nullptr;
+
+#else // DOCTEST_PLATFORM_WINDOWS
+
+SignalDefs signalDefs[] = {{SIGINT, "SIGINT - Terminal interrupt signal"},
+                            {SIGILL, "SIGILL - Illegal instruction signal"},
+                            {SIGFPE, "SIGFPE - Floating point error signal"},
+                            {SIGSEGV, "SIGSEGV - Segmentation violation signal"},
+                            {SIGTERM, "SIGTERM - Termination request signal"},
+                            {SIGABRT, "SIGABRT - Abort (abnormal termination) signal"}};
+static_assert(
+  DOCTEST_COUNTOF(signalDefs) == DOCTEST_COUNTOF(FatalConditionHandler::oldSigActions),
+  "arrays should match in size"
+);
+
+void FatalConditionHandler::handleSignal(int sig) {
+    const char* name = "<unknown signal>";
+    for(std::size_t i = 0; i < DOCTEST_COUNTOF(signalDefs); ++i) {
+        SignalDefs& def = signalDefs[i];
+        if(sig == def.id) {
+            name = def.name;
+            break;
+        }
+    }
+    reset();
+    reportFatal(name);
+    raise(sig);
+}
+
+void FatalConditionHandler::allocateAltStackMem() {
+    altStackMem = new char[altStackSize];
+}
+
+void FatalConditionHandler::freeAltStackMem() {
+    delete[] altStackMem;
+}
+
+FatalConditionHandler::FatalConditionHandler() {
+    isSet = true;
+    stack_t sigStack;
+    sigStack.ss_sp    = altStackMem;
+    sigStack.ss_size  = altStackSize;
+    sigStack.ss_flags = 0;
+    sigaltstack(&sigStack, &oldSigStack);
+    struct sigaction sa = {};
+    sa.sa_handler       = handleSignal;
+    sa.sa_flags         = SA_ONSTACK;
+    for(std::size_t i = 0; i < DOCTEST_COUNTOF(signalDefs); ++i) {
+        sigaction(signalDefs[i].id, &sa, &oldSigActions[i]);
+    }
+}
+
+FatalConditionHandler::~FatalConditionHandler() { reset(); }
+
+void FatalConditionHandler::reset() {
+    if(isSet) {
+        // Set signals back to previous values -- hopefully nobody overwrote them in the meantime
+        for(std::size_t i = 0; i < DOCTEST_COUNTOF(signalDefs); ++i) {
+            sigaction(signalDefs[i].id, &oldSigActions[i], nullptr);
+        }
+        // Return the old stack
+        sigaltstack(&oldSigStack, nullptr);
+        isSet = false;
+    }
+}
+
+bool             FatalConditionHandler::isSet = false;
+struct sigaction FatalConditionHandler::oldSigActions[DOCTEST_COUNTOF(signalDefs)] = {};
+stack_t          FatalConditionHandler::oldSigStack = {};
+size_t           FatalConditionHandler::altStackSize = 4 * SIGSTKSZ;
+char*            FatalConditionHandler::altStackMem = nullptr;
+
+#endif // DOCTEST_PLATFORM_WINDOWS
+#endif // DOCTEST_CONFIG_POSIX_SIGNALS || DOCTEST_CONFIG_WINDOWS_SEH
+
+} // namespace detail
+} // namespace doctest
+
+#endif // DOCTEST_CONFIG_DISABLE
+
+DOCTEST_SUPPRESS_PRIVATE_WARNINGS_POP
 
 DOCTEST_SUPPRESS_PRIVATE_WARNINGS_PUSH
 
@@ -7761,6 +8050,11 @@ DOCTEST_SUPPRESS_PRIVATE_WARNINGS_PUSH
 namespace doctest {
 namespace detail {
 
+std::set<TestCase>& getRegisteredTests() {
+    static std::set<TestCase> data;
+    return data;
+}
+
 TestCase::TestCase(funcType test, const char* file, unsigned line, const TestSuite& test_suite,
                     const String& type, int template_id) {
     m_file              = file;
@@ -7865,6 +8159,53 @@ doctest::detail::TestSuite& getCurrentTestSuite() {
     return data;
 }
 } // namespace doctest_detail_test_suite_ns
+
+#endif // DOCTEST_CONFIG_DISABLE
+
+DOCTEST_SUPPRESS_PRIVATE_WARNINGS_POP
+
+DOCTEST_SUPPRESS_PRIVATE_WARNINGS_PUSH
+
+#ifndef DOCTEST_CONFIG_DISABLE
+
+namespace doctest {
+namespace detail {
+
+#ifdef DOCTEST_CONFIG_GETCURRENTTICKS
+ticks_t getCurrentTicks() { return DOCTEST_CONFIG_GETCURRENTTICKS(); }
+#elif defined(DOCTEST_PLATFORM_WINDOWS)
+ticks_t getCurrentTicks() {
+    static LARGE_INTEGER hz = { {0} }, hzo = { {0} };
+    if(!hz.QuadPart) {
+        QueryPerformanceFrequency(&hz);
+        QueryPerformanceCounter(&hzo);
+    }
+    LARGE_INTEGER t;
+    QueryPerformanceCounter(&t);
+    return ((t.QuadPart - hzo.QuadPart) * LONGLONG(1000000)) / hz.QuadPart;
+}
+#else  // DOCTEST_PLATFORM_WINDOWS
+ticks_t getCurrentTicks() {
+    timeval t;
+    gettimeofday(&t, nullptr);
+    return static_cast<ticks_t>(t.tv_sec) * 1000000 + static_cast<ticks_t>(t.tv_usec);
+}
+#endif // DOCTEST_PLATFORM_WINDOWS
+
+void Timer::start() { m_ticks = getCurrentTicks(); }
+
+unsigned int Timer::getElapsedMicroseconds() const {
+    return static_cast<unsigned int>(getCurrentTicks() - m_ticks);
+}
+
+//unsigned int Timer::getElapsedMilliseconds() const {
+//    return static_cast<unsigned int>(getElapsedMicroseconds() / 1000);
+//}
+
+double Timer::getElapsedSeconds() const { return static_cast<double>(getCurrentTicks() - m_ticks) / 1000000.0; }
+
+} // namespace detail
+} // namespace doctest
 
 #endif // DOCTEST_CONFIG_DISABLE
 

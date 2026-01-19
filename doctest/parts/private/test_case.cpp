@@ -8,6 +8,11 @@ DOCTEST_SUPPRESS_PRIVATE_WARNINGS_PUSH
 namespace doctest {
 namespace detail {
 
+std::set<TestCase>& getRegisteredTests() {
+    static std::set<TestCase> data;
+    return data;
+}
+
 TestCase::TestCase(funcType test, const char* file, unsigned line, const TestSuite& test_suite,
                     const String& type, int template_id) {
     m_file              = file;

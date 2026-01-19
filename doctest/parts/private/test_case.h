@@ -11,10 +11,7 @@ namespace doctest {
 namespace detail {
 
     // all the registered tests
-    std::set<TestCase>& getRegisteredTests() {
-        static std::set<TestCase> data;
-        return data;
-    }
+    std::set<TestCase>& getRegisteredTests();
 
 } // namespace detail
 } // namespace doctest
