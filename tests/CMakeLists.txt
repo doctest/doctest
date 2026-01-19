@@ -9,11 +9,8 @@ set(unit_test_sources
     doctest/test_path.cpp
     doctest/test_string.cpp)
 
-# doctest_with_main currently has multiple definitions of various symbols
-# due to them being implemented inline. Once this is resolved, we can drop
-# main.cpp and just use doctest_with_main instead
-add_executable(unit_tests ${unit_test_sources} main.cpp)
-target_link_libraries(unit_tests doctest)
+add_executable(unit_tests ${unit_test_sources})
+target_link_libraries(unit_tests doctest_with_main)
 
 # While our unit-tests compile, there's sufficient errors that we can't really enable globally.
 # For now, we're going to run the tests, and hopefully try to smooth over these errors later.

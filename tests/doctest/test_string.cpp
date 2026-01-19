@@ -1,7 +1,7 @@
-#define DOCTEST_CONFIG_TREAT_CHAR_STAR_AS_STRING
 #include <doctest/doctest.h>
 #include <limits>
 #include <sstream>
+#include <string>
 using doctest::String;
 
 namespace {
@@ -36,7 +36,7 @@ TEST_SUITE("String construction") {
     TEST_CASE("Default construction") {
         auto string = String();
 
-        CHECK(string.c_str() == "");
+        CHECK(string.c_str() == std::string(""));
         CHECK(string.size() == 0u);
         CHECK(string.capacity() == 24u);
         CHECK(is_on_stack(string));
@@ -46,7 +46,7 @@ TEST_SUITE("String construction") {
         SUBCASE("Small-string-optimizable string literal") {
             auto string = String("doctest");
 
-            CHECK(string.c_str() == "doctest");
+            CHECK(string.c_str() == std::string("doctest"));
             CHECK(string.size() == 7u);
             CHECK(string.capacity() == 24u);
             CHECK(is_on_stack(string));
@@ -55,7 +55,7 @@ TEST_SUITE("String construction") {
         SUBCASE("Large string literal") {
             auto string = String("a very big string literal");
 
-            CHECK(string.c_str() == "a very big string literal");
+            CHECK(string.c_str() == std::string("a very big string literal"));
             CHECK(string.size() == 25u);
             CHECK(string.capacity() == 26u);
             CHECK(is_on_heap(string));
@@ -66,7 +66,7 @@ TEST_SUITE("String construction") {
         SUBCASE("Small-string-optimizable string literal") {
             auto string = String("a particularly long string", 6);
 
-            CHECK(string.c_str() == "a part");
+            CHECK(string.c_str() == std::string("a part"));
             CHECK(string.size() == 6u);
             CHECK(string.capacity() == 24u);
             CHECK(is_on_stack(string));
@@ -75,7 +75,7 @@ TEST_SUITE("String construction") {
         SUBCASE("Large string literal, size set to below threshold") {
             auto string = String("a very big string literal", 23);
 
-            CHECK(string.c_str() == "a very big string liter");
+            CHECK(string.c_str() == std::string("a very big string liter"));
             CHECK(string.size() == 23u);
             CHECK(string.capacity() == 24u);
             CHECK(is_on_stack(string));
@@ -84,7 +84,7 @@ TEST_SUITE("String construction") {
         SUBCASE("Large string literal, size set to threshold") {
             auto string = String("a very big string literal", 24);
 
-            CHECK(string.c_str() == "a very big string litera");
+            CHECK(string.c_str() == std::string("a very big string litera"));
             CHECK(string.size() == 24u);
             CHECK(string.capacity() == 25u);
             CHECK(is_on_heap(string));
@@ -98,7 +98,7 @@ TEST_SUITE("String construction") {
         SUBCASE("Size set to below threshold") {
             auto string = String(ss, 17);
 
-            CHECK(string.c_str() == "a very big string");
+            CHECK(string.c_str() == std::string("a very big string"));
             CHECK(string.size() == 17u);
             CHECK(string.capacity() == 24u);
             CHECK(is_on_stack(string));
@@ -107,7 +107,7 @@ TEST_SUITE("String construction") {
         SUBCASE("Size set to threshold") {
             auto string = String(ss, 24);
 
-            CHECK(string.c_str() == "a very big string litera");
+            CHECK(string.c_str() == std::string("a very big string litera"));
             CHECK(string.size() == 24u);
             CHECK(string.capacity() == 25u);
             CHECK(is_on_heap(string));
@@ -123,7 +123,7 @@ TEST_SUITE("String construction") {
         SUBCASE("Substring over [0, 0] with const source") {
             auto string = base.substr(0, 0);
 
-            CHECK(string.c_str() == "");
+            CHECK(string.c_str() == std::string(""));
             CHECK(string.size() == 0u);
             CHECK(string.capacity() == 24u);
             CHECK(is_on_stack(string));
@@ -132,7 +132,7 @@ TEST_SUITE("String construction") {
         SUBCASE("Substring over [0, 0] with rvalue source") {
             auto string = std::move(base).substr(0, 0);
 
-            CHECK(string.c_str() == "");
+            CHECK(string.c_str() == std::string(""));
             CHECK(string.size() == 0u);
             CHECK(string.capacity() == 40u);
             CHECK(is_on_heap(string));
@@ -141,7 +141,7 @@ TEST_SUITE("String construction") {
         SUBCASE("Substring over [3, 24] with const source") {
             auto string = base.substr(3, 21); // NOLINT(bugprone-use-after-move) NOLINT(hicpp-invalid-access-moved)
 
-            CHECK(string.c_str() == "extraordinarily large");
+            CHECK(string.c_str() == std::string("extraordinarily large"));
             CHECK(string.size() == 21u);
             CHECK(string.capacity() == 24u);
             CHECK(is_on_stack(string));
@@ -150,7 +150,7 @@ TEST_SUITE("String construction") {
         SUBCASE("Substring over [19, 31] with rvalue source") {
             auto string = std::move(base).substr(19, 12); // NOLINT(bugprone-use-after-move) NOLINT(hicpp-invalid-access-moved)
 
-            CHECK(string.c_str() == "large string");
+            CHECK(string.c_str() == std::string("large string"));
             CHECK(string.size() == 12u);
             CHECK(string.capacity() == 40u);
             CHECK(is_on_heap(string));
@@ -159,7 +159,7 @@ TEST_SUITE("String construction") {
         SUBCASE("Substring over [0, SIZE_MAX] with const source") {
             auto string = base.substr(0, std::numeric_limits<String::size_type>::max()); // NOLINT(bugprone-use-after-move) NOLINT(hicpp-invalid-access-moved)
 
-            CHECK(string.c_str() == "an extraordinarily large string literal");
+            CHECK(string.c_str() == std::string("an extraordinarily large string literal"));
             CHECK(string.size() == 39u);
             CHECK(string.capacity() == 40u);
             CHECK(is_on_heap(string));
@@ -168,7 +168,7 @@ TEST_SUITE("String construction") {
         SUBCASE("Substring over [0, SIZE_MAX] with rvalue source") {
             auto string = base.substr(0, std::numeric_limits<String::size_type>::max()); // NOLINT(bugprone-use-after-move) NOLINT(hicpp-invalid-access-moved)
 
-            CHECK(string.c_str() == "an extraordinarily large string literal");
+            CHECK(string.c_str() == std::string("an extraordinarily large string literal"));
             CHECK(string.size() == 39u);
             CHECK(string.capacity() == 40u);
             CHECK(is_on_heap(string));
@@ -446,44 +446,44 @@ TEST_SUITE("Type stringification") {
     using namespace doctest;
 
     TEST_CASE("Fundamental types") {
-        CHECK(toString<void          >() == "void");
-        CHECK(toString<bool          >() == "bool");
-        CHECK(toString<std::nullptr_t>() == "std::nullptr_t");
+        CHECK(toString<void          >() == doctest::String("void"));
+        CHECK(toString<bool          >() == doctest::String("bool"));
+        CHECK(toString<std::nullptr_t>() == doctest::String("std::nullptr_t"));
 
-        CHECK(toString<char              >() == "char");
-        CHECK(toString<char16_t          >() == "char16_t");
-        CHECK(toString<char32_t          >() == "char32_t");
+        CHECK(toString<char              >() == doctest::String("char"));
+        CHECK(toString<char16_t          >() == doctest::String("char16_t"));
+        CHECK(toString<char32_t          >() == doctest::String("char32_t"));
 
-        CHECK(toString<signed char       >() == "signed char");
-        CHECK(toString<unsigned char     >() == "unsigned char");
-        CHECK(toString<short             >() == "short int");
-        CHECK(toString<unsigned short    >() == "short unsigned int");
-        CHECK(toString<int               >() == "int");
-        CHECK(toString<unsigned int      >() == "unsigned int");
-        CHECK(toString<long              >() == "long int");
-        CHECK(toString<unsigned long     >() == "long unsigned int");
-        CHECK(toString<long long         >() == "long long int");
-        CHECK(toString<unsigned long long>() == "long long unsigned int");
+        CHECK(toString<signed char       >() == doctest::String("signed char"));
+        CHECK(toString<unsigned char     >() == doctest::String("unsigned char"));
+        CHECK(toString<short             >() == doctest::String("short int"));
+        CHECK(toString<unsigned short    >() == doctest::String("short unsigned int"));
+        CHECK(toString<int               >() == doctest::String("int"));
+        CHECK(toString<unsigned int      >() == doctest::String("unsigned int"));
+        CHECK(toString<long              >() == doctest::String("long int"));
+        CHECK(toString<unsigned long     >() == doctest::String("long unsigned int"));
+        CHECK(toString<long long         >() == doctest::String("long long int"));
+        CHECK(toString<unsigned long long>() == doctest::String("long long unsigned int"));
 
-        CHECK(toString<float      >() == "float");
-        CHECK(toString<double     >() == "double");
-        CHECK(toString<long double>() == "long double");
+        CHECK(toString<float      >() == doctest::String("float"));
+        CHECK(toString<double     >() == doctest::String("double"));
+        CHECK(toString<long double>() == doctest::String("long double"));
 
-        CHECK(toString<volatile const void *const>() == "const volatile void* const");
+        CHECK(toString<volatile const void *const>() == doctest::String("const volatile void* const"));
     }
 
     TEST_CASE("Doctest internal types") {
-        CHECK(toString<doctest::String      >() == "String");
-        CHECK(toString<doctest::Approx      >() == "Approx");
-        CHECK(toString<doctest::Contains    >() == "Contains");
-        CHECK(toString<doctest::IsNaN<float>>() == "IsNaN<float>");
+        CHECK(toString<doctest::String      >() == doctest::String("String"));
+        CHECK(toString<doctest::Approx      >() == doctest::String("Approx"));
+        CHECK(toString<doctest::Contains    >() == doctest::String("Contains"));
+        CHECK(toString<doctest::IsNaN<float>>() == doctest::String("IsNaN<float>"));
     }
 
     TEST_CASE("Custom types") {
-        CHECK(toString<X           >() == "{anonymous}::X");
-        CHECK(toString<Y           >() == "{anonymous}::Y");
-        CHECK(toString<Z           >() == "{anonymous}::Z");
-        CHECK(toString<nested::Type>() == "{anonymous}::nested::Type");
+        CHECK(toString<X           >() == doctest::String("{anonymous}::X"));
+        CHECK(toString<Y           >() == doctest::String("{anonymous}::Y"));
+        CHECK(toString<Z           >() == doctest::String("{anonymous}::Z"));
+        CHECK(toString<nested::Type>() == doctest::String("{anonymous}::nested::Type"));
     }
 }
 
@@ -497,37 +497,37 @@ TEST_SUITE("Value stringification") {
     TEST_CASE("Fundamental types") {
         // Cannot instantiate 'void' so excluded
         SUBCASE("bool") {
-            CHECK(toString(false) == "false");
-            CHECK(toString(true)  == "true");
+            CHECK(toString(false) == doctest::String("false"));
+            CHECK(toString(true)  == doctest::String("true"));
         }
 
         SUBCASE("nullptr") {
-            CHECK(toString(nullptr) == "nullptr");
+            CHECK(toString(nullptr) == doctest::String("nullptr"));
         }
 
         SUBCASE("Character types") {
-            CHECK(toString(lit<char         >('X' )) == "88");
-            CHECK(toString(lit<char16_t     >(u'X')) == "{?}");
-            CHECK(toString(lit<char32_t     >(U'X')) == "{?}");
+            CHECK(toString(lit<char         >('X' )) == doctest::String("88"));
+            CHECK(toString(lit<char16_t     >(u'X')) == doctest::String("{?}"));
+            CHECK(toString(lit<char32_t     >(U'X')) == doctest::String("{?}"));
         }
 
         SUBCASE("Integral types") {
-            CHECK(toString(lit<unsigned      char >(12)) == "12");
-            CHECK(toString(lit<  signed      char >(23)) == "23");
-            CHECK(toString(lit<              short>(34)) == "34");
-            CHECK(toString(lit<unsigned      short>(45)) == "45");
-            CHECK(toString(lit<              int  >(56)) == "56");
-            CHECK(toString(lit<unsigned      int  >(67)) == "67");
-            CHECK(toString(lit<              long >(78)) == "78");
-            CHECK(toString(lit<unsigned      long >(89)) == "89");
-            CHECK(toString(lit<         long long >(90)) == "90");
-            CHECK(toString(lit<unsigned long long >(99)) == "99");
+            CHECK(toString(lit<unsigned      char >(12)) == doctest::String("12"));
+            CHECK(toString(lit<  signed      char >(23)) == doctest::String("23"));
+            CHECK(toString(lit<              short>(34)) == doctest::String("34"));
+            CHECK(toString(lit<unsigned      short>(45)) == doctest::String("45"));
+            CHECK(toString(lit<              int  >(56)) == doctest::String("56"));
+            CHECK(toString(lit<unsigned      int  >(67)) == doctest::String("67"));
+            CHECK(toString(lit<              long >(78)) == doctest::String("78"));
+            CHECK(toString(lit<unsigned      long >(89)) == doctest::String("89"));
+            CHECK(toString(lit<         long long >(90)) == doctest::String("90"));
+            CHECK(toString(lit<unsigned long long >(99)) == doctest::String("99"));
         }
 
         SUBCASE("Floating types") {
-            CHECK(toString(lit<      float>(1.5)) == "1.5");
-            CHECK(toString(lit<     double>(2.5)) == "2.5");
-            CHECK(toString(lit<long double>(3.5)) == "3.5");
+            CHECK(toString(lit<      float>(1.5)) == doctest::String("1.5"));
+            CHECK(toString(lit<     double>(2.5)) == doctest::String("2.5"));
+            CHECK(toString(lit<long double>(3.5)) == doctest::String("3.5"));
         }
     }
 }
