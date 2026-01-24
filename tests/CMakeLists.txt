@@ -12,11 +12,17 @@ set(unit_test_sources
 add_executable(unit_tests ${unit_test_sources})
 target_link_libraries(unit_tests doctest_with_main)
 
-# While our unit-tests compile, there's sufficient errors that we can't really enable globally.
-# For now, we're going to run the tests, and hopefully try to smooth over these errors later.
-if(DOCTEST_INTERNAL_COVERAGE)
-    add_test(NAME unit_tests COMMAND unit_tests)
-endif()
+foreach(f ${unit_test_sources})
+    set(args)
+    if(NOT DOCTEST_INTERNAL_COVERAGE)
+        # Stringification is mostly compiler-specific, so these are excluded for now
+        set(args
+            "-tce=Stringification*"
+            "-tse=Stringification*,Type stringification*,Value stringification*")
+    endif()
+
+    add_test(NAME "${f}" COMMAND unit_tests "-sf=*${f}" ${args})
+endforeach()
 
 # For unit-tests, we don't want to enforce the same level of warning-correctness
 # as with our examples. So, we inhibit some extras here
