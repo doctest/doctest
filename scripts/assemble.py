@@ -50,9 +50,7 @@ TEMPLATE = string.Template(
 def main(args):
     """Script entry-point."""
 
-    if len(args) != 1:
-        print("Usage: scripts/assemble.py", file=sys.stderr)
-        sys.exit(1)
+    remap = "--remap" in sys.argv
 
     script = Path(__file__).resolve()
     root = script.parent.parent
@@ -111,10 +109,15 @@ def main(args):
         visited.add(file)
         content = file.read_text(encoding="utf-8")
 
-        for line in content.splitlines(keepends=False):
+        if remap:
+            yield f'#line 1 "{file.resolve()}"'
+
+        for idx, line in enumerate(content.splitlines(keepends=False), start=1):
             header = extract_header(line)
             if (header is not None) and ((root / header) in headers):
                 yield from process_file(root / header, visited=visited, headers=headers)
+                if remap:
+                    yield f'#line {idx + 1} "{file.resolve()}"'
             else:
                 yield line
 

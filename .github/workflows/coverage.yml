@@ -38,7 +38,9 @@ jobs:
         run: cmake -B build -S . -G Ninja -D CMAKE_CXX_FLAGS="-fprofile-arcs -ftest-coverage" -D DOCTEST_INTERNAL_COVERAGE=ON
 
       - name: Build
-        run: cmake --build build
+        run: |
+          python scripts/assemble.py --remap
+          cmake --build build
 
       - name: Test
         run: ctest --test-dir build --no-tests=error
@@ -46,7 +48,7 @@ jobs:
       - name: LCOV
         run: |
           mkdir coverage
-          lcov -c -d build/ -o coverage/lcov.info --include "*/doctest/doctest.h"
+          lcov -c -d build/ -o coverage/lcov.info --include "*/doctest/parts/*"
 
       - name: Codecov
         uses: codecov/codecov-action@v5
