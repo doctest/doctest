@@ -1,3 +1,5 @@
+add_subdirectory(common)
+
 set(unit_test_sources
     doctest/assert/test_expression.cpp
     doctest/assert/test_message.cpp
