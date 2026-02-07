@@ -5,6 +5,7 @@
 
 #pragma once
 
+#include <doctest/parts/public/warnings.h>
 #include <cctype>
 #include <limits>
 #include <sstream>
@@ -13,6 +14,8 @@
 
 namespace utils {
 namespace text {
+
+DOCTEST_SUPPRESS_PRIVATE_WARNINGS_PUSH
 
 /**
  * Splits the input @p{text} by the specified @p{delimiter}.
@@ -81,6 +84,8 @@ inline std::string dedent(const std::string &text) noexcept {
     }
     return result;
 }
+
+DOCTEST_SUPPRESS_PUBLIC_WARNINGS_POP
 
 } // namespace text
 } // namespace utils

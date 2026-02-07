@@ -14,8 +14,8 @@ TEST_CASE("Building messages") {
     mb.logged = true;
     mb.m_string = doctest::detail::tlssPop();
 
-    CHECK(mb.m_string   == "ERROR: 42 == 24 was FALSE");
-    CHECK(mb.m_file     == "file.c");
+    CHECK(mb.m_string   == doctest::String("ERROR: 42 == 24 was FALSE"));
+    CHECK(mb.m_file     == doctest::String("file.c"));
     CHECK(mb.m_line     == 123);
     CHECK(mb.m_severity == doctest::assertType::DT_CHECK);
 }
