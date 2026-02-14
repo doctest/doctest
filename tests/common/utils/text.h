@@ -17,6 +17,19 @@ namespace text {
 
 DOCTEST_SUPPRESS_PRIVATE_WARNINGS_PUSH
 
+/** @return the input string, with @p{\r\n} replaced by @p{\n} */
+inline std::string sanitize(const std::string &text) noexcept {
+    auto result = std::string { };
+    result.reserve(text.size());
+    for (auto index = 0u; index < text.size(); ++index) {
+        if ((index + 1) < text.size() && (text[index] == '\r') && (text[index + 1] == '\n')) {
+            continue;
+        }
+        result += text[index];
+    }
+    return result;
+}
+
 /**
  * Splits the input @p{text} by the specified @p{delimiter}.
  * If @p{keep_ends} is set, then the @p{delimiter} is kept
@@ -62,7 +75,7 @@ inline std::string dedent(const std::string &text) noexcept {
     };
 
     // To support multiline raw-strings, we need to skip the first/last blank line
-    auto lines = split(text);
+    auto lines = split(sanitize(text));
 
     if ((lines.size() > 0) && is_blank(lines.front())) {
         lines.erase(lines.begin());
@@ -75,12 +88,18 @@ inline std::string dedent(const std::string &text) noexcept {
     // Past this point, we need to determine the max. common whitespace, and strip it
     auto prefix = std::numeric_limits<size_t>::max();
     for (const auto &line: lines) {
-        prefix = std::min(prefix, count_char(line, ' '));
+        const auto count = count_char(line, ' ');
+
+        // Likely entire whitespace, trimmed by editor
+        if (is_blank(line) && count == 0) { continue; }
+
+        prefix = std::min(prefix, count);
     }
 
     auto result = std::string();
     for (const auto &line: lines) {
-        result += line.substr(prefix);
+        const auto count = count_char(line, ' ');
+        result += line.substr(std::min(prefix, count));
     }
     return result;
 }

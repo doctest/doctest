@@ -32,12 +32,13 @@ function(doctest_add_unit_test)
         target_link_libraries(${EXE_NAME} doctest)
     endif()
 
-    set(TEST_ARGS)
     if(NOT DOCTEST_INTERNAL_COVERAGE)
         # Stringification is mostly compiler-specific, so these are excluded for now
         set(TEST_ARGS
             "-tce=Stringification*"
-            "-tse=Stringification*,Type stringification*,Value stringification*")
+            "-tse=Stringification*,Type stringification*,Value stringification*,INTERNAL")
+    else()
+        set(TEST_ARGS "-tse=INTERNAL")
     endif()
     add_test(NAME "${ARG_SOURCE}" COMMAND ${EXE_NAME} ${TEST_ARGS})
 
@@ -80,6 +81,7 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
     endif()
 endif()
 
+# Unit tests
 doctest_add_unit_test(WITH_MAIN SOURCE doctest/assert/test_expression.cpp)
 doctest_add_unit_test(WITH_MAIN SOURCE doctest/assert/test_message.cpp)
 doctest_add_unit_test(WITH_MAIN SOURCE doctest/assert/test_type.cpp)
@@ -94,3 +96,11 @@ doctest_add_unit_test(WITH_MAIN SOURCE doctest/test_filters.cpp)
 doctest_add_unit_test(WITH_MAIN SOURCE doctest/test_path.cpp)
 doctest_add_unit_test(WITH_MAIN SOURCE doctest/test_string.cpp)
 doctest_add_unit_test(WITH_MAIN SOURCE doctest/test_xml.cpp EXCEPT ${GCC_4_8})
+
+# Integration tests
+doctest_add_unit_test(WITH_MAIN SOURCE integration/test_bdd.cpp     EXCEPT ${GCC_4_8})
+doctest_add_unit_test(WITH_MAIN SOURCE integration/test_capture.cpp EXCEPT ${GCC_4_8})
+doctest_add_unit_test(WITH_MAIN SOURCE integration/test_info.cpp    EXCEPT ${GCC_4_8})
+doctest_add_unit_test(WITH_MAIN SOURCE integration/test_message.cpp EXCEPT ${GCC_4_8})
+
+doctest_add_unit_test(SOURCE integration/test_assert_out_of_test_context.cpp EXCEPT ${GCC_4_8})
