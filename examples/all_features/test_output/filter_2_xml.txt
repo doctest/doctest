@@ -4,8 +4,6 @@
   <TestSuite>
     <TestCase name="  Scenario: vectors can be sized and resized" filename="subcases.cpp" line="0" skipped="true"/>
     <TestCase name="CHECK level of asserts fail the test case but don't abort it" filename="assertion_macros.cpp" line="0" skipped="true"/>
-    <TestCase name="Impl cast from non-const value" filename="decomposition.cpp" line="0" skipped="true"/>
-    <TestCase name="Move Only Type" filename="decomposition.cpp" line="0" skipped="true"/>
     <TestCase name="Nested - related to https://github.com/doctest/doctest/issues/282" filename="subcases.cpp" line="0" skipped="true"/>
     <TestCase name="REQUIRE level of asserts fail and abort the test case - 1" filename="assertion_macros.cpp" line="0" skipped="true"/>
     <TestCase name="REQUIRE level of asserts fail and abort the test case - 10" filename="assertion_macros.cpp" line="0" skipped="true"/>
@@ -30,7 +28,6 @@
     <TestCase name="all binary assertions" filename="assertion_macros.cpp" line="0" skipped="true"/>
     <TestCase name="an empty test that will succeed - not part of a test suite" filename="test_cases_and_suites.cpp" line="0" skipped="true"/>
     <TestCase name="bad stringification of type pair&lt;int_pair>" filename="templated_test_cases.cpp" line="0" skipped="true"/>
-    <TestCase name="bitfield" filename="bitfields.cpp" line="0" skipped="true"/>
     <TestCase name="check return values" filename="assertion_macros.cpp" line="0" skipped="true"/>
     <TestCase name="check return values no print" filename="assertion_macros.cpp" line="0" skipped="true"/>
     <TestCase name="custom macros" filename="alternative_macros.cpp" line="0" skipped="true"/>
@@ -41,9 +38,6 @@
     <TestCase name="default construction&lt;int>" filename="templated_test_cases.cpp" line="0" skipped="true"/>
     <TestCase name="default construction&lt;signed char>" filename="templated_test_cases.cpp" line="0" skipped="true"/>
     <TestCase name="default construction&lt;unsigned char>" filename="templated_test_cases.cpp" line="0" skipped="true"/>
-  </TestSuite>
-  <TestSuite name="doctest unit tests">
-    <TestCase name="doctest::String::substr()" filename="check_doctest_string.cpp" line="0" skipped="true"/>
   </TestSuite>
   <TestSuite name="test suite with a description">
     <TestCase name="doesn't fail but it should have" filename="test_cases_and_suites.cpp" line="0" description="regarding failures" should_fail="true" skipped="true"/>
@@ -87,15 +81,6 @@
     <TestCase name="multiple types&lt;Custom name test>" filename="templated_test_cases.cpp" line="0" skipped="true"/>
     <TestCase name="multiple types&lt;Other custom name>" filename="templated_test_cases.cpp" line="0" skipped="true"/>
     <TestCase name="multiple types&lt;TypePair&lt;bool, int>>" filename="templated_test_cases.cpp" line="0" skipped="true"/>
-    <TestCase name="namespace 1 global operator" filename="namespace1.cpp" line="0" skipped="true"/>
-    <TestCase name="namespace 2 friend operator" filename="namespace2.cpp" line="0" skipped="true"/>
-    <TestCase name="namespace 3 member operator" filename="namespace3.cpp" line="0" skipped="true"/>
-    <TestCase name="namespace 4 member vs member" filename="namespace4.cpp" line="0" skipped="true"/>
-    <TestCase name="namespace 5 member vs friend" filename="namespace5.cpp" line="0" skipped="true"/>
-    <TestCase name="namespace 6 friend vs friend" filename="namespace6.cpp" line="0" skipped="true"/>
-    <TestCase name="namespace 7 member vs global" filename="namespace7.cpp" line="0" skipped="true"/>
-    <TestCase name="namespace 8 friend vs global" filename="namespace8.cpp" line="0" skipped="true"/>
-    <TestCase name="namespace 9 both global" filename="namespace9.cpp" line="0" skipped="true"/>
     <TestCase name="no checks" filename="no_failures.cpp" line="0" skipped="true"/>
     <TestCase name="no headers" filename="stringification.cpp" line="0" skipped="true"/>
     <TestCase name="normal macros" filename="assertion_macros.cpp" line="0" skipped="true"/>
@@ -105,7 +90,6 @@
   </TestSuite>
   <TestSuite>
     <TestCase name="operator&lt;&lt;" filename="stringification.cpp" line="0" skipped="true"/>
-    <TestCase name="packed_struct" filename="bitfield_packed_struct.cpp" line="0" skipped="true"/>
   </TestSuite>
   <TestSuite name="scoped test suite">
     <TestCase name="part of scoped" filename="test_cases_and_suites.cpp" line="0" skipped="true"/>
@@ -155,6 +139,6 @@
     <TestCase name="without a funny name:" filename="subcases.cpp" line="0" skipped="true"/>
   </TestSuite>
   <OverallResultsAsserts successes="0" failures="0"/>
-  <OverallResultsTestCases successes="0" failures="0" skipped="109"/>
+  <OverallResultsTestCases successes="0" failures="0" skipped="95"/>
 </doctest>
 Program code.

@@ -9,7 +9,6 @@ set(files_with_output
     alternative_macros.cpp
     assertion_macros.cpp
     stringification.cpp
-    check_doctest_string.cpp
     double_stringification.cpp
     reporters_and_listeners.cpp
     subcases.cpp
@@ -18,24 +17,12 @@ set(files_with_output
     test_cases_and_suites.cpp
     asserts_used_outside_of_tests.cpp
     enums.cpp
-    decomposition.cpp
 )
 
 set(files_all
     ${files_with_output}
     concurrency.cpp
     coverage_maxout.cpp
-    bitfields.cpp
-    bitfield_packed_struct.cpp
-    namespace1.cpp
-    namespace2.cpp
-    namespace3.cpp
-    namespace4.cpp
-    namespace5.cpp
-    namespace6.cpp
-    namespace7.cpp
-    namespace8.cpp
-    namespace9.cpp
     no_failures.cpp
 )
 

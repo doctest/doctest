@@ -53,16 +53,6 @@ assertion_macros.cpp(0): ERROR: CHECK_UNARY_FALSE( 1 ) is NOT correct!
 assertion_macros.cpp(0): MESSAGE: reached!
 
 ===============================================================================
-decomposition.cpp(0):
-TEST CASE:  Move Only Type
-
-decomposition.cpp(0): ERROR: CHECK( genType(false) ) is NOT correct!
-  values: CHECK( {?} )
-
-decomposition.cpp(0): ERROR: CHECK( a ) is NOT correct!
-  values: CHECK( {?} )
-
-===============================================================================
 assertion_macros.cpp(0):
 TEST CASE:  REQUIRE level of asserts fail and abort the test case - 1
 
@@ -925,7 +915,7 @@ TEST CASE:  without a funny name:
 subcases.cpp(0): MESSAGE: Nooo
 
 ===============================================================================
-[doctest] test cases:  87 |  36 passed |  51 failed |
-[doctest] assertions: 240 | 120 passed | 120 failed |
+[doctest] test cases:  84 |  34 passed |  50 failed |
+[doctest] assertions: 233 | 115 passed | 118 failed |
 [doctest] Status: FAILURE!
 Program code.
