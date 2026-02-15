@@ -1,17 +1,18 @@
 add_subdirectory(common)
 
 function(doctest_add_unit_test)
-    set(options            WITH_MAIN)
-    set(one_value_keywords SOURCE TEST_NAME IF EXCEPT)
-    set(multi_value_keywords)
+    set(options              WITH_MAIN)
+    set(one_value_keywords   SOURCE TEST_NAME IF EXCEPT)
+    set(multi_value_keywords SOURCES)
     cmake_parse_arguments(ARG "${options}" "${one_value_keywords}" "${multi_value_keywords}" ${ARGN})
 
-    if(NOT ARG_SOURCE)
-        message(FATAL_ERROR "must specify a SOURCE")
+    SET(ARG_SOURCES ${ARG_SOURCE} ${ARG_SOURCES})
+    if(NOT ARG_SOURCES)
+        message(FATAL_ERROR "must specify a SOURCE or multiple SOURCES")
     endif()
 
     if(NOT ARG_TEST_NAME)
-        set(ARG_TEST_NAME ${ARG_SOURCE})
+        list(GET ARG_SOURCES 0 ARG_TEST_NAME)
     endif()
     string(MAKE_C_IDENTIFIER "${ARG_TEST_NAME}" EXE_NAME)
 
@@ -23,7 +24,7 @@ function(doctest_add_unit_test)
         return()
     endif()
 
-    add_executable(${EXE_NAME} ${ARG_SOURCE})
+    add_executable(${EXE_NAME} ${ARG_SOURCES})
     target_link_libraries(${EXE_NAME} common)
 
     if(ARG_WITH_MAIN)
@@ -39,7 +40,7 @@ function(doctest_add_unit_test)
             "-tce=Stringification*"
             "-tse=Stringification*,Type stringification*,Value stringification*")
     endif()
-    add_test(NAME "${ARG_SOURCE}" COMMAND ${EXE_NAME} ${TEST_ARGS})
+    add_test(NAME "${ARG_TEST_NAME}" COMMAND ${EXE_NAME} ${TEST_ARGS})
 
     # For unit-tests, we don't want to enforce the same level of warning-correctness
     # as with our examples. So, we inhibit some extras here
@@ -94,3 +95,21 @@ doctest_add_unit_test(WITH_MAIN SOURCE doctest/test_filters.cpp)
 doctest_add_unit_test(WITH_MAIN SOURCE doctest/test_path.cpp)
 doctest_add_unit_test(WITH_MAIN SOURCE doctest/test_string.cpp)
 doctest_add_unit_test(WITH_MAIN SOURCE doctest/test_xml.cpp EXCEPT ${GCC_4_8})
+
+# Regression tests
+doctest_add_unit_test(
+    TEST_NAME "regression/test.443" WITH_MAIN SOURCES
+    regression/test.443/namespace1.cpp
+    regression/test.443/namespace2.cpp
+    regression/test.443/namespace3.cpp
+    regression/test.443/namespace4.cpp
+    regression/test.443/namespace5.cpp
+    regression/test.443/namespace6.cpp
+    regression/test.443/namespace7.cpp
+    regression/test.443/namespace8.cpp
+    regression/test.443/namespace9.cpp
+)
+
+doctest_add_unit_test(WITH_MAIN SOURCE regression/test.630.cpp)
+doctest_add_unit_test(WITH_MAIN SOURCE regression/test.651.cpp)
+doctest_add_unit_test(WITH_MAIN SOURCE regression/test.786.cpp)
