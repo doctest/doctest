@@ -1,11 +1,10 @@
+// IWYU pragma: private, include "public/config.h"
 // =================================================================================================
 // == COMPILER VERSION =============================================================================
 // =================================================================================================
 
 #ifndef DOCTEST_PARTS_PUBLIC_COMPILER
 #define DOCTEST_PARTS_PUBLIC_COMPILER
-
-#include "doctest/parts/public/version.h"
 
 // ideas for the version stuff are taken from here: https://github.com/cxxstuff/cxx_detect
 

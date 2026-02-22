@@ -2,13 +2,8 @@
 #define DOCTEST_PARTS_PUBLIC_UTILITY
 
 #include "doctest/parts/public/config.h"
-#include "doctest/parts/public/warnings.h"
 
 DOCTEST_SUPPRESS_PUBLIC_WARNINGS_PUSH
-
-DOCTEST_CLANG_SUPPRESS_WARNING_PUSH
-DOCTEST_CLANG_SUPPRESS_WARNING("-Wunused-function")
-DOCTEST_CLANG_SUPPRESS_WARNING("-Wunused-macros")
 
 #define DOCTEST_DECLARE_INTERFACE(name)                                                            \
     virtual ~name();                                                                               \
@@ -37,15 +32,15 @@ DOCTEST_CLANG_SUPPRESS_WARNING("-Wunused-macros")
 #endif // DOCTEST_CONFIG_ASSERTION_PARAMETERS_BY_VALUE
 
 namespace doctest { namespace detail {
+DOCTEST_CLANG_SUPPRESS_WARNING_WITH_PUSH("-Wunused-function")
     static DOCTEST_CONSTEXPR int consume(const int*, int) noexcept { return 0; }
+DOCTEST_CLANG_SUPPRESS_WARNING_POP
 }}
 
 #define DOCTEST_GLOBAL_NO_WARNINGS(var, ...)                                                         \
     DOCTEST_CLANG_SUPPRESS_WARNING_WITH_PUSH("-Wglobal-constructors")                                \
     static const int var = doctest::detail::consume(&var, __VA_ARGS__);                              \
     DOCTEST_CLANG_SUPPRESS_WARNING_POP
-
-DOCTEST_CLANG_SUPPRESS_WARNING_POP
 
 DOCTEST_SUPPRESS_PUBLIC_WARNINGS_POP
 

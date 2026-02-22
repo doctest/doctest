@@ -2,7 +2,6 @@
 #define DOCTEST_PARTS_PUBLIC_DEBUGGER
 
 #include "doctest/parts/public/config.h"
-#include "doctest/parts/public/platform.h"
 
 #ifndef DOCTEST_BREAK_INTO_DEBUGGER
 // should probably take a look at https://github.com/scottt/debugbreak
@@ -11,7 +10,9 @@
 // Break at the location of the failing check if possible
 #define DOCTEST_BREAK_INTO_DEBUGGER() __asm__("int $3\n" : :) // NOLINT(hicpp-no-assembler)
 #else
+DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_BEGIN
 #include <signal.h>
+DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_END
 #define DOCTEST_BREAK_INTO_DEBUGGER() raise(SIGTRAP)
 #endif
 #elif defined(DOCTEST_PLATFORM_MAC)

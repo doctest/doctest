@@ -5,7 +5,12 @@
 #ifndef DOCTEST_PARTS_PUBLIC_CONFIG
 #define DOCTEST_PARTS_PUBLIC_CONFIG
 
+// IWYU pragma: begin_exports
+#include "doctest/parts/public/version.h"
+#include "doctest/parts/public/platform.h"
 #include "doctest/parts/public/compiler.h"
+#include "doctest/parts/public/warnings.h"
+// IWYU pragma: end_exports
 
 // general compiler feature support table: https://en.cppreference.com/w/cpp/compiler_support
 // MSVC C++11 feature support table: https://msdn.microsoft.com/en-us/library/hh567368.aspx
@@ -168,11 +173,13 @@
 // https://github.com/doctest/doctest/issues/126
 // https://github.com/doctest/doctest/issues/356
 #if DOCTEST_CLANG
+DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_BEGIN
 #if DOCTEST_CPLUSPLUS >= 201703L && __has_include(<version>)
 #include <version>
 #else
 #include <ciso646>
 #endif
+DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_END
 #endif // clang
 
 #ifdef _LIBCPP_VERSION
