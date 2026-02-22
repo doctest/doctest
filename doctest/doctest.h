@@ -1,4 +1,4 @@
-// ============================================================= lgtm [cpp/missing-header-guard]
+// =============================================================
 // == DO NOT MODIFY THIS FILE BY HAND - IT IS AUTO GENERATED! ==
 // =============================================================
 //
@@ -798,8 +798,8 @@ namespace doctest {
         using size_type = DOCTEST_CONFIG_STRING_SIZE_TYPE;
 
     private:
-        static DOCTEST_CONSTEXPR size_type len  = 24;      //!OCLINT avoid private static members
-        static DOCTEST_CONSTEXPR size_type last = len - 1; //!OCLINT avoid private static members
+        static DOCTEST_CONSTEXPR size_type len  = 24;
+        static DOCTEST_CONSTEXPR size_type last = len - 1;
 
         struct view // len should be more than sizeof(view) - because of the final byte for flags
         {
@@ -829,7 +829,6 @@ namespace doctest {
         String() noexcept;
         ~String();
 
-        // cppcheck-suppress noExplicitConstructor
         String(const char* in);
         String(const char* in, size_type in_size);
 
@@ -1280,7 +1279,7 @@ namespace detail {
     struct DOCTEST_INTERFACE TestCase;
 } // namespace detail
 
-    struct ContextOptions //!OCLINT too many fields
+    struct ContextOptions
     {
         std::ostream* cout = nullptr; // stdout stream
         String        binary_name;    // the test binary name
@@ -1680,7 +1679,7 @@ namespace detail {
         DOCTEST_NOINLINE bool unary_assert(const DOCTEST_REF_WRAP(L) val) {
             m_failed = !val;
 
-            if (m_at & assertType::is_false) { //!OCLINT bitwise operator in conditional
+            if (m_at & assertType::is_false) {
                 m_failed = !m_failed;
             }
 
@@ -1767,7 +1766,6 @@ DOCTEST_CLANG_SUPPRESS_WARNING_WITH_PUSH("-Wunused-comparison")
 #endif // DOCTEST_CONFIG_NO_COMPARISON_WARNING_SUPPRESSION
 
 template <typename L>
-// cppcheck-suppress copyCtorAndEqOperator
 struct Expression_lhs
 {
     L                lhs;
@@ -1782,7 +1780,7 @@ struct Expression_lhs
 DOCTEST_MSVC_SUPPRESS_WARNING_WITH_PUSH(4800) // 'int': forcing value to bool
         bool res = static_cast<bool>(lhs);
 DOCTEST_MSVC_SUPPRESS_WARNING_POP
-        if(m_at & assertType::is_false) { //!OCLINT bitwise operator in conditional
+        if(m_at & assertType::is_false) {
             res = !res;
         }
 
@@ -1796,12 +1794,12 @@ DOCTEST_MSVC_SUPPRESS_WARNING_POP
     operator L() const { return lhs; }
 
     // clang-format off
-    DOCTEST_DO_BINARY_EXPRESSION_COMPARISON(==, " == ", DOCTEST_CMP_EQ) //!OCLINT bitwise operator in conditional
-    DOCTEST_DO_BINARY_EXPRESSION_COMPARISON(!=, " != ", DOCTEST_CMP_NE) //!OCLINT bitwise operator in conditional
-    DOCTEST_DO_BINARY_EXPRESSION_COMPARISON(>,  " >  ", DOCTEST_CMP_GT) //!OCLINT bitwise operator in conditional
-    DOCTEST_DO_BINARY_EXPRESSION_COMPARISON(<,  " <  ", DOCTEST_CMP_LT) //!OCLINT bitwise operator in conditional
-    DOCTEST_DO_BINARY_EXPRESSION_COMPARISON(>=, " >= ", DOCTEST_CMP_GE) //!OCLINT bitwise operator in conditional
-    DOCTEST_DO_BINARY_EXPRESSION_COMPARISON(<=, " <= ", DOCTEST_CMP_LE) //!OCLINT bitwise operator in conditional
+    DOCTEST_DO_BINARY_EXPRESSION_COMPARISON(==, " == ", DOCTEST_CMP_EQ)
+    DOCTEST_DO_BINARY_EXPRESSION_COMPARISON(!=, " != ", DOCTEST_CMP_NE)
+    DOCTEST_DO_BINARY_EXPRESSION_COMPARISON(>,  " >  ", DOCTEST_CMP_GT)
+    DOCTEST_DO_BINARY_EXPRESSION_COMPARISON(<,  " <  ", DOCTEST_CMP_LT)
+    DOCTEST_DO_BINARY_EXPRESSION_COMPARISON(>=, " >= ", DOCTEST_CMP_GE)
+    DOCTEST_DO_BINARY_EXPRESSION_COMPARISON(<=, " <= ", DOCTEST_CMP_LE)
     // clang-format on
 
     // forbidding some expressions based on this table: https://en.cppreference.com/w/cpp/language/operator_precedence
@@ -2128,7 +2126,7 @@ namespace detail {
     };
 
     template <typename T>
-    class ExceptionTranslator : public IExceptionTranslator //!OCLINT destructor of virtual class
+    class ExceptionTranslator : public IExceptionTranslator
     {
     public:
         explicit ExceptionTranslator(String (*translateFunction)(T))
@@ -2137,12 +2135,11 @@ namespace detail {
         bool translate(String& res) const override {
 #ifndef DOCTEST_CONFIG_NO_EXCEPTIONS
             try {
-                throw; // lgtm [cpp/rethrow-no-exception]
-                // cppcheck-suppress catchExceptionByValue
+                throw;
             } catch(const T& ex) {
-                res = m_translateFunction(ex); //!OCLINT parameter reassignment
+                res = m_translateFunction(ex);
                 return true;
-            } catch(...) {}         //!OCLINT -  empty catch statement
+            } catch(...) {}
 #endif                              // DOCTEST_CONFIG_NO_EXCEPTIONS
             static_cast<void>(res); // to silence -Wunused-parameter
             return false;
@@ -2483,7 +2480,7 @@ namespace detail {
                                        const char* expr, const DOCTEST_REF_WRAP(L) val) {
         bool failed = !val;
 
-        if(at & assertType::is_false) //!OCLINT bitwise operator in conditional
+        if(at & assertType::is_false)
             failed = !failed;
 
         // ###################################################################################
@@ -3875,7 +3872,7 @@ namespace detail {
             return result;
         }
 
-        T operator=(T desired) DOCTEST_NOEXCEPT { // lgtm [cpp/assignment-does-not-return-this]
+        T operator=(T desired) DOCTEST_NOEXCEPT {
             store(desired);
             return desired;
         }
@@ -4079,12 +4076,12 @@ namespace doctest {
 namespace detail {
 
     void addAssert(assertType::Enum at) {
-        if((at & assertType::is_warn) == 0) //!OCLINT bitwise operator in conditional
+        if((at & assertType::is_warn) == 0)
             g_cs->numAssertsCurrentTest_atomic++;
     }
 
     void addFailedAssert(assertType::Enum at) {
-        if((at & assertType::is_warn) == 0) //!OCLINT bitwise operator in conditional
+        if((at & assertType::is_warn) == 0)
             g_cs->numAssertsFailedCurrentTest_atomic++;
     }
 
@@ -4175,7 +4172,7 @@ namespace detail {
     }
 
     void MessageBuilder::react() {
-        if(m_severity & assertType::is_require) //!OCLINT bitwise operator in conditional
+        if(m_severity & assertType::is_require)
             throwException();
     }
 
@@ -4238,15 +4235,15 @@ namespace detail {
     }
 
     bool ResultBuilder::log() {
-        if(m_at & assertType::is_throws) { //!OCLINT bitwise operator in conditional
+        if(m_at & assertType::is_throws) {
             m_failed = !m_threw;
-        } else if((m_at & assertType::is_throws_as) && (m_at & assertType::is_throws_with)) { //!OCLINT
+        } else if((m_at & assertType::is_throws_as) && (m_at & assertType::is_throws_with)) {
             m_failed = !m_threw_as || !m_exception_string.check(m_exception);
-        } else if(m_at & assertType::is_throws_as) { //!OCLINT bitwise operator in conditional
+        } else if(m_at & assertType::is_throws_as) {
             m_failed = !m_threw_as;
-        } else if(m_at & assertType::is_throws_with) { //!OCLINT bitwise operator in conditional
+        } else if(m_at & assertType::is_throws_with) {
             m_failed = !m_exception_string.check(m_exception);
-        } else if(m_at & assertType::is_nothrow) { //!OCLINT bitwise operator in conditional
+        } else if(m_at & assertType::is_nothrow) {
             m_failed = m_threw;
         }
 
@@ -4369,11 +4366,11 @@ const char* assertString(assertType::Enum at) {
 // clang-format on
 
 const char* failureString(assertType::Enum at) {
-    if(at & assertType::is_warn) //!OCLINT bitwise operator in conditional
+    if(at & assertType::is_warn)
         return "WARNING";
-    if(at & assertType::is_check) //!OCLINT bitwise operator in conditional
+    if(at & assertType::is_check)
         return "ERROR";
-    if(at & assertType::is_require) //!OCLINT bitwise operator in conditional
+    if(at & assertType::is_require)
         return "FATAL ERROR";
     return "";
 }
@@ -4422,7 +4419,7 @@ namespace detail {
         // clang-format off
             DOCTEST_CLANG_SUPPRESS_WARNING_PUSH
             DOCTEST_CLANG_SUPPRESS_WARNING("-Wcovered-switch-default")
-            switch(code) { //!OCLINT missing break in switch statement / unnecessary default statement in covered switch statement
+            switch(code) {
                 case Color::Red:         col = "[0;31m"; break;
                 case Color::Green:       col = "[0;32m"; break;
                 case Color::Blue:        col = "[0;34m"; break;
@@ -4870,7 +4867,7 @@ namespace detail {
         for(int i = argc; i > 0; --i) {
             auto index = i - 1;
             auto temp = std::strstr(argv[index], pattern);
-            if(temp && (value || strlen(temp) == strlen(pattern))) { //!OCLINT prefer early exits and continue
+            if(temp && (value || strlen(temp) == strlen(pattern))) {
                 // eliminate matches in which the chars before the option are not '-'
                 bool noBadCharsFound = true;
                 auto curr            = argv[index];
@@ -4981,7 +4978,7 @@ namespace detail {
             // TODO: change this to use std::stoi or something else! currently it uses undefined behavior - assumes '0' on failed parse...
             int theInt = std::atoi(parsedValue.c_str());
             if (theInt != 0) {
-                res = theInt; //!OCLINT parameter reassignment
+                res = theInt;
                 return true;
             }
         } else {
@@ -4992,11 +4989,11 @@ namespace detail {
             // if the value matches any of the positive/negative possibilities
             for (unsigned i = 0; i < 4; i++) {
                 if (parsedValue.compare(positive[i], true) == 0) {
-                    res = 1; //!OCLINT parameter reassignment
+                    res = 1;
                     return true;
                 }
                 if (parsedValue.compare(negative[i], true) == 0) {
-                    res = 0; //!OCLINT parameter reassignment
+                    res = 0;
                     return true;
                 }
             }
@@ -5759,10 +5756,10 @@ namespace doctest {
 namespace detail {
 
     bool checkIfShouldThrow(assertType::Enum at) {
-        if(at & assertType::is_require) //!OCLINT bitwise operator in conditional
+        if(at & assertType::is_require)
             return true;
 
-        if((at & assertType::is_check) //!OCLINT bitwise operator in conditional
+        if((at & assertType::is_check)
            && getContextOptions()->abort_after > 0 &&
            (g_cs->numAssertsFailed + g_cs->numAssertsFailedCurrentTest_atomic) >=
                    getContextOptions()->abort_after)
@@ -5817,8 +5814,8 @@ namespace detail {
                 wild++;
                 str++;
             } else {
-                wild = mp;   //!OCLINT parameter reassignment
-                str  = cp++; //!OCLINT parameter reassignment
+                wild = mp;
+                str  = cp++;
             }
         }
 
@@ -6063,14 +6060,14 @@ namespace doctest {
 
 void fulltext_log_assert_to_stream(std::ostream& s, const AssertData& rb) {
     if((rb.m_at & (assertType::is_throws_as | assertType::is_throws_with)) ==
-        0) //!OCLINT bitwise operator in conditional
+        0)
         s << Color::Cyan << assertString(rb.m_at) << "( " << rb.m_expr << " ) "
             << Color::None;
 
-    if(rb.m_at & assertType::is_throws) { //!OCLINT bitwise operator in conditional
+    if(rb.m_at & assertType::is_throws) {
         s << (rb.m_threw ? "threw as expected!" : "did NOT throw at all!") << "\n";
     } else if((rb.m_at & assertType::is_throws_as) &&
-                (rb.m_at & assertType::is_throws_with)) { //!OCLINT
+                (rb.m_at & assertType::is_throws_with)) {
         s << Color::Cyan << assertString(rb.m_at) << "( " << rb.m_expr << ", \""
             << rb.m_exception_string.c_str()
             << "\", " << rb.m_exception_type << " ) " << Color::None;
@@ -6084,7 +6081,7 @@ void fulltext_log_assert_to_stream(std::ostream& s, const AssertData& rb) {
             s << "did NOT throw at all!\n";
         }
     } else if(rb.m_at &
-                assertType::is_throws_as) { //!OCLINT bitwise operator in conditional
+                assertType::is_throws_as) {
         s << Color::Cyan << assertString(rb.m_at) << "( " << rb.m_expr << ", "
             << rb.m_exception_type << " ) " << Color::None
             << (rb.m_threw ? (rb.m_threw_as ? "threw as expected!" :
@@ -6092,7 +6089,7 @@ void fulltext_log_assert_to_stream(std::ostream& s, const AssertData& rb) {
                             "did NOT throw at all!")
             << Color::Cyan << rb.m_exception << "\n";
     } else if(rb.m_at &
-                assertType::is_throws_with) { //!OCLINT bitwise operator in conditional
+                assertType::is_throws_with) {
         s << Color::Cyan << assertString(rb.m_at) << "( " << rb.m_expr << ", \""
             << rb.m_exception_string.c_str()
             << "\" ) " << Color::None
@@ -6100,7 +6097,7 @@ void fulltext_log_assert_to_stream(std::ostream& s, const AssertData& rb) {
                                             "threw a DIFFERENT exception: ") :
                             "did NOT throw at all!")
             << Color::Cyan << rb.m_exception << "\n";
-    } else if(rb.m_at & assertType::is_nothrow) { //!OCLINT bitwise operator in conditional
+    } else if(rb.m_at & assertType::is_nothrow) {
         s << (rb.m_threw ? "THREW exception: " : "didn't throw!") << Color::Cyan
             << rb.m_exception << "\n";
     } else {
@@ -6494,7 +6491,7 @@ void ConsoleReporter::test_case_end(const CurrentTestCaseStats& st) {
     if(st.failure_flags & TestCaseFailureReason::TooManyFailedAsserts) {
         s << Color::Red << "Aborting - too many failed asserts!\n";
     }
-    s << Color::None; // lgtm [cpp/useless-expression]
+    s << Color::None;
 }
 
 void ConsoleReporter::test_case_exception(const TestCaseException& e) {

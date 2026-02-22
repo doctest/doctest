@@ -378,7 +378,7 @@ void ConsoleReporter::test_case_end(const CurrentTestCaseStats& st) {
     if(st.failure_flags & TestCaseFailureReason::TooManyFailedAsserts) {
         s << Color::Red << "Aborting - too many failed asserts!\n";
     }
-    s << Color::None; // lgtm [cpp/useless-expression]
+    s << Color::None;
 }
 
 void ConsoleReporter::test_case_exception(const TestCaseException& e) {

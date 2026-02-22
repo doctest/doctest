@@ -10,7 +10,7 @@ namespace detail {
     struct DOCTEST_INTERFACE TestCase;
 } // namespace detail
 
-    struct ContextOptions //!OCLINT too many fields
+    struct ContextOptions
     {
         std::ostream* cout = nullptr; // stdout stream
         String        binary_name;    // the test binary name

@@ -41,7 +41,7 @@ namespace detail {
         // clang-format off
             DOCTEST_CLANG_SUPPRESS_WARNING_PUSH
             DOCTEST_CLANG_SUPPRESS_WARNING("-Wcovered-switch-default")
-            switch(code) { //!OCLINT missing break in switch statement / unnecessary default statement in covered switch statement
+            switch(code) {
                 case Color::Red:         col = "[0;31m"; break;
                 case Color::Green:       col = "[0;32m"; break;
                 case Color::Blue:        col = "[0;34m"; break;

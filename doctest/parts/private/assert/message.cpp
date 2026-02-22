@@ -43,7 +43,7 @@ namespace detail {
     }
 
     void MessageBuilder::react() {
-        if(m_severity & assertType::is_require) //!OCLINT bitwise operator in conditional
+        if(m_severity & assertType::is_require)
             throwException();
     }
 

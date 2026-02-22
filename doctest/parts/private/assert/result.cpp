@@ -33,15 +33,15 @@ namespace detail {
     }
 
     bool ResultBuilder::log() {
-        if(m_at & assertType::is_throws) { //!OCLINT bitwise operator in conditional
+        if(m_at & assertType::is_throws) {
             m_failed = !m_threw;
-        } else if((m_at & assertType::is_throws_as) && (m_at & assertType::is_throws_with)) { //!OCLINT
+        } else if((m_at & assertType::is_throws_as) && (m_at & assertType::is_throws_with)) {
             m_failed = !m_threw_as || !m_exception_string.check(m_exception);
-        } else if(m_at & assertType::is_throws_as) { //!OCLINT bitwise operator in conditional
+        } else if(m_at & assertType::is_throws_as) {
             m_failed = !m_threw_as;
-        } else if(m_at & assertType::is_throws_with) { //!OCLINT bitwise operator in conditional
+        } else if(m_at & assertType::is_throws_with) {
             m_failed = !m_exception_string.check(m_exception);
-        } else if(m_at & assertType::is_nothrow) { //!OCLINT bitwise operator in conditional
+        } else if(m_at & assertType::is_nothrow) {
             m_failed = m_threw;
         }
 

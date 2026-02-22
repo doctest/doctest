@@ -17,7 +17,7 @@ namespace detail {
     };
 
     template <typename T>
-    class ExceptionTranslator : public IExceptionTranslator //!OCLINT destructor of virtual class
+    class ExceptionTranslator : public IExceptionTranslator
     {
     public:
         explicit ExceptionTranslator(String (*translateFunction)(T))
@@ -26,12 +26,11 @@ namespace detail {
         bool translate(String& res) const override {
 #ifndef DOCTEST_CONFIG_NO_EXCEPTIONS
             try {
-                throw; // lgtm [cpp/rethrow-no-exception]
-                // cppcheck-suppress catchExceptionByValue
+                throw;
             } catch(const T& ex) {
-                res = m_translateFunction(ex); //!OCLINT parameter reassignment
+                res = m_translateFunction(ex);
                 return true;
-            } catch(...) {}         //!OCLINT -  empty catch statement
+            } catch(...) {}
 #endif                              // DOCTEST_CONFIG_NO_EXCEPTIONS
             static_cast<void>(res); // to silence -Wunused-parameter
             return false;

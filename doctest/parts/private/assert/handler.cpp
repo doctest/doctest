@@ -11,12 +11,12 @@ namespace doctest {
 namespace detail {
 
     void addAssert(assertType::Enum at) {
-        if((at & assertType::is_warn) == 0) //!OCLINT bitwise operator in conditional
+        if((at & assertType::is_warn) == 0)
             g_cs->numAssertsCurrentTest_atomic++;
     }
 
     void addFailedAssert(assertType::Enum at) {
-        if((at & assertType::is_warn) == 0) //!OCLINT bitwise operator in conditional
+        if((at & assertType::is_warn) == 0)
             g_cs->numAssertsFailedCurrentTest_atomic++;
     }
 

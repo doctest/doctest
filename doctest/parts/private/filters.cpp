@@ -31,8 +31,8 @@ namespace detail {
                 wild++;
                 str++;
             } else {
-                wild = mp;   //!OCLINT parameter reassignment
-                str  = cp++; //!OCLINT parameter reassignment
+                wild = mp;
+                str  = cp++;
             }
         }
 

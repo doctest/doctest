@@ -82,7 +82,7 @@ namespace detail {
         DOCTEST_NOINLINE bool unary_assert(const DOCTEST_REF_WRAP(L) val) {
             m_failed = !val;
 
-            if (m_at & assertType::is_false) { //!OCLINT bitwise operator in conditional
+            if (m_at & assertType::is_false) {
                 m_failed = !m_failed;
             }
 
