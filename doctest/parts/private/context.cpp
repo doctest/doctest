@@ -67,7 +67,7 @@ namespace detail {
         for(int i = argc; i > 0; --i) {
             auto index = i - 1;
             auto temp = std::strstr(argv[index], pattern);
-            if(temp && (value || strlen(temp) == strlen(pattern))) { //!OCLINT prefer early exits and continue
+            if(temp && (value || strlen(temp) == strlen(pattern))) {
                 // eliminate matches in which the chars before the option are not '-'
                 bool noBadCharsFound = true;
                 auto curr            = argv[index];
@@ -178,7 +178,7 @@ namespace detail {
             // TODO: change this to use std::stoi or something else! currently it uses undefined behavior - assumes '0' on failed parse...
             int theInt = std::atoi(parsedValue.c_str());
             if (theInt != 0) {
-                res = theInt; //!OCLINT parameter reassignment
+                res = theInt;
                 return true;
             }
         } else {
@@ -189,11 +189,11 @@ namespace detail {
             // if the value matches any of the positive/negative possibilities
             for (unsigned i = 0; i < 4; i++) {
                 if (parsedValue.compare(positive[i], true) == 0) {
-                    res = 1; //!OCLINT parameter reassignment
+                    res = 1;
                     return true;
                 }
                 if (parsedValue.compare(negative[i], true) == 0) {
-                    res = 0; //!OCLINT parameter reassignment
+                    res = 0;
                     return true;
                 }
             }

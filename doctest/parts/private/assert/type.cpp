@@ -53,11 +53,11 @@ const char* assertString(assertType::Enum at) {
 // clang-format on
 
 const char* failureString(assertType::Enum at) {
-    if(at & assertType::is_warn) //!OCLINT bitwise operator in conditional
+    if(at & assertType::is_warn)
         return "WARNING";
-    if(at & assertType::is_check) //!OCLINT bitwise operator in conditional
+    if(at & assertType::is_check)
         return "ERROR";
-    if(at & assertType::is_require) //!OCLINT bitwise operator in conditional
+    if(at & assertType::is_require)
         return "FATAL ERROR";
     return "";
 }

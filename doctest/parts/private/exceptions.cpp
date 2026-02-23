@@ -9,10 +9,10 @@ namespace doctest {
 namespace detail {
 
     bool checkIfShouldThrow(assertType::Enum at) {
-        if(at & assertType::is_require) //!OCLINT bitwise operator in conditional
+        if(at & assertType::is_require)
             return true;
 
-        if((at & assertType::is_check) //!OCLINT bitwise operator in conditional
+        if((at & assertType::is_check)
            && getContextOptions()->abort_after > 0 &&
            (g_cs->numAssertsFailed + g_cs->numAssertsFailedCurrentTest_atomic) >=
                    getContextOptions()->abort_after)

@@ -66,7 +66,7 @@ namespace detail {
                                        const char* expr, const DOCTEST_REF_WRAP(L) val) {
         bool failed = !val;
 
-        if(at & assertType::is_false) //!OCLINT bitwise operator in conditional
+        if(at & assertType::is_false)
             failed = !failed;
 
         // ###################################################################################

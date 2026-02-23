@@ -38,8 +38,8 @@ namespace doctest {
         using size_type = DOCTEST_CONFIG_STRING_SIZE_TYPE;
 
     private:
-        static DOCTEST_CONSTEXPR size_type len  = 24;      //!OCLINT avoid private static members
-        static DOCTEST_CONSTEXPR size_type last = len - 1; //!OCLINT avoid private static members
+        static DOCTEST_CONSTEXPR size_type len  = 24;
+        static DOCTEST_CONSTEXPR size_type last = len - 1;
 
         struct view // len should be more than sizeof(view) - because of the final byte for flags
         {
@@ -69,7 +69,6 @@ namespace doctest {
         String() noexcept;
         ~String();
 
-        // cppcheck-suppress noExplicitConstructor
         String(const char* in);
         String(const char* in, size_type in_size);
 

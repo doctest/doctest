@@ -68,7 +68,7 @@ namespace detail {
             return result;
         }
 
-        T operator=(T desired) DOCTEST_NOEXCEPT { // lgtm [cpp/assignment-does-not-return-this]
+        T operator=(T desired) DOCTEST_NOEXCEPT {
             store(desired);
             return desired;
         }

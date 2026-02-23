@@ -24,7 +24,7 @@ from textwrap import dedent
 TEMPLATE = string.Template(
     dedent(
         """\
-  // ============================================================= lgtm [cpp/missing-header-guard]
+  // =============================================================
   // == DO NOT MODIFY THIS FILE BY HAND - IT IS AUTO GENERATED! ==
   // =============================================================
   $headers

@@ -9,14 +9,14 @@ namespace doctest {
 
 void fulltext_log_assert_to_stream(std::ostream& s, const AssertData& rb) {
     if((rb.m_at & (assertType::is_throws_as | assertType::is_throws_with)) ==
-        0) //!OCLINT bitwise operator in conditional
+        0)
         s << Color::Cyan << assertString(rb.m_at) << "( " << rb.m_expr << " ) "
             << Color::None;
 
-    if(rb.m_at & assertType::is_throws) { //!OCLINT bitwise operator in conditional
+    if(rb.m_at & assertType::is_throws) {
         s << (rb.m_threw ? "threw as expected!" : "did NOT throw at all!") << "\n";
     } else if((rb.m_at & assertType::is_throws_as) &&
-                (rb.m_at & assertType::is_throws_with)) { //!OCLINT
+                (rb.m_at & assertType::is_throws_with)) {
         s << Color::Cyan << assertString(rb.m_at) << "( " << rb.m_expr << ", \""
             << rb.m_exception_string.c_str()
             << "\", " << rb.m_exception_type << " ) " << Color::None;
@@ -30,7 +30,7 @@ void fulltext_log_assert_to_stream(std::ostream& s, const AssertData& rb) {
             s << "did NOT throw at all!\n";
         }
     } else if(rb.m_at &
-                assertType::is_throws_as) { //!OCLINT bitwise operator in conditional
+                assertType::is_throws_as) {
         s << Color::Cyan << assertString(rb.m_at) << "( " << rb.m_expr << ", "
             << rb.m_exception_type << " ) " << Color::None
             << (rb.m_threw ? (rb.m_threw_as ? "threw as expected!" :
@@ -38,7 +38,7 @@ void fulltext_log_assert_to_stream(std::ostream& s, const AssertData& rb) {
                             "did NOT throw at all!")
             << Color::Cyan << rb.m_exception << "\n";
     } else if(rb.m_at &
-                assertType::is_throws_with) { //!OCLINT bitwise operator in conditional
+                assertType::is_throws_with) {
         s << Color::Cyan << assertString(rb.m_at) << "( " << rb.m_expr << ", \""
             << rb.m_exception_string.c_str()
             << "\" ) " << Color::None
@@ -46,7 +46,7 @@ void fulltext_log_assert_to_stream(std::ostream& s, const AssertData& rb) {
                                             "threw a DIFFERENT exception: ") :
                             "did NOT throw at all!")
             << Color::Cyan << rb.m_exception << "\n";
-    } else if(rb.m_at & assertType::is_nothrow) { //!OCLINT bitwise operator in conditional
+    } else if(rb.m_at & assertType::is_nothrow) {
         s << (rb.m_threw ? "THREW exception: " : "didn't throw!") << Color::Cyan
             << rb.m_exception << "\n";
     } else {
