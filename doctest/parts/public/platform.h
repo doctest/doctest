@@ -1,4 +1,4 @@
-
+// IWYU pragma: private, include "public/config.h"
 #ifndef DOCTEST_PARTS_PUBLIC_PLATFORM
 #define DOCTEST_PARTS_PUBLIC_PLATFORM
 

@@ -2,7 +2,6 @@
 #define DOCTEST_PARTS_PUBLIC_EXCEPTIONS
 
 #include "doctest/parts/public/config.h"
-#include "doctest/parts/public/warnings.h"
 #include "doctest/parts/public/assert/type.h"
 
 DOCTEST_SUPPRESS_PUBLIC_WARNINGS_PUSH

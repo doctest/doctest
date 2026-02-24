@@ -1,8 +1,7 @@
 #ifndef DOCTEST_PARTS_PUBLIC_TEST_SUITE
 #define DOCTEST_PARTS_PUBLIC_TEST_SUITE
 
-#include "doctest/parts/public/config.h"
-#include "doctest/parts/public/warnings.h"
+#include "doctest/parts/public/utility.h"
 
 DOCTEST_SUPPRESS_PUBLIC_WARNINGS_PUSH
 

@@ -73,7 +73,6 @@
 #ifndef DOCTEST_PARTS_PUBLIC_COMPILER
 #define DOCTEST_PARTS_PUBLIC_COMPILER
 
-
 // ideas for the version stuff are taken from here: https://github.com/cxxstuff/cxx_detect
 
 #ifdef _MSC_VER
@@ -182,6 +181,7 @@
     DOCTEST_CLANG_SUPPRESS_WARNING("-Wc++98-compat")                                               \
     DOCTEST_CLANG_SUPPRESS_WARNING("-Wc++98-compat-pedantic")                                      \
     DOCTEST_CLANG_SUPPRESS_WARNING("-Wunsafe-buffer-usage")                                        \
+    DOCTEST_CLANG_SUPPRESS_WARNING("-Wunused-macros")                                              \
                                                                                                    \
     DOCTEST_GCC_SUPPRESS_WARNING_PUSH                                                              \
     DOCTEST_GCC_SUPPRESS_WARNING("-Wunknown-pragmas")                                              \
@@ -319,6 +319,23 @@ DOCTEST_SUPPRESS_PUBLIC_WARNINGS_PUSH
 #ifndef DOCTEST_PARTS_PUBLIC_CONFIG
 #define DOCTEST_PARTS_PUBLIC_CONFIG
 
+#ifndef DOCTEST_PARTS_PUBLIC_PLATFORM
+#define DOCTEST_PARTS_PUBLIC_PLATFORM
+
+// not using __APPLE__ because... this is how Catch does it
+#ifdef __MAC_OS_X_VERSION_MIN_REQUIRED
+#define DOCTEST_PLATFORM_MAC
+#elif defined(__IPHONE_OS_VERSION_MIN_REQUIRED)
+#define DOCTEST_PLATFORM_IPHONE
+#elif defined(_WIN32)
+#define DOCTEST_PLATFORM_WINDOWS
+#elif defined(__wasi__)
+#define DOCTEST_PLATFORM_WASI
+#else // DOCTEST_PLATFORM
+#define DOCTEST_PLATFORM_LINUX
+#endif // DOCTEST_PLATFORM
+
+#endif // DOCTEST_PARTS_PUBLIC_PLATFORM
 
 // general compiler feature support table: https://en.cppreference.com/w/cpp/compiler_support
 // MSVC C++11 feature support table: https://msdn.microsoft.com/en-us/library/hh567368.aspx
@@ -481,11 +498,13 @@ DOCTEST_SUPPRESS_PUBLIC_WARNINGS_PUSH
 // https://github.com/doctest/doctest/issues/126
 // https://github.com/doctest/doctest/issues/356
 #if DOCTEST_CLANG
+DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_BEGIN
 #if DOCTEST_CPLUSPLUS >= 201703L && __has_include(<version>)
 #include <version>
 #else
 #include <ciso646>
 #endif
+DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_END
 #endif // clang
 
 #ifdef _LIBCPP_VERSION
@@ -510,10 +529,6 @@ DOCTEST_SUPPRESS_PUBLIC_WARNINGS_PUSH
 
 
 DOCTEST_SUPPRESS_PUBLIC_WARNINGS_PUSH
-
-DOCTEST_CLANG_SUPPRESS_WARNING_PUSH
-DOCTEST_CLANG_SUPPRESS_WARNING("-Wunused-function")
-DOCTEST_CLANG_SUPPRESS_WARNING("-Wunused-macros")
 
 #define DOCTEST_DECLARE_INTERFACE(name)                                                            \
     virtual ~name();                                                                               \
@@ -542,7 +557,9 @@ DOCTEST_CLANG_SUPPRESS_WARNING("-Wunused-macros")
 #endif // DOCTEST_CONFIG_ASSERTION_PARAMETERS_BY_VALUE
 
 namespace doctest { namespace detail {
+DOCTEST_CLANG_SUPPRESS_WARNING_WITH_PUSH("-Wunused-function")
     static DOCTEST_CONSTEXPR int consume(const int*, int) noexcept { return 0; }
+DOCTEST_CLANG_SUPPRESS_WARNING_POP
 }}
 
 #define DOCTEST_GLOBAL_NO_WARNINGS(var, ...)                                                         \
@@ -550,29 +567,9 @@ namespace doctest { namespace detail {
     static const int var = doctest::detail::consume(&var, __VA_ARGS__);                              \
     DOCTEST_CLANG_SUPPRESS_WARNING_POP
 
-DOCTEST_CLANG_SUPPRESS_WARNING_POP
-
 DOCTEST_SUPPRESS_PUBLIC_WARNINGS_POP
 
 #endif // DOCTEST_PARTS_PUBLIC_UTILITY
-
-#ifndef DOCTEST_PARTS_PUBLIC_PLATFORM
-#define DOCTEST_PARTS_PUBLIC_PLATFORM
-
-// not using __APPLE__ because... this is how Catch does it
-#ifdef __MAC_OS_X_VERSION_MIN_REQUIRED
-#define DOCTEST_PLATFORM_MAC
-#elif defined(__IPHONE_OS_VERSION_MIN_REQUIRED)
-#define DOCTEST_PLATFORM_IPHONE
-#elif defined(_WIN32)
-#define DOCTEST_PLATFORM_WINDOWS
-#elif defined(__wasi__)
-#define DOCTEST_PLATFORM_WASI
-#else // DOCTEST_PLATFORM
-#define DOCTEST_PLATFORM_LINUX
-#endif // DOCTEST_PLATFORM
-
-#endif // DOCTEST_PARTS_PUBLIC_PLATFORM
 #ifndef DOCTEST_PARTS_PUBLIC_DEBUGGER
 #define DOCTEST_PARTS_PUBLIC_DEBUGGER
 
@@ -584,7 +581,9 @@ DOCTEST_SUPPRESS_PUBLIC_WARNINGS_POP
 // Break at the location of the failing check if possible
 #define DOCTEST_BREAK_INTO_DEBUGGER() __asm__("int $3\n" : :) // NOLINT(hicpp-no-assembler)
 #else
+DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_BEGIN
 #include <signal.h>
+DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_END
 #define DOCTEST_BREAK_INTO_DEBUGGER() raise(SIGTRAP)
 #endif
 #elif defined(DOCTEST_PLATFORM_MAC)
@@ -682,7 +681,9 @@ DOCTEST_SUPPRESS_PUBLIC_WARNINGS_POP
 DOCTEST_SUPPRESS_PUBLIC_WARNINGS_PUSH
 
 #ifdef DOCTEST_CONFIG_INCLUDE_TYPE_TRAITS
+DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_BEGIN
 #include <type_traits>
+DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_END
 #endif // DOCTEST_CONFIG_INCLUDE_TYPE_TRAITS
 
 namespace doctest {
@@ -2633,8 +2634,6 @@ DOCTEST_SUPPRESS_PUBLIC_WARNINGS_POP
 
 DOCTEST_SUPPRESS_PUBLIC_WARNINGS_PUSH
 
-DOCTEST_CLANG_SUPPRESS_WARNING_WITH_PUSH("-Wunused-macros")
-
 #ifndef DOCTEST_CONFIG_DISABLE
 namespace doctest {
 namespace detail {
@@ -3601,8 +3600,6 @@ namespace detail {
 
 #endif // DOCTEST_CONFIG_NO_SHORT_MACRO_NAMES
 
-DOCTEST_CLANG_SUPPRESS_WARNING_POP
-
 DOCTEST_SUPPRESS_PUBLIC_WARNINGS_POP
 
 #endif // DOCTEST_PARTS_PUBLIC_MACROS
@@ -3616,8 +3613,6 @@ DOCTEST_SUPPRESS_PUBLIC_WARNINGS_POP
 DOCTEST_CLANG_SUPPRESS_WARNING_WITH_PUSH("-Wunused-macros")
 #define DOCTEST_LIBRARY_IMPLEMENTATION
 DOCTEST_CLANG_SUPPRESS_WARNING_POP
-
-DOCTEST_SUPPRESS_PRIVATE_WARNINGS_PUSH
 
 #ifndef DOCTEST_PARTS_PRIVATE_PRELUDE
 #define DOCTEST_PARTS_PRIVATE_PRELUDE
@@ -8505,8 +8500,6 @@ using uchar = unsigned char;
 } // namespace doctest
 
 #endif // DOCTEST_CONFIG_DISABLE
-
-DOCTEST_SUPPRESS_PRIVATE_WARNINGS_POP
 
 DOCTEST_SUPPRESS_PRIVATE_WARNINGS_POP
 
