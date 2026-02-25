@@ -5,19 +5,19 @@ DOCTEST_SUPPRESS_PRIVATE_WARNINGS_PUSH
 
 namespace doctest {
 
-// clang-format off
-const char* assertString(assertType::Enum at) {
+const char *assertString(assertType::Enum at) {
     DOCTEST_MSVC_SUPPRESS_WARNING_WITH_PUSH(4061) // enum 'x' in switch of enum 'y' is not explicitly handled
-    #define DOCTEST_GENERATE_ASSERT_TYPE_CASE(assert_type) case assertType::DT_ ## assert_type: return #assert_type
-    #define DOCTEST_GENERATE_ASSERT_TYPE_CASES(assert_type) \
-        DOCTEST_GENERATE_ASSERT_TYPE_CASE(WARN_ ## assert_type); \
-        DOCTEST_GENERATE_ASSERT_TYPE_CASE(CHECK_ ## assert_type); \
-        DOCTEST_GENERATE_ASSERT_TYPE_CASE(REQUIRE_ ## assert_type)
+#define DOCTEST_GENERATE_ASSERT_TYPE_CASE(assert_type)                                                                 \
+    case assertType::DT_##assert_type: return #assert_type
+#define DOCTEST_GENERATE_ASSERT_TYPE_CASES(assert_type)                                                                \
+    DOCTEST_GENERATE_ASSERT_TYPE_CASE(WARN_##assert_type);                                                             \
+    DOCTEST_GENERATE_ASSERT_TYPE_CASE(CHECK_##assert_type);                                                            \
+    DOCTEST_GENERATE_ASSERT_TYPE_CASE(REQUIRE_##assert_type)
     DOCTEST_CLANG_SUPPRESS_WARNING_PUSH
     DOCTEST_CLANG_SUPPRESS_WARNING("-Wswitch-enum")
     DOCTEST_GCC_SUPPRESS_WARNING_PUSH
     DOCTEST_GCC_SUPPRESS_WARNING("-Wswitch-enum")
-    switch(at) {
+    switch (at) {
         DOCTEST_GENERATE_ASSERT_TYPE_CASE(WARN);
         DOCTEST_GENERATE_ASSERT_TYPE_CASE(CHECK);
         DOCTEST_GENERATE_ASSERT_TYPE_CASE(REQUIRE);
@@ -50,14 +50,13 @@ const char* assertString(assertType::Enum at) {
     DOCTEST_GCC_SUPPRESS_WARNING_POP
     DOCTEST_MSVC_SUPPRESS_WARNING_POP
 }
-// clang-format on
 
-const char* failureString(assertType::Enum at) {
-    if(at & assertType::is_warn)
+const char *failureString(assertType::Enum at) {
+    if (at & assertType::is_warn)
         return "WARNING";
-    if(at & assertType::is_check)
+    if (at & assertType::is_check)
         return "ERROR";
-    if(at & assertType::is_require)
+    if (at & assertType::is_require)
         return "FATAL ERROR";
     return "";
 }

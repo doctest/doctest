@@ -13,7 +13,7 @@ DOCTEST_SUPPRESS_PRIVATE_WARNINGS_PUSH
 
 namespace doctest {
 
-    void fulltext_log_assert_to_stream(std::ostream& s, const AssertData& rb);
+void fulltext_log_assert_to_stream(std::ostream &s, const AssertData &rb);
 
 } // namespace doctest
 

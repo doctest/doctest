@@ -8,26 +8,24 @@ DOCTEST_SUPPRESS_PRIVATE_WARNINGS_PUSH
 namespace doctest {
 namespace detail {
 
-    bool checkIfShouldThrow(assertType::Enum at) {
-        if(at & assertType::is_require)
-            return true;
+bool checkIfShouldThrow(assertType::Enum at) {
+    if (at & assertType::is_require)
+        return true;
 
-        if((at & assertType::is_check)
-           && getContextOptions()->abort_after > 0 &&
-           (g_cs->numAssertsFailed + g_cs->numAssertsFailedCurrentTest_atomic) >=
-                   getContextOptions()->abort_after)
-            return true;
+    if ((at & assertType::is_check) && getContextOptions()->abort_after > 0 &&
+        (g_cs->numAssertsFailed + g_cs->numAssertsFailedCurrentTest_atomic) >= getContextOptions()->abort_after)
+        return true;
 
-        return false;
-    }
+    return false;
+}
 
 #ifndef DOCTEST_CONFIG_NO_EXCEPTIONS
-    DOCTEST_NORETURN void throwException() {
-        g_cs->shouldLogCurrentException = false;
-        throw TestFailureException(); // NOLINT(hicpp-exception-baseclass)
-    }
-#else // DOCTEST_CONFIG_NO_EXCEPTIONS
-    void throwException() {}
+DOCTEST_NORETURN void throwException() {
+    g_cs->shouldLogCurrentException = false;
+    throw TestFailureException(); // NOLINT(hicpp-exception-baseclass)
+}
+#else  // DOCTEST_CONFIG_NO_EXCEPTIONS
+void throwException() {}
 #endif // DOCTEST_CONFIG_NO_EXCEPTIONS
 
 } // namespace detail

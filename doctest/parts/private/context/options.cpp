@@ -5,7 +5,9 @@ DOCTEST_SUPPRESS_PRIVATE_WARNINGS_PUSH
 
 namespace doctest {
 
-    const ContextOptions* getContextOptions() { return DOCTEST_BRANCH_ON_DISABLED(nullptr, detail::g_cs); }
+const ContextOptions *getContextOptions() {
+    return DOCTEST_BRANCH_ON_DISABLED(nullptr, detail::g_cs);
+}
 
 } // namespace doctest
 

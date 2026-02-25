@@ -8,7 +8,7 @@ namespace doctest {
 namespace detail {
 
 ExpressionDecomposer::ExpressionDecomposer(assertType::Enum at)
-        : m_at(at) {}
+    : m_at(at) {}
 
 } // namespace detail
 } // namespace doctest

@@ -9,11 +9,13 @@ namespace doctest {
 namespace detail {
 
 #ifdef DOCTEST_CONFIG_GETCURRENTTICKS
-ticks_t getCurrentTicks() { return DOCTEST_CONFIG_GETCURRENTTICKS(); }
+ticks_t getCurrentTicks() {
+    return DOCTEST_CONFIG_GETCURRENTTICKS();
+}
 #elif defined(DOCTEST_PLATFORM_WINDOWS)
 ticks_t getCurrentTicks() {
-    static LARGE_INTEGER hz = { {0} }, hzo = { {0} };
-    if(!hz.QuadPart) {
+    static LARGE_INTEGER hz = {{0}}, hzo = {{0}};
+    if (!hz.QuadPart) {
         QueryPerformanceFrequency(&hz);
         QueryPerformanceCounter(&hzo);
     }
@@ -29,17 +31,21 @@ ticks_t getCurrentTicks() {
 }
 #endif // DOCTEST_PLATFORM_WINDOWS
 
-void Timer::start() { m_ticks = getCurrentTicks(); }
+void Timer::start() {
+    m_ticks = getCurrentTicks();
+}
 
 unsigned int Timer::getElapsedMicroseconds() const {
     return static_cast<unsigned int>(getCurrentTicks() - m_ticks);
 }
 
-//unsigned int Timer::getElapsedMilliseconds() const {
-//    return static_cast<unsigned int>(getElapsedMicroseconds() / 1000);
-//}
+// unsigned int Timer::getElapsedMilliseconds() const {
+//     return static_cast<unsigned int>(getElapsedMicroseconds() / 1000);
+// }
 
-double Timer::getElapsedSeconds() const { return static_cast<double>(getCurrentTicks() - m_ticks) / 1000000.0; }
+double Timer::getElapsedSeconds() const {
+    return static_cast<double>(getCurrentTicks() - m_ticks) / 1000000.0;
+}
 
 } // namespace detail
 } // namespace doctest

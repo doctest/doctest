@@ -8,48 +8,66 @@ DOCTEST_SUPPRESS_PRIVATE_WARNINGS_PUSH
 namespace doctest {
 #ifdef DOCTEST_CONFIG_DISABLE
 
-    int                         IReporter::get_num_active_contexts() { return 0; }
-    const IContextScope* const* IReporter::get_active_contexts() { return nullptr; }
-    int                         IReporter::get_num_stringified_contexts() { return 0; }
-    const String*               IReporter::get_stringified_contexts() { return nullptr; }
+int IReporter::get_num_active_contexts() {
+    return 0;
+}
 
-    int registerReporter(const char*, int, IReporter*) { return 0; }
+const IContextScope *const *IReporter::get_active_contexts() {
+    return nullptr;
+}
+
+int IReporter::get_num_stringified_contexts() {
+    return 0;
+}
+
+const String *IReporter::get_stringified_contexts() {
+    return nullptr;
+}
+
+int registerReporter(const char *, int, IReporter *) {
+    return 0;
+}
 
 #else
 
 namespace detail {
-    reporterMap& getReporters() {
-        static reporterMap data;
-        return data;
-    }
+reporterMap &getReporters() {
+    static reporterMap data;
+    return data;
+}
 
-    reporterMap& getListeners() {
-        static reporterMap data;
-        return data;
-    }
+reporterMap &getListeners() {
+    static reporterMap data;
+    return data;
+}
 } // namespace detail
 
+DOCTEST_DEFINE_INTERFACE(IReporter)
 
-    DOCTEST_DEFINE_INTERFACE(IReporter)
+int IReporter::get_num_active_contexts() {
+    return detail::g_infoContexts.size();
+}
 
-    int IReporter::get_num_active_contexts() { return detail::g_infoContexts.size(); }
-    const IContextScope* const* IReporter::get_active_contexts() {
-        return get_num_active_contexts() ? &detail::g_infoContexts[0] : nullptr;
-    }
+const IContextScope *const *IReporter::get_active_contexts() {
+    return get_num_active_contexts() ? &detail::g_infoContexts[0] : nullptr;
+}
 
-    int IReporter::get_num_stringified_contexts() { return detail::g_cs->stringifiedContexts.size(); }
-    const String* IReporter::get_stringified_contexts() {
-        return get_num_stringified_contexts() ? &detail::g_cs->stringifiedContexts[0] : nullptr;
-    }
+int IReporter::get_num_stringified_contexts() {
+    return detail::g_cs->stringifiedContexts.size();
+}
 
-    namespace detail {
-        void registerReporterImpl(const char* name, int priority, reporterCreatorFunc c, bool isReporter) {
-            if(isReporter)
-                getReporters().insert(reporterMap::value_type(reporterMap::key_type(priority, name), c));
-            else
-                getListeners().insert(reporterMap::value_type(reporterMap::key_type(priority, name), c));
-        }
-    } // namespace detail
+const String *IReporter::get_stringified_contexts() {
+    return get_num_stringified_contexts() ? &detail::g_cs->stringifiedContexts[0] : nullptr;
+}
+
+namespace detail {
+void registerReporterImpl(const char *name, int priority, reporterCreatorFunc c, bool isReporter) {
+    if (isReporter)
+        getReporters().insert(reporterMap::value_type(reporterMap::key_type(priority, name), c));
+    else
+        getListeners().insert(reporterMap::value_type(reporterMap::key_type(priority, name), c));
+}
+} // namespace detail
 
 #endif // DOCTEST_CONFIG_DISABLE
 } // namespace doctest
