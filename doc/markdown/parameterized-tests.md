@@ -1,93 +1,74 @@
 ## Parameterized test cases
 
-Test cases can be parameterized easily by type and indirectly by value.
+Test cases can be parameterized easily by type and by value.
 
 ## Value-parameterized test cases
 
-There will be proper support for this in the future. For now there are 2 ways of doing data-driven testing in doctest:
+Value-parameterized tests are supported via the `GENERATE` macro in `doctest/doctest.h`.
 
-- extracting the asserts in a helper function and calling it with a user-constructed array of data:
+```c++
+TEST_CASE("example") {
+    auto x = GENERATE(1, 2, 3);  // runs 3 times: x=1, x=2, x=3
+    CHECK(x > 0);
+}
+```
 
-    ```c++
-    void doChecks(int data) {
-        // do asserts with data
+Each additional `GENERATE` call adds a dimension. The last `GENERATE` in source order cycles fastest (innermost loop):
+
+```c++
+TEST_CASE("cartesian product") {
+    auto x = GENERATE(1, 2);        // outer - 2 values
+    auto y = GENERATE(10, 20, 30);  // inner - 3 values
+    // 6 runs: (1,10),(1,20),(1,30),(2,10),(2,20),(2,30)
+    CHECK(x * y > 0);
+}
+```
+
+`GENERATE` is generator-outer: each generator combination runs through all subcase paths before the generator advances.
+
+```c++
+TEST_CASE("generator + subcases") {
+    auto x = GENERATE(1, 2);
+    SUBCASE("positive") { CHECK(x > 0); }
+    SUBCASE("nonzero")  { CHECK(x != 0); }
+    // 4 runs: (x=1,positive),(x=1,nonzero),(x=2,positive),(x=2,nonzero)
+}
+```
+
+The value type is deduced from the first argument. All subsequent arguments are
+implicitly converted to that type.
+Use an explicit cast on the first argument to control the type:
+
+```c++
+auto x = GENERATE(1.0, 2, 3);    // double - 2 and 3 are implicit cast to double
+auto s = GENERATE("foo", "bar"); // const char*
+```
+
+User-defined types work as long as they are copyable:
+
+```c++
+struct Point { int x, y; };
+Point p1{1, 2}, p2{3, 4};
+auto p = GENERATE(p1, p2);
+```
+
+`GENERATE` may appear inside control flow whose shape is determined by earlier traversal choices on the current path (for example, an outer `GENERATE` or `SUBCASE`).
+```c++
+int i = GENERATE(1, 2);
+for(int j = 0; j < i; ++j) {
+    SUBCASE(std::to_string(j).c_str()) {
+        int k = GENERATE(10 - i - j, 20 - i - j);
+        CHECK(((i + j + k) % 10) == 0);
     }
+}
+```
 
-    TEST_CASE("test name") {
-        std::vector<int> data {1, 2, 3, 4, 5, 6};
+Constraints:
 
-        for(auto& i : data) {
-            CAPTURE(i); // log the current input data
-            doChecks(i);
-        }
-    }
-    ```
+- All arguments must be implicitly convertible to the type of the first argument.
+- `GENERATE` must not appear inside control flow that varies between reruns independently of `SUBCASE` or earlier `GENERATE` choices (for example, mutable external state, randomness, or time-dependent conditions).
 
-    This has several drawbacks:
-    - in case of an exception (or a ```REQUIRE``` assert failing) the entire test case ends and the checks are not done for the rest of the input data
-    - the user has to manually log the data with calls to ```CAPTURE()``` ( or ```INFO()```)
-    - more boilerplate - doctest should supply primitives for generating data but currently doesn't - so the user has to write their own data generation
-
-- using subcases to initialize data differently:
-
-    ```c++
-    TEST_CASE("test name") {
-        int data;
-        SUBCASE("") { data = 1; }
-        SUBCASE("") { data = 2; }
-
-        CAPTURE(data);
-
-        // do asserts with data
-    }
-    ```
-
-    This has the following drawbacks:
-    - doesn't scale well - it is very impractical to write such code for more than a few different inputs
-    - the user has to manually log the data with calls to ```CAPTURE()``` (or ```INFO()```)
-
-    --------------------------------
-
-    There is however an easy way to encapsulate this into a macro (written with C++14 for simplicity):
-
-    ```c++
-    #include <algorithm>
-    #include <string>
-
-    #define DOCTEST_VALUE_PARAMETERIZED_DATA(data, data_container)                                  \
-        static size_t _doctest_subcase_idx = 0;                                                     \
-        std::for_each(data_container.begin(), data_container.end(), [&](const auto& in) {           \
-            DOCTEST_SUBCASE((std::string(#data_container "[") +                                     \
-                            std::to_string(_doctest_subcase_idx++) + "]").c_str()) { data = in; }  \
-        });                                                                                         \
-        _doctest_subcase_idx = 0
-    ```
-
-    and now this can be used as follows:
-
-    ```c++
-    TEST_CASE("test name") {
-        int data;
-        std::list<int> data_container = {1, 2, 3, 4}; // must be iterable - std::vector<> would work as well
-
-        DOCTEST_VALUE_PARAMETERIZED_DATA(data, data_container);
-
-        printf("%d\n", data);
-    }
-    ```
-
-    and will print the 4 numbers by re-entering the test case 3 times (after the first entry) - just like subcases work:
-
-    ```
-    1
-    2
-    3
-    4
-    ```
-
-    The big limitation of this approach is that the macro cannot be used with other subcases at the same code block {} indentation level (will act weird) - it can only be used within a subcase.
-
-Stay tuned for proper value-parameterization in doctest!
+See [`examples/all_features/generators.cpp`](../../examples/all_features/generators.cpp).
 
 ## Templated test cases - parameterized by type
 

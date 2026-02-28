@@ -1,6 +1,10 @@
 [doctest] run with "--help" for options
+sc root x=1
+keep x=1
+sc root x=2
+keep x=2
 ===============================================================================
-[doctest] test cases: 0 | 0 passed | 0 failed | 124 skipped
-[doctest] assertions: 0 | 0 passed | 0 failed |
+[doctest] test cases: 1 | 1 passed | 0 failed |
+[doctest] assertions: 2 | 2 passed | 0 failed |
 [doctest] Status: SUCCESS!
 Program code.

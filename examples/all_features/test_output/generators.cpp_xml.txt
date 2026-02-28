@@ -1,0 +1,682 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<doctest binary="all_features">
+  <Options order_by="file" rand_seed="324" first="0" last="4294967295" abort_after="0" subcase_filter_levels="2147483647" case_sensitive="false" no_throw="false" no_skip="false"/>
+  <TestSuite>
+    <TestCase name="GENERATE - single, two values" filename="generators.cpp" line="0">
+x=10
+x=20
+      <OverallResultsAsserts successes="2" failures="0" test_case_success="true"/>
+    </TestCase>
+    <TestCase name="GENERATE - single, three values" filename="generators.cpp" line="0">
+x=1
+x=2
+x=3
+      <OverallResultsAsserts successes="6" failures="0" test_case_success="true"/>
+    </TestCase>
+    <TestCase name="GENERATE - two generators, cartesian product" filename="generators.cpp" line="0">
+x=1 y=10
+x=1 y=20
+x=2 y=10
+x=2 y=20
+      <OverallResultsAsserts successes="8" failures="0" test_case_success="true"/>
+    </TestCase>
+    <TestCase name="GENERATE - three generators" filename="generators.cpp" line="0">
+a=1 b=3 c=5
+a=1 b=3 c=6
+a=1 b=4 c=5
+a=1 b=4 c=6
+a=2 b=3 c=5
+a=2 b=3 c=6
+a=2 b=4 c=5
+a=2 b=4 c=6
+      <OverallResultsAsserts successes="8" failures="0" test_case_success="true"/>
+    </TestCase>
+    <TestCase name="GENERATE statements can depend on each other" filename="generators.cpp" line="0">
+i=1 j=2
+i=1 j=3
+i=1 j=4
+i=2 j=3
+i=2 j=4
+i=2 j=5
+i=3 j=4
+i=3 j=5
+i=3 j=6
+      <OverallResultsAsserts successes="9" failures="0" test_case_success="true"/>
+    </TestCase>
+    <TestCase name="multiple GENERATEs on a single line" filename="generators.cpp" line="0">
+i=1 j=10
+i=1 j=20
+i=2 j=10
+i=2 j=20
+      <OverallResultsAsserts successes="0" failures="0" test_case_success="true"/>
+    </TestCase>
+    <TestCase name="GENERATE - double values" filename="generators.cpp" line="0">
+d=1
+d=2.5
+d=3.14
+      <OverallResultsAsserts successes="3" failures="0" test_case_success="true"/>
+    </TestCase>
+    <TestCase name="GENERATE - const char* values" filename="generators.cpp" line="0">
+      <OverallResultsAsserts successes="4" failures="0" test_case_success="true"/>
+    </TestCase>
+    <TestCase name="GENERATE + SUBCASE - basic interaction" filename="generators.cpp" line="0">
+test_case: x=1
+      <SubCase name="A" filename="generators.cpp" line="0">
+A: x=1
+      </SubCase>
+test_case: x=1
+      <SubCase name="B" filename="generators.cpp" line="0">
+B: x=1
+      </SubCase>
+test_case: x=2
+      <SubCase name="A" filename="generators.cpp" line="0">
+A: x=2
+      </SubCase>
+test_case: x=2
+      <SubCase name="B" filename="generators.cpp" line="0">
+B: x=2
+      </SubCase>
+      <OverallResultsAsserts successes="4" failures="0" test_case_success="true"/>
+    </TestCase>
+    <TestCase name="GENERATE + nested SUBCASE" filename="generators.cpp" line="0">
+test_case: x=1
+      <SubCase name="outer" filename="generators.cpp" line="0">
+outer: x=1
+        <SubCase name="inner A" filename="generators.cpp" line="0">
+inner A: x=1
+        </SubCase>
+      </SubCase>
+test_case: x=1
+      <SubCase name="outer" filename="generators.cpp" line="0">
+outer: x=1
+        <SubCase name="inner B" filename="generators.cpp" line="0">
+inner B: x=1
+        </SubCase>
+      </SubCase>
+test_case: x=2
+      <SubCase name="outer" filename="generators.cpp" line="0">
+outer: x=2
+        <SubCase name="inner A" filename="generators.cpp" line="0">
+inner A: x=2
+        </SubCase>
+      </SubCase>
+test_case: x=2
+      <SubCase name="outer" filename="generators.cpp" line="0">
+outer: x=2
+        <SubCase name="inner B" filename="generators.cpp" line="0">
+inner B: x=2
+        </SubCase>
+      </SubCase>
+      <OverallResultsAsserts successes="4" failures="0" test_case_success="true"/>
+    </TestCase>
+    <TestCase name="two GENERATEs + SUBCASE" filename="generators.cpp" line="0">
+      <SubCase name="s" filename="generators.cpp" line="0">
+s: x=1 y=10
+      </SubCase>
+      <SubCase name="s" filename="generators.cpp" line="0">
+s: x=1 y=20
+      </SubCase>
+      <SubCase name="s" filename="generators.cpp" line="0">
+s: x=2 y=10
+      </SubCase>
+      <SubCase name="s" filename="generators.cpp" line="0">
+s: x=2 y=20
+      </SubCase>
+      <OverallResultsAsserts successes="4" failures="0" test_case_success="true"/>
+    </TestCase>
+    <TestCase name="GENERATE - custom struct type" filename="generators.cpp" line="0">
+p.x=1 p.y=2
+p.x=3 p.y=4
+p.x=5 p.y=6
+      <OverallResultsAsserts successes="6" failures="0" test_case_success="true"/>
+    </TestCase>
+    <TestCase name="GENERATE - single value (degenerate case)" filename="generators.cpp" line="0">
+x=42
+      <OverallResultsAsserts successes="1" failures="0" test_case_success="true"/>
+    </TestCase>
+    <TestCase name="GENERATE inside SUBCASE - single sibling" filename="generators.cpp" line="0">
+      <SubCase name="A" filename="generators.cpp" line="0">
+A x=1
+      </SubCase>
+      <SubCase name="A" filename="generators.cpp" line="0">
+A x=2
+      </SubCase>
+      <SubCase name="B" filename="generators.cpp" line="0">
+B
+      </SubCase>
+      <OverallResultsAsserts successes="3" failures="0" test_case_success="true"/>
+    </TestCase>
+    <TestCase name="GENERATE inside sibling SUBCASEs - different counts" filename="generators.cpp" line="0">
+      <SubCase name="A" filename="generators.cpp" line="0">
+A x=1
+      </SubCase>
+      <SubCase name="A" filename="generators.cpp" line="0">
+A x=2
+      </SubCase>
+      <SubCase name="A" filename="generators.cpp" line="0">
+A x=3
+      </SubCase>
+      <SubCase name="B" filename="generators.cpp" line="0">
+B y=10
+      </SubCase>
+      <SubCase name="B" filename="generators.cpp" line="0">
+B y=20
+      </SubCase>
+      <OverallResultsAsserts successes="5" failures="0" test_case_success="true"/>
+    </TestCase>
+    <TestCase name="GENERATE inside SUBCASE - with nested child subcases" filename="generators.cpp" line="0">
+      <SubCase name="outer" filename="generators.cpp" line="0">
+outer x=1
+        <SubCase name="inner A" filename="generators.cpp" line="0">
+  inner A x=1
+        </SubCase>
+      </SubCase>
+      <SubCase name="outer" filename="generators.cpp" line="0">
+outer x=1
+        <SubCase name="inner B" filename="generators.cpp" line="0">
+  inner B x=1
+        </SubCase>
+      </SubCase>
+      <SubCase name="outer" filename="generators.cpp" line="0">
+outer x=2
+        <SubCase name="inner A" filename="generators.cpp" line="0">
+  inner A x=2
+        </SubCase>
+      </SubCase>
+      <SubCase name="outer" filename="generators.cpp" line="0">
+outer x=2
+        <SubCase name="inner B" filename="generators.cpp" line="0">
+  inner B x=2
+        </SubCase>
+      </SubCase>
+      <OverallResultsAsserts successes="4" failures="0" test_case_success="true"/>
+    </TestCase>
+    <TestCase name="top-level GENERATE composes with GENERATE inside SUBCASE" filename="generators.cpp" line="0">
+      <SubCase name="s" filename="generators.cpp" line="0">
+s: n=10 k=1
+      </SubCase>
+      <SubCase name="s" filename="generators.cpp" line="0">
+s: n=10 k=2
+      </SubCase>
+      <SubCase name="s" filename="generators.cpp" line="0">
+s: n=20 k=1
+      </SubCase>
+      <SubCase name="s" filename="generators.cpp" line="0">
+s: n=20 k=2
+      </SubCase>
+      <OverallResultsAsserts successes="4" failures="0" test_case_success="true"/>
+    </TestCase>
+    <TestCase name="top-level GENERATE + two sibling SUBCASEs each with GENERATE" filename="generators.cpp" line="0">
+      <SubCase name="A" filename="generators.cpp" line="0">
+A n=1 k=10
+      </SubCase>
+      <SubCase name="A" filename="generators.cpp" line="0">
+A n=1 k=20
+      </SubCase>
+      <SubCase name="B" filename="generators.cpp" line="0">
+B n=1 k=100
+      </SubCase>
+      <SubCase name="B" filename="generators.cpp" line="0">
+B n=1 k=200
+      </SubCase>
+      <SubCase name="A" filename="generators.cpp" line="0">
+A n=2 k=10
+      </SubCase>
+      <SubCase name="A" filename="generators.cpp" line="0">
+A n=2 k=20
+      </SubCase>
+      <SubCase name="B" filename="generators.cpp" line="0">
+B n=2 k=100
+      </SubCase>
+      <SubCase name="B" filename="generators.cpp" line="0">
+B n=2 k=200
+      </SubCase>
+      <OverallResultsAsserts successes="8" failures="0" test_case_success="true"/>
+    </TestCase>
+    <TestCase name="GENERATE at multiple nesting depths" filename="generators.cpp" line="0">
+      <SubCase name="A" filename="generators.cpp" line="0">
+        <SubCase name="1" filename="generators.cpp" line="0">
+          <SubCase name="a" filename="generators.cpp" line="0">
+A1a: i=1 j=3 k=5 l=7
+          </SubCase>
+        </SubCase>
+      </SubCase>
+test_case: i=1
+      <SubCase name="A" filename="generators.cpp" line="0">
+        <SubCase name="1" filename="generators.cpp" line="0">
+          <SubCase name="a" filename="generators.cpp" line="0">
+A1a: i=1 j=3 k=5 l=8
+          </SubCase>
+        </SubCase>
+      </SubCase>
+test_case: i=1
+      <SubCase name="A" filename="generators.cpp" line="0">
+        <SubCase name="1" filename="generators.cpp" line="0">
+          <SubCase name="a" filename="generators.cpp" line="0">
+A1a: i=1 j=3 k=6 l=7
+          </SubCase>
+        </SubCase>
+      </SubCase>
+test_case: i=1
+      <SubCase name="A" filename="generators.cpp" line="0">
+        <SubCase name="1" filename="generators.cpp" line="0">
+          <SubCase name="a" filename="generators.cpp" line="0">
+A1a: i=1 j=3 k=6 l=8
+          </SubCase>
+        </SubCase>
+      </SubCase>
+test_case: i=1
+      <SubCase name="A" filename="generators.cpp" line="0">
+        <SubCase name="2" filename="generators.cpp" line="0">
+A2 i=1 m=9
+        </SubCase>
+      </SubCase>
+test_case: i=1
+      <SubCase name="A" filename="generators.cpp" line="0">
+        <SubCase name="2" filename="generators.cpp" line="0">
+A2 i=1 m=10
+        </SubCase>
+      </SubCase>
+test_case: i=1
+      <SubCase name="A" filename="generators.cpp" line="0">
+        <SubCase name="1" filename="generators.cpp" line="0">
+          <SubCase name="a" filename="generators.cpp" line="0">
+A1a: i=1 j=4 k=5 l=7
+          </SubCase>
+        </SubCase>
+      </SubCase>
+test_case: i=1
+      <SubCase name="A" filename="generators.cpp" line="0">
+        <SubCase name="1" filename="generators.cpp" line="0">
+          <SubCase name="a" filename="generators.cpp" line="0">
+A1a: i=1 j=4 k=5 l=8
+          </SubCase>
+        </SubCase>
+      </SubCase>
+test_case: i=1
+      <SubCase name="A" filename="generators.cpp" line="0">
+        <SubCase name="1" filename="generators.cpp" line="0">
+          <SubCase name="a" filename="generators.cpp" line="0">
+A1a: i=1 j=4 k=6 l=7
+          </SubCase>
+        </SubCase>
+      </SubCase>
+test_case: i=1
+      <SubCase name="A" filename="generators.cpp" line="0">
+        <SubCase name="1" filename="generators.cpp" line="0">
+          <SubCase name="a" filename="generators.cpp" line="0">
+A1a: i=1 j=4 k=6 l=8
+          </SubCase>
+        </SubCase>
+      </SubCase>
+test_case: i=1
+      <SubCase name="A" filename="generators.cpp" line="0">
+        <SubCase name="2" filename="generators.cpp" line="0">
+A2 i=1 m=9
+        </SubCase>
+      </SubCase>
+test_case: i=1
+      <SubCase name="A" filename="generators.cpp" line="0">
+        <SubCase name="2" filename="generators.cpp" line="0">
+A2 i=1 m=10
+        </SubCase>
+      </SubCase>
+test_case: i=1
+      <SubCase name="B" filename="generators.cpp" line="0">
+B: i=1 n=1000
+      </SubCase>
+test_case: i=1
+      <SubCase name="B" filename="generators.cpp" line="0">
+B: i=1 n=2000
+      </SubCase>
+test_case: i=1
+      <SubCase name="A" filename="generators.cpp" line="0">
+        <SubCase name="1" filename="generators.cpp" line="0">
+          <SubCase name="a" filename="generators.cpp" line="0">
+A1a: i=2 j=3 k=5 l=7
+          </SubCase>
+        </SubCase>
+      </SubCase>
+test_case: i=2
+      <SubCase name="A" filename="generators.cpp" line="0">
+        <SubCase name="1" filename="generators.cpp" line="0">
+          <SubCase name="a" filename="generators.cpp" line="0">
+A1a: i=2 j=3 k=5 l=8
+          </SubCase>
+        </SubCase>
+      </SubCase>
+test_case: i=2
+      <SubCase name="A" filename="generators.cpp" line="0">
+        <SubCase name="1" filename="generators.cpp" line="0">
+          <SubCase name="a" filename="generators.cpp" line="0">
+A1a: i=2 j=3 k=6 l=7
+          </SubCase>
+        </SubCase>
+      </SubCase>
+test_case: i=2
+      <SubCase name="A" filename="generators.cpp" line="0">
+        <SubCase name="1" filename="generators.cpp" line="0">
+          <SubCase name="a" filename="generators.cpp" line="0">
+A1a: i=2 j=3 k=6 l=8
+          </SubCase>
+        </SubCase>
+      </SubCase>
+test_case: i=2
+      <SubCase name="A" filename="generators.cpp" line="0">
+        <SubCase name="2" filename="generators.cpp" line="0">
+A2 i=2 m=9
+        </SubCase>
+      </SubCase>
+test_case: i=2
+      <SubCase name="A" filename="generators.cpp" line="0">
+        <SubCase name="2" filename="generators.cpp" line="0">
+A2 i=2 m=10
+        </SubCase>
+      </SubCase>
+test_case: i=2
+      <SubCase name="A" filename="generators.cpp" line="0">
+        <SubCase name="1" filename="generators.cpp" line="0">
+          <SubCase name="a" filename="generators.cpp" line="0">
+A1a: i=2 j=4 k=5 l=7
+          </SubCase>
+        </SubCase>
+      </SubCase>
+test_case: i=2
+      <SubCase name="A" filename="generators.cpp" line="0">
+        <SubCase name="1" filename="generators.cpp" line="0">
+          <SubCase name="a" filename="generators.cpp" line="0">
+A1a: i=2 j=4 k=5 l=8
+          </SubCase>
+        </SubCase>
+      </SubCase>
+test_case: i=2
+      <SubCase name="A" filename="generators.cpp" line="0">
+        <SubCase name="1" filename="generators.cpp" line="0">
+          <SubCase name="a" filename="generators.cpp" line="0">
+A1a: i=2 j=4 k=6 l=7
+          </SubCase>
+        </SubCase>
+      </SubCase>
+test_case: i=2
+      <SubCase name="A" filename="generators.cpp" line="0">
+        <SubCase name="1" filename="generators.cpp" line="0">
+          <SubCase name="a" filename="generators.cpp" line="0">
+A1a: i=2 j=4 k=6 l=8
+          </SubCase>
+        </SubCase>
+      </SubCase>
+test_case: i=2
+      <SubCase name="A" filename="generators.cpp" line="0">
+        <SubCase name="2" filename="generators.cpp" line="0">
+A2 i=2 m=9
+        </SubCase>
+      </SubCase>
+test_case: i=2
+      <SubCase name="A" filename="generators.cpp" line="0">
+        <SubCase name="2" filename="generators.cpp" line="0">
+A2 i=2 m=10
+        </SubCase>
+      </SubCase>
+test_case: i=2
+      <SubCase name="B" filename="generators.cpp" line="0">
+B: i=2 n=1000
+      </SubCase>
+test_case: i=2
+      <SubCase name="B" filename="generators.cpp" line="0">
+B: i=2 n=2000
+      </SubCase>
+test_case: i=2
+      <OverallResultsAsserts successes="0" failures="0" test_case_success="true"/>
+    </TestCase>
+    <TestCase name="nested GENERATE does not affect sibling SUBCASE" filename="generators.cpp" line="0">
+      <SubCase name="A" filename="generators.cpp" line="0">
+        <SubCase name="1" filename="generators.cpp" line="0">
+A1 j=10 k=100
+        </SubCase>
+      </SubCase>
+      <SubCase name="A" filename="generators.cpp" line="0">
+        <SubCase name="1" filename="generators.cpp" line="0">
+A1 j=10 k=200
+        </SubCase>
+      </SubCase>
+      <SubCase name="A" filename="generators.cpp" line="0">
+        <SubCase name="1" filename="generators.cpp" line="0">
+A1 j=20 k=100
+        </SubCase>
+      </SubCase>
+      <SubCase name="A" filename="generators.cpp" line="0">
+        <SubCase name="1" filename="generators.cpp" line="0">
+A1 j=20 k=200
+        </SubCase>
+      </SubCase>
+      <SubCase name="B" filename="generators.cpp" line="0">
+B enter=0
+      </SubCase>
+      <OverallResultsAsserts successes="1" failures="0" test_case_success="true"/>
+    </TestCase>
+    <TestCase name="all items are handled" filename="generators.cpp" line="0">
+before: i=1
+after: i=1
+before: i=2
+      <Expression success="false" type="REQUIRE" filename="generators.cpp" line="0">
+        <Original>
+          i % 2
+        </Original>
+        <Expanded>
+          0
+        </Expanded>
+      </Expression>
+before: i=3
+after: i=3
+before: i=4
+      <Expression success="false" type="REQUIRE" filename="generators.cpp" line="0">
+        <Original>
+          i % 2
+        </Original>
+        <Expanded>
+          0
+        </Expanded>
+      </Expression>
+      <OverallResultsAsserts successes="2" failures="2" test_case_success="true" expected_failures="2"/>
+    </TestCase>
+    <TestCase name="failures continue cartesian iteration" filename="generators.cpp" line="0">
+before: i=1 j=0
+      <Expression success="false" type="REQUIRE" filename="generators.cpp" line="0">
+        <Original>
+          i + j == 2
+        </Original>
+        <Expanded>
+          1 == 2
+        </Expanded>
+      </Expression>
+before: i=1 j=1
+after: i=1 j=1
+before: i=1 j=2
+      <Expression success="false" type="REQUIRE" filename="generators.cpp" line="0">
+        <Original>
+          i + j == 2
+        </Original>
+        <Expanded>
+          3 == 2
+        </Expanded>
+      </Expression>
+before: i=2 j=-1
+      <Expression success="false" type="REQUIRE" filename="generators.cpp" line="0">
+        <Original>
+          i + j == 2
+        </Original>
+        <Expanded>
+          1 == 2
+        </Expanded>
+      </Expression>
+before: i=2 j=0
+after: i=2 j=0
+before: i=2 j=1
+      <Expression success="false" type="REQUIRE" filename="generators.cpp" line="0">
+        <Original>
+          i + j == 2
+        </Original>
+        <Expanded>
+          3 == 2
+        </Expanded>
+      </Expression>
+      <OverallResultsAsserts successes="2" failures="4" test_case_success="true" expected_failures="4"/>
+    </TestCase>
+    <TestCase name="GENERATE with fixed for loop" filename="generators.cpp" line="0">
+      <SubCase name="loop with fixed name" filename="generators.cpp" line="0">
+        <SubCase name="fixed name" filename="generators.cpp" line="0">
+i=0 j=3
+        </SubCase>
+        <SubCase name="fixed name" filename="generators.cpp" line="0">
+i=1 j=3 j=5
+        </SubCase>
+        <SubCase name="fixed name" filename="generators.cpp" line="0">
+i=2 j=3 j=5 j=7
+        </SubCase>
+      </SubCase>
+      <SubCase name="loop with fixed name" filename="generators.cpp" line="0">
+        <SubCase name="fixed name" filename="generators.cpp" line="0">
+i=0 j=4
+        </SubCase>
+        <SubCase name="fixed name" filename="generators.cpp" line="0">
+i=1 j=4 j=6
+        </SubCase>
+        <SubCase name="fixed name" filename="generators.cpp" line="0">
+i=2 j=4 j=6 j=8
+        </SubCase>
+      </SubCase>
+      <SubCase name="loop with dynamic name" filename="generators.cpp" line="0">
+        <SubCase name="dynamic 0" filename="generators.cpp" line="0">
+i=0 j=3
+        </SubCase>
+      </SubCase>
+      <SubCase name="loop with dynamic name" filename="generators.cpp" line="0">
+        <SubCase name="dynamic 0" filename="generators.cpp" line="0">
+i=0 j=4
+        </SubCase>
+      </SubCase>
+      <SubCase name="loop with dynamic name" filename="generators.cpp" line="0">
+        <SubCase name="dynamic 1" filename="generators.cpp" line="0">
+i=1 j=5
+        </SubCase>
+      </SubCase>
+      <SubCase name="loop with dynamic name" filename="generators.cpp" line="0">
+        <SubCase name="dynamic 1" filename="generators.cpp" line="0">
+i=1 j=6
+        </SubCase>
+      </SubCase>
+      <SubCase name="loop with dynamic name" filename="generators.cpp" line="0">
+        <SubCase name="dynamic 2" filename="generators.cpp" line="0">
+i=2 j=7
+        </SubCase>
+      </SubCase>
+      <SubCase name="loop with dynamic name" filename="generators.cpp" line="0">
+        <SubCase name="dynamic 2" filename="generators.cpp" line="0">
+i=2 j=8
+        </SubCase>
+      </SubCase>
+      <SubCase name="loop without subcase" filename="generators.cpp" line="0">
+js=[ 3 5 7 ]
+      </SubCase>
+      <SubCase name="loop without subcase" filename="generators.cpp" line="0">
+js=[ 3 5 8 ]
+      </SubCase>
+      <SubCase name="loop without subcase" filename="generators.cpp" line="0">
+js=[ 3 6 7 ]
+      </SubCase>
+      <SubCase name="loop without subcase" filename="generators.cpp" line="0">
+js=[ 3 6 8 ]
+      </SubCase>
+      <SubCase name="loop without subcase" filename="generators.cpp" line="0">
+js=[ 4 5 7 ]
+      </SubCase>
+      <SubCase name="loop without subcase" filename="generators.cpp" line="0">
+js=[ 4 5 8 ]
+      </SubCase>
+      <SubCase name="loop without subcase" filename="generators.cpp" line="0">
+js=[ 4 6 7 ]
+      </SubCase>
+      <SubCase name="loop without subcase" filename="generators.cpp" line="0">
+js=[ 4 6 8 ]
+      </SubCase>
+      <OverallResultsAsserts successes="0" failures="0" test_case_success="true"/>
+    </TestCase>
+    <TestCase name="GENERATE with dynamic loop" filename="generators.cpp" line="0">
+# i=1
+      <SubCase name="0" filename="generators.cpp" line="0">
+j=0 k=9
+      </SubCase>
+# i=1
+      <SubCase name="0" filename="generators.cpp" line="0">
+j=0 k=19
+      </SubCase>
+# i=2
+      <SubCase name="0" filename="generators.cpp" line="0">
+j=0 k=8
+      </SubCase>
+# i=2
+      <SubCase name="0" filename="generators.cpp" line="0">
+j=0 k=18
+      </SubCase>
+# i=2
+      <SubCase name="1" filename="generators.cpp" line="0">
+j=1 k=7
+      </SubCase>
+# i=2
+      <SubCase name="1" filename="generators.cpp" line="0">
+j=1 k=17
+      </SubCase>
+      <OverallResultsAsserts successes="6" failures="0" test_case_success="true"/>
+    </TestCase>
+    <TestCase name="GENERATE with dynamic if" filename="generators.cpp" line="0">
+i=1 j=10
+i=1 j=20
+i=3 j=10
+i=3 j=20
+      <OverallResultsAsserts successes="0" failures="0" test_case_success="true"/>
+    </TestCase>
+    <TestCase name="GENERATE with dynamic switch" filename="generators.cpp" line="0">
+i=1 j=10
+i=1 j=20
+i=2 k=100
+i=2 k=200
+i=3 m=1000
+i=3 m=2000
+      <OverallResultsAsserts successes="0" failures="0" test_case_success="true"/>
+    </TestCase>
+    <TestCase name="GENERATE filter test-case target" filename="generators.cpp" line="0">
+tc target x=1 y=10
+tc target x=1 y=20
+tc target x=2 y=10
+tc target x=2 y=20
+      <OverallResultsAsserts successes="4" failures="0" test_case_success="true"/>
+    </TestCase>
+    <TestCase name="GENERATE filter test-case excluded" filename="generators.cpp" line="0">
+tc excluded x=3
+tc excluded x=4
+      <OverallResultsAsserts successes="2" failures="0" test_case_success="true"/>
+    </TestCase>
+    <TestCase name="GENERATE filter subcase target" filename="generators.cpp" line="0">
+sc root x=1
+      <SubCase name="keep" filename="generators.cpp" line="0">
+keep x=1
+      </SubCase>
+sc root x=1
+      <SubCase name="drop" filename="generators.cpp" line="0">
+drop x=1
+      </SubCase>
+sc root x=2
+      <SubCase name="keep" filename="generators.cpp" line="0">
+keep x=2
+      </SubCase>
+sc root x=2
+      <SubCase name="drop" filename="generators.cpp" line="0">
+drop x=2
+      </SubCase>
+      <OverallResultsAsserts successes="4" failures="0" test_case_success="true"/>
+    </TestCase>
+  </TestSuite>
+  <OverallResultsAsserts successes="104" failures="6"/>
+  <OverallResultsTestCases successes="29" failures="0"/>
+</doctest>
+Program code.

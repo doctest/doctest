@@ -1,0 +1,254 @@
+[doctest] run with "--help" for options
+x=10
+x=20
+x=1
+x=2
+x=3
+x=1 y=10
+x=1 y=20
+x=2 y=10
+x=2 y=20
+a=1 b=3 c=5
+a=1 b=3 c=6
+a=1 b=4 c=5
+a=1 b=4 c=6
+a=2 b=3 c=5
+a=2 b=3 c=6
+a=2 b=4 c=5
+a=2 b=4 c=6
+i=1 j=2
+i=1 j=3
+i=1 j=4
+i=2 j=3
+i=2 j=4
+i=2 j=5
+i=3 j=4
+i=3 j=5
+i=3 j=6
+i=1 j=10
+i=1 j=20
+i=2 j=10
+i=2 j=20
+d=1
+d=2.5
+d=3.14
+test_case: x=1
+A: x=1
+test_case: x=1
+B: x=1
+test_case: x=2
+A: x=2
+test_case: x=2
+B: x=2
+test_case: x=1
+outer: x=1
+inner A: x=1
+test_case: x=1
+outer: x=1
+inner B: x=1
+test_case: x=2
+outer: x=2
+inner A: x=2
+test_case: x=2
+outer: x=2
+inner B: x=2
+s: x=1 y=10
+s: x=1 y=20
+s: x=2 y=10
+s: x=2 y=20
+p.x=1 p.y=2
+p.x=3 p.y=4
+p.x=5 p.y=6
+x=42
+A x=1
+A x=2
+B
+A x=1
+A x=2
+A x=3
+B y=10
+B y=20
+outer x=1
+  inner A x=1
+outer x=1
+  inner B x=1
+outer x=2
+  inner A x=2
+outer x=2
+  inner B x=2
+s: n=10 k=1
+s: n=10 k=2
+s: n=20 k=1
+s: n=20 k=2
+A n=1 k=10
+A n=1 k=20
+B n=1 k=100
+B n=1 k=200
+A n=2 k=10
+A n=2 k=20
+B n=2 k=100
+B n=2 k=200
+A1a: i=1 j=3 k=5 l=7
+test_case: i=1
+A1a: i=1 j=3 k=5 l=8
+test_case: i=1
+A1a: i=1 j=3 k=6 l=7
+test_case: i=1
+A1a: i=1 j=3 k=6 l=8
+test_case: i=1
+A2 i=1 m=9
+test_case: i=1
+A2 i=1 m=10
+test_case: i=1
+A1a: i=1 j=4 k=5 l=7
+test_case: i=1
+A1a: i=1 j=4 k=5 l=8
+test_case: i=1
+A1a: i=1 j=4 k=6 l=7
+test_case: i=1
+A1a: i=1 j=4 k=6 l=8
+test_case: i=1
+A2 i=1 m=9
+test_case: i=1
+A2 i=1 m=10
+test_case: i=1
+B: i=1 n=1000
+test_case: i=1
+B: i=1 n=2000
+test_case: i=1
+A1a: i=2 j=3 k=5 l=7
+test_case: i=2
+A1a: i=2 j=3 k=5 l=8
+test_case: i=2
+A1a: i=2 j=3 k=6 l=7
+test_case: i=2
+A1a: i=2 j=3 k=6 l=8
+test_case: i=2
+A2 i=2 m=9
+test_case: i=2
+A2 i=2 m=10
+test_case: i=2
+A1a: i=2 j=4 k=5 l=7
+test_case: i=2
+A1a: i=2 j=4 k=5 l=8
+test_case: i=2
+A1a: i=2 j=4 k=6 l=7
+test_case: i=2
+A1a: i=2 j=4 k=6 l=8
+test_case: i=2
+A2 i=2 m=9
+test_case: i=2
+A2 i=2 m=10
+test_case: i=2
+B: i=2 n=1000
+test_case: i=2
+B: i=2 n=2000
+test_case: i=2
+A1 j=10 k=100
+A1 j=10 k=200
+A1 j=20 k=100
+A1 j=20 k=200
+B enter=0
+before: i=1
+after: i=1
+before: i=2
+===============================================================================
+generators.cpp(0):
+TEST CASE:  all items are handled
+
+generators.cpp(0): FATAL ERROR: REQUIRE( i % 2 ) is NOT correct!
+  values: REQUIRE( 0 )
+
+before: i=3
+after: i=3
+before: i=4
+generators.cpp(0): FATAL ERROR: REQUIRE( i % 2 ) is NOT correct!
+  values: REQUIRE( 0 )
+
+Failed exactly 2 times as expected so marking it as not failed!
+before: i=1 j=0
+===============================================================================
+generators.cpp(0):
+TEST CASE:  failures continue cartesian iteration
+
+generators.cpp(0): FATAL ERROR: REQUIRE( i + j == 2 ) is NOT correct!
+  values: REQUIRE( 1 == 2 )
+
+before: i=1 j=1
+after: i=1 j=1
+before: i=1 j=2
+generators.cpp(0): FATAL ERROR: REQUIRE( i + j == 2 ) is NOT correct!
+  values: REQUIRE( 3 == 2 )
+
+before: i=2 j=-1
+generators.cpp(0): FATAL ERROR: REQUIRE( i + j == 2 ) is NOT correct!
+  values: REQUIRE( 1 == 2 )
+
+before: i=2 j=0
+after: i=2 j=0
+before: i=2 j=1
+generators.cpp(0): FATAL ERROR: REQUIRE( i + j == 2 ) is NOT correct!
+  values: REQUIRE( 3 == 2 )
+
+Failed exactly 4 times as expected so marking it as not failed!
+i=0 j=3
+i=1 j=3 j=5
+i=2 j=3 j=5 j=7
+i=0 j=4
+i=1 j=4 j=6
+i=2 j=4 j=6 j=8
+i=0 j=3
+i=0 j=4
+i=1 j=5
+i=1 j=6
+i=2 j=7
+i=2 j=8
+js=[ 3 5 7 ]
+js=[ 3 5 8 ]
+js=[ 3 6 7 ]
+js=[ 3 6 8 ]
+js=[ 4 5 7 ]
+js=[ 4 5 8 ]
+js=[ 4 6 7 ]
+js=[ 4 6 8 ]
+# i=1
+j=0 k=9
+# i=1
+j=0 k=19
+# i=2
+j=0 k=8
+# i=2
+j=0 k=18
+# i=2
+j=1 k=7
+# i=2
+j=1 k=17
+i=1 j=10
+i=1 j=20
+i=3 j=10
+i=3 j=20
+i=1 j=10
+i=1 j=20
+i=2 k=100
+i=2 k=200
+i=3 m=1000
+i=3 m=2000
+tc target x=1 y=10
+tc target x=1 y=20
+tc target x=2 y=10
+tc target x=2 y=20
+tc excluded x=3
+tc excluded x=4
+sc root x=1
+keep x=1
+sc root x=1
+drop x=1
+sc root x=2
+keep x=2
+sc root x=2
+drop x=2
+===============================================================================
+[doctest] test cases:  29 |  29 passed | 0 failed |
+[doctest] assertions: 110 | 104 passed | 6 failed |
+[doctest] Status: SUCCESS!
+Program code.

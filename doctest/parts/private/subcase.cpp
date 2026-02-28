@@ -7,47 +7,6 @@ DOCTEST_SUPPRESS_PRIVATE_WARNINGS_PUSH
 
 namespace doctest {
 
-#ifndef DOCTEST_CONFIG_DISABLE
-namespace detail {
-
-DOCTEST_NO_SANITIZE_INTEGER
-unsigned long long hash(unsigned long long a, unsigned long long b) {
-    return (a << 5) + b;
-}
-
-// C string hash function (djb2) - taken from http://www.cse.yorku.ca/~oz/hash.html
-DOCTEST_NO_SANITIZE_INTEGER
-unsigned long long hash(const char *str) {
-    unsigned long long hash = 5381;
-    char c;
-    while ((c = *str++))
-        hash = ((hash << 5) + hash) + c; // hash * 33 + c
-    return hash;
-}
-
-unsigned long long hash(const SubcaseSignature &sig) {
-    return hash(hash(hash(sig.m_file), hash(sig.m_name.c_str())), sig.m_line);
-}
-
-unsigned long long hash(const std::vector<SubcaseSignature> &sigs, size_t count) {
-    unsigned long long running = 0;
-    auto end = sigs.begin() + count;
-    for (auto it = sigs.begin(); it != end; it++) {
-        running = hash(running, hash(*it));
-    }
-    return running;
-}
-
-unsigned long long hash(const std::vector<SubcaseSignature> &sigs) {
-    unsigned long long running = 0;
-    for (const SubcaseSignature &sig: sigs) {
-        running = hash(running, hash(sig));
-    }
-    return running;
-}
-} // namespace detail
-#endif // DOCTEST_CONFIG_DISABLE
-
 bool SubcaseSignature::operator==(const SubcaseSignature &other) const {
     return m_line == other.m_line && std::strcmp(m_file, other.m_file) == 0 && m_name == other.m_name;
 }
@@ -64,7 +23,7 @@ bool SubcaseSignature::operator<(const SubcaseSignature &other) const {
 namespace detail {
 
 bool Subcase::checkFilters() {
-    if (g_cs->subcaseStack.size() < size_t(g_cs->subcase_filter_levels)) {
+    if (g_cs->traversal.activeSubcaseDepth() < size_t(g_cs->subcase_filter_levels)) {
         if (!matchesAny(m_signature.m_name.c_str(), g_cs->filters[6], true, g_cs->case_sensitive))
             return true;
         if (matchesAny(m_signature.m_name.c_str(), g_cs->filters[7], false, g_cs->case_sensitive))
@@ -75,42 +34,14 @@ bool Subcase::checkFilters() {
 
 Subcase::Subcase(const String &name, const char *file, int line)
     : m_signature({name, file, line}) {
-    if (!g_cs->reachedLeaf) {
-        if (g_cs->nextSubcaseStack.size() <= g_cs->subcaseStack.size() ||
-            g_cs->nextSubcaseStack[g_cs->subcaseStack.size()] == m_signature) {
-            // Going down.
-            if (checkFilters()) {
-                return;
-            }
+    if (checkFilters())
+        return;
 
-            g_cs->subcaseStack.push_back(m_signature);
-            g_cs->currentSubcaseDepth++;
-            m_entered = true;
-            DOCTEST_ITERATE_THROUGH_REPORTERS(subcase_start, m_signature);
-        }
-    } else {
-        if (g_cs->subcaseStack[g_cs->currentSubcaseDepth] == m_signature) {
-            // This subcase is reentered via control flow.
-            g_cs->currentSubcaseDepth++;
-            m_entered = true;
-            DOCTEST_ITERATE_THROUGH_REPORTERS(subcase_start, m_signature);
-        } else if (g_cs->nextSubcaseStack.size() <= g_cs->currentSubcaseDepth &&
-                   g_cs->fullyTraversedSubcases.find(
-                       hash(hash(g_cs->subcaseStack, g_cs->currentSubcaseDepth), hash(m_signature))
-                   ) == g_cs->fullyTraversedSubcases.end()) {
-            if (checkFilters()) {
-                return;
-            }
-            // This subcase is part of the one to be executed next.
-            g_cs->nextSubcaseStack.clear();
-            g_cs->nextSubcaseStack.insert(
-                g_cs->nextSubcaseStack.end(),
-                g_cs->subcaseStack.begin(),
-                g_cs->subcaseStack.begin() + g_cs->currentSubcaseDepth
-            );
-            g_cs->nextSubcaseStack.push_back(m_signature);
-        }
-    }
+    if (!g_cs->traversal.tryEnterSubcase(m_signature))
+        return;
+
+    m_entered = true;
+    DOCTEST_ITERATE_THROUGH_REPORTERS(subcase_start, m_signature);
 }
 
 DOCTEST_MSVC_SUPPRESS_WARNING_WITH_PUSH(4996) // std::uncaught_exception is deprecated in C++17
@@ -119,17 +50,7 @@ DOCTEST_CLANG_SUPPRESS_WARNING_WITH_PUSH("-Wdeprecated-declarations")
 
 Subcase::~Subcase() {
     if (m_entered) {
-        g_cs->currentSubcaseDepth--;
-
-        if (!g_cs->reachedLeaf) {
-            // Leaf.
-            g_cs->fullyTraversedSubcases.insert(hash(g_cs->subcaseStack));
-            g_cs->nextSubcaseStack.clear();
-            g_cs->reachedLeaf = true;
-        } else if (g_cs->nextSubcaseStack.empty()) {
-            // All children are finished.
-            g_cs->fullyTraversedSubcases.insert(hash(g_cs->subcaseStack));
-        }
+        g_cs->traversal.leaveSubcase();
 
 #if defined(__cpp_lib_uncaught_exceptions) && __cpp_lib_uncaught_exceptions >= 201411L &&                              \
     (!defined(__MAC_OS_X_VERSION_MIN_REQUIRED) || __MAC_OS_X_VERSION_MIN_REQUIRED >= 101200)

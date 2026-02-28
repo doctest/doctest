@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+tc target x=1 y=10
+tc target x=1 y=20
+tc target x=2 y=10
+tc target x=2 y=20
+<testsuites>
+  <testsuite name="all_features" errors="0" failures="0" tests="4">
+    <testcase classname="generators.cpp" name="GENERATE filter test-case target" status="run"/>
+    <testcase classname="generators.cpp" name="GENERATE filter test-case target" status="run"/>
+    <testcase classname="generators.cpp" name="GENERATE filter test-case target" status="run"/>
+    <testcase classname="generators.cpp" name="GENERATE filter test-case target" status="run"/>
+  </testsuite>
+</testsuites>
+Program code.

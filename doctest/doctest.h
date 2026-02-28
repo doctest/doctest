@@ -2718,6 +2718,32 @@ int registerReporter(const char *name, int priority, bool isReporter) {
 DOCTEST_SUPPRESS_PUBLIC_WARNINGS_POP
 
 #endif // DOCTEST_PARTS_PUBLIC_REPORTER
+#ifndef DOCTEST_PARTS_PUBLIC_GENERATOR
+#define DOCTEST_PARTS_PUBLIC_GENERATOR
+
+
+DOCTEST_SUPPRESS_PUBLIC_WARNINGS_PUSH
+
+#ifndef DOCTEST_CONFIG_DISABLE
+namespace doctest {
+namespace detail {
+
+DOCTEST_INTERFACE size_t acquireGeneratorDecisionIndex(size_t count);
+
+template <typename T, typename... Rest>
+T acquireGeneratorValue(T first, Rest... rest) {
+    const T values[] = {first, static_cast<T>(rest)...};
+    const size_t idx = acquireGeneratorDecisionIndex(1 + sizeof...(Rest));
+    return values[idx];
+}
+
+} // namespace detail
+} // namespace doctest
+#endif // DOCTEST_CONFIG_DISABLE
+
+DOCTEST_SUPPRESS_PUBLIC_WARNINGS_POP
+
+#endif // DOCTEST_PARTS_PUBLIC_GENERATOR
 #ifndef DOCTEST_PARTS_PUBLIC_MACROS
 #define DOCTEST_PARTS_PUBLIC_MACROS
 
@@ -2908,6 +2934,9 @@ int instantiationHelper(const T &) {
 #define DOCTEST_SUBCASE(name)                                                                                          \
     if (const doctest::detail::Subcase &DOCTEST_ANONYMOUS(DOCTEST_ANON_SUBCASE_) DOCTEST_UNUSED =                      \
             doctest::detail::Subcase(name, __FILE__, __LINE__))
+
+// for generating value-parameterized test inputs
+#define DOCTEST_GENERATE(...) doctest::detail::acquireGeneratorValue(__VA_ARGS__)
 
 // for grouping tests in test suites by using code blocks
 #define DOCTEST_TEST_SUITE_IMPL(decorators, ns_name)                                                                   \
@@ -3250,6 +3279,10 @@ int instantiationHelper(const T &) {
 
 // for subcases
 #define DOCTEST_SUBCASE(name)
+
+// for generating value-parameterized test inputs
+// expands to `(first)` for consistent type deduction
+#define DOCTEST_GENERATE(first, ...) (first)
 
 // for a testsuite block
 #define DOCTEST_TEST_SUITE(name) namespace // NOLINT
@@ -3594,6 +3627,7 @@ DOCTEST_RELATIONAL_OP(ge, >=)
 #define TEST_CASE_TEMPLATE_INVOKE(id, ...) DOCTEST_TEST_CASE_TEMPLATE_INVOKE(id, __VA_ARGS__)
 #define TEST_CASE_TEMPLATE_APPLY(id, ...) DOCTEST_TEST_CASE_TEMPLATE_APPLY(id, __VA_ARGS__)
 #define SUBCASE(name) DOCTEST_SUBCASE(name)
+#define GENERATE(...) DOCTEST_GENERATE(__VA_ARGS__)
 #define TEST_SUITE(decorators) DOCTEST_TEST_SUITE(decorators)
 #define TEST_SUITE_BEGIN(name) DOCTEST_TEST_SUITE_BEGIN(name)
 #define TEST_SUITE_END DOCTEST_TEST_SUITE_END
@@ -4037,6 +4071,58 @@ private:
 DOCTEST_SUPPRESS_PRIVATE_WARNINGS_POP
 
 #endif // DOCTEST_PARTS_PRIVATE_ATOMIC
+#ifndef DOCTEST_PARTS_PRIVATE_TRAVERSAL
+#define DOCTEST_PARTS_PRIVATE_TRAVERSAL
+
+
+DOCTEST_SUPPRESS_PRIVATE_WARNINGS_PUSH
+
+#ifndef DOCTEST_CONFIG_DISABLE
+
+namespace doctest {
+namespace detail {
+
+struct DecisionPoint {
+    // Number of branches available at this depth for the current traversal path.
+    size_t branch_count = 0;
+    // Encountered sibling subcases in source order for subcase decision points.
+    std::vector<SubcaseSignature> subcases;
+};
+
+class TraversalState {
+public:
+    size_t activeSubcaseDepth() const {
+        return m_activeSubcaseDepth;
+    }
+
+    void resetForTestCase();
+    void resetForRun();
+    bool advance();
+    bool tryEnterSubcase(const SubcaseSignature &signature);
+    void leaveSubcase();
+    size_t unwindActiveSubcases();
+    size_t acquireGeneratorIndex(size_t count);
+
+private:
+    // decisionPath is the selected traversal prefix; discoveredDecisionPath is rebuilt
+    // on each rerun to describe the branches encountered at each depth.
+    std::vector<DecisionPoint> m_discoveredDecisionPath;
+    std::vector<size_t> m_decisionPath;
+    size_t m_decisionDepth = 0;
+    std::vector<size_t> m_enteredSubcaseDepths;
+    size_t m_activeSubcaseDepth = 0;
+
+    DecisionPoint &ensureDecisionPointAtCurrentDepth();
+};
+
+} // namespace detail
+} // namespace doctest
+
+#endif // DOCTEST_CONFIG_DISABLE
+
+DOCTEST_SUPPRESS_PRIVATE_WARNINGS_POP
+
+#endif // DOCTEST_PARTS_PRIVATE_TRAVERSAL
 
 DOCTEST_SUPPRESS_PRIVATE_WARNINGS_PUSH
 
@@ -4060,12 +4146,8 @@ struct ContextState : ContextOptions, TestRunStats, CurrentTestCaseStats {
 
     std::vector<String> stringifiedContexts; // logging from INFO() due to an exception
 
-    // stuff for subcases
-    bool reachedLeaf;
-    std::vector<SubcaseSignature> subcaseStack;
-    std::vector<SubcaseSignature> nextSubcaseStack;
-    std::unordered_set<unsigned long long> fullyTraversedSubcases;
-    size_t currentSubcaseDepth;
+    // Backtrack traversal state shared by SUBCASE and GENERATE.
+    TraversalState traversal;
     Atomic<bool> shouldLogCurrentException;
 
     void resetRunData();
@@ -4223,10 +4305,8 @@ void reportFatal(const std::string &message) {
 
     DOCTEST_ITERATE_THROUGH_REPORTERS(test_case_exception, {message.c_str(), true});
 
-    while (g_cs->subcaseStack.size()) {
-        g_cs->subcaseStack.pop_back();
+    for (size_t i = g_cs->traversal.unwindActiveSubcases(); i > 0; --i)
         DOCTEST_ITERATE_THROUGH_REPORTERS(subcase_end, DOCTEST_EMPTY);
-    }
 
     g_cs->finalizeTestCaseData();
 
@@ -5538,7 +5618,7 @@ int Context::run() {
             p->numAssertsFailedCurrentTest_atomic = 0;
             p->numAssertsCurrentTest_atomic = 0;
 
-            p->fullyTraversedSubcases.clear();
+            p->traversal.resetForTestCase();
 
             DOCTEST_ITERATE_THROUGH_REPORTERS(test_case_start, tc);
 
@@ -5547,11 +5627,8 @@ int Context::run() {
             bool run_test = true;
 
             do {
-                // reset some of the fields for subcases (except for the set of fully passed ones)
-                p->reachedLeaf = false;
-                // May not be empty if previous subcase exited via exception.
-                p->subcaseStack.clear();
-                p->currentSubcaseDepth = 0;
+                // Reset per-run traversal data while keeping the current decision path prefix.
+                p->traversal.resetForRun();
 
                 p->shouldLogCurrentException = true;
 
@@ -5585,9 +5662,11 @@ int Context::run() {
                     p->failure_flags |= TestCaseFailureReason::TooManyFailedAsserts;
                 }
 
-                if (!p->nextSubcaseStack.empty() && run_test)
+                const bool has_next_path = p->traversal.advance();
+
+                if (has_next_path && run_test)
                     DOCTEST_ITERATE_THROUGH_REPORTERS(test_case_reenter, tc);
-                if (p->nextSubcaseStack.empty())
+                if (!has_next_path)
                     run_test = false;
             } while (run_test);
 
@@ -8181,47 +8260,6 @@ DOCTEST_SUPPRESS_PRIVATE_WARNINGS_PUSH
 
 namespace doctest {
 
-#ifndef DOCTEST_CONFIG_DISABLE
-namespace detail {
-
-DOCTEST_NO_SANITIZE_INTEGER
-unsigned long long hash(unsigned long long a, unsigned long long b) {
-    return (a << 5) + b;
-}
-
-// C string hash function (djb2) - taken from http://www.cse.yorku.ca/~oz/hash.html
-DOCTEST_NO_SANITIZE_INTEGER
-unsigned long long hash(const char *str) {
-    unsigned long long hash = 5381;
-    char c;
-    while ((c = *str++))
-        hash = ((hash << 5) + hash) + c; // hash * 33 + c
-    return hash;
-}
-
-unsigned long long hash(const SubcaseSignature &sig) {
-    return hash(hash(hash(sig.m_file), hash(sig.m_name.c_str())), sig.m_line);
-}
-
-unsigned long long hash(const std::vector<SubcaseSignature> &sigs, size_t count) {
-    unsigned long long running = 0;
-    auto end = sigs.begin() + count;
-    for (auto it = sigs.begin(); it != end; it++) {
-        running = hash(running, hash(*it));
-    }
-    return running;
-}
-
-unsigned long long hash(const std::vector<SubcaseSignature> &sigs) {
-    unsigned long long running = 0;
-    for (const SubcaseSignature &sig: sigs) {
-        running = hash(running, hash(sig));
-    }
-    return running;
-}
-} // namespace detail
-#endif // DOCTEST_CONFIG_DISABLE
-
 bool SubcaseSignature::operator==(const SubcaseSignature &other) const {
     return m_line == other.m_line && std::strcmp(m_file, other.m_file) == 0 && m_name == other.m_name;
 }
@@ -8238,7 +8276,7 @@ bool SubcaseSignature::operator<(const SubcaseSignature &other) const {
 namespace detail {
 
 bool Subcase::checkFilters() {
-    if (g_cs->subcaseStack.size() < size_t(g_cs->subcase_filter_levels)) {
+    if (g_cs->traversal.activeSubcaseDepth() < size_t(g_cs->subcase_filter_levels)) {
         if (!matchesAny(m_signature.m_name.c_str(), g_cs->filters[6], true, g_cs->case_sensitive))
             return true;
         if (matchesAny(m_signature.m_name.c_str(), g_cs->filters[7], false, g_cs->case_sensitive))
@@ -8249,42 +8287,14 @@ bool Subcase::checkFilters() {
 
 Subcase::Subcase(const String &name, const char *file, int line)
     : m_signature({name, file, line}) {
-    if (!g_cs->reachedLeaf) {
-        if (g_cs->nextSubcaseStack.size() <= g_cs->subcaseStack.size() ||
-            g_cs->nextSubcaseStack[g_cs->subcaseStack.size()] == m_signature) {
-            // Going down.
-            if (checkFilters()) {
-                return;
-            }
+    if (checkFilters())
+        return;
 
-            g_cs->subcaseStack.push_back(m_signature);
-            g_cs->currentSubcaseDepth++;
-            m_entered = true;
-            DOCTEST_ITERATE_THROUGH_REPORTERS(subcase_start, m_signature);
-        }
-    } else {
-        if (g_cs->subcaseStack[g_cs->currentSubcaseDepth] == m_signature) {
-            // This subcase is reentered via control flow.
-            g_cs->currentSubcaseDepth++;
-            m_entered = true;
-            DOCTEST_ITERATE_THROUGH_REPORTERS(subcase_start, m_signature);
-        } else if (g_cs->nextSubcaseStack.size() <= g_cs->currentSubcaseDepth &&
-                   g_cs->fullyTraversedSubcases.find(
-                       hash(hash(g_cs->subcaseStack, g_cs->currentSubcaseDepth), hash(m_signature))
-                   ) == g_cs->fullyTraversedSubcases.end()) {
-            if (checkFilters()) {
-                return;
-            }
-            // This subcase is part of the one to be executed next.
-            g_cs->nextSubcaseStack.clear();
-            g_cs->nextSubcaseStack.insert(
-                g_cs->nextSubcaseStack.end(),
-                g_cs->subcaseStack.begin(),
-                g_cs->subcaseStack.begin() + g_cs->currentSubcaseDepth
-            );
-            g_cs->nextSubcaseStack.push_back(m_signature);
-        }
-    }
+    if (!g_cs->traversal.tryEnterSubcase(m_signature))
+        return;
+
+    m_entered = true;
+    DOCTEST_ITERATE_THROUGH_REPORTERS(subcase_start, m_signature);
 }
 
 DOCTEST_MSVC_SUPPRESS_WARNING_WITH_PUSH(4996) // std::uncaught_exception is deprecated in C++17
@@ -8293,17 +8303,7 @@ DOCTEST_CLANG_SUPPRESS_WARNING_WITH_PUSH("-Wdeprecated-declarations")
 
 Subcase::~Subcase() {
     if (m_entered) {
-        g_cs->currentSubcaseDepth--;
-
-        if (!g_cs->reachedLeaf) {
-            // Leaf.
-            g_cs->fullyTraversedSubcases.insert(hash(g_cs->subcaseStack));
-            g_cs->nextSubcaseStack.clear();
-            g_cs->reachedLeaf = true;
-        } else if (g_cs->nextSubcaseStack.empty()) {
-            // All children are finished.
-            g_cs->fullyTraversedSubcases.insert(hash(g_cs->subcaseStack));
-        }
+        g_cs->traversal.leaveSubcase();
 
 #if defined(__cpp_lib_uncaught_exceptions) && __cpp_lib_uncaught_exceptions >= 201411L &&                              \
     (!defined(__MAC_OS_X_VERSION_MIN_REQUIRED) || __MAC_OS_X_VERSION_MIN_REQUIRED >= 101200)
@@ -8507,6 +8507,112 @@ unsigned int Timer::getElapsedMicroseconds() const {
 
 double Timer::getElapsedSeconds() const {
     return static_cast<double>(getCurrentTicks() - m_ticks) / 1000000.0;
+}
+
+} // namespace detail
+} // namespace doctest
+
+#endif // DOCTEST_CONFIG_DISABLE
+
+DOCTEST_SUPPRESS_PRIVATE_WARNINGS_POP
+
+DOCTEST_SUPPRESS_PRIVATE_WARNINGS_PUSH
+
+#ifndef DOCTEST_CONFIG_DISABLE
+
+namespace doctest {
+namespace detail {
+
+DOCTEST_NOINLINE DecisionPoint &TraversalState::ensureDecisionPointAtCurrentDepth() {
+    const size_t depth = m_decisionDepth;
+
+    if (m_discoveredDecisionPath.size() == depth) {
+        m_discoveredDecisionPath.push_back(DecisionPoint{});
+
+        if (m_decisionPath.size() == depth)
+            m_decisionPath.push_back(0);
+    }
+
+    return m_discoveredDecisionPath[depth];
+}
+
+void TraversalState::resetForTestCase() {
+    m_decisionPath.clear();
+    m_discoveredDecisionPath.clear();
+    m_enteredSubcaseDepths.clear();
+    m_activeSubcaseDepth = 0;
+    m_decisionDepth = 0;
+}
+
+void TraversalState::resetForRun() {
+    m_activeSubcaseDepth = 0;
+    m_discoveredDecisionPath.clear();
+    m_decisionDepth = 0;
+    m_enteredSubcaseDepths.clear();
+}
+
+bool TraversalState::advance() {
+    for (size_t depth = m_decisionPath.size(); depth-- > 0;) {
+        if (m_decisionPath[depth] + 1 < m_discoveredDecisionPath[depth].branch_count) {
+            ++m_decisionPath[depth];
+            m_decisionPath.resize(depth + 1);
+            return true;
+        }
+    }
+
+    return false;
+}
+
+bool TraversalState::tryEnterSubcase(const SubcaseSignature &signature) {
+    DecisionPoint &point = ensureDecisionPointAtCurrentDepth();
+    std::vector<SubcaseSignature> &subcases = point.subcases;
+    size_t siblingIndex = 0;
+
+    for (; siblingIndex < subcases.size(); ++siblingIndex) {
+        if (subcases[siblingIndex] == signature)
+            break;
+    }
+
+    if (siblingIndex == subcases.size())
+        subcases.push_back(signature);
+
+    point.branch_count = subcases.size();
+
+    if (siblingIndex != m_decisionPath[m_decisionDepth])
+        return false;
+
+    m_enteredSubcaseDepths.push_back(m_decisionDepth);
+    m_activeSubcaseDepth++;
+    m_decisionDepth++;
+    return true;
+}
+
+void TraversalState::leaveSubcase() {
+    m_decisionDepth = m_enteredSubcaseDepths.back();
+    m_enteredSubcaseDepths.pop_back();
+    m_activeSubcaseDepth--;
+}
+
+size_t TraversalState::unwindActiveSubcases() {
+    const size_t activeSubcaseCount = m_activeSubcaseDepth;
+
+    while (m_activeSubcaseDepth > 0)
+        leaveSubcase();
+
+    return activeSubcaseCount;
+}
+
+size_t TraversalState::acquireGeneratorIndex(size_t count) {
+    DecisionPoint &point = ensureDecisionPointAtCurrentDepth();
+    point.branch_count = count;
+
+    const size_t index = m_decisionPath[m_decisionDepth];
+    m_decisionDepth++;
+    return index < count ? index : 0;
+}
+
+size_t acquireGeneratorDecisionIndex(size_t count) {
+    return g_cs->traversal.acquireGeneratorIndex(count);
 }
 
 } // namespace detail
