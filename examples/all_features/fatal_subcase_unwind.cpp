@@ -5,27 +5,30 @@ DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_BEGIN
 #include <csignal>
 DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_END
 
+DOCTEST_CLANG_SUPPRESS_WARNING("-Wweak-vtables")
+
+namespace {
 struct FatalTraceReporter : public doctest::IReporter {
-    std::ostream& out;
+    std::ostream &out;
 
-    explicit FatalTraceReporter(const doctest::ContextOptions& in)
-            : out(*in.cout) {}
+    explicit FatalTraceReporter(const doctest::ContextOptions &in)
+        : out(*in.cout) {}
 
-    void report_query(const doctest::QueryData&) override {}
+    void report_query(const doctest::QueryData &) override {}
     void test_run_start() override {}
-    void test_run_end(const doctest::TestRunStats&) override {}
-    void test_case_start(const doctest::TestCaseData&) override {}
-    void test_case_reenter(const doctest::TestCaseData&) override {}
-    void test_case_skipped(const doctest::TestCaseData&) override {}
-    void log_assert(const doctest::AssertData&) override {}
-    void log_message(const doctest::MessageData&) override {}
+    void test_run_end(const doctest::TestRunStats &) override {}
+    void test_case_start(const doctest::TestCaseData &) override {}
+    void test_case_reenter(const doctest::TestCaseData &) override {}
+    void test_case_skipped(const doctest::TestCaseData &) override {}
+    void log_assert(const doctest::AssertData &) override {}
+    void log_message(const doctest::MessageData &) override {}
 
-    void test_case_exception(const doctest::TestCaseException& in) override {
+    void test_case_exception(const doctest::TestCaseException &in) override {
         out << "exception:" << in.error_string.c_str() << ":crash=" << (in.is_crash ? 1 : 0) << '\n';
         out.flush();
     }
 
-    void subcase_start(const doctest::SubcaseSignature& in) override {
+    void subcase_start(const doctest::SubcaseSignature &in) override {
         out << "subcase_start:" << in.m_name.c_str() << '\n';
         out.flush();
     }
@@ -35,11 +38,12 @@ struct FatalTraceReporter : public doctest::IReporter {
         out.flush();
     }
 
-    void test_case_end(const doctest::CurrentTestCaseStats&) override {
+    void test_case_end(const doctest::CurrentTestCaseStats &) override {
         out << "test_case_end\n";
         out.flush();
     }
 };
+} // namespace
 
 REGISTER_REPORTER("fatal_trace", 0, FatalTraceReporter);
 
