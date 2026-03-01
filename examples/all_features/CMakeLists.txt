@@ -128,6 +128,20 @@ add_test_all_features(no_multi_lane_atomics DOCTEST_CONFIG_NO_MULTI_LANE_ATOMICS
 add_test_all_features(disabled DOCTEST_CONFIG_DISABLE)
 add_test_all_features(std_headers DOCTEST_CONFIG_USE_STD_HEADERS)
 
+if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
+    add_executable(fatal_subcase_unwind fatal_subcase_unwind.cpp)
+    target_link_libraries(fatal_subcase_unwind doctest ${CMAKE_THREAD_LIBS_INIT})
+
+    add_test(
+        NAME fatal_subcase_unwind
+        COMMAND ${CMAKE_COMMAND}
+            -DTEST_PROGRAM=$<TARGET_FILE:fatal_subcase_unwind>
+            -DTEST_OUTPUT_FILE=${CMAKE_CURRENT_SOURCE_DIR}/test_output/fatal_subcase_unwind.txt
+            -DTEST_TEMP_FILE=${CMAKE_CURRENT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/temp_test_output_fatal_subcase_unwind.txt
+            -P ${CMAKE_CURRENT_SOURCE_DIR}/run_fatal_subcase_unwind_test.cmake
+    )
+endif()
+
 # TODO: think about fixing these in a different way! - see issue #61 or commit 6b61e8aa3818c5ea100cedc1bb48a60ea10df6e8
 if(MSVC)
     target_compile_options(disabled PRIVATE /wd4505) # unreferenced local function has been removed

@@ -1,0 +1,6 @@
+subcase_start:outer
+subcase_start:inner
+exception:SIGABRT - Abort (abnormal termination) signal:crash=1
+subcase_end
+subcase_end
+test_case_end
