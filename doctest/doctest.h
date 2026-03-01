@@ -3281,8 +3281,8 @@ int instantiationHelper(const T &) {
 #define DOCTEST_SUBCASE(name)
 
 // for generating value-parameterized test inputs
-// expands to `(first)` for consistent type deduction
-#define DOCTEST_GENERATE(first, ...) (first)
+#define DOCTEST_GENERATE_IMPL(first, ...) (first)
+#define DOCTEST_GENERATE(...) DOCTEST_GENERATE_IMPL(__VA_ARGS__, DOCTEST_EMPTY)
 
 // for a testsuite block
 #define DOCTEST_TEST_SUITE(name) namespace // NOLINT
