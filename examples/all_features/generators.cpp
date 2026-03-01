@@ -54,7 +54,10 @@ TEST_CASE("GENERATE statements can depend on each other") {
 }
 
 TEST_CASE("multiple GENERATEs on a single line") {
+    // clang-format off
+    // NOLINTNEXTLINE(readability-isolate-declaration)
     int i = GENERATE(1, 2), j = GENERATE(10, 20);
+    // clang-format on
     cout << "i=" << i << " j=" << j << endl;
 }
 

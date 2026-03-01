@@ -37,10 +37,11 @@ void TraversalState::resetForRun() {
 }
 
 bool TraversalState::advance() {
-    for (size_t depth = m_decisionPath.size(); depth-- > 0;) {
-        if (m_decisionPath[depth] + 1 < m_discoveredDecisionPath[depth].branch_count) {
-            ++m_decisionPath[depth];
-            m_decisionPath.resize(depth + 1);
+    for (size_t depth = m_decisionPath.size(); depth > 0; --depth) {
+        const size_t index = depth - 1;
+        if (m_decisionPath[index] + 1 < m_discoveredDecisionPath[index].branch_count) {
+            ++m_decisionPath[index];
+            m_decisionPath.resize(index + 1);
             return true;
         }
     }
