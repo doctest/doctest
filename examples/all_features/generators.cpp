@@ -6,6 +6,7 @@
 DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_BEGIN
 #include <iostream>
 #include <vector>
+#include <string>
 using namespace std;
 DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_END
 
@@ -329,6 +330,7 @@ TEST_CASE("GENERATE with fixed for loop") {
         // int j3 = GENERATE(7, 8);
         // with one generator depth per loop iteration.
         std::vector<int> js;
+        js.reserve(3);
         for (int i = 0; i < 3; ++i) {
             js.push_back(GENERATE(3 + 2 * i + 0, 3 + 2 * i + 1));
         }
