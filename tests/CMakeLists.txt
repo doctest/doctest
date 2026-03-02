@@ -94,6 +94,7 @@ doctest_add_unit_test(WITH_MAIN SOURCE doctest/test_exception_translator.cpp)
 doctest_add_unit_test(WITH_MAIN SOURCE doctest/test_filters.cpp)
 doctest_add_unit_test(WITH_MAIN SOURCE doctest/test_path.cpp)
 doctest_add_unit_test(WITH_MAIN SOURCE doctest/test_string.cpp)
+doctest_add_unit_test(WITH_MAIN SOURCE doctest/test_traversal.cpp)
 doctest_add_unit_test(WITH_MAIN SOURCE doctest/test_xml.cpp EXCEPT ${GCC_4_8})
 
 # Regression tests

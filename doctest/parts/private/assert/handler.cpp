@@ -26,11 +26,8 @@ void reportFatal(const std::string &message) {
 
     DOCTEST_ITERATE_THROUGH_REPORTERS(test_case_exception, {message.c_str(), true});
 
-    while (g_cs->subcaseStack.size()) {
-        g_cs->subcaseStack.pop_back();
+    for (size_t i = g_cs->traversal.unwindActiveSubcases(); i > 0; --i)
         DOCTEST_ITERATE_THROUGH_REPORTERS(subcase_end, DOCTEST_EMPTY);
-    }
-
     g_cs->finalizeTestCaseData();
 
     DOCTEST_ITERATE_THROUGH_REPORTERS(test_case_end, *g_cs);
