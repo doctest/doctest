@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+sc root x=1
+keep x=1
+sc root x=2
+keep x=2
+<testsuites>
+  <testsuite name="all_features" errors="0" failures="0" tests="2">
+    <testcase classname="generators.cpp" name="GENERATE filter subcase target/keep" status="run"/>
+    <testcase classname="generators.cpp" name="GENERATE filter subcase target/keep" status="run"/>
+  </testsuite>
+</testsuites>
+Program code.

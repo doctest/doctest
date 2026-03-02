@@ -1,0 +1,10 @@
+[doctest] run with "--help" for options
+tc target x=1 y=10
+tc target x=1 y=20
+tc target x=2 y=10
+tc target x=2 y=20
+===============================================================================
+[doctest] test cases: 1 | 1 passed | 0 failed |
+[doctest] assertions: 4 | 4 passed | 0 failed |
+[doctest] Status: SUCCESS!
+Program code.

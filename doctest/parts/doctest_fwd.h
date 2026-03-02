@@ -75,6 +75,7 @@ DOCTEST_SUPPRESS_PUBLIC_WARNINGS_PUSH
 #include <doctest/parts/public/context.h>
 #include <doctest/parts/public/assert/handler.h>
 #include <doctest/parts/public/reporter.h>
+#include <doctest/parts/public/generator.h>
 #include <doctest/parts/public/macros.h>
 
 DOCTEST_SUPPRESS_PUBLIC_WARNINGS_POP

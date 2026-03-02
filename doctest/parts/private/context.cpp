@@ -609,7 +609,7 @@ int Context::run() {
             p->numAssertsFailedCurrentTest_atomic = 0;
             p->numAssertsCurrentTest_atomic = 0;
 
-            p->fullyTraversedSubcases.clear();
+            p->traversal.resetForTestCase();
 
             DOCTEST_ITERATE_THROUGH_REPORTERS(test_case_start, tc);
 
@@ -618,11 +618,8 @@ int Context::run() {
             bool run_test = true;
 
             do {
-                // reset some of the fields for subcases (except for the set of fully passed ones)
-                p->reachedLeaf = false;
-                // May not be empty if previous subcase exited via exception.
-                p->subcaseStack.clear();
-                p->currentSubcaseDepth = 0;
+                // Reset per-run traversal data while keeping the current decision path prefix.
+                p->traversal.resetForRun();
 
                 p->shouldLogCurrentException = true;
 
@@ -656,9 +653,11 @@ int Context::run() {
                     p->failure_flags |= TestCaseFailureReason::TooManyFailedAsserts;
                 }
 
-                if (!p->nextSubcaseStack.empty() && run_test)
+                const bool has_next_path = run_test ? p->traversal.advance() : false;
+
+                if (has_next_path && run_test)
                     DOCTEST_ITERATE_THROUGH_REPORTERS(test_case_reenter, tc);
-                if (p->nextSubcaseStack.empty())
+                if (!has_next_path)
                     run_test = false;
             } while (run_test);
 

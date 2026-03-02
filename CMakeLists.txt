@@ -82,6 +82,7 @@ if(${DOCTEST_WITH_MAIN_IN_STATIC_LIB})
         ${doctest_parts_folder}/private/matchers/contains.cpp
         ${doctest_parts_folder}/private/matchers/is_nan.cpp
         ${doctest_parts_folder}/private/path.cpp
+        ${doctest_parts_folder}/private/traversal.cpp
         ${doctest_parts_folder}/private/reporter.cpp
         ${doctest_parts_folder}/private/reporters/common.cpp
         ${doctest_parts_folder}/private/reporters/console.cpp

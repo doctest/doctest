@@ -17,6 +17,7 @@ set(files_with_output
     test_cases_and_suites.cpp
     asserts_used_outside_of_tests.cpp
     enums.cpp
+    generators.cpp
 )
 
 set(files_all
@@ -84,6 +85,8 @@ doctest_add_test(NAME filter_1    ${common_args} -ts=none) # should filter out a
 doctest_add_test(NAME filter_2        COMMAND $<TARGET_FILE:all_features>   -tse=* -nv -order-by=name) # should filter out all + print skipped
 doctest_add_test(NAME filter_3        ${common_args} -sc=from*,sc* -sce=sc2 -sf=*subcases*) # enter a specific subcase - sc1
 doctest_add_test(NAME filter_4        ${common_args} -ts=*\\, -tc=*\\: -sc=*\\\\\\,,*:) # escape stuff
+doctest_add_test(NAME generators_filters_tc ${common_args} -sf=*generators.cpp -tc=GENERATE*filter*test-case*target)
+doctest_add_test(NAME generators_filters_sc ${common_args} -sf=*generators.cpp -tc=GENERATE*filter*subcase*target -sc=keep)
 doctest_add_test(NAME order_1         ${common_args} -ob=suite -ns          -sf=*test_cases_and_suites*)
 doctest_add_test(NAME order_2         ${common_args} -ob=name               -sf=*test_cases_and_suites*)
 doctest_add_test(NAME order_3         ${common_args} -ob=rand               -sfe=*) # exclude everything for no output

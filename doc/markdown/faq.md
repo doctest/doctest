@@ -34,7 +34,7 @@ Aside from everything mentioned so far doctest has some [**features**](features.
 
 Missing stuff:
 
-- matchers and generators
+- matchers
 - micro benchmarking support - nonius is used in [**Catch**](https://github.com/catchorg/Catch2)
 - other small stuff such as tags - can be easily emulated/migrated from - see below
 
@@ -72,7 +72,6 @@ Here are a couple of differences:
 
 but there are also some areas in which doctest is lacking:
 
-- value-parameterized tests
 - death tests (where you check if calling a certain function doesn’t simply throw but if it crashes the process)
 - doctest has some integration with mocking libraries but Google Test works perfectly with Google Mock (although doctest should in theory work with it as well)
 
