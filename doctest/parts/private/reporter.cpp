@@ -8,6 +8,8 @@ DOCTEST_SUPPRESS_PRIVATE_WARNINGS_PUSH
 namespace doctest {
 #ifdef DOCTEST_CONFIG_DISABLE
 
+DOCTEST_DEFINE_INTERFACE(IReporter)
+
 int IReporter::get_num_active_contexts() {
     return 0;
 }
