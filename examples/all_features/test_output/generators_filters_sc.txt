@@ -1,8 +1,30 @@
 [doctest] run with "--help" for options
-sc root x=1
-keep x=1
-sc root x=2
-keep x=2
+===============================================================================
+generators.cpp(0):
+TEST CASE:  GENERATE filter subcase target
+
+generators.cpp(0): MESSAGE: sc root x=1
+
+===============================================================================
+generators.cpp(0):
+TEST CASE:  GENERATE filter subcase target
+  keep
+
+generators.cpp(0): MESSAGE: keep x=1
+
+===============================================================================
+generators.cpp(0):
+TEST CASE:  GENERATE filter subcase target
+
+generators.cpp(0): MESSAGE: sc root x=2
+
+===============================================================================
+generators.cpp(0):
+TEST CASE:  GENERATE filter subcase target
+  keep
+
+generators.cpp(0): MESSAGE: keep x=2
+
 ===============================================================================
 [doctest] test cases: 1 | 1 passed | 0 failed |
 [doctest] assertions: 2 | 2 passed | 0 failed |

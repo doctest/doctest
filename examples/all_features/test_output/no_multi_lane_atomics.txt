@@ -52,187 +52,1236 @@ assertion_macros.cpp(0): ERROR: CHECK_UNARY_FALSE( 1 ) is NOT correct!
 
 assertion_macros.cpp(0): MESSAGE: reached!
 
-test_case: x=1
-A: x=1
-test_case: x=1
-B: x=1
-test_case: x=2
-A: x=2
-test_case: x=2
-B: x=2
-test_case: x=1
-outer: x=1
-inner A: x=1
-test_case: x=1
-outer: x=1
-inner B: x=1
-test_case: x=2
-outer: x=2
-inner A: x=2
-test_case: x=2
-outer: x=2
-inner B: x=2
-p.x=1 p.y=2
-p.x=3 p.y=4
-p.x=5 p.y=6
-d=1
-d=2.5
-d=3.14
-x=42
-x=1
-x=2
-x=3
-x=10
-x=20
-a=1 b=3 c=5
-a=1 b=3 c=6
-a=1 b=4 c=5
-a=1 b=4 c=6
-a=2 b=3 c=5
-a=2 b=3 c=6
-a=2 b=4 c=5
-a=2 b=4 c=6
-x=1 y=10
-x=1 y=20
-x=2 y=10
-x=2 y=20
-A1a: i=1 j=3 k=5 l=7
-test_case: i=1
-A1a: i=1 j=3 k=5 l=8
-test_case: i=1
-A1a: i=1 j=3 k=6 l=7
-test_case: i=1
-A1a: i=1 j=3 k=6 l=8
-test_case: i=1
-A2 i=1 m=9
-test_case: i=1
-A2 i=1 m=10
-test_case: i=1
-A1a: i=1 j=4 k=5 l=7
-test_case: i=1
-A1a: i=1 j=4 k=5 l=8
-test_case: i=1
-A1a: i=1 j=4 k=6 l=7
-test_case: i=1
-A1a: i=1 j=4 k=6 l=8
-test_case: i=1
-A2 i=1 m=9
-test_case: i=1
-A2 i=1 m=10
-test_case: i=1
-B: i=1 n=1000
-test_case: i=1
-B: i=1 n=2000
-test_case: i=1
-A1a: i=2 j=3 k=5 l=7
-test_case: i=2
-A1a: i=2 j=3 k=5 l=8
-test_case: i=2
-A1a: i=2 j=3 k=6 l=7
-test_case: i=2
-A1a: i=2 j=3 k=6 l=8
-test_case: i=2
-A2 i=2 m=9
-test_case: i=2
-A2 i=2 m=10
-test_case: i=2
-A1a: i=2 j=4 k=5 l=7
-test_case: i=2
-A1a: i=2 j=4 k=5 l=8
-test_case: i=2
-A1a: i=2 j=4 k=6 l=7
-test_case: i=2
-A1a: i=2 j=4 k=6 l=8
-test_case: i=2
-A2 i=2 m=9
-test_case: i=2
-A2 i=2 m=10
-test_case: i=2
-B: i=2 n=1000
-test_case: i=2
-B: i=2 n=2000
-test_case: i=2
-sc root x=1
-keep x=1
-sc root x=1
-drop x=1
-sc root x=2
-keep x=2
-sc root x=2
-drop x=2
-tc excluded x=3
-tc excluded x=4
-tc target x=1 y=10
-tc target x=1 y=20
-tc target x=2 y=10
-tc target x=2 y=20
-A x=1
-A x=2
-B
-outer x=1
-  inner A x=1
-outer x=1
-  inner B x=1
-outer x=2
-  inner A x=2
-outer x=2
-  inner B x=2
-A x=1
-A x=2
-A x=3
-B y=10
-B y=20
-i=1 j=2
-i=1 j=3
-i=1 j=4
-i=2 j=3
-i=2 j=4
-i=2 j=5
-i=3 j=4
-i=3 j=5
-i=3 j=6
-i=1 j=10
-i=1 j=20
-i=3 j=10
-i=3 j=20
-# i=1
-j=0 k=9
-# i=1
-j=0 k=19
-# i=2
-j=0 k=8
-# i=2
-j=0 k=18
-# i=2
-j=1 k=7
-# i=2
-j=1 k=17
-i=1 j=10
-i=1 j=20
-i=2 k=100
-i=2 k=200
-i=3 m=1000
-i=3 m=2000
-i=0 j=3
-i=1 j=3 j=5
-i=2 j=3 j=5 j=7
-i=0 j=4
-i=1 j=4 j=6
-i=2 j=4 j=6 j=8
-i=0 j=3
-i=0 j=4
-i=1 j=5
-i=1 j=6
-i=2 j=7
-i=2 j=8
-js=[ 3 5 7 ]
-js=[ 3 5 8 ]
-js=[ 3 6 7 ]
-js=[ 3 6 8 ]
-js=[ 4 5 7 ]
-js=[ 4 5 8 ]
-js=[ 4 6 7 ]
-js=[ 4 6 8 ]
+===============================================================================
+generators.cpp(0):
+TEST CASE:  GENERATE + SUBCASE - basic interaction
+
+generators.cpp(0): MESSAGE: test_case: x=1
+
+===============================================================================
+generators.cpp(0):
+TEST CASE:  GENERATE + SUBCASE - basic interaction
+  A
+
+generators.cpp(0): MESSAGE: A: x=1
+
+===============================================================================
+generators.cpp(0):
+TEST CASE:  GENERATE + SUBCASE - basic interaction
+
+generators.cpp(0): MESSAGE: test_case: x=1
+
+===============================================================================
+generators.cpp(0):
+TEST CASE:  GENERATE + SUBCASE - basic interaction
+  B
+
+generators.cpp(0): MESSAGE: B: x=1
+
+===============================================================================
+generators.cpp(0):
+TEST CASE:  GENERATE + SUBCASE - basic interaction
+
+generators.cpp(0): MESSAGE: test_case: x=2
+
+===============================================================================
+generators.cpp(0):
+TEST CASE:  GENERATE + SUBCASE - basic interaction
+  A
+
+generators.cpp(0): MESSAGE: A: x=2
+
+===============================================================================
+generators.cpp(0):
+TEST CASE:  GENERATE + SUBCASE - basic interaction
+
+generators.cpp(0): MESSAGE: test_case: x=2
+
+===============================================================================
+generators.cpp(0):
+TEST CASE:  GENERATE + SUBCASE - basic interaction
+  B
+
+generators.cpp(0): MESSAGE: B: x=2
+
+===============================================================================
+generators.cpp(0):
+TEST CASE:  GENERATE + nested SUBCASE
+
+generators.cpp(0): MESSAGE: test_case: x=1
+
+===============================================================================
+generators.cpp(0):
+TEST CASE:  GENERATE + nested SUBCASE
+  outer
+
+generators.cpp(0): MESSAGE: outer: x=1
+
+===============================================================================
+generators.cpp(0):
+TEST CASE:  GENERATE + nested SUBCASE
+  outer
+  inner A
+
+generators.cpp(0): MESSAGE: inner A: x=1
+
+===============================================================================
+generators.cpp(0):
+TEST CASE:  GENERATE + nested SUBCASE
+
+generators.cpp(0): MESSAGE: test_case: x=1
+
+===============================================================================
+generators.cpp(0):
+TEST CASE:  GENERATE + nested SUBCASE
+  outer
+
+generators.cpp(0): MESSAGE: outer: x=1
+
+===============================================================================
+generators.cpp(0):
+TEST CASE:  GENERATE + nested SUBCASE
+  outer
+  inner B
+
+generators.cpp(0): MESSAGE: inner B: x=1
+
+===============================================================================
+generators.cpp(0):
+TEST CASE:  GENERATE + nested SUBCASE
+
+generators.cpp(0): MESSAGE: test_case: x=2
+
+===============================================================================
+generators.cpp(0):
+TEST CASE:  GENERATE + nested SUBCASE
+  outer
+
+generators.cpp(0): MESSAGE: outer: x=2
+
+===============================================================================
+generators.cpp(0):
+TEST CASE:  GENERATE + nested SUBCASE
+  outer
+  inner A
+
+generators.cpp(0): MESSAGE: inner A: x=2
+
+===============================================================================
+generators.cpp(0):
+TEST CASE:  GENERATE + nested SUBCASE
+
+generators.cpp(0): MESSAGE: test_case: x=2
+
+===============================================================================
+generators.cpp(0):
+TEST CASE:  GENERATE + nested SUBCASE
+  outer
+
+generators.cpp(0): MESSAGE: outer: x=2
+
+===============================================================================
+generators.cpp(0):
+TEST CASE:  GENERATE + nested SUBCASE
+  outer
+  inner B
+
+generators.cpp(0): MESSAGE: inner B: x=2
+
+===============================================================================
+generators.cpp(0):
+TEST CASE:  GENERATE - custom struct type
+
+generators.cpp(0): MESSAGE: p.x=1 p.y=2
+
+generators.cpp(0): MESSAGE: p.x=3 p.y=4
+
+generators.cpp(0): MESSAGE: p.x=5 p.y=6
+
+===============================================================================
+generators.cpp(0):
+TEST CASE:  GENERATE - double values
+
+generators.cpp(0): MESSAGE: d=1
+
+generators.cpp(0): MESSAGE: d=2.5
+
+generators.cpp(0): MESSAGE: d=3.14
+
+===============================================================================
+generators.cpp(0):
+TEST CASE:  GENERATE - single value (degenerate case)
+
+generators.cpp(0): MESSAGE: x=42
+
+===============================================================================
+generators.cpp(0):
+TEST CASE:  GENERATE - single, three values
+
+generators.cpp(0): MESSAGE: x=1
+
+generators.cpp(0): MESSAGE: x=2
+
+generators.cpp(0): MESSAGE: x=3
+
+===============================================================================
+generators.cpp(0):
+TEST CASE:  GENERATE - single, two values
+
+generators.cpp(0): MESSAGE: x=10
+
+generators.cpp(0): MESSAGE: x=20
+
+===============================================================================
+generators.cpp(0):
+TEST CASE:  GENERATE - three generators
+
+generators.cpp(0): MESSAGE: a=1 b=3 c=5
+
+generators.cpp(0): MESSAGE: a=1 b=3 c=6
+
+generators.cpp(0): MESSAGE: a=1 b=4 c=5
+
+generators.cpp(0): MESSAGE: a=1 b=4 c=6
+
+generators.cpp(0): MESSAGE: a=2 b=3 c=5
+
+generators.cpp(0): MESSAGE: a=2 b=3 c=6
+
+generators.cpp(0): MESSAGE: a=2 b=4 c=5
+
+generators.cpp(0): MESSAGE: a=2 b=4 c=6
+
+===============================================================================
+generators.cpp(0):
+TEST CASE:  GENERATE - two generators, cartesian product
+
+generators.cpp(0): MESSAGE: x=1 y=10
+
+generators.cpp(0): MESSAGE: x=1 y=20
+
+generators.cpp(0): MESSAGE: x=2 y=10
+
+generators.cpp(0): MESSAGE: x=2 y=20
+
+===============================================================================
+generators.cpp(0):
+TEST CASE:  GENERATE at multiple nesting depths
+  A
+  1
+  a
+
+generators.cpp(0): MESSAGE: A1a: i=1 j=3 k=5 l=7
+
+===============================================================================
+generators.cpp(0):
+TEST CASE:  GENERATE at multiple nesting depths
+
+DEEPEST SUBCASE STACK REACHED (DIFFERENT FROM THE CURRENT ONE):
+  A
+  1
+  a
+
+generators.cpp(0): MESSAGE: test_case: i=1
+
+===============================================================================
+generators.cpp(0):
+TEST CASE:  GENERATE at multiple nesting depths
+  A
+  1
+  a
+
+generators.cpp(0): MESSAGE: A1a: i=1 j=3 k=5 l=8
+
+===============================================================================
+generators.cpp(0):
+TEST CASE:  GENERATE at multiple nesting depths
+
+DEEPEST SUBCASE STACK REACHED (DIFFERENT FROM THE CURRENT ONE):
+  A
+  1
+  a
+
+generators.cpp(0): MESSAGE: test_case: i=1
+
+===============================================================================
+generators.cpp(0):
+TEST CASE:  GENERATE at multiple nesting depths
+  A
+  1
+  a
+
+generators.cpp(0): MESSAGE: A1a: i=1 j=3 k=6 l=7
+
+===============================================================================
+generators.cpp(0):
+TEST CASE:  GENERATE at multiple nesting depths
+
+DEEPEST SUBCASE STACK REACHED (DIFFERENT FROM THE CURRENT ONE):
+  A
+  1
+  a
+
+generators.cpp(0): MESSAGE: test_case: i=1
+
+===============================================================================
+generators.cpp(0):
+TEST CASE:  GENERATE at multiple nesting depths
+  A
+  1
+  a
+
+generators.cpp(0): MESSAGE: A1a: i=1 j=3 k=6 l=8
+
+===============================================================================
+generators.cpp(0):
+TEST CASE:  GENERATE at multiple nesting depths
+
+DEEPEST SUBCASE STACK REACHED (DIFFERENT FROM THE CURRENT ONE):
+  A
+  1
+  a
+
+generators.cpp(0): MESSAGE: test_case: i=1
+
+===============================================================================
+generators.cpp(0):
+TEST CASE:  GENERATE at multiple nesting depths
+  A
+  2
+
+generators.cpp(0): MESSAGE: A2 i=1 m=9
+
+===============================================================================
+generators.cpp(0):
+TEST CASE:  GENERATE at multiple nesting depths
+
+DEEPEST SUBCASE STACK REACHED (DIFFERENT FROM THE CURRENT ONE):
+  A
+  2
+
+generators.cpp(0): MESSAGE: test_case: i=1
+
+===============================================================================
+generators.cpp(0):
+TEST CASE:  GENERATE at multiple nesting depths
+  A
+  2
+
+generators.cpp(0): MESSAGE: A2 i=1 m=10
+
+===============================================================================
+generators.cpp(0):
+TEST CASE:  GENERATE at multiple nesting depths
+
+DEEPEST SUBCASE STACK REACHED (DIFFERENT FROM THE CURRENT ONE):
+  A
+  2
+
+generators.cpp(0): MESSAGE: test_case: i=1
+
+===============================================================================
+generators.cpp(0):
+TEST CASE:  GENERATE at multiple nesting depths
+  A
+  1
+  a
+
+generators.cpp(0): MESSAGE: A1a: i=1 j=4 k=5 l=7
+
+===============================================================================
+generators.cpp(0):
+TEST CASE:  GENERATE at multiple nesting depths
+
+DEEPEST SUBCASE STACK REACHED (DIFFERENT FROM THE CURRENT ONE):
+  A
+  1
+  a
+
+generators.cpp(0): MESSAGE: test_case: i=1
+
+===============================================================================
+generators.cpp(0):
+TEST CASE:  GENERATE at multiple nesting depths
+  A
+  1
+  a
+
+generators.cpp(0): MESSAGE: A1a: i=1 j=4 k=5 l=8
+
+===============================================================================
+generators.cpp(0):
+TEST CASE:  GENERATE at multiple nesting depths
+
+DEEPEST SUBCASE STACK REACHED (DIFFERENT FROM THE CURRENT ONE):
+  A
+  1
+  a
+
+generators.cpp(0): MESSAGE: test_case: i=1
+
+===============================================================================
+generators.cpp(0):
+TEST CASE:  GENERATE at multiple nesting depths
+  A
+  1
+  a
+
+generators.cpp(0): MESSAGE: A1a: i=1 j=4 k=6 l=7
+
+===============================================================================
+generators.cpp(0):
+TEST CASE:  GENERATE at multiple nesting depths
+
+DEEPEST SUBCASE STACK REACHED (DIFFERENT FROM THE CURRENT ONE):
+  A
+  1
+  a
+
+generators.cpp(0): MESSAGE: test_case: i=1
+
+===============================================================================
+generators.cpp(0):
+TEST CASE:  GENERATE at multiple nesting depths
+  A
+  1
+  a
+
+generators.cpp(0): MESSAGE: A1a: i=1 j=4 k=6 l=8
+
+===============================================================================
+generators.cpp(0):
+TEST CASE:  GENERATE at multiple nesting depths
+
+DEEPEST SUBCASE STACK REACHED (DIFFERENT FROM THE CURRENT ONE):
+  A
+  1
+  a
+
+generators.cpp(0): MESSAGE: test_case: i=1
+
+===============================================================================
+generators.cpp(0):
+TEST CASE:  GENERATE at multiple nesting depths
+  A
+  2
+
+generators.cpp(0): MESSAGE: A2 i=1 m=9
+
+===============================================================================
+generators.cpp(0):
+TEST CASE:  GENERATE at multiple nesting depths
+
+DEEPEST SUBCASE STACK REACHED (DIFFERENT FROM THE CURRENT ONE):
+  A
+  2
+
+generators.cpp(0): MESSAGE: test_case: i=1
+
+===============================================================================
+generators.cpp(0):
+TEST CASE:  GENERATE at multiple nesting depths
+  A
+  2
+
+generators.cpp(0): MESSAGE: A2 i=1 m=10
+
+===============================================================================
+generators.cpp(0):
+TEST CASE:  GENERATE at multiple nesting depths
+
+DEEPEST SUBCASE STACK REACHED (DIFFERENT FROM THE CURRENT ONE):
+  A
+  2
+
+generators.cpp(0): MESSAGE: test_case: i=1
+
+===============================================================================
+generators.cpp(0):
+TEST CASE:  GENERATE at multiple nesting depths
+  B
+
+generators.cpp(0): MESSAGE: B: i=1 n=1000
+
+===============================================================================
+generators.cpp(0):
+TEST CASE:  GENERATE at multiple nesting depths
+
+DEEPEST SUBCASE STACK REACHED (DIFFERENT FROM THE CURRENT ONE):
+  B
+
+generators.cpp(0): MESSAGE: test_case: i=1
+
+===============================================================================
+generators.cpp(0):
+TEST CASE:  GENERATE at multiple nesting depths
+  B
+
+generators.cpp(0): MESSAGE: B: i=1 n=2000
+
+===============================================================================
+generators.cpp(0):
+TEST CASE:  GENERATE at multiple nesting depths
+
+DEEPEST SUBCASE STACK REACHED (DIFFERENT FROM THE CURRENT ONE):
+  B
+
+generators.cpp(0): MESSAGE: test_case: i=1
+
+===============================================================================
+generators.cpp(0):
+TEST CASE:  GENERATE at multiple nesting depths
+  A
+  1
+  a
+
+generators.cpp(0): MESSAGE: A1a: i=2 j=3 k=5 l=7
+
+===============================================================================
+generators.cpp(0):
+TEST CASE:  GENERATE at multiple nesting depths
+
+DEEPEST SUBCASE STACK REACHED (DIFFERENT FROM THE CURRENT ONE):
+  A
+  1
+  a
+
+generators.cpp(0): MESSAGE: test_case: i=2
+
+===============================================================================
+generators.cpp(0):
+TEST CASE:  GENERATE at multiple nesting depths
+  A
+  1
+  a
+
+generators.cpp(0): MESSAGE: A1a: i=2 j=3 k=5 l=8
+
+===============================================================================
+generators.cpp(0):
+TEST CASE:  GENERATE at multiple nesting depths
+
+DEEPEST SUBCASE STACK REACHED (DIFFERENT FROM THE CURRENT ONE):
+  A
+  1
+  a
+
+generators.cpp(0): MESSAGE: test_case: i=2
+
+===============================================================================
+generators.cpp(0):
+TEST CASE:  GENERATE at multiple nesting depths
+  A
+  1
+  a
+
+generators.cpp(0): MESSAGE: A1a: i=2 j=3 k=6 l=7
+
+===============================================================================
+generators.cpp(0):
+TEST CASE:  GENERATE at multiple nesting depths
+
+DEEPEST SUBCASE STACK REACHED (DIFFERENT FROM THE CURRENT ONE):
+  A
+  1
+  a
+
+generators.cpp(0): MESSAGE: test_case: i=2
+
+===============================================================================
+generators.cpp(0):
+TEST CASE:  GENERATE at multiple nesting depths
+  A
+  1
+  a
+
+generators.cpp(0): MESSAGE: A1a: i=2 j=3 k=6 l=8
+
+===============================================================================
+generators.cpp(0):
+TEST CASE:  GENERATE at multiple nesting depths
+
+DEEPEST SUBCASE STACK REACHED (DIFFERENT FROM THE CURRENT ONE):
+  A
+  1
+  a
+
+generators.cpp(0): MESSAGE: test_case: i=2
+
+===============================================================================
+generators.cpp(0):
+TEST CASE:  GENERATE at multiple nesting depths
+  A
+  2
+
+generators.cpp(0): MESSAGE: A2 i=2 m=9
+
+===============================================================================
+generators.cpp(0):
+TEST CASE:  GENERATE at multiple nesting depths
+
+DEEPEST SUBCASE STACK REACHED (DIFFERENT FROM THE CURRENT ONE):
+  A
+  2
+
+generators.cpp(0): MESSAGE: test_case: i=2
+
+===============================================================================
+generators.cpp(0):
+TEST CASE:  GENERATE at multiple nesting depths
+  A
+  2
+
+generators.cpp(0): MESSAGE: A2 i=2 m=10
+
+===============================================================================
+generators.cpp(0):
+TEST CASE:  GENERATE at multiple nesting depths
+
+DEEPEST SUBCASE STACK REACHED (DIFFERENT FROM THE CURRENT ONE):
+  A
+  2
+
+generators.cpp(0): MESSAGE: test_case: i=2
+
+===============================================================================
+generators.cpp(0):
+TEST CASE:  GENERATE at multiple nesting depths
+  A
+  1
+  a
+
+generators.cpp(0): MESSAGE: A1a: i=2 j=4 k=5 l=7
+
+===============================================================================
+generators.cpp(0):
+TEST CASE:  GENERATE at multiple nesting depths
+
+DEEPEST SUBCASE STACK REACHED (DIFFERENT FROM THE CURRENT ONE):
+  A
+  1
+  a
+
+generators.cpp(0): MESSAGE: test_case: i=2
+
+===============================================================================
+generators.cpp(0):
+TEST CASE:  GENERATE at multiple nesting depths
+  A
+  1
+  a
+
+generators.cpp(0): MESSAGE: A1a: i=2 j=4 k=5 l=8
+
+===============================================================================
+generators.cpp(0):
+TEST CASE:  GENERATE at multiple nesting depths
+
+DEEPEST SUBCASE STACK REACHED (DIFFERENT FROM THE CURRENT ONE):
+  A
+  1
+  a
+
+generators.cpp(0): MESSAGE: test_case: i=2
+
+===============================================================================
+generators.cpp(0):
+TEST CASE:  GENERATE at multiple nesting depths
+  A
+  1
+  a
+
+generators.cpp(0): MESSAGE: A1a: i=2 j=4 k=6 l=7
+
+===============================================================================
+generators.cpp(0):
+TEST CASE:  GENERATE at multiple nesting depths
+
+DEEPEST SUBCASE STACK REACHED (DIFFERENT FROM THE CURRENT ONE):
+  A
+  1
+  a
+
+generators.cpp(0): MESSAGE: test_case: i=2
+
+===============================================================================
+generators.cpp(0):
+TEST CASE:  GENERATE at multiple nesting depths
+  A
+  1
+  a
+
+generators.cpp(0): MESSAGE: A1a: i=2 j=4 k=6 l=8
+
+===============================================================================
+generators.cpp(0):
+TEST CASE:  GENERATE at multiple nesting depths
+
+DEEPEST SUBCASE STACK REACHED (DIFFERENT FROM THE CURRENT ONE):
+  A
+  1
+  a
+
+generators.cpp(0): MESSAGE: test_case: i=2
+
+===============================================================================
+generators.cpp(0):
+TEST CASE:  GENERATE at multiple nesting depths
+  A
+  2
+
+generators.cpp(0): MESSAGE: A2 i=2 m=9
+
+===============================================================================
+generators.cpp(0):
+TEST CASE:  GENERATE at multiple nesting depths
+
+DEEPEST SUBCASE STACK REACHED (DIFFERENT FROM THE CURRENT ONE):
+  A
+  2
+
+generators.cpp(0): MESSAGE: test_case: i=2
+
+===============================================================================
+generators.cpp(0):
+TEST CASE:  GENERATE at multiple nesting depths
+  A
+  2
+
+generators.cpp(0): MESSAGE: A2 i=2 m=10
+
+===============================================================================
+generators.cpp(0):
+TEST CASE:  GENERATE at multiple nesting depths
+
+DEEPEST SUBCASE STACK REACHED (DIFFERENT FROM THE CURRENT ONE):
+  A
+  2
+
+generators.cpp(0): MESSAGE: test_case: i=2
+
+===============================================================================
+generators.cpp(0):
+TEST CASE:  GENERATE at multiple nesting depths
+  B
+
+generators.cpp(0): MESSAGE: B: i=2 n=1000
+
+===============================================================================
+generators.cpp(0):
+TEST CASE:  GENERATE at multiple nesting depths
+
+DEEPEST SUBCASE STACK REACHED (DIFFERENT FROM THE CURRENT ONE):
+  B
+
+generators.cpp(0): MESSAGE: test_case: i=2
+
+===============================================================================
+generators.cpp(0):
+TEST CASE:  GENERATE at multiple nesting depths
+  B
+
+generators.cpp(0): MESSAGE: B: i=2 n=2000
+
+===============================================================================
+generators.cpp(0):
+TEST CASE:  GENERATE at multiple nesting depths
+
+DEEPEST SUBCASE STACK REACHED (DIFFERENT FROM THE CURRENT ONE):
+  B
+
+generators.cpp(0): MESSAGE: test_case: i=2
+
+===============================================================================
+generators.cpp(0):
+TEST CASE:  GENERATE filter subcase target
+
+generators.cpp(0): MESSAGE: sc root x=1
+
+===============================================================================
+generators.cpp(0):
+TEST CASE:  GENERATE filter subcase target
+  keep
+
+generators.cpp(0): MESSAGE: keep x=1
+
+===============================================================================
+generators.cpp(0):
+TEST CASE:  GENERATE filter subcase target
+
+generators.cpp(0): MESSAGE: sc root x=1
+
+===============================================================================
+generators.cpp(0):
+TEST CASE:  GENERATE filter subcase target
+  drop
+
+generators.cpp(0): MESSAGE: drop x=1
+
+===============================================================================
+generators.cpp(0):
+TEST CASE:  GENERATE filter subcase target
+
+generators.cpp(0): MESSAGE: sc root x=2
+
+===============================================================================
+generators.cpp(0):
+TEST CASE:  GENERATE filter subcase target
+  keep
+
+generators.cpp(0): MESSAGE: keep x=2
+
+===============================================================================
+generators.cpp(0):
+TEST CASE:  GENERATE filter subcase target
+
+generators.cpp(0): MESSAGE: sc root x=2
+
+===============================================================================
+generators.cpp(0):
+TEST CASE:  GENERATE filter subcase target
+  drop
+
+generators.cpp(0): MESSAGE: drop x=2
+
+===============================================================================
+generators.cpp(0):
+TEST CASE:  GENERATE filter test-case excluded
+
+generators.cpp(0): MESSAGE: tc excluded x=3
+
+generators.cpp(0): MESSAGE: tc excluded x=4
+
+===============================================================================
+generators.cpp(0):
+TEST CASE:  GENERATE filter test-case target
+
+generators.cpp(0): MESSAGE: tc target x=1 y=10
+
+generators.cpp(0): MESSAGE: tc target x=1 y=20
+
+generators.cpp(0): MESSAGE: tc target x=2 y=10
+
+generators.cpp(0): MESSAGE: tc target x=2 y=20
+
+===============================================================================
+generators.cpp(0):
+TEST CASE:  GENERATE inside SUBCASE - single sibling
+  A
+
+generators.cpp(0): MESSAGE: A x=1
+
+===============================================================================
+generators.cpp(0):
+TEST CASE:  GENERATE inside SUBCASE - single sibling
+  A
+
+generators.cpp(0): MESSAGE: A x=2
+
+===============================================================================
+generators.cpp(0):
+TEST CASE:  GENERATE inside SUBCASE - single sibling
+  B
+
+generators.cpp(0): MESSAGE: B
+
+===============================================================================
+generators.cpp(0):
+TEST CASE:  GENERATE inside SUBCASE - with nested child subcases
+  outer
+
+generators.cpp(0): MESSAGE: outer x=1
+
+===============================================================================
+generators.cpp(0):
+TEST CASE:  GENERATE inside SUBCASE - with nested child subcases
+  outer
+  inner A
+
+generators.cpp(0): MESSAGE:   inner A x=1
+
+===============================================================================
+generators.cpp(0):
+TEST CASE:  GENERATE inside SUBCASE - with nested child subcases
+  outer
+
+generators.cpp(0): MESSAGE: outer x=1
+
+===============================================================================
+generators.cpp(0):
+TEST CASE:  GENERATE inside SUBCASE - with nested child subcases
+  outer
+  inner B
+
+generators.cpp(0): MESSAGE:   inner B x=1
+
+===============================================================================
+generators.cpp(0):
+TEST CASE:  GENERATE inside SUBCASE - with nested child subcases
+  outer
+
+generators.cpp(0): MESSAGE: outer x=2
+
+===============================================================================
+generators.cpp(0):
+TEST CASE:  GENERATE inside SUBCASE - with nested child subcases
+  outer
+  inner A
+
+generators.cpp(0): MESSAGE:   inner A x=2
+
+===============================================================================
+generators.cpp(0):
+TEST CASE:  GENERATE inside SUBCASE - with nested child subcases
+  outer
+
+generators.cpp(0): MESSAGE: outer x=2
+
+===============================================================================
+generators.cpp(0):
+TEST CASE:  GENERATE inside SUBCASE - with nested child subcases
+  outer
+  inner B
+
+generators.cpp(0): MESSAGE:   inner B x=2
+
+===============================================================================
+generators.cpp(0):
+TEST CASE:  GENERATE inside sibling SUBCASEs - different counts
+  A
+
+generators.cpp(0): MESSAGE: A x=1
+
+===============================================================================
+generators.cpp(0):
+TEST CASE:  GENERATE inside sibling SUBCASEs - different counts
+  A
+
+generators.cpp(0): MESSAGE: A x=2
+
+===============================================================================
+generators.cpp(0):
+TEST CASE:  GENERATE inside sibling SUBCASEs - different counts
+  A
+
+generators.cpp(0): MESSAGE: A x=3
+
+===============================================================================
+generators.cpp(0):
+TEST CASE:  GENERATE inside sibling SUBCASEs - different counts
+  B
+
+generators.cpp(0): MESSAGE: B y=10
+
+===============================================================================
+generators.cpp(0):
+TEST CASE:  GENERATE inside sibling SUBCASEs - different counts
+  B
+
+generators.cpp(0): MESSAGE: B y=20
+
+===============================================================================
+generators.cpp(0):
+TEST CASE:  GENERATE statements can depend on each other
+
+generators.cpp(0): MESSAGE: i=1 j=2
+
+generators.cpp(0): MESSAGE: i=1 j=3
+
+generators.cpp(0): MESSAGE: i=1 j=4
+
+generators.cpp(0): MESSAGE: i=2 j=3
+
+generators.cpp(0): MESSAGE: i=2 j=4
+
+generators.cpp(0): MESSAGE: i=2 j=5
+
+generators.cpp(0): MESSAGE: i=3 j=4
+
+generators.cpp(0): MESSAGE: i=3 j=5
+
+generators.cpp(0): MESSAGE: i=3 j=6
+
+===============================================================================
+generators.cpp(0):
+TEST CASE:  GENERATE with dynamic if
+
+generators.cpp(0): MESSAGE: i=1 j=10
+
+generators.cpp(0): MESSAGE: i=1 j=20
+
+generators.cpp(0): MESSAGE: i=3 j=10
+
+generators.cpp(0): MESSAGE: i=3 j=20
+
+===============================================================================
+generators.cpp(0):
+TEST CASE:  GENERATE with dynamic loop
+
+generators.cpp(0): MESSAGE: # i=1
+
+===============================================================================
+generators.cpp(0):
+TEST CASE:  GENERATE with dynamic loop
+  0
+
+generators.cpp(0): MESSAGE: j=0 k=9
+
+===============================================================================
+generators.cpp(0):
+TEST CASE:  GENERATE with dynamic loop
+
+generators.cpp(0): MESSAGE: # i=1
+
+===============================================================================
+generators.cpp(0):
+TEST CASE:  GENERATE with dynamic loop
+  0
+
+generators.cpp(0): MESSAGE: j=0 k=19
+
+===============================================================================
+generators.cpp(0):
+TEST CASE:  GENERATE with dynamic loop
+
+generators.cpp(0): MESSAGE: # i=2
+
+===============================================================================
+generators.cpp(0):
+TEST CASE:  GENERATE with dynamic loop
+  0
+
+generators.cpp(0): MESSAGE: j=0 k=8
+
+===============================================================================
+generators.cpp(0):
+TEST CASE:  GENERATE with dynamic loop
+
+generators.cpp(0): MESSAGE: # i=2
+
+===============================================================================
+generators.cpp(0):
+TEST CASE:  GENERATE with dynamic loop
+  0
+
+generators.cpp(0): MESSAGE: j=0 k=18
+
+===============================================================================
+generators.cpp(0):
+TEST CASE:  GENERATE with dynamic loop
+
+generators.cpp(0): MESSAGE: # i=2
+
+===============================================================================
+generators.cpp(0):
+TEST CASE:  GENERATE with dynamic loop
+  1
+
+generators.cpp(0): MESSAGE: j=1 k=7
+
+===============================================================================
+generators.cpp(0):
+TEST CASE:  GENERATE with dynamic loop
+
+generators.cpp(0): MESSAGE: # i=2
+
+===============================================================================
+generators.cpp(0):
+TEST CASE:  GENERATE with dynamic loop
+  1
+
+generators.cpp(0): MESSAGE: j=1 k=17
+
+===============================================================================
+generators.cpp(0):
+TEST CASE:  GENERATE with dynamic switch
+
+generators.cpp(0): MESSAGE: i=1 j=10
+
+generators.cpp(0): MESSAGE: i=1 j=20
+
+generators.cpp(0): MESSAGE: i=2 k=100
+
+generators.cpp(0): MESSAGE: i=2 k=200
+
+generators.cpp(0): MESSAGE: i=3 m=1000
+
+generators.cpp(0): MESSAGE: i=3 m=2000
+
+===============================================================================
+generators.cpp(0):
+TEST CASE:  GENERATE with fixed for loop
+  loop with fixed name
+  fixed name
+
+generators.cpp(0): MESSAGE: i=0 js=[ 3 ]
+
+===============================================================================
+generators.cpp(0):
+TEST CASE:  GENERATE with fixed for loop
+  loop with fixed name
+  fixed name
+
+DEEPEST SUBCASE STACK REACHED (DIFFERENT FROM THE CURRENT ONE):
+  loop with fixed name
+  fixed name
+  fixed name
+
+generators.cpp(0): MESSAGE: i=1 js=[ 3 5 ]
+
+===============================================================================
+generators.cpp(0):
+TEST CASE:  GENERATE with fixed for loop
+  loop with fixed name
+  fixed name
+
+DEEPEST SUBCASE STACK REACHED (DIFFERENT FROM THE CURRENT ONE):
+  loop with fixed name
+  fixed name
+  fixed name
+  fixed name
+
+generators.cpp(0): MESSAGE: i=2 js=[ 3 5 7 ]
+
+===============================================================================
+generators.cpp(0):
+TEST CASE:  GENERATE with fixed for loop
+  loop with fixed name
+  fixed name
+
+generators.cpp(0): MESSAGE: i=0 js=[ 4 ]
+
+===============================================================================
+generators.cpp(0):
+TEST CASE:  GENERATE with fixed for loop
+  loop with fixed name
+  fixed name
+
+DEEPEST SUBCASE STACK REACHED (DIFFERENT FROM THE CURRENT ONE):
+  loop with fixed name
+  fixed name
+  fixed name
+
+generators.cpp(0): MESSAGE: i=1 js=[ 4 6 ]
+
+===============================================================================
+generators.cpp(0):
+TEST CASE:  GENERATE with fixed for loop
+  loop with fixed name
+  fixed name
+
+DEEPEST SUBCASE STACK REACHED (DIFFERENT FROM THE CURRENT ONE):
+  loop with fixed name
+  fixed name
+  fixed name
+  fixed name
+
+generators.cpp(0): MESSAGE: i=2 js=[ 4 6 8 ]
+
+===============================================================================
+generators.cpp(0):
+TEST CASE:  GENERATE with fixed for loop
+  loop with dynamic name
+  dynamic 0
+
+generators.cpp(0): MESSAGE: i=0 js=[ 3 ]
+
+===============================================================================
+generators.cpp(0):
+TEST CASE:  GENERATE with fixed for loop
+  loop with dynamic name
+  dynamic 0
+
+generators.cpp(0): MESSAGE: i=0 js=[ 4 ]
+
+===============================================================================
+generators.cpp(0):
+TEST CASE:  GENERATE with fixed for loop
+  loop with dynamic name
+  dynamic 1
+
+generators.cpp(0): MESSAGE: i=1 js=[ 5 ]
+
+===============================================================================
+generators.cpp(0):
+TEST CASE:  GENERATE with fixed for loop
+  loop with dynamic name
+  dynamic 1
+
+generators.cpp(0): MESSAGE: i=1 js=[ 6 ]
+
+===============================================================================
+generators.cpp(0):
+TEST CASE:  GENERATE with fixed for loop
+  loop with dynamic name
+  dynamic 2
+
+generators.cpp(0): MESSAGE: i=2 js=[ 7 ]
+
+===============================================================================
+generators.cpp(0):
+TEST CASE:  GENERATE with fixed for loop
+  loop with dynamic name
+  dynamic 2
+
+generators.cpp(0): MESSAGE: i=2 js=[ 8 ]
+
+===============================================================================
+generators.cpp(0):
+TEST CASE:  GENERATE with fixed for loop
+  loop without subcase
+
+generators.cpp(0): MESSAGE: js=[ 3 5 7 ]
+
+===============================================================================
+generators.cpp(0):
+TEST CASE:  GENERATE with fixed for loop
+  loop without subcase
+
+generators.cpp(0): MESSAGE: js=[ 3 5 8 ]
+
+===============================================================================
+generators.cpp(0):
+TEST CASE:  GENERATE with fixed for loop
+  loop without subcase
+
+generators.cpp(0): MESSAGE: js=[ 3 6 7 ]
+
+===============================================================================
+generators.cpp(0):
+TEST CASE:  GENERATE with fixed for loop
+  loop without subcase
+
+generators.cpp(0): MESSAGE: js=[ 3 6 8 ]
+
+===============================================================================
+generators.cpp(0):
+TEST CASE:  GENERATE with fixed for loop
+  loop without subcase
+
+generators.cpp(0): MESSAGE: js=[ 4 5 7 ]
+
+===============================================================================
+generators.cpp(0):
+TEST CASE:  GENERATE with fixed for loop
+  loop without subcase
+
+generators.cpp(0): MESSAGE: js=[ 4 5 8 ]
+
+===============================================================================
+generators.cpp(0):
+TEST CASE:  GENERATE with fixed for loop
+  loop without subcase
+
+generators.cpp(0): MESSAGE: js=[ 4 6 7 ]
+
+===============================================================================
+generators.cpp(0):
+TEST CASE:  GENERATE with fixed for loop
+  loop without subcase
+
+generators.cpp(0): MESSAGE: js=[ 4 6 8 ]
+
 ===============================================================================
 assertion_macros.cpp(0):
 TEST CASE:  REQUIRE level of asserts fail and abort the test case - 1
@@ -425,19 +1474,25 @@ stringification.cpp(0): ERROR: CHECK( "a" == doctest::Contains("aaa") ) is NOT c
 
 stringification.cpp(0): ERROR: test case THREW exception: MyTypeInherited<int>(5, 4)
 
-before: i=1
-after: i=1
-before: i=2
 ===============================================================================
 generators.cpp(0):
 TEST CASE:  all items are handled
 
+generators.cpp(0): MESSAGE: before: i=1
+
+generators.cpp(0): MESSAGE: after: i=1
+
+generators.cpp(0): MESSAGE: before: i=2
+
 generators.cpp(0): FATAL ERROR: REQUIRE( i % 2 ) is NOT correct!
   values: REQUIRE( 0 )
 
-before: i=3
-after: i=3
-before: i=4
+generators.cpp(0): MESSAGE: before: i=3
+
+generators.cpp(0): MESSAGE: after: i=3
+
+generators.cpp(0): MESSAGE: before: i=4
+
 generators.cpp(0): FATAL ERROR: REQUIRE( i % 2 ) is NOT correct!
   values: REQUIRE( 0 )
 
@@ -712,27 +1767,35 @@ test_cases_and_suites.cpp(0): ERROR:
 test_cases_and_suites.cpp(0): ERROR: 
 
 Didn't fail exactly 1 times so marking it as failed!
-before: i=1 j=0
 ===============================================================================
 generators.cpp(0):
 TEST CASE:  failures continue cartesian iteration
 
+generators.cpp(0): MESSAGE: before: i=1 j=0
+
 generators.cpp(0): FATAL ERROR: REQUIRE( i + j == 2 ) is NOT correct!
   values: REQUIRE( 1 == 2 )
 
-before: i=1 j=1
-after: i=1 j=1
-before: i=1 j=2
+generators.cpp(0): MESSAGE: before: i=1 j=1
+
+generators.cpp(0): MESSAGE: after: i=1 j=1
+
+generators.cpp(0): MESSAGE: before: i=1 j=2
+
 generators.cpp(0): FATAL ERROR: REQUIRE( i + j == 2 ) is NOT correct!
   values: REQUIRE( 3 == 2 )
 
-before: i=2 j=-1
+generators.cpp(0): MESSAGE: before: i=2 j=-1
+
 generators.cpp(0): FATAL ERROR: REQUIRE( i + j == 2 ) is NOT correct!
   values: REQUIRE( 1 == 2 )
 
-before: i=2 j=0
-after: i=2 j=0
-before: i=2 j=1
+generators.cpp(0): MESSAGE: before: i=2 j=0
+
+generators.cpp(0): MESSAGE: after: i=2 j=0
+
+generators.cpp(0): MESSAGE: before: i=2 j=1
+
 generators.cpp(0): FATAL ERROR: REQUIRE( i + j == 2 ) is NOT correct!
   values: REQUIRE( 3 == 2 )
 
@@ -797,10 +1860,18 @@ TEST CASE:  lots of nested subcases
 
 subcases.cpp(0): FATAL ERROR: 
 
-i=1 j=10
-i=1 j=20
-i=2 j=10
-i=2 j=20
+===============================================================================
+generators.cpp(0):
+TEST CASE:  multiple GENERATEs on a single line
+
+generators.cpp(0): MESSAGE: i=1 j=10
+
+generators.cpp(0): MESSAGE: i=1 j=20
+
+generators.cpp(0): MESSAGE: i=2 j=10
+
+generators.cpp(0): MESSAGE: i=2 j=20
+
 ===============================================================================
 templated_test_cases.cpp(0):
 TEST CASE:  multiple types<Custom name test>
@@ -822,11 +1893,45 @@ TEST CASE:  multiple types<TypePair<bool, int>>
 templated_test_cases.cpp(0): ERROR: CHECK( t2 != T2() ) is NOT correct!
   values: CHECK( 0 != 0 )
 
-A1 j=10 k=100
-A1 j=10 k=200
-A1 j=20 k=100
-A1 j=20 k=200
-B enter=0
+===============================================================================
+generators.cpp(0):
+TEST CASE:  nested GENERATE does not affect sibling SUBCASE
+  A
+  1
+
+generators.cpp(0): MESSAGE: A1 j=10 k=100
+
+===============================================================================
+generators.cpp(0):
+TEST CASE:  nested GENERATE does not affect sibling SUBCASE
+  A
+  1
+
+generators.cpp(0): MESSAGE: A1 j=10 k=200
+
+===============================================================================
+generators.cpp(0):
+TEST CASE:  nested GENERATE does not affect sibling SUBCASE
+  A
+  1
+
+generators.cpp(0): MESSAGE: A1 j=20 k=100
+
+===============================================================================
+generators.cpp(0):
+TEST CASE:  nested GENERATE does not affect sibling SUBCASE
+  A
+  1
+
+generators.cpp(0): MESSAGE: A1 j=20 k=200
+
+===============================================================================
+generators.cpp(0):
+TEST CASE:  nested GENERATE does not affect sibling SUBCASE
+  B
+
+generators.cpp(0): MESSAGE: B enter=0
+
 ===============================================================================
 stringification.cpp(0):
 TEST CASE:  no headers
@@ -1100,22 +2205,118 @@ logging.cpp(0): ERROR: MY_ASSERT(false)
 
 logging.cpp(0): FATAL ERROR: MY_ASSERT_FATAL(false)
 
-A n=1 k=10
-A n=1 k=20
-B n=1 k=100
-B n=1 k=200
-A n=2 k=10
-A n=2 k=20
-B n=2 k=100
-B n=2 k=200
-s: n=10 k=1
-s: n=10 k=2
-s: n=20 k=1
-s: n=20 k=2
-s: x=1 y=10
-s: x=1 y=20
-s: x=2 y=10
-s: x=2 y=20
+===============================================================================
+generators.cpp(0):
+TEST CASE:  top-level GENERATE + two sibling SUBCASEs each with GENERATE
+  A
+
+generators.cpp(0): MESSAGE: A n=1 k=10
+
+===============================================================================
+generators.cpp(0):
+TEST CASE:  top-level GENERATE + two sibling SUBCASEs each with GENERATE
+  A
+
+generators.cpp(0): MESSAGE: A n=1 k=20
+
+===============================================================================
+generators.cpp(0):
+TEST CASE:  top-level GENERATE + two sibling SUBCASEs each with GENERATE
+  B
+
+generators.cpp(0): MESSAGE: B n=1 k=100
+
+===============================================================================
+generators.cpp(0):
+TEST CASE:  top-level GENERATE + two sibling SUBCASEs each with GENERATE
+  B
+
+generators.cpp(0): MESSAGE: B n=1 k=200
+
+===============================================================================
+generators.cpp(0):
+TEST CASE:  top-level GENERATE + two sibling SUBCASEs each with GENERATE
+  A
+
+generators.cpp(0): MESSAGE: A n=2 k=10
+
+===============================================================================
+generators.cpp(0):
+TEST CASE:  top-level GENERATE + two sibling SUBCASEs each with GENERATE
+  A
+
+generators.cpp(0): MESSAGE: A n=2 k=20
+
+===============================================================================
+generators.cpp(0):
+TEST CASE:  top-level GENERATE + two sibling SUBCASEs each with GENERATE
+  B
+
+generators.cpp(0): MESSAGE: B n=2 k=100
+
+===============================================================================
+generators.cpp(0):
+TEST CASE:  top-level GENERATE + two sibling SUBCASEs each with GENERATE
+  B
+
+generators.cpp(0): MESSAGE: B n=2 k=200
+
+===============================================================================
+generators.cpp(0):
+TEST CASE:  top-level GENERATE composes with GENERATE inside SUBCASE
+  s
+
+generators.cpp(0): MESSAGE: s: n=10 k=1
+
+===============================================================================
+generators.cpp(0):
+TEST CASE:  top-level GENERATE composes with GENERATE inside SUBCASE
+  s
+
+generators.cpp(0): MESSAGE: s: n=10 k=2
+
+===============================================================================
+generators.cpp(0):
+TEST CASE:  top-level GENERATE composes with GENERATE inside SUBCASE
+  s
+
+generators.cpp(0): MESSAGE: s: n=20 k=1
+
+===============================================================================
+generators.cpp(0):
+TEST CASE:  top-level GENERATE composes with GENERATE inside SUBCASE
+  s
+
+generators.cpp(0): MESSAGE: s: n=20 k=2
+
+===============================================================================
+generators.cpp(0):
+TEST CASE:  two GENERATEs + SUBCASE
+  s
+
+generators.cpp(0): MESSAGE: s: x=1 y=10
+
+===============================================================================
+generators.cpp(0):
+TEST CASE:  two GENERATEs + SUBCASE
+  s
+
+generators.cpp(0): MESSAGE: s: x=1 y=20
+
+===============================================================================
+generators.cpp(0):
+TEST CASE:  two GENERATEs + SUBCASE
+  s
+
+generators.cpp(0): MESSAGE: s: x=2 y=10
+
+===============================================================================
+generators.cpp(0):
+TEST CASE:  two GENERATEs + SUBCASE
+  s
+
+generators.cpp(0): MESSAGE: s: x=2 y=20
+
 ===============================================================================
 test_cases_and_suites.cpp(0):
 DESCRIPTION: this test has overridden its skip decorator

@@ -3,13 +3,29 @@
   <Options order_by="file" rand_seed="324" first="0" last="4294967295" abort_after="0" subcase_filter_levels="2147483647" case_sensitive="false" no_throw="false" no_skip="false"/>
   <TestSuite>
     <TestCase name="GENERATE filter subcase target" filename="generators.cpp" line="0">
-sc root x=1
+      <Message type="WARNING" filename="generators.cpp" line="0">
+        <Text>
+          sc root x=1
+        </Text>
+      </Message>
       <SubCase name="keep" filename="generators.cpp" line="0">
-keep x=1
+        <Message type="WARNING" filename="generators.cpp" line="0">
+          <Text>
+            keep x=1
+          </Text>
+        </Message>
       </SubCase>
-sc root x=2
+      <Message type="WARNING" filename="generators.cpp" line="0">
+        <Text>
+          sc root x=2
+        </Text>
+      </Message>
       <SubCase name="keep" filename="generators.cpp" line="0">
-keep x=2
+        <Message type="WARNING" filename="generators.cpp" line="0">
+          <Text>
+            keep x=2
+          </Text>
+        </Message>
       </SubCase>
       <OverallResultsAsserts successes="2" failures="0" test_case_success="true"/>
     </TestCase>

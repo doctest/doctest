@@ -4,7 +4,7 @@
 #include "header.h"
 
 DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_BEGIN
-#include <iostream>
+#include <sstream>
 #include <vector>
 #include <string>
 using namespace std;
@@ -16,13 +16,13 @@ DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_END
 
 TEST_CASE("GENERATE - single, two values") {
     auto x = GENERATE(10, 20);
-    cout << "x=" << x << endl;
+    MESSAGE("x=", x);
     CHECK((x == 10 || x == 20));
 }
 
 TEST_CASE("GENERATE - single, three values") {
     auto x = GENERATE(1, 2, 3);
-    cout << "x=" << x << endl;
+    MESSAGE("x=", x);
     CHECK(x >= 1);
     CHECK(x <= 3);
 }
@@ -34,7 +34,7 @@ TEST_CASE("GENERATE - single, three values") {
 TEST_CASE("GENERATE - two generators, cartesian product") {
     auto x = GENERATE(1, 2);   // outer: cycles slowest
     auto y = GENERATE(10, 20); // inner: cycles fastest
-    cout << "x=" << x << " y=" << y << endl;
+    MESSAGE("x=", x, " y=", y);
     CHECK(x >= 1);
     CHECK(y >= 10);
 }
@@ -43,14 +43,14 @@ TEST_CASE("GENERATE - three generators") {
     auto a = GENERATE(1, 2);
     auto b = GENERATE(3, 4);
     auto c = GENERATE(5, 6);
-    cout << "a=" << a << " b=" << b << " c=" << c << endl;
+    MESSAGE("a=", a, " b=", b, " c=", c);
     CHECK(a + b + c > 0);
 }
 
 TEST_CASE("GENERATE statements can depend on each other") {
     int i = GENERATE(1, 2, 3);
     int j = GENERATE(i + 1, i + 2, i + 3);
-    cout << "i=" << i << " j=" << j << endl;
+    MESSAGE("i=", i, " j=", j);
     CHECK(i <= j);
 }
 
@@ -59,7 +59,7 @@ TEST_CASE("multiple GENERATEs on a single line") {
     // NOLINTNEXTLINE(readability-isolate-declaration)
     int i = GENERATE(1, 2), j = GENERATE(10, 20);
     // clang-format on
-    cout << "i=" << i << " j=" << j << endl;
+    MESSAGE("i=", i, " j=", j);
 }
 
 // ---------------------------------------------------------------------------
@@ -68,7 +68,7 @@ TEST_CASE("multiple GENERATEs on a single line") {
 
 TEST_CASE("GENERATE - double values") {
     auto d = GENERATE(1.0, 2.5, 3.14);
-    cout << "d=" << d << endl;
+    MESSAGE("d=", d);
     CHECK(d > 0.0);
 }
 
@@ -84,28 +84,28 @@ TEST_CASE("GENERATE - const char* values") {
 
 TEST_CASE("GENERATE + SUBCASE - basic interaction") {
     auto x = GENERATE(1, 2);
-    cout << "test_case: x=" << x << endl;
+    MESSAGE("test_case: x=", x);
     SUBCASE("A") {
-        cout << "A: x=" << x << endl;
+        MESSAGE("A: x=", x);
         CHECK(x > 0);
     }
     SUBCASE("B") {
-        cout << "B: x=" << x << endl;
+        MESSAGE("B: x=", x);
         CHECK(x > 0);
     }
 }
 
 TEST_CASE("GENERATE + nested SUBCASE") {
     auto x = GENERATE(1, 2);
-    cout << "test_case: x=" << x << endl;
+    MESSAGE("test_case: x=", x);
     SUBCASE("outer") {
-        cout << "outer: x=" << x << endl;
+        MESSAGE("outer: x=", x);
         SUBCASE("inner A") {
-            cout << "inner A: x=" << x << endl;
+            MESSAGE("inner A: x=", x);
             CHECK(x > 0);
         }
         SUBCASE("inner B") {
-            cout << "inner B: x=" << x << endl;
+            MESSAGE("inner B: x=", x);
             CHECK(x > 0);
         }
     }
@@ -115,7 +115,7 @@ TEST_CASE("two GENERATEs + SUBCASE") {
     auto x = GENERATE(1, 2);
     auto y = GENERATE(10, 20);
     SUBCASE("s") {
-        cout << "s: x=" << x << " y=" << y << endl;
+        MESSAGE("s: x=", x, " y=", y);
         CHECK(x + y > 0);
     }
 }
@@ -131,7 +131,7 @@ TEST_CASE("GENERATE - custom struct type") {
     const Point p1{1, 2};
     const Point p2{3, 4};
     auto p = GENERATE(p1, p2, Point{5, 6});
-    cout << "p.x=" << p.x << " p.y=" << p.y << endl;
+    MESSAGE("p.x=", p.x, " p.y=", p.y);
     CHECK(p.x > 0);
     CHECK(p.y > 0);
 }
@@ -143,7 +143,7 @@ TEST_CASE("GENERATE - custom struct type") {
 TEST_CASE("GENERATE - single value (degenerate case)") {
     auto x = GENERATE(42);
     CHECK(x == 42);
-    cout << "x=" << x << endl;
+    MESSAGE("x=", x);
 }
 
 // ---------------------------------------------------------------------------
@@ -154,11 +154,11 @@ TEST_CASE("GENERATE inside SUBCASE - single sibling") {
     // SUBCASE("A") runs twice (for x=1 and x=2); SUBCASE("B") runs once.
     SUBCASE("A") {
         auto x = GENERATE(1, 2);
-        cout << "A x=" << x << endl;
+        MESSAGE("A x=", x);
         CHECK(x > 0);
     }
     SUBCASE("B") {
-        cout << "B" << endl;
+        MESSAGE("B");
         CHECK(true);
     }
 }
@@ -167,12 +167,12 @@ TEST_CASE("GENERATE inside sibling SUBCASEs - different counts") {
     // A runs 3 times, B runs 2 times: 5 total.
     SUBCASE("A") {
         auto x = GENERATE(1, 2, 3);
-        cout << "A x=" << x << endl;
+        MESSAGE("A x=", x);
         CHECK(x > 0);
     }
     SUBCASE("B") {
         auto y = GENERATE(10, 20);
-        cout << "B y=" << y << endl;
+        MESSAGE("B y=", y);
         CHECK(y > 0);
     }
 }
@@ -181,13 +181,13 @@ TEST_CASE("GENERATE inside SUBCASE - with nested child subcases") {
     // Each generator value causes both child subcases to re-run.
     SUBCASE("outer") {
         auto x = GENERATE(1, 2);
-        cout << "outer x=" << x << endl;
+        MESSAGE("outer x=", x);
         SUBCASE("inner A") {
-            cout << "  inner A x=" << x << endl;
+            MESSAGE("  inner A x=", x);
             CHECK(x > 0);
         }
         SUBCASE("inner B") {
-            cout << "  inner B x=" << x << endl;
+            MESSAGE("  inner B x=", x);
             CHECK(x > 0);
         }
     }
@@ -197,7 +197,7 @@ TEST_CASE("top-level GENERATE composes with GENERATE inside SUBCASE") {
     auto n = GENERATE(10, 20);
     SUBCASE("s") {
         auto k = GENERATE(1, 2);
-        cout << "s: n=" << n << " k=" << k << endl;
+        MESSAGE("s: n=", n, " k=", k);
         CHECK(n + k > 0);
     }
 }
@@ -208,12 +208,12 @@ TEST_CASE("top-level GENERATE + two sibling SUBCASEs each with GENERATE") {
     auto n = GENERATE(1, 2);
     SUBCASE("A") {
         auto k = GENERATE(10, 20);
-        cout << "A n=" << n << " k=" << k << endl;
+        MESSAGE("A n=", n, " k=", k);
         CHECK(n + k > 0);
     }
     SUBCASE("B") {
         auto k = GENERATE(100, 200);
-        cout << "B n=" << n << " k=" << k << endl;
+        MESSAGE("B n=", n, " k=", k);
         CHECK(n + k > 0);
     }
 }
@@ -230,19 +230,19 @@ TEST_CASE("GENERATE at multiple nesting depths") {
             auto k = GENERATE(5, 6);
             SUBCASE("a") {
                 auto l = GENERATE(7, 8);
-                cout << "A1a: i=" << i << " j=" << j << " k=" << k << " l=" << l << endl;
+                MESSAGE("A1a: i=", i, " j=", j, " k=", k, " l=", l);
             }
         }
         SUBCASE("2") {
             auto m = GENERATE(9, 10);
-            cout << "A2 i=" << i << " m=" << m << endl;
+            MESSAGE("A2 i=", i, " m=", m);
         }
     }
     SUBCASE("B") {
         auto n = GENERATE(1000, 2000);
-        cout << "B: i=" << i << " n=" << n << endl;
+        MESSAGE("B: i=", i, " n=", n);
     }
-    cout << "test_case: i=" << i << endl;
+    MESSAGE("test_case: i=", i);
 }
 
 TEST_CASE("nested GENERATE does not affect sibling SUBCASE") {
@@ -252,11 +252,11 @@ TEST_CASE("nested GENERATE does not affect sibling SUBCASE") {
         auto j = GENERATE(10, 20);
         SUBCASE("1") {
             auto k = GENERATE(100, 200);
-            cout << "A1 j=" << j << " k=" << k << endl;
+            MESSAGE("A1 j=", j, " k=", k);
         }
     }
     SUBCASE("B") {
-        cout << "B enter=" << b_enter_count << endl;
+        MESSAGE("B enter=", b_enter_count);
         CHECK(b_enter_count++ == 0);
     }
 }
@@ -267,17 +267,17 @@ TEST_CASE("nested GENERATE does not affect sibling SUBCASE") {
 
 TEST_CASE("all items are handled" * doctest::expected_failures(2)) {
     int i = GENERATE(1, 2, 3, 4);
-    cout << "before: i=" << i << endl;
+    MESSAGE("before: i=", i);
     REQUIRE(i % 2);
-    cout << "after: i=" << i << endl;
+    MESSAGE("after: i=", i);
 }
 
 TEST_CASE("failures continue cartesian iteration" * doctest::expected_failures(4)) {
     int i = GENERATE(1, 2);
     int j = GENERATE(1 - i, 2 - i, 3 - i);
-    cout << "before: i=" << i << " j=" << j << endl;
+    MESSAGE("before: i=", i, " j=", j);
     REQUIRE(i + j == 2);
-    cout << "after: i=" << i << " j=" << j << endl;
+    MESSAGE("after: i=", i, " j=", j);
 }
 
 // ---------------------------------------------------------------------------
@@ -297,11 +297,13 @@ DOCTEST_MSVC_SUPPRESS_WARNING(5045) // Spectre mitigation warning can surface at
         for (int i = 0; i < 3; ++i) {
             SUBCASE("fixed name") {
                 js.push_back(3 + 2 * i + GENERATE(0, 1));
-                cout << "i=" << i;
+                std::ostringstream oss;
+                oss << "i=" << i << " js=[ ";
                 for (auto j: js) {
-                    cout << " j=" << j;
+                    oss << j << " ";
                 }
-                cout << endl;
+                oss << "]";
+                MESSAGE(oss.str());
             }
         }
     }
@@ -317,11 +319,13 @@ DOCTEST_MSVC_SUPPRESS_WARNING(5045) // Spectre mitigation warning can surface at
         for (int i = 0; i < 3; ++i) {
             SUBCASE(("dynamic " + std::to_string(i)).c_str()) {
                 js.push_back(3 + 2 * i + GENERATE(0, 1));
-                cout << "i=" << i;
+                std::ostringstream oss;
+                oss << "i=" << i << " js=[ ";
                 for (auto j: js) {
-                    cout << " j=" << j;
+                    oss << j << " ";
                 }
-                cout << endl;
+                oss << "]";
+                MESSAGE(oss.str());
             }
         }
     }
@@ -337,21 +341,23 @@ DOCTEST_MSVC_SUPPRESS_WARNING(5045) // Spectre mitigation warning can surface at
         for (int i = 0; i < 3; ++i) {
             js.push_back(GENERATE(3 + 2 * i + 0, 3 + 2 * i + 1));
         }
-        cout << "js=[ ";
+        std::ostringstream oss;
+        oss << "js=[ ";
         for (auto j: js) {
-            cout << j << " ";
+            oss << j << " ";
         }
-        cout << "]" << endl;
+        oss << "]";
+        MESSAGE(oss.str());
     }
 }
 
 TEST_CASE("GENERATE with dynamic loop") {
     int i = GENERATE(1, 2);
-    cout << "# i=" << i << endl;
+    MESSAGE("# i=", i);
     for (int j = 0; j < i; ++j) {
         SUBCASE(std::to_string(j).c_str()) {
             int k = GENERATE(10 - i - j, 20 - i - j);
-            cout << "j=" << j << " k=" << k << endl;
+            MESSAGE("j=", j, " k=", k);
             CHECK(((i + j + k) % 10) == 0);
         }
     }
@@ -363,7 +369,7 @@ TEST_CASE("GENERATE with dynamic if") {
     int i = GENERATE(1, 2, 3);
     if (i != 2) {
         int j = GENERATE(10, 20);
-        cout << "i=" << i << " j=" << j << endl;
+        MESSAGE("i=", i, " j=", j);
     }
 }
 
@@ -372,17 +378,17 @@ TEST_CASE("GENERATE with dynamic switch") {
     switch (i) {
         case 1: {
             int j = GENERATE(10, 20);
-            cout << "i=" << i << " j=" << j << endl;
+            MESSAGE("i=", i, " j=", j);
             break;
         }
         case 2: {
             int k = GENERATE(100, 200);
-            cout << "i=" << i << " k=" << k << endl;
+            MESSAGE("i=", i, " k=", k);
             break;
         }
         case 3: {
             int m = GENERATE(1000, 2000);
-            cout << "i=" << i << " m=" << m << endl;
+            MESSAGE("i=", i, " m=", m);
             break;
         }
         default:;
@@ -396,27 +402,27 @@ TEST_CASE("GENERATE with dynamic switch") {
 TEST_CASE("GENERATE filter test-case target") {
     const int x = GENERATE(1, 2);
     const int y = GENERATE(10, 20);
-    cout << "tc target x=" << x << " y=" << y << endl;
+    MESSAGE("tc target x=", x, " y=", y);
     CHECK(x + y > 0);
 }
 
 TEST_CASE("GENERATE filter test-case excluded") {
     const int x = GENERATE(3, 4);
-    cout << "tc excluded x=" << x << endl;
+    MESSAGE("tc excluded x=", x);
     CHECK(x > 0);
 }
 
 TEST_CASE("GENERATE filter subcase target") {
     const int x = GENERATE(1, 2);
-    cout << "sc root x=" << x << endl;
+    MESSAGE("sc root x=", x);
 
     SUBCASE("keep") {
-        cout << "keep x=" << x << endl;
+        MESSAGE("keep x=", x);
         CHECK(x > 0);
     }
 
     SUBCASE("drop") {
-        cout << "drop x=" << x << endl;
+        MESSAGE("drop x=", x);
         CHECK(x > 0);
     }
 }
