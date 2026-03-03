@@ -153,8 +153,8 @@ This should be defined only in the source file where the library is implemented 
 
 ### **```DOCTEST_CONFIG_OPTIONS_FILE_PREFIX_SEPARATOR```**
 
-Use the [**command line**](commandline.md) option ```-spp``` to strip the longest matching in a list of prefixes from all file names in the output.
-The prefixes are passed as a single string that gets split at this separator character, ```':'``` by default. 
+Use the [**command line**](commandline.md) option ```-sfp``` to strip the longest matching in a list of prefixes from all file names in the output.
+The prefixes are passed as a single string that gets split at this separator character, ```':'``` by default.
 
 ### **```DOCTEST_CONFIG_NO_TRY_CATCH_IN_ASSERTS```**
 
