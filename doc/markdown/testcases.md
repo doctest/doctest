@@ -25,6 +25,10 @@ In addition to **doctest**'s take on the classic style of test cases, **doctest*
 
 This macro maps onto ```TEST_CASE``` and works in the same way, except that the test case name will be prefixed by "Scenario: "
 
+* **SCENARIO_METHOD(** _fixture_, _scenario name_ **)**
+
+This macro maps onto `TEST_CASE_FIXTURE` and works in the same way, except that the test case name will be prefixed by "Scenario: "
+
 * **SCENARIO_TEMPLATE(** _scenario name_, _type_, _list of types_ **)**
 
 This macro maps onto ```TEST_CASE_TEMPLATE``` and works in the same way, except that the test case name will be prefixed by "Scenario: "
@@ -39,10 +43,11 @@ This macro maps onto ```TEST_CASE_TEMPLATE_DEFINE``` and works in the same way, 
 
 These macros map onto ```SUBCASE```s except that the subcase names are the _something_s prefixed by "given: ", "when: " or "then: " respectively.
 
+* **AND_GIVEN(** _something_ **)**
 * **AND_WHEN(** _something_ **)**
 * **AND_THEN(** _something_ **)**
 
-Similar to ```WHEN``` and ```THEN``` except that the prefixes start with "and ". These are used to chain ```WHEN```s and ```THEN```s together.
+Similar to `GIVEN` / `WHEN` / `THEN` except that the prefixes start with "and ". These are used to chain `GIVEN`s / `WHEN`s / `THEN`s together.
 
 When any of these macros are used the console reporter recognises them and formats the test case header such that the Givens, Whens and Thens are aligned to aid readability.
 
