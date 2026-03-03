@@ -6547,7 +6547,7 @@ void ConsoleReporter::printHelp() {
       << Whitespace(sizePrefixDisplay * 1) << ":n: vs (n): for line numbers in output\n";
     s << " -" DOCTEST_OPTIONS_PREFIX_DISPLAY "npf, --" DOCTEST_OPTIONS_PREFIX_DISPLAY "no-path-filenames=<bool>      "
       << Whitespace(sizePrefixDisplay * 1) << "only filenames and no paths in output\n";
-    s << " -" DOCTEST_OPTIONS_PREFIX_DISPLAY "spp, --" DOCTEST_OPTIONS_PREFIX_DISPLAY "skip-path-prefixes=<p1:p2>    "
+    s << " -" DOCTEST_OPTIONS_PREFIX_DISPLAY "sfp, --" DOCTEST_OPTIONS_PREFIX_DISPLAY "strip-file-prefixes=<p1:p2>   "
       << Whitespace(sizePrefixDisplay * 1) << "whenever file paths start with this prefix, remove it from the output\n";
     s << " -" DOCTEST_OPTIONS_PREFIX_DISPLAY "nln, --" DOCTEST_OPTIONS_PREFIX_DISPLAY "no-line-numbers=<bool>        "
       << Whitespace(sizePrefixDisplay * 1) << "0 instead of real line numbers in output\n";
