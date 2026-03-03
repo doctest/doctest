@@ -287,10 +287,9 @@ TEST_CASE("failures continue cartesian iteration" * doctest::expected_failures(4
 // GENERATE with control flow
 // ---------------------------------------------------------------------------
 
-DOCTEST_MSVC_SUPPRESS_WARNING_PUSH  // context for spectre warning suppression
-DOCTEST_MSVC_SUPPRESS_WARNING(5045) // Spectre mitigation warning can surface at GENERATE call sites
+DOCTEST_MSVC_SUPPRESS_WARNING_WITH_PUSH(5045) // Spectre mitigation warning can surface at GENERATE call sites
 
-    TEST_CASE("GENERATE with fixed for loop") {
+TEST_CASE("GENERATE with fixed for loop") {
     SUBCASE("loop with fixed name") {
         // N.B. this produces 2 reruns, not 6: the loop reenters the same subcase
         // three times per rerun, and the single generator depth chosen for that
