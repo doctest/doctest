@@ -33,11 +33,12 @@ TEST_CASE("GENERATE - single, three values") {
 
 TEST_CASE("GENERATE - two generators, cartesian product") {
     static size_t iteration = 0;
-    static std::vector<std::pair<int, int>> expectations = {{1, 10}, {1, 20}, {2, 10}, {2, 20}};
+    static const std::pair<int, int> expectations[] = {{1, 10}, {1, 20}, {2, 10}, {2, 20}};
 
     auto x = GENERATE(1, 2);   // outer: cycles slowest
     auto y = GENERATE(10, 20); // inner: cycles fastest
     MESSAGE("x=", x, " y=", y);
+    REQUIRE(iteration < 2 * 2); // 2 values for x * 2 values for y
     auto expected = expectations[iteration++];
     CHECK(std::make_pair(x, y) == expected);
 }

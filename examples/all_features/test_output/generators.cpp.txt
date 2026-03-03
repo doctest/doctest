@@ -1450,6 +1450,6 @@ generators.cpp(0): MESSAGE: drop x=2
 
 ===============================================================================
 [doctest] test cases:  29 |  29 passed | 0 failed |
-[doctest] assertions: 106 | 100 passed | 6 failed |
+[doctest] assertions: 110 | 104 passed | 6 failed |
 [doctest] Status: SUCCESS!
 Program code.

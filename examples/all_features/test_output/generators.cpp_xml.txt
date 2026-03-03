@@ -54,7 +54,7 @@
           x=2 y=20
         </Text>
       </Message>
-      <OverallResultsAsserts successes="4" failures="0" test_case_success="true"/>
+      <OverallResultsAsserts successes="8" failures="0" test_case_success="true"/>
     </TestCase>
     <TestCase name="GENERATE - three generators" filename="generators.cpp" line="0">
       <Message type="WARNING" filename="generators.cpp" line="0">
@@ -1556,7 +1556,7 @@
       <OverallResultsAsserts successes="4" failures="0" test_case_success="true"/>
     </TestCase>
   </TestSuite>
-  <OverallResultsAsserts successes="100" failures="6"/>
+  <OverallResultsAsserts successes="104" failures="6"/>
   <OverallResultsTestCases successes="29" failures="0"/>
 </doctest>
 Program code.
