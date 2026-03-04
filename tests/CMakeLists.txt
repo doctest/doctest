@@ -113,3 +113,4 @@ doctest_add_unit_test(
 doctest_add_unit_test(WITH_MAIN SOURCE regression/test.630.cpp)
 doctest_add_unit_test(WITH_MAIN SOURCE regression/test.651.cpp)
 doctest_add_unit_test(WITH_MAIN SOURCE regression/test.786.cpp)
+doctest_add_unit_test(          SOURCE regression/test.873.cpp)
