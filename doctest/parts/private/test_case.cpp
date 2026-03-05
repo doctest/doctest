@@ -57,7 +57,7 @@ TestCase &TestCase::operator*(const char *in) {
     m_name = in;
     // make a new name with an appended type for templated test case
     if (m_template_id != -1) {
-        m_full_name = String(m_name) + "<" + m_type + ">";
+        m_full_name = String(m_name) + " with template argument " + m_type;
         // redirect the name to point to the newly constructed full name
         m_name = m_full_name.c_str();
     }
