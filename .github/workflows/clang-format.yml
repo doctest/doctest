@@ -1,0 +1,79 @@
+name: Clang-Format
+
+on:
+  push:
+    branches: [dev, master]
+    paths-ignore:
+      - "doc/**"
+      - "scripts/**"
+      - "LICENSE.txt"
+      - "README.md"
+
+  pull_request:
+    paths-ignore:
+      - "doc/**"
+      - "scripts/**"
+      - "LICENSE.txt"
+      - "README.md"
+
+concurrency:
+  group: ${{ github.workflow }}|${{ github.ref_name }}|clang-format
+  cancel-in-progress: true
+
+jobs:
+  clang-format:
+    runs-on: ubuntu-24.04
+    env:
+      LLVM_VERSION: 22
+      DIRECTORIES: >-
+        doctest/parts
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Configure LLVM Upstream
+        run: |
+          # See apt.llvm.org
+          wget -qO- http://apt.llvm.org/llvm-snapshot.gpg.key \
+            | sudo tee /etc/apt/trusted.gpg.d/apt.llvm.org.asc
+
+          sudo add-apt-repository \
+            "deb http://apt.llvm.org/$(lsb_release -cs)/ llvm-toolchain-$(lsb_release -cs)-${{ env.LLVM_VERSION}} main"
+
+      - name: Install
+        run: |
+          sudo apt-get update
+          sudo apt-get install clang-format-${{ env.LLVM_VERSION }}
+
+      - name: Apply
+        run: |
+          find ${{ env.DIRECTORIES }} \
+            -regextype posix-extended \
+            -regex '^.*\.(cpp|hpp|cxx|hxx|cc|c|h)$' \
+            -exec clang-format-${{ env.LLVM_VERSION }} --style=file -i {} + \
+
+      - name: Diff
+        id: diff
+        run: |
+          git diff | tee clang-format.patch
+          if [[ -s clang-format.patch ]]; then
+            echo "formatted=false" >> $GITHUB_OUTPUT
+          else
+            echo "formatted=true" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Upload Patch
+        if: steps.diff.outputs.formatted == 'false'
+        uses: actions/upload-artifact@v4
+        with:
+          name: clang-format.patch
+          path: clang-format.patch
+
+      - name: Block Pipeline
+        if: steps.diff.outputs.formatted == 'false'
+        run: |
+          echo "::error::Code is not formatted!"
+          echo "Either run clang-format-${{ env.LLVM_VERSION }} locally,"
+          echo "or download the clang-format.patch file and apply via"
+          echo "$ git apply clang-format.patch"
+          exit 1

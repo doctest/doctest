@@ -94,10 +94,12 @@ Subcase::Subcase(const String &name, const char *file, int line)
             g_cs->currentSubcaseDepth++;
             m_entered = true;
             DOCTEST_ITERATE_THROUGH_REPORTERS(subcase_start, m_signature);
-        } else if (g_cs->nextSubcaseStack.size() <= g_cs->currentSubcaseDepth &&
-                   g_cs->fullyTraversedSubcases.find(
-                       hash(hash(g_cs->subcaseStack, g_cs->currentSubcaseDepth), hash(m_signature))
-                   ) == g_cs->fullyTraversedSubcases.end()) {
+        } else if (
+            g_cs->nextSubcaseStack.size() <= g_cs->currentSubcaseDepth &&
+            g_cs->fullyTraversedSubcases.find(
+                hash(hash(g_cs->subcaseStack, g_cs->currentSubcaseDepth), hash(m_signature))
+            ) == g_cs->fullyTraversedSubcases.end()
+        ) {
             if (checkFilters()) {
                 return;
             }
