@@ -39,9 +39,9 @@ TEST_CASE("exceptions-related macros") {
 
     CHECK_THROWS_WITH(throw_if(true, "whops!"), "whops! no match!"); // fails
     CHECK_THROWS_WITH(throw_if(true, "whops! does it match?"), doctest::Contains("whops!"));
-    CHECK_THROWS_WITH(throw_if(true, "whops! does it match?"), doctest::Contains("whops! no match!")); // fails
-    CHECK_THROWS_WITH_AS(throw_if(true, "whops!"), "whops! no match!", bool); // fails
-    CHECK_THROWS_WITH_AS(throw_if(true, "whops!"), "whops!", int); // fails
+    CHECK_THROWS_WITH(throw_if(true, "whops! does it match?"), doctest::Contains("whops! no match!"));         // fails
+    CHECK_THROWS_WITH_AS(throw_if(true, "whops!"), "whops! no match!", bool);                                  // fails
+    CHECK_THROWS_WITH_AS(throw_if(true, "whops!"), "whops!", int);                                             // fails
     CHECK_THROWS_WITH_AS(throw_if(true, "whops! does it match?"), doctest::Contains("whops! no match!"), int); // fails
 
     CHECK_NOTHROW(throw_if(true, 0)); // fails
@@ -51,7 +51,7 @@ TEST_CASE("exceptions-related macros") {
 TEST_CASE("exceptions-related macros for std::exception") {
     CHECK_THROWS(throw_if(false, 0));
     CHECK_THROWS_AS(throw_if(false, std::runtime_error("whops!")), std::exception);
-    CHECK_THROWS_AS(throw_if(true, std::runtime_error("whops!")), const std::exception&);
+    CHECK_THROWS_AS(throw_if(true, std::runtime_error("whops!")), const std::exception &);
     CHECK_THROWS_AS(throw_if(true, std::runtime_error("whops!")), int);
 
     CHECK_THROWS_WITH(throw_if(false, ""), "whops!");
@@ -207,29 +207,55 @@ TEST_CASE("some asserts used in a function called by a test case") {
 
 // TODO: Remove NOLINT (if (false && (__VA_ARGS__));)?
 DOCTEST_INLINE_NOINLINE void comp(int a, int b) { // NOLINT(misc-unused-parameters)
-    if (CHECK(a == b)) { MESSAGE(":D"); }
-    if (CHECK_FALSE(a != b)) { MESSAGE(":D"); }
-    if (CHECK_EQ(a, b)) { MESSAGE(":D"); }
-    if (CHECK_UNARY(a == b)) { MESSAGE(":D"); }
-    if (CHECK_UNARY_FALSE(a != b)) { MESSAGE(":D"); }
+    if (CHECK(a == b)) {
+        MESSAGE(":D");
+    }
+    if (CHECK_FALSE(a != b)) {
+        MESSAGE(":D");
+    }
+    if (CHECK_EQ(a, b)) {
+        MESSAGE(":D");
+    }
+    if (CHECK_UNARY(a == b)) {
+        MESSAGE(":D");
+    }
+    if (CHECK_UNARY_FALSE(a != b)) {
+        MESSAGE(":D");
+    }
 }
 
 DOCTEST_MSVC_SUPPRESS_WARNING_WITH_PUSH(4702)
 TEST_CASE("check return values") {
     comp(0, 0);
 
-    if (CHECK_THROWS(throw_if(true, true))) { MESSAGE(":D"); }
-    if (CHECK_THROWS_AS(throw_if(true, 2), int)) { MESSAGE(":D"); }
-    if (CHECK_NOTHROW(throw_if(false, 2))) { MESSAGE(":D"); }
-    if (CHECK_THROWS_WITH(throw_if(true, 2), "2")) { MESSAGE(":D"); }
+    if (CHECK_THROWS(throw_if(true, true))) {
+        MESSAGE(":D");
+    }
+    if (CHECK_THROWS_AS(throw_if(true, 2), int)) {
+        MESSAGE(":D");
+    }
+    if (CHECK_NOTHROW(throw_if(false, 2))) {
+        MESSAGE(":D");
+    }
+    if (CHECK_THROWS_WITH(throw_if(true, 2), "2")) {
+        MESSAGE(":D");
+    }
 }
 
 TEST_CASE("check return values no print") {
     comp(4, 2);
 
-    if (CHECK_THROWS(throw_if(false, false))) { MESSAGE(":D"); }
-    if (CHECK_THROWS_AS(throw_if(true, 2), doctest::Approx)) { MESSAGE(":D"); }
-    if (CHECK_NOTHROW(throw_if(true, 2))) { MESSAGE(":D"); }
-    if (CHECK_THROWS_WITH(throw_if(true, 2), "1")) { MESSAGE(":D"); }
+    if (CHECK_THROWS(throw_if(false, false))) {
+        MESSAGE(":D");
+    }
+    if (CHECK_THROWS_AS(throw_if(true, 2), doctest::Approx)) {
+        MESSAGE(":D");
+    }
+    if (CHECK_NOTHROW(throw_if(true, 2))) {
+        MESSAGE(":D");
+    }
+    if (CHECK_THROWS_WITH(throw_if(true, 2), "1")) {
+        MESSAGE(":D");
+    }
 }
 DOCTEST_MSVC_SUPPRESS_WARNING_POP

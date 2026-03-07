@@ -5,12 +5,12 @@ DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_BEGIN
 #include <iostream>
 DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_END
 
-template<typename T>
-static int conditional_throw(bool in, const T& ex) {
-    if(in)
+template <typename T>
+static int conditional_throw(bool in, const T &ex) {
+    if (in)
 #ifndef DOCTEST_CONFIG_NO_EXCEPTIONS
         throw ex; // NOLINT
-#else // DOCTEST_CONFIG_NO_EXCEPTIONS
+#else
         ((void)ex);
 #endif // DOCTEST_CONFIG_NO_EXCEPTIONS
     return 42;
@@ -32,7 +32,7 @@ DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_END
 #else // _MSC_VER
 #define LoadDynamicLib(lib) LoadLibrary("lib" lib ".dll")
 #endif // _MSC_VER
-#else // _WIN32
+#else  // _WIN32
 #include <dlfcn.h>
 #ifdef __APPLE__
 #define LoadDynamicLib(lib) dlopen("lib" lib ".dylib", RTLD_NOW)
@@ -44,13 +44,13 @@ DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_END
 #endif // _WIN32
 
 // set an exception translator for double
-REGISTER_EXCEPTION_TRANSLATOR(double& e) {
+REGISTER_EXCEPTION_TRANSLATOR(double &e) {
     return doctest::String("double: ") + doctest::toString(e);
 }
 
 DOCTEST_SYMBOL_IMPORT void from_dll();
 
-int main(int argc, char** argv) {
+int main(int argc, char **argv) {
     // force the use of a symbol from the dll so tests from it get registered
     from_dll();
 
@@ -58,9 +58,9 @@ int main(int argc, char** argv) {
 
     doctest::Context context(argc, argv);
     int res = context.run();
-    
-    if(context.shouldExit()) // important - query flags (and --exit) rely on the user doing this
-        return res;          // propagate the result of the tests
+
+    if (context.shouldExit()) // important - query flags (and --exit) rely on the user doing this
+        return res;           // propagate the result of the tests
 
     int client_stuff_return_code = 0;
     // your program - if the testing framework is integrated in your production code

@@ -93,7 +93,7 @@ Expects that an exception of the _specified type_ is thrown during evaluation of
 Note that ```const``` and ```&``` are added to the exception type if missing (users shouldn't care) - the standard practice for exceptions in C++ is ```Throw by value, catch by (const) reference```.
 
 ```c++
-CHECK_THROWS_AS(func(), const std::exception&);
+CHECK_THROWS_AS(func(), const std::exception &);
 CHECK_THROWS_AS(func(), std::exception); // same as above
 ```
 
@@ -170,12 +170,12 @@ When dealing with very large or very small numbers it can be useful to specify a
 
 Two NaN floating point numbers do not compare equal to each other. This makes it quite inconvenient to check for NaN while capturing the value.
 ```c++
-CHECK(std::isnan(performComputation()); // does not capture the result of the call
+CHECK(std::isnan(performComputation())); // does not capture the result of the call
 ```
 
 **doctest** provides `doctest::IsNaN` which can be used in assertions to check if a float (or any other floating point fundamental type) is indeed NaN, outputting the actual value if it is not.
 ```c++
-CHECK(doctest::IsNaN(performComputation()); // captures the result!
+CHECK(doctest::IsNaN(performComputation())); // captures the result!
 ```
 
 `IsNaN` is able to capture the value, even if negated via `!`.

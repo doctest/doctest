@@ -79,26 +79,31 @@ If there isn't an option to exclude those starting with ```--dt-``` then the ```
 #include "doctest.h"
 
 class dt_removed {
-    std::vector<const char*> vec;
+    std::vector<const char *> vec;
+
 public:
-    dt_removed(const char** argv_in) {
-        for(; *argv_in; ++argv_in)
-            if(strncmp(*argv_in, "--dt-", strlen("--dt-")) != 0)
+    dt_removed(const char **argv_in) {
+        for (; *argv_in; ++argv_in)
+            if (strncmp(*argv_in, "--dt-", strlen("--dt-")) != 0)
                 vec.push_back(*argv_in);
         vec.push_back(NULL);
     }
 
-    int          argc() { return static_cast<int>(vec.size()) - 1; }
-    const char** argv() { return &vec[0]; } // Note: non-const char **:
+    int argc() {
+        return static_cast<int>(vec.size()) - 1;
+    }
+    const char **argv() {
+        return &vec[0];
+    } // Note: non-const char **:
 };
 
-int program(int argc, const char** argv);
+int program(int argc, const char **argv);
 
-int main(int argc, const char** argv) {
+int main(int argc, const char **argv) {
     doctest::Context context(argc, argv);
     int test_result = context.run(); // run queries, or run tests unless --no-run
 
-    if(context.shouldExit()) // honor query flags and --exit
+    if (context.shouldExit()) // honor query flags and --exit
         return test_result;
 
     dt_removed args(argv);
@@ -107,9 +112,9 @@ int main(int argc, const char** argv) {
     return test_result + app_result; // combine the 2 results
 }
 
-int program(int argc, const char** argv) {
+int program(int argc, const char **argv) {
     printf("Program: %d arguments received:\n", argc - 1);
-    while(*++argv)
+    while (*++argv)
         printf("'%s'\n", *argv);
     return EXIT_SUCCESS;
 }

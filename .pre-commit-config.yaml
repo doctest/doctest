@@ -4,13 +4,7 @@ repos:
     hooks:
       - id: clang-format
         types: [c++]
-        exclude: |
-          (?x)^(
-            doctest/doctest\.h|
-            examples/.*|
-            scripts/.*|
-            tests/.*
-          )$
+        exclude: ^doctest/doctest\.h$
 
   - repo: local
     hooks:

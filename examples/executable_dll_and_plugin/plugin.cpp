@@ -18,6 +18,6 @@ TEST_SUITE("some test suite") {
 }
 
 // set an exception translator for char
-REGISTER_EXCEPTION_TRANSLATOR(char& e) {
+REGISTER_EXCEPTION_TRANSLATOR(char &e) {
     return doctest::String("char: ") + doctest::toString(e);
 }

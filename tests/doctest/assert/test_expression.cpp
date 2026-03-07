@@ -2,6 +2,7 @@
 #include <utility>
 
 namespace {
+// clang-format off
 
 /**
  * ExpressionDecomposer sucks to use in isolation.
@@ -19,45 +20,52 @@ namespace {
  * In the future, we should just make the Expression API a little nicer to work with,
  * so we can perform these checks a lot more easily.
  */
-#define DECOMPOSE(...)                                                                          \
-  static_cast<doctest::String>(                                                                 \
-    static_cast<const doctest::detail::Result &>(                                               \
-      doctest::detail::ExpressionDecomposer(doctest::assertType::DT_CHECK_FALSE) << __VA_ARGS__ \
-    ).m_decomp                                                                                  \
-  )                                                                                             \
+#define DECOMPOSE(...)                                                                                                 \
+    static_cast<doctest::String>(                                                                                      \
+        static_cast<const doctest::detail::Result &>(                                                                  \
+            doctest::detail::ExpressionDecomposer(doctest::assertType::DT_CHECK_FALSE) << __VA_ARGS__                  \
+        ).m_decomp                                                                                                     \
+    )
 
+// clang-format on
 } // namespace
 
 TEST_SUITE("Expression decomposition") {
 
     // Collection of lvalues / basis for xvalues / prvalues
-    const auto _false  = false;
-    const auto _true   = true;
-    const auto _1      = int { 1 };
-    const auto _2      = int { 2 };
-    const auto _foo    = doctest::String("foo");
-    const auto _bar    = doctest::String("bar");
+    const auto _false = false;
+    const auto _true = true;
+    const auto _1 = int{1};
+    const auto _2 = int{2};
+    const auto _foo = doctest::String("foo");
+    const auto _bar = doctest::String("bar");
     const auto _foobar = doctest::String("foobar");
 
-    const int *ptr      = &_1;
-    const int  array[2] = { 1, 2 };
+    const int *ptr = &_1;
+    const int array[2] = {1, 2};
 
-    struct { int value: 4; } bitfield = { 1 };
+    struct {
+        int value : 4;
+    } bitfield = {1};
 
-    struct Object { int var = 1; void method() { } };
-    const auto member_var    = &Object::var;
+    struct Object {
+        int var = 1;
+        void method() {}
+    };
+    const auto member_var = &Object::var;
     const auto member_method = &Object::method;
-    const auto object        = Object();
+    const auto object = Object();
 
-    enum         { X = 1, Y = 2 };
+    enum { X = 1, Y = 2 };
     enum class C { X = 1, Y = 2 };
 
-    inline void function() { }
+    inline void function() {}
 
     // Generate an xvalue from a prvalue
     template <typename T>
-    T &&xvalue(T &&value) { return static_cast<T &&>(value); }
-
+    T &&xvalue(T && value) {
+        return static_cast<T &&>(value);
+    }
 
     TEST_CASE("Unary decomposition") {
         SUBCASE("boolean [lvalue]") {
@@ -81,12 +89,12 @@ TEST_SUITE("Expression decomposition") {
         }
 
         SUBCASE("Pointer-to-member [lvalue]") {
-            CHECK(DECOMPOSE(member_var)    == "{?}");
+            CHECK(DECOMPOSE(member_var) == "{?}");
             CHECK(DECOMPOSE(member_method) == "{?}");
         }
 
         SUBCASE("Pointer-to-member [prvalue]") {
-            CHECK(DECOMPOSE(&Object::var)    == "{?}");
+            CHECK(DECOMPOSE(&Object::var) == "{?}");
             CHECK(DECOMPOSE(&Object::method) == "{?}");
         }
 
@@ -114,27 +122,29 @@ TEST_SUITE("Expression decomposition") {
         // is able to accept these values; the stringification is another module's problem.
 
         SUBCASE("boolean [lvalue]") {
-            CHECK(DECOMPOSE(_true == _true)  == "true == true");
+            CHECK(DECOMPOSE(_true == _true) == "true == true");
             CHECK(DECOMPOSE(_true != _false) == "true != false");
         }
 
         SUBCASE("boolean [prvalue]") {
-            CHECK(DECOMPOSE(true == true)  == "true == true");
+            CHECK(DECOMPOSE(true == true) == "true == true");
             CHECK(DECOMPOSE(true != false) == "true != false");
         }
 
         SUBCASE("boolean [xvalue]") {
-            CHECK(DECOMPOSE(xvalue(true) == xvalue(true))  == "true == true");
+            CHECK(DECOMPOSE(xvalue(true) == xvalue(true)) == "true == true");
             CHECK(DECOMPOSE(xvalue(true) != xvalue(false)) == "true != false");
         }
 
         SUBCASE("integer [lvalue]") {
+            // clang-format off
             CHECK(DECOMPOSE(_1 == _1) == "1 == 1");
             CHECK(DECOMPOSE(_1 != _2) == "1 != 2");
             CHECK(DECOMPOSE(_1 <  _2) == "1 <  2");
             CHECK(DECOMPOSE(_2 >  _1) == "2 >  1");
             CHECK(DECOMPOSE(_1 <= _2) == "1 <= 2");
             CHECK(DECOMPOSE(_2 >= _1) == "2 >= 1");
+            // clang-format on
         }
 
         SUBCASE("String [prvalue]") {
@@ -154,12 +164,12 @@ TEST_SUITE("Expression decomposition") {
         }
 
         SUBCASE("Pointer-to-member [lvalue]") {
-            CHECK(DECOMPOSE(member_var    == member_var)    == "{?} == {?}");
+            CHECK(DECOMPOSE(member_var == member_var) == "{?} == {?}");
             CHECK(DECOMPOSE(member_method == member_method) == "{?} == {?}");
         }
 
         SUBCASE("Pointer-to-member [prvalue]") {
-            CHECK(DECOMPOSE(&Object::var    == &Object::var)    == "{?} == {?}");
+            CHECK(DECOMPOSE(&Object::var == &Object::var) == "{?} == {?}");
             CHECK(DECOMPOSE(&Object::method == &Object::method) == "{?} == {?}");
         }
 

@@ -14,9 +14,9 @@ There will be proper support for this in the future. For now there are 2 ways of
     }
 
     TEST_CASE("test name") {
-        std::vector<int> data {1, 2, 3, 4, 5, 6};
+        std::vector<int> data{1, 2, 3, 4, 5, 6};
 
-        for(auto& i : data) {
+        for (auto &i: data) {
             CAPTURE(i); // log the current input data
             doChecks(i);
         }
@@ -33,8 +33,12 @@ There will be proper support for this in the future. For now there are 2 ways of
     ```c++
     TEST_CASE("test name") {
         int data;
-        SUBCASE("") { data = 1; }
-        SUBCASE("") { data = 2; }
+        SUBCASE("") {
+            data = 1;
+        }
+        SUBCASE("") {
+            data = 2;
+        }
 
         CAPTURE(data);
 
@@ -54,12 +58,13 @@ There will be proper support for this in the future. For now there are 2 ways of
     #include <algorithm>
     #include <string>
 
-    #define DOCTEST_VALUE_PARAMETERIZED_DATA(data, data_container)                                  \
-        static size_t _doctest_subcase_idx = 0;                                                     \
-        std::for_each(data_container.begin(), data_container.end(), [&](const auto& in) {           \
-            DOCTEST_SUBCASE((std::string(#data_container "[") +                                     \
-                            std::to_string(_doctest_subcase_idx++) + "]").c_str()) { data = in; }  \
-        });                                                                                         \
+    #define DOCTEST_VALUE_PARAMETERIZED_DATA(data, data_container)                                                         \
+        static size_t _doctest_subcase_idx = 0;                                                                            \
+        std::for_each(data_container.begin(), data_container.end(), [&](const auto &in) {                                  \
+            DOCTEST_SUBCASE((std::string(#data_container "[") + std::to_string(_doctest_subcase_idx++) + "]").c_str()) {   \
+                data = in;                                                                                                 \
+            }                                                                                                              \
+        });                                                                                                                \
         _doctest_subcase_idx = 0
     ```
 
@@ -149,15 +154,12 @@ Some notes:
 
     ```c++
     template <typename first, typename second>
-    struct TypePair
-    {
-        typedef first  A;
+    struct TypePair {
+        typedef first A;
         typedef second B;
     };
 
-    #define pairs \
-        TypePair<int, char>, \
-        TypePair<char, int>
+    #define pairs TypePair<int, char>, TypePair<char, int>
 
     TEST_CASE_TEMPLATE("multiple types", T, pairs) {
         typedef typename T::A T1;
