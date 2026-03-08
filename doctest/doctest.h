@@ -5231,10 +5231,8 @@ void Context::parseArgs(int argc, const char *const *argv, bool withDefaults) {
     if (parseIntOption(argc, argv, DOCTEST_CONFIG_OPTIONS_PREFIX name "=", option_bool, intRes) ||                     \
         parseIntOption(argc, argv, DOCTEST_CONFIG_OPTIONS_PREFIX sname "=", option_bool, intRes))                      \
         p->var = static_cast<bool>(intRes);                                                                            \
-    else if (                                                                                                          \
-        parseFlag(argc, argv, DOCTEST_CONFIG_OPTIONS_PREFIX name) ||                                                   \
-        parseFlag(argc, argv, DOCTEST_CONFIG_OPTIONS_PREFIX sname)                                                     \
-    )                                                                                                                  \
+    else if (parseFlag(argc, argv, DOCTEST_CONFIG_OPTIONS_PREFIX name) ||                                              \
+             parseFlag(argc, argv, DOCTEST_CONFIG_OPTIONS_PREFIX sname))                                               \
         p->var = true;                                                                                                 \
     else if (withDefaults)                                                                                             \
     p->var = default
@@ -8488,6 +8486,8 @@ double Timer::getElapsedSeconds() const {
 
 DOCTEST_SUPPRESS_PRIVATE_WARNINGS_POP
 
+#include <algorithm>
+
 DOCTEST_SUPPRESS_PRIVATE_WARNINGS_PUSH
 
 #ifndef DOCTEST_CONFIG_DISABLE
@@ -8524,7 +8524,8 @@ void TraversalState::resetForRun() {
 }
 
 bool TraversalState::advance() {
-    for (size_t depth = m_decisionPath.size(); depth > 0; --depth) {
+    size_t maxDepth = std::min(m_decisionPath.size(), m_discoveredDecisionPath.size());
+    for (size_t depth = maxDepth; depth > 0; --depth) {
         const size_t index = depth - 1;
         if (m_decisionPath[index] + 1 < m_discoveredDecisionPath[index].subcases.size()) {
             ++m_decisionPath[index];

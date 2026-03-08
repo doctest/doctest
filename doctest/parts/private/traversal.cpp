@@ -1,5 +1,7 @@
 #include "doctest/parts/private/traversal.h"
 
+#include <algorithm>
+
 DOCTEST_SUPPRESS_PRIVATE_WARNINGS_PUSH
 
 #ifndef DOCTEST_CONFIG_DISABLE
@@ -36,7 +38,8 @@ void TraversalState::resetForRun() {
 }
 
 bool TraversalState::advance() {
-    for (size_t depth = m_decisionPath.size(); depth > 0; --depth) {
+    size_t maxDepth = std::min(m_decisionPath.size(), m_discoveredDecisionPath.size());
+    for (size_t depth = maxDepth; depth > 0; --depth) {
         const size_t index = depth - 1;
         if (m_decisionPath[index] + 1 < m_discoveredDecisionPath[index].subcases.size()) {
             ++m_decisionPath[index];

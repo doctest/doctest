@@ -254,10 +254,8 @@ void Context::parseArgs(int argc, const char *const *argv, bool withDefaults) {
     if (parseIntOption(argc, argv, DOCTEST_CONFIG_OPTIONS_PREFIX name "=", option_bool, intRes) ||                     \
         parseIntOption(argc, argv, DOCTEST_CONFIG_OPTIONS_PREFIX sname "=", option_bool, intRes))                      \
         p->var = static_cast<bool>(intRes);                                                                            \
-    else if (                                                                                                          \
-        parseFlag(argc, argv, DOCTEST_CONFIG_OPTIONS_PREFIX name) ||                                                   \
-        parseFlag(argc, argv, DOCTEST_CONFIG_OPTIONS_PREFIX sname)                                                     \
-    )                                                                                                                  \
+    else if (parseFlag(argc, argv, DOCTEST_CONFIG_OPTIONS_PREFIX name) ||                                              \
+             parseFlag(argc, argv, DOCTEST_CONFIG_OPTIONS_PREFIX sname))                                               \
         p->var = true;                                                                                                 \
     else if (withDefaults)                                                                                             \
     p->var = default
