@@ -71,4 +71,23 @@ TEST_CASE("TraversalState can unwind active subcases after an abrupt exit") {
     CHECK(traversal.activeSubcaseDepth() == 0);
 }
 
+TEST_CASE("TraversalState advance handles runs with no discovered decision points") {
+    const SubcaseSignature first = SubcaseSignature{"first", "test_traversal.cpp", 30};
+    const SubcaseSignature second = SubcaseSignature{"second", "test_traversal.cpp", 31};
+
+    TraversalState traversal;
+    traversal.resetForTestCase();
+
+    traversal.resetForRun();
+    REQUIRE(traversal.tryEnterSubcase(first));
+    traversal.leaveSubcase();
+    CHECK_FALSE(traversal.tryEnterSubcase(second));
+
+    REQUIRE(traversal.advance());
+
+    // Simulate a rerun that exits before reaching any SUBCASE.
+    traversal.resetForRun();
+    CHECK_FALSE(traversal.advance());
+}
+
 } // namespace

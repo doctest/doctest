@@ -113,5 +113,13 @@ doctest_add_unit_test(
 
 doctest_add_unit_test(WITH_MAIN SOURCE regression/test.630.cpp)
 doctest_add_unit_test(WITH_MAIN SOURCE regression/test.651.cpp)
+doctest_add_unit_test(          SOURCE regression/test.782.cpp)
 doctest_add_unit_test(WITH_MAIN SOURCE regression/test.786.cpp)
 doctest_add_unit_test(          SOURCE regression/test.873.cpp)
+
+set_tests_properties(
+    regression/test.782.cpp
+    PROPERTIES
+        PASS_REGULAR_EXPRESSION
+            ".*ERROR: test case THREW exception: #782 repro exception.*"
+)
