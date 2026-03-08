@@ -121,5 +121,5 @@ set_tests_properties(
     regression/test.782.cpp
     PROPERTIES
         PASS_REGULAR_EXPRESSION
-            ".*ERROR: test case THREW exception: #782 repro exception.*"
+            ".*ERROR: test case THREW exception: #782 repro exception.*|Exceptions disabled, cannot run this test"
 )
