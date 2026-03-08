@@ -193,6 +193,12 @@ DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_END
 #endif // DOCTEST_CONFIG_INCLUDE_TYPE_TRAITS
 #endif // DOCTEST_CONFIG_USE_STD_HEADERS
 
+#if defined(__has_builtin)
+#define DOCTEST_HAS_BUILTIN(x) __has_builtin(x)
+#else
+#define DOCTEST_HAS_BUILTIN(x) 0
+#endif // __has_builtin
+
 #endif // DOCTEST_PARTS_PUBLIC_CONFIG
 
 // =================================================================================================
