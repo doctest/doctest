@@ -1,4 +1,5 @@
 #include "doctest/parts/private/prelude.h"
+#include "doctest/parts/private/ext/windows.h" // IWYU pragma: keep
 
 DOCTEST_SUPPRESS_PRIVATE_WARNINGS_PUSH
 

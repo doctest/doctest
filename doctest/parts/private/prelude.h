@@ -5,8 +5,6 @@
 
 DOCTEST_SUPPRESS_PRIVATE_WARNINGS_PUSH
 
-DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_BEGIN
-
 // required includes - will go only in one translation unit!
 #include <ctime>
 #include <cmath>
@@ -46,9 +44,6 @@ DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_BEGIN
 #include <unordered_set>
 #include <exception>
 #include <stdexcept>
-#if defined(DOCTEST_CONFIG_POSIX_SIGNALS) || defined(DOCTEST_CONFIG_WINDOWS_SEH)
-#include <csignal>
-#endif // DOCTEST_CONFIG_POSIX_SIGNALS
 #include <cfloat>
 #include <cctype>
 #include <cstdint>
@@ -60,49 +55,10 @@ DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_BEGIN
 #include <sys/sysctl.h>
 #endif // DOCTEST_PLATFORM_MAC
 
-#ifdef DOCTEST_PLATFORM_WINDOWS
-
-// defines for a leaner windows.h
-#ifndef WIN32_LEAN_AND_MEAN
-#define WIN32_LEAN_AND_MEAN
-#define DOCTEST_UNDEF_WIN32_LEAN_AND_MEAN
-#endif // WIN32_LEAN_AND_MEAN
-#ifndef NOMINMAX
-#define NOMINMAX
-#define DOCTEST_UNDEF_NOMINMAX
-#endif // NOMINMAX
-
-// not sure what AfxWin.h is for - here I do what Catch does
-#ifdef __AFXDLL
-#include <AfxWin.h>
-#else
-#include <windows.h>
-#endif
-#include <io.h>
-
-#ifdef DOCTEST_UNDEF_WIN32_LEAN_AND_MEAN
-#undef WIN32_LEAN_AND_MEAN
-#undef DOCTEST_UNDEF_WIN32_LEAN_AND_MEAN
-#endif // DOCTEST_UNDEF_WIN32_LEAN_AND_MEAN
-#ifdef DOCTEST_UNDEF_NOMINMAX
-#undef NOMINMAX
-#undef DOCTEST_UNDEF_NOMINMAX
-#endif // DOCTEST_UNDEF_NOMINMAX
-
-#else // DOCTEST_PLATFORM_WINDOWS
-
+#ifndef DOCTEST_PLATFORM_WINDOWS
 #include <sys/time.h>
 #include <unistd.h>
-
 #endif // DOCTEST_PLATFORM_WINDOWS
-
-// this is a fix for https://github.com/doctest/doctest/issues/348
-// https://mail.gnome.org/archives/xml/2012-January/msg00000.html
-#if !defined(HAVE_UNISTD_H) && !defined(STDOUT_FILENO)
-#define STDOUT_FILENO fileno(stdout)
-#endif // HAVE_UNISTD_H
-
-DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_END
 
 // counts the number of elements in a C array
 #define DOCTEST_COUNTOF(x) (sizeof(x) / sizeof(x[0]))
@@ -127,14 +83,6 @@ DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_END
 
 #ifndef DOCTEST_MULTI_LANE_ATOMICS_CACHE_LINE_SIZE
 #define DOCTEST_MULTI_LANE_ATOMICS_CACHE_LINE_SIZE 64
-#endif
-
-#if defined(WINAPI_FAMILY) && (WINAPI_FAMILY == WINAPI_FAMILY_APP)
-#define DOCTEST_CONFIG_NO_MULTI_LANE_ATOMICS
-#endif
-
-#ifndef DOCTEST_CDECL
-#define DOCTEST_CDECL __cdecl
 #endif
 
 DOCTEST_SUPPRESS_PRIVATE_WARNINGS_POP

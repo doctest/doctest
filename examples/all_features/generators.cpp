@@ -3,12 +3,10 @@
 
 #include "header.h"
 
-DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_BEGIN
 #include <sstream>
 #include <vector>
 #include <string>
 using namespace std;
-DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_END
 
 // ---------------------------------------------------------------------------
 // Basic: single generator
