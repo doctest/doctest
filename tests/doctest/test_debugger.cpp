@@ -1,10 +1,7 @@
 #include <doctest/doctest.h>
 
-DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_BEGIN
 #if defined(DOCTEST_PLATFORM_WINDOWS)
-DOCTEST_CLANG_SUPPRESS_WARNING_WITH_PUSH("-Wnonportable-system-include-path")
-#include <windows.h>
-DOCTEST_CLANG_SUPPRESS_WARNING_POP
+#include <doctest/parts/private/ext/windows.h>
 
 #elif defined(DOCTEST_PLATFORM_LINUX)
 #include <csignal>
@@ -12,7 +9,6 @@ DOCTEST_CLANG_SUPPRESS_WARNING_POP
 #else
 #error No test implemented for this platform!
 #endif
-DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_END
 
 namespace debugger {
 bool signal_caught = false;
