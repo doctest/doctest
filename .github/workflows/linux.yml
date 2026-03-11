@@ -29,38 +29,37 @@ concurrency:
 
 jobs:
   clang:
-    runs-on: ${{ matrix.os }}
+    runs-on: ubuntu-24.04
 
     strategy:
       fail-fast: false
       matrix:
         include:
-          - { compiler: clang, version: "3.9", os: ubuntu-24.04, container: ubuntu:18.04 }
-          - { compiler: clang, version: "4.0", os: ubuntu-24.04, container: ubuntu:18.04 }
-          - { compiler: clang, version: "5.0", os: ubuntu-24.04, container: ubuntu:18.04 }
-          - { compiler: clang, version: "6.0", os: ubuntu-24.04, container: ubuntu:20.04 }
-          - { compiler: clang, version: "7",   os: ubuntu-24.04, container: ubuntu:20.04 }
-          - { compiler: clang, version: "8",   os: ubuntu-24.04, container: ubuntu:20.04 }
-          - { compiler: clang, version: "9",   os: ubuntu-24.04, container: ubuntu:20.04 }
-          - { compiler: clang, version: "10",  os: ubuntu-24.04, container: ubuntu:20.04 }
-          - { compiler: clang, version: "11",  os: ubuntu-22.04                          }
-          - { compiler: clang, version: "12",  os: ubuntu-22.04                          }
-          - { compiler: clang, version: "13",  os: ubuntu-22.04                          }
-          - { compiler: clang, version: "14",  os: ubuntu-24.04                          }
-          - { compiler: clang, version: "15",  os: ubuntu-24.04                          }
-          - { compiler: clang, version: "16",  os: ubuntu-24.04                          }
-          - { compiler: clang, version: "17",  os: ubuntu-24.04                          }
-          - { compiler: clang, version: "18",  os: ubuntu-24.04                          }
-          - { compiler: clang, version: "19",  os: ubuntu-24.04, container: ubuntu:26.04 }
-          - { compiler: clang, version: "20",  os: ubuntu-24.04, container: ubuntu:26.04 }
-          - { compiler: clang, version: "21",  os: ubuntu-24.04, container: ubuntu:26.04 }
+          - { compiler: clang, version: "3.9", container: ubuntu:18.04 }
+          - { compiler: clang, version: "4.0", container: ubuntu:18.04 }
+          - { compiler: clang, version: "5.0", container: ubuntu:18.04 }
+          - { compiler: clang, version: "6.0", container: ubuntu:20.04 }
+          - { compiler: clang, version: "7",   container: ubuntu:20.04 }
+          - { compiler: clang, version: "8",   container: ubuntu:20.04 }
+          - { compiler: clang, version: "9",   container: ubuntu:20.04 }
+          - { compiler: clang, version: "10",  container: ubuntu:20.04 }
+          - { compiler: clang, version: "11",  container: ubuntu:22.04 }
+          - { compiler: clang, version: "12",  container: ubuntu:22.04 }
+          - { compiler: clang, version: "13",  container: ubuntu:22.04 }
+          - { compiler: clang, version: "14",  container: ubuntu:24.04 }
+          - { compiler: clang, version: "15",  container: ubuntu:24.04 }
+          - { compiler: clang, version: "16",  container: ubuntu:24.04 }
+          - { compiler: clang, version: "17",  container: ubuntu:24.04 }
+          - { compiler: clang, version: "18",  container: ubuntu:24.04 }
+          - { compiler: clang, version: "19",  container: ubuntu:26.04 }
+          - { compiler: clang, version: "20",  container: ubuntu:26.04 }
+          - { compiler: clang, version: "21",  container: ubuntu:26.04 }
 
     steps:
       - uses: actions/checkout@v5
 
       # Ref: https://github.com/actions/checkout/issues/1590#issuecomment-2567109195
-      - name: Prepare container (Linux, containerized)
-        if: runner.os == 'Linux' && matrix.container != ''
+      - name: Prepare Container
         run: |
           docker pull ${{ matrix.container }}
           docker run --name build-container -d -v ${{ github.workspace }}:/workspace ${{ matrix.container }} tail -f /dev/null
@@ -73,26 +72,7 @@ jobs:
           export TSAN_OPTIONS="${{ env.TSAN_OPTIONS }}"
           EOF
 
-      - name: Install (Linux)
-        if: runner.os == 'Linux' && matrix.container == ''
-        run: |
-          # Required for libc6-dbg:i386 and g++-multilib packages which are
-          # needed for x86 builds.
-          sudo dpkg --add-architecture i386
-
-          sudo apt-get update
-          sudo apt-get install -y cmake ninja-build valgrind libc6-dbg:i386
-
-          # clang-17 does not automatically provide the i386 sanitizer runtimes,
-          # but libclang-rt-V-dev:i386 does not always exist. This is the best intermediate option
-          if [ "${{ matrix.version }}" = "17" ]; then
-            sudo apt-get install -y libclang-rt-${{ matrix.version }}-dev:i386
-          fi
-
-          sudo apt-get install -y clang-${{ matrix.version }} libclang-${{ matrix.version }}-dev llvm-${{ matrix.version }}-dev g++-multilib
-
-      - name: Install (containerized)
-        if: runner.os == 'Linux' && matrix.container != ''
+      - name: Install
         env:
           CMD: |
             dpkg --add-architecture i386
@@ -107,14 +87,15 @@ jobs:
             apt-get update
             apt-get install -y cmake ninja-build valgrind libc6-dbg:i386 python3
             apt-get install -y clang-${{ matrix.version }} libclang-${{ matrix.version }}-dev llvm-${{ matrix.version }}-dev g++-multilib
+
+            # clang-17 does not automatically provide the i386 sanitizer runtimes,
+            # but libclang-rt-V-dev:i386 does not always exist. This is the best intermediate option
+            if [ "${{ matrix.version }}" = "17" ]; then
+              apt-get install -y libclang-rt-${{ matrix.version }}-dev:i386
+            fi
         run: docker exec build-container bash -c "$CMD"
 
       - name: Build & Test ${{ runner.arch }}
-        if: matrix.container == ''
-        run: python3 .github/workflows/build_and_test.py ${{ runner.os }} ${{ runner.arch }} ${{ matrix.compiler }} ${{ matrix.version }}
-
-      - name: Build & Test ${{ runner.arch }} (containerized)
-        if: matrix.container != ''
         env:
           CMD: |
             cd /workspace
@@ -123,11 +104,6 @@ jobs:
         run: docker exec build-container bash -c "$CMD"
 
       - name: Build & Test X86
-        if: (runner.os == 'Linux' && matrix.container == '')
-        run: python3 .github/workflows/build_and_test.py ${{ runner.os }} x86 ${{ matrix.compiler }} ${{ matrix.version }}
-
-      - name: Build & Test X86 (containerized)
-        if: matrix.container != ''
         env:
           CMD: |
             cd /workspace
@@ -136,31 +112,30 @@ jobs:
         run: docker exec build-container bash -c "$CMD"
 
   gcc:
-    runs-on: ${{ matrix.os }}
+    runs-on: ubuntu-24.04
 
     strategy:
       fail-fast: false
       matrix:
         include:
-          - { compiler: gcc,   version: "4.8", os: ubuntu-24.04, container: ubuntu:18.04 }
-          - { compiler: gcc,   version: "5",   os: ubuntu-24.04, container: ubuntu:18.04 }
-          - { compiler: gcc,   version: "6",   os: ubuntu-24.04, container: ubuntu:18.04 }
-          - { compiler: gcc,   version: "7",   os: ubuntu-24.04, container: ubuntu:18.04 }
-          - { compiler: gcc,   version: "8",   os: ubuntu-24.04, container: ubuntu:18.04 }
-          - { compiler: gcc,   version: "9",   os: ubuntu-22.04                          }
-          - { compiler: gcc,   version: "10",  os: ubuntu-24.04                          }
-          - { compiler: gcc,   version: "11",  os: ubuntu-24.04                          }
-          - { compiler: gcc,   version: "12",  os: ubuntu-24.04                          }
-          - { compiler: gcc,   version: "13",  os: ubuntu-24.04                          }
-          - { compiler: gcc,   version: "14",  os: ubuntu-24.04                          }
-          - { compiler: gcc,   version: "15",  os: ubuntu-24.04, container: ubuntu:26.04 }
+          - { compiler: gcc,   version: "4.8", container: ubuntu:18.04 }
+          - { compiler: gcc,   version: "5",   container: ubuntu:18.04 }
+          - { compiler: gcc,   version: "6",   container: ubuntu:18.04 }
+          - { compiler: gcc,   version: "7",   container: ubuntu:18.04 }
+          - { compiler: gcc,   version: "8",   container: ubuntu:18.04 }
+          - { compiler: gcc,   version: "9",   container: ubuntu:22.04 }
+          - { compiler: gcc,   version: "10",  container: ubuntu:24.04 }
+          - { compiler: gcc,   version: "11",  container: ubuntu:24.04 }
+          - { compiler: gcc,   version: "12",  container: ubuntu:24.04 }
+          - { compiler: gcc,   version: "13",  container: ubuntu:24.04 }
+          - { compiler: gcc,   version: "14",  container: ubuntu:24.04 }
+          - { compiler: gcc,   version: "15",  container: ubuntu:26.04 }
 
     steps:
       - uses: actions/checkout@v5
 
       # Ref: https://github.com/actions/checkout/issues/1590#issuecomment-2567109195
-      - name: Prepare container (containerized)
-        if: matrix.container != ''
+      - name: Prepare Container
         run: |
           docker pull ${{ matrix.container }}
           docker run --name build-container -d -v ${{ github.workspace }}:/workspace ${{ matrix.container }} tail -f /dev/null
@@ -174,18 +149,6 @@ jobs:
           EOF
 
       - name: Install
-        if: matrix.container == ''
-        run: |
-          # Required for libc6-dbg:i386 and g++-multilib packages which are
-          # needed for x86 builds.
-          sudo dpkg --add-architecture i386
-
-          sudo apt-get update
-          sudo apt-get install -y cmake ninja-build valgrind libc6-dbg:i386
-          sudo apt-get install -y g++-${{ matrix.version }} g++-${{ matrix.version }}-multilib
-
-      - name: Install (containerized)
-        if: runner.os == 'Linux' && matrix.container != ''
         env:
           CMD: |
             dpkg --add-architecture i386
@@ -203,11 +166,6 @@ jobs:
         run: docker exec build-container bash -c "$CMD"
 
       - name: Build & Test ${{ runner.arch }}
-        if: matrix.container == ''
-        run: python3 .github/workflows/build_and_test.py ${{ runner.os }} ${{ runner.arch }} ${{ matrix.compiler }} ${{ matrix.version }}
-
-      - name: Build & Test ${{ runner.arch }} (containerized)
-        if: matrix.container != ''
         env:
           CMD: |
             cd /workspace
@@ -216,11 +174,6 @@ jobs:
         run: docker exec build-container bash -c "$CMD"
 
       - name: Build & Test X86
-        if: matrix.container == ''
-        run: python3 .github/workflows/build_and_test.py ${{ runner.os }} x86 ${{ matrix.compiler }} ${{ matrix.version }}
-
-      - name: Build & Test X86 (containerized)
-        if: matrix.container != ''
         env:
           CMD: |
             cd /workspace
