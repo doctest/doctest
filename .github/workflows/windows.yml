@@ -1,0 +1,106 @@
+name: Windows
+
+on:
+  push:
+    branches: [dev, master]
+    paths-ignore:
+      - "doc/**"
+      - "scripts/**"
+      - "LICENSE.txt"
+      - "README.md"
+
+  pull_request:
+    paths-ignore:
+      - "doc/**"
+      - "scripts/**"
+      - "LICENSE.txt"
+      - "README.md"
+
+concurrency:
+  group: ${{ github.workflow }}|${{ github.ref_name }}|windows
+  cancel-in-progress: true
+
+env:
+  CTEST_OUTPUT_ON_FAILURE: ON
+  CTEST_PARALLEL_LEVEL: 2
+
+jobs:
+  mingw-w64:
+    runs-on: windows-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        configuration: ["Debug", "Release"]
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Set up MinGW-w64
+        uses: egor-tensin/setup-mingw@v2
+        with:
+          version: 12.2.0
+
+      - name: Generate
+        run: cmake -B build -S . -G "MinGW Makefiles" -D CMAKE_BUILD_TYPE=${{ matrix.configuration }}
+
+      - name: Build
+        run: cmake --build build
+
+      - name: Test
+        run: ctest --test-dir build --no-tests=error
+
+  msvc:
+    runs-on: windows-2025
+
+    env:
+      CMAKE_GENERATOR: Ninja
+      ASAN_OPTIONS: strict_string_checks=true:detect_odr_violation=2:detect_stack_use_after_return=true:check_initialization_order=true:strict_init_order=true
+      TSAN_OPTIONS: force_seq_cst_atomics=1
+
+    strategy:
+      fail-fast: false
+      matrix:
+        compiler: ["cl", "clang", "clang-cl"]
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Configure MSVC for X64
+        uses: ilammy/msvc-dev-cmd@v1
+
+      - name: Build & Test ${{ runner.arch }}
+        run: python3 .github/workflows/build_and_test.py ${{ runner.os }} ${{ runner.arch }} ${{ matrix.compiler }} ${{ matrix.version }}
+
+      - name: Configure MSVC for X86
+        uses: ilammy/msvc-dev-cmd@v1
+        with:
+          arch: x86
+
+      - name: Build & Test X86
+        if: matrix.compiler != 'clang-cl'
+        run: python3 .github/workflows/build_and_test.py ${{ runner.os }} x86 ${{ matrix.compiler }} ${{ matrix.version }}
+
+  msvs:
+    runs-on:  "windows-2025"
+
+    strategy:
+      fail-fast: false
+      matrix:
+        toolset: ["v142", "v143"]
+        architecture: ["Win32", "x64"]
+        configuration: ["Debug", "Release"]
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Generate
+        run:
+          cmake -B build -S . -G "Visual Studio 17 2022" \
+          -A ${{ matrix.architecture }} -T ${{ matrix.toolset }}
+
+      - name: Build
+        run: cmake --build build --config ${{ matrix.configuration }}
+
+      - name: Test
+        run: ctest -C ${{ matrix.configuration }} --test-dir build --no-tests=error
