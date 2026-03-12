@@ -16,13 +16,6 @@ on:
       - "LICENSE.txt"
       - "README.md"
 
-env:
-  CTEST_OUTPUT_ON_FAILURE: ON
-  CTEST_PARALLEL_LEVEL: 2
-  CMAKE_GENERATOR: Ninja
-  ASAN_OPTIONS: strict_string_checks=true:detect_odr_violation=2:detect_stack_use_after_return=true:check_initialization_order=true:strict_init_order=true
-  TSAN_OPTIONS: force_seq_cst_atomics=1
-
 concurrency:
   group: ${{ github.workflow }}|${{ github.ref_name }}|linux
   cancel-in-progress: true
@@ -34,26 +27,32 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
+        version:    ["21"]
+        container:  ["ubuntu:26.04"]
+        arch:       [x64, x86]
+        build-type: [Release, Debug]
+        target:     [test, asan/ubsan, tsan, fno-exceptions, fno-rtti, valgrind]
         include:
-          - { compiler: clang, version: "3.9", container: ubuntu:18.04 }
-          - { compiler: clang, version: "4.0", container: ubuntu:18.04 }
-          - { compiler: clang, version: "5.0", container: ubuntu:18.04 }
-          - { compiler: clang, version: "6.0", container: ubuntu:20.04 }
-          - { compiler: clang, version: "7",   container: ubuntu:20.04 }
-          - { compiler: clang, version: "8",   container: ubuntu:20.04 }
-          - { compiler: clang, version: "9",   container: ubuntu:20.04 }
-          - { compiler: clang, version: "10",  container: ubuntu:20.04 }
-          - { compiler: clang, version: "11",  container: ubuntu:22.04 }
-          - { compiler: clang, version: "12",  container: ubuntu:22.04 }
-          - { compiler: clang, version: "13",  container: ubuntu:22.04 }
-          - { compiler: clang, version: "14",  container: ubuntu:24.04 }
-          - { compiler: clang, version: "15",  container: ubuntu:24.04 }
-          - { compiler: clang, version: "16",  container: ubuntu:24.04 }
-          - { compiler: clang, version: "17",  container: ubuntu:24.04 }
-          - { compiler: clang, version: "18",  container: ubuntu:24.04 }
-          - { compiler: clang, version: "19",  container: ubuntu:26.04 }
-          - { compiler: clang, version: "20",  container: ubuntu:26.04 }
-          - { compiler: clang, version: "21",  container: ubuntu:26.04 }
+          - { version: "3.9", container: ubuntu:18.04, arch: x64, build-type: Release, target: test }
+          - { version: "4.0", container: ubuntu:18.04, arch: x64, build-type: Release, target: test }
+          - { version: "5.0", container: ubuntu:18.04, arch: x64, build-type: Release, target: test }
+          - { version: "6.0", container: ubuntu:20.04, arch: x64, build-type: Release, target: test }
+          - { version: "7",   container: ubuntu:20.04, arch: x64, build-type: Release, target: test }
+          - { version: "8",   container: ubuntu:20.04, arch: x64, build-type: Release, target: test }
+          - { version: "9",   container: ubuntu:20.04, arch: x64, build-type: Release, target: test }
+          - { version: "10",  container: ubuntu:20.04, arch: x64, build-type: Release, target: test }
+          - { version: "11",  container: ubuntu:22.04, arch: x64, build-type: Release, target: test }
+          - { version: "12",  container: ubuntu:22.04, arch: x64, build-type: Release, target: test }
+          - { version: "13",  container: ubuntu:22.04, arch: x64, build-type: Release, target: test }
+          - { version: "14",  container: ubuntu:24.04, arch: x64, build-type: Release, target: test }
+          - { version: "15",  container: ubuntu:24.04, arch: x64, build-type: Release, target: test }
+          - { version: "16",  container: ubuntu:24.04, arch: x64, build-type: Release, target: test }
+          - { version: "17",  container: ubuntu:24.04, arch: x64, build-type: Release, target: test }
+          - { version: "18",  container: ubuntu:24.04, arch: x64, build-type: Release, target: test }
+          - { version: "19",  container: ubuntu:26.04, arch: x64, build-type: Release, target: test }
+          - { version: "20",  container: ubuntu:26.04, arch: x64, build-type: Release, target: test }
+        exclude:
+          - { arch: x86, target: tsan }
 
     steps:
       - uses: actions/checkout@v5
@@ -63,14 +62,6 @@ jobs:
         run: |
           docker pull ${{ matrix.container }}
           docker run --name build-container -d -v ${{ github.workspace }}:/workspace ${{ matrix.container }} tail -f /dev/null
-
-          cat <<'EOF' > container-env.sh
-          export CTEST_OUTPUT_ON_FAILURE="${{ env.CTEST_OUTPUT_ON_FAILURE }}"
-          export CTEST_PARALLEL_LEVEL="${{ env.CTEST_PARALLEL_LEVEL }}"
-          export CMAKE_GENERATOR="${{ env.CMAKE_GENERATOR }}"
-          export ASAN_OPTIONS="${{ env.ASAN_OPTIONS }}"
-          export TSAN_OPTIONS="${{ env.TSAN_OPTIONS }}"
-          EOF
 
       - name: Install
         env:
@@ -93,23 +84,20 @@ jobs:
             if [ "${{ matrix.version }}" = "17" ]; then
               apt-get install -y libclang-rt-${{ matrix.version }}-dev:i386
             fi
-        run: docker exec build-container bash -c "$CMD"
+        run: docker exec build-container bash -eu -c "$CMD"
 
-      - name: Build & Test ${{ runner.arch }}
+      - name: Build & Test
         env:
           CMD: |
             cd /workspace
-            source container-env.sh
-            python3 .github/workflows/build_and_test.py ${{ runner.os }} ${{ runner.arch }} ${{ matrix.compiler }} ${{ matrix.version }}
-        run: docker exec build-container bash -c "$CMD"
-
-      - name: Build & Test X86
-        env:
-          CMD: |
-            cd /workspace
-            source container-env.sh
-            python3 .github/workflows/build_and_test.py ${{ runner.os }} x86 ${{ matrix.compiler }} ${{ matrix.version }}
-        run: docker exec build-container bash -c "$CMD"
+            python3 .github/scripts/cmake.py        \
+              --os         ${{ runner.os }}         \
+              --arch       ${{ matrix.arch }}       \
+              --compiler   clang                    \
+              --version    ${{ matrix.version }}    \
+              --build-type ${{ matrix.build-type }} \
+              --target     ${{ matrix.target }}
+        run: docker exec build-container bash -eu -c "$CMD"
 
   gcc:
     runs-on: ubuntu-24.04
@@ -117,19 +105,25 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
+        version:    ["15"]
+        container:  ["ubuntu:26.04"]
+        arch:       [x64, x86]
+        build-type: [Release, Debug]
+        target:     [test, asan/ubsan, tsan, fno-exceptions, fno-rtti, valgrind]
         include:
-          - { compiler: gcc,   version: "4.8", container: ubuntu:18.04 }
-          - { compiler: gcc,   version: "5",   container: ubuntu:18.04 }
-          - { compiler: gcc,   version: "6",   container: ubuntu:18.04 }
-          - { compiler: gcc,   version: "7",   container: ubuntu:18.04 }
-          - { compiler: gcc,   version: "8",   container: ubuntu:18.04 }
-          - { compiler: gcc,   version: "9",   container: ubuntu:22.04 }
-          - { compiler: gcc,   version: "10",  container: ubuntu:24.04 }
-          - { compiler: gcc,   version: "11",  container: ubuntu:24.04 }
-          - { compiler: gcc,   version: "12",  container: ubuntu:24.04 }
-          - { compiler: gcc,   version: "13",  container: ubuntu:24.04 }
-          - { compiler: gcc,   version: "14",  container: ubuntu:24.04 }
-          - { compiler: gcc,   version: "15",  container: ubuntu:26.04 }
+          - { version: "4.8", container: ubuntu:18.04, arch: x64, build-type: Release, target: test }
+          - { version: "5",   container: ubuntu:18.04, arch: x64, build-type: Release, target: test }
+          - { version: "6",   container: ubuntu:18.04, arch: x64, build-type: Release, target: test }
+          - { version: "7",   container: ubuntu:18.04, arch: x64, build-type: Release, target: test }
+          - { version: "8",   container: ubuntu:18.04, arch: x64, build-type: Release, target: test }
+          - { version: "9",   container: ubuntu:22.04, arch: x64, build-type: Release, target: test }
+          - { version: "10",  container: ubuntu:24.04, arch: x64, build-type: Release, target: test }
+          - { version: "11",  container: ubuntu:24.04, arch: x64, build-type: Release, target: test }
+          - { version: "12",  container: ubuntu:24.04, arch: x64, build-type: Release, target: test }
+          - { version: "13",  container: ubuntu:24.04, arch: x64, build-type: Release, target: test }
+          - { version: "14",  container: ubuntu:24.04, arch: x64, build-type: Release, target: test }
+        exclude:
+          - { arch: x86, target: tsan }
 
     steps:
       - uses: actions/checkout@v5
@@ -139,14 +133,6 @@ jobs:
         run: |
           docker pull ${{ matrix.container }}
           docker run --name build-container -d -v ${{ github.workspace }}:/workspace ${{ matrix.container }} tail -f /dev/null
-
-          cat <<'EOF' > container-env.sh
-          export CTEST_OUTPUT_ON_FAILURE="${{ env.CTEST_OUTPUT_ON_FAILURE }}"
-          export CTEST_PARALLEL_LEVEL="${{ env.CTEST_PARALLEL_LEVEL }}"
-          export CMAKE_GENERATOR="${{ env.CMAKE_GENERATOR }}"
-          export ASAN_OPTIONS="${{ env.ASAN_OPTIONS }}"
-          export TSAN_OPTIONS="${{ env.TSAN_OPTIONS }}"
-          EOF
 
       - name: Install
         env:
@@ -163,23 +149,20 @@ jobs:
             apt-get update
             apt-get install -y cmake ninja-build valgrind libc6-dbg:i386 python3
             apt-get install -y g++-${{ matrix.version }} g++-${{ matrix.version }}-multilib
-        run: docker exec build-container bash -c "$CMD"
+        run: docker exec build-container bash -eu -c "$CMD"
 
-      - name: Build & Test ${{ runner.arch }}
+      - name: Build & Test
         env:
           CMD: |
             cd /workspace
-            source container-env.sh
-            python3 .github/workflows/build_and_test.py ${{ runner.os }} ${{ runner.arch }} ${{ matrix.compiler }} ${{ matrix.version }}
-        run: docker exec build-container bash -c "$CMD"
-
-      - name: Build & Test X86
-        env:
-          CMD: |
-            cd /workspace
-            source container-env.sh
-            python3 .github/workflows/build_and_test.py ${{ runner.os }} x86 ${{ matrix.compiler }} ${{ matrix.version }}
-        run: docker exec build-container bash -c "$CMD"
+            python3 .github/scripts/cmake.py        \
+              --os         ${{ runner.os }}         \
+              --arch       ${{ matrix.arch }}       \
+              --compiler   gcc                      \
+              --version    ${{ matrix.version }}    \
+              --build-type ${{ matrix.build-type }} \
+              --target     ${{ matrix.target }}
+        run: docker exec build-container bash -eu -c "$CMD"
 
   icc:
     runs-on: ubuntu-22.04

@@ -20,10 +20,6 @@ concurrency:
   group: ${{ github.workflow }}|${{ github.ref_name }}|windows
   cancel-in-progress: true
 
-env:
-  CTEST_OUTPUT_ON_FAILURE: ON
-  CTEST_PARALLEL_LEVEL: 2
-
 jobs:
   mingw-w64:
     runs-on: windows-latest
@@ -32,6 +28,9 @@ jobs:
       fail-fast: false
       matrix:
         configuration: ["Debug", "Release"]
+
+    env:
+      CMAKE_GENERATOR: MinGW Makefiles
 
     steps:
       - uses: actions/checkout@v5
@@ -42,7 +41,9 @@ jobs:
           version: 12.2.0
 
       - name: Generate
-        run: cmake -B build -S . -G "MinGW Makefiles" -D CMAKE_BUILD_TYPE=${{ matrix.configuration }}
+        shell: bash
+        run: |
+          cmake -B build -S . -D CMAKE_BUILD_TYPE=${{ matrix.configuration }}
 
       - name: Build
         run: cmake --build build
@@ -53,33 +54,40 @@ jobs:
   msvc:
     runs-on: windows-2025
 
-    env:
-      CMAKE_GENERATOR: Ninja
-      ASAN_OPTIONS: strict_string_checks=true:detect_odr_violation=2:detect_stack_use_after_return=true:check_initialization_order=true:strict_init_order=true
-      TSAN_OPTIONS: force_seq_cst_atomics=1
-
     strategy:
       fail-fast: false
       matrix:
-        compiler: ["cl", "clang", "clang-cl"]
+        compiler:   ["cl", "clang", "clang-cl"]
+        arch:       [x64, x86]
+        build-type: [Release, Debug]
+        target:     [test]
+
+        exclude:
+          - { compiler: cl,       arch: x86 }
+          - { compiler: clang-cl, arch: x86 }
 
     steps:
       - uses: actions/checkout@v5
 
-      - name: Configure MSVC for X64
+      - name: Configure MSVC (x64)
+        if:   matrix.arch == 'x64'
         uses: ilammy/msvc-dev-cmd@v1
 
-      - name: Build & Test ${{ runner.arch }}
-        run: python3 .github/workflows/build_and_test.py ${{ runner.os }} ${{ runner.arch }} ${{ matrix.compiler }} ${{ matrix.version }}
-
-      - name: Configure MSVC for X86
+      - name: Configure MSVC (x86)
+        if:   matrix.arch == 'x86'
         uses: ilammy/msvc-dev-cmd@v1
         with:
           arch: x86
 
-      - name: Build & Test X86
-        if: matrix.compiler != 'clang-cl'
-        run: python3 .github/workflows/build_and_test.py ${{ runner.os }} x86 ${{ matrix.compiler }} ${{ matrix.version }}
+      - name: Build & Test
+        shell: bash
+        run: |
+          python3 .github/scripts/cmake.py        \
+            --os         ${{ runner.os }}         \
+            --arch       ${{ matrix.arch }}       \
+            --compiler   ${{ matrix.compiler }}   \
+            --build-type ${{ matrix.build-type }} \
+            --target     ${{ matrix.target }}
 
   msvs:
     runs-on:  "windows-2025"
