@@ -2,6 +2,11 @@
 
 #include "header.h"
 
+DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_BEGIN
+#include <chrono>
+#include <thread>
+DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_END
+
 static int doStuff() {
     int a = 5;
     a += 2;
@@ -46,6 +51,14 @@ TEST_CASE_FIXTURE(SomeFixture, "fixtured test - not part of a test suite") {
 
 TEST_CASE("normal test in a test suite from a decorator" * doctest::test_suite("ts1") *
           doctest::timeout(0.000001)) {
+    // Guarantee that we time-out by sleeping for at least 5ms (> 1us)
+    using clock_type = std::chrono::steady_clock;
+    const auto quanta = std::chrono::milliseconds(5);
+    const auto t0 = clock_type::now();
+    while (clock_type::now() < t0 + quanta) {
+        std::this_thread::sleep_for(quanta);
+    }
+
     MESSAGE("failing because of the timeout decorator!");
 }
 
