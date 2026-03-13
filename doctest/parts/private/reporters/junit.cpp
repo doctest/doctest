@@ -133,11 +133,13 @@ void JUnitReporter::test_run_end(const TestRunStats &p) {
 }
 
 void JUnitReporter::test_case_start(const TestCaseData &in) {
+    DOCTEST_LOCK_MUTEX(mutex)
     testCaseData.add(skipPathFromFilename(in.m_file.c_str()), in.m_name);
     timer.start();
 }
 
 void JUnitReporter::test_case_reenter(const TestCaseData &in) {
+    DOCTEST_LOCK_MUTEX(mutex)
     testCaseData.addTime(timer.getElapsedSeconds());
     testCaseData.appendSubcaseNamesToLastTestcase(deepestSubcaseStackNames);
     deepestSubcaseStackNames.clear();
@@ -147,6 +149,7 @@ void JUnitReporter::test_case_reenter(const TestCaseData &in) {
 }
 
 void JUnitReporter::test_case_end(const CurrentTestCaseStats &) {
+    DOCTEST_LOCK_MUTEX(mutex)
     testCaseData.addTime(timer.getElapsedSeconds());
     testCaseData.appendSubcaseNamesToLastTestcase(deepestSubcaseStackNames);
     deepestSubcaseStackNames.clear();
@@ -158,6 +161,7 @@ void JUnitReporter::test_case_exception(const TestCaseException &e) {
 }
 
 void JUnitReporter::subcase_start(const SubcaseSignature &in) {
+    DOCTEST_LOCK_MUTEX(mutex)
     deepestSubcaseStackNames.push_back(in.m_name);
 }
 

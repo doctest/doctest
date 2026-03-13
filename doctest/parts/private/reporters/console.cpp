@@ -332,6 +332,7 @@ void ConsoleReporter::test_run_end(const TestRunStats &p) {
 }
 
 void ConsoleReporter::test_case_start(const TestCaseData &in) {
+    DOCTEST_LOCK_MUTEX(mutex)
     hasLoggedCurrentTestStart = false;
     tc = &in;
     subcasesStack.clear();
@@ -339,10 +340,12 @@ void ConsoleReporter::test_case_start(const TestCaseData &in) {
 }
 
 void ConsoleReporter::test_case_reenter(const TestCaseData &) {
+    DOCTEST_LOCK_MUTEX(mutex)
     subcasesStack.clear();
 }
 
 void ConsoleReporter::test_case_end(const CurrentTestCaseStats &st) {
+    DOCTEST_LOCK_MUTEX(mutex)
     if (tc->m_no_output)
         return;
 
@@ -401,12 +404,14 @@ void ConsoleReporter::test_case_exception(const TestCaseException &e) {
 }
 
 void ConsoleReporter::subcase_start(const SubcaseSignature &subc) {
+    DOCTEST_LOCK_MUTEX(mutex)
     subcasesStack.push_back(subc);
     ++currentSubcaseLevel;
     hasLoggedCurrentTestStart = false;
 }
 
 void ConsoleReporter::subcase_end() {
+    DOCTEST_LOCK_MUTEX(mutex)
     --currentSubcaseLevel;
     hasLoggedCurrentTestStart = false;
 }
