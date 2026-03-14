@@ -1,5 +1,7 @@
 add_subdirectory(common)
 
+find_package(Threads REQUIRED)
+
 function(doctest_add_unit_test)
     set(options              WITH_MAIN)
     set(one_value_keywords   SOURCE TEST_NAME IF EXCEPT)
@@ -26,6 +28,7 @@ function(doctest_add_unit_test)
 
     add_executable(${EXE_NAME} ${ARG_SOURCES})
     target_link_libraries(${EXE_NAME} common)
+    target_link_libraries(${EXE_NAME} Threads::Threads)
 
     if(ARG_WITH_MAIN)
         target_link_libraries(${EXE_NAME} doctest_with_main)
@@ -125,3 +128,4 @@ doctest_add_unit_test(WITH_MAIN SOURCE regression/test.630.cpp)
 doctest_add_unit_test(WITH_MAIN SOURCE regression/test.651.cpp)
 doctest_add_unit_test(WITH_MAIN SOURCE regression/test.786.cpp)
 doctest_add_unit_test(          SOURCE regression/test.873.cpp)
+doctest_add_unit_test(WITH_MAIN SOURCE regression/test.915.cpp)
