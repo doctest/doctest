@@ -7100,8 +7100,10 @@ std::string JUnitReporter::JUnitTestCaseData::getCurrentTimestamp() {
     const auto timeStampSize = sizeof("2017-01-16T17:06:45Z");
 
     std::tm timeInfo;
-#ifdef DOCTEST_PLATFORM_WINDOWS
+#if defined(DOCTEST_PLATFORM_WINDOWS)
     gmtime_s(&timeInfo, &rawtime);
+#elif defined(__STDC_LIB_EXT1__)
+    gmtime_s(&rawtime, &timeInfo);
 #else  // DOCTEST_PLATFORM_WINDOWS
     gmtime_r(&rawtime, &timeInfo);
 #endif // DOCTEST_PLATFORM_WINDOWS
