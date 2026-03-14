@@ -130,9 +130,11 @@ if(CMAKE_SYSTEM_NAME STREQUAL Linux)
     include(GNUInstallDirs)
     set(include_install_dir ${CMAKE_INSTALL_INCLUDEDIR})
     set(config_install_dir "${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}")
+    set(pkg_config_install_dir "${CMAKE_INSTALL_LIBDIR}/pkgconfig")
 else()
     set(include_install_dir "include")
     set(config_install_dir "lib/cmake/${PROJECT_NAME}")
+    set(pkg_config_install_dir "lib/pkgconfig")
 endif()
 
 
@@ -148,6 +150,9 @@ write_basic_package_version_file(
 )
 
 configure_file("scripts/cmake/Config.cmake.in" "${project_config}" @ONLY)
+
+set (project_pkg_config "${generated_dir}/${PROJECT_NAME}.pc")
+configure_file("doctest.pc.in" "${project_pkg_config}" @ONLY)
 
 if(NOT ${DOCTEST_NO_INSTALL})
     install(
@@ -169,6 +174,11 @@ if(NOT ${DOCTEST_NO_INSTALL})
     install(
         FILES "${project_config}" "${version_config}"
         DESTINATION "${config_install_dir}"
+    )
+
+    install(
+        FILES "${project_pkg_config}"
+        DESTINATION "${pkg_config_install_dir}"
     )
 
     install(
