@@ -6,6 +6,6 @@ cc_library(
         ["doctest/**/*.h"],
         exclude = ["doctest/parts/**/*"],
     ),
-    includes = ["doctest"],
+    includes = [".", "doctest"],
     visibility = ["//visibility:public"],
 )
