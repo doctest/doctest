@@ -8,6 +8,11 @@
 #include "doctest/parts/private/filters.h"
 #include "doctest/parts/private/signals.h"
 
+// Fix for #1035
+#include "doctest/parts/private/reporters/console.h"
+#include "doctest/parts/private/reporters/junit.h"
+#include "doctest/parts/private/reporters/xml.h"
+
 DOCTEST_SUPPRESS_PRIVATE_WARNINGS_PUSH
 
 namespace doctest {
