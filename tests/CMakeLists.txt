@@ -80,14 +80,6 @@ function(doctest_add_unit_test)
     endif()
 endfunction()
 
-set(GCC_4_8 OFF)
-if(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
-    if(CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL "4.8" AND
-       CMAKE_CXX_COMPILER_VERSION VERSION_LESS          "4.9")
-        set(GCC_4_8 ON)
-    endif()
-endif()
-
 set(MAC OFF)
 if(CMAKE_SYSTEM_NAME MATCHES "Darwin")
     set(MAC ON)
@@ -108,7 +100,7 @@ doctest_add_unit_test(WITH_MAIN SOURCE doctest/test_filters.cpp)
 doctest_add_unit_test(WITH_MAIN SOURCE doctest/test_path.cpp)
 doctest_add_unit_test(WITH_MAIN SOURCE doctest/test_platform.cpp DEFINES CMAKE_SYSTEM_NAME="${CMAKE_SYSTEM_NAME}")
 doctest_add_unit_test(WITH_MAIN SOURCE doctest/test_string.cpp)
-doctest_add_unit_test(WITH_MAIN SOURCE doctest/test_xml.cpp EXCEPT ${GCC_4_8})
+doctest_add_unit_test(WITH_MAIN SOURCE doctest/test_xml.cpp)
 
 # Regression tests
 doctest_add_unit_test(
