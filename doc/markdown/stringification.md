@@ -10,7 +10,7 @@ For stringifying enums checkout [this issue](https://github.com/doctest/doctest/
 This is the standard way of providing string conversions in C++ - and the chances are you may already provide this for your own purposes. If you're not familiar with this idiom it involves writing a free function of the form:
 
 ```c++
-std::ostream& operator<< (std::ostream& os, const T& value) {
+std::ostream &operator<<(std::ostream &os, const T &value) {
     os << convertMyTypeToString(value);
     return os;
 }
@@ -23,7 +23,7 @@ You should put this function in the same namespace as your type.
 Alternatively you may prefer to write it as a member function:
 
 ```c++
-std::ostream& T::operator<<(std::ostream& os) const {
+std::ostream &T::operator<<(std::ostream &os) const {
     os << convertMyTypeToString(*this);
     return os;
 }
@@ -35,12 +35,12 @@ If you don't want to provide an ```operator<<``` overload, or you want to conver
 
 ```c++
 namespace user {
-    struct udt {};
-    
-    doctest::String toString(const udt& value) {
-        return convertMyTypeToString(value);
-    }
+struct udt {};
+
+doctest::String toString(const udt &value) {
+    return convertMyTypeToString(value);
 }
+} // namespace user
 ```
 
 Note that the function must be in the same namespace as your type. If the type is not in any namespace - then the overload should be in the global namespace as well. ```convertMyTypeToString``` is where you'll write whatever code is necessary to make your type printable.
@@ -51,12 +51,13 @@ There are some cases where overloading ```toString``` does not work as expected.
 
 ```c++
 namespace doctest {
-    template<> struct StringMaker<T> {
-        static String convert(const T& value) {
-            return convertMyTypeToString(value);
-        }
-    };
-}
+template <>
+struct StringMaker<T> {
+    static String convert(const T &value) {
+        return convertMyTypeToString(value);
+    }
+};
+} // namespace doctest
 ```
 
 ## Translating exceptions
@@ -64,7 +65,7 @@ namespace doctest {
 By default all exceptions deriving from ```std::exception``` will be translated to strings by calling the ```what()``` method (also C strings). For exception types that do not derive from ```std::exception``` - or if ```what()``` does not return a suitable string - use ```REGISTER_EXCEPTION_TRANSLATOR```. This defines a function that takes your exception type and returns a ```doctest::String```. It can appear anywhere in the code - it doesn't have to be in the same translation unit. For example:
 
 ```c++
-REGISTER_EXCEPTION_TRANSLATOR(MyType& ex) {
+REGISTER_EXCEPTION_TRANSLATOR(MyType &ex) {
     return doctest::String(ex.message());
 }
 ```
@@ -74,8 +75,8 @@ Note that the exception may be accepted without a reference but it is considered
 An alternative way to register an exception translator is to do the following in some function - before executing any tests:
 
 ```c++
-    // adding a lambda - the signature required is `doctest::String(exception_type)`
-    doctest::registerExceptionTranslator<int>([](int in){ return doctest::toString(in); });
+// adding a lambda - the signature required is `doctest::String(exception_type)`
+doctest::registerExceptionTranslator<int>([](int in) { return doctest::toString(in); });
 ```
 
 The order of registering exception translators can be controlled - simply call the explicit function in the required order or list the exception translators with the macro in a top-to-bottom fashion in a single translation unit - everything that auto-registers in doctest works in a top-to-bottom way for a single translation unit (source file).

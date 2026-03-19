@@ -13,9 +13,9 @@ TEST_CASE("logging the counter of a loop") {
     vec.push_back(4);
     vec.push_back(8);
     vec.push_back(16);
-    
+
     INFO("current iteration of loop:");
-    for(unsigned i = 0; i < vec.size(); ++i) {
+    for (unsigned i = 0; i < vec.size(); ++i) {
         CAPTURE(i);
         CHECK(vec[i] != (1 << i));
     }
@@ -53,9 +53,9 @@ TEST_CASE("a test case that will end from an exception and should print the unpr
 
 // TODO: Also remove
 // NOLINTNEXTLINE(misc-unused-parameters)
-static void thirdPartyAssert(bool result, bool is_fatal, const char* file, int line) {
-    if(!result) {
-        if(is_fatal) // NOLINT(bugprone-branch-clone)
+static void thirdPartyAssert(bool result, bool is_fatal, const char *file, int line) {
+    if (!result) {
+        if (is_fatal) // NOLINT(bugprone-branch-clone)
             ADD_FAIL_AT(file, line, "MY_ASSERT_FATAL(" << result << ")");
         else
             ADD_FAIL_CHECK_AT(file, line, "MY_ASSERT(" << result << ")");

@@ -11,7 +11,9 @@ This tutorial assumes you can use the header directly: ```#include "doctest.h"``
 Suppose we have a ```factorial()``` function that we want to test:
 
 ```c++
-int factorial(int number) { return number <= 1 ? number : factorial(number - 1) * number; }
+int factorial(int number) {
+    return number <= 1 ? number : factorial(number - 1) * number;
+}
 ```
 
 A complete compiling example with a self-registering test looks like this:
@@ -20,7 +22,9 @@ A complete compiling example with a self-registering test looks like this:
 #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 #include "doctest.h"
 
-int factorial(int number) { return number <= 1 ? number : factorial(number - 1) * number; }
+int factorial(int number) {
+    return number <= 1 ? number : factorial(number - 1) * number;
+}
 
 TEST_CASE("testing the factorial function") {
     CHECK(factorial(1) == 1);
@@ -58,7 +62,9 @@ Note that we get the actual return value of ```factorial(0)``` printed for us (0
 Let's change the factorial function to:
 
 ```c++
-int factorial(int number) { return number > 1 ? factorial(number - 1) * number : 1; }
+int factorial(int number) {
+    return number > 1 ? factorial(number - 1) * number : 1;
+}
 ```
 
 Now all the tests pass.

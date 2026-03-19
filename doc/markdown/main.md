@@ -17,7 +17,7 @@ All the [**command line**](commandline.md) options can be set like this (flags c
 #define DOCTEST_CONFIG_IMPLEMENT
 #include "doctest.h"
 
-int main(int argc, char** argv) {
+int main(int argc, char **argv) {
     doctest::Context context;
 
     // !!! THIS IS JUST AN EXAMPLE SHOWING HOW DEFAULTS/OVERRIDES ARE SET !!!
@@ -30,19 +30,18 @@ int main(int argc, char** argv) {
     context.applyCommandLine(argc, argv);
 
     // overrides
-    context.setOption("no-breaks", true);             // don't break in the debugger when assertions fail
+    context.setOption("no-breaks", true); // don't break in the debugger when assertions fail
 
     int res = context.run(); // run
 
-    if(context.shouldExit()) // important - query flags (and --exit) rely on the user doing this
-        return res;          // propagate the result of the tests
-    
+    if (context.shouldExit()) // important - query flags (and --exit) rely on the user doing this
+        return res;           // propagate the result of the tests
+
     int client_stuff_return_code = 0;
     // your program - if the testing framework is integrated in your production code
-    
+
     return res + client_stuff_return_code; // the result from doctest is propagated here as well
 }
-
 ```
 
 Note the call to ```.shouldExit()``` on the context - that is very important - it will be set when a query flag has been used (or the ```--no-run``` option is set to ```true```) and it is the user's responsibility to exit the application in a normal way.

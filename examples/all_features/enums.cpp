@@ -7,61 +7,52 @@ DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_BEGIN
 #include <sstream>
 DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_END
 
-namespace
-{
+namespace {
 
-enum StandardEnum
-{
+enum StandardEnum {
     Zero,
     One,
     Two,
 };
 
-enum TypedEnum : int64_t
-{
+enum TypedEnum : int64_t {
     TypedZero,
     TypedOne,
     TypedTwo,
 };
 
-enum class EnumClassC : char
-{
+enum class EnumClassC : char {
     Zero = '0',
     One = '1',
     Two = '2',
 };
 
-enum class EnumClassSC : signed char
-{
+enum class EnumClassSC : signed char {
     Zero = '0',
     One = '1',
     Two = '2',
 };
 
-enum class EnumClassUC : unsigned char
-{
+enum class EnumClassUC : unsigned char {
     Zero = '0',
     One = '1',
     Two = '2',
 };
 
-enum class EnumClassU8 : uint8_t
-{
+enum class EnumClassU8 : uint8_t {
     Zero,
     One,
     Two,
 };
 
-template<class E, class T = typename std::underlying_type<E>::type>
-T printable(E val)
-{
+template <class E, class T = typename std::underlying_type<E>::type>
+T printable(E val) {
     return static_cast<T>(val);
 }
 
-}
+} // namespace
 
-TEST_CASE("enum 1")
-{
+TEST_CASE("enum 1") {
     std::ostringstream ostr;
     ostr << Zero << One << Two;
     ostr << TypedZero << TypedOne << TypedTwo;
@@ -81,8 +72,7 @@ TEST_CASE("enum 1")
     CHECK_EQ(EnumClassSC::Two, EnumClassSC::Two);
 }
 
-TEST_CASE("enum 2" * doctest::should_fail())
-{
+TEST_CASE("enum 2" * doctest::should_fail()) {
     CHECK_EQ(Zero, 1);
     CHECK_EQ(One, 2);
     CHECK_EQ(Two, 3);

@@ -1,11 +1,10 @@
 #include <doctest/doctest.h>
 #include <cstdint>
 
-
 TEST_CASE("Bitfield") {
     struct S {
-        uint32_t a: 31;
-        uint32_t b: 1;
+        uint32_t a : 31;
+        uint32_t b : 1;
     };
 
     S s;
@@ -14,7 +13,6 @@ TEST_CASE("Bitfield") {
     CHECK(s.a == 0);
 }
 
-
 TEST_CASE("Packed struct") {
     DOCTEST_CLANG_SUPPRESS_WARNING_WITH_PUSH("-Wpacked")
 #if !defined(WIN32)
@@ -22,11 +20,11 @@ TEST_CASE("Packed struct") {
         int i;
     };
 #else
-    #pragma pack(push, 1)
+#pragma pack(push, 1)
     struct P {
         int i;
     };
-    #pragma pack(pop)
+#pragma pack(pop)
 #endif
     DOCTEST_CLANG_SUPPRESS_WARNING_POP
 

@@ -24,8 +24,7 @@ namespace detail {
         return *this;                                                                                                  \
     }
 
-struct DOCTEST_INTERFACE Result // NOLINT(*-member-init)
-{
+struct DOCTEST_INTERFACE Result { // NOLINT(*-member-init)
     bool m_passed;
     String m_decomp;
 

@@ -43,8 +43,7 @@ TEST_CASE_TEMPLATE_APPLY(test_id, std::tuple<unsigned char, char>);
 // =================================================================================================
 
 template <typename first, typename second>
-struct TypePair
-{
+struct TypePair {
     using A = first;
     using B = second;
 };
@@ -63,7 +62,8 @@ TEST_CASE_TEMPLATE("multiple types", T, TypePair<int, char>, TypePair<char, int>
     CHECK(t2 != T2());
 }
 
-// currently the string result will be "int_pair" instead of "TypePair<int, int>" because of the way the type stringification works
+// currently the string result will be "int_pair" instead of "TypePair<int, int>" because of the way the type
+// stringification works
 using int_pair = TypePair<int, int>;
 TYPE_TO_STRING(int_pair);
 

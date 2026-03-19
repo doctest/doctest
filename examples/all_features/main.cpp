@@ -4,9 +4,9 @@
 #include "header.h"
 
 int program();
-void some_program_code(int argc, char** argv);
+void some_program_code(int argc, char **argv);
 
-int main(int argc, char** argv) {
+int main(int argc, char **argv) {
     doctest::Context context;
 
     // !!! THIS IS JUST AN EXAMPLE SHOWING HOW DEFAULTS/OVERRIDES ARE SET !!!
@@ -23,8 +23,8 @@ int main(int argc, char** argv) {
 
     int res = context.run(); // run queries, or run tests unless --no-run is specified
 
-    if(context.shouldExit()) // important - query flags (and --exit) rely on the user doing this
-        return res;          // propagate the result of the tests
+    if (context.shouldExit()) // important - query flags (and --exit) rely on the user doing this
+        return res;           // propagate the result of the tests
 
     context.clearFilters(); // removes all filters added up to this point
 

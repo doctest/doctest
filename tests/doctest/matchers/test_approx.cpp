@@ -21,10 +21,12 @@ struct bounds {
         const auto s = m.m_scale;
         const auto C = m.m_value;
 
-        if (std::isinf(C)) { return { C, C }; }
-        const auto min = std::min((C - e*s) / (1 - e), C - e*(s + std::abs(C)));
-        const auto max = std::max((C + e*s) / (1 - e), C + e*(s + std::abs(C)));
-        return { min, max };
+        if (std::isinf(C)) {
+            return {C, C};
+        }
+        const auto min = std::min((C - e * s) / (1 - e), C - e * (s + std::abs(C)));
+        const auto max = std::max((C + e * s) / (1 - e), C + e * (s + std::abs(C)));
+        return {min, max};
     }
 };
 
@@ -36,15 +38,16 @@ doctest::String toString(bounds b) {
 TEST_CASE_TEMPLATE("Construction with non-double values", T, float, double, long double) {
     const auto m = Approx(T(1)).epsilon(T(2)).scale(T(3));
 
-    CHECK(m.m_value   == Approx(1.0));
+    CHECK(m.m_value == Approx(1.0));
     CHECK(m.m_epsilon == Approx(2.0));
-    CHECK(m.m_scale   == Approx(3.0));
+    CHECK(m.m_scale == Approx(3.0));
 }
 
 TEST_CASE_TEMPLATE("Verification of relational operators", T, float, double, long double) {
     const auto m = Approx(100.0).epsilon(0.01).scale(3);
     CAPTURE(bounds::determine(m)); // [98.97, 101.04]
 
+    // clang-format off
     const auto too_small = T( 98.96); // Would be 98.97, but float loses too much precision
     const auto     small = T( 98.98);
     const auto    center = T(100.00);
@@ -134,19 +137,21 @@ TEST_CASE_TEMPLATE("Verification of relational operators", T, float, double, lon
         CHECK      (m >= large);
         CHECK_FALSE(m >= too_large);
     }
+    // clang-format on
 }
 
 TEST_CASE("Comparison with finite floating-point values" * doctest::expected_failures(2)) {
     const auto epsilon = std::numeric_limits<double>::epsilon();
-    const auto inf     = std::numeric_limits<double>::infinity();
+    const auto inf = std::numeric_limits<double>::infinity();
 
+    // clang-format off
     SUBCASE("Matcher focused around 0") {
         const auto m = Approx(0.0);
         CAPTURE(bounds::determine(m)); // [-1.19211e-5, 1.19211e-5]
 
         CHECK(-1.19211e-5 != m);
         CHECK(-1.19210e-5 == m);
-        CHECK( 0.0        == m);
+        CHECK(        0.0 == m);
         CHECK(+1.19210e-5 == m);
         CHECK(+1.19211e-5 != m);
     }
@@ -156,7 +161,7 @@ TEST_CASE("Comparison with finite floating-point values" * doctest::expected_fai
         CAPTURE(bounds::determine(m)); // [0, 0]
 
         CHECK(-epsilon != m);
-        CHECK( 0.0     == m); // FAIL
+        CHECK(     0.0 == m); // FAIL
         CHECK(+epsilon != m);
     }
 
@@ -165,7 +170,7 @@ TEST_CASE("Comparison with finite floating-point values" * doctest::expected_fai
         CAPTURE(bounds::determine(m)); // [-NaN, +NaN]
 
         CHECK(-epsilon != m);
-        CHECK( 0.0     == m); // FAIL
+        CHECK(     0.0 == m); // FAIL
         CHECK(+epsilon != m);
     }
 
@@ -175,7 +180,7 @@ TEST_CASE("Comparison with finite floating-point values" * doctest::expected_fai
 
         CHECK(-1.19211e-5 != m);
         CHECK(-1.19210e-5 == m);
-        CHECK( 0.0        == m);
+        CHECK(        0.0 == m);
         CHECK(+1.19210e-5 == m);
         CHECK(+1.19211e-5 != m);
     }
@@ -225,7 +230,7 @@ TEST_CASE("Comparison with finite floating-point values" * doctest::expected_fai
         const auto m = Approx(100.0).epsilon(1.0).scale(0);
         CAPTURE(bounds::determine(m)); // [0, inf]
 
-        CHECK(0.0   != m);
+        CHECK(  0.0 != m);
         CHECK(1e-14 == m);
         CHECK(100.0 == m);
         CHECK(1e+18 == m);
@@ -241,60 +246,69 @@ TEST_CASE("Comparison with finite floating-point values" * doctest::expected_fai
         CHECK(75.7878 == m);
         CHECK(75.7879 != m);
     }
+    // clang-format on
 }
 
 TEST_CASE("Comparison with non-finite floating-point values") {
     SUBCASE("Matcher focused around infinity") {
         const auto inf = std::numeric_limits<float>::infinity();
-        const auto m   = Approx(inf);
+        const auto m = Approx(inf);
         CAPTURE(bounds::determine(m)); // [inf, inf]
 
+        // clang-format off
         CHECK_FALSE(inf == m);
-        CHECK      (inf != m);
+        CHECK(      inf != m);
         CHECK_FALSE(inf <  m);
         CHECK_FALSE(inf <= m);
         CHECK_FALSE(inf >  m);
         CHECK_FALSE(inf >= m);
+        // clang-format on
     }
 
     SUBCASE("Matcher focused around negative-infinity") {
         const auto inf = std::numeric_limits<float>::infinity();
-        const auto m   = Approx(-inf);
+        const auto m = Approx(-inf);
         CAPTURE(bounds::determine(m)); // [-inf, -inf]
 
+        // clang-format off
         CHECK_FALSE(-inf == m);
-        CHECK      (-inf != m);
+        CHECK(      -inf != m);
         CHECK_FALSE(-inf <  m);
         CHECK_FALSE(-inf <= m);
         CHECK_FALSE(-inf >  m);
         CHECK_FALSE(-inf >= m);
-     }
+        // clang-format on
+    }
 
     SUBCASE("Matcher focused around a quiet NaN") {
         const auto qnan = std::numeric_limits<float>::quiet_NaN();
-        const auto m    = Approx(qnan);
+        const auto m = Approx(qnan);
         CAPTURE(bounds::determine(m)); // [nan, nan]
 
+        // clang-format off
         CHECK_FALSE(qnan == m);
-        CHECK      (qnan != m);
+        CHECK(      qnan != m);
         CHECK_FALSE(qnan <  m);
         CHECK_FALSE(qnan <= m);
         CHECK_FALSE(qnan >  m);
         CHECK_FALSE(qnan >= m);
-     }
+        // clang-format on
+    }
 
     SUBCASE("Matcher focused around a signalling NaN") {
         const auto snan = std::numeric_limits<float>::signaling_NaN();
-        const auto m    = Approx(snan);
+        const auto m = Approx(snan);
         CAPTURE(bounds::determine(m)); // [nan, nan]
 
+        // clang-format off
         CHECK_FALSE(snan == m);
-        CHECK      (snan != m);
+        CHECK(      snan != m);
         CHECK_FALSE(snan <  m);
         CHECK_FALSE(snan <= m);
         CHECK_FALSE(snan >  m);
         CHECK_FALSE(snan >= m);
-     }
+        // clang-format on
+    }
 }
 
 TEST_CASE("Stringification") {
@@ -302,6 +316,7 @@ TEST_CASE("Stringification") {
         constexpr auto inf = std::numeric_limits<double>::infinity();
         constexpr auto nan = std::numeric_limits<double>::signaling_NaN();
 
+        // clang-format off
         CHECK(doctest::toString(Approx( 0  )) == "Approx( 0 )");
         CHECK(doctest::toString(Approx( 1  )) == "Approx( 1 )");
         CHECK(doctest::toString(Approx( 1.5)) == "Approx( 1.5 )");
@@ -310,6 +325,7 @@ TEST_CASE("Stringification") {
         CHECK(doctest::toString(Approx(-inf)) == "Approx( -inf )");
         CHECK(doctest::toString(Approx( nan)) == "Approx( nan )");
         CHECK(doctest::toString(Approx(-nan)) == "Approx( -nan )");
+        // clang-format on
     }
 
     SUBCASE("Matcher with both epsilon and scale set") {
