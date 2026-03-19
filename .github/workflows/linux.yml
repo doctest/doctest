@@ -111,7 +111,6 @@ jobs:
         build-type: [Release, Debug]
         target:     [test, asan/ubsan, tsan, fno-exceptions, fno-rtti, valgrind]
         include:
-          - { version: "4.8", container: ubuntu:18.04, arch: x64, build-type: Release, target: test }
           - { version: "5",   container: ubuntu:18.04, arch: x64, build-type: Release, target: test }
           - { version: "6",   container: ubuntu:18.04, arch: x64, build-type: Release, target: test }
           - { version: "7",   container: ubuntu:18.04, arch: x64, build-type: Release, target: test }
