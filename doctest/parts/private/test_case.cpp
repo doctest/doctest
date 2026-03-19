@@ -34,7 +34,7 @@ TestCase::TestCase(
     m_template_id = template_id;
 }
 
-TestCase::TestCase(const TestCase &other)
+TestCase::TestCase(const TestCase &other) // NOLINT(bugprone-copy-constructor-init)
     : TestCaseData() {
     *this = other;
 }
