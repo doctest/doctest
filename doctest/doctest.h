@@ -786,6 +786,11 @@ template <typename T, size_t SIZE>
 struct is_array<T[SIZE]> : true_type {};
 #endif
 
+#if !(defined(DOCTEST_CONFIG_INCLUDE_TYPE_TRAITS) && (DOCTEST_CPLUSPLUS >= 201703L))
+template <typename... Unused>
+using void_t = void;
+#endif
+
 } // namespace types
 } // namespace detail
 } // namespace doctest
@@ -996,6 +1001,30 @@ struct should_stringify_as_underlying_type {
         detail::types::is_enum<T>::value && !doctest::detail::has_insertion_operator<T>::value;
 };
 
+template <typename T, typename = void>
+struct is_pair : types::false_type {};
+
+template <typename T>
+struct is_pair<
+    T,
+    types::void_t<
+        typename T::first_type,
+        typename T::second_type,
+        decltype(declval<T>().first),
+        decltype(declval<T>().second)>> : types::true_type {};
+
+template <typename T, typename = void>
+struct is_container : types::false_type {};
+
+template <typename T>
+struct is_container<
+    T,
+    types::void_t<
+        typename T::value_type,
+        typename T::iterator,
+        decltype(declval<T>().begin()),
+        decltype(declval<T>().end())>> : types::true_type {};
+
 DOCTEST_INTERFACE std::ostream *tlssPush();
 DOCTEST_INTERFACE String tlssPop();
 
@@ -1010,7 +1039,7 @@ struct StringMakerBase {
     }
 };
 
-template <typename T>
+template <typename T, typename Enable = void>
 struct filldata;
 
 template <typename T>
@@ -1043,9 +1072,10 @@ struct StringMakerBase<true> {
 } // namespace detail
 
 template <typename T>
-struct StringMaker : public detail::StringMakerBase<
-                         detail::has_insertion_operator<T>::value || detail::types::is_pointer<T>::value ||
-                         detail::types::is_array<T>::value> {};
+struct StringMaker
+    : public detail::StringMakerBase<
+          detail::has_insertion_operator<T>::value || detail::types::is_pointer<T>::value ||
+          detail::types::is_array<T>::value || detail::is_pair<T>::value || detail::is_container<T>::value> {};
 
 #ifndef DOCTEST_STRINGIFY
 #ifdef DOCTEST_CONFIG_DOUBLE_STRINGIFY
@@ -1119,7 +1149,7 @@ String toString(const DOCTEST_REF_WRAP(T) value) {
 }
 
 namespace detail {
-template <typename T>
+template <typename T, typename Enable>
 struct filldata {
     static void fill(std::ostream *stream, const T &in) {
 #if defined(_MSC_VER) && _MSC_VER <= 1900
@@ -1183,6 +1213,32 @@ struct filldata<T *> {
 #endif // DOCTEST_GCC
         );
         DOCTEST_CLANG_SUPPRESS_WARNING_POP
+    }
+};
+
+template <typename T>
+struct filldata<
+    T,
+    typename detail::types::enable_if<!detail::has_insertion_operator<T>::value && detail::is_pair<T>::value>::type> {
+    static void fill(std::ostream *stream, const T &in) {
+        *stream << "{" << DOCTEST_STRINGIFY(in.first) << ", " << DOCTEST_STRINGIFY(in.second) << "}";
+    }
+};
+
+template <typename T>
+struct filldata<
+    T,
+    typename detail::types::enable_if<
+        !detail::has_insertion_operator<T>::value && detail::is_container<T>::value>::type> {
+    static void fill(std::ostream *stream, const DOCTEST_REF_WRAP(T) in) {
+        *stream << "{";
+        for (auto it = in.begin(); it != in.end(); ++it) {
+            if (it != in.begin()) {
+                *stream << ", ";
+            }
+            *stream << DOCTEST_STRINGIFY(*it);
+        }
+        *stream << "}";
     }
 };
 

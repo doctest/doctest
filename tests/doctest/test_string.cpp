@@ -1,10 +1,42 @@
 #include <doctest/doctest.h>
+DOCTEST_GCC_SUPPRESS_WARNING_WITH_PUSH("-Wstrict-overflow")
+#include <array>
+#include <deque>
 #include <limits>
+#include <list>
+#include <map>
+#include <set>
 #include <sstream>
 #include <string>
+#include <unordered_map>
+#include <unordered_set>
+#include <vector>
 using doctest::String;
+DOCTEST_GCC_SUPPRESS_WARNING_POP
 
 namespace {
+
+/** Allows for set-based equality */
+template <typename T>
+struct one_of {
+private:
+    std::vector<T> _items;
+
+public:
+    inline one_of(std::initializer_list<T> items)
+        : _items(items) {}
+
+    template <typename S>
+    inline friend bool operator==(const S &lhs, const one_of<T> &rhs) noexcept {
+        for (auto &item: rhs._items) {
+            if (lhs == item) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+};
 
 /** Determines the address of the actual string content */
 inline const void *data_address(const String &s) {
@@ -538,4 +570,28 @@ TEST_SUITE("Value stringification") {
         }
     }
     // clang-format on
+
+    TEST_CASE("Array-like containers") {
+        CHECK(toString(std::array<int, 0u>{}) == "{}");
+        CHECK(toString(std::array<int, 1u>{}) == "{0}");
+        CHECK(toString(std::array<int, 2u>{}) == "{0, 0}");
+    }
+
+    TEST_CASE_TEMPLATE("List-like containers", Container, std::vector<int>, std::list<int>, std::deque<int>) {
+        CHECK(toString(Container{}) == "{}");
+        CHECK(toString(Container{1}) == "{1}");
+        CHECK(toString(Container{1, 2}) == "{1, 2}");
+    }
+
+    TEST_CASE_TEMPLATE("Set-like containers", Container, std::set<int>, std::unordered_set<int>) {
+        CHECK(toString(Container{}) == "{}");
+        CHECK(toString(Container{1}) == "{1}");
+        CHECK(toString(Container{1, 2}) == one_of<String>{"{1, 2}", "{2, 1}"});
+    }
+
+    TEST_CASE_TEMPLATE("Map-like containers", Container, std::map<int, int>, std::unordered_map<int, int>) {
+        CHECK(toString(Container{}) == "{}");
+        CHECK(toString(Container{{1, 3}}) == "{{1, 3}}");
+        CHECK(toString(Container{{1, 3}, {2, 4}}) == one_of<String>{"{{1, 3}, {2, 4}}", "{{2, 4}, {1, 3}}"});
+    }
 }
