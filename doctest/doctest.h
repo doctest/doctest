@@ -5578,7 +5578,7 @@ int Context::run() {
             // random_shuffle implementation
             const auto first = &testArray[0];
             for (size_t i = testArray.size() - 1; i > 0; --i) {
-                int idxToSwap = std::rand() % (i + 1);
+                int idxToSwap = static_cast<int>(std::rand() % (i + 1));
 
                 const auto temp = first[i];
 
@@ -6366,7 +6366,7 @@ reporterMap &getListeners() {
 DOCTEST_DEFINE_INTERFACE(IReporter)
 
 int IReporter::get_num_active_contexts() {
-    return detail::g_infoContexts.size();
+    return static_cast<int>(detail::g_infoContexts.size());
 }
 
 const IContextScope *const *IReporter::get_active_contexts() {
@@ -6374,7 +6374,7 @@ const IContextScope *const *IReporter::get_active_contexts() {
 }
 
 int IReporter::get_num_stringified_contexts() {
-    return detail::g_cs->stringifiedContexts.size();
+    return static_cast<int>(detail::g_cs->stringifiedContexts.size());
 }
 
 const String *IReporter::get_stringified_contexts() {
@@ -6523,7 +6523,7 @@ void ConsoleReporter::logTestStart() {
         return;
 
     separator_to_stream();
-    file_line_to_stream(tc->m_file.c_str(), tc->m_line, "\n");
+    file_line_to_stream(tc->m_file.c_str(), static_cast<int>(tc->m_line), "\n");
     if (tc->m_description)
         s << Color::Yellow << "DESCRIPTION: " << Color::None << tc->m_description << "\n";
     if (tc->m_test_suite && tc->m_test_suite[0] != '\0')
@@ -6766,7 +6766,7 @@ void ConsoleReporter::test_run_end(const TestRunStats &p) {
       << (p.numTestCasesFailed > 0 ? Color::Red : Color::None) << std::setw(failwidth) << p.numTestCasesFailed
       << " failed" << Color::None << " |";
     if (opt.no_skipped_summary == false) {
-        const int numSkipped = p.numTestCases - p.numTestCasesPassingFilters;
+        const unsigned int numSkipped = p.numTestCases - p.numTestCasesPassingFilters;
         s << " " << (numSkipped == 0 ? Color::None : Color::Yellow) << numSkipped << " skipped" << Color::None;
     }
     s << "\n";
@@ -6836,7 +6836,7 @@ void ConsoleReporter::test_case_exception(const TestCaseException &e) {
 
     logTestStart();
 
-    file_line_to_stream(tc->m_file.c_str(), tc->m_line, " ");
+    file_line_to_stream(tc->m_file.c_str(), static_cast<int>(tc->m_line), " ");
     successOrFailColoredStringToStream(false, e.is_crash ? assertType::is_require : assertType::is_check);
     s << Color::Red << (e.is_crash ? "test case CRASHED: " : "test case THREW exception: ");
     s << Color::Cyan << e.error_string << "\n";

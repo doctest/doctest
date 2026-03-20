@@ -47,7 +47,7 @@ reporterMap &getListeners() {
 DOCTEST_DEFINE_INTERFACE(IReporter)
 
 int IReporter::get_num_active_contexts() {
-    return detail::g_infoContexts.size();
+    return static_cast<int>(detail::g_infoContexts.size());
 }
 
 const IContextScope *const *IReporter::get_active_contexts() {
@@ -55,7 +55,7 @@ const IContextScope *const *IReporter::get_active_contexts() {
 }
 
 int IReporter::get_num_stringified_contexts() {
-    return detail::g_cs->stringifiedContexts.size();
+    return static_cast<int>(detail::g_cs->stringifiedContexts.size());
 }
 
 const String *IReporter::get_stringified_contexts() {
