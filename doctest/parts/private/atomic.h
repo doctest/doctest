@@ -74,6 +74,7 @@ public:
         return result;
     }
 
+    // NOLINTNEXTLINE(cppcoreguidelines-c-copy-assignment-signature)
     T operator=(T desired) DOCTEST_NOEXCEPT {
         store(desired);
         return desired;
