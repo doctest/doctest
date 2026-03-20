@@ -12,7 +12,7 @@ std::string JUnitReporter::JUnitTestCaseData::getCurrentTimestamp() {
     // Beware, this is not reentrant because of backward compatibility issues
     // Also, UTC only, again because of backward compatibility (%z is C++11)
     time_t rawtime;
-    std::time(&rawtime);
+    static_cast<void>(std::time(&rawtime));
     const auto timeStampSize = sizeof("2017-01-16T17:06:45Z");
 
     std::tm timeInfo;
@@ -27,7 +27,7 @@ std::string JUnitReporter::JUnitTestCaseData::getCurrentTimestamp() {
     char timeStamp[timeStampSize];
     const char *const fmt = "%Y-%m-%dT%H:%M:%SZ";
 
-    std::strftime(timeStamp, timeStampSize, fmt, &timeInfo);
+    static_cast<void>(std::strftime(timeStamp, timeStampSize, fmt, &timeInfo));
     return std::string(timeStamp);
 }
 

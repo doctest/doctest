@@ -67,7 +67,7 @@ inline void cleanup() {
     ) /* SIG_DFL=0, but is the correct way to de-register a handler */
 #endif
 
-    signal(SIGTRAP, SIG_DFL);
+    static_cast<void>(signal(SIGTRAP, SIG_DFL));
 
 #if DOCTEST_CLANG >= DOCTEST_COMPILER(5, 0, 0)
     DOCTEST_CLANG_SUPPRESS_WARNING_POP
