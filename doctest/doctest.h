@@ -8445,8 +8445,8 @@ TestCase::TestCase(const TestCase &other) noexcept // NOLINT(bugprone-copy-const
     *this = other;
 }
 
-DOCTEST_MSVC_SUPPRESS_WARNING_WITH_PUSH(26434) // hides a non-virtual function
-TestCase &TestCase::operator=(const TestCase &other) noexcept {
+DOCTEST_MSVC_SUPPRESS_WARNING_WITH_PUSH(26434)                  // hides a non-virtual function
+TestCase &TestCase::operator=(const TestCase &other) noexcept { // NOLINT(cert-oop54-cpp)
     TestCaseData::operator=(other);
     m_test = other.m_test;
     m_type = other.m_type;
