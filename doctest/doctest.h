@@ -8125,6 +8125,7 @@ String &String::operator=(String &&other) noexcept {
 }
 
 char String::operator[](size_type i) const {
+    // NOLINTNEXTLINE(cppcoreguidelines-pro-type-const-cast)
     return const_cast<String *>(this)->operator[](i);
 }
 
