@@ -4479,7 +4479,8 @@ ResultBuilder::ResultBuilder(
     const char *exception_type,
     const String &exception_string
 )
-    : AssertData(at, file, line, expr, exception_type, exception_string) {}
+    : AssertData(at, file, line, expr, exception_type, exception_string) {
+} // NOLINT(clang-analyzer-cplusplus.NewDeleteLeaks)
 
 ResultBuilder::ResultBuilder(
     assertType::Enum at,
@@ -8016,7 +8017,7 @@ void String::copy(const String &other) {
     } else {
         memcpy(allocate(other.data.size), other.data.ptr, other.data.size);
     }
-}
+} // NOLINT(clang-analyzer-cplusplus.NewDeleteLeaks)
 
 String::String() noexcept {
     buf[0] = '\0';

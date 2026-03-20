@@ -21,7 +21,8 @@ ResultBuilder::ResultBuilder(
     const char *exception_type,
     const String &exception_string
 )
-    : AssertData(at, file, line, expr, exception_type, exception_string) {}
+    : AssertData(at, file, line, expr, exception_type, exception_string) {
+} // NOLINT(clang-analyzer-cplusplus.NewDeleteLeaks)
 
 ResultBuilder::ResultBuilder(
     assertType::Enum at,
