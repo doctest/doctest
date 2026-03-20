@@ -11,7 +11,7 @@ namespace doctest {
 std::string JUnitReporter::JUnitTestCaseData::getCurrentTimestamp() {
     // Beware, this is not reentrant because of backward compatibility issues
     // Also, UTC only, again because of backward compatibility (%z is C++11)
-    time_t rawtime;
+    time_t rawtime{};
     static_cast<void>(std::time(&rawtime));
     const auto timeStampSize = sizeof("2017-01-16T17:06:45Z");
 
