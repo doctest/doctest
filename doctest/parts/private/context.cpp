@@ -412,7 +412,7 @@ private:
     } discardBuf;
 
 public:
-    DiscardOStream()
+    DiscardOStream() noexcept
         : std::ostream(&discardBuf) {}
 } discardOut;
 

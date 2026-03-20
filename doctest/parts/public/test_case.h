@@ -43,32 +43,32 @@ struct DOCTEST_INTERFACE TestCase : public TestCaseData {
         const TestSuite &test_suite,
         const String &type = String(),
         int template_id = -1
-    );
+    ) noexcept;
 
-    TestCase(const TestCase &other);
+    TestCase(const TestCase &other) noexcept;
     TestCase(TestCase &&) = delete;
 
     DOCTEST_MSVC_SUPPRESS_WARNING_WITH_PUSH(26434) // hides a non-virtual function
-    TestCase &operator=(const TestCase &other);
+    TestCase &operator=(const TestCase &other) noexcept;
     DOCTEST_MSVC_SUPPRESS_WARNING_POP
 
     TestCase &operator=(TestCase &&) = delete;
 
-    TestCase &operator*(const char *in);
+    TestCase &operator*(const char *in) noexcept;
 
     template <typename T>
-    TestCase &operator*(const T &in) {
+    TestCase &operator*(const T &in) noexcept {
         in.fill(*this);
         return *this;
     }
 
-    bool operator<(const TestCase &other) const;
+    bool operator<(const TestCase &other) const noexcept;
 
     ~TestCase() = default;
 };
 
 // forward declarations of functions used by the macros
-DOCTEST_INTERFACE int regTest(const TestCase &tc);
+DOCTEST_INTERFACE int regTest(const TestCase &tc) noexcept;
 
 } // namespace detail
 #endif // DOCTEST_CONFIG_DISABLE

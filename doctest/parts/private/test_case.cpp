@@ -15,7 +15,7 @@ std::set<TestCase> &getRegisteredTests() {
 
 TestCase::TestCase(
     funcType test, const char *file, unsigned line, const TestSuite &test_suite, const String &type, int template_id
-) {
+) noexcept {
     m_file = file;
     m_line = line;
     m_name = nullptr; // will be later overridden in operator*
@@ -34,13 +34,13 @@ TestCase::TestCase(
     m_template_id = template_id;
 }
 
-TestCase::TestCase(const TestCase &other) // NOLINT(bugprone-copy-constructor-init)
+TestCase::TestCase(const TestCase &other) noexcept // NOLINT(bugprone-copy-constructor-init)
     : TestCaseData() {
     *this = other;
 }
 
 DOCTEST_MSVC_SUPPRESS_WARNING_WITH_PUSH(26434) // hides a non-virtual function
-TestCase &TestCase::operator=(const TestCase &other) {
+TestCase &TestCase::operator=(const TestCase &other) noexcept {
     TestCaseData::operator=(other);
     m_test = other.m_test;
     m_type = other.m_type;
@@ -53,7 +53,7 @@ TestCase &TestCase::operator=(const TestCase &other) {
 }
 DOCTEST_MSVC_SUPPRESS_WARNING_POP
 
-TestCase &TestCase::operator*(const char *in) {
+TestCase &TestCase::operator*(const char *in) noexcept {
     m_name = in;
     // make a new name with an appended type for templated test case
     if (m_template_id != -1) {
@@ -64,7 +64,7 @@ TestCase &TestCase::operator*(const char *in) {
     return *this;
 }
 
-bool TestCase::operator<(const TestCase &other) const {
+bool TestCase::operator<(const TestCase &other) const noexcept {
     // this will be used only to differentiate between test cases - not relevant for sorting
     if (m_line != other.m_line)
         return m_line < other.m_line;
@@ -78,7 +78,7 @@ bool TestCase::operator<(const TestCase &other) const {
 }
 
 // used by the macros for registering tests
-int regTest(const TestCase &tc) {
+int regTest(const TestCase &tc) noexcept {
     getRegisteredTests().insert(tc);
     return 0;
 }

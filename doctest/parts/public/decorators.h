@@ -10,12 +10,12 @@ namespace doctest {
 #define DOCTEST_DEFINE_DECORATOR(name, type, def)                                                                      \
     struct name {                                                                                                      \
         type data;                                                                                                     \
-        name(type in = def)                                                                                            \
+        name(type in = def) noexcept                                                                                   \
             : data(in) {}                                                                                              \
-        void fill(detail::TestCase &state) const {                                                                     \
+        void fill(detail::TestCase &state) const noexcept {                                                            \
             state.DOCTEST_CAT(m_, name) = data;                                                                        \
         }                                                                                                              \
-        void fill(detail::TestSuite &state) const {                                                                    \
+        void fill(detail::TestSuite &state) const noexcept {                                                           \
             state.DOCTEST_CAT(m_, name) = data;                                                                        \
         }                                                                                                              \
     }

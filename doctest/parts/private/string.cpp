@@ -6,7 +6,7 @@ DOCTEST_SUPPRESS_PRIVATE_WARNINGS_PUSH
 namespace doctest {
 namespace detail {
 
-DOCTEST_THREAD_LOCAL class {
+DOCTEST_THREAD_LOCAL class oss {
     std::vector<std::streampos> stack;
     std::stringstream ss;
 
@@ -26,7 +26,7 @@ public:
         ss.rdbuf()->pubseekpos(pos, std::ios::in | std::ios::out);
         return String(ss, sz);
     }
-} g_oss;
+} g_oss; // NOLINT(cert-err58-cpp)
 
 std::ostream *tlssPush() {
     return g_oss.push();

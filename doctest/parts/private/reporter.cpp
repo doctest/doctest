@@ -33,12 +33,12 @@ int registerReporter(const char *, int, IReporter *) {
 #else
 
 namespace detail {
-reporterMap &getReporters() {
+reporterMap &getReporters() noexcept {
     static reporterMap data;
     return data;
 }
 
-reporterMap &getListeners() {
+reporterMap &getListeners() noexcept {
     static reporterMap data;
     return data;
 }
@@ -63,7 +63,7 @@ const String *IReporter::get_stringified_contexts() {
 }
 
 namespace detail {
-void registerReporterImpl(const char *name, int priority, reporterCreatorFunc c, bool isReporter) {
+void registerReporterImpl(const char *name, int priority, reporterCreatorFunc c, bool isReporter) noexcept {
     if (isReporter)
         getReporters().insert(reporterMap::value_type(reporterMap::key_type(priority, name), c));
     else
