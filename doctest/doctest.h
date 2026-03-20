@@ -922,6 +922,7 @@ public:
 
     char *c_str() {
         if (isOnStack()) {
+            // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
             return reinterpret_cast<char *>(buf);
         }
         return data.ptr;
@@ -1207,8 +1208,10 @@ struct filldata<T *> {
         filldata<const volatile void *>::fill(
             stream,
 #if DOCTEST_GCC == 0 || DOCTEST_GCC >= DOCTEST_COMPILER(4, 9, 0)
+            // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
             reinterpret_cast<const volatile void *>(in)
 #else
+            // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
             *reinterpret_cast<const volatile void *const *>(&in)
 #endif // DOCTEST_GCC
         );
@@ -7996,6 +7999,7 @@ char *String::allocate(size_type sz) {
 }
 
 void String::setOnHeap() noexcept {
+    // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
     *reinterpret_cast<unsigned char *>(&buf[last]) = 128;
 }
 
@@ -8131,6 +8135,7 @@ char String::operator[](size_type i) const {
 
 char &String::operator[](size_type i) {
     if (isOnStack())
+        // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
         return reinterpret_cast<char *>(buf)[i];
     return data.ptr[i];
 }

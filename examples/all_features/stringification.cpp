@@ -67,7 +67,7 @@ TEST_CASE("no headers") {
 
     char *cptr = reinterpret_cast<char *>(ints + 4); // NOLINT
     const char *ccptr = cptr;
-    void *vptr = reinterpret_cast<void *>(cptr);
+    void *vptr = reinterpret_cast<void *>(cptr); // NOLINT
     CHECK(doctest::toString(cptr) == doctest::toString(ccptr));
     CHECK(doctest::toString(ccptr) == doctest::toString(vptr));
 

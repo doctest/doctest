@@ -63,6 +63,7 @@ char *String::allocate(size_type sz) {
 }
 
 void String::setOnHeap() noexcept {
+    // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
     *reinterpret_cast<unsigned char *>(&buf[last]) = 128;
 }
 
@@ -198,6 +199,7 @@ char String::operator[](size_type i) const {
 
 char &String::operator[](size_type i) {
     if (isOnStack())
+        // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
         return reinterpret_cast<char *>(buf)[i];
     return data.ptr[i];
 }
