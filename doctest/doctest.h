@@ -5191,7 +5191,7 @@ bool parseCommaSepArgs(int argc, const char *const *argv, const char *pattern, s
         auto flush = [&s, &res]() {
             auto string = s.str();
             if (string.size() > 0) {
-                res.push_back(string.c_str());
+                res.emplace_back(string.c_str());
             }
             s.str("");
         };
@@ -5814,7 +5814,7 @@ void ContextScopeBase::destroy() {
 #endif
         std::ostringstream s;
         this->stringify(&s);
-        g_cs->stringifiedContexts.push_back(s.str().c_str());
+        g_cs->stringifiedContexts.emplace_back(s.str().c_str());
     }
     g_infoContexts.pop_back();
 }

@@ -128,7 +128,7 @@ bool parseCommaSepArgs(int argc, const char *const *argv, const char *pattern, s
         auto flush = [&s, &res]() {
             auto string = s.str();
             if (string.size() > 0) {
-                res.push_back(string.c_str());
+                res.emplace_back(string.c_str());
             }
             s.str("");
         };
