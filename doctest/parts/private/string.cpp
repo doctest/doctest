@@ -47,6 +47,8 @@ static int stricmp(const char *a, const char *b) {
     }
 }
 
+// NOLINTBEGIN(cppcoreguidelines-pro-type-union-access)
+
 char *String::allocate(size_type sz) {
     if (sz <= last) {
         buf[sz] = '\0';
@@ -390,6 +392,8 @@ String toString(long long in) {
 String toString(long long unsigned in) {
     return detail::toStreamLit(in);
 }
+
+// NOLINTEND(cppcoreguidelines-pro-type-union-access)
 
 } // namespace doctest
 

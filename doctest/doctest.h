@@ -884,6 +884,7 @@ private:
     char *allocate(size_type sz);
 
     bool isOnStack() const noexcept {
+        // NOLINTNEXTLINE(cppcoreguidelines-pro-type-union-access)
         return (buf[last] & 128) == 0;
     }
 
@@ -920,6 +921,7 @@ public:
         return const_cast<String *>(this)->c_str(); // NOLINT
     }
 
+    // NOLINTBEGIN(cppcoreguidelines-pro-type-union-access)
     char *c_str() {
         if (isOnStack()) {
             // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
@@ -927,6 +929,7 @@ public:
         }
         return data.ptr;
     }
+    // NOLINTEND(cppcoreguidelines-pro-type-union-access)
 
     size_type size() const;
     size_type capacity() const;
@@ -7983,6 +7986,8 @@ static int stricmp(const char *a, const char *b) {
     }
 }
 
+// NOLINTBEGIN(cppcoreguidelines-pro-type-union-access)
+
 char *String::allocate(size_type sz) {
     if (sz <= last) {
         buf[sz] = '\0';
@@ -8326,6 +8331,8 @@ String toString(long long in) {
 String toString(long long unsigned in) {
     return detail::toStreamLit(in);
 }
+
+// NOLINTEND(cppcoreguidelines-pro-type-union-access)
 
 } // namespace doctest
 
