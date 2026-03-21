@@ -66,11 +66,11 @@ inline std::string dedent(const std::string &text) noexcept {
     // To support multiline raw-strings, we need to skip the first/last blank line
     auto lines = split(text);
 
-    if ((lines.size() > 0) && is_blank(lines.front())) {
+    if (!lines.empty() && is_blank(lines.front())) {
         lines.erase(lines.begin());
     }
 
-    if ((lines.size() > 0) && is_blank(lines.back())) {
+    if (!lines.empty() && is_blank(lines.back())) {
         lines.erase(lines.end() - 1);
     }
 

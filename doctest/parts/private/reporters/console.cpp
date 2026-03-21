@@ -236,7 +236,7 @@ void ConsoleReporter::printHelp() {
 void ConsoleReporter::printRegisteredReporters() {
     printVersion();
     auto printReporters = [this](const detail::reporterMap &reporters, const char *type) {
-        if (reporters.size()) {
+        if (!reporters.empty()) {
             s << Color::Cyan << "[doctest] " << Color::None << "listing all registered " << type << "\n";
             for (auto &curr: reporters)
                 s << "priority: " << std::setw(5) << curr.first.first << " name: " << curr.first.second << "\n";

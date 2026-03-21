@@ -127,7 +127,7 @@ bool parseCommaSepArgs(int argc, const char *const *argv, const char *pattern, s
         std::ostringstream s;
         auto flush = [&s, &res]() {
             auto string = s.str();
-            if (string.size() > 0) {
+            if (!string.empty()) {
                 res.emplace_back(string.c_str());
             }
             s.str("");
