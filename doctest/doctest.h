@@ -4084,7 +4084,7 @@ public:
         return result;
     }
 
-    // NOLINTNEXTLINE(cppcoreguidelines-c-copy-assignment-signature)
+    // NOLINTNEXTLINE(cppcoreguidelines-c-copy-assignment-signature, misc-unconventional-assign-operator)
     T operator=(T desired) DOCTEST_NOEXCEPT {
         store(desired);
         return desired;
