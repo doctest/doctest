@@ -4840,9 +4840,9 @@ struct ConsoleReporter : public IReporter {
 
     void separator_to_stream();
 
-    const char *getSuccessOrFailString(bool success, assertType::Enum at, const char *success_str);
+    static const char *getSuccessOrFailString(bool success, assertType::Enum at, const char *success_str);
 
-    Color::Enum getSuccessOrFailColor(bool success, assertType::Enum at);
+    static Color::Enum getSuccessOrFailColor(bool success, assertType::Enum at);
 
     void successOrFailColoredStringToStream(bool success, assertType::Enum at, const char *success_str = "SUCCESS");
 
@@ -5079,6 +5079,7 @@ bool is_running_in_test = false;
 
 #ifdef DOCTEST_CONFIG_DISABLE
 
+// NOLINTBEGIN(readability-convert-member-functions-to-static)
 Context::Context(int, const char *const *) {}
 Context::~Context() = default;
 void Context::applyCommandLine(int, const char *const *) {}
@@ -5096,6 +5097,7 @@ void Context::setCout(std::ostream *) {}
 int Context::run() {
     return 0;
 }
+// NOLINTEND(readability-convert-member-functions-to-static)
 
 #else
 
@@ -7179,7 +7181,7 @@ struct JUnitReporter : public IReporter {
 
     void test_case_skipped(const TestCaseData &) override;
 
-    void log_contexts(std::ostringstream &s);
+    static void log_contexts(std::ostringstream &s);
 };
 
 DOCTEST_REGISTER_REPORTER("junit", 0, JUnitReporter);

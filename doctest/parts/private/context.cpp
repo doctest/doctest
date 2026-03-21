@@ -16,6 +16,7 @@ bool is_running_in_test = false;
 
 #ifdef DOCTEST_CONFIG_DISABLE
 
+// NOLINTBEGIN(readability-convert-member-functions-to-static)
 Context::Context(int, const char *const *) {}
 Context::~Context() = default;
 void Context::applyCommandLine(int, const char *const *) {}
@@ -33,6 +34,7 @@ void Context::setCout(std::ostream *) {}
 int Context::run() {
     return 0;
 }
+// NOLINTEND(readability-convert-member-functions-to-static)
 
 #else
 
