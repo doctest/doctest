@@ -638,9 +638,10 @@ int Context::run() {
        // static method)
                     DOCTEST_MSVC_SUPPRESS_WARNING_WITH_PUSH(4101) // unreferenced local variable
                     FatalConditionHandler fatalConditionHandler;  // Handle signals
+                    static_cast<void>(fatalConditionHandler);
                     // execute the test
                     tc.m_test();
-                    fatalConditionHandler.reset();
+                    FatalConditionHandler::reset();
                     DOCTEST_MSVC_SUPPRESS_WARNING_POP
 #ifndef DOCTEST_CONFIG_NO_EXCEPTIONS
                 } catch (const TestFailureException &) {
