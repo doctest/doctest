@@ -522,7 +522,7 @@ int Context::run() {
             std::srand(p->rand_seed);
 
             // random_shuffle implementation
-            const auto first = &testArray[0];
+            const auto first = testArray.data();
             for (size_t i = testArray.size() - 1; i > 0; --i) {
                 // NOLINTNEXTLINE(cert-msc30-c, cert-msc50-cpp, concurrency-mt-unsafe)
                 int idxToSwap = static_cast<int>(std::rand() % (i + 1));

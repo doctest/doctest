@@ -51,7 +51,7 @@ int IReporter::get_num_active_contexts() {
 }
 
 const IContextScope *const *IReporter::get_active_contexts() {
-    return get_num_active_contexts() ? &detail::g_infoContexts[0] : nullptr;
+    return get_num_active_contexts() ? detail::g_infoContexts.data() : nullptr;
 }
 
 int IReporter::get_num_stringified_contexts() {
@@ -59,7 +59,7 @@ int IReporter::get_num_stringified_contexts() {
 }
 
 const String *IReporter::get_stringified_contexts() {
-    return get_num_stringified_contexts() ? &detail::g_cs->stringifiedContexts[0] : nullptr;
+    return get_num_stringified_contexts() ? detail::g_cs->stringifiedContexts.data() : nullptr;
 }
 
 namespace detail {

@@ -5585,7 +5585,7 @@ int Context::run() {
             std::srand(p->rand_seed);
 
             // random_shuffle implementation
-            const auto first = &testArray[0];
+            const auto first = testArray.data();
             for (size_t i = testArray.size() - 1; i > 0; --i) {
                 // NOLINTNEXTLINE(cert-msc30-c, cert-msc50-cpp, concurrency-mt-unsafe)
                 int idxToSwap = static_cast<int>(std::rand() % (i + 1));
@@ -6380,7 +6380,7 @@ int IReporter::get_num_active_contexts() {
 }
 
 const IContextScope *const *IReporter::get_active_contexts() {
-    return get_num_active_contexts() ? &detail::g_infoContexts[0] : nullptr;
+    return get_num_active_contexts() ? detail::g_infoContexts.data() : nullptr;
 }
 
 int IReporter::get_num_stringified_contexts() {
@@ -6388,7 +6388,7 @@ int IReporter::get_num_stringified_contexts() {
 }
 
 const String *IReporter::get_stringified_contexts() {
-    return get_num_stringified_contexts() ? &detail::g_cs->stringifiedContexts[0] : nullptr;
+    return get_num_stringified_contexts() ? detail::g_cs->stringifiedContexts.data() : nullptr;
 }
 
 namespace detail {
