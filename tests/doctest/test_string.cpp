@@ -40,7 +40,7 @@ public:
 
 /** Determines the address of the actual string content */
 inline const void *data_address(const String &s) {
-    return reinterpret_cast<const void *>(s.c_str());
+    return reinterpret_cast<const void *>(s.c_str()); // NOLINT
 }
 /**
  * Determines if the String object is on the stack,
@@ -48,7 +48,7 @@ inline const void *data_address(const String &s) {
  * This is mostly to check we're hitting small-string optimizations
  */
 inline bool is_on_stack(const String &s) {
-    return reinterpret_cast<const void *>(&s) == data_address(s);
+    return reinterpret_cast<const void *>(&s) == data_address(s); // NOLINT
 }
 
 /** Convenience alias for !is_on_stack */

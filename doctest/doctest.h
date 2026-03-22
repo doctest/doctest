@@ -884,6 +884,7 @@ private:
     char *allocate(size_type sz);
 
     bool isOnStack() const noexcept {
+        // NOLINTNEXTLINE(cppcoreguidelines-pro-type-union-access)
         return (buf[last] & 128) == 0;
     }
 
@@ -920,12 +921,15 @@ public:
         return const_cast<String *>(this)->c_str(); // NOLINT
     }
 
+    // NOLINTBEGIN(cppcoreguidelines-pro-type-union-access)
     char *c_str() {
         if (isOnStack()) {
+            // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
             return reinterpret_cast<char *>(buf);
         }
         return data.ptr;
     }
+    // NOLINTEND(cppcoreguidelines-pro-type-union-access)
 
     size_type size() const;
     size_type capacity() const;
@@ -1207,8 +1211,10 @@ struct filldata<T *> {
         filldata<const volatile void *>::fill(
             stream,
 #if DOCTEST_GCC == 0 || DOCTEST_GCC >= DOCTEST_COMPILER(4, 9, 0)
+            // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
             reinterpret_cast<const volatile void *>(in)
 #else
+            // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
             *reinterpret_cast<const volatile void *const *>(&in)
 #endif // DOCTEST_GCC
         );
@@ -2127,17 +2133,17 @@ struct DOCTEST_INTERFACE TestSuite {
     int m_expected_failures = 0;
     double m_timeout = 0;
 
-    TestSuite &operator*(const char *in);
+    TestSuite &operator*(const char *in) noexcept;
 
     template <typename T>
-    TestSuite &operator*(const T &in) {
+    TestSuite &operator*(const T &in) noexcept {
         in.fill(*this);
         return *this;
     }
 };
 
 // forward declarations of functions used by the macros
-DOCTEST_INTERFACE int setTestSuite(const TestSuite &ts);
+DOCTEST_INTERFACE int setTestSuite(const TestSuite &ts) noexcept;
 
 } // namespace detail
 
@@ -2146,7 +2152,7 @@ DOCTEST_INTERFACE int setTestSuite(const TestSuite &ts);
 // in a separate namespace outside of doctest because the DOCTEST_TEST_SUITE macro
 // introduces an anonymous namespace in which getCurrentTestSuite gets overridden
 namespace doctest_detail_test_suite_ns {
-DOCTEST_INTERFACE doctest::detail::TestSuite &getCurrentTestSuite();
+DOCTEST_INTERFACE doctest::detail::TestSuite &getCurrentTestSuite() noexcept;
 
 // this is here to clear the 'current test suite' for the current translation unit - at the top
 DOCTEST_GLOBAL_NO_WARNINGS(/* NOLINT(cert-err58-cpp) */
@@ -2204,32 +2210,32 @@ struct DOCTEST_INTERFACE TestCase : public TestCaseData {
         const TestSuite &test_suite,
         const String &type = String(),
         int template_id = -1
-    );
+    ) noexcept;
 
-    TestCase(const TestCase &other);
+    TestCase(const TestCase &other) noexcept;
     TestCase(TestCase &&) = delete;
 
     DOCTEST_MSVC_SUPPRESS_WARNING_WITH_PUSH(26434) // hides a non-virtual function
-    TestCase &operator=(const TestCase &other);
+    TestCase &operator=(const TestCase &other) noexcept;
     DOCTEST_MSVC_SUPPRESS_WARNING_POP
 
     TestCase &operator=(TestCase &&) = delete;
 
-    TestCase &operator*(const char *in);
+    TestCase &operator*(const char *in) noexcept;
 
     template <typename T>
-    TestCase &operator*(const T &in) {
+    TestCase &operator*(const T &in) noexcept {
         in.fill(*this);
         return *this;
     }
 
-    bool operator<(const TestCase &other) const;
+    bool operator<(const TestCase &other) const noexcept;
 
     ~TestCase() = default;
 };
 
 // forward declarations of functions used by the macros
-DOCTEST_INTERFACE int regTest(const TestCase &tc);
+DOCTEST_INTERFACE int regTest(const TestCase &tc) noexcept;
 
 } // namespace detail
 #endif // DOCTEST_CONFIG_DISABLE
@@ -2250,12 +2256,12 @@ namespace doctest {
 #define DOCTEST_DEFINE_DECORATOR(name, type, def)                                                                      \
     struct name {                                                                                                      \
         type data;                                                                                                     \
-        name(type in = def)                                                                                            \
+        name(type in = def) noexcept                                                                                   \
             : data(in) {}                                                                                              \
-        void fill(detail::TestCase &state) const {                                                                     \
+        void fill(detail::TestCase &state) const noexcept {                                                            \
             state.DOCTEST_CAT(m_, name) = data;                                                                        \
         }                                                                                                              \
-        void fill(detail::TestSuite &state) const {                                                                    \
+        void fill(detail::TestSuite &state) const noexcept {                                                           \
             state.DOCTEST_CAT(m_, name) = data;                                                                        \
         }                                                                                                              \
     }
@@ -2294,7 +2300,7 @@ struct DOCTEST_INTERFACE IExceptionTranslator {
 template <typename T>
 class ExceptionTranslator : public IExceptionTranslator {
 public:
-    explicit ExceptionTranslator(String (*translateFunction)(T))
+    explicit ExceptionTranslator(String (*translateFunction)(T)) noexcept
         : m_translateFunction(translateFunction) {}
 
     bool translate(String &res) const override {
@@ -2314,7 +2320,7 @@ private:
     String (*m_translateFunction)(T);
 };
 
-DOCTEST_INTERFACE void registerExceptionTranslatorImpl(const IExceptionTranslator *et);
+DOCTEST_INTERFACE void registerExceptionTranslatorImpl(const IExceptionTranslator *et) noexcept;
 
 #endif // DOCTEST_CONFIG_DISABLE
 
@@ -2323,7 +2329,7 @@ DOCTEST_INTERFACE void registerExceptionTranslatorImpl(const IExceptionTranslato
 #ifndef DOCTEST_CONFIG_DISABLE
 
 template <typename T>
-int registerExceptionTranslator(String (*translateFunction)(T)) {
+int registerExceptionTranslator(String (*translateFunction)(T)) noexcept {
     DOCTEST_CLANG_SUPPRESS_WARNING_WITH_PUSH("-Wexit-time-destructors")
     static detail::ExceptionTranslator<T> exceptionTranslator(translateFunction);
     DOCTEST_CLANG_SUPPRESS_WARNING_POP
@@ -2334,7 +2340,7 @@ int registerExceptionTranslator(String (*translateFunction)(T)) {
 #else // DOCTEST_CONFIG_DISABLE
 
 template <typename T>
-int registerExceptionTranslator(String (*)(T)) {
+int registerExceptionTranslator(String (*)(T)) noexcept {
     return 0;
 }
 
@@ -2777,7 +2783,8 @@ struct DOCTEST_INTERFACE IReporter {
 namespace detail {
 using reporterCreatorFunc = IReporter *(*)(const ContextOptions &);
 
-DOCTEST_INTERFACE void registerReporterImpl(const char *name, int prio, reporterCreatorFunc c, bool isReporter);
+DOCTEST_INTERFACE void
+registerReporterImpl(const char *name, int prio, reporterCreatorFunc c, bool isReporter) noexcept;
 
 template <typename Reporter>
 IReporter *reporterCreator(const ContextOptions &o) {
@@ -2786,7 +2793,7 @@ IReporter *reporterCreator(const ContextOptions &o) {
 } // namespace detail
 
 template <typename Reporter>
-int registerReporter(const char *name, int priority, bool isReporter) {
+int registerReporter(const char *name, int priority, bool isReporter) noexcept {
     detail::registerReporterImpl(name, priority, detail::reporterCreator<Reporter>, isReporter);
     return 0;
 }
@@ -2805,7 +2812,7 @@ DOCTEST_SUPPRESS_PUBLIC_WARNINGS_PUSH
 namespace doctest {
 namespace detail {
 template <typename T>
-int instantiationHelper(const T &) {
+int instantiationHelper(const T &) noexcept {
     return 0;
 }
 
@@ -2932,7 +2939,7 @@ int instantiationHelper(const T &) {
     struct iter;                                                                                                       \
     template <typename Type, typename... Rest>                                                                         \
     struct iter<std::tuple<Type, Rest...>> {                                                                           \
-        iter(const char *file, unsigned line, int index) {                                                             \
+        iter(const char *file, unsigned line, int index) noexcept {                                                    \
             doctest::detail::regTest(                                                                                  \
                 doctest::detail::TestCase(                                                                             \
                     func<Type>,                                                                                        \
@@ -4053,7 +4060,7 @@ public:
         return fetch_add(1) + 1;
     }
 
-    T operator++(int) DOCTEST_NOEXCEPT {
+    T operator++(int) DOCTEST_NOEXCEPT { // NOLINT(cert-dcl21-cpp)
         return fetch_add(1);
     }
 
@@ -4077,6 +4084,7 @@ public:
         return result;
     }
 
+    // NOLINTNEXTLINE(cppcoreguidelines-c-copy-assignment-signature, misc-unconventional-assign-operator)
     T operator=(T desired) DOCTEST_NOEXCEPT {
         store(desired);
         return desired;
@@ -4285,8 +4293,8 @@ namespace detail {
 // reporter with a duplicate name and a different priority but hopefully that won't happen often :|
 using reporterMap = std::map<std::pair<int, String>, detail::reporterCreatorFunc>;
 
-reporterMap &getReporters();
-reporterMap &getListeners();
+reporterMap &getReporters() noexcept;
+reporterMap &getListeners() noexcept;
 } // namespace detail
 
 #define DOCTEST_ITERATE_THROUGH_REPORTERS(function, ...)                                                               \
@@ -4448,8 +4456,8 @@ DOCTEST_SUPPRESS_PRIVATE_WARNINGS_PUSH
 namespace doctest {
 namespace detail {
 
-std::vector<const IExceptionTranslator *> &getExceptionTranslators();
-String translateActiveException();
+std::vector<const IExceptionTranslator *> &getExceptionTranslators() noexcept;
+String translateActiveException() noexcept;
 
 } // namespace detail
 } // namespace doctest
@@ -4478,7 +4486,8 @@ ResultBuilder::ResultBuilder(
     const char *exception_type,
     const String &exception_string
 )
-    : AssertData(at, file, line, expr, exception_type, exception_string) {}
+    : AssertData(at, file, line, expr, exception_type, exception_string) {
+} // NOLINT(clang-analyzer-cplusplus.NewDeleteLeaks)
 
 ResultBuilder::ResultBuilder(
     assertType::Enum at,
@@ -4831,9 +4840,9 @@ struct ConsoleReporter : public IReporter {
 
     void separator_to_stream();
 
-    const char *getSuccessOrFailString(bool success, assertType::Enum at, const char *success_str);
+    static const char *getSuccessOrFailString(bool success, assertType::Enum at, const char *success_str);
 
-    Color::Enum getSuccessOrFailColor(bool success, assertType::Enum at);
+    static Color::Enum getSuccessOrFailColor(bool success, assertType::Enum at);
 
     void successOrFailColoredStringToStream(bool success, assertType::Enum at, const char *success_str = "SUCCESS");
 
@@ -5070,6 +5079,7 @@ bool is_running_in_test = false;
 
 #ifdef DOCTEST_CONFIG_DISABLE
 
+// NOLINTBEGIN(readability-convert-member-functions-to-static)
 Context::Context(int, const char *const *) {}
 Context::~Context() = default;
 void Context::applyCommandLine(int, const char *const *) {}
@@ -5087,6 +5097,7 @@ void Context::setCout(std::ostream *) {}
 int Context::run() {
     return 0;
 }
+// NOLINTEND(readability-convert-member-functions-to-static)
 
 #else
 
@@ -5181,8 +5192,8 @@ bool parseCommaSepArgs(int argc, const char *const *argv, const char *pattern, s
         std::ostringstream s;
         auto flush = [&s, &res]() {
             auto string = s.str();
-            if (string.size() > 0) {
-                res.push_back(string.c_str());
+            if (!string.empty()) {
+                res.emplace_back(string.c_str());
             }
             s.str("");
         };
@@ -5230,7 +5241,7 @@ bool parseIntOption(int argc, const char *const *argv, const char *pattern, opti
         // integer
         // TODO: change this to use std::stoi or something else! currently it uses undefined
         // behavior - assumes '0' on failed parse...
-        int theInt = std::atoi(parsedValue.c_str());
+        int theInt = std::atoi(parsedValue.c_str()); // NOLINT(cert-err34-c)
         if (theInt != 0) {
             res = theInt;
             return true;
@@ -5466,7 +5477,7 @@ private:
     } discardBuf;
 
 public:
-    DiscardOStream()
+    DiscardOStream() noexcept
         : std::ostream(&discardBuf) {}
 } discardOut;
 
@@ -5576,9 +5587,10 @@ int Context::run() {
             std::srand(p->rand_seed);
 
             // random_shuffle implementation
-            const auto first = &testArray[0];
+            const auto first = testArray.data();
             for (size_t i = testArray.size() - 1; i > 0; --i) {
-                int idxToSwap = std::rand() % (i + 1);
+                // NOLINTNEXTLINE(cert-msc30-c, cert-msc50-cpp, concurrency-mt-unsafe)
+                int idxToSwap = static_cast<int>(std::rand() % (i + 1));
 
                 const auto temp = first[i];
 
@@ -5689,9 +5701,10 @@ int Context::run() {
        // static method)
                     DOCTEST_MSVC_SUPPRESS_WARNING_WITH_PUSH(4101) // unreferenced local variable
                     FatalConditionHandler fatalConditionHandler;  // Handle signals
+                    static_cast<void>(fatalConditionHandler);
                     // execute the test
                     tc.m_test();
-                    fatalConditionHandler.reset();
+                    FatalConditionHandler::reset();
                     DOCTEST_MSVC_SUPPRESS_WARNING_POP
 #ifndef DOCTEST_CONFIG_NO_EXCEPTIONS
                 } catch (const TestFailureException &) {
@@ -5804,7 +5817,7 @@ void ContextScopeBase::destroy() {
 #endif
         std::ostringstream s;
         this->stringify(&s);
-        g_cs->stringifiedContexts.push_back(s.str().c_str());
+        g_cs->stringifiedContexts.emplace_back(s.str().c_str());
     }
     g_infoContexts.pop_back();
 }
@@ -5977,18 +5990,18 @@ namespace detail {
 
 DOCTEST_DEFINE_INTERFACE(IExceptionTranslator)
 
-void registerExceptionTranslatorImpl(const IExceptionTranslator *et) {
+void registerExceptionTranslatorImpl(const IExceptionTranslator *et) noexcept {
     if (std::find(getExceptionTranslators().begin(), getExceptionTranslators().end(), et) ==
         getExceptionTranslators().end())
         getExceptionTranslators().push_back(et);
 }
 
-std::vector<const IExceptionTranslator *> &getExceptionTranslators() {
+std::vector<const IExceptionTranslator *> &getExceptionTranslators() noexcept {
     static std::vector<const IExceptionTranslator *> data;
     return data;
 }
 
-String translateActiveException() {
+String translateActiveException() noexcept {
 #ifndef DOCTEST_CONFIG_NO_EXCEPTIONS
     String res;
     auto &translators = getExceptionTranslators();
@@ -6352,12 +6365,12 @@ int registerReporter(const char *, int, IReporter *) {
 #else
 
 namespace detail {
-reporterMap &getReporters() {
+reporterMap &getReporters() noexcept {
     static reporterMap data;
     return data;
 }
 
-reporterMap &getListeners() {
+reporterMap &getListeners() noexcept {
     static reporterMap data;
     return data;
 }
@@ -6366,23 +6379,23 @@ reporterMap &getListeners() {
 DOCTEST_DEFINE_INTERFACE(IReporter)
 
 int IReporter::get_num_active_contexts() {
-    return detail::g_infoContexts.size();
+    return static_cast<int>(detail::g_infoContexts.size());
 }
 
 const IContextScope *const *IReporter::get_active_contexts() {
-    return get_num_active_contexts() ? &detail::g_infoContexts[0] : nullptr;
+    return get_num_active_contexts() ? detail::g_infoContexts.data() : nullptr;
 }
 
 int IReporter::get_num_stringified_contexts() {
-    return detail::g_cs->stringifiedContexts.size();
+    return static_cast<int>(detail::g_cs->stringifiedContexts.size());
 }
 
 const String *IReporter::get_stringified_contexts() {
-    return get_num_stringified_contexts() ? &detail::g_cs->stringifiedContexts[0] : nullptr;
+    return get_num_stringified_contexts() ? detail::g_cs->stringifiedContexts.data() : nullptr;
 }
 
 namespace detail {
-void registerReporterImpl(const char *name, int priority, reporterCreatorFunc c, bool isReporter) {
+void registerReporterImpl(const char *name, int priority, reporterCreatorFunc c, bool isReporter) noexcept {
     if (isReporter)
         getReporters().insert(reporterMap::value_type(reporterMap::key_type(priority, name), c));
     else
@@ -6523,7 +6536,7 @@ void ConsoleReporter::logTestStart() {
         return;
 
     separator_to_stream();
-    file_line_to_stream(tc->m_file.c_str(), tc->m_line, "\n");
+    file_line_to_stream(tc->m_file.c_str(), static_cast<int>(tc->m_line), "\n");
     if (tc->m_description)
         s << Color::Yellow << "DESCRIPTION: " << Color::None << tc->m_description << "\n";
     if (tc->m_test_suite && tc->m_test_suite[0] != '\0')
@@ -6685,7 +6698,7 @@ void ConsoleReporter::printHelp() {
 void ConsoleReporter::printRegisteredReporters() {
     printVersion();
     auto printReporters = [this](const detail::reporterMap &reporters, const char *type) {
-        if (reporters.size()) {
+        if (!reporters.empty()) {
             s << Color::Cyan << "[doctest] " << Color::None << "listing all registered " << type << "\n";
             for (auto &curr: reporters)
                 s << "priority: " << std::setw(5) << curr.first.first << " name: " << curr.first.second << "\n";
@@ -6766,7 +6779,7 @@ void ConsoleReporter::test_run_end(const TestRunStats &p) {
       << (p.numTestCasesFailed > 0 ? Color::Red : Color::None) << std::setw(failwidth) << p.numTestCasesFailed
       << " failed" << Color::None << " |";
     if (opt.no_skipped_summary == false) {
-        const int numSkipped = p.numTestCases - p.numTestCasesPassingFilters;
+        const unsigned int numSkipped = p.numTestCases - p.numTestCasesPassingFilters;
         s << " " << (numSkipped == 0 ? Color::None : Color::Yellow) << numSkipped << " skipped" << Color::None;
     }
     s << "\n";
@@ -6836,7 +6849,7 @@ void ConsoleReporter::test_case_exception(const TestCaseException &e) {
 
     logTestStart();
 
-    file_line_to_stream(tc->m_file.c_str(), tc->m_line, " ");
+    file_line_to_stream(tc->m_file.c_str(), static_cast<int>(tc->m_line), " ");
     successOrFailColoredStringToStream(false, e.is_crash ? assertType::is_require : assertType::is_check);
     s << Color::Red << (e.is_crash ? "test case CRASHED: " : "test case THREW exception: ");
     s << Color::Cyan << e.error_string << "\n";
@@ -7169,7 +7182,7 @@ struct JUnitReporter : public IReporter {
 
     void test_case_skipped(const TestCaseData &) override;
 
-    void log_contexts(std::ostringstream &s);
+    static void log_contexts(std::ostringstream &s);
 };
 
 DOCTEST_REGISTER_REPORTER("junit", 0, JUnitReporter);
@@ -7191,8 +7204,8 @@ namespace doctest {
 std::string JUnitReporter::JUnitTestCaseData::getCurrentTimestamp() {
     // Beware, this is not reentrant because of backward compatibility issues
     // Also, UTC only, again because of backward compatibility (%z is C++11)
-    time_t rawtime;
-    std::time(&rawtime);
+    time_t rawtime{};
+    static_cast<void>(std::time(&rawtime));
     const auto timeStampSize = sizeof("2017-01-16T17:06:45Z");
 
     std::tm timeInfo;
@@ -7207,7 +7220,7 @@ std::string JUnitReporter::JUnitTestCaseData::getCurrentTimestamp() {
     char timeStamp[timeStampSize];
     const char *const fmt = "%Y-%m-%dT%H:%M:%SZ";
 
-    std::strftime(timeStamp, timeStampSize, fmt, &timeInfo);
+    static_cast<void>(std::strftime(timeStamp, timeStampSize, fmt, &timeInfo));
     return std::string(timeStamp);
 }
 
@@ -7872,7 +7885,7 @@ void FatalConditionHandler::handleSignal(int sig) {
     }
     reset();
     reportFatal(name);
-    raise(sig);
+    static_cast<void>(raise(sig));
 }
 
 void FatalConditionHandler::allocateAltStackMem() {
@@ -7935,7 +7948,7 @@ DOCTEST_SUPPRESS_PRIVATE_WARNINGS_PUSH
 namespace doctest {
 namespace detail {
 
-DOCTEST_THREAD_LOCAL class {
+DOCTEST_THREAD_LOCAL class oss {
     std::vector<std::streampos> stack;
     std::stringstream ss;
 
@@ -7955,7 +7968,7 @@ public:
         ss.rdbuf()->pubseekpos(pos, std::ios::in | std::ios::out);
         return String(ss, sz);
     }
-} g_oss;
+} g_oss; // NOLINT(cert-err58-cpp)
 
 std::ostream *tlssPush() {
     return g_oss.push();
@@ -7976,6 +7989,8 @@ static int stricmp(const char *a, const char *b) {
     }
 }
 
+// NOLINTBEGIN(cppcoreguidelines-pro-type-union-access)
+
 char *String::allocate(size_type sz) {
     if (sz <= last) {
         buf[sz] = '\0';
@@ -7992,6 +8007,7 @@ char *String::allocate(size_type sz) {
 }
 
 void String::setOnHeap() noexcept {
+    // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
     *reinterpret_cast<unsigned char *>(&buf[last]) = 128;
 }
 
@@ -8015,7 +8031,7 @@ void String::copy(const String &other) {
     } else {
         memcpy(allocate(other.data.size), other.data.ptr, other.data.size);
     }
-}
+} // NOLINT(clang-analyzer-cplusplus.NewDeleteLeaks)
 
 String::String() noexcept {
     buf[0] = '\0';
@@ -8121,11 +8137,13 @@ String &String::operator=(String &&other) noexcept {
 }
 
 char String::operator[](size_type i) const {
+    // NOLINTNEXTLINE(cppcoreguidelines-pro-type-const-cast)
     return const_cast<String *>(this)->operator[](i);
 }
 
 char &String::operator[](size_type i) {
     if (isOnStack())
+        // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
         return reinterpret_cast<char *>(buf)[i];
     return data.ptr[i];
 }
@@ -8317,6 +8335,8 @@ String toString(long long unsigned in) {
     return detail::toStreamLit(in);
 }
 
+// NOLINTEND(cppcoreguidelines-pro-type-union-access)
+
 } // namespace doctest
 
 DOCTEST_SUPPRESS_PRIVATE_WARNINGS_POP
@@ -8420,7 +8440,7 @@ std::set<TestCase> &getRegisteredTests() {
 
 TestCase::TestCase(
     funcType test, const char *file, unsigned line, const TestSuite &test_suite, const String &type, int template_id
-) {
+) noexcept {
     m_file = file;
     m_line = line;
     m_name = nullptr; // will be later overridden in operator*
@@ -8439,13 +8459,13 @@ TestCase::TestCase(
     m_template_id = template_id;
 }
 
-TestCase::TestCase(const TestCase &other)
+TestCase::TestCase(const TestCase &other) noexcept // NOLINT(bugprone-copy-constructor-init)
     : TestCaseData() {
     *this = other;
 }
 
-DOCTEST_MSVC_SUPPRESS_WARNING_WITH_PUSH(26434) // hides a non-virtual function
-TestCase &TestCase::operator=(const TestCase &other) {
+DOCTEST_MSVC_SUPPRESS_WARNING_WITH_PUSH(26434)                  // hides a non-virtual function
+TestCase &TestCase::operator=(const TestCase &other) noexcept { // NOLINT(cert-oop54-cpp)
     TestCaseData::operator=(other);
     m_test = other.m_test;
     m_type = other.m_type;
@@ -8458,7 +8478,7 @@ TestCase &TestCase::operator=(const TestCase &other) {
 }
 DOCTEST_MSVC_SUPPRESS_WARNING_POP
 
-TestCase &TestCase::operator*(const char *in) {
+TestCase &TestCase::operator*(const char *in) noexcept {
     m_name = in;
     // make a new name with an appended type for templated test case
     if (m_template_id != -1) {
@@ -8469,7 +8489,7 @@ TestCase &TestCase::operator*(const char *in) {
     return *this;
 }
 
-bool TestCase::operator<(const TestCase &other) const {
+bool TestCase::operator<(const TestCase &other) const noexcept {
     // this will be used only to differentiate between test cases - not relevant for sorting
     if (m_line != other.m_line)
         return m_line < other.m_line;
@@ -8483,7 +8503,7 @@ bool TestCase::operator<(const TestCase &other) const {
 }
 
 // used by the macros for registering tests
-int regTest(const TestCase &tc) {
+int regTest(const TestCase &tc) noexcept {
     getRegisteredTests().insert(tc);
     return 0;
 }
@@ -8502,13 +8522,13 @@ DOCTEST_SUPPRESS_PRIVATE_WARNINGS_PUSH
 namespace doctest {
 namespace detail {
 
-TestSuite &TestSuite::operator*(const char *in) {
+TestSuite &TestSuite::operator*(const char *in) noexcept {
     m_test_suite = in;
     return *this;
 }
 
 // sets the current test suite
-int setTestSuite(const TestSuite &ts) {
+int setTestSuite(const TestSuite &ts) noexcept {
     doctest_detail_test_suite_ns::getCurrentTestSuite() = ts;
     return 0;
 }
@@ -8518,7 +8538,7 @@ int setTestSuite(const TestSuite &ts) {
 
 namespace doctest_detail_test_suite_ns {
 // holds the current test suite
-doctest::detail::TestSuite &getCurrentTestSuite() {
+doctest::detail::TestSuite &getCurrentTestSuite() noexcept {
     static doctest::detail::TestSuite data{};
     return data;
 }

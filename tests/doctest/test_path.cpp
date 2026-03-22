@@ -10,6 +10,7 @@ public:
 
     inline DummyContextOptions() {
         // Safe since this function is backed by g_cs, which is mutable
+        // NOLINTNEXTLINE(cppcoreguidelines-pro-type-const-cast)
         options = const_cast<doctest::ContextOptions *>(doctest::getContextOptions());
 
         // Retain a copy

@@ -29,15 +29,15 @@ TEST_CASE("TraversalState advances through discovered subcase paths") {
         std::vector<std::string> visited_path;
 
         if (traversal.tryEnterSubcase(outer_a)) {
-            visited_path.push_back(outer_a.m_name.c_str());
+            visited_path.emplace_back(outer_a.m_name.c_str());
 
             if (traversal.tryEnterSubcase(inner_a)) {
-                visited_path.push_back(inner_a.m_name.c_str());
+                visited_path.emplace_back(inner_a.m_name.c_str());
                 traversal.leaveSubcase();
             }
 
             if (traversal.tryEnterSubcase(inner_b)) {
-                visited_path.push_back(inner_b.m_name.c_str());
+                visited_path.emplace_back(inner_b.m_name.c_str());
                 traversal.leaveSubcase();
             }
 
@@ -45,7 +45,7 @@ TEST_CASE("TraversalState advances through discovered subcase paths") {
         }
 
         if (traversal.tryEnterSubcase(outer_b)) {
-            visited_path.push_back(outer_b.m_name.c_str());
+            visited_path.emplace_back(outer_b.m_name.c_str());
             traversal.leaveSubcase();
         }
 

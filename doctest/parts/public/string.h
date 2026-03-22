@@ -56,6 +56,7 @@ private:
     char *allocate(size_type sz);
 
     bool isOnStack() const noexcept {
+        // NOLINTNEXTLINE(cppcoreguidelines-pro-type-union-access)
         return (buf[last] & 128) == 0;
     }
 
@@ -92,12 +93,15 @@ public:
         return const_cast<String *>(this)->c_str(); // NOLINT
     }
 
+    // NOLINTBEGIN(cppcoreguidelines-pro-type-union-access)
     char *c_str() {
         if (isOnStack()) {
+            // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
             return reinterpret_cast<char *>(buf);
         }
         return data.ptr;
     }
+    // NOLINTEND(cppcoreguidelines-pro-type-union-access)
 
     size_type size() const;
     size_type capacity() const;
@@ -379,8 +383,10 @@ struct filldata<T *> {
         filldata<const volatile void *>::fill(
             stream,
 #if DOCTEST_GCC == 0 || DOCTEST_GCC >= DOCTEST_COMPILER(4, 9, 0)
+            // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
             reinterpret_cast<const volatile void *>(in)
 #else
+            // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
             *reinterpret_cast<const volatile void *const *>(&in)
 #endif // DOCTEST_GCC
         );

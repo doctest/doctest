@@ -16,6 +16,7 @@ bool is_running_in_test = false;
 
 #ifdef DOCTEST_CONFIG_DISABLE
 
+// NOLINTBEGIN(readability-convert-member-functions-to-static)
 Context::Context(int, const char *const *) {}
 Context::~Context() = default;
 void Context::applyCommandLine(int, const char *const *) {}
@@ -33,6 +34,7 @@ void Context::setCout(std::ostream *) {}
 int Context::run() {
     return 0;
 }
+// NOLINTEND(readability-convert-member-functions-to-static)
 
 #else
 
@@ -127,8 +129,8 @@ bool parseCommaSepArgs(int argc, const char *const *argv, const char *pattern, s
         std::ostringstream s;
         auto flush = [&s, &res]() {
             auto string = s.str();
-            if (string.size() > 0) {
-                res.push_back(string.c_str());
+            if (!string.empty()) {
+                res.emplace_back(string.c_str());
             }
             s.str("");
         };
@@ -176,7 +178,7 @@ bool parseIntOption(int argc, const char *const *argv, const char *pattern, opti
         // integer
         // TODO: change this to use std::stoi or something else! currently it uses undefined
         // behavior - assumes '0' on failed parse...
-        int theInt = std::atoi(parsedValue.c_str());
+        int theInt = std::atoi(parsedValue.c_str()); // NOLINT(cert-err34-c)
         if (theInt != 0) {
             res = theInt;
             return true;
@@ -412,7 +414,7 @@ private:
     } discardBuf;
 
 public:
-    DiscardOStream()
+    DiscardOStream() noexcept
         : std::ostream(&discardBuf) {}
 } discardOut;
 
@@ -522,9 +524,10 @@ int Context::run() {
             std::srand(p->rand_seed);
 
             // random_shuffle implementation
-            const auto first = &testArray[0];
+            const auto first = testArray.data();
             for (size_t i = testArray.size() - 1; i > 0; --i) {
-                int idxToSwap = std::rand() % (i + 1);
+                // NOLINTNEXTLINE(cert-msc30-c, cert-msc50-cpp, concurrency-mt-unsafe)
+                int idxToSwap = static_cast<int>(std::rand() % (i + 1));
 
                 const auto temp = first[i];
 
@@ -635,9 +638,10 @@ int Context::run() {
        // static method)
                     DOCTEST_MSVC_SUPPRESS_WARNING_WITH_PUSH(4101) // unreferenced local variable
                     FatalConditionHandler fatalConditionHandler;  // Handle signals
+                    static_cast<void>(fatalConditionHandler);
                     // execute the test
                     tc.m_test();
-                    fatalConditionHandler.reset();
+                    FatalConditionHandler::reset();
                     DOCTEST_MSVC_SUPPRESS_WARNING_POP
 #ifndef DOCTEST_CONFIG_NO_EXCEPTIONS
                 } catch (const TestFailureException &) {

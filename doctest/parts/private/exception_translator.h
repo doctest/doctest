@@ -10,8 +10,8 @@ DOCTEST_SUPPRESS_PRIVATE_WARNINGS_PUSH
 namespace doctest {
 namespace detail {
 
-std::vector<const IExceptionTranslator *> &getExceptionTranslators();
-String translateActiveException();
+std::vector<const IExceptionTranslator *> &getExceptionTranslators() noexcept;
+String translateActiveException() noexcept;
 
 } // namespace detail
 } // namespace doctest

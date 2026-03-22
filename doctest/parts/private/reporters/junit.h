@@ -94,7 +94,7 @@ struct JUnitReporter : public IReporter {
 
     void test_case_skipped(const TestCaseData &) override;
 
-    void log_contexts(std::ostringstream &s);
+    static void log_contexts(std::ostringstream &s);
 };
 
 DOCTEST_REGISTER_REPORTER("junit", 0, JUnitReporter);

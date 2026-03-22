@@ -110,7 +110,8 @@ struct DOCTEST_INTERFACE IReporter {
 namespace detail {
 using reporterCreatorFunc = IReporter *(*)(const ContextOptions &);
 
-DOCTEST_INTERFACE void registerReporterImpl(const char *name, int prio, reporterCreatorFunc c, bool isReporter);
+DOCTEST_INTERFACE void
+registerReporterImpl(const char *name, int prio, reporterCreatorFunc c, bool isReporter) noexcept;
 
 template <typename Reporter>
 IReporter *reporterCreator(const ContextOptions &o) {
@@ -119,7 +120,7 @@ IReporter *reporterCreator(const ContextOptions &o) {
 } // namespace detail
 
 template <typename Reporter>
-int registerReporter(const char *name, int priority, bool isReporter) {
+int registerReporter(const char *name, int priority, bool isReporter) noexcept {
     detail::registerReporterImpl(name, priority, detail::reporterCreator<Reporter>, isReporter);
     return 0;
 }

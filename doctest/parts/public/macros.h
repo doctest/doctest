@@ -9,7 +9,7 @@ DOCTEST_SUPPRESS_PUBLIC_WARNINGS_PUSH
 namespace doctest {
 namespace detail {
 template <typename T>
-int instantiationHelper(const T &) {
+int instantiationHelper(const T &) noexcept {
     return 0;
 }
 
@@ -136,7 +136,7 @@ int instantiationHelper(const T &) {
     struct iter;                                                                                                       \
     template <typename Type, typename... Rest>                                                                         \
     struct iter<std::tuple<Type, Rest...>> {                                                                           \
-        iter(const char *file, unsigned line, int index) {                                                             \
+        iter(const char *file, unsigned line, int index) noexcept {                                                    \
             doctest::detail::regTest(                                                                                  \
                 doctest::detail::TestCase(                                                                             \
                     func<Type>,                                                                                        \

@@ -18,7 +18,7 @@ struct DOCTEST_INTERFACE IExceptionTranslator {
 template <typename T>
 class ExceptionTranslator : public IExceptionTranslator {
 public:
-    explicit ExceptionTranslator(String (*translateFunction)(T))
+    explicit ExceptionTranslator(String (*translateFunction)(T)) noexcept
         : m_translateFunction(translateFunction) {}
 
     bool translate(String &res) const override {
@@ -38,7 +38,7 @@ private:
     String (*m_translateFunction)(T);
 };
 
-DOCTEST_INTERFACE void registerExceptionTranslatorImpl(const IExceptionTranslator *et);
+DOCTEST_INTERFACE void registerExceptionTranslatorImpl(const IExceptionTranslator *et) noexcept;
 
 #endif // DOCTEST_CONFIG_DISABLE
 
@@ -47,7 +47,7 @@ DOCTEST_INTERFACE void registerExceptionTranslatorImpl(const IExceptionTranslato
 #ifndef DOCTEST_CONFIG_DISABLE
 
 template <typename T>
-int registerExceptionTranslator(String (*translateFunction)(T)) {
+int registerExceptionTranslator(String (*translateFunction)(T)) noexcept {
     DOCTEST_CLANG_SUPPRESS_WARNING_WITH_PUSH("-Wexit-time-destructors")
     static detail::ExceptionTranslator<T> exceptionTranslator(translateFunction);
     DOCTEST_CLANG_SUPPRESS_WARNING_POP
@@ -58,7 +58,7 @@ int registerExceptionTranslator(String (*translateFunction)(T)) {
 #else // DOCTEST_CONFIG_DISABLE
 
 template <typename T>
-int registerExceptionTranslator(String (*)(T)) {
+int registerExceptionTranslator(String (*)(T)) noexcept {
     return 0;
 }
 

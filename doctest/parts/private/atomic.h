@@ -50,7 +50,7 @@ public:
         return fetch_add(1) + 1;
     }
 
-    T operator++(int) DOCTEST_NOEXCEPT {
+    T operator++(int) DOCTEST_NOEXCEPT { // NOLINT(cert-dcl21-cpp)
         return fetch_add(1);
     }
 
@@ -74,6 +74,7 @@ public:
         return result;
     }
 
+    // NOLINTNEXTLINE(cppcoreguidelines-c-copy-assignment-signature, misc-unconventional-assign-operator)
     T operator=(T desired) DOCTEST_NOEXCEPT {
         store(desired);
         return desired;

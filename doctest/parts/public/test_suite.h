@@ -21,17 +21,17 @@ struct DOCTEST_INTERFACE TestSuite {
     int m_expected_failures = 0;
     double m_timeout = 0;
 
-    TestSuite &operator*(const char *in);
+    TestSuite &operator*(const char *in) noexcept;
 
     template <typename T>
-    TestSuite &operator*(const T &in) {
+    TestSuite &operator*(const T &in) noexcept {
         in.fill(*this);
         return *this;
     }
 };
 
 // forward declarations of functions used by the macros
-DOCTEST_INTERFACE int setTestSuite(const TestSuite &ts);
+DOCTEST_INTERFACE int setTestSuite(const TestSuite &ts) noexcept;
 
 } // namespace detail
 
@@ -40,7 +40,7 @@ DOCTEST_INTERFACE int setTestSuite(const TestSuite &ts);
 // in a separate namespace outside of doctest because the DOCTEST_TEST_SUITE macro
 // introduces an anonymous namespace in which getCurrentTestSuite gets overridden
 namespace doctest_detail_test_suite_ns {
-DOCTEST_INTERFACE doctest::detail::TestSuite &getCurrentTestSuite();
+DOCTEST_INTERFACE doctest::detail::TestSuite &getCurrentTestSuite() noexcept;
 
 // this is here to clear the 'current test suite' for the current translation unit - at the top
 DOCTEST_GLOBAL_NO_WARNINGS(/* NOLINT(cert-err58-cpp) */

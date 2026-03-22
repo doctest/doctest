@@ -6,7 +6,7 @@ DOCTEST_SUPPRESS_PRIVATE_WARNINGS_PUSH
 namespace doctest {
 namespace detail {
 
-DOCTEST_THREAD_LOCAL class {
+DOCTEST_THREAD_LOCAL class oss {
     std::vector<std::streampos> stack;
     std::stringstream ss;
 
@@ -26,7 +26,7 @@ public:
         ss.rdbuf()->pubseekpos(pos, std::ios::in | std::ios::out);
         return String(ss, sz);
     }
-} g_oss;
+} g_oss; // NOLINT(cert-err58-cpp)
 
 std::ostream *tlssPush() {
     return g_oss.push();
@@ -47,6 +47,8 @@ static int stricmp(const char *a, const char *b) {
     }
 }
 
+// NOLINTBEGIN(cppcoreguidelines-pro-type-union-access)
+
 char *String::allocate(size_type sz) {
     if (sz <= last) {
         buf[sz] = '\0';
@@ -63,6 +65,7 @@ char *String::allocate(size_type sz) {
 }
 
 void String::setOnHeap() noexcept {
+    // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
     *reinterpret_cast<unsigned char *>(&buf[last]) = 128;
 }
 
@@ -86,7 +89,7 @@ void String::copy(const String &other) {
     } else {
         memcpy(allocate(other.data.size), other.data.ptr, other.data.size);
     }
-}
+} // NOLINT(clang-analyzer-cplusplus.NewDeleteLeaks)
 
 String::String() noexcept {
     buf[0] = '\0';
@@ -192,11 +195,13 @@ String &String::operator=(String &&other) noexcept {
 }
 
 char String::operator[](size_type i) const {
+    // NOLINTNEXTLINE(cppcoreguidelines-pro-type-const-cast)
     return const_cast<String *>(this)->operator[](i);
 }
 
 char &String::operator[](size_type i) {
     if (isOnStack())
+        // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
         return reinterpret_cast<char *>(buf)[i];
     return data.ptr[i];
 }
@@ -387,6 +392,8 @@ String toString(long long in) {
 String toString(long long unsigned in) {
     return detail::toStreamLit(in);
 }
+
+// NOLINTEND(cppcoreguidelines-pro-type-union-access)
 
 } // namespace doctest
 

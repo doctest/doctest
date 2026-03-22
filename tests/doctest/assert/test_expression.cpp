@@ -37,9 +37,9 @@ TEST_SUITE("Expression decomposition") {
     const auto _true = true;
     const auto _1 = int{1};
     const auto _2 = int{2};
-    const auto _foo = doctest::String("foo");
-    const auto _bar = doctest::String("bar");
-    const auto _foobar = doctest::String("foobar");
+    const auto _foo = doctest::String("foo");       // NOLINT(cert-err58-cpp)
+    const auto _bar = doctest::String("bar");       // NOLINT(cert-err58-cpp)
+    const auto _foobar = doctest::String("foobar"); // NOLINT(cert-err58-cpp)
 
     const int *ptr = &_1;
     const int array[2] = {1, 2};

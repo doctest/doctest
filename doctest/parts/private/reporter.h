@@ -14,8 +14,8 @@ namespace detail {
 // reporter with a duplicate name and a different priority but hopefully that won't happen often :|
 using reporterMap = std::map<std::pair<int, String>, detail::reporterCreatorFunc>;
 
-reporterMap &getReporters();
-reporterMap &getListeners();
+reporterMap &getReporters() noexcept;
+reporterMap &getListeners() noexcept;
 } // namespace detail
 
 #define DOCTEST_ITERATE_THROUGH_REPORTERS(function, ...)                                                               \

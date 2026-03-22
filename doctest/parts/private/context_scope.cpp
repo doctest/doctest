@@ -39,7 +39,7 @@ void ContextScopeBase::destroy() {
 #endif
         std::ostringstream s;
         this->stringify(&s);
-        g_cs->stringifiedContexts.push_back(s.str().c_str());
+        g_cs->stringifiedContexts.emplace_back(s.str().c_str());
     }
     g_infoContexts.pop_back();
 }

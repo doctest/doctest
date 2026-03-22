@@ -61,7 +61,7 @@ TEST_CASE("normal test in a test suite from a decorator" * doctest::test_suite("
     MESSAGE("failing because of the timeout decorator!");
 }
 
-static bool shouldSkip() {
+static bool shouldSkip() noexcept {
     return false;
 }
 

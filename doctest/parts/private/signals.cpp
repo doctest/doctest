@@ -169,7 +169,7 @@ void FatalConditionHandler::handleSignal(int sig) {
     }
     reset();
     reportFatal(name);
-    raise(sig);
+    static_cast<void>(raise(sig));
 }
 
 void FatalConditionHandler::allocateAltStackMem() {

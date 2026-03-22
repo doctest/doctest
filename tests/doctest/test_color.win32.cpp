@@ -79,7 +79,7 @@ TEST_CASE_FIXTURE(callbacks, "Colorizing a stream") {
     };
     using result = std::tuple<HANDLE, WORD>;
 
-    const auto handle = reinterpret_cast<HANDLE>(42);
+    const auto handle = reinterpret_cast<HANDLE>(42); // NOLINT
     GetStdHandle_ = [&](_In_ DWORD) { return handle; };
 
     const auto fg = WORD{};
