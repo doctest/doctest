@@ -206,7 +206,10 @@ This can be defined both globally and in specific source files only.
 This option forces all doctest asserts to copy by value the expressions they are given instead of binding them to const references. This might be useful to avoid ODR-usage of static constants (which might lead to linker errors with g++/clang):
 
 ```c++
-template<typename T> struct type_traits { static const bool value = false; };
+template <typename T>
+struct type_traits {
+    static const bool value = false;
+};
 
 // unless DOCTEST_CONFIG_ASSERTION_PARAMETERS_BY_VALUE is defined the following assertion
 // will lead to a linker error if type_traits<int>::value isn't defined in a translation unit

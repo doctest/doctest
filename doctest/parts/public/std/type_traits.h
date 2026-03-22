@@ -89,6 +89,11 @@ template <typename T, size_t SIZE>
 struct is_array<T[SIZE]> : true_type {};
 #endif
 
+#if !(defined(DOCTEST_CONFIG_INCLUDE_TYPE_TRAITS) && (DOCTEST_CPLUSPLUS >= 201703L))
+template <typename... Unused>
+using void_t = void;
+#endif
+
 } // namespace types
 } // namespace detail
 } // namespace doctest

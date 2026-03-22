@@ -65,10 +65,14 @@ Although **doctest** allows you to group tests together as subcases within a tes
 class UniqueTestsFixture {
 private:
     static int uniqueID;
+
 protected:
     DBConnection conn;
+
 public:
-    UniqueTestsFixture() : conn(DBConnection::createConnection("myDB")) {}
+    UniqueTestsFixture()
+        : conn(DBConnection::createConnection("myDB")) {}
+
 protected:
     int getID() {
         return ++uniqueID;
@@ -117,9 +121,7 @@ Then test cases from specific test suites can be executed with the help of filte
 Test cases can be *decorated* with additional attributes like this:
 
 ```c++
-TEST_CASE("name"
-          * doctest::description("shouldn't take more than 500ms")
-          * doctest::timeout(0.5)) {
+TEST_CASE("name" * doctest::description("shouldn't take more than 500ms") * doctest::timeout(0.5)) {
     // asserts
 }
 ```

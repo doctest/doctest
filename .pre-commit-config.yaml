@@ -1,16 +1,10 @@
 repos:
   - repo: https://github.com/pre-commit/mirrors-clang-format
-    rev: v21.1.8
+    rev: v22.1.0
     hooks:
       - id: clang-format
         types: [c++]
-        exclude: |
-          (?x)^(
-            doctest/doctest\.h|
-            examples/.*|
-            scripts/.*|
-            tests/.*
-          )$
+        exclude: ^doctest/doctest\.h$
 
   - repo: local
     hooks:

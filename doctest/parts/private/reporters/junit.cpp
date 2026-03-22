@@ -16,8 +16,10 @@ std::string JUnitReporter::JUnitTestCaseData::getCurrentTimestamp() {
     const auto timeStampSize = sizeof("2017-01-16T17:06:45Z");
 
     std::tm timeInfo;
-#ifdef DOCTEST_PLATFORM_WINDOWS
+#if defined(DOCTEST_PLATFORM_WINDOWS)
     gmtime_s(&timeInfo, &rawtime);
+#elif defined(__STDC_LIB_EXT1__)
+    gmtime_s(&rawtime, &timeInfo);
 #else  // DOCTEST_PLATFORM_WINDOWS
     gmtime_r(&rawtime, &timeInfo);
 #endif // DOCTEST_PLATFORM_WINDOWS
@@ -133,11 +135,13 @@ void JUnitReporter::test_run_end(const TestRunStats &p) {
 }
 
 void JUnitReporter::test_case_start(const TestCaseData &in) {
+    DOCTEST_LOCK_MUTEX(mutex)
     testCaseData.add(skipPathFromFilename(in.m_file.c_str()), in.m_name);
     timer.start();
 }
 
 void JUnitReporter::test_case_reenter(const TestCaseData &in) {
+    DOCTEST_LOCK_MUTEX(mutex)
     testCaseData.addTime(timer.getElapsedSeconds());
     testCaseData.appendSubcaseNamesToLastTestcase(deepestSubcaseStackNames);
     deepestSubcaseStackNames.clear();
@@ -147,6 +151,7 @@ void JUnitReporter::test_case_reenter(const TestCaseData &in) {
 }
 
 void JUnitReporter::test_case_end(const CurrentTestCaseStats &) {
+    DOCTEST_LOCK_MUTEX(mutex)
     testCaseData.addTime(timer.getElapsedSeconds());
     testCaseData.appendSubcaseNamesToLastTestcase(deepestSubcaseStackNames);
     deepestSubcaseStackNames.clear();
@@ -158,6 +163,7 @@ void JUnitReporter::test_case_exception(const TestCaseException &e) {
 }
 
 void JUnitReporter::subcase_start(const SubcaseSignature &in) {
+    DOCTEST_LOCK_MUTEX(mutex)
     deepestSubcaseStackNames.push_back(in.m_name);
 }
 

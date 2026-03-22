@@ -32,7 +32,7 @@ This will handle the stringification of the variable name for you (actually it w
 This would log something like:
 
 ```c++
-  some_variable := 42
+some_variable := 42
 ```
 
 ## Messages which can optionally fail test cases

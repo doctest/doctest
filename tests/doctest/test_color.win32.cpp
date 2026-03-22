@@ -23,8 +23,7 @@ public:
         return _instance;
     }
 
-#define DEFINE_CALLBACK(_fn) \
-    utils::callback<decltype(_fn)> _fn##_
+#define DEFINE_CALLBACK(_fn) utils::callback<decltype(_fn)> _fn##_
 
     DEFINE_CALLBACK(GetStdHandle);
     DEFINE_CALLBACK(GetConsoleScreenBufferInfo);
@@ -34,7 +33,6 @@ public:
 callbacks *callbacks::_instance = nullptr;
 
 } // namespace
-
 
 extern "C" {
 
@@ -46,14 +44,13 @@ HANDLE WINAPI GetStdHandle(_In_ DWORD nStdHandle) {
     return self->GetStdHandle_(nStdHandle);
 }
 
-BOOL WINAPI GetConsoleScreenBufferInfo(_In_  HANDLE                      hConsoleOutput,
-                                       _Out_ PCONSOLE_SCREEN_BUFFER_INFO lpConsoleScreenBufferInfo) {
+BOOL WINAPI
+GetConsoleScreenBufferInfo(_In_ HANDLE hConsoleOutput, _Out_ PCONSOLE_SCREEN_BUFFER_INFO lpConsoleScreenBufferInfo) {
     auto *self = callbacks::instance();
     return self->GetConsoleScreenBufferInfo_(hConsoleOutput, lpConsoleScreenBufferInfo);
 }
 
-BOOL WINAPI SetConsoleTextAttribute(_In_ HANDLE hConsoleOutput,
-                                    _In_ WORD   wAttributes) {
+BOOL WINAPI SetConsoleTextAttribute(_In_ HANDLE hConsoleOutput, _In_ WORD wAttributes) {
     auto *self = callbacks::instance();
     return self->SetConsoleTextAttribute_(hConsoleOutput, wAttributes);
 }
@@ -63,7 +60,6 @@ DOCTEST_MSVC_SUPPRESS_WARNING_POP
 
 } // extern "C"
 
-
 TEST_CASE_FIXTURE(callbacks, "Colorizing a stream") {
     using namespace doctest;
 
@@ -72,7 +68,7 @@ TEST_CASE_FIXTURE(callbacks, "Colorizing a stream") {
     // object to memoize the calls. So, we can only one-shot it.
 
     const auto set_colour = [&](doctest::Color::Enum color) {
-        std::ostringstream oss { };
+        std::ostringstream oss{};
         doctest::detail::g_cs->force_colors = true;
         oss << color;
         doctest::detail::g_cs->force_colors = false;
@@ -86,13 +82,14 @@ TEST_CASE_FIXTURE(callbacks, "Colorizing a stream") {
     const auto handle = reinterpret_cast<HANDLE>(42);
     GetStdHandle_ = [&](_In_ DWORD) { return handle; };
 
-    const auto fg = WORD { };
-    const auto bg = WORD { BACKGROUND_INTENSITY | BACKGROUND_RED };
+    const auto fg = WORD{};
+    const auto bg = WORD{BACKGROUND_INTENSITY | BACKGROUND_RED};
     GetConsoleScreenBufferInfo_ = [&](_In_ HANDLE, _Out_ PCONSOLE_SCREEN_BUFFER_INFO lpConsoleScreenBufferInfo) {
         lpConsoleScreenBufferInfo->wAttributes = static_cast<WORD>(fg | bg);
         return TRUE;
     };
 
+    // clang-format off
     CHECK(set_colour(Color::None) == result {
         handle, bg
     });
@@ -100,6 +97,7 @@ TEST_CASE_FIXTURE(callbacks, "Colorizing a stream") {
     CHECK(set_colour(Color::White) == result {
         handle, static_cast<WORD>(bg | FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE)
     });
+
 
     CHECK(set_colour(Color::Red) == result {
         handle, static_cast<WORD>(bg | FOREGROUND_RED)
@@ -121,6 +119,7 @@ TEST_CASE_FIXTURE(callbacks, "Colorizing a stream") {
         handle, static_cast<WORD>(bg | FOREGROUND_RED | FOREGROUND_GREEN)
     });
 
+
     CHECK(set_colour(Color::Grey) == result {
         handle, bg
     });
@@ -133,6 +132,7 @@ TEST_CASE_FIXTURE(callbacks, "Colorizing a stream") {
         handle, static_cast<WORD>(bg | FOREGROUND_INTENSITY | FOREGROUND_GREEN)
     });
 
+
     CHECK(set_colour(Color::LightGrey) == result {
         handle, static_cast<WORD>(bg | FOREGROUND_INTENSITY)
     });
@@ -140,6 +140,7 @@ TEST_CASE_FIXTURE(callbacks, "Colorizing a stream") {
     CHECK(set_colour(Color::BrightWhite) == result {
         handle, static_cast<WORD>(bg | FOREGROUND_INTENSITY | FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE)
     });
+    // clang-format on
 }
 
 #endif // defined(DOCTEST_CONFIG_COLORS_WINDOWS)

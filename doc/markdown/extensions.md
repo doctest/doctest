@@ -22,20 +22,19 @@ See [**the complete test**](../../examples/mpi/mpi.cpp) and [**the configuration
 #include "doctest/extensions/doctest_mpi.h"
 
 int my_function_to_test(MPI_Comm comm) {
-  int rank;
-  MPI_Comm_rank(comm,&rank);
-  if (rank == 0) {
-    return 10;
-  }
-  return 11;
+    int rank;
+    MPI_Comm_rank(comm, &rank);
+    if (rank == 0) {
+        return 10;
+    }
+    return 11;
 }
 
+MPI_TEST_CASE("test over two processes", 2) { // Parallel test on 2 processes
+    int x = my_function_to_test(test_comm);
 
-MPI_TEST_CASE("test over two processes",2) { // Parallel test on 2 processes
-  int x = my_function_to_test(test_comm);
-
-  MPI_CHECK( 0,  x==10 ); // CHECK for rank 0, that x==10
-  MPI_CHECK( 1,  x==11 ); // CHECK for rank 1, that x==11
+    MPI_CHECK(0, x == 10); // CHECK for rank 0, that x==10
+    MPI_CHECK(1, x == 11); // CHECK for rank 1, that x==11
 }
 ```
 
@@ -46,9 +45,9 @@ An ```MPI_TEST_CASE``` is like a regular ```TEST_CASE```, except it takes a seco
 We always have:
 
 ```c++
-MPI_TEST_CASE("my_test",N) {
-  CHECK( test_nb_procs == N );
-  MPI_CHECK( i, test_rank==i ); // for any i<N
+MPI_TEST_CASE("my_test", N) {
+    CHECK(test_nb_procs == N);
+    MPI_CHECK(i, test_rank == i); // for any i<N
 }
 ```
 
@@ -70,20 +69,20 @@ mpirun -np 2 unit_test_executable.exe
 
 #include "doctest/extensions/doctest_mpi.h"
 
-int main(int argc, char** argv) {
-  doctest::mpi_init_thread(argc,argv,MPI_THREAD_MULTIPLE); // Or any MPI thread level
+int main(int argc, char **argv) {
+    doctest::mpi_init_thread(argc, argv, MPI_THREAD_MULTIPLE); // Or any MPI thread level
 
-  doctest::Context ctx;
-  ctx.setOption("reporters", "MpiConsoleReporter");
-  ctx.setOption("reporters", "MpiFileReporter");
-  ctx.setOption("force-colors", true);
-  ctx.applyCommandLine(argc, argv);
+    doctest::Context ctx;
+    ctx.setOption("reporters", "MpiConsoleReporter");
+    ctx.setOption("reporters", "MpiFileReporter");
+    ctx.setOption("force-colors", true);
+    ctx.applyCommandLine(argc, argv);
 
-  int test_result = ctx.run();
+    int test_result = ctx.run();
 
-  doctest::mpi_finalize();
+    doctest::mpi_finalize();
 
-  return test_result;
+    return test_result;
 }
 ```
 
@@ -124,8 +123,8 @@ If the test executable is launch with less processes than the number of processe
 
 
 ```c++
-MPI_TEST_CASE("my_test",3) {
-  // ...
+MPI_TEST_CASE("my_test", 3) {
+    // ...
 }
 ```
 

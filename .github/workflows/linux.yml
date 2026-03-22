@@ -1,0 +1,202 @@
+name: Linux
+
+on:
+  push:
+    branches: [dev, master]
+    paths-ignore:
+      - "doc/**"
+      - "scripts/**"
+      - "LICENSE.txt"
+      - "README.md"
+
+  pull_request:
+    paths-ignore:
+      - "doc/**"
+      - "scripts/**"
+      - "LICENSE.txt"
+      - "README.md"
+
+concurrency:
+  group: ${{ github.workflow }}|${{ github.ref_name }}|linux
+  cancel-in-progress: true
+
+jobs:
+  clang:
+    runs-on: ubuntu-24.04
+
+    strategy:
+      fail-fast: false
+      matrix:
+        version:    ["21"]
+        container:  ["ubuntu:26.04"]
+        arch:       [x64, x86]
+        build-type: [Release, Debug]
+        target:     [test, asan/ubsan, tsan, fno-exceptions, fno-rtti, valgrind]
+        include:
+          - { version: "3.9", container: ubuntu:18.04, arch: x64, build-type: Release, target: test }
+          - { version: "4.0", container: ubuntu:18.04, arch: x64, build-type: Release, target: test }
+          - { version: "5.0", container: ubuntu:18.04, arch: x64, build-type: Release, target: test }
+          - { version: "6.0", container: ubuntu:20.04, arch: x64, build-type: Release, target: test }
+          - { version: "7",   container: ubuntu:20.04, arch: x64, build-type: Release, target: test }
+          - { version: "8",   container: ubuntu:20.04, arch: x64, build-type: Release, target: test }
+          - { version: "9",   container: ubuntu:20.04, arch: x64, build-type: Release, target: test }
+          - { version: "10",  container: ubuntu:20.04, arch: x64, build-type: Release, target: test }
+          - { version: "11",  container: ubuntu:22.04, arch: x64, build-type: Release, target: test }
+          - { version: "12",  container: ubuntu:22.04, arch: x64, build-type: Release, target: test }
+          - { version: "13",  container: ubuntu:22.04, arch: x64, build-type: Release, target: test }
+          - { version: "14",  container: ubuntu:24.04, arch: x64, build-type: Release, target: test }
+          - { version: "15",  container: ubuntu:24.04, arch: x64, build-type: Release, target: test }
+          - { version: "16",  container: ubuntu:24.04, arch: x64, build-type: Release, target: test }
+          - { version: "17",  container: ubuntu:24.04, arch: x64, build-type: Release, target: test }
+          - { version: "18",  container: ubuntu:24.04, arch: x64, build-type: Release, target: test }
+          - { version: "19",  container: ubuntu:26.04, arch: x64, build-type: Release, target: test }
+          - { version: "20",  container: ubuntu:26.04, arch: x64, build-type: Release, target: test }
+        exclude:
+          - { arch: x86, target: tsan }
+
+    steps:
+      - uses: actions/checkout@v5
+
+      # Ref: https://github.com/actions/checkout/issues/1590#issuecomment-2567109195
+      - name: Prepare Container
+        run: |
+          docker pull ${{ matrix.container }}
+          docker run --name build-container -d -v ${{ github.workspace }}:/workspace ${{ matrix.container }} tail -f /dev/null
+
+      - name: Install
+        env:
+          CMD: |
+            dpkg --add-architecture i386
+
+            # Configure Kitware repo for newer version of CMake.
+            if [ "${{ matrix.container }}" = "ubuntu:18.04" ]; then
+              apt-get update && apt-get install -y wget gpg
+              wget -O - https://apt.kitware.com/keys/kitware-archive-latest.asc 2>/dev/null | gpg --dearmor - | tee /usr/share/keyrings/kitware-archive-keyring.gpg >/dev/null
+              echo 'deb [signed-by=/usr/share/keyrings/kitware-archive-keyring.gpg] https://apt.kitware.com/ubuntu/ bionic main' | tee /etc/apt/sources.list.d/kitware.list >/dev/null
+            fi
+
+            apt-get update
+            apt-get install -y cmake ninja-build valgrind libc6-dbg:i386 python3
+            apt-get install -y clang-${{ matrix.version }} libclang-${{ matrix.version }}-dev llvm-${{ matrix.version }}-dev g++-multilib
+
+            # clang-17 does not automatically provide the i386 sanitizer runtimes,
+            # but libclang-rt-V-dev:i386 does not always exist. This is the best intermediate option
+            if [ "${{ matrix.version }}" = "17" ]; then
+              apt-get install -y libclang-rt-${{ matrix.version }}-dev:i386
+            fi
+        run: docker exec build-container bash -eu -c "$CMD"
+
+      - name: Build & Test
+        env:
+          CMD: |
+            cd /workspace
+            python3 .github/scripts/cmake.py        \
+              --os         ${{ runner.os }}         \
+              --arch       ${{ matrix.arch }}       \
+              --compiler   clang                    \
+              --version    ${{ matrix.version }}    \
+              --build-type ${{ matrix.build-type }} \
+              --target     ${{ matrix.target }}
+        run: docker exec build-container bash -eu -c "$CMD"
+
+  gcc:
+    runs-on: ubuntu-24.04
+
+    strategy:
+      fail-fast: false
+      matrix:
+        version:    ["15"]
+        container:  ["ubuntu:26.04"]
+        arch:       [x64, x86]
+        build-type: [Release, Debug]
+        target:     [test, asan/ubsan, tsan, fno-exceptions, fno-rtti, valgrind]
+        include:
+          - { version: "5",   container: ubuntu:18.04, arch: x64, build-type: Release, target: test }
+          - { version: "6",   container: ubuntu:18.04, arch: x64, build-type: Release, target: test }
+          - { version: "7",   container: ubuntu:18.04, arch: x64, build-type: Release, target: test }
+          - { version: "8",   container: ubuntu:18.04, arch: x64, build-type: Release, target: test }
+          - { version: "9",   container: ubuntu:22.04, arch: x64, build-type: Release, target: test }
+          - { version: "10",  container: ubuntu:24.04, arch: x64, build-type: Release, target: test }
+          - { version: "11",  container: ubuntu:24.04, arch: x64, build-type: Release, target: test }
+          - { version: "12",  container: ubuntu:24.04, arch: x64, build-type: Release, target: test }
+          - { version: "13",  container: ubuntu:24.04, arch: x64, build-type: Release, target: test }
+          - { version: "14",  container: ubuntu:24.04, arch: x64, build-type: Release, target: test }
+        exclude:
+          - { arch: x86, target: tsan }
+
+    steps:
+      - uses: actions/checkout@v5
+
+      # Ref: https://github.com/actions/checkout/issues/1590#issuecomment-2567109195
+      - name: Prepare Container
+        run: |
+          docker pull ${{ matrix.container }}
+          docker run --name build-container -d -v ${{ github.workspace }}:/workspace ${{ matrix.container }} tail -f /dev/null
+
+      - name: Install
+        env:
+          CMD: |
+            dpkg --add-architecture i386
+
+            # Configure Kitware repo for newer version of CMake.
+            if [ "${{ matrix.container }}" = "ubuntu:18.04" ]; then
+              apt-get update && apt-get install -y wget gpg
+              wget -O - https://apt.kitware.com/keys/kitware-archive-latest.asc 2>/dev/null | gpg --dearmor - | tee /usr/share/keyrings/kitware-archive-keyring.gpg >/dev/null
+              echo 'deb [signed-by=/usr/share/keyrings/kitware-archive-keyring.gpg] https://apt.kitware.com/ubuntu/ bionic main' | tee /etc/apt/sources.list.d/kitware.list >/dev/null
+            fi
+
+            apt-get update
+            apt-get install -y cmake ninja-build valgrind libc6-dbg:i386 python3
+            apt-get install -y g++-${{ matrix.version }} g++-${{ matrix.version }}-multilib
+        run: docker exec build-container bash -eu -c "$CMD"
+
+      - name: Build & Test
+        env:
+          CMD: |
+            cd /workspace
+            python3 .github/scripts/cmake.py        \
+              --os         ${{ runner.os }}         \
+              --arch       ${{ matrix.arch }}       \
+              --compiler   gcc                      \
+              --version    ${{ matrix.version }}    \
+              --build-type ${{ matrix.build-type }} \
+              --target     ${{ matrix.target }}
+        run: docker exec build-container bash -eu -c "$CMD"
+
+  icc:
+    runs-on: ubuntu-22.04
+
+    strategy:
+      fail-fast: false
+      matrix:
+        configuration: ["Debug", "Release"]
+        compiler: ["icpc", "icx"]
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Install
+        run: |
+          wget -O - https://apt.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB 2>/dev/null | gpg --dearmor - | sudo tee /usr/share/keyrings/oneapi-archive-keyring.gpg >/dev/null
+          echo "deb [signed-by=/usr/share/keyrings/oneapi-archive-keyring.gpg] https://apt.repos.intel.com/oneapi all main" | sudo tee /etc/apt/sources.list.d/oneapi.list >/dev/null
+          sudo apt-get update
+          sudo apt-get install -y intel-oneapi-compiler-dpcpp-cpp-and-cpp-classic ninja-build
+
+      - name: Generate
+        run: |
+          . /opt/intel/oneapi/setvars.sh
+          if [ "${{ matrix.compiler }}" = "icpc" ]; then
+            cmake -B build -S . -G Ninja -D CMAKE_C_COMPILER=icc -D CMAKE_CXX_COMPILER=icpc -D CMAKE_BUILD_TYPE=${{ matrix.configuration }} -D CMAKE_CXX_FLAGS="-w2 -Wcheck -Werror -diag-disable=10441 -D DOCTEST_CONFIG_NO_CONTRADICTING_INLINE"
+          else
+            cmake -B build -S . -G Ninja -D CMAKE_C_COMPILER=icx -D CMAKE_CXX_COMPILER=icpx -D CMAKE_BUILD_TYPE=${{ matrix.configuration }} -D CMAKE_CXX_FLAGS="-Werror -fp-model=precise"
+          fi
+
+      - name: Build
+        run: |
+          . /opt/intel/oneapi/setvars.sh
+          cmake --build build --config ${{ matrix.configuration }}
+
+      - name: Test
+        run: |
+          . /opt/intel/oneapi/setvars.sh
+          ctest -C ${{ matrix.configuration }} --test-dir build --no-tests=error

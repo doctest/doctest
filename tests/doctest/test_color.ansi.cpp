@@ -9,7 +9,7 @@ namespace {
 
 /** @return the text that the color stringizes to */
 inline std::string text(doctest::Color::Enum color) noexcept {
-    std::ostringstream oss { };
+    std::ostringstream oss{};
     oss << color;
     return oss.str();
 }
@@ -29,7 +29,7 @@ DOCTEST_MSVC_SUPPRESS_WARNING_WITH_PUSH(4866)
 TEST_CASE("Colorizing a stream") {
     using namespace doctest;
 
-    doctest::detail::g_cs->force_colors = true;
+    doctest::detail::g_cs->force_colors = true; // clang-format off
     CHECK(escape(text(Color::None))        == "[0m");
     CHECK(escape(text(Color::White))       == "[0m");
     CHECK(escape(text(Color::Red))         == "[0;31m");
@@ -42,6 +42,6 @@ TEST_CASE("Colorizing a stream") {
     CHECK(escape(text(Color::BrightGreen)) == "[1;32m");
     CHECK(escape(text(Color::LightGrey))   == "[0;37m");
     CHECK(escape(text(Color::BrightWhite)) == "[1;37m");
-    doctest::detail::g_cs->force_colors = false;
+    doctest::detail::g_cs->force_colors = false; // clang-format on
 }
 DOCTEST_MSVC_SUPPRESS_WARNING_POP

@@ -12,9 +12,9 @@ namespace {
 using doctest::detail::ExceptionTranslator;
 
 /** Example exceptions... */
-struct exception1 { };
-struct exception2 { };
-struct exception3 { };
+struct exception1 {};
+struct exception2 {};
+struct exception3 {};
 
 /** ...and their translators */
 const ExceptionTranslator<exception1> translator1([](exception1) { return doctest::String("exception1"); });
@@ -28,22 +28,23 @@ const ExceptionTranslator<exception3> translator3([](exception3) { return doctes
  * */
 template <typename Ex, typename Fn>
 inline doctest::String with_ambient_exception(Ex e, Fn f) {
-    try { throw e; } // NOLINT(hicpp-exception-baseclass)
-    catch (... ) { return f(); }
+    try {
+        throw e; // NOLINT(hicpp-exception-baseclass)
+    } catch (...) { return f(); }
 }
 
 inline bool should_skip() noexcept {
     // TODO: For some reason ubuntu-22.04, gcc-6 fails these tests
-    return (DOCTEST_GCC >= DOCTEST_COMPILER(6,0,0)) && (DOCTEST_GCC < DOCTEST_COMPILER(7,0,0));
+    return (DOCTEST_GCC >= DOCTEST_COMPILER(6, 0, 0)) && (DOCTEST_GCC < DOCTEST_COMPILER(7, 0, 0));
 }
 
 } // namespace
 
 TEST_CASE("Translating custom exceptions" * doctest::skip(should_skip())) {
     SUBCASE("Throwing exception1") {
-        auto result = with_ambient_exception(exception1 { }, [] {
+        auto result = with_ambient_exception(exception1{}, [] {
             auto result_ = doctest::String();
-            REQUIRE( translator1.translate(result_));
+            REQUIRE(translator1.translate(result_));
             REQUIRE(!translator2.translate(result_));
             REQUIRE(!translator3.translate(result_));
             return result_;
@@ -53,10 +54,10 @@ TEST_CASE("Translating custom exceptions" * doctest::skip(should_skip())) {
     }
 
     SUBCASE("Throwing exception1") {
-        auto result = with_ambient_exception(exception2 { }, [] {
+        auto result = with_ambient_exception(exception2{}, [] {
             auto result_ = doctest::String();
             REQUIRE(!translator1.translate(result_));
-            REQUIRE( translator2.translate(result_));
+            REQUIRE(translator2.translate(result_));
             REQUIRE(!translator3.translate(result_));
             return result_;
         });
@@ -65,11 +66,11 @@ TEST_CASE("Translating custom exceptions" * doctest::skip(should_skip())) {
     }
 
     SUBCASE("Throwing exception1") {
-        auto result = with_ambient_exception(exception3 { }, [] {
+        auto result = with_ambient_exception(exception3{}, [] {
             auto result_ = doctest::String();
             REQUIRE(!translator1.translate(result_));
             REQUIRE(!translator2.translate(result_));
-            REQUIRE( translator3.translate(result_));
+            REQUIRE(translator3.translate(result_));
             return result_;
         });
 

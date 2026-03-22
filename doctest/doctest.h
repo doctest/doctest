@@ -319,16 +319,25 @@ DOCTEST_SUPPRESS_PUBLIC_WARNINGS_PUSH
 #ifndef DOCTEST_PARTS_PUBLIC_PLATFORM
 #define DOCTEST_PARTS_PUBLIC_PLATFORM
 
-// not using __APPLE__ because... this is how Catch does it
-#ifdef __MAC_OS_X_VERSION_MIN_REQUIRED
+#if defined(__APPLE__)
+// Apple detection taken from Catch2 codebase
+// For <TargetConditionals.h> information:
+//   https://github.com/swiftlang/swift-corelibs-foundation/blob/release/5.10/CoreFoundation/Base.subproj/SwiftRuntime/TargetConditionals.h
+#include <TargetConditionals.h>
+#if (defined(TARGET_OS_MAC) && TARGET_OS_MAC == 1) || (defined(TARGET_OS_OSX) && TARGET_OS_OSX == 1)
 #define DOCTEST_PLATFORM_MAC
-#elif defined(__IPHONE_OS_VERSION_MIN_REQUIRED)
+
+#elif defined(TARGET_OS_IPHONE) && TARGET_OS_IPHONE == 1
 #define DOCTEST_PLATFORM_IPHONE
-#elif defined(_WIN32)
+#endif
+
+#elif defined(WIN32) || defined(_WIN32)
 #define DOCTEST_PLATFORM_WINDOWS
+
 #elif defined(__wasi__)
 #define DOCTEST_PLATFORM_WASI
-#else // DOCTEST_PLATFORM
+
+#else // defined(linux) || defined(__linux) // defined(__linux__)
 #define DOCTEST_PLATFORM_LINUX
 #endif // DOCTEST_PLATFORM
 
@@ -515,6 +524,12 @@ DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_END
 #endif // DOCTEST_CONFIG_INCLUDE_TYPE_TRAITS
 #endif // DOCTEST_CONFIG_USE_STD_HEADERS
 
+#if defined(__has_builtin)
+#define DOCTEST_HAS_BUILTIN(x) __has_builtin(x)
+#else
+#define DOCTEST_HAS_BUILTIN(x) 0
+#endif // __has_builtin
+
 #endif // DOCTEST_PARTS_PUBLIC_CONFIG
 
 // =================================================================================================
@@ -574,8 +589,12 @@ DOCTEST_SUPPRESS_PUBLIC_WARNINGS_POP
 
 
 #ifndef DOCTEST_BREAK_INTO_DEBUGGER
+
 // should probably take a look at https://github.com/scottt/debugbreak
-#ifdef DOCTEST_PLATFORM_LINUX
+#if DOCTEST_CLANG && DOCTEST_HAS_BUILTIN(__builtin_debugtrap)
+#define DOCTEST_BREAK_INTO_DEBUGGER() __builtin_debugtrap()
+
+#elif defined(DOCTEST_PLATFORM_LINUX)
 #if defined(__GNUC__) && (defined(__i386) || defined(__x86_64))
 // Break at the location of the failing check if possible
 #define DOCTEST_BREAK_INTO_DEBUGGER() __asm__("int $3\n" ::) // NOLINT(hicpp-no-assembler)
@@ -585,6 +604,7 @@ DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_BEGIN
 DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_END
 #define DOCTEST_BREAK_INTO_DEBUGGER() raise(SIGTRAP)
 #endif
+
 #elif defined(DOCTEST_PLATFORM_MAC)
 #if defined(__x86_64) || defined(__x86_64__) || defined(__amd64__) || defined(__i386)
 #define DOCTEST_BREAK_INTO_DEBUGGER() __asm__("int $3\n" ::) // NOLINT(hicpp-no-assembler)
@@ -595,8 +615,10 @@ DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_END
 #else
 #define DOCTEST_BREAK_INTO_DEBUGGER() __asm__("brk #0"); // NOLINT(hicpp-no-assembler)
 #endif
+
 #elif DOCTEST_MSVC
 #define DOCTEST_BREAK_INTO_DEBUGGER() __debugbreak()
+
 #elif defined(__MINGW32__)
 DOCTEST_GCC_SUPPRESS_WARNING_WITH_PUSH("-Wredundant-decls")
 extern "C" __declspec(dllimport) void __stdcall DebugBreak();
@@ -762,6 +784,11 @@ struct is_array : false_type {};
 // NOLINTNEXTLINE(*-avoid-c-arrays)
 template <typename T, size_t SIZE>
 struct is_array<T[SIZE]> : true_type {};
+#endif
+
+#if !(defined(DOCTEST_CONFIG_INCLUDE_TYPE_TRAITS) && (DOCTEST_CPLUSPLUS >= 201703L))
+template <typename... Unused>
+using void_t = void;
 #endif
 
 } // namespace types
@@ -974,6 +1001,30 @@ struct should_stringify_as_underlying_type {
         detail::types::is_enum<T>::value && !doctest::detail::has_insertion_operator<T>::value;
 };
 
+template <typename T, typename = void>
+struct is_pair : types::false_type {};
+
+template <typename T>
+struct is_pair<
+    T,
+    types::void_t<
+        typename T::first_type,
+        typename T::second_type,
+        decltype(declval<T>().first),
+        decltype(declval<T>().second)>> : types::true_type {};
+
+template <typename T, typename = void>
+struct is_container : types::false_type {};
+
+template <typename T>
+struct is_container<
+    T,
+    types::void_t<
+        typename T::value_type,
+        typename T::iterator,
+        decltype(declval<T>().begin()),
+        decltype(declval<T>().end())>> : types::true_type {};
+
 DOCTEST_INTERFACE std::ostream *tlssPush();
 DOCTEST_INTERFACE String tlssPop();
 
@@ -988,7 +1039,7 @@ struct StringMakerBase {
     }
 };
 
-template <typename T>
+template <typename T, typename Enable = void>
 struct filldata;
 
 template <typename T>
@@ -1021,9 +1072,10 @@ struct StringMakerBase<true> {
 } // namespace detail
 
 template <typename T>
-struct StringMaker : public detail::StringMakerBase<
-                         detail::has_insertion_operator<T>::value || detail::types::is_pointer<T>::value ||
-                         detail::types::is_array<T>::value> {};
+struct StringMaker
+    : public detail::StringMakerBase<
+          detail::has_insertion_operator<T>::value || detail::types::is_pointer<T>::value ||
+          detail::types::is_array<T>::value || detail::is_pair<T>::value || detail::is_container<T>::value> {};
 
 #ifndef DOCTEST_STRINGIFY
 #ifdef DOCTEST_CONFIG_DOUBLE_STRINGIFY
@@ -1097,7 +1149,7 @@ String toString(const DOCTEST_REF_WRAP(T) value) {
 }
 
 namespace detail {
-template <typename T>
+template <typename T, typename Enable>
 struct filldata {
     static void fill(std::ostream *stream, const T &in) {
 #if defined(_MSC_VER) && _MSC_VER <= 1900
@@ -1161,6 +1213,32 @@ struct filldata<T *> {
 #endif // DOCTEST_GCC
         );
         DOCTEST_CLANG_SUPPRESS_WARNING_POP
+    }
+};
+
+template <typename T>
+struct filldata<
+    T,
+    typename detail::types::enable_if<!detail::has_insertion_operator<T>::value && detail::is_pair<T>::value>::type> {
+    static void fill(std::ostream *stream, const T &in) {
+        *stream << "{" << DOCTEST_STRINGIFY(in.first) << ", " << DOCTEST_STRINGIFY(in.second) << "}";
+    }
+};
+
+template <typename T>
+struct filldata<
+    T,
+    typename detail::types::enable_if<
+        !detail::has_insertion_operator<T>::value && detail::is_container<T>::value>::type> {
+    static void fill(std::ostream *stream, const DOCTEST_REF_WRAP(T) in) {
+        *stream << "{";
+        for (auto it = in.begin(); it != in.end(); ++it) {
+            if (it != in.begin()) {
+                *stream << ", ";
+            }
+            *stream << DOCTEST_STRINGIFY(*it);
+        }
+        *stream << "}";
     }
 };
 
@@ -1691,8 +1769,7 @@ namespace detail {
         return *this;                                                                                                  \
     }
 
-struct DOCTEST_INTERFACE Result // NOLINT(*-member-init)
-{
+struct DOCTEST_INTERFACE Result { // NOLINT(*-member-init)
     bool m_passed;
     String m_decomp;
 
@@ -2227,7 +2304,7 @@ public:
         } catch (const T &ex) {
             res = m_translateFunction(ex);
             return true;
-        } catch (...) {}
+        } catch (...) {}        // NOLINT(bugprone-empty-catch)
 #endif                          // DOCTEST_CONFIG_NO_EXCEPTIONS
         static_cast<void>(res); // to silence -Wunused-parameter
         return false;
@@ -6704,6 +6781,7 @@ void ConsoleReporter::test_run_end(const TestRunStats &p) {
 }
 
 void ConsoleReporter::test_case_start(const TestCaseData &in) {
+    DOCTEST_LOCK_MUTEX(mutex)
     hasLoggedCurrentTestStart = false;
     tc = &in;
     subcasesStack.clear();
@@ -6711,10 +6789,12 @@ void ConsoleReporter::test_case_start(const TestCaseData &in) {
 }
 
 void ConsoleReporter::test_case_reenter(const TestCaseData &) {
+    DOCTEST_LOCK_MUTEX(mutex)
     subcasesStack.clear();
 }
 
 void ConsoleReporter::test_case_end(const CurrentTestCaseStats &st) {
+    DOCTEST_LOCK_MUTEX(mutex)
     if (tc->m_no_output)
         return;
 
@@ -6773,12 +6853,14 @@ void ConsoleReporter::test_case_exception(const TestCaseException &e) {
 }
 
 void ConsoleReporter::subcase_start(const SubcaseSignature &subc) {
+    DOCTEST_LOCK_MUTEX(mutex)
     subcasesStack.push_back(subc);
     ++currentSubcaseLevel;
     hasLoggedCurrentTestStart = false;
 }
 
 void ConsoleReporter::subcase_end() {
+    DOCTEST_LOCK_MUTEX(mutex)
     --currentSubcaseLevel;
     hasLoggedCurrentTestStart = false;
 }
@@ -7114,8 +7196,10 @@ std::string JUnitReporter::JUnitTestCaseData::getCurrentTimestamp() {
     const auto timeStampSize = sizeof("2017-01-16T17:06:45Z");
 
     std::tm timeInfo;
-#ifdef DOCTEST_PLATFORM_WINDOWS
+#if defined(DOCTEST_PLATFORM_WINDOWS)
     gmtime_s(&timeInfo, &rawtime);
+#elif defined(__STDC_LIB_EXT1__)
+    gmtime_s(&rawtime, &timeInfo);
 #else  // DOCTEST_PLATFORM_WINDOWS
     gmtime_r(&rawtime, &timeInfo);
 #endif // DOCTEST_PLATFORM_WINDOWS
@@ -7231,11 +7315,13 @@ void JUnitReporter::test_run_end(const TestRunStats &p) {
 }
 
 void JUnitReporter::test_case_start(const TestCaseData &in) {
+    DOCTEST_LOCK_MUTEX(mutex)
     testCaseData.add(skipPathFromFilename(in.m_file.c_str()), in.m_name);
     timer.start();
 }
 
 void JUnitReporter::test_case_reenter(const TestCaseData &in) {
+    DOCTEST_LOCK_MUTEX(mutex)
     testCaseData.addTime(timer.getElapsedSeconds());
     testCaseData.appendSubcaseNamesToLastTestcase(deepestSubcaseStackNames);
     deepestSubcaseStackNames.clear();
@@ -7245,6 +7331,7 @@ void JUnitReporter::test_case_reenter(const TestCaseData &in) {
 }
 
 void JUnitReporter::test_case_end(const CurrentTestCaseStats &) {
+    DOCTEST_LOCK_MUTEX(mutex)
     testCaseData.addTime(timer.getElapsedSeconds());
     testCaseData.appendSubcaseNamesToLastTestcase(deepestSubcaseStackNames);
     deepestSubcaseStackNames.clear();
@@ -7256,6 +7343,7 @@ void JUnitReporter::test_case_exception(const TestCaseException &e) {
 }
 
 void JUnitReporter::subcase_start(const SubcaseSignature &in) {
+    DOCTEST_LOCK_MUTEX(mutex)
     deepestSubcaseStackNames.push_back(in.m_name);
 }
 
@@ -7516,6 +7604,7 @@ void XmlReporter::test_run_end(const TestRunStats &p) {
 }
 
 void XmlReporter::test_case_start(const TestCaseData &in) {
+    DOCTEST_LOCK_MUTEX(mutex)
     test_case_start_impl(in);
     xml.ensureTagClosed();
 }
@@ -7523,6 +7612,7 @@ void XmlReporter::test_case_start(const TestCaseData &in) {
 void XmlReporter::test_case_reenter(const TestCaseData &) {}
 
 void XmlReporter::test_case_end(const CurrentTestCaseStats &st) {
+    DOCTEST_LOCK_MUTEX(mutex)
     xml.startElement("OverallResultsAsserts")
         .writeAttribute("successes", st.numAssertsCurrentTest - st.numAssertsFailedCurrentTest)
         .writeAttribute("failures", st.numAssertsFailedCurrentTest)
@@ -7543,6 +7633,7 @@ void XmlReporter::test_case_exception(const TestCaseException &e) {
 }
 
 void XmlReporter::subcase_start(const SubcaseSignature &in) {
+    DOCTEST_LOCK_MUTEX(mutex)
     xml.startElement("SubCase")
         .writeAttribute("name", in.m_name)
         .writeAttribute("filename", skipPathFromFilename(in.m_file))
@@ -7551,6 +7642,7 @@ void XmlReporter::subcase_start(const SubcaseSignature &in) {
 }
 
 void XmlReporter::subcase_end() {
+    DOCTEST_LOCK_MUTEX(mutex)
     xml.endElement();
 }
 
@@ -7600,6 +7692,7 @@ void XmlReporter::log_message(const MessageData &mb) {
 
 void XmlReporter::test_case_skipped(const TestCaseData &in) {
     if (opt.no_skipped_summary == false) {
+        DOCTEST_LOCK_MUTEX(mutex)
         test_case_start_impl(in);
         xml.writeAttribute("skipped", "true");
         xml.endElement();

@@ -40,14 +40,14 @@ TEST_CASE("threads...") {
     // exceptions from threads (that includes failing REQUIRE asserts) have to be handled explicitly
     SUBCASE("spawned threads with exception propagation") {
         std::exception_ptr exception_ptr = nullptr;
-        std::mutex         mutex;
+        std::mutex mutex;
 
         auto might_throw = [&]() {
             try {
                 REQUIRE(1 == 1);
                 REQUIRE(1 == 2); // will fail and throw an exception
                 MESSAGE("not reached!");
-            } catch(...) {
+            } catch (...) {
                 // make sure there are no races when dealing with the exception ptr
                 std::lock_guard<std::mutex> lock(mutex);
 
@@ -63,7 +63,7 @@ TEST_CASE("threads...") {
         t2.join();
 
         // if any thread has thrown an exception - rethrow it
-        if(exception_ptr)
+        if (exception_ptr)
             std::rethrow_exception(exception_ptr);
     }
 }

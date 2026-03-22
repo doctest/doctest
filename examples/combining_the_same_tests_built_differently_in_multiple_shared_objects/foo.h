@@ -22,20 +22,23 @@ inline int bar() {
 #ifdef DOCTEST_LIBRARY_INCLUDED
 
 #ifdef RETURN_42
-TEST_CASE(TEST_LABEL "bartest"){
-    INFO("Running " TEST_LABEL "bartest"); MESSAGE("");
+TEST_CASE(TEST_LABEL "bartest") {
+    INFO("Running " TEST_LABEL "bartest");
+    MESSAGE("");
     CHECK_EQ(42, bar());
 }
 #endif
 
 #ifndef RETURN_42
-TEST_CASE(TEST_LABEL "bartest"){
-    INFO("Running " TEST_LABEL "bartest"); MESSAGE("");
+TEST_CASE(TEST_LABEL "bartest") {
+    INFO("Running " TEST_LABEL "bartest");
+    MESSAGE("");
     CHECK_EQ(11, bar());
 }
 #endif
 
-TEST_CASE(TEST_LABEL "commontest"){
-    INFO("Running " TEST_LABEL "commontest"); MESSAGE("");
+TEST_CASE(TEST_LABEL "commontest") {
+    INFO("Running " TEST_LABEL "commontest");
+    MESSAGE("");
 }
 #endif // DOCTEST_LIBRARY_INCLUDED

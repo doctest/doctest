@@ -6,22 +6,24 @@ DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_BEGIN
 DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_END
 
 namespace user4 {
-struct label
-{
+struct label {
     label()
-            : i(0) {}
-    int  i;
-    bool operator==(const user4::label& rhs) const { return i == rhs.i; }
+        : i(0) {}
+    int i;
+    bool operator==(const user4::label &rhs) const {
+        return i == rhs.i;
+    }
 };
 } // namespace user4
 
 namespace user5 {
-struct label
-{
+struct label {
     label()
-            : i(0) {}
-    int  i;
-    bool operator==(const user5::label& rhs) const { return i == rhs.i; }
+        : i(0) {}
+    int i;
+    bool operator==(const user5::label &rhs) const {
+        return i == rhs.i;
+    }
 };
 } // namespace user5
 
