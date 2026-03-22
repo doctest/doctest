@@ -27,7 +27,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        version:    ["21"]
+        version:    ["22"]
         container:  ["ubuntu:26.04"]
         arch:       [x64, x86]
         build-type: [Release, Debug]
@@ -51,6 +51,7 @@ jobs:
           - { version: "18",  container: ubuntu:24.04, arch: x64, build-type: Release, target: test }
           - { version: "19",  container: ubuntu:26.04, arch: x64, build-type: Release, target: test }
           - { version: "20",  container: ubuntu:26.04, arch: x64, build-type: Release, target: test }
+          - { version: "21",  container: ubuntu:26.04, arch: x64, build-type: Release, target: test }
         exclude:
           - { arch: x86, target: tsan }
 
@@ -62,6 +63,16 @@ jobs:
         run: |
           docker pull ${{ matrix.container }}
           docker run --name build-container -d -v ${{ github.workspace }}:/workspace ${{ matrix.container }} tail -f /dev/null
+
+      - name: Configure LLVM Upstream
+        if: matrix.version == '22'
+        run: |
+          # See apt.llvm.org
+          wget -qO- http://apt.llvm.org/llvm-snapshot.gpg.key \
+            | sudo tee /etc/apt/trusted.gpg.d/apt.llvm.org.asc
+
+          sudo add-apt-repository \
+            "deb http://apt.llvm.org/$(lsb_release -cs)/ llvm-toolchain-$(lsb_release -cs)-${{ env.LLVM_VERSION}} main"
 
       - name: Install
         env:
