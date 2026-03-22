@@ -1,6 +1,8 @@
 ## Test cases
 
-While **doctest** fully supports the traditional, xUnit, style of class-based fixtures containing test case methods this is not the preferred style. Instead **doctest** provides a powerful mechanism for nesting subcases within a test case. For a more detailed discussion and examples see the [**tutorial**](tutorial.md#test-cases-and-subcases).
+While **doctest** fully supports the traditional, xUnit, style of class-based fixtures containing test case methods, this is not the preferred style.
+Instead **doctest** provides a powerful mechanism for nesting subcases within a test case.
+For a more detailed discussion and examples see the [**tutorial**](tutorial.md#test-cases-and-subcases).
 
 Test cases and subcases are very easy to use in practice:
 

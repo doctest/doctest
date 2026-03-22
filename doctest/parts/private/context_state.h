@@ -4,6 +4,7 @@
 #include "doctest/parts/private/prelude.h"
 #include "doctest/parts/private/timer.h"
 #include "doctest/parts/private/atomic.h"
+#include "doctest/parts/private/traversal.h"
 
 DOCTEST_SUPPRESS_PRIVATE_WARNINGS_PUSH
 
@@ -27,12 +28,8 @@ struct ContextState : ContextOptions, TestRunStats, CurrentTestCaseStats {
 
     std::vector<String> stringifiedContexts; // logging from INFO() due to an exception
 
-    // stuff for subcases
-    bool reachedLeaf;
-    std::vector<SubcaseSignature> subcaseStack;
-    std::vector<SubcaseSignature> nextSubcaseStack;
-    std::unordered_set<unsigned long long> fullyTraversedSubcases;
-    size_t currentSubcaseDepth;
+    // Backtrack traversal state for SUBCASE reruns.
+    TraversalState traversal;
     Atomic<bool> shouldLogCurrentException;
 
     void resetRunData();

@@ -100,6 +100,7 @@ doctest_add_unit_test(WITH_MAIN SOURCE doctest/test_filters.cpp)
 doctest_add_unit_test(WITH_MAIN SOURCE doctest/test_path.cpp)
 doctest_add_unit_test(WITH_MAIN SOURCE doctest/test_platform.cpp DEFINES CMAKE_SYSTEM_NAME="${CMAKE_SYSTEM_NAME}")
 doctest_add_unit_test(WITH_MAIN SOURCE doctest/test_string.cpp)
+doctest_add_unit_test(WITH_MAIN SOURCE doctest/test_traversal.cpp)
 doctest_add_unit_test(WITH_MAIN SOURCE doctest/test_xml.cpp)
 
 # Regression tests
@@ -118,6 +119,14 @@ doctest_add_unit_test(
 
 doctest_add_unit_test(WITH_MAIN SOURCE regression/test.630.cpp)
 doctest_add_unit_test(WITH_MAIN SOURCE regression/test.651.cpp)
+doctest_add_unit_test(          SOURCE regression/test.782.cpp)
 doctest_add_unit_test(WITH_MAIN SOURCE regression/test.786.cpp)
 doctest_add_unit_test(          SOURCE regression/test.873.cpp)
 doctest_add_unit_test(WITH_MAIN SOURCE regression/test.915.cpp)
+
+set_tests_properties(
+    regression/test.782.cpp
+    PROPERTIES
+        PASS_REGULAR_EXPRESSION
+            ".*ERROR: test case THREW exception: #782 repro exception.*|Exceptions disabled, cannot run this test"
+)
