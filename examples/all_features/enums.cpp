@@ -57,6 +57,7 @@ TEST_CASE("enum 1") {
     ostr << Zero << One << Two;
     ostr << TypedZero << TypedOne << TypedTwo;
     static_assert(std::is_enum<EnumClassSC>::value, "");
+    // NOLINTNEXTLINE(bugprone-unintended-char-ostream-output)
     ostr << printable(EnumClassSC::Zero) << printable(EnumClassSC::One) << printable(EnumClassSC::Two);
 
     CHECK_EQ(Zero, 0);
