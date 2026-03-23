@@ -8,7 +8,7 @@ DOCTEST_SUPPRESS_PUBLIC_WARNINGS_PUSH
 
 namespace doctest {
 namespace Color {
-enum Enum {
+enum Enum {  // NOLINT(cert-int09-c)
     None = 0,
     White,
     Red,

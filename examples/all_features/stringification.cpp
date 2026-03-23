@@ -75,7 +75,7 @@ TEST_CASE("no headers") {
     MESSAGE(cnptr);
     CHECK(cnptr != nullptr);
 
-    enum Test {
+    enum Test { // NOLINT(cert-int09-c)
         A = 0,
         B,
         C = 100,
