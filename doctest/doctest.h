@@ -7976,7 +7976,7 @@ public:
         ss.rdbuf()->pubseekpos(pos, std::ios::in | std::ios::out);
         return String(ss, sz);
     }
-} g_oss; // NOLINT(cert-err58-cpp)
+} g_oss; // NOLINT(bugprone-throwing-static-initialization, cert-err58-cpp)
 
 std::ostream *tlssPush() {
     return g_oss.push();
