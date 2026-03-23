@@ -623,7 +623,7 @@ int Context::run() {
 
             bool run_test = true;
 
-            do {
+            do { // NOLINT(cppcoreguidelines-avoid-do-while)
                 // Reset per-run traversal data while keeping the current decision path prefix.
                 p->traversal.resetForRun();
 

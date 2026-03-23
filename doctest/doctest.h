@@ -2615,7 +2615,7 @@ DOCTEST_INTERFACE bool
 decomp_assert(assertType::Enum at, const char *file, int line, const char *expr, const Result &result);
 
 #define DOCTEST_ASSERT_OUT_OF_TESTS(decomp)                                                                            \
-    do {                                                                                                               \
+    do { /* NOLINT(cppcoreguidelines-avoid-do-while) */                                                                \
         if (!is_running_in_test) {                                                                                     \
             if (failed) {                                                                                              \
                 ResultBuilder rb(at, file, line, expr);                                                                \
@@ -2842,7 +2842,7 @@ int instantiationHelper(const T &) noexcept {
 #define DOCTEST_FUNC_SCOPE_END ()
 #define DOCTEST_FUNC_SCOPE_RET(v) return v
 #else
-#define DOCTEST_FUNC_SCOPE_BEGIN do
+#define DOCTEST_FUNC_SCOPE_BEGIN do /* NOLINT(cppcoreguidelines-avoid-do-while)*/
 #define DOCTEST_FUNC_SCOPE_END while (false)
 #define DOCTEST_FUNC_SCOPE_RET(v) (void)0
 #endif
@@ -5694,7 +5694,7 @@ int Context::run() {
 
             bool run_test = true;
 
-            do {
+            do { // NOLINT(cppcoreguidelines-avoid-do-while)
                 // Reset per-run traversal data while keeping the current decision path prefix.
                 p->traversal.resetForRun();
 

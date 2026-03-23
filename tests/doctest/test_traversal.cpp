@@ -24,7 +24,7 @@ TEST_CASE("TraversalState advances through discovered subcase paths") {
 
     std::vector<std::vector<std::string>> visited_paths;
 
-    do {
+    do { /* NOLINT(cppcoreguidelines-avoid-do-while) */
         traversal.resetForRun();
         std::vector<std::string> visited_path;
 
