@@ -69,6 +69,7 @@ TEST_CASE("exercising tricky code paths of doctest") {
     // trigger code path for assert string of a non-existent assert type
 #ifndef DOCTEST_CONFIG_NO_EXCEPTIONS
     try {
+        // NOLINTNEXTLINE(clang-analyzer-optin.core.EnumCastOutOfRange)
         assertString(static_cast<assertType::Enum>(3));
     } catch (const std::logic_error &) {} // NOLINT(bugprone-empty-catch)
 #endif
