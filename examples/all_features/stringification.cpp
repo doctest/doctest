@@ -100,7 +100,7 @@ DOCTEST_MSVC_SUPPRESS_WARNING(5045) // Spectre mitigation diagnostics
 // NOLINTBEGIN(cert-dcl58-cpp)
 namespace std {
 template <typename T>
-ostream &operator<<(ostream &stream, const vector<T> &in) {
+ostream &operator<<(ostream &stream, const vector<T> &in) { // NOLINT(bugprone-std-namespace-modification)
     stream << "[";
     for (size_t i = 0; i < in.size(); ++i) {
         if (i != 0) {

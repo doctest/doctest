@@ -16,6 +16,7 @@ DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_END
 // Forward declaring 'X' in namespace std is not permitted by the C++ Standard.
 DOCTEST_MSVC_SUPPRESS_WARNING_WITH_PUSH(4643)
 
+// NOLINTBEGIN(bugprone-std-namespace-modification)
 namespace std {                          // NOLINT(cert-dcl58-cpp)
 typedef decltype(nullptr) nullptr_t;     // NOLINT(modernize-use-using)
 typedef decltype(sizeof(void *)) size_t; // NOLINT(modernize-use-using)
@@ -43,6 +44,7 @@ class basic_string;
 using string = basic_string<char, char_traits<char>, allocator<char>>;
 #endif // VS 2019
 } // namespace std
+// NOLINTEND(bugprone-std-namespace-modification)
 
 DOCTEST_MSVC_SUPPRESS_WARNING_POP
 
