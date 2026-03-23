@@ -54,9 +54,9 @@ void ContextState::finalizeTestCaseData() {
         }
     }
 
-    bool ok_to_fail = (TestCaseFailureReason::ShouldHaveFailedAndDid & failure_flags) ||
-                      (TestCaseFailureReason::CouldHaveFailedAndDid & failure_flags) ||
-                      (TestCaseFailureReason::FailedExactlyNumTimes & failure_flags);
+    const bool ok_to_fail = (TestCaseFailureReason::ShouldHaveFailedAndDid & failure_flags) ||
+                            (TestCaseFailureReason::CouldHaveFailedAndDid & failure_flags) ||
+                            (TestCaseFailureReason::FailedExactlyNumTimes & failure_flags);
 
     // if any subcase has failed - the whole test case has failed
     testCaseSuccess = !(failure_flags && !ok_to_fail);

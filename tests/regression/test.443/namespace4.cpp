@@ -28,11 +28,11 @@ struct label {
 } // namespace user5
 
 TEST_CASE("namespace 4 member vs member") {
-    user4::label a4;
-    user4::label b4;
+    const user4::label a4;
+    const user4::label b4;
 
-    user5::label a5;
-    user5::label b5;
+    const user5::label a5;
+    const user5::label b5;
 
     REQUIRE(a4 == b4);
     REQUIRE(a5 == b5);

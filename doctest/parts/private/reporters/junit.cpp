@@ -90,6 +90,7 @@ void JUnitReporter::test_run_start() {
 
 void JUnitReporter::test_run_end(const TestRunStats &p) {
     // remove .exe extension - mainly to have the same output on UNIX and Windows
+    // NOLINTNEXTLINE(misc-const-correctness)
     std::string binary_name = skipPathFromFilename(opt.binary_name.c_str());
 #ifdef DOCTEST_PLATFORM_WINDOWS
     if (binary_name.rfind(".exe") != std::string::npos)
@@ -205,7 +206,7 @@ void JUnitReporter::log_message(const MessageData &mb) {
 void JUnitReporter::test_case_skipped(const TestCaseData &) {}
 
 void JUnitReporter::log_contexts(std::ostringstream &s) {
-    int num_contexts = get_num_active_contexts();
+    const int num_contexts = get_num_active_contexts();
     if (num_contexts) {
         auto contexts = get_active_contexts();
 

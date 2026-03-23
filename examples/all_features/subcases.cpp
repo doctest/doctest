@@ -48,7 +48,7 @@ TEST_CASE("lots of nested subcases") {
 
 TEST_CASE("reentering subcase via regular control flow") {
     cout << endl << "root" << endl;
-    for (int i: {0, 1, 2}) {
+    for (const int i: {0, 1, 2}) {
         cout << "outside of subcase" << endl;
         SUBCASE("") {
             cout << "inside subcase " << i << endl;
@@ -64,7 +64,7 @@ TEST_CASE("reentering subcase via regular control flow") {
         }
         SUBCASE("") {
             cout << "inside outside" << endl;
-            for (int j: {0, 1, 2}) {
+            for (const int j: {0, 1, 2}) {
                 SUBCASE("") {
                     cout << "nested twice " << i << ", " << j << endl;
                 }
@@ -168,13 +168,13 @@ static void checks(int data) { // NOLINT(misc-unused-parameters)
 
 TEST_CASE("Nested - related to https://github.com/doctest/doctest/issues/282") {
     DOCTEST_SUBCASE("generate data variant 1") {
-        int data(44);
+        const int data(44);
 
         // checks
         checks(data);
     }
     DOCTEST_SUBCASE("generate data variant 1") {
-        int data(80);
+        const int data(80);
 
         // checks (identical in both variants)
         checks(data);

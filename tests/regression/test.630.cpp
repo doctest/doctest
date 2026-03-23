@@ -32,6 +32,6 @@ TEST_CASE("Move Only Type") {
     CHECK(genType(true));
     CHECK_FALSE(genType(false));
 
-    MoveOnly a{0};
+    MoveOnly a{0}; // NOLINT(misc-const-correctness)
     CHECK_FALSE(a);
 }

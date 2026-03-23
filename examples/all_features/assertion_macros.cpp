@@ -9,8 +9,8 @@ DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_BEGIN
 DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_END
 
 TEST_CASE("normal macros") {
-    int a = 5;
-    int b = 5;
+    const int a = 5;
+    const int b = 5;
 
     CHECK(throw_if(true, std::runtime_error("whops!")) == 42);
 
@@ -25,7 +25,7 @@ TEST_CASE("normal macros") {
 }
 
 TEST_CASE("expressions should be evaluated only once") {
-    int a = 5;
+    int a = 5; // NOLINT(misc-const-correctness)
     REQUIRE(++a == 6);
     REQUIRE_EQ(++a, 7);
 }
@@ -76,7 +76,7 @@ TEST_CASE("WARN level of asserts don't fail the test case") {
     WARN_NOTHROW(throw_if(true, 0));
 
     WARN_EQ(1, 0);
-    doctest::String myStr = doctest::String("Hello world, how are you doing? Well, nice to meet you, Goodbye!");
+    const doctest::String myStr = doctest::String("Hello world, how are you doing? Well, nice to meet you, Goodbye!");
     WARN_EQ(myStr, doctest::Contains("Hello"));
     WARN(myStr == doctest::Contains("Goodbye"));
     WARN(myStr != doctest::Contains("goodbye"));
@@ -95,7 +95,7 @@ TEST_CASE("CHECK level of asserts fail the test case but don't abort it") {
     CHECK_NOTHROW(throw_if(true, 0));
 
     CHECK_EQ(1, 0);
-    doctest::String myStr = doctest::String("Hello world, how are you doing? Well, nice to meet you, Goodbye!");
+    const doctest::String myStr = doctest::String("Hello world, how are you doing? Well, nice to meet you, Goodbye!");
     CHECK_EQ(myStr, doctest::Contains("Hello"));
     CHECK(myStr == doctest::Contains("Goodbye"));
     CHECK(myStr != doctest::Contains("goodbye"));
@@ -186,8 +186,8 @@ TEST_CASE("all binary assertions") {
 }
 
 static void someAssertsInFunction() {
-    int a = 5;
-    int b = 5;
+    const int a = 5;
+    const int b = 5;
     CHECK(a == b);
     CHECK_FALSE(a != b);
     CHECK_THROWS(throw_if(true, 0));

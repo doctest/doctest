@@ -31,7 +31,7 @@ static int test_disabled_var_ = [] { // NOLINT
         TEST_FAIL();
     }
 #ifndef DOCTEST_CONFIG_NO_EXCEPTIONS_BUT_WITH_ALL_ASSERTS
-    int i = 2;
+    const int i = 2;
     (void)i;
     if (TEST_FLIP ^ CHECK_THROWS([=] { throw i; }())) {
         TEST_FAIL();

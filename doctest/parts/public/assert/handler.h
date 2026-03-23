@@ -55,7 +55,7 @@ DOCTEST_NOINLINE bool binary_assert(
     const DOCTEST_REF_WRAP(L) lhs,
     const DOCTEST_REF_WRAP(R) rhs
 ) {
-    bool failed = !RelationalComparator<comparison, L, R>()(lhs, rhs);
+    const bool failed = !RelationalComparator<comparison, L, R>()(lhs, rhs);
 
     // ###################################################################################
     // IF THE DEBUGGER BREAKS HERE - GO 1 LEVEL UP IN THE CALLSTACK FOR THE FAILING ASSERT

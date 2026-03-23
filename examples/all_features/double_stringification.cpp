@@ -13,7 +13,7 @@ static std::string toString(Foo *) {
 } // namespace App
 
 TEST_CASE("toString std::string ret type") {
-    App::Foo foo;
+    App::Foo foo; // NOLINT(misc-const-correctness)
     CHECK(&foo != nullptr);
     CHECK_NE(&foo, nullptr);
     CHECK(&foo);

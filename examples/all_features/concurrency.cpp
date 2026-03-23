@@ -19,8 +19,8 @@ TEST_CASE("threads...") {
         CHECK(value == 2);
     };
 
-    int data_1 = 1;
-    int data_2 = 2;
+    const int data_1 = 1;
+    const int data_2 = 2;
     CAPTURE(data_1); // will not be used for assertions in other threads
 
     // subcases have to be used only in the main thread (where the test runner is)
@@ -49,7 +49,7 @@ TEST_CASE("threads...") {
                 MESSAGE("not reached!");
             } catch (...) {
                 // make sure there are no races when dealing with the exception ptr
-                std::lock_guard<std::mutex> lock(mutex);
+                const std::lock_guard<std::mutex> lock(mutex);
 
                 // set the exception pointer in case of an exception - might overwrite
                 // another exception but here we care about propagating any exception - not all

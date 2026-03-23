@@ -21,7 +21,7 @@ bool operator==(const user1::label &lhs, const user1::label &rhs) {
 }
 
 TEST_CASE("namespace 1 global operator") {
-    user1::label a;
-    user1::label b;
+    const user1::label a;
+    const user1::label b;
     CHECK(a == b);
 }

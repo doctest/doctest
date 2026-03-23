@@ -17,7 +17,7 @@ struct label {
 } // namespace user3
 
 TEST_CASE("namespace 3 member operator") {
-    user3::label a;
-    user3::label b;
+    const user3::label a;
+    const user3::label b;
     REQUIRE(a == b);
 }

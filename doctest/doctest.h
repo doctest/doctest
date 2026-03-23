@@ -1107,8 +1107,8 @@ String toString() {
     String::size_type beginPos = ret.find('<');
     return ret.substr(beginPos + 1, ret.size() - beginPos - static_cast<String::size_type>(sizeof(">(void)")));
 #else
-    String ret = __PRETTY_FUNCTION__; // doctest::String toString() [with T = TYPE]
-    String::size_type begin = ret.find('=') + 2;
+    const String ret = __PRETTY_FUNCTION__; // doctest::String toString() [with T = TYPE]
+    const String::size_type begin = ret.find('=') + 2;
     return ret.substr(begin, ret.size() - begin - 1);
 #endif // Compiler
 }
@@ -2659,7 +2659,7 @@ DOCTEST_NOINLINE bool binary_assert(
     const DOCTEST_REF_WRAP(L) lhs,
     const DOCTEST_REF_WRAP(R) rhs
 ) {
-    bool failed = !RelationalComparator<comparison, L, R>()(lhs, rhs);
+    const bool failed = !RelationalComparator<comparison, L, R>()(lhs, rhs);
 
     // ###################################################################################
     // IF THE DEBUGGER BREAKS HERE - GO 1 LEVEL UP IN THE CALLSTACK FOR THE FAILING ASSERT
@@ -3877,7 +3877,7 @@ DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_BEGIN
 #include <mutex>
 #define DOCTEST_DECLARE_MUTEX(name) std::mutex name;
 #define DOCTEST_DECLARE_STATIC_MUTEX(name) static DOCTEST_DECLARE_MUTEX(name)
-#define DOCTEST_LOCK_MUTEX(name) std::lock_guard<std::mutex> DOCTEST_ANONYMOUS(DOCTEST_ANON_LOCK_)(name);
+#define DOCTEST_LOCK_MUTEX(name) const std::lock_guard<std::mutex> DOCTEST_ANONYMOUS(DOCTEST_ANON_LOCK_)(name);
 #else // DOCTEST_CONFIG_NO_MULTITHREADING
 #define DOCTEST_DECLARE_MUTEX(name)
 #define DOCTEST_DECLARE_STATIC_MUTEX(name)
@@ -4394,7 +4394,7 @@ void failed_out_of_a_testing_context(const AssertData &ad) {
 }
 
 bool decomp_assert(assertType::Enum at, const char *file, int line, const char *expr, const Result &result) {
-    bool failed = !result.m_passed;
+    const bool failed = !result.m_passed;
 
     // ###################################################################################
     // IF THE DEBUGGER BREAKS HERE - GO 1 LEVEL UP IN THE CALLSTACK FOR THE FAILING ASSERT
@@ -5219,7 +5219,7 @@ bool parseCommaSepArgs(int argc, const char *const *argv, const char *pattern, s
         const char *current = filtersString.c_str();
         const char *end = current + strlen(current);
         while (current != end) {
-            char character = *current++;
+            const char character = *current++;
             if (seenBackslash) {
                 seenBackslash = false;
                 if (character == ',' || character == '\\') {
@@ -5259,7 +5259,7 @@ bool parseIntOption(int argc, const char *const *argv, const char *pattern, opti
         // TODO: change this to use std::stoi or something else! currently it uses undefined
         // behavior - assumes '0' on failed parse...
         // NOLINTNEXTLINE(bugprone-unchecked-string-to-number-conversion, cert-err34-c)
-        int theInt = std::atoi(parsedValue.c_str());
+        const int theInt = std::atoi(parsedValue.c_str());
         if (theInt != 0) {
             res = theInt;
             return true;
@@ -5608,7 +5608,7 @@ int Context::run() {
             const auto first = testArray.data();
             for (size_t i = testArray.size() - 1; i > 0; --i) {
                 // NOLINTNEXTLINE(cert-msc30-c, cert-msc50-cpp, concurrency-mt-unsafe)
-                int idxToSwap = static_cast<int>(std::rand() % (i + 1));
+                const int idxToSwap = static_cast<int>(std::rand() % (i + 1));
 
                 const auto temp = first[i];
 
@@ -5623,7 +5623,7 @@ int Context::run() {
 
     std::set<String> testSuitesPassingFilt;
 
-    bool query_mode = p->count || p->list_test_cases || p->list_test_suites;
+    const bool query_mode = p->count || p->list_test_cases || p->list_test_suites;
     std::vector<const TestCaseData *> queryResults;
 
     if (!query_mode)
@@ -5717,8 +5717,8 @@ int Context::run() {
 #endif // DOCTEST_CONFIG_NO_EXCEPTIONS
        // MSVC 2015 diagnoses fatalConditionHandler as unused (because reset() is a
        // static method)
-                    DOCTEST_MSVC_SUPPRESS_WARNING_WITH_PUSH(4101) // unreferenced local variable
-                    FatalConditionHandler fatalConditionHandler;  // Handle signals
+                    DOCTEST_MSVC_SUPPRESS_WARNING_WITH_PUSH(4101)      // unreferenced local variable
+                    const FatalConditionHandler fatalConditionHandler; // Handle signals
                     static_cast<void>(fatalConditionHandler);
                     // execute the test
                     tc.m_test();
@@ -5902,9 +5902,9 @@ void ContextState::finalizeTestCaseData() {
         }
     }
 
-    bool ok_to_fail = (TestCaseFailureReason::ShouldHaveFailedAndDid & failure_flags) ||
-                      (TestCaseFailureReason::CouldHaveFailedAndDid & failure_flags) ||
-                      (TestCaseFailureReason::FailedExactlyNumTimes & failure_flags);
+    const bool ok_to_fail = (TestCaseFailureReason::ShouldHaveFailedAndDid & failure_flags) ||
+                            (TestCaseFailureReason::CouldHaveFailedAndDid & failure_flags) ||
+                            (TestCaseFailureReason::FailedExactlyNumTimes & failure_flags);
 
     // if any subcase has failed - the whole test case has failed
     testCaseSuccess = !(failure_flags && !ok_to_fail);
@@ -5945,7 +5945,7 @@ private:
 // See the comments in Catch2 for the reasoning behind this implementation:
 // https://github.com/catchorg/Catch2/blob/v2.13.1/include/internal/catch_debugger.cpp#L79-L102
 bool isDebuggerActive() {
-    ErrnoGuard guard;
+    const ErrnoGuard guard;
     std::ifstream in("/proc/self/status");
     for (std::string line; std::getline(in, line);) {
         static const int PREFIX_LEN = 11;
@@ -6527,7 +6527,7 @@ void ConsoleReporter::successOrFailColoredStringToStream(bool success, assertTyp
 }
 
 void ConsoleReporter::log_contexts() {
-    int num_contexts = get_num_active_contexts();
+    const int num_contexts = get_num_active_contexts();
     if (num_contexts) {
         auto contexts = get_active_contexts();
 
@@ -6595,7 +6595,7 @@ void ConsoleReporter::printIntro() {
 }
 
 void ConsoleReporter::printHelp() {
-    int sizePrefixDisplay = static_cast<int>(strlen(DOCTEST_OPTIONS_PREFIX_DISPLAY));
+    const int sizePrefixDisplay = static_cast<int>(strlen(DOCTEST_OPTIONS_PREFIX_DISPLAY));
     printVersion();
     // clang-format off
     s << Color::Cyan << "[doctest]\n" << Color::None;
@@ -6872,7 +6872,7 @@ void ConsoleReporter::test_case_exception(const TestCaseException &e) {
     s << Color::Red << (e.is_crash ? "test case CRASHED: " : "test case THREW exception: ");
     s << Color::Cyan << e.error_string << "\n";
 
-    int num_stringified_contexts = get_num_stringified_contexts();
+    const int num_stringified_contexts = get_num_stringified_contexts();
     if (num_stringified_contexts) {
         auto stringified_contexts = get_stringified_contexts();
         s << Color::None << "  logged: ";
@@ -7301,6 +7301,7 @@ void JUnitReporter::test_run_start() {
 
 void JUnitReporter::test_run_end(const TestRunStats &p) {
     // remove .exe extension - mainly to have the same output on UNIX and Windows
+    // NOLINTNEXTLINE(misc-const-correctness)
     std::string binary_name = skipPathFromFilename(opt.binary_name.c_str());
 #ifdef DOCTEST_PLATFORM_WINDOWS
     if (binary_name.rfind(".exe") != std::string::npos)
@@ -7416,7 +7417,7 @@ void JUnitReporter::log_message(const MessageData &mb) {
 void JUnitReporter::test_case_skipped(const TestCaseData &) {}
 
 void JUnitReporter::log_contexts(std::ostringstream &s) {
-    int num_contexts = get_num_active_contexts();
+    const int num_contexts = get_num_active_contexts();
     if (num_contexts) {
         auto contexts = get_active_contexts();
 
@@ -7509,7 +7510,7 @@ XmlReporter::XmlReporter(const ContextOptions &co)
     : xml(*co.cout), opt(co) {}
 
 void XmlReporter::log_contexts() {
-    int num_contexts = get_num_active_contexts();
+    const int num_contexts = get_num_active_contexts();
     if (num_contexts) {
         auto contexts = get_active_contexts();
         std::stringstream ss;
@@ -7593,6 +7594,7 @@ void XmlReporter::test_run_start() {
     xml.writeDeclaration();
 
     // remove .exe extension - mainly to have the same output on UNIX and Windows
+    // NOLINTNEXTLINE(misc-const-correctness)
     std::string binary_name = skipPathFromFilename(opt.binary_name.c_str());
 #ifdef DOCTEST_PLATFORM_WINDOWS
     if (binary_name.rfind(".exe") != std::string::npos)
@@ -7895,7 +7897,7 @@ static_assert(
 void FatalConditionHandler::handleSignal(int sig) {
     const char *name = "<unknown signal>";
     for (std::size_t i = 0; i < DOCTEST_COUNTOF(signalDefs); ++i) {
-        SignalDefs &def = signalDefs[i];
+        const SignalDefs &def = signalDefs[i];
         if (sig == def.id) {
             name = def.name;
             break;
@@ -7980,9 +7982,9 @@ public:
         if (stack.empty())
             DOCTEST_INTERNAL_ERROR("TLSS was empty when trying to pop!");
 
-        std::streampos pos = stack.back();
+        const std::streampos pos = stack.back();
         stack.pop_back();
-        unsigned sz = static_cast<unsigned>(ss.tellp() - pos);
+        const unsigned sz = static_cast<unsigned>(ss.tellp() - pos);
         ss.rdbuf()->pubseekpos(pos, std::ios::in | std::ios::out);
         return String(ss, sz);
     }
@@ -8278,6 +8280,7 @@ void filldata<const volatile void *>::fill(std::ostream *stream, const volatile 
 
 template <typename T>
 String toStreamLit(T t) {
+    // NOLINTNEXTLINE(misc-const-correctness)
     std::ostream *os = tlssPush();
     os->operator<<(t);
     return tlssPop();

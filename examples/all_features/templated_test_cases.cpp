@@ -55,8 +55,8 @@ TYPE_TO_STRING(TypePair<bool, int>);
 TEST_CASE_TEMPLATE("multiple types", T, TypePair<int, char>, TypePair<char, int>, TypePair<bool, int>) {
     using T1 = typename T::A;
     using T2 = typename T::B;
-    T1 t1 = T1();
-    T2 t2 = T2();
+    const T1 t1 = T1();
+    const T2 t2 = T2();
     // use T1 and T2 types
     CHECK(t1 == T1());
     CHECK(t2 != T2());
@@ -70,8 +70,8 @@ TYPE_TO_STRING(int_pair);
 TEST_CASE_TEMPLATE("bad stringification of type pair", T, int_pair) {
     using T1 = typename T::A;
     using T2 = typename T::B;
-    T1 t1 = T1();
-    T2 t2 = T2();
+    const T1 t1 = T1();
+    const T2 t2 = T2();
     // use T1 and T2 types
     CHECK(t1 == T1());
     CHECK(t2 != T2());

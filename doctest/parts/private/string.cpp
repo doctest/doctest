@@ -20,9 +20,9 @@ public:
         if (stack.empty())
             DOCTEST_INTERNAL_ERROR("TLSS was empty when trying to pop!");
 
-        std::streampos pos = stack.back();
+        const std::streampos pos = stack.back();
         stack.pop_back();
-        unsigned sz = static_cast<unsigned>(ss.tellp() - pos);
+        const unsigned sz = static_cast<unsigned>(ss.tellp() - pos);
         ss.rdbuf()->pubseekpos(pos, std::ios::in | std::ios::out);
         return String(ss, sz);
     }
@@ -318,6 +318,7 @@ void filldata<const volatile void *>::fill(std::ostream *stream, const volatile 
 
 template <typename T>
 String toStreamLit(T t) {
+    // NOLINTNEXTLINE(misc-const-correctness)
     std::ostream *os = tlssPush();
     os->operator<<(t);
     return tlssPop();

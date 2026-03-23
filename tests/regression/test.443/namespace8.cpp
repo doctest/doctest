@@ -32,11 +32,11 @@ bool operator==(const user8::label &lhs, const user8::label &rhs) {
 }
 
 TEST_CASE("namespace 8 friend vs global") {
-    user6::label a6;
-    user6::label b6;
+    const user6::label a6;
+    const user6::label b6;
 
-    user8::label a8;
-    user8::label b8;
+    const user8::label a8;
+    const user8::label b8;
 
     REQUIRE(a6 == b6);
     REQUIRE(a8 == b8);

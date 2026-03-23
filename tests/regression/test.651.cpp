@@ -35,7 +35,7 @@ struct int_holder {
 
 DOCTEST_MSVC_SUPPRESS_WARNING_WITH_PUSH(4866) // eval order
 TEST_CASE("Impl cast from non-const value") {
-    int_holder h{8};
+    int_holder h{8}; // NOLINT(misc-const-correctness)
     int i = 8;
 
     // this comparison is safe

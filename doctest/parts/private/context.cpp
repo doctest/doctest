@@ -139,7 +139,7 @@ bool parseCommaSepArgs(int argc, const char *const *argv, const char *pattern, s
         const char *current = filtersString.c_str();
         const char *end = current + strlen(current);
         while (current != end) {
-            char character = *current++;
+            const char character = *current++;
             if (seenBackslash) {
                 seenBackslash = false;
                 if (character == ',' || character == '\\') {
@@ -179,7 +179,7 @@ bool parseIntOption(int argc, const char *const *argv, const char *pattern, opti
         // TODO: change this to use std::stoi or something else! currently it uses undefined
         // behavior - assumes '0' on failed parse...
         // NOLINTNEXTLINE(bugprone-unchecked-string-to-number-conversion, cert-err34-c)
-        int theInt = std::atoi(parsedValue.c_str());
+        const int theInt = std::atoi(parsedValue.c_str());
         if (theInt != 0) {
             res = theInt;
             return true;
@@ -528,7 +528,7 @@ int Context::run() {
             const auto first = testArray.data();
             for (size_t i = testArray.size() - 1; i > 0; --i) {
                 // NOLINTNEXTLINE(cert-msc30-c, cert-msc50-cpp, concurrency-mt-unsafe)
-                int idxToSwap = static_cast<int>(std::rand() % (i + 1));
+                const int idxToSwap = static_cast<int>(std::rand() % (i + 1));
 
                 const auto temp = first[i];
 
@@ -543,7 +543,7 @@ int Context::run() {
 
     std::set<String> testSuitesPassingFilt;
 
-    bool query_mode = p->count || p->list_test_cases || p->list_test_suites;
+    const bool query_mode = p->count || p->list_test_cases || p->list_test_suites;
     std::vector<const TestCaseData *> queryResults;
 
     if (!query_mode)
@@ -637,8 +637,8 @@ int Context::run() {
 #endif // DOCTEST_CONFIG_NO_EXCEPTIONS
        // MSVC 2015 diagnoses fatalConditionHandler as unused (because reset() is a
        // static method)
-                    DOCTEST_MSVC_SUPPRESS_WARNING_WITH_PUSH(4101) // unreferenced local variable
-                    FatalConditionHandler fatalConditionHandler;  // Handle signals
+                    DOCTEST_MSVC_SUPPRESS_WARNING_WITH_PUSH(4101)      // unreferenced local variable
+                    const FatalConditionHandler fatalConditionHandler; // Handle signals
                     static_cast<void>(fatalConditionHandler);
                     // execute the test
                     tc.m_test();

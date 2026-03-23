@@ -22,7 +22,7 @@ TEST_CASE("logging the counter of a loop") {
 }
 
 static int someTests() {
-    int some_var = 42;
+    const int some_var = 42;
     INFO("lots of captures: ", some_var, " ", some_var, " ", some_var, ";");
     INFO("old way of capturing - using the streaming operator: " << some_var << " " << some_var);
     FAIL_CHECK("forcing the many captures to be stringified");
@@ -30,7 +30,7 @@ static int someTests() {
 }
 
 TEST_CASE("a test case that will end from an exception") {
-    int some_var = someTests();
+    const int some_var = someTests();
     INFO("someTests() returned: ", some_var); // note that we have to use a local variable - cannot pass a temporary
     INFO("this should be printed if an exception is thrown even if no assert has failed: ", some_var);
     {

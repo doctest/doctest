@@ -47,7 +47,7 @@ void ConsoleReporter::successOrFailColoredStringToStream(bool success, assertTyp
 }
 
 void ConsoleReporter::log_contexts() {
-    int num_contexts = get_num_active_contexts();
+    const int num_contexts = get_num_active_contexts();
     if (num_contexts) {
         auto contexts = get_active_contexts();
 
@@ -115,7 +115,7 @@ void ConsoleReporter::printIntro() {
 }
 
 void ConsoleReporter::printHelp() {
-    int sizePrefixDisplay = static_cast<int>(strlen(DOCTEST_OPTIONS_PREFIX_DISPLAY));
+    const int sizePrefixDisplay = static_cast<int>(strlen(DOCTEST_OPTIONS_PREFIX_DISPLAY));
     printVersion();
     // clang-format off
     s << Color::Cyan << "[doctest]\n" << Color::None;
@@ -392,7 +392,7 @@ void ConsoleReporter::test_case_exception(const TestCaseException &e) {
     s << Color::Red << (e.is_crash ? "test case CRASHED: " : "test case THREW exception: ");
     s << Color::Cyan << e.error_string << "\n";
 
-    int num_stringified_contexts = get_num_stringified_contexts();
+    const int num_stringified_contexts = get_num_stringified_contexts();
     if (num_stringified_contexts) {
         auto stringified_contexts = get_stringified_contexts();
         s << Color::None << "  logged: ";
