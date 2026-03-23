@@ -36,7 +36,7 @@ int main(int argc, char **argv) { // NOLINT(bugprone-exception-escape)
 }
 
 TEST_CASE("[string] testing std::string") {
-    std::string a("omg");
+    std::string a("omg"); // NOLINT(bugprone-unused-local-non-trivial-variable)
     CHECK(a == "omg");
 }
 

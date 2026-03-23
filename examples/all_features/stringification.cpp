@@ -205,6 +205,7 @@ TEST_CASE("all asserts should fail and show how the objects get stringified") {
     CHECK(str == doctest::toString(str));
 
     // std::string already has an operator<< working with std::ostream
+    // NOLINTNEXTLINE(bugprone-unintended-char-ostream-output, bugprone-unused-local-non-trivial-variable)
     std::string dummy = "omg";
 
     MESSAGE(dummy);
