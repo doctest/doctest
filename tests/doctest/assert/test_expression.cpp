@@ -63,7 +63,7 @@ TEST_SUITE("Expression decomposition") {
 
     // Generate an xvalue from a prvalue
     template <typename T>
-    T &&xvalue(T && value) {
+    T &&xvalue(T && value) { // NOLINT(cppcoreguidelines-missing-std-forward)
         return static_cast<T &&>(value);
     }
 
