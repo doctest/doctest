@@ -527,7 +527,7 @@ int Context::run() {
             // random_shuffle implementation
             const auto first = testArray.data();
             for (size_t i = testArray.size() - 1; i > 0; --i) {
-                // NOLINTNEXTLINE(cert-msc30-c, cert-msc50-cpp, concurrency-mt-unsafe)
+                // NOLINTNEXTLINE(cert-msc30-c, cert-msc50-cpp, concurrency-mt-unsafe, misc-predictable-rand)
                 const int idxToSwap = static_cast<int>(std::rand() % (i + 1));
 
                 const auto temp = first[i];
