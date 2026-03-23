@@ -57,10 +57,12 @@ static void handler(const doctest::AssertData &ad) {
 
 void some_program_code(int argc, char **argv) {
     // IGNORE THIS: return if the current test from the doctest CMake tests is not for this file
+    // NOLINTBEGIN(clang-diagnostic-unsafe-buffer-usage)
     if (std::find_if(argv, argv + argc, [](const char *str) {
             return strcmp(str, "-sf=*asserts_used_outside_of_tests.cpp") == 0;
         }) == argv + argc)
         return;
+    // NOLINTEND(clang-diagnostic-unsafe-buffer-usage)
 
     // construct a context
     doctest::Context context(argc, argv);
