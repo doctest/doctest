@@ -44,7 +44,7 @@ void failed_out_of_a_testing_context(const AssertData &ad) {
 }
 
 bool decomp_assert(assertType::Enum at, const char *file, int line, const char *expr, const Result &result) {
-    bool failed = !result.m_passed;
+    const bool failed = !result.m_passed;
 
     // ###################################################################################
     // IF THE DEBUGGER BREAKS HERE - GO 1 LEVEL UP IN THE CALLSTACK FOR THE FAILING ASSERT

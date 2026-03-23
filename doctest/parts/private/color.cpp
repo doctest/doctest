@@ -36,7 +36,7 @@ void color_to_stream(std::ostream &s, Color::Enum code) {
     if (g_no_colors || (isatty(STDOUT_FILENO) == false && getContextOptions()->force_colors == false))
         return;
 
-    auto col = "";
+    auto col = ""; // NOLINT(clang-analyzer-deadcode.DeadStores)
     DOCTEST_CLANG_SUPPRESS_WARNING_PUSH
     DOCTEST_CLANG_SUPPRESS_WARNING("-Wcovered-switch-default")
     switch (code) {

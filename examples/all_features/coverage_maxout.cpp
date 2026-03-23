@@ -69,6 +69,7 @@ TEST_CASE("exercising tricky code paths of doctest") {
     // trigger code path for assert string of a non-existent assert type
 #ifndef DOCTEST_CONFIG_NO_EXCEPTIONS
     try {
+        // NOLINTNEXTLINE(clang-analyzer-optin.core.EnumCastOutOfRange)
         assertString(static_cast<assertType::Enum>(3));
     } catch (const std::logic_error &) {} // NOLINT(bugprone-empty-catch)
 #endif
@@ -79,14 +80,14 @@ TEST_CASE("exercising tricky code paths of doctest") {
                "omgomgomgaaanullptrtrue099991111111"
     );
     // trigger code path for rawMemoryToString
-    bool isThereAnything = str.size() > 0u;
-    String unknown = toString(skip()); // trigger code path for "{?}"
-    str = unknown;                     // trigger code path for deleting memory in operator=
+    const bool isThereAnything = str.size() > 0u;
+    const String unknown = toString(skip()); // trigger code path for "{?}"
+    str = unknown;                           // trigger code path for deleting memory in operator=
     CHECK_FALSE_MESSAGE(isThereAnything, "should fail");
 
     Approx a(5);
     a.scale(4);
-    Approx b = a(7);
+    const Approx b = a(7);
 
     CHECK(b == 7);
     CHECK(b != 6);

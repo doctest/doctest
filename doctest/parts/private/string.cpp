@@ -20,13 +20,13 @@ public:
         if (stack.empty())
             DOCTEST_INTERNAL_ERROR("TLSS was empty when trying to pop!");
 
-        std::streampos pos = stack.back();
+        const std::streampos pos = stack.back();
         stack.pop_back();
-        unsigned sz = static_cast<unsigned>(ss.tellp() - pos);
+        const unsigned sz = static_cast<unsigned>(ss.tellp() - pos);
         ss.rdbuf()->pubseekpos(pos, std::ios::in | std::ios::out);
         return String(ss, sz);
     }
-} g_oss; // NOLINT(cert-err58-cpp)
+} g_oss; // NOLINT(bugprone-throwing-static-initialization, cert-err58-cpp)
 
 std::ostream *tlssPush() {
     return g_oss.push();
@@ -70,7 +70,7 @@ void String::setOnHeap() noexcept {
 }
 
 void String::setLast(size_type in) noexcept {
-    buf[last] = char(in);
+    buf[last] = static_cast<char>(in);
 }
 
 void String::setSize(size_type sz) noexcept {
@@ -209,7 +209,7 @@ char &String::operator[](size_type i) {
 DOCTEST_GCC_SUPPRESS_WARNING_WITH_PUSH("-Wmaybe-uninitialized")
 String::size_type String::size() const {
     if (isOnStack())
-        return last - (size_type(buf[last]) & 31); // using "last" would work only if "len" is 32
+        return last - (static_cast<size_type>(buf[last]) & 31); // using "last" would work only if "len" is 32
     return data.size;
 }
 DOCTEST_GCC_SUPPRESS_WARNING_POP
@@ -318,6 +318,7 @@ void filldata<const volatile void *>::fill(std::ostream *stream, const volatile 
 
 template <typename T>
 String toStreamLit(T t) {
+    // NOLINTNEXTLINE(misc-const-correctness)
     std::ostream *os = tlssPush();
     os->operator<<(t);
     return tlssPop();

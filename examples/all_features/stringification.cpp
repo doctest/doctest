@@ -54,7 +54,7 @@ TEST_CASE("operator<<") {
 #endif
 
 TEST_CASE("no headers") {
-    char chs[] = {'1', 'a', 's'}; // NOLINT(*-avoid-c-arrays)
+    const char chs[] = {'1', 'a', 's'}; // NOLINT(*-avoid-c-arrays)
     MESSAGE(chs);
     CHECK(chs == nullptr);
     MESSAGE("1as");
@@ -71,11 +71,11 @@ TEST_CASE("no headers") {
     CHECK(doctest::toString(cptr) == doctest::toString(ccptr));
     CHECK(doctest::toString(ccptr) == doctest::toString(vptr));
 
-    char *cnptr = nullptr;
+    const char *cnptr = nullptr;
     MESSAGE(cnptr);
     CHECK(cnptr != nullptr);
 
-    enum Test {
+    enum Test { // NOLINT(cert-int09-c, readability-enum-initial-value)
         A = 0,
         B,
         C = 100,
@@ -100,7 +100,7 @@ DOCTEST_MSVC_SUPPRESS_WARNING(5045) // Spectre mitigation diagnostics
 // NOLINTBEGIN(cert-dcl58-cpp)
 namespace std {
 template <typename T>
-ostream &operator<<(ostream &stream, const vector<T> &in) {
+ostream &operator<<(ostream &stream, const vector<T> &in) { // NOLINT(bugprone-std-namespace-modification)
     stream << "[";
     for (size_t i = 0; i < in.size(); ++i) {
         if (i != 0) {
@@ -196,16 +196,17 @@ TEST_CASE("all asserts should fail and show how the objects get stringified") {
     bla1.one = 5;
     bla1.two = 4u;
 
-    Bar::Foo f1;
+    const Bar::Foo f1;
     MESSAGE(f1);
-    Bar::Foo f2;
+    const Bar::Foo f2;
     CHECK(f1 == f2);
 
-    doctest::String str;
+    const doctest::String str;
     CHECK(str == doctest::toString(str));
 
     // std::string already has an operator<< working with std::ostream
-    std::string dummy = "omg";
+    // NOLINTNEXTLINE(bugprone-unintended-char-ostream-output, bugprone-unused-local-non-trivial-variable)
+    const std::string dummy = "omg";
 
     MESSAGE(dummy);
 
@@ -241,8 +242,8 @@ TEST_CASE("all asserts should fail and show how the objects get stringified") {
     CHECK(lst_1 == lst_2);
 
     {
-        Bar::MyOtherType s1{42};
-        Bar::MyOtherType s2{666};
+        const Bar::MyOtherType s1{42};
+        const Bar::MyOtherType s2{666};
         INFO("s1=", s1, " s2=", s2);
         CHECK(s1 == s2);
         CHECK_MESSAGE(s1 == s2, s1, " is not really ", s2);
@@ -278,7 +279,7 @@ static int ***function2() {
 TEST_CASE("pointer comparisons") {
     int i = 42;
     int *a = &i;
-    int *b = a;
+    int *b = a; // NOLINT(misc-const-correctness)
 
     CHECK(a == b);
     CHECK_EQ(a, b);
@@ -287,9 +288,11 @@ TEST_CASE("pointer comparisons") {
     CHECK(&function == functionPointer);
     CHECK(&function2 == &function2);
 
+    // NOLINTBEGIN(misc-const-correctness)
     volatile int i_2 = 30;
     volatile int *a_2 = &i_2;
     volatile int *b_2 = a_2;
+    // NOLINTEND(misc-const-correctness)
 
     CHECK(a_2 == b_2);
     CHECK_EQ(a_2, b_2);

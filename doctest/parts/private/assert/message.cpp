@@ -17,7 +17,7 @@ MessageBuilder::MessageBuilder(const char *file, int line, assertType::Enum seve
     m_severity = severity;
 }
 
-MessageBuilder::~MessageBuilder() {
+MessageBuilder::~MessageBuilder() noexcept(false) {
     if (!logged)
         tlssPop();
 }

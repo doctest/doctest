@@ -29,10 +29,11 @@ DOCTEST_MSVC_SUPPRESS_WARNING_POP
 } // namespace
 
 int main() {
+    // NOLINTNEXTLINE(misc-const-correctness)
     reporter r;
     static_cast<void>(r);
 
     // Required to fix issues with xcode optimizing away `main`
-    volatile int result = 0;
+    const volatile int result = 0;
     return result;
 }

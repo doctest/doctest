@@ -25,7 +25,7 @@ public:
 
 TEST_CASE("Determining basename from path") {
     using doctest::skipPathFromFilename;
-    DummyContextOptions context{};
+    const DummyContextOptions context{};
 
     SUBCASE("With no_path_in_filenames enabled") {
         context.options->no_path_in_filenames = true;

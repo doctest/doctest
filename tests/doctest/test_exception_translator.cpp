@@ -17,11 +17,11 @@ struct exception2 {};
 struct exception3 {};
 
 /** ...and their translators */
-// NOLINTBEGIN(cert-err58-cpp)
+// NOLINTBEGIN(bugprone-throwing-static-initialization, cert-err58-cpp)
 const ExceptionTranslator<exception1> translator1([](exception1) { return doctest::String("exception1"); });
 const ExceptionTranslator<exception2> translator2([](exception2) { return doctest::String("exception2"); });
 const ExceptionTranslator<exception3> translator3([](exception3) { return doctest::String("exception3"); });
-// NOLINTEND(cert-err58-cpp)
+// NOLINTEND(bugprone-throwing-static-initialization, cert-err58-cpp)
 
 /**
  * Utility to raise an exception, call the functor, then resolve the exception

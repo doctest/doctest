@@ -11,7 +11,7 @@ XmlReporter::XmlReporter(const ContextOptions &co)
     : xml(*co.cout), opt(co) {}
 
 void XmlReporter::log_contexts() {
-    int num_contexts = get_num_active_contexts();
+    const int num_contexts = get_num_active_contexts();
     if (num_contexts) {
         auto contexts = get_active_contexts();
         std::stringstream ss;
@@ -95,6 +95,7 @@ void XmlReporter::test_run_start() {
     xml.writeDeclaration();
 
     // remove .exe extension - mainly to have the same output on UNIX and Windows
+    // NOLINTNEXTLINE(misc-const-correctness)
     std::string binary_name = skipPathFromFilename(opt.binary_name.c_str());
 #ifdef DOCTEST_PLATFORM_WINDOWS
     if (binary_name.rfind(".exe") != std::string::npos)

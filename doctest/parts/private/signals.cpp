@@ -161,7 +161,7 @@ static_assert(
 void FatalConditionHandler::handleSignal(int sig) {
     const char *name = "<unknown signal>";
     for (std::size_t i = 0; i < DOCTEST_COUNTOF(signalDefs); ++i) {
-        SignalDefs &def = signalDefs[i];
+        const SignalDefs &def = signalDefs[i];
         if (sig == def.id) {
             name = def.name;
             break;

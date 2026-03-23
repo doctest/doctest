@@ -35,11 +35,11 @@ bool operator==(const user9b::label &lhs, const user9b::label &rhs) {
 }
 
 TEST_CASE("namespace 9 both global") {
-    user9a::label a1;
-    user9a::label a2;
+    const user9a::label a1;
+    const user9a::label a2;
 
-    user9b::label b1;
-    user9b::label b2;
+    const user9b::label b1;
+    const user9b::label b2;
 
     REQUIRE(a1 == a2);
     REQUIRE(b1 == b2);

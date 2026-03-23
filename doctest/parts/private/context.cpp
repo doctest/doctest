@@ -43,7 +43,7 @@ namespace detail {
 bool fileOrderComparator(const TestCase *lhs, const TestCase *rhs) {
     // this is needed because MSVC gives different case for drive letters
     // for __FILE__ when evaluated in a header and a source file
-    const int res = lhs->m_file.compare(rhs->m_file, bool(DOCTEST_MSVC));
+    const int res = lhs->m_file.compare(rhs->m_file, static_cast<bool>(DOCTEST_MSVC));
     if (res != 0)
         return res < 0;
     if (lhs->m_line != rhs->m_line)
@@ -139,7 +139,7 @@ bool parseCommaSepArgs(int argc, const char *const *argv, const char *pattern, s
         const char *current = filtersString.c_str();
         const char *end = current + strlen(current);
         while (current != end) {
-            char character = *current++;
+            const char character = *current++;
             if (seenBackslash) {
                 seenBackslash = false;
                 if (character == ',' || character == '\\') {
@@ -178,7 +178,8 @@ bool parseIntOption(int argc, const char *const *argv, const char *pattern, opti
         // integer
         // TODO: change this to use std::stoi or something else! currently it uses undefined
         // behavior - assumes '0' on failed parse...
-        int theInt = std::atoi(parsedValue.c_str()); // NOLINT(cert-err34-c)
+        // NOLINTNEXTLINE(bugprone-unchecked-string-to-number-conversion, cert-err34-c)
+        const int theInt = std::atoi(parsedValue.c_str());
         if (theInt != 0) {
             res = theInt;
             return true;
@@ -481,7 +482,7 @@ int Context::run() {
 
     // setup default reporter if none is given through the command line
     if (p->filters[8].empty())
-        p->filters[8].push_back("console");
+        p->filters[8].emplace_back("console");
 
     // check to see if any of the registered reporters has been selected
     for (auto &curr: getReporters()) {
@@ -526,8 +527,8 @@ int Context::run() {
             // random_shuffle implementation
             const auto first = testArray.data();
             for (size_t i = testArray.size() - 1; i > 0; --i) {
-                // NOLINTNEXTLINE(cert-msc30-c, cert-msc50-cpp, concurrency-mt-unsafe)
-                int idxToSwap = static_cast<int>(std::rand() % (i + 1));
+                // NOLINTNEXTLINE(cert-msc30-c, cert-msc50-cpp, concurrency-mt-unsafe, misc-predictable-rand)
+                const int idxToSwap = static_cast<int>(std::rand() % (i + 1));
 
                 const auto temp = first[i];
 
@@ -542,7 +543,7 @@ int Context::run() {
 
     std::set<String> testSuitesPassingFilt;
 
-    bool query_mode = p->count || p->list_test_cases || p->list_test_suites;
+    const bool query_mode = p->count || p->list_test_cases || p->list_test_suites;
     std::vector<const TestCaseData *> queryResults;
 
     if (!query_mode)
@@ -622,7 +623,7 @@ int Context::run() {
 
             bool run_test = true;
 
-            do {
+            do { // NOLINT(cppcoreguidelines-avoid-do-while)
                 // Reset per-run traversal data while keeping the current decision path prefix.
                 p->traversal.resetForRun();
 
@@ -636,8 +637,8 @@ int Context::run() {
 #endif // DOCTEST_CONFIG_NO_EXCEPTIONS
        // MSVC 2015 diagnoses fatalConditionHandler as unused (because reset() is a
        // static method)
-                    DOCTEST_MSVC_SUPPRESS_WARNING_WITH_PUSH(4101) // unreferenced local variable
-                    FatalConditionHandler fatalConditionHandler;  // Handle signals
+                    DOCTEST_MSVC_SUPPRESS_WARNING_WITH_PUSH(4101)      // unreferenced local variable
+                    const FatalConditionHandler fatalConditionHandler; // Handle signals
                     static_cast<void>(fatalConditionHandler);
                     // execute the test
                     tc.m_test();
@@ -685,7 +686,7 @@ int Context::run() {
         QueryData qdata;
         qdata.run_stats = g_cs;
         qdata.data = queryResults.data();
-        qdata.num_data = unsigned(queryResults.size());
+        qdata.num_data = static_cast<unsigned>(queryResults.size());
         DOCTEST_ITERATE_THROUGH_REPORTERS(report_query, qdata);
     }
 

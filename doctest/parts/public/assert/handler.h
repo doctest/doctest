@@ -20,7 +20,7 @@ DOCTEST_INTERFACE bool
 decomp_assert(assertType::Enum at, const char *file, int line, const char *expr, const Result &result);
 
 #define DOCTEST_ASSERT_OUT_OF_TESTS(decomp)                                                                            \
-    do {                                                                                                               \
+    do { /* NOLINT(cppcoreguidelines-avoid-do-while) */                                                                \
         if (!is_running_in_test) {                                                                                     \
             if (failed) {                                                                                              \
                 ResultBuilder rb(at, file, line, expr);                                                                \
@@ -55,7 +55,7 @@ DOCTEST_NOINLINE bool binary_assert(
     const DOCTEST_REF_WRAP(L) lhs,
     const DOCTEST_REF_WRAP(R) rhs
 ) {
-    bool failed = !RelationalComparator<comparison, L, R>()(lhs, rhs);
+    const bool failed = !RelationalComparator<comparison, L, R>()(lhs, rhs);
 
     // ###################################################################################
     // IF THE DEBUGGER BREAKS HERE - GO 1 LEVEL UP IN THE CALLSTACK FOR THE FAILING ASSERT

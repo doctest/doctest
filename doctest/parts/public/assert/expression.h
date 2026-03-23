@@ -28,6 +28,7 @@ DOCTEST_CLANG_SUPPRESS_WARNING_WITH_PUSH("-Wunused-comparison")
 #endif
 
 #define DOCTEST_DO_BINARY_EXPRESSION_COMPARISON(op, op_str, op_macro)                                                  \
+    /* NOLINTBEGIN(cppcoreguidelines-missing-std-forward) */                                                           \
     template <typename R>                                                                                              \
     DOCTEST_NOINLINE SFINAE_OP(Result, op) operator op(R &&rhs) {                                                      \
         bool res = op_macro(doctest::detail::forward<const L>(lhs), doctest::detail::forward<R>(rhs));                 \
@@ -36,7 +37,8 @@ DOCTEST_CLANG_SUPPRESS_WARNING_WITH_PUSH("-Wunused-comparison")
         if (!res || doctest::getContextOptions()->success)                                                             \
             return Result(res, stringifyBinaryExpr(lhs, op_str, rhs));                                                 \
         return Result(res);                                                                                            \
-    }
+    }                                                                                                                  \
+    /* NOLINTEND(cppcoreguidelines-missing-std-forward) */
 
 #ifndef DOCTEST_CONFIG_NO_COMPARISON_WARNING_SUPPRESSION
 
@@ -69,13 +71,14 @@ struct Expression_lhs {
     L lhs;
     assertType::Enum m_at;
 
+    // NOLINTNEXTLINE(cppcoreguidelines-rvalue-reference-param-not-moved)
     explicit Expression_lhs(L &&in, assertType::Enum at)
         : lhs(static_cast<L &&>(in)), m_at(at) {}
 
     DOCTEST_NOINLINE operator Result() {
         // this is needed only for MSVC 2015
         DOCTEST_MSVC_SUPPRESS_WARNING_WITH_PUSH(4800) // 'int': forcing value to bool
-        bool res = static_cast<bool>(lhs);
+        bool res = static_cast<bool>(lhs);            // NOLINT(bugprone-non-zero-enum-to-bool-conversion)
         DOCTEST_MSVC_SUPPRESS_WARNING_POP
         if (m_at & assertType::is_false) {
             res = !res;

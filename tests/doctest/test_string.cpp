@@ -337,7 +337,7 @@ TEST_SUITE("String construction") {
 TEST_SUITE("String searching") {
     // For some reason, String::npos produces an undefined-reference link error
     // So for these tests, we have to invent our own...
-    const auto npos = String::size_type(-1);
+    const auto npos = static_cast<String::size_type>(-1);
 
     TEST_CASE("Forward-searching") {
         SUBCASE("Empty source string") {
