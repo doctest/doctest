@@ -13,7 +13,7 @@ DOCTEST_NOINLINE DecisionPoint &TraversalState::ensureDecisionPointAtCurrentDept
     const size_t depth = m_decisionDepth;
 
     if (m_discoveredDecisionPath.size() == depth) {
-        m_discoveredDecisionPath.push_back(DecisionPoint{});
+        m_discoveredDecisionPath.emplace_back();
 
         if (m_decisionPath.size() == depth)
             m_decisionPath.push_back(0);

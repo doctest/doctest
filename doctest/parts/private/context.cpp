@@ -482,7 +482,7 @@ int Context::run() {
 
     // setup default reporter if none is given through the command line
     if (p->filters[8].empty())
-        p->filters[8].push_back("console");
+        p->filters[8].emplace_back("console");
 
     // check to see if any of the registered reporters has been selected
     for (auto &curr: getReporters()) {

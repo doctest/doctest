@@ -5562,7 +5562,7 @@ int Context::run() {
 
     // setup default reporter if none is given through the command line
     if (p->filters[8].empty())
-        p->filters[8].push_back("console");
+        p->filters[8].emplace_back("console");
 
     // check to see if any of the registered reporters has been selected
     for (auto &curr: getReporters()) {
@@ -8632,7 +8632,7 @@ DOCTEST_NOINLINE DecisionPoint &TraversalState::ensureDecisionPointAtCurrentDept
     const size_t depth = m_decisionDepth;
 
     if (m_discoveredDecisionPath.size() == depth) {
-        m_discoveredDecisionPath.push_back(DecisionPoint{});
+        m_discoveredDecisionPath.emplace_back();
 
         if (m_decisionPath.size() == depth)
             m_decisionPath.push_back(0);
