@@ -178,7 +178,8 @@ bool parseIntOption(int argc, const char *const *argv, const char *pattern, opti
         // integer
         // TODO: change this to use std::stoi or something else! currently it uses undefined
         // behavior - assumes '0' on failed parse...
-        int theInt = std::atoi(parsedValue.c_str()); // NOLINT(cert-err34-c)
+        // NOLINTNEXTLINE(bugprone-unchecked-string-to-number-conversion, cert-err34-c)
+        int theInt = std::atoi(parsedValue.c_str());
         if (theInt != 0) {
             res = theInt;
             return true;
