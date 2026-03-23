@@ -6,9 +6,11 @@
 #ifndef DOCTEST_PARTS_PUBLIC_VERSION
 #define DOCTEST_PARTS_PUBLIC_VERSION
 
+// NOLINTBEGIN(cppcoreguidelines-macro-to-enum)
 #define DOCTEST_VERSION_MAJOR 2
 #define DOCTEST_VERSION_MINOR 4
 #define DOCTEST_VERSION_PATCH 12
+// NOLINTEND(cppcoreguidelines-macro-to-enum)
 
 // util we need here
 #define DOCTEST_TOSTR_IMPL(x) #x
