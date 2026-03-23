@@ -551,14 +551,20 @@ DOCTEST_SUPPRESS_PUBLIC_WARNINGS_PUSH
 
 #define DOCTEST_DEFINE_INTERFACE(name) name::~name() = default;
 
+#if !defined(DOCTEST_COUNTER)
+#if DOCTEST_CLANG >= DOCTEST_COMPILER(22, 0, 0)
+#define DOCTEST_COUNTER __LINE__
+#elif defined(__COUNTER__)
+#define DOCTEST_COUNTER __COUNTER__
+#else
+#define DOCTEST_COUNTER __LINE__
+#endif
+#endif // defined(DOCTEST_COUNTER)
+
 // internal macros for string concatenation and anonymous variable name generation
 #define DOCTEST_CAT_IMPL(s1, s2) s1##s2
 #define DOCTEST_CAT(s1, s2) DOCTEST_CAT_IMPL(s1, s2)
-#ifdef __COUNTER__ // not standard and may be missing for some compilers
-#define DOCTEST_ANONYMOUS(x) DOCTEST_CAT(x, __COUNTER__)
-#else // __COUNTER__
-#define DOCTEST_ANONYMOUS(x) DOCTEST_CAT(x, __LINE__)
-#endif // __COUNTER__
+#define DOCTEST_ANONYMOUS(x) DOCTEST_CAT(x, DOCTEST_COUNTER)
 
 #ifndef DOCTEST_CONFIG_ASSERTION_PARAMETERS_BY_VALUE
 #define DOCTEST_REF_WRAP(x) x &
@@ -3038,7 +3044,7 @@ int instantiationHelper(const T &) noexcept {
 #define DOCTEST_REGISTER_EXCEPTION_TRANSLATOR_IMPL(translatorName, signature)                                          \
     inline doctest::String translatorName(signature);                                                                  \
     DOCTEST_GLOBAL_NO_WARNINGS(                                                                                        \
-        DOCTEST_ANONYMOUS(DOCTEST_ANON_TRANSLATOR_), /* NOLINT(cert-err58-cpp) */                                      \
+        DOCTEST_ANONYMOUS(DOCTEST_ANON_TRANSLATOR_VAR_), /* NOLINT(cert-err58-cpp) */                                  \
         doctest::registerExceptionTranslator(translatorName)                                                           \
     )                                                                                                                  \
     doctest::String translatorName(signature)
@@ -3049,7 +3055,7 @@ int instantiationHelper(const T &) noexcept {
 // for registering reporters
 #define DOCTEST_REGISTER_REPORTER(name, priority, reporter)                                                            \
     DOCTEST_GLOBAL_NO_WARNINGS(                                                                                        \
-        DOCTEST_ANONYMOUS(DOCTEST_ANON_REPORTER_), /* NOLINT(cert-err58-cpp) */                                        \
+        DOCTEST_ANONYMOUS(DOCTEST_ANON_REPORTER_VAR_), /* NOLINT(cert-err58-cpp) */                                    \
         doctest::registerReporter<reporter>(name, priority, true)                                                      \
     )                                                                                                                  \
     static_assert(true, "")
@@ -3057,13 +3063,13 @@ int instantiationHelper(const T &) noexcept {
 // for registering listeners
 #define DOCTEST_REGISTER_LISTENER(name, priority, reporter)                                                            \
     DOCTEST_GLOBAL_NO_WARNINGS(                                                                                        \
-        DOCTEST_ANONYMOUS(DOCTEST_ANON_REPORTER_), /* NOLINT(cert-err58-cpp) */                                        \
+        DOCTEST_ANONYMOUS(DOCTEST_ANON_REPORTER_VAR_), /* NOLINT(cert-err58-cpp) */                                    \
         doctest::registerReporter<reporter>(name, priority, false)                                                     \
     )                                                                                                                  \
     static_assert(true, "")
 
 #define DOCTEST_INFO(...)                                                                                              \
-    DOCTEST_INFO_IMPL(DOCTEST_ANONYMOUS(DOCTEST_CAPTURE_), DOCTEST_ANONYMOUS(DOCTEST_CAPTURE_OTHER_), __VA_ARGS__)
+    DOCTEST_INFO_IMPL(DOCTEST_ANONYMOUS(DOCTEST_CAPTURE_MB_), DOCTEST_ANONYMOUS(DOCTEST_CAPTURE_OTHER_), __VA_ARGS__)
 
 #define DOCTEST_INFO_IMPL(mb_name, s_name, ...)                                                                        \
     auto DOCTEST_ANONYMOUS(DOCTEST_CAPTURE_) = doctest::detail::MakeContextScope([&](std::ostream *s_name) {           \
