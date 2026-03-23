@@ -2461,7 +2461,7 @@ struct DOCTEST_INTERFACE MessageBuilder : public MessageData {
     MessageBuilder &operator=(const MessageBuilder &) = delete;
     MessageBuilder &operator=(MessageBuilder &&) = delete;
 
-    ~MessageBuilder();
+    ~MessageBuilder() noexcept(false);
 
     // the preferred way of chaining parameters for stringification
     DOCTEST_MSVC_SUPPRESS_WARNING_WITH_PUSH(4866)
@@ -4415,7 +4415,7 @@ MessageBuilder::MessageBuilder(const char *file, int line, assertType::Enum seve
     m_severity = severity;
 }
 
-MessageBuilder::~MessageBuilder() {
+MessageBuilder::~MessageBuilder() noexcept(false) {
     if (!logged)
         tlssPop();
 }
