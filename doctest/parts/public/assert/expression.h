@@ -71,6 +71,7 @@ struct Expression_lhs {
     L lhs;
     assertType::Enum m_at;
 
+    // NOLINTNEXTLINE(cppcoreguidelines-rvalue-reference-param-not-moved)
     explicit Expression_lhs(L &&in, assertType::Enum at)
         : lhs(static_cast<L &&>(in)), m_at(at) {}
 

@@ -281,6 +281,7 @@ String toString(const DOCTEST_REF_WRAP(T) value) {
     return StringMaker<T>::convert(value);
 }
 
+// NOLINTNEXTLINE(cppcoreguidelines-rvalue-reference-param-not-moved)
 inline String &&toString(String &&in) {
     return static_cast<String &&>(in);
 }

@@ -827,6 +827,7 @@ DOCTEST_CONSTEXPR_FUNC T &&forward(typename types::remove_reference<T>::type &t)
 }
 
 template <class T>
+// NOLINTNEXTLINE(cppcoreguidelines-rvalue-reference-param-not-moved)
 DOCTEST_CONSTEXPR_FUNC T &&forward(typename types::remove_reference<T>::type &&t) DOCTEST_NOEXCEPT {
     return static_cast<T &&>(t);
 }
@@ -1119,6 +1120,7 @@ String toString(const DOCTEST_REF_WRAP(T) value) {
     return StringMaker<T>::convert(value);
 }
 
+// NOLINTNEXTLINE(cppcoreguidelines-rvalue-reference-param-not-moved)
 inline String &&toString(String &&in) {
     return static_cast<String &&>(in);
 }
@@ -1946,6 +1948,7 @@ struct Expression_lhs {
     L lhs;
     assertType::Enum m_at;
 
+    // NOLINTNEXTLINE(cppcoreguidelines-rvalue-reference-param-not-moved)
     explicit Expression_lhs(L &&in, assertType::Enum at)
         : lhs(static_cast<L &&>(in)), m_at(at) {}
 
@@ -2404,6 +2407,8 @@ class ContextScope : public ContextScopeBase {
 public:
     explicit ContextScope(const L &lambda)
         : lambda_(lambda) {}
+
+    // NOLINTNEXTLINE(cppcoreguidelines-rvalue-reference-param-not-moved)
     explicit ContextScope(L &&lambda)
         : lambda_(static_cast<L &&>(lambda)) {}
 
