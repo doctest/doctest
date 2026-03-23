@@ -5123,7 +5123,7 @@ namespace detail {
 bool fileOrderComparator(const TestCase *lhs, const TestCase *rhs) {
     // this is needed because MSVC gives different case for drive letters
     // for __FILE__ when evaluated in a header and a source file
-    const int res = lhs->m_file.compare(rhs->m_file, bool(DOCTEST_MSVC));
+    const int res = lhs->m_file.compare(rhs->m_file, static_cast<bool>(DOCTEST_MSVC));
     if (res != 0)
         return res < 0;
     if (lhs->m_line != rhs->m_line)
@@ -5766,7 +5766,7 @@ int Context::run() {
         QueryData qdata;
         qdata.run_stats = g_cs;
         qdata.data = queryResults.data();
-        qdata.num_data = unsigned(queryResults.size());
+        qdata.num_data = static_cast<unsigned>(queryResults.size());
         DOCTEST_ITERATE_THROUGH_REPORTERS(report_query, qdata);
     }
 
@@ -6776,17 +6776,17 @@ void ConsoleReporter::test_run_end(const TestRunStats &p) {
     separator_to_stream();
     s << std::dec;
 
-    auto totwidth = int(std::ceil(
+    auto totwidth = static_cast<int>(std::ceil(
         log10(static_cast<double>(std::max(p.numTestCasesPassingFilters, static_cast<unsigned>(p.numAsserts))) + 1)
     ));
-    auto passwidth = int(std::ceil(log10(
+    auto passwidth = static_cast<int>(std::ceil(log10(
         static_cast<double>(std::max(
             p.numTestCasesPassingFilters - p.numTestCasesFailed,
             static_cast<unsigned>(p.numAsserts - p.numAssertsFailed)
         )) +
         1
     )));
-    auto failwidth = int(std::ceil(
+    auto failwidth = static_cast<int>(std::ceil(
         log10(static_cast<double>(std::max(p.numTestCasesFailed, static_cast<unsigned>(p.numAssertsFailed))) + 1)
     ));
     const bool anythingFailed = p.numTestCasesFailed > 0 || p.numAssertsFailed > 0;
@@ -8032,7 +8032,7 @@ void String::setOnHeap() noexcept {
 }
 
 void String::setLast(size_type in) noexcept {
-    buf[last] = char(in);
+    buf[last] = static_cast<char>(in);
 }
 
 void String::setSize(size_type sz) noexcept {
@@ -8171,7 +8171,7 @@ char &String::operator[](size_type i) {
 DOCTEST_GCC_SUPPRESS_WARNING_WITH_PUSH("-Wmaybe-uninitialized")
 String::size_type String::size() const {
     if (isOnStack())
-        return last - (size_type(buf[last]) & 31); // using "last" would work only if "len" is 32
+        return last - (static_cast<size_type>(buf[last]) & 31); // using "last" would work only if "len" is 32
     return data.size;
 }
 DOCTEST_GCC_SUPPRESS_WARNING_POP
@@ -8382,7 +8382,7 @@ bool SubcaseSignature::operator<(const SubcaseSignature &other) const {
 namespace detail {
 
 bool Subcase::checkFilters() {
-    if (g_cs->traversal.activeSubcaseDepth() < size_t(g_cs->subcase_filter_levels)) {
+    if (g_cs->traversal.activeSubcaseDepth() < static_cast<size_t>(g_cs->subcase_filter_levels)) {
         if (!matchesAny(m_signature.m_name.c_str(), g_cs->filters[6], true, g_cs->case_sensitive))
             return true;
         if (matchesAny(m_signature.m_name.c_str(), g_cs->filters[7], false, g_cs->case_sensitive))

@@ -70,7 +70,7 @@ void String::setOnHeap() noexcept {
 }
 
 void String::setLast(size_type in) noexcept {
-    buf[last] = char(in);
+    buf[last] = static_cast<char>(in);
 }
 
 void String::setSize(size_type sz) noexcept {
@@ -209,7 +209,7 @@ char &String::operator[](size_type i) {
 DOCTEST_GCC_SUPPRESS_WARNING_WITH_PUSH("-Wmaybe-uninitialized")
 String::size_type String::size() const {
     if (isOnStack())
-        return last - (size_type(buf[last]) & 31); // using "last" would work only if "len" is 32
+        return last - (static_cast<size_type>(buf[last]) & 31); // using "last" would work only if "len" is 32
     return data.size;
 }
 DOCTEST_GCC_SUPPRESS_WARNING_POP

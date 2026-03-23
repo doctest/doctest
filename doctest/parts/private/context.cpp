@@ -43,7 +43,7 @@ namespace detail {
 bool fileOrderComparator(const TestCase *lhs, const TestCase *rhs) {
     // this is needed because MSVC gives different case for drive letters
     // for __FILE__ when evaluated in a header and a source file
-    const int res = lhs->m_file.compare(rhs->m_file, bool(DOCTEST_MSVC));
+    const int res = lhs->m_file.compare(rhs->m_file, static_cast<bool>(DOCTEST_MSVC));
     if (res != 0)
         return res < 0;
     if (lhs->m_line != rhs->m_line)
@@ -686,7 +686,7 @@ int Context::run() {
         QueryData qdata;
         qdata.run_stats = g_cs;
         qdata.data = queryResults.data();
-        qdata.num_data = unsigned(queryResults.size());
+        qdata.num_data = static_cast<unsigned>(queryResults.size());
         DOCTEST_ITERATE_THROUGH_REPORTERS(report_query, qdata);
     }
 

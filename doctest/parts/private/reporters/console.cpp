@@ -296,17 +296,17 @@ void ConsoleReporter::test_run_end(const TestRunStats &p) {
     separator_to_stream();
     s << std::dec;
 
-    auto totwidth = int(std::ceil(
+    auto totwidth = static_cast<int>(std::ceil(
         log10(static_cast<double>(std::max(p.numTestCasesPassingFilters, static_cast<unsigned>(p.numAsserts))) + 1)
     ));
-    auto passwidth = int(std::ceil(log10(
+    auto passwidth = static_cast<int>(std::ceil(log10(
         static_cast<double>(std::max(
             p.numTestCasesPassingFilters - p.numTestCasesFailed,
             static_cast<unsigned>(p.numAsserts - p.numAssertsFailed)
         )) +
         1
     )));
-    auto failwidth = int(std::ceil(
+    auto failwidth = static_cast<int>(std::ceil(
         log10(static_cast<double>(std::max(p.numTestCasesFailed, static_cast<unsigned>(p.numAssertsFailed))) + 1)
     ));
     const bool anythingFailed = p.numTestCasesFailed > 0 || p.numAssertsFailed > 0;

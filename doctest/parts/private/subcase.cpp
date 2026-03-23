@@ -23,7 +23,7 @@ bool SubcaseSignature::operator<(const SubcaseSignature &other) const {
 namespace detail {
 
 bool Subcase::checkFilters() {
-    if (g_cs->traversal.activeSubcaseDepth() < size_t(g_cs->subcase_filter_levels)) {
+    if (g_cs->traversal.activeSubcaseDepth() < static_cast<size_t>(g_cs->subcase_filter_levels)) {
         if (!matchesAny(m_signature.m_name.c_str(), g_cs->filters[6], true, g_cs->case_sensitive))
             return true;
         if (matchesAny(m_signature.m_name.c_str(), g_cs->filters[7], false, g_cs->case_sensitive))
