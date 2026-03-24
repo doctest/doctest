@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <testsuites>
-  <testsuite name="all_features" errors="1" failures="11" tests="12">
+  <testsuite name="all_features" errors="4" failures="11" tests="12">
     <testcase classname="test_cases_and_suites.cpp" name="an empty test that will succeed - not part of a test suite" status="run"/>
     <testcase classname="test_cases_and_suites.cpp" name="should fail because of an exception" status="run">
       <error message="exception">
@@ -36,7 +36,11 @@ CHECK( data == 85 ) is NOT correct!
 
       </failure>
     </testcase>
-    <testcase classname="test_cases_and_suites.cpp" name="normal test in a test suite from a decorator" status="run"/>
+    <testcase classname="test_cases_and_suites.cpp" name="normal test in a test suite from a decorator" status="run">
+      <error message="timeout">
+        Test case exceeded time limit of 0.000001
+      </error>
+    </testcase>
     <testcase classname="test_cases_and_suites.cpp" name="unskipped" status="run">
       <failure type="FAIL">
 test_cases_and_suites.cpp(0):
@@ -59,7 +63,11 @@ test_cases_and_suites.cpp(0):
 
       </failure>
     </testcase>
-    <testcase classname="test_cases_and_suites.cpp" name="doesn't fail but it should have" status="run"/>
+    <testcase classname="test_cases_and_suites.cpp" name="doesn't fail but it should have" status="run">
+      <error message="should_fail">
+        Should have failed, but didn't
+      </error>
+    </testcase>
     <testcase classname="test_cases_and_suites.cpp" name="fails 1 time as it should" status="run">
       <failure type="FAIL">
 test_cases_and_suites.cpp(0):
@@ -78,6 +86,9 @@ test_cases_and_suites.cpp(0):
 
 
       </failure>
+      <error message="should_fail">
+        Should have failed exactly 1 times, but didn't
+      </error>
     </testcase>
     <testcase classname="test_cases_and_suites.cpp" name="should fail and no output" status="run">
       <failure type="FAIL">
