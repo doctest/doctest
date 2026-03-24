@@ -148,6 +148,16 @@ TEST_SUITE("String construction") {
         }
     }
 
+    TEST_CASE("Construction from std::string") {
+        auto in = std::string("doctest");
+        auto string = String(in);
+
+        CHECK(string.c_str() == std::string("doctest"));
+        CHECK(string.size() == 7u);
+        CHECK(string.capacity() == 24u);
+        CHECK(is_on_stack(string));
+    }
+
     TEST_CASE("Construction from a substring") {
         auto base = String("an extraordinarily large string literal");
         REQUIRE(base.size() == 39u);

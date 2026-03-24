@@ -49,6 +49,12 @@ struct remove_reference<T &&> {
     using type = T;
 };
 
+template <typename T, typename U>
+struct is_same : false_type {};
+
+template <typename T>
+struct is_same<T, T> : true_type {};
+
 template <typename T>
 struct is_rvalue_reference : false_type {};
 
