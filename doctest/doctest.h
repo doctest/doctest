@@ -756,6 +756,12 @@ struct remove_reference<T &&> {
     using type = T;
 };
 
+template <typename T, typename U>
+struct is_same : false_type {};
+
+template <typename T>
+struct is_same<T, T> : true_type {};
+
 template <typename T>
 struct is_rvalue_reference : false_type {};
 
@@ -852,6 +858,20 @@ namespace doctest {
 #define DOCTEST_CONFIG_STRING_SIZE_TYPE unsigned
 #endif
 
+namespace detail {
+
+template <typename T, typename Enable = void>
+struct is_std_string : types::false_type {};
+
+template <typename T>
+struct is_std_string<
+    T,
+    typename types::enable_if<
+        types::is_same<decltype(declval<const T &>().c_str()), const char *>::value &&
+        types::is_same<decltype(declval<const T &>().size()), size_t>::value>::type> : types::true_type {};
+
+} // namespace detail
+
 // A 24 byte string class (can be as small as 17 for x64 and 13 for x86) that can hold strings
 // with length of up to 23 chars on the stack before going on the heap -
 // the last byte of the buffer is used for:
@@ -915,6 +935,10 @@ public:
     String(const char *in, size_type in_size);
 
     String(std::istream &in, size_type in_size);
+
+    template <typename T, typename detail::types::enable_if<detail::is_std_string<T>::value, bool>::type = true>
+    String(const T &in)
+        : String(in.c_str(), static_cast<size_type>(in.size())) {}
 
     String(const String &other);
     String &operator=(const String &other);

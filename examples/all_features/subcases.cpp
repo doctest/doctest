@@ -181,10 +181,7 @@ TEST_CASE("Nested - related to https://github.com/doctest/doctest/issues/282") {
     }
 }
 
-DOCTEST_MSVC_SUPPRESS_WARNING(5045)            // Spectre mitigation stuff
-DOCTEST_GCC_SUPPRESS_WARNING("-Wuseless-cast") // for the std::string() cast
-#undef SUBCASE
-#define SUBCASE(...) DOCTEST_SUBCASE(std::string(__VA_ARGS__).c_str())
+DOCTEST_MSVC_SUPPRESS_WARNING(5045) // Spectre mitigation stuff
 
 TEST_CASE("subcases with changing names") {
     for (int i = 0; i < 2; ++i) {
