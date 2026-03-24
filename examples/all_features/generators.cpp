@@ -262,7 +262,9 @@ TEST_CASE("nested GENERATE does not affect sibling SUBCASE") {
     }
     SUBCASE("B") {
         MESSAGE("B enter=", b_enter_count);
-        CHECK(b_enter_count++ == 0);
+        CHECK(b_enter_count == 0);
+        b_enter_count++;
+        (void)b_enter_count;
     }
 }
 
