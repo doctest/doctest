@@ -47,7 +47,7 @@ void ConsoleReporter::successOrFailColoredStringToStream(bool success, assertTyp
 }
 
 void ConsoleReporter::log_contexts() {
-    int num_contexts = get_num_active_contexts();
+    const int num_contexts = get_num_active_contexts();
     if (num_contexts) {
         auto contexts = get_active_contexts();
 
@@ -74,7 +74,7 @@ void ConsoleReporter::logTestStart() {
         return;
 
     separator_to_stream();
-    file_line_to_stream(tc->m_file.c_str(), tc->m_line, "\n");
+    file_line_to_stream(tc->m_file.c_str(), static_cast<int>(tc->m_line), "\n");
     if (tc->m_description)
         s << Color::Yellow << "DESCRIPTION: " << Color::None << tc->m_description << "\n";
     if (tc->m_test_suite && tc->m_test_suite[0] != '\0')
@@ -115,7 +115,7 @@ void ConsoleReporter::printIntro() {
 }
 
 void ConsoleReporter::printHelp() {
-    int sizePrefixDisplay = static_cast<int>(strlen(DOCTEST_OPTIONS_PREFIX_DISPLAY));
+    const int sizePrefixDisplay = static_cast<int>(strlen(DOCTEST_OPTIONS_PREFIX_DISPLAY));
     printVersion();
     // clang-format off
     s << Color::Cyan << "[doctest]\n" << Color::None;
@@ -222,7 +222,7 @@ void ConsoleReporter::printHelp() {
       << Whitespace(sizePrefixDisplay * 1) << ":n: vs (n): for line numbers in output\n";
     s << " -" DOCTEST_OPTIONS_PREFIX_DISPLAY "npf, --" DOCTEST_OPTIONS_PREFIX_DISPLAY "no-path-filenames=<bool>      "
       << Whitespace(sizePrefixDisplay * 1) << "only filenames and no paths in output\n";
-    s << " -" DOCTEST_OPTIONS_PREFIX_DISPLAY "spp, --" DOCTEST_OPTIONS_PREFIX_DISPLAY "skip-path-prefixes=<p1:p2>    "
+    s << " -" DOCTEST_OPTIONS_PREFIX_DISPLAY "sfp, --" DOCTEST_OPTIONS_PREFIX_DISPLAY "strip-file-prefixes=<p1:p2>   "
       << Whitespace(sizePrefixDisplay * 1) << "whenever file paths start with this prefix, remove it from the output\n";
     s << " -" DOCTEST_OPTIONS_PREFIX_DISPLAY "nln, --" DOCTEST_OPTIONS_PREFIX_DISPLAY "no-line-numbers=<bool>        "
       << Whitespace(sizePrefixDisplay * 1) << "0 instead of real line numbers in output\n";
@@ -236,7 +236,7 @@ void ConsoleReporter::printHelp() {
 void ConsoleReporter::printRegisteredReporters() {
     printVersion();
     auto printReporters = [this](const detail::reporterMap &reporters, const char *type) {
-        if (reporters.size()) {
+        if (!reporters.empty()) {
             s << Color::Cyan << "[doctest] " << Color::None << "listing all registered " << type << "\n";
             for (auto &curr: reporters)
                 s << "priority: " << std::setw(5) << curr.first.first << " name: " << curr.first.second << "\n";
@@ -296,17 +296,17 @@ void ConsoleReporter::test_run_end(const TestRunStats &p) {
     separator_to_stream();
     s << std::dec;
 
-    auto totwidth = int(std::ceil(
+    auto totwidth = static_cast<int>(std::ceil(
         log10(static_cast<double>(std::max(p.numTestCasesPassingFilters, static_cast<unsigned>(p.numAsserts))) + 1)
     ));
-    auto passwidth = int(std::ceil(log10(
+    auto passwidth = static_cast<int>(std::ceil(log10(
         static_cast<double>(std::max(
             p.numTestCasesPassingFilters - p.numTestCasesFailed,
             static_cast<unsigned>(p.numAsserts - p.numAssertsFailed)
         )) +
         1
     )));
-    auto failwidth = int(std::ceil(
+    auto failwidth = static_cast<int>(std::ceil(
         log10(static_cast<double>(std::max(p.numTestCasesFailed, static_cast<unsigned>(p.numAssertsFailed))) + 1)
     ));
     const bool anythingFailed = p.numTestCasesFailed > 0 || p.numAssertsFailed > 0;
@@ -317,7 +317,7 @@ void ConsoleReporter::test_run_end(const TestRunStats &p) {
       << (p.numTestCasesFailed > 0 ? Color::Red : Color::None) << std::setw(failwidth) << p.numTestCasesFailed
       << " failed" << Color::None << " |";
     if (opt.no_skipped_summary == false) {
-        const int numSkipped = p.numTestCases - p.numTestCasesPassingFilters;
+        const unsigned int numSkipped = p.numTestCases - p.numTestCasesPassingFilters;
         s << " " << (numSkipped == 0 ? Color::None : Color::Yellow) << numSkipped << " skipped" << Color::None;
     }
     s << "\n";
@@ -332,6 +332,7 @@ void ConsoleReporter::test_run_end(const TestRunStats &p) {
 }
 
 void ConsoleReporter::test_case_start(const TestCaseData &in) {
+    DOCTEST_LOCK_MUTEX(mutex)
     hasLoggedCurrentTestStart = false;
     tc = &in;
     subcasesStack.clear();
@@ -339,10 +340,12 @@ void ConsoleReporter::test_case_start(const TestCaseData &in) {
 }
 
 void ConsoleReporter::test_case_reenter(const TestCaseData &) {
+    DOCTEST_LOCK_MUTEX(mutex)
     subcasesStack.clear();
 }
 
 void ConsoleReporter::test_case_end(const CurrentTestCaseStats &st) {
+    DOCTEST_LOCK_MUTEX(mutex)
     if (tc->m_no_output)
         return;
 
@@ -384,12 +387,12 @@ void ConsoleReporter::test_case_exception(const TestCaseException &e) {
 
     logTestStart();
 
-    file_line_to_stream(tc->m_file.c_str(), tc->m_line, " ");
+    file_line_to_stream(tc->m_file.c_str(), static_cast<int>(tc->m_line), " ");
     successOrFailColoredStringToStream(false, e.is_crash ? assertType::is_require : assertType::is_check);
     s << Color::Red << (e.is_crash ? "test case CRASHED: " : "test case THREW exception: ");
     s << Color::Cyan << e.error_string << "\n";
 
-    int num_stringified_contexts = get_num_stringified_contexts();
+    const int num_stringified_contexts = get_num_stringified_contexts();
     if (num_stringified_contexts) {
         auto stringified_contexts = get_stringified_contexts();
         s << Color::None << "  logged: ";
@@ -401,12 +404,14 @@ void ConsoleReporter::test_case_exception(const TestCaseException &e) {
 }
 
 void ConsoleReporter::subcase_start(const SubcaseSignature &subc) {
+    DOCTEST_LOCK_MUTEX(mutex)
     subcasesStack.push_back(subc);
     ++currentSubcaseLevel;
     hasLoggedCurrentTestStart = false;
 }
 
 void ConsoleReporter::subcase_end() {
+    DOCTEST_LOCK_MUTEX(mutex)
     --currentSubcaseLevel;
     hasLoggedCurrentTestStart = false;
 }

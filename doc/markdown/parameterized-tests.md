@@ -130,15 +130,12 @@ Some notes:
 
     ```c++
     template <typename first, typename second>
-    struct TypePair
-    {
-        typedef first  A;
+    struct TypePair {
+        typedef first A;
         typedef second B;
     };
 
-    #define pairs \
-        TypePair<int, char>, \
-        TypePair<char, int>
+    #define pairs TypePair<int, char>, TypePair<char, int>
 
     TEST_CASE_TEMPLATE("multiple types", T, pairs) {
         typedef typename T::A T1;

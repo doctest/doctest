@@ -4,11 +4,11 @@
 
 // helper for throwing exceptions
 template <typename T>
-int throw_if(bool in, const T& ex) {
-    if(in)
+int throw_if(bool in, const T &ex) {
+    if (in)
 #ifndef DOCTEST_CONFIG_NO_EXCEPTIONS
         throw ex; // NOLINT
-#else  // DOCTEST_CONFIG_NO_EXCEPTIONS
+#else
         ((void)ex);
 #endif // DOCTEST_CONFIG_NO_EXCEPTIONS
     return 42;
@@ -22,7 +22,7 @@ TEST_SUITE("some TS") {
     }
 }
 
-REGISTER_EXCEPTION_TRANSLATOR(int& in) {
+REGISTER_EXCEPTION_TRANSLATOR(int &in) {
     return doctest::toString(in);
 }
 
@@ -48,11 +48,10 @@ DOCTEST_GCC_SUPPRESS_WARNING("-Wstrict-overflow")
 #endif // gcc 5
 
 // NOLINTBEGIN
-struct SomeFixture
-{
+struct SomeFixture {
     int data;
     SomeFixture() noexcept
-            : data(42) {
+        : data(42) {
         // setup here
     }
 

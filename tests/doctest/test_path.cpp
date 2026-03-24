@@ -10,6 +10,7 @@ public:
 
     inline DummyContextOptions() {
         // Safe since this function is backed by g_cs, which is mutable
+        // NOLINTNEXTLINE(cppcoreguidelines-pro-type-const-cast)
         options = const_cast<doctest::ContextOptions *>(doctest::getContextOptions());
 
         // Retain a copy
@@ -24,40 +25,40 @@ public:
 
 TEST_CASE("Determining basename from path") {
     using doctest::skipPathFromFilename;
-    DummyContextOptions context { };
+    const DummyContextOptions context{};
 
     SUBCASE("With no_path_in_filenames enabled") {
         context.options->no_path_in_filenames = true;
 
-        CHECK(skipPathFromFilename("")                          == doctest::String(""));
-        CHECK(skipPathFromFilename("file.c")                    == doctest::String("file.c"));
-        CHECK(skipPathFromFilename("path/to/file.c")            == doctest::String("file.c"));
-        CHECK(skipPathFromFilename("path\\to\\file.c")          == doctest::String("file.c"));
-        CHECK(skipPathFromFilename("another/path/to/file.c")    == doctest::String("file.c"));
+        CHECK(skipPathFromFilename("") == doctest::String(""));
+        CHECK(skipPathFromFilename("file.c") == doctest::String("file.c"));
+        CHECK(skipPathFromFilename("path/to/file.c") == doctest::String("file.c"));
+        CHECK(skipPathFromFilename("path\\to\\file.c") == doctest::String("file.c"));
+        CHECK(skipPathFromFilename("another/path/to/file.c") == doctest::String("file.c"));
         CHECK(skipPathFromFilename("another\\path\\to\\file.c") == doctest::String("file.c"));
     }
 
     SUBCASE("With no_path_in_filenames disabled, and strip_file_prefixes empty") {
         context.options->no_path_in_filenames = false;
-        context.options->strip_file_prefixes  = "";
+        context.options->strip_file_prefixes = "";
 
-        CHECK(skipPathFromFilename("")                          == doctest::String(""));
-        CHECK(skipPathFromFilename("file.c")                    == doctest::String("file.c"));
-        CHECK(skipPathFromFilename("path/to/file.c")            == doctest::String("path/to/file.c"));
-        CHECK(skipPathFromFilename("path\\to\\file.c")          == doctest::String("path\\to\\file.c"));
-        CHECK(skipPathFromFilename("another/path/to/file.c")    == doctest::String("another/path/to/file.c"));
+        CHECK(skipPathFromFilename("") == doctest::String(""));
+        CHECK(skipPathFromFilename("file.c") == doctest::String("file.c"));
+        CHECK(skipPathFromFilename("path/to/file.c") == doctest::String("path/to/file.c"));
+        CHECK(skipPathFromFilename("path\\to\\file.c") == doctest::String("path\\to\\file.c"));
+        CHECK(skipPathFromFilename("another/path/to/file.c") == doctest::String("another/path/to/file.c"));
         CHECK(skipPathFromFilename("another\\path\\to\\file.c") == doctest::String("another\\path\\to\\file.c"));
     }
 
     SUBCASE("With no_path_in_filenames disabled, and strip_file_prefixes set to 'path'") {
         context.options->no_path_in_filenames = false;
-        context.options->strip_file_prefixes  = "path";
+        context.options->strip_file_prefixes = "path";
 
-        CHECK(skipPathFromFilename("")                          == doctest::String(""));
-        CHECK(skipPathFromFilename("file.c")                    == doctest::String("file.c"));
-        CHECK(skipPathFromFilename("path/to/file.c")            == doctest::String("/to/file.c"));
-        CHECK(skipPathFromFilename("path\\to\\file.c")          == doctest::String("\\to\\file.c"));
-        CHECK(skipPathFromFilename("another/path/to/file.c")    == doctest::String("another/path/to/file.c"));
+        CHECK(skipPathFromFilename("") == doctest::String(""));
+        CHECK(skipPathFromFilename("file.c") == doctest::String("file.c"));
+        CHECK(skipPathFromFilename("path/to/file.c") == doctest::String("/to/file.c"));
+        CHECK(skipPathFromFilename("path\\to\\file.c") == doctest::String("\\to\\file.c"));
+        CHECK(skipPathFromFilename("another/path/to/file.c") == doctest::String("another/path/to/file.c"));
         CHECK(skipPathFromFilename("another\\path\\to\\file.c") == doctest::String("another\\path\\to\\file.c"));
     }
 }

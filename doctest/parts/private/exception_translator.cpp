@@ -10,18 +10,18 @@ namespace detail {
 
 DOCTEST_DEFINE_INTERFACE(IExceptionTranslator)
 
-void registerExceptionTranslatorImpl(const IExceptionTranslator *et) {
+void registerExceptionTranslatorImpl(const IExceptionTranslator *et) noexcept {
     if (std::find(getExceptionTranslators().begin(), getExceptionTranslators().end(), et) ==
         getExceptionTranslators().end())
         getExceptionTranslators().push_back(et);
 }
 
-std::vector<const IExceptionTranslator *> &getExceptionTranslators() {
+std::vector<const IExceptionTranslator *> &getExceptionTranslators() noexcept {
     static std::vector<const IExceptionTranslator *> data;
     return data;
 }
 
-String translateActiveException() {
+String translateActiveException() noexcept {
 #ifndef DOCTEST_CONFIG_NO_EXCEPTIONS
     String res;
     auto &translators = getExceptionTranslators();

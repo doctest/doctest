@@ -1,0 +1,85 @@
+name: MacOS
+
+on:
+  push:
+    branches: [dev, master]
+    paths-ignore:
+      - "doc/**"
+      - "scripts/**"
+      - "LICENSE.txt"
+      - "README.md"
+
+  pull_request:
+    paths-ignore:
+      - "doc/**"
+      - "scripts/**"
+      - "LICENSE.txt"
+      - "README.md"
+
+concurrency:
+  group: ${{ github.workflow }}|${{ github.ref_name }}|mac
+  cancel-in-progress: true
+
+jobs:
+  clang:
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        # Apple Clang 17.0.0
+        os:         ["macos-15"]
+        version:    ["16.3"]
+        arch:       [arm64]
+        build-type: [Release, Debug]
+        target:     [test, asan/ubsan, tsan, fno-exceptions, fno-rtti]
+        include:
+          - { os: macos-14, version: "15.0.1", arch: arm64, build-type: Release, target: test } # Apple Clang 15.0.0
+          - { os: macos-14, version: "15.4",   arch: arm64, build-type: Release, target: test } # Apple Clang 15.0.0
+          - { os: macos-14, version: "16.2",   arch: arm64, build-type: Release, target: test } # Apple Clang 16.0.0
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Install
+        run: |
+          sudo xcode-select --switch /Applications/Xcode_${{ matrix.version }}.app
+
+      - name: Build & Test
+        run: |
+          python3 .github/scripts/cmake.py        \
+            --os         ${{ runner.os }}         \
+            --arch       ${{ matrix.arch }}       \
+            --compiler   xcode                    \
+            --version    ${{ matrix.version }}    \
+            --build-type ${{ matrix.build-type }} \
+            --target     ${{ matrix.target }}
+
+  gcc:
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        os:         ["macos-14"]
+        version:    ["13"]
+        arch:       [arm64]
+        build-type: [Release, Debug]
+        target:     [test, fno-exceptions, fno-rtti]
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Install
+        run: |
+          sudo xcode-select --switch /Applications/Xcode_15.4.app
+
+      - name: Build and Test
+        run: |
+          python3 .github/scripts/cmake.py        \
+            --os         ${{ runner.os }}         \
+            --arch       ${{ matrix.arch }}       \
+            --compiler   gcc                      \
+            --version    ${{ matrix.version }}    \
+            --build-type ${{ matrix.build-type }} \
+            --target     ${{ matrix.target }}

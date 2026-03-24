@@ -11,15 +11,15 @@ DOCTEST_SUPPRESS_COMMON_WARNINGS_PUSH
 namespace {
 
 struct XmlWriter {
-    std::ostringstream oss { };
-    doctest::detail::XmlWriter xml { oss };
+    std::ostringstream oss{};
+    doctest::detail::XmlWriter xml{oss};
 
     std::string text() const noexcept {
         return oss.str();
     }
 };
 
-}
+} // namespace
 
 TEST_CASE_FIXTURE(XmlWriter, "Writing XML document declaration") {
     xml.writeDeclaration();
@@ -29,8 +29,10 @@ TEST_CASE_FIXTURE(XmlWriter, "Writing XML document declaration") {
 }
 
 TEST_CASE_FIXTURE(XmlWriter, "Writing an empty element") {
+    // clang-format off
     xml.startElement("test")
        .endElement();
+    // clang-format on
 
     CHECK(text() == text::dedent(R"(
         <test/>
@@ -39,10 +41,12 @@ TEST_CASE_FIXTURE(XmlWriter, "Writing an empty element") {
 
 TEST_CASE_FIXTURE(XmlWriter, "Writing an element with attributes") {
     SUBCASE("Boolean arguments") {
+        // clang-format off
         xml.startElement("test")
            .writeAttribute("x", false)
            .writeAttribute("y", true)
            .endElement();
+        // clang-format on
 
         CHECK(text() == text::dedent(R"(
             <test x="false" y="true"/>
@@ -50,10 +54,12 @@ TEST_CASE_FIXTURE(XmlWriter, "Writing an element with attributes") {
     }
 
     SUBCASE("String arguments") {
+        // clang-format off
         xml.startElement("test")
            .writeAttribute("non-empty", "data")
-           .writeAttribute("empty",     "")
+           .writeAttribute("empty", "")
            .endElement();
+        // clang-format on
 
         CHECK(text() == text::dedent(R"(
             <test non-empty="data"/>
@@ -61,9 +67,11 @@ TEST_CASE_FIXTURE(XmlWriter, "Writing an element with attributes") {
     }
 
     SUBCASE("Stringifiable arguments") {
+        // clang-format off
         xml.startElement("test")
-           .writeAttribute("int",  42)
+           .writeAttribute("int", 42)
            .endElement();
+        // clang-format on
 
         CHECK(text() == text::dedent(R"(
             <test int="42"/>
@@ -71,9 +79,11 @@ TEST_CASE_FIXTURE(XmlWriter, "Writing an element with attributes") {
     }
 
     SUBCASE("Empty name") {
+        // clang-format off
         xml.startElement("test")
            .writeAttribute("", 42)
            .endElement();
+        // clang-format on
 
         CHECK(text() == text::dedent(R"(
             <test/>
@@ -83,9 +93,11 @@ TEST_CASE_FIXTURE(XmlWriter, "Writing an element with attributes") {
 
 TEST_CASE_FIXTURE(XmlWriter, "Writing an element with internal data") {
     SUBCASE("One line of data") {
+        // clang-format off
         xml.startElement("test")
            .writeText("data")
            .endElement();
+        // clang-format on
 
         CHECK(text() == text::dedent(R"(
             <test>
@@ -95,11 +107,13 @@ TEST_CASE_FIXTURE(XmlWriter, "Writing an element with internal data") {
     }
 
     SUBCASE("Multiple lines of data") {
+        // clang-format off
         xml.startElement("test")
            .writeText("foo")
            .writeText("bar")
            .writeText("baz")
            .endElement();
+        // clang-format on
 
         CHECK(text() == text::dedent(R"(
             <test>
@@ -109,9 +123,11 @@ TEST_CASE_FIXTURE(XmlWriter, "Writing an element with internal data") {
     }
 
     SUBCASE("Data with internal newlines") {
+        // clang-format off
         xml.startElement("test")
            .writeText("foo\nbar\nbaz")
            .endElement();
+        // clang-format on
 
         CHECK(text() == text::dedent(R"(
             <test>
@@ -124,13 +140,15 @@ TEST_CASE_FIXTURE(XmlWriter, "Writing an element with internal data") {
 }
 
 TEST_CASE_FIXTURE(XmlWriter, "Writing a nested structure") {
+    // clang-format off
     xml.startElement("foo")
        .startElement("bar")
        .startElement("baz")
-           .writeText("data")
+          .writeText("data")
        .endElement()
        .endElement()
        .endElement();
+    // clang-format on
 
     CHECK(text() == text::dedent(R"(
         <foo>
@@ -144,10 +162,14 @@ TEST_CASE_FIXTURE(XmlWriter, "Writing a nested structure") {
 }
 
 TEST_CASE("Explicitly dropping an XmlWriter with unclosed elements") {
-    std::ostringstream oss { };
+    std::ostringstream oss{};
     /* scope */ {
-        doctest::detail::XmlWriter xml { oss };
-        xml.startElement("foo").startElement("bar").startElement("baz");
+        doctest::detail::XmlWriter xml{oss};
+        // clang-format off
+        xml.startElement("foo")
+           .startElement("bar")
+           .startElement("baz");
+        // clang-format on
     }
 
     CHECK(oss.str() == text::dedent(R"(
@@ -164,7 +186,7 @@ TEST_CASE("Escaping special characters") {
 
     struct {
         std::string operator()(const char *str, XmlEncode::ForWhat what = XmlEncode::ForWhat::ForTextNodes) {
-            std::ostringstream oss { };
+            std::ostringstream oss{};
             oss << doctest::detail::XmlEncode(str, what);
             return oss.str();
         }
@@ -192,18 +214,20 @@ TEST_CASE("Escaping special characters") {
         CHECK(escape("'string'") == "'string'");
 
         CHECK(escape("\"string\"", XmlEncode::ForWhat::ForAttributes) == "&quot;string&quot;");
-        CHECK(escape("\"string\"", XmlEncode::ForWhat::ForTextNodes)  == "\"string\"");
+        CHECK(escape("\"string\"", XmlEncode::ForWhat::ForTextNodes) == "\"string\"");
     }
 
     SUBCASE("Printable ASCII chars") {
-        CHECK(escape("data")  == "data");
+        CHECK(escape("data") == "data");
         CHECK(escape("x y z") == "x y z");
     }
 
     SUBCASE("Valid UTF-8 sequences") {
+        // clang-format off
         CHECK(escape("\xC3\x9C")         == "\xC3\x9C");         // U+00DC: Latin Capital Letter U with Diaresis
         CHECK(escape("\xEE\x83\x84")     == "\xEE\x83\x84");     // U+30C3: Katakana Letter Small Tu
         CHECK(escape("\xF0\x9F\x98\x8A") == "\xF0\x9F\x98\x8A"); // U+1F60A Smiling Face with Smiling Eyes
+        // clang-format on
     }
 
     SUBCASE("Invalid UTF-8 sequences") {
@@ -219,11 +243,13 @@ TEST_CASE("Escaping special characters") {
         // After the lead byte, the next byte(s) are continuations which lead with 0b10
         CHECK(escape("\xC2\x7F") == R"(\xC2\x7F)");
 
+        // clang-format off
         // We can hypothetically encode small codepoints as-if they were larger
         // by simply adding `0b10'000000` sequences; this shouldn't be valid though
         CHECK(escape("\xC0\xAF")         == R"(\xC0\xAF)");
         CHECK(escape("\xE0\x80\xAF")     == R"(\xE0\x80\xAF)");
         CHECK(escape("\xF0\x80\x80\xAF") == R"(\xF0\x80\x80\xAF)");
+        // clang-format on
 
         // A 4-byte UTF-8 sequence can represent up to (3+6+6+6 = 21) bits of data,
         // but Unicode only currently maps up to U+10FFFF

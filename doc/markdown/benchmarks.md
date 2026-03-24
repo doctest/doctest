@@ -154,14 +154,14 @@ And here is [**Catch**](https://github.com/catchorg/Catch2) which only has norma
 The runtime benchmarks consist of a single test case with a loop of 10 million iterations performing the task - a single normal assert (using expression decomposition) or the assert + the logging of the loop iterator ```i```:
 
 ```c++
-for(int i = 0; i < 10000000; ++i)
+for (int i = 0; i < 10000000; ++i)
     CHECK(i == i);
 ```
 
 or
 
 ```c++
-for(int i = 0; i < 10000000; ++i) {
+for (int i = 0; i < 10000000; ++i) {
     INFO(i);
     CHECK(i == i);
 }

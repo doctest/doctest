@@ -11,7 +11,7 @@ XmlReporter::XmlReporter(const ContextOptions &co)
     : xml(*co.cout), opt(co) {}
 
 void XmlReporter::log_contexts() {
-    int num_contexts = get_num_active_contexts();
+    const int num_contexts = get_num_active_contexts();
     if (num_contexts) {
         auto contexts = get_active_contexts();
         std::stringstream ss;
@@ -95,6 +95,7 @@ void XmlReporter::test_run_start() {
     xml.writeDeclaration();
 
     // remove .exe extension - mainly to have the same output on UNIX and Windows
+    // NOLINTNEXTLINE(misc-const-correctness)
     std::string binary_name = skipPathFromFilename(opt.binary_name.c_str());
 #ifdef DOCTEST_PLATFORM_WINDOWS
     if (binary_name.rfind(".exe") != std::string::npos)
@@ -137,6 +138,7 @@ void XmlReporter::test_run_end(const TestRunStats &p) {
 }
 
 void XmlReporter::test_case_start(const TestCaseData &in) {
+    DOCTEST_LOCK_MUTEX(mutex)
     test_case_start_impl(in);
     xml.ensureTagClosed();
 }
@@ -144,6 +146,7 @@ void XmlReporter::test_case_start(const TestCaseData &in) {
 void XmlReporter::test_case_reenter(const TestCaseData &) {}
 
 void XmlReporter::test_case_end(const CurrentTestCaseStats &st) {
+    DOCTEST_LOCK_MUTEX(mutex)
     xml.startElement("OverallResultsAsserts")
         .writeAttribute("successes", st.numAssertsCurrentTest - st.numAssertsFailedCurrentTest)
         .writeAttribute("failures", st.numAssertsFailedCurrentTest)
@@ -164,6 +167,7 @@ void XmlReporter::test_case_exception(const TestCaseException &e) {
 }
 
 void XmlReporter::subcase_start(const SubcaseSignature &in) {
+    DOCTEST_LOCK_MUTEX(mutex)
     xml.startElement("SubCase")
         .writeAttribute("name", in.m_name)
         .writeAttribute("filename", skipPathFromFilename(in.m_file))
@@ -172,6 +176,7 @@ void XmlReporter::subcase_start(const SubcaseSignature &in) {
 }
 
 void XmlReporter::subcase_end() {
+    DOCTEST_LOCK_MUTEX(mutex)
     xml.endElement();
 }
 
@@ -221,6 +226,7 @@ void XmlReporter::log_message(const MessageData &mb) {
 
 void XmlReporter::test_case_skipped(const TestCaseData &in) {
     if (opt.no_skipped_summary == false) {
+        DOCTEST_LOCK_MUTEX(mutex)
         test_case_start_impl(in);
         xml.writeAttribute("skipped", "true");
         xml.endElement();

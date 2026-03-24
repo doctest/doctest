@@ -9,7 +9,7 @@ namespace {
 
 /** @return the text that the color stringizes to */
 inline std::string text(doctest::Color::Enum color) noexcept {
-    std::ostringstream oss { };
+    std::ostringstream oss{};
     oss << color;
     return oss.str();
 }
@@ -19,6 +19,7 @@ inline std::string text(doctest::Color::Enum color) noexcept {
 TEST_CASE("Colorizing a stream") {
     using namespace doctest;
 
+    // clang-format off
     CHECK(text(Color::None)        == "");
     CHECK(text(Color::White)       == "");
     CHECK(text(Color::Red)         == "");
@@ -31,4 +32,5 @@ TEST_CASE("Colorizing a stream") {
     CHECK(text(Color::BrightGreen) == "");
     CHECK(text(Color::LightGrey)   == "");
     CHECK(text(Color::BrightWhite) == "");
+    // clang-format on
 }

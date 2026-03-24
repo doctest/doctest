@@ -6,7 +6,7 @@
 
 **Int/String options** - they require a value after the ```=``` sign - without spaces! For example: ```--order-by=rand```.
 
-**Bool options** - they expect ```1```/```yes```/```on```/```true``` or ```0```/```no```/```off```/```false``` after the ```=``` sign - but they can also be used like flags and the ```=value``` part can be skipped - then ```true``` is assumed.  
+**Bool options** - they expect ```1```/```yes```/```on```/```true``` or ```0```/```no```/```off```/```false``` after the ```=``` sign - but they can also be used like flags and the ```=value``` part can be skipped - then ```true``` is assumed.
 
 **Filters** - a comma-separated list of wildcards for matching values - where ```*``` means "match any sequence" and ```?``` means "match any one character".
 To pass patterns with intervals use ```""``` like this:  ```--test-case="*no sound*,vaguely named test number ?"```. Patterns that contain a comma or a backslash can be escaped with ```\``` (example: ```--test-case=this\,test\,has\,commas\,and\,a\\\,backslash\,followed\,by\,a\,comma```).
@@ -30,7 +30,7 @@ All the options can also be set with code (defaults/overrides) if the user [**su
 | ```-sfe``` ```--source-file-exclude=<filters>``` | Same as ```--test-case-exclude=<filters>``` but filters based on the file in which test cases are written |
 | ```-ts``` &nbsp; ```--test-suite=<filters>``` | Same as ```--test-case=<filters>``` but filters based on the test suite in which test cases are in |
 | ```-tse``` ```--test-suite-exclude=<filters>``` | Same as ```--test-case-exclude=<filters>``` but filters based on the test suite in which test cases are in |
-| ```-sc``` &nbsp; ```--subcase=<filters>``` | Same as ```--test-case=<filters>``` but filters subcases based on their names. Does not filter test cases (they have to be executed for subcases to be discovered) so you might want to use this together with ```--test-case=<filters>```. |
+| ```-sc``` &nbsp; ```--subcase=<filters>``` | Same as ```--test-case=<filters>``` but filters subcases based on their names. Does not filter test cases (they have to be executed for subcases to be discovered) so you might want to use this together with ```--test-case=<filters>```. This will **not** run any subcases within the selected subcase, however this behaviour will change in v2.6. See #519 for details. |
 | ```-sce``` ```--subcase-exclude=<filters>``` | Same as ```--test-case-exclude=<filters>``` but filters based on subcase names |
 | ```-r``` ```--reporters=<filters>``` | List of [**reporters**](reporters.md) to use (default is ```console```) |
 | ```-o``` &nbsp; ```--out=<string>``` | Output filename |
@@ -58,7 +58,7 @@ All the options can also be set with code (defaults/overrides) if the user [**su
 | ```-ns``` &nbsp; ```--no-skip=<bool>``` | Don't skip test cases marked as skip with a decorator |
 | ```-gfl``` ```--gnu-file-line=<bool>``` | ```:n:``` vs ```(n):``` for line numbers in output (gnu mode is usually for linux tools/IDEs and is with the ```:``` separator) |
 | ```-npf``` ```--no-path-filenames=<bool>``` | Paths are removed from the output when a filename is printed - useful if you want the same output from the testing framework on different environments |
-| ```-spp``` ```--skip-path-prefixes=<string>``` | Remove the longest matching one in [**a list of prefixes**](configuration.md#doctest_config_options_file_prefix_separator) from any file path in the output - similar to ```-npf```, but can preserve some context by not removing the entire relative paths. Try: ```--spp=${CMAKE_SOURCE_DIR}/:${CMAKE_BINARY_DIR}/``` |
+| ```-sfp``` ```--strip-file-prefixes=<string>``` | Remove the longest matching one in [**a list of prefixes**](configuration.md#doctest_config_options_file_prefix_separator) from any file path in the output - similar to ```-npf```, but can preserve some context by not removing the entire relative paths. Try: ```--sfp=${CMAKE_SOURCE_DIR}/:${CMAKE_BINARY_DIR}/``` |
 | ```-nln``` ```--no-line-numbers=<bool>``` | Line numbers are replaced with ```0``` in the output when a source location is printed - useful if you want the same output from the testing framework even when test positions change within a source file |
 | ```-ndo``` ```--no-debug-output=<bool>``` | Disables output in the debug console when a debugger is attached |
 | &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| |
@@ -79,26 +79,31 @@ If there isn't an option to exclude those starting with ```--dt-``` then the ```
 #include "doctest.h"
 
 class dt_removed {
-    std::vector<const char*> vec;
+    std::vector<const char *> vec;
+
 public:
-    dt_removed(const char** argv_in) {
-        for(; *argv_in; ++argv_in)
-            if(strncmp(*argv_in, "--dt-", strlen("--dt-")) != 0)
+    dt_removed(const char **argv_in) {
+        for (; *argv_in; ++argv_in)
+            if (strncmp(*argv_in, "--dt-", strlen("--dt-")) != 0)
                 vec.push_back(*argv_in);
         vec.push_back(NULL);
     }
 
-    int          argc() { return static_cast<int>(vec.size()) - 1; }
-    const char** argv() { return &vec[0]; } // Note: non-const char **:
+    int argc() {
+        return static_cast<int>(vec.size()) - 1;
+    }
+    const char **argv() {
+        return &vec[0];
+    } // Note: non-const char **:
 };
 
-int program(int argc, const char** argv);
+int program(int argc, const char **argv);
 
-int main(int argc, const char** argv) {
+int main(int argc, const char **argv) {
     doctest::Context context(argc, argv);
     int test_result = context.run(); // run queries, or run tests unless --no-run
 
-    if(context.shouldExit()) // honor query flags and --exit
+    if (context.shouldExit()) // honor query flags and --exit
         return test_result;
 
     dt_removed args(argv);
@@ -107,9 +112,9 @@ int main(int argc, const char** argv) {
     return test_result + app_result; // combine the 2 results
 }
 
-int program(int argc, const char** argv) {
+int program(int argc, const char **argv) {
     printf("Program: %d arguments received:\n", argc - 1);
-    while(*++argv)
+    while (*++argv)
         printf("'%s'\n", *argv);
     return EXIT_SUCCESS;
 }

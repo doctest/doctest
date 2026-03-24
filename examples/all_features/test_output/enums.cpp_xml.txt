@@ -8,7 +8,7 @@
     <TestCase name="enum 2" filename="enums.cpp" line="0" should_fail="true">
       <Expression success="false" type="CHECK_EQ" filename="enums.cpp" line="0">
         <Original>
-          castToUnderlying(Zero), 1
+          Zero, 1
         </Original>
         <Expanded>
           0, 1
@@ -16,7 +16,7 @@
       </Expression>
       <Expression success="false" type="CHECK_EQ" filename="enums.cpp" line="0">
         <Original>
-          castToUnderlying(One), 2
+          One, 2
         </Original>
         <Expanded>
           1, 2
@@ -24,7 +24,7 @@
       </Expression>
       <Expression success="false" type="CHECK_EQ" filename="enums.cpp" line="0">
         <Original>
-          castToUnderlying(Two), 3
+          Two, 3
         </Original>
         <Expanded>
           2, 3
@@ -32,7 +32,7 @@
       </Expression>
       <Expression success="false" type="CHECK_EQ" filename="enums.cpp" line="0">
         <Original>
-          castToUnderlying(TypedZero), 1
+          TypedZero, 1
         </Original>
         <Expanded>
           0, 1
@@ -40,7 +40,7 @@
       </Expression>
       <Expression success="false" type="CHECK_EQ" filename="enums.cpp" line="0">
         <Original>
-          castToUnderlying(TypedOne), 2
+          TypedOne, 2
         </Original>
         <Expanded>
           1, 2
@@ -48,7 +48,7 @@
       </Expression>
       <Expression success="false" type="CHECK_EQ" filename="enums.cpp" line="0">
         <Original>
-          castToUnderlying(TypedTwo), 3
+          TypedTwo, 3
         </Original>
         <Expanded>
           2, 3

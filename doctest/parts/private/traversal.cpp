@@ -1,5 +1,8 @@
 #include "doctest/parts/private/traversal.h"
+
 #include "doctest/parts/private/context_state.h"
+
+#include <algorithm>
 
 DOCTEST_SUPPRESS_PRIVATE_WARNINGS_PUSH
 
@@ -12,7 +15,7 @@ DOCTEST_NOINLINE DecisionPoint &TraversalState::ensureDecisionPointAtCurrentDept
     const size_t depth = m_decisionDepth;
 
     if (m_discoveredDecisionPath.size() == depth) {
-        m_discoveredDecisionPath.push_back(DecisionPoint{});
+        m_discoveredDecisionPath.emplace_back();
 
         if (m_decisionPath.size() == depth)
             m_decisionPath.push_back(0);
@@ -63,7 +66,6 @@ bool TraversalState::tryEnterSubcase(const SubcaseSignature &signature) {
         subcases.push_back(signature);
 
     point.branch_count = subcases.size();
-
     if (siblingIndex != m_decisionPath[m_decisionDepth])
         return false;
 
@@ -100,7 +102,6 @@ size_t TraversalState::acquireGeneratorIndex(size_t count) {
 size_t acquireGeneratorDecisionIndex(size_t count) {
     return g_cs->traversal.acquireGeneratorIndex(count);
 }
-
 } // namespace detail
 } // namespace doctest
 

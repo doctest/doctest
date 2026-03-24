@@ -9,7 +9,7 @@ DOCTEST_SUPPRESS_PUBLIC_WARNINGS_PUSH
 namespace doctest {
 namespace detail {
 template <typename T>
-int instantiationHelper(const T &) {
+int instantiationHelper(const T &) noexcept {
     return 0;
 }
 
@@ -31,7 +31,7 @@ int instantiationHelper(const T &) {
 #define DOCTEST_FUNC_SCOPE_END ()
 #define DOCTEST_FUNC_SCOPE_RET(v) return v
 #else
-#define DOCTEST_FUNC_SCOPE_BEGIN do
+#define DOCTEST_FUNC_SCOPE_BEGIN do /* NOLINT(cppcoreguidelines-avoid-do-while)*/
 #define DOCTEST_FUNC_SCOPE_END while (false)
 #define DOCTEST_FUNC_SCOPE_RET(v) (void)0
 #endif
@@ -136,7 +136,7 @@ int instantiationHelper(const T &) {
     struct iter;                                                                                                       \
     template <typename Type, typename... Rest>                                                                         \
     struct iter<std::tuple<Type, Rest...>> {                                                                           \
-        iter(const char *file, unsigned line, int index) {                                                             \
+        iter(const char *file, unsigned line, int index) noexcept {                                                    \
             doctest::detail::regTest(                                                                                  \
                 doctest::detail::TestCase(                                                                             \
                     func<Type>,                                                                                        \
@@ -238,7 +238,7 @@ int instantiationHelper(const T &) {
 #define DOCTEST_REGISTER_EXCEPTION_TRANSLATOR_IMPL(translatorName, signature)                                          \
     inline doctest::String translatorName(signature);                                                                  \
     DOCTEST_GLOBAL_NO_WARNINGS(                                                                                        \
-        DOCTEST_ANONYMOUS(DOCTEST_ANON_TRANSLATOR_), /* NOLINT(cert-err58-cpp) */                                      \
+        DOCTEST_ANONYMOUS(DOCTEST_ANON_TRANSLATOR_VAR_), /* NOLINT(cert-err58-cpp) */                                  \
         doctest::registerExceptionTranslator(translatorName)                                                           \
     )                                                                                                                  \
     doctest::String translatorName(signature)
@@ -249,7 +249,7 @@ int instantiationHelper(const T &) {
 // for registering reporters
 #define DOCTEST_REGISTER_REPORTER(name, priority, reporter)                                                            \
     DOCTEST_GLOBAL_NO_WARNINGS(                                                                                        \
-        DOCTEST_ANONYMOUS(DOCTEST_ANON_REPORTER_), /* NOLINT(cert-err58-cpp) */                                        \
+        DOCTEST_ANONYMOUS(DOCTEST_ANON_REPORTER_VAR_), /* NOLINT(cert-err58-cpp) */                                    \
         doctest::registerReporter<reporter>(name, priority, true)                                                      \
     )                                                                                                                  \
     static_assert(true, "")
@@ -257,13 +257,13 @@ int instantiationHelper(const T &) {
 // for registering listeners
 #define DOCTEST_REGISTER_LISTENER(name, priority, reporter)                                                            \
     DOCTEST_GLOBAL_NO_WARNINGS(                                                                                        \
-        DOCTEST_ANONYMOUS(DOCTEST_ANON_REPORTER_), /* NOLINT(cert-err58-cpp) */                                        \
+        DOCTEST_ANONYMOUS(DOCTEST_ANON_REPORTER_VAR_), /* NOLINT(cert-err58-cpp) */                                    \
         doctest::registerReporter<reporter>(name, priority, false)                                                     \
     )                                                                                                                  \
     static_assert(true, "")
 
 #define DOCTEST_INFO(...)                                                                                              \
-    DOCTEST_INFO_IMPL(DOCTEST_ANONYMOUS(DOCTEST_CAPTURE_), DOCTEST_ANONYMOUS(DOCTEST_CAPTURE_OTHER_), __VA_ARGS__)
+    DOCTEST_INFO_IMPL(DOCTEST_ANONYMOUS(DOCTEST_CAPTURE_MB_), DOCTEST_ANONYMOUS(DOCTEST_CAPTURE_OTHER_), __VA_ARGS__)
 
 #define DOCTEST_INFO_IMPL(mb_name, s_name, ...)                                                                        \
     auto DOCTEST_ANONYMOUS(DOCTEST_CAPTURE_) = doctest::detail::MakeContextScope([&](std::ostream *s_name) {           \
@@ -859,14 +859,16 @@ DOCTEST_RELATIONAL_OP(ge, >=)
 // clang-format off
 #define DOCTEST_SCENARIO(name)                                        DOCTEST_TEST_CASE("  Scenario: " name)
 #define DOCTEST_SCENARIO_CLASS(name)                            DOCTEST_TEST_CASE_CLASS("  Scenario: " name)
+#define DOCTEST_SCENARIO_METHOD(x, name)                   DOCTEST_TEST_CASE_FIXTURE(x, "  Scenario: " name)
 #define DOCTEST_SCENARIO_TEMPLATE(name, T, ...)              DOCTEST_TEST_CASE_TEMPLATE("  Scenario: " name, T, __VA_ARGS__)
 #define DOCTEST_SCENARIO_TEMPLATE_DEFINE(name, T, id) DOCTEST_TEST_CASE_TEMPLATE_DEFINE("  Scenario: " name, T, id)
 
-#define DOCTEST_GIVEN(name)    DOCTEST_SUBCASE("   Given: " name)
-#define DOCTEST_WHEN(name)     DOCTEST_SUBCASE("    When: " name)
-#define DOCTEST_AND_WHEN(name) DOCTEST_SUBCASE("And when: " name)
-#define DOCTEST_THEN(name)     DOCTEST_SUBCASE("    Then: " name)
-#define DOCTEST_AND_THEN(name) DOCTEST_SUBCASE("     And: " name)
+#define DOCTEST_GIVEN(name)     DOCTEST_SUBCASE("   Given: " name)
+#define DOCTEST_AND_GIVEN(name) DOCTEST_SUBCASE("     And: " name)
+#define DOCTEST_WHEN(name)      DOCTEST_SUBCASE("    When: " name)
+#define DOCTEST_AND_WHEN(name)  DOCTEST_SUBCASE("     And: " name)
+#define DOCTEST_THEN(name)      DOCTEST_SUBCASE("    Then: " name)
+#define DOCTEST_AND_THEN(name)  DOCTEST_SUBCASE("     And: " name)
 // clang-format on
 
 // == SHORT VERSIONS OF THE MACROS
@@ -946,10 +948,12 @@ DOCTEST_RELATIONAL_OP(ge, >=)
 // clang-format on
 
 #define SCENARIO(name) DOCTEST_SCENARIO(name)
+#define SCENARIO_METHOD(x, name) DOCTEST_SCENARIO_METHOD(x, name)
 #define SCENARIO_CLASS(name) DOCTEST_SCENARIO_CLASS(name)
 #define SCENARIO_TEMPLATE(name, T, ...) DOCTEST_SCENARIO_TEMPLATE(name, T, __VA_ARGS__)
 #define SCENARIO_TEMPLATE_DEFINE(name, T, id) DOCTEST_SCENARIO_TEMPLATE_DEFINE(name, T, id)
 #define GIVEN(name) DOCTEST_GIVEN(name)
+#define AND_GIVEN(name) DOCTEST_AND_GIVEN(name)
 #define WHEN(name) DOCTEST_WHEN(name)
 #define AND_WHEN(name) DOCTEST_AND_WHEN(name)
 #define THEN(name) DOCTEST_THEN(name)

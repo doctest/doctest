@@ -6,7 +6,9 @@
 #include <stdio.h>
 
 extern "C" {
-    void say_hello_dll() { printf("%s", "Hello, World!\n"); }
+void say_hello_dll() {
+    printf("%s", "Hello, World!\n");
+}
 }
 
 int factorial(int number) {

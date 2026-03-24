@@ -30,7 +30,7 @@ struct DOCTEST_INTERFACE MessageBuilder : public MessageData {
     MessageBuilder &operator=(const MessageBuilder &) = delete;
     MessageBuilder &operator=(MessageBuilder &&) = delete;
 
-    ~MessageBuilder();
+    ~MessageBuilder() noexcept(false);
 
     // the preferred way of chaining parameters for stringification
     DOCTEST_MSVC_SUPPRESS_WARNING_WITH_PUSH(4866)

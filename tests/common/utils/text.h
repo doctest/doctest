@@ -26,12 +26,12 @@ DOCTEST_SUPPRESS_PRIVATE_WARNINGS_PUSH
  * present in the result.
  */
 inline std::vector<std::string> split(const std::string &text, char delimiter = '\n', bool keep_ends = true) noexcept {
-    auto result = std::vector<std::string> { };
-    auto start  = std::size_t { 0 };
-    auto end    = text.find(delimiter);
+    auto result = std::vector<std::string>{};
+    auto start = std::size_t{0};
+    auto end = text.find(delimiter);
 
     while (end != std::string::npos) {
-        auto length = keep_ends? (end - start + 1) : (end - start);
+        auto length = keep_ends ? (end - start + 1) : (end - start);
         result.push_back(text.substr(start, length));
 
         start = end + 1;
@@ -53,7 +53,9 @@ inline std::vector<std::string> split(const std::string &text, char delimiter = 
 inline std::string dedent(const std::string &text) noexcept {
     const auto count_char = [](std::string line, char c) {
         size_t count = 0;
-        while ((count < line.size()) && (line[count] == c)) { count++; }
+        while ((count < line.size()) && (line[count] == c)) {
+            count++;
+        }
         return count;
     };
 
@@ -64,11 +66,11 @@ inline std::string dedent(const std::string &text) noexcept {
     // To support multiline raw-strings, we need to skip the first/last blank line
     auto lines = split(text);
 
-    if ((lines.size() > 0) && is_blank(lines.front())) {
+    if (!lines.empty() && is_blank(lines.front())) {
         lines.erase(lines.begin());
     }
 
-    if ((lines.size() > 0) && is_blank(lines.back())) {
+    if (!lines.empty() && is_blank(lines.back())) {
         lines.erase(lines.end() - 1);
     }
 

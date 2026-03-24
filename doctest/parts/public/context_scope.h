@@ -41,6 +41,8 @@ class ContextScope : public ContextScopeBase {
 public:
     explicit ContextScope(const L &lambda)
         : lambda_(lambda) {}
+
+    // NOLINTNEXTLINE(cppcoreguidelines-rvalue-reference-param-not-moved)
     explicit ContextScope(L &&lambda)
         : lambda_(static_cast<L &&>(lambda)) {}
 

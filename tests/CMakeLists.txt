@@ -1,9 +1,11 @@
 add_subdirectory(common)
 
+find_package(Threads REQUIRED)
+
 function(doctest_add_unit_test)
     set(options              WITH_MAIN)
     set(one_value_keywords   SOURCE TEST_NAME IF EXCEPT)
-    set(multi_value_keywords SOURCES)
+    set(multi_value_keywords SOURCES DEFINES)
     cmake_parse_arguments(ARG "${options}" "${one_value_keywords}" "${multi_value_keywords}" ${ARGN})
 
     SET(ARG_SOURCES ${ARG_SOURCE} ${ARG_SOURCES})
@@ -26,12 +28,17 @@ function(doctest_add_unit_test)
 
     add_executable(${EXE_NAME} ${ARG_SOURCES})
     target_link_libraries(${EXE_NAME} common)
+    target_link_libraries(${EXE_NAME} Threads::Threads)
 
     if(ARG_WITH_MAIN)
         target_link_libraries(${EXE_NAME} doctest_with_main)
     else()
         target_link_libraries(${EXE_NAME} doctest)
     endif()
+
+    foreach(DEFINE ${ARG_DEFINES})
+        target_compile_options(${EXE_NAME} PRIVATE -D${DEFINE})
+    endforeach()
 
     set(TEST_ARGS)
     if(NOT DOCTEST_INTERNAL_COVERAGE)
@@ -73,12 +80,9 @@ function(doctest_add_unit_test)
     endif()
 endfunction()
 
-set(GCC_4_8 OFF)
-if(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
-    if(CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL "4.8" AND
-       CMAKE_CXX_COMPILER_VERSION VERSION_LESS          "4.9")
-        set(GCC_4_8 ON)
-    endif()
+set(MAC OFF)
+if(CMAKE_SYSTEM_NAME MATCHES "Darwin")
+    set(MAC ON)
 endif()
 
 doctest_add_unit_test(WITH_MAIN SOURCE doctest/assert/test_expression.cpp)
@@ -90,11 +94,14 @@ doctest_add_unit_test(WITH_MAIN SOURCE doctest/matchers/test_is_nan.cpp)
 doctest_add_unit_test(          SOURCE doctest/test_color.ansi.cpp)
 doctest_add_unit_test(          SOURCE doctest/test_color.none.cpp)
 doctest_add_unit_test(          SOURCE doctest/test_color.win32.cpp)
+doctest_add_unit_test(WITH_MAIN SOURCE doctest/test_debugger.cpp EXCEPT ${MAC})
 doctest_add_unit_test(WITH_MAIN SOURCE doctest/test_exception_translator.cpp)
 doctest_add_unit_test(WITH_MAIN SOURCE doctest/test_filters.cpp)
 doctest_add_unit_test(WITH_MAIN SOURCE doctest/test_path.cpp)
+doctest_add_unit_test(WITH_MAIN SOURCE doctest/test_platform.cpp DEFINES CMAKE_SYSTEM_NAME="${CMAKE_SYSTEM_NAME}")
 doctest_add_unit_test(WITH_MAIN SOURCE doctest/test_string.cpp)
-doctest_add_unit_test(WITH_MAIN SOURCE doctest/test_xml.cpp EXCEPT ${GCC_4_8})
+doctest_add_unit_test(WITH_MAIN SOURCE doctest/test_traversal.cpp)
+doctest_add_unit_test(WITH_MAIN SOURCE doctest/test_xml.cpp)
 
 # Regression tests
 doctest_add_unit_test(
@@ -112,4 +119,14 @@ doctest_add_unit_test(
 
 doctest_add_unit_test(WITH_MAIN SOURCE regression/test.630.cpp)
 doctest_add_unit_test(WITH_MAIN SOURCE regression/test.651.cpp)
+doctest_add_unit_test(          SOURCE regression/test.782.cpp)
 doctest_add_unit_test(WITH_MAIN SOURCE regression/test.786.cpp)
+doctest_add_unit_test(          SOURCE regression/test.873.cpp)
+doctest_add_unit_test(WITH_MAIN SOURCE regression/test.915.cpp)
+
+set_tests_properties(
+    regression/test.782.cpp
+    PROPERTIES
+        PASS_REGULAR_EXPRESSION
+            ".*ERROR: test case THREW exception: #782 repro exception.*|Exceptions disabled, cannot run this test"
+)

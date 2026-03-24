@@ -6,7 +6,7 @@ DOCTEST_SUPPRESS_PRIVATE_WARNINGS_PUSH
 namespace doctest {
 namespace detail {
 
-DOCTEST_THREAD_LOCAL class {
+DOCTEST_THREAD_LOCAL class oss {
     std::vector<std::streampos> stack;
     std::stringstream ss;
 
@@ -20,13 +20,13 @@ public:
         if (stack.empty())
             DOCTEST_INTERNAL_ERROR("TLSS was empty when trying to pop!");
 
-        std::streampos pos = stack.back();
+        const std::streampos pos = stack.back();
         stack.pop_back();
-        unsigned sz = static_cast<unsigned>(ss.tellp() - pos);
+        const unsigned sz = static_cast<unsigned>(ss.tellp() - pos);
         ss.rdbuf()->pubseekpos(pos, std::ios::in | std::ios::out);
         return String(ss, sz);
     }
-} g_oss;
+} g_oss; // NOLINT(bugprone-throwing-static-initialization, cert-err58-cpp)
 
 std::ostream *tlssPush() {
     return g_oss.push();
@@ -47,6 +47,8 @@ static int stricmp(const char *a, const char *b) {
     }
 }
 
+// NOLINTBEGIN(cppcoreguidelines-pro-type-union-access)
+
 char *String::allocate(size_type sz) {
     if (sz <= last) {
         buf[sz] = '\0';
@@ -63,11 +65,12 @@ char *String::allocate(size_type sz) {
 }
 
 void String::setOnHeap() noexcept {
+    // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
     *reinterpret_cast<unsigned char *>(&buf[last]) = 128;
 }
 
 void String::setLast(size_type in) noexcept {
-    buf[last] = char(in);
+    buf[last] = static_cast<char>(in);
 }
 
 void String::setSize(size_type sz) noexcept {
@@ -86,7 +89,7 @@ void String::copy(const String &other) {
     } else {
         memcpy(allocate(other.data.size), other.data.ptr, other.data.size);
     }
-}
+} // NOLINT(clang-analyzer-cplusplus.NewDeleteLeaks)
 
 String::String() noexcept {
     buf[0] = '\0';
@@ -192,11 +195,13 @@ String &String::operator=(String &&other) noexcept {
 }
 
 char String::operator[](size_type i) const {
+    // NOLINTNEXTLINE(cppcoreguidelines-pro-type-const-cast)
     return const_cast<String *>(this)->operator[](i);
 }
 
 char &String::operator[](size_type i) {
     if (isOnStack())
+        // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
         return reinterpret_cast<char *>(buf)[i];
     return data.ptr[i];
 }
@@ -204,7 +209,7 @@ char &String::operator[](size_type i) {
 DOCTEST_GCC_SUPPRESS_WARNING_WITH_PUSH("-Wmaybe-uninitialized")
 String::size_type String::size() const {
     if (isOnStack())
-        return last - (size_type(buf[last]) & 31); // using "last" would work only if "len" is 32
+        return last - (static_cast<size_type>(buf[last]) & 31); // using "last" would work only if "len" is 32
     return data.size;
 }
 DOCTEST_GCC_SUPPRESS_WARNING_POP
@@ -313,6 +318,7 @@ void filldata<const volatile void *>::fill(std::ostream *stream, const volatile 
 
 template <typename T>
 String toStreamLit(T t) {
+    // NOLINTNEXTLINE(misc-const-correctness)
     std::ostream *os = tlssPush();
     os->operator<<(t);
     return tlssPop();
@@ -387,6 +393,8 @@ String toString(long long in) {
 String toString(long long unsigned in) {
     return detail::toStreamLit(in);
 }
+
+// NOLINTEND(cppcoreguidelines-pro-type-union-access)
 
 } // namespace doctest
 

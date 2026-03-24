@@ -26,16 +26,33 @@ concurrency:
 
 jobs:
   clang-tidy:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
+    env:
+      LLVM_VERSION: 22
 
     steps:
       - uses: actions/checkout@v5
 
+      - name: Configure LLVM Upstream
+        run: |
+          # See apt.llvm.org
+          wget -qO- http://apt.llvm.org/llvm-snapshot.gpg.key \
+            | sudo tee /etc/apt/trusted.gpg.d/apt.llvm.org.asc
+
+          sudo add-apt-repository \
+            "deb http://apt.llvm.org/$(lsb_release -cs)/ llvm-toolchain-$(lsb_release -cs)-${{ env.LLVM_VERSION}} main"
+
       - name: Install
-        run: sudo apt-get install -y ninja-build clang-tidy-14
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ninja-build clang-tidy-${{ env.LLVM_VERSION }}
 
       - name: Generate
-        run: cmake -B build -S . -G Ninja -D CMAKE_CXX_COMPILER=clang++ -D CMAKE_EXPORT_COMPILE_COMMANDS=ON -D CMAKE_CXX_CLANG_TIDY="clang-tidy-14;-warnings-as-errors=*"
+        run: |
+          cmake -B build -S . -G Ninja \
+            -D CMAKE_CXX_COMPILER=clang++ \
+            -D CMAKE_EXPORT_COMPILE_COMMANDS=ON \
+            -D CMAKE_CXX_CLANG_TIDY="clang-tidy-${{ env.LLVM_VERSION }};-warnings-as-errors=*"
 
       - name: Build
         run: cmake --build build

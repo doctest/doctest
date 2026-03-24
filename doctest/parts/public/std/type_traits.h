@@ -49,6 +49,12 @@ struct remove_reference<T &&> {
     using type = T;
 };
 
+template <typename T, typename U>
+struct is_same : false_type {};
+
+template <typename T>
+struct is_same<T, T> : true_type {};
+
 template <typename T>
 struct is_rvalue_reference : false_type {};
 
@@ -87,6 +93,11 @@ struct is_array : false_type {};
 // NOLINTNEXTLINE(*-avoid-c-arrays)
 template <typename T, size_t SIZE>
 struct is_array<T[SIZE]> : true_type {};
+#endif
+
+#if !(defined(DOCTEST_CONFIG_INCLUDE_TYPE_TRAITS) && (DOCTEST_CPLUSPLUS >= 201703L))
+template <typename... Unused>
+using void_t = void;
 #endif
 
 } // namespace types

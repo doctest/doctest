@@ -26,7 +26,7 @@ private:
 // See the comments in Catch2 for the reasoning behind this implementation:
 // https://github.com/catchorg/Catch2/blob/v2.13.1/include/internal/catch_debugger.cpp#L79-L102
 bool isDebuggerActive() {
-    ErrnoGuard guard;
+    const ErrnoGuard guard;
     std::ifstream in("/proc/self/status");
     for (std::string line; std::getline(in, line);) {
         static const int PREFIX_LEN = 11;

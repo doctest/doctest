@@ -13,11 +13,15 @@ TEST_CASE("lots of nested subcases") {
     cout << endl << "root" << endl;
     SUBCASE("") {
         cout << "1" << endl;
-        SUBCASE("") { cout << "1.1" << endl; }
+        SUBCASE("") {
+            cout << "1.1" << endl;
+        }
     }
     SUBCASE("") {
         cout << "2" << endl;
-        SUBCASE("") { cout << "2.1" << endl; }
+        SUBCASE("") {
+            cout << "2.1" << endl;
+        }
         SUBCASE("") {
             // whops! all the subcases below shouldn't be discovered and executed!
             FAIL("");
@@ -25,30 +29,48 @@ TEST_CASE("lots of nested subcases") {
             cout << "2.2" << endl;
             SUBCASE("") {
                 cout << "2.2.1" << endl;
-                SUBCASE("") { cout << "2.2.1.1" << endl; }
-                SUBCASE("") { cout << "2.2.1.2" << endl; }
+                SUBCASE("") {
+                    cout << "2.2.1.1" << endl;
+                }
+                SUBCASE("") {
+                    cout << "2.2.1.2" << endl;
+                }
             }
         }
-        SUBCASE("") { cout << "2.3" << endl; }
-        SUBCASE("") { cout << "2.4" << endl; }
+        SUBCASE("") {
+            cout << "2.3" << endl;
+        }
+        SUBCASE("") {
+            cout << "2.4" << endl;
+        }
     }
 }
 
 TEST_CASE("reentering subcase via regular control flow") {
     cout << endl << "root" << endl;
-    for (int i : { 0, 1, 2 }) {
+    for (const int i: {0, 1, 2}) {
         cout << "outside of subcase" << endl;
-        SUBCASE("") { cout << "inside subcase " << i << endl; }
-        SUBCASE("") { cout << "also inside " << i << endl; }
         SUBCASE("") {
-            if (i != 0) { FAIL(i); }
+            cout << "inside subcase " << i << endl;
+        }
+        SUBCASE("") {
+            cout << "also inside " << i << endl;
+        }
+        SUBCASE("") {
+            if (i != 0) {
+                FAIL(i);
+            }
             cout << "fail inside " << i << endl;
         }
         SUBCASE("") {
             cout << "inside outside" << endl;
-            for (int j : { 0, 1, 2 }) {
-                SUBCASE("") { cout << "nested twice " << i << ", " << j << endl; }
-                SUBCASE("") { cout << "also twice " << i << ", " << j << endl; }
+            for (const int j: {0, 1, 2}) {
+                SUBCASE("") {
+                    cout << "nested twice " << i << ", " << j << endl;
+                }
+                SUBCASE("") {
+                    cout << "also twice " << i << ", " << j << endl;
+                }
             }
         }
     }
@@ -135,39 +157,36 @@ TEST_CASE("fails from an exception but gets re-entered to traverse all subcases"
     }
 }
 
-static void checks(int data) // NOLINT(misc-unused-parameters)
-{
-    DOCTEST_SUBCASE("check data 1") { REQUIRE(data % 2 == 0); }
-    DOCTEST_SUBCASE("check data 2") { REQUIRE(data % 4 == 0); }
+static void checks(int data) { // NOLINT(misc-unused-parameters)
+    DOCTEST_SUBCASE("check data 1") {
+        REQUIRE(data % 2 == 0);
+    }
+    DOCTEST_SUBCASE("check data 2") {
+        REQUIRE(data % 4 == 0);
+    }
 }
 
-TEST_CASE("Nested - related to https://github.com/doctest/doctest/issues/282")
-{
-    DOCTEST_SUBCASE("generate data variant 1")
-    {
-        int data(44);
-        
+TEST_CASE("Nested - related to https://github.com/doctest/doctest/issues/282") {
+    DOCTEST_SUBCASE("generate data variant 1") {
+        const int data(44);
+
         // checks
         checks(data);
     }
-    DOCTEST_SUBCASE("generate data variant 1")
-    {
-        int data(80);
-        
+    DOCTEST_SUBCASE("generate data variant 1") {
+        const int data(80);
+
         // checks (identical in both variants)
         checks(data);
     }
 }
 
 DOCTEST_MSVC_SUPPRESS_WARNING(5045) // Spectre mitigation stuff
-DOCTEST_GCC_SUPPRESS_WARNING("-Wuseless-cast") // for the std::string() cast
-#undef SUBCASE
-#define SUBCASE(...) DOCTEST_SUBCASE(std::string(__VA_ARGS__).c_str())
 
 TEST_CASE("subcases with changing names") {
-    for(int i = 0; i < 2; ++i) {
+    for (int i = 0; i < 2; ++i) {
         SUBCASE("outer " + std::to_string(i)) {
-            for(int k = 0; k < 2; ++k) {
+            for (int k = 0; k < 2; ++k) {
                 SUBCASE("inner " + std::to_string(k)) {
                     MESSAGE("msg!");
                 }

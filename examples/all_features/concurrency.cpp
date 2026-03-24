@@ -19,8 +19,8 @@ TEST_CASE("threads...") {
         CHECK(value == 2);
     };
 
-    int data_1 = 1;
-    int data_2 = 2;
+    const int data_1 = 1;
+    const int data_2 = 2;
     CAPTURE(data_1); // will not be used for assertions in other threads
 
     // subcases have to be used only in the main thread (where the test runner is)
@@ -40,16 +40,16 @@ TEST_CASE("threads...") {
     // exceptions from threads (that includes failing REQUIRE asserts) have to be handled explicitly
     SUBCASE("spawned threads with exception propagation") {
         std::exception_ptr exception_ptr = nullptr;
-        std::mutex         mutex;
+        std::mutex mutex;
 
         auto might_throw = [&]() {
             try {
                 REQUIRE(1 == 1);
                 REQUIRE(1 == 2); // will fail and throw an exception
                 MESSAGE("not reached!");
-            } catch(...) {
+            } catch (...) {
                 // make sure there are no races when dealing with the exception ptr
-                std::lock_guard<std::mutex> lock(mutex);
+                const std::lock_guard<std::mutex> lock(mutex);
 
                 // set the exception pointer in case of an exception - might overwrite
                 // another exception but here we care about propagating any exception - not all
@@ -63,7 +63,7 @@ TEST_CASE("threads...") {
         t2.join();
 
         // if any thread has thrown an exception - rethrow it
-        if(exception_ptr)
+        if (exception_ptr)
             std::rethrow_exception(exception_ptr);
     }
 }

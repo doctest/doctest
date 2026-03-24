@@ -1,6 +1,8 @@
 ## Test cases
 
-While **doctest** fully supports the traditional, xUnit, style of class-based fixtures containing test case methods this is not the preferred style. Instead **doctest** provides a powerful mechanism for nesting subcases within a test case. For a more detailed discussion and examples see the [**tutorial**](tutorial.md#test-cases-and-subcases).
+While **doctest** fully supports the traditional, xUnit, style of class-based fixtures containing test case methods, this is not the preferred style.
+Instead **doctest** provides a powerful mechanism for nesting subcases within a test case.
+For a more detailed discussion and examples see the [**tutorial**](tutorial.md#test-cases-and-subcases).
 
 Test cases and subcases are very easy to use in practice:
 
@@ -25,6 +27,10 @@ In addition to **doctest**'s take on the classic style of test cases, **doctest*
 
 This macro maps onto ```TEST_CASE``` and works in the same way, except that the test case name will be prefixed by "Scenario: "
 
+* **SCENARIO_METHOD(** _fixture_, _scenario name_ **)**
+
+This macro maps onto `TEST_CASE_FIXTURE` and works in the same way, except that the test case name will be prefixed by "Scenario: "
+
 * **SCENARIO_TEMPLATE(** _scenario name_, _type_, _list of types_ **)**
 
 This macro maps onto ```TEST_CASE_TEMPLATE``` and works in the same way, except that the test case name will be prefixed by "Scenario: "
@@ -39,10 +45,11 @@ This macro maps onto ```TEST_CASE_TEMPLATE_DEFINE``` and works in the same way, 
 
 These macros map onto ```SUBCASE```s except that the subcase names are the _something_s prefixed by "given: ", "when: " or "then: " respectively.
 
+* **AND_GIVEN(** _something_ **)**
 * **AND_WHEN(** _something_ **)**
 * **AND_THEN(** _something_ **)**
 
-Similar to ```WHEN``` and ```THEN``` except that the prefixes start with "and ". These are used to chain ```WHEN```s and ```THEN```s together.
+Similar to `GIVEN` / `WHEN` / `THEN` except that the prefixes start with "and ". These are used to chain `GIVEN`s / `WHEN`s / `THEN`s together.
 
 When any of these macros are used the console reporter recognises them and formats the test case header such that the Givens, Whens and Thens are aligned to aid readability.
 
@@ -58,10 +65,14 @@ Although **doctest** allows you to group tests together as subcases within a tes
 class UniqueTestsFixture {
 private:
     static int uniqueID;
+
 protected:
     DBConnection conn;
+
 public:
-    UniqueTestsFixture() : conn(DBConnection::createConnection("myDB")) {}
+    UniqueTestsFixture()
+        : conn(DBConnection::createConnection("myDB")) {}
+
 protected:
     int getID() {
         return ++uniqueID;
@@ -110,9 +121,7 @@ Then test cases from specific test suites can be executed with the help of filte
 Test cases can be *decorated* with additional attributes like this:
 
 ```c++
-TEST_CASE("name"
-          * doctest::description("shouldn't take more than 500ms")
-          * doctest::timeout(0.5)) {
+TEST_CASE("name" * doctest::description("shouldn't take more than 500ms") * doctest::timeout(0.5)) {
     // asserts
 }
 ```

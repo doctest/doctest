@@ -13,16 +13,16 @@ TEST_CASE("logging the counter of a loop") {
     vec.push_back(4);
     vec.push_back(8);
     vec.push_back(16);
-    
+
     INFO("current iteration of loop:");
-    for(unsigned i = 0; i < vec.size(); ++i) {
+    for (unsigned i = 0; i < vec.size(); ++i) {
         CAPTURE(i);
         CHECK(vec[i] != (1 << i));
     }
 }
 
 static int someTests() {
-    int some_var = 42;
+    const int some_var = 42;
     INFO("lots of captures: ", some_var, " ", some_var, " ", some_var, ";");
     INFO("old way of capturing - using the streaming operator: " << some_var << " " << some_var);
     FAIL_CHECK("forcing the many captures to be stringified");
@@ -30,7 +30,7 @@ static int someTests() {
 }
 
 TEST_CASE("a test case that will end from an exception") {
-    int some_var = someTests();
+    const int some_var = someTests();
     INFO("someTests() returned: ", some_var); // note that we have to use a local variable - cannot pass a temporary
     INFO("this should be printed if an exception is thrown even if no assert has failed: ", some_var);
     {
@@ -53,9 +53,9 @@ TEST_CASE("a test case that will end from an exception and should print the unpr
 
 // TODO: Also remove
 // NOLINTNEXTLINE(misc-unused-parameters)
-static void thirdPartyAssert(bool result, bool is_fatal, const char* file, int line) {
-    if(!result) {
-        if(is_fatal) // NOLINT(bugprone-branch-clone)
+static void thirdPartyAssert(bool result, bool is_fatal, const char *file, int line) {
+    if (!result) {
+        if (is_fatal) // NOLINT(bugprone-branch-clone)
             ADD_FAIL_AT(file, line, "MY_ASSERT_FATAL(" << result << ")");
         else
             ADD_FAIL_CHECK_AT(file, line, "MY_ASSERT(" << result << ")");

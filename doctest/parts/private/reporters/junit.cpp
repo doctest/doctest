@@ -11,13 +11,15 @@ namespace doctest {
 std::string JUnitReporter::JUnitTestCaseData::getCurrentTimestamp() {
     // Beware, this is not reentrant because of backward compatibility issues
     // Also, UTC only, again because of backward compatibility (%z is C++11)
-    time_t rawtime;
-    std::time(&rawtime);
+    time_t rawtime{};
+    static_cast<void>(std::time(&rawtime));
     const auto timeStampSize = sizeof("2017-01-16T17:06:45Z");
 
     std::tm timeInfo;
-#ifdef DOCTEST_PLATFORM_WINDOWS
+#if defined(DOCTEST_PLATFORM_WINDOWS)
     gmtime_s(&timeInfo, &rawtime);
+#elif defined(__STDC_LIB_EXT1__)
+    gmtime_s(&rawtime, &timeInfo);
 #else  // DOCTEST_PLATFORM_WINDOWS
     gmtime_r(&rawtime, &timeInfo);
 #endif // DOCTEST_PLATFORM_WINDOWS
@@ -25,7 +27,7 @@ std::string JUnitReporter::JUnitTestCaseData::getCurrentTimestamp() {
     char timeStamp[timeStampSize];
     const char *const fmt = "%Y-%m-%dT%H:%M:%SZ";
 
-    std::strftime(timeStamp, timeStampSize, fmt, &timeInfo);
+    static_cast<void>(std::strftime(timeStamp, timeStampSize, fmt, &timeInfo));
     return std::string(timeStamp);
 }
 
@@ -88,6 +90,7 @@ void JUnitReporter::test_run_start() {
 
 void JUnitReporter::test_run_end(const TestRunStats &p) {
     // remove .exe extension - mainly to have the same output on UNIX and Windows
+    // NOLINTNEXTLINE(misc-const-correctness)
     std::string binary_name = skipPathFromFilename(opt.binary_name.c_str());
 #ifdef DOCTEST_PLATFORM_WINDOWS
     if (binary_name.rfind(".exe") != std::string::npos)
@@ -133,11 +136,13 @@ void JUnitReporter::test_run_end(const TestRunStats &p) {
 }
 
 void JUnitReporter::test_case_start(const TestCaseData &in) {
+    DOCTEST_LOCK_MUTEX(mutex)
     testCaseData.add(skipPathFromFilename(in.m_file.c_str()), in.m_name);
     timer.start();
 }
 
 void JUnitReporter::test_case_reenter(const TestCaseData &in) {
+    DOCTEST_LOCK_MUTEX(mutex)
     testCaseData.addTime(timer.getElapsedSeconds());
     testCaseData.appendSubcaseNamesToLastTestcase(deepestSubcaseStackNames);
     deepestSubcaseStackNames.clear();
@@ -147,6 +152,7 @@ void JUnitReporter::test_case_reenter(const TestCaseData &in) {
 }
 
 void JUnitReporter::test_case_end(const CurrentTestCaseStats &) {
+    DOCTEST_LOCK_MUTEX(mutex)
     testCaseData.addTime(timer.getElapsedSeconds());
     testCaseData.appendSubcaseNamesToLastTestcase(deepestSubcaseStackNames);
     deepestSubcaseStackNames.clear();
@@ -158,6 +164,7 @@ void JUnitReporter::test_case_exception(const TestCaseException &e) {
 }
 
 void JUnitReporter::subcase_start(const SubcaseSignature &in) {
+    DOCTEST_LOCK_MUTEX(mutex)
     deepestSubcaseStackNames.push_back(in.m_name);
 }
 
@@ -199,7 +206,7 @@ void JUnitReporter::log_message(const MessageData &mb) {
 void JUnitReporter::test_case_skipped(const TestCaseData &) {}
 
 void JUnitReporter::log_contexts(std::ostringstream &s) {
-    int num_contexts = get_num_active_contexts();
+    const int num_contexts = get_num_active_contexts();
     if (num_contexts) {
         auto contexts = get_active_contexts();
 

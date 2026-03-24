@@ -8,6 +8,8 @@ DOCTEST_SUPPRESS_PRIVATE_WARNINGS_PUSH
 namespace doctest {
 #ifdef DOCTEST_CONFIG_DISABLE
 
+DOCTEST_DEFINE_INTERFACE(IReporter)
+
 int IReporter::get_num_active_contexts() {
     return 0;
 }
@@ -31,12 +33,12 @@ int registerReporter(const char *, int, IReporter *) {
 #else
 
 namespace detail {
-reporterMap &getReporters() {
+reporterMap &getReporters() noexcept {
     static reporterMap data;
     return data;
 }
 
-reporterMap &getListeners() {
+reporterMap &getListeners() noexcept {
     static reporterMap data;
     return data;
 }
@@ -45,23 +47,23 @@ reporterMap &getListeners() {
 DOCTEST_DEFINE_INTERFACE(IReporter)
 
 int IReporter::get_num_active_contexts() {
-    return detail::g_infoContexts.size();
+    return static_cast<int>(detail::g_infoContexts.size());
 }
 
 const IContextScope *const *IReporter::get_active_contexts() {
-    return get_num_active_contexts() ? &detail::g_infoContexts[0] : nullptr;
+    return get_num_active_contexts() ? detail::g_infoContexts.data() : nullptr;
 }
 
 int IReporter::get_num_stringified_contexts() {
-    return detail::g_cs->stringifiedContexts.size();
+    return static_cast<int>(detail::g_cs->stringifiedContexts.size());
 }
 
 const String *IReporter::get_stringified_contexts() {
-    return get_num_stringified_contexts() ? &detail::g_cs->stringifiedContexts[0] : nullptr;
+    return get_num_stringified_contexts() ? detail::g_cs->stringifiedContexts.data() : nullptr;
 }
 
 namespace detail {
-void registerReporterImpl(const char *name, int priority, reporterCreatorFunc c, bool isReporter) {
+void registerReporterImpl(const char *name, int priority, reporterCreatorFunc c, bool isReporter) noexcept {
     if (isReporter)
         getReporters().insert(reporterMap::value_type(reporterMap::key_type(priority, name), c));
     else

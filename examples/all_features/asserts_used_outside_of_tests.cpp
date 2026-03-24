@@ -26,7 +26,7 @@ static void some_func() {
 
 // std::mutex g_mut;
 
-static void handler(const doctest::AssertData& ad) {
+static void handler(const doctest::AssertData &ad) {
     using namespace doctest;
 
     // uncomment if asserts will be used in a multi-threaded context
@@ -41,10 +41,10 @@ static void handler(const doctest::AssertData& ad) {
     std::cout << Color::Red << failureString(ad.m_at) << ": ";
 
     // handling only normal (comparison and unary) asserts - exceptions-related asserts have been skipped
-    if(ad.m_at & assertType::is_normal) {
+    if (ad.m_at & assertType::is_normal) {
         std::cout << Color::Cyan << assertString(ad.m_at) << "( " << ad.m_expr << " ) ";
         std::cout << Color::None << (ad.m_threw ? "THREW exception: " : "is NOT correct!\n");
-        if(ad.m_threw)
+        if (ad.m_threw)
             std::cout << ad.m_exception;
         else
             std::cout << "  values: " << assertString(ad.m_at) << "( " << ad.m_decomp << " )";
@@ -55,9 +55,15 @@ static void handler(const doctest::AssertData& ad) {
     std::cout << std::endl;
 }
 
-void some_program_code(int argc, char** argv) {
+void some_program_code(int argc, char **argv) {
     // IGNORE THIS: return if the current test from the doctest CMake tests is not for this file
-    if(std::find_if(argv, argv + argc, [](const char* str) { return strcmp(str, "-sf=*asserts_used_outside_of_tests.cpp") == 0; }) == argv + argc) return;
+    // NOLINTBEGIN(clang-diagnostic-unsafe-buffer-usage)
+    if (std::find_if(argv, argv + argc, [](const char *str) {
+            // NOLINTNEXTLINE(clang-diagnostic-unsafe-buffer-usage-in-libc-call)
+            return strcmp(str, "-sf=*asserts_used_outside_of_tests.cpp") == 0;
+        }) == argv + argc)
+        return;
+    // NOLINTEND(clang-diagnostic-unsafe-buffer-usage)
 
     // construct a context
     doctest::Context context(argc, argv);

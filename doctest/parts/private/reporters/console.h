@@ -44,9 +44,9 @@ struct ConsoleReporter : public IReporter {
 
     void separator_to_stream();
 
-    const char *getSuccessOrFailString(bool success, assertType::Enum at, const char *success_str);
+    static const char *getSuccessOrFailString(bool success, assertType::Enum at, const char *success_str);
 
-    Color::Enum getSuccessOrFailColor(bool success, assertType::Enum at);
+    static Color::Enum getSuccessOrFailColor(bool success, assertType::Enum at);
 
     void successOrFailColoredStringToStream(bool success, assertType::Enum at, const char *success_str = "SUCCESS");
 
