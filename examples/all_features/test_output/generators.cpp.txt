@@ -1362,6 +1362,22 @@ generators.cpp(0): MESSAGE: i=3 j=20
 
 ===============================================================================
 generators.cpp(0):
+TEST CASE:  stale generator depth does not create extra reruns
+  outer
+
+generators.cpp(0): MESSAGE: run=0 discover=true
+
+generators.cpp(0): MESSAGE: j=10
+
+===============================================================================
+generators.cpp(0):
+TEST CASE:  stale generator depth does not create extra reruns
+  outer
+
+generators.cpp(0): MESSAGE: run=1 discover=false
+
+===============================================================================
+generators.cpp(0):
 TEST CASE:  GENERATE with dynamic switch
 
 generators.cpp(0): MESSAGE: i=1 j=10
@@ -1449,7 +1465,7 @@ TEST CASE:  GENERATE filter subcase target
 generators.cpp(0): MESSAGE: drop x=2
 
 ===============================================================================
-[doctest] test cases:  29 |  29 passed | 0 failed |
-[doctest] assertions: 110 | 104 passed | 6 failed |
+[doctest] test cases:  30 |  30 passed | 0 failed |
+[doctest] assertions: 112 | 106 passed | 6 failed |
 [doctest] Status: SUCCESS!
 Program code.

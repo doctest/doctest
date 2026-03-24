@@ -140,6 +140,7 @@
   </TestSuite>
   <TestSuite>
     <TestCase name="some asserts used in a function called by a test case" filename="assertion_macros.cpp" line="0" skipped="true"/>
+    <TestCase name="stale generator depth does not create extra reruns" filename="generators.cpp" line="0" skipped="true"/>
     <TestCase name="subcases can be used in a separate function as well" filename="subcases.cpp" line="0" skipped="true"/>
     <TestCase name="subcases with changing names" filename="subcases.cpp" line="0" skipped="true"/>
     <TestCase name="template 1&lt;char>" filename="header.h" line="0" skipped="true"/>
@@ -168,6 +169,6 @@
     <TestCase name="without a funny name:" filename="subcases.cpp" line="0" skipped="true"/>
   </TestSuite>
   <OverallResultsAsserts successes="0" failures="0"/>
-  <OverallResultsTestCases successes="0" failures="0" skipped="124"/>
+  <OverallResultsTestCases successes="0" failures="0" skipped="125"/>
 </doctest>
 Program code.

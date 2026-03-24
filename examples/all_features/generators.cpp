@@ -376,6 +376,29 @@ TEST_CASE("GENERATE with dynamic if") {
     }
 }
 
+// ---------------------------------------------------------------------------
+// Regression: stale traversal depth metadata
+// ---------------------------------------------------------------------------
+
+TEST_CASE("stale generator depth does not create extra reruns") {
+    static bool discover_deeper_generator = true;
+    static int run_count = 0;
+
+    SUBCASE("outer") {
+        MESSAGE("run=", run_count, " discover=", discover_deeper_generator);
+
+        ++run_count;
+
+        if (discover_deeper_generator) {
+            discover_deeper_generator = false;
+            int j = GENERATE(10, 20, 30);
+            MESSAGE("j=", j);
+        }
+
+        CHECK(run_count <= 2);
+    }
+}
+
 TEST_CASE("GENERATE with dynamic switch") {
     int i = GENERATE(1, 2, 3);
     switch (i) {

@@ -8724,7 +8724,8 @@ void TraversalState::resetForRun() {
 }
 
 bool TraversalState::advance() {
-    for (size_t depth = m_decisionPath.size(); depth > 0; --depth) {
+    const size_t maxDepth = std::min(m_decisionPath.size(), m_discoveredDecisionPath.size());
+    for (size_t depth = maxDepth; depth > 0; --depth) {
         const size_t index = depth - 1;
         if (m_decisionPath[index] + 1 < m_discoveredDecisionPath[index].branch_count) {
             ++m_decisionPath[index];
@@ -8750,6 +8751,7 @@ bool TraversalState::tryEnterSubcase(const SubcaseSignature &signature) {
         subcases.push_back(signature);
 
     point.branch_count = subcases.size();
+
     if (siblingIndex != m_decisionPath[m_decisionDepth])
         return false;
 

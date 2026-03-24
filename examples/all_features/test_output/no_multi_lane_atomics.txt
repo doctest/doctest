@@ -2089,6 +2089,22 @@ TEST CASE:  some asserts used in a function called by a test case
 assertion_macros.cpp(0): ERROR: CHECK_THROWS_WITH_AS( throw_if(true, false), "unknown exception", int ) threw a DIFFERENT exception! (contents: "unknown exception")
 
 ===============================================================================
+generators.cpp(0):
+TEST CASE:  stale generator depth does not create extra reruns
+  outer
+
+generators.cpp(0): MESSAGE: run=0 discover=true
+
+generators.cpp(0): MESSAGE: j=10
+
+===============================================================================
+generators.cpp(0):
+TEST CASE:  stale generator depth does not create extra reruns
+  outer
+
+generators.cpp(0): MESSAGE: run=1 discover=false
+
+===============================================================================
 subcases.cpp(0):
 TEST CASE:  subcases can be used in a separate function as well
   from function...
@@ -2364,7 +2380,7 @@ TEST CASE:  without a funny name:
 subcases.cpp(0): MESSAGE: Nooo
 
 ===============================================================================
-[doctest] test cases: 113 |  63 passed |  50 failed |
-[doctest] assertions: 343 | 219 passed | 124 failed |
+[doctest] test cases: 114 |  64 passed |  50 failed |
+[doctest] assertions: 345 | 221 passed | 124 failed |
 [doctest] Status: FAILURE!
 Program code.

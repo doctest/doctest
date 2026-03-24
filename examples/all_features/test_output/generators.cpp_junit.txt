@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <testsuites>
-  <testsuite name="all_features" errors="0" failures="6" tests="110">
+  <testsuite name="all_features" errors="0" failures="6" tests="112">
     <testcase classname="generators.cpp" name="GENERATE - single, two values" status="run"/>
     <testcase classname="generators.cpp" name="GENERATE - single, two values" status="run"/>
     <testcase classname="generators.cpp" name="GENERATE - single, three values" status="run"/>
@@ -188,6 +188,8 @@ REQUIRE( i + j == 2 ) is NOT correct!
     <testcase classname="generators.cpp" name="GENERATE with dynamic if" status="run"/>
     <testcase classname="generators.cpp" name="GENERATE with dynamic if" status="run"/>
     <testcase classname="generators.cpp" name="GENERATE with dynamic if" status="run"/>
+    <testcase classname="generators.cpp" name="stale generator depth does not create extra reruns/outer" status="run"/>
+    <testcase classname="generators.cpp" name="stale generator depth does not create extra reruns/outer" status="run"/>
     <testcase classname="generators.cpp" name="GENERATE with dynamic switch" status="run"/>
     <testcase classname="generators.cpp" name="GENERATE with dynamic switch" status="run"/>
     <testcase classname="generators.cpp" name="GENERATE with dynamic switch" status="run"/>
