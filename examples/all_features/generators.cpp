@@ -389,6 +389,7 @@ TEST_CASE("stale generator depth does not create extra reruns") {
         MESSAGE("run=", run_count, " discover=", discover_deeper_generator);
 
         ++run_count;
+        (void)run_count;
 
         if (discover_deeper_generator) {
             discover_deeper_generator = false;
