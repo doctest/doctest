@@ -52,8 +52,8 @@ TEST_CASE("GENERATE - three generators") {
 }
 
 TEST_CASE("GENERATE statements can depend on each other") {
-    int i = GENERATE(1, 2, 3);
-    int j = GENERATE(i + 1, i + 2, i + 3);
+    const int i = GENERATE(1, 2, 3);
+    const int j = GENERATE(i + 1, i + 2, i + 3);
     MESSAGE("i=", i, " j=", j);
     CHECK(i <= j);
 }
@@ -61,7 +61,8 @@ TEST_CASE("GENERATE statements can depend on each other") {
 TEST_CASE("multiple GENERATEs on a single line") {
     // clang-format off
     // NOLINTNEXTLINE(readability-isolate-declaration)
-    int i = GENERATE(1, 2), j = GENERATE(10, 20);
+    const int i = GENERATE(1, 2);
+    const int j = GENERATE(10, 20);
     // clang-format on
     MESSAGE("i=", i, " j=", j);
 }
@@ -270,15 +271,15 @@ TEST_CASE("nested GENERATE does not affect sibling SUBCASE") {
 // ---------------------------------------------------------------------------
 
 TEST_CASE("all items are handled" * doctest::expected_failures(2)) {
-    int i = GENERATE(1, 2, 3, 4);
+    const int i = GENERATE(1, 2, 3, 4);
     MESSAGE("before: i=", i);
     REQUIRE(i % 2);
     MESSAGE("after: i=", i);
 }
 
 TEST_CASE("failures continue cartesian iteration" * doctest::expected_failures(4)) {
-    int i = GENERATE(1, 2);
-    int j = GENERATE(1 - i, 2 - i, 3 - i);
+    const int i = GENERATE(1, 2);
+    const int j = GENERATE(1 - i, 2 - i, 3 - i);
     MESSAGE("before: i=", i, " j=", j);
     REQUIRE(i + j == 2);
     MESSAGE("after: i=", i, " j=", j);
@@ -355,11 +356,11 @@ TEST_CASE("GENERATE with fixed for loop") {
 }
 
 TEST_CASE("GENERATE with dynamic loop") {
-    int i = GENERATE(1, 2);
+    const int i = GENERATE(1, 2);
     MESSAGE("# i=", i);
     for (int j = 0; j < i; ++j) {
         SUBCASE(std::to_string(j).c_str()) {
-            int k = GENERATE(10 - i - j, 20 - i - j);
+            const int k = GENERATE(10 - i - j, 20 - i - j);
             MESSAGE("j=", j, " k=", k);
             CHECK(((i + j + k) % 10) == 0);
         }
@@ -369,9 +370,9 @@ TEST_CASE("GENERATE with dynamic loop") {
 DOCTEST_MSVC_SUPPRESS_WARNING_POP // context for spectre warning suppression
 
 TEST_CASE("GENERATE with dynamic if") {
-    int i = GENERATE(1, 2, 3);
+    const int i = GENERATE(1, 2, 3);
     if (i != 2) {
-        int j = GENERATE(10, 20);
+        const int j = GENERATE(10, 20);
         MESSAGE("i=", i, " j=", j);
     }
 }
@@ -391,7 +392,7 @@ TEST_CASE("stale generator depth does not create extra reruns") {
 
         if (discover_deeper_generator) {
             discover_deeper_generator = false;
-            int j = GENERATE(10, 20, 30);
+            const int j = GENERATE(10, 20, 30);
             MESSAGE("j=", j);
         }
 
@@ -400,20 +401,20 @@ TEST_CASE("stale generator depth does not create extra reruns") {
 }
 
 TEST_CASE("GENERATE with dynamic switch") {
-    int i = GENERATE(1, 2, 3);
+    const int i = GENERATE(1, 2, 3);
     switch (i) {
         case 1: {
-            int j = GENERATE(10, 20);
+            const int j = GENERATE(10, 20);
             MESSAGE("i=", i, " j=", j);
             break;
         }
         case 2: {
-            int k = GENERATE(100, 200);
+            const int k = GENERATE(100, 200);
             MESSAGE("i=", i, " k=", k);
             break;
         }
         case 3: {
-            int m = GENERATE(1000, 2000);
+            const int m = GENERATE(1000, 2000);
             MESSAGE("i=", i, " m=", m);
             break;
         }
