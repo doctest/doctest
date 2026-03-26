@@ -51,8 +51,8 @@
 
 // NOLINTBEGIN(cppcoreguidelines-macro-to-enum, modernize-macro-to-enum)
 #define DOCTEST_VERSION_MAJOR 2
-#define DOCTEST_VERSION_MINOR 4
-#define DOCTEST_VERSION_PATCH 12
+#define DOCTEST_VERSION_MINOR 5
+#define DOCTEST_VERSION_PATCH 0
 // NOLINTEND(cppcoreguidelines-macro-to-enum, modernize-macro-to-enum)
 
 // util we need here
