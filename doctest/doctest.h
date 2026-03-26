@@ -2843,6 +2843,32 @@ int registerReporter(const char *name, int priority, bool isReporter) noexcept {
 DOCTEST_SUPPRESS_PUBLIC_WARNINGS_POP
 
 #endif // DOCTEST_PARTS_PUBLIC_REPORTER
+#ifndef DOCTEST_PARTS_PUBLIC_GENERATOR
+#define DOCTEST_PARTS_PUBLIC_GENERATOR
+
+
+DOCTEST_SUPPRESS_PUBLIC_WARNINGS_PUSH
+
+#ifndef DOCTEST_CONFIG_DISABLE
+namespace doctest {
+namespace detail {
+
+DOCTEST_INTERFACE size_t acquireGeneratorDecisionIndex(size_t count);
+
+template <typename T, typename... Rest>
+T acquireGeneratorValue(T first, Rest... rest) {
+    const T values[] = {first, static_cast<T>(rest)...};
+    const size_t idx = acquireGeneratorDecisionIndex(1 + sizeof...(Rest));
+    return values[idx];
+}
+
+} // namespace detail
+} // namespace doctest
+#endif // DOCTEST_CONFIG_DISABLE
+
+DOCTEST_SUPPRESS_PUBLIC_WARNINGS_POP
+
+#endif // DOCTEST_PARTS_PUBLIC_GENERATOR
 #ifndef DOCTEST_PARTS_PUBLIC_MACROS
 #define DOCTEST_PARTS_PUBLIC_MACROS
 
@@ -3033,6 +3059,9 @@ int instantiationHelper(const T &) noexcept {
 #define DOCTEST_SUBCASE(name)                                                                                          \
     if (const doctest::detail::Subcase &DOCTEST_ANONYMOUS(DOCTEST_ANON_SUBCASE_) DOCTEST_UNUSED =                      \
             doctest::detail::Subcase(name, __FILE__, __LINE__))
+
+// for generating value-parameterized test inputs
+#define DOCTEST_GENERATE(...) doctest::detail::acquireGeneratorValue(__VA_ARGS__)
 
 // for grouping tests in test suites by using code blocks
 #define DOCTEST_TEST_SUITE_IMPL(decorators, ns_name)                                                                   \
@@ -3375,6 +3404,10 @@ int instantiationHelper(const T &) noexcept {
 
 // for subcases
 #define DOCTEST_SUBCASE(name)
+
+// for generating value-parameterized test inputs
+#define DOCTEST_GENERATE_IMPL(first, ...) (first)
+#define DOCTEST_GENERATE(...) DOCTEST_GENERATE_IMPL(__VA_ARGS__, DOCTEST_EMPTY)
 
 // for a testsuite block
 #define DOCTEST_TEST_SUITE(name) namespace // NOLINT
@@ -3721,6 +3754,7 @@ DOCTEST_RELATIONAL_OP(ge, >=)
 #define TEST_CASE_TEMPLATE_INVOKE(id, ...) DOCTEST_TEST_CASE_TEMPLATE_INVOKE(id, __VA_ARGS__)
 #define TEST_CASE_TEMPLATE_APPLY(id, ...) DOCTEST_TEST_CASE_TEMPLATE_APPLY(id, __VA_ARGS__)
 #define SUBCASE(name) DOCTEST_SUBCASE(name)
+#define GENERATE(...) DOCTEST_GENERATE(__VA_ARGS__)
 #define TEST_SUITE(decorators) DOCTEST_TEST_SUITE(decorators)
 #define TEST_SUITE_BEGIN(name) DOCTEST_TEST_SUITE_BEGIN(name)
 #define TEST_SUITE_END DOCTEST_TEST_SUITE_END
@@ -4181,7 +4215,9 @@ namespace doctest {
 namespace detail {
 
 struct DecisionPoint {
-    // Encountered sibling subcases in source order for this traversal depth.
+    // Number of branches available at this depth for the current traversal path.
+    size_t branch_count = 0;
+    // Encountered sibling subcases in source order for subcase decision points.
     std::vector<SubcaseSignature> subcases;
 };
 
@@ -4197,6 +4233,7 @@ public:
     bool tryEnterSubcase(const SubcaseSignature &signature);
     void leaveSubcase();
     size_t unwindActiveSubcases();
+    size_t acquireGeneratorIndex(size_t count);
 
 private:
     // decisionPath is the selected traversal prefix; discoveredDecisionPath is rebuilt
@@ -4241,7 +4278,7 @@ struct ContextState : ContextOptions, TestRunStats, CurrentTestCaseStats {
 
     std::vector<String> stringifiedContexts; // logging from INFO() due to an exception
 
-    // Backtrack traversal state for SUBCASE reruns.
+    // Backtrack traversal state shared by SUBCASE and GENERATE.
     TraversalState traversal;
     Atomic<bool> shouldLogCurrentException;
 
@@ -8648,6 +8685,7 @@ double Timer::getElapsedSeconds() const {
 
 DOCTEST_SUPPRESS_PRIVATE_WARNINGS_POP
 
+
 #include <algorithm>
 
 DOCTEST_SUPPRESS_PRIVATE_WARNINGS_PUSH
@@ -8686,10 +8724,10 @@ void TraversalState::resetForRun() {
 }
 
 bool TraversalState::advance() {
-    size_t maxDepth = std::min(m_decisionPath.size(), m_discoveredDecisionPath.size());
+    const size_t maxDepth = std::min(m_decisionPath.size(), m_discoveredDecisionPath.size());
     for (size_t depth = maxDepth; depth > 0; --depth) {
         const size_t index = depth - 1;
-        if (m_decisionPath[index] + 1 < m_discoveredDecisionPath[index].subcases.size()) {
+        if (m_decisionPath[index] + 1 < m_discoveredDecisionPath[index].branch_count) {
             ++m_decisionPath[index];
             m_decisionPath.resize(index + 1);
             return true;
@@ -8711,6 +8749,8 @@ bool TraversalState::tryEnterSubcase(const SubcaseSignature &signature) {
 
     if (siblingIndex == subcases.size())
         subcases.push_back(signature);
+
+    point.branch_count = subcases.size();
 
     if (siblingIndex != m_decisionPath[m_decisionDepth])
         return false;
@@ -8736,6 +8776,18 @@ size_t TraversalState::unwindActiveSubcases() {
     return activeSubcaseCount;
 }
 
+size_t TraversalState::acquireGeneratorIndex(size_t count) {
+    DecisionPoint &point = ensureDecisionPointAtCurrentDepth();
+    point.branch_count = count;
+
+    const size_t index = m_decisionPath[m_decisionDepth];
+    m_decisionDepth++;
+    return index < count ? index : 0;
+}
+
+size_t acquireGeneratorDecisionIndex(size_t count) {
+    return g_cs->traversal.acquireGeneratorIndex(count);
+}
 } // namespace detail
 } // namespace doctest
 

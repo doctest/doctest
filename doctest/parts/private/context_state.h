@@ -28,7 +28,7 @@ struct ContextState : ContextOptions, TestRunStats, CurrentTestCaseStats {
 
     std::vector<String> stringifiedContexts; // logging from INFO() due to an exception
 
-    // Backtrack traversal state for SUBCASE reruns.
+    // Backtrack traversal state shared by SUBCASE and GENERATE.
     TraversalState traversal;
     Atomic<bool> shouldLogCurrentException;
 

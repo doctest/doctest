@@ -1,0 +1,1584 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<doctest binary="all_features">
+  <Options order_by="file" rand_seed="324" first="0" last="4294967295" abort_after="0" subcase_filter_levels="2147483647" case_sensitive="false" no_throw="false" no_skip="false"/>
+  <TestSuite>
+    <TestCase name="GENERATE - single, two values" filename="generators.cpp" line="0">
+      <Message type="WARNING" filename="generators.cpp" line="0">
+        <Text>
+          x=10
+        </Text>
+      </Message>
+      <Message type="WARNING" filename="generators.cpp" line="0">
+        <Text>
+          x=20
+        </Text>
+      </Message>
+      <OverallResultsAsserts successes="2" failures="0" test_case_success="true"/>
+    </TestCase>
+    <TestCase name="GENERATE - single, three values" filename="generators.cpp" line="0">
+      <Message type="WARNING" filename="generators.cpp" line="0">
+        <Text>
+          x=1
+        </Text>
+      </Message>
+      <Message type="WARNING" filename="generators.cpp" line="0">
+        <Text>
+          x=2
+        </Text>
+      </Message>
+      <Message type="WARNING" filename="generators.cpp" line="0">
+        <Text>
+          x=3
+        </Text>
+      </Message>
+      <OverallResultsAsserts successes="6" failures="0" test_case_success="true"/>
+    </TestCase>
+    <TestCase name="GENERATE - two generators, cartesian product" filename="generators.cpp" line="0">
+      <Message type="WARNING" filename="generators.cpp" line="0">
+        <Text>
+          x=1 y=10
+        </Text>
+      </Message>
+      <Message type="WARNING" filename="generators.cpp" line="0">
+        <Text>
+          x=1 y=20
+        </Text>
+      </Message>
+      <Message type="WARNING" filename="generators.cpp" line="0">
+        <Text>
+          x=2 y=10
+        </Text>
+      </Message>
+      <Message type="WARNING" filename="generators.cpp" line="0">
+        <Text>
+          x=2 y=20
+        </Text>
+      </Message>
+      <OverallResultsAsserts successes="8" failures="0" test_case_success="true"/>
+    </TestCase>
+    <TestCase name="GENERATE - three generators" filename="generators.cpp" line="0">
+      <Message type="WARNING" filename="generators.cpp" line="0">
+        <Text>
+          a=1 b=3 c=5
+        </Text>
+      </Message>
+      <Message type="WARNING" filename="generators.cpp" line="0">
+        <Text>
+          a=1 b=3 c=6
+        </Text>
+      </Message>
+      <Message type="WARNING" filename="generators.cpp" line="0">
+        <Text>
+          a=1 b=4 c=5
+        </Text>
+      </Message>
+      <Message type="WARNING" filename="generators.cpp" line="0">
+        <Text>
+          a=1 b=4 c=6
+        </Text>
+      </Message>
+      <Message type="WARNING" filename="generators.cpp" line="0">
+        <Text>
+          a=2 b=3 c=5
+        </Text>
+      </Message>
+      <Message type="WARNING" filename="generators.cpp" line="0">
+        <Text>
+          a=2 b=3 c=6
+        </Text>
+      </Message>
+      <Message type="WARNING" filename="generators.cpp" line="0">
+        <Text>
+          a=2 b=4 c=5
+        </Text>
+      </Message>
+      <Message type="WARNING" filename="generators.cpp" line="0">
+        <Text>
+          a=2 b=4 c=6
+        </Text>
+      </Message>
+      <OverallResultsAsserts successes="8" failures="0" test_case_success="true"/>
+    </TestCase>
+    <TestCase name="GENERATE statements can depend on each other" filename="generators.cpp" line="0">
+      <Message type="WARNING" filename="generators.cpp" line="0">
+        <Text>
+          i=1 j=2
+        </Text>
+      </Message>
+      <Message type="WARNING" filename="generators.cpp" line="0">
+        <Text>
+          i=1 j=3
+        </Text>
+      </Message>
+      <Message type="WARNING" filename="generators.cpp" line="0">
+        <Text>
+          i=1 j=4
+        </Text>
+      </Message>
+      <Message type="WARNING" filename="generators.cpp" line="0">
+        <Text>
+          i=2 j=3
+        </Text>
+      </Message>
+      <Message type="WARNING" filename="generators.cpp" line="0">
+        <Text>
+          i=2 j=4
+        </Text>
+      </Message>
+      <Message type="WARNING" filename="generators.cpp" line="0">
+        <Text>
+          i=2 j=5
+        </Text>
+      </Message>
+      <Message type="WARNING" filename="generators.cpp" line="0">
+        <Text>
+          i=3 j=4
+        </Text>
+      </Message>
+      <Message type="WARNING" filename="generators.cpp" line="0">
+        <Text>
+          i=3 j=5
+        </Text>
+      </Message>
+      <Message type="WARNING" filename="generators.cpp" line="0">
+        <Text>
+          i=3 j=6
+        </Text>
+      </Message>
+      <OverallResultsAsserts successes="9" failures="0" test_case_success="true"/>
+    </TestCase>
+    <TestCase name="multiple GENERATEs on a single line" filename="generators.cpp" line="0">
+      <Message type="WARNING" filename="generators.cpp" line="0">
+        <Text>
+          i=1 j=10
+        </Text>
+      </Message>
+      <Message type="WARNING" filename="generators.cpp" line="0">
+        <Text>
+          i=1 j=20
+        </Text>
+      </Message>
+      <Message type="WARNING" filename="generators.cpp" line="0">
+        <Text>
+          i=2 j=10
+        </Text>
+      </Message>
+      <Message type="WARNING" filename="generators.cpp" line="0">
+        <Text>
+          i=2 j=20
+        </Text>
+      </Message>
+      <OverallResultsAsserts successes="0" failures="0" test_case_success="true"/>
+    </TestCase>
+    <TestCase name="GENERATE - double values" filename="generators.cpp" line="0">
+      <Message type="WARNING" filename="generators.cpp" line="0">
+        <Text>
+          d=1
+        </Text>
+      </Message>
+      <Message type="WARNING" filename="generators.cpp" line="0">
+        <Text>
+          d=2.5
+        </Text>
+      </Message>
+      <Message type="WARNING" filename="generators.cpp" line="0">
+        <Text>
+          d=3.14
+        </Text>
+      </Message>
+      <OverallResultsAsserts successes="3" failures="0" test_case_success="true"/>
+    </TestCase>
+    <TestCase name="GENERATE - const char* values" filename="generators.cpp" line="0">
+      <OverallResultsAsserts successes="4" failures="0" test_case_success="true"/>
+    </TestCase>
+    <TestCase name="GENERATE + SUBCASE - basic interaction" filename="generators.cpp" line="0">
+      <Message type="WARNING" filename="generators.cpp" line="0">
+        <Text>
+          test_case: x=1
+        </Text>
+      </Message>
+      <SubCase name="A" filename="generators.cpp" line="0">
+        <Message type="WARNING" filename="generators.cpp" line="0">
+          <Text>
+            A: x=1
+          </Text>
+        </Message>
+      </SubCase>
+      <Message type="WARNING" filename="generators.cpp" line="0">
+        <Text>
+          test_case: x=1
+        </Text>
+      </Message>
+      <SubCase name="B" filename="generators.cpp" line="0">
+        <Message type="WARNING" filename="generators.cpp" line="0">
+          <Text>
+            B: x=1
+          </Text>
+        </Message>
+      </SubCase>
+      <Message type="WARNING" filename="generators.cpp" line="0">
+        <Text>
+          test_case: x=2
+        </Text>
+      </Message>
+      <SubCase name="A" filename="generators.cpp" line="0">
+        <Message type="WARNING" filename="generators.cpp" line="0">
+          <Text>
+            A: x=2
+          </Text>
+        </Message>
+      </SubCase>
+      <Message type="WARNING" filename="generators.cpp" line="0">
+        <Text>
+          test_case: x=2
+        </Text>
+      </Message>
+      <SubCase name="B" filename="generators.cpp" line="0">
+        <Message type="WARNING" filename="generators.cpp" line="0">
+          <Text>
+            B: x=2
+          </Text>
+        </Message>
+      </SubCase>
+      <OverallResultsAsserts successes="4" failures="0" test_case_success="true"/>
+    </TestCase>
+    <TestCase name="GENERATE + nested SUBCASE" filename="generators.cpp" line="0">
+      <Message type="WARNING" filename="generators.cpp" line="0">
+        <Text>
+          test_case: x=1
+        </Text>
+      </Message>
+      <SubCase name="outer" filename="generators.cpp" line="0">
+        <Message type="WARNING" filename="generators.cpp" line="0">
+          <Text>
+            outer: x=1
+          </Text>
+        </Message>
+        <SubCase name="inner A" filename="generators.cpp" line="0">
+          <Message type="WARNING" filename="generators.cpp" line="0">
+            <Text>
+              inner A: x=1
+            </Text>
+          </Message>
+        </SubCase>
+      </SubCase>
+      <Message type="WARNING" filename="generators.cpp" line="0">
+        <Text>
+          test_case: x=1
+        </Text>
+      </Message>
+      <SubCase name="outer" filename="generators.cpp" line="0">
+        <Message type="WARNING" filename="generators.cpp" line="0">
+          <Text>
+            outer: x=1
+          </Text>
+        </Message>
+        <SubCase name="inner B" filename="generators.cpp" line="0">
+          <Message type="WARNING" filename="generators.cpp" line="0">
+            <Text>
+              inner B: x=1
+            </Text>
+          </Message>
+        </SubCase>
+      </SubCase>
+      <Message type="WARNING" filename="generators.cpp" line="0">
+        <Text>
+          test_case: x=2
+        </Text>
+      </Message>
+      <SubCase name="outer" filename="generators.cpp" line="0">
+        <Message type="WARNING" filename="generators.cpp" line="0">
+          <Text>
+            outer: x=2
+          </Text>
+        </Message>
+        <SubCase name="inner A" filename="generators.cpp" line="0">
+          <Message type="WARNING" filename="generators.cpp" line="0">
+            <Text>
+              inner A: x=2
+            </Text>
+          </Message>
+        </SubCase>
+      </SubCase>
+      <Message type="WARNING" filename="generators.cpp" line="0">
+        <Text>
+          test_case: x=2
+        </Text>
+      </Message>
+      <SubCase name="outer" filename="generators.cpp" line="0">
+        <Message type="WARNING" filename="generators.cpp" line="0">
+          <Text>
+            outer: x=2
+          </Text>
+        </Message>
+        <SubCase name="inner B" filename="generators.cpp" line="0">
+          <Message type="WARNING" filename="generators.cpp" line="0">
+            <Text>
+              inner B: x=2
+            </Text>
+          </Message>
+        </SubCase>
+      </SubCase>
+      <OverallResultsAsserts successes="4" failures="0" test_case_success="true"/>
+    </TestCase>
+    <TestCase name="two GENERATEs + SUBCASE" filename="generators.cpp" line="0">
+      <SubCase name="s" filename="generators.cpp" line="0">
+        <Message type="WARNING" filename="generators.cpp" line="0">
+          <Text>
+            s: x=1 y=10
+          </Text>
+        </Message>
+      </SubCase>
+      <SubCase name="s" filename="generators.cpp" line="0">
+        <Message type="WARNING" filename="generators.cpp" line="0">
+          <Text>
+            s: x=1 y=20
+          </Text>
+        </Message>
+      </SubCase>
+      <SubCase name="s" filename="generators.cpp" line="0">
+        <Message type="WARNING" filename="generators.cpp" line="0">
+          <Text>
+            s: x=2 y=10
+          </Text>
+        </Message>
+      </SubCase>
+      <SubCase name="s" filename="generators.cpp" line="0">
+        <Message type="WARNING" filename="generators.cpp" line="0">
+          <Text>
+            s: x=2 y=20
+          </Text>
+        </Message>
+      </SubCase>
+      <OverallResultsAsserts successes="4" failures="0" test_case_success="true"/>
+    </TestCase>
+    <TestCase name="GENERATE - custom struct type" filename="generators.cpp" line="0">
+      <Message type="WARNING" filename="generators.cpp" line="0">
+        <Text>
+          p.x=1 p.y=2
+        </Text>
+      </Message>
+      <Message type="WARNING" filename="generators.cpp" line="0">
+        <Text>
+          p.x=3 p.y=4
+        </Text>
+      </Message>
+      <Message type="WARNING" filename="generators.cpp" line="0">
+        <Text>
+          p.x=5 p.y=6
+        </Text>
+      </Message>
+      <OverallResultsAsserts successes="6" failures="0" test_case_success="true"/>
+    </TestCase>
+    <TestCase name="GENERATE - single value (degenerate case)" filename="generators.cpp" line="0">
+      <Message type="WARNING" filename="generators.cpp" line="0">
+        <Text>
+          x=42
+        </Text>
+      </Message>
+      <OverallResultsAsserts successes="1" failures="0" test_case_success="true"/>
+    </TestCase>
+    <TestCase name="GENERATE inside SUBCASE - single sibling" filename="generators.cpp" line="0">
+      <SubCase name="A" filename="generators.cpp" line="0">
+        <Message type="WARNING" filename="generators.cpp" line="0">
+          <Text>
+            A x=1
+          </Text>
+        </Message>
+      </SubCase>
+      <SubCase name="A" filename="generators.cpp" line="0">
+        <Message type="WARNING" filename="generators.cpp" line="0">
+          <Text>
+            A x=2
+          </Text>
+        </Message>
+      </SubCase>
+      <SubCase name="B" filename="generators.cpp" line="0">
+        <Message type="WARNING" filename="generators.cpp" line="0">
+          <Text>
+            B
+          </Text>
+        </Message>
+      </SubCase>
+      <OverallResultsAsserts successes="3" failures="0" test_case_success="true"/>
+    </TestCase>
+    <TestCase name="GENERATE inside sibling SUBCASEs - different counts" filename="generators.cpp" line="0">
+      <SubCase name="A" filename="generators.cpp" line="0">
+        <Message type="WARNING" filename="generators.cpp" line="0">
+          <Text>
+            A x=1
+          </Text>
+        </Message>
+      </SubCase>
+      <SubCase name="A" filename="generators.cpp" line="0">
+        <Message type="WARNING" filename="generators.cpp" line="0">
+          <Text>
+            A x=2
+          </Text>
+        </Message>
+      </SubCase>
+      <SubCase name="A" filename="generators.cpp" line="0">
+        <Message type="WARNING" filename="generators.cpp" line="0">
+          <Text>
+            A x=3
+          </Text>
+        </Message>
+      </SubCase>
+      <SubCase name="B" filename="generators.cpp" line="0">
+        <Message type="WARNING" filename="generators.cpp" line="0">
+          <Text>
+            B y=10
+          </Text>
+        </Message>
+      </SubCase>
+      <SubCase name="B" filename="generators.cpp" line="0">
+        <Message type="WARNING" filename="generators.cpp" line="0">
+          <Text>
+            B y=20
+          </Text>
+        </Message>
+      </SubCase>
+      <OverallResultsAsserts successes="5" failures="0" test_case_success="true"/>
+    </TestCase>
+    <TestCase name="GENERATE inside SUBCASE - with nested child subcases" filename="generators.cpp" line="0">
+      <SubCase name="outer" filename="generators.cpp" line="0">
+        <Message type="WARNING" filename="generators.cpp" line="0">
+          <Text>
+            outer x=1
+          </Text>
+        </Message>
+        <SubCase name="inner A" filename="generators.cpp" line="0">
+          <Message type="WARNING" filename="generators.cpp" line="0">
+            <Text>
+                inner A x=1
+            </Text>
+          </Message>
+        </SubCase>
+      </SubCase>
+      <SubCase name="outer" filename="generators.cpp" line="0">
+        <Message type="WARNING" filename="generators.cpp" line="0">
+          <Text>
+            outer x=1
+          </Text>
+        </Message>
+        <SubCase name="inner B" filename="generators.cpp" line="0">
+          <Message type="WARNING" filename="generators.cpp" line="0">
+            <Text>
+                inner B x=1
+            </Text>
+          </Message>
+        </SubCase>
+      </SubCase>
+      <SubCase name="outer" filename="generators.cpp" line="0">
+        <Message type="WARNING" filename="generators.cpp" line="0">
+          <Text>
+            outer x=2
+          </Text>
+        </Message>
+        <SubCase name="inner A" filename="generators.cpp" line="0">
+          <Message type="WARNING" filename="generators.cpp" line="0">
+            <Text>
+                inner A x=2
+            </Text>
+          </Message>
+        </SubCase>
+      </SubCase>
+      <SubCase name="outer" filename="generators.cpp" line="0">
+        <Message type="WARNING" filename="generators.cpp" line="0">
+          <Text>
+            outer x=2
+          </Text>
+        </Message>
+        <SubCase name="inner B" filename="generators.cpp" line="0">
+          <Message type="WARNING" filename="generators.cpp" line="0">
+            <Text>
+                inner B x=2
+            </Text>
+          </Message>
+        </SubCase>
+      </SubCase>
+      <OverallResultsAsserts successes="4" failures="0" test_case_success="true"/>
+    </TestCase>
+    <TestCase name="top-level GENERATE composes with GENERATE inside SUBCASE" filename="generators.cpp" line="0">
+      <SubCase name="s" filename="generators.cpp" line="0">
+        <Message type="WARNING" filename="generators.cpp" line="0">
+          <Text>
+            s: n=10 k=1
+          </Text>
+        </Message>
+      </SubCase>
+      <SubCase name="s" filename="generators.cpp" line="0">
+        <Message type="WARNING" filename="generators.cpp" line="0">
+          <Text>
+            s: n=10 k=2
+          </Text>
+        </Message>
+      </SubCase>
+      <SubCase name="s" filename="generators.cpp" line="0">
+        <Message type="WARNING" filename="generators.cpp" line="0">
+          <Text>
+            s: n=20 k=1
+          </Text>
+        </Message>
+      </SubCase>
+      <SubCase name="s" filename="generators.cpp" line="0">
+        <Message type="WARNING" filename="generators.cpp" line="0">
+          <Text>
+            s: n=20 k=2
+          </Text>
+        </Message>
+      </SubCase>
+      <OverallResultsAsserts successes="4" failures="0" test_case_success="true"/>
+    </TestCase>
+    <TestCase name="top-level GENERATE + two sibling SUBCASEs each with GENERATE" filename="generators.cpp" line="0">
+      <SubCase name="A" filename="generators.cpp" line="0">
+        <Message type="WARNING" filename="generators.cpp" line="0">
+          <Text>
+            A n=1 k=10
+          </Text>
+        </Message>
+      </SubCase>
+      <SubCase name="A" filename="generators.cpp" line="0">
+        <Message type="WARNING" filename="generators.cpp" line="0">
+          <Text>
+            A n=1 k=20
+          </Text>
+        </Message>
+      </SubCase>
+      <SubCase name="B" filename="generators.cpp" line="0">
+        <Message type="WARNING" filename="generators.cpp" line="0">
+          <Text>
+            B n=1 k=100
+          </Text>
+        </Message>
+      </SubCase>
+      <SubCase name="B" filename="generators.cpp" line="0">
+        <Message type="WARNING" filename="generators.cpp" line="0">
+          <Text>
+            B n=1 k=200
+          </Text>
+        </Message>
+      </SubCase>
+      <SubCase name="A" filename="generators.cpp" line="0">
+        <Message type="WARNING" filename="generators.cpp" line="0">
+          <Text>
+            A n=2 k=10
+          </Text>
+        </Message>
+      </SubCase>
+      <SubCase name="A" filename="generators.cpp" line="0">
+        <Message type="WARNING" filename="generators.cpp" line="0">
+          <Text>
+            A n=2 k=20
+          </Text>
+        </Message>
+      </SubCase>
+      <SubCase name="B" filename="generators.cpp" line="0">
+        <Message type="WARNING" filename="generators.cpp" line="0">
+          <Text>
+            B n=2 k=100
+          </Text>
+        </Message>
+      </SubCase>
+      <SubCase name="B" filename="generators.cpp" line="0">
+        <Message type="WARNING" filename="generators.cpp" line="0">
+          <Text>
+            B n=2 k=200
+          </Text>
+        </Message>
+      </SubCase>
+      <OverallResultsAsserts successes="8" failures="0" test_case_success="true"/>
+    </TestCase>
+    <TestCase name="GENERATE at multiple nesting depths" filename="generators.cpp" line="0">
+      <SubCase name="A" filename="generators.cpp" line="0">
+        <SubCase name="1" filename="generators.cpp" line="0">
+          <SubCase name="a" filename="generators.cpp" line="0">
+            <Message type="WARNING" filename="generators.cpp" line="0">
+              <Text>
+                A1a: i=1 j=3 k=5 l=7
+              </Text>
+            </Message>
+          </SubCase>
+        </SubCase>
+      </SubCase>
+      <Message type="WARNING" filename="generators.cpp" line="0">
+        <Text>
+          test_case: i=1
+        </Text>
+      </Message>
+      <SubCase name="A" filename="generators.cpp" line="0">
+        <SubCase name="1" filename="generators.cpp" line="0">
+          <SubCase name="a" filename="generators.cpp" line="0">
+            <Message type="WARNING" filename="generators.cpp" line="0">
+              <Text>
+                A1a: i=1 j=3 k=5 l=8
+              </Text>
+            </Message>
+          </SubCase>
+        </SubCase>
+      </SubCase>
+      <Message type="WARNING" filename="generators.cpp" line="0">
+        <Text>
+          test_case: i=1
+        </Text>
+      </Message>
+      <SubCase name="A" filename="generators.cpp" line="0">
+        <SubCase name="1" filename="generators.cpp" line="0">
+          <SubCase name="a" filename="generators.cpp" line="0">
+            <Message type="WARNING" filename="generators.cpp" line="0">
+              <Text>
+                A1a: i=1 j=3 k=6 l=7
+              </Text>
+            </Message>
+          </SubCase>
+        </SubCase>
+      </SubCase>
+      <Message type="WARNING" filename="generators.cpp" line="0">
+        <Text>
+          test_case: i=1
+        </Text>
+      </Message>
+      <SubCase name="A" filename="generators.cpp" line="0">
+        <SubCase name="1" filename="generators.cpp" line="0">
+          <SubCase name="a" filename="generators.cpp" line="0">
+            <Message type="WARNING" filename="generators.cpp" line="0">
+              <Text>
+                A1a: i=1 j=3 k=6 l=8
+              </Text>
+            </Message>
+          </SubCase>
+        </SubCase>
+      </SubCase>
+      <Message type="WARNING" filename="generators.cpp" line="0">
+        <Text>
+          test_case: i=1
+        </Text>
+      </Message>
+      <SubCase name="A" filename="generators.cpp" line="0">
+        <SubCase name="2" filename="generators.cpp" line="0">
+          <Message type="WARNING" filename="generators.cpp" line="0">
+            <Text>
+              A2 i=1 m=9
+            </Text>
+          </Message>
+        </SubCase>
+      </SubCase>
+      <Message type="WARNING" filename="generators.cpp" line="0">
+        <Text>
+          test_case: i=1
+        </Text>
+      </Message>
+      <SubCase name="A" filename="generators.cpp" line="0">
+        <SubCase name="2" filename="generators.cpp" line="0">
+          <Message type="WARNING" filename="generators.cpp" line="0">
+            <Text>
+              A2 i=1 m=10
+            </Text>
+          </Message>
+        </SubCase>
+      </SubCase>
+      <Message type="WARNING" filename="generators.cpp" line="0">
+        <Text>
+          test_case: i=1
+        </Text>
+      </Message>
+      <SubCase name="A" filename="generators.cpp" line="0">
+        <SubCase name="1" filename="generators.cpp" line="0">
+          <SubCase name="a" filename="generators.cpp" line="0">
+            <Message type="WARNING" filename="generators.cpp" line="0">
+              <Text>
+                A1a: i=1 j=4 k=5 l=7
+              </Text>
+            </Message>
+          </SubCase>
+        </SubCase>
+      </SubCase>
+      <Message type="WARNING" filename="generators.cpp" line="0">
+        <Text>
+          test_case: i=1
+        </Text>
+      </Message>
+      <SubCase name="A" filename="generators.cpp" line="0">
+        <SubCase name="1" filename="generators.cpp" line="0">
+          <SubCase name="a" filename="generators.cpp" line="0">
+            <Message type="WARNING" filename="generators.cpp" line="0">
+              <Text>
+                A1a: i=1 j=4 k=5 l=8
+              </Text>
+            </Message>
+          </SubCase>
+        </SubCase>
+      </SubCase>
+      <Message type="WARNING" filename="generators.cpp" line="0">
+        <Text>
+          test_case: i=1
+        </Text>
+      </Message>
+      <SubCase name="A" filename="generators.cpp" line="0">
+        <SubCase name="1" filename="generators.cpp" line="0">
+          <SubCase name="a" filename="generators.cpp" line="0">
+            <Message type="WARNING" filename="generators.cpp" line="0">
+              <Text>
+                A1a: i=1 j=4 k=6 l=7
+              </Text>
+            </Message>
+          </SubCase>
+        </SubCase>
+      </SubCase>
+      <Message type="WARNING" filename="generators.cpp" line="0">
+        <Text>
+          test_case: i=1
+        </Text>
+      </Message>
+      <SubCase name="A" filename="generators.cpp" line="0">
+        <SubCase name="1" filename="generators.cpp" line="0">
+          <SubCase name="a" filename="generators.cpp" line="0">
+            <Message type="WARNING" filename="generators.cpp" line="0">
+              <Text>
+                A1a: i=1 j=4 k=6 l=8
+              </Text>
+            </Message>
+          </SubCase>
+        </SubCase>
+      </SubCase>
+      <Message type="WARNING" filename="generators.cpp" line="0">
+        <Text>
+          test_case: i=1
+        </Text>
+      </Message>
+      <SubCase name="A" filename="generators.cpp" line="0">
+        <SubCase name="2" filename="generators.cpp" line="0">
+          <Message type="WARNING" filename="generators.cpp" line="0">
+            <Text>
+              A2 i=1 m=9
+            </Text>
+          </Message>
+        </SubCase>
+      </SubCase>
+      <Message type="WARNING" filename="generators.cpp" line="0">
+        <Text>
+          test_case: i=1
+        </Text>
+      </Message>
+      <SubCase name="A" filename="generators.cpp" line="0">
+        <SubCase name="2" filename="generators.cpp" line="0">
+          <Message type="WARNING" filename="generators.cpp" line="0">
+            <Text>
+              A2 i=1 m=10
+            </Text>
+          </Message>
+        </SubCase>
+      </SubCase>
+      <Message type="WARNING" filename="generators.cpp" line="0">
+        <Text>
+          test_case: i=1
+        </Text>
+      </Message>
+      <SubCase name="B" filename="generators.cpp" line="0">
+        <Message type="WARNING" filename="generators.cpp" line="0">
+          <Text>
+            B: i=1 n=1000
+          </Text>
+        </Message>
+      </SubCase>
+      <Message type="WARNING" filename="generators.cpp" line="0">
+        <Text>
+          test_case: i=1
+        </Text>
+      </Message>
+      <SubCase name="B" filename="generators.cpp" line="0">
+        <Message type="WARNING" filename="generators.cpp" line="0">
+          <Text>
+            B: i=1 n=2000
+          </Text>
+        </Message>
+      </SubCase>
+      <Message type="WARNING" filename="generators.cpp" line="0">
+        <Text>
+          test_case: i=1
+        </Text>
+      </Message>
+      <SubCase name="A" filename="generators.cpp" line="0">
+        <SubCase name="1" filename="generators.cpp" line="0">
+          <SubCase name="a" filename="generators.cpp" line="0">
+            <Message type="WARNING" filename="generators.cpp" line="0">
+              <Text>
+                A1a: i=2 j=3 k=5 l=7
+              </Text>
+            </Message>
+          </SubCase>
+        </SubCase>
+      </SubCase>
+      <Message type="WARNING" filename="generators.cpp" line="0">
+        <Text>
+          test_case: i=2
+        </Text>
+      </Message>
+      <SubCase name="A" filename="generators.cpp" line="0">
+        <SubCase name="1" filename="generators.cpp" line="0">
+          <SubCase name="a" filename="generators.cpp" line="0">
+            <Message type="WARNING" filename="generators.cpp" line="0">
+              <Text>
+                A1a: i=2 j=3 k=5 l=8
+              </Text>
+            </Message>
+          </SubCase>
+        </SubCase>
+      </SubCase>
+      <Message type="WARNING" filename="generators.cpp" line="0">
+        <Text>
+          test_case: i=2
+        </Text>
+      </Message>
+      <SubCase name="A" filename="generators.cpp" line="0">
+        <SubCase name="1" filename="generators.cpp" line="0">
+          <SubCase name="a" filename="generators.cpp" line="0">
+            <Message type="WARNING" filename="generators.cpp" line="0">
+              <Text>
+                A1a: i=2 j=3 k=6 l=7
+              </Text>
+            </Message>
+          </SubCase>
+        </SubCase>
+      </SubCase>
+      <Message type="WARNING" filename="generators.cpp" line="0">
+        <Text>
+          test_case: i=2
+        </Text>
+      </Message>
+      <SubCase name="A" filename="generators.cpp" line="0">
+        <SubCase name="1" filename="generators.cpp" line="0">
+          <SubCase name="a" filename="generators.cpp" line="0">
+            <Message type="WARNING" filename="generators.cpp" line="0">
+              <Text>
+                A1a: i=2 j=3 k=6 l=8
+              </Text>
+            </Message>
+          </SubCase>
+        </SubCase>
+      </SubCase>
+      <Message type="WARNING" filename="generators.cpp" line="0">
+        <Text>
+          test_case: i=2
+        </Text>
+      </Message>
+      <SubCase name="A" filename="generators.cpp" line="0">
+        <SubCase name="2" filename="generators.cpp" line="0">
+          <Message type="WARNING" filename="generators.cpp" line="0">
+            <Text>
+              A2 i=2 m=9
+            </Text>
+          </Message>
+        </SubCase>
+      </SubCase>
+      <Message type="WARNING" filename="generators.cpp" line="0">
+        <Text>
+          test_case: i=2
+        </Text>
+      </Message>
+      <SubCase name="A" filename="generators.cpp" line="0">
+        <SubCase name="2" filename="generators.cpp" line="0">
+          <Message type="WARNING" filename="generators.cpp" line="0">
+            <Text>
+              A2 i=2 m=10
+            </Text>
+          </Message>
+        </SubCase>
+      </SubCase>
+      <Message type="WARNING" filename="generators.cpp" line="0">
+        <Text>
+          test_case: i=2
+        </Text>
+      </Message>
+      <SubCase name="A" filename="generators.cpp" line="0">
+        <SubCase name="1" filename="generators.cpp" line="0">
+          <SubCase name="a" filename="generators.cpp" line="0">
+            <Message type="WARNING" filename="generators.cpp" line="0">
+              <Text>
+                A1a: i=2 j=4 k=5 l=7
+              </Text>
+            </Message>
+          </SubCase>
+        </SubCase>
+      </SubCase>
+      <Message type="WARNING" filename="generators.cpp" line="0">
+        <Text>
+          test_case: i=2
+        </Text>
+      </Message>
+      <SubCase name="A" filename="generators.cpp" line="0">
+        <SubCase name="1" filename="generators.cpp" line="0">
+          <SubCase name="a" filename="generators.cpp" line="0">
+            <Message type="WARNING" filename="generators.cpp" line="0">
+              <Text>
+                A1a: i=2 j=4 k=5 l=8
+              </Text>
+            </Message>
+          </SubCase>
+        </SubCase>
+      </SubCase>
+      <Message type="WARNING" filename="generators.cpp" line="0">
+        <Text>
+          test_case: i=2
+        </Text>
+      </Message>
+      <SubCase name="A" filename="generators.cpp" line="0">
+        <SubCase name="1" filename="generators.cpp" line="0">
+          <SubCase name="a" filename="generators.cpp" line="0">
+            <Message type="WARNING" filename="generators.cpp" line="0">
+              <Text>
+                A1a: i=2 j=4 k=6 l=7
+              </Text>
+            </Message>
+          </SubCase>
+        </SubCase>
+      </SubCase>
+      <Message type="WARNING" filename="generators.cpp" line="0">
+        <Text>
+          test_case: i=2
+        </Text>
+      </Message>
+      <SubCase name="A" filename="generators.cpp" line="0">
+        <SubCase name="1" filename="generators.cpp" line="0">
+          <SubCase name="a" filename="generators.cpp" line="0">
+            <Message type="WARNING" filename="generators.cpp" line="0">
+              <Text>
+                A1a: i=2 j=4 k=6 l=8
+              </Text>
+            </Message>
+          </SubCase>
+        </SubCase>
+      </SubCase>
+      <Message type="WARNING" filename="generators.cpp" line="0">
+        <Text>
+          test_case: i=2
+        </Text>
+      </Message>
+      <SubCase name="A" filename="generators.cpp" line="0">
+        <SubCase name="2" filename="generators.cpp" line="0">
+          <Message type="WARNING" filename="generators.cpp" line="0">
+            <Text>
+              A2 i=2 m=9
+            </Text>
+          </Message>
+        </SubCase>
+      </SubCase>
+      <Message type="WARNING" filename="generators.cpp" line="0">
+        <Text>
+          test_case: i=2
+        </Text>
+      </Message>
+      <SubCase name="A" filename="generators.cpp" line="0">
+        <SubCase name="2" filename="generators.cpp" line="0">
+          <Message type="WARNING" filename="generators.cpp" line="0">
+            <Text>
+              A2 i=2 m=10
+            </Text>
+          </Message>
+        </SubCase>
+      </SubCase>
+      <Message type="WARNING" filename="generators.cpp" line="0">
+        <Text>
+          test_case: i=2
+        </Text>
+      </Message>
+      <SubCase name="B" filename="generators.cpp" line="0">
+        <Message type="WARNING" filename="generators.cpp" line="0">
+          <Text>
+            B: i=2 n=1000
+          </Text>
+        </Message>
+      </SubCase>
+      <Message type="WARNING" filename="generators.cpp" line="0">
+        <Text>
+          test_case: i=2
+        </Text>
+      </Message>
+      <SubCase name="B" filename="generators.cpp" line="0">
+        <Message type="WARNING" filename="generators.cpp" line="0">
+          <Text>
+            B: i=2 n=2000
+          </Text>
+        </Message>
+      </SubCase>
+      <Message type="WARNING" filename="generators.cpp" line="0">
+        <Text>
+          test_case: i=2
+        </Text>
+      </Message>
+      <OverallResultsAsserts successes="0" failures="0" test_case_success="true"/>
+    </TestCase>
+    <TestCase name="nested GENERATE does not affect sibling SUBCASE" filename="generators.cpp" line="0">
+      <SubCase name="A" filename="generators.cpp" line="0">
+        <SubCase name="1" filename="generators.cpp" line="0">
+          <Message type="WARNING" filename="generators.cpp" line="0">
+            <Text>
+              A1 j=10 k=100
+            </Text>
+          </Message>
+        </SubCase>
+      </SubCase>
+      <SubCase name="A" filename="generators.cpp" line="0">
+        <SubCase name="1" filename="generators.cpp" line="0">
+          <Message type="WARNING" filename="generators.cpp" line="0">
+            <Text>
+              A1 j=10 k=200
+            </Text>
+          </Message>
+        </SubCase>
+      </SubCase>
+      <SubCase name="A" filename="generators.cpp" line="0">
+        <SubCase name="1" filename="generators.cpp" line="0">
+          <Message type="WARNING" filename="generators.cpp" line="0">
+            <Text>
+              A1 j=20 k=100
+            </Text>
+          </Message>
+        </SubCase>
+      </SubCase>
+      <SubCase name="A" filename="generators.cpp" line="0">
+        <SubCase name="1" filename="generators.cpp" line="0">
+          <Message type="WARNING" filename="generators.cpp" line="0">
+            <Text>
+              A1 j=20 k=200
+            </Text>
+          </Message>
+        </SubCase>
+      </SubCase>
+      <SubCase name="B" filename="generators.cpp" line="0">
+        <Message type="WARNING" filename="generators.cpp" line="0">
+          <Text>
+            B enter=0
+          </Text>
+        </Message>
+      </SubCase>
+      <OverallResultsAsserts successes="1" failures="0" test_case_success="true"/>
+    </TestCase>
+    <TestCase name="all items are handled" filename="generators.cpp" line="0">
+      <Message type="WARNING" filename="generators.cpp" line="0">
+        <Text>
+          before: i=1
+        </Text>
+      </Message>
+      <Message type="WARNING" filename="generators.cpp" line="0">
+        <Text>
+          after: i=1
+        </Text>
+      </Message>
+      <Message type="WARNING" filename="generators.cpp" line="0">
+        <Text>
+          before: i=2
+        </Text>
+      </Message>
+      <Expression success="false" type="REQUIRE" filename="generators.cpp" line="0">
+        <Original>
+          i % 2
+        </Original>
+        <Expanded>
+          0
+        </Expanded>
+      </Expression>
+      <Message type="WARNING" filename="generators.cpp" line="0">
+        <Text>
+          before: i=3
+        </Text>
+      </Message>
+      <Message type="WARNING" filename="generators.cpp" line="0">
+        <Text>
+          after: i=3
+        </Text>
+      </Message>
+      <Message type="WARNING" filename="generators.cpp" line="0">
+        <Text>
+          before: i=4
+        </Text>
+      </Message>
+      <Expression success="false" type="REQUIRE" filename="generators.cpp" line="0">
+        <Original>
+          i % 2
+        </Original>
+        <Expanded>
+          0
+        </Expanded>
+      </Expression>
+      <OverallResultsAsserts successes="2" failures="2" test_case_success="true" expected_failures="2"/>
+    </TestCase>
+    <TestCase name="failures continue cartesian iteration" filename="generators.cpp" line="0">
+      <Message type="WARNING" filename="generators.cpp" line="0">
+        <Text>
+          before: i=1 j=0
+        </Text>
+      </Message>
+      <Expression success="false" type="REQUIRE" filename="generators.cpp" line="0">
+        <Original>
+          i + j == 2
+        </Original>
+        <Expanded>
+          1 == 2
+        </Expanded>
+      </Expression>
+      <Message type="WARNING" filename="generators.cpp" line="0">
+        <Text>
+          before: i=1 j=1
+        </Text>
+      </Message>
+      <Message type="WARNING" filename="generators.cpp" line="0">
+        <Text>
+          after: i=1 j=1
+        </Text>
+      </Message>
+      <Message type="WARNING" filename="generators.cpp" line="0">
+        <Text>
+          before: i=1 j=2
+        </Text>
+      </Message>
+      <Expression success="false" type="REQUIRE" filename="generators.cpp" line="0">
+        <Original>
+          i + j == 2
+        </Original>
+        <Expanded>
+          3 == 2
+        </Expanded>
+      </Expression>
+      <Message type="WARNING" filename="generators.cpp" line="0">
+        <Text>
+          before: i=2 j=-1
+        </Text>
+      </Message>
+      <Expression success="false" type="REQUIRE" filename="generators.cpp" line="0">
+        <Original>
+          i + j == 2
+        </Original>
+        <Expanded>
+          1 == 2
+        </Expanded>
+      </Expression>
+      <Message type="WARNING" filename="generators.cpp" line="0">
+        <Text>
+          before: i=2 j=0
+        </Text>
+      </Message>
+      <Message type="WARNING" filename="generators.cpp" line="0">
+        <Text>
+          after: i=2 j=0
+        </Text>
+      </Message>
+      <Message type="WARNING" filename="generators.cpp" line="0">
+        <Text>
+          before: i=2 j=1
+        </Text>
+      </Message>
+      <Expression success="false" type="REQUIRE" filename="generators.cpp" line="0">
+        <Original>
+          i + j == 2
+        </Original>
+        <Expanded>
+          3 == 2
+        </Expanded>
+      </Expression>
+      <OverallResultsAsserts successes="2" failures="4" test_case_success="true" expected_failures="4"/>
+    </TestCase>
+    <TestCase name="GENERATE with fixed for loop" filename="generators.cpp" line="0">
+      <SubCase name="loop with fixed name" filename="generators.cpp" line="0">
+        <SubCase name="fixed name" filename="generators.cpp" line="0">
+          <Message type="WARNING" filename="generators.cpp" line="0">
+            <Text>
+              i=0 js=[ 3 ]
+            </Text>
+          </Message>
+        </SubCase>
+        <SubCase name="fixed name" filename="generators.cpp" line="0">
+          <Message type="WARNING" filename="generators.cpp" line="0">
+            <Text>
+              i=1 js=[ 3 5 ]
+            </Text>
+          </Message>
+        </SubCase>
+        <SubCase name="fixed name" filename="generators.cpp" line="0">
+          <Message type="WARNING" filename="generators.cpp" line="0">
+            <Text>
+              i=2 js=[ 3 5 7 ]
+            </Text>
+          </Message>
+        </SubCase>
+      </SubCase>
+      <SubCase name="loop with fixed name" filename="generators.cpp" line="0">
+        <SubCase name="fixed name" filename="generators.cpp" line="0">
+          <Message type="WARNING" filename="generators.cpp" line="0">
+            <Text>
+              i=0 js=[ 4 ]
+            </Text>
+          </Message>
+        </SubCase>
+        <SubCase name="fixed name" filename="generators.cpp" line="0">
+          <Message type="WARNING" filename="generators.cpp" line="0">
+            <Text>
+              i=1 js=[ 4 6 ]
+            </Text>
+          </Message>
+        </SubCase>
+        <SubCase name="fixed name" filename="generators.cpp" line="0">
+          <Message type="WARNING" filename="generators.cpp" line="0">
+            <Text>
+              i=2 js=[ 4 6 8 ]
+            </Text>
+          </Message>
+        </SubCase>
+      </SubCase>
+      <SubCase name="loop with dynamic name" filename="generators.cpp" line="0">
+        <SubCase name="dynamic 0" filename="generators.cpp" line="0">
+          <Message type="WARNING" filename="generators.cpp" line="0">
+            <Text>
+              i=0 js=[ 3 ]
+            </Text>
+          </Message>
+        </SubCase>
+      </SubCase>
+      <SubCase name="loop with dynamic name" filename="generators.cpp" line="0">
+        <SubCase name="dynamic 0" filename="generators.cpp" line="0">
+          <Message type="WARNING" filename="generators.cpp" line="0">
+            <Text>
+              i=0 js=[ 4 ]
+            </Text>
+          </Message>
+        </SubCase>
+      </SubCase>
+      <SubCase name="loop with dynamic name" filename="generators.cpp" line="0">
+        <SubCase name="dynamic 1" filename="generators.cpp" line="0">
+          <Message type="WARNING" filename="generators.cpp" line="0">
+            <Text>
+              i=1 js=[ 5 ]
+            </Text>
+          </Message>
+        </SubCase>
+      </SubCase>
+      <SubCase name="loop with dynamic name" filename="generators.cpp" line="0">
+        <SubCase name="dynamic 1" filename="generators.cpp" line="0">
+          <Message type="WARNING" filename="generators.cpp" line="0">
+            <Text>
+              i=1 js=[ 6 ]
+            </Text>
+          </Message>
+        </SubCase>
+      </SubCase>
+      <SubCase name="loop with dynamic name" filename="generators.cpp" line="0">
+        <SubCase name="dynamic 2" filename="generators.cpp" line="0">
+          <Message type="WARNING" filename="generators.cpp" line="0">
+            <Text>
+              i=2 js=[ 7 ]
+            </Text>
+          </Message>
+        </SubCase>
+      </SubCase>
+      <SubCase name="loop with dynamic name" filename="generators.cpp" line="0">
+        <SubCase name="dynamic 2" filename="generators.cpp" line="0">
+          <Message type="WARNING" filename="generators.cpp" line="0">
+            <Text>
+              i=2 js=[ 8 ]
+            </Text>
+          </Message>
+        </SubCase>
+      </SubCase>
+      <SubCase name="loop without subcase" filename="generators.cpp" line="0">
+        <Message type="WARNING" filename="generators.cpp" line="0">
+          <Text>
+            js=[ 3 5 7 ]
+          </Text>
+        </Message>
+      </SubCase>
+      <SubCase name="loop without subcase" filename="generators.cpp" line="0">
+        <Message type="WARNING" filename="generators.cpp" line="0">
+          <Text>
+            js=[ 3 5 8 ]
+          </Text>
+        </Message>
+      </SubCase>
+      <SubCase name="loop without subcase" filename="generators.cpp" line="0">
+        <Message type="WARNING" filename="generators.cpp" line="0">
+          <Text>
+            js=[ 3 6 7 ]
+          </Text>
+        </Message>
+      </SubCase>
+      <SubCase name="loop without subcase" filename="generators.cpp" line="0">
+        <Message type="WARNING" filename="generators.cpp" line="0">
+          <Text>
+            js=[ 3 6 8 ]
+          </Text>
+        </Message>
+      </SubCase>
+      <SubCase name="loop without subcase" filename="generators.cpp" line="0">
+        <Message type="WARNING" filename="generators.cpp" line="0">
+          <Text>
+            js=[ 4 5 7 ]
+          </Text>
+        </Message>
+      </SubCase>
+      <SubCase name="loop without subcase" filename="generators.cpp" line="0">
+        <Message type="WARNING" filename="generators.cpp" line="0">
+          <Text>
+            js=[ 4 5 8 ]
+          </Text>
+        </Message>
+      </SubCase>
+      <SubCase name="loop without subcase" filename="generators.cpp" line="0">
+        <Message type="WARNING" filename="generators.cpp" line="0">
+          <Text>
+            js=[ 4 6 7 ]
+          </Text>
+        </Message>
+      </SubCase>
+      <SubCase name="loop without subcase" filename="generators.cpp" line="0">
+        <Message type="WARNING" filename="generators.cpp" line="0">
+          <Text>
+            js=[ 4 6 8 ]
+          </Text>
+        </Message>
+      </SubCase>
+      <OverallResultsAsserts successes="0" failures="0" test_case_success="true"/>
+    </TestCase>
+    <TestCase name="GENERATE with dynamic loop" filename="generators.cpp" line="0">
+      <Message type="WARNING" filename="generators.cpp" line="0">
+        <Text>
+          # i=1
+        </Text>
+      </Message>
+      <SubCase name="0" filename="generators.cpp" line="0">
+        <Message type="WARNING" filename="generators.cpp" line="0">
+          <Text>
+            j=0 k=9
+          </Text>
+        </Message>
+      </SubCase>
+      <Message type="WARNING" filename="generators.cpp" line="0">
+        <Text>
+          # i=1
+        </Text>
+      </Message>
+      <SubCase name="0" filename="generators.cpp" line="0">
+        <Message type="WARNING" filename="generators.cpp" line="0">
+          <Text>
+            j=0 k=19
+          </Text>
+        </Message>
+      </SubCase>
+      <Message type="WARNING" filename="generators.cpp" line="0">
+        <Text>
+          # i=2
+        </Text>
+      </Message>
+      <SubCase name="0" filename="generators.cpp" line="0">
+        <Message type="WARNING" filename="generators.cpp" line="0">
+          <Text>
+            j=0 k=8
+          </Text>
+        </Message>
+      </SubCase>
+      <Message type="WARNING" filename="generators.cpp" line="0">
+        <Text>
+          # i=2
+        </Text>
+      </Message>
+      <SubCase name="0" filename="generators.cpp" line="0">
+        <Message type="WARNING" filename="generators.cpp" line="0">
+          <Text>
+            j=0 k=18
+          </Text>
+        </Message>
+      </SubCase>
+      <Message type="WARNING" filename="generators.cpp" line="0">
+        <Text>
+          # i=2
+        </Text>
+      </Message>
+      <SubCase name="1" filename="generators.cpp" line="0">
+        <Message type="WARNING" filename="generators.cpp" line="0">
+          <Text>
+            j=1 k=7
+          </Text>
+        </Message>
+      </SubCase>
+      <Message type="WARNING" filename="generators.cpp" line="0">
+        <Text>
+          # i=2
+        </Text>
+      </Message>
+      <SubCase name="1" filename="generators.cpp" line="0">
+        <Message type="WARNING" filename="generators.cpp" line="0">
+          <Text>
+            j=1 k=17
+          </Text>
+        </Message>
+      </SubCase>
+      <OverallResultsAsserts successes="6" failures="0" test_case_success="true"/>
+    </TestCase>
+    <TestCase name="GENERATE with dynamic if" filename="generators.cpp" line="0">
+      <Message type="WARNING" filename="generators.cpp" line="0">
+        <Text>
+          i=1 j=10
+        </Text>
+      </Message>
+      <Message type="WARNING" filename="generators.cpp" line="0">
+        <Text>
+          i=1 j=20
+        </Text>
+      </Message>
+      <Message type="WARNING" filename="generators.cpp" line="0">
+        <Text>
+          i=3 j=10
+        </Text>
+      </Message>
+      <Message type="WARNING" filename="generators.cpp" line="0">
+        <Text>
+          i=3 j=20
+        </Text>
+      </Message>
+      <OverallResultsAsserts successes="0" failures="0" test_case_success="true"/>
+    </TestCase>
+    <TestCase name="stale generator depth does not create extra reruns" filename="generators.cpp" line="0">
+      <SubCase name="outer" filename="generators.cpp" line="0">
+        <Message type="WARNING" filename="generators.cpp" line="0">
+          <Text>
+            run=0 discover=true
+          </Text>
+        </Message>
+        <Message type="WARNING" filename="generators.cpp" line="0">
+          <Text>
+            j=10
+          </Text>
+        </Message>
+      </SubCase>
+      <SubCase name="outer" filename="generators.cpp" line="0">
+        <Message type="WARNING" filename="generators.cpp" line="0">
+          <Text>
+            run=1 discover=false
+          </Text>
+        </Message>
+      </SubCase>
+      <OverallResultsAsserts successes="2" failures="0" test_case_success="true"/>
+    </TestCase>
+    <TestCase name="GENERATE with dynamic switch" filename="generators.cpp" line="0">
+      <Message type="WARNING" filename="generators.cpp" line="0">
+        <Text>
+          i=1 j=10
+        </Text>
+      </Message>
+      <Message type="WARNING" filename="generators.cpp" line="0">
+        <Text>
+          i=1 j=20
+        </Text>
+      </Message>
+      <Message type="WARNING" filename="generators.cpp" line="0">
+        <Text>
+          i=2 k=100
+        </Text>
+      </Message>
+      <Message type="WARNING" filename="generators.cpp" line="0">
+        <Text>
+          i=2 k=200
+        </Text>
+      </Message>
+      <Message type="WARNING" filename="generators.cpp" line="0">
+        <Text>
+          i=3 m=1000
+        </Text>
+      </Message>
+      <Message type="WARNING" filename="generators.cpp" line="0">
+        <Text>
+          i=3 m=2000
+        </Text>
+      </Message>
+      <OverallResultsAsserts successes="0" failures="0" test_case_success="true"/>
+    </TestCase>
+    <TestCase name="GENERATE filter test-case target" filename="generators.cpp" line="0">
+      <Message type="WARNING" filename="generators.cpp" line="0">
+        <Text>
+          tc target x=1 y=10
+        </Text>
+      </Message>
+      <Message type="WARNING" filename="generators.cpp" line="0">
+        <Text>
+          tc target x=1 y=20
+        </Text>
+      </Message>
+      <Message type="WARNING" filename="generators.cpp" line="0">
+        <Text>
+          tc target x=2 y=10
+        </Text>
+      </Message>
+      <Message type="WARNING" filename="generators.cpp" line="0">
+        <Text>
+          tc target x=2 y=20
+        </Text>
+      </Message>
+      <OverallResultsAsserts successes="4" failures="0" test_case_success="true"/>
+    </TestCase>
+    <TestCase name="GENERATE filter test-case excluded" filename="generators.cpp" line="0">
+      <Message type="WARNING" filename="generators.cpp" line="0">
+        <Text>
+          tc excluded x=3
+        </Text>
+      </Message>
+      <Message type="WARNING" filename="generators.cpp" line="0">
+        <Text>
+          tc excluded x=4
+        </Text>
+      </Message>
+      <OverallResultsAsserts successes="2" failures="0" test_case_success="true"/>
+    </TestCase>
+    <TestCase name="GENERATE filter subcase target" filename="generators.cpp" line="0">
+      <Message type="WARNING" filename="generators.cpp" line="0">
+        <Text>
+          sc root x=1
+        </Text>
+      </Message>
+      <SubCase name="keep" filename="generators.cpp" line="0">
+        <Message type="WARNING" filename="generators.cpp" line="0">
+          <Text>
+            keep x=1
+          </Text>
+        </Message>
+      </SubCase>
+      <Message type="WARNING" filename="generators.cpp" line="0">
+        <Text>
+          sc root x=1
+        </Text>
+      </Message>
+      <SubCase name="drop" filename="generators.cpp" line="0">
+        <Message type="WARNING" filename="generators.cpp" line="0">
+          <Text>
+            drop x=1
+          </Text>
+        </Message>
+      </SubCase>
+      <Message type="WARNING" filename="generators.cpp" line="0">
+        <Text>
+          sc root x=2
+        </Text>
+      </Message>
+      <SubCase name="keep" filename="generators.cpp" line="0">
+        <Message type="WARNING" filename="generators.cpp" line="0">
+          <Text>
+            keep x=2
+          </Text>
+        </Message>
+      </SubCase>
+      <Message type="WARNING" filename="generators.cpp" line="0">
+        <Text>
+          sc root x=2
+        </Text>
+      </Message>
+      <SubCase name="drop" filename="generators.cpp" line="0">
+        <Message type="WARNING" filename="generators.cpp" line="0">
+          <Text>
+            drop x=2
+          </Text>
+        </Message>
+      </SubCase>
+      <OverallResultsAsserts successes="4" failures="0" test_case_success="true"/>
+    </TestCase>
+  </TestSuite>
+  <OverallResultsAsserts successes="106" failures="6"/>
+  <OverallResultsTestCases successes="30" failures="0"/>
+</doctest>
+Program code.

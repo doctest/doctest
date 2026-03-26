@@ -12,7 +12,9 @@ namespace doctest {
 namespace detail {
 
 struct DecisionPoint {
-    // Encountered sibling subcases in source order for this traversal depth.
+    // Number of branches available at this depth for the current traversal path.
+    size_t branch_count = 0;
+    // Encountered sibling subcases in source order for subcase decision points.
     std::vector<SubcaseSignature> subcases;
 };
 
@@ -28,6 +30,7 @@ public:
     bool tryEnterSubcase(const SubcaseSignature &signature);
     void leaveSubcase();
     size_t unwindActiveSubcases();
+    size_t acquireGeneratorIndex(size_t count);
 
 private:
     // decisionPath is the selected traversal prefix; discoveredDecisionPath is rebuilt

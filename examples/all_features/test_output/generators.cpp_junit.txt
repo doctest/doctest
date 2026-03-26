@@ -1,0 +1,211 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+  <testsuite name="all_features" errors="0" failures="6" tests="112">
+    <testcase classname="generators.cpp" name="GENERATE - single, two values" status="run"/>
+    <testcase classname="generators.cpp" name="GENERATE - single, two values" status="run"/>
+    <testcase classname="generators.cpp" name="GENERATE - single, three values" status="run"/>
+    <testcase classname="generators.cpp" name="GENERATE - single, three values" status="run"/>
+    <testcase classname="generators.cpp" name="GENERATE - single, three values" status="run"/>
+    <testcase classname="generators.cpp" name="GENERATE - two generators, cartesian product" status="run"/>
+    <testcase classname="generators.cpp" name="GENERATE - two generators, cartesian product" status="run"/>
+    <testcase classname="generators.cpp" name="GENERATE - two generators, cartesian product" status="run"/>
+    <testcase classname="generators.cpp" name="GENERATE - two generators, cartesian product" status="run"/>
+    <testcase classname="generators.cpp" name="GENERATE - three generators" status="run"/>
+    <testcase classname="generators.cpp" name="GENERATE - three generators" status="run"/>
+    <testcase classname="generators.cpp" name="GENERATE - three generators" status="run"/>
+    <testcase classname="generators.cpp" name="GENERATE - three generators" status="run"/>
+    <testcase classname="generators.cpp" name="GENERATE - three generators" status="run"/>
+    <testcase classname="generators.cpp" name="GENERATE - three generators" status="run"/>
+    <testcase classname="generators.cpp" name="GENERATE - three generators" status="run"/>
+    <testcase classname="generators.cpp" name="GENERATE - three generators" status="run"/>
+    <testcase classname="generators.cpp" name="GENERATE statements can depend on each other" status="run"/>
+    <testcase classname="generators.cpp" name="GENERATE statements can depend on each other" status="run"/>
+    <testcase classname="generators.cpp" name="GENERATE statements can depend on each other" status="run"/>
+    <testcase classname="generators.cpp" name="GENERATE statements can depend on each other" status="run"/>
+    <testcase classname="generators.cpp" name="GENERATE statements can depend on each other" status="run"/>
+    <testcase classname="generators.cpp" name="GENERATE statements can depend on each other" status="run"/>
+    <testcase classname="generators.cpp" name="GENERATE statements can depend on each other" status="run"/>
+    <testcase classname="generators.cpp" name="GENERATE statements can depend on each other" status="run"/>
+    <testcase classname="generators.cpp" name="GENERATE statements can depend on each other" status="run"/>
+    <testcase classname="generators.cpp" name="multiple GENERATEs on a single line" status="run"/>
+    <testcase classname="generators.cpp" name="multiple GENERATEs on a single line" status="run"/>
+    <testcase classname="generators.cpp" name="multiple GENERATEs on a single line" status="run"/>
+    <testcase classname="generators.cpp" name="multiple GENERATEs on a single line" status="run"/>
+    <testcase classname="generators.cpp" name="GENERATE - double values" status="run"/>
+    <testcase classname="generators.cpp" name="GENERATE - double values" status="run"/>
+    <testcase classname="generators.cpp" name="GENERATE - double values" status="run"/>
+    <testcase classname="generators.cpp" name="GENERATE - const char* values" status="run"/>
+    <testcase classname="generators.cpp" name="GENERATE - const char* values" status="run"/>
+    <testcase classname="generators.cpp" name="GENERATE + SUBCASE - basic interaction/A" status="run"/>
+    <testcase classname="generators.cpp" name="GENERATE + SUBCASE - basic interaction/B" status="run"/>
+    <testcase classname="generators.cpp" name="GENERATE + SUBCASE - basic interaction/A" status="run"/>
+    <testcase classname="generators.cpp" name="GENERATE + SUBCASE - basic interaction/B" status="run"/>
+    <testcase classname="generators.cpp" name="GENERATE + nested SUBCASE/outer/inner A" status="run"/>
+    <testcase classname="generators.cpp" name="GENERATE + nested SUBCASE/outer/inner B" status="run"/>
+    <testcase classname="generators.cpp" name="GENERATE + nested SUBCASE/outer/inner A" status="run"/>
+    <testcase classname="generators.cpp" name="GENERATE + nested SUBCASE/outer/inner B" status="run"/>
+    <testcase classname="generators.cpp" name="two GENERATEs + SUBCASE/s" status="run"/>
+    <testcase classname="generators.cpp" name="two GENERATEs + SUBCASE/s" status="run"/>
+    <testcase classname="generators.cpp" name="two GENERATEs + SUBCASE/s" status="run"/>
+    <testcase classname="generators.cpp" name="two GENERATEs + SUBCASE/s" status="run"/>
+    <testcase classname="generators.cpp" name="GENERATE - custom struct type" status="run"/>
+    <testcase classname="generators.cpp" name="GENERATE - custom struct type" status="run"/>
+    <testcase classname="generators.cpp" name="GENERATE - custom struct type" status="run"/>
+    <testcase classname="generators.cpp" name="GENERATE - single value (degenerate case)" status="run"/>
+    <testcase classname="generators.cpp" name="GENERATE inside SUBCASE - single sibling/A" status="run"/>
+    <testcase classname="generators.cpp" name="GENERATE inside SUBCASE - single sibling/A" status="run"/>
+    <testcase classname="generators.cpp" name="GENERATE inside SUBCASE - single sibling/B" status="run"/>
+    <testcase classname="generators.cpp" name="GENERATE inside sibling SUBCASEs - different counts/A" status="run"/>
+    <testcase classname="generators.cpp" name="GENERATE inside sibling SUBCASEs - different counts/A" status="run"/>
+    <testcase classname="generators.cpp" name="GENERATE inside sibling SUBCASEs - different counts/A" status="run"/>
+    <testcase classname="generators.cpp" name="GENERATE inside sibling SUBCASEs - different counts/B" status="run"/>
+    <testcase classname="generators.cpp" name="GENERATE inside sibling SUBCASEs - different counts/B" status="run"/>
+    <testcase classname="generators.cpp" name="GENERATE inside SUBCASE - with nested child subcases/outer/inner A" status="run"/>
+    <testcase classname="generators.cpp" name="GENERATE inside SUBCASE - with nested child subcases/outer/inner B" status="run"/>
+    <testcase classname="generators.cpp" name="GENERATE inside SUBCASE - with nested child subcases/outer/inner A" status="run"/>
+    <testcase classname="generators.cpp" name="GENERATE inside SUBCASE - with nested child subcases/outer/inner B" status="run"/>
+    <testcase classname="generators.cpp" name="top-level GENERATE composes with GENERATE inside SUBCASE/s" status="run"/>
+    <testcase classname="generators.cpp" name="top-level GENERATE composes with GENERATE inside SUBCASE/s" status="run"/>
+    <testcase classname="generators.cpp" name="top-level GENERATE composes with GENERATE inside SUBCASE/s" status="run"/>
+    <testcase classname="generators.cpp" name="top-level GENERATE composes with GENERATE inside SUBCASE/s" status="run"/>
+    <testcase classname="generators.cpp" name="top-level GENERATE + two sibling SUBCASEs each with GENERATE/A" status="run"/>
+    <testcase classname="generators.cpp" name="top-level GENERATE + two sibling SUBCASEs each with GENERATE/A" status="run"/>
+    <testcase classname="generators.cpp" name="top-level GENERATE + two sibling SUBCASEs each with GENERATE/B" status="run"/>
+    <testcase classname="generators.cpp" name="top-level GENERATE + two sibling SUBCASEs each with GENERATE/B" status="run"/>
+    <testcase classname="generators.cpp" name="top-level GENERATE + two sibling SUBCASEs each with GENERATE/A" status="run"/>
+    <testcase classname="generators.cpp" name="top-level GENERATE + two sibling SUBCASEs each with GENERATE/A" status="run"/>
+    <testcase classname="generators.cpp" name="top-level GENERATE + two sibling SUBCASEs each with GENERATE/B" status="run"/>
+    <testcase classname="generators.cpp" name="top-level GENERATE + two sibling SUBCASEs each with GENERATE/B" status="run"/>
+    <testcase classname="generators.cpp" name="GENERATE at multiple nesting depths/A/1/a" status="run"/>
+    <testcase classname="generators.cpp" name="GENERATE at multiple nesting depths/A/1/a" status="run"/>
+    <testcase classname="generators.cpp" name="GENERATE at multiple nesting depths/A/1/a" status="run"/>
+    <testcase classname="generators.cpp" name="GENERATE at multiple nesting depths/A/1/a" status="run"/>
+    <testcase classname="generators.cpp" name="GENERATE at multiple nesting depths/A/2" status="run"/>
+    <testcase classname="generators.cpp" name="GENERATE at multiple nesting depths/A/2" status="run"/>
+    <testcase classname="generators.cpp" name="GENERATE at multiple nesting depths/A/1/a" status="run"/>
+    <testcase classname="generators.cpp" name="GENERATE at multiple nesting depths/A/1/a" status="run"/>
+    <testcase classname="generators.cpp" name="GENERATE at multiple nesting depths/A/1/a" status="run"/>
+    <testcase classname="generators.cpp" name="GENERATE at multiple nesting depths/A/1/a" status="run"/>
+    <testcase classname="generators.cpp" name="GENERATE at multiple nesting depths/A/2" status="run"/>
+    <testcase classname="generators.cpp" name="GENERATE at multiple nesting depths/A/2" status="run"/>
+    <testcase classname="generators.cpp" name="GENERATE at multiple nesting depths/B" status="run"/>
+    <testcase classname="generators.cpp" name="GENERATE at multiple nesting depths/B" status="run"/>
+    <testcase classname="generators.cpp" name="GENERATE at multiple nesting depths/A/1/a" status="run"/>
+    <testcase classname="generators.cpp" name="GENERATE at multiple nesting depths/A/1/a" status="run"/>
+    <testcase classname="generators.cpp" name="GENERATE at multiple nesting depths/A/1/a" status="run"/>
+    <testcase classname="generators.cpp" name="GENERATE at multiple nesting depths/A/1/a" status="run"/>
+    <testcase classname="generators.cpp" name="GENERATE at multiple nesting depths/A/2" status="run"/>
+    <testcase classname="generators.cpp" name="GENERATE at multiple nesting depths/A/2" status="run"/>
+    <testcase classname="generators.cpp" name="GENERATE at multiple nesting depths/A/1/a" status="run"/>
+    <testcase classname="generators.cpp" name="GENERATE at multiple nesting depths/A/1/a" status="run"/>
+    <testcase classname="generators.cpp" name="GENERATE at multiple nesting depths/A/1/a" status="run"/>
+    <testcase classname="generators.cpp" name="GENERATE at multiple nesting depths/A/1/a" status="run"/>
+    <testcase classname="generators.cpp" name="GENERATE at multiple nesting depths/A/2" status="run"/>
+    <testcase classname="generators.cpp" name="GENERATE at multiple nesting depths/A/2" status="run"/>
+    <testcase classname="generators.cpp" name="GENERATE at multiple nesting depths/B" status="run"/>
+    <testcase classname="generators.cpp" name="GENERATE at multiple nesting depths/B" status="run"/>
+    <testcase classname="generators.cpp" name="nested GENERATE does not affect sibling SUBCASE/A/1" status="run"/>
+    <testcase classname="generators.cpp" name="nested GENERATE does not affect sibling SUBCASE/A/1" status="run"/>
+    <testcase classname="generators.cpp" name="nested GENERATE does not affect sibling SUBCASE/A/1" status="run"/>
+    <testcase classname="generators.cpp" name="nested GENERATE does not affect sibling SUBCASE/A/1" status="run"/>
+    <testcase classname="generators.cpp" name="nested GENERATE does not affect sibling SUBCASE/B" status="run"/>
+    <testcase classname="generators.cpp" name="all items are handled" status="run"/>
+    <testcase classname="generators.cpp" name="all items are handled" status="run">
+      <failure message="0" type="REQUIRE">
+generators.cpp(0):
+REQUIRE( i % 2 ) is NOT correct!
+  values: REQUIRE( 0 )
+
+      </failure>
+    </testcase>
+    <testcase classname="generators.cpp" name="all items are handled" status="run"/>
+    <testcase classname="generators.cpp" name="all items are handled" status="run">
+      <failure message="0" type="REQUIRE">
+generators.cpp(0):
+REQUIRE( i % 2 ) is NOT correct!
+  values: REQUIRE( 0 )
+
+      </failure>
+    </testcase>
+    <testcase classname="generators.cpp" name="failures continue cartesian iteration" status="run">
+      <failure message="1 == 2" type="REQUIRE">
+generators.cpp(0):
+REQUIRE( i + j == 2 ) is NOT correct!
+  values: REQUIRE( 1 == 2 )
+
+      </failure>
+    </testcase>
+    <testcase classname="generators.cpp" name="failures continue cartesian iteration" status="run"/>
+    <testcase classname="generators.cpp" name="failures continue cartesian iteration" status="run">
+      <failure message="3 == 2" type="REQUIRE">
+generators.cpp(0):
+REQUIRE( i + j == 2 ) is NOT correct!
+  values: REQUIRE( 3 == 2 )
+
+      </failure>
+    </testcase>
+    <testcase classname="generators.cpp" name="failures continue cartesian iteration" status="run">
+      <failure message="1 == 2" type="REQUIRE">
+generators.cpp(0):
+REQUIRE( i + j == 2 ) is NOT correct!
+  values: REQUIRE( 1 == 2 )
+
+      </failure>
+    </testcase>
+    <testcase classname="generators.cpp" name="failures continue cartesian iteration" status="run"/>
+    <testcase classname="generators.cpp" name="failures continue cartesian iteration" status="run">
+      <failure message="3 == 2" type="REQUIRE">
+generators.cpp(0):
+REQUIRE( i + j == 2 ) is NOT correct!
+  values: REQUIRE( 3 == 2 )
+
+      </failure>
+    </testcase>
+    <testcase classname="generators.cpp" name="GENERATE with fixed for loop/loop with fixed name/fixed name/fixed name/fixed name" status="run"/>
+    <testcase classname="generators.cpp" name="GENERATE with fixed for loop/loop with fixed name/fixed name/fixed name/fixed name" status="run"/>
+    <testcase classname="generators.cpp" name="GENERATE with fixed for loop/loop with dynamic name/dynamic 0" status="run"/>
+    <testcase classname="generators.cpp" name="GENERATE with fixed for loop/loop with dynamic name/dynamic 0" status="run"/>
+    <testcase classname="generators.cpp" name="GENERATE with fixed for loop/loop with dynamic name/dynamic 1" status="run"/>
+    <testcase classname="generators.cpp" name="GENERATE with fixed for loop/loop with dynamic name/dynamic 1" status="run"/>
+    <testcase classname="generators.cpp" name="GENERATE with fixed for loop/loop with dynamic name/dynamic 2" status="run"/>
+    <testcase classname="generators.cpp" name="GENERATE with fixed for loop/loop with dynamic name/dynamic 2" status="run"/>
+    <testcase classname="generators.cpp" name="GENERATE with fixed for loop/loop without subcase" status="run"/>
+    <testcase classname="generators.cpp" name="GENERATE with fixed for loop/loop without subcase" status="run"/>
+    <testcase classname="generators.cpp" name="GENERATE with fixed for loop/loop without subcase" status="run"/>
+    <testcase classname="generators.cpp" name="GENERATE with fixed for loop/loop without subcase" status="run"/>
+    <testcase classname="generators.cpp" name="GENERATE with fixed for loop/loop without subcase" status="run"/>
+    <testcase classname="generators.cpp" name="GENERATE with fixed for loop/loop without subcase" status="run"/>
+    <testcase classname="generators.cpp" name="GENERATE with fixed for loop/loop without subcase" status="run"/>
+    <testcase classname="generators.cpp" name="GENERATE with fixed for loop/loop without subcase" status="run"/>
+    <testcase classname="generators.cpp" name="GENERATE with dynamic loop/0" status="run"/>
+    <testcase classname="generators.cpp" name="GENERATE with dynamic loop/0" status="run"/>
+    <testcase classname="generators.cpp" name="GENERATE with dynamic loop/0" status="run"/>
+    <testcase classname="generators.cpp" name="GENERATE with dynamic loop/0" status="run"/>
+    <testcase classname="generators.cpp" name="GENERATE with dynamic loop/1" status="run"/>
+    <testcase classname="generators.cpp" name="GENERATE with dynamic loop/1" status="run"/>
+    <testcase classname="generators.cpp" name="GENERATE with dynamic if" status="run"/>
+    <testcase classname="generators.cpp" name="GENERATE with dynamic if" status="run"/>
+    <testcase classname="generators.cpp" name="GENERATE with dynamic if" status="run"/>
+    <testcase classname="generators.cpp" name="GENERATE with dynamic if" status="run"/>
+    <testcase classname="generators.cpp" name="GENERATE with dynamic if" status="run"/>
+    <testcase classname="generators.cpp" name="stale generator depth does not create extra reruns/outer" status="run"/>
+    <testcase classname="generators.cpp" name="stale generator depth does not create extra reruns/outer" status="run"/>
+    <testcase classname="generators.cpp" name="GENERATE with dynamic switch" status="run"/>
+    <testcase classname="generators.cpp" name="GENERATE with dynamic switch" status="run"/>
+    <testcase classname="generators.cpp" name="GENERATE with dynamic switch" status="run"/>
+    <testcase classname="generators.cpp" name="GENERATE with dynamic switch" status="run"/>
+    <testcase classname="generators.cpp" name="GENERATE with dynamic switch" status="run"/>
+    <testcase classname="generators.cpp" name="GENERATE with dynamic switch" status="run"/>
+    <testcase classname="generators.cpp" name="GENERATE filter test-case target" status="run"/>
+    <testcase classname="generators.cpp" name="GENERATE filter test-case target" status="run"/>
+    <testcase classname="generators.cpp" name="GENERATE filter test-case target" status="run"/>
+    <testcase classname="generators.cpp" name="GENERATE filter test-case target" status="run"/>
+    <testcase classname="generators.cpp" name="GENERATE filter test-case excluded" status="run"/>
+    <testcase classname="generators.cpp" name="GENERATE filter test-case excluded" status="run"/>
+    <testcase classname="generators.cpp" name="GENERATE filter subcase target/keep" status="run"/>
+    <testcase classname="generators.cpp" name="GENERATE filter subcase target/drop" status="run"/>
+    <testcase classname="generators.cpp" name="GENERATE filter subcase target/keep" status="run"/>
+    <testcase classname="generators.cpp" name="GENERATE filter subcase target/drop" status="run"/>
+  </testsuite>
+</testsuites>
+Program code.

@@ -90,4 +90,26 @@ TEST_CASE("TraversalState advance handles runs with no discovered decision point
     CHECK_FALSE(traversal.advance());
 }
 
+TEST_CASE("TraversalState advance ignores deeper stale decisions when rerun exits early") {
+    const SubcaseSignature outer = SubcaseSignature{"outer", "test_traversal.cpp", 40};
+
+    TraversalState traversal;
+    traversal.resetForTestCase();
+
+    // First run discovers a deeper generator choice point under the outer subcase.
+    traversal.resetForRun();
+    REQUIRE(traversal.tryEnterSubcase(outer));
+    CHECK(traversal.acquireGeneratorIndex(2) == 0);
+    traversal.leaveSubcase();
+
+    // Second run follows the same outer prefix but exits before reaching that generator.
+    traversal.resetForRun();
+    REQUIRE(traversal.tryEnterSubcase(outer));
+    traversal.leaveSubcase();
+
+    // There is no decision point at depth 1 on this replay, so advance() must not
+    // advance using stale metadata from the earlier run.
+    CHECK_FALSE(traversal.advance());
+}
+
 } // namespace

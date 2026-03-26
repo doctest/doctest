@@ -44,6 +44,7 @@
 - tests are registered automatically - no need to add them to a collection manually
 - [**Subcases**](tutorial.md#test-cases-and-subcases) - an intuitive way to share common setup and teardown code for test cases (alternative to [**test fixtures**](testcases.md#test-fixtures) which are also supported)
 - [**templated test cases**](parameterized-tests.md#templated-test-cases---parameterized-by-type) - parameterized by type
+- [**value-parameterized test cases**](parameterized-tests.md#value-parameterized-test-cases) via `GENERATE`
 - supports [**logging macros**](logging.md) for capturing local variables and strings - as a message for when an assert fails - with lazy stringification and no allocations when possible!
 - crash handling support - uses signals for UNIX and SEH for Windows
 - [**thread-safe**](faq.md#is-doctest-thread-aware) - asserts (and logging) can be used from multiple threads spawned from a single test case - [**example**](../../examples/all_features/concurrency.cpp)
