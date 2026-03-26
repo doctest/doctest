@@ -318,13 +318,7 @@ TEST_CASE("GENERATE with fixed for loop") {
         for (int i = 0; i < 3; ++i) {
             SUBCASE("dynamic " + std::to_string(i)) {
                 js.push_back(3 + 2 * i + GENERATE(0, 1));
-                std::ostringstream oss;
-                oss << "i=" << i << " js=[ ";
-                for (auto j: js) {
-                    oss << j << " ";
-                }
-                oss << "]";
-                MESSAGE(oss.str());
+                MESSAGE("i=", i, " js=", doctest::toString(js));
             }
         }
     }
@@ -340,13 +334,7 @@ TEST_CASE("GENERATE with fixed for loop") {
         for (int i = 0; i < 3; ++i) {
             js.push_back(GENERATE(3 + 2 * i + 0, 3 + 2 * i + 1));
         }
-        std::ostringstream oss;
-        oss << "js=[ ";
-        for (auto j: js) {
-            oss << j << " ";
-        }
-        oss << "]";
-        MESSAGE(oss.str());
+        MESSAGE("js=", doctest::toString(js));
     }
 }
 
