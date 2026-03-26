@@ -1,0 +1,28 @@
+name: Feature Request
+type: feature
+description: Suggest a new feature, or an enhancement to an existing feature
+
+body:
+  - type: textarea
+    attributes:
+      label: Description
+      description: >
+        Explain what you want to be able to do
+    validations:
+      required: true
+
+  - type: textarea
+    attributes:
+      label: Workarounds
+      description: >
+        Explain whether you can currently achieve this behaviour in any way
+    validations:
+      required: false
+
+  - type: textarea
+    attributes:
+      label: Context
+      description: >
+        Any extra information that would be useful to understand the request
+    validations:
+      required: false
