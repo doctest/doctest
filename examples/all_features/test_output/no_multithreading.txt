@@ -1184,7 +1184,7 @@ TEST CASE:  GENERATE with fixed for loop
   loop with dynamic name
   dynamic 0
 
-generators.cpp(0): MESSAGE: i=0 js=[3]
+generators.cpp(0): MESSAGE: i=0 js=[ 3 ]
 
 ===============================================================================
 generators.cpp(0):
@@ -1192,7 +1192,7 @@ TEST CASE:  GENERATE with fixed for loop
   loop with dynamic name
   dynamic 0
 
-generators.cpp(0): MESSAGE: i=0 js=[4]
+generators.cpp(0): MESSAGE: i=0 js=[ 4 ]
 
 ===============================================================================
 generators.cpp(0):
@@ -1200,7 +1200,7 @@ TEST CASE:  GENERATE with fixed for loop
   loop with dynamic name
   dynamic 1
 
-generators.cpp(0): MESSAGE: i=1 js=[5]
+generators.cpp(0): MESSAGE: i=1 js=[ 5 ]
 
 ===============================================================================
 generators.cpp(0):
@@ -1208,7 +1208,7 @@ TEST CASE:  GENERATE with fixed for loop
   loop with dynamic name
   dynamic 1
 
-generators.cpp(0): MESSAGE: i=1 js=[6]
+generators.cpp(0): MESSAGE: i=1 js=[ 6 ]
 
 ===============================================================================
 generators.cpp(0):
@@ -1216,7 +1216,7 @@ TEST CASE:  GENERATE with fixed for loop
   loop with dynamic name
   dynamic 2
 
-generators.cpp(0): MESSAGE: i=2 js=[7]
+generators.cpp(0): MESSAGE: i=2 js=[ 7 ]
 
 ===============================================================================
 generators.cpp(0):
@@ -1224,63 +1224,63 @@ TEST CASE:  GENERATE with fixed for loop
   loop with dynamic name
   dynamic 2
 
-generators.cpp(0): MESSAGE: i=2 js=[8]
+generators.cpp(0): MESSAGE: i=2 js=[ 8 ]
 
 ===============================================================================
 generators.cpp(0):
 TEST CASE:  GENERATE with fixed for loop
   loop without subcase
 
-generators.cpp(0): MESSAGE: js=[3, 5, 7]
+generators.cpp(0): MESSAGE: js=[ 3 5 7 ]
 
 ===============================================================================
 generators.cpp(0):
 TEST CASE:  GENERATE with fixed for loop
   loop without subcase
 
-generators.cpp(0): MESSAGE: js=[3, 5, 8]
+generators.cpp(0): MESSAGE: js=[ 3 5 8 ]
 
 ===============================================================================
 generators.cpp(0):
 TEST CASE:  GENERATE with fixed for loop
   loop without subcase
 
-generators.cpp(0): MESSAGE: js=[3, 6, 7]
+generators.cpp(0): MESSAGE: js=[ 3 6 7 ]
 
 ===============================================================================
 generators.cpp(0):
 TEST CASE:  GENERATE with fixed for loop
   loop without subcase
 
-generators.cpp(0): MESSAGE: js=[3, 6, 8]
+generators.cpp(0): MESSAGE: js=[ 3 6 8 ]
 
 ===============================================================================
 generators.cpp(0):
 TEST CASE:  GENERATE with fixed for loop
   loop without subcase
 
-generators.cpp(0): MESSAGE: js=[4, 5, 7]
+generators.cpp(0): MESSAGE: js=[ 4 5 7 ]
 
 ===============================================================================
 generators.cpp(0):
 TEST CASE:  GENERATE with fixed for loop
   loop without subcase
 
-generators.cpp(0): MESSAGE: js=[4, 5, 8]
+generators.cpp(0): MESSAGE: js=[ 4 5 8 ]
 
 ===============================================================================
 generators.cpp(0):
 TEST CASE:  GENERATE with fixed for loop
   loop without subcase
 
-generators.cpp(0): MESSAGE: js=[4, 6, 7]
+generators.cpp(0): MESSAGE: js=[ 4 6 7 ]
 
 ===============================================================================
 generators.cpp(0):
 TEST CASE:  GENERATE with fixed for loop
   loop without subcase
 
-generators.cpp(0): MESSAGE: js=[4, 6, 8]
+generators.cpp(0): MESSAGE: js=[ 4 6 8 ]
 
 ===============================================================================
 assertion_macros.cpp(0):

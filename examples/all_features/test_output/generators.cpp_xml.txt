@@ -1229,7 +1229,7 @@
         <SubCase name="dynamic 0" filename="generators.cpp" line="0">
           <Message type="WARNING" filename="generators.cpp" line="0">
             <Text>
-              i=0 js=[3]
+              i=0 js=[ 3 ]
             </Text>
           </Message>
         </SubCase>
@@ -1238,7 +1238,7 @@
         <SubCase name="dynamic 0" filename="generators.cpp" line="0">
           <Message type="WARNING" filename="generators.cpp" line="0">
             <Text>
-              i=0 js=[4]
+              i=0 js=[ 4 ]
             </Text>
           </Message>
         </SubCase>
@@ -1247,7 +1247,7 @@
         <SubCase name="dynamic 1" filename="generators.cpp" line="0">
           <Message type="WARNING" filename="generators.cpp" line="0">
             <Text>
-              i=1 js=[5]
+              i=1 js=[ 5 ]
             </Text>
           </Message>
         </SubCase>
@@ -1256,7 +1256,7 @@
         <SubCase name="dynamic 1" filename="generators.cpp" line="0">
           <Message type="WARNING" filename="generators.cpp" line="0">
             <Text>
-              i=1 js=[6]
+              i=1 js=[ 6 ]
             </Text>
           </Message>
         </SubCase>
@@ -1265,7 +1265,7 @@
         <SubCase name="dynamic 2" filename="generators.cpp" line="0">
           <Message type="WARNING" filename="generators.cpp" line="0">
             <Text>
-              i=2 js=[7]
+              i=2 js=[ 7 ]
             </Text>
           </Message>
         </SubCase>
@@ -1274,7 +1274,7 @@
         <SubCase name="dynamic 2" filename="generators.cpp" line="0">
           <Message type="WARNING" filename="generators.cpp" line="0">
             <Text>
-              i=2 js=[8]
+              i=2 js=[ 8 ]
             </Text>
           </Message>
         </SubCase>
@@ -1282,56 +1282,56 @@
       <SubCase name="loop without subcase" filename="generators.cpp" line="0">
         <Message type="WARNING" filename="generators.cpp" line="0">
           <Text>
-            js=[3, 5, 7]
+            js=[ 3 5 7 ]
           </Text>
         </Message>
       </SubCase>
       <SubCase name="loop without subcase" filename="generators.cpp" line="0">
         <Message type="WARNING" filename="generators.cpp" line="0">
           <Text>
-            js=[3, 5, 8]
+            js=[ 3 5 8 ]
           </Text>
         </Message>
       </SubCase>
       <SubCase name="loop without subcase" filename="generators.cpp" line="0">
         <Message type="WARNING" filename="generators.cpp" line="0">
           <Text>
-            js=[3, 6, 7]
+            js=[ 3 6 7 ]
           </Text>
         </Message>
       </SubCase>
       <SubCase name="loop without subcase" filename="generators.cpp" line="0">
         <Message type="WARNING" filename="generators.cpp" line="0">
           <Text>
-            js=[3, 6, 8]
+            js=[ 3 6 8 ]
           </Text>
         </Message>
       </SubCase>
       <SubCase name="loop without subcase" filename="generators.cpp" line="0">
         <Message type="WARNING" filename="generators.cpp" line="0">
           <Text>
-            js=[4, 5, 7]
+            js=[ 4 5 7 ]
           </Text>
         </Message>
       </SubCase>
       <SubCase name="loop without subcase" filename="generators.cpp" line="0">
         <Message type="WARNING" filename="generators.cpp" line="0">
           <Text>
-            js=[4, 5, 8]
+            js=[ 4 5 8 ]
           </Text>
         </Message>
       </SubCase>
       <SubCase name="loop without subcase" filename="generators.cpp" line="0">
         <Message type="WARNING" filename="generators.cpp" line="0">
           <Text>
-            js=[4, 6, 7]
+            js=[ 4 6 7 ]
           </Text>
         </Message>
       </SubCase>
       <SubCase name="loop without subcase" filename="generators.cpp" line="0">
         <Message type="WARNING" filename="generators.cpp" line="0">
           <Text>
-            js=[4, 6, 8]
+            js=[ 4 6 8 ]
           </Text>
         </Message>
       </SubCase>
