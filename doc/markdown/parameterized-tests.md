@@ -63,6 +63,26 @@ for(int j = 0; j < i; ++j) {
 }
 ```
 
+When using `SUBCASE` inside a loop, each iteration must have a distinct name. A loop such as:
+
+```c++
+for(int j = 0; j < 3; ++j) {
+    SUBCASE("fixed name") { /* ... */ }
+}
+```
+
+is unsupported because each iteration reuses the same subcase identity at the same source location and this leads to unpredictable (but deterministic) behavior.
+
+If the name varies per iteration, the discovered loop subcases behave as siblings at that nesting depth:
+
+```c++
+for(int j = 0; j < 3; ++j) {
+    SUBCASE(doctest::toString(j)) { /* ... */ }
+}
+```
+
+This behaves the same as replacing the loop with a `GENERATE` over those sibling choices. As with `GENERATE` in control flow generally, this relies on the loop shape being stable across reruns and determined only by earlier traversal choices on the current path.
+
 Constraints:
 
 - All arguments must be implicitly convertible to the type of the first argument.
