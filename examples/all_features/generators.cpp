@@ -316,7 +316,7 @@ TEST_CASE("GENERATE with fixed for loop") {
         // int i = GENERATE(0, 1, 2);
         // int j = GENERATE(0, 1);
         for (int i = 0; i < 3; ++i) {
-            SUBCASE(("dynamic " + std::to_string(i)).c_str()) {
+            SUBCASE("dynamic " + std::to_string(i)) {
                 js.push_back(3 + 2 * i + GENERATE(0, 1));
                 std::ostringstream oss;
                 oss << "i=" << i << " js=[ ";
@@ -354,7 +354,7 @@ TEST_CASE("GENERATE with dynamic loop") {
     const int i = GENERATE(1, 2);
     MESSAGE("# i=", i);
     for (int j = 0; j < i; ++j) {
-        SUBCASE(std::to_string(j).c_str()) {
+        SUBCASE(std::to_string(j)) {
             const int k = GENERATE(10 - i - j, 20 - i - j);
             MESSAGE("j=", j, " k=", k);
             CHECK(((i + j + k) % 10) == 0);
