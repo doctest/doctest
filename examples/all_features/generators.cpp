@@ -61,8 +61,7 @@ TEST_CASE("GENERATE statements can depend on each other") {
 TEST_CASE("multiple GENERATEs on a single line") {
     // clang-format off
     // NOLINTNEXTLINE(readability-isolate-declaration)
-    const int i = GENERATE(1, 2);
-    const int j = GENERATE(10, 20);
+    const int i = GENERATE(1, 2); const int j = GENERATE(10, 20);
     // clang-format on
     MESSAGE("i=", i, " j=", j);
 }
