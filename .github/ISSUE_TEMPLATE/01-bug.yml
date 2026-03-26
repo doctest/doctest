@@ -1,0 +1,61 @@
+name: Bug Report
+type: bug
+description: Report an issue you're having with the library
+
+body:
+  - type: textarea
+    attributes:
+      label: Description
+      description: >
+        Explain what happened, and what you _expected_ to happen
+    validations:
+      required: true
+
+  - type: textarea
+    attributes:
+      label: Steps to reproduce
+      description: >
+        Provide a [minimal reproducible example](https://en.wikipedia.org/wiki/Minimal_reproducible_example)
+        which we can use to test the bug
+    validations:
+      required: true
+
+  - type: input
+    attributes:
+      label: doctest version
+      description: >
+        The version of doctest you are using
+    validations:
+      required: true
+
+  - type: input
+    attributes:
+      label: Operating system
+      description: >
+        The operating system you are compiling on / for
+    validations:
+      required: false
+
+  - type: input
+    attributes:
+      label: Architecture
+      description: >
+        The architecture you are compiling on / for
+    validations:
+      required: false
+
+  - type: input
+    attributes:
+      label: Compiler
+      description: >
+        The compiler (and its version) you are compiling with
+    validations:
+      required: false
+
+  - type: textarea
+    attributes:
+      label: Context
+      description: >
+        Any extra information that would be useful to understand the request
+    validations:
+      required: false

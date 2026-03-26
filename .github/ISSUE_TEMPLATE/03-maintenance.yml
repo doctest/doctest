@@ -1,0 +1,10 @@
+name: Maintenance Task
+type: task
+description: Internal maintenance task
+
+body:
+  - type: textarea
+    attributes:
+      label: Description
+      description: >
+        Explain what needs to be done

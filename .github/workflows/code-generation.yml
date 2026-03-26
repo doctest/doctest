@@ -10,6 +10,7 @@ on:
 
   pull_request:
     paths-ignore:
+      - ".github/ISSUE_TEMPLATE/**"
       - "doc/**"
       - "LICENSE.txt"
       - "README.md"
