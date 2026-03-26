@@ -1183,21 +1183,21 @@
         <SubCase name="fixed name" filename="generators.cpp" line="0">
           <Message type="WARNING" filename="generators.cpp" line="0">
             <Text>
-              i=0 js=[ 3 ]
+              i=0 js=[3]
             </Text>
           </Message>
         </SubCase>
         <SubCase name="fixed name" filename="generators.cpp" line="0">
           <Message type="WARNING" filename="generators.cpp" line="0">
             <Text>
-              i=1 js=[ 3 5 ]
+              i=1 js=[3, 5]
             </Text>
           </Message>
         </SubCase>
         <SubCase name="fixed name" filename="generators.cpp" line="0">
           <Message type="WARNING" filename="generators.cpp" line="0">
             <Text>
-              i=2 js=[ 3 5 7 ]
+              i=2 js=[3, 5, 7]
             </Text>
           </Message>
         </SubCase>
@@ -1206,21 +1206,21 @@
         <SubCase name="fixed name" filename="generators.cpp" line="0">
           <Message type="WARNING" filename="generators.cpp" line="0">
             <Text>
-              i=0 js=[ 4 ]
+              i=0 js=[4]
             </Text>
           </Message>
         </SubCase>
         <SubCase name="fixed name" filename="generators.cpp" line="0">
           <Message type="WARNING" filename="generators.cpp" line="0">
             <Text>
-              i=1 js=[ 4 6 ]
+              i=1 js=[4, 6]
             </Text>
           </Message>
         </SubCase>
         <SubCase name="fixed name" filename="generators.cpp" line="0">
           <Message type="WARNING" filename="generators.cpp" line="0">
             <Text>
-              i=2 js=[ 4 6 8 ]
+              i=2 js=[4, 6, 8]
             </Text>
           </Message>
         </SubCase>
