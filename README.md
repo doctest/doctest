@@ -35,12 +35,6 @@
 [![CII Best Practices](https://bestpractices.coreinfrastructure.org/projects/503/badge)](https://bestpractices.coreinfrastructure.org/projects/503)
 [![Try it online](https://img.shields.io/badge/try%20it-online-orange.svg)](https://godbolt.org/z/4s389Kbfs)
 
-[<img src="https://c5.patreon.com/external/logo/become_a_patron_button.png" align="right">](https://www.patreon.com/onqtam)
-
-The framework is and will stay free but needs your support to sustain its development. There are lots of <a href="https://github.com/doctest/doctest/issues/600"><b>new features</b></a> and maintenance to do. If you work for a company using **doctest** or have the means to do so, please consider financial support. Monthly donations via Patreon and one-offs via PayPal.
-
-[<img src="https://raw.githubusercontent.com/aha999/DonateButtons/master/paypal-donate-icon-7.png" width=100 align="right">](https://www.paypal.me/onqtam/10)
-
 A complete example with a self-registering test that compiles to an executable looks like this:
 
 ![cover-example](scripts/data/using_doctest_888px_wide.gif)
@@ -116,15 +110,7 @@ Please make sure to read through the [**Contributing**](CONTRIBUTING.md) page be
 Contributing
 ------------
 
-[<img src="https://c5.patreon.com/external/logo/become_a_patron_button.png" align="right">](https://www.patreon.com/onqtam)
-
-Support the development of the project with donations! There is a list of planned features which are all important and big - see the [**roadmap**](https://github.com/doctest/doctest/issues/600).
-
-[<img src="https://raw.githubusercontent.com/aha999/DonateButtons/master/paypal-donate-icon-7.png" width=100 align="right">](https://www.paypal.me/onqtam/10)
-
-If you work for a company using **doctest** or have the means to do so, please consider financial support.
-
-Contributions in the form of issues and pull requests are welcome as well - check out the [**Contributing**](CONTRIBUTING.md) page.
+Contributions in the form of issues and pull requests are welcome - check out the [**Contributing**](CONTRIBUTING.md) page.
 
 Stargazers over time
 ------------
