@@ -1102,7 +1102,7 @@ TEST CASE:  GENERATE with fixed for loop
   loop with fixed name
   fixed name
 
-generators.cpp(0): MESSAGE: i=0 js=[3]
+generators.cpp(0): MESSAGE: i=0 js=[ 3 ]
 
 ===============================================================================
 generators.cpp(0):
@@ -1115,42 +1115,7 @@ DEEPEST SUBCASE STACK REACHED (DIFFERENT FROM THE CURRENT ONE):
   fixed name
   fixed name
 
-generators.cpp(0): MESSAGE: i=1 js=[3, 5]
-
-===============================================================================
-generators.cpp(0):
-TEST CASE:  GENERATE with fixed for loop
-  loop with fixed name
-  fixed name
-
-DEEPEST SUBCASE STACK REACHED (DIFFERENT FROM THE CURRENT ONE):
-  loop with fixed name
-  fixed name
-  fixed name
-  fixed name
-
-generators.cpp(0): MESSAGE: i=2 js=[3, 5, 7]
-
-===============================================================================
-generators.cpp(0):
-TEST CASE:  GENERATE with fixed for loop
-  loop with fixed name
-  fixed name
-
-generators.cpp(0): MESSAGE: i=0 js=[4]
-
-===============================================================================
-generators.cpp(0):
-TEST CASE:  GENERATE with fixed for loop
-  loop with fixed name
-  fixed name
-
-DEEPEST SUBCASE STACK REACHED (DIFFERENT FROM THE CURRENT ONE):
-  loop with fixed name
-  fixed name
-  fixed name
-
-generators.cpp(0): MESSAGE: i=1 js=[4, 6]
+generators.cpp(0): MESSAGE: i=1 js=[ 3 5 ]
 
 ===============================================================================
 generators.cpp(0):
@@ -1164,7 +1129,42 @@ DEEPEST SUBCASE STACK REACHED (DIFFERENT FROM THE CURRENT ONE):
   fixed name
   fixed name
 
-generators.cpp(0): MESSAGE: i=2 js=[4, 6, 8]
+generators.cpp(0): MESSAGE: i=2 js=[ 3 5 7 ]
+
+===============================================================================
+generators.cpp(0):
+TEST CASE:  GENERATE with fixed for loop
+  loop with fixed name
+  fixed name
+
+generators.cpp(0): MESSAGE: i=0 js=[ 4 ]
+
+===============================================================================
+generators.cpp(0):
+TEST CASE:  GENERATE with fixed for loop
+  loop with fixed name
+  fixed name
+
+DEEPEST SUBCASE STACK REACHED (DIFFERENT FROM THE CURRENT ONE):
+  loop with fixed name
+  fixed name
+  fixed name
+
+generators.cpp(0): MESSAGE: i=1 js=[ 4 6 ]
+
+===============================================================================
+generators.cpp(0):
+TEST CASE:  GENERATE with fixed for loop
+  loop with fixed name
+  fixed name
+
+DEEPEST SUBCASE STACK REACHED (DIFFERENT FROM THE CURRENT ONE):
+  loop with fixed name
+  fixed name
+  fixed name
+  fixed name
+
+generators.cpp(0): MESSAGE: i=2 js=[ 4 6 8 ]
 
 ===============================================================================
 generators.cpp(0):

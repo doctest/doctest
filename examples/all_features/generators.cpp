@@ -302,7 +302,13 @@ TEST_CASE("GENERATE with fixed for loop") {
         for (int i = 0; i < 3; ++i) {
             SUBCASE("fixed name") {
                 js.push_back(3 + 2 * i + GENERATE(0, 1));
-                MESSAGE("i=", i, " js=", doctest::toString(js));
+                std::ostringstream oss;
+                oss << "i=" << i << " js=[ ";
+                for (auto j: js) {
+                    oss << j << " ";
+                }
+                oss << "]";
+                MESSAGE(oss.str());
             }
         }
     }
