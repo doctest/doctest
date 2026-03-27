@@ -1,4 +1,4 @@
-project('doctest', ['cpp'], version: '2.4.12')
+project('doctest', ['cpp'], version: '2.5.0')
 
 doctest_dep = declare_dependency(
     include_directories: include_directories('.', 'doctest', is_system: true),
