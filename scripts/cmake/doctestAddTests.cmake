@@ -56,12 +56,14 @@ foreach(line ${output})
   if("${line}" STREQUAL "===============================================================================" OR "${line}" MATCHES [==[^\[doctest\] ]==])
     continue()
   endif()
-  set(test ${line})
+  set(unescaped_test ${line})
+  # use escape commas to handle properly test cases with commas inside the name
+  string(REPLACE "," "\\," escaped_test ${unescaped_test})
   set(labels "")
   if(${add_labels})
     # get test suite that test belongs to
     execute_process(
-      COMMAND ${TEST_EXECUTOR} "${TEST_EXECUTABLE}" --test-case=${test} --list-test-suites
+      COMMAND ${TEST_EXECUTOR} "${TEST_EXECUTABLE}" --test-case=${escaped_test} --list-test-suites
       OUTPUT_VARIABLE labeloutput
       RESULT_VARIABLE labelresult
       WORKING_DIRECTORY "${TEST_WORKING_DIR}"
@@ -85,24 +87,22 @@ foreach(line ${output})
 
   if(NOT "${junit_output_dir}" STREQUAL "")
     # turn testname into a valid filename by replacing all special characters with "-"
-    string(REGEX REPLACE "[/\\:\"|<>]" "-" test_filename "${test}")
+    string(REGEX REPLACE "[/\\:\"|<>]" "-" test_filename "${unescaped_test}")
     set(TEST_JUNIT_OUTPUT_PARAM "--reporters=junit" "--out=${junit_output_dir}/${prefix}${test_filename}${suffix}.xml")
   else()
     unset(TEST_JUNIT_OUTPUT_PARAM)
   endif()
-  # use escape commas to handle properly test cases with commas inside the name
-  string(REPLACE "," "\\," test_name ${test})
   # ...and add to script
   add_command(add_test
-    "${prefix}${test}${suffix}"
+    "${prefix}${unescaped_test}${suffix}"
     ${TEST_EXECUTOR}
     "${TEST_EXECUTABLE}"
-    "--test-case=${test_name}"
+    "--test-case=${escaped_test}"
     "${TEST_JUNIT_OUTPUT_PARAM}"
     ${extra_args}
   )
   add_command(set_tests_properties
-    "${prefix}${test}${suffix}"
+    "${prefix}${unescaped_test}${suffix}"
     PROPERTIES
     WORKING_DIRECTORY "${TEST_WORKING_DIR}"
     ${properties}
