@@ -1,0 +1,28 @@
+name: Markdown
+
+on:
+  push:
+    branches: [dev, master]
+    paths:
+      - .github/workflows/markdown.yml
+      - "**/*.md"
+
+  pull_request:
+    paths:
+      - .github/workflows/markdown.yml
+      - "**/*.md"
+
+concurrency:
+  group: ${{ github.workflow }}|${{ github.ref_name }}|clang-tidy
+  cancel-in-progress: true
+
+jobs:
+  markdownlint-cli2:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: DavidAnson/markdownlint-cli2-action@v23
+        with:
+          globs: '**/*.md'
