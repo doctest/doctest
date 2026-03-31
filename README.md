@@ -27,7 +27,13 @@
 </table>
 </b>
 
-**doctest** is a new C++ testing framework but is by far the fastest both in compile times (by [**orders of magnitude**](doc/markdown/benchmarks.md)) and runtime compared to other feature-rich alternatives. It brings the ability of compiled languages such as [**D**](https://dlang.org/spec/unittest.html) / [**Rust**](https://doc.rust-lang.org/book/second-edition/ch11-00-testing.html) / [**Nim**](https://nim-lang.org/docs/unittest.html) to have tests written directly in the production code thanks to a fast, transparent and flexible test runner with a clean interface.
+**doctest** is a new C++ testing framework but is by far the fastest both in compile times
+(by [**orders of magnitude**](doc/markdown/benchmarks.md)) and runtime compared to
+other feature-rich alternatives. It brings the ability of compiled languages such as
+[**D**](https://dlang.org/spec/unittest.html) /
+[**Rust**](https://doc.rust-lang.org/book/second-edition/ch11-00-testing.html) /
+[**Nim**](https://nim-lang.org/docs/unittest.html) to have tests written directly
+in the production code thanks to a fast, transparent and flexible test runner with a clean interface.
 
 [![Standard](https://img.shields.io/badge/c%2B%2B-11/14/17/20/23-blue.svg)](https://en.wikipedia.org/wiki/C%2B%2B#Standardization)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://opensource.org/licenses/MIT)
@@ -39,16 +45,29 @@ A complete example with a self-registering test that compiles to an executable l
 
 ![cover-example](scripts/data/using_doctest_888px_wide.gif)
 
-There are many C++ testing frameworks - [Catch](https://github.com/catchorg/Catch2), [Boost.Test](http://www.boost.org/doc/libs/1_64_0/libs/test/doc/html/index.html), [UnitTest++](https://github.com/unittest-cpp/unittest-cpp), [cpputest](https://github.com/cpputest/cpputest), [googletest](https://github.com/google/googletest) and [others](https://en.wikipedia.org/wiki/List_of_unit_testing_frameworks#C.2B.2B).
+There are many C++ testing frameworks -
+[Catch](https://github.com/catchorg/Catch2),
+[Boost.Test](http://www.boost.org/doc/libs/1_64_0/libs/test/doc/html/index.html),
+[UnitTest++](https://github.com/unittest-cpp/unittest-cpp),
+[cpputest](https://github.com/cpputest/cpputest),
+[googletest](https://github.com/google/googletest) and
+[others](https://en.wikipedia.org/wiki/List_of_unit_testing_frameworks#C.2B.2B).
 
 The **key** differences between it and other testing frameworks are that it is light and unintrusive:
-- Ultra light on compile times both in terms of [**including the header**](doc/markdown/benchmarks.md#cost-of-including-the-header) and writing [**thousands of asserts**](doc/markdown/benchmarks.md#cost-of-an-assertion-macro)
+
+- Ultra light on compile times both in terms of [**including the header**](doc/markdown/benchmarks.md#cost-of-including-the-header)
+  and writing [**thousands of asserts**](doc/markdown/benchmarks.md#cost-of-an-assertion-macro)
 - Doesn't produce any warnings even on the [**most aggressive**](scripts/cmake/common.cmake#L84) warning levels for **MSVC**/**GCC**/**Clang**
-- Can remove **everything** testing-related from the binary with the [**```DOCTEST_CONFIG_DISABLE```**](doc/markdown/configuration.md#doctest_config_disable) identifier
-- [**thread-safe**](doc/markdown/faq.md#is-doctest-thread-aware) - asserts can be used from multiple threads spawned from a single test case - [**example**](examples/all_features/concurrency.cpp)
-- asserts can be used [**outside of a testing context**](doc/markdown/assertions.md#using-asserts-out-of-a-testing-context) - as a general purpose assert library - [**example**](examples/all_features/asserts_used_outside_of_tests.cpp)
+- Can remove **everything** testing-related from the binary with the
+  [**```DOCTEST_CONFIG_DISABLE```**](doc/markdown/configuration.md#doctest_config_disable) identifier
+- [**thread-safe**](doc/markdown/faq.md#is-doctest-thread-aware) - asserts can be used from multiple threads
+  spawned from a single test case - [**example**](examples/all_features/concurrency.cpp)
+- asserts can be used [**outside of a testing context**](doc/markdown/assertions.md#using-asserts-out-of-a-testing-context)
+  \- as a general purpose assert library - [**example**](examples/all_features/asserts_used_outside_of_tests.cpp)
 - No global namespace pollution (everything is in ```doctest::```) & doesn't drag **any** headers with it
-- [**Portable**](doc/markdown/features.md#extremely-portable) C++11 (use tag [**1.2.9**](https://github.com/doctest/doctest/tree/1.2.9) for C++98) with over 100 different CI builds (static analysis, sanitizers..)
+- [**Portable**](doc/markdown/features.md#extremely-portable) C++11
+  (use tag [**1.2.9**](https://github.com/doctest/doctest/tree/1.2.9) for C++98) with over
+  100 different CI builds (static analysis, sanitizers..)
 - binaries (exe/dll) can use the test runner of another binary => tests in a single registry - [**example**](examples/executable_dll_and_plugin/)
 
 ![cost-of-including-the-framework-header](scripts/data/benchmarks/header.png)
@@ -57,18 +76,33 @@ This allows the framework to be used in more ways than any other - tests can be 
 
 *Tests can be a form of documentation and should be able to reside near the production code which they test.*
 
-- This makes the barrier for writing tests **much lower** - you don't have to: **1)** make a separate source file **2)** include a bunch of stuff in it **3)** add it to the build system and **4)** add it to source control - You can just write the tests for a class or a piece of functionality at the bottom of its source file - or even header file!
+- This makes the barrier for writing tests **much lower** - you don't have to:
+  **1)** make a separate source file
+  **2)** include a bunch of stuff in it
+  **3)** add it to the build system and
+  **4)** add it to source control -
+  You can just write the tests for a class or a piece of functionality at the bottom
+  of its source file - or even header file!
 - Tests in the production code can be thought of as documentation/up-to-date comments - showcasing the APIs
 - Testing internals that are not exposed through the public API and headers is no longer a mind-bending exercise
 - [**Test-driven development**](https://en.wikipedia.org/wiki/Test-driven_development) in C++ has never been easier!
 
 The framework can be used just like any other without mixing production code and tests - check out the [**features**](doc/markdown/features.md).
 
-**doctest** is modeled after [**Catch**](https://github.com/catchorg/Catch2) and some parts of the code have been taken directly - check out [**the differences**](doc/markdown/faq.md#how-is-doctest-different-from-catch).
+**doctest** is modeled after [**Catch**](https://github.com/catchorg/Catch2) and some parts of the code
+have been taken directly - check out [**the differences**](doc/markdown/faq.md#how-is-doctest-different-from-catch).
 
-[This table](https://github.com/martinmoene/catch-lest-other-comparison) compares **doctest** / [**Catch**](https://github.com/catchorg/Catch2) / [**lest**](https://github.com/martinmoene/lest) which are all very similar.
+[This table](https://github.com/martinmoene/catch-lest-other-comparison) compares **doctest** /
+[**Catch**](https://github.com/catchorg/Catch2) /
+[**lest**](https://github.com/martinmoene/lest) which are all very similar.
 
-Checkout the [**CppCon 2017 talk**](https://cppcon2017.sched.com/event/BgsI/mix-tests-and-production-code-with-doctest-implementing-and-using-the-fastest-modern-c-testing-framework) on [**YouTube**](https://www.youtube.com/watch?v=eH1CxEC29l8) to get a better understanding of how the framework works and read about how to use it in [**the JetBrains article**](https://blog.jetbrains.com/rscpp/better-ways-testing-with-doctest/) - highlighting the unique aspects of the framework! On a short description on how to use the framework along production code you could refer to [**this GitHub issue**](https://github.com/doctest/doctest/issues/252). There is also an [**older article**](https://accu.org/var/uploads/journals/Overload137.pdf) in the february edition of ACCU Overload 2017.
+Checkout the [**CppCon 2017 talk**](https://cppcon2017.sched.com/event/BgsI/mix-tests-and-production-code-with-doctest-implementing-and-using-the-fastest-modern-c-testing-framework)
+on [**YouTube**](https://www.youtube.com/watch?v=eH1CxEC29l8) to get a better understanding
+of how the framework works and read about how to use it in [**the JetBrains article**](https://blog.jetbrains.com/rscpp/better-ways-testing-with-doctest/)
+\- highlighting the unique aspects of the framework! On a short description on how to use the framework
+along production code you could refer to [**this GitHub issue**](https://github.com/doctest/doctest/issues/252).
+There is also an [**older article**](https://accu.org/var/uploads/journals/Overload137.pdf)
+in the february edition of ACCU Overload 2017.
 
 [![CppCon 2017 talk about doctest on youtube](scripts/data/youtube-cppcon-talk-thumbnail.png)](https://www.youtube.com/watch?v=eH1CxEC29l8)
 
@@ -102,10 +136,14 @@ Usage:
 
 Bugs and feature proposals
 ------------
+
 If you find a bug, report it!
-If you have an idea on how to improve the project, be it anything from better documentation to adding new features, consider preparing a **feature proposal**.
-We call it proposal because the word "request" has the wrong intention, no one will auto-magically fix it for you, but the idea can be discussed and accepted or rejected before **you** implement it.
-Please make sure to read through the [**Contributing**](CONTRIBUTING.md) page before submitting any issue, the triaging procedure is documented there.
+If you have an idea on how to improve the project, be it anything from better documentation to adding new features,
+consider preparing a **feature proposal**.  We call it proposal because the word "request" has the wrong intention,
+no one will auto-magically fix it for you, but the idea can be discussed and accepted
+or rejected before **you** implement it.
+Please make sure to read through the [**Contributing**](CONTRIBUTING.md) page before submitting any issue,
+the triaging procedure is documented there.
 
 Contributing
 ------------
@@ -120,6 +158,7 @@ Stargazers over time
 Logo
 ------------
 
-The [logo](scripts/data/logo) is licensed under a Creative Commons Attribution 4.0 International License. Copyright &copy; 2019 [area55git](https://github.com/area55git) &nbsp; [![License: CC BY 4.0](https://licensebuttons.net/l/by/4.0/80x15.png)](https://creativecommons.org/licenses/by/4.0/)
+The [logo](scripts/data/logo) is licensed under a Creative Commons Attribution 4.0 International License.
+Copyright &copy; 2019 [area55git](https://github.com/area55git) &nbsp; [![License: CC BY 4.0](https://licensebuttons.net/l/by/4.0/80x15.png)](https://creativecommons.org/licenses/by/4.0/)
 
 <p align="center"><img src="scripts/data/logo/icon_2.svg"></p>

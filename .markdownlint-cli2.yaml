@@ -1,0 +1,5 @@
+---
+ignores:
+  - CHANGELOG.md
+  - doc/markdown/benchmarks.md
+  - scripts/*
