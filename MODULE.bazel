@@ -1,6 +1,6 @@
 module(
     name = "doctest",
-    version = "2.5.0",
+    version = "2.5.1",
 )
 
 bazel_dep(name = "rules_cc", version = "0.2.16")
