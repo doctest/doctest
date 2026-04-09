@@ -1,3 +1,9 @@
+// mingw has issues with thread_local in our setup
+#if defined(__MINGW32__) || defined(__MINGW64__)
+#define DOCTEST_THREAD_LOCAL /*nothing*/
+#endif
+
+#define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 #include <doctest/doctest.h>
 #include <chrono>
 #include <thread>
