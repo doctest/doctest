@@ -2,12 +2,10 @@
 
 #ifndef DOCTEST_CONFIG_NO_EXCEPTIONS
 
-DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_BEGIN
 #include <thread>
 #include <mutex>
 #include <exception>
 #include <stdexcept>
-DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_END
 
 DOCTEST_MSVC_SUPPRESS_WARNING(4626) // assignment operator was implicitly defined as deleted
 

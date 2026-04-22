@@ -14,10 +14,6 @@ void addAssert(assertType::Enum at);
 
 void addFailedAssert(assertType::Enum at);
 
-#if defined(DOCTEST_CONFIG_POSIX_SIGNALS) || defined(DOCTEST_CONFIG_WINDOWS_SEH)
-void reportFatal(const std::string &message);
-#endif // DOCTEST_CONFIG_POSIX_SIGNALS || DOCTEST_CONFIG_WINDOWS_SEH
-
 } // namespace detail
 } // namespace doctest
 

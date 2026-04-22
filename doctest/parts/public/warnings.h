@@ -139,7 +139,6 @@
     DOCTEST_CLANG_SUPPRESS_WARNING("-Wmissing-field-initializers")                                                     \
     DOCTEST_CLANG_SUPPRESS_WARNING("-Wunused-member-function")                                                         \
     DOCTEST_CLANG_SUPPRESS_WARNING("-Wunused-function")                                                                \
-    DOCTEST_CLANG_SUPPRESS_WARNING("-Wnonportable-system-include-path")                                                \
     DOCTEST_CLANG_SUPPRESS_WARNING("-Wnrvo")                                                                           \
                                                                                                                        \
     DOCTEST_GCC_SUPPRESS_WARNING("-Wconversion")                                                                       \
@@ -166,28 +165,5 @@
     DOCTEST_MSVC_SUPPRESS_WARNING(5245) /* unreferenced function with internal linkage removed */
 
 #define DOCTEST_SUPPRESS_PRIVATE_WARNINGS_POP DOCTEST_SUPPRESS_COMMON_WARNINGS_POP
-
-#define DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_BEGIN                                                     \
-    DOCTEST_MSVC_SUPPRESS_WARNING_PUSH                                                                                 \
-    DOCTEST_MSVC_SUPPRESS_WARNING(4548) /* before comma no effect; expected side - effect */                           \
-    DOCTEST_MSVC_SUPPRESS_WARNING(4265) /* virtual functions, but destructor is not virtual */                         \
-    DOCTEST_MSVC_SUPPRESS_WARNING(4986) /* exception specification does not match previous */                          \
-    DOCTEST_MSVC_SUPPRESS_WARNING(4350) /* 'member1' called instead of 'member2' */                                    \
-    DOCTEST_MSVC_SUPPRESS_WARNING(4668) /* not defined as a preprocessor macro */                                      \
-    DOCTEST_MSVC_SUPPRESS_WARNING(4365) /* signed/unsigned mismatch */                                                 \
-    DOCTEST_MSVC_SUPPRESS_WARNING(4774) /* format string not a string literal */                                       \
-    DOCTEST_MSVC_SUPPRESS_WARNING(4820) /* padding */                                                                  \
-    DOCTEST_MSVC_SUPPRESS_WARNING(4625) /* copy constructor was implicitly deleted */                                  \
-    DOCTEST_MSVC_SUPPRESS_WARNING(4626) /* assignment operator was implicitly deleted */                               \
-    DOCTEST_MSVC_SUPPRESS_WARNING(5027) /* move assignment operator implicitly deleted */                              \
-    DOCTEST_MSVC_SUPPRESS_WARNING(5026) /* move constructor was implicitly deleted */                                  \
-    DOCTEST_MSVC_SUPPRESS_WARNING(4623) /* default constructor was implicitly deleted */                               \
-    DOCTEST_MSVC_SUPPRESS_WARNING(5039) /* pointer to pot. throwing function passed to extern C */                     \
-    DOCTEST_MSVC_SUPPRESS_WARNING(5045) /* Spectre mitigation for memory load */                                       \
-    DOCTEST_MSVC_SUPPRESS_WARNING(5105) /* macro producing 'defined' has undefined behavior */                         \
-    DOCTEST_MSVC_SUPPRESS_WARNING(4738) /* storing float result in memory, loss of performance */                      \
-    DOCTEST_MSVC_SUPPRESS_WARNING(5262) /* implicit fall-through */
-
-#define DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_END DOCTEST_MSVC_SUPPRESS_WARNING_POP
 
 #endif // DOCTEST_PARTS_PUBLIC_WARNINGS

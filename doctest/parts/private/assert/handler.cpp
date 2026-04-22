@@ -20,22 +20,6 @@ void addFailedAssert(assertType::Enum at) {
         g_cs->numAssertsFailedCurrentTest_atomic++;
 }
 
-#if defined(DOCTEST_CONFIG_POSIX_SIGNALS) || defined(DOCTEST_CONFIG_WINDOWS_SEH)
-void reportFatal(const std::string &message) {
-    g_cs->failure_flags |= TestCaseFailureReason::Crash;
-
-    DOCTEST_ITERATE_THROUGH_REPORTERS(test_case_exception, {message.c_str(), true});
-
-    for (size_t i = g_cs->traversal.unwindActiveSubcases(); i > 0; --i)
-        DOCTEST_ITERATE_THROUGH_REPORTERS(subcase_end, DOCTEST_EMPTY);
-    g_cs->finalizeTestCaseData();
-
-    DOCTEST_ITERATE_THROUGH_REPORTERS(test_case_end, *g_cs);
-
-    DOCTEST_ITERATE_THROUGH_REPORTERS(test_run_end, *g_cs);
-}
-#endif // DOCTEST_CONFIG_POSIX_SIGNALS || DOCTEST_CONFIG_WINDOWS_SEH
-
 void failed_out_of_a_testing_context(const AssertData &ad) {
     if (g_cs->ah)
         g_cs->ah(ad);

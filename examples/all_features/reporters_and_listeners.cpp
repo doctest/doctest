@@ -1,9 +1,7 @@
 #include <doctest/doctest.h>
 
-DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_BEGIN
 #include <vector>
 #include <mutex>
-DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_END
 
 DOCTEST_CLANG_SUPPRESS_WARNING("-Wweak-vtables")
 

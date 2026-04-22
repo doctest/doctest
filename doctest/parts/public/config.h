@@ -29,14 +29,19 @@
 
 // Universal Windows Platform support
 #if defined(WINAPI_FAMILY) && (WINAPI_FAMILY == WINAPI_FAMILY_APP)
-#define DOCTEST_CONFIG_NO_WINDOWS_SEH
-#endif // WINAPI_FAMILY
+#ifndef DOCTEST_CONFIG_NO_WINDOWS_SEH
+#deifne DOCTEST_CONFIG_NO_WINDOWS_SEH
+#endif
+#ifndef DOCTEST_CONFIG_NO_MULTI_LANE_ATOMICS
+#define DOCTEST_CONFIG_NO_MULTI_LANE_ATOMICS
+#endif
+#endif // defined(WINAPI_FAMILY) && (WINAPI_FAMILY == WINAPI_FAMILY_APP)
 #if DOCTEST_MSVC && !defined(DOCTEST_CONFIG_WINDOWS_SEH)
 #define DOCTEST_CONFIG_WINDOWS_SEH
-#endif // MSVC
+#endif // DOCTEST_MSVC && !defined(DOCTEST_CONFIG_WINDOWS_SEH)
 #if defined(DOCTEST_CONFIG_NO_WINDOWS_SEH) && defined(DOCTEST_CONFIG_WINDOWS_SEH)
 #undef DOCTEST_CONFIG_WINDOWS_SEH
-#endif // DOCTEST_CONFIG_NO_WINDOWS_SEH
+#endif // defined(DOCTEST_CONFIG_NO_WINDOWS_SEH) && defined(DOCTEST_CONFIG_WINDOWS_SEH)
 
 #if !defined(_WIN32) && !defined(__QNX__) && !defined(DOCTEST_CONFIG_POSIX_SIGNALS) && !defined(__EMSCRIPTEN__) &&     \
     !defined(__wasi__)
@@ -172,13 +177,11 @@
 // https://github.com/doctest/doctest/issues/126
 // https://github.com/doctest/doctest/issues/356
 #if DOCTEST_CLANG
-DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_BEGIN
 #if DOCTEST_CPLUSPLUS >= 201703L && __has_include(<version>)
 #include <version>
 #else
 #include <ciso646>
 #endif
-DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_END
 #endif // clang
 
 #ifdef _LIBCPP_VERSION
