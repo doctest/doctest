@@ -117,7 +117,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        version:    ["15"]
+        version:    ["16"]
         container:  ["ubuntu:26.04"]
         arch:       [x64, x86]
         build-type: [Release, Debug]
@@ -133,6 +133,7 @@ jobs:
           - { version: "12",  container: ubuntu:24.04, arch: x64, build-type: Release, target: test }
           - { version: "13",  container: ubuntu:24.04, arch: x64, build-type: Release, target: test }
           - { version: "14",  container: ubuntu:24.04, arch: x64, build-type: Release, target: test }
+          - { version: "15",  container: ubuntu:24.04, arch: x64, build-type: Release, target: test }
         exclude:
           - { arch: x86, target: tsan }
 
