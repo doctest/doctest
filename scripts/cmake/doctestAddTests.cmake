@@ -35,12 +35,30 @@ if("${spec}" MATCHES .)
   set(spec "--test-case=${spec}")
 endif()
 
-execute_process(
-  COMMAND ${TEST_EXECUTOR} "${TEST_EXECUTABLE}" ${spec} --list-test-cases
-  OUTPUT_VARIABLE output
-  RESULT_VARIABLE result
-  WORKING_DIRECTORY "${TEST_WORKING_DIR}"
-)
+# MSVC AddressSanitizer copies runtime DLLs next to the test binary; discovery
+# must be able to load them (see https://github.com/doctest/doctest/issues/836).
+if(WIN32)
+  get_filename_component(_doctest_exe_dir "${TEST_EXECUTABLE}" DIRECTORY)
+  if(DEFINED ENV{PATH})
+    set(_doctest_path_env "${_doctest_exe_dir};$ENV{PATH}")
+  else()
+    set(_doctest_path_env "${_doctest_exe_dir}")
+  endif()
+  execute_process(
+    COMMAND ${CMAKE_COMMAND} -E env "PATH=${_doctest_path_env}"
+            ${TEST_EXECUTOR} "${TEST_EXECUTABLE}" ${spec} --list-test-cases
+    OUTPUT_VARIABLE output
+    RESULT_VARIABLE result
+    WORKING_DIRECTORY "${TEST_WORKING_DIR}"
+  )
+else()
+  execute_process(
+    COMMAND ${TEST_EXECUTOR} "${TEST_EXECUTABLE}" ${spec} --list-test-cases
+    OUTPUT_VARIABLE output
+    RESULT_VARIABLE result
+    WORKING_DIRECTORY "${TEST_WORKING_DIR}"
+  )
+endif()
 if(NOT ${result} EQUAL 0)
   message(FATAL_ERROR
     "Error running test executable '${TEST_EXECUTABLE}':\n"
@@ -60,12 +78,24 @@ foreach(line ${output})
   set(labels "")
   if(${add_labels})
     # get test suite that test belongs to
-    execute_process(
-      COMMAND ${TEST_EXECUTOR} "${TEST_EXECUTABLE}" --test-case=${test} --list-test-suites
-      OUTPUT_VARIABLE labeloutput
-      RESULT_VARIABLE labelresult
-      WORKING_DIRECTORY "${TEST_WORKING_DIR}"
-    )
+    if(WIN32)
+      execute_process(
+        COMMAND ${CMAKE_COMMAND} -E env "PATH=${_doctest_path_env}"
+                ${TEST_EXECUTOR} "${TEST_EXECUTABLE}" --test-case=${test}
+                --list-test-suites
+        OUTPUT_VARIABLE labeloutput
+        RESULT_VARIABLE labelresult
+        WORKING_DIRECTORY "${TEST_WORKING_DIR}"
+      )
+    else()
+      execute_process(
+        COMMAND ${TEST_EXECUTOR} "${TEST_EXECUTABLE}" --test-case=${test}
+                --list-test-suites
+        OUTPUT_VARIABLE labeloutput
+        RESULT_VARIABLE labelresult
+        WORKING_DIRECTORY "${TEST_WORKING_DIR}"
+      )
+    endif()
     if(NOT ${labelresult} EQUAL 0)
       message(FATAL_ERROR
         "Error running test executable '${TEST_EXECUTABLE}':\n"
