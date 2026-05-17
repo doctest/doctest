@@ -13,6 +13,7 @@
 - [**Can different versions of the framework be used within the same binary (executable/dll)?**](#can-different-versions-of-the-framework-be-used-within-the-same-binary-executabledll)
 - [**Why is doctest using macros?**](#why-is-doctest-using-macros)
 - [**How to use with multiple files?**](#how-to-use-with-multiple-files)
+- [**Why does expensive setup run again for every SUBCASE?**](#why-does-expensive-setup-run-again-for-every-subcase)
 
 ### How is **doctest** different from Catch?
 
@@ -164,11 +165,23 @@ Currently no. Single header libraries like [**stb**](https://github.com/nothings
 
 ### Why is doctest using macros?
 
-Aren't they evil and not *modern*? - Check out the answer Phil Nash gives to this question [**here**](http://accu.org/index.php/journals/2064) (the creator of [**Catch**](https://github.com/catchorg/Catch2)).
+Aren't they evil and not *modern*? - Check out the answer Phil Nash gives to this question [**here**](https://accu.org/index.php/journals/2064) (the creator of [**Catch**](https://github.com/catchorg/Catch2)).
 
 ### How to use with multiple files?
 
 All you need to do is define either [**```DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN```**](configuration.md#doctest_config_implement_with_main) or [**```DOCTEST_CONFIG_IMPLEMENT```**](configuration.md#doctest_config_implement) in only ONE of the source files just before including the doctest header - in all other source files you just include the header and use the framework. The difference between the two is that one of them provides a `main()` entry point - for more info on that please refer to [`The main() entry point`](main.md).
+
+### Why does expensive setup run again for every SUBCASE?
+
+By design, the `TEST_CASE` body is **re-entered from the start once per leaf `SUBCASE`**. Code before the first `SUBCASE` therefore runs again for every sibling subcase, and `TEST_CASE_FIXTURE` constructors run on each re-entry as well.
+
+If setup is costly (GPU context, large file load, etc.) and you need deterministic teardown when the whole case finishes, the subcase model does not offer a built-in "run once per `TEST_CASE`" hook today. Practical options:
+
+- **Split scenarios** into separate `TEST_CASE`s without `SUBCASE` when branches do not need a shared subcase tree.
+- **Share state explicitly** with a helper or fixture whose lifetime you control (accepting that teardown timing is your responsibility).
+- **Keep `SUBCASE`s** when the extra setup cost is acceptable for clarity of the tree.
+
+See also the [**tutorial on subcases**](tutorial.md#test-cases-and-subcases) and [issue #1108](https://github.com/doctest/doctest/issues/1108).
 
 ---------------
 

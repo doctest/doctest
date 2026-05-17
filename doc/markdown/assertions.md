@@ -166,6 +166,26 @@ REQUIRE(22.0/7 == doctest::Approx(3.141).epsilon(0.01)); // allow for a 1% error
 
 When dealing with very large or very small numbers it can be useful to specify a scale, which can be achieved by calling the ```scale()``` method on the ```doctest::Approx``` instance.
 
+**Comparison semantics:** `lhs` matches `Approx(value)` when
+
+```text
+|lhs - value| < epsilon * (scale + max(|lhs|, |value|))
+```
+
+**Defaults:** `epsilon` defaults to `std::numeric_limits<float>::epsilon() * 100` (about `1.2e-5`), even though comparisons use `double`. `scale` defaults to `1.0`. That is why `CHECK(Approx(0.98765) == 0.98766)` can pass despite an absolute difference of `1e-5`.
+
+**Absolute tolerances:** doctest has no separate absolute `margin()` like Catch2. For a fixed absolute threshold, compare manually:
+
+```c++
+CHECK(std::fabs(a - b) < 1e-12);
+```
+
+Or tune `epsilon()` together with `scale(0)` so `epsilon * max(|lhs|, |value|)` matches your tolerance at the magnitudes you care about:
+
+```c++
+CHECK(lhs == doctest::Approx(rhs).epsilon(1e-12).scale(0));
+```
+
 ## NaN checking
 
 Two NaN floating point numbers do not compare equal to each other. This makes it quite inconvenient to check for NaN while capturing the value.
