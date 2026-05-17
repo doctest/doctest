@@ -444,6 +444,8 @@ template <typename L, typename R>
 String stringifyBinaryExpr(const DOCTEST_REF_WRAP(L) lhs, const char *op, const DOCTEST_REF_WRAP(R) rhs) {
     return (DOCTEST_STRINGIFY(lhs)) + op + (DOCTEST_STRINGIFY(rhs));
 }
+
+String escapeAssertFailureDecomp(const String &in);
 #endif // DOCTEST_CONFIG_DISABLE
 } // namespace detail
 

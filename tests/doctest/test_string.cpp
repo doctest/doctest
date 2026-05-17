@@ -533,6 +533,18 @@ TEST_SUITE("Type stringification") {
     // clang-format on
 }
 
+TEST_SUITE("Assert failure decomposition escaping") {
+    using doctest::detail::escapeAssertFailureDecomp;
+
+    TEST_CASE("escapes control and non-printable characters") {
+        const char raw[] = "a\x7fz";
+        CHECK(escapeAssertFailureDecomp(String(raw, sizeof(raw) - 1)) == "a\\x7fz");
+        CHECK(escapeAssertFailureDecomp(String("a \nb")) == "a \\nb");
+        CHECK(escapeAssertFailureDecomp(String("tab\there")) == "tab\\there");
+        CHECK(escapeAssertFailureDecomp(String("back\\slash")) == "back\\\\slash");
+    }
+}
+
 TEST_SUITE("Value stringification") {
     using namespace doctest;
 
