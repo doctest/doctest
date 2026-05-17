@@ -820,6 +820,27 @@ DOCTEST_SUPPRESS_PUBLIC_WARNINGS_POP
 
 DOCTEST_SUPPRESS_PUBLIC_WARNINGS_PUSH
 
+#ifdef DOCTEST_CONFIG_USE_STD_HEADERS
+DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_BEGIN
+#include <utility>
+DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_END
+
+namespace doctest {
+namespace detail {
+
+template <typename T>
+T &&declval();
+
+using std::forward;
+using std::move;
+
+template <typename T>
+struct deferred_false : types::false_type {};
+
+} // namespace detail
+} // namespace doctest
+#else // DOCTEST_CONFIG_USE_STD_HEADERS
+
 namespace doctest {
 namespace detail {
 
@@ -843,6 +864,7 @@ struct deferred_false : types::false_type {};
 
 } // namespace detail
 } // namespace doctest
+#endif // DOCTEST_CONFIG_USE_STD_HEADERS
 
 DOCTEST_SUPPRESS_PUBLIC_WARNINGS_POP
 
