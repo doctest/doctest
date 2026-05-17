@@ -58,7 +58,10 @@ foreach(line ${output})
   endif()
   set(test ${line})
   set(labels "")
-  if(${add_labels})
+  if(TEST_ADD_LABELS)
+    list(APPEND labels ${TEST_ADD_LABELS})
+  endif()
+  if(TEST_ADD_LABELS)
     # get test suite that test belongs to
     execute_process(
       COMMAND ${TEST_EXECUTOR} "${TEST_EXECUTABLE}" --test-case=${test} --list-test-suites

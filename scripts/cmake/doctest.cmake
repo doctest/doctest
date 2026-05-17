@@ -86,8 +86,9 @@ same as the doctest name; see also ``TEST_PREFIX`` and ``TEST_SUFFIX``.
     Specifies additional properties to be set on all tests discovered by this
     invocation of ``doctest_discover_tests``.
 
-  ``ADD_LABELS value``
-    Specifies if the test labels should be set automatically.
+  ``ADD_LABELS label...``
+    Adds the given label(s) to every discovered test. When specified, test suite
+    names are also discovered and added as labels.
 
   ``TEST_LIST var``
     Make the list of tests available in the variable ``var``, rather than the
