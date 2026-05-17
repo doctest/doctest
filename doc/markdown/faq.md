@@ -164,7 +164,7 @@ Currently no. Single header libraries like [**stb**](https://github.com/nothings
 
 ### Why is doctest using macros?
 
-Aren't they evil and not *modern*? - Check out the answer Phil Nash gives to this question [**here**](http://accu.org/index.php/journals/2064) (the creator of [**Catch**](https://github.com/catchorg/Catch2)).
+Aren't they evil and not *modern*? - Check out the answer Phil Nash gives to this question [**here**](https://accu.org/index.php/journals/2064) (the creator of [**Catch**](https://github.com/catchorg/Catch2)).
 
 ### How to use with multiple files?
 
