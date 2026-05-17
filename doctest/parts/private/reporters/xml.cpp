@@ -204,7 +204,8 @@ void XmlReporter::log_assert(const AssertData &rb) {
     if ((rb.m_at & assertType::is_normal) && !rb.m_threw)
         xml.scopedElement("Expanded").writeText(rb.m_decomp.c_str());
 
-    log_contexts();
+    if (rb.m_failed)
+        log_contexts();
 
     xml.endElement();
 }
