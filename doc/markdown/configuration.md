@@ -331,6 +331,15 @@ Includes [**`DOCTEST_CONFIG_NO_MULTI_LANE_ATOMICS`**](#doctest_config_no_multi_l
 
 This should be defined only in the source file where the library is implemented (it's relevant only there).
 
+On embedded targets such as **ESP32**, `thread_local` storage can increase every task's stack usage and
+trigger early stack overflows in system tasks (for example the IPC task). If you do not use assertions
+from multiple threads, define this macro in the translation unit that implements doctest before including
+`doctest.h`. See [issue #861](https://github.com/doctest/doctest/issues/861).
+
+Alternatively, define **`DOCTEST_THREAD_LOCAL`** as empty before including `doctest.h` to disable
+`thread_local` while keeping the default multithreading support (higher overhead than
+`DOCTEST_CONFIG_NO_MULTITHREADING` on single-threaded firmware).
+
 ### **`DOCTEST_CONFIG_NO_MULTI_LANE_ATOMICS`**
 
 This can be used to disable multi lane atomics. Multi lane atomics can speed up highly parallel use of assert statements,

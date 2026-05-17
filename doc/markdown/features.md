@@ -36,10 +36,10 @@ These key features should be kept.
 - tested with **MSVC**: **2015**, **2017**, **2019**, **2022** (also in 32 bit mode)
 - per-commit tested on [**GitHub Actions**](https://github.com/doctest/doctest/actions)
   - warnings as errors even on the most aggressive warning levels - see [**here**](../../scripts/cmake/common.cmake#L84)
-  - statically analyzed on the CI - [**Cppcheck**](http://cppcheck.sourceforge.net/) /
+  - statically analyzed on the CI - [**Cppcheck**](https://cppcheck.sourceforge.net/) /
     [**Clang-Tidy**](https://clang.llvm.org/extra/clang-tidy/) /
     [**Coverity Scan**](https://scan.coverity.com/) /
-    [**OCLint**](http://oclint.org/) /
+    [**OCLint**](https://oclint.org/) /
     [**Visual Studio Analyzer**](https://docs.microsoft.com/en-us/visualstudio/code-quality/analyzing-c-cpp-code-quality-by-using-code-analysis)
   - all tests have their output compared to reference output of a previous known good run
   - all tests built and run in **Debug**/**Release** modes

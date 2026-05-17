@@ -4,6 +4,7 @@
   - [How is **doctest** different from Catch?](#how-is-doctest-different-from-catch)
   - [How is **doctest** different from Google Test?](#how-is-doctest-different-from-google-test)
   - [How to get the best compile-time performance with the framework?](#how-to-get-the-best-compile-time-performance-with-the-framework)
+  - [doctest crashes at startup on ESP32 (stack canary / IPC task)](#doctest-crashes-at-startup-on-esp32-stack-canary--ipc-task)
   - [Is doctest thread-aware?](#is-doctest-thread-aware)
   - [Is mocking supported?](#is-mocking-supported)
   - [Why are my tests in a static library not getting registered?](#why-are-my-tests-in-a-static-library-not-getting-registered)
@@ -112,6 +113,17 @@ These 2 things can be considered negligible and totally worth it if you are deal
 unlikely to throw exceptions and all the tests usually pass (you don't need to navigate often to a
 failing assert with a debugger attached).
 
+### doctest crashes at startup on ESP32 (stack canary / IPC task)
+
+ESP-IDF allocates C++ `thread_local` variables in each task's stack. doctest's defaults can push
+small system stacks (such as the 4 KiB IPC task) over their limit before your `setup()` runs.
+
+If you run tests only from the main/test runner thread, define
+[**`DOCTEST_CONFIG_NO_MULTITHREADING`**](configuration.md#doctest_config_no_multithreading) in the
+translation unit that implements doctest (recommended on firmware). Otherwise define
+`DOCTEST_THREAD_LOCAL` as empty before `#include "doctest.h"`. Details and background:
+[issue #861](https://github.com/doctest/doctest/issues/861).
+
 ### Is doctest thread-aware?
 
 Most macros/functionality is safe to use in a multithreaded context: [**assertion**](assertions.md) and [**logging**](logging.md)
@@ -219,7 +231,7 @@ in only one source file.
 
 ### Why is doctest using macros?
 
-Aren't they evil and not *modern*? - Check out the answer Phil Nash gives to this question [**here**](http://accu.org/index.php/journals/2064)
+Aren't they evil and not *modern*? - Check out the answer Phil Nash gives to this question [**here**](https://accu.org/journals/2064)
 (the creator of [**Catch**](https://github.com/catchorg/Catch2)).
 
 ### How to use with multiple files?

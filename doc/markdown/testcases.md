@@ -158,7 +158,9 @@ Multiple decorators can be used at the same time. These are the currently suppor
 - **`should_fail(bool = true)`** - like **`may_fail()`** but fails the test if it passes - this can be useful
 if you want to be notified of accidental, or third-party, fixes
 - **`expected_failures(int)`** - defines the number of assertions that are expected to fail within the test case -
-  reported as failure when the number of failed assertions is different than the declared expected number of failures
+  reported as failure when the number of failed assertions is different than the declared expected number of failures.
+  Failed assertions inside `may_fail` / `expected_failures` tests still count toward
+  [`--abort-after`](commandline.md) ([#542](https://github.com/doctest/doctest/issues/542))
 - **`timeout(double)`** - fails the test case if its execution exceeds this limit (in seconds) -
   but doesn't terminate it - that would require subprocess support
 - **`test_suite("name")`** - can be used on test cases to override (or just set) the test suite they are in

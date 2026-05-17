@@ -115,9 +115,9 @@ While **doctest** fully supports this way of working there are a few problems wi
 In particular the way your code must be split up and the blunt granularity of it may cause problems.
 You can only have one setup/ teardown pair across a set of methods but sometimes you want slightly different setup
 in each method or you may even want several levels of setup (a concept which we will clarify later on in this tutorial).
-It was [**problems like these**](http://jamesnewkirk.typepad.com/posts/2007/09/why-you-should-.html) that led James Newkirk
+It was [**problems like these**](https://jamesnewkirk.typepad.com/posts/2007/09/why-you-should-.html) that led James Newkirk
 who led the team that built NUnit to start again from scratch and build
-[**xUnit**](http://jamesnewkirk.typepad.com/posts/2007/09/announcing-xuni.html).
+[**xUnit**](https://jamesnewkirk.typepad.com/posts/2007/09/announcing-xuni.html).
 
 **doctest** takes a different approach (to both NUnit and xUnit) that is a more natural fit for C++
 and the C family of languages.
