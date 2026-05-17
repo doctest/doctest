@@ -57,7 +57,7 @@ remains `0` and the `CHECK` fails.
 ## BDD-style test cases
 
 In addition to **doctest**'s take on the classic style of test cases, **doctest** supports an alternative syntax
-that allow tests to be written as "executable specifications" (one of the early goals of [Behaviour Driven Development](http://dannorth.net/introducing-bdd/)).
+that allow tests to be written as "executable specifications" (one of the early goals of [Behaviour Driven Development](https://dannorth.net/introducing-bdd/)).
 This set of macros map on to `TEST_CASE`s and `SUBCASE`s, with a little internal support to make them smoother to work with.
 
 - **SCENARIO(** _scenario name_ **)**
