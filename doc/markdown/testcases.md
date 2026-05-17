@@ -22,6 +22,38 @@ Test cases can also be parameterized - see the [**documentation**](parameterized
 
 Test cases and subcases can be filtered through the use of the [**command line**](commandline.md)
 
+## Filtering subcases
+
+`--subcase=<filters>` (`-sc`) applies a wildcard filter to subcase **names at each nesting
+level** (by default at all levels; see [`--subcase-filter-levels`](commandline.md)). When a
+subcase matches, it is entered, but **deeper nested subcases are still filtered** by the same
+pattern. They are not run unless their names match too.
+
+This differs from an unfiltered run, where doctest executes **one leaf subcase path** per run
+and always enters nested subcases on that path.
+
+Example from [issue #519](https://github.com/doctest/doctest/issues/519):
+
+```cpp
+TEST_CASE("foo") {
+    SUBCASE("bar") {
+        int i{};
+        SUBCASE("baz") { i = 42; }
+        CHECK(i == 42);
+    }
+}
+```
+
+`test.exe -sc=bar` enters `bar` but skips `baz` (the name does not match `bar`), so `i`
+remains `0` and the `CHECK` fails.
+
+**Workarounds:**
+
+- Filter the leaf subcase: `-sc=baz` (and usually `-tc=foo` to limit the test case).
+- Combine patterns: `-sc=bar,baz`.
+- Apply the name filter only at the outer level and run all nested subcases beneath it:
+  `-sc=bar --subcase-filter-levels=1` (`-scfl=1`).
+
 ## BDD-style test cases
 
 In addition to **doctest**'s take on the classic style of test cases, **doctest** supports an alternative syntax
