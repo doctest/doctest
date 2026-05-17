@@ -52,7 +52,7 @@ pprint.pprint(vars(args), width = 1)
 # ==============================================================================
 
 # catch version
-catch_ver = "2.3.0"
+catch_ver = "2.13.10"
 catch_header = "catch." + catch_ver + ".hpp"
 
 # get the catch header
