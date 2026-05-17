@@ -104,6 +104,9 @@ This can be defined both globally and in specific source files only.
 By default `char*` is being treated as a pointer. With this option comparing `char*` pointers will switch to
 using `strcmp()` for comparisons and when stringified the string will be printed instead of the pointer value.
 
+Null pointers and mixed comparisons between string literals and `char*` buffers can behave differently than
+in the default mode; see [issue #707](https://github.com/doctest/doctest/issues/707) for reports and edge cases.
+
 This should be defined globally.
 
 ### **`DOCTEST_CONFIG_REQUIRE_STRINGIFICATION_FOR_ALL_USED_TYPES`**
