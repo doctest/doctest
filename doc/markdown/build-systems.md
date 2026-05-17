@@ -114,6 +114,11 @@ target_link_libraries(my_tests doctest)
   from scripts/cmake/doctest.cmake](../../scripts/cmake/doctest.cmake) - read the comments in the file on how to use it.
   It works just like [the same functionality in Catch](https://github.com/catchorg/Catch2/blob/master/docs/cmake-integration.md#automatic-test-registration).
 
+  On **Windows**, if the test executable is built with MSVC AddressSanitizer (`/fsanitize=address`), discovery runs the
+  binary at build time and must be able to load the ASAN runtime DLLs (usually next to the executable). Recent doctest
+  versions prepend the executable directory to `PATH` during discovery ([#836](https://github.com/doctest/doctest/issues/836)).
+  If you use an older release, upgrade or apply the same workaround locally.
+
 ### Package managers
 
 **doctest** is available through the following package managers:
