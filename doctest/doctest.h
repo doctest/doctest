@@ -5526,8 +5526,21 @@ bool parseOptionImpl(int argc, const char *const *argv, const char *pattern, Str
                         return true;
                     }
                 } else {
-                    // just a flag - no value
-                    return true;
+                    // flag - exact match or boolean assignment (e.g. --dt-foo=true)
+                    const char *suffix = temp + strlen(pattern);
+                    if (*suffix == '\0')
+                        return true;
+                    if (*suffix == '=') {
+                        const char positive[][5] = {"1", "true", "on", "yes"};
+                        const char negative[][6] = {"0", "false", "off", "no"};
+                        const char *val = suffix + 1;
+                        for (unsigned i = 0; i < 4; i++) {
+                            if (std::strcmp(val, positive[i]) == 0)
+                                return true;
+                            if (std::strcmp(val, negative[i]) == 0)
+                                return true;
+                        }
+                    }
                 }
             }
         }
