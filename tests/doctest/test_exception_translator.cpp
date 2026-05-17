@@ -5,6 +5,8 @@
 #if !defined(DOCTEST_CONFIG_NO_EXCEPTIONS_BUT_WITH_ALL_ASSERTS)
 
 #include <doctest/doctest.h>
+
+#include <cstddef>
 #include <type_traits>
 
 namespace {
@@ -78,6 +80,27 @@ TEST_CASE("Translating custom exceptions" * doctest::skip(should_skip())) {
 
         CHECK(result == "exception3");
     }
+}
+
+TEST_CASE("translateActiveException handles nullptr" * doctest::skip(should_skip())) {
+    auto result = with_ambient_exception(std::nullptr_t{}, [] {
+        return doctest::detail::translateActiveException();
+    });
+
+    CHECK(result == "nullptr");
+}
+
+TEST_CASE("translateActiveException handles null char pointer" * doctest::skip(should_skip())) {
+    const char *null_msg = nullptr;
+    auto result = with_ambient_exception(null_msg, [] {
+        return doctest::detail::translateActiveException();
+    });
+
+    CHECK(result == "null");
+}
+
+TEST_CASE("CHECK_NOTHROW does not crash when nullptr is thrown" * doctest::skip(should_skip())) {
+    CHECK_FALSE(CHECK_NOTHROW(throw nullptr));
 }
 
 #endif // !defined(DOCTEST_CONFIG_NO_EXCEPTIONS_BUT_WITH_ALL_ASSERTS)
