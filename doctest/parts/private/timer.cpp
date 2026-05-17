@@ -1,6 +1,9 @@
-#include "doctest/parts/private/prelude.h"
-#include "doctest/parts/private/timer.h"
 #include "doctest/parts/private/ext/windows.h" // IWYU pragma: keep
+#include "doctest/parts/private/timer.h"
+
+#ifndef DOCTEST_PLATFORM_WINDOWS
+#include <sys/time.h>
+#endif
 
 DOCTEST_SUPPRESS_PRIVATE_WARNINGS_PUSH
 

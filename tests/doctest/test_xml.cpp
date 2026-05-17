@@ -1,3 +1,4 @@
+#include <doctest/doctest.h>
 #include <doctest/parts/private/xml.h>
 
 #include <sstream>

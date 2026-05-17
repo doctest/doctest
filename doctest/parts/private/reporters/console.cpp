@@ -1,11 +1,23 @@
-#include "doctest/parts/private/prelude.h"
 #include "doctest/parts/private/context_state.h"
 #include "doctest/parts/private/reporter.h"
+#include "doctest/parts/private/reporters/common.h"
 #include "doctest/parts/private/reporters/console.h"
+#include "doctest/parts/public/path.h"
+
+#include <cmath>
+#include <cstring>
+#include <iomanip>
+#include <ostream>
 
 DOCTEST_SUPPRESS_PRIVATE_WARNINGS_PUSH
 
 #ifndef DOCTEST_CONFIG_DISABLE
+
+#ifdef DOCTEST_CONFIG_NO_UNPREFIXED_OPTIONS
+#define DOCTEST_OPTIONS_PREFIX_DISPLAY DOCTEST_CONFIG_OPTIONS_PREFIX
+#else
+#define DOCTEST_OPTIONS_PREFIX_DISPLAY ""
+#endif
 
 namespace doctest {
 
@@ -79,7 +91,7 @@ void ConsoleReporter::logTestStart() {
         s << Color::Yellow << "DESCRIPTION: " << Color::None << tc->m_description << "\n";
     if (tc->m_test_suite && tc->m_test_suite[0] != '\0')
         s << Color::Yellow << "TEST SUITE: " << Color::None << tc->m_test_suite << "\n";
-    if (strncmp(tc->m_name, "  Scenario:", 11) != 0)
+    if (std::strncmp(tc->m_name, "  Scenario:", 11) != 0)
         s << Color::Yellow << "TEST CASE:  ";
     s << Color::None << tc->m_name << "\n";
 

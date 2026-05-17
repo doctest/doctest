@@ -6,6 +6,7 @@
 #pragma once
 
 #include <doctest/parts/public/warnings.h>
+#include <algorithm>
 #include <cctype>
 #include <limits>
 #include <sstream>

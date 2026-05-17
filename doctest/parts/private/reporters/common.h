@@ -1,7 +1,7 @@
 #ifndef DOCTEST_PARTS_PRIVATE_REPORTERS_COMMON
 #define DOCTEST_PARTS_PRIVATE_REPORTERS_COMMON
 
-#include "doctest/parts/private/prelude.h"
+#include "doctest/parts/public/assert/data.h"
 
 DOCTEST_SUPPRESS_PRIVATE_WARNINGS_PUSH
 

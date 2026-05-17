@@ -1,7 +1,9 @@
 #ifndef DOCTEST_PARTS_PRIVATE_TIMER
 #define DOCTEST_PARTS_PRIVATE_TIMER
 
-#include "doctest/parts/private/prelude.h"
+#include "doctest/parts/public/config.h"
+
+#include <cstdint>
 
 DOCTEST_SUPPRESS_PRIVATE_WARNINGS_PUSH
 

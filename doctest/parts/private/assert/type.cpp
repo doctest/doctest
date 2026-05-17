@@ -1,5 +1,5 @@
-#include "doctest/parts/private/prelude.h"
 #include "doctest/parts/private/exceptions.h"
+#include "doctest/parts/public/assert/type.h"
 
 DOCTEST_SUPPRESS_PRIVATE_WARNINGS_PUSH
 

@@ -1,6 +1,5 @@
-#include "doctest/parts/private/traversal.h"
-
 #include "doctest/parts/private/context_state.h"
+#include "doctest/parts/private/traversal.h"
 
 #include <algorithm>
 

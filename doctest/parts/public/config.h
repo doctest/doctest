@@ -12,6 +12,8 @@
 #include "doctest/parts/public/warnings.h"
 // IWYU pragma: end_exports
 
+DOCTEST_CLANG_SUPPRESS_WARNING_WITH_PUSH("-Wunused-macros")
+
 // general compiler feature support table: https://en.cppreference.com/w/cpp/compiler_support
 // MSVC C++11 feature support table: https://msdn.microsoft.com/en-us/library/hh567368.aspx
 // GCC C++11 feature support table: https://gcc.gnu.org/projects/cxx-status.html
@@ -67,7 +69,7 @@
 #define DOCTEST_CONFIG_NO_TRY_CATCH_IN_ASSERTS
 #endif // DOCTEST_CONFIG_NO_EXCEPTIONS && !DOCTEST_CONFIG_NO_TRY_CATCH_IN_ASSERTS
 
-#ifdef __wasi__
+#if !defined(DOCTEST_CONFIG_NO_MULTITHREADING) && defined(__wasi__)
 #define DOCTEST_CONFIG_NO_MULTITHREADING
 #endif
 
@@ -122,6 +124,14 @@
 #define DOCTEST_NOINLINE __attribute__((noinline))
 #define DOCTEST_UNUSED __attribute__((unused))
 #define DOCTEST_ALIGNMENT(x) __attribute__((aligned(x)))
+#endif
+
+#ifndef DOCTEST_THREAD_LOCAL
+#if defined(DOCTEST_CONFIG_NO_MULTITHREADING) || DOCTEST_MSVC && (DOCTEST_MSVC < DOCTEST_COMPILER(19, 0, 0))
+#define DOCTEST_THREAD_LOCAL
+#else
+#define DOCTEST_THREAD_LOCAL thread_local
+#endif
 #endif
 
 #ifdef DOCTEST_CONFIG_NO_CONTRADICTING_INLINE
@@ -201,6 +211,14 @@
 #else
 #define DOCTEST_HAS_BUILTIN(x) 0
 #endif // __has_builtin
+
+#ifdef DOCTEST_CONFIG_DISABLE
+#define DOCTEST_BRANCH_ON_DISABLED(if_disabled, if_not_disabled) if_disabled
+#else
+#define DOCTEST_BRANCH_ON_DISABLED(if_disabled, if_not_disabled) if_not_disabled
+#endif
+
+DOCTEST_CLANG_SUPPRESS_WARNING_POP
 
 #endif // DOCTEST_PARTS_PUBLIC_CONFIG
 

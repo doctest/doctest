@@ -1,17 +1,23 @@
-#include "doctest/parts/private/prelude.h"
 #include "doctest/parts/private/context_state.h"
+#include "doctest/parts/private/exception_translator.h"
+#include "doctest/parts/private/filters.h"
 #include "doctest/parts/private/reporter.h"
 #include "doctest/parts/private/reporters/common.h"
 #include "doctest/parts/private/reporters/debug_output_window.h"
-#include "doctest/parts/private/exception_translator.h"
-#include "doctest/parts/private/test_case.h"
-#include "doctest/parts/private/filters.h"
 #include "doctest/parts/private/signals.h"
+#include "doctest/parts/private/test_case.h"
+#include "doctest/parts/public/debugger.h"
+#include "doctest/parts/public/exceptions.h"
 
 // Fix for #1035
 #include "doctest/parts/private/reporters/console.h"
 #include "doctest/parts/private/reporters/junit.h"
 #include "doctest/parts/private/reporters/xml.h"
+
+#include <algorithm>
+#include <climits>
+#include <cstring>
+#include <fstream>
 
 DOCTEST_SUPPRESS_PRIVATE_WARNINGS_PUSH
 

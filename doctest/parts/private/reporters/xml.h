@@ -1,9 +1,10 @@
 #ifndef DOCTEST_PARTS_PRIVATE_REPORTERS_XML
 #define DOCTEST_PARTS_PRIVATE_REPORTERS_XML
 
-#include "doctest/parts/private/prelude.h"
+#include "doctest/parts/private/atomic.h"
 #include "doctest/parts/private/xml.h"
-#include "doctest/parts/private/reporter.h"
+#include "doctest/parts/public/macros.h"
+#include "doctest/parts/public/reporter.h"
 
 DOCTEST_SUPPRESS_PRIVATE_WARNINGS_PUSH
 

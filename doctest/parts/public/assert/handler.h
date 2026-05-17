@@ -5,6 +5,9 @@
 #include "doctest/parts/public/assert/result.h"
 #include "doctest/parts/public/assert/type.h"
 #include "doctest/parts/public/context.h"
+#include "doctest/parts/public/context/options.h"
+#include "doctest/parts/public/debugger.h"
+#include "doctest/parts/public/exceptions.h"
 #include "doctest/parts/public/string.h"
 
 DOCTEST_SUPPRESS_PUBLIC_WARNINGS_PUSH

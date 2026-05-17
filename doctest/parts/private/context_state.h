@@ -1,10 +1,14 @@
 #ifndef DOCTEST_PARTS_PRIVATE_CONTEXT_STATE
 #define DOCTEST_PARTS_PRIVATE_CONTEXT_STATE
 
-#include "doctest/parts/private/prelude.h"
-#include "doctest/parts/private/timer.h"
 #include "doctest/parts/private/atomic.h"
+#include "doctest/parts/private/timer.h"
 #include "doctest/parts/private/traversal.h"
+#include "doctest/parts/public/context.h"
+#include "doctest/parts/public/context/options.h"
+#include "doctest/parts/public/reporter.h"
+
+#include <vector>
 
 DOCTEST_SUPPRESS_PRIVATE_WARNINGS_PUSH
 

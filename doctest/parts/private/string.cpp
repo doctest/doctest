@@ -1,5 +1,9 @@
-#include "doctest/parts/private/prelude.h"
 #include "doctest/parts/private/exceptions.h"
+#include "doctest/parts/public/string.h"
+
+#include <cstring>
+#include <sstream>
+#include <vector>
 
 DOCTEST_SUPPRESS_PRIVATE_WARNINGS_PUSH
 
@@ -41,7 +45,7 @@ String tlssPop() {
 // case insensitive strcmp
 static int stricmp(const char *a, const char *b) {
     for (;; a++, b++) {
-        const int d = tolower(*a) - tolower(*b);
+        const int d = std::tolower(*a) - std::tolower(*b);
         if (d != 0 || !*a)
             return d;
     }
@@ -102,7 +106,7 @@ String::~String() {
 } // NOLINT(clang-analyzer-cplusplus.NewDeleteLeaks)
 
 String::String(const char *in)
-    : String(in, strlen(in)) {}
+    : String(in, std::strlen(in)) {}
 
 String::String(const char *in, size_type in_size) {
     memcpy(allocate(in_size), in, in_size);

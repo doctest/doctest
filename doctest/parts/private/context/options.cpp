@@ -1,4 +1,3 @@
-#include "doctest/parts/private/prelude.h"
 #include "doctest/parts/private/context_state.h"
 
 DOCTEST_SUPPRESS_PRIVATE_WARNINGS_PUSH

@@ -1,6 +1,8 @@
 #include <doctest/doctest.h>
+#include <doctest/parts/private/traversal.h>
 
-#include "doctest/parts/private/traversal.h"
+#include <string>
+#include <ostream>
 
 using doctest::SubcaseSignature;
 using doctest::detail::TraversalState;

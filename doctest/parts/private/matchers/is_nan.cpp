@@ -1,4 +1,10 @@
-#include "doctest/parts/private/prelude.h"
+#include "doctest/parts/public/matchers/is_nan.h"
+
+#ifndef __BORLANDC__ // See: https://github.com/doctest/doctest/pull/37
+#include <cmath>
+#else
+#include <math.h>
+#endif
 
 DOCTEST_SUPPRESS_PRIVATE_WARNINGS_PUSH
 

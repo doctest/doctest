@@ -1,7 +1,9 @@
 #ifndef DOCTEST_PARTS_PRIVATE_EXCEPTION_TRANSLATOR
 #define DOCTEST_PARTS_PRIVATE_EXCEPTION_TRANSLATOR
 
-#include "doctest/parts/private/prelude.h"
+#include "doctest/parts/public/exception_translator.h"
+
+#include <vector>
 
 DOCTEST_SUPPRESS_PRIVATE_WARNINGS_PUSH
 

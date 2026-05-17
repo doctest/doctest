@@ -1,3 +1,4 @@
+#include <doctest/doctest.h>
 #include <doctest/parts/private/filters.h>
 #include <functional>
 #include <vector>

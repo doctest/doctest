@@ -1,7 +1,7 @@
 #ifndef DOCTEST_PARTS_PRIVATE_SIGNALS
 #define DOCTEST_PARTS_PRIVATE_SIGNALS
 
-#include "doctest/parts/private/prelude.h"
+#include "doctest/parts/public/config.h"
 
 #if defined(DOCTEST_CONFIG_POSIX_SIGNALS) || defined(DOCTEST_CONFIG_WINDOWS_SEH)
 #include "doctest/parts/private/ext/windows.h" // IWYU pragma: keep
@@ -9,6 +9,8 @@
 #include <csignal>
 #endif
 #endif
+
+#include <string>
 
 DOCTEST_SUPPRESS_PRIVATE_WARNINGS_PUSH
 

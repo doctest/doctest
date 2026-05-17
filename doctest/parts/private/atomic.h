@@ -1,11 +1,26 @@
 #ifndef DOCTEST_PARTS_PRIVATE_ATOMIC
 #define DOCTEST_PARTS_PRIVATE_ATOMIC
 
-#include "doctest/parts/private/prelude.h"
+#include "doctest/parts/public/config.h"
+
+#ifndef DOCTEST_CONFIG_NO_MULTITHREADING
+#include <atomic>
+#include <mutex> // IWYU pragma: keep (DOCTEST_DECLARE_MUTEX)
+#endif
 
 DOCTEST_SUPPRESS_PRIVATE_WARNINGS_PUSH
 
 #ifndef DOCTEST_CONFIG_DISABLE
+
+#ifndef DOCTEST_CONFIG_NO_MULTITHREADING
+#define DOCTEST_DECLARE_MUTEX(name) std::mutex name;
+#define DOCTEST_DECLARE_STATIC_MUTEX(name) static DOCTEST_DECLARE_MUTEX(name)
+#define DOCTEST_LOCK_MUTEX(name) std::lock_guard<std::mutex> DOCTEST_ANONYMOUS(DOCTEST_ANON_LOCK_)(name);
+#else
+#define DOCTEST_DECLARE_MUTEX(name)
+#define DOCTEST_DECLARE_STATIC_MUTEX(name)
+#define DOCTEST_LOCK_MUTEX(name)
+#endif
 
 namespace doctest {
 namespace detail {
@@ -21,7 +36,16 @@ using Atomic = std::atomic<T>;
 #if defined(DOCTEST_CONFIG_NO_MULTI_LANE_ATOMICS) || defined(DOCTEST_CONFIG_NO_MULTITHREADING)
 template <typename T>
 using MultiLaneAtomic = Atomic<T>;
-#else  // DOCTEST_CONFIG_NO_MULTI_LANE_ATOMICS
+#else
+
+#ifndef DOCTEST_MULTI_LANE_ATOMICS_THREAD_LANES
+#define DOCTEST_MULTI_LANE_ATOMICS_THREAD_LANES 32
+#endif
+
+#ifndef DOCTEST_MULTI_LANE_ATOMICS_CACHE_LINE_SIZE
+#define DOCTEST_MULTI_LANE_ATOMICS_CACHE_LINE_SIZE 64
+#endif
+
 // Provides a multilane implementation of an atomic variable that supports add, sub, load,
 // store. Instead of using a single atomic variable, this splits up into multiple ones,
 // each sitting on a separate cache line. The goal is to provide a speedup when most
@@ -108,7 +132,7 @@ private:
         return m_atomics[tlsLaneIdx].atomic;
     }
 };
-#endif // DOCTEST_CONFIG_NO_MULTI_LANE_ATOMICS
+#endif // defined(DOCTEST_CONFIG_NO_MULTI_LANE_ATOMICS) || defined(DOCTEST_CONFIG_NO_MULTITHREADING)
 
 } // namespace detail
 } // namespace doctest
