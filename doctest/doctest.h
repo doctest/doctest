@@ -1289,6 +1289,8 @@ template <typename L, typename R>
 String stringifyBinaryExpr(const DOCTEST_REF_WRAP(L) lhs, const char *op, const DOCTEST_REF_WRAP(R) rhs) {
     return (DOCTEST_STRINGIFY(lhs)) + op + (DOCTEST_STRINGIFY(rhs));
 }
+
+String escapeAssertFailureDecomp(const String &in);
 #endif // DOCTEST_CONFIG_DISABLE
 } // namespace detail
 
@@ -6825,7 +6827,8 @@ void fulltext_log_assert_to_stream(std::ostream &s, const AssertData &rb) {
         if (rb.m_threw)
             s << rb.m_exception << "\n";
         else
-            s << "  values: " << assertString(rb.m_at) << "( " << rb.m_decomp << " )\n";
+            s << "  values: " << assertString(rb.m_at) << "( "
+              << detail::escapeAssertFailureDecomp(rb.m_decomp) << " )\n";
     }
     // clang-format on
 }
@@ -7543,7 +7546,7 @@ void JUnitReporter::log_assert(const AssertData &rb) {
 
     fulltext_log_assert_to_stream(os, rb);
     log_contexts(os);
-    testCaseData.addFailure(rb.m_decomp.c_str(), assertString(rb.m_at), os.str());
+    testCaseData.addFailure(detail::escapeAssertFailureDecomp(rb.m_decomp).c_str(), assertString(rb.m_at), os.str());
 }
 
 void JUnitReporter::log_message(const MessageData &mb) {
@@ -7787,7 +7790,7 @@ void XmlReporter::log_assert(const AssertData &rb) {
     if (rb.m_at & assertType::is_throws_with)
         xml.scopedElement("ExpectedExceptionString").writeText(rb.m_exception_string.c_str());
     if ((rb.m_at & assertType::is_normal) && !rb.m_threw)
-        xml.scopedElement("Expanded").writeText(rb.m_decomp.c_str());
+        xml.scopedElement("Expanded").writeText(detail::escapeAssertFailureDecomp(rb.m_decomp).c_str());
 
     log_contexts();
 
@@ -8441,6 +8444,41 @@ String toString(long long in) {
 String toString(long long unsigned in) {
     return detail::toStreamLit(in);
 }
+
+namespace detail {
+
+String escapeAssertFailureDecomp(const String &in) {
+    String out;
+    for (String::size_type i = 0; i < in.size(); ++i) {
+        const unsigned char c = static_cast<unsigned char>(in[i]);
+        switch (c) {
+        case '\n':
+            out += "\\n";
+            break;
+        case '\r':
+            out += "\\r";
+            break;
+        case '\t':
+            out += "\\t";
+            break;
+        case '\\':
+            out += "\\\\";
+            break;
+        default:
+            if (c >= 32 && c < 127) {
+                out += static_cast<char>(c);
+            } else {
+                char buf[5] = {'\\', 'x', 0, 0, 0};
+                std::snprintf(buf + 2, sizeof(buf) - 2, "%02x", c);
+                out += buf;
+            }
+            break;
+        }
+    }
+    return out;
+}
+
+} // namespace detail
 
 // NOLINTEND(cppcoreguidelines-pro-type-union-access)
 

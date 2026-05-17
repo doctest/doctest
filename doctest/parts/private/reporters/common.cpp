@@ -47,7 +47,8 @@ void fulltext_log_assert_to_stream(std::ostream &s, const AssertData &rb) {
         if (rb.m_threw)
             s << rb.m_exception << "\n";
         else
-            s << "  values: " << assertString(rb.m_at) << "( " << rb.m_decomp << " )\n";
+            s << "  values: " << assertString(rb.m_at) << "( "
+              << detail::escapeAssertFailureDecomp(rb.m_decomp) << " )\n";
     }
     // clang-format on
 }

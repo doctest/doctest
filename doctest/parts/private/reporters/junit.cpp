@@ -205,7 +205,7 @@ void JUnitReporter::log_assert(const AssertData &rb) {
 
     fulltext_log_assert_to_stream(os, rb);
     log_contexts(os);
-    testCaseData.addFailure(rb.m_decomp.c_str(), assertString(rb.m_at), os.str());
+    testCaseData.addFailure(detail::escapeAssertFailureDecomp(rb.m_decomp).c_str(), assertString(rb.m_at), os.str());
 }
 
 void JUnitReporter::log_message(const MessageData &mb) {

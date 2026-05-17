@@ -394,6 +394,41 @@ String toString(long long unsigned in) {
     return detail::toStreamLit(in);
 }
 
+namespace detail {
+
+String escapeAssertFailureDecomp(const String &in) {
+    String out;
+    for (String::size_type i = 0; i < in.size(); ++i) {
+        const unsigned char c = static_cast<unsigned char>(in[i]);
+        switch (c) {
+        case '\n':
+            out += "\\n";
+            break;
+        case '\r':
+            out += "\\r";
+            break;
+        case '\t':
+            out += "\\t";
+            break;
+        case '\\':
+            out += "\\\\";
+            break;
+        default:
+            if (c >= 32 && c < 127) {
+                out += static_cast<char>(c);
+            } else {
+                char buf[5] = {'\\', 'x', 0, 0, 0};
+                std::snprintf(buf + 2, sizeof(buf) - 2, "%02x", c);
+                out += buf;
+            }
+            break;
+        }
+    }
+    return out;
+}
+
+} // namespace detail
+
 // NOLINTEND(cppcoreguidelines-pro-type-union-access)
 
 } // namespace doctest
