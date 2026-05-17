@@ -27,7 +27,7 @@ def addCommonFlags(parser):
                                                                 help = "<doctest> type of assert used - Catch: only normal")
 
 parser = argparse.ArgumentParser()
-subparsers = parser.add_subparsers()
+subparsers = parser.add_subparsers(dest="command", required=True)
 parser_c = subparsers.add_parser('compile', help='benchmark compile times')
 addCommonFlags(parser_c)
 parser_c.add_argument("--implement",    action = "store_true",  help = "implement the framework test runner")
