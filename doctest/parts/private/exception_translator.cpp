@@ -33,11 +33,14 @@ String translateActiveException() noexcept {
     try {
         throw;
     } catch (std::exception &ex) {
-        return ex.what();
+        const char *what = ex.what();
+        return what ? what : "";
     } catch (std::string &msg) {
         return msg.c_str();
+    } catch (std::nullptr_t) {
+        return "nullptr";
     } catch (const char *msg) {
-        return msg;
+        return msg ? msg : "null";
     } catch (...) {
         return "unknown exception";
     }
