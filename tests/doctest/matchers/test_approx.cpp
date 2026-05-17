@@ -24,6 +24,10 @@ struct bounds {
         if (std::isinf(C)) {
             return {C, C};
         }
+        if (e >= 1.0) {
+            return {std::numeric_limits<double>::lowest(),
+                    std::numeric_limits<double>::max()};
+        }
         const auto min = std::min((C - e * s) / (1 - e), C - e * (s + std::abs(C)));
         const auto max = std::max((C + e * s) / (1 - e), C + e * (s + std::abs(C)));
         return {min, max};
@@ -167,11 +171,11 @@ TEST_CASE("Comparison with finite floating-point values" * doctest::expected_fai
 
     SUBCASE("Matcher focused around 0 with an error of 100% and no scaling") {
         const auto m = Approx(0.0).epsilon(1.0).scale(0);
-        CAPTURE(bounds::determine(m)); // [-NaN, +NaN]
+        CAPTURE(bounds::determine(m)); // [lowest, max]
 
-        CHECK(-epsilon != m);
-        CHECK(     0.0 == m); // FAIL
-        CHECK(+epsilon != m);
+        CHECK(-epsilon == m);
+        CHECK(     0.0 == m);
+        CHECK(+epsilon == m);
     }
 
     SUBCASE("Matcher focused around smallest positive normalized value") {

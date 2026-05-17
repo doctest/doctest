@@ -204,6 +204,9 @@ REQUIRE(22.0/7 == doctest::Approx(3.141).epsilon(0.01)); // allow for a 1% error
 When dealing with very large or very small numbers it can be useful to specify a scale, which can be achieved by calling
 the `scale()` method on the `doctest::Approx` instance.
 
+`epsilon` is a relative tolerance and is expected to be in the `[0, 1)` range for the usual comparison formula. Values of
+`1.0` or greater are treated as “match anything” (100% tolerance or more).
+
 ## NaN checking
 
 Two NaN floating point numbers do not compare equal to each other. This makes it quite inconvenient to check for NaN

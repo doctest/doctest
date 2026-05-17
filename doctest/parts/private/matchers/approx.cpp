@@ -24,6 +24,9 @@ Approx &Approx::scale(double newScale) {
 }
 
 bool operator==(double lhs, const Approx &rhs) {
+    // 100% (or greater) relative tolerance matches any finite comparison operand.
+    if (rhs.m_epsilon >= 1.0)
+        return true;
     // Thanks to Richard Harris for his help refining this formula
     return std::fabs(lhs - rhs.m_value) <
            rhs.m_epsilon * (rhs.m_scale + std::max<double>(std::fabs(lhs), std::fabs(rhs.m_value)));
