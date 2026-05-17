@@ -429,7 +429,8 @@ void ConsoleReporter::log_assert(const AssertData &rb) {
 
     fulltext_log_assert_to_stream(s, rb);
 
-    log_contexts();
+    if (rb.m_failed)
+        log_contexts();
 }
 
 void ConsoleReporter::log_message(const MessageData &mb) {

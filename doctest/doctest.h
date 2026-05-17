@@ -7262,7 +7262,8 @@ void ConsoleReporter::log_assert(const AssertData &rb) {
 
     fulltext_log_assert_to_stream(s, rb);
 
-    log_contexts();
+    if (rb.m_failed)
+        log_contexts();
 }
 
 void ConsoleReporter::log_message(const MessageData &mb) {
@@ -7789,7 +7790,8 @@ void XmlReporter::log_assert(const AssertData &rb) {
     if ((rb.m_at & assertType::is_normal) && !rb.m_threw)
         xml.scopedElement("Expanded").writeText(rb.m_decomp.c_str());
 
-    log_contexts();
+    if (rb.m_failed)
+        log_contexts();
 
     xml.endElement();
 }
