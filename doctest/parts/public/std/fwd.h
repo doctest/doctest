@@ -6,15 +6,14 @@
 DOCTEST_SUPPRESS_PUBLIC_WARNINGS_PUSH
 
 #ifdef DOCTEST_CONFIG_USE_STD_HEADERS
-DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_BEGIN
 #include <cstddef>
 #include <ostream>
 #include <istream>
-DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_END
 #else // DOCTEST_CONFIG_USE_STD_HEADERS
 
-// Forward declaring 'X' in namespace std is not permitted by the C++ Standard.
-DOCTEST_MSVC_SUPPRESS_WARNING_WITH_PUSH(4643)
+DOCTEST_MSVC_SUPPRESS_WARNING_PUSH
+DOCTEST_MSVC_SUPPRESS_WARNING(4643) // Forward declaring 'X' in namespace std is not permitted by the C++ Standard.
+DOCTEST_MSVC_SUPPRESS_WARNING(5285) // Cannot declare a specialization for 'template name': template argument.
 
 // NOLINTBEGIN(bugprone-std-namespace-modification, cert-dcl58-cpp)
 namespace std {

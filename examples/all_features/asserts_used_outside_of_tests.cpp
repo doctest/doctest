@@ -6,11 +6,9 @@
 
 #include "header.h"
 
-DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_BEGIN
 #include <iostream>
 #include <cstring>
 #include <algorithm>
-DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_END
 DOCTEST_GCC_SUPPRESS_WARNING("-Wmissing-declarations")
 DOCTEST_CLANG_SUPPRESS_WARNING("-Wmissing-prototypes")
 
