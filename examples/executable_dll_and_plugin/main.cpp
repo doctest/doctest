@@ -1,9 +1,7 @@
 #define DOCTEST_CONFIG_IMPLEMENTATION_IN_DLL
 #include <doctest/doctest.h>
 
-DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_BEGIN
 #include <iostream>
-DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_END
 
 template <typename T>
 static int conditional_throw(bool in, const T &ex) {
@@ -22,11 +20,7 @@ TEST_CASE("executable") {
 }
 
 #ifdef _WIN32
-#define WIN32_LEAN_AND_MEAN
-DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_BEGIN
-DOCTEST_CLANG_SUPPRESS_WARNING("-Wnonportable-system-include-path")
-#include <windows.h>
-DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_END
+#include <doctest/parts/private/ext/windows.h>
 #ifdef _MSC_VER
 #define LoadDynamicLib(lib) LoadLibrary(lib ".dll")
 #else // _MSC_VER

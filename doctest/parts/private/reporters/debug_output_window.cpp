@@ -1,6 +1,7 @@
 #include "doctest/parts/private/prelude.h"
 #include "doctest/parts/private/reporters/debug_output_window.h"
 #include "doctest/parts/private/context_state.h"
+#include "doctest/parts/private/ext/windows.h" // IWYU pragma: keep
 
 DOCTEST_SUPPRESS_PRIVATE_WARNINGS_PUSH
 
