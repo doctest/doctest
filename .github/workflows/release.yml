@@ -13,7 +13,7 @@ jobs:
     permissions:
       contents: write
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v6
       - run: git archive $GITHUB_REF -o "doctest-${GITHUB_REF:10}.tar.gz"
       - run: gh release upload ${GITHUB_REF:10} "doctest-${GITHUB_REF:10}.tar.gz"
         env:

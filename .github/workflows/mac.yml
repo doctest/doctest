@@ -39,7 +39,7 @@ jobs:
           - { os: macos-14, version: "16.2",   arch: arm64, build-type: Release, target: test } # Apple Clang 16.0.0
 
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
 
       - name: Install
         run: |
@@ -68,7 +68,7 @@ jobs:
         target:     [test, fno-exceptions, fno-rtti]
 
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
 
       - name: Install
         run: |
