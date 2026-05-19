@@ -30,6 +30,6 @@ jobs:
           - macos-latest
     runs-on: ${{ matrix.os }}
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v6
     - run: bazelisk test --config=ci ...
       working-directory: examples

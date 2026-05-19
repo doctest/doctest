@@ -34,7 +34,7 @@ jobs:
       CMAKE_GENERATOR: MinGW Makefiles
 
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
 
       - name: Set up MinGW-w64
         uses: egor-tensin/setup-mingw@v2
@@ -68,7 +68,7 @@ jobs:
           - { compiler: clang-cl, arch: x86 }
 
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
 
       - name: Configure MSVC (x64)
         if:   matrix.arch == 'x64'
@@ -101,7 +101,7 @@ jobs:
         configuration: ["Debug", "Release"]
 
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
 
       - name: Generate
         run:
