@@ -1,7 +1,7 @@
-#include "doctest/parts/private/prelude.h"
-#include "doctest/parts/private/signals.h"
 #include "doctest/parts/private/context_state.h"
 #include "doctest/parts/private/reporter.h"
+#include "doctest/parts/private/signals.h"
+#include "doctest/parts/public/debugger.h"
 
 #if defined(DOCTEST_CONFIG_POSIX_SIGNALS) || defined(DOCTEST_CONFIG_WINDOWS_SEH)
 #include <csignal>

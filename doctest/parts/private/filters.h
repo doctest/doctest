@@ -1,7 +1,9 @@
 #ifndef DOCTEST_PARTS_PRIVATE_FILTERS
 #define DOCTEST_PARTS_PRIVATE_FILTERS
 
-#include "doctest/parts/private/prelude.h"
+#include "doctest/parts/public/string.h"
+
+#include <vector>
 
 DOCTEST_SUPPRESS_PRIVATE_WARNINGS_PUSH
 

@@ -1,8 +1,9 @@
 #ifndef DOCTEST_PARTS_PRIVATE_TRAVERSAL
 #define DOCTEST_PARTS_PRIVATE_TRAVERSAL
 
-#include "doctest/parts/private/prelude.h"
 #include "doctest/parts/public/subcase.h"
+
+#include <vector>
 
 DOCTEST_SUPPRESS_PRIVATE_WARNINGS_PUSH
 

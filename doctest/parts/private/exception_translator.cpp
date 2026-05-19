@@ -1,5 +1,7 @@
-#include "doctest/parts/private/prelude.h"
 #include "doctest/parts/private/exception_translator.h"
+
+#include <algorithm>
+#include <string>
 
 DOCTEST_SUPPRESS_PRIVATE_WARNINGS_PUSH
 

@@ -1,7 +1,16 @@
 #ifndef DOCTEST_PARTS_PRIVATE_EXCEPTIONS
 #define DOCTEST_PARTS_PRIVATE_EXCEPTIONS
 
-#include "doctest/parts/private/prelude.h"
+#include "doctest/parts/public/config.h"
+
+#include <stdexcept> // IWYU pragma: keep (DOCTEST_INTERNAL_ERROR)
+
+#if defined(DOCTEST_CONFIG_NO_EXCEPTIONS) && !defined(DOCTEST_CONFIG_HANDLE_EXCEPTION)
+#include <exception>
+#ifndef DOCTEST_CONFIG_NO_INCLUDE_IOSTREAM
+#include <iostream>
+#endif
+#endif
 
 DOCTEST_SUPPRESS_PRIVATE_WARNINGS_PUSH
 

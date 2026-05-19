@@ -1,4 +1,8 @@
-#include "doctest/parts/private/prelude.h"
+#include "doctest/parts/public/context/options.h"
+#include "doctest/parts/public/path.h"
+
+#include <algorithm>
+#include <cstring>
 
 DOCTEST_SUPPRESS_PRIVATE_WARNINGS_PUSH
 

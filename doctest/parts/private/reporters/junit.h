@@ -1,9 +1,11 @@
 #ifndef DOCTEST_PARTS_PRIVATE_REPORTERS_JUNIT
 #define DOCTEST_PARTS_PRIVATE_REPORTERS_JUNIT
 
-#include "doctest/parts/private/prelude.h"
-#include "doctest/parts/private/xml.h"
+#include "doctest/parts/private/atomic.h"
 #include "doctest/parts/private/timer.h"
+#include "doctest/parts/private/xml.h"
+#include "doctest/parts/public/macros.h"
+#include "doctest/parts/public/reporter.h"
 
 DOCTEST_SUPPRESS_PRIVATE_WARNINGS_PUSH
 

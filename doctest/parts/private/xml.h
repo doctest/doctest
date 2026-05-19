@@ -1,7 +1,15 @@
 #ifndef DOCTEST_PARTS_PRIVATE_XML
 #define DOCTEST_PARTS_PRIVATE_XML
 
-#include "doctest/parts/private/prelude.h"
+#include "doctest/parts/public/config.h"
+
+#include <sstream>
+#include <string>
+#include <vector>
+
+#ifndef DOCTEST_CONFIG_NO_INCLUDE_IOSTREAM
+#include <iostream>
+#endif
 
 DOCTEST_SUPPRESS_PRIVATE_WARNINGS_PUSH
 

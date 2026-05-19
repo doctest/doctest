@@ -1,6 +1,9 @@
-#include "doctest/parts/private/prelude.h"
-#include "doctest/parts/private/reporters/junit.h"
+
 #include "doctest/parts/private/reporters/common.h"
+#include "doctest/parts/private/reporters/junit.h"
+#include "doctest/parts/public/path.h"
+
+#include <iomanip>
 
 DOCTEST_SUPPRESS_PRIVATE_WARNINGS_PUSH
 

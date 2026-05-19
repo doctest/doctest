@@ -1,7 +1,8 @@
-#include "doctest/parts/private/prelude.h"
 #include "doctest/parts/private/context_state.h"
 #include "doctest/parts/private/filters.h"
 #include "doctest/parts/private/reporter.h"
+
+#include <cstring>
 
 DOCTEST_SUPPRESS_PRIVATE_WARNINGS_PUSH
 

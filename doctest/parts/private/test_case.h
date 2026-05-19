@@ -1,7 +1,9 @@
 #ifndef DOCTEST_PARTS_PRIVATE_TEST_CASE
 #define DOCTEST_PARTS_PRIVATE_TEST_CASE
 
-#include "doctest/parts/private/prelude.h"
+#include "doctest/parts/public/test_case.h"
+
+#include <set>
 
 DOCTEST_SUPPRESS_PRIVATE_WARNINGS_PUSH
 

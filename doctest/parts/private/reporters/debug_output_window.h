@@ -1,9 +1,9 @@
 #ifndef DOCTEST_PARTS_PRIVATE_REPORTERS_DEBUG_OUTPUT_WINDOW
 #define DOCTEST_PARTS_PRIVATE_REPORTERS_DEBUG_OUTPUT_WINDOW
 
-#include "doctest/parts/private/prelude.h"
 #include "doctest/parts/private/reporters/console.h"
-#include "doctest/parts/private/context_state.h"
+
+#include <iosfwd>
 
 DOCTEST_SUPPRESS_PRIVATE_WARNINGS_PUSH
 

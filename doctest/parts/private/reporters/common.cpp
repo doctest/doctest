@@ -1,5 +1,7 @@
-#include "doctest/parts/private/prelude.h"
 #include "doctest/parts/private/reporters/common.h"
+#include "doctest/parts/public/color.h"
+
+#include <ostream>
 
 DOCTEST_SUPPRESS_PRIVATE_WARNINGS_PUSH
 

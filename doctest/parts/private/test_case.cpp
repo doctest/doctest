@@ -1,5 +1,6 @@
-#include "doctest/parts/private/prelude.h"
 #include "doctest/parts/private/test_case.h"
+
+#include <cstring>
 
 DOCTEST_SUPPRESS_PRIVATE_WARNINGS_PUSH
 
@@ -68,7 +69,7 @@ bool TestCase::operator<(const TestCase &other) const noexcept {
     // this will be used only to differentiate between test cases - not relevant for sorting
     if (m_line != other.m_line)
         return m_line < other.m_line;
-    const int name_cmp = strcmp(m_name, other.m_name);
+    const int name_cmp = std::strcmp(m_name, other.m_name);
     if (name_cmp != 0)
         return name_cmp < 0;
     const int file_cmp = m_file.compare(other.m_file);

@@ -1,16 +1,15 @@
 #ifndef DOCTEST_PARTS_PRIVATE_REPORTERS_CONSOLE
 #define DOCTEST_PARTS_PRIVATE_REPORTERS_CONSOLE
 
-#include "doctest/parts/private/prelude.h"
-#include "doctest/parts/private/reporters/common.h"
+#include "doctest/parts/private/atomic.h"
+#include "doctest/parts/public/color.h"
+#include "doctest/parts/public/config.h"
+#include "doctest/parts/public/macros.h"
+#include "doctest/parts/public/reporter.h"
+
+#include <vector>
 
 DOCTEST_SUPPRESS_PRIVATE_WARNINGS_PUSH
-
-#ifdef DOCTEST_CONFIG_NO_UNPREFIXED_OPTIONS
-#define DOCTEST_OPTIONS_PREFIX_DISPLAY DOCTEST_CONFIG_OPTIONS_PREFIX
-#else
-#define DOCTEST_OPTIONS_PREFIX_DISPLAY ""
-#endif
 
 #ifndef DOCTEST_CONFIG_DISABLE
 

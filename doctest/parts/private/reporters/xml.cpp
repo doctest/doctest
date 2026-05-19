@@ -1,5 +1,9 @@
-#include "doctest/parts/private/prelude.h"
+#include "doctest/parts/private/reporter.h"
 #include "doctest/parts/private/reporters/xml.h"
+#include "doctest/parts/public/matchers/approx.h"
+#include "doctest/parts/public/path.h"
+
+#include <cstring>
 
 DOCTEST_SUPPRESS_PRIVATE_WARNINGS_PUSH
 

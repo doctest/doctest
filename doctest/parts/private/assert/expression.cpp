@@ -1,4 +1,4 @@
-#include "doctest/parts/private/prelude.h"
+#include "doctest/parts/public/assert/expression.h"
 
 DOCTEST_SUPPRESS_PRIVATE_WARNINGS_PUSH
 

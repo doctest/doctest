@@ -1,6 +1,8 @@
-#include "doctest/parts/private/prelude.h"
-#include "doctest/parts/private/xml.h"
 #include "doctest/parts/private/exceptions.h"
+#include "doctest/parts/private/xml.h"
+
+#include <cstdint>
+#include <iomanip>
 
 DOCTEST_SUPPRESS_PRIVATE_WARNINGS_PUSH
 

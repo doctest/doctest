@@ -1,5 +1,14 @@
-#include "doctest/parts/private/prelude.h"
 #include "doctest/parts/private/ext/windows.h" // IWYU pragma: keep
+#include "doctest/parts/public/debugger.h"
+
+#include <cerrno>
+#include <fstream>
+#include <string>
+
+#ifdef DOCTEST_PLATFORM_MAC
+#include <sys/sysctl.h>
+#include <sys/types.h>
+#endif
 
 DOCTEST_SUPPRESS_PRIVATE_WARNINGS_PUSH
 

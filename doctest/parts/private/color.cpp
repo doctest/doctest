@@ -1,9 +1,14 @@
-#include "doctest/parts/private/prelude.h"
 #include "doctest/parts/private/context_state.h"
 #include "doctest/parts/private/ext/windows.h" // IWYU pragma: keep
+#include "doctest/parts/public/color.h"
+
+#include <cstdio>
+#include <ostream>
 
 #ifdef DOCTEST_PLATFORM_WINDOWS
 #include <io.h>
+#else
+#include <unistd.h>
 #endif
 
 DOCTEST_SUPPRESS_PRIVATE_WARNINGS_PUSH

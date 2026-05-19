@@ -1,9 +1,10 @@
 #ifndef DOCTEST_PARTS_PUBLIC_ASSERT_RESULT
 #define DOCTEST_PARTS_PUBLIC_ASSERT_RESULT
 
-#include "doctest/parts/public/assert/type.h"
 #include "doctest/parts/public/assert/comparator.h"
 #include "doctest/parts/public/assert/data.h"
+#include "doctest/parts/public/assert/type.h"
+#include "doctest/parts/public/context/options.h"
 #include "doctest/parts/public/matchers/contains.h"
 #include "doctest/parts/public/string.h"
 
