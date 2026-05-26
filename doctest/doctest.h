@@ -6530,7 +6530,7 @@ Approx &Approx::scale(double newScale) {
 
 bool operator==(double lhs, const Approx &rhs) {
     // A relative tolerance of 100% or more matches any finite value (but not NaN).
-    if(rhs.m_epsilon >= 1.0) {
+    if (rhs.m_epsilon >= 1.0) {
         return !std::isnan(lhs) && !std::isnan(rhs.m_value);
     }
     // Thanks to Richard Harris for his help refining this formula
