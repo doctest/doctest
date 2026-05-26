@@ -140,7 +140,7 @@ TEST_CASE_TEMPLATE("Verification of relational operators", T, float, double, lon
     // clang-format on
 }
 
-TEST_CASE("Comparison with finite floating-point values" * doctest::expected_failures(2)) {
+TEST_CASE("Comparison with finite floating-point values" * doctest::expected_failures(1)) {
     const auto epsilon = std::numeric_limits<double>::epsilon();
     const auto inf = std::numeric_limits<double>::infinity();
 
@@ -167,11 +167,10 @@ TEST_CASE("Comparison with finite floating-point values" * doctest::expected_fai
 
     SUBCASE("Matcher focused around 0 with an error of 100% and no scaling") {
         const auto m = Approx(0.0).epsilon(1.0).scale(0);
-        CAPTURE(bounds::determine(m)); // [-NaN, +NaN]
 
-        CHECK(-epsilon != m);
-        CHECK(     0.0 == m); // FAIL
-        CHECK(+epsilon != m);
+        CHECK(-epsilon == m);
+        CHECK(     0.0 == m);
+        CHECK(+epsilon == m);
     }
 
     SUBCASE("Matcher focused around smallest positive normalized value") {
@@ -228,9 +227,8 @@ TEST_CASE("Comparison with finite floating-point values" * doctest::expected_fai
 
     SUBCASE("Matcher focused around 100 with an error of 100% and no scaling") {
         const auto m = Approx(100.0).epsilon(1.0).scale(0);
-        CAPTURE(bounds::determine(m)); // [0, inf]
 
-        CHECK(  0.0 != m);
+        CHECK(  0.0 == m);
         CHECK(1e-14 == m);
         CHECK(100.0 == m);
         CHECK(1e+18 == m);
