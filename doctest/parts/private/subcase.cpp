@@ -3,6 +3,7 @@
 #include "doctest/parts/private/reporter.h"
 
 #include <cstring>
+#include <exception>
 
 DOCTEST_SUPPRESS_PRIVATE_WARNINGS_PUSH
 
