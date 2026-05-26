@@ -311,6 +311,30 @@ TEST_CASE("Comparison with non-finite floating-point values") {
     }
 }
 
+TEST_CASE("epsilon >= 1 matches any finite value") {
+    SUBCASE("epsilon = 1 with expected value 0") {
+        const auto m = Approx(0.0).epsilon(1.0);
+        CHECK(-1.0 == m);
+        CHECK(0.0 == m);
+        CHECK(1.0 == m);
+        CHECK(std::numeric_limits<double>::infinity() == m);
+    }
+
+    SUBCASE("epsilon = 1 with positive expected value") {
+        const auto m = Approx(100.0).epsilon(1.0);
+        CHECK(-50.0 == m);
+        CHECK(100.0 == m);
+        CHECK(250.0 == m);
+    }
+
+    SUBCASE("NaN is never equal") {
+        const auto qnan = std::numeric_limits<double>::quiet_NaN();
+        const auto m = Approx(0.0).epsilon(1.0);
+        CHECK_FALSE(qnan == m);
+        CHECK_FALSE(m == qnan);
+    }
+}
+
 TEST_CASE("Stringification") {
     SUBCASE("Matcher without epsilon or scale set") {
         constexpr auto inf = std::numeric_limits<double>::infinity();
