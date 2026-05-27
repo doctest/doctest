@@ -141,40 +141,60 @@ static_assert(__cpp_lib_format >= 201907L);
         auto a = std::format("{}",0);
         return 0;
     }
-]] HAS_STD_FORMAT)
+]] HAS_STD_FORMAT20)
+    set(CMAKE_CXX_STANDARD "${CMAKE_CXX_STANDARD_BACKUP}")
+endif()
+if (CMAKE_CXX23_COMPILE_FEATURES)
+    set(CMAKE_CXX_STANDARD_BACKUP "${CMAKE_CXX_STANDARD}")
+    set(CMAKE_CXX_STANDARD 23)
+    check_cxx_source_compiles([[
+#include <version>
+#include <format>
+static_assert(__cpp_auto_cast >= 202110L);
+static_assert(__cpp_concepts >= 201907L);
+static_assert(__cpp_lib_format >= 202207L);
+    int main() {
+        auto a = std::format("{}",0);
+        return 0;
+    }
+]] HAS_STD_FORMAT23)
     set(CMAKE_CXX_STANDARD "${CMAKE_CXX_STANDARD_BACKUP}")
 endif()
 
-if (${HAS_STD_FORMAT})
+if (${HAS_STD_FORMAT20})
     if (CMAKE_CXX_CLANG_TIDY)
         message("hiding c++20 format from clang tidy")
     else()
         add_test_all_features(std_format20 DOCTEST_CONFIG_USE_STDFORMAT)
         set_target_properties(std_format20 PROPERTIES CXX_STANDARD 20 CXX_STANDARD_REQUIRED ON)
-
-        if (CMAKE_CXX23_COMPILE_FEATURES)
-            add_test_all_features(std_format23 DOCTEST_CONFIG_USE_STDFORMAT)
-            set_target_properties(std_format23 PROPERTIES CXX_STANDARD 23 CXX_STANDARD_REQUIRED ON)
-        else()
-            message("no c++23")
-        endif()
     endif()
 else()
-    message("no std::format")
+    message("no c++20 std::format")
+endif()
+
+if (${HAS_STD_FORMAT23})
+    if (CMAKE_CXX_CLANG_TIDY)
+        message("hiding c++23 format from clang tidy")
+    else()
+        add_test_all_features(std_format23 DOCTEST_CONFIG_USE_STDFORMAT)
+        set_target_properties(std_format23 PROPERTIES CXX_STANDARD 23 CXX_STANDARD_REQUIRED ON)
+    endif()
+else()
+    message("no c++23 std::format")
 endif()
 
 find_package(fmt)
 if (${fmt_FOUND})
     if (CMAKE_CXX_CLANG_TIDY)
-        message("hiding c++20 fmtlib from clang tidy")
+        message("hiding c++20 c++23 fmtlib from clang tidy")
     else()
-        if (CMAKE_CXX20_COMPILE_FEATURES)
+        if (${HAS_STD_FORMAT20})
             add_test_all_features(std_fmtlib20 DOCTEST_CONFIG_USE_FMTLIB)
             set_target_properties(std_fmtlib20 PROPERTIES CXX_STANDARD 20 CXX_STANDARD_REQUIRED ON)
             target_link_libraries(std_fmtlib20 fmt::fmt)
         endif()
 
-        if (CMAKE_CXX23_COMPILE_FEATURES)
+        if (${HAS_STD_FORMAT23})
             add_test_all_features(std_fmtlib23 DOCTEST_CONFIG_USE_FMTLIB)
             set_target_properties(std_fmtlib23 PROPERTIES CXX_STANDARD 23 CXX_STANDARD_REQUIRED ON)
             target_link_libraries(std_fmtlib23 fmt::fmt)
