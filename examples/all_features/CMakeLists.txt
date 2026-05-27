@@ -128,6 +128,39 @@ add_test_all_features(no_multi_lane_atomics DOCTEST_CONFIG_NO_MULTI_LANE_ATOMICS
 add_test_all_features(disabled DOCTEST_CONFIG_DISABLE)
 add_test_all_features(std_headers DOCTEST_CONFIG_USE_STD_HEADERS)
 
+if (CMAKE_CXX20_COMPILE_FEATURES)
+add_test_all_features(std_format20 DOCTEST_CONFIG_USE_STDFORMAT)
+set_target_properties(std_format20 PROPERTIES CXX_STANDARD 20 CXX_STANDARD_REQUIRED ON)
+else()
+message("no c++20")
+endif()
+
+if (CMAKE_CXX23_COMPILE_FEATURES)
+add_test_all_features(std_format23 DOCTEST_CONFIG_USE_STDFORMAT)
+set_target_properties(std_format23 PROPERTIES CXX_STANDARD 23 CXX_STANDARD_REQUIRED ON)
+else()
+message("no c++23")
+endif()
+
+find_package(fmt)
+if (${fmt_FOUND})
+if (CMAKE_CXX20_COMPILE_FEATURES)
+add_test_all_features(std_fmtlib20 DOCTEST_CONFIG_USE_FMTLIB)
+set_target_properties(std_fmtlib20 PROPERTIES CXX_STANDARD 20 CXX_STANDARD_REQUIRED ON)
+target_link_libraries(std_fmtlib20 fmt::fmt)
+endif()
+
+if (CMAKE_CXX23_COMPILE_FEATURES)
+add_test_all_features(std_fmtlib23 DOCTEST_CONFIG_USE_FMTLIB)
+set_target_properties(std_fmtlib23 PROPERTIES CXX_STANDARD 23 CXX_STANDARD_REQUIRED ON)
+target_link_libraries(std_fmtlib23 fmt::fmt)
+endif()
+add_test_all_features(std_fmtlib DOCTEST_CONFIG_USE_FMTLIB)
+target_link_libraries(std_fmtlib fmt::fmt)
+else()
+message("no fmtlib")
+endif()
+
 # TODO: think about fixing these in a different way! - see issue #61 or commit 6b61e8aa3818c5ea100cedc1bb48a60ea10df6e8
 if(MSVC)
     target_compile_options(disabled PRIVATE /wd4505) # unreferenced local function has been removed

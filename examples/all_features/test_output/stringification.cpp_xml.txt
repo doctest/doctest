@@ -212,8 +212,16 @@
     <TestCase name="enum with operator&lt;&lt;" filename="stringification.cpp" line="0">
       <OverallResultsAsserts successes="1" failures="0" test_case_success="true"/>
     </TestCase>
+    <TestCase name="std::format" filename="stringification.cpp" line="0">
+      <Message type="WARNING" filename="stringification.cpp" line="0">
+        <Text>
+          TestFormat
+        </Text>
+      </Message>
+      <OverallResultsAsserts successes="0" failures="0" test_case_success="true"/>
+    </TestCase>
   </TestSuite>
   <OverallResultsAsserts successes="16" failures="13"/>
-  <OverallResultsTestCases successes="4" failures="3"/>
+  <OverallResultsTestCases successes="5" failures="3"/>
 </doctest>
 Program code.

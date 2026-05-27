@@ -2105,6 +2105,12 @@ TEST CASE:  stale generator depth does not create extra reruns
 generators.cpp(0): MESSAGE: run=1 discover=false
 
 ===============================================================================
+stringification.cpp(0):
+TEST CASE:  std::format
+
+stringification.cpp(0): MESSAGE: TestFormat
+
+===============================================================================
 subcases.cpp(0):
 TEST CASE:  subcases can be used in a separate function as well
   from function...
@@ -2380,7 +2386,7 @@ TEST CASE:  without a funny name:
 subcases.cpp(0): MESSAGE: Nooo
 
 ===============================================================================
-[doctest] test cases: 114 |  64 passed |  50 failed |
+[doctest] test cases: 115 |  65 passed |  50 failed |
 [doctest] assertions: 345 | 221 passed | 124 failed |
 [doctest] Status: FAILURE!
 Program code.

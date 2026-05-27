@@ -90,7 +90,13 @@ TEST CASE:  a test case that registers an exception translator for int and then 
 stringification.cpp(0): ERROR: test case THREW exception: 5
 
 ===============================================================================
-[doctest] test cases:  7 |  4 passed |  3 failed |
+stringification.cpp(0):
+TEST CASE:  std::format
+
+stringification.cpp(0): MESSAGE: TestFormat
+
+===============================================================================
+[doctest] test cases:  8 |  5 passed |  3 failed |
 [doctest] assertions: 29 | 16 passed | 13 failed |
 [doctest] Status: FAILURE!
 Program code.

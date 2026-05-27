@@ -305,3 +305,39 @@ static std::ostream &operator<<(std::ostream &os, Foo) {
 TEST_CASE("enum with operator<<") {
     CHECK(doctest::toString(Foo()) == "Foo");
 }
+
+struct TestFormat {};
+#if defined(DOCTEST_CONFIG_USE_STDFORMAT) || defined(DOCTEST_CONFIG_USE_FMTLIB)
+#include <doctest/extensions/doctest_format.h>
+
+static_assert(doctest::detail::meta::is_default_formattable<int>::value, "checking format int");
+static_assert(!doctest::detail::meta::is_default_formattable<N::A>::value, "checking format A");
+
+template <>
+struct DOCTEST_FORMAT_FORMATTER<TestFormat> {
+    template <typename Context>
+    constexpr typename Context::iterator parse(Context &ctx) {
+        auto it = ctx.begin();
+        if (it != ctx.end() && *it != '}')
+            throw DOCTEST_FORMAT_ERROR("badfmt");
+        return it;
+    }
+
+    template <typename Context>
+    typename Context::iterator format(const TestFormat &, Context &ctx) const {
+        return DOCTEST_FORMAT_TO(ctx.out(), "TestFormat");
+    }
+};
+
+static_assert(doctest::detail::meta::is_default_formattable<TestFormat>::value, "checking format TestFormat");
+using CheckOverideSuccessful = doctest::StringMaker<TestFormat>::UsingFmt;
+#endif
+
+TEST_CASE("std::format") {
+#if defined(DOCTEST_CONFIG_USE_STDFORMAT) || defined(DOCTEST_CONFIG_USE_FMTLIB)
+    TestFormat tf;
+    MESSAGE(tf);
+#else
+    MESSAGE("TestFormat");
+#endif
+}
