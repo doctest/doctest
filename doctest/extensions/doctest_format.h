@@ -93,7 +93,7 @@ concept formattable = requires(
     std::format_parse_context &pc,
     fake_format_context &fc
 ) {
-    // {f.parse(pc)}->std::same_as<std::format_parse_context::iterator>;
+    {f.parse(pc)}->std::same_as<std::format_parse_context::iterator>;
     {cf.format(t, fc)}->std::same_as<fake_format_context::iterator>;
 };
 
