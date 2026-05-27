@@ -133,12 +133,18 @@ add_test_all_features(std_headers DOCTEST_CONFIG_USE_STD_HEADERS)
 if (CMAKE_CXX20_COMPILE_FEATURES)
     set(CMAKE_CXX_STANDARD_BACKUP "${CMAKE_CXX_STANDARD}")
     set(CMAKE_CXX_STANDARD 20)
+    set(CMAKE_CXX_FLAGS_BACKUP "${CMAKE_CXX_FLAGS}")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS_BACKUP} -O3")
     check_cxx_source_compiles([[
 #include <version>
 #include <format>
 #include <iostream>
+#include <algorithm>
+
 static_assert(__cpp_concepts >= 201907L);
 static_assert(__cpp_lib_format >= 201907L);
+
+struct A{};
 
 struct TestFormat {};
 template <>
@@ -155,12 +161,17 @@ struct std::formatter<TestFormat> {
 };
 
 int main() {
+    // testing gcc-13 bug
+    A *bla[1]={nullptr};
+    std::sort(bla,bla);
+
     TestFormat tf;
     std::cout << std::format("{}", tf);
     return 0;
 }
 ]] HAS_STD_FORMAT20)
     set(CMAKE_CXX_STANDARD "${CMAKE_CXX_STANDARD_BACKUP}")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS_BACKUP}")
 endif()
 
 if (${HAS_STD_FORMAT20})
