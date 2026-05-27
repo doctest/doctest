@@ -1,9 +1,9 @@
 #include "doctest/parts/private/context_state.h"
 #include "doctest/parts/private/traversal.h"
 
-#include <algorithm>
-
 DOCTEST_SUPPRESS_PRIVATE_WARNINGS_PUSH
+
+#include <algorithm>
 
 #ifndef DOCTEST_CONFIG_DISABLE
 

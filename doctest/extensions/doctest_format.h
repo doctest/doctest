@@ -80,7 +80,7 @@ struct fake_format_context_iterator {
     fake_format_context_iterator operator++(int);
     fake_format_context_iterator &operator++();
     char &operator*();
-    friend ssize_t operator-(fake_format_context_iterator me, fake_format_context_iterator them);
+    int operator-(fake_format_context_iterator them) const;
 };
 
 using fake_format_context = std::basic_format_context<fake_format_context_iterator, char>;
