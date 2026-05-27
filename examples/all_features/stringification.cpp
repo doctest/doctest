@@ -316,10 +316,15 @@ static_assert(!doctest::detail::meta::is_default_formattable<N::A>::value, "chec
 template <>
 struct DOCTEST_FORMAT_FORMATTER<TestFormat> {
     template <typename Context>
-    constexpr typename Context::iterator parse(Context &ctx) {
+#if DOCTEST_CPLUSPLUS >= 201703L
+    constexpr typename Context::iterator parse(Context &ctx)
+#else
+    typename Context::iterator parse(Context &ctx) const
+#endif
+    {
         auto it = ctx.begin();
         if (it != ctx.end() && *it != '}')
-            throw DOCTEST_FORMAT_ERROR("badfmt");
+            std::abort();
         return it;
     }
 

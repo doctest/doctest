@@ -1104,11 +1104,9 @@ struct StringMakerBase<true> {
 };
 
 template <typename T>
-struct use_default_string_maker
-{
-static constexpr bool value =
-    has_insertion_operator<T>::value || types::is_pointer<T>::value ||
-    types::is_array<T>::value || is_pair<T>::value || is_container<T>::value;
+struct use_default_string_maker {
+    static constexpr bool value = has_insertion_operator<T>::value || types::is_pointer<T>::value ||
+                                  types::is_array<T>::value || is_pair<T>::value || is_container<T>::value;
 };
 } // namespace detail
 
@@ -5667,10 +5665,8 @@ void Context::parseArgs(int argc, const char *const *argv, bool withDefaults) {
     if (parseIntOption(argc, argv, DOCTEST_CONFIG_OPTIONS_PREFIX name "=", option_bool, intRes) ||                     \
         parseIntOption(argc, argv, DOCTEST_CONFIG_OPTIONS_PREFIX sname "=", option_bool, intRes))                      \
         p->var = static_cast<bool>(intRes);                                                                            \
-    else if (                                                                                                          \
-        parseFlag(argc, argv, DOCTEST_CONFIG_OPTIONS_PREFIX name) ||                                                   \
-        parseFlag(argc, argv, DOCTEST_CONFIG_OPTIONS_PREFIX sname)                                                     \
-    )                                                                                                                  \
+    else if (parseFlag(argc, argv, DOCTEST_CONFIG_OPTIONS_PREFIX name) ||                                              \
+             parseFlag(argc, argv, DOCTEST_CONFIG_OPTIONS_PREFIX sname))                                               \
         p->var = true;                                                                                                 \
     else if (withDefaults)                                                                                             \
     p->var = default

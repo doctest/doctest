@@ -264,11 +264,9 @@ struct StringMakerBase<true> {
 };
 
 template <typename T>
-struct use_default_string_maker
-{
-static constexpr bool value =
-    has_insertion_operator<T>::value || types::is_pointer<T>::value ||
-    types::is_array<T>::value || is_pair<T>::value || is_container<T>::value;
+struct use_default_string_maker {
+    static constexpr bool value = has_insertion_operator<T>::value || types::is_pointer<T>::value ||
+                                  types::is_array<T>::value || is_pair<T>::value || is_container<T>::value;
 };
 } // namespace detail
 

@@ -1,6 +1,7 @@
 
 #include "doctest/parts/private/reporters/common.h"
 #include "doctest/parts/private/reporters/junit.h"
+#include "doctest/parts/private/exceptions.h"
 #include "doctest/parts/public/path.h"
 
 #include <iomanip>

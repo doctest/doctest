@@ -24,7 +24,7 @@
 namespace doctest {
 
 inline void applyCommandLine(doctest::Context &ctx, const std::vector<std::string> &args) {
-    std::vector<const char*> doctest_args(args.size());
+    std::vector<const char *> doctest_args(args.size());
     for (size_t i = 0; i < args.size(); ++i) {
         doctest_args[i] = args[i].c_str();
     }

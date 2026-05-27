@@ -11,7 +11,6 @@
 // https://github.com/doctest/doctest/blob/master/doc/markdown/readme.md
 //
 
-
 #ifndef DOCTEST_PARTS_PUBLIC_FORMAT
 #define DOCTEST_PARTS_PUBLIC_FORMAT
 
@@ -34,6 +33,8 @@
 #if !defined(DOCTEST_CONFIG_USE_STDFORMAT) && !defined(DOCTEST_CONFIG_USE_FMTLIB)
 #define DOCTEST_CONFIG_USE_STDFORMAT
 #endif
+#elif defined(DOCTEST_CONFIG_USE_STDFORMAT)
+#error "No available <format>, please use DOCTEST_CONFIG_USE_FMTLIB instead"
 #endif
 
 #if !defined(DOCTEST_CONFIG_USE_STDFORMAT) && !defined(DOCTEST_CONFIG_USE_FMTLIB) && defined(__has_include) &&         \
@@ -46,6 +47,7 @@ DOCTEST_SUPPRESS_PUBLIC_WARNINGS_PUSH
 #ifndef DOCTEST_USE_CONCEPTS
 #error "Cannot use DOCTEST_CONFIG_USE_STDFORMAT without support for concepts"
 #endif
+#include <utility>
 #include <format>
 #elif defined(DOCTEST_CONFIG_USE_FMTLIB)
 #include <fmt/format.h>
@@ -58,9 +60,8 @@ namespace detail {
 namespace meta {
 #ifdef DOCTEST_CONFIG_USE_FMTLIB
 template <typename T>
-struct is_formattable
-{
-static constexpr bool value = fmt::is_formattable<T>::value && std::is_constructible<fmt::formatter<T>>::value;
+struct is_formattable {
+    static constexpr bool value = fmt::is_formattable<T>::value && std::is_constructible<fmt::formatter<T>>::value;
 };
 #ifdef DOCTEST_USE_CONCEPTS
 template <typename T>
@@ -71,8 +72,7 @@ template <typename T>
 concept formattable = std::formattable<T, char>;
 
 template <typename T>
-struct is_formattable
-{
+struct is_formattable {
     static constexpr bool value = formattable<T>;
 };
 #else
@@ -98,8 +98,7 @@ concept formattable = requires(
 };
 
 template <typename T>
-struct is_formattable
-{
+struct is_formattable {
     static constexpr bool value = formattable<T>;
 };
 #endif
@@ -108,14 +107,12 @@ struct is_formattable
 #define DOCTEST_FORMAT_FORMATTER fmt::formatter
 #define DOCTEST_FORMAT_TO fmt::format_to
 #define DOCTEST_FORMAT fmt::format
-#define DOCTEST_FORMAT_ERROR fmt::format_error
 #define DOCTEST_FORMAT_EMPTY_STRING FMT_STRING("")
 #else
 #define DOCTEST_FORMAT_PARSE_CONTEXT std::format_parse_context
 #define DOCTEST_FORMAT_FORMATTER std::formatter
 #define DOCTEST_FORMAT_TO std::format_to
 #define DOCTEST_FORMAT std::format
-#define DOCTEST_FORMAT_ERROR std::format_error
 #define DOCTEST_FORMAT_EMPTY_STRING ""
 #endif
 
@@ -125,7 +122,7 @@ constexpr bool check_format_string() {
     DOCTEST_FORMAT_PARSE_CONTEXT pc{"}"};
     DOCTEST_FORMAT_FORMATTER<typename types::remove_const<typename types::remove_reference<T>::type>::type> formatter;
     if (formatter.parse(pc) != pc.begin())
-        throw DOCTEST_FORMAT_ERROR("bad format");
+        std::abort();
     return true;
 }
 
@@ -139,15 +136,13 @@ concept default_formattable = requires {
 &&!use_default_string_maker<T>::value;
 
 template <typename T>
-struct is_default_formattable
-{
+struct is_default_formattable {
     static constexpr bool value = default_formattable<T>;
 };
 #else
 
 template <typename T>
-struct is_default_formattable
-{
+struct is_default_formattable {
     static constexpr bool value = is_formattable<T>::value && !use_default_string_maker<T>::value;
 };
 #endif
