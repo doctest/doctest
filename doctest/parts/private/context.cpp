@@ -14,12 +14,12 @@
 #include "doctest/parts/private/reporters/junit.h"
 #include "doctest/parts/private/reporters/xml.h"
 
-DOCTEST_SUPPRESS_PRIVATE_WARNINGS_PUSH
-
 #include <algorithm>
 #include <climits>
 #include <cstring>
 #include <fstream>
+
+DOCTEST_SUPPRESS_PRIVATE_WARNINGS_PUSH
 
 namespace doctest {
 

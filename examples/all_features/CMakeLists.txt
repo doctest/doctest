@@ -129,35 +129,37 @@ add_test_all_features(disabled DOCTEST_CONFIG_DISABLE)
 add_test_all_features(std_headers DOCTEST_CONFIG_USE_STD_HEADERS)
 
 
+#### Checking for C++20
 if (CMAKE_CXX20_COMPILE_FEATURES)
     set(CMAKE_CXX_STANDARD_BACKUP "${CMAKE_CXX_STANDARD}")
     set(CMAKE_CXX_STANDARD 20)
     check_cxx_source_compiles([[
 #include <version>
 #include <format>
+#include <iostream>
 static_assert(__cpp_concepts >= 201907L);
 static_assert(__cpp_lib_format >= 201907L);
-    int main() {
-        auto a = std::format("{}",0);
-        return 0;
+
+struct TestFormat {};
+template <>
+struct std::formatter<TestFormat> {
+    template <typename Context>
+    static constexpr typename Context::iterator parse(Context &ctx) {
+        return ctx.begin();
     }
+
+    template <typename Context>
+    typename Context::iterator format(const TestFormat &, Context &ctx) const {
+        return std::format_to(ctx.out(), "");
+    }
+};
+
+int main() {
+    TestFormat tf;
+    std::cout << std::format("{}", tf);
+    return 0;
+}
 ]] HAS_STD_FORMAT20)
-    set(CMAKE_CXX_STANDARD "${CMAKE_CXX_STANDARD_BACKUP}")
-endif()
-if (CMAKE_CXX23_COMPILE_FEATURES)
-    set(CMAKE_CXX_STANDARD_BACKUP "${CMAKE_CXX_STANDARD}")
-    set(CMAKE_CXX_STANDARD 23)
-    check_cxx_source_compiles([[
-#include <version>
-#include <format>
-static_assert(__cpp_auto_cast >= 202110L);
-static_assert(__cpp_concepts >= 201907L);
-static_assert(__cpp_lib_format >= 202207L);
-    int main() {
-        auto a = std::format("{}",0);
-        return 0;
-    }
-]] HAS_STD_FORMAT23)
     set(CMAKE_CXX_STANDARD "${CMAKE_CXX_STANDARD_BACKUP}")
 endif()
 
@@ -172,6 +174,43 @@ else()
     message("no c++20 std::format")
 endif()
 
+#### Checking for C++23
+
+if (CMAKE_CXX23_COMPILE_FEATURES)
+    set(CMAKE_CXX_STANDARD_BACKUP "${CMAKE_CXX_STANDARD}")
+    set(CMAKE_CXX_STANDARD 23)
+    check_cxx_source_compiles([[
+#include <version>
+#include <format>
+#include <iostream>
+static_assert(__cpp_auto_cast >= 202110L);
+static_assert(__cpp_concepts >= 201907L);
+static_assert(__cpp_lib_format >= 202207L);
+
+struct TestFormat {};
+template <>
+struct std::formatter<TestFormat> {
+    template <typename Context>
+    static constexpr typename Context::iterator parse(Context &ctx) {
+        return ctx.begin();
+    }
+
+    template <typename Context>
+    typename Context::iterator format(const TestFormat &, Context &ctx) const {
+        return std::format_to(ctx.out(), "");
+    }
+};
+
+static_assert(std::formattable<TestFormat,char>);
+int main() {
+    TestFormat tf;
+    std::cout << std::format("{}", tf);
+    return 0;
+}
+]] HAS_STD_FORMAT23)
+    set(CMAKE_CXX_STANDARD "${CMAKE_CXX_STANDARD_BACKUP}")
+endif()
+
 if (${HAS_STD_FORMAT23})
     if (CMAKE_CXX_CLANG_TIDY)
         message("hiding c++23 format from clang tidy")
@@ -183,8 +222,41 @@ else()
     message("no c++23 std::format")
 endif()
 
+
+#### Checking for fmtlib
+
 find_package(fmt)
 if (${fmt_FOUND})
+    set(CMAKE_REQUIRED_LIBRARIES_BACKUP "${CMAKE_REQUIRED_LIBRARIES}")
+    set(CMAKE_REQUIRED_LIBRARIES fmt::fmt)
+    check_cxx_source_compiles([[
+#include <iostream>
+#include <fmt/format.h>
+
+struct TestFormat {};
+template <>
+struct fmt::formatter<TestFormat> {
+    template <typename Context>
+    static constexpr typename Context::iterator parse(Context &ctx) {
+        return ctx.begin();
+    }
+
+    template <typename Context>
+    typename Context::iterator format(const TestFormat &, Context &ctx) const {
+        return fmt::format_to(ctx.out(), "");
+    }
+};
+
+static_assert(fmt::is_formattable<TestFormat>::value, "no fmt");
+int main() {
+    TestFormat tf;
+    std::cout << fmt::format("{}", tf);
+    return 0;
+}
+]] CAN_COMPILE_FMT)
+    set(CMAKE_REQUIRED_LIBRARIES "${CMAKE_REQUIRED_LIBRARIES_BACKUP}")
+endif()
+if (${CAN_COMPILE_FMT})
     if (CMAKE_CXX_CLANG_TIDY)
         message("hiding c++20 c++23 fmtlib from clang tidy")
     else()

@@ -1,10 +1,10 @@
 #include "doctest/parts/public/context/options.h"
 #include "doctest/parts/public/path.h"
 
-DOCTEST_SUPPRESS_PRIVATE_WARNINGS_PUSH
-
 #include <algorithm>
 #include <cstring>
+
+DOCTEST_SUPPRESS_PRIVATE_WARNINGS_PUSH
 
 #ifndef DOCTEST_CONFIG_OPTIONS_FILE_PREFIX_SEPARATOR
 #define DOCTEST_CONFIG_OPTIONS_FILE_PREFIX_SEPARATOR ':'

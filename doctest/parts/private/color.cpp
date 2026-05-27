@@ -2,8 +2,6 @@
 #include "doctest/parts/private/ext/windows.h" // IWYU pragma: keep
 #include "doctest/parts/public/color.h"
 
-DOCTEST_SUPPRESS_PRIVATE_WARNINGS_PUSH
-
 #include <cstdio>
 #include <ostream>
 
@@ -12,6 +10,8 @@ DOCTEST_SUPPRESS_PRIVATE_WARNINGS_PUSH
 #else
 #include <unistd.h>
 #endif
+
+DOCTEST_SUPPRESS_PRIVATE_WARNINGS_PUSH
 
 #if !defined(DOCTEST_CONFIG_COLORS_NONE)
 #if !defined(DOCTEST_CONFIG_COLORS_WINDOWS) && !defined(DOCTEST_CONFIG_COLORS_ANSI)
