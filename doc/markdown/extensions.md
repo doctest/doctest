@@ -9,6 +9,10 @@ that's when extensions come into play. They are located as header files in
 
 nothing here yet...
 
+# [Format](../../doctest/extensions/doctest_format.h)
+
+Allows stringification of any structures defined with a std::formatter or fmt::formatter
+
 # [Distributed tests with MPI](../../doctest/extensions/doctest_mpi.h)
 
 [Bruno Maugars and Bérenger Berthoul, ONERA]

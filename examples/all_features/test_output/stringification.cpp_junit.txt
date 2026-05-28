@@ -98,6 +98,7 @@ CHECK( "a" == doctest::Contains("aaa") ) is NOT correct!
     </testcase>
     <testcase classname="stringification.cpp" name="pointer comparisons" status="run"/>
     <testcase classname="stringification.cpp" name="enum with operator&lt;&lt;" status="run"/>
+    <testcase classname="stringification.cpp" name="std::format" status="run"/>
   </testsuite>
 </testsuites>
 Program code.

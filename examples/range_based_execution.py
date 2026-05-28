@@ -33,7 +33,8 @@ data = tuple([[x[0], x[-1]] for x in data])
 # ([1, 13], [14, 26], [27, 39], [40, 52], [53, 65], [66, 78], [79, 91], [92, 100])
 
 # the worker callback that runs the executable for the given range of tests
-def worker((first, last)):
+def worker(param):
+    (first, last) = param
     program_with_args = [sys.argv[1], "--dt-first=" + str(first), "--dt-last=" + str(last)]
     subprocess.Popen(program_with_args)
 

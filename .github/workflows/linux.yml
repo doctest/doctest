@@ -91,6 +91,9 @@ jobs:
             apt-get install -y cmake ninja-build valgrind libc6-dbg:i386 python3
             apt-get install -y clang-${{ matrix.version }} libclang-${{ matrix.version }}-dev llvm-${{ matrix.version }}-dev g++-multilib
 
+            # installing libfmt
+            apt-get install -y libfmt-dev
+
             # clang-17 does not automatically provide the i386 sanitizer runtimes,
             # but libclang-rt-V-dev:i386 does not always exist. This is the best intermediate option
             if [ "${{ matrix.version }}" = "17" ]; then
@@ -161,6 +164,8 @@ jobs:
             apt-get update
             apt-get install -y cmake ninja-build valgrind libc6-dbg:i386 python3
             apt-get install -y g++-${{ matrix.version }} g++-${{ matrix.version }}-multilib
+            # installing libfmt
+            apt-get install -y libfmt-dev
         run: docker exec build-container bash -eu -c "$CMD"
 
       - name: Build & Test
@@ -194,6 +199,8 @@ jobs:
           echo "deb [signed-by=/usr/share/keyrings/oneapi-archive-keyring.gpg] https://apt.repos.intel.com/oneapi all main" | sudo tee /etc/apt/sources.list.d/oneapi.list >/dev/null
           sudo apt-get update
           sudo apt-get install -y intel-oneapi-compiler-dpcpp-cpp-and-cpp-classic ninja-build
+          # installing libfmt
+          sudo apt-get install -y libfmt-dev
 
       - name: Generate
         run: |

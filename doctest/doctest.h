@@ -1103,13 +1103,15 @@ struct StringMakerBase<true> {
     }
 };
 
+template <typename T>
+struct use_default_string_maker {
+    static constexpr bool value = has_insertion_operator<T>::value || types::is_pointer<T>::value ||
+                                  types::is_array<T>::value || is_pair<T>::value || is_container<T>::value;
+};
 } // namespace detail
 
-template <typename T>
-struct StringMaker
-    : public detail::StringMakerBase<
-          detail::has_insertion_operator<T>::value || detail::types::is_pointer<T>::value ||
-          detail::types::is_array<T>::value || detail::is_pair<T>::value || detail::is_container<T>::value> {};
+template <typename T, typename Enable = void>
+struct StringMaker : public detail::StringMakerBase<detail::use_default_string_maker<T>::value> {};
 
 #ifndef DOCTEST_STRINGIFY
 #ifdef DOCTEST_CONFIG_DOUBLE_STRINGIFY
