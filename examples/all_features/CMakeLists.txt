@@ -240,6 +240,10 @@ find_package(fmt)
 if (${fmt_FOUND})
     set(CMAKE_REQUIRED_LIBRARIES_BACKUP "${CMAKE_REQUIRED_LIBRARIES}")
     set(CMAKE_REQUIRED_LIBRARIES fmt::fmt)
+    set(CMAKE_CXX_STANDARD_BACKUP "${CMAKE_CXX_STANDARD}")
+    set(CMAKE_CXX_FLAGS_BACKUP "${CMAKE_CXX_FLAGS}")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS_BACKUP} -O3")
+
     check_cxx_source_compiles([[
 #include <iostream>
 #include <fmt/format.h>
@@ -265,19 +269,79 @@ int main() {
     return 0;
 }
 ]] CAN_COMPILE_FMT)
+
+    if (CMAKE_CXX20_COMPILE_FEATURES)
+        set(CMAKE_CXX_STANDARD 20)
+        check_cxx_source_compiles([[
+#include <iostream>
+#include <fmt/format.h>
+
+struct TestFormat {};
+template <>
+struct fmt::formatter<TestFormat> {
+    template <typename Context>
+    static constexpr typename Context::iterator parse(Context &ctx) {
+        return ctx.begin();
+    }
+
+    template <typename Context>
+    typename Context::iterator format(const TestFormat &, Context &ctx) const {
+        return fmt::format_to(ctx.out(), "");
+    }
+};
+
+static_assert(fmt::is_formattable<TestFormat>::value, "no fmt");
+int main() {
+    TestFormat tf;
+    std::cout << fmt::format("{}", tf);
+    return 0;
+}
+]] CAN_COMPILE_FMT20)
+    endif()
+
+    if (CMAKE_CXX23_COMPILE_FEATURES)
+       set(CMAKE_CXX_STANDARD 23)
+        check_cxx_source_compiles([[
+#include <iostream>
+#include <fmt/format.h>
+
+struct TestFormat {};
+template <>
+struct fmt::formatter<TestFormat> {
+    template <typename Context>
+    static constexpr typename Context::iterator parse(Context &ctx) {
+        return ctx.begin();
+    }
+
+    template <typename Context>
+    typename Context::iterator format(const TestFormat &, Context &ctx) const {
+        return fmt::format_to(ctx.out(), "");
+    }
+};
+
+static_assert(fmt::is_formattable<TestFormat>::value, "no fmt");
+int main() {
+    TestFormat tf;
+    std::cout << fmt::format("{}", tf);
+    return 0;
+}
+]] CAN_COMPILE_FMT23)
+    endif()
+    set(CMAKE_CXX_STANDARD "${CMAKE_CXX_STANDARD_BACKUP}")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS_BACKUP}")
     set(CMAKE_REQUIRED_LIBRARIES "${CMAKE_REQUIRED_LIBRARIES_BACKUP}")
 endif()
 if (${CAN_COMPILE_FMT})
     if (CMAKE_CXX_CLANG_TIDY)
         message("hiding c++20 c++23 fmtlib from clang tidy")
     else()
-        if (${HAS_STD_FORMAT20})
+        if (${CAN_COMPILE_FMT20})
             add_test_all_features(std_fmtlib20 DOCTEST_CONFIG_USE_FMTLIB)
             set_target_properties(std_fmtlib20 PROPERTIES CXX_STANDARD 20 CXX_STANDARD_REQUIRED ON)
             target_link_libraries(std_fmtlib20 fmt::fmt)
         endif()
 
-        if (${HAS_STD_FORMAT23})
+        if (${CAN_COMPILE_FMT23})
             add_test_all_features(std_fmtlib23 DOCTEST_CONFIG_USE_FMTLIB)
             set_target_properties(std_fmtlib23 PROPERTIES CXX_STANDARD 23 CXX_STANDARD_REQUIRED ON)
             target_link_libraries(std_fmtlib23 fmt::fmt)
