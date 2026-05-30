@@ -139,7 +139,9 @@ A compiler-specific solution for MSVC is to use the [```/OPT:NOREF```](https://m
 
 ### Why is comparing C strings (```char*```) actually comparing pointers?
 
-**doctest** by default treats ```char*``` as normal pointers. Using the [**```DOCTEST_CONFIG_TREAT_CHAR_STAR_AS_STRING```**](configuration.md#doctest_config_treat_char_star_as_string) changes that.
+**doctest** by default treats ```char*``` as normal pointers in comparisons and stringification, so `CHECK("foo" == ptr)` compares addresses, not text. Enable [**```DOCTEST_CONFIG_TREAT_CHAR_STAR_AS_STRING```**](configuration.md#doctest_config_treat_char_star_as_string) globally before including the header to use `strcmp()`-based comparisons and print string contents in failures.
+
+Prefer `const char*` literals or `std::string` when possible. For `char*` buffers, the config macro is the supported approach; see [issue #707](https://github.com/doctest/doctest/issues/707) for remaining edge cases.
 
 ### How to write tests in header-only libraries?
 
