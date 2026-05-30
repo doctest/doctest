@@ -86,6 +86,10 @@ This can be defined both globally and in specific source files only.
 
 By default ```char*``` is being treated as a pointer. With this option comparing ```char*``` pointers will switch to using ```strcmp()``` for comparisons and when stringified the string will be printed instead of the pointer value.
 
+This applies to **`char*`** (not necessarily every `const char*` expression in all macro expansions). Define it **before** including the doctest header in every translation unit that compares C strings. Null pointers stringify as `"{null string}"`.
+
+Some reporter and decomposition edge cases with this option enabled are tracked in [issue #707](https://github.com/doctest/doctest/issues/707).
+
 This should be defined globally.
 
 ### **```DOCTEST_CONFIG_REQUIRE_STRINGIFICATION_FOR_ALL_USED_TYPES```**
