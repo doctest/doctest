@@ -71,7 +71,9 @@ for(int j = 0; j < 3; ++j) {
 }
 ```
 
-is unsupported because each iteration reuses the same subcase identity at the same source location and this leads to unpredictable (but deterministic) behavior.
+is unsupported because each iteration reuses the same subcase identity at the same source location and this leads to unpredictable (but deterministic) behavior. Only one of the iterations may run; failures in others can be missed (see [#939](https://github.com/doctest/doctest/issues/939)).
+
+Two `SUBCASE` macros with the **same name on the same source line** (for example `SUBCASE("x") { } SUBCASE("x") { }`) are also unsupported for the same reason.
 
 If the name varies per iteration, the discovered loop subcases behave as siblings at that nesting depth:
 
