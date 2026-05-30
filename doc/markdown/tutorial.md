@@ -179,7 +179,13 @@ root
 </pre>
 </td></tr></table>
 
-Subcases can be nested to an arbitrary depth (limited only by your stack size). Each leaf subcase (a subcase that contains no nested subcases) will be executed exactly once on a separate path of execution from any other leaf subcase (so no leaf subcase can interfere with another). A fatal failure in a parent subcase will prevent nested subcases from running - but then that's the idea.
+Subcases can be nested to an arbitrary depth (limited only by your stack size). Each leaf subcase (a subcase that contains no nested subcases) will be executed exactly once on a separate path of execution from any other leaf subcase.
+
+**What “separate paths” means:** each re-entry starts the ```TEST_CASE``` from the top, so sibling leaves do not inherit each other's mutations to locals in shared scopes. It does **not** mean that doctest keeps running every other leaf after one leaf fails.
+
+When a ```REQUIRE``` fails, the **current re-entry** stops immediately. Other leaf subcases in the same ```TEST_CASE``` are usually **not** run afterward. Use ```CHECK``` if you need multiple failures reported within the same path without stopping at the first one.
+
+A fatal failure in a parent subcase also prevents nested subcases on that path from running. See [issue #844](https://github.com/doctest/doctest/issues/844) for discussion (including differences from Catch2 expectations).
 
 Keep in mind that even though **doctest** is [**thread-safe**](faq.md#is-doctest-thread-aware) - using subcases has to be done only in the main test runner thread and all threads spawned in a subcase ought to be joined before the end of that subcase and no new subcases should be entered while other threads with doctest assertions in them are still running.
 
