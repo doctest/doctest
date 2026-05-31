@@ -34,10 +34,13 @@ template <class charT, class traits>
 class basic_istream;
 typedef basic_istream<char, char_traits<char>> istream; // NOLINT(modernize-use-using)
 #ifdef _MSC_VER
-#pragma warning(suppress: 5285)        // Suppress "Specializing template std::tuple is forbidden" warning
-template <class... Types> class tuple; // on this line only
-#else
-template <class... Types> class tuple;
+#pragma warning(push)
+#pragma warning(disable : 5285) // Suppress "Specializing template std::tuple is forbidden" warning
+#endif
+template <class... Types>
+class tuple;
+#ifdef _MSC_VER
+#pragma warning(pop)
 #endif
 #if DOCTEST_MSVC >= DOCTEST_COMPILER(19, 20, 0)
 // see this issue on why this is needed: https://github.com/doctest/doctest/issues/183
