@@ -34,8 +34,7 @@ template <class charT, class traits>
 class basic_istream;
 typedef basic_istream<char, char_traits<char>> istream; // NOLINT(modernize-use-using)
 template <class... Types>
-// Specializing template std::tuple is forbidden
-DOCTEST_MSVC_SUPPRESS_WARNING_WITH_PUSH(5285)
+DOCTEST_MSVC_SUPPRESS_WARNING_WITH_PUSH(5285) // Specializing template std::tuple is forbidden
 class tuple;
 DOCTEST_MSVC_SUPPRESS_WARNING_POP
 #if DOCTEST_MSVC >= DOCTEST_COMPILER(19, 20, 0)
