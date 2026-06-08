@@ -33,7 +33,7 @@
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 [![download](https://img.shields.io/badge/download%20%20-link-blue.svg)](https://raw.githubusercontent.com/doctest/doctest/master/doctest/doctest.h)
 [![CII Best Practices](https://bestpractices.coreinfrastructure.org/projects/503/badge)](https://bestpractices.coreinfrastructure.org/projects/503)
-[![Try it online](https://img.shields.io/badge/try%20it-online-orange.svg)](https://godbolt.org/z/fx7T11afK)
+[![Try it online](https://img.shields.io/badge/try%20it-online-orange.svg)](https://godbolt.org/z/zTr69fG3z)
 
 A complete example with a self-registering test that compiles to an executable looks like this:
 
