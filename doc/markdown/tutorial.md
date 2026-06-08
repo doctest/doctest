@@ -6,6 +6,10 @@ This tutorial assumes you can use the header directly: ```#include "doctest.h"``
 
 [TDD](https://en.wikipedia.org/wiki/Test-driven_development) is not discussed in this tutorial.
 
+## Try it online
+
+You can try **doctest** right now in your browser without installing anything — just open the [**interactive playground on Compiler Explorer (Godbolt)**](https://godbolt.org/z/fx7T11afK). It comes pre-configured with **doctest v2.5.2** (the latest release), GCC 14.3, and C++20. Edit the code, hit "Compile & Run", and see the test results immediately.
+
 ## A simple example
 
 Suppose we have a ```factorial()``` function that we want to test:
