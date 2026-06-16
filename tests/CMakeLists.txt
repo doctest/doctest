@@ -85,6 +85,11 @@ if(CMAKE_SYSTEM_NAME MATCHES "Darwin")
     set(MAC ON)
 endif()
 
+set(FNOEXCEPT OFF)
+if(CMAKE_CXX_FLAGS MATCHES "DOCTEST_CONFIG_NO_EXCEPTIONS_BUT_WITH_ALL_ASSERTS")
+    set(FNOEXCEPT ON)
+endif()
+
 doctest_add_unit_test(WITH_MAIN SOURCE doctest/assert/test_expression.cpp)
 doctest_add_unit_test(WITH_MAIN SOURCE doctest/assert/test_message.cpp)
 doctest_add_unit_test(WITH_MAIN SOURCE doctest/assert/test_type.cpp)
@@ -123,6 +128,7 @@ doctest_add_unit_test(          SOURCE regression/test.782.cpp)
 doctest_add_unit_test(WITH_MAIN SOURCE regression/test.786.cpp)
 doctest_add_unit_test(          SOURCE regression/test.873.cpp)
 doctest_add_unit_test(WITH_MAIN SOURCE regression/test.915.cpp)
+doctest_add_unit_test(WITH_MAIN SOURCE regression/test.1165.cpp EXCEPT ${FNOEXCEPT})
 
 set_tests_properties(
     regression/test.782.cpp
