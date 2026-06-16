@@ -105,8 +105,7 @@ jobs:
 
       - name: Generate
         run:
-          cmake -B build -S . -G "Visual Studio 17 2022" \
-          -A ${{ matrix.architecture }} -T ${{ matrix.toolset }}
+          cmake -B build -S . -G "Visual Studio 17 2022" -A ${{ matrix.architecture }} -T ${{ matrix.toolset }}
 
       - name: Build
         run: cmake --build build --config ${{ matrix.configuration }}
