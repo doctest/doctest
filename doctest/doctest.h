@@ -8209,7 +8209,7 @@ String::~String() {
 } // NOLINT(clang-analyzer-cplusplus.NewDeleteLeaks)
 
 String::String(const char *in)
-    : String(in, std::strlen(in)) {}
+    : String(in, in? std::strlen(in) : 0) {}
 
 String::String(const char *in, size_type in_size) {
     memcpy(allocate(in_size), in, in_size);
