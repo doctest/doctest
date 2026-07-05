@@ -19,6 +19,15 @@ bool checkIfShouldThrow(assertType::Enum at) {
     return false;
 }
 
+bool has_uncaught_exceptions() {
+#if defined(__cpp_lib_uncaught_exceptions) && __cpp_lib_uncaught_exceptions >= 201411L &&                              \
+    (!defined(__MAC_OS_X_VERSION_MIN_REQUIRED) || __MAC_OS_X_VERSION_MIN_REQUIRED >= 101200)
+    return (std::uncaught_exceptions() > 0);
+#else
+    return std::uncaught_exception();
+#endif
+}
+
 #ifndef DOCTEST_CONFIG_NO_EXCEPTIONS
 DOCTEST_NORETURN void throwException() {
     g_cs->shouldLogCurrentException = false;
