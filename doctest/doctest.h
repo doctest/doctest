@@ -6423,8 +6423,11 @@ bool checkIfShouldThrow(assertType::Enum at) {
 }
 
 bool has_uncaught_exceptions() {
-#if defined(__cpp_lib_uncaught_exceptions) && __cpp_lib_uncaught_exceptions >= 201411L &&                              \
-    (!defined(__MAC_OS_X_VERSION_MIN_REQUIRED) || __MAC_OS_X_VERSION_MIN_REQUIRED >= 101200)
+// Derived from https://github.com/uxlfoundation/oneTBB/blob/v2023.0.0/include/oneapi/tbb/detail/_config.h#L342
+#if (defined(_MSC_VER) && _MSC_VER >= 1900) ||                                                                         \
+    (defined(__cpp_lib_uncaught_exceptions) && __cpp_lib_uncaught_exceptions >= 201411L &&                             \
+     (!defined(_LIBCPP_VERSION) || !defined(__MAC_OS_X_VERSION_MIN_REQUIRED) ||                                        \
+      __MAC_OS_X_VERSION_MIN_REQUIRED >= 101200))
     return (std::uncaught_exceptions() > 0);
 #else
     return std::uncaught_exception();
