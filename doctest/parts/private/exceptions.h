@@ -8,6 +8,14 @@ DOCTEST_SUPPRESS_PRIVATE_WARNINGS_PUSH
 namespace doctest {
 namespace detail {
 
+/**
+ * Compatibility wrapper around:
+ *   - std::uncaught_exception
+ *   - std::uncaught_exceptions
+ * ...depending on the availability of each function
+ */
+bool has_uncaught_exceptions();
+
 template <typename Ex>
 DOCTEST_NORETURN void throw_exception(const Ex &e) {
 #ifndef DOCTEST_CONFIG_NO_EXCEPTIONS

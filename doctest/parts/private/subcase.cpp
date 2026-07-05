@@ -1,5 +1,6 @@
 #include "doctest/parts/private/prelude.h"
 #include "doctest/parts/private/context_state.h"
+#include "doctest/parts/private/exceptions.h"
 #include "doctest/parts/private/filters.h"
 #include "doctest/parts/private/reporter.h"
 
@@ -52,13 +53,7 @@ Subcase::~Subcase() {
     if (m_entered) {
         g_cs->traversal.leaveSubcase();
 
-#if defined(__cpp_lib_uncaught_exceptions) && __cpp_lib_uncaught_exceptions >= 201411L &&                              \
-    (!defined(__MAC_OS_X_VERSION_MIN_REQUIRED) || __MAC_OS_X_VERSION_MIN_REQUIRED >= 101200)
-        if (std::uncaught_exceptions() > 0
-#else
-        if (std::uncaught_exception()
-#endif
-            && g_cs->shouldLogCurrentException) {
+        if (detail::has_uncaught_exceptions() && g_cs->shouldLogCurrentException) {
             DOCTEST_ITERATE_THROUGH_REPORTERS(
                 test_case_exception,
                 {"exception thrown in subcase - will translate later "
