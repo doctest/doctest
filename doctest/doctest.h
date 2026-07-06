@@ -8070,6 +8070,9 @@ public:
         if (stack.empty())
             DOCTEST_INTERNAL_ERROR("TLSS was empty when trying to pop!");
 
+        if (ss.fail())
+            DOCTEST_INTERNAL_ERROR("Output stream is bad");
+
         const std::streampos pos = stack.back();
         stack.pop_back();
         const unsigned sz = static_cast<unsigned>(ss.tellp() - pos);
