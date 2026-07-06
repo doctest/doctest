@@ -62,9 +62,9 @@ jobs:
         run: |
           git diff | tee clang-format.patch
           if [[ -s clang-format.patch ]]; then
-            echo "formatted=false" >> $GITHUB_OUTPUT
+            echo "formatted=false" >> "$GITHUB_OUTPUT"
           else
-            echo "formatted=true" >> $GITHUB_OUTPUT
+            echo "formatted=true" >> "$GITHUB_OUTPUT"
           fi
 
       - name: Upload Patch
