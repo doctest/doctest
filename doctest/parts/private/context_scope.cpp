@@ -25,9 +25,6 @@ ContextScopeBase::ContextScopeBase(ContextScopeBase &&other) noexcept {
     g_infoContexts.push_back(this);
 }
 
-DOCTEST_MSVC_SUPPRESS_WARNING_WITH_PUSH(4996) // std::uncaught_exception is deprecated in C++17
-DOCTEST_GCC_SUPPRESS_WARNING_WITH_PUSH("-Wdeprecated-declarations")
-DOCTEST_CLANG_SUPPRESS_WARNING_WITH_PUSH("-Wdeprecated-declarations")
 // destroy cannot be inlined into the destructor because that would mean calling stringify after
 // ContextScope has been destroyed (base class destructors run after derived class destructors).
 // Instead, ContextScope calls this method directly from its destructor.
@@ -39,9 +36,7 @@ void ContextScopeBase::destroy() {
     }
     g_infoContexts.pop_back();
 }
-DOCTEST_CLANG_SUPPRESS_WARNING_POP
-DOCTEST_GCC_SUPPRESS_WARNING_POP
-DOCTEST_MSVC_SUPPRESS_WARNING_POP
+
 } // namespace detail
 #endif // DOCTEST_CONFIG_DISABLE
 

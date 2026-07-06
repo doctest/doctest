@@ -45,10 +45,6 @@ Subcase::Subcase(const String &name, const char *file, int line)
     DOCTEST_ITERATE_THROUGH_REPORTERS(subcase_start, m_signature);
 }
 
-DOCTEST_MSVC_SUPPRESS_WARNING_WITH_PUSH(4996) // std::uncaught_exception is deprecated in C++17
-DOCTEST_GCC_SUPPRESS_WARNING_WITH_PUSH("-Wdeprecated-declarations")
-DOCTEST_CLANG_SUPPRESS_WARNING_WITH_PUSH("-Wdeprecated-declarations")
-
 Subcase::~Subcase() {
     if (m_entered) {
         g_cs->traversal.leaveSubcase();
@@ -67,10 +63,6 @@ Subcase::~Subcase() {
         DOCTEST_ITERATE_THROUGH_REPORTERS(subcase_end, DOCTEST_EMPTY);
     }
 }
-
-DOCTEST_CLANG_SUPPRESS_WARNING_POP
-DOCTEST_GCC_SUPPRESS_WARNING_POP
-DOCTEST_MSVC_SUPPRESS_WARNING_POP
 
 Subcase::operator bool() const {
     return m_entered;
