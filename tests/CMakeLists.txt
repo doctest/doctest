@@ -128,6 +128,7 @@ doctest_add_unit_test(          SOURCE regression/test.782.cpp)
 doctest_add_unit_test(WITH_MAIN SOURCE regression/test.786.cpp)
 doctest_add_unit_test(          SOURCE regression/test.873.cpp)
 doctest_add_unit_test(WITH_MAIN SOURCE regression/test.915.cpp)
+doctest_add_unit_test(WITH_MAIN SOURCE regression/test.1045.cpp EXCEPT ${FNOEXCEPT})
 doctest_add_unit_test(WITH_MAIN SOURCE regression/test.1165.cpp EXCEPT ${FNOEXCEPT})
 
 set_tests_properties(
