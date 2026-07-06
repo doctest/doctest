@@ -1,5 +1,6 @@
 #include "doctest/parts/private/prelude.h"
 #include "doctest/parts/private/timer.h"
+#include "doctest/parts/private/ext/windows.h" // IWYU pragma: keep
 
 DOCTEST_SUPPRESS_PRIVATE_WARNINGS_PUSH
 
@@ -9,11 +10,11 @@ namespace doctest {
 namespace detail {
 
 #ifdef DOCTEST_CONFIG_GETCURRENTTICKS
-ticks_t getCurrentTicks() {
+uint64_t getCurrentTicks() {
     return DOCTEST_CONFIG_GETCURRENTTICKS();
 }
 #elif defined(DOCTEST_PLATFORM_WINDOWS)
-ticks_t getCurrentTicks() {
+uint64_t getCurrentTicks() {
     static LARGE_INTEGER hz = {{0}}, hzo = {{0}};
     if (!hz.QuadPart) {
         QueryPerformanceFrequency(&hz);
@@ -24,10 +25,10 @@ ticks_t getCurrentTicks() {
     return ((t.QuadPart - hzo.QuadPart) * LONGLONG(1000000)) / hz.QuadPart;
 }
 #else  // DOCTEST_PLATFORM_WINDOWS
-ticks_t getCurrentTicks() {
+uint64_t getCurrentTicks() {
     timeval t;
     gettimeofday(&t, nullptr);
-    return static_cast<ticks_t>(t.tv_sec) * 1000000 + static_cast<ticks_t>(t.tv_usec);
+    return static_cast<uint64_t>(t.tv_sec) * 1000000 + static_cast<uint64_t>(t.tv_usec);
 }
 #endif // DOCTEST_PLATFORM_WINDOWS
 

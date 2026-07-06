@@ -10,18 +10,7 @@ DOCTEST_SUPPRESS_PRIVATE_WARNINGS_PUSH
 namespace doctest {
 namespace detail {
 
-namespace timer_large_integer {
-
-#if defined(DOCTEST_PLATFORM_WINDOWS)
-using type = ULONGLONG;
-#else  // DOCTEST_PLATFORM_WINDOWS
-using type = std::uint64_t;
-#endif // DOCTEST_PLATFORM_WINDOWS
-} // namespace timer_large_integer
-
-using ticks_t = timer_large_integer::type;
-
-ticks_t getCurrentTicks();
+uint64_t getCurrentTicks();
 
 struct Timer {
     void start();
@@ -29,7 +18,7 @@ struct Timer {
     double getElapsedSeconds() const;
 
 private:
-    ticks_t m_ticks = 0;
+    uint64_t m_ticks = 0;
 };
 
 } // namespace detail
