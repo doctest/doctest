@@ -19,6 +19,10 @@ bool checkIfShouldThrow(assertType::Enum at) {
     return false;
 }
 
+DOCTEST_MSVC_SUPPRESS_WARNING_WITH_PUSH(4996) // std::uncaught_exception is deprecated in C++17
+DOCTEST_GCC_SUPPRESS_WARNING_WITH_PUSH("-Wdeprecated-declarations")
+DOCTEST_CLANG_SUPPRESS_WARNING_WITH_PUSH("-Wdeprecated-declarations")
+
 bool has_uncaught_exceptions() {
 // Derived from https://github.com/uxlfoundation/oneTBB/blob/v2023.0.0/include/oneapi/tbb/detail/_config.h#L342
 #if (defined(_MSC_VER) && _MSC_VER >= 1900) ||                                                                         \
@@ -30,6 +34,10 @@ bool has_uncaught_exceptions() {
     return std::uncaught_exception();
 #endif
 }
+
+DOCTEST_CLANG_SUPPRESS_WARNING_POP
+DOCTEST_GCC_SUPPRESS_WARNING_POP
+DOCTEST_MSVC_SUPPRESS_WARNING_POP
 
 #ifndef DOCTEST_CONFIG_NO_EXCEPTIONS
 DOCTEST_NORETURN void throwException() {
