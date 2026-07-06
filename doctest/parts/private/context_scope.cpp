@@ -1,6 +1,7 @@
 #include "doctest/parts/private/prelude.h"
 #include "doctest/parts/private/context_state.h"
 #include "doctest/parts/private/context_scope.h"
+#include "doctest/parts/private/exceptions.h"
 
 DOCTEST_SUPPRESS_PRIVATE_WARNINGS_PUSH
 
@@ -31,12 +32,7 @@ DOCTEST_CLANG_SUPPRESS_WARNING_WITH_PUSH("-Wdeprecated-declarations")
 // ContextScope has been destroyed (base class destructors run after derived class destructors).
 // Instead, ContextScope calls this method directly from its destructor.
 void ContextScopeBase::destroy() {
-#if defined(__cpp_lib_uncaught_exceptions) && __cpp_lib_uncaught_exceptions >= 201411L &&                              \
-    (!defined(__MAC_OS_X_VERSION_MIN_REQUIRED) || __MAC_OS_X_VERSION_MIN_REQUIRED >= 101200)
-    if (std::uncaught_exceptions() > 0) {
-#else
-    if (std::uncaught_exception()) {
-#endif
+    if (detail::has_uncaught_exceptions()) {
         std::ostringstream s;
         this->stringify(&s);
         g_cs->stringifiedContexts.emplace_back(s.str().c_str());

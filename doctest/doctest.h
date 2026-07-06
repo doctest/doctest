@@ -4639,6 +4639,14 @@ DOCTEST_SUPPRESS_PRIVATE_WARNINGS_PUSH
 namespace doctest {
 namespace detail {
 
+/**
+ * Compatibility wrapper around:
+ *   - std::uncaught_exception
+ *   - std::uncaught_exceptions
+ * ...depending on the availability of each function
+ */
+bool has_uncaught_exceptions();
+
 template <typename Ex>
 DOCTEST_NORETURN void throw_exception(const Ex &e) {
 #ifndef DOCTEST_CONFIG_NO_EXCEPTIONS
@@ -6182,12 +6190,7 @@ DOCTEST_CLANG_SUPPRESS_WARNING_WITH_PUSH("-Wdeprecated-declarations")
 // ContextScope has been destroyed (base class destructors run after derived class destructors).
 // Instead, ContextScope calls this method directly from its destructor.
 void ContextScopeBase::destroy() {
-#if defined(__cpp_lib_uncaught_exceptions) && __cpp_lib_uncaught_exceptions >= 201411L &&                              \
-    (!defined(__MAC_OS_X_VERSION_MIN_REQUIRED) || __MAC_OS_X_VERSION_MIN_REQUIRED >= 101200)
-    if (std::uncaught_exceptions() > 0) {
-#else
-    if (std::uncaught_exception()) {
-#endif
+    if (detail::has_uncaught_exceptions()) {
         std::ostringstream s;
         this->stringify(&s);
         g_cs->stringifiedContexts.emplace_back(s.str().c_str());
@@ -6426,6 +6429,18 @@ bool checkIfShouldThrow(assertType::Enum at) {
         return true;
 
     return false;
+}
+
+bool has_uncaught_exceptions() {
+// Derived from https://github.com/uxlfoundation/oneTBB/blob/v2023.0.0/include/oneapi/tbb/detail/_config.h#L342
+#if (defined(_MSC_VER) && _MSC_VER >= 1900) ||                                                                         \
+    (defined(__cpp_lib_uncaught_exceptions) && __cpp_lib_uncaught_exceptions >= 201411L &&                             \
+     (!defined(_LIBCPP_VERSION) || !defined(__MAC_OS_X_VERSION_MIN_REQUIRED) ||                                        \
+      __MAC_OS_X_VERSION_MIN_REQUIRED >= 101200))
+    return (std::uncaught_exceptions() > 0);
+#else
+    return std::uncaught_exception();
+#endif
 }
 
 #ifndef DOCTEST_CONFIG_NO_EXCEPTIONS
@@ -8504,13 +8519,7 @@ Subcase::~Subcase() {
     if (m_entered) {
         g_cs->traversal.leaveSubcase();
 
-#if defined(__cpp_lib_uncaught_exceptions) && __cpp_lib_uncaught_exceptions >= 201411L &&                              \
-    (!defined(__MAC_OS_X_VERSION_MIN_REQUIRED) || __MAC_OS_X_VERSION_MIN_REQUIRED >= 101200)
-        if (std::uncaught_exceptions() > 0
-#else
-        if (std::uncaught_exception()
-#endif
-            && g_cs->shouldLogCurrentException) {
+        if (detail::has_uncaught_exceptions() && g_cs->shouldLogCurrentException) {
             DOCTEST_ITERATE_THROUGH_REPORTERS(
                 test_case_exception,
                 {"exception thrown in subcase - will translate later "
