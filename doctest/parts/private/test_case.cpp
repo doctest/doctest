@@ -23,6 +23,7 @@ TestCase::TestCase(
     m_test_suite = test_suite.m_test_suite;
     m_description = test_suite.m_description;
     m_skip = test_suite.m_skip;
+    m_focus = test_suite.m_focus;
     m_no_breaks = test_suite.m_no_breaks;
     m_no_output = test_suite.m_no_output;
     m_may_fail = test_suite.m_may_fail;

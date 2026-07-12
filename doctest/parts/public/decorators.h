@@ -23,6 +23,7 @@ namespace doctest {
 DOCTEST_DEFINE_DECORATOR(test_suite, const char *, "");
 DOCTEST_DEFINE_DECORATOR(description, const char *, "");
 DOCTEST_DEFINE_DECORATOR(skip, bool, true);
+DOCTEST_DEFINE_DECORATOR(focus, bool, true);
 DOCTEST_DEFINE_DECORATOR(no_breaks, bool, true);
 DOCTEST_DEFINE_DECORATOR(no_output, bool, true);
 DOCTEST_DEFINE_DECORATOR(timeout, double, 0);

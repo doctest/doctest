@@ -14,6 +14,7 @@ struct DOCTEST_INTERFACE TestSuite {
     const char *m_test_suite = nullptr;
     const char *m_description = nullptr;
     bool m_skip = false;
+    bool m_focus = false;
     bool m_no_breaks = false;
     bool m_no_output = false;
     bool m_may_fail = false;

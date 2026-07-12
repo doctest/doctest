@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+  <testsuite name="focus" errors="0" failures="0" tests="0" doctest_version="2.5.0">
+    <testcase classname="focus.cpp" name="This test will be executed, as it is marked as focused" status="run"/>
+    <testcase classname="focus.cpp" name="This test will be excuted, as it is transitively marked as focused" status="run"/>
+  </testsuite>
+</testsuites>

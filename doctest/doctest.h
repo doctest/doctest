@@ -2188,6 +2188,7 @@ struct DOCTEST_INTERFACE TestSuite {
     const char *m_test_suite = nullptr;
     const char *m_description = nullptr;
     bool m_skip = false;
+    bool m_focus = false;
     bool m_no_breaks = false;
     bool m_no_output = false;
     bool m_may_fail = false;
@@ -2244,6 +2245,7 @@ struct DOCTEST_INTERFACE TestCaseData {
     const char *m_test_suite; // the test suite in which the test was added
     const char *m_description;
     bool m_skip;
+    bool m_focus;
     bool m_no_breaks;
     bool m_no_output;
     bool m_may_fail;
@@ -2331,6 +2333,7 @@ namespace doctest {
 DOCTEST_DEFINE_DECORATOR(test_suite, const char *, "");
 DOCTEST_DEFINE_DECORATOR(description, const char *, "");
 DOCTEST_DEFINE_DECORATOR(skip, bool, true);
+DOCTEST_DEFINE_DECORATOR(focus, bool, true);
 DOCTEST_DEFINE_DECORATOR(no_breaks, bool, true);
 DOCTEST_DEFINE_DECORATOR(no_output, bool, true);
 DOCTEST_DEFINE_DECORATOR(timeout, double, 0);
@@ -5950,9 +5953,12 @@ int Context::run() {
         return cleanup_and_return();
     }
 
+    auto is_focused = false;
     std::vector<const TestCase *> testArray;
-    for (auto &curr: getRegisteredTests())
+    for (auto &curr: getRegisteredTests()) {
         testArray.push_back(&curr);
+        is_focused |= curr.m_focus;
+    }
     p->numTestCases = testArray.size();
 
     // sort the collected records
@@ -5997,6 +6003,9 @@ int Context::run() {
 
         bool skip_me = false;
         if (tc.m_skip && !p->no_skip)
+            skip_me = true;
+
+        if (!tc.m_focus && is_focused)
             skip_me = true;
 
         if (!matchesAny(tc.m_file.c_str(), p->filters[0], true, p->case_sensitive))
@@ -8649,6 +8658,7 @@ TestCase::TestCase(
     m_test_suite = test_suite.m_test_suite;
     m_description = test_suite.m_description;
     m_skip = test_suite.m_skip;
+    m_focus = test_suite.m_focus;
     m_no_breaks = test_suite.m_no_breaks;
     m_no_output = test_suite.m_no_output;
     m_may_fail = test_suite.m_may_fail;
