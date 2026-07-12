@@ -519,9 +519,12 @@ int Context::run() {
         return cleanup_and_return();
     }
 
+    auto is_focused = false;
     std::vector<const TestCase *> testArray;
-    for (auto &curr: getRegisteredTests())
+    for (auto &curr: getRegisteredTests()) {
         testArray.push_back(&curr);
+        is_focused |= curr.m_focus;
+    }
     p->numTestCases = testArray.size();
 
     // sort the collected records
@@ -566,6 +569,9 @@ int Context::run() {
 
         bool skip_me = false;
         if (tc.m_skip && !p->no_skip)
+            skip_me = true;
+
+        if (!tc.m_focus && is_focused)
             skip_me = true;
 
         if (!matchesAny(tc.m_file.c_str(), p->filters[0], true, p->case_sensitive))

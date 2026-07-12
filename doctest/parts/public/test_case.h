@@ -15,6 +15,7 @@ struct DOCTEST_INTERFACE TestCaseData {
     const char *m_test_suite; // the test suite in which the test was added
     const char *m_description;
     bool m_skip;
+    bool m_focus;
     bool m_no_breaks;
     bool m_no_output;
     bool m_may_fail;

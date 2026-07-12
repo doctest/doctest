@@ -111,6 +111,10 @@ elseif(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
     target_compile_options(disabled_but_evaluated PRIVATE -Wno-unused-variable)
 endif()
 
+add_executable(focus focus.cpp)
+target_link_libraries(focus doctest)
+doctest_add_test(NAME focus COMMAND $<TARGET_FILE:focus> --success)
+
 ################################################################################
 ## CONFIG TESTS - TESTS WITH VARIOUS CONFIGURATION OPTIONS
 ################################################################################
