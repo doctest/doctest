@@ -573,17 +573,15 @@ DOCTEST_SUPPRESS_PUBLIC_WARNINGS_PUSH
 
 namespace doctest {
 namespace detail {
-DOCTEST_CLANG_SUPPRESS_WARNING_WITH_PUSH("-Wunused-function")
-static DOCTEST_CONSTEXPR int consume(const int *, int) noexcept {
-    return 0;
-}
-DOCTEST_CLANG_SUPPRESS_WARNING_POP
+struct consumer {
+    consumer(int) DOCTEST_NOEXCEPT {}
+};
 } // namespace detail
 } // namespace doctest
 
 #define DOCTEST_GLOBAL_NO_WARNINGS(var, ...)                                                                           \
     DOCTEST_CLANG_SUPPRESS_WARNING_WITH_PUSH("-Wglobal-constructors")                                                  \
-    static const int var = doctest::detail::consume(&var, __VA_ARGS__);                                                \
+    static const doctest::detail::consumer var = __VA_ARGS__;                                                          \
     DOCTEST_CLANG_SUPPRESS_WARNING_POP
 
 // counts the number of elements in a C array
@@ -2986,10 +2984,10 @@ int instantiationHelper(const T &) noexcept {
     static void f()
 
 #define DOCTEST_CREATE_AND_REGISTER_FUNCTION_IN_CLASS(f, proxy, decorators)                                            \
-    static doctest::detail::funcType proxy() {                                                                         \
+    static doctest::detail::funcType proxy() DOCTEST_NOEXCEPT {                                                        \
         return f;                                                                                                      \
     }                                                                                                                  \
-    DOCTEST_REGISTER_FUNCTION(inline, proxy(), decorators)                                                             \
+    DOCTEST_REGISTER_FUNCTION(inline, proxy(), doctest::test_suite() * decorators)                                     \
     static void f()
 
 // for registering tests

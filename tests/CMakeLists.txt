@@ -4,7 +4,7 @@ find_package(Threads REQUIRED)
 
 function(doctest_add_unit_test)
     set(options              WITH_MAIN)
-    set(one_value_keywords   SOURCE TEST_NAME IF EXCEPT)
+    set(one_value_keywords   SOURCE TEST_NAME IF EXCEPT CXX)
     set(multi_value_keywords SOURCES DEFINES)
     cmake_parse_arguments(ARG "${options}" "${one_value_keywords}" "${multi_value_keywords}" ${ARGN})
 
@@ -57,6 +57,10 @@ function(doctest_add_unit_test)
         endforeach()
     endmacro()
 
+    if(DEFINED ARG_CXX)
+        target_compile_features(${EXE_NAME} PRIVATE cxx_std_${ARG_CXX})
+    endif()
+
     if(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
         add_compiler_flags(-Wno-address)
         add_compiler_flags(-Wno-effc++)
@@ -88,6 +92,14 @@ endif()
 set(FNOEXCEPT OFF)
 if(CMAKE_CXX_FLAGS MATCHES "DOCTEST_CONFIG_NO_EXCEPTIONS_BUT_WITH_ALL_ASSERTS")
     set(FNOEXCEPT ON)
+endif()
+
+set(PRE_CXX_17_COMPILER OFF)
+if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU" AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS 7)
+    set(PRE_CXX_17_COMPILER ON)
+endif()
+if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang" AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS 5)
+    set(PRE_CXX_17_COMPILER ON)
 endif()
 
 doctest_add_unit_test(WITH_MAIN SOURCE doctest/assert/test_expression.cpp)
@@ -123,6 +135,7 @@ doctest_add_unit_test(
     regression/test.443/namespace9.cpp
 )
 
+doctest_add_unit_test(WITH_MAIN SOURCE regression/test.76.cpp CXX 17 EXCEPT ${PRE_CXX_17_COMPILER})
 doctest_add_unit_test(WITH_MAIN SOURCE regression/test.630.cpp)
 doctest_add_unit_test(WITH_MAIN SOURCE regression/test.651.cpp)
 doctest_add_unit_test(          SOURCE regression/test.782.cpp)

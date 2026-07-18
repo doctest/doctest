@@ -90,10 +90,10 @@ int instantiationHelper(const T &) noexcept {
     static void f()
 
 #define DOCTEST_CREATE_AND_REGISTER_FUNCTION_IN_CLASS(f, proxy, decorators)                                            \
-    static doctest::detail::funcType proxy() {                                                                         \
+    static doctest::detail::funcType proxy() DOCTEST_NOEXCEPT {                                                        \
         return f;                                                                                                      \
     }                                                                                                                  \
-    DOCTEST_REGISTER_FUNCTION(inline, proxy(), decorators)                                                             \
+    DOCTEST_REGISTER_FUNCTION(inline, proxy(), doctest::test_suite() * decorators)                                     \
     static void f()
 
 // for registering tests
