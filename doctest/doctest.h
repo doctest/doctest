@@ -2980,10 +2980,20 @@ int instantiationHelper(const T &) noexcept {
     }                                                                                                                  \
     DOCTEST_INLINE_NOINLINE void der::f() // NOLINT(misc-definitions-in-headers)
 
+DOCTEST_CLANG_SUPPRESS_WARNING_PUSH
+DOCTEST_CLANG_SUPPRESS_WARNING("-Wunused-template")
+template <int>
+static void test_case();
+DOCTEST_CLANG_SUPPRESS_WARNING_POP
+
 #define DOCTEST_CREATE_AND_REGISTER_FUNCTION(f, decorators)                                                            \
-    static void f();                                                                                                   \
-    DOCTEST_REGISTER_FUNCTION(DOCTEST_EMPTY, f, decorators)                                                            \
-    static void f()
+    template <int>                                                                                                     \
+    static void test_case();                                                                                           \
+    template <>                                                                                                        \
+    void test_case<__LINE__>();                                                                                        \
+    DOCTEST_REGISTER_FUNCTION(DOCTEST_EMPTY, test_case<__LINE__>, decorators)                                          \
+    template <>                                                                                                        \
+    void test_case<__LINE__>()
 
 #define DOCTEST_CREATE_AND_REGISTER_FUNCTION_IN_CLASS(f, proxy, decorators)                                            \
     static doctest::detail::funcType proxy() {                                                                         \
