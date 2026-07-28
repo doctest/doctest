@@ -3066,20 +3066,20 @@ DOCTEST_CLANG_SUPPRESS_WARNING_POP
     static void func()
 
 #define DOCTEST_TEST_CASE_TEMPLATE_DEFINE(dec, T, id)                                                                  \
-    DOCTEST_TEST_CASE_TEMPLATE_DEFINE_IMPL(dec, T, DOCTEST_CAT(id, ITERATOR), DOCTEST_ANONYMOUS(DOCTEST_ANON_TMP_))
+    DOCTEST_TEST_CASE_TEMPLATE_DEFINE_IMPL(dec, T, DOCTEST_CAT(id, ITERATOR), id)
 
 #define DOCTEST_TEST_CASE_TEMPLATE_INSTANTIATE_IMPL(id, anon, ...)                                                     \
     DOCTEST_GLOBAL_NO_WARNINGS(                                                                                        \
-        DOCTEST_CAT(anon, DUMMY), /* NOLINT(cert-err58-cpp, fuchsia-statically-constructed-objects) */                 \
+        DOCTEST_ANONYMOUS(DOCTEST_ANON_TMP_DUMMY), /* NOLINT(cert-err58-cpp) */                                        \
         doctest::detail::instantiationHelper(DOCTEST_CAT(id, ITERATOR) < __VA_ARGS__ > (__FILE__, __LINE__, 0))        \
     )
 
 #define DOCTEST_TEST_CASE_TEMPLATE_INVOKE(id, ...)                                                                     \
-    DOCTEST_TEST_CASE_TEMPLATE_INSTANTIATE_IMPL(id, DOCTEST_ANONYMOUS(DOCTEST_ANON_TMP_), std::tuple<__VA_ARGS__>)     \
+    DOCTEST_TEST_CASE_TEMPLATE_INSTANTIATE_IMPL(id, id, std::tuple<__VA_ARGS__>)                                       \
     static_assert(true, "")
 
 #define DOCTEST_TEST_CASE_TEMPLATE_APPLY(id, ...)                                                                      \
-    DOCTEST_TEST_CASE_TEMPLATE_INSTANTIATE_IMPL(id, DOCTEST_ANONYMOUS(DOCTEST_ANON_TMP_), __VA_ARGS__)                 \
+    DOCTEST_TEST_CASE_TEMPLATE_INSTANTIATE_IMPL(id, id, __VA_ARGS__)                                                   \
     static_assert(true, "")
 
 #define DOCTEST_TEST_CASE_TEMPLATE_IMPL(dec, T, anon, ...)                                                             \
