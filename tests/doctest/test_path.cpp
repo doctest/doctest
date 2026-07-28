@@ -2,10 +2,11 @@
 
 namespace {
 class DummyContextOptions {
-private:
+    template <int>
+    friend void ::test_case();
+
     doctest::ContextOptions _old_options;
 
-public:
     doctest::ContextOptions *options;
 
     inline DummyContextOptions() {

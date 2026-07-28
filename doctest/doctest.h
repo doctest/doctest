@@ -3070,7 +3070,7 @@ DOCTEST_CLANG_SUPPRESS_WARNING_POP
 
 #define DOCTEST_TEST_CASE_TEMPLATE_INSTANTIATE_IMPL(id, anon, ...)                                                     \
     DOCTEST_GLOBAL_NO_WARNINGS(                                                                                        \
-        DOCTEST_ANONYMOUS(DOCTEST_ANON_TMP_DUMMY), /* NOLINT(cert-err58-cpp) */                                        \
+        DOCTEST_ANONYMOUS(DOCTEST_ANON_TMP_VAR_), /* NOLINT(cert-err58-cpp) */                                         \
         doctest::detail::instantiationHelper(DOCTEST_CAT(id, ITERATOR) < __VA_ARGS__ > (__FILE__, __LINE__, 0))        \
     )
 
