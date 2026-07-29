@@ -73,14 +73,17 @@ int instantiationHelper(const T &) noexcept {
 
 #define DOCTEST_IMPLEMENT_FIXTURE(der, base, func, decorators)                                                         \
     template <>                                                                                                        \
-    void base::test_case<__LINE__>();                                                                                  \
-    static DOCTEST_INLINE_NOINLINE void func() {                                                                       \
-        base v;                                                                                                        \
-        v.test_case<__LINE__>();                                                                                       \
-    }                                                                                                                  \
-    DOCTEST_REGISTER_FUNCTION(DOCTEST_EMPTY, func, decorators)                                                         \
+    void base::test_case<der>();                                                                                       \
+    template <int>                                                                                                     \
+    static void test_case();                                                                                           \
     template <>                                                                                                        \
-    DOCTEST_INLINE_NOINLINE void base::test_case<__LINE__>() // NOLINT(misc-definitions-in-headers)
+    void test_case<func>() {                                                                                           \
+        base v;                                                                                                        \
+        v.test_case<der>();                                                                                            \
+    }                                                                                                                  \
+    DOCTEST_REGISTER_FUNCTION(DOCTEST_EMPTY, test_case<func>, decorators)                                              \
+    template <>                                                                                                        \
+    DOCTEST_INLINE_NOINLINE void base::test_case<der>() // NOLINT(misc-definitions-in-headers)
 
 DOCTEST_CLANG_SUPPRESS_WARNING_PUSH
 DOCTEST_CLANG_SUPPRESS_WARNING("-Wunused-template")
@@ -92,10 +95,10 @@ DOCTEST_CLANG_SUPPRESS_WARNING_POP
     template <int>                                                                                                     \
     static void test_case();                                                                                           \
     template <>                                                                                                        \
-    void test_case<__LINE__>();                                                                                        \
-    DOCTEST_REGISTER_FUNCTION(DOCTEST_EMPTY, test_case<__LINE__>, decorators)                                          \
+    void test_case<f>();                                                                                               \
+    DOCTEST_REGISTER_FUNCTION(DOCTEST_EMPTY, test_case<f>, decorators)                                                 \
     template <>                                                                                                        \
-    void test_case<__LINE__>()
+    void test_case<f>()
 
 #define DOCTEST_CREATE_AND_REGISTER_FUNCTION_IN_CLASS(f, proxy, decorators)                                            \
     static doctest::detail::funcType proxy() {                                                                         \
@@ -105,8 +108,7 @@ DOCTEST_CLANG_SUPPRESS_WARNING_POP
     static void f()
 
 // for registering tests
-#define DOCTEST_TEST_CASE(decorators)                                                                                  \
-    DOCTEST_CREATE_AND_REGISTER_FUNCTION(DOCTEST_ANONYMOUS(DOCTEST_ANON_FUNC_), decorators)
+#define DOCTEST_TEST_CASE(decorators) DOCTEST_CREATE_AND_REGISTER_FUNCTION(DOCTEST_COUNTER, decorators)
 
 // for registering tests in classes - requires C++17 for inline variables!
 #if DOCTEST_CPLUSPLUS >= 201703L
@@ -120,9 +122,7 @@ DOCTEST_CLANG_SUPPRESS_WARNING_POP
 
 // for registering tests with a fixture
 #define DOCTEST_TEST_CASE_FIXTURE(c, decorators)                                                                       \
-    DOCTEST_IMPLEMENT_FIXTURE(                                                                                         \
-        DOCTEST_ANONYMOUS(DOCTEST_ANON_CLASS_), c, DOCTEST_ANONYMOUS(DOCTEST_ANON_FUNC_), decorators                   \
-    )
+    DOCTEST_IMPLEMENT_FIXTURE(DOCTEST_COUNTER, c, DOCTEST_COUNTER, decorators)
 
 // for converting types to strings without the <typeinfo> header and demangling
 #define DOCTEST_TYPE_TO_STRING_AS(str, ...)                                                                            \
@@ -512,13 +512,13 @@ DOCTEST_CLANG_SUPPRESS_WARNING_POP
 
 #define DOCTEST_CREATE_AND_REGISTER_FUNCTION(f, name)                                                                  \
     template <typename DOCTEST_UNUSED_TEMPLATE_TYPE>                                                                   \
-    static inline void f()
+    static inline void DOCTEST_CAT(DOCTEST_ANON_FUNC_, f)()
 
 // for registering tests
-#define DOCTEST_TEST_CASE(name) DOCTEST_CREATE_AND_REGISTER_FUNCTION(DOCTEST_ANONYMOUS(DOCTEST_ANON_FUNC_), name)
+#define DOCTEST_TEST_CASE(name) DOCTEST_CREATE_AND_REGISTER_FUNCTION(DOCTEST_COUNTER, name)
 
 // for registering tests in classes
-#define DOCTEST_TEST_CASE_CLASS(name) DOCTEST_CREATE_AND_REGISTER_FUNCTION(DOCTEST_ANONYMOUS(DOCTEST_ANON_FUNC_), name)
+#define DOCTEST_TEST_CASE_CLASS(name) DOCTEST_CREATE_AND_REGISTER_FUNCTION(DOCTEST_COUNTER, name)
 
 // for registering tests with a fixture
 #define DOCTEST_TEST_CASE_FIXTURE(x, name)                                                                             \
