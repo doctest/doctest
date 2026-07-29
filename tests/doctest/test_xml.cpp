@@ -23,8 +23,6 @@ struct XmlWriter {
     void test_case();
 };
 
-} // namespace
-
 TEST_CASE_FIXTURE(XmlWriter, "Writing XML document declaration") {
     xml.writeDeclaration();
     CHECK(text() == text::dedent(R"(
@@ -263,3 +261,5 @@ TEST_CASE("Escaping special characters") {
 }
 
 DOCTEST_SUPPRESS_COMMON_WARNINGS_POP
+
+} // namespace
