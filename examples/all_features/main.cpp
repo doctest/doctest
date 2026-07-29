@@ -1,7 +1,10 @@
 #define DOCTEST_CONFIG_IMPLEMENT
 #include <doctest/doctest.h>
-
 #include "header.h"
+
+REGISTER_EXCEPTION_TRANSLATOR(std::nullptr_t &in) {
+    return doctest::toString(in);
+}
 
 int program();
 void some_program_code(int argc, char **argv);

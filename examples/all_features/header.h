@@ -2,6 +2,10 @@
 
 #include <doctest/doctest.h>
 
+REGISTER_EXCEPTION_TRANSLATOR(int &in) {
+    return doctest::toString(in);
+}
+
 // helper for throwing exceptions
 template <typename T>
 int throw_if(bool in, const T &ex) {
@@ -20,10 +24,6 @@ TEST_SUITE("some TS") {
     TEST_CASE("in TS") {
         FAIL("");
     }
-}
-
-REGISTER_EXCEPTION_TRANSLATOR(int &in) {
-    return doctest::toString(in);
 }
 
 // Removes class on MSVC
