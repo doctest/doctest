@@ -18,6 +18,9 @@ struct XmlWriter {
     std::string text() const noexcept {
         return oss.str();
     }
+
+    template <int>
+    void test_case();
 };
 
 } // namespace

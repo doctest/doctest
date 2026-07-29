@@ -28,6 +28,9 @@ public:
     DEFINE_CALLBACK(GetStdHandle);
     DEFINE_CALLBACK(GetConsoleScreenBufferInfo);
     DEFINE_CALLBACK(SetConsoleTextAttribute);
+
+    template <int>
+    void test_case();
 };
 
 callbacks *callbacks::_instance = nullptr;

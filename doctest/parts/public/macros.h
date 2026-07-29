@@ -72,17 +72,15 @@ int instantiationHelper(const T &) noexcept {
     )
 
 #define DOCTEST_IMPLEMENT_FIXTURE(der, base, func, decorators)                                                         \
-    namespace { /* NOLINT */                                                                                           \
-    struct der : public base {                                                                                         \
-        void f();                                                                                                      \
-    };                                                                                                                 \
+    template <>                                                                                                        \
+    void base::test_case<__LINE__>();                                                                                  \
     static DOCTEST_INLINE_NOINLINE void func() {                                                                       \
-        der v;                                                                                                         \
-        v.f();                                                                                                         \
+        base v;                                                                                                        \
+        v.test_case<__LINE__>();                                                                                       \
     }                                                                                                                  \
     DOCTEST_REGISTER_FUNCTION(DOCTEST_EMPTY, func, decorators)                                                         \
-    }                                                                                                                  \
-    DOCTEST_INLINE_NOINLINE void der::f() // NOLINT(misc-definitions-in-headers)
+    template <>                                                                                                        \
+    DOCTEST_INLINE_NOINLINE void base::test_case<__LINE__>() // NOLINT(misc-definitions-in-headers)
 
 DOCTEST_CLANG_SUPPRESS_WARNING_PUSH
 DOCTEST_CLANG_SUPPRESS_WARNING("-Wunused-template")
