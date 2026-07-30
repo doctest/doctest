@@ -2,6 +2,8 @@
 
 #include <doctest/doctest.h>
 
+// Complement the REGISTER_EXCEPTION_TRANSLATOR() on the same line in main.cpp
+// to break the build in case DOCTEST_COUNTER surprisingly resolves to __LINE__
 REGISTER_EXCEPTION_TRANSLATOR(int &in) {
     return doctest::toString(in);
 }
