@@ -18,10 +18,9 @@ struct XmlWriter {
     std::string text() const noexcept {
         return oss.str();
     }
-
-    template <int>
-    void test_case();
 };
+
+} // namespace
 
 TEST_CASE_FIXTURE(XmlWriter, "Writing XML document declaration") {
     xml.writeDeclaration();
@@ -261,5 +260,3 @@ TEST_CASE("Escaping special characters") {
 }
 
 DOCTEST_SUPPRESS_COMMON_WARNINGS_POP
-
-} // namespace

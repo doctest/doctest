@@ -60,9 +60,6 @@ struct SomeFixture {
     ~SomeFixture() {
         // teardown here
     }
-
-    template <int>
-    void test_case();
 };
 // NOLINTEND
 

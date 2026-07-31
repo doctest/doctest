@@ -2968,18 +2968,17 @@ int instantiationHelper(const T &) noexcept {
     )
 
 #define DOCTEST_IMPLEMENT_FIXTURE(der, base, func, decorators)                                                         \
-    template <>                                                                                                        \
-    void base::test_case<der>();                                                                                       \
-    template <int>                                                                                                     \
-    static void test_case();                                                                                           \
-    template <>                                                                                                        \
-    void test_case<func>() {                                                                                           \
-        base v;                                                                                                        \
-        v.test_case<der>();                                                                                            \
+    namespace { /* NOLINT */                                                                                           \
+    struct der : public base {                                                                                         \
+        void f();                                                                                                      \
+    };                                                                                                                 \
+    static DOCTEST_INLINE_NOINLINE void func() {                                                                       \
+        der v;                                                                                                         \
+        v.f();                                                                                                         \
     }                                                                                                                  \
-    DOCTEST_REGISTER_FUNCTION(DOCTEST_EMPTY, test_case<func>, decorators)                                              \
-    template <>                                                                                                        \
-    DOCTEST_INLINE_NOINLINE void base::test_case<der>() // NOLINT(misc-definitions-in-headers)
+    DOCTEST_REGISTER_FUNCTION(DOCTEST_EMPTY, func, decorators)                                                         \
+    }                                                                                                                  \
+    DOCTEST_INLINE_NOINLINE void der::f() // NOLINT(misc-definitions-in-headers)
 
 DOCTEST_CLANG_SUPPRESS_WARNING_PUSH
 DOCTEST_CLANG_SUPPRESS_WARNING("-Wunused-template")
@@ -3018,7 +3017,9 @@ DOCTEST_CLANG_SUPPRESS_WARNING_POP
 
 // for registering tests with a fixture
 #define DOCTEST_TEST_CASE_FIXTURE(c, decorators)                                                                       \
-    DOCTEST_IMPLEMENT_FIXTURE(DOCTEST_COUNTER, c, DOCTEST_COUNTER, decorators)
+    DOCTEST_IMPLEMENT_FIXTURE(                                                                                         \
+        DOCTEST_ANONYMOUS(DOCTEST_ANON_CLASS_), c, DOCTEST_ANONYMOUS(DOCTEST_ANON_FUNC_), decorators                   \
+    )
 
 // for converting types to strings without the <typeinfo> header and demangling
 #define DOCTEST_TYPE_TO_STRING_AS(str, ...)                                                                            \
@@ -3397,8 +3398,14 @@ DOCTEST_CLANG_SUPPRESS_WARNING_POP
 #else // DOCTEST_CONFIG_DISABLE
 
 #define DOCTEST_IMPLEMENT_FIXTURE(der, base, func, name)                                                               \
-    template <>                                                                                                        \
-    inline void base::test_case<der>() // NOLINT(misc-definitions-in-headers)
+    namespace /* NOLINT */ {                                                                                           \
+    template <typename DOCTEST_UNUSED_TEMPLATE_TYPE>                                                                   \
+    struct der : public base {                                                                                         \
+        void f();                                                                                                      \
+    };                                                                                                                 \
+    }                                                                                                                  \
+    template <typename DOCTEST_UNUSED_TEMPLATE_TYPE>                                                                   \
+    inline void der<DOCTEST_UNUSED_TEMPLATE_TYPE>::f()
 
 #define DOCTEST_CREATE_AND_REGISTER_FUNCTION(f, name)                                                                  \
     template <typename DOCTEST_UNUSED_TEMPLATE_TYPE>                                                                   \
@@ -3411,8 +3418,8 @@ DOCTEST_CLANG_SUPPRESS_WARNING_POP
 #define DOCTEST_TEST_CASE_CLASS(name) DOCTEST_CREATE_AND_REGISTER_FUNCTION(DOCTEST_COUNTER, name)
 
 // for registering tests with a fixture
-#define DOCTEST_TEST_CASE_FIXTURE(c, decorators)                                                                       \
-    DOCTEST_IMPLEMENT_FIXTURE(DOCTEST_COUNTER, c, DOCTEST_COUNTER, decorators)
+#define DOCTEST_TEST_CASE_FIXTURE(x, name)                                                                             \
+    DOCTEST_IMPLEMENT_FIXTURE(DOCTEST_ANONYMOUS(DOCTEST_ANON_CLASS_), x, DOCTEST_ANONYMOUS(DOCTEST_ANON_FUNC_), name)
 
 // for converting types to strings without the <typeinfo> header and demangling
 #define DOCTEST_TYPE_TO_STRING_AS(str, ...) static_assert(true, "")
