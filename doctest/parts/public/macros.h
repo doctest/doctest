@@ -501,14 +501,8 @@ DOCTEST_CLANG_SUPPRESS_WARNING_POP
 #else // DOCTEST_CONFIG_DISABLE
 
 #define DOCTEST_IMPLEMENT_FIXTURE(der, base, func, name)                                                               \
-    namespace /* NOLINT */ {                                                                                           \
-    template <typename DOCTEST_UNUSED_TEMPLATE_TYPE>                                                                   \
-    struct der : public base {                                                                                         \
-        void f();                                                                                                      \
-    };                                                                                                                 \
-    }                                                                                                                  \
-    template <typename DOCTEST_UNUSED_TEMPLATE_TYPE>                                                                   \
-    inline void der<DOCTEST_UNUSED_TEMPLATE_TYPE>::f()
+    template <>                                                                                                        \
+    inline void base::test_case<der>() // NOLINT(misc-definitions-in-headers)
 
 #define DOCTEST_CREATE_AND_REGISTER_FUNCTION(f, name)                                                                  \
     template <typename DOCTEST_UNUSED_TEMPLATE_TYPE>                                                                   \
@@ -521,8 +515,8 @@ DOCTEST_CLANG_SUPPRESS_WARNING_POP
 #define DOCTEST_TEST_CASE_CLASS(name) DOCTEST_CREATE_AND_REGISTER_FUNCTION(DOCTEST_COUNTER, name)
 
 // for registering tests with a fixture
-#define DOCTEST_TEST_CASE_FIXTURE(x, name)                                                                             \
-    DOCTEST_IMPLEMENT_FIXTURE(DOCTEST_ANONYMOUS(DOCTEST_ANON_CLASS_), x, DOCTEST_ANONYMOUS(DOCTEST_ANON_FUNC_), name)
+#define DOCTEST_TEST_CASE_FIXTURE(c, decorators)                                                                       \
+    DOCTEST_IMPLEMENT_FIXTURE(DOCTEST_COUNTER, c, DOCTEST_COUNTER, decorators)
 
 // for converting types to strings without the <typeinfo> header and demangling
 #define DOCTEST_TYPE_TO_STRING_AS(str, ...) static_assert(true, "")
