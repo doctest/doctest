@@ -3,7 +3,7 @@
 namespace {
 class DummyContextOptions {
     template <int>
-    friend void ::test_case();
+    friend void ::doctest_backdoor();
 
     doctest::ContextOptions _old_options;
 
@@ -23,6 +23,8 @@ class DummyContextOptions {
     }
 };
 } // namespace
+
+#define DOCTEST_BACKDOOR
 
 TEST_CASE("Determining basename from path") {
     using doctest::skipPathFromFilename;
