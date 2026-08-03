@@ -67,3 +67,7 @@ TEST_CASE_FIXTURE(SomeFixture, "fixtured test") {
     data /= 2;
     CHECK(data == 21);
 }
+
+namespace test_suite_with_a_description {
+TEST_SUITE_USING("test suite with a description" * doctest::description("regarding failures"));
+} // namespace test_suite_with_a_description

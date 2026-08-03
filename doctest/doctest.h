@@ -3101,10 +3101,10 @@ DOCTEST_CLANG_SUPPRESS_WARNING_POP
 #define DOCTEST_GENERATE(...) doctest::detail::acquireGeneratorValue(__VA_ARGS__)
 
 // for grouping tests in test suites by using code blocks
-#define DOCTEST_TEST_SUITE_IMPL(decorators, ns_name)                                                                   \
+#define DOCTEST_TEST_SUITE_IMPL(decorators, ns_name, option)                                                           \
     namespace ns_name {                                                                                                \
     namespace doctest_detail_test_suite_ns {                                                                           \
-    static DOCTEST_NOINLINE doctest::detail::TestSuite &getCurrentTestSuite() noexcept {                               \
+    static DOCTEST_INLINE_NOINLINE doctest::detail::TestSuite &getCurrentTestSuite() noexcept {                        \
         DOCTEST_MSVC_SUPPRESS_WARNING_WITH_PUSH(4640)                                                                  \
         DOCTEST_CLANG_SUPPRESS_WARNING_WITH_PUSH("-Wexit-time-destructors")                                            \
         DOCTEST_GCC_SUPPRESS_WARNING_WITH_PUSH("-Wmissing-field-initializers")                                         \
@@ -3121,9 +3121,12 @@ DOCTEST_CLANG_SUPPRESS_WARNING_POP
     }                                                                                                                  \
     }                                                                                                                  \
     }                                                                                                                  \
-    namespace ns_name
+    option namespace ns_name
 
-#define DOCTEST_TEST_SUITE(decorators) DOCTEST_TEST_SUITE_IMPL(decorators, DOCTEST_ANONYMOUS(DOCTEST_ANON_SUITE_))
+#define DOCTEST_TEST_SUITE(decorators)                                                                                 \
+    DOCTEST_TEST_SUITE_IMPL(decorators, DOCTEST_ANONYMOUS(DOCTEST_ANON_SUITE_), DOCTEST_EMPTY)
+
+#define DOCTEST_TEST_SUITE_USING(decorators) DOCTEST_TEST_SUITE_IMPL(decorators, doctest_ns_name, using)
 
 // for starting a testsuite block
 #define DOCTEST_TEST_SUITE_BEGIN(decorators)                                                                           \
@@ -3448,6 +3451,7 @@ DOCTEST_CLANG_SUPPRESS_WARNING_POP
 
 // for a testsuite block
 #define DOCTEST_TEST_SUITE(name) namespace // NOLINT
+#define DOCTEST_TEST_SUITE_USING(name) static_assert(true, "")
 
 // for starting a testsuite block
 #define DOCTEST_TEST_SUITE_BEGIN(name) static_assert(true, "")
@@ -3793,6 +3797,7 @@ DOCTEST_RELATIONAL_OP(ge, >=)
 #define SUBCASE(name) DOCTEST_SUBCASE(name)
 #define GENERATE(...) DOCTEST_GENERATE(__VA_ARGS__)
 #define TEST_SUITE(decorators) DOCTEST_TEST_SUITE(decorators)
+#define TEST_SUITE_USING(decorators) DOCTEST_TEST_SUITE_USING(decorators)
 #define TEST_SUITE_BEGIN(name) DOCTEST_TEST_SUITE_BEGIN(name)
 #define TEST_SUITE_END DOCTEST_TEST_SUITE_END
 #define REGISTER_EXCEPTION_TRANSLATOR(signature) DOCTEST_REGISTER_EXCEPTION_TRANSLATOR(signature)
