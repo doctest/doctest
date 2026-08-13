@@ -354,6 +354,19 @@ void Context::parseArgs(int argc, const char *const *argv, bool withDefaults) {
         p->list_reporters = true;
         p->exit = true;
     }
+
+#ifndef DOCTEST_CONFIG_COLORS_NONE
+    if (withDefaults) {
+        if (const char* no_color = std::getenv("NO_COLOR")) {
+            if (no_color[0] != '\0')
+                p->no_colors = true;
+        }
+        if (const char* force_color = std::getenv("FORCE_COLOR")) {
+            if (force_color[0] != '\0' && !(force_color[0] == '0' && force_color[1] == '\0'))
+                p->force_colors = true;
+        }
+    }
+#endif
 }
 
 // allows the user to add procedurally to the filters from the command line
