@@ -32,6 +32,9 @@ struct ContextState : ContextOptions, TestRunStats, CurrentTestCaseStats {
     TraversalState traversal;
     Atomic<bool> shouldLogCurrentException;
 
+    // Active subcase names for doctest::current_subcase_name().
+    std::vector<const char *> currentSubcaseNames;
+
     void resetRunData();
 
     void finalizeTestCaseData();
