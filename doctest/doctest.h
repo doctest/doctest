@@ -1516,6 +1516,11 @@ struct ContextOptions {
 
 DOCTEST_INTERFACE const ContextOptions *getContextOptions();
 
+/// Returns the active test case name, or an empty string outside of a test.
+DOCTEST_INTERFACE const char *current_test_name();
+/// Returns the innermost active subcase name, or an empty string outside of a subcase.
+DOCTEST_INTERFACE const char *current_subcase_name();
+
 } // namespace doctest
 
 DOCTEST_SUPPRESS_PUBLIC_WARNINGS_POP
@@ -4282,6 +4287,9 @@ struct ContextState : ContextOptions, TestRunStats, CurrentTestCaseStats {
     TraversalState traversal;
     Atomic<bool> shouldLogCurrentException;
 
+    // Active subcase names for doctest::current_subcase_name().
+    std::vector<const char *> currentSubcaseNames;
+
     void resetRunData();
 
     void finalizeTestCaseData();
@@ -4843,6 +4851,24 @@ namespace doctest {
 
 const ContextOptions *getContextOptions() {
     return DOCTEST_BRANCH_ON_DISABLED(nullptr, detail::g_cs);
+}
+
+const char *current_test_name() {
+    DOCTEST_BRANCH_ON_DISABLED(return "", {
+        if (!detail::g_cs || !detail::g_cs->currentTest)
+            return "";
+        if (!detail::g_cs->currentTest->m_full_name.empty())
+            return detail::g_cs->currentTest->m_full_name.c_str();
+        return detail::g_cs->currentTest->m_name;
+    });
+}
+
+const char *current_subcase_name() {
+    DOCTEST_BRANCH_ON_DISABLED(return "", {
+        if (!detail::g_cs || detail::g_cs->currentSubcaseNames.empty())
+            return "";
+        return detail::g_cs->currentSubcaseNames.back();
+    });
 }
 
 } // namespace doctest
@@ -5782,6 +5808,19 @@ void Context::parseArgs(int argc, const char *const *argv, bool withDefaults) {
         p->list_reporters = true;
         p->exit = true;
     }
+
+#ifndef DOCTEST_CONFIG_COLORS_NONE
+    if (withDefaults) {
+        if (const char* no_color = std::getenv("NO_COLOR")) {
+            if (no_color[0] != '\0')
+                p->no_colors = true;
+        }
+        if (const char* force_color = std::getenv("FORCE_COLOR")) {
+            if (force_color[0] != '\0' && !(force_color[0] == '0' && force_color[1] == '\0'))
+                p->force_colors = true;
+        }
+    }
+#endif
 }
 
 // allows the user to add procedurally to the filters from the command line
@@ -8486,6 +8525,7 @@ Subcase::Subcase(const String &name, const char *file, int line)
         return;
 
     m_entered = true;
+    g_cs->currentSubcaseNames.push_back(m_signature.m_name.c_str());
     DOCTEST_ITERATE_THROUGH_REPORTERS(subcase_start, m_signature);
 }
 
@@ -8495,6 +8535,8 @@ DOCTEST_CLANG_SUPPRESS_WARNING_WITH_PUSH("-Wdeprecated-declarations")
 
 Subcase::~Subcase() {
     if (m_entered) {
+        if (!g_cs->currentSubcaseNames.empty())
+            g_cs->currentSubcaseNames.pop_back();
         g_cs->traversal.leaveSubcase();
 
 #if defined(__cpp_lib_uncaught_exceptions) && __cpp_lib_uncaught_exceptions >= 201411L &&                              \
