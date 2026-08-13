@@ -41,6 +41,7 @@ Subcase::Subcase(const String &name, const char *file, int line)
         return;
 
     m_entered = true;
+    g_cs->currentSubcaseNames.push_back(m_signature.m_name.c_str());
     DOCTEST_ITERATE_THROUGH_REPORTERS(subcase_start, m_signature);
 }
 
@@ -50,6 +51,8 @@ DOCTEST_CLANG_SUPPRESS_WARNING_WITH_PUSH("-Wdeprecated-declarations")
 
 Subcase::~Subcase() {
     if (m_entered) {
+        if (!g_cs->currentSubcaseNames.empty())
+            g_cs->currentSubcaseNames.pop_back();
         g_cs->traversal.leaveSubcase();
 
 #if defined(__cpp_lib_uncaught_exceptions) && __cpp_lib_uncaught_exceptions >= 201411L &&                              \
