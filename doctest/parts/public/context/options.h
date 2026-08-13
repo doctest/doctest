@@ -60,6 +60,11 @@ struct ContextOptions {
 
 DOCTEST_INTERFACE const ContextOptions *getContextOptions();
 
+/// Returns the active test case name, or an empty string outside of a test.
+DOCTEST_INTERFACE const char *current_test_name();
+/// Returns the innermost active subcase name, or an empty string outside of a subcase.
+DOCTEST_INTERFACE const char *current_subcase_name();
+
 } // namespace doctest
 
 DOCTEST_SUPPRESS_PUBLIC_WARNINGS_POP
