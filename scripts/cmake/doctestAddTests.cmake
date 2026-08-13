@@ -36,7 +36,7 @@ if("${spec}" MATCHES .)
 endif()
 
 execute_process(
-  COMMAND ${TEST_EXECUTOR} "${TEST_EXECUTABLE}" ${spec} --list-test-cases
+  COMMAND ${TEST_EXECUTOR} "${TEST_EXECUTABLE}" ${spec} --list-test-cases --no-colors=true
   OUTPUT_VARIABLE output
   RESULT_VARIABLE result
   WORKING_DIRECTORY "${TEST_WORKING_DIR}"
@@ -61,7 +61,7 @@ foreach(line ${output})
   if(${add_labels})
     # get test suite that test belongs to
     execute_process(
-      COMMAND ${TEST_EXECUTOR} "${TEST_EXECUTABLE}" --test-case=${test} --list-test-suites
+      COMMAND ${TEST_EXECUTOR} "${TEST_EXECUTABLE}" --test-case=${test} --list-test-suites --no-colors=true
       OUTPUT_VARIABLE labeloutput
       RESULT_VARIABLE labelresult
       WORKING_DIRECTORY "${TEST_WORKING_DIR}"
