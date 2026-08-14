@@ -32,6 +32,16 @@ struct DOCTEST_INTERFACE Approx {
     }
 #endif //  DOCTEST_CONFIG_INCLUDE_TYPE_TRAITS
 
+    Approx &margin(double newMargin);
+
+#ifdef DOCTEST_CONFIG_INCLUDE_TYPE_TRAITS
+    template <typename T>
+    typename std::enable_if<std::is_constructible<double, T>::value, Approx &>::type margin(const T &newMargin) {
+        m_margin = static_cast<double>(newMargin);
+        return *this;
+    }
+#endif // DOCTEST_CONFIG_INCLUDE_TYPE_TRAITS
+
     Approx &scale(double newScale);
 
 #ifdef DOCTEST_CONFIG_INCLUDE_TYPE_TRAITS
@@ -80,6 +90,7 @@ struct DOCTEST_INTERFACE Approx {
 #endif // DOCTEST_CONFIG_INCLUDE_TYPE_TRAITS
 
     double m_epsilon;
+    double m_margin;
     double m_scale;
     double m_value;
 };
