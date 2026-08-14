@@ -18,6 +18,8 @@ set(files_with_output
     asserts_used_outside_of_tests.cpp
     enums.cpp
     generators.cpp
+    introspection.cpp
+    throws_predicate.cpp
 )
 
 set(files_all
