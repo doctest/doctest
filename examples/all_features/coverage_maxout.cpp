@@ -87,6 +87,7 @@ TEST_CASE("exercising tricky code paths of doctest") {
 
     Approx a(5);
     a.scale(4);
+    a.margin(0.1);
     const Approx b = a(7);
 
     CHECK(b == 7);
