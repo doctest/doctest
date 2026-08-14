@@ -1359,6 +1359,16 @@ struct DOCTEST_INTERFACE Approx {
     }
 #endif //  DOCTEST_CONFIG_INCLUDE_TYPE_TRAITS
 
+    Approx &margin(double newMargin);
+
+#ifdef DOCTEST_CONFIG_INCLUDE_TYPE_TRAITS
+    template <typename T>
+    typename std::enable_if<std::is_constructible<double, T>::value, Approx &>::type margin(const T &newMargin) {
+        m_margin = static_cast<double>(newMargin);
+        return *this;
+    }
+#endif // DOCTEST_CONFIG_INCLUDE_TYPE_TRAITS
+
     Approx &scale(double newScale);
 
 #ifdef DOCTEST_CONFIG_INCLUDE_TYPE_TRAITS
@@ -1407,6 +1417,7 @@ struct DOCTEST_INTERFACE Approx {
 #endif // DOCTEST_CONFIG_INCLUDE_TYPE_TRAITS
 
     double m_epsilon;
+    double m_margin;
     double m_scale;
     double m_value;
 };
@@ -1487,6 +1498,7 @@ struct ContextOptions {
     bool case_sensitive;        // if filtering should be case sensitive
     bool exit;                  // if the program should be exited after the tests are ran/whatever
     bool duration;              // print the time duration of each test case
+    bool print_test;            // print each test name as it completes (without timing)
     bool minimal;               // minimal console output (only test failures)
     bool quiet;                 // no console output
     bool no_throw;              // to skip exceptions-related assertion macros
@@ -5724,6 +5736,7 @@ void Context::parseArgs(int argc, const char *const *argv, bool withDefaults) {
     DOCTEST_PARSE_AS_BOOL_OR_FLAG("case-sensitive", "cs", case_sensitive, false);
     DOCTEST_PARSE_AS_BOOL_OR_FLAG("exit", "e", exit, false);
     DOCTEST_PARSE_AS_BOOL_OR_FLAG("duration", "d", duration, false);
+    DOCTEST_PARSE_AS_BOOL_OR_FLAG("print-test", "pt", print_test, false);
     DOCTEST_PARSE_AS_BOOL_OR_FLAG("minimal", "m", minimal, false);
     DOCTEST_PARSE_AS_BOOL_OR_FLAG("quiet", "q", quiet, false);
     DOCTEST_PARSE_AS_BOOL_OR_FLAG("no-throw", "nt", no_throw, false);
@@ -6508,13 +6521,22 @@ DOCTEST_SUPPRESS_PRIVATE_WARNINGS_POP
 DOCTEST_SUPPRESS_PRIVATE_WARNINGS_PUSH
 
 namespace doctest {
+namespace {
+// Performs equivalent check of std::fabs(lhs - rhs) <= margin
+// But without the subtraction to allow for INFINITY in comparison
+bool marginComparison(double lhs, double rhs, double margin) {
+    return (lhs + margin >= rhs) && (rhs + margin >= lhs);
+}
+} // namespace
 
 Approx::Approx(double value)
-    : m_epsilon(static_cast<double>(std::numeric_limits<float>::epsilon()) * 100), m_scale(1.0), m_value(value) {}
+    : m_epsilon(static_cast<double>(std::numeric_limits<float>::epsilon()) * 100), m_margin(0.0), m_scale(1.0),
+      m_value(value) {}
 
 Approx Approx::operator()(double value) const {
     Approx approx(value);
     approx.epsilon(m_epsilon);
+    approx.margin(m_margin);
     approx.scale(m_scale);
     return approx;
 }
@@ -6523,15 +6545,21 @@ Approx &Approx::epsilon(double newEpsilon) {
     m_epsilon = newEpsilon;
     return *this;
 }
+Approx &Approx::margin(double newMargin) {
+    m_margin = newMargin;
+    return *this;
+}
 Approx &Approx::scale(double newScale) {
     m_scale = newScale;
     return *this;
 }
 
 bool operator==(double lhs, const Approx &rhs) {
-    // Thanks to Richard Harris for his help refining this formula
-    return std::fabs(lhs - rhs.m_value) <
-           rhs.m_epsilon * (rhs.m_scale + std::max<double>(std::fabs(lhs), std::fabs(rhs.m_value)));
+    // Absolute margin OR scaled epsilon (Catch2-style).
+    // Thanks to Richard Harris for his help refining the scaled epsilon formula
+    return marginComparison(lhs, rhs.m_value, rhs.m_margin) ||
+           std::fabs(lhs - rhs.m_value) <
+               rhs.m_epsilon * (rhs.m_scale + std::max<double>(std::fabs(lhs), std::fabs(rhs.m_value)));
 }
 
 bool operator==(const Approx &lhs, double rhs) {
@@ -7029,6 +7057,8 @@ void ConsoleReporter::printHelp() {
       << Whitespace(sizePrefixDisplay * 1) << "exits after the tests finish\n";
     s << " -" DOCTEST_OPTIONS_PREFIX_DISPLAY "d,   --" DOCTEST_OPTIONS_PREFIX_DISPLAY "duration=<bool>               "
       << Whitespace(sizePrefixDisplay * 1) << "prints the time duration of each test\n";
+    s << " -" DOCTEST_OPTIONS_PREFIX_DISPLAY "pt,  --" DOCTEST_OPTIONS_PREFIX_DISPLAY "print-test=<bool>             "
+      << Whitespace(sizePrefixDisplay * 1) << "print each test name as it completes\n";
     s << " -" DOCTEST_OPTIONS_PREFIX_DISPLAY "m,   --" DOCTEST_OPTIONS_PREFIX_DISPLAY "minimal=<bool>                "
       << Whitespace(sizePrefixDisplay * 1) << "minimal console output (only failures)\n";
     s << " -" DOCTEST_OPTIONS_PREFIX_DISPLAY "q,   --" DOCTEST_OPTIONS_PREFIX_DISPLAY "quiet=<bool>                  "
@@ -7184,12 +7214,14 @@ void ConsoleReporter::test_case_end(const CurrentTestCaseStats &st) {
 
     // log the preamble of the test case only if there is something
     // else to print - something other than that an assert has failed
-    if (opt.duration ||
+    if (opt.duration || opt.print_test ||
         (st.failure_flags && st.failure_flags != static_cast<int>(TestCaseFailureReason::AssertFailure)))
         logTestStart();
 
     if (opt.duration)
         s << Color::None << std::setprecision(6) << std::fixed << st.seconds << " s: " << tc->m_name << "\n";
+    else if (opt.print_test)
+        s << Color::None << tc->m_name << "\n";
 
     if (st.failure_flags & TestCaseFailureReason::Timeout)
         s << Color::Red << "Test case exceeded time limit of " << std::setprecision(6) << std::fixed << tc->m_timeout
