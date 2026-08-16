@@ -2985,7 +2985,8 @@ DOCTEST_CLANG_SUPPRESS_WARNING("-Wunused-template")
 template <int>
 static void doctest_backdoor();
 template <int>
-static void doctest_backdoorDOCTEST_BACKDOOR();
+static void doctest_frontdoor();
+#define doctest_backdoorDOCTEST_BACKDOOR doctest_frontdoor
 DOCTEST_CLANG_SUPPRESS_WARNING_POP
 
 #define DOCTEST_CREATE_AND_REGISTER_FUNCTION(f, decorators)                                                            \
