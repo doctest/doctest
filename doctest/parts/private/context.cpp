@@ -525,7 +525,7 @@ int Context::run() {
         testArray.push_back(&curr);
         is_focused |= curr.m_focus;
     }
-    p->numTestCases = testArray.size();
+    p->numTestCases = static_cast<counter_type>(testArray.size());
 
     // sort the collected records
     if (!testArray.empty()) {
@@ -591,8 +591,8 @@ int Context::run() {
             p->numTestCasesPassingFilters++;
 
         // skip the test if it is not in the execution range
-        if ((p->last < p->numTestCasesPassingFilters && p->first <= p->last) ||
-            (p->first > p->numTestCasesPassingFilters))
+        if ((static_cast<counter_type>(p->last) < p->numTestCasesPassingFilters && p->first <= p->last) ||
+            (static_cast<counter_type>(p->first) > p->numTestCasesPassingFilters))
             skip_me = true;
 
         if (skip_me) {
@@ -671,8 +671,8 @@ int Context::run() {
 #endif // DOCTEST_CONFIG_NO_EXCEPTIONS
 
                 // exit this loop if enough assertions have failed - even if there are more subcases
-                if (p->abort_after > 0 &&
-                    p->numAssertsFailed + p->numAssertsFailedCurrentTest_atomic >= p->abort_after) {
+                if (p->abort_after > 0 && p->numAssertsFailed + p->numAssertsFailedCurrentTest_atomic >=
+                                              static_cast<counter_type>(p->abort_after)) {
                     run_test = false;
                     p->failure_flags |= TestCaseFailureReason::TooManyFailedAsserts;
                 }
@@ -692,7 +692,7 @@ int Context::run() {
             p->currentTest = nullptr;
 
             // stop executing tests if enough assertions have failed
-            if (p->abort_after > 0 && p->numAssertsFailed >= p->abort_after)
+            if (p->abort_after > 0 && p->numAssertsFailed >= static_cast<counter_type>(p->abort_after))
                 break;
         }
     }

@@ -27,11 +27,13 @@ void ContextState::resetRunData() {
 void ContextState::finalizeTestCaseData() {
     seconds = timer.getElapsedSeconds();
 
-    // update the non-atomic counters
-    numAsserts += numAssertsCurrentTest_atomic;
-    numAssertsFailed += numAssertsFailedCurrentTest_atomic;
-    numAssertsCurrentTest = numAssertsCurrentTest_atomic;
+    // Update the non-atomic counters. The failed count is read first: both counters only
+    // grow, so reading the failed one first keeps failed <= total even if a thread of the
+    // test case is still running and counting.
     numAssertsFailedCurrentTest = numAssertsFailedCurrentTest_atomic;
+    numAssertsCurrentTest = numAssertsCurrentTest_atomic;
+    numAsserts += numAssertsCurrentTest;
+    numAssertsFailed += numAssertsFailedCurrentTest;
 
     if (numAssertsFailedCurrentTest)
         failure_flags |= TestCaseFailureReason::AssertFailure;
@@ -49,7 +51,7 @@ void ContextState::finalizeTestCaseData() {
     } else if (failure_flags && currentTest->m_may_fail) {
         failure_flags |= TestCaseFailureReason::CouldHaveFailedAndDid;
     } else if (currentTest->m_expected_failures > 0) {
-        if (numAssertsFailedCurrentTest == currentTest->m_expected_failures) {
+        if (numAssertsFailedCurrentTest == static_cast<counter_type>(currentTest->m_expected_failures)) {
             failure_flags |= TestCaseFailureReason::FailedExactlyNumTimes;
         } else {
             failure_flags |= TestCaseFailureReason::DidntFailExactlyNumTimes;

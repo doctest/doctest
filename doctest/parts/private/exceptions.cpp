@@ -13,7 +13,8 @@ bool checkIfShouldThrow(assertType::Enum at) {
         return true;
 
     if ((at & assertType::is_check) && getContextOptions()->abort_after > 0 &&
-        (g_cs->numAssertsFailed + g_cs->numAssertsFailedCurrentTest_atomic) >= getContextOptions()->abort_after)
+        (g_cs->numAssertsFailed + g_cs->numAssertsFailedCurrentTest_atomic) >=
+            static_cast<counter_type>(getContextOptions()->abort_after))
         return true;
 
     return false;

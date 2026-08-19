@@ -91,20 +91,30 @@ public:
         MPI_Comm_rank(MPI_COMM_WORLD, &rank);
         MPI_Comm_size(MPI_COMM_WORLD, &n_rank);
 
-        int g_numAsserts = 0;
-        int g_numAssertsFailed = 0;
-        int g_numTestCasesFailed = 0;
+        counter_type g_numAsserts = 0;
+        counter_type g_numAssertsFailed = 0;
+        counter_type g_numTestCasesFailed = 0;
 
-        MPI_Reduce(&p.numAsserts, &g_numAsserts, 1, MPI_INT, MPI_SUM, 0, MPI_COMM_WORLD);
-        MPI_Reduce(&p.numAssertsFailed, &g_numAssertsFailed, 1, MPI_INT, MPI_SUM, 0, MPI_COMM_WORLD);
-        MPI_Reduce(&p.numTestCasesFailed, &g_numTestCasesFailed, 1, MPI_INT, MPI_SUM, 0, MPI_COMM_WORLD);
+        // The datatype has to match counter_type, otherwise MPI reads the wrong number of bytes
+        MPI_Reduce(&p.numAsserts, &g_numAsserts, 1, MPI_UNSIGNED_LONG_LONG, MPI_SUM, 0, MPI_COMM_WORLD);
+        MPI_Reduce(&p.numAssertsFailed, &g_numAssertsFailed, 1, MPI_UNSIGNED_LONG_LONG, MPI_SUM, 0, MPI_COMM_WORLD);
+        MPI_Reduce(&p.numTestCasesFailed, &g_numTestCasesFailed, 1, MPI_UNSIGNED_LONG_LONG, MPI_SUM, 0, MPI_COMM_WORLD);
 
-        std::vector<int> numAssertsFailedByRank;
+        std::vector<counter_type> numAssertsFailedByRank;
         if (rank == 0) {
             numAssertsFailedByRank.resize(static_cast<std::size_t>(n_rank));
         }
 
-        MPI_Gather(&p.numAssertsFailed, 1, MPI_INT, numAssertsFailedByRank.data(), 1, MPI_INT, 0, MPI_COMM_WORLD);
+        MPI_Gather(
+            &p.numAssertsFailed,
+            1,
+            MPI_UNSIGNED_LONG_LONG,
+            numAssertsFailedByRank.data(),
+            1,
+            MPI_UNSIGNED_LONG_LONG,
+            0,
+            MPI_COMM_WORLD
+        );
 
         if (rank == 0) {
             separator_to_stream();
