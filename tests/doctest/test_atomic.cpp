@@ -6,7 +6,7 @@
 namespace {
 
 // The same type the assertion counters use, so this test follows them if the type changes.
-typedef decltype(doctest::TestRunStats::numAsserts) counter_t;
+using counter_t = decltype(doctest::TestRunStats::numAsserts);
 
 using Counter = doctest::detail::MultiLaneAtomic<counter_t>;
 
@@ -27,14 +27,14 @@ unsigned long long widen(T value) {
 // in the default configuration: DOCTEST_CONFIG_NO_MULTITHREADING and
 // DOCTEST_CONFIG_NO_MULTI_LANE_ATOMICS collapse MultiLaneAtomic to a single plain atomic.
 void addFromOwnThread(Counter &counter, long long amount) {
-    const counter_t value = static_cast<counter_t>(amount);
+    const auto value = static_cast<counter_t>(amount);
     std::thread worker([&counter, value]() noexcept { counter.fetch_add(value); });
     worker.join();
 }
 
 TEST_CASE("MultiLaneAtomic keeps one lane exact up to 2^32") {
     Counter counter;
-    const counter_t amount = static_cast<counter_t>(quarter_of_2_32);
+    const auto amount = static_cast<counter_t>(quarter_of_2_32);
 
     // All four go to the same lane, so a 32 bit counter wraps back to zero here.
     counter.fetch_add(amount);

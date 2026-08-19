@@ -10,7 +10,7 @@ DOCTEST_SUPPRESS_COMMON_WARNINGS_PUSH
 namespace {
 
 // The same type the assertion counters use, so this test follows them if the type changes.
-typedef decltype(doctest::TestRunStats::numAsserts) counter_t;
+using counter_t = decltype(doctest::TestRunStats::numAsserts);
 
 // 2^30. Four of these add up to 2^32. Kept as long long so that a cast to the counter type
 // is a real conversion whether that type is 32 or 64 bit wide, which keeps gcc
