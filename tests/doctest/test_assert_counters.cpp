@@ -12,8 +12,10 @@ namespace {
 // The same type the assertion counters use, so this test follows them if the type changes.
 typedef decltype(doctest::TestRunStats::numAsserts) counter_t;
 
-// 2^30. Four of these add up to 2^32.
-const unsigned long long quarter_of_2_32 = 1073741824ull;
+// 2^30. Four of these add up to 2^32. Kept as long long so that a cast to the counter type
+// is a real conversion whether that type is 32 or 64 bit wide, which keeps gcc
+// -Wuseless-cast quiet in both cases.
+const long long quarter_of_2_32 = 1073741824LL;
 
 // Widening goes through a template so gcc does not see a cast to the type the operand
 // already has, which -Wuseless-cast rejects.
@@ -36,11 +38,11 @@ public:
     }
 
     // Every call adds to the same lane, so a 32 bit counter wraps within four calls.
-    void addAsserts(unsigned long long amount) {
+    void addAsserts(long long amount) {
         state.numAssertsCurrentTest_atomic.fetch_add(static_cast<counter_t>(amount));
     }
 
-    void addFailedAsserts(unsigned long long amount) {
+    void addFailedAsserts(long long amount) {
         state.numAssertsFailedCurrentTest_atomic.fetch_add(static_cast<counter_t>(amount));
     }
 };
@@ -54,7 +56,7 @@ TEST_CASE("the per test case assertion count is exact at 2^32") {
     counters.addAsserts(quarter_of_2_32);
     counters.state.finalizeTestCaseData();
 
-    CHECK(widen(counters.state.numAssertsCurrentTest) == 4ull * quarter_of_2_32);
+    CHECK(widen(counters.state.numAssertsCurrentTest) == 4ull * widen(quarter_of_2_32));
 }
 
 TEST_CASE("the per test case failed assertion count is exact at 2^32") {
@@ -66,8 +68,8 @@ TEST_CASE("the per test case failed assertion count is exact at 2^32") {
     }
     counters.state.finalizeTestCaseData();
 
-    CHECK(widen(counters.state.numAssertsFailedCurrentTest) == 4ull * quarter_of_2_32);
-    CHECK(widen(counters.state.numAssertsCurrentTest) == 4ull * quarter_of_2_32);
+    CHECK(widen(counters.state.numAssertsFailedCurrentTest) == 4ull * widen(quarter_of_2_32));
+    CHECK(widen(counters.state.numAssertsCurrentTest) == 4ull * widen(quarter_of_2_32));
 }
 
 TEST_CASE("the run assertion count is exact past 2^32") {
@@ -78,7 +80,7 @@ TEST_CASE("the run assertion count is exact past 2^32") {
     counters.state.finalizeTestCaseData();
 
     // Past 2^32, so a 32 bit counter of either signedness reports the wrong number.
-    CHECK(widen(counters.state.numAsserts) == 4000000000ull + quarter_of_2_32);
+    CHECK(widen(counters.state.numAsserts) == 4000000000ull + widen(quarter_of_2_32));
 }
 
 TEST_CASE("the console reporter prints an assertion count above 2^32") {
