@@ -573,9 +573,11 @@ DOCTEST_SUPPRESS_PUBLIC_WARNINGS_PUSH
 
 namespace doctest {
 // Type of the test case and assertion counters. A test run can execute more than 2^31
-// assertions, so a 32 bit counter is not enough. This is spelled out instead of using
-// std::uint64_t so that no public header has to include <cstdint>.
-using counter_type = unsigned long long;
+// assertions, so a 32 bit counter is not enough. The type stays signed, so that a reporter
+// assigning one of these fields to a signed variable keeps compiling without a sign change.
+// It is spelled out instead of using std::int64_t so that no public header has to include
+// <cstdint>.
+using counter_type = long long;
 
 static_assert(sizeof(counter_type) >= 8, "doctest::counter_type must be at least 64 bit");
 
@@ -4027,11 +4029,11 @@ public:
     }
 
     T load(std::memory_order order = std::memory_order_seq_cst) const DOCTEST_NOEXCEPT {
-        auto result = T();
+        unsigned long long result = 0;
         for (const auto &c: m_atomics) {
-            result += c.atomic.load(order);
+            result += static_cast<unsigned long long>(c.atomic.load(order));
         }
-        return result;
+        return static_cast<T>(result);
     }
 
     // NOLINTNEXTLINE(cppcoreguidelines-c-copy-assignment-signature, misc-unconventional-assign-operator)
@@ -6032,8 +6034,8 @@ int Context::run() {
             p->numTestCasesPassingFilters++;
 
         // skip the test if it is not in the execution range
-        if ((static_cast<counter_type>(p->last) < p->numTestCasesPassingFilters && p->first <= p->last) ||
-            (static_cast<counter_type>(p->first) > p->numTestCasesPassingFilters))
+        if ((p->last < p->numTestCasesPassingFilters && p->first <= p->last) ||
+            (p->first > p->numTestCasesPassingFilters))
             skip_me = true;
 
         if (skip_me) {
@@ -6112,8 +6114,8 @@ int Context::run() {
 #endif // DOCTEST_CONFIG_NO_EXCEPTIONS
 
                 // exit this loop if enough assertions have failed - even if there are more subcases
-                if (p->abort_after > 0 && p->numAssertsFailed + p->numAssertsFailedCurrentTest_atomic >=
-                                              static_cast<counter_type>(p->abort_after)) {
+                if (p->abort_after > 0 &&
+                    p->numAssertsFailed + p->numAssertsFailedCurrentTest_atomic >= p->abort_after) {
                     run_test = false;
                     p->failure_flags |= TestCaseFailureReason::TooManyFailedAsserts;
                 }
@@ -6133,7 +6135,7 @@ int Context::run() {
             p->currentTest = nullptr;
 
             // stop executing tests if enough assertions have failed
-            if (p->abort_after > 0 && p->numAssertsFailed >= static_cast<counter_type>(p->abort_after))
+            if (p->abort_after > 0 && p->numAssertsFailed >= p->abort_after)
                 break;
         }
     }
@@ -6271,7 +6273,7 @@ void ContextState::finalizeTestCaseData() {
     } else if (failure_flags && currentTest->m_may_fail) {
         failure_flags |= TestCaseFailureReason::CouldHaveFailedAndDid;
     } else if (currentTest->m_expected_failures > 0) {
-        if (numAssertsFailedCurrentTest == static_cast<counter_type>(currentTest->m_expected_failures)) {
+        if (numAssertsFailedCurrentTest == currentTest->m_expected_failures) {
             failure_flags |= TestCaseFailureReason::FailedExactlyNumTimes;
         } else {
             failure_flags |= TestCaseFailureReason::DidntFailExactlyNumTimes;
@@ -6455,8 +6457,7 @@ bool checkIfShouldThrow(assertType::Enum at) {
         return true;
 
     if ((at & assertType::is_check) && getContextOptions()->abort_after > 0 &&
-        (g_cs->numAssertsFailed + g_cs->numAssertsFailedCurrentTest_atomic) >=
-            static_cast<counter_type>(getContextOptions()->abort_after))
+        (g_cs->numAssertsFailed + g_cs->numAssertsFailedCurrentTest_atomic) >= getContextOptions()->abort_after)
         return true;
 
     return false;

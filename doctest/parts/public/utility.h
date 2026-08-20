@@ -38,9 +38,11 @@ DOCTEST_SUPPRESS_PUBLIC_WARNINGS_PUSH
 
 namespace doctest {
 // Type of the test case and assertion counters. A test run can execute more than 2^31
-// assertions, so a 32 bit counter is not enough. This is spelled out instead of using
-// std::uint64_t so that no public header has to include <cstdint>.
-using counter_type = unsigned long long;
+// assertions, so a 32 bit counter is not enough. The type stays signed, so that a reporter
+// assigning one of these fields to a signed variable keeps compiling without a sign change.
+// It is spelled out instead of using std::int64_t so that no public header has to include
+// <cstdint>.
+using counter_type = long long;
 
 static_assert(sizeof(counter_type) >= 8, "doctest::counter_type must be at least 64 bit");
 

@@ -51,7 +51,7 @@ void ContextState::finalizeTestCaseData() {
     } else if (failure_flags && currentTest->m_may_fail) {
         failure_flags |= TestCaseFailureReason::CouldHaveFailedAndDid;
     } else if (currentTest->m_expected_failures > 0) {
-        if (numAssertsFailedCurrentTest == static_cast<counter_type>(currentTest->m_expected_failures)) {
+        if (numAssertsFailedCurrentTest == currentTest->m_expected_failures) {
             failure_flags |= TestCaseFailureReason::FailedExactlyNumTimes;
         } else {
             failure_flags |= TestCaseFailureReason::DidntFailExactlyNumTimes;

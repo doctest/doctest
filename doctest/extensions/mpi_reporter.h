@@ -96,9 +96,9 @@ public:
         counter_type g_numTestCasesFailed = 0;
 
         // The datatype has to match counter_type, otherwise MPI reads the wrong number of bytes
-        MPI_Reduce(&p.numAsserts, &g_numAsserts, 1, MPI_UNSIGNED_LONG_LONG, MPI_SUM, 0, MPI_COMM_WORLD);
-        MPI_Reduce(&p.numAssertsFailed, &g_numAssertsFailed, 1, MPI_UNSIGNED_LONG_LONG, MPI_SUM, 0, MPI_COMM_WORLD);
-        MPI_Reduce(&p.numTestCasesFailed, &g_numTestCasesFailed, 1, MPI_UNSIGNED_LONG_LONG, MPI_SUM, 0, MPI_COMM_WORLD);
+        MPI_Reduce(&p.numAsserts, &g_numAsserts, 1, MPI_LONG_LONG, MPI_SUM, 0, MPI_COMM_WORLD);
+        MPI_Reduce(&p.numAssertsFailed, &g_numAssertsFailed, 1, MPI_LONG_LONG, MPI_SUM, 0, MPI_COMM_WORLD);
+        MPI_Reduce(&p.numTestCasesFailed, &g_numTestCasesFailed, 1, MPI_LONG_LONG, MPI_SUM, 0, MPI_COMM_WORLD);
 
         std::vector<counter_type> numAssertsFailedByRank;
         if (rank == 0) {
@@ -106,14 +106,7 @@ public:
         }
 
         MPI_Gather(
-            &p.numAssertsFailed,
-            1,
-            MPI_UNSIGNED_LONG_LONG,
-            numAssertsFailedByRank.data(),
-            1,
-            MPI_UNSIGNED_LONG_LONG,
-            0,
-            MPI_COMM_WORLD
+            &p.numAssertsFailed, 1, MPI_LONG_LONG, numAssertsFailedByRank.data(), 1, MPI_LONG_LONG, 0, MPI_COMM_WORLD
         );
 
         if (rank == 0) {
