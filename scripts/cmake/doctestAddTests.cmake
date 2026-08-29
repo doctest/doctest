@@ -36,7 +36,7 @@ if("${spec}" MATCHES .)
 endif()
 
 execute_process(
-  COMMAND ${TEST_EXECUTOR} "${TEST_EXECUTABLE}" ${spec} --list-test-cases
+  COMMAND ${TEST_EXECUTOR} "${TEST_EXECUTABLE}" ${spec} --list-test-cases --no-colors
   OUTPUT_VARIABLE output
   RESULT_VARIABLE result
   WORKING_DIRECTORY "${TEST_WORKING_DIR}"
@@ -74,6 +74,9 @@ foreach(line ${output})
       )
     endif()
 
+    # Normalize line endings: adb shell (and pty-backed executors) can emit CRLF,
+    # which would otherwise leave a trailing \r on each parsed test name.
+    string(REPLACE "\r" "" output "${output}")
     string(REPLACE "\n" ";" labeloutput "${labeloutput}")
     foreach(labelline ${labeloutput})
       if("${labelline}" STREQUAL "===============================================================================" OR "${labelline}" MATCHES [==[^\[doctest\] ]==])
