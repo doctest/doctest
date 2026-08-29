@@ -8,6 +8,10 @@
 #ifdef DOCTEST_PLATFORM_MAC
 #include <sys/sysctl.h>
 #include <sys/types.h>
+#include <unistd.h>
+#ifndef DOCTEST_CONFIG_NO_INCLUDE_IOSTREAM
+#include <iostream>
+#endif
 #endif
 
 DOCTEST_SUPPRESS_PRIVATE_WARNINGS_PUSH
@@ -67,7 +71,9 @@ bool isDebuggerActive() {
     // Call sysctl.
     size = sizeof(info);
     if (sysctl(mib, DOCTEST_COUNTOF(mib), &info, &size, nullptr, 0) != 0) {
+#ifndef DOCTEST_CONFIG_NO_INCLUDE_IOSTREAM
         std::cerr << "\nCall to sysctl failed - unable to determine if debugger is active **\n";
+#endif
         return false;
     }
     // We're being debugged if the P_TRACED flag is set.

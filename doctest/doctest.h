@@ -527,6 +527,9 @@ DOCTEST_CLANG_SUPPRESS_WARNING_WITH_PUSH("-Wunused-macros")
 #define DOCTEST_BRANCH_ON_DISABLED(if_disabled, if_not_disabled) if_not_disabled
 #endif
 
+// counts the number of elements in a C array
+#define DOCTEST_COUNTOF(x) (sizeof(x) / sizeof(x[0]))
+
 DOCTEST_CLANG_SUPPRESS_WARNING_POP
 
 #endif // DOCTEST_PARTS_PUBLIC_CONFIG
@@ -585,9 +588,6 @@ DOCTEST_CLANG_SUPPRESS_WARNING_POP
     DOCTEST_CLANG_SUPPRESS_WARNING_WITH_PUSH("-Wglobal-constructors")                                                  \
     static const int var = doctest::detail::consume(&var, __VA_ARGS__);                                                \
     DOCTEST_CLANG_SUPPRESS_WARNING_POP
-
-// counts the number of elements in a C array
-#define DOCTEST_COUNTOF(x) (sizeof(x) / sizeof(x[0]))
 
 DOCTEST_SUPPRESS_PUBLIC_WARNINGS_POP
 
@@ -6171,6 +6171,7 @@ DOCTEST_SUPPRESS_PRIVATE_WARNINGS_POP
 
 #endif // DOCTEST_PARTS_PRIVATE_CONTEXT_SCOPE
 
+#include <exception>
 #include <sstream>
 
 DOCTEST_SUPPRESS_PRIVATE_WARNINGS_PUSH
@@ -6293,6 +6294,10 @@ DOCTEST_SUPPRESS_PRIVATE_WARNINGS_POP
 #ifdef DOCTEST_PLATFORM_MAC
 #include <sys/sysctl.h>
 #include <sys/types.h>
+#include <unistd.h>
+#ifndef DOCTEST_CONFIG_NO_INCLUDE_IOSTREAM
+#include <iostream>
+#endif
 #endif
 
 DOCTEST_SUPPRESS_PRIVATE_WARNINGS_PUSH
@@ -6352,7 +6357,9 @@ bool isDebuggerActive() {
     // Call sysctl.
     size = sizeof(info);
     if (sysctl(mib, DOCTEST_COUNTOF(mib), &info, &size, nullptr, 0) != 0) {
+#ifndef DOCTEST_CONFIG_NO_INCLUDE_IOSTREAM
         std::cerr << "\nCall to sysctl failed - unable to determine if debugger is active **\n";
+#endif
         return false;
     }
     // We're being debugged if the P_TRACED flag is set.
@@ -8563,6 +8570,7 @@ String toString(long long unsigned in) {
 DOCTEST_SUPPRESS_PRIVATE_WARNINGS_POP
 
 #include <cstring>
+#include <exception>
 
 DOCTEST_SUPPRESS_PRIVATE_WARNINGS_PUSH
 

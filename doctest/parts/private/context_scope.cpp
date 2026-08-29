@@ -2,6 +2,7 @@
 #include "doctest/parts/private/context_state.h"
 #include "doctest/parts/private/exceptions.h"
 
+#include <exception>
 #include <sstream>
 
 DOCTEST_SUPPRESS_PRIVATE_WARNINGS_PUSH
