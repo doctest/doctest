@@ -55,7 +55,7 @@ struct JUnitReporter : public IReporter {
 
         std::vector<JUnitTestCase> testcases;
         double totalSeconds = 0;
-        int totalErrors = 0, totalFailures = 0;
+        counter_type totalErrors = 0, totalFailures = 0;
     };
 
     JUnitTestCaseData testCaseData;

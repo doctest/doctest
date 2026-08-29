@@ -19,8 +19,8 @@ namespace detail {
 
 // this holds both parameters from the command line and runtime data for tests
 struct ContextState : ContextOptions, TestRunStats, CurrentTestCaseStats {
-    MultiLaneAtomic<int> numAssertsCurrentTest_atomic;
-    MultiLaneAtomic<int> numAssertsFailedCurrentTest_atomic;
+    MultiLaneAtomic<counter_type> numAssertsCurrentTest_atomic;
+    MultiLaneAtomic<counter_type> numAssertsFailedCurrentTest_atomic;
 
     std::vector<std::vector<String>> filters = decltype(filters)(9); // 9 different filters
 

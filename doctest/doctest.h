@@ -572,6 +572,15 @@ DOCTEST_SUPPRESS_PUBLIC_WARNINGS_PUSH
 #endif // DOCTEST_CONFIG_ASSERTION_PARAMETERS_BY_VALUE
 
 namespace doctest {
+// Type of the test case and assertion counters. A test run can execute more than 2^31
+// assertions, so a 32 bit counter is not enough. The type stays signed, so that a reporter
+// assigning one of these fields to a signed variable keeps compiling without a sign change.
+// It is spelled out instead of using std::int64_t so that no public header has to include
+// <cstdint>.
+using counter_type = long long;
+
+static_assert(sizeof(counter_type) >= 8, "doctest::counter_type must be at least 64 bit");
+
 namespace detail {
 DOCTEST_CLANG_SUPPRESS_WARNING_WITH_PUSH("-Wunused-function")
 static DOCTEST_CONSTEXPR int consume(const int *, int) noexcept {
@@ -2770,8 +2779,8 @@ enum Enum {
 } // namespace TestCaseFailureReason
 
 struct DOCTEST_INTERFACE CurrentTestCaseStats {
-    int numAssertsCurrentTest;
-    int numAssertsFailedCurrentTest;
+    counter_type numAssertsCurrentTest;
+    counter_type numAssertsFailedCurrentTest;
     double seconds;
     int failure_flags; // use TestCaseFailureReason::Enum
     bool testCaseSuccess;
@@ -2783,12 +2792,12 @@ struct DOCTEST_INTERFACE TestCaseException {
 };
 
 struct DOCTEST_INTERFACE TestRunStats {
-    unsigned numTestCases;
-    unsigned numTestCasesPassingFilters;
-    unsigned numTestSuitesPassingFilters;
-    unsigned numTestCasesFailed;
-    int numAsserts;
-    int numAssertsFailed;
+    counter_type numTestCases;
+    counter_type numTestCasesPassingFilters;
+    counter_type numTestSuitesPassingFilters;
+    counter_type numTestCasesFailed;
+    counter_type numAsserts;
+    counter_type numAssertsFailed;
 };
 
 struct QueryData {
@@ -4020,11 +4029,11 @@ public:
     }
 
     T load(std::memory_order order = std::memory_order_seq_cst) const DOCTEST_NOEXCEPT {
-        auto result = T();
+        unsigned long long result = 0;
         for (const auto &c: m_atomics) {
-            result += c.atomic.load(order);
+            result += static_cast<unsigned long long>(c.atomic.load(order));
         }
-        return result;
+        return static_cast<T>(result);
     }
 
     // NOLINTNEXTLINE(cppcoreguidelines-c-copy-assignment-signature, misc-unconventional-assign-operator)
@@ -4169,8 +4178,8 @@ namespace detail {
 
 // this holds both parameters from the command line and runtime data for tests
 struct ContextState : ContextOptions, TestRunStats, CurrentTestCaseStats {
-    MultiLaneAtomic<int> numAssertsCurrentTest_atomic;
-    MultiLaneAtomic<int> numAssertsFailedCurrentTest_atomic;
+    MultiLaneAtomic<counter_type> numAssertsCurrentTest_atomic;
+    MultiLaneAtomic<counter_type> numAssertsFailedCurrentTest_atomic;
 
     std::vector<std::vector<String>> filters = decltype(filters)(9); // 9 different filters
 
@@ -5330,7 +5339,7 @@ struct JUnitReporter : public IReporter {
 
         std::vector<JUnitTestCase> testcases;
         double totalSeconds = 0;
-        int totalErrors = 0, totalFailures = 0;
+        counter_type totalErrors = 0, totalFailures = 0;
     };
 
     JUnitTestCaseData testCaseData;
@@ -5959,7 +5968,7 @@ int Context::run() {
         testArray.push_back(&curr);
         is_focused |= curr.m_focus;
     }
-    p->numTestCases = testArray.size();
+    p->numTestCases = static_cast<counter_type>(testArray.size());
 
     // sort the collected records
     if (!testArray.empty()) {
@@ -6240,11 +6249,13 @@ void ContextState::resetRunData() {
 void ContextState::finalizeTestCaseData() {
     seconds = timer.getElapsedSeconds();
 
-    // update the non-atomic counters
-    numAsserts += numAssertsCurrentTest_atomic;
-    numAssertsFailed += numAssertsFailedCurrentTest_atomic;
-    numAssertsCurrentTest = numAssertsCurrentTest_atomic;
+    // Update the non-atomic counters. The failed count is read first: both counters only
+    // grow, so reading the failed one first keeps failed <= total even if a thread of the
+    // test case is still running and counting.
     numAssertsFailedCurrentTest = numAssertsFailedCurrentTest_atomic;
+    numAssertsCurrentTest = numAssertsCurrentTest_atomic;
+    numAsserts += numAssertsCurrentTest;
+    numAssertsFailed += numAssertsFailedCurrentTest;
 
     if (numAssertsFailedCurrentTest)
         failure_flags |= TestCaseFailureReason::AssertFailure;
@@ -7211,19 +7222,17 @@ void ConsoleReporter::test_run_end(const TestRunStats &p) {
     separator_to_stream();
     s << std::dec;
 
-    auto totwidth = static_cast<int>(std::ceil(
-        log10(static_cast<double>(std::max(p.numTestCasesPassingFilters, static_cast<unsigned>(p.numAsserts))) + 1)
-    ));
+    auto totwidth = static_cast<int>(
+        std::ceil(log10(static_cast<double>(std::max(p.numTestCasesPassingFilters, p.numAsserts)) + 1))
+    );
     auto passwidth = static_cast<int>(std::ceil(log10(
-        static_cast<double>(std::max(
-            p.numTestCasesPassingFilters - p.numTestCasesFailed,
-            static_cast<unsigned>(p.numAsserts - p.numAssertsFailed)
-        )) +
+        static_cast<double>(
+            std::max(p.numTestCasesPassingFilters - p.numTestCasesFailed, p.numAsserts - p.numAssertsFailed)
+        ) +
         1
     )));
-    auto failwidth = static_cast<int>(std::ceil(
-        log10(static_cast<double>(std::max(p.numTestCasesFailed, static_cast<unsigned>(p.numAssertsFailed))) + 1)
-    ));
+    auto failwidth =
+        static_cast<int>(std::ceil(log10(static_cast<double>(std::max(p.numTestCasesFailed, p.numAssertsFailed)) + 1)));
     const bool anythingFailed = p.numTestCasesFailed > 0 || p.numAssertsFailed > 0;
     s << Color::Cyan << "[doctest] " << Color::None << "test cases: " << std::setw(totwidth)
       << p.numTestCasesPassingFilters << " | "
@@ -7232,7 +7241,7 @@ void ConsoleReporter::test_run_end(const TestRunStats &p) {
       << (p.numTestCasesFailed > 0 ? Color::Red : Color::None) << std::setw(failwidth) << p.numTestCasesFailed
       << " failed" << Color::None << " |";
     if (opt.no_skipped_summary == false) {
-        const unsigned int numSkipped = p.numTestCases - p.numTestCasesPassingFilters;
+        const counter_type numSkipped = p.numTestCases - p.numTestCasesPassingFilters;
         s << " " << (numSkipped == 0 ? Color::None : Color::Yellow) << numSkipped << " skipped" << Color::None;
     }
     s << "\n";

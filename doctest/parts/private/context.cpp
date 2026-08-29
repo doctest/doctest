@@ -525,7 +525,7 @@ int Context::run() {
         testArray.push_back(&curr);
         is_focused |= curr.m_focus;
     }
-    p->numTestCases = testArray.size();
+    p->numTestCases = static_cast<counter_type>(testArray.size());
 
     // sort the collected records
     if (!testArray.empty()) {
