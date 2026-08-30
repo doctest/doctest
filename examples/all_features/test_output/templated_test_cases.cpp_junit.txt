@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <testsuites>
-  <testsuite name="all_features" errors="0" failures="5" tests="19">
+  <testsuite name="all_features" errors="0" failures="5" tests="22">
     <testcase classname="templated_test_cases.cpp" name="signed integers stuff&lt;signed char>" status="run"/>
     <testcase classname="templated_test_cases.cpp" name="signed integers stuff&lt;SHORT!!!>" status="run"/>
     <testcase classname="templated_test_cases.cpp" name="signed integers stuff&lt;int>" status="run"/>
@@ -19,6 +19,9 @@ CHECK( vec.size() == 20 ) is NOT correct!
     <testcase classname="templated_test_cases.cpp" name="default construction&lt;double>" status="run"/>
     <testcase classname="templated_test_cases.cpp" name="default construction&lt;unsigned char>" status="run"/>
     <testcase classname="templated_test_cases.cpp" name="default construction&lt;char>" status="run"/>
+    <testcase classname="templated_test_cases.cpp" name="default construction&lt;answer&lt;signed char>>" status="run"/>
+    <testcase classname="templated_test_cases.cpp" name="default construction&lt;answer&lt;short>>" status="run"/>
+    <testcase classname="templated_test_cases.cpp" name="default construction&lt;answer&lt;int>>" status="run"/>
     <testcase classname="templated_test_cases.cpp" name="multiple types&lt;Custom name test>" status="run">
       <failure message="0 != 0" type="CHECK">
 templated_test_cases.cpp(0):

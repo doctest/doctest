@@ -2,10 +2,11 @@
 
 namespace {
 class DummyContextOptions {
-private:
+    template <int>
+    friend void ::doctest_backdoor();
+
     doctest::ContextOptions _old_options;
 
-public:
     doctest::ContextOptions *options;
 
     inline DummyContextOptions() {
@@ -22,6 +23,8 @@ public:
     }
 };
 } // namespace
+
+#define DOCTEST_BACKDOOR
 
 TEST_CASE("Determining basename from path") {
     using doctest::skipPathFromFilename;

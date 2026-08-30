@@ -74,25 +74,25 @@ TEST_SUITE("skipped test cases" * doctest::skip()) {
     }
 }
 
-TEST_SUITE("test suite with a description" * doctest::description("regarding failures")) {
-    TEST_CASE("fails - and its allowed" * doctest::may_fail()) {
-        FAIL("");
-    }
-    TEST_CASE("doesn't fail which is fine" * doctest::may_fail()) {}
-
-    TEST_CASE("fails as it should" * doctest::should_fail()) {
-        FAIL("");
-    }
-    TEST_CASE("doesn't fail but it should have" * doctest::should_fail()) {}
-
-    TEST_CASE("fails 1 time as it should" * doctest::expected_failures(1)) {
-        FAIL("");
-    }
-    TEST_CASE("fails more times than it should" * doctest::expected_failures(1)) {
-        FAIL_CHECK("");
-        FAIL_CHECK("");
-    }
+namespace test_suite_with_a_description {
+TEST_CASE("fails - and its allowed" * doctest::may_fail()) {
+    FAIL("");
 }
+TEST_CASE("doesn't fail which is fine" * doctest::may_fail()) {}
+
+TEST_CASE("fails as it should" * doctest::should_fail()) {
+    FAIL("");
+}
+TEST_CASE("doesn't fail but it should have" * doctest::should_fail()) {}
+
+TEST_CASE("fails 1 time as it should" * doctest::expected_failures(1)) {
+    FAIL("");
+}
+TEST_CASE("fails more times than it should" * doctest::expected_failures(1)) {
+    FAIL_CHECK("");
+    FAIL_CHECK("");
+}
+} // namespace test_suite_with_a_description
 
 TEST_CASE("should fail and no output" * doctest::should_fail() * doctest::no_breaks() * doctest::no_output()) {
     FAIL("");

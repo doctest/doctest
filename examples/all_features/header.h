@@ -2,6 +2,12 @@
 
 #include <doctest/doctest.h>
 
+// Complement the REGISTER_EXCEPTION_TRANSLATOR() on the same line in main.cpp
+// to break the build in case DOCTEST_COUNTER surprisingly resolves to __LINE__
+REGISTER_EXCEPTION_TRANSLATOR(int &in) {
+    return doctest::toString(in);
+}
+
 // helper for throwing exceptions
 template <typename T>
 int throw_if(bool in, const T &ex) {
@@ -20,10 +26,6 @@ TEST_SUITE("some TS") {
     TEST_CASE("in TS") {
         FAIL("");
     }
-}
-
-REGISTER_EXCEPTION_TRANSLATOR(int &in) {
-    return doctest::toString(in);
 }
 
 // Removes class on MSVC
@@ -65,3 +67,7 @@ TEST_CASE_FIXTURE(SomeFixture, "fixtured test") {
     data /= 2;
     CHECK(data == 21);
 }
+
+namespace test_suite_with_a_description {
+TEST_SUITE_USING("test suite with a description" * doctest::description("regarding failures"));
+} // namespace test_suite_with_a_description

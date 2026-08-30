@@ -36,6 +36,24 @@ TEST_CASE_TEMPLATE_INVOKE(test_id, double, double); // note that types won't be 
 
 TEST_CASE_TEMPLATE_APPLY(test_id, std::tuple<unsigned char, char>);
 
+template <typename T>
+class answer {
+    template <typename>
+    friend void test_id();
+    answer() = default;
+
+public:
+    operator T() const {
+        return 42;
+    }
+};
+
+TYPE_TO_STRING(answer<signed char>);
+TYPE_TO_STRING(answer<short>);
+TYPE_TO_STRING(answer<int>);
+
+TEST_CASE_TEMPLATE_INVOKE(test_id, answer<signed char>, answer<short>, answer<int>);
+
 // =================================================================================================
 // MULTIPLE TYPES AS PARAMETERS
 // =================================================================================================

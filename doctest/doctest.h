@@ -552,7 +552,7 @@ DOCTEST_SUPPRESS_PUBLIC_WARNINGS_PUSH
 
 #if !defined(DOCTEST_COUNTER)
 #if DOCTEST_CLANG >= DOCTEST_COMPILER(22, 0, 0)
-#define DOCTEST_COUNTER __LINE__
+#define DOCTEST_COUNTER DOCTEST_CAT(__LINE__, __INCLUDE_LEVEL__)
 #elif defined(__COUNTER__)
 #define DOCTEST_COUNTER __COUNTER__
 #else
@@ -2980,10 +2980,23 @@ int instantiationHelper(const T &) noexcept {
     }                                                                                                                  \
     DOCTEST_INLINE_NOINLINE void der::f() // NOLINT(misc-definitions-in-headers)
 
+DOCTEST_CLANG_SUPPRESS_WARNING_PUSH
+DOCTEST_CLANG_SUPPRESS_WARNING("-Wunused-template")
+template <int>
+static void doctest_backdoor();
+template <int>
+static void doctest_frontdoor();
+#define doctest_backdoorDOCTEST_BACKDOOR doctest_frontdoor
+DOCTEST_CLANG_SUPPRESS_WARNING_POP
+
 #define DOCTEST_CREATE_AND_REGISTER_FUNCTION(f, decorators)                                                            \
-    static void f();                                                                                                   \
-    DOCTEST_REGISTER_FUNCTION(DOCTEST_EMPTY, f, decorators)                                                            \
-    static void f()
+    template <int>                                                                                                     \
+    static void DOCTEST_CAT(doctest_backdoor, DOCTEST_BACKDOOR)();                                                     \
+    template <>                                                                                                        \
+    void DOCTEST_CAT(doctest_backdoor, DOCTEST_BACKDOOR)<f>();                                                         \
+    DOCTEST_REGISTER_FUNCTION(DOCTEST_EMPTY, DOCTEST_CAT(doctest_backdoor, DOCTEST_BACKDOOR) < f >, decorators)        \
+    template <>                                                                                                        \
+    void DOCTEST_CAT(doctest_backdoor, DOCTEST_BACKDOOR)<f>()
 
 #define DOCTEST_CREATE_AND_REGISTER_FUNCTION_IN_CLASS(f, proxy, decorators)                                            \
     static doctest::detail::funcType proxy() {                                                                         \
@@ -2993,8 +3006,7 @@ int instantiationHelper(const T &) noexcept {
     static void f()
 
 // for registering tests
-#define DOCTEST_TEST_CASE(decorators)                                                                                  \
-    DOCTEST_CREATE_AND_REGISTER_FUNCTION(DOCTEST_ANONYMOUS(DOCTEST_ANON_FUNC_), decorators)
+#define DOCTEST_TEST_CASE(decorators) DOCTEST_CREATE_AND_REGISTER_FUNCTION(DOCTEST_COUNTER, decorators)
 
 // for registering tests in classes - requires C++17 for inline variables!
 #if DOCTEST_CPLUSPLUS >= 201703L
@@ -3056,20 +3068,20 @@ int instantiationHelper(const T &) noexcept {
     static void func()
 
 #define DOCTEST_TEST_CASE_TEMPLATE_DEFINE(dec, T, id)                                                                  \
-    DOCTEST_TEST_CASE_TEMPLATE_DEFINE_IMPL(dec, T, DOCTEST_CAT(id, ITERATOR), DOCTEST_ANONYMOUS(DOCTEST_ANON_TMP_))
+    DOCTEST_TEST_CASE_TEMPLATE_DEFINE_IMPL(dec, T, DOCTEST_CAT(id, ITERATOR), id)
 
 #define DOCTEST_TEST_CASE_TEMPLATE_INSTANTIATE_IMPL(id, anon, ...)                                                     \
     DOCTEST_GLOBAL_NO_WARNINGS(                                                                                        \
-        DOCTEST_CAT(anon, DUMMY), /* NOLINT(cert-err58-cpp, fuchsia-statically-constructed-objects) */                 \
+        DOCTEST_ANONYMOUS(DOCTEST_ANON_TMP_VAR_), /* NOLINT(cert-err58-cpp) */                                         \
         doctest::detail::instantiationHelper(DOCTEST_CAT(id, ITERATOR) < __VA_ARGS__ > (__FILE__, __LINE__, 0))        \
     )
 
 #define DOCTEST_TEST_CASE_TEMPLATE_INVOKE(id, ...)                                                                     \
-    DOCTEST_TEST_CASE_TEMPLATE_INSTANTIATE_IMPL(id, DOCTEST_ANONYMOUS(DOCTEST_ANON_TMP_), std::tuple<__VA_ARGS__>)     \
+    DOCTEST_TEST_CASE_TEMPLATE_INSTANTIATE_IMPL(id, id, std::tuple<__VA_ARGS__>)                                       \
     static_assert(true, "")
 
 #define DOCTEST_TEST_CASE_TEMPLATE_APPLY(id, ...)                                                                      \
-    DOCTEST_TEST_CASE_TEMPLATE_INSTANTIATE_IMPL(id, DOCTEST_ANONYMOUS(DOCTEST_ANON_TMP_), __VA_ARGS__)                 \
+    DOCTEST_TEST_CASE_TEMPLATE_INSTANTIATE_IMPL(id, id, __VA_ARGS__)                                                   \
     static_assert(true, "")
 
 #define DOCTEST_TEST_CASE_TEMPLATE_IMPL(dec, T, anon, ...)                                                             \
@@ -3090,10 +3102,10 @@ int instantiationHelper(const T &) noexcept {
 #define DOCTEST_GENERATE(...) doctest::detail::acquireGeneratorValue(__VA_ARGS__)
 
 // for grouping tests in test suites by using code blocks
-#define DOCTEST_TEST_SUITE_IMPL(decorators, ns_name)                                                                   \
+#define DOCTEST_TEST_SUITE_IMPL(decorators, ns_name, option)                                                           \
     namespace ns_name {                                                                                                \
     namespace doctest_detail_test_suite_ns {                                                                           \
-    static DOCTEST_NOINLINE doctest::detail::TestSuite &getCurrentTestSuite() noexcept {                               \
+    static DOCTEST_INLINE_NOINLINE doctest::detail::TestSuite &getCurrentTestSuite() noexcept {                        \
         DOCTEST_MSVC_SUPPRESS_WARNING_WITH_PUSH(4640)                                                                  \
         DOCTEST_CLANG_SUPPRESS_WARNING_WITH_PUSH("-Wexit-time-destructors")                                            \
         DOCTEST_GCC_SUPPRESS_WARNING_WITH_PUSH("-Wmissing-field-initializers")                                         \
@@ -3110,9 +3122,12 @@ int instantiationHelper(const T &) noexcept {
     }                                                                                                                  \
     }                                                                                                                  \
     }                                                                                                                  \
-    namespace ns_name
+    option namespace ns_name
 
-#define DOCTEST_TEST_SUITE(decorators) DOCTEST_TEST_SUITE_IMPL(decorators, DOCTEST_ANONYMOUS(DOCTEST_ANON_SUITE_))
+#define DOCTEST_TEST_SUITE(decorators)                                                                                 \
+    DOCTEST_TEST_SUITE_IMPL(decorators, DOCTEST_ANONYMOUS(DOCTEST_ANON_SUITE_), DOCTEST_EMPTY)
+
+#define DOCTEST_TEST_SUITE_USING(decorators) DOCTEST_TEST_SUITE_IMPL(decorators, doctest_ns_name, using)
 
 // for starting a testsuite block
 #define DOCTEST_TEST_SUITE_BEGIN(decorators)                                                                           \
@@ -3400,13 +3415,13 @@ int instantiationHelper(const T &) noexcept {
 
 #define DOCTEST_CREATE_AND_REGISTER_FUNCTION(f, name)                                                                  \
     template <typename DOCTEST_UNUSED_TEMPLATE_TYPE>                                                                   \
-    static inline void f()
+    static inline void DOCTEST_CAT(DOCTEST_ANON_FUNC_, f)()
 
 // for registering tests
-#define DOCTEST_TEST_CASE(name) DOCTEST_CREATE_AND_REGISTER_FUNCTION(DOCTEST_ANONYMOUS(DOCTEST_ANON_FUNC_), name)
+#define DOCTEST_TEST_CASE(name) DOCTEST_CREATE_AND_REGISTER_FUNCTION(DOCTEST_COUNTER, name)
 
 // for registering tests in classes
-#define DOCTEST_TEST_CASE_CLASS(name) DOCTEST_CREATE_AND_REGISTER_FUNCTION(DOCTEST_ANONYMOUS(DOCTEST_ANON_FUNC_), name)
+#define DOCTEST_TEST_CASE_CLASS(name) DOCTEST_CREATE_AND_REGISTER_FUNCTION(DOCTEST_COUNTER, name)
 
 // for registering tests with a fixture
 #define DOCTEST_TEST_CASE_FIXTURE(x, name)                                                                             \
@@ -3437,6 +3452,7 @@ int instantiationHelper(const T &) noexcept {
 
 // for a testsuite block
 #define DOCTEST_TEST_SUITE(name) namespace // NOLINT
+#define DOCTEST_TEST_SUITE_USING(name) static_assert(true, "")
 
 // for starting a testsuite block
 #define DOCTEST_TEST_SUITE_BEGIN(name) static_assert(true, "")
@@ -3782,6 +3798,7 @@ DOCTEST_RELATIONAL_OP(ge, >=)
 #define SUBCASE(name) DOCTEST_SUBCASE(name)
 #define GENERATE(...) DOCTEST_GENERATE(__VA_ARGS__)
 #define TEST_SUITE(decorators) DOCTEST_TEST_SUITE(decorators)
+#define TEST_SUITE_USING(decorators) DOCTEST_TEST_SUITE_USING(decorators)
 #define TEST_SUITE_BEGIN(name) DOCTEST_TEST_SUITE_BEGIN(name)
 #define TEST_SUITE_END DOCTEST_TEST_SUITE_END
 #define REGISTER_EXCEPTION_TRANSLATOR(signature) DOCTEST_REGISTER_EXCEPTION_TRANSLATOR(signature)
