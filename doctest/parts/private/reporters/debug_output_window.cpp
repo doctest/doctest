@@ -17,8 +17,6 @@ namespace detail {
 
 #ifdef DOCTEST_PLATFORM_WINDOWS
 
-DOCTEST_THREAD_LOCAL std::ostringstream DebugOutputWindowReporter::oss;
-
 DebugOutputWindowReporter::DebugOutputWindowReporter(const ContextOptions &co)
     : ConsoleReporter(co, oss) {}
 

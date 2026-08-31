@@ -221,6 +221,7 @@ struct is_container<
 
 DOCTEST_INTERFACE std::ostream *tlssPush();
 DOCTEST_INTERFACE String tlssPop();
+DOCTEST_INTERFACE void tlssCleanup();
 
 template <bool C>
 struct StringMakerBase {
