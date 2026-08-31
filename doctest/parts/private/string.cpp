@@ -1,3 +1,4 @@
+#include "doctest/parts/private/context_scope.h"
 #include "doctest/parts/private/exceptions.h"
 #include "doctest/parts/public/string.h"
 
@@ -54,6 +55,10 @@ String tlssPop() {
 void tlssCleanup() {
     delete g_oss;
     g_oss = nullptr;
+#ifndef DOCTEST_CONFIG_DISABLE
+    delete g_infoContexts;
+    g_infoContexts = nullptr;
+#endif
 }
 
 } // namespace detail

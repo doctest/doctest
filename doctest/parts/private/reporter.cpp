@@ -49,11 +49,11 @@ reporterMap &getListeners() noexcept {
 DOCTEST_DEFINE_INTERFACE(IReporter)
 
 int IReporter::get_num_active_contexts() {
-    return static_cast<int>(detail::g_infoContexts.size());
+    return static_cast<int>(detail::getInfoContexts().size());
 }
 
 const IContextScope *const *IReporter::get_active_contexts() {
-    return get_num_active_contexts() ? detail::g_infoContexts.data() : nullptr;
+    return get_num_active_contexts() ? detail::getInfoContexts().data() : nullptr;
 }
 
 int IReporter::get_num_stringified_contexts() {

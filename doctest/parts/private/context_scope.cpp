@@ -12,10 +12,16 @@ DOCTEST_DEFINE_INTERFACE(IContextScope)
 
 #ifndef DOCTEST_CONFIG_DISABLE
 namespace detail {
-DOCTEST_THREAD_LOCAL std::vector<IContextScope *> g_infoContexts; // for logging with INFO()
+DOCTEST_THREAD_LOCAL std::vector<IContextScope *> *g_infoContexts = nullptr;
+
+std::vector<IContextScope *> &getInfoContexts() {
+    if (g_infoContexts == nullptr)
+        g_infoContexts = new std::vector<IContextScope *>;
+    return *g_infoContexts;
+}
 
 ContextScopeBase::ContextScopeBase() {
-    g_infoContexts.push_back(this);
+    getInfoContexts().push_back(this);
 }
 
 ContextScopeBase::ContextScopeBase(ContextScopeBase &&other) noexcept {
@@ -23,7 +29,7 @@ ContextScopeBase::ContextScopeBase(ContextScopeBase &&other) noexcept {
         other.destroy();
     }
     other.need_to_destroy = false;
-    g_infoContexts.push_back(this);
+    getInfoContexts().push_back(this);
 }
 
 // destroy cannot be inlined into the destructor because that would mean calling stringify after
@@ -35,7 +41,7 @@ void ContextScopeBase::destroy() {
         this->stringify(&s);
         g_cs->stringifiedContexts.emplace_back(s.str().c_str());
     }
-    g_infoContexts.pop_back();
+    getInfoContexts().pop_back();
 }
 
 } // namespace detail
