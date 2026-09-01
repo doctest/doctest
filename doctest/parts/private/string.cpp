@@ -3,6 +3,7 @@
 #include "doctest/parts/public/string.h"
 
 #include <cstring>
+#include <memory>
 #include <sstream>
 #include <vector>
 
@@ -36,11 +37,11 @@ public:
     }
 };
 
-DOCTEST_THREAD_LOCAL oss *g_oss = nullptr;
+DOCTEST_THREAD_LOCAL std::unique_ptr<oss> g_oss;
 
 static oss &getOss() {
     if (g_oss == nullptr)
-        g_oss = new oss;
+        g_oss.reset(new oss);
     return *g_oss;
 }
 
@@ -53,11 +54,9 @@ String tlssPop() {
 }
 
 void tlssCleanup() {
-    delete g_oss;
-    g_oss = nullptr;
+    g_oss.reset();
 #ifndef DOCTEST_CONFIG_DISABLE
-    delete g_infoContexts;
-    g_infoContexts = nullptr;
+    cleanupInfoContexts();
 #endif
 }
 

@@ -12,6 +12,7 @@ DOCTEST_SUPPRESS_PRIVATE_WARNINGS_PUSH
 namespace doctest {
 namespace detail {
 DOCTEST_INTERFACE std::vector<IContextScope *> &getInfoContexts(); // for logging with INFO()
+DOCTEST_INTERFACE void cleanupInfoContexts();
 } // namespace detail
 } // namespace doctest
 

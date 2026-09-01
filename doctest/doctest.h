@@ -6165,6 +6165,7 @@ DOCTEST_SUPPRESS_PRIVATE_WARNINGS_PUSH
 namespace doctest {
 namespace detail {
 DOCTEST_INTERFACE std::vector<IContextScope *> &getInfoContexts(); // for logging with INFO()
+DOCTEST_INTERFACE void cleanupInfoContexts();
 } // namespace detail
 } // namespace doctest
 
@@ -6174,6 +6175,7 @@ DOCTEST_SUPPRESS_PRIVATE_WARNINGS_POP
 
 #endif // DOCTEST_PARTS_PRIVATE_CONTEXT_SCOPE
 
+#include <memory>
 #include <sstream>
 
 DOCTEST_SUPPRESS_PRIVATE_WARNINGS_PUSH
@@ -6184,12 +6186,16 @@ DOCTEST_DEFINE_INTERFACE(IContextScope)
 
 #ifndef DOCTEST_CONFIG_DISABLE
 namespace detail {
-DOCTEST_THREAD_LOCAL std::vector<IContextScope *> *g_infoContexts = nullptr;
+DOCTEST_THREAD_LOCAL std::unique_ptr<std::vector<IContextScope *>> g_infoContexts;
 
 std::vector<IContextScope *> &getInfoContexts() {
     if (g_infoContexts == nullptr)
-        g_infoContexts = new std::vector<IContextScope *>;
+        g_infoContexts.reset(new std::vector<IContextScope *>);
     return *g_infoContexts;
+}
+
+void cleanupInfoContexts() {
+    g_infoContexts.reset();
 }
 
 ContextScopeBase::ContextScopeBase() {
@@ -8214,6 +8220,7 @@ char *FatalConditionHandler::altStackMem = nullptr;
 DOCTEST_SUPPRESS_PRIVATE_WARNINGS_POP
 
 #include <cstring>
+#include <memory>
 #include <sstream>
 #include <vector>
 
@@ -8247,11 +8254,11 @@ public:
     }
 };
 
-DOCTEST_THREAD_LOCAL oss *g_oss = nullptr;
+DOCTEST_THREAD_LOCAL std::unique_ptr<oss> g_oss;
 
 static oss &getOss() {
     if (g_oss == nullptr)
-        g_oss = new oss;
+        g_oss.reset(new oss);
     return *g_oss;
 }
 
@@ -8264,11 +8271,9 @@ String tlssPop() {
 }
 
 void tlssCleanup() {
-    delete g_oss;
-    g_oss = nullptr;
+    g_oss.reset();
 #ifndef DOCTEST_CONFIG_DISABLE
-    delete g_infoContexts;
-    g_infoContexts = nullptr;
+    cleanupInfoContexts();
 #endif
 }
 

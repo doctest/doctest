@@ -2,6 +2,7 @@
 #include "doctest/parts/private/context_state.h"
 #include "doctest/parts/private/exceptions.h"
 
+#include <memory>
 #include <sstream>
 
 DOCTEST_SUPPRESS_PRIVATE_WARNINGS_PUSH
@@ -12,12 +13,16 @@ DOCTEST_DEFINE_INTERFACE(IContextScope)
 
 #ifndef DOCTEST_CONFIG_DISABLE
 namespace detail {
-DOCTEST_THREAD_LOCAL std::vector<IContextScope *> *g_infoContexts = nullptr;
+DOCTEST_THREAD_LOCAL std::unique_ptr<std::vector<IContextScope *>> g_infoContexts;
 
 std::vector<IContextScope *> &getInfoContexts() {
     if (g_infoContexts == nullptr)
-        g_infoContexts = new std::vector<IContextScope *>;
+        g_infoContexts.reset(new std::vector<IContextScope *>);
     return *g_infoContexts;
+}
+
+void cleanupInfoContexts() {
+    g_infoContexts.reset();
 }
 
 ContextScopeBase::ContextScopeBase() {

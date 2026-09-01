@@ -1,6 +1,8 @@
 #define DOCTEST_CONFIG_IMPLEMENT
 #include <doctest/doctest.h>
 
+#include <thread>
+
 #if defined(_MSC_VER) && defined(_DEBUG)
 #include <crtdbg.h>
 #include <doctest/parts/private/reporters/debug_output_window.h>
@@ -9,6 +11,14 @@
 TEST_CASE("doctest test run owns its temporary memory") {
     INFO("Create active INFO context storage");
     static_cast<void>(doctest::toString(42));
+
+    std::thread worker{[] {
+        INFO("Create active INFO context storage in a worker thread");
+        static_cast<void>(doctest::toString(42));
+        CHECK(true);
+    }};
+    worker.join();
+
     CHECK(true);
 }
 
