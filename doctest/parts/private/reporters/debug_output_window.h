@@ -3,7 +3,7 @@
 
 #include "doctest/parts/private/reporters/console.h"
 
-#include <iosfwd>
+#include <sstream>
 
 DOCTEST_SUPPRESS_PRIVATE_WARNINGS_PUSH
 
@@ -14,7 +14,7 @@ namespace detail {
 
 #ifdef DOCTEST_PLATFORM_WINDOWS
 struct DebugOutputWindowReporter : public ConsoleReporter {
-    DOCTEST_THREAD_LOCAL static std::ostringstream oss;
+    std::ostringstream oss;
 
     DebugOutputWindowReporter(const ContextOptions &co);
 

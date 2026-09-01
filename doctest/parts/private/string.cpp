@@ -1,7 +1,9 @@
+#include "doctest/parts/private/context_scope.h"
 #include "doctest/parts/private/exceptions.h"
 #include "doctest/parts/public/string.h"
 
 #include <cstring>
+#include <memory>
 #include <sstream>
 #include <vector>
 
@@ -10,7 +12,7 @@ DOCTEST_SUPPRESS_PRIVATE_WARNINGS_PUSH
 namespace doctest {
 namespace detail {
 
-DOCTEST_THREAD_LOCAL class oss {
+class oss {
     std::vector<std::streampos> stack;
     std::stringstream ss;
 
@@ -33,14 +35,29 @@ public:
         ss.rdbuf()->pubseekpos(pos, std::ios::in | std::ios::out);
         return String(ss, sz);
     }
-} g_oss; // NOLINT(bugprone-throwing-static-initialization, cert-err58-cpp)
+};
+
+DOCTEST_THREAD_LOCAL std::unique_ptr<oss> g_oss;
+
+static oss &getOss() {
+    if (g_oss == nullptr)
+        g_oss.reset(new oss);
+    return *g_oss;
+}
 
 std::ostream *tlssPush() {
-    return g_oss.push();
+    return getOss().push();
 }
 
 String tlssPop() {
-    return g_oss.pop();
+    return getOss().pop();
+}
+
+void tlssCleanup() {
+    g_oss.reset();
+#ifndef DOCTEST_CONFIG_DISABLE
+    cleanupInfoContexts();
+#endif
 }
 
 } // namespace detail
