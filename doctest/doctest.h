@@ -1063,6 +1063,7 @@ struct is_container<
 
 DOCTEST_INTERFACE std::ostream *tlssPush();
 DOCTEST_INTERFACE String tlssPop();
+DOCTEST_INTERFACE void tlssCleanup();
 
 template <bool C>
 struct StringMakerBase {
@@ -4985,7 +4986,7 @@ DOCTEST_SUPPRESS_PRIVATE_WARNINGS_POP
 
 #endif // DOCTEST_PARTS_PRIVATE_REPORTERS_CONSOLE
 
-#include <iosfwd>
+#include <sstream>
 
 DOCTEST_SUPPRESS_PRIVATE_WARNINGS_PUSH
 
@@ -4996,7 +4997,7 @@ namespace detail {
 
 #ifdef DOCTEST_PLATFORM_WINDOWS
 struct DebugOutputWindowReporter : public ConsoleReporter {
-    DOCTEST_THREAD_LOCAL static std::ostringstream oss;
+    std::ostringstream oss;
 
     DebugOutputWindowReporter(const ContextOptions &co);
 
@@ -5841,7 +5842,7 @@ void Context::setCout(std::ostream *out) {
     p->cout = out;
 }
 
-static class DiscardOStream : public std::ostream {
+class DiscardOStream : public std::ostream {
 private:
     class : public std::streambuf {
     private:
@@ -5862,7 +5863,7 @@ private:
 public:
     DiscardOStream() noexcept
         : std::ostream(&discardBuf) {}
-} discardOut;
+};
 
 // the main function that does all the filtering and test running
 int Context::run() {
@@ -5878,6 +5879,7 @@ int Context::run() {
     p->resetRunData();
 
     std::fstream fstr;
+    DiscardOStream discardOut;
     if (p->cout == nullptr) {
         if (p->quiet) {
             p->cout = &discardOut;
@@ -5919,6 +5921,7 @@ int Context::run() {
         for (auto &curr: p->reporters_currently_used)
             delete curr;
         p->reporters_currently_used.clear();
+        tlssCleanup();
 
         if (p->numTestCasesFailed && !p->no_exitcode)
             return EXIT_FAILURE;
@@ -6161,7 +6164,7 @@ DOCTEST_SUPPRESS_PRIVATE_WARNINGS_PUSH
 
 namespace doctest {
 namespace detail {
-extern DOCTEST_THREAD_LOCAL std::vector<IContextScope *> g_infoContexts; // for logging with INFO()
+DOCTEST_INTERFACE std::vector<IContextScope *> &getInfoContexts(); // for logging with INFO()
 } // namespace detail
 } // namespace doctest
 
@@ -6181,10 +6184,16 @@ DOCTEST_DEFINE_INTERFACE(IContextScope)
 
 #ifndef DOCTEST_CONFIG_DISABLE
 namespace detail {
-DOCTEST_THREAD_LOCAL std::vector<IContextScope *> g_infoContexts; // for logging with INFO()
+DOCTEST_THREAD_LOCAL std::vector<IContextScope *> *g_infoContexts = nullptr;
+
+std::vector<IContextScope *> &getInfoContexts() {
+    if (g_infoContexts == nullptr)
+        g_infoContexts = new std::vector<IContextScope *>;
+    return *g_infoContexts;
+}
 
 ContextScopeBase::ContextScopeBase() {
-    g_infoContexts.push_back(this);
+    getInfoContexts().push_back(this);
 }
 
 ContextScopeBase::ContextScopeBase(ContextScopeBase &&other) noexcept {
@@ -6192,7 +6201,7 @@ ContextScopeBase::ContextScopeBase(ContextScopeBase &&other) noexcept {
         other.destroy();
     }
     other.need_to_destroy = false;
-    g_infoContexts.push_back(this);
+    getInfoContexts().push_back(this);
 }
 
 // destroy cannot be inlined into the destructor because that would mean calling stringify after
@@ -6204,7 +6213,7 @@ void ContextScopeBase::destroy() {
         this->stringify(&s);
         g_cs->stringifiedContexts.emplace_back(s.str().c_str());
     }
-    g_infoContexts.pop_back();
+    getInfoContexts().pop_back();
 }
 
 } // namespace detail
@@ -6374,6 +6383,51 @@ bool isDebuggerActive() {
 #endif // DOCTEST_CONFIG_DISABLE
 
 DOCTEST_SUPPRESS_PRIVATE_WARNINGS_POP
+#ifndef DOCTEST_PARTS_PRIVATE_STATIC_REGISTRATION
+#define DOCTEST_PARTS_PRIVATE_STATIC_REGISTRATION
+
+
+// Registrations are intentionally performed during static initialization. In a
+// debug-CRT build these objects can still be alive when a host DLL asks the CRT
+// for a leak dump during its detach notification. Mark only allocations made
+// while registering doctest metadata as ignored, so that such a snapshot does
+// not mistake framework lifetime state for a user allocation leak.
+#if DOCTEST_MSVC && defined(_DEBUG)
+#include <crtdbg.h>
+#endif
+
+DOCTEST_SUPPRESS_PRIVATE_WARNINGS_PUSH
+
+namespace doctest {
+namespace detail {
+
+class StaticRegistrationMemoryGuard {
+public:
+    StaticRegistrationMemoryGuard() noexcept {
+#if DOCTEST_MSVC && defined(_DEBUG)
+        m_flags = _CrtSetDbgFlag(_CRTDBG_REPORT_FLAG);
+        _CrtSetDbgFlag(m_flags & ~_CRTDBG_ALLOC_MEM_DF);
+#endif
+    }
+
+    ~StaticRegistrationMemoryGuard() {
+#if DOCTEST_MSVC && defined(_DEBUG)
+        _CrtSetDbgFlag(m_flags);
+#endif
+    }
+
+private:
+#if DOCTEST_MSVC && defined(_DEBUG)
+    int m_flags;
+#endif
+};
+
+} // namespace detail
+} // namespace doctest
+
+DOCTEST_SUPPRESS_PRIVATE_WARNINGS_POP
+
+#endif // DOCTEST_PARTS_PRIVATE_STATIC_REGISTRATION
 
 #include <algorithm>
 #include <string>
@@ -6388,12 +6442,14 @@ namespace detail {
 DOCTEST_DEFINE_INTERFACE(IExceptionTranslator)
 
 void registerExceptionTranslatorImpl(const IExceptionTranslator *et) noexcept {
+    StaticRegistrationMemoryGuard memoryGuard;
     if (std::find(getExceptionTranslators().begin(), getExceptionTranslators().end(), et) ==
         getExceptionTranslators().end())
         getExceptionTranslators().push_back(et);
 }
 
 std::vector<const IExceptionTranslator *> &getExceptionTranslators() noexcept {
+    StaticRegistrationMemoryGuard memoryGuard;
     static std::vector<const IExceptionTranslator *> data;
     return data;
 }
@@ -6806,11 +6862,13 @@ int registerReporter(const char *, int, IReporter *) {
 
 namespace detail {
 reporterMap &getReporters() noexcept {
+    StaticRegistrationMemoryGuard memoryGuard;
     static reporterMap data;
     return data;
 }
 
 reporterMap &getListeners() noexcept {
+    StaticRegistrationMemoryGuard memoryGuard;
     static reporterMap data;
     return data;
 }
@@ -6819,11 +6877,11 @@ reporterMap &getListeners() noexcept {
 DOCTEST_DEFINE_INTERFACE(IReporter)
 
 int IReporter::get_num_active_contexts() {
-    return static_cast<int>(detail::g_infoContexts.size());
+    return static_cast<int>(detail::getInfoContexts().size());
 }
 
 const IContextScope *const *IReporter::get_active_contexts() {
-    return get_num_active_contexts() ? detail::g_infoContexts.data() : nullptr;
+    return get_num_active_contexts() ? detail::getInfoContexts().data() : nullptr;
 }
 
 int IReporter::get_num_stringified_contexts() {
@@ -6836,6 +6894,7 @@ const String *IReporter::get_stringified_contexts() {
 
 namespace detail {
 void registerReporterImpl(const char *name, int priority, reporterCreatorFunc c, bool isReporter) noexcept {
+    StaticRegistrationMemoryGuard memoryGuard;
     if (isReporter)
         getReporters().insert(reporterMap::value_type(reporterMap::key_type(priority, name), c));
     else
@@ -7384,8 +7443,6 @@ namespace detail {
 #endif // Platform
 
 #ifdef DOCTEST_PLATFORM_WINDOWS
-
-DOCTEST_THREAD_LOCAL std::ostringstream DebugOutputWindowReporter::oss;
 
 DebugOutputWindowReporter::DebugOutputWindowReporter(const ContextOptions &co)
     : ConsoleReporter(co, oss) {}
@@ -8165,7 +8222,7 @@ DOCTEST_SUPPRESS_PRIVATE_WARNINGS_PUSH
 namespace doctest {
 namespace detail {
 
-DOCTEST_THREAD_LOCAL class oss {
+class oss {
     std::vector<std::streampos> stack;
     std::stringstream ss;
 
@@ -8188,14 +8245,31 @@ public:
         ss.rdbuf()->pubseekpos(pos, std::ios::in | std::ios::out);
         return String(ss, sz);
     }
-} g_oss; // NOLINT(bugprone-throwing-static-initialization, cert-err58-cpp)
+};
+
+DOCTEST_THREAD_LOCAL oss *g_oss = nullptr;
+
+static oss &getOss() {
+    if (g_oss == nullptr)
+        g_oss = new oss;
+    return *g_oss;
+}
 
 std::ostream *tlssPush() {
-    return g_oss.push();
+    return getOss().push();
 }
 
 String tlssPop() {
-    return g_oss.pop();
+    return getOss().pop();
+}
+
+void tlssCleanup() {
+    delete g_oss;
+    g_oss = nullptr;
+#ifndef DOCTEST_CONFIG_DISABLE
+    delete g_infoContexts;
+    g_infoContexts = nullptr;
+#endif
 }
 
 } // namespace detail
@@ -8645,6 +8719,7 @@ namespace doctest {
 namespace detail {
 
 std::set<TestCase> &getRegisteredTests() {
+    StaticRegistrationMemoryGuard memoryGuard;
     static std::set<TestCase> data;
     return data;
 }
@@ -8716,6 +8791,7 @@ bool TestCase::operator<(const TestCase &other) const noexcept {
 
 // used by the macros for registering tests
 int regTest(const TestCase &tc) noexcept {
+    StaticRegistrationMemoryGuard memoryGuard;
     getRegisteredTests().insert(tc);
     return 0;
 }
