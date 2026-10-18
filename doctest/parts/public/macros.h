@@ -188,7 +188,20 @@ int instantiationHelper(const T &) noexcept {
 // for subcases
 #define DOCTEST_SUBCASE(name)                                                                                          \
     if (const doctest::detail::Subcase &DOCTEST_ANONYMOUS(DOCTEST_ANON_SUBCASE_) DOCTEST_UNUSED =                      \
-            doctest::detail::Subcase(name, __FILE__, __LINE__))
+            doctest::detail::Subcase(doctest::DecoratedName()->*name, __FILE__, __LINE__))
+
+#define DOCTEST_FIXTURE_SETUP(f)                                                                                       \
+    *f;                                                                                                                \
+    try {                                                                                                              \
+    DOCTEST_SUBCASE("Fixture Setup" * doctest::filterable::off) f
+
+#define DOCTEST_FIXTURE_CLEANUP(f)                                                                                     \
+    DOCTEST_SUBCASE("Fixture Cleanup" * doctest::filterable::off) delete f;                                            \
+    }                                                                                                                  \
+    catch (...) {                                                                                                      \
+        delete f;                                                                                                      \
+        throw;                                                                                                         \
+    }
 
 // for generating value-parameterized test inputs
 #define DOCTEST_GENERATE(...) doctest::detail::acquireGeneratorValue(__VA_ARGS__)
@@ -534,6 +547,8 @@ int instantiationHelper(const T &) noexcept {
 
 // for subcases
 #define DOCTEST_SUBCASE(name)
+#define DOCTEST_FIXTURE_SETUP(f)
+#define DOCTEST_FIXTURE_CLEANUP(f)
 
 // for generating value-parameterized test inputs
 #define DOCTEST_GENERATE_IMPL(first, ...) (first)
@@ -884,6 +899,8 @@ DOCTEST_RELATIONAL_OP(ge, >=)
 #define TEST_CASE_TEMPLATE_INVOKE(id, ...) DOCTEST_TEST_CASE_TEMPLATE_INVOKE(id, __VA_ARGS__)
 #define TEST_CASE_TEMPLATE_APPLY(id, ...) DOCTEST_TEST_CASE_TEMPLATE_APPLY(id, __VA_ARGS__)
 #define SUBCASE(name) DOCTEST_SUBCASE(name)
+#define FIXTURE_SETUP(f) DOCTEST_FIXTURE_SETUP(f)
+#define FIXTURE_CLEANUP(f) DOCTEST_FIXTURE_CLEANUP(f)
 #define GENERATE(...) DOCTEST_GENERATE(__VA_ARGS__)
 #define TEST_SUITE(decorators) DOCTEST_TEST_SUITE(decorators)
 #define TEST_SUITE_BEGIN(name) DOCTEST_TEST_SUITE_BEGIN(name)
