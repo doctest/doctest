@@ -815,12 +815,21 @@ DOCTEST_SUPPRESS_PUBLIC_WARNINGS_POP
 #define DOCTEST_PARTS_PUBLIC_STD_UTILITY
 
 
+#ifdef DOCTEST_CONFIG_USE_STD_HEADERS
+#include <utility>
+#endif
+
 DOCTEST_SUPPRESS_PUBLIC_WARNINGS_PUSH
 
 namespace doctest {
 namespace detail {
 
 // <utility>
+#ifdef DOCTEST_CONFIG_USE_STD_HEADERS
+using std::declval;
+using std::forward;
+using std::move;
+#else
 template <typename T>
 T &&declval();
 
@@ -834,6 +843,12 @@ template <class T>
 DOCTEST_CONSTEXPR_FUNC T &&forward(typename types::remove_reference<T>::type &&t) DOCTEST_NOEXCEPT {
     return static_cast<T &&>(t);
 }
+
+template <class T>
+DOCTEST_CONSTEXPR_FUNC typename types::remove_reference<T>::type &&move(T &&t) DOCTEST_NOEXCEPT {
+    return static_cast<typename types::remove_reference<T>::type &&>(t);
+}
+#endif
 
 template <typename T>
 struct deferred_false : types::false_type {};
