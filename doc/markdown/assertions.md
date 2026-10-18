@@ -164,6 +164,8 @@ By default a small epsilon value (relative - in percentages) is used that covers
 REQUIRE(22.0/7 == doctest::Approx(3.141).epsilon(0.01)); // allow for a 1% error
 ```
 
+Epsilon represents a relative percentage tolerance and should be in the range ```[0, 1)```. Values of ```1.0``` or greater (100% relative tolerance) are not recommended: the comparison uses ```|lhs - rhs| < epsilon * (scale + max(|lhs|, |rhs|))```, which becomes unstable or ill-conditioned when epsilon reaches or exceeds ```1```.
+
 When dealing with very large or very small numbers it can be useful to specify a scale, which can be achieved by calling the ```scale()``` method on the ```doctest::Approx``` instance.
 
 ## NaN checking

@@ -22,6 +22,8 @@ struct DOCTEST_INTERFACE Approx {
     }
 #endif // DOCTEST_CONFIG_INCLUDE_TYPE_TRAITS
 
+    // Epsilon is a relative percentage tolerance; keep it in [0, 1).
+    // Values >= 1.0 make the relative comparison ill-conditioned.
     Approx &epsilon(double newEpsilon);
 
 #ifdef DOCTEST_CONFIG_INCLUDE_TYPE_TRAITS
