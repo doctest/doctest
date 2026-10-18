@@ -192,6 +192,10 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
     add_compiler_flags(-Wno-c++98-compat-pedantic)
     add_compiler_flags(-Wno-c++98-compat-bind-to-temporary-copy)
     add_compiler_flags(-Wno-c++98-compat-local-type-template-args)
+    check_cxx_compiler_flag(-Wthread-safety-negative HAVE_THREAD_SAFETY_NEGATIVE)
+    if(HAVE_THREAD_SAFETY_NEGATIVE)
+        add_compiler_flags(-Wno-thread-safety-negative)
+    endif()
     add_compiler_flags(-Qunused-arguments -fcolor-diagnostics) # needed for ccache integration
 endif()
 
@@ -199,6 +203,7 @@ check_cxx_compiler_flag(-Wunsafe-buffer-usage HAVE_UNSAFE_BUFFER_USAGE)
 if(HAVE_UNSAFE_BUFFER_USAGE)
     add_compiler_flags(-Wno-unsafe-buffer-usage)
 endif()
+
 
 if(MSVC)
     add_compiler_flags(/std:c++latest) # for post c++14 updates in MSVC
