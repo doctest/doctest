@@ -30,8 +30,8 @@ enum Enum {
 } // namespace TestCaseFailureReason
 
 struct DOCTEST_INTERFACE CurrentTestCaseStats {
-    int numAssertsCurrentTest;
-    int numAssertsFailedCurrentTest;
+    counter_type numAssertsCurrentTest;
+    counter_type numAssertsFailedCurrentTest;
     double seconds;
     int failure_flags; // use TestCaseFailureReason::Enum
     bool testCaseSuccess;
@@ -43,12 +43,12 @@ struct DOCTEST_INTERFACE TestCaseException {
 };
 
 struct DOCTEST_INTERFACE TestRunStats {
-    unsigned numTestCases;
-    unsigned numTestCasesPassingFilters;
-    unsigned numTestSuitesPassingFilters;
-    unsigned numTestCasesFailed;
-    int numAsserts;
-    int numAssertsFailed;
+    counter_type numTestCases;
+    counter_type numTestCasesPassingFilters;
+    counter_type numTestSuitesPassingFilters;
+    counter_type numTestCasesFailed;
+    counter_type numAsserts;
+    counter_type numAssertsFailed;
 };
 
 struct QueryData {

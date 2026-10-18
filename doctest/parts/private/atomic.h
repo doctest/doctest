@@ -91,11 +91,11 @@ public:
     }
 
     T load(std::memory_order order = std::memory_order_seq_cst) const DOCTEST_NOEXCEPT {
-        auto result = T();
+        unsigned long long result = 0;
         for (const auto &c: m_atomics) {
-            result += c.atomic.load(order);
+            result += static_cast<unsigned long long>(c.atomic.load(order));
         }
-        return result;
+        return static_cast<T>(result);
     }
 
     // NOLINTNEXTLINE(cppcoreguidelines-c-copy-assignment-signature, misc-unconventional-assign-operator)

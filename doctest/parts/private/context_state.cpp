@@ -27,11 +27,13 @@ void ContextState::resetRunData() {
 void ContextState::finalizeTestCaseData() {
     seconds = timer.getElapsedSeconds();
 
-    // update the non-atomic counters
-    numAsserts += numAssertsCurrentTest_atomic;
-    numAssertsFailed += numAssertsFailedCurrentTest_atomic;
-    numAssertsCurrentTest = numAssertsCurrentTest_atomic;
+    // Update the non-atomic counters. The failed count is read first: both counters only
+    // grow, so reading the failed one first keeps failed <= total even if a thread of the
+    // test case is still running and counting.
     numAssertsFailedCurrentTest = numAssertsFailedCurrentTest_atomic;
+    numAssertsCurrentTest = numAssertsCurrentTest_atomic;
+    numAsserts += numAssertsCurrentTest;
+    numAssertsFailed += numAssertsFailedCurrentTest;
 
     if (numAssertsFailedCurrentTest)
         failure_flags |= TestCaseFailureReason::AssertFailure;
