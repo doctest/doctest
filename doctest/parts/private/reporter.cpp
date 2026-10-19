@@ -1,6 +1,7 @@
 #include "doctest/parts/private/context_scope.h"
 #include "doctest/parts/private/context_state.h"
 #include "doctest/parts/private/reporter.h"
+#include "doctest/parts/private/static_registration.h"
 
 DOCTEST_SUPPRESS_PRIVATE_WARNINGS_PUSH
 
@@ -33,11 +34,13 @@ int registerReporter(const char *, int, IReporter *) {
 
 namespace detail {
 reporterMap &getReporters() noexcept {
+    StaticRegistrationMemoryGuard memoryGuard;
     static reporterMap data;
     return data;
 }
 
 reporterMap &getListeners() noexcept {
+    StaticRegistrationMemoryGuard memoryGuard;
     static reporterMap data;
     return data;
 }
@@ -46,11 +49,11 @@ reporterMap &getListeners() noexcept {
 DOCTEST_DEFINE_INTERFACE(IReporter)
 
 int IReporter::get_num_active_contexts() {
-    return static_cast<int>(detail::g_infoContexts.size());
+    return static_cast<int>(detail::getInfoContexts().size());
 }
 
 const IContextScope *const *IReporter::get_active_contexts() {
-    return get_num_active_contexts() ? detail::g_infoContexts.data() : nullptr;
+    return get_num_active_contexts() ? detail::getInfoContexts().data() : nullptr;
 }
 
 int IReporter::get_num_stringified_contexts() {
@@ -63,6 +66,7 @@ const String *IReporter::get_stringified_contexts() {
 
 namespace detail {
 void registerReporterImpl(const char *name, int priority, reporterCreatorFunc c, bool isReporter) noexcept {
+    StaticRegistrationMemoryGuard memoryGuard;
     if (isReporter)
         getReporters().insert(reporterMap::value_type(reporterMap::key_type(priority, name), c));
     else

@@ -133,6 +133,13 @@ doctest_add_unit_test(WITH_MAIN SOURCE regression/test.1045.cpp EXCEPT ${FNOEXCE
 doctest_add_unit_test(WITH_MAIN SOURCE regression/test.1165.cpp EXCEPT ${FNOEXCEPT})
 doctest_add_unit_test(WITH_MAIN SOURCE regression/test.1171.cpp)
 
+# The debug CRT reports allocations which are still alive before static
+# destructors run. This regression test verifies that doctest does not leave
+# apparent leaks in that situation.
+if(MSVC)
+    doctest_add_unit_test(SOURCE regression/test.205.cpp)
+endif()
+
 set_tests_properties(
     regression/test.782.cpp
     PROPERTIES

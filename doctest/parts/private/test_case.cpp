@@ -1,4 +1,5 @@
 #include "doctest/parts/private/test_case.h"
+#include "doctest/parts/private/static_registration.h"
 
 #include <cstring>
 
@@ -10,6 +11,7 @@ namespace doctest {
 namespace detail {
 
 std::set<TestCase> &getRegisteredTests() {
+    StaticRegistrationMemoryGuard memoryGuard;
     static std::set<TestCase> data;
     return data;
 }
@@ -81,6 +83,7 @@ bool TestCase::operator<(const TestCase &other) const noexcept {
 
 // used by the macros for registering tests
 int regTest(const TestCase &tc) noexcept {
+    StaticRegistrationMemoryGuard memoryGuard;
     getRegisteredTests().insert(tc);
     return 0;
 }

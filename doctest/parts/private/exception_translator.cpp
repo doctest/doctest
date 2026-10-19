@@ -1,4 +1,5 @@
 #include "doctest/parts/private/exception_translator.h"
+#include "doctest/parts/private/static_registration.h"
 
 #include <algorithm>
 #include <string>
@@ -13,12 +14,14 @@ namespace detail {
 DOCTEST_DEFINE_INTERFACE(IExceptionTranslator)
 
 void registerExceptionTranslatorImpl(const IExceptionTranslator *et) noexcept {
+    StaticRegistrationMemoryGuard memoryGuard;
     if (std::find(getExceptionTranslators().begin(), getExceptionTranslators().end(), et) ==
         getExceptionTranslators().end())
         getExceptionTranslators().push_back(et);
 }
 
 std::vector<const IExceptionTranslator *> &getExceptionTranslators() noexcept {
+    StaticRegistrationMemoryGuard memoryGuard;
     static std::vector<const IExceptionTranslator *> data;
     return data;
 }

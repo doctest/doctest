@@ -407,7 +407,7 @@ void Context::setCout(std::ostream *out) {
     p->cout = out;
 }
 
-static class DiscardOStream : public std::ostream {
+class DiscardOStream : public std::ostream {
 private:
     class : public std::streambuf {
     private:
@@ -428,7 +428,7 @@ private:
 public:
     DiscardOStream() noexcept
         : std::ostream(&discardBuf) {}
-} discardOut;
+};
 
 // the main function that does all the filtering and test running
 int Context::run() {
@@ -444,6 +444,7 @@ int Context::run() {
     p->resetRunData();
 
     std::fstream fstr;
+    DiscardOStream discardOut;
     if (p->cout == nullptr) {
         if (p->quiet) {
             p->cout = &discardOut;
@@ -485,6 +486,7 @@ int Context::run() {
         for (auto &curr: p->reporters_currently_used)
             delete curr;
         p->reporters_currently_used.clear();
+        tlssCleanup();
 
         if (p->numTestCasesFailed && !p->no_exitcode)
             return EXIT_FAILURE;
