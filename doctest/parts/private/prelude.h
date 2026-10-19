@@ -43,7 +43,6 @@ DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_BEGIN
 #endif // DOCTEST_CONFIG_NO_MULTITHREADING
 #include <set>
 #include <map>
-#include <unordered_set>
 #include <exception>
 #include <stdexcept>
 #if defined(DOCTEST_CONFIG_POSIX_SIGNALS) || defined(DOCTEST_CONFIG_WINDOWS_SEH)
