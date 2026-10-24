@@ -1,0 +1,32 @@
+name: Documentation
+
+on:
+  push:
+    branches: [dev, master]
+    paths-ignore:
+      - "doc/**"
+      - "scripts/**"
+      - "LICENSE.txt"
+      - "README.md"
+
+  pull_request:
+    paths-ignore:
+      - ".github/ISSUE_TEMPLATE/**"
+      - "doc/**"
+      - "scripts/**"
+      - "LICENSE.txt"
+      - "README.md"
+
+concurrency:
+  group: ${{ github.workflow }}|${{ github.ref_name }}|docs
+  cancel-in-progress: true
+
+jobs:
+  doxygen:
+    runs-on: ubuntu-24.04
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Generate
+        run: echo WIP
