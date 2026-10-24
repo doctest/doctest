@@ -55,6 +55,9 @@
     <TestCase name="check return values no print" filename="assertion_macros.cpp" line="0" skipped="true"/>
     <TestCase name="custom macros" filename="alternative_macros.cpp" line="0" skipped="true"/>
     <TestCase name="default construction&lt;SHORT!!!>" filename="templated_test_cases.cpp" line="0" skipped="true"/>
+    <TestCase name="default construction&lt;answer&lt;int>>" filename="templated_test_cases.cpp" line="0" skipped="true"/>
+    <TestCase name="default construction&lt;answer&lt;short>>" filename="templated_test_cases.cpp" line="0" skipped="true"/>
+    <TestCase name="default construction&lt;answer&lt;signed char>>" filename="templated_test_cases.cpp" line="0" skipped="true"/>
     <TestCase name="default construction&lt;char>" filename="templated_test_cases.cpp" line="0" skipped="true"/>
     <TestCase name="default construction&lt;double>" filename="templated_test_cases.cpp" line="0" skipped="true"/>
     <TestCase name="default construction&lt;double>" filename="templated_test_cases.cpp" line="0" skipped="true"/>
@@ -169,6 +172,6 @@
     <TestCase name="without a funny name:" filename="subcases.cpp" line="0" skipped="true"/>
   </TestSuite>
   <OverallResultsAsserts successes="0" failures="0"/>
-  <OverallResultsTestCases successes="0" failures="0" skipped="125"/>
+  <OverallResultsTestCases successes="0" failures="0" skipped="128"/>
 </doctest>
 Program code.

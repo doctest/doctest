@@ -43,6 +43,15 @@
     <TestCase name="default construction&lt;char>" filename="templated_test_cases.cpp" line="0">
       <OverallResultsAsserts successes="1" failures="0" test_case_success="true"/>
     </TestCase>
+    <TestCase name="default construction&lt;answer&lt;signed char>>" filename="templated_test_cases.cpp" line="0">
+      <OverallResultsAsserts successes="1" failures="0" test_case_success="true"/>
+    </TestCase>
+    <TestCase name="default construction&lt;answer&lt;short>>" filename="templated_test_cases.cpp" line="0">
+      <OverallResultsAsserts successes="1" failures="0" test_case_success="true"/>
+    </TestCase>
+    <TestCase name="default construction&lt;answer&lt;int>>" filename="templated_test_cases.cpp" line="0">
+      <OverallResultsAsserts successes="1" failures="0" test_case_success="true"/>
+    </TestCase>
     <TestCase name="multiple types&lt;Custom name test>" filename="templated_test_cases.cpp" line="0">
       <Expression success="false" type="CHECK" filename="templated_test_cases.cpp" line="0">
         <Original>
@@ -88,7 +97,7 @@
       <OverallResultsAsserts successes="1" failures="1" test_case_success="false"/>
     </TestCase>
   </TestSuite>
-  <OverallResultsAsserts successes="14" failures="5"/>
-  <OverallResultsTestCases successes="10" failures="5"/>
+  <OverallResultsAsserts successes="17" failures="5"/>
+  <OverallResultsTestCases successes="13" failures="5"/>
 </doctest>
 Program code.

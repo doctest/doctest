@@ -1,7 +1,12 @@
 #define DOCTEST_CONFIG_IMPLEMENT
 #include <doctest/doctest.h>
-
 #include "header.h"
+
+// Complement the REGISTER_EXCEPTION_TRANSLATOR() on the same line in header.h
+// to break the build in case DOCTEST_COUNTER surprisingly resolves to __LINE__
+REGISTER_EXCEPTION_TRANSLATOR(std::nullptr_t &in) {
+    return doctest::toString(in);
+}
 
 int program();
 void some_program_code(int argc, char **argv);
