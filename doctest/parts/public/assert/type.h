@@ -58,6 +58,10 @@ enum Enum {
     DT_CHECK_THROWS_WITH_AS = is_throws_with | is_throws_as | is_check,
     DT_REQUIRE_THROWS_WITH_AS = is_throws_with | is_throws_as | is_require,
 
+    DT_WARN_THROWS_WITH_PREDICATE = is_throws_as | is_warn,
+    DT_CHECK_THROWS_WITH_PREDICATE = is_throws_as | is_check,
+    DT_REQUIRE_THROWS_WITH_PREDICATE = is_throws_as | is_require,
+
     DT_WARN_NOTHROW = is_nothrow | is_warn,
     DT_CHECK_NOTHROW = is_nothrow | is_check,
     DT_REQUIRE_NOTHROW = is_nothrow | is_require,

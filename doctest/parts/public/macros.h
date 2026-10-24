@@ -420,6 +420,35 @@ int instantiationHelper(const T &) noexcept {
     }                                                                                                                  \
     DOCTEST_FUNC_SCOPE_END
 
+#define DOCTEST_ASSERT_THROWS_WITH_PREDICATE(expr, assert_type, ExceptionType, predicate)                              \
+    DOCTEST_FUNC_SCOPE_BEGIN {                                                                                         \
+        if (!doctest::getContextOptions()->no_throw) {                                                                 \
+            try {                                                                                                      \
+                DOCTEST_CAST_TO_VOID(expr)                                                                             \
+                doctest::detail::ResultBuilder DOCTEST_RB(                                                             \
+                    doctest::assertType::assert_type, __FILE__, __LINE__, #expr, #ExceptionType, "");                  \
+                DOCTEST_RB.m_failed = true;                                                                            \
+                DOCTEST_RB.m_decomp = " threw no exception";                                                           \
+                DOCTEST_ASSERT_LOG_REACT_RETURN(DOCTEST_RB);                                                           \
+            } catch (const ExceptionType& DOCTEST_ANONYMOUS(DOCTEST_ANON_PRED_E_)) {                                   \
+                predicate(DOCTEST_ANONYMOUS(DOCTEST_ANON_PRED_E_));                                                   \
+                doctest::detail::ResultBuilder DOCTEST_RB(                                                             \
+                    doctest::assertType::assert_type, __FILE__, __LINE__, #expr, #ExceptionType, "");                  \
+                DOCTEST_RB.m_threw_as = true;                                                                          \
+                DOCTEST_ASSERT_LOG_REACT_RETURN(DOCTEST_RB);                                                           \
+            } catch (...) {                                                                                            \
+                doctest::detail::ResultBuilder DOCTEST_RB(                                                             \
+                    doctest::assertType::assert_type, __FILE__, __LINE__, #expr, #ExceptionType,                       \
+                    "unexpected exception type");                                                                      \
+                DOCTEST_RB.translateException();                                                                       \
+                DOCTEST_ASSERT_LOG_REACT_RETURN(DOCTEST_RB);                                                           \
+            }                                                                                                          \
+        } else { /* NOLINT(*-else-after-return) */                                                                     \
+            DOCTEST_FUNC_SCOPE_RET(false);                                                                             \
+        }                                                                                                              \
+    }                                                                                                                  \
+    DOCTEST_FUNC_SCOPE_END
+
 #define DOCTEST_ASSERT_THROWS_WITH(expr, expr_str, assert_type, ...)                                                   \
     DOCTEST_FUNC_SCOPE_BEGIN {                                                                                         \
         if (!doctest::getContextOptions()->no_throw) {                                                                 \
@@ -462,6 +491,13 @@ int instantiationHelper(const T &) noexcept {
 #define DOCTEST_WARN_THROWS_WITH_AS(expr, message, ...) DOCTEST_ASSERT_THROWS_AS(expr, DT_WARN_THROWS_WITH_AS, message, __VA_ARGS__)
 #define DOCTEST_CHECK_THROWS_WITH_AS(expr, message, ...) DOCTEST_ASSERT_THROWS_AS(expr, DT_CHECK_THROWS_WITH_AS, message, __VA_ARGS__)
 #define DOCTEST_REQUIRE_THROWS_WITH_AS(expr, message, ...) DOCTEST_ASSERT_THROWS_AS(expr, DT_REQUIRE_THROWS_WITH_AS, message, __VA_ARGS__)
+
+#define DOCTEST_WARN_THROWS_WITH_PREDICATE(expr, ExceptionType, predicate)                                             \
+    DOCTEST_ASSERT_THROWS_WITH_PREDICATE(expr, DT_WARN_THROWS_WITH_PREDICATE, ExceptionType, predicate)
+#define DOCTEST_CHECK_THROWS_WITH_PREDICATE(expr, ExceptionType, predicate)                                            \
+    DOCTEST_ASSERT_THROWS_WITH_PREDICATE(expr, DT_CHECK_THROWS_WITH_PREDICATE, ExceptionType, predicate)
+#define DOCTEST_REQUIRE_THROWS_WITH_PREDICATE(expr, ExceptionType, predicate)                                          \
+    DOCTEST_ASSERT_THROWS_WITH_PREDICATE(expr, DT_REQUIRE_THROWS_WITH_PREDICATE, ExceptionType, predicate)
 
 #define DOCTEST_WARN_NOTHROW(...) DOCTEST_ASSERT_NOTHROW(DT_WARN_NOTHROW, __VA_ARGS__)
 #define DOCTEST_CHECK_NOTHROW(...) DOCTEST_ASSERT_NOTHROW(DT_CHECK_NOTHROW, __VA_ARGS__)
@@ -649,6 +685,21 @@ DOCTEST_RELATIONAL_OP(ge, >=)
 #define DOCTEST_WARN_THROWS_AS(expr, ...) [&] { try { expr; } catch (__VA_ARGS__) { return true; } catch (...) { } return false; }()
 #define DOCTEST_CHECK_THROWS_AS(expr, ...) [&] { try { expr; } catch (__VA_ARGS__) { return true; } catch (...) { } return false; }()
 #define DOCTEST_REQUIRE_THROWS_AS(expr, ...) [&] { try { expr; } catch (__VA_ARGS__) { return true; } catch (...) { } return false; }()
+#define DOCTEST_WARN_THROWS_WITH_PREDICATE(expr, ExceptionType, predicate)                                             \
+    [&] {                                                                                                              \
+        try {                                                                                                          \
+            expr;                                                                                                      \
+            return false;                                                                                              \
+        } catch (const ExceptionType& e) {                                                                             \
+            return predicate(e);                                                                                       \
+        } catch (...) {                                                                                                \
+        }                                                                                                              \
+        return false;                                                                                                  \
+    }()
+#define DOCTEST_CHECK_THROWS_WITH_PREDICATE(expr, ExceptionType, predicate)                                            \
+    DOCTEST_WARN_THROWS_WITH_PREDICATE(expr, ExceptionType, predicate)
+#define DOCTEST_REQUIRE_THROWS_WITH_PREDICATE(expr, ExceptionType, predicate)                                          \
+    DOCTEST_WARN_THROWS_WITH_PREDICATE(expr, ExceptionType, predicate)
 #define DOCTEST_WARN_NOTHROW(...) [&] { try { __VA_ARGS__; return true; } catch (...) { return false; } }()
 #define DOCTEST_CHECK_NOTHROW(...) [&] { try { __VA_ARGS__; return true; } catch (...) { return false; } }()
 #define DOCTEST_REQUIRE_NOTHROW(...) [&] { try { __VA_ARGS__; return true; } catch (...) { return false; } }()
@@ -722,6 +773,9 @@ DOCTEST_RELATIONAL_OP(ge, >=)
 #define DOCTEST_WARN_THROWS_WITH_AS(expr, with, ...) DOCTEST_FUNC_EMPTY
 #define DOCTEST_CHECK_THROWS_WITH_AS(expr, with, ...) DOCTEST_FUNC_EMPTY
 #define DOCTEST_REQUIRE_THROWS_WITH_AS(expr, with, ...) DOCTEST_FUNC_EMPTY
+#define DOCTEST_WARN_THROWS_WITH_PREDICATE(expr, ExceptionType, predicate) DOCTEST_FUNC_EMPTY
+#define DOCTEST_CHECK_THROWS_WITH_PREDICATE(expr, ExceptionType, predicate) DOCTEST_FUNC_EMPTY
+#define DOCTEST_REQUIRE_THROWS_WITH_PREDICATE(expr, ExceptionType, predicate) DOCTEST_FUNC_EMPTY
 #define DOCTEST_WARN_NOTHROW(...) DOCTEST_FUNC_EMPTY
 #define DOCTEST_CHECK_NOTHROW(...) DOCTEST_FUNC_EMPTY
 #define DOCTEST_REQUIRE_NOTHROW(...) DOCTEST_FUNC_EMPTY
@@ -804,6 +858,9 @@ DOCTEST_RELATIONAL_OP(ge, >=)
 #define DOCTEST_WARN_THROWS_WITH_AS(expr, with, ...) DOCTEST_EXCEPTION_EMPTY_FUNC
 #define DOCTEST_CHECK_THROWS_WITH_AS(expr, with, ...) DOCTEST_EXCEPTION_EMPTY_FUNC
 #define DOCTEST_REQUIRE_THROWS_WITH_AS(expr, with, ...) DOCTEST_EXCEPTION_EMPTY_FUNC
+#define DOCTEST_WARN_THROWS_WITH_PREDICATE(expr, ExceptionType, predicate) DOCTEST_EXCEPTION_EMPTY_FUNC
+#define DOCTEST_CHECK_THROWS_WITH_PREDICATE(expr, ExceptionType, predicate) DOCTEST_EXCEPTION_EMPTY_FUNC
+#define DOCTEST_REQUIRE_THROWS_WITH_PREDICATE(expr, ExceptionType, predicate) DOCTEST_EXCEPTION_EMPTY_FUNC
 #define DOCTEST_WARN_NOTHROW(...) DOCTEST_EXCEPTION_EMPTY_FUNC
 #define DOCTEST_CHECK_NOTHROW(...) DOCTEST_EXCEPTION_EMPTY_FUNC
 #define DOCTEST_REQUIRE_NOTHROW(...) DOCTEST_EXCEPTION_EMPTY_FUNC
@@ -907,6 +964,8 @@ DOCTEST_RELATIONAL_OP(ge, >=)
 #define WARN_THROWS_AS(expr, ...) DOCTEST_WARN_THROWS_AS(expr, __VA_ARGS__)
 #define WARN_THROWS_WITH(expr, ...) DOCTEST_WARN_THROWS_WITH(expr, __VA_ARGS__)
 #define WARN_THROWS_WITH_AS(expr, with, ...) DOCTEST_WARN_THROWS_WITH_AS(expr, with, __VA_ARGS__)
+#define WARN_THROWS_WITH_PREDICATE(expr, ExceptionType, predicate)                                                     \
+    DOCTEST_WARN_THROWS_WITH_PREDICATE(expr, ExceptionType, predicate)
 #define WARN_NOTHROW(...) DOCTEST_WARN_NOTHROW(__VA_ARGS__)
 #define CHECK(...) DOCTEST_CHECK(__VA_ARGS__)
 #define CHECK_FALSE(...) DOCTEST_CHECK_FALSE(__VA_ARGS__)
@@ -914,6 +973,8 @@ DOCTEST_RELATIONAL_OP(ge, >=)
 #define CHECK_THROWS_AS(expr, ...) DOCTEST_CHECK_THROWS_AS(expr, __VA_ARGS__)
 #define CHECK_THROWS_WITH(expr, ...) DOCTEST_CHECK_THROWS_WITH(expr, __VA_ARGS__)
 #define CHECK_THROWS_WITH_AS(expr, with, ...) DOCTEST_CHECK_THROWS_WITH_AS(expr, with, __VA_ARGS__)
+#define CHECK_THROWS_WITH_PREDICATE(expr, ExceptionType, predicate)                                                      \
+    DOCTEST_CHECK_THROWS_WITH_PREDICATE(expr, ExceptionType, predicate)
 #define CHECK_NOTHROW(...) DOCTEST_CHECK_NOTHROW(__VA_ARGS__)
 #define REQUIRE(...) DOCTEST_REQUIRE(__VA_ARGS__)
 #define REQUIRE_FALSE(...) DOCTEST_REQUIRE_FALSE(__VA_ARGS__)
@@ -921,6 +982,8 @@ DOCTEST_RELATIONAL_OP(ge, >=)
 #define REQUIRE_THROWS_AS(expr, ...) DOCTEST_REQUIRE_THROWS_AS(expr, __VA_ARGS__)
 #define REQUIRE_THROWS_WITH(expr, ...) DOCTEST_REQUIRE_THROWS_WITH(expr, __VA_ARGS__)
 #define REQUIRE_THROWS_WITH_AS(expr, with, ...) DOCTEST_REQUIRE_THROWS_WITH_AS(expr, with, __VA_ARGS__)
+#define REQUIRE_THROWS_WITH_PREDICATE(expr, ExceptionType, predicate)                                                    \
+    DOCTEST_REQUIRE_THROWS_WITH_PREDICATE(expr, ExceptionType, predicate)
 #define REQUIRE_NOTHROW(...) DOCTEST_REQUIRE_NOTHROW(__VA_ARGS__)
 
 // clang-format off
