@@ -218,6 +218,9 @@ DOCTEST_CLANG_SUPPRESS_WARNING_WITH_PUSH("-Wunused-macros")
 #define DOCTEST_BRANCH_ON_DISABLED(if_disabled, if_not_disabled) if_not_disabled
 #endif
 
+// counts the number of elements in a C array
+#define DOCTEST_COUNTOF(x) (sizeof(x) / sizeof(x[0]))
+
 DOCTEST_CLANG_SUPPRESS_WARNING_POP
 
 #endif // DOCTEST_PARTS_PUBLIC_CONFIG

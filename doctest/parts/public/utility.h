@@ -51,9 +51,6 @@ DOCTEST_CLANG_SUPPRESS_WARNING_POP
     static const int var = doctest::detail::consume(&var, __VA_ARGS__);                                                \
     DOCTEST_CLANG_SUPPRESS_WARNING_POP
 
-// counts the number of elements in a C array
-#define DOCTEST_COUNTOF(x) (sizeof(x) / sizeof(x[0]))
-
 DOCTEST_SUPPRESS_PUBLIC_WARNINGS_POP
 
 #endif // DOCTEST_PARTS_PUBLIC_UTILITY
