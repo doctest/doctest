@@ -43,11 +43,14 @@ Subcase::Subcase(const String &name, const char *file, int line)
         return;
 
     m_entered = true;
+    g_cs->currentSubcaseNames.push_back(m_signature.m_name.c_str());
     DOCTEST_ITERATE_THROUGH_REPORTERS(subcase_start, m_signature);
 }
 
 Subcase::~Subcase() {
     if (m_entered) {
+        if (!g_cs->currentSubcaseNames.empty())
+            g_cs->currentSubcaseNames.pop_back();
         g_cs->traversal.leaveSubcase();
 
         if (detail::has_uncaught_exceptions() && g_cs->shouldLogCurrentException) {
