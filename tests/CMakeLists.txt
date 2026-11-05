@@ -139,3 +139,18 @@ set_tests_properties(
         PASS_REGULAR_EXPRESSION
             ".*ERROR: test case THREW exception: #782 repro exception.*|Exceptions disabled, cannot run this test"
 )
+
+add_test(NAME cmake/discovery_semicolons
+    COMMAND ${CMAKE_COMMAND}
+        "-DSOURCE_DIR=${CMAKE_CURRENT_SOURCE_DIR}/cmake/discovery_semicolons"
+        "-DBINARY_DIR=${CMAKE_CURRENT_BINARY_DIR}/cmake/discovery_semicolons/$<CONFIG>"
+        "-DGENERATOR=${CMAKE_GENERATOR}"
+        "-DGENERATOR_PLATFORM=${CMAKE_GENERATOR_PLATFORM}"
+        "-DGENERATOR_TOOLSET=${CMAKE_GENERATOR_TOOLSET}"
+        "-DMAKE_PROGRAM=${CMAKE_MAKE_PROGRAM}"
+        "-DTOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}"
+        "-DTEST_CONFIG=$<CONFIG>"
+        "-DDOCTEST_SOURCE_DIR=${PROJECT_SOURCE_DIR}"
+        "-DCXX_COMPILER=${CMAKE_CXX_COMPILER}"
+        -P "${CMAKE_CURRENT_SOURCE_DIR}/cmake/discovery_semicolons/run.cmake"
+)
