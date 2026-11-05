@@ -14,7 +14,15 @@ set(tests)
 
 function(add_command NAME)
   set(_args "")
-  foreach(_arg ${ARGN})
+  math(EXPR last_arg "${ARGC} - 1")
+  foreach(index RANGE 1 ${last_arg})
+    set(_arg "${ARGV${index}}")
+    if("${_arg}" STREQUAL "")
+      continue()
+    endif()
+    if("${NAME}" STREQUAL "set")
+      string(REPLACE ";" "\\;" _arg "${_arg}")
+    endif()
     if(_arg MATCHES "[^-./:a-zA-Z0-9_]")
       set(_args "${_args} [==[${_arg}]==]") # form a bracket_argument
     else()
@@ -49,14 +57,15 @@ if(NOT ${result} EQUAL 0)
   )
 endif()
 
+string(REPLACE ";" "\\;" output "${output}")
 string(REPLACE "\n" ";" output "${output}")
 
 # Parse output
-foreach(line ${output})
-  if("${line}" STREQUAL "===============================================================================" OR "${line}" MATCHES [==[^\[doctest\] ]==])
+foreach(line IN LISTS output)
+  if("${line}" STREQUAL "" OR "${line}" STREQUAL "===============================================================================" OR "${line}" MATCHES [==[^\[doctest\] ]==])
     continue()
   endif()
-  set(test ${line})
+  set(test "${line}")
   set(labels "")
   if(${add_labels})
     # get test suite that test belongs to
@@ -94,7 +103,7 @@ foreach(line ${output})
     unset(TEST_JUNIT_OUTPUT_PARAM)
   endif()
   # use escape commas to handle properly test cases with commas inside the name
-  string(REPLACE "," "\\," test_name ${test})
+  string(REPLACE "," "\\," test_name "${test}")
   # ...and add to script
   add_command(add_test
     "${prefix}${test}${suffix}"
@@ -112,7 +121,8 @@ foreach(line ${output})
     LABELS ${labels}
   )
   unset(labels)
-  list(APPEND tests "${prefix}${test}${suffix}")
+  string(REPLACE ";" "\\;" test_list_name "${prefix}${test}${suffix}")
+  list(APPEND tests "${test_list_name}")
 endforeach()
 
 # Create a list of all discovered tests, which users may use to e.g. set
